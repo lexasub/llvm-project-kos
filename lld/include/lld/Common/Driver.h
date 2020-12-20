@@ -56,6 +56,11 @@ namespace wasm {
 bool link(llvm::ArrayRef<const char *> args, bool canExitEarly,
           llvm::raw_ostream &stdoutOS, llvm::raw_ostream &stderrOS);
 }
+
+namespace kos {
+bool link(llvm::ArrayRef<const char *> args, bool canExitEarly,
+          llvm::raw_ostream &stdoutOS, llvm::raw_ostream &stderrOS);
+}
 }
 
 #endif

@@ -18,6 +18,7 @@ target_link_libraries(lld
   lldMachO2
   lldMinGW
   lldWasm
+  lldKOS
   )
 
 install(TARGETS lld

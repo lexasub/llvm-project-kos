@@ -19,6 +19,7 @@
 //  - ld64:      Mach-O (macOS)
 //  - lld-link:  COFF (Windows)
 //  - ld-wasm:   WebAssembly
+//  - ld-kos:    KolibriOS (MENUET02)
 //
 // lld can be invoked as "lld" along with "-flavor" option. This is for
 // backward compatibility and not recommended.
@@ -58,6 +59,7 @@ enum Flavor {
   Darwin,    // -flavor darwin
   DarwinNew, // -flavor darwinnew
   Wasm,      // -flavor wasm
+  Kos,       // -flavor kos
 };
 
 LLVM_ATTRIBUTE_NORETURN static void die(const Twine &s) {
@@ -69,6 +71,7 @@ static Flavor getFlavor(StringRef s) {
   return StringSwitch<Flavor>(s)
       .CasesLower("ld", "ld.lld", "gnu", Gnu)
       .CasesLower("wasm", "ld-wasm", Wasm)
+      .CasesLower("kos", "ld-kos", Kos)
       .CaseLower("link", WinLink)
       .CasesLower("ld64", "ld64.lld", "darwin", Darwin)
       .CasesLower("darwinnew", "ld64.lld.darwinnew", DarwinNew)
@@ -159,10 +162,12 @@ static int lldMain(int argc, const char **argv, llvm::raw_ostream &stdoutOS,
     return !macho::link(args, exitEarly, stdoutOS, stderrOS);
   case Wasm:
     return !lld::wasm::link(args, exitEarly, stdoutOS, stderrOS);
+  case Kos:
+    return !kos::link(args, exitEarly, stdoutOS, stderrOS);
   default:
     die("lld is a generic driver.\n"
         "Invoke ld.lld (Unix), ld64.lld (macOS), lld-link (Windows), wasm-ld"
-        " (WebAssembly) instead");
+        " (WebAssembly), kos-ld (KolibriOS) instead");
   }
 }
 
