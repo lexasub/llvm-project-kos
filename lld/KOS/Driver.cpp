@@ -1905,6 +1905,11 @@ void LinkerDriver::linkerMain(ArrayRef<const char *> argsArr) {
   if (config->imageBase == uint64_t(-1))
     config->imageBase = getDefaultImageBase();
 
+  symtab->addAbsolute("___hdr_params", 0); // params field of Menuet02 header
+  symtab->addAbsolute("___hdr_path", 0);   // path fiels of Menuet02 header
+  symtab->addAbsolute("___params", 0);     // buffer for params
+  symtab->addAbsolute("___path", 0);       // buffer for path
+
   symtab->addSynthetic(mangle("__ImageBase"), nullptr);
   if (config->machine == I386) {
     symtab->addAbsolute("___safe_se_handler_table", 0);

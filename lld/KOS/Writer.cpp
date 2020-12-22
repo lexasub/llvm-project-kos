@@ -173,6 +173,15 @@ void Writer::run() {
 
   createSections();
   finalizeAddresses();
+
+  dyn_cast<DefinedAbsolute>(symtab->findUnderscore("__hdr_params"))->setVA(28);
+  dyn_cast<DefinedAbsolute>(symtab->findUnderscore("__hdr_path"))->setVA(32);
+
+  dyn_cast<DefinedAbsolute>(symtab->findUnderscore("__params"))->setVA(sizeOfImage);
+  sizeOfImage += 1024;
+  dyn_cast<DefinedAbsolute>(symtab->findUnderscore("__path"))->setVA(sizeOfImage);
+  sizeOfImage += 4096;
+
   removeEmptySections();
   assignOutputSectionIndices();
   setSectionPermissions();
@@ -364,6 +373,8 @@ void Writer::writeHeader() {
   hdr.end = fileSize;
   hdr.memory = sizeOfImage + config->stackSize;
   hdr.stack = sizeOfImage + config->stackSize;
+  hdr.params = dyn_cast<Defined>(symtab->findUnderscore("__params"))->getRVA();
+  hdr.path = dyn_cast<Defined>(symtab->findUnderscore("__path"))->getRVA();
 
   // Prevent UB, reinterpret cast sucks
   auto put32 = [&buf](uint32_t v) {
@@ -381,6 +392,8 @@ void Writer::writeHeader() {
   put32(hdr.end);
   put32(hdr.memory);
   put32(hdr.stack);
+  put32(hdr.params);
+  put32(hdr.path);
 }
 
 void Writer::openFile(StringRef path) {
