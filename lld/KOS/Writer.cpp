@@ -7,41 +7,17 @@
 //===----------------------------------------------------------------------===//
 
 #include "Writer.h"
-#include "CallGraphSort.h"
 #include "Config.h"
-#include "DLL.h"
 #include "InputFiles.h"
-#include "LLDMapFile.h"
-#include "MapFile.h"
-#include "PDB.h"
 #include "SymbolTable.h"
 #include "Symbols.h"
 #include "lld/Common/ErrorHandler.h"
-#include "lld/Common/Memory.h"
 #include "lld/Common/Timer.h"
-#include "llvm/ADT/DenseMap.h"
-#include "llvm/ADT/STLExtras.h"
-#include "llvm/ADT/StringSet.h"
-#include "llvm/ADT/StringSwitch.h"
-#include "llvm/Support/BinaryStreamReader.h"
-#include "llvm/Support/Debug.h"
-#include "llvm/Support/Endian.h"
-#include "llvm/Support/FileOutputBuffer.h"
 #include "llvm/Support/Parallel.h"
-#include "llvm/Support/Path.h"
-#include "llvm/Support/RandomNumberGenerator.h"
-#include "llvm/Support/xxhash.h"
-#include <algorithm>
-#include <cstdio>
-#include <map>
-#include <memory>
-#include <utility>
 
 using namespace llvm;
 using namespace llvm::COFF;
 using namespace llvm::object;
-using namespace llvm::support;
-using namespace llvm::support::endian;
 using namespace lld;
 using namespace lld::kos;
 
@@ -101,22 +77,11 @@ private:
   void assignOutputSectionIndices();
   void openFile(StringRef outputPath);
   void writeHeader();
-  void setSectionPermissions();
   void writeSections();
   PartialSection *createPartialSection(StringRef name, uint32_t outChars);
 
-  OutputSection *findSection(StringRef name);
-
   std::unique_ptr<FileOutputBuffer> &buffer;
   std::map<PartialSectionKey, PartialSection *> partialSections;
-  std::vector<char> strtab;
-  std::vector<llvm::object::coff_symbol16> outputSymtab;
-  IdataContents idata;
-  DelayLoadContents delayIdata;
-  EdataContents edata;
-
-  std::vector<std::pair<COFF::DebugType, Chunk *>> debugRecords;
-  ArrayRef<uint8_t> sectionTable;
 
   uint64_t fileSize;
   uint64_t sizeOfImage;
@@ -184,7 +149,6 @@ void Writer::run() {
 
   removeEmptySections();
   assignOutputSectionIndices();
-  setSectionPermissions();
 
   openFile(config->outputFile);
   writeHeader();
@@ -402,18 +366,6 @@ void Writer::openFile(StringRef path) {
       "failed to open " + path);
 }
 
-// Handles /section options to allow users to overwrite
-// section attributes.
-void Writer::setSectionPermissions() {
-  for (auto &p : config->section) {
-    StringRef name = p.first;
-    uint32_t perm = p.second;
-    for (OutputSection *sec : outputSections)
-      if (sec->name == name)
-        sec->setPermissions(perm);
-  }
-}
-
 // Write section contents to a mmap'ed file.
 void Writer::writeSections() {
   // Record the number of sections to apply section index relocations
@@ -432,13 +384,6 @@ void Writer::writeSections() {
       c->writeTo(secBuf + c->getRVA() - sec->getRVA());
     });
   }
-}
-
-OutputSection *Writer::findSection(StringRef name) {
-  for (OutputSection *sec : outputSections)
-    if (sec->name == name)
-      return sec;
-  return nullptr;
 }
 
 PartialSection *Writer::createPartialSection(StringRef name,

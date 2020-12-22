@@ -3,17 +3,13 @@ tablegen(LLVM Options.inc -gen-opt-parser-defs)
 add_public_tablegen_target(KOSOptionsTableGen)
 
 add_lld_library(lldKOS
-  CallGraphSort.cpp
   Chunks.cpp
   DebugTypes.cpp
-  DLL.cpp
   Driver.cpp
   DriverUtils.cpp
   ICF.cpp
   InputFiles.cpp
-  LLDMapFile.cpp
   LTO.cpp
-  MapFile.cpp
   MarkLive.cpp
   MinGW.cpp
   PDB.cpp
