@@ -1,6 +1,6 @@
-# This directory contains a large amount of C code which provides
-# generic implementations of the core runtime library along with optimized
-# architecture-specific code in various subdirectories.
+#This directory contains a large amount of C code which provides
+#generic implementations of the core runtime library along with optimized
+#architecture - specific code in various subdirectories.
 
 if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
   cmake_minimum_required(VERSION 3.13.4)
@@ -36,10 +36,10 @@ if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
 endif()
 
 if (COMPILER_RT_STANDALONE_BUILD)
-  # When compiler-rt is being built standalone, possibly as a cross-compilation
-  # target, the target may or may not want position independent code. This
-  # option provides an avenue through which the flag may be controlled when an
-  # LLVM configuration is not being utilized.
+#When compiler - rt is being built standalone, possibly as a cross - compilation
+#target, the target may or may not want position independent code.This
+#option provides an avenue through which the flag may be controlled when an
+#LLVM configuration is not being utilized.
   option(COMPILER_RT_BUILTINS_ENABLE_PIC
     "Turns on or off -fPIC for the builtin library source"
     ON)
@@ -50,8 +50,8 @@ include(builtin-config-ix)
 option(COMPILER_RT_BUILTINS_HIDE_SYMBOLS
   "Do not export any symbols from the static library." ON)
 
-# TODO: Need to add a mechanism for logging errors when builtin source files are
-# added to a sub-directory and not this CMakeLists file.
+#TODO : Need to add a mechanism for logging errors when builtin source files are
+#added to a sub - directory and not this CMakeLists file.
 set(GENERIC_SOURCES
   absvdi2.c
   absvsi2.c
@@ -174,8 +174,8 @@ set(GENERIC_SOURCES
   umodti3.c
 )
 
-# TODO: Several "tf" files (and divtc3.c, but not multc3.c) are in
-# GENERIC_SOURCES instead of here.
+#TODO : Several "tf" files(and divtc3.c, but not multc3.c) are in
+#GENERIC_SOURCES instead of here.
 set(GENERIC_TF_SOURCES
   addtf3.c
   comparetf2.c
@@ -224,6 +224,12 @@ if(COMPILER_RT_HAS_ATOMIC_KEYWORD AND NOT COMPILER_RT_EXCLUDE_ATOMIC_BUILTIN)
     atomic.c
   )
 endif()
+ if(COMPILER_RT_HAS_ATOMIC_KEYWORD AND NOT COMPILER_RT_EXCLUDE_ATOMIC_BUILTIN
+								 AND NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Kolibri")
+   set(GENERIC_SOURCES 
+			${GENERIC_SOURCES}   
+			emutls.c
+	)
 
 if(APPLE)
   set(GENERIC_SOURCES
@@ -251,7 +257,7 @@ if (NOT FUCHSIA)
   )
 endif()
 
-# These files are used on 32-bit and 64-bit x86.
+#These files are used on 32 - bit and 64 - bit x86.
 set(x86_ARCH_SOURCES
   cpu_model.c
   )
@@ -263,8 +269,8 @@ if (NOT MSVC)
   )
 endif ()
 
-# Implement extended-precision builtins, assuming long double is 80 bits.
-# long double is not 80 bits on Android or MSVC.
+#Implement extended - precision builtins, assuming long double is 80 bits.
+#long double is not 80 bits on Android or MSVC.
 set(x86_80_BIT_SOURCES
   divxc3.c
   fixxfdi.c
@@ -300,7 +306,7 @@ if (NOT MSVC)
     )
   endif()
 
-  # Darwin x86_64 Haswell
+#Darwin x86_64 Haswell
   set(x86_64h_SOURCES ${x86_64_SOURCES})
 
   if (WIN32)
@@ -345,9 +351,9 @@ if (NOT MSVC)
     )
   endif()
 else () # MSVC
-  # Use C versions of functions when building on MSVC
-  # MSVC's assembler takes Intel syntax, not AT&T syntax.
-  # Also use only MSVC compilable builtin implementations.
+#Use C versions of functions when building on MSVC
+#MSVC's assembler takes Intel syntax, not AT&T syntax.
+#Also use only MSVC compilable builtin implementations.
   set(x86_64_SOURCES
     ${GENERIC_SOURCES}
     ${x86_ARCH_SOURCES}
@@ -491,7 +497,7 @@ if(MINGW)
     ${GENERIC_SOURCES}
   )
 elseif(NOT WIN32)
-  # TODO the EABI sources should only be added to EABI targets
+#TODO the EABI sources should only be added to EABI targets
   set(arm_SOURCES
     ${arm_SOURCES}
     ${arm_EABI_SOURCES}
@@ -511,7 +517,7 @@ set(aarch64_SOURCES
   aarch64/fp_mode.c
 )
 
-# Generate outline atomics helpers from lse.S base
+#Generate outline atomics helpers from lse.S base
 set(OA_HELPERS_DIR "${CMAKE_CURRENT_BINARY_DIR}/outline_atomic_helpers.dir")
 file(MAKE_DIRECTORY "${OA_HELPERS_DIR}")
 
@@ -549,12 +555,12 @@ set(armv7k_SOURCES ${arm_SOURCES})
 set(arm64_SOURCES ${aarch64_SOURCES})
 set(arm64e_SOURCES ${aarch64_SOURCES})
 
-# macho_embedded archs
+#macho_embedded archs
 set(armv6m_SOURCES ${thumb1_SOURCES})
 set(armv7m_SOURCES ${arm_SOURCES})
 set(armv7em_SOURCES ${arm_SOURCES})
 
-# hexagon arch
+#hexagon arch
 set(hexagon_SOURCES
   hexagon/common_entry_exit_abi1.S
   hexagon/common_entry_exit_abi2.S
@@ -609,7 +615,7 @@ set(powerpc64_SOURCES
   ppc/multc3.c
   ${GENERIC_SOURCES}
 )
-# These routines require __int128, which isn't supported on AIX.
+#These routines require __int128, which isn't supported on AIX.
 if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "AIX")
   set(powerpc64_SOURCES
     ppc/floattitf.c
@@ -662,8 +668,8 @@ else ()
 
   append_list_if(COMPILER_RT_HAS_STD_C11_FLAG -std=c11 BUILTIN_CFLAGS)
 
-  # These flags would normally be added to CMAKE_C_FLAGS by the llvm
-  # cmake step. Add them manually if this is a standalone build.
+#These flags would normally be added to CMAKE_C_FLAGS by the llvm
+#cmake step.Add them manually if this is a standalone build.
   if(COMPILER_RT_STANDALONE_BUILD)
     if(COMPILER_RT_BUILTINS_ENABLE_PIC)
       append_list_if(COMPILER_RT_HAS_FPIC_FLAG -fPIC BUILTIN_CFLAGS)
@@ -687,35 +693,36 @@ else ()
 
   foreach (arch ${BUILTIN_SUPPORTED_ARCH})
     if (CAN_TARGET_${arch})
-      # For ARM archs, exclude any VFP builtins if VFP is not supported
+#For ARM archs, exclude any VFP builtins if VFP is not supported
       if (${arch} MATCHES "^(arm|armhf|armv7|armv7s|armv7k|armv7m|armv7em)$")
         string(REPLACE ";" " " _TARGET_${arch}_CFLAGS "${TARGET_${arch}_CFLAGS}")
         check_compile_definition(__ARM_FP "${CMAKE_C_FLAGS} ${_TARGET_${arch}_CFLAGS}" COMPILER_RT_HAS_${arch}_VFP)
         if(NOT COMPILER_RT_HAS_${arch}_VFP)
           list(REMOVE_ITEM ${arch}_SOURCES ${arm_Thumb1_VFPv2_DP_SOURCES} ${arm_Thumb1_VFPv2_SP_SOURCES} ${arm_Thumb1_SjLj_EH_SOURCES})
         else()
-          # Exclude any double-precision builtins if VFP is single-precision-only
+#Exclude any double - precision builtins if VFP is single - precision - only
           check_c_source_compiles("#if !(__ARM_FP & 0x8)
-                                   #error No double-precision support!
-                                   #endif
-                                   int main() { return 0; }" COMPILER_RT_HAS_${arch}_VFP_DP)
+#error No double-precision support!
+#endif
+                                   int main() {
+    return 0; }" COMPILER_RT_HAS_${arch}_VFP_DP)
           if(NOT COMPILER_RT_HAS_${arch}_VFP_DP)
             list(REMOVE_ITEM ${arch}_SOURCES ${arm_Thumb1_VFPv2_DP_SOURCES})
           endif()
         endif()
       endif()
 
-      # Remove a generic C builtin when an arch-specific builtin is specified.
+#Remove a generic C builtin when an arch - specific builtin is specified.
       filter_builtin_sources(${arch}_SOURCES ${arch})
 
-      # Needed for clear_cache on debug mode, due to r7's usage in inline asm.
-      # Release mode already sets it via -O2/3, Debug mode doesn't.
+#Needed for clear_cache on debug mode, due to r7's usage in inline asm.
+#Release mode already sets it via - O2 / 3, Debug mode doesn't.
       if (${arch} STREQUAL "armhf")
         list(APPEND BUILTIN_CFLAGS -fomit-frame-pointer -DCOMPILER_RT_ARMHF_TARGET)
       endif()
 
-      # For RISCV32, we must force enable int128 for compiling long
-      # double routines.
+#For RISCV32, we must force enable int128 for compiling long
+#double routines.
       if("${arch}" STREQUAL "riscv32")
         list(APPEND BUILTIN_CFLAGS -fforce-enable-int128)
       endif()

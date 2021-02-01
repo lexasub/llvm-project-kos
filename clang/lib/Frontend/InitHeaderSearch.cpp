@@ -37,10 +37,10 @@ namespace {
 ///  a HeaderSearch object. InitHeaderSearch stores several search path lists
 ///  internally, which can be sent to a HeaderSearch object in one swoop.
 class InitHeaderSearch {
-  std::vector<std::pair<IncludeDirGroup, DirectoryLookup> > IncludePath;
+  std::vector<std::pair<IncludeDirGroup, DirectoryLookup>> IncludePath;
   typedef std::vector<std::pair<IncludeDirGroup,
-                      DirectoryLookup> >::const_iterator path_iterator;
-  std::vector<std::pair<std::string, bool> > SystemHeaderPrefixes;
+                                DirectoryLookup>>::const_iterator path_iterator;
+  std::vector<std::pair<std::string, bool>> SystemHeaderPrefixes;
   HeaderSearch &Headers;
   bool Verbose;
   std::string IncludeSysroot;
@@ -77,8 +77,7 @@ public:
 
   /// AddMinGWCPlusPlusIncludePaths - Add the necessary paths to support a MinGW
   ///  libstdc++.
-  void AddMinGWCPlusPlusIncludePaths(StringRef Base,
-                                     StringRef Arch,
+  void AddMinGWCPlusPlusIncludePaths(StringRef Base, StringRef Arch,
                                      StringRef Version);
 
   // AddDefaultCIncludePaths - Add paths that should always be searched.
@@ -102,7 +101,7 @@ public:
   void Realize(const LangOptions &Lang);
 };
 
-}  // end anonymous namespace.
+} // end anonymous namespace.
 
 static bool CanPrefixSysroot(StringRef Path) {
 #if defined(_WIN32)
@@ -155,7 +154,7 @@ bool InitHeaderSearch::AddUnmappedPath(const Twine &Path, IncludeDirGroup Group,
   // If the directory exists, add it.
   if (auto DE = FM.getOptionalDirectoryRef(MappedPathStr)) {
     IncludePath.push_back(
-      std::make_pair(Group, DirectoryLookup(*DE, Type, isFramework)));
+        std::make_pair(Group, DirectoryLookup(*DE, Type, isFramework)));
     return true;
   }
 
@@ -165,17 +164,16 @@ bool InitHeaderSearch::AddUnmappedPath(const Twine &Path, IncludeDirGroup Group,
     if (auto FE = FM.getFile(MappedPathStr)) {
       if (const HeaderMap *HM = Headers.CreateHeaderMap(*FE)) {
         // It is a headermap, add it to the search path.
-        IncludePath.push_back(
-          std::make_pair(Group,
-                         DirectoryLookup(HM, Type, Group == IndexHeaderMap)));
+        IncludePath.push_back(std::make_pair(
+            Group, DirectoryLookup(HM, Type, Group == IndexHeaderMap)));
         return true;
       }
     }
   }
 
   if (Verbose)
-    llvm::errs() << "ignoring nonexistent directory \""
-                 << MappedPathStr << "\"\n";
+    llvm::errs() << "ignoring nonexistent directory \"" << MappedPathStr
+                 << "\"\n";
   return false;
 }
 
@@ -203,16 +201,15 @@ bool InitHeaderSearch::AddGnuCPlusPlusIncludePaths(StringRef Base,
 void InitHeaderSearch::AddMinGWCPlusPlusIncludePaths(StringRef Base,
                                                      StringRef Arch,
                                                      StringRef Version) {
-  AddPath(Base + "/" + Arch + "/" + Version + "/include/c++",
-          CXXSystem, false);
-  AddPath(Base + "/" + Arch + "/" + Version + "/include/c++/" + Arch,
-          CXXSystem, false);
+  AddPath(Base + "/" + Arch + "/" + Version + "/include/c++", CXXSystem, false);
+  AddPath(Base + "/" + Arch + "/" + Version + "/include/c++/" + Arch, CXXSystem,
+          false);
   AddPath(Base + "/" + Arch + "/" + Version + "/include/c++/backward",
           CXXSystem, false);
 }
 
-void InitHeaderSearch::AddDefaultCIncludePaths(const llvm::Triple &triple,
-                                            const HeaderSearchOptions &HSOpts) {
+void InitHeaderSearch::AddDefaultCIncludePaths(
+    const llvm::Triple &triple, const HeaderSearchOptions &HSOpts) {
   llvm::Triple::OSType os = triple.getOS();
 
   if (triple.isOSDarwin()) {
@@ -303,25 +300,30 @@ void InitHeaderSearch::AddDefaultCIncludePaths(const llvm::Triple &triple,
     AddPath("/boot/system/develop/headers/os/support", System, false);
     AddPath("/boot/system/develop/headers/os/translation", System, false);
     AddPath("/boot/system/develop/headers/os/add-ons/graphics", System, false);
-    AddPath("/boot/system/develop/headers/os/add-ons/input_server", System, false);
-    AddPath("/boot/system/develop/headers/os/add-ons/mail_daemon", System, false);
+    AddPath("/boot/system/develop/headers/os/add-ons/input_server", System,
+            false);
+    AddPath("/boot/system/develop/headers/os/add-ons/mail_daemon", System,
+            false);
     AddPath("/boot/system/develop/headers/os/add-ons/registrar", System, false);
-    AddPath("/boot/system/develop/headers/os/add-ons/screen_saver", System, false);
+    AddPath("/boot/system/develop/headers/os/add-ons/screen_saver", System,
+            false);
     AddPath("/boot/system/develop/headers/os/add-ons/tracker", System, false);
     AddPath("/boot/system/develop/headers/os/be_apps/Deskbar", System, false);
-    AddPath("/boot/system/develop/headers/os/be_apps/NetPositive", System, false);
+    AddPath("/boot/system/develop/headers/os/be_apps/NetPositive", System,
+            false);
     AddPath("/boot/system/develop/headers/os/be_apps/Tracker", System, false);
     AddPath("/boot/system/develop/headers/3rdparty", System, false);
     AddPath("/boot/system/develop/headers/bsd", System, false);
     AddPath("/boot/system/develop/headers/glibc", System, false);
     AddPath("/boot/system/develop/headers/posix", System, false);
-    AddPath("/boot/system/develop/headers",  System, false);
+    AddPath("/boot/system/develop/headers", System, false);
     break;
   case llvm::Triple::RTEMS:
     break;
   case llvm::Triple::Win32:
     switch (triple.getEnvironment()) {
-    default: llvm_unreachable("Include management is handled in the driver.");
+    default:
+      llvm_unreachable("Include management is handled in the driver.");
     case llvm::Triple::Cygnus:
       AddPath("/usr/include/w32api", System, false);
       break;
@@ -339,7 +341,7 @@ void InitHeaderSearch::AddDefaultCIncludePaths(const llvm::Triple &triple,
   case llvm::Triple::NaCl:
   case llvm::Triple::ELFIAMCU:
   case llvm::Triple::Fuchsia:
- case llvm::Triple::Kolibri:
+  case llvm::Triple::Kolibri:
     break;
   case llvm::Triple::PS4: {
     // <isysroot> gets prepended later in AddPath().
@@ -389,7 +391,8 @@ void InitHeaderSearch::AddDefaultCPlusPlusIncludePaths(
     break;
   case llvm::Triple::Win32:
     switch (triple.getEnvironment()) {
-    default: llvm_unreachable("Include management is handled in the driver.");
+    default:
+      llvm_unreachable("Include management is handled in the driver.");
     case llvm::Triple::Cygnus:
       // Cygwin-1.7
       AddMinGWCPlusPlusIncludePaths("/usr/lib/gcc", "i686-pc-cygwin", "4.7.3");
@@ -404,17 +407,17 @@ void InitHeaderSearch::AddDefaultCPlusPlusIncludePaths(
     AddPath("/usr/include/c++/5.0", CXXSystem, false);
     break;
   case llvm::Triple::Minix:
-    AddGnuCPlusPlusIncludePaths("/usr/gnu/include/c++/4.4.3",
-                                "", "", "", triple);
+    AddGnuCPlusPlusIncludePaths("/usr/gnu/include/c++/4.4.3", "", "", "",
+                                triple);
     break;
   default:
     break;
   }
 }
 
-void InitHeaderSearch::AddDefaultIncludePaths(const LangOptions &Lang,
-                                              const llvm::Triple &triple,
-                                            const HeaderSearchOptions &HSOpts) {
+void InitHeaderSearch::AddDefaultIncludePaths(
+    const LangOptions &Lang, const llvm::Triple &triple,
+    const HeaderSearchOptions &HSOpts) {
   // NB: This code path is going away. All of the logic is moving into the
   // driver which has the information necessary to do target-specific
   // selections of default include paths. Each target which moves there will be
@@ -535,8 +538,8 @@ static unsigned RemoveDuplicates(std::vector<DirectoryLookup> &SearchList,
     }
 
     if (Verbose) {
-      llvm::errs() << "ignoring duplicate directory \""
-                   << CurEntry.getName() << "\"\n";
+      llvm::errs() << "ignoring duplicate directory \"" << CurEntry.getName()
+                   << "\"\n";
       if (DirToRemove != i)
         llvm::errs() << "  as it is a non-system directory that duplicates "
                      << "a system directory\n";
@@ -546,12 +549,11 @@ static unsigned RemoveDuplicates(std::vector<DirectoryLookup> &SearchList,
 
     // This is reached if the current entry is a duplicate.  Remove the
     // DirToRemove (usually the current dir).
-    SearchList.erase(SearchList.begin()+DirToRemove);
+    SearchList.erase(SearchList.begin() + DirToRemove);
     --i;
   }
   return NonSystemRemoved;
 }
-
 
 void InitHeaderSearch::Realize(const LangOptions &Lang) {
   // Concatenate ANGLE+SYSTEM+AFTER chains together into SearchList.
@@ -593,7 +595,7 @@ void InitHeaderSearch::Realize(const LangOptions &Lang) {
   unsigned NonSystemRemoved = RemoveDuplicates(SearchList, NumQuoted, Verbose);
   NumAngled -= NonSystemRemoved;
 
-  bool DontSearchCurDir = false;  // TODO: set to true if -I- is set?
+  bool DontSearchCurDir = false; // TODO: set to true if -I- is set?
   Headers.SetSearchPaths(SearchList, NumQuoted, NumAngled, DontSearchCurDir);
 
   Headers.SetSystemHeaderPrefixes(SystemHeaderPrefixes);
