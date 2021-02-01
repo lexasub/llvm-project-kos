@@ -381,8 +381,8 @@ protected:
     Builder.defineMacro("_REENTRANT");
     Builder.defineMacro("_GNU_SOURCE");
 		//Builder.defineMacro("_NEWLIB_VERSION");
-    /* if (this->HasFloat128)
-      Builder.defineMacro("__FLOAT128__");*/
+    if (this->HasFloat128)
+      Builder.defineMacro("__FLOAT128__");
   }
 
 public:

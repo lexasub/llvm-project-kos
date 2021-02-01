@@ -56,26 +56,26 @@ std::string Kolibri::getMultiarchTriple(const Driver &D,
   // common linux triples that don't quite match the Clang triple for both
   // 32-bit and 64-bit targets. Multiarch fixes its install triples to these
   // regardless of what the actual target triple is.
-  /*case llvm::Triple::arm:
+  case llvm::Triple::arm:
   case llvm::Triple::thumb:
-                 if (TargetEnvironment == llvm::Triple::GNUEABIHF) {
-      if (D.getVFS().exists(SysRoot + "/lib/arm-linux-gnueabihf"))
-        return "arm-linux-gnueabihf";
+    if (TargetEnvironment == llvm::Triple::GNUEABIHF) {
+      if (D.getVFS().exists(SysRoot + "/lib/arm-kolibri-gnueabihf"))
+        return "arm-kolibri-gnueabihf";
     } else {
-      if (D.getVFS().exists(SysRoot + "/lib/arm-linux-gnueabi"))
-        return "arm-linux-gnueabi";
+      if (D.getVFS().exists(SysRoot + "/lib/arm-kolibri-gnueabi"))
+        return "arm-kolibri-gnueabi";
     }
     break;
   case llvm::Triple::armeb:
   case llvm::Triple::thumbeb:
     if (TargetEnvironment == llvm::Triple::GNUEABIHF) {
-      if (D.getVFS().exists(SysRoot + "/lib/armeb-linux-gnueabihf"))
-        return "armeb-linux-gnueabihf";
+      if (D.getVFS().exists(SysRoot + "/lib/armeb-kolibri-gnueabihf"))
+        return "armeb-kolibri-gnueabihf";
     } else {
-      if (D.getVFS().exists(SysRoot + "/lib/armeb-linux-gnueabi"))
-        return "armeb-linux-gnueabi";
+      if (D.getVFS().exists(SysRoot + "/lib/armeb-kolibri-gnueabi"))
+        return "armeb-kolibri-gnueabi";
     }
-    break;*/
+    break;
   case llvm::Triple::x86:
     if (D.getVFS().exists(SysRoot + "/lib/i386-Kolibri-gnu"))
       return "i386-kolibri-gnu";
@@ -86,76 +86,76 @@ std::string Kolibri::getMultiarchTriple(const Driver &D,
         D.getVFS().exists(SysRoot + "/lib/x86_64-kolibri-gnu"))
       return "x86_64-kolibri-gnu";
     break;
+
+  case llvm::Triple::aarch64:
+    if (D.getVFS().exists(SysRoot + "/lib/aarch64-kolibri-gnu"))
+      return "aarch64-kolibri-gnu";
+    break;
+  case llvm::Triple::aarch64_be:
+    if (D.getVFS().exists(SysRoot + "/lib/aarch64_be-kolibri-gnu"))
+      return "aarch64_be-kolibri-gnu";
+    break;
     /*
-case llvm::Triple::aarch64:
-   if (D.getVFS().exists(SysRoot + "/lib/aarch64-linux-gnu"))
-  return "aarch64-linux-gnu";
-break;
-case llvm::Triple::aarch64_be:
-if (D.getVFS().exists(SysRoot + "/lib/aarch64_be-linux-gnu"))
-  return "aarch64_be-linux-gnu";
-break;
-case llvm::Triple::mips: {
-std::string MT = IsMipsR6 ? "mipsisa32r6-linux-gnu" : "mips-linux-gnu";
-if (D.getVFS().exists(SysRoot + "/lib/" + MT))
-  return MT;
-break;
-}
-case llvm::Triple::mipsel: {
-   std::string MT = IsMipsR6 ? "mipsisa32r6el-linux-gnu" : "mipsel-linux-gnu";
-if (D.getVFS().exists(SysRoot + "/lib/" + MT))
-  return MT;
-break;
-}
-case llvm::Triple::mips64: {
-std::string MT = std::string(IsMipsR6 ? "mipsisa64r6" : "mips64") +
-                 "-linux-" + (IsMipsN32Abi ? "gnuabin32" : "gnuabi64");
-if (D.getVFS().exists(SysRoot + "/lib/" + MT))
-  return MT;
-if (D.getVFS().exists(SysRoot + "/lib/mips64-linux-gnu"))
-  return "mips64-linux-gnu";
-break;
-}
-case llvm::Triple::mips64el: {
-   std::string MT = std::string(IsMipsR6 ? "mipsisa64r6el" : "mips64el") +
-                 "-linux-" + (IsMipsN32Abi ? "gnuabin32" : "gnuabi64");
-if (D.getVFS().exists(SysRoot + "/lib/" + MT))
-  return MT;
-if (D.getVFS().exists(SysRoot + "/lib/mips64el-linux-gnu"))
-  return "mips64el-linux-gnu";
-break;
-}
-case llvm::Triple::ppc:
-if (D.getVFS().exists(SysRoot + "/lib/powerpc-linux-gnuspe"))
-  return "powerpc-linux-gnuspe";
-if (D.getVFS().exists(SysRoot + "/lib/powerpc-linux-gnu"))
-  return "powerpc-linux-gnu";
-break;
-case llvm::Triple::ppcle:
-if (D.getVFS().exists(SysRoot + "/lib/powerpcle-linux-gnu"))
-  return "powerpcle-linux-gnu";
-break;
-case llvm::Triple::ppc64:
-if (D.getVFS().exists(SysRoot + "/lib/powerpc64-linux-gnu"))
-  return "powerpc64-linux-gnu";
-break;
-case llvm::Triple::ppc64le:
-if (D.getVFS().exists(SysRoot + "/lib/powerpc64le-linux-gnu"))
-  return "powerpc64le-linux-gnu";
-break;
-case llvm::Triple::sparc:
-if (D.getVFS().exists(SysRoot + "/lib/sparc-linux-gnu"))
-  return "sparc-linux-gnu";
-break;
-case llvm::Triple::sparcv9:
-if (D.getVFS().exists(SysRoot + "/lib/sparc64-linux-gnu"))
-  return "sparc64-linux-gnu";
-break;
-case llvm::Triple::systemz:
-if (D.getVFS().exists(SysRoot + "/lib/s390x-linux-gnu"))
-  return "s390x-linux-gnu";
-break;
-    */
+    case llvm::Triple::mips: {
+    std::string MT = IsMipsR6 ? "mipsisa32r6-linux-gnu" : "mips-linux-gnu";
+    if (D.getVFS().exists(SysRoot + "/lib/" + MT))
+      return MT;
+    break;
+    }
+    case llvm::Triple::mipsel: {
+       std::string MT = IsMipsR6 ? "mipsisa32r6el-linux-gnu" :
+    "mipsel-linux-gnu"; if (D.getVFS().exists(SysRoot + "/lib/" + MT)) return
+    MT; break;
+    }
+    case llvm::Triple::mips64: {
+    std::string MT = std::string(IsMipsR6 ? "mipsisa64r6" : "mips64") +
+                     "-linux-" + (IsMipsN32Abi ? "gnuabin32" : "gnuabi64");
+    if (D.getVFS().exists(SysRoot + "/lib/" + MT))
+      return MT;
+    if (D.getVFS().exists(SysRoot + "/lib/mips64-linux-gnu"))
+      return "mips64-linux-gnu";
+    break;
+    }
+    case llvm::Triple::mips64el: {
+       std::string MT = std::string(IsMipsR6 ? "mipsisa64r6el" : "mips64el") +
+                     "-linux-" + (IsMipsN32Abi ? "gnuabin32" : "gnuabi64");
+    if (D.getVFS().exists(SysRoot + "/lib/" + MT))
+      return MT;
+    if (D.getVFS().exists(SysRoot + "/lib/mips64el-linux-gnu"))
+      return "mips64el-linux-gnu";
+    break;
+    }
+    case llvm::Triple::ppc:
+    if (D.getVFS().exists(SysRoot + "/lib/powerpc-linux-gnuspe"))
+      return "powerpc-linux-gnuspe";
+    if (D.getVFS().exists(SysRoot + "/lib/powerpc-linux-gnu"))
+      return "powerpc-linux-gnu";
+    break;
+    case llvm::Triple::ppcle:
+    if (D.getVFS().exists(SysRoot + "/lib/powerpcle-linux-gnu"))
+      return "powerpcle-linux-gnu";
+    break;
+    case llvm::Triple::ppc64:
+    if (D.getVFS().exists(SysRoot + "/lib/powerpc64-linux-gnu"))
+      return "powerpc64-linux-gnu";
+    break;
+    case llvm::Triple::ppc64le:
+    if (D.getVFS().exists(SysRoot + "/lib/powerpc64le-linux-gnu"))
+      return "powerpc64le-linux-gnu";
+    break;
+    case llvm::Triple::sparc:
+    if (D.getVFS().exists(SysRoot + "/lib/sparc-linux-gnu"))
+      return "sparc-linux-gnu";
+    break;
+    case llvm::Triple::sparcv9:
+    if (D.getVFS().exists(SysRoot + "/lib/sparc64-linux-gnu"))
+      return "sparc64-linux-gnu";
+    break;
+    case llvm::Triple::systemz:
+    if (D.getVFS().exists(SysRoot + "/lib/s390x-linux-gnu"))
+      return "s390x-linux-gnu";
+    break;
+        */
   }
   return TargetTriple.str();
 }
@@ -216,8 +216,8 @@ Kolibri::Kolibri(const Driver &D, const llvm::Triple &Triple,
     PPaths.push_back(
         Twine(GCCInstallation.getParentLibPath() + "/../bin").str());
 
-/*if (Arch == llvm::Triple::arm || Arch == llvm::Triple::thumb)
-  ExtraOpts.push_back("-X");*/
+  if (Arch == llvm::Triple::arm || Arch == llvm::Triple::thumb)
+    ExtraOpts.push_back("-X");
 
 /*const bool IsMips = Triple.isMIPS();
 const bool IsHexagon = Arch == llvm::Triple::hexagon;
@@ -263,11 +263,11 @@ const bool IsRISCV = Triple.isRISCV();*/
     addPathIfExists(D, SysRoot + "/usr/" + OSLibDir, Paths);
   else
     addPathIfExists(D, SysRoot + "/usr/lib/../" + OSLibDir, Paths);
-  /*if (IsRISCV) {
+  if (IsRISCV) {
     StringRef ABIName = tools::riscv::getRISCVABI(Args, Triple);
     addPathIfExists(D, SysRoot + "/" + OSLibDir + "/" + ABIName, Paths);
     addPathIfExists(D, SysRoot + "/usr/" + OSLibDir + "/" + ABIName, Paths);
-  }*/
+  }
 
   Generic_GCC::AddMultiarchPaths(D, SysRoot, OSLibDir, Paths);
 
@@ -339,7 +339,7 @@ std::string Kolibri::getDynamicLinker(const ArgList &Args) const {
 
   if (Triple.isMusl()) {
     std::string ArchName;
-    /*bool IsArm = false;
+    bool IsArm = false;
 
     switch (Arch) {
     case llvm::Triple::arm:
@@ -352,14 +352,14 @@ std::string Kolibri::getDynamicLinker(const ArgList &Args) const {
       ArchName = "armeb";
       IsArm = true;
       break;
-    default:*/
-    ArchName = Triple.getArchName().str();
-    /*}
+    default:
+      ArchName = Triple.getArchName().str();
+    }
     if (IsArm &&
         (Triple.getEnvironment() == llvm::Triple::MuslEABIHF ||
          tools::arm::getARMFloatABI(*this, Args) == tools::arm::FloatABI::Hard))
       ArchName += "hf";
-                */
+
     return "/lib/ld-musl-" + ArchName + ".so.1";
   }
 
@@ -369,85 +369,85 @@ std::string Kolibri::getDynamicLinker(const ArgList &Args) const {
   switch (Arch) {
   default:
     llvm_unreachable("unsupported architecture");
+
+  case llvm::Triple::aarch64:
+    LibDir = "lib";
+    Loader = "ld-kolibri-aarch64.so.1";
+    break;
+  case llvm::Triple::aarch64_be:
+    LibDir = "lib";
+    Loader = "ld-kolibri-aarch64_be.so.1";
+    break;
+  case llvm::Triple::arm:
+  case llvm::Triple::thumb:
+  case llvm::Triple::armeb:
+  case llvm::Triple::thumbeb: {
+    const bool HF =
+        Triple.getEnvironment() == llvm::Triple::GNUEABIHF ||
+        tools::arm::getARMFloatABI(*this, Args) == tools::arm::FloatABI::Hard;
+
+    LibDir = "lib";
+    Loader = HF ? "ld-kolibri-armhf.so.3" : "ld-kolibri.so.3";
+    break;
+  }
     /*
-      case llvm::Triple::aarch64:
-        LibDir = "lib";
-        Loader = "ld-linux-aarch64.so.1";
-        break;
-      case llvm::Triple::aarch64_be:
-        LibDir = "lib";
-        Loader = "ld-linux-aarch64_be.so.1";
-        break;
-      case llvm::Triple::arm:
-      case llvm::Triple::thumb:
-      case llvm::Triple::armeb:
-      case llvm::Triple::thumbeb: {
-        const bool HF =
-            Triple.getEnvironment() == llvm::Triple::GNUEABIHF ||
-            tools::arm::getARMFloatABI(*this, Args) ==
-      tools::arm::FloatABI::Hard;
+case llvm::Triple::mips:
+case llvm::Triple::mipsel:
+case llvm::Triple::mips64:
+case llvm::Triple::mips64el: {
+bool IsNaN2008 = tools::mips::isNaN2008(Args, Triple);
 
-        LibDir = "lib";
-        Loader = HF ? "ld-linux-armhf.so.3" : "ld-linux.so.3";
-        break;
-      }
-      case llvm::Triple::mips:
-      case llvm::Triple::mipsel:
-      case llvm::Triple::mips64:
-      case llvm::Triple::mips64el: {
-        bool IsNaN2008 = tools::mips::isNaN2008(Args, Triple);
+LibDir = "lib" + tools::mips::getMipsABILibSuffix(Args, Triple);
 
-        LibDir = "lib" + tools::mips::getMipsABILibSuffix(Args, Triple);
+if (tools::mips::isUCLibc(Args))
+Loader = IsNaN2008 ? "ld-uClibc-mipsn8.so.0" : "ld-uClibc.so.0";
+else if (!Triple.hasEnvironment() &&
+Triple.getVendor() ==
+llvm::Triple::VendorType::MipsTechnologies) Loader =
+Triple.isLittleEndian() ? "ld-musl-mipsel.so.1" :
+"ld-musl-mips.so.1"; else Loader = IsNaN2008 ? "ld-linux-mipsn8.so.1" :
+"ld.so.1";
 
-        if (tools::mips::isUCLibc(Args))
-          Loader = IsNaN2008 ? "ld-uClibc-mipsn8.so.0" : "ld-uClibc.so.0";
-        else if (!Triple.hasEnvironment() &&
-                 Triple.getVendor() ==
-      llvm::Triple::VendorType::MipsTechnologies) Loader =
-              Triple.isLittleEndian() ? "ld-musl-mipsel.so.1" :
-      "ld-musl-mips.so.1"; else Loader = IsNaN2008 ? "ld-linux-mipsn8.so.1" :
-      "ld.so.1";
-
-        break;
-      }
-      case llvm::Triple::ppc:
-        LibDir = "lib";
-        Loader = "ld.so.1";
-        break;
-      case llvm::Triple::ppcle:
-        LibDir = "lib";
-        Loader = "ld.so.1";
-        break;
-      case llvm::Triple::ppc64:
-        LibDir = "lib64";
-        Loader =
-            (tools::ppc::hasPPCAbiArg(Args, "elfv2")) ? "ld64.so.2" :
-      "ld64.so.1"; break; case llvm::Triple::ppc64le: LibDir = "lib64"; Loader =
-            (tools::ppc::hasPPCAbiArg(Args, "elfv1")) ? "ld64.so.1" :
-      "ld64.so.2"; break; case llvm::Triple::riscv32: { StringRef ABIName =
-      tools::riscv::getRISCVABI(Args, Triple); LibDir = "lib"; Loader =
-      ("ld-linux-riscv32-" + ABIName + ".so.1").str(); break;
-      }
-      case llvm::Triple::riscv64: {
-        StringRef ABIName = tools::riscv::getRISCVABI(Args, Triple);
-        LibDir = "lib";
-        Loader = ("ld-linux-riscv64-" + ABIName + ".so.1").str();
-        break;
-      }
-      case llvm::Triple::sparc:
-      case llvm::Triple::sparcel:
-        LibDir = "lib";
-        Loader = "ld-linux.so.2";
-        break;
-      case llvm::Triple::sparcv9:
-        LibDir = "lib64";
-        Loader = "ld-linux.so.2";
-        break;
-      case llvm::Triple::systemz:
-        LibDir = "lib";
-        Loader = "ld64.so.1";
-        break;
-            */
+break;
+}
+case llvm::Triple::ppc:
+LibDir = "lib";
+Loader = "ld.so.1";
+break;
+case llvm::Triple::ppcle:
+LibDir = "lib";
+Loader = "ld.so.1";
+break;
+case llvm::Triple::ppc64:
+LibDir = "lib64";
+Loader =
+(tools::ppc::hasPPCAbiArg(Args, "elfv2")) ? "ld64.so.2" :
+"ld64.so.1"; break; case llvm::Triple::ppc64le: LibDir = "lib64"; Loader =
+(tools::ppc::hasPPCAbiArg(Args, "elfv1")) ? "ld64.so.1" :
+"ld64.so.2"; break; case llvm::Triple::riscv32: { StringRef ABIName =
+tools::riscv::getRISCVABI(Args, Triple); LibDir = "lib"; Loader =
+("ld-linux-riscv32-" + ABIName + ".so.1").str(); break;
+}
+case llvm::Triple::riscv64: {
+StringRef ABIName = tools::riscv::getRISCVABI(Args, Triple);
+LibDir = "lib";
+Loader = ("ld-linux-riscv64-" + ABIName + ".so.1").str();
+break;
+}
+case llvm::Triple::sparc:
+case llvm::Triple::sparcel:
+LibDir = "lib";
+Loader = "ld-linux.so.2";
+break;
+case llvm::Triple::sparcv9:
+LibDir = "lib64";
+Loader = "ld-linux.so.2";
+break;
+case llvm::Triple::systemz:
+LibDir = "lib";
+Loader = "ld64.so.1";
+break;
+*/
   case llvm::Triple::x86:
     LibDir = "lib";
     Loader = "ld-kolibri.so.2";
@@ -521,55 +521,56 @@ void Kolibri::AddClangSystemIncludeArgs(const ArgList &DriverArgs,
       // in use in any released version of Debian, so we should consider
       // removing them.
       "/usr/include/x86_64-kolibri-gnu/32", "/usr/include/i686-kolibri-gnu",
-      "/usr/include/i486-kolibri-gnu"}; /*
-   const StringRef AArch64MultiarchIncludeDirs[] = {
-       "/usr/include/aarch64-linux-gnu"};
-   const StringRef ARMMultiarchIncludeDirs[] = {
-       "/usr/include/arm-linux-gnueabi"};
-   const StringRef ARMHFMultiarchIncludeDirs[] = {
-       "/usr/include/arm-linux-gnueabihf"};
-   const StringRef ARMEBMultiarchIncludeDirs[] = {
-       "/usr/include/armeb-linux-gnueabi"};
-   const StringRef ARMEBHFMultiarchIncludeDirs[] = {
-       "/usr/include/armeb-linux-gnueabihf"};
-   const StringRef MIPSMultiarchIncludeDirs[] = {"/usr/include/mips-linux-gnu"};
-   const StringRef MIPSELMultiarchIncludeDirs[] = {
-       "/usr/include/mipsel-linux-gnu"};
-   const StringRef MIPS64MultiarchIncludeDirs[] = {
-       "/usr/include/mips64-linux-gnuabi64"};
-   const StringRef MIPS64ELMultiarchIncludeDirs[] = {
-       "/usr/include/mips64el-linux-gnuabi64"};
-   const StringRef MIPSN32MultiarchIncludeDirs[] = {
-       "/usr/include/mips64-linux-gnuabin32"};
-   const StringRef MIPSN32ELMultiarchIncludeDirs[] = {
-       "/usr/include/mips64el-linux-gnuabin32"};
-   const StringRef MIPSR6MultiarchIncludeDirs[] = {
-       "/usr/include/mipsisa32-linux-gnu"};
-   const StringRef MIPSR6ELMultiarchIncludeDirs[] = {
-       "/usr/include/mipsisa32r6el-linux-gnu"};
-   const StringRef MIPS64R6MultiarchIncludeDirs[] = {
-       "/usr/include/mipsisa64r6-linux-gnuabi64"};
-   const StringRef MIPS64R6ELMultiarchIncludeDirs[] = {
-       "/usr/include/mipsisa64r6el-linux-gnuabi64"};
-   const StringRef MIPSN32R6MultiarchIncludeDirs[] = {
-       "/usr/include/mipsisa64r6-linux-gnuabin32"};
-   const StringRef MIPSN32R6ELMultiarchIncludeDirs[] = {
-       "/usr/include/mipsisa64r6el-linux-gnuabin32"};
-   const StringRef PPCMultiarchIncludeDirs[] = {
-       "/usr/include/powerpc-linux-gnu", "/usr/include/powerpc-linux-gnuspe"};
-   const StringRef PPCLEMultiarchIncludeDirs[] = {
-       "/usr/include/powerpcle-linux-gnu"};
-   const StringRef PPC64MultiarchIncludeDirs[] = {
-       "/usr/include/powerpc64-linux-gnu"};
-   const StringRef PPC64LEMultiarchIncludeDirs[] = {
-       "/usr/include/powerpc64le-linux-gnu"};
-   const StringRef SparcMultiarchIncludeDirs[] = {
-       "/usr/include/sparc-linux-gnu"};
-   const StringRef Sparc64MultiarchIncludeDirs[] = {
-       "/usr/include/sparc64-linux-gnu"};
-   const StringRef SYSTEMZMultiarchIncludeDirs[] = {
-       "/usr/include/s390x-linux-gnu"};
-                         */
+      "/usr/include/i486-kolibri-gnu"};
+  const StringRef AArch64MultiarchIncludeDirs[] = {
+      "/usr/include/aarch64-kolibri-gnu"};
+  const StringRef ARMMultiarchIncludeDirs[] = {
+      "/usr/include/arm-kolibri-gnueabi"};
+  const StringRef ARMHFMultiarchIncludeDirs[] = {
+      "/usr/include/arm-kolibri-gnueabihf"};
+  const StringRef ARMEBMultiarchIncludeDirs[] = {
+      "/usr/include/armeb-kolibri-gnueabi"};
+  const StringRef ARMEBHFMultiarchIncludeDirs[] = {
+      "/usr/include/armeb-kolibri-gnueabihf"};
+  /*
+const StringRef MIPSMultiarchIncludeDirs[] = {"/usr/include/mips-linux-gnu"};
+const StringRef MIPSELMultiarchIncludeDirs[] = {
+"/usr/include/mipsel-linux-gnu"};
+const StringRef MIPS64MultiarchIncludeDirs[] = {
+"/usr/include/mips64-linux-gnuabi64"};
+const StringRef MIPS64ELMultiarchIncludeDirs[] = {
+"/usr/include/mips64el-linux-gnuabi64"};
+const StringRef MIPSN32MultiarchIncludeDirs[] = {
+"/usr/include/mips64-linux-gnuabin32"};
+const StringRef MIPSN32ELMultiarchIncludeDirs[] = {
+"/usr/include/mips64el-linux-gnuabin32"};
+const StringRef MIPSR6MultiarchIncludeDirs[] = {
+"/usr/include/mipsisa32-linux-gnu"};
+const StringRef MIPSR6ELMultiarchIncludeDirs[] = {
+"/usr/include/mipsisa32r6el-linux-gnu"};
+const StringRef MIPS64R6MultiarchIncludeDirs[] = {
+"/usr/include/mipsisa64r6-linux-gnuabi64"};
+const StringRef MIPS64R6ELMultiarchIncludeDirs[] = {
+"/usr/include/mipsisa64r6el-linux-gnuabi64"};
+const StringRef MIPSN32R6MultiarchIncludeDirs[] = {
+"/usr/include/mipsisa64r6-linux-gnuabin32"};
+const StringRef MIPSN32R6ELMultiarchIncludeDirs[] = {
+"/usr/include/mipsisa64r6el-linux-gnuabin32"};
+const StringRef PPCMultiarchIncludeDirs[] = {
+"/usr/include/powerpc-linux-gnu", "/usr/include/powerpc-linux-gnuspe"};
+const StringRef PPCLEMultiarchIncludeDirs[] = {
+"/usr/include/powerpcle-linux-gnu"};
+const StringRef PPC64MultiarchIncludeDirs[] = {
+"/usr/include/powerpc64-linux-gnu"};
+const StringRef PPC64LEMultiarchIncludeDirs[] = {
+"/usr/include/powerpc64le-linux-gnu"};
+const StringRef SparcMultiarchIncludeDirs[] = {
+"/usr/include/sparc-linux-gnu"};
+const StringRef Sparc64MultiarchIncludeDirs[] = {
+"/usr/include/sparc64-linux-gnu"};
+const StringRef SYSTEMZMultiarchIncludeDirs[] = {
+"/usr/include/s390x-linux-gnu"};
+                  */
   ArrayRef<StringRef> MultiarchIncludeDirs;
   switch (getTriple().getArch()) {
   case llvm::Triple::x86_64:
@@ -578,81 +579,82 @@ void Kolibri::AddClangSystemIncludeArgs(const ArgList &DriverArgs,
   case llvm::Triple::x86:
     MultiarchIncludeDirs = X86MultiarchIncludeDirs;
     break;
-  /*
-    case llvm::Triple::aarch64:
-case llvm::Triple::aarch64_be:
-MultiarchIncludeDirs = AArch64MultiarchIncludeDirs;
-break;
-case llvm::Triple::arm:
-case llvm::Triple::thumb:
-if (getTriple().getEnvironment() == llvm::Triple::GNUEABIHF)
-  MultiarchIncludeDirs = ARMHFMultiarchIncludeDirs;
-else
-  MultiarchIncludeDirs = ARMMultiarchIncludeDirs;
-break;
-case llvm::Triple::armeb:
-case llvm::Triple::thumbeb:
-if (getTriple().getEnvironment() == llvm::Triple::GNUEABIHF)
-  MultiarchIncludeDirs = ARMEBHFMultiarchIncludeDirs;
-else
-  MultiarchIncludeDirs = ARMEBMultiarchIncludeDirs;
-break;
-case llvm::Triple::mips:
-if (getTriple().getSubArch() == llvm::Triple::MipsSubArch_r6)
-  MultiarchIncludeDirs = MIPSR6MultiarchIncludeDirs;
-else
-  MultiarchIncludeDirs = MIPSMultiarchIncludeDirs;
-break;
-case llvm::Triple::mipsel:
-if (getTriple().getSubArch() == llvm::Triple::MipsSubArch_r6)
-  MultiarchIncludeDirs = MIPSR6ELMultiarchIncludeDirs;
-else
-  MultiarchIncludeDirs = MIPSELMultiarchIncludeDirs;
-break;
-case llvm::Triple::mips64:
-if (getTriple().getSubArch() == llvm::Triple::MipsSubArch_r6)
-  if (getTriple().getEnvironment() == llvm::Triple::GNUABIN32)
-    MultiarchIncludeDirs = MIPSN32R6MultiarchIncludeDirs;
-  else
-    MultiarchIncludeDirs = MIPS64R6MultiarchIncludeDirs;
-else if (getTriple().getEnvironment() == llvm::Triple::GNUABIN32)
-  MultiarchIncludeDirs = MIPSN32MultiarchIncludeDirs;
-else
-  MultiarchIncludeDirs = MIPS64MultiarchIncludeDirs;
-break;
-case llvm::Triple::mips64el:
-if (getTriple().getSubArch() == llvm::Triple::MipsSubArch_r6)
-  if (getTriple().getEnvironment() == llvm::Triple::GNUABIN32)
-    MultiarchIncludeDirs = MIPSN32R6ELMultiarchIncludeDirs;
-  else
-    MultiarchIncludeDirs = MIPS64R6ELMultiarchIncludeDirs;
-else if (getTriple().getEnvironment() == llvm::Triple::GNUABIN32)
-  MultiarchIncludeDirs = MIPSN32ELMultiarchIncludeDirs;
-else
-  MultiarchIncludeDirs = MIPS64ELMultiarchIncludeDirs;
-break;
-case llvm::Triple::ppc:
-MultiarchIncludeDirs = PPCMultiarchIncludeDirs;
-break;
-case llvm::Triple::ppcle:
-MultiarchIncludeDirs = PPCLEMultiarchIncludeDirs;
-break;
-case llvm::Triple::ppc64:
-MultiarchIncludeDirs = PPC64MultiarchIncludeDirs;
-break;
-case llvm::Triple::ppc64le:
-MultiarchIncludeDirs = PPC64LEMultiarchIncludeDirs;
-break;
-case llvm::Triple::sparc:
-MultiarchIncludeDirs = SparcMultiarchIncludeDirs;
-break;
-case llvm::Triple::sparcv9:
-MultiarchIncludeDirs = Sparc64MultiarchIncludeDirs;
-break;
-case llvm::Triple::systemz:
-MultiarchIncludeDirs = SYSTEMZMultiarchIncludeDirs;
-break;
-            */
+
+  case llvm::Triple::aarch64:
+  case llvm::Triple::aarch64_be:
+    MultiarchIncludeDirs = AArch64MultiarchIncludeDirs;
+    break;
+  case llvm::Triple::arm:
+  case llvm::Triple::thumb:
+    if (getTriple().getEnvironment() == llvm::Triple::GNUEABIHF)
+      MultiarchIncludeDirs = ARMHFMultiarchIncludeDirs;
+    else
+      MultiarchIncludeDirs = ARMMultiarchIncludeDirs;
+    break;
+  case llvm::Triple::armeb:
+  case llvm::Triple::thumbeb:
+    if (getTriple().getEnvironment() == llvm::Triple::GNUEABIHF)
+      MultiarchIncludeDirs = ARMEBHFMultiarchIncludeDirs;
+    else
+      MultiarchIncludeDirs = ARMEBMultiarchIncludeDirs;
+    break;
+    /*
+    case llvm::Triple::mips:
+    if (getTriple().getSubArch() == llvm::Triple::MipsSubArch_r6)
+      MultiarchIncludeDirs = MIPSR6MultiarchIncludeDirs;
+    else
+      MultiarchIncludeDirs = MIPSMultiarchIncludeDirs;
+    break;
+    case llvm::Triple::mipsel:
+    if (getTriple().getSubArch() == llvm::Triple::MipsSubArch_r6)
+      MultiarchIncludeDirs = MIPSR6ELMultiarchIncludeDirs;
+    else
+      MultiarchIncludeDirs = MIPSELMultiarchIncludeDirs;
+    break;
+    case llvm::Triple::mips64:
+    if (getTriple().getSubArch() == llvm::Triple::MipsSubArch_r6)
+      if (getTriple().getEnvironment() == llvm::Triple::GNUABIN32)
+        MultiarchIncludeDirs = MIPSN32R6MultiarchIncludeDirs;
+      else
+        MultiarchIncludeDirs = MIPS64R6MultiarchIncludeDirs;
+    else if (getTriple().getEnvironment() == llvm::Triple::GNUABIN32)
+      MultiarchIncludeDirs = MIPSN32MultiarchIncludeDirs;
+    else
+      MultiarchIncludeDirs = MIPS64MultiarchIncludeDirs;
+    break;
+    case llvm::Triple::mips64el:
+    if (getTriple().getSubArch() == llvm::Triple::MipsSubArch_r6)
+      if (getTriple().getEnvironment() == llvm::Triple::GNUABIN32)
+        MultiarchIncludeDirs = MIPSN32R6ELMultiarchIncludeDirs;
+      else
+        MultiarchIncludeDirs = MIPS64R6ELMultiarchIncludeDirs;
+    else if (getTriple().getEnvironment() == llvm::Triple::GNUABIN32)
+      MultiarchIncludeDirs = MIPSN32ELMultiarchIncludeDirs;
+    else
+      MultiarchIncludeDirs = MIPS64ELMultiarchIncludeDirs;
+    break;
+    case llvm::Triple::ppc:
+    MultiarchIncludeDirs = PPCMultiarchIncludeDirs;
+    break;
+    case llvm::Triple::ppcle:
+    MultiarchIncludeDirs = PPCLEMultiarchIncludeDirs;
+    break;
+    case llvm::Triple::ppc64:
+    MultiarchIncludeDirs = PPC64MultiarchIncludeDirs;
+    break;
+    case llvm::Triple::ppc64le:
+    MultiarchIncludeDirs = PPC64LEMultiarchIncludeDirs;
+    break;
+    case llvm::Triple::sparc:
+    MultiarchIncludeDirs = SparcMultiarchIncludeDirs;
+    break;
+    case llvm::Triple::sparcv9:
+    MultiarchIncludeDirs = Sparc64MultiarchIncludeDirs;
+    break;
+    case llvm::Triple::systemz:
+    MultiarchIncludeDirs = SYSTEMZMultiarchIncludeDirs;
+    break;
+                */
   default:
     break;
   }
@@ -678,8 +680,9 @@ break;
     addSystemInclude(DriverArgs, CC1Args, ResourceDirInclude);
 }
 
-void Kolibri::addLibStdCxxIncludePaths(const llvm::opt::ArgList &DriverArgs,
-                                     llvm::opt::ArgStringList &CC1Args) const {
+void Kolibri::addLibStdCxxIncludePaths(
+    const llvm::opt::ArgList &DriverArgs,
+    llvm::opt::ArgStringList &CC1Args) const {
   // Try generic GCC detection first.
   if (Generic_GCC::addGCCLibStdCxxIncludePaths(DriverArgs, CC1Args))
     return;
@@ -715,17 +718,17 @@ void Kolibri::addLibStdCxxIncludePaths(const llvm::opt::ArgList &DriverArgs,
 }
 
 void Kolibri::AddCudaIncludeArgs(const ArgList &DriverArgs,
-                               ArgStringList &CC1Args) const {
-  //CudaInstallation.AddCudaIncludeArgs(DriverArgs, CC1Args);
+                                 ArgStringList &CC1Args) const {
+  // CudaInstallation.AddCudaIncludeArgs(DriverArgs, CC1Args);
 }
 
 void Kolibri::AddHIPIncludeArgs(const ArgList &DriverArgs,
-                              ArgStringList &CC1Args) const {
+                                ArgStringList &CC1Args) const {
   RocmInstallation.AddHIPIncludeArgs(DriverArgs, CC1Args);
 }
 
 void Kolibri::AddIAMCUIncludeArgs(const ArgList &DriverArgs,
-                                ArgStringList &CC1Args) const {
+                                  ArgStringList &CC1Args) const {
   if (GCCInstallation.isValid()) {
     CC1Args.push_back("-isystem");
     CC1Args.push_back(DriverArgs.MakeArgString(
@@ -764,13 +767,14 @@ SanitizerMask Kolibri::getSupportedSanitizers() const {
   const bool IsMIPS64 = getTriple().isMIPS64();
   const bool IsPowerPC64 = getTriple().getArch() == llvm::Triple::ppc64 ||
                            getTriple().getArch() == llvm::Triple::ppc64le;
+        */
   const bool IsAArch64 = getTriple().getArch() == llvm::Triple::aarch64 ||
                          getTriple().getArch() == llvm::Triple::aarch64_be;
   const bool IsArmArch = getTriple().getArch() == llvm::Triple::arm ||
                          getTriple().getArch() == llvm::Triple::thumb ||
                          getTriple().getArch() == llvm::Triple::armeb ||
                          getTriple().getArch() == llvm::Triple::thumbeb;
-  const bool IsRISCV64 = getTriple().getArch() == llvm::Triple::riscv64;
+  /*const bool IsRISCV64 = getTriple().getArch() == llvm::Triple::riscv64;
   const bool IsSystemZ = getTriple().getArch() == llvm::Triple::systemz;*/
   SanitizerMask Res = ToolChain::getSupportedSanitizers();
   Res |= SanitizerKind::Address;
@@ -782,21 +786,21 @@ SanitizerMask Kolibri::getSupportedSanitizers() const {
   Res |= SanitizerKind::Memory;
   Res |= SanitizerKind::Vptr;
   Res |= SanitizerKind::SafeStack;
-  if (IsX86_64)// || IsMIPS64 || IsAArch64)
+  if (IsX86_64i || IsAArch64) // || IsMIPS64 )
     Res |= SanitizerKind::DataFlow;
-  if (IsX86_64 || IsX86) // || IsMIPS64 || IsAArch64 || IsArmArch || IsPowerPC64 ||
-                // IsRISCV64 || IsSystemZ)
+  if (IsX86_64 || IsX86 || IsAArch64 || IsArmArch) // || IsMIPS64 || IsPowerPC64
+                                                   // || IsRISCV64 || IsSystemZ)
     Res |= SanitizerKind::Leak;
-  if (IsX86_64)// || IsMIPS64 || IsAArch64 || IsPowerPC64)
+  if (IsX86_64 || IsAArch64) // || IsMIPS64 || IsPowerPC64)
     Res |= SanitizerKind::Thread;
   if (IsX86_64)
     Res |= SanitizerKind::KernelMemory;
   if (IsX86 || IsX86_64)
     Res |= SanitizerKind::Function;
-  if (IsX86_64 || IsX86 )//IsMIPS64 || IsAArch64 || IsMIPS || IsArmArch || IsPowerPC64)
+  if (IsX86_64 || IsArmArch || IsAArch64 ||
+      IsX86) // IsMIPS64 || IsMIPS || IsPowerPC64)
     Res |= SanitizerKind::Scudo;
-  if (IsX86_64 )//|| IsAArch64) 
-  {
+  if (IsX86_64 || IsAArch64) {
     Res |= SanitizerKind::HWAddress;
     Res |= SanitizerKind::KernelHWAddress;
   }
@@ -804,7 +808,7 @@ SanitizerMask Kolibri::getSupportedSanitizers() const {
 }
 
 void Kolibri::addProfileRTLibs(const llvm::opt::ArgList &Args,
-                             llvm::opt::ArgStringList &CmdArgs) const {
+                               llvm::opt::ArgStringList &CmdArgs) const {
   // Add linker option -u__llvm_profile_runtime to cause runtime
   // initialization module to be linked in.
   if (needsProfileRT(Args))
@@ -815,8 +819,8 @@ void Kolibri::addProfileRTLibs(const llvm::opt::ArgList &Args,
 
 llvm::DenormalMode
 Kolibri::getDefaultDenormalModeForType(const llvm::opt::ArgList &DriverArgs,
-                                     const JobAction &JA,
-                                     const llvm::fltSemantics *FPType) const {
+                                       const JobAction &JA,
+                                       const llvm::fltSemantics *FPType) const {
   switch (getTriple().getArch()) {
   case llvm::Triple::x86:
   case llvm::Triple::x86_64: {
