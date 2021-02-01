@@ -540,7 +540,7 @@ TargetInfo *AllocateTarget(const llvm::Triple &Triple,
       return new AnanasTargetInfo<X86_64TargetInfo>(Triple, Opts);
     case llvm::Triple::CloudABI:
       return new CloudABITargetInfo<X86_64TargetInfo>(Triple, Opts);
-		case llvm::Triple::Kolibri: 
+		case llvm::Triple::KOS: 
       return new KolibriTargetInfo<X86_64TargetInfo>(Triple, Opts);
     case llvm::Triple::Linux: {
       switch (Triple.getEnvironment()) {

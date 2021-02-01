@@ -263,11 +263,11 @@ const bool IsRISCV = Triple.isRISCV();*/
     addPathIfExists(D, SysRoot + "/usr/" + OSLibDir, Paths);
   else
     addPathIfExists(D, SysRoot + "/usr/lib/../" + OSLibDir, Paths);
-  if (IsRISCV) {
+  /*if (IsRISCV) {
     StringRef ABIName = tools::riscv::getRISCVABI(Args, Triple);
     addPathIfExists(D, SysRoot + "/" + OSLibDir + "/" + ABIName, Paths);
     addPathIfExists(D, SysRoot + "/usr/" + OSLibDir + "/" + ABIName, Paths);
-  }
+  }*/
 
   Generic_GCC::AddMultiarchPaths(D, SysRoot, OSLibDir, Paths);
 
@@ -283,7 +283,7 @@ const bool IsRISCV = Triple.isRISCV();*/
   addPathIfExists(D, SysRoot + "/usr/lib", Paths);
 }
 
-ToolChain::CXXStdlibType Linux::GetDefaultCXXStdlibType() const {
+ToolChain::CXXStdlibType Kolibri::GetDefaultCXXStdlibType() const {
   return ToolChain::CST_Libstdcxx;
 }
 
@@ -786,7 +786,7 @@ SanitizerMask Kolibri::getSupportedSanitizers() const {
   Res |= SanitizerKind::Memory;
   Res |= SanitizerKind::Vptr;
   Res |= SanitizerKind::SafeStack;
-  if (IsX86_64i || IsAArch64) // || IsMIPS64 )
+  if (IsX86_64 || IsAArch64) // || IsMIPS64 )
     Res |= SanitizerKind::DataFlow;
   if (IsX86_64 || IsX86 || IsAArch64 || IsArmArch) // || IsMIPS64 || IsPowerPC64
                                                    // || IsRISCV64 || IsSystemZ)

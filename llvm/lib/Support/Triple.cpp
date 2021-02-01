@@ -504,7 +504,7 @@ static Triple::OSType parseOS(StringRef OSName) {
     .StartsWith("fuchsia", Triple::Fuchsia)
     .StartsWith("ios", Triple::IOS)
     .StartsWith("kfreebsd", Triple::KFreeBSD)
-    .StartsWith("kolibri", Triple::Kolibri)
+    .StartsWith("kolibri", Triple::KOS)
     .StartsWith("linux", Triple::Linux)
     .StartsWith("lv2", Triple::Lv2)
     .StartsWith("macos", Triple::MacOSX)

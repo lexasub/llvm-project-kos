@@ -5101,7 +5101,7 @@ const ToolChain &Driver::getToolChain(const ArgList &Args,
     case llvm::Triple::Minix:
       TC = std::make_unique<toolchains::Minix>(*this, Target, Args);
       break;
-    case llvm::Triple::Kolibri:
+    case llvm::Triple::KOS:
       /*if (Target.getArch() == llvm::Triple::hexagon)
         TC =
             std::make_unique<toolchains::HexagonToolChain>(*this, Target, Args);
