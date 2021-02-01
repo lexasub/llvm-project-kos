@@ -8,7 +8,8 @@ The README briefly describes how to get started with building LLVM.
 For more information on how to contribute to the LLVM project, please
 take a look at the
 [Contributing to LLVM](https://llvm.org/docs/Contributing.html) guide.
-
+## How add os
+https://lf-net.org/blog/posts/2020-05-17-clang-osdev/
 ## Getting Started with the LLVM System
 
 Taken from https://llvm.org/docs/GettingStarted.html.
