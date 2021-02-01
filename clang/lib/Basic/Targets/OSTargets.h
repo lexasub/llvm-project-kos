@@ -367,6 +367,54 @@ public:
   MinixTargetInfo(const llvm::Triple &Triple, const TargetOptions &Opts)
       : OSTargetInfo<Target>(Triple, Opts) {}
 };
+// Kolibri target
+template <typename Target>
+class LLVM_LIBRARY_VISIBILITY KolibriTargetInfo : public OSTargetInfo<Target> {
+protected:
+  void getOSDefines(const LangOptions &Opts, const llvm::Triple &Triple,
+                    MacroBuilder &Builder) const override {
+    // Kolibri defines; list based off of gcc output
+    DefineStd(Builder, "unix", Opts);
+    //DefineStd(Builder, "linux", Opts);
+    Builder.defineMacro("__ELF__");
+    Builder.defineMacro("__kolibri_os__");
+    Builder.defineMacro("_REENTRANT");
+    Builder.defineMacro("_GNU_SOURCE");
+		//Builder.defineMacro("_NEWLIB_VERSION");
+    /* if (this->HasFloat128)
+      Builder.defineMacro("__FLOAT128__");*/
+  }
+
+public:
+  KolibriTargetInfo(const llvm::Triple &Triple, const TargetOptions &Opts)
+      : OSTargetInfo<Target>(Triple, Opts) {
+    this->WIntType = TargetInfo::UnsignedInt;
+
+    switch (Triple.getArch()) {
+    default:
+      break;
+    /*case llvm::Triple::mips:
+    case llvm::Triple::mipsel:
+    case llvm::Triple::mips64:
+    case llvm::Triple::mips64el:
+    case llvm::Triple::ppc:
+    case llvm::Triple::ppcle:
+    case llvm::Triple::ppc64:
+    case llvm::Triple::ppc64le:
+      this->MCountName = "_mcount";
+      break;*/
+    case llvm::Triple::x86:
+    case llvm::Triple::x86_64:
+      this->HasFloat128 = true;
+      break;
+    }
+  }
+
+  const char *getStaticInitSectionSpecifier() const override {
+    return ".text.startup";
+  }
+};
+
 
 // Linux target
 template <typename Target>

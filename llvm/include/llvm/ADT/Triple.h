@@ -180,6 +180,7 @@ public:
     Win32,
     ZOS,
     Haiku,
+		KOS,
     Minix,
     RTEMS,
     NaCl,       // Native Client

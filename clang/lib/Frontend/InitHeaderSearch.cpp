@@ -226,6 +226,7 @@ void InitHeaderSearch::AddDefaultCIncludePaths(const llvm::Triple &triple,
     case llvm::Triple::NetBSD:
     case llvm::Triple::OpenBSD:
     case llvm::Triple::NaCl:
+    case llvm::Triple::Kolibri:
     case llvm::Triple::PS4:
     case llvm::Triple::ELFIAMCU:
     case llvm::Triple::Fuchsia:
@@ -338,6 +339,7 @@ void InitHeaderSearch::AddDefaultCIncludePaths(const llvm::Triple &triple,
   case llvm::Triple::NaCl:
   case llvm::Triple::ELFIAMCU:
   case llvm::Triple::Fuchsia:
+ case llvm::Triple::Kolibri:
     break;
   case llvm::Triple::PS4: {
     // <isysroot> gets prepended later in AddPath().

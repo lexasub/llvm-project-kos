@@ -203,6 +203,7 @@ StringRef Triple::getOSTypeName(OSType Kind) {
   case Hurd: return "hurd";
   case IOS: return "ios";
   case KFreeBSD: return "kfreebsd";
+	case KOS: return "kolibri";
   case Linux: return "linux";
   case Lv2: return "lv2";
   case MacOSX: return "macosx";
@@ -503,6 +504,7 @@ static Triple::OSType parseOS(StringRef OSName) {
     .StartsWith("fuchsia", Triple::Fuchsia)
     .StartsWith("ios", Triple::IOS)
     .StartsWith("kfreebsd", Triple::KFreeBSD)
+    .StartsWith("kolibri", Triple::Kolibri)
     .StartsWith("linux", Triple::Linux)
     .StartsWith("lv2", Triple::Lv2)
     .StartsWith("macos", Triple::MacOSX)
