@@ -27,7 +27,8 @@ namespace llvm {
 
 // Specialize GraphTraits to treat Block as a graph of Operations as nodes and
 // uses as edges.
-template <> struct GraphTraits<Block *> {
+template <>
+struct GraphTraits<Block *> {
   using GraphType = Block *;
   using NodeRef = Operation *;
 
@@ -48,7 +49,8 @@ template <> struct GraphTraits<Block *> {
 };
 
 // Specialize DOTGraphTraits to produce more readable output.
-template <> struct DOTGraphTraits<Block *> : public DefaultDOTGraphTraits {
+template <>
+struct DOTGraphTraits<Block *> : public DefaultDOTGraphTraits {
   using DefaultDOTGraphTraits::DefaultDOTGraphTraits;
   static std::string getNodeLabel(Operation *op, Block *);
 };

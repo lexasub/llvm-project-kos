@@ -7,7 +7,7 @@ jptr lockaddr;
 void *Thread(void *p) {
   __tsan_java_mutex_lock(lockaddr);
   __tsan_java_mutex_lock(lockaddr);
-  *(int*)varaddr = 42;
+  *(int *)varaddr = 42;
   int rec = __tsan_java_mutex_unlock_rec(lockaddr);
   if (rec != 2) {
     fprintf(stderr, "FAILED 0 rec=%d\n", rec);
@@ -16,8 +16,8 @@ void *Thread(void *p) {
   barrier_wait(&barrier);
   barrier_wait(&barrier);
   __tsan_java_mutex_lock_rec(lockaddr, rec);
-  if (*(int*)varaddr != 43) {
-    fprintf(stderr, "FAILED 3 var=%d\n", *(int*)varaddr);
+  if (*(int *)varaddr != 43) {
+    fprintf(stderr, "FAILED 3 var=%d\n", *(int *)varaddr);
     exit(1);
   }
   __tsan_java_mutex_unlock(lockaddr);
@@ -33,17 +33,17 @@ int main() {
   const int kBlockSize = 16;
   __tsan_java_alloc(jheap, kBlockSize);
   varaddr = jheap;
-  *(int*)varaddr = 0;
+  *(int *)varaddr = 0;
   lockaddr = jheap + 8;
   pthread_t th;
   pthread_create(&th, 0, Thread, 0);
   barrier_wait(&barrier);
   __tsan_java_mutex_lock(lockaddr);
-  if (*(int*)varaddr != 42) {
-    fprintf(stderr, "FAILED 1 var=%d\n", *(int*)varaddr);
+  if (*(int *)varaddr != 42) {
+    fprintf(stderr, "FAILED 1 var=%d\n", *(int *)varaddr);
     exit(1);
   }
-  *(int*)varaddr = 43;
+  *(int *)varaddr = 43;
   __tsan_java_mutex_unlock(lockaddr);
   barrier_wait(&barrier);
   pthread_join(th, 0);

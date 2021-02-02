@@ -15,15 +15,15 @@
 #ifndef LLVM_CLANG_ANALYSIS_RETAINSUMMARY_MANAGER_H
 #define LLVM_CLANG_ANALYSIS_RETAINSUMMARY_MANAGER_H
 
-#include "llvm/ADT/DenseMap.h"
-#include "llvm/ADT/FoldingSet.h"
-#include "llvm/ADT/ImmutableMap.h"
 #include "clang/AST/Attr.h"
 #include "clang/AST/DeclCXX.h"
 #include "clang/AST/DeclObjC.h"
 #include "clang/AST/ParentMap.h"
 #include "clang/Analysis/AnyCall.h"
 #include "clang/Analysis/SelectorExtras.h"
+#include "llvm/ADT/DenseMap.h"
+#include "llvm/ADT/FoldingSet.h"
+#include "llvm/ADT/ImmutableMap.h"
 #include "llvm/ADT/STLExtras.h"
 
 using namespace clang;
@@ -118,6 +118,7 @@ enum ArgEffectKind {
 class ArgEffect {
   ArgEffectKind K;
   ObjKind O;
+
 public:
   explicit ArgEffect(ArgEffectKind K = DoNothing, ObjKind O = ObjKind::AnyObj)
       : K(K), O(O) {}
@@ -125,9 +126,7 @@ public:
   ArgEffectKind getKind() const { return K; }
   ObjKind getObjKind() const { return O; }
 
-  ArgEffect withKind(ArgEffectKind NewK) {
-    return ArgEffect(NewK, O);
-  }
+  ArgEffect withKind(ArgEffectKind NewK) { return ArgEffect(NewK, O); }
 
   bool operator==(const ArgEffect &Other) const {
     return K == Other.K && O == Other.O;
@@ -177,9 +176,7 @@ public:
     return K == OwnedSymbol || K == OwnedWhenTrackedReceiver;
   }
 
-  bool notOwned() const {
-    return K == NotOwnedSymbol;
-  }
+  bool notOwned() const { return K == NotOwnedSymbol; }
 
   bool operator==(const RetEffect &Other) const {
     return K == Other.K && O == Other.O;
@@ -189,33 +186,26 @@ public:
     return RetEffect(OwnedWhenTrackedReceiver, ObjKind::ObjC);
   }
 
-  static RetEffect MakeOwned(ObjKind o) {
-    return RetEffect(OwnedSymbol, o);
-  }
+  static RetEffect MakeOwned(ObjKind o) { return RetEffect(OwnedSymbol, o); }
   static RetEffect MakeNotOwned(ObjKind o) {
     return RetEffect(NotOwnedSymbol, o);
   }
-  static RetEffect MakeNoRet() {
-    return RetEffect(NoRet);
-  }
-  static RetEffect MakeNoRetHard() {
-    return RetEffect(NoRetHard);
-  }
+  static RetEffect MakeNoRet() { return RetEffect(NoRet); }
+  static RetEffect MakeNoRetHard() { return RetEffect(NoRetHard); }
 };
 
 /// A key identifying a summary.
 class ObjCSummaryKey {
-  IdentifierInfo* II;
+  IdentifierInfo *II;
   Selector S;
+
 public:
-  ObjCSummaryKey(IdentifierInfo* ii, Selector s)
-    : II(ii), S(s) {}
+  ObjCSummaryKey(IdentifierInfo *ii, Selector s) : II(ii), S(s) {}
 
   ObjCSummaryKey(const ObjCInterfaceDecl *d, Selector s)
-    : II(d ? d->getIdentifier() : nullptr), S(s) {}
+      : II(d ? d->getIdentifier() : nullptr), S(s) {}
 
-  ObjCSummaryKey(Selector s)
-    : II(nullptr), S(s) {}
+  ObjCSummaryKey(Selector s) : II(nullptr), S(s) {}
 
   IdentifierInfo *getIdentifier() const { return II; }
   Selector getSelector() const { return S; }
@@ -232,44 +222,42 @@ namespace llvm {
 // Adapters for FoldingSet.
 //===----------------------------------------------------------------------===//
 template <> struct FoldingSetTrait<ArgEffect> {
-static inline void Profile(const ArgEffect X, FoldingSetNodeID &ID) {
-  ID.AddInteger((unsigned) X.getKind());
-  ID.AddInteger((unsigned) X.getObjKind());
-}
+  static inline void Profile(const ArgEffect X, FoldingSetNodeID &ID) {
+    ID.AddInteger((unsigned)X.getKind());
+    ID.AddInteger((unsigned)X.getObjKind());
+  }
 };
 template <> struct FoldingSetTrait<RetEffect> {
   static inline void Profile(const RetEffect &X, FoldingSetNodeID &ID) {
-    ID.AddInteger((unsigned) X.getKind());
-    ID.AddInteger((unsigned) X.getObjKind());
-}
+    ID.AddInteger((unsigned)X.getKind());
+    ID.AddInteger((unsigned)X.getObjKind());
+  }
 };
 
 template <> struct DenseMapInfo<ObjCSummaryKey> {
   static inline ObjCSummaryKey getEmptyKey() {
-    return ObjCSummaryKey(DenseMapInfo<IdentifierInfo*>::getEmptyKey(),
+    return ObjCSummaryKey(DenseMapInfo<IdentifierInfo *>::getEmptyKey(),
                           DenseMapInfo<Selector>::getEmptyKey());
   }
 
   static inline ObjCSummaryKey getTombstoneKey() {
-    return ObjCSummaryKey(DenseMapInfo<IdentifierInfo*>::getTombstoneKey(),
+    return ObjCSummaryKey(DenseMapInfo<IdentifierInfo *>::getTombstoneKey(),
                           DenseMapInfo<Selector>::getTombstoneKey());
   }
 
   static unsigned getHashValue(const ObjCSummaryKey &V) {
-    typedef std::pair<IdentifierInfo*, Selector> PairTy;
-    return DenseMapInfo<PairTy>::getHashValue(PairTy(V.getIdentifier(),
-                                                     V.getSelector()));
+    typedef std::pair<IdentifierInfo *, Selector> PairTy;
+    return DenseMapInfo<PairTy>::getHashValue(
+        PairTy(V.getIdentifier(), V.getSelector()));
   }
 
-  static bool isEqual(const ObjCSummaryKey& LHS, const ObjCSummaryKey& RHS) {
+  static bool isEqual(const ObjCSummaryKey &LHS, const ObjCSummaryKey &RHS) {
     return LHS.getIdentifier() == RHS.getIdentifier() &&
            LHS.getSelector() == RHS.getSelector();
   }
-
 };
 
-} // end llvm namespace
-
+} // namespace llvm
 
 namespace clang {
 namespace ento {
@@ -301,13 +289,10 @@ class RetainSummary {
   RetEffect Ret;
 
 public:
-  RetainSummary(ArgEffects A,
-                RetEffect R,
-                ArgEffect defaultEff,
-                ArgEffect ReceiverEff,
-                ArgEffect ThisEff)
-    : Args(A), DefaultArgEffect(defaultEff), Receiver(ReceiverEff),
-      This(ThisEff), Ret(R) {}
+  RetainSummary(ArgEffects A, RetEffect R, ArgEffect defaultEff,
+                ArgEffect ReceiverEff, ArgEffect ThisEff)
+      : Args(A), DefaultArgEffect(defaultEff), Receiver(ReceiverEff),
+        This(ThisEff), Ret(R) {}
 
   /// getArg - Return the argument effect on the argument specified by
   ///  idx (starting from 0).
@@ -323,16 +308,13 @@ public:
   }
 
   /// setDefaultArgEffect - Set the default argument effect.
-  void setDefaultArgEffect(ArgEffect E) {
-    DefaultArgEffect = E;
-  }
+  void setDefaultArgEffect(ArgEffect E) { DefaultArgEffect = E; }
 
   /// getRetEffect - Returns the effect on the return value of the call.
   RetEffect getRetEffect() const { return Ret; }
 
   /// setRetEffect - Set the effect of the return value of the call.
   void setRetEffect(RetEffect E) { Ret = E; }
-
 
   /// Sets the effect on the receiver of the message.
   void setReceiverEffect(ArgEffect e) { Receiver = e; }
@@ -351,9 +333,9 @@ public:
   void setThisEffect(ArgEffect e) { This = e; }
 
   bool isNoop() const {
-    return Ret == RetEffect::MakeNoRet() && Receiver.getKind() == DoNothing
-      && DefaultArgEffect.getKind() == MayEscape && This.getKind() == DoNothing
-      && Args.isEmpty();
+    return Ret == RetEffect::MakeNoRet() && Receiver.getKind() == DoNothing &&
+           DefaultArgEffect.getKind() == MayEscape &&
+           This.getKind() == DoNothing && Args.isEmpty();
   }
 
   /// Test if two retain summaries are identical. Note that merely equivalent
@@ -365,7 +347,7 @@ public:
   }
 
   /// Profile this summary for inclusion in a FoldingSet.
-  void Profile(llvm::FoldingSetNodeID& ID) const {
+  void Profile(llvm::FoldingSetNodeID &ID) const {
     ID.Add(Args);
     ID.Add(DefaultArgEffect);
     ID.Add(Receiver);
@@ -374,9 +356,7 @@ public:
   }
 
   /// A retain summary is simple if it has no ArgEffects other than the default.
-  bool isSimple() const {
-    return Args.isEmpty();
-  }
+  bool isSimple() const { return Args.isEmpty(); }
 
   ArgEffects getArgEffects() const { return Args; }
 
@@ -389,10 +369,11 @@ private:
 class ObjCSummaryCache {
   typedef llvm::DenseMap<ObjCSummaryKey, const RetainSummary *> MapTy;
   MapTy M;
+
 public:
   ObjCSummaryCache() {}
 
-  const RetainSummary * find(const ObjCInterfaceDecl *D, Selector S) {
+  const RetainSummary *find(const ObjCInterfaceDecl *D, Selector S) {
     // Do a lookup with the (D,S) pair.  If we find a match return
     // the iterator.
     ObjCSummaryKey K(D, S);
@@ -409,7 +390,7 @@ public:
     // generate initial summaries without having to worry about NSObject
     // being declared.
     // FIXME: We may change this at some point.
-    for (ObjCInterfaceDecl *C=D->getSuperClass() ;; C=C->getSuperClass()) {
+    for (ObjCInterfaceDecl *C = D->getSuperClass();; C = C->getSuperClass()) {
       if ((I = M.find(ObjCSummaryKey(C, S))) != M.end())
         break;
 
@@ -424,7 +405,7 @@ public:
     return Summ;
   }
 
-  const RetainSummary *find(IdentifierInfo* II, Selector S) {
+  const RetainSummary *find(IdentifierInfo *II, Selector S) {
     // FIXME: Class method lookup.  Right now we don't have a good way
     // of going between IdentifierInfo* and the class hierarchy.
     MapTy::iterator I = M.find(ObjCSummaryKey(II, S));
@@ -435,20 +416,16 @@ public:
     return I == M.end() ? nullptr : I->second;
   }
 
-  const RetainSummary *& operator[](ObjCSummaryKey K) {
-    return M[K];
-  }
+  const RetainSummary *&operator[](ObjCSummaryKey K) { return M[K]; }
 
-  const RetainSummary *& operator[](Selector S) {
-    return M[ ObjCSummaryKey(S) ];
-  }
+  const RetainSummary *&operator[](Selector S) { return M[ObjCSummaryKey(S)]; }
 };
 
 class RetainSummaryTemplate;
 
 class RetainSummaryManager {
-  typedef llvm::DenseMap<const FunctionDecl*, const RetainSummary *>
-          FuncSummariesTy;
+  typedef llvm::DenseMap<const FunctionDecl *, const RetainSummary *>
+      FuncSummariesTy;
 
   typedef ObjCSummaryCache ObjCMethodSummariesTy;
 
@@ -510,7 +487,7 @@ class RetainSummaryManager {
   /// Free the OS object.
   const RetainSummary *getOSSummaryFreeRule(const FunctionDecl *FD);
 
-  const RetainSummary *getUnarySummary(const FunctionType* FT,
+  const RetainSummary *getUnarySummary(const FunctionType *FT,
                                        ArgEffectKind AE);
 
   const RetainSummary *getCFSummaryCreateRule(const FunctionDecl *FD);
@@ -557,61 +534,60 @@ class RetainSummaryManager {
     ObjCMethodSummaries[S] = Summ;
   }
 
-  void addClassMethSummary(const char* Cls, const char* name,
+  void addClassMethSummary(const char *Cls, const char *name,
                            const RetainSummary *Summ, bool isNullary = true) {
-    IdentifierInfo* ClsII = &Ctx.Idents.get(Cls);
-    Selector S = isNullary ? GetNullarySelector(name, Ctx)
-                           : GetUnarySelector(name, Ctx);
-    ObjCClassMethodSummaries[ObjCSummaryKey(ClsII, S)]  = Summ;
+    IdentifierInfo *ClsII = &Ctx.Idents.get(Cls);
+    Selector S =
+        isNullary ? GetNullarySelector(name, Ctx) : GetUnarySelector(name, Ctx);
+    ObjCClassMethodSummaries[ObjCSummaryKey(ClsII, S)] = Summ;
   }
 
-  void addInstMethSummary(const char* Cls, const char* nullaryName,
+  void addInstMethSummary(const char *Cls, const char *nullaryName,
                           const RetainSummary *Summ) {
-    IdentifierInfo* ClsII = &Ctx.Idents.get(Cls);
+    IdentifierInfo *ClsII = &Ctx.Idents.get(Cls);
     Selector S = GetNullarySelector(nullaryName, Ctx);
-    ObjCMethodSummaries[ObjCSummaryKey(ClsII, S)]  = Summ;
+    ObjCMethodSummaries[ObjCSummaryKey(ClsII, S)] = Summ;
   }
 
   template <typename... Keywords>
   void addMethodSummary(IdentifierInfo *ClsII, ObjCMethodSummariesTy &Summaries,
-                        const RetainSummary *Summ, Keywords *... Kws) {
+                        const RetainSummary *Summ, Keywords *...Kws) {
     Selector S = getKeywordSelector(Ctx, Kws...);
     Summaries[ObjCSummaryKey(ClsII, S)] = Summ;
   }
 
   template <typename... Keywords>
   void addInstMethSummary(const char *Cls, const RetainSummary *Summ,
-                          Keywords *... Kws) {
+                          Keywords *...Kws) {
     addMethodSummary(&Ctx.Idents.get(Cls), ObjCMethodSummaries, Summ, Kws...);
   }
 
   template <typename... Keywords>
   void addClsMethSummary(const char *Cls, const RetainSummary *Summ,
-                         Keywords *... Kws) {
+                         Keywords *...Kws) {
     addMethodSummary(&Ctx.Idents.get(Cls), ObjCClassMethodSummaries, Summ,
                      Kws...);
   }
 
   template <typename... Keywords>
   void addClsMethSummary(IdentifierInfo *II, const RetainSummary *Summ,
-                         Keywords *... Kws) {
+                         Keywords *...Kws) {
     addMethodSummary(II, ObjCClassMethodSummaries, Summ, Kws...);
   }
 
-  const RetainSummary * generateSummary(const FunctionDecl *FD,
-                                        bool &AllowAnnotations);
+  const RetainSummary *generateSummary(const FunctionDecl *FD,
+                                       bool &AllowAnnotations);
 
   /// Return a summary for OSObject, or nullptr if not found.
   const RetainSummary *getSummaryForOSObject(const FunctionDecl *FD,
                                              StringRef FName, QualType RetTy);
 
   /// Return a summary for Objective-C or CF object, or nullptr if not found.
-  const RetainSummary *getSummaryForObjCOrCFObject(
-    const FunctionDecl *FD,
-    StringRef FName,
-    QualType RetTy,
-    const FunctionType *FT,
-    bool &AllowAnnotations);
+  const RetainSummary *getSummaryForObjCOrCFObject(const FunctionDecl *FD,
+                                                   StringRef FName,
+                                                   QualType RetTy,
+                                                   const FunctionType *FT,
+                                                   bool &AllowAnnotations);
 
   /// Apply the annotation of {@code pd} in function {@code FD}
   /// to the resulting summary stored in out-parameter {@code Template}.
@@ -657,15 +633,13 @@ public:
 
   bool isTrustedReferenceCountImplementation(const Decl *FD);
 
-  const RetainSummary *getSummary(AnyCall C,
-                                  bool HasNonZeroCallbackArg=false,
-                                  bool IsReceiverUnconsumedSelf=false,
-                                  QualType ReceiverType={});
+  const RetainSummary *getSummary(AnyCall C, bool HasNonZeroCallbackArg = false,
+                                  bool IsReceiverUnconsumedSelf = false,
+                                  QualType ReceiverType = {});
 
   RetEffect getObjAllocRetEffect() const { return ObjCAllocRetE; }
 
 private:
-
   /// getMethodSummary - This version of getMethodSummary is used to query
   ///  the summary for the current method being analyzed.
   const RetainSummary *getMethodSummary(const ObjCMethodDecl *MD);
@@ -677,8 +651,8 @@ private:
                                         QualType RetTy,
                                         ObjCMethodSummariesTy &CachedSummaries);
 
-  const RetainSummary *
-  getInstanceMethodSummary(const ObjCMessageExpr *ME, QualType ReceiverType);
+  const RetainSummary *getInstanceMethodSummary(const ObjCMessageExpr *ME,
+                                                QualType ReceiverType);
 
   const RetainSummary *getClassMethodSummary(const ObjCMessageExpr *ME);
 
@@ -695,8 +669,8 @@ private:
   void updateSummaryFromAnnotations(const RetainSummary *&Summ,
                                     const FunctionDecl *FD);
 
-  const RetainSummary *updateSummaryForNonZeroCallbackArg(const RetainSummary *S,
-                                                          AnyCall &C);
+  const RetainSummary *
+  updateSummaryForNonZeroCallbackArg(const RetainSummary *S, AnyCall &C);
 
   /// Special case '[super init];' and '[self init];'
   ///
@@ -713,7 +687,8 @@ private:
   void updateSummaryForReceiverUnconsumedSelf(const RetainSummary *&S);
 
   /// Set argument types for arguments which are not doing anything.
-  void updateSummaryForArgumentTypes(const AnyCall &C, const RetainSummary *&RS);
+  void updateSummaryForArgumentTypes(const AnyCall &C,
+                                     const RetainSummary *&RS);
 
   /// Determine whether a declaration {@code D} of correspondent type (return
   /// type for functions/methods) {@code QT} has any of the given attributes,
@@ -731,7 +706,6 @@ private:
   friend class RetainSummaryTemplate;
 };
 
-
 // Used to avoid allocating long-term (BPAlloc'd) memory for default retain
 // summaries. If a function or method looks like it has a default summary, but
 // it has annotations, the annotations are added to the stack-based template
@@ -741,9 +715,11 @@ class RetainSummaryTemplate {
   const RetainSummary *&RealSummary;
   RetainSummary ScratchSummary;
   bool Accessed;
+
 public:
   RetainSummaryTemplate(const RetainSummary *&real, RetainSummaryManager &mgr)
-    : Manager(mgr), RealSummary(real), ScratchSummary(*real), Accessed(false) {}
+      : Manager(mgr), RealSummary(real), ScratchSummary(*real),
+        Accessed(false) {}
 
   ~RetainSummaryTemplate() {
     if (Accessed)

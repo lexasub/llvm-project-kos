@@ -7,9 +7,7 @@ void __attribute__((noinline)) sink() {
   // CHECK-NEXT: main{{.*}}
 }
 
-void __attribute__((noinline)) func2() {
-  sink(); /* tail */
-}
+void __attribute__((noinline)) func2() { sink(); /* tail */ }
 
 void __attribute__((noinline)) func1() { sink(); /* tail */ }
 

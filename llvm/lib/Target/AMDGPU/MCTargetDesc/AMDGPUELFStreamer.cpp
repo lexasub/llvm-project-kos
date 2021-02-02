@@ -26,7 +26,7 @@ public:
                       std::move(Emitter)) {}
 };
 
-}
+} // namespace
 
 MCELFStreamer *llvm::createAMDGPUELFStreamer(
     const Triple &T, MCContext &Context, std::unique_ptr<MCAsmBackend> MAB,

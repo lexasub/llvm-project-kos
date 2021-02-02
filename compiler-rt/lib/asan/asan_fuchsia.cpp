@@ -14,15 +14,15 @@
 #include "sanitizer_common/sanitizer_fuchsia.h"
 #if SANITIZER_FUCHSIA
 
-#include "asan_interceptors.h"
-#include "asan_internal.h"
-#include "asan_stack.h"
-#include "asan_thread.h"
-
 #include <limits.h>
 #include <zircon/sanitizer.h>
 #include <zircon/syscalls.h>
 #include <zircon/threads.h>
+
+#include "asan_interceptors.h"
+#include "asan_internal.h"
+#include "asan_stack.h"
+#include "asan_thread.h"
 
 namespace __asan {
 
@@ -31,7 +31,8 @@ namespace __asan {
 // AsanInitInternal->InitializeHighMemEnd (asan_rtl.cpp).
 // Just do some additional sanity checks here.
 void InitializeShadowMemory() {
-  if (Verbosity()) PrintAddressSpaceLayout();
+  if (Verbosity())
+    PrintAddressSpaceLayout();
 
   // Make sure SHADOW_OFFSET doesn't use __asan_shadow_memory_dynamic_address.
   __asan_shadow_memory_dynamic_address = kDefaultShadowSentinel;
@@ -148,7 +149,8 @@ static void *BeforeThreadCreateHook(uptr user_id, bool detached,
                                     uptr stack_size) {
   EnsureMainThreadIDIsCorrect();
   // Strict init-order checking is thread-hostile.
-  if (flags()->strict_init_order) StopInitOrderChecking();
+  if (flags()->strict_init_order)
+    StopInitOrderChecking();
 
   GET_STACK_TRACE_THREAD;
   u32 parent_tid = GetCurrentTidOrInvalid();

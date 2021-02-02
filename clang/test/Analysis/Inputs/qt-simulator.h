@@ -2,7 +2,7 @@
 
 namespace QtPrivate {
 struct QSlotObjectBase {};
-}
+} // namespace QtPrivate
 
 namespace Qt {
 enum ConnectionType {};

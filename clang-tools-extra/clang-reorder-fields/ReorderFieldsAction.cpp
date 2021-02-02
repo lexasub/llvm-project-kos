@@ -1,4 +1,5 @@
-//===-- tools/extra/clang-reorder-fields/ReorderFieldsAction.cpp -*- C++ -*-===//
+//===-- tools/extra/clang-reorder-fields/ReorderFieldsAction.cpp -*- C++
+//-*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -305,7 +306,7 @@ public:
 
 std::unique_ptr<ASTConsumer> ReorderFieldsAction::newASTConsumer() {
   return std::make_unique<ReorderingConsumer>(RecordName, DesiredFieldsOrder,
-                                               Replacements);
+                                              Replacements);
 }
 
 } // namespace reorder_fields

@@ -2,7 +2,8 @@
 
 // Note: this test expects no diagnostics, but FileCheck cannot handle that,
 // hence the use of | count 0.
-template <int index> struct B {
+template <int index>
+struct B {
   int get() {
     // The next line used to crash the check (in C++03 mode only).
     return x[index];

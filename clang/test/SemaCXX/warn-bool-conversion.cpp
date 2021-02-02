@@ -3,7 +3,7 @@
 // RUN: %clang_cc1 -fsyntax-only -verify=expected,expected-cxx11 -std=c++11 %s
 
 namespace BooleanFalse {
-int* j = false;
+int *j = false;
 #if __cplusplus <= 199711L
 // expected-warning@-2 {{initialization of pointer of type 'int *' to null from a constant boolean expression}}
 #else
@@ -21,8 +21,7 @@ void bar(int *j = false);
 #if __cplusplus > 199711L
 // expected-note@+2 4{{candidate function not viable: no known conversion}}
 #endif
-void foo(int *i)
-{
+void foo(int *i) {
   foo(false);
 #if __cplusplus <= 199711L
 // expected-warning@-2 {{initialization of pointer of type 'int *' to null from a constant boolean expression}}
@@ -30,8 +29,8 @@ void foo(int *i)
 // expected-error@-4 {{no matching function for call to 'foo'}}
 #endif
 
-  foo((int*)false); // OK: explicit cast
-  foo(0); // OK: not a bool, even though it's convertible to bool
+  foo((int *)false); // OK: explicit cast
+  foo(0);            // OK: not a bool, even though it's convertible to bool
 
   foo(false == true);
 #if __cplusplus <= 199711L
@@ -56,7 +55,7 @@ void foo(int *i)
 #endif
 }
 
-char f(struct Undefined*);
+char f(struct Undefined *);
 double f(...);
 
 // Ensure that when using false in metaprogramming machinery its conversion
@@ -64,7 +63,7 @@ double f(...);
 template <int N> struct S {};
 S<sizeof(f(false))> s;
 
-}
+} // namespace BooleanFalse
 
 namespace Function {
 void f1();
@@ -87,11 +86,13 @@ void bar() {
 
   b = f1; // expected-warning {{address of function 'f1' will always evaluate to 'true'}} \
              expected-note {{prefix with the address-of operator to silence this warning}}
-  if (f1) {} // expected-warning {{address of function 'f1' will always evaluate to 'true'}} \
+  if (f1) {
+  }          // expected-warning {{address of function 'f1' will always evaluate to 'true'}} \
                 expected-note {{prefix with the address-of operator to silence this warning}}
   b = S::f2; // expected-warning {{address of function 'S::f2' will always evaluate to 'true'}} \
                 expected-note {{prefix with the address-of operator to silence this warning}}
-  if (S::f2) {} // expected-warning {{address of function 'S::f2' will always evaluate to 'true'}} \
+  if (S::f2) {
+  }       // expected-warning {{address of function 'S::f2' will always evaluate to 'true'}} \
                    expected-note {{prefix with the address-of operator to silence this warning}}
   b = f5; // expected-warning {{address of function 'f5' will always evaluate to 'true'}} \
              expected-note {{prefix with the address-of operator to silence this warning}} \
@@ -101,107 +102,132 @@ void bar() {
 
   // implicit casts of weakly imported symbols are ok:
   b = f3;
-  if (f3) {}
+  if (f3) {
+  }
   b = S2::f4;
-  if (S2::f4) {}
+  if (S2::f4) {
+  }
 }
-}
+} // namespace Function
 
 namespace Array {
-  #define GetValue(ptr)  ((ptr) ? ptr[0] : 0)
-  extern int a[] __attribute__((weak));
-  int b[] = {8,13,21};
-  struct {
-    int x[10];
-  } c;
-  const char str[] = "text";
-  void ignore() {
-    if (a) {}
-    if (a) {}
-    (void)GetValue(b);
+#define GetValue(ptr) ((ptr) ? ptr[0] : 0)
+extern int a[] __attribute__((weak));
+int b[] = {8, 13, 21};
+struct {
+  int x[10];
+} c;
+const char str[] = "text";
+void ignore() {
+  if (a) {
   }
-  void test() {
-    if (b) {}
-    // expected-warning@-1{{address of array 'b' will always evaluate to 'true'}}
-    if (b) {}
-    // expected-warning@-1{{address of array 'b' will always evaluate to 'true'}}
-    if (c.x) {}
-    // expected-warning@-1{{address of array 'c.x' will always evaluate to 'true'}}
-    if (str) {}
-    // expected-warning@-1{{address of array 'str' will always evaluate to 'true'}}
+  if (a) {
   }
+  (void)GetValue(b);
 }
+void test() {
+  if (b) {
+  }
+  // expected-warning@-1{{address of array 'b' will always evaluate to 'true'}}
+  if (b) {
+  }
+  // expected-warning@-1{{address of array 'b' will always evaluate to 'true'}}
+  if (c.x) {
+  }
+  // expected-warning@-1{{address of array 'c.x' will always evaluate to 'true'}}
+  if (str) {
+  }
+  // expected-warning@-1{{address of array 'str' will always evaluate to 'true'}}
+}
+} // namespace Array
 
 namespace Pointer {
-  extern int a __attribute__((weak));
+extern int a __attribute__((weak));
+int b;
+static int c;
+class S {
+public:
+  static int a;
   int b;
-  static int c;
-  class S {
-  public:
-    static int a;
-    int b;
-  };
-  void ignored() {
-    if (&a) {}
-  }
-  void test() {
-    S s;
-    if (&b) {}
-    // expected-warning@-1{{address of 'b' will always evaluate to 'true'}}
-    if (&c) {}
-    // expected-warning@-1{{address of 'c' will always evaluate to 'true'}}
-    if (&s.a) {}
-    // expected-warning@-1{{address of 's.a' will always evaluate to 'true'}}
-    if (&s.b) {}
-    // expected-warning@-1{{address of 's.b' will always evaluate to 'true'}}
-    if (&S::a) {}
-    // expected-warning@-1{{address of 'S::a' will always evaluate to 'true'}}
+};
+void ignored() {
+  if (&a) {
   }
 }
+void test() {
+  S s;
+  if (&b) {
+  }
+  // expected-warning@-1{{address of 'b' will always evaluate to 'true'}}
+  if (&c) {
+  }
+  // expected-warning@-1{{address of 'c' will always evaluate to 'true'}}
+  if (&s.a) {
+  }
+  // expected-warning@-1{{address of 's.a' will always evaluate to 'true'}}
+  if (&s.b) {
+  }
+  // expected-warning@-1{{address of 's.b' will always evaluate to 'true'}}
+  if (&S::a) {
+  }
+  // expected-warning@-1{{address of 'S::a' will always evaluate to 'true'}}
+}
+} // namespace Pointer
 
 namespace macros {
-  #define assert(x) if (x) {}
-  #define zero_on_null(x) ((x) ? *(x) : 0)
+#define assert(x) \
+  if (x) {        \
+  }
+#define zero_on_null(x) ((x) ? *(x) : 0)
 
-  int array[5];
-  void fun();
-  int x;
+int array[5];
+void fun();
+int x;
 
-  void test() {
-    assert(array);
-    assert(array && "expecting null pointer");
-    // expected-warning@-1{{address of array 'array' will always evaluate to 'true'}}
+void test() {
+  assert(array);
+  assert(array && "expecting null pointer");
+  // expected-warning@-1{{address of array 'array' will always evaluate to 'true'}}
 
-    assert(fun);
-    assert(fun && "expecting null pointer");
-    // expected-warning@-1{{address of function 'fun' will always evaluate to 'true'}}
-    // expected-note@-2 {{prefix with the address-of operator to silence this warning}}
+  assert(fun);
+  assert(fun && "expecting null pointer");
+  // expected-warning@-1{{address of function 'fun' will always evaluate to 'true'}}
+  // expected-note@-2 {{prefix with the address-of operator to silence this warning}}
 
-    // TODO: warn on assert(&x) while not warning on zero_on_null(&x)
-    zero_on_null(&x);
-    assert(zero_on_null(&x));
-    assert(&x);
-    assert(&x && "expecting null pointer");
-    // expected-warning@-1{{address of 'x' will always evaluate to 'true'}}
+  // TODO: warn on assert(&x) while not warning on zero_on_null(&x)
+  zero_on_null(&x);
+  assert(zero_on_null(&x));
+  assert(&x);
+  assert(&x && "expecting null pointer");
+  // expected-warning@-1{{address of 'x' will always evaluate to 'true'}}
+}
+} // namespace macros
+
+namespace Template {
+// FIXME: These cases should not warn.
+template <int *p> void f() {
+  if (p) {
+  }
+} // expected-warning 2{{will always evaluate to 'true'}} expected-cxx11-warning {{implicit conversion of nullptr}}
+template <int (*p)[3]> void g() {
+  if (p) {
+  }
+} // expected-warning 2{{will always evaluate to 'true'}} expected-cxx11-warning {{implicit conversion of nullptr}}
+template <int (*p)()> void h() {
+  if (p) {
   }
 }
 
-namespace Template {
-  // FIXME: These cases should not warn.
-  template<int *p> void f() { if (p) {} } // expected-warning 2{{will always evaluate to 'true'}} expected-cxx11-warning {{implicit conversion of nullptr}}
-  template<int (*p)[3]> void g() { if (p) {} } // expected-warning 2{{will always evaluate to 'true'}} expected-cxx11-warning {{implicit conversion of nullptr}}
-  template<int (*p)()> void h() { if (p) {} }
-
-  int a, b[3], c[3][3], d();
-  template void f<&a>(); // expected-note {{instantiation of}}
-  template void f<b>(); // expected-note {{instantiation of}}
+int a, b[3], c[3][3], d();
+template void f<&a>(); // expected-note {{instantiation of}}
+template void f<b>();  // expected-note {{instantiation of}}
 #if __cplusplus >= 201103L
-  template void f<(int*)nullptr>(); // expected-note {{instantiation of}}
+template void f<(int *)nullptr>(); // expected-note {{instantiation of}}
 #endif
-  template void g<&b>(); // expected-note {{instantiation of}}
-  template void g<c>(); // expected-note {{instantiation of}}
+template void g<&b>(); // expected-note {{instantiation of}}
+template void g<c>();  // expected-note {{instantiation of}}
 #if __cplusplus >= 201103L
-  template void g<(int(*)[3])nullptr>(); // expected-note {{instantiation of}}
+template void g<(int (*)[3]) nullptr>(); // expected-note {{instantiation of}}
 #endif
-  template void h<d>();
-}
+template void h<d>();
+} // namespace Template

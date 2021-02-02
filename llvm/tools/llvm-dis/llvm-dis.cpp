@@ -36,17 +36,17 @@
 using namespace llvm;
 
 static cl::opt<std::string>
-InputFilename(cl::Positional, cl::desc("<input bitcode>"), cl::init("-"));
+    InputFilename(cl::Positional, cl::desc("<input bitcode>"), cl::init("-"));
 
-static cl::opt<std::string>
-OutputFilename("o", cl::desc("Override output filename"),
-               cl::value_desc("filename"));
+static cl::opt<std::string> OutputFilename("o",
+                                           cl::desc("Override output filename"),
+                                           cl::value_desc("filename"));
 
-static cl::opt<bool>
-Force("f", cl::desc("Enable binary output on terminals"));
+static cl::opt<bool> Force("f", cl::desc("Enable binary output on terminals"));
 
-static cl::opt<bool>
-DontPrint("disable-output", cl::desc("Don't output the .ll file"), cl::Hidden);
+static cl::opt<bool> DontPrint("disable-output",
+                               cl::desc("Don't output the .ll file"),
+                               cl::Hidden);
 
 static cl::opt<bool>
     SetImporting("set-importing",
@@ -80,7 +80,7 @@ class CommentWriter : public AssemblyAnnotationWriter {
 public:
   void emitFunctionAnnot(const Function *F,
                          formatted_raw_ostream &OS) override {
-    OS << "; [#uses=" << F->getNumUses() << ']';  // Output # uses
+    OS << "; [#uses=" << F->getNumUses() << ']'; // Output # uses
     OS << '\n';
   }
   void printInfoComment(const Value &V, formatted_raw_ostream &OS) override {
@@ -99,7 +99,7 @@ public:
           OS << ";";
         }
         OS << " [debug line = ";
-        printDebugLoc(DL,OS);
+        printDebugLoc(DL, OS);
         OS << "]";
       }
       if (const DbgDeclareInst *DDI = dyn_cast<DbgDeclareInst>(I)) {
@@ -108,8 +108,7 @@ public:
           OS << ";";
         }
         OS << " [debug variable = " << DDI->getVariable()->getName() << "]";
-      }
-      else if (const DbgValueInst *DVI = dyn_cast<DbgValueInst>(I)) {
+      } else if (const DbgValueInst *DVI = dyn_cast<DbgValueInst>(I)) {
         if (!Padded) {
           OS.PadToColumn(50);
           OS << ";";
@@ -127,10 +126,18 @@ struct LLVMDisDiagnosticHandler : public DiagnosticHandler {
     raw_ostream &OS = errs();
     OS << Prefix << ": ";
     switch (DI.getSeverity()) {
-      case DS_Error: WithColor::error(OS); break;
-      case DS_Warning: WithColor::warning(OS); break;
-      case DS_Remark: OS << "remark: "; break;
-      case DS_Note: WithColor::note(OS); break;
+    case DS_Error:
+      WithColor::error(OS);
+      break;
+    case DS_Warning:
+      WithColor::warning(OS);
+      break;
+    case DS_Remark:
+      OS << "remark: ";
+      break;
+    case DS_Note:
+      WithColor::note(OS);
+      break;
     }
 
     DiagnosticPrinterRawOStream DP(OS);
@@ -142,7 +149,7 @@ struct LLVMDisDiagnosticHandler : public DiagnosticHandler {
     return true;
   }
 };
-} // end anon namespace
+} // namespace
 
 static ExitOnError ExitOnErr;
 
@@ -164,12 +171,12 @@ int main(int argc, char **argv) {
   const size_t N = IF.Mods.size();
 
   if (OutputFilename == "-" && N > 1)
-      errs() << "only single module bitcode files can be written to stdout\n";
+    errs() << "only single module bitcode files can be written to stdout\n";
 
   for (size_t i = 0; i < N; ++i) {
     BitcodeModule MB = IF.Mods[i];
-    std::unique_ptr<Module> M = ExitOnErr(MB.getLazyModule(Context, MaterializeMetadata,
-                                          SetImporting));
+    std::unique_ptr<Module> M =
+        ExitOnErr(MB.getLazyModule(Context, MaterializeMetadata, SetImporting));
     if (MaterializeMetadata)
       ExitOnErr(M->materializeMetadata());
     else

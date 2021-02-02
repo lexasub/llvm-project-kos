@@ -37,9 +37,9 @@ using namespace llvm;
 
 // By default, we limit this to creating 16 PHIs (which is a little over half
 // of the allocatable register set).
-static cl::opt<bool>
-PrefetchWrites("loop-prefetch-writes", cl::Hidden, cl::init(false),
-               cl::desc("Prefetch write addresses"));
+static cl::opt<bool> PrefetchWrites("loop-prefetch-writes", cl::Hidden,
+                                    cl::init(false),
+                                    cl::desc("Prefetch write addresses"));
 
 static cl::opt<unsigned>
     PrefetchDistance("prefetch-distance",
@@ -77,8 +77,7 @@ private:
 
   unsigned getMinPrefetchStride(unsigned NumMemAccesses,
                                 unsigned NumStridedMemAccesses,
-                                unsigned NumPrefetches,
-                                bool HasCall) {
+                                unsigned NumPrefetches, bool HasCall) {
     if (MinPrefetchStride.getNumOccurrences() > 0)
       return MinPrefetchStride;
     return TTI->getMinPrefetchStride(NumMemAccesses, NumStridedMemAccesses,
@@ -132,8 +131,8 @@ public:
   }
 
   bool runOnFunction(Function &F) override;
-  };
-}
+};
+} // namespace
 
 char LoopDataPrefetchLegacyPass::ID = 0;
 INITIALIZE_PASS_BEGIN(LoopDataPrefetchLegacyPass, "loop-data-prefetch",
@@ -324,10 +323,12 @@ bool LoopDataPrefetch::runOnLoop(Loop *L) {
         MemI = LMemI;
         PtrValue = LMemI->getPointerOperand();
       } else if (StoreInst *SMemI = dyn_cast<StoreInst>(&I)) {
-        if (!doPrefetchWrites()) continue;
+        if (!doPrefetchWrites())
+          continue;
         MemI = SMemI;
         PtrValue = SMemI->getPointerOperand();
-      } else continue;
+      } else
+        continue;
 
       unsigned PtrAddrSpace = PtrValue->getType()->getPointerAddressSpace();
       if (PtrAddrSpace)
@@ -349,9 +350,9 @@ bool LoopDataPrefetch::runOnLoop(Loop *L) {
       for (auto &Pref : Prefetches) {
         const SCEV *PtrDiff = SE->getMinusSCEV(LSCEVAddRec, Pref.LSCEVAddRec);
         if (const SCEVConstant *ConstPtrDiff =
-            dyn_cast<SCEVConstant>(PtrDiff)) {
+                dyn_cast<SCEVConstant>(PtrDiff)) {
           int64_t PD = std::abs(ConstPtrDiff->getValue()->getSExtValue());
-          if (PD < (int64_t) TTI->getCacheLineSize()) {
+          if (PD < (int64_t)TTI->getCacheLineSize()) {
             Pref.addInstruction(MemI, DT, PD);
             DupPref = true;
             break;
@@ -362,19 +363,17 @@ bool LoopDataPrefetch::runOnLoop(Loop *L) {
         Prefetches.push_back(Prefetch(LSCEVAddRec, MemI));
     }
 
-  unsigned TargetMinStride =
-    getMinPrefetchStride(NumMemAccesses, NumStridedMemAccesses,
-                         Prefetches.size(), HasCall);
+  unsigned TargetMinStride = getMinPrefetchStride(
+      NumMemAccesses, NumStridedMemAccesses, Prefetches.size(), HasCall);
 
   LLVM_DEBUG(dbgs() << "Prefetching " << ItersAhead
-             << " iterations ahead (loop size: " << LoopSize << ") in "
-             << L->getHeader()->getParent()->getName() << ": " << *L);
-  LLVM_DEBUG(dbgs() << "Loop has: "
-             << NumMemAccesses << " memory accesses, "
-             << NumStridedMemAccesses << " strided memory accesses, "
-             << Prefetches.size() << " potential prefetch(es), "
-             << "a minimum stride of " << TargetMinStride << ", "
-             << (HasCall ? "calls" : "no calls") << ".\n");
+                    << " iterations ahead (loop size: " << LoopSize << ") in "
+                    << L->getHeader()->getParent()->getName() << ": " << *L);
+  LLVM_DEBUG(dbgs() << "Loop has: " << NumMemAccesses << " memory accesses, "
+                    << NumStridedMemAccesses << " strided memory accesses, "
+                    << Prefetches.size() << " potential prefetch(es), "
+                    << "a minimum stride of " << TargetMinStride << ", "
+                    << (HasCall ? "calls" : "no calls") << ".\n");
 
   for (auto &P : Prefetches) {
     // Check if the stride of the accesses is large enough to warrant a
@@ -382,35 +381,34 @@ bool LoopDataPrefetch::runOnLoop(Loop *L) {
     if (!isStrideLargeEnough(P.LSCEVAddRec, TargetMinStride))
       continue;
 
-    const SCEV *NextLSCEV = SE->getAddExpr(P.LSCEVAddRec, SE->getMulExpr(
-      SE->getConstant(P.LSCEVAddRec->getType(), ItersAhead),
-      P.LSCEVAddRec->getStepRecurrence(*SE)));
+    const SCEV *NextLSCEV = SE->getAddExpr(
+        P.LSCEVAddRec,
+        SE->getMulExpr(SE->getConstant(P.LSCEVAddRec->getType(), ItersAhead),
+                       P.LSCEVAddRec->getStepRecurrence(*SE)));
     if (!isSafeToExpand(NextLSCEV, *SE))
       continue;
 
     BasicBlock *BB = P.InsertPt->getParent();
-    Type *I8Ptr = Type::getInt8PtrTy(BB->getContext(), 0/*PtrAddrSpace*/);
+    Type *I8Ptr = Type::getInt8PtrTy(BB->getContext(), 0 /*PtrAddrSpace*/);
     SCEVExpander SCEVE(*SE, BB->getModule()->getDataLayout(), "prefaddr");
     Value *PrefPtrValue = SCEVE.expandCodeFor(NextLSCEV, I8Ptr, P.InsertPt);
 
     IRBuilder<> Builder(P.InsertPt);
     Module *M = BB->getParent()->getParent();
     Type *I32 = Type::getInt32Ty(BB->getContext());
-    Function *PrefetchFunc = Intrinsic::getDeclaration(
-        M, Intrinsic::prefetch, PrefPtrValue->getType());
-    Builder.CreateCall(
-        PrefetchFunc,
-        {PrefPtrValue,
-         ConstantInt::get(I32, P.Writes),
-         ConstantInt::get(I32, 3), ConstantInt::get(I32, 1)});
+    Function *PrefetchFunc = Intrinsic::getDeclaration(M, Intrinsic::prefetch,
+                                                       PrefPtrValue->getType());
+    Builder.CreateCall(PrefetchFunc,
+                       {PrefPtrValue, ConstantInt::get(I32, P.Writes),
+                        ConstantInt::get(I32, 3), ConstantInt::get(I32, 1)});
     ++NumPrefetches;
     LLVM_DEBUG(dbgs() << "  Access: "
-               << *P.MemI->getOperand(isa<LoadInst>(P.MemI) ? 0 : 1)
-               << ", SCEV: " << *P.LSCEVAddRec << "\n");
+                      << *P.MemI->getOperand(isa<LoadInst>(P.MemI) ? 0 : 1)
+                      << ", SCEV: " << *P.LSCEVAddRec << "\n");
     ORE->emit([&]() {
-        return OptimizationRemark(DEBUG_TYPE, "Prefetched", P.MemI)
-          << "prefetched memory access";
-      });
+      return OptimizationRemark(DEBUG_TYPE, "Prefetched", P.MemI)
+             << "prefetched memory access";
+    });
 
     MadeChange = true;
   }

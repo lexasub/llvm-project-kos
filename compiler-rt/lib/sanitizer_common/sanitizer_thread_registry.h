@@ -29,9 +29,9 @@ enum ThreadStatus {
 };
 
 enum class ThreadType {
-  Regular, // Normal thread
-  Worker,  // macOS Grand Central Dispatch (GCD) worker thread
-  Fiber,   // Fiber
+  Regular,  // Normal thread
+  Worker,   // macOS Grand Central Dispatch (GCD) worker thread
+  Fiber,    // Fiber
 };
 
 // Generic thread context. Specific sanitizer tools may inherit from it.
@@ -39,12 +39,12 @@ enum class ThreadType {
 class ThreadContextBase {
  public:
   explicit ThreadContextBase(u32 tid);
-  const u32 tid;  // Thread ID. Main thread should have tid = 0.
-  u64 unique_id;  // Unique thread ID.
+  const u32 tid;    // Thread ID. Main thread should have tid = 0.
+  u64 unique_id;    // Unique thread ID.
   u32 reuse_count;  // Number of times this tid was reused.
-  tid_t os_id;     // PID (used for reporting).
-  uptr user_id;   // Some opaque user thread id (e.g. pthread_t).
-  char name[64];  // As annotated by user.
+  tid_t os_id;      // PID (used for reporting).
+  uptr user_id;     // Some opaque user thread id (e.g. pthread_t).
+  char name[64];    // As annotated by user.
 
   ThreadStatus status;
   bool detached;
@@ -53,7 +53,7 @@ class ThreadContextBase {
   u32 parent_tid;
   ThreadContextBase *next;  // For storing thread contexts in a list.
 
-  atomic_uint32_t thread_destroyed; // To address race of Joined vs Finished
+  atomic_uint32_t thread_destroyed;  // To address race of Joined vs Finished
 
   void SetName(const char *new_name);
 
@@ -83,7 +83,7 @@ class ThreadContextBase {
   ~ThreadContextBase();
 };
 
-typedef ThreadContextBase* (*ThreadContextFactory)(u32 tid);
+typedef ThreadContextBase *(*ThreadContextFactory)(u32 tid);
 
 class ThreadRegistry {
  public:
@@ -118,8 +118,7 @@ class ThreadRegistry {
   u32 FindThread(FindThreadCallback cb, void *arg);
   // Should be guarded by ThreadRegistryLock. Return 0 if no thread
   // is found.
-  ThreadContextBase *FindThreadContextLocked(FindThreadCallback cb,
-                                             void *arg);
+  ThreadContextBase *FindThreadContextLocked(FindThreadCallback cb, void *arg);
   ThreadContextBase *FindThreadContextByOsIDLocked(tid_t os_id);
 
   void SetThreadName(u32 tid, const char *name);
@@ -156,6 +155,6 @@ class ThreadRegistry {
 
 typedef GenericScopedLock<ThreadRegistry> ThreadRegistryLock;
 
-} // namespace __sanitizer
+}  // namespace __sanitizer
 
-#endif // SANITIZER_THREAD_REGISTRY_H
+#endif  // SANITIZER_THREAD_REGISTRY_H

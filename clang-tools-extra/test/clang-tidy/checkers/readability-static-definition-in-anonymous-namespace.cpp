@@ -20,8 +20,8 @@ void f() {
 }
 
 static int g() {
-// CHECK-MESSAGES: :[[@LINE-1]]:12: warning: 'g' is a static definition in anonymous namespace
-// CHECK-FIXES: {{^}}int g() {
+  // CHECK-MESSAGES: :[[@LINE-1]]:12: warning: 'g' is a static definition in anonymous namespace
+  // CHECK-FIXES: {{^}}int g() {
   return 1;
 }
 

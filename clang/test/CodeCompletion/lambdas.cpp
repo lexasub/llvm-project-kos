@@ -2,7 +2,6 @@ template <class T>
 struct function {
 };
 
-
 void test() {
   void (*x)(int, double) = nullptr;
 
@@ -12,7 +11,7 @@ void test() {
   // CHECK-1: COMPLETION: Pattern : [<#=#>](int <#parameter#>, double <#parameter#>) { <#body#> }
 
   // == Placeholders for suffix types must be placed properly.
-  function<void(void(*)(int))> z = {};
+  function<void(void (*)(int))> z = {};
   // RUN: %clang_cc1 -fsyntax-only -code-completion-patterns -code-completion-at=%s:15:36 %s -o - | FileCheck -check-prefix=CHECK-2 %s
   // CHECK-2: COMPLETION: Pattern : [<#=#>](void (* <#parameter#>)(int)) { <#body#> }
 

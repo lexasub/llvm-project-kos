@@ -101,4 +101,4 @@ bool IsStackTraceSuppressed(const StackTrace *stack) {
   return false;
 }
 
-} // namespace __asan
+}  // namespace __asan

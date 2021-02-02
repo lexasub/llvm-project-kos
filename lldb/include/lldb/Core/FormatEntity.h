@@ -28,7 +28,7 @@ class Stream;
 class StringList;
 class SymbolContext;
 class ValueObject;
-}
+} // namespace lldb_private
 namespace llvm {
 class StringRef;
 }

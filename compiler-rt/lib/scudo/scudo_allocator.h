@@ -18,15 +18,15 @@
 namespace __scudo {
 
 enum AllocType : u8 {
-  FromMalloc    = 0,  // Memory block came from malloc, realloc, calloc, etc.
-  FromNew       = 1,  // Memory block came from operator new.
-  FromNewArray  = 2,  // Memory block came from operator new [].
-  FromMemalign  = 3,  // Memory block came from memalign, posix_memalign, etc.
+  FromMalloc = 0,   // Memory block came from malloc, realloc, calloc, etc.
+  FromNew = 1,      // Memory block came from operator new.
+  FromNewArray = 2, // Memory block came from operator new [].
+  FromMemalign = 3, // Memory block came from memalign, posix_memalign, etc.
 };
 
 enum ChunkState : u8 {
-  ChunkAvailable  = 0,
-  ChunkAllocated  = 1,
+  ChunkAvailable = 0,
+  ChunkAllocated = 1,
   ChunkQuarantine = 2
 };
 
@@ -37,16 +37,16 @@ enum ChunkState : u8 {
 // well. The header will be atomically loaded and stored.
 typedef u64 PackedHeader;
 struct UnpackedHeader {
-  u64 Checksum          : 16;
-  u64 ClassId           : 8;
-  u64 SizeOrUnusedBytes : 20;  // Size for Primary backed allocations, amount of
-                               // unused bytes in the chunk for Secondary ones.
-  u64 State             : 2;   // available, allocated, or quarantined
-  u64 AllocType         : 2;   // malloc, new, new[], or memalign
-  u64 Offset            : 16;  // Offset from the beginning of the backend
-                               // allocation to the beginning of the chunk
-                               // itself, in multiples of MinAlignment. See
-                               // comment about its maximum value and in init().
+  u64 Checksum : 16;
+  u64 ClassId : 8;
+  u64 SizeOrUnusedBytes : 20; // Size for Primary backed allocations, amount of
+                              // unused bytes in the chunk for Secondary ones.
+  u64 State : 2;              // available, allocated, or quarantined
+  u64 AllocType : 2;          // malloc, new, new[], or memalign
+  u64 Offset : 16;            // Offset from the beginning of the backend
+                              // allocation to the beginning of the chunk
+                              // itself, in multiples of MinAlignment. See
+                              // comment about its maximum value and in init().
 };
 
 typedef atomic_uint64_t AtomicPackedHeader;
@@ -54,7 +54,7 @@ COMPILER_CHECK(sizeof(UnpackedHeader) == sizeof(PackedHeader));
 
 // Minimum alignment of 8 bytes for 32-bit, 16 for 64-bit
 const uptr MinAlignmentLog = FIRST_32_SECOND_64(3, 4);
-const uptr MaxAlignmentLog = 24;  // 16 MB
+const uptr MaxAlignmentLog = 24; // 16 MB
 const uptr MinAlignment = 1 << MinAlignmentLog;
 const uptr MaxAlignment = 1 << MaxAlignmentLog;
 
@@ -65,10 +65,10 @@ constexpr uptr RoundUpTo(uptr Size, uptr Boundary) {
 }
 
 namespace Chunk {
-  constexpr uptr getHeaderSize() {
-    return RoundUpTo(sizeof(PackedHeader), MinAlignment);
-  }
+constexpr uptr getHeaderSize() {
+  return RoundUpTo(sizeof(PackedHeader), MinAlignment);
 }
+} // namespace Chunk
 
 #if SANITIZER_CAN_USE_ALLOCATOR64
 const uptr AllocatorSpace = ~0ULL;
@@ -97,7 +97,7 @@ struct AP32 {
       SizeClassAllocator32FlagMasks::kUseSeparateSizeClassForBatch;
 };
 typedef SizeClassAllocator32<AP32> PrimaryT;
-#endif  // SANITIZER_CAN_USE_ALLOCATOR64
+#endif // SANITIZER_CAN_USE_ALLOCATOR64
 
 #include "scudo_allocator_secondary.h"
 
@@ -120,6 +120,6 @@ int scudoPosixMemalign(void **MemPtr, uptr Alignment, uptr Size);
 void *scudoAlignedAlloc(uptr Alignment, uptr Size);
 uptr scudoMallocUsableSize(void *Ptr);
 
-}  // namespace __scudo
+} // namespace __scudo
 
-#endif  // SCUDO_ALLOCATOR_H_
+#endif // SCUDO_ALLOCATOR_H_

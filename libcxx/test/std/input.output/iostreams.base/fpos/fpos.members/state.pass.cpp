@@ -17,11 +17,10 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    std::fpos<int> f;
-    f.state(3);
-    assert(f.state() == 3);
+int main(int, char**) {
+  std::fpos<int> f;
+  f.state(3);
+  assert(f.state() == 3);
 
   return 0;
 }

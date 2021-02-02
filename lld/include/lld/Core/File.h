@@ -60,9 +60,7 @@ public:
   };
 
   /// Returns file kind.  Need for dyn_cast<> on File objects.
-  Kind kind() const {
-    return _kind;
-  }
+  Kind kind() const { return _kind; }
 
   /// This returns the path to the file which was used to create this object
   /// (e.g. "/tmp/foo.o"). If the file is a member of an archive file, the
@@ -96,14 +94,10 @@ public:
   void setOrdinal(uint64_t ordinal) const { _ordinal = ordinal; }
 
   /// Returns the ordinal for the next atom to be defined in this file.
-  uint64_t getNextAtomOrdinalAndIncrement() const {
-    return _nextAtomOrdinal++;
-  }
+  uint64_t getNextAtomOrdinalAndIncrement() const { return _nextAtomOrdinal++; }
 
   /// For allocating any objects owned by this File.
-  llvm::BumpPtrAllocator &allocator() const {
-    return _allocator;
-  }
+  llvm::BumpPtrAllocator &allocator() const { return _allocator; }
 
   /// The type of atom mutable container.
   template <typename T> using AtomVector = std::vector<OwningAtomPtr<T>>;
@@ -114,21 +108,18 @@ public:
     AtomRange(AtomVector<T> &v) : _v(v) {}
     AtomRange(const AtomVector<T> &v) : _v(const_cast<AtomVector<T> &>(v)) {}
 
-    using ConstDerefFn = const T* (*)(const OwningAtomPtr<T>&);
-    using DerefFn = T* (*)(OwningAtomPtr<T>&);
+    using ConstDerefFn = const T *(*)(const OwningAtomPtr<T> &);
+    using DerefFn = T *(*)(OwningAtomPtr<T> &);
 
     typedef llvm::mapped_iterator<typename AtomVector<T>::const_iterator,
-                                  ConstDerefFn> ConstItTy;
-    typedef llvm::mapped_iterator<typename AtomVector<T>::iterator,
-                                  DerefFn> ItTy;
+                                  ConstDerefFn>
+        ConstItTy;
+    typedef llvm::mapped_iterator<typename AtomVector<T>::iterator, DerefFn>
+        ItTy;
 
-    static const T* DerefConst(const OwningAtomPtr<T> &p) {
-      return p.get();
-    }
+    static const T *DerefConst(const OwningAtomPtr<T> &p) { return p.get(); }
 
-    static T* Deref(OwningAtomPtr<T> &p) {
-      return p.get();
-    }
+    static T *Deref(OwningAtomPtr<T> &p) { return p.get(); }
 
     ConstItTy begin() const {
       return ConstItTy(_v.begin(), ConstDerefFn(DerefConst));
@@ -137,12 +128,8 @@ public:
       return ConstItTy(_v.end(), ConstDerefFn(DerefConst));
     }
 
-    ItTy begin() {
-      return ItTy(_v.begin(), DerefFn(Deref));
-    }
-    ItTy end() {
-      return ItTy(_v.end(), DerefFn(Deref));
-    }
+    ItTy begin() { return ItTy(_v.begin(), DerefFn(Deref)); }
+    ItTy end() { return ItTy(_v.end(), DerefFn(Deref)); }
 
     llvm::iterator_range<typename AtomVector<T>::iterator> owning_ptrs() {
       return llvm::make_range(_v.begin(), _v.end());
@@ -152,21 +139,13 @@ public:
       return llvm::make_range(_v.begin(), _v.end());
     }
 
-    bool empty() const {
-      return _v.empty();
-    }
+    bool empty() const { return _v.empty(); }
 
-    size_t size() const {
-      return _v.size();
-    }
+    size_t size() const { return _v.size(); }
 
-    const OwningAtomPtr<T> &operator[](size_t idx) const {
-      return _v[idx];
-    }
+    const OwningAtomPtr<T> &operator[](size_t idx) const { return _v[idx]; }
 
-    OwningAtomPtr<T> &operator[](size_t idx) {
-      return _v[idx];
-    }
+    OwningAtomPtr<T> &operator[](size_t idx) { return _v[idx]; }
 
   private:
     AtomVector<T> &_v;
@@ -214,8 +193,7 @@ public:
 protected:
   /// only subclasses of File can be instantiated
   File(StringRef p, Kind kind)
-    : _path(p), _kind(kind), _ordinal(UINT64_MAX),
-      _nextAtomOrdinal(0) {}
+      : _path(p), _kind(kind), _ordinal(UINT64_MAX), _nextAtomOrdinal(0) {}
 
   /// Subclasses should override this method to parse the
   /// memory buffer passed to this file's constructor.
@@ -231,8 +209,8 @@ private:
   StringRef _path;
   std::string _archivePath;
   mutable std::string _archiveMemberPath;
-  Kind              _kind;
-  mutable uint64_t  _ordinal;
+  Kind _kind;
+  mutable uint64_t _ordinal;
   mutable uint64_t _nextAtomOrdinal;
   std::shared_ptr<MemoryBuffer> _sharedMemoryBuffer;
   llvm::Optional<std::error_code> _lastError;
@@ -264,8 +242,7 @@ public:
     llvm_unreachable("internal error");
   }
 
-  void clearAtoms() override {
-  }
+  void clearAtoms() override {}
 
 private:
   std::error_code _ec;

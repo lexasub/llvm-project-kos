@@ -23,32 +23,31 @@
 #include "test_convertible.h"
 #endif
 
-int main(int, char**)
-{
-    {
-        typedef std::bernoulli_distribution D;
-        D d;
-        assert(d.p() == 0.5);
-    }
-    {
-        typedef std::bernoulli_distribution D;
-        D d(0);
-        assert(d.p() == 0);
-    }
-    {
-        typedef std::bernoulli_distribution D;
-        D d(0.75);
-        assert(d.p() == 0.75);
-    }
+int main(int, char**) {
+  {
+    typedef std::bernoulli_distribution D;
+    D d;
+    assert(d.p() == 0.5);
+  }
+  {
+    typedef std::bernoulli_distribution D;
+    D d(0);
+    assert(d.p() == 0);
+  }
+  {
+    typedef std::bernoulli_distribution D;
+    D d(0.75);
+    assert(d.p() == 0.75);
+  }
 
 #if TEST_STD_VER >= 11
-    {
-      typedef std::bernoulli_distribution D;
-      static_assert(test_convertible<D>(), "");
-      assert(D(0.5) == make_implicit<D>());
-      static_assert(!test_convertible<D, double>(), "");
-    }
+  {
+    typedef std::bernoulli_distribution D;
+    static_assert(test_convertible<D>(), "");
+    assert(D(0.5) == make_implicit<D>());
+    static_assert(!test_convertible<D, double>(), "");
+  }
 #endif
 
-    return 0;
+  return 0;
 }

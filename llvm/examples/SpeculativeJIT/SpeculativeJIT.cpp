@@ -103,7 +103,8 @@ private:
       IndirectStubsManagerBuilderFunction ISMBuilder,
       std::unique_ptr<DynamicLibrarySearchGenerator> ProcessSymbolsGenerator)
       : ES(std::move(ES)), DL(std::move(DL)),
-        MainJD(this->ES->createBareJITDylib("<main>")), LCTMgr(std::move(LCTMgr)),
+        MainJD(this->ES->createBareJITDylib("<main>")),
+        LCTMgr(std::move(LCTMgr)),
         CompileLayer(*this->ES, ObjLayer,
                      std::make_unique<ConcurrentIRCompiler>(std::move(JTMB))),
         S(Imps, *this->ES),

@@ -1,40 +1,56 @@
 // RUN: %check_clang_tidy %s misc-unused-using-decls %t -- -- -fno-delayed-template-parsing -isystem %S/Inputs/
 
-
 // ----- Definitions -----
-template <typename T> class vector {};
+template <typename T>
+class vector {};
 namespace n {
 class A;
 class B;
 class C;
 class D;
-class D { public: static int i; };
-template <typename T> class E {};
-template <typename T> class F {};
-class G { public: static void func() {} };
-class H { public: static int i; };
+class D {
+public:
+  static int i;
+};
+template <typename T>
+class E {};
+template <typename T>
+class F {};
+class G {
+public:
+  static void func() {}
+};
+class H {
+public:
+  static int i;
+};
 class I {
- public:
+public:
   static int ii;
 };
-template <typename T> class J {};
+template <typename T>
+class J {};
 class G;
 class H;
 
-template <typename T> class K {};
+template <typename T>
+class K {};
 template <template <typename> class S>
 class L {};
 
-template <typename T> class M {};
+template <typename T>
+class M {};
 class N {};
 
-template <int T> class P {};
+template <int T>
+class P {};
 const int Constant = 0;
 
-template <typename T> class Q {};
+template <typename T>
+class Q {};
 
 class Base {
- public:
+public:
   void f();
 };
 
@@ -43,9 +59,12 @@ D UnusedInstance;
 
 int UsedFunc() { return 1; }
 int UnusedFunc() { return 1; }
-template <typename T> int UsedTemplateFunc() { return 1; }
-template <typename T> int UnusedTemplateFunc() { return 1; }
-template <typename T> int UsedInTemplateFunc() { return 1; }
+template <typename T>
+int UsedTemplateFunc() { return 1; }
+template <typename T>
+int UnusedTemplateFunc() { return 1; }
+template <typename T>
+int UsedInTemplateFunc() { return 1; }
 void OverloadFunc(int);
 void OverloadFunc(double);
 int FuncUsedByUsingDeclInMacro() { return 1; }
@@ -65,7 +84,7 @@ enum Color3 { Yellow };
 
 enum Color4 { Blue };
 
-}  // namespace n
+} // namespace n
 
 #include "unused-using-decls.h"
 namespace ns {
@@ -74,7 +93,10 @@ class AA {
   T t;
 };
 template <typename T>
-T ff() { T t; return t; }
+T ff() {
+  T t;
+  return t;
+}
 } // namespace ns
 
 // ----- Using declarations -----
@@ -95,13 +117,13 @@ using n::H;
 using n::I;
 int I::ii = 1;
 class Derived : public n::Base {
- public:
+public:
   using Base::f;
 };
-using n::UsedInstance;
-using n::UsedFunc;
-using n::UsedTemplateFunc;
 using n::UnusedInstance; // UnusedInstance
+using n::UsedFunc;
+using n::UsedInstance;
+using n::UsedTemplateFunc;
 // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: using decl 'UnusedInstance' is unused
 // CHECK-FIXES: {{^}}// UnusedInstance
 using n::UnusedFunc; // UnusedFunc
@@ -110,9 +132,10 @@ using n::UnusedFunc; // UnusedFunc
 using n::cout;
 using n::endl;
 
-using n::UsedInTemplateFunc;
 using n::J;
-template <typename T> void Callee() {
+using n::UsedInTemplateFunc;
+template <typename T>
+void Callee() {
   J<T> j;
   UsedInTemplateFunc<T>();
 }
@@ -140,25 +163,25 @@ namespace N1 {
 // using-decls will be marked as used once we see an usage even the usage is in
 // other scope.
 using n::G;
-}
+} // namespace N1
 
 namespace N2 {
 using n::G;
 void f(G g);
-}
+} // namespace N2
 
 void IgnoreFunctionScope() {
-// Using-decls defined in function scope will be ignored.
-using n::H;
+  // Using-decls defined in function scope will be ignored.
+  using n::H;
 }
 
 using n::Color1;
 // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: using decl 'Color1' is unused
 using n::Green;
 // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: using decl 'Green' is unused
+using n::Blue;
 using n::Color2;
 using n::Color3;
-using n::Blue;
 
 using ns::AA;
 using ns::ff;
@@ -197,17 +220,18 @@ void g() {
   n::L<K> l;
 }
 
-template<class T>
-void h(n::M<T>* t) {}
+template <class T>
+void h(n::M<T> *t) {}
 // n::N is used the explicit template instantiation.
-template void h(n::M<N>* t);
+template void h(n::M<N> *t);
 
 // Test on Non-type template arguments.
 template <int T>
-void i(n::P<T>* t) {}
-template void i(n::P<Constant>* t);
+void i(n::P<T> *t) {}
+template void i(n::P<Constant> *t);
 
-template <typename T, template <typename> class U> class Bar {};
+template <typename T, template <typename> class U>
+class Bar {};
 // We used to report Q unsued, because we only checked the first template
 // argument.
 Bar<int, Q> *bar;

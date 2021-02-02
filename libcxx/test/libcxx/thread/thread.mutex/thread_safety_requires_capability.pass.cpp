@@ -24,9 +24,7 @@
 std::mutex m;
 int foo __attribute__((guarded_by(m)));
 
-void increment() __attribute__((requires_capability(m))) {
-  foo++;
-}
+void increment() __attribute__((requires_capability(m))) { foo++; }
 
 int main(int, char**) {
   m.lock();

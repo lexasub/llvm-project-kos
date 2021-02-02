@@ -1,6 +1,5 @@
 #include <stdio.h>
-int main ()
-{
+int main() {
   puts("running"); // breakpoint here
   return 0;
 }

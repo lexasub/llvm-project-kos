@@ -27,17 +27,45 @@ OptionGroupFormat::OptionGroupFormat(lldb::Format default_format,
 OptionGroupFormat::~OptionGroupFormat() {}
 
 static constexpr OptionDefinition g_option_table[] = {
-    {LLDB_OPT_SET_1, false, "format", 'f', OptionParser::eRequiredArgument,
-     nullptr, {}, 0, eArgTypeFormat,
+    {LLDB_OPT_SET_1,
+     false,
+     "format",
+     'f',
+     OptionParser::eRequiredArgument,
+     nullptr,
+     {},
+     0,
+     eArgTypeFormat,
      "Specify a format to be used for display."},
-    {LLDB_OPT_SET_2, false, "gdb-format", 'G', OptionParser::eRequiredArgument,
-     nullptr, {}, 0, eArgTypeGDBFormat,
+    {LLDB_OPT_SET_2,
+     false,
+     "gdb-format",
+     'G',
+     OptionParser::eRequiredArgument,
+     nullptr,
+     {},
+     0,
+     eArgTypeGDBFormat,
      "Specify a format using a GDB format specifier string."},
-    {LLDB_OPT_SET_3, false, "size", 's', OptionParser::eRequiredArgument,
-     nullptr, {}, 0, eArgTypeByteSize,
+    {LLDB_OPT_SET_3,
+     false,
+     "size",
+     's',
+     OptionParser::eRequiredArgument,
+     nullptr,
+     {},
+     0,
+     eArgTypeByteSize,
      "The size in bytes to use when displaying with the selected format."},
-    {LLDB_OPT_SET_4, false, "count", 'c', OptionParser::eRequiredArgument,
-     nullptr, {}, 0, eArgTypeCount,
+    {LLDB_OPT_SET_4,
+     false,
+     "count",
+     'c',
+     OptionParser::eRequiredArgument,
+     nullptr,
+     {},
+     0,
+     eArgTypeCount,
      "The number of total items to display."},
 };
 
@@ -229,31 +257,28 @@ bool OptionGroupFormat::ParserGDBFormatLetter(
   case 'b':
   case 'h':
   case 'w':
-  case 'g':
-    {
-      // Size isn't used for printing instructions, so if a size is specified,
-      // and the previous format was 'i', then we should reset it to the
-      // default ('x').  Otherwise we'll continue to print as instructions,
-      // which isn't expected.
-      if (format_letter == 'b')
-          byte_size = 1;
-      else if (format_letter == 'h')
-          byte_size = 2;
-      else if (format_letter == 'w')
-          byte_size = 4;
-      else if (format_letter == 'g')
-          byte_size = 8;
+  case 'g': {
+    // Size isn't used for printing instructions, so if a size is specified,
+    // and the previous format was 'i', then we should reset it to the
+    // default ('x').  Otherwise we'll continue to print as instructions,
+    // which isn't expected.
+    if (format_letter == 'b')
+      byte_size = 1;
+    else if (format_letter == 'h')
+      byte_size = 2;
+    else if (format_letter == 'w')
+      byte_size = 4;
+    else if (format_letter == 'g')
+      byte_size = 8;
 
-        m_prev_gdb_size = format_letter;
-        if (m_prev_gdb_format == 'i')
-          m_prev_gdb_format = 'x';
-        return true;
-    }
-    break;
+    m_prev_gdb_size = format_letter;
+    if (m_prev_gdb_format == 'i')
+      m_prev_gdb_format = 'x';
+    return true;
+  } break;
   default:
     break;
   }
-
 
   return false;
 }

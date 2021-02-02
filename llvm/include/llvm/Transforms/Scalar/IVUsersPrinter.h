@@ -24,6 +24,6 @@ public:
   PreservedAnalyses run(Loop &L, LoopAnalysisManager &AM,
                         LoopStandardAnalysisResults &AR, LPMUpdater &U);
 };
-}
+} // namespace llvm
 
 #endif

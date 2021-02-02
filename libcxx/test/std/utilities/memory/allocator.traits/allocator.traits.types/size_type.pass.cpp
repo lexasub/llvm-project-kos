@@ -21,56 +21,57 @@
 #include "test_macros.h"
 
 template <class T>
-struct A
-{
-    typedef T value_type;
-    typedef unsigned short size_type;
+struct A {
+  typedef T value_type;
+  typedef unsigned short size_type;
 };
 
 template <class T>
-struct B
-{
-    typedef T value_type;
+struct B {
+  typedef T value_type;
 };
 
 template <class T>
-struct C
-{
-    typedef T value_type;
-    struct pointer {};
-    struct const_pointer {};
-    struct void_pointer {};
-    struct const_void_pointer {};
+struct C {
+  typedef T value_type;
+  struct pointer {};
+  struct const_pointer {};
+  struct void_pointer {};
+  struct const_void_pointer {};
 };
 
 template <class T>
 struct D {
-    typedef T value_type;
-    typedef short difference_type;
+  typedef T value_type;
+  typedef short difference_type;
+
 private:
-    typedef void size_type;
+  typedef void size_type;
 };
 
-namespace std
-{
+namespace std {
 
 template <>
-struct pointer_traits<C<char>::pointer>
-{
-    typedef signed char difference_type;
+struct pointer_traits<C<char>::pointer> {
+  typedef signed char difference_type;
 };
 
-}
+} // namespace std
 
-int main(int, char**)
-{
-    static_assert((std::is_same<std::allocator_traits<A<char> >::size_type, unsigned short>::value), "");
-    static_assert((std::is_same<std::allocator_traits<B<char> >::size_type,
-                   std::make_unsigned<std::ptrdiff_t>::type>::value), "");
-    static_assert((std::is_same<std::allocator_traits<C<char> >::size_type,
-                   unsigned char>::value), "");
+int main(int, char**) {
+  static_assert((std::is_same<std::allocator_traits<A<char> >::size_type,
+                              unsigned short>::value),
+                "");
+  static_assert((std::is_same<std::allocator_traits<B<char> >::size_type,
+                              std::make_unsigned<std::ptrdiff_t>::type>::value),
+                "");
+  static_assert((std::is_same<std::allocator_traits<C<char> >::size_type,
+                              unsigned char>::value),
+                "");
 #if TEST_STD_VER >= 11
-    static_assert((std::is_same<std::allocator_traits<D<char> >::size_type, unsigned short>::value), "");
+  static_assert((std::is_same<std::allocator_traits<D<char> >::size_type,
+                              unsigned short>::value),
+                "");
 #endif
 
   return 0;

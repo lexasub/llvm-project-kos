@@ -64,7 +64,7 @@ struct BreakpointPrinter : public ModulePass {
 };
 
 char BreakpointPrinter::ID = 0;
-}
+} // namespace
 
 ModulePass *llvm::createBreakpointPrinter(raw_ostream &out) {
   return new BreakpointPrinter(out);

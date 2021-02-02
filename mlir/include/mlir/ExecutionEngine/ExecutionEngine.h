@@ -23,7 +23,8 @@
 #include <memory>
 
 namespace llvm {
-template <typename T> class Expected;
+template <typename T>
+class Expected;
 class Module;
 class ExecutionEngine;
 class JITEventListener;

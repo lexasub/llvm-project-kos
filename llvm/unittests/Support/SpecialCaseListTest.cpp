@@ -157,8 +157,8 @@ TEST_F(SpecialCaseListTest, InvalidSpecialCaseList) {
   EXPECT_EQ("malformed regex in line 1: 'bad[a-': invalid character range",
             Error);
   EXPECT_EQ(nullptr, makeSpecialCaseList("src:a.c\n"
-                                   "fun:fun(a\n",
-                                   Error));
+                                         "fun:fun(a\n",
+                                         Error));
   EXPECT_EQ("malformed regex in line 2: 'fun(a': parentheses not balanced",
             Error);
   std::vector<std::string> Files(1, "unexisting");
@@ -209,8 +209,9 @@ TEST_F(SpecialCaseListTest, NoTrigramsInARule) {
 }
 
 TEST_F(SpecialCaseListTest, RepetitiveRule) {
-  std::unique_ptr<SpecialCaseList> SCL = makeSpecialCaseList("fun:*bar*bar*bar*bar*\n"
-                                                             "fun:bar*\n");
+  std::unique_ptr<SpecialCaseList> SCL =
+      makeSpecialCaseList("fun:*bar*bar*bar*bar*\n"
+                          "fun:bar*\n");
   EXPECT_TRUE(SCL->inSection("", "fun", "bara"));
   EXPECT_FALSE(SCL->inSection("", "fun", "abara"));
   EXPECT_TRUE(SCL->inSection("", "fun", "barbarbarbar"));
@@ -219,7 +220,8 @@ TEST_F(SpecialCaseListTest, RepetitiveRule) {
 }
 
 TEST_F(SpecialCaseListTest, SpecialSymbolRule) {
-  std::unique_ptr<SpecialCaseList> SCL = makeSpecialCaseList("src:*c\\+\\+abi*\n");
+  std::unique_ptr<SpecialCaseList> SCL =
+      makeSpecialCaseList("src:*c\\+\\+abi*\n");
   EXPECT_TRUE(SCL->inSection("", "src", "c++abi"));
   EXPECT_FALSE(SCL->inSection("", "src", "c\\+\\+abi"));
 }
@@ -235,8 +237,9 @@ TEST_F(SpecialCaseListTest, PopularTrigram) {
 }
 
 TEST_F(SpecialCaseListTest, EscapedSymbols) {
-  std::unique_ptr<SpecialCaseList> SCL = makeSpecialCaseList("src:*c\\+\\+abi*\n"
-                                                             "src:*hello\\\\world*\n");
+  std::unique_ptr<SpecialCaseList> SCL =
+      makeSpecialCaseList("src:*c\\+\\+abi*\n"
+                          "src:*hello\\\\world*\n");
   EXPECT_TRUE(SCL->inSection("", "src", "dir/c++abi"));
   EXPECT_FALSE(SCL->inSection("", "src", "dir/c\\+\\+abi"));
   EXPECT_FALSE(SCL->inSection("", "src", "c\\+\\+abi"));
@@ -245,4 +248,4 @@ TEST_F(SpecialCaseListTest, EscapedSymbols) {
   EXPECT_FALSE(SCL->inSection("", "src", "hello\\\\world"));
 }
 
-}
+} // namespace

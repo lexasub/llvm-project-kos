@@ -47,8 +47,7 @@ private:
   HardcodedFormatters::HardcodedSummaryFinder m_hardcoded_summaries;
   HardcodedFormatters::HardcodedSyntheticFinder m_hardcoded_synthetics;
 
-  template <typename ImplSP>
-  auto &GetHardcodedFinder();
+  template <typename ImplSP> auto &GetHardcodedFinder();
 
   lldb_private::FormatCache m_format_cache;
 

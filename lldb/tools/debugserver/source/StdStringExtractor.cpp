@@ -10,7 +10,6 @@
 
 #include <stdlib.h>
 
-
 static inline int xdigit_to_sint(char ch) {
   if (ch >= 'a' && ch <= 'f')
     return 10 + ch - 'a';

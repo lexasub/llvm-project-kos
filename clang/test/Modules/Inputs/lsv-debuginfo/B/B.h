@@ -10,5 +10,5 @@ struct S {
 class C {
   Optional<S> S;
 };
-}
+} // namespace llvm
 #endif

@@ -178,8 +178,8 @@ private:
           TrampolineMem + (I * ORCABI::TrampolineSize)));
 
     if (auto EC = sys::Memory::protectMappedMemory(
-                    TrampolineBlock.getMemoryBlock(),
-                    sys::Memory::MF_READ | sys::Memory::MF_EXEC))
+            TrampolineBlock.getMemoryBlock(),
+            sys::Memory::MF_READ | sys::Memory::MF_EXEC))
       return errorCodeToError(EC);
 
     TrampolineBlocks.push_back(std::move(TrampolineBlock));
@@ -290,7 +290,8 @@ public:
   /// Find the stub with the given name. If ExportedStubsOnly is true,
   ///        this will only return a result if the stub's flags indicate that it
   ///        is exported.
-  virtual JITEvaluatedSymbol findStub(StringRef Name, bool ExportedStubsOnly) = 0;
+  virtual JITEvaluatedSymbol findStub(StringRef Name,
+                                      bool ExportedStubsOnly) = 0;
 
   /// Find the implementation-pointer for the stub.
   virtual JITEvaluatedSymbol findPointer(StringRef Name) = 0;

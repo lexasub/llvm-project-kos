@@ -30,7 +30,7 @@ static bool stripDeadPrototypes(Module &M) {
   bool MadeChange = false;
 
   // Erase dead function prototypes.
-  for (Module::iterator I = M.begin(), E = M.end(); I != E; ) {
+  for (Module::iterator I = M.begin(), E = M.end(); I != E;) {
     Function *F = &*I++;
     // Function must be a prototype and unused.
     if (F->isDeclaration() && F->use_empty()) {
@@ -42,7 +42,7 @@ static bool stripDeadPrototypes(Module &M) {
 
   // Erase dead global var prototypes.
   for (Module::global_iterator I = M.global_begin(), E = M.global_end();
-       I != E; ) {
+       I != E;) {
     GlobalVariable *GV = &*I++;
     // Global must be a prototype and unused.
     if (GV->isDeclaration() && GV->use_empty())

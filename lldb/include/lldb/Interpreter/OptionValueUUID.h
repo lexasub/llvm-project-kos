@@ -9,8 +9,8 @@
 #ifndef LLDB_INTERPRETER_OPTIONVALUEUUID_H
 #define LLDB_INTERPRETER_OPTIONVALUEUUID_H
 
-#include "lldb/Utility/UUID.h"
 #include "lldb/Interpreter/OptionValue.h"
+#include "lldb/Utility/UUID.h"
 
 namespace lldb_private {
 

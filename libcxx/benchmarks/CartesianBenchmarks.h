@@ -6,7 +6,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-
 #include <string>
 #include <tuple>
 #include <type_traits>
@@ -22,7 +21,7 @@ struct EnumValue : std::integral_constant<E, static_cast<E>(I)> {
   static std::string name() { return std::string("_") + D::Names[I]; }
 };
 
-template <class D, class E, size_t ...Idxs>
+template <class D, class E, size_t... Idxs>
 constexpr auto makeEnumValueTuple(std::index_sequence<Idxs...>) {
   return std::make_tuple(EnumValue<D, E, Idxs>{}...);
 }
@@ -57,8 +56,8 @@ void makeBenchmarkImpl(const Args& A, std::tuple<U...> t) {
   makeBenchmarkFromValues<B<U...> >(A);
 }
 
-template <template <class...> class B, class Args, class... U,
-          class... T, class... Tuples>
+template <template <class...> class B, class Args, class... U, class... T,
+          class... Tuples>
 void makeBenchmarkImpl(const Args& A, std::tuple<U...>, std::tuple<T...>,
                        Tuples... rest) {
   (internal::makeBenchmarkImpl<B>(A, std::tuple<U..., T>(), rest...), ...);
@@ -78,7 +77,7 @@ void allValueCombinations(R& Result, const T& Prev, const V& Value,
   }
 }
 
-}  // namespace internal
+} // namespace internal
 
 // CRTP class that enables using enum types as a dimension for
 // makeCartesianProductBenchmark below.
@@ -128,6 +127,7 @@ int makeCartesianProductBenchmark(const Args&... A) {
 // It returns `value`.
 template <class T>
 TEST_ALWAYS_INLINE inline T maybeOpaque(T value, bool opaque) {
-  if (opaque) benchmark::DoNotOptimize(value);
+  if (opaque)
+    benchmark::DoNotOptimize(value);
   return value;
 }

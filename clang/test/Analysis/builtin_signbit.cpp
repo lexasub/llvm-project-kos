@@ -5,8 +5,7 @@
 bool b;
 double d = -1.0;
 long double ld = -1.0L;
-void test_signbit()
-{
+void test_signbit() {
   b = __builtin_signbit(1.0L);
   // CHECK: i128
   // CHECK-LE-NOT: lshr

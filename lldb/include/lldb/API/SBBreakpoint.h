@@ -17,7 +17,6 @@ namespace lldb {
 
 class LLDB_API SBBreakpoint {
 public:
-
   SBBreakpoint();
 
   SBBreakpoint(const lldb::SBBreakpoint &rhs);
@@ -97,7 +96,7 @@ public:
   void SetScriptCallbackFunction(const char *callback_function_name);
 
   SBError SetScriptCallbackFunction(const char *callback_function_name,
-                                 SBStructuredData &extra_args);
+                                    SBStructuredData &extra_args);
 
   void SetCommandLineCommands(SBStringList &commands);
 
@@ -140,8 +139,7 @@ public:
   bool IsHardware() const;
 
   // Can only be called from a ScriptedBreakpointResolver...
-  SBError
-  AddLocation(SBAddress &address);
+  SBError AddLocation(SBAddress &address);
 
   SBStructuredData SerializeToStructuredData();
 

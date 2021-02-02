@@ -46,6 +46,6 @@ struct MemorySanitizerPass : public PassInfoMixin<MemorySanitizerPass> {
 private:
   MemorySanitizerOptions Options;
 };
-}
+} // namespace llvm
 
 #endif /* LLVM_TRANSFORMS_INSTRUMENTATION_MEMORYSANITIZER_H */

@@ -115,9 +115,7 @@ struct FunctionInfo {
   /// address and name will be filled in.
   ///
   /// \returns A boolean indicating if this FunctionInfo is valid.
-  bool isValid() const {
-    return Name != 0;
-  }
+  bool isValid() const { return Name != 0; }
 
   /// Decode an object from a binary data stream.
   ///
@@ -143,7 +141,6 @@ struct FunctionInfo {
   /// function info that was successfully written into the stream.
   llvm::Expected<uint64_t> encode(FileWriter &O) const;
 
-
   /// Lookup an address within a FunctionInfo object's data stream.
   ///
   /// Instead of decoding an entire FunctionInfo object when doing lookups,
@@ -167,8 +164,7 @@ struct FunctionInfo {
   /// address is not contained in the FunctionInfo or if the data is corrupted.
   static llvm::Expected<LookupResult> lookup(DataExtractor &Data,
                                              const GsymReader &GR,
-                                             uint64_t FuncAddr,
-                                             uint64_t Addr);
+                                             uint64_t FuncAddr, uint64_t Addr);
 
   uint64_t startAddress() const { return Range.Start; }
   uint64_t endAddress() const { return Range.End; }
@@ -195,8 +191,8 @@ inline bool operator!=(const FunctionInfo &LHS, const FunctionInfo &RHS) {
 /// This sorting will order things consistently by address range first, but then
 /// followed by inlining being valid and line tables. We might end up with a
 /// FunctionInfo from debug info that will have the same range as one from the
-/// symbol table, but we want to quickly be able to sort and use the best version
-/// when creating the final GSYM file.
+/// symbol table, but we want to quickly be able to sort and use the best
+/// version when creating the final GSYM file.
 inline bool operator<(const FunctionInfo &LHS, const FunctionInfo &RHS) {
   // First sort by address range
   if (LHS.Range != RHS.Range)

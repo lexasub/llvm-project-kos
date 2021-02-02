@@ -51,7 +51,7 @@ Context &getContext() {
   static Context Ctxt;
   return Ctxt;
 }
-}
+} // namespace
 
 void verifyEncoding(MCDwarfLineTableParams Params, int LineDelta, int AddrDelta,
                     ArrayRef<uint8_t> ExpectedEncoding) {

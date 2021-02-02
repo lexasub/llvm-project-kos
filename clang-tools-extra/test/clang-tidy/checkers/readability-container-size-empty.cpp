@@ -1,21 +1,23 @@
 // RUN: %check_clang_tidy %s readability-container-size-empty %t -- -- -fno-delayed-template-parsing
 
 namespace std {
-template <typename T> struct vector {
+template <typename T>
+struct vector {
   vector();
-  bool operator==(const vector<T>& other) const;
-  bool operator!=(const vector<T>& other) const;
+  bool operator==(const vector<T> &other) const;
+  bool operator!=(const vector<T> &other) const;
   unsigned long size() const;
   bool empty() const;
 };
 
-template <typename T> struct basic_string {
+template <typename T>
+struct basic_string {
   basic_string();
-  bool operator==(const basic_string<T>& other) const;
-  bool operator!=(const basic_string<T>& other) const;
+  bool operator==(const basic_string<T> &other) const;
+  bool operator!=(const basic_string<T> &other) const;
   bool operator==(const char *) const;
   bool operator!=(const char *) const;
-  basic_string<T> operator+(const basic_string<T>& other) const;
+  basic_string<T> operator+(const basic_string<T> &other) const;
   unsigned long size() const;
   bool empty() const;
 };
@@ -24,22 +26,23 @@ typedef basic_string<char> string;
 typedef basic_string<wchar_t> wstring;
 
 inline namespace __v2 {
-template <typename T> struct set {
+template <typename T>
+struct set {
   set();
-  bool operator==(const set<T>& other) const;
-  bool operator!=(const set<T>& other) const;
+  bool operator==(const set<T> &other) const;
+  bool operator!=(const set<T> &other) const;
   unsigned long size() const;
   bool empty() const;
 };
-}
+} // namespace __v2
 
-}
+} // namespace std
 
 template <typename T>
 class TemplatedContainer {
 public:
-  bool operator==(const TemplatedContainer<T>& other) const;
-  bool operator!=(const TemplatedContainer<T>& other) const;
+  bool operator==(const TemplatedContainer<T> &other) const;
+  bool operator!=(const TemplatedContainer<T> &other) const;
   int size() const;
   bool empty() const;
 };
@@ -47,9 +50,10 @@ public:
 template <typename T>
 class PrivateEmpty {
 public:
-  bool operator==(const PrivateEmpty<T>& other) const;
-  bool operator!=(const PrivateEmpty<T>& other) const;
+  bool operator==(const PrivateEmpty<T> &other) const;
+  bool operator!=(const PrivateEmpty<T> &other) const;
   int size() const;
+
 private:
   bool empty() const;
 };
@@ -67,7 +71,7 @@ struct EnumSize {
 
 class Container {
 public:
-  bool operator==(const Container& other) const;
+  bool operator==(const Container &other) const;
   int size() const;
   bool empty() const;
 };
@@ -91,7 +95,7 @@ bool Container3::empty() const { return this->size() == 0; }
 
 class Container4 {
 public:
-  bool operator==(const Container4& rhs) const;
+  bool operator==(const Container4 &rhs) const;
   int size() const;
   bool empty() const { return *this == Container4(); }
 };
@@ -105,9 +109,7 @@ std::string s_func() {
   return std::string();
 }
 
-void takesBool(bool)
-{
-
+void takesBool(bool) {
 }
 
 bool returnsBool() {
@@ -447,26 +449,27 @@ bool returnsBool() {
 
 class ConstructWithBoolField {
   bool B;
+
 public:
   ConstructWithBoolField(const std::vector<int> &C) : B(C.size()) {}
-// CHECK-MESSAGES: :[[@LINE-1]]:57: warning: the 'empty' method should be used
-// CHECK-MESSAGES: :9:8: note: method 'vector'::empty() defined here
-// CHECK-FIXES: {{^  }}ConstructWithBoolField(const std::vector<int> &C) : B(!C.empty()) {}
+  // CHECK-MESSAGES: :[[@LINE-1]]:57: warning: the 'empty' method should be used
+  // CHECK-MESSAGES: :9:8: note: method 'vector'::empty() defined here
+  // CHECK-FIXES: {{^  }}ConstructWithBoolField(const std::vector<int> &C) : B(!C.empty()) {}
 };
 
 struct StructWithNSDMI {
   std::vector<int> C;
   bool B = C.size();
-// CHECK-MESSAGES: :[[@LINE-1]]:12: warning: the 'empty' method should be used
-// CHECK-MESSAGES: :9:8: note: method 'vector'::empty() defined here
-// CHECK-FIXES: {{^  }}bool B = !C.empty();
+  // CHECK-MESSAGES: :[[@LINE-1]]:12: warning: the 'empty' method should be used
+  // CHECK-MESSAGES: :9:8: note: method 'vector'::empty() defined here
+  // CHECK-FIXES: {{^  }}bool B = !C.empty();
 };
 
 int func(const std::vector<int> &C) {
   return C.size() ? 0 : 1;
-// CHECK-MESSAGES: :[[@LINE-1]]:10: warning: the 'empty' method should be used
-// CHECK-MESSAGES: :9:8: note: method 'vector'::empty() defined here
-// CHECK-FIXES: {{^  }}return !C.empty() ? 0 : 1;
+  // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: the 'empty' method should be used
+  // CHECK-MESSAGES: :9:8: note: method 'vector'::empty() defined here
+  // CHECK-FIXES: {{^  }}return !C.empty() ? 0 : 1;
 }
 
 constexpr Lazy L;
@@ -477,15 +480,18 @@ static_assert(!L.size(), "");
 
 struct StructWithLazyNoexcept {
   void func() noexcept(L.size());
-// CHECK-MESSAGES: :[[@LINE-1]]:24: warning: the 'empty' method should be used
-// CHECK-MESSAGES: :101:18: note: method 'Lazy'::empty() defined here
-// CHECK-FIXES: {{^  }}void func() noexcept(!L.empty());
+  // CHECK-MESSAGES: :[[@LINE-1]]:24: warning: the 'empty' method should be used
+  // CHECK-MESSAGES: :101:18: note: method 'Lazy'::empty() defined here
+  // CHECK-FIXES: {{^  }}void func() noexcept(!L.empty());
 };
 
-#define CHECKSIZE(x) if (x.size()) {}
+#define CHECKSIZE(x) \
+  if (x.size()) {    \
+  }
 // CHECK-FIXES: #define CHECKSIZE(x) if (x.size()) {}
 
-template <typename T> void f() {
+template <typename T>
+void f() {
   std::vector<T> v;
   if (v.size())
     ;
@@ -604,8 +610,7 @@ bool neverInstantiatedTemplate() {
   // CHECK-FIXES: {{^  }}while (!templated_container.empty()){{$}}
 
   do {
-  }
-  while (templated_container.size());
+  } while (templated_container.size());
   // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: the 'empty' method should be used
   // CHECK-MESSAGES: :44:8: note: method 'TemplatedContainer'::empty() defined here
   // CHECK-FIXES: {{^  }}while (!templated_container.empty());

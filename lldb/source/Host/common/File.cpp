@@ -512,7 +512,8 @@ Status NativeFile::Read(void *buf, size_t &num_bytes) {
 
   ssize_t bytes_read = -1;
   if (DescriptorIsValid()) {
-    bytes_read = llvm::sys::RetryAfterSignal(-1, ::read, m_descriptor, buf, num_bytes);
+    bytes_read =
+        llvm::sys::RetryAfterSignal(-1, ::read, m_descriptor, buf, num_bytes);
     if (bytes_read == -1) {
       error.SetErrorToErrno();
       num_bytes = 0;
@@ -694,8 +695,8 @@ Status NativeFile::Write(const void *buf, size_t &num_bytes, off_t &offset) {
   int fd = GetDescriptor();
   if (fd != kInvalidDescriptor) {
 #ifndef _WIN32
-    ssize_t bytes_written =
-        llvm::sys::RetryAfterSignal(-1, ::pwrite, m_descriptor, buf, num_bytes, offset);
+    ssize_t bytes_written = llvm::sys::RetryAfterSignal(
+        -1, ::pwrite, m_descriptor, buf, num_bytes, offset);
     if (bytes_written < 0) {
       num_bytes = 0;
       error.SetErrorToErrno();

@@ -48,9 +48,9 @@ class SmallBitVector {
     // A few more bits are used to store the size of the bit set in small mode.
     // Theoretically this is a ceil-log2. These bits are encoded in the most
     // significant bits of the raw bits.
-    SmallNumSizeBits = (NumBaseBits == 32 ? 5 :
-                        NumBaseBits == 64 ? 6 :
-                        SmallNumRawBits),
+    SmallNumSizeBits = (NumBaseBits == 32   ? 5
+                        : NumBaseBits == 64 ? 6
+                                            : SmallNumRawBits),
 
     // The remaining bits are used to store the actual set in small mode.
     SmallNumDataBits = SmallNumRawBits - SmallNumSizeBits
@@ -70,14 +70,14 @@ public:
   public:
     reference(SmallBitVector &b, unsigned Idx) : TheVector(b), BitPos(Idx) {}
 
-    reference(const reference&) = default;
+    reference(const reference &) = default;
 
-    reference& operator=(reference t) {
+    reference &operator=(reference t) {
       *this = bool(t);
       return *this;
     }
 
-    reference& operator=(bool t) {
+    reference &operator=(bool t) {
       if (t)
         TheVector.set(BitPos);
       else
@@ -157,9 +157,7 @@ public:
       switchToLarge(new BitVector(*RHS.getPointer()));
   }
 
-  SmallBitVector(SmallBitVector &&RHS) : X(RHS.X) {
-    RHS.X = 1;
-  }
+  SmallBitVector(SmallBitVector &&RHS) : X(RHS.X) { RHS.X = 1; }
 
   ~SmallBitVector() {
     if (!isSmall())
@@ -374,8 +372,7 @@ public:
                         std::numeric_limits<uintptr_t>::digits) &&
              "undefined behavior");
       setSmallBits(getSmallBits() | (uintptr_t(1) << Idx));
-    }
-    else
+    } else
       getPointer()->set(Idx);
     return *this;
   }
@@ -384,7 +381,8 @@ public:
   SmallBitVector &set(unsigned I, unsigned E) {
     assert(I <= E && "Attempted to set backwards range!");
     assert(E <= size() && "Attempted to set out-of-bounds range!");
-    if (I == E) return *this;
+    if (I == E)
+      return *this;
     if (isSmall()) {
       uintptr_t EMask = ((uintptr_t)1) << E;
       uintptr_t IMask = ((uintptr_t)1) << I;
@@ -415,7 +413,8 @@ public:
   SmallBitVector &reset(unsigned I, unsigned E) {
     assert(I <= E && "Attempted to reset backwards range!");
     assert(E <= size() && "Attempted to reset out-of-bounds range!");
-    if (I == E) return *this;
+    if (I == E)
+      return *this;
     if (isSmall()) {
       uintptr_t EMask = ((uintptr_t)1) << E;
       uintptr_t IMask = ((uintptr_t)1) << I;
@@ -443,9 +442,7 @@ public:
   }
 
   // No argument flip.
-  SmallBitVector operator~() const {
-    return SmallBitVector(*this).flip();
-  }
+  SmallBitVector operator~() const { return SmallBitVector(*this).flip(); }
 
   // Indexing.
   reference operator[](unsigned Idx) {
@@ -460,14 +457,10 @@ public:
     return getPointer()->operator[](Idx);
   }
 
-  bool test(unsigned Idx) const {
-    return (*this)[Idx];
-  }
+  bool test(unsigned Idx) const { return (*this)[Idx]; }
 
   // Push single bit to end of vector.
-  void push_back(bool Val) {
-    resize(size() + 1, Val);
-  }
+  void push_back(bool Val) { resize(size() + 1, Val); }
 
   /// Test if any common bits are set.
   bool anyCommon(const SmallBitVector &RHS) const {
@@ -499,9 +492,7 @@ public:
     }
   }
 
-  bool operator!=(const SmallBitVector &RHS) const {
-    return !(*this == RHS);
-  }
+  bool operator!=(const SmallBitVector &RHS) const { return !(*this == RHS); }
 
   // Intersection, union, disjoint union.
   // FIXME BitVector::operator&= does not resize the LHS but this does
@@ -622,9 +613,7 @@ public:
     return *this;
   }
 
-  void swap(SmallBitVector &RHS) {
-    std::swap(X, RHS.X);
-  }
+  void swap(SmallBitVector &RHS) { std::swap(X, RHS.X); }
 
   /// Add '1' bits from Mask to this vector. Don't resize.
   /// This computes "*this |= Mask".
@@ -691,22 +680,22 @@ private:
   }
 };
 
-inline SmallBitVector
-operator&(const SmallBitVector &LHS, const SmallBitVector &RHS) {
+inline SmallBitVector operator&(const SmallBitVector &LHS,
+                                const SmallBitVector &RHS) {
   SmallBitVector Result(LHS);
   Result &= RHS;
   return Result;
 }
 
-inline SmallBitVector
-operator|(const SmallBitVector &LHS, const SmallBitVector &RHS) {
+inline SmallBitVector operator|(const SmallBitVector &LHS,
+                                const SmallBitVector &RHS) {
   SmallBitVector Result(LHS);
   Result |= RHS;
   return Result;
 }
 
-inline SmallBitVector
-operator^(const SmallBitVector &LHS, const SmallBitVector &RHS) {
+inline SmallBitVector operator^(const SmallBitVector &LHS,
+                                const SmallBitVector &RHS) {
   SmallBitVector Result(LHS);
   Result ^= RHS;
   return Result;
@@ -735,8 +724,7 @@ template <> struct DenseMapInfo<SmallBitVector> {
 namespace std {
 
 /// Implement std::swap in terms of BitVector swap.
-inline void
-swap(llvm::SmallBitVector &LHS, llvm::SmallBitVector &RHS) {
+inline void swap(llvm::SmallBitVector &LHS, llvm::SmallBitVector &RHS) {
   LHS.swap(RHS);
 }
 

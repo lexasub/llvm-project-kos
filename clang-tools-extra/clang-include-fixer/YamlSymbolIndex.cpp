@@ -15,8 +15,8 @@
 #include <string>
 #include <vector>
 
-using clang::find_all_symbols::SymbolInfo;
 using clang::find_all_symbols::SymbolAndSignals;
+using clang::find_all_symbols::SymbolInfo;
 
 namespace clang {
 namespace include_fixer {

@@ -531,14 +531,13 @@ RecurrenceDescriptor::isConditionalRdxPattern(RecurKind Kind, Instruction *I) {
       (!isa<PHINode>(*TrueVal) && !isa<PHINode>(*FalseVal)))
     return InstDesc(false, I);
 
-  Instruction *I1 =
-      isa<PHINode>(*TrueVal) ? dyn_cast<Instruction>(FalseVal)
-                             : dyn_cast<Instruction>(TrueVal);
+  Instruction *I1 = isa<PHINode>(*TrueVal) ? dyn_cast<Instruction>(FalseVal)
+                                           : dyn_cast<Instruction>(TrueVal);
   if (!I1 || !I1->isBinaryOp())
     return InstDesc(false, I);
 
   Value *Op1, *Op2;
-  if ((m_FAdd(m_Value(Op1), m_Value(Op2)).match(I1)  ||
+  if ((m_FAdd(m_Value(Op1), m_Value(Op2)).match(I1) ||
        m_FSub(m_Value(Op1), m_Value(Op2)).match(I1)) &&
       I1->isFast())
     return InstDesc(Kind == RecurKind::FAdd, SI);

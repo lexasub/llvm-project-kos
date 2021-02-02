@@ -74,7 +74,7 @@ public:
   /// Minimal vector-like interface.
   /// @{
   void push_back(uint64_t N) { Record->push_back(N); }
-  template<typename InputIterator>
+  template <typename InputIterator>
   void append(InputIterator begin, InputIterator end) {
     Record->append(begin, end);
   }
@@ -116,12 +116,8 @@ public:
   /// that have expressions as part of their formulation. Once the
   /// type or declaration has been written, Emit() will write
   /// the corresponding statements just after the record.
-  void AddStmt(Stmt *S) {
-    StmtsToEmit.push_back(S);
-  }
-  void writeStmtRef(const Stmt *S) {
-    AddStmt(const_cast<Stmt*>(S));
-  }
+  void AddStmt(Stmt *S) { StmtsToEmit.push_back(S); }
+  void writeStmtRef(const Stmt *S) { AddStmt(const_cast<Stmt *>(S)); }
 
   /// Add a definition for the given function to the queue of statements
   /// to emit.
@@ -131,36 +127,24 @@ public:
   void AddSourceLocation(SourceLocation Loc) {
     return Writer->AddSourceLocation(Loc, *Record);
   }
-  void writeSourceLocation(SourceLocation Loc) {
-    AddSourceLocation(Loc);
-  }
+  void writeSourceLocation(SourceLocation Loc) { AddSourceLocation(Loc); }
 
   /// Emit a source range.
   void AddSourceRange(SourceRange Range) {
     return Writer->AddSourceRange(Range, *Record);
   }
 
-  void writeBool(bool Value) {
-    Record->push_back(Value);
-  }
+  void writeBool(bool Value) { Record->push_back(Value); }
 
-  void writeUInt32(uint32_t Value) {
-    Record->push_back(Value);
-  }
+  void writeUInt32(uint32_t Value) { Record->push_back(Value); }
 
-  void writeUInt64(uint64_t Value) {
-    Record->push_back(Value);
-  }
+  void writeUInt64(uint64_t Value) { Record->push_back(Value); }
 
   /// Emit an integral value.
-  void AddAPInt(const llvm::APInt &Value) {
-    writeAPInt(Value);
-  }
+  void AddAPInt(const llvm::APInt &Value) { writeAPInt(Value); }
 
   /// Emit a signed integral value.
-  void AddAPSInt(const llvm::APSInt &Value) {
-    writeAPSInt(Value);
-  }
+  void AddAPSInt(const llvm::APSInt &Value) { writeAPSInt(Value); }
 
   /// Emit a floating-point value.
   void AddAPFloat(const llvm::APFloat &Value);
@@ -172,15 +156,11 @@ public:
   void AddIdentifierRef(const IdentifierInfo *II) {
     return Writer->AddIdentifierRef(II, *Record);
   }
-  void writeIdentifier(const IdentifierInfo *II) {
-    AddIdentifierRef(II);
-  }
+  void writeIdentifier(const IdentifierInfo *II) { AddIdentifierRef(II); }
 
   /// Emit a Selector (which is a smart pointer reference).
   void AddSelectorRef(Selector S);
-  void writeSelector(Selector sel) {
-    AddSelectorRef(sel);
-  }
+  void writeSelector(Selector sel) { AddSelectorRef(sel); }
 
   /// Emit a CXXTemporary.
   void AddCXXTemporary(const CXXTemporary *Temp);
@@ -192,12 +172,8 @@ public:
   void AddCXXBaseSpecifiers(ArrayRef<CXXBaseSpecifier> Bases);
 
   /// Emit a reference to a type.
-  void AddTypeRef(QualType T) {
-    return Writer->AddTypeRef(T, *Record);
-  }
-  void writeQualType(QualType T) {
-    AddTypeRef(T);
-  }
+  void AddTypeRef(QualType T) { return Writer->AddTypeRef(T, *Record); }
+  void writeQualType(QualType T) { AddTypeRef(T); }
 
   /// Emits a reference to a declarator info.
   void AddTypeSourceInfo(TypeSourceInfo *TInfo);
@@ -217,17 +193,11 @@ public:
       const ASTTemplateArgumentListInfo *ASTTemplArgList);
 
   /// Emit a reference to a declaration.
-  void AddDeclRef(const Decl *D) {
-    return Writer->AddDeclRef(D, *Record);
-  }
-  void writeDeclRef(const Decl *D) {
-    AddDeclRef(D);
-  }
+  void AddDeclRef(const Decl *D) { return Writer->AddDeclRef(D, *Record); }
+  void writeDeclRef(const Decl *D) { AddDeclRef(D); }
 
   /// Emit a declaration name.
-  void AddDeclarationName(DeclarationName Name) {
-    writeDeclarationName(Name);
-  }
+  void AddDeclarationName(DeclarationName Name) { writeDeclarationName(Name); }
 
   void AddDeclarationNameLoc(const DeclarationNameLoc &DNLoc,
                              DeclarationName Name);
@@ -244,9 +214,7 @@ public:
   void AddNestedNameSpecifierLoc(NestedNameSpecifierLoc NNS);
 
   /// Emit a template name.
-  void AddTemplateName(TemplateName Name) {
-    writeTemplateName(Name);
-  }
+  void AddTemplateName(TemplateName Name) { writeTemplateName(Name); }
 
   /// Emit a template argument.
   void AddTemplateArgument(const TemplateArgument &Arg) {
@@ -279,14 +247,10 @@ public:
   void writeOMPChildren(OMPChildren *Data);
 
   /// Emit a string.
-  void AddString(StringRef Str) {
-    return Writer->AddString(Str, *Record);
-  }
+  void AddString(StringRef Str) { return Writer->AddString(Str, *Record); }
 
   /// Emit a path.
-  void AddPath(StringRef Path) {
-    return Writer->AddPath(Path, *Record);
-  }
+  void AddPath(StringRef Path) { return Writer->AddPath(Path, *Record); }
 
   /// Emit a version tuple.
   void AddVersionTuple(const VersionTuple &Version) {
@@ -297,7 +261,7 @@ public:
   void AddAttr(const Attr *A);
 
   /// Emit a list of attributes.
-  void AddAttributes(ArrayRef<const Attr*> Attrs);
+  void AddAttributes(ArrayRef<const Attr *> Attrs);
 };
 
 } // end namespace clang

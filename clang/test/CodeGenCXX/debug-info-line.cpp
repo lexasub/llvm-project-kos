@@ -68,7 +68,9 @@ void f5() {
       = complex_src();
 }
 
-struct agg { int i; };
+struct agg {
+  int i;
+};
 agg agg_src();
 
 // CHECK-LABEL: define
@@ -114,7 +116,7 @@ inline void *operator new(decltype(sizeof(1)), void *p) noexcept { return p; }
 void f10() {
   void *void_src();
   (
-    // CHECK: store {{.*}} !dbg [[DBG_F10_STORE:!.*]]
+  // CHECK: store {{.*}} !dbg [[DBG_F10_STORE:!.*]]
 #line 1100
       new (void_src()) int(src()));
 }
@@ -169,7 +171,7 @@ void f13() {
 #define F13_IMPL 1, src()
   1,
 #line 1500
-  F13_IMPL;
+      F13_IMPL;
 }
 
 struct f14_impl {
@@ -244,9 +246,10 @@ void f20(int a, int b, int c) {
 // further).
 // CHECK: br {{.*}}, !dbg [[DBG_F20_1]]
 #line 2200
-  if (a  //
-      ? //
-      b : c)
+  if (a     //
+          ? //
+          b
+          : c)
     ;
 }
 

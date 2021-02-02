@@ -4,10 +4,14 @@
 
 namespace std {
 
-template <typename> struct remove_reference;
-template <typename _Tp> struct remove_reference { typedef _Tp type; };
-template <typename _Tp> struct remove_reference<_Tp &> { typedef _Tp type; };
-template <typename _Tp> struct remove_reference<_Tp &&> { typedef _Tp type; };
+template <typename>
+struct remove_reference;
+template <typename _Tp>
+struct remove_reference { typedef _Tp type; };
+template <typename _Tp>
+struct remove_reference<_Tp &> { typedef _Tp type; };
+template <typename _Tp>
+struct remove_reference<_Tp &&> { typedef _Tp type; };
 
 template <typename _Tp>
 constexpr typename std::remove_reference<_Tp>::type &&move(_Tp &&__t) {
@@ -23,7 +27,7 @@ forward(typename remove_reference<_Tp>::type &__t) noexcept {
 } // namespace std
 
 class NoMoveSemantics {
- public:
+public:
   NoMoveSemantics();
   NoMoveSemantics(const NoMoveSemantics &);
 
@@ -54,7 +58,7 @@ void g() {
 }
 
 class MoveSemantics {
- public:
+public:
   MoveSemantics();
   MoveSemantics(MoveSemantics &&);
 
@@ -70,9 +74,10 @@ void lambda1() {
   f(MoveSemantics());
 }
 
-template<class T> struct function {};
+template <class T>
+struct function {};
 
-template<typename Result, typename... Args>
+template <typename Result, typename... Args>
 class function<Result(Args...)> {
 public:
   function() = default;

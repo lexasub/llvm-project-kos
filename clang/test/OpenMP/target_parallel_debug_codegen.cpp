@@ -8,7 +8,7 @@ struct S {
 };
 
 extern unsigned aaa;
-template<> int S<&aaa>::a;
+template <> int S<&aaa>::a;
 
 template struct S<&aaa>;
 // CHECK-NOT: @aaa
@@ -20,9 +20,10 @@ int main() {
   int a;
   int b[10][10];
   int c[10][10][10];
-#pragma omp target parallel firstprivate(a, b) map(tofrom          \
-                                                   : c) map(tofrom \
-                                                            : bb) if (target:a)
+#pragma omp target parallel firstprivate(a, b) map(tofrom                    \
+                                                   : c) map(tofrom           \
+                                                            : bb) if (target \
+                                                                      : a)
   {
     int &f = c[1][1][1];
     int &g = a;

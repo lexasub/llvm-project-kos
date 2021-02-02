@@ -41,7 +41,7 @@ void DwarfCFIExceptionBase::markFunctionEnd() {
 
   // Map all labels and get rid of any dead landing pads.
   if (!Asm->MF->getLandingPads().empty()) {
-    MachineFunction *NonConstMF = const_cast<MachineFunction*>(Asm->MF);
+    MachineFunction *NonConstMF = const_cast<MachineFunction *>(Asm->MF);
     NonConstMF->tidyLandingPads();
   }
 }
@@ -119,8 +119,8 @@ void DwarfCFIException::beginFunction(const MachineFunction *MF) {
       Per;
 
   unsigned LSDAEncoding = TLOF.getLSDAEncoding();
-  shouldEmitLSDA = shouldEmitPersonality &&
-    LSDAEncoding != dwarf::DW_EH_PE_omit;
+  shouldEmitLSDA =
+      shouldEmitPersonality && LSDAEncoding != dwarf::DW_EH_PE_omit;
 
   shouldEmitCFI = MF->getMMI().getContext().getAsmInfo()->usesCFIForEH() &&
                   (shouldEmitPersonality || shouldEmitMoves);

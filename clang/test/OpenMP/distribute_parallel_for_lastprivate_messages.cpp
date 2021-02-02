@@ -19,9 +19,9 @@ class S2 {
 public:
   S2() : a(0) {}
   S2(S2 &s2) : a(s2.a) {}
-  const S2 &operator =(const S2&) const;
-  S2 &operator =(const S2&);
-  static float S2s; // expected-note {{static data member is predetermined as shared}}
+  const S2 &operator=(const S2 &) const;
+  S2 &operator=(const S2 &);
+  static float S2s;        // expected-note {{static data member is predetermined as shared}}
   static const float S2sc; // expected-note {{'S2sc' declared here}}
 };
 const float S2::S2sc = 0;
@@ -40,7 +40,7 @@ const S3 ca[5];     // expected-note {{'ca' defined here}}
 extern const int f; // expected-note {{'f' declared here}}
 class S4 {
   int a;
-  S4();             // expected-note 3 {{implicitly declared private here}}
+  S4(); // expected-note 3 {{implicitly declared private here}}
   S4(const S4 &s4);
 
 public:
@@ -104,12 +104,17 @@ int foomain(int argc, char **argv) {
     ++k;
 #pragma omp target
 #pragma omp teams
-#pragma omp distribute parallel for lastprivate(argc) allocate , allocate(, allocate(omp_default , allocate(omp_default_mem_alloc, allocate(omp_default_mem_alloc:, allocate(omp_default_mem_alloc: argc, allocate(omp_default_mem_alloc: argv), allocate(argv) // expected-error {{expected '(' after 'allocate'}} expected-error 2 {{expected expression}} expected-error 2 {{expected ')'}} expected-error {{use of undeclared identifier 'omp_default'}} expected-note 2 {{to match this '('}}
+#pragma omp distribute parallel for lastprivate(argc) allocate, allocate(, allocate(omp_default, allocate(omp_default_mem_alloc, allocate(omp_default_mem_alloc:, allocate(omp_default_mem_alloc                  \
+                                                                                                                                                                           : argc, allocate(omp_default_mem_alloc \
+                                                                                                                                                                                            : argv),              \
+                                                                                                                                                                             allocate(argv) // expected-error {{expected '(' after 'allocate'}} expected-error 2 {{expected expression}} expected-error 2 {{expected ')'}} expected-error {{use of undeclared identifier 'omp_default'}} expected-note 2 {{to match this '('}}
   for (int k = 0; k < argc; ++k)
     ++k;
 #pragma omp target
 #pragma omp teams
-#pragma omp distribute parallel for lastprivate(conditional: argc) lastprivate(conditional: // expected-error 2 {{use of undeclared identifier 'conditional'}} expected-error {{expected ')'}} expected-note {{to match this '('}}
+#pragma omp distribute parallel for lastprivate(conditional                     \
+                                                : argc) lastprivate(conditional \
+                                                                    : // expected-error 2 {{use of undeclared identifier 'conditional'}} expected-error {{expected ')'}} expected-note {{to match this '('}}
   for (int k = 0; k < argc; ++k)
     ++k;
 #pragma omp target
@@ -172,7 +177,7 @@ void bar(S4 a[2]) {
 namespace A {
 double x;
 #pragma omp threadprivate(x) // expected-note {{defined as threadprivate or thread local}}
-}
+} // namespace A
 namespace B {
 using A::x;
 }

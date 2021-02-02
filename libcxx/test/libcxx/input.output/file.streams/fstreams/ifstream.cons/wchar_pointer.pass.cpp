@@ -20,27 +20,26 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
+int main(int, char**) {
 #ifdef _LIBCPP_HAS_OPEN_WITH_WCHAR
-    {
-        std::ifstream fs(L"test.dat");
-        double x = 0;
-        fs >> x;
-        assert(x == 3.25);
-    }
-    // std::ifstream(const wchar_t*, std::ios_base::openmode) is tested in
-    // test/libcxx/input.output/file.streams/fstreams/ofstream.cons/wchar_pointer.pass.cpp
-    // which creates writable files.
-    {
-        std::wifstream fs(L"test.dat");
-        double x = 0;
-        fs >> x;
-        assert(x == 3.25);
-    }
-    // std::wifstream(const wchar_t*, std::ios_base::openmode) is tested in
-    // test/libcxx/input.output/file.streams/fstreams/ofstream.cons/wchar_pointer.pass.cpp
-    // which creates writable files.
+  {
+    std::ifstream fs(L"test.dat");
+    double x = 0;
+    fs >> x;
+    assert(x == 3.25);
+  }
+  // std::ifstream(const wchar_t*, std::ios_base::openmode) is tested in
+  // test/libcxx/input.output/file.streams/fstreams/ofstream.cons/wchar_pointer.pass.cpp
+  // which creates writable files.
+  {
+    std::wifstream fs(L"test.dat");
+    double x = 0;
+    fs >> x;
+    assert(x == 3.25);
+  }
+  // std::wifstream(const wchar_t*, std::ios_base::openmode) is tested in
+  // test/libcxx/input.output/file.streams/fstreams/ofstream.cons/wchar_pointer.pass.cpp
+  // which creates writable files.
 #endif
 
   return 0;

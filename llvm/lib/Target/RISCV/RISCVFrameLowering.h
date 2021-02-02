@@ -74,5 +74,5 @@ private:
                  const DebugLoc &DL, Register DestReg, Register SrcReg,
                  int64_t Val, MachineInstr::MIFlag Flag) const;
 };
-}
+} // namespace llvm
 #endif

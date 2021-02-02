@@ -14,6 +14,6 @@ class Outer {
     // expected-error@-2 {{invalid use of non-static data member 'x'}}
 #endif
     static char b[sizeof(sx)]; // okay
-    static char c[sizeof(f)]; // expected-error {{call to non-static member function without an object argument}}
+    static char c[sizeof(f)];  // expected-error {{call to non-static member function without an object argument}}
   };
 };

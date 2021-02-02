@@ -6,11 +6,11 @@
 class X {
 public:
   X();
-  X(const X&);
+  X(const X &);
   ~X();
 };
 
-template<typename T> struct Y {
+template <typename T> struct Y {
   Y();
   static Y f() {
     Y y;
@@ -123,7 +123,6 @@ X test2(bool B) {
   // CHECK-EH-03-NEXT: [[T1:%.*]] = extractvalue { i8*, i32 } [[T0]], 0
   // CHECK-EH-03-NEXT: call void @__clang_call_terminate(i8* [[T1]]) [[NR_NUW:#[0-9]+]]
   // CHECK-EH-03-NEXT: unreachable
-
 }
 
 // CHECK-LABEL: define{{.*}} void @_Z5test3b

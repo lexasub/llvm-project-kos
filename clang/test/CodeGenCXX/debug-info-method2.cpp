@@ -8,8 +8,8 @@ public:
   int bar(int arg) const;
 };
 
-int A::bar(int arg) const{
-  return arg+2;
+int A::bar(int arg) const {
+  return arg + 2;
 }
 
 int main() {

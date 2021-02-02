@@ -104,44 +104,44 @@ int main() {
   // TLS-LAMBDA:     call {{.*}}void {{.+}} @__kmpc_fork_call({{.+}}, i32 1, {{.+}}* [[OMP_REGION:@.+]] to {{.+}}, i32* @g)
 
 #pragma omp parallel copyin(g)
-  {
-    // LAMBDA: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias %{{.+}}, i32* noalias %{{.+}})
-    // TLS-LAMBDA: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias %{{.+}}, i32* noalias %{{.+}}, i32* nonnull align 4 dereferenceable(4) %{{.+}})
+    {
+      // LAMBDA: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias %{{.+}}, i32* noalias %{{.+}})
+      // TLS-LAMBDA: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias %{{.+}}, i32* noalias %{{.+}}, i32* nonnull align 4 dereferenceable(4) %{{.+}})
 
-    // threadprivate_g = g;
-    // LAMBDA: call {{.*}}i8* @__kmpc_threadprivate_cached({{.+}} [[G]]
-    // LAMBDA: ptrtoint i{{[0-9]+}}* %{{.+}} to i{{[0-9]+}}
-    // LAMBDA: icmp ne i{{[0-9]+}} ptrtoint (i{{[0-9]+}}* [[G]] to i{{[0-9]+}}), %{{.+}}
-    // LAMBDA: br i1 %{{.+}}, label %[[NOT_MASTER:.+]], label %[[DONE:.+]]
-    // LAMBDA: [[NOT_MASTER]]
-    // LAMBDA: load i{{[0-9]+}}, i{{[0-9]+}}* [[G]], align 128
-    // LAMBDA: store volatile i{{[0-9]+}} %{{.+}}, i{{[0-9]+}}* %{{.+}}, align 128
-    // LAMBDA: [[DONE]]
+      // threadprivate_g = g;
+      // LAMBDA: call {{.*}}i8* @__kmpc_threadprivate_cached({{.+}} [[G]]
+      // LAMBDA: ptrtoint i{{[0-9]+}}* %{{.+}} to i{{[0-9]+}}
+      // LAMBDA: icmp ne i{{[0-9]+}} ptrtoint (i{{[0-9]+}}* [[G]] to i{{[0-9]+}}), %{{.+}}
+      // LAMBDA: br i1 %{{.+}}, label %[[NOT_MASTER:.+]], label %[[DONE:.+]]
+      // LAMBDA: [[NOT_MASTER]]
+      // LAMBDA: load i{{[0-9]+}}, i{{[0-9]+}}* [[G]], align 128
+      // LAMBDA: store volatile i{{[0-9]+}} %{{.+}}, i{{[0-9]+}}* %{{.+}}, align 128
+      // LAMBDA: [[DONE]]
 
-    // TLS-LAMBDA-DAG: [[G_CAPTURE_SRC:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** %
-    // TLS-LAMBDA-DAG: [[G_CAPTURE_SRCC:%.+]] = ptrtoint i{{[0-9]+}}* [[G_CAPTURE_SRC]] to i{{[0-9]+}}
-    // TLS-LAMBDA: icmp ne i{{[0-9]+}} {{%.+}}, ptrtoint (i{{[0-9]+}}* @g to i{{[0-9]+}})
-    // TLS-LAMBDA: br i1 %{{.+}}, label %[[NOT_MASTER:.+]], label %[[DONE:.+]]
-    // TLS-LAMBDA: [[NOT_MASTER]]
-    // TLS-LAMBDA: load i{{[0-9]+}}, i{{[0-9]+}}* [[G_CAPTURE_SRC]],
-    // TLS-LAMBDA: store volatile i{{[0-9]+}} %{{.+}}, i{{[0-9]+}}* @g, align 128
-    // TLS-LAMBDA: [[DONE]]
+      // TLS-LAMBDA-DAG: [[G_CAPTURE_SRC:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** %
+      // TLS-LAMBDA-DAG: [[G_CAPTURE_SRCC:%.+]] = ptrtoint i{{[0-9]+}}* [[G_CAPTURE_SRC]] to i{{[0-9]+}}
+      // TLS-LAMBDA: icmp ne i{{[0-9]+}} {{%.+}}, ptrtoint (i{{[0-9]+}}* @g to i{{[0-9]+}})
+      // TLS-LAMBDA: br i1 %{{.+}}, label %[[NOT_MASTER:.+]], label %[[DONE:.+]]
+      // TLS-LAMBDA: [[NOT_MASTER]]
+      // TLS-LAMBDA: load i{{[0-9]+}}, i{{[0-9]+}}* [[G_CAPTURE_SRC]],
+      // TLS-LAMBDA: store volatile i{{[0-9]+}} %{{.+}}, i{{[0-9]+}}* @g, align 128
+      // TLS-LAMBDA: [[DONE]]
 
-    // LAMBDA: call {{.*}}void @__kmpc_barrier(
-    // TLS-LAMBDA: call {{.*}}void @__kmpc_barrier(
-    g = 1;
-    // LAMBDA: call{{.*}} void [[INNER_LAMBDA:@.+]](%{{.+}}*
-    // TLS-LAMBDA: call{{.*}} void [[INNER_LAMBDA:@.+]](%{{.+}}*
+      // LAMBDA: call {{.*}}void @__kmpc_barrier(
+      // TLS-LAMBDA: call {{.*}}void @__kmpc_barrier(
+      g = 1;
+      // LAMBDA: call{{.*}} void [[INNER_LAMBDA:@.+]](%{{.+}}*
+      // TLS-LAMBDA: call{{.*}} void [[INNER_LAMBDA:@.+]](%{{.+}}*
 
-    [&]() {
-      // LAMBDA: define {{.+}} void [[INNER_LAMBDA]](%{{.+}}* {{[^,]*}} [[ARG_PTR:%.+]])
-      // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
-      g = 2;
-      // LAMBDA: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
+      [&]() {
+        // LAMBDA: define {{.+}} void [[INNER_LAMBDA]](%{{.+}}* {{[^,]*}} [[ARG_PTR:%.+]])
+        // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
+        g = 2;
+        // LAMBDA: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
 
-      // TLS-LAMBDA: store volatile i{{[0-9]+}} 2, i{{[0-9]+}}* @g, align 128
-    }();
-  }
+        // TLS-LAMBDA: store volatile i{{[0-9]+}} 2, i{{[0-9]+}}* @g, align 128
+      }();
+    }
   }();
   return 0;
 #elif defined(BLOCKS)
@@ -159,56 +159,56 @@ int main() {
   // TLS-BLOCKS:     call {{.*}}void {{.+}} @__kmpc_fork_call({{.+}}, i32 1, {{.+}}* [[OMP_REGION:@.+]] to {{.+}}, i32* @g)
 
 #pragma omp parallel copyin(g)
-  {
-    // BLOCKS: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias %{{.+}}, i32* noalias %{{.+}})
-    // TLS-BLOCKS: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias %{{.+}}, i32* noalias %{{.+}}, i32* nonnull align 4 dereferenceable(4) %{{.+}})
+    {
+      // BLOCKS: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias %{{.+}}, i32* noalias %{{.+}})
+      // TLS-BLOCKS: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias %{{.+}}, i32* noalias %{{.+}}, i32* nonnull align 4 dereferenceable(4) %{{.+}})
 
-    // threadprivate_g = g;
-    // BLOCKS: call {{.*}}i8* @__kmpc_threadprivate_cached({{.+}} [[G]]
-    // BLOCKS: ptrtoint i{{[0-9]+}}* %{{.+}} to i{{[0-9]+}}
-    // BLOCKS: icmp ne i{{[0-9]+}} ptrtoint (i{{[0-9]+}}* [[G]] to i{{[0-9]+}}), %{{.+}}
-    // BLOCKS: br i1 %{{.+}}, label %[[NOT_MASTER:.+]], label %[[DONE:.+]]
-    // BLOCKS: [[NOT_MASTER]]
-    // BLOCKS: load i{{[0-9]+}}, i{{[0-9]+}}* [[G]], align 128
-    // BLOCKS: store volatile i{{[0-9]+}} %{{.+}}, i{{[0-9]+}}* %{{.+}}, align 128
-    // BLOCKS: [[DONE]]
-
-    // TLS-BLOCKS-DAG: [[G_CAPTURE_SRC:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** %
-    // TLS-BLOCKS-DAG: [[G_CAPTURE_SRCC:%.+]] = ptrtoint i{{[0-9]+}}* [[G_CAPTURE_SRC]] to i{{[0-9]+}}
-    // TLS-BLOCKS: icmp ne i{{[0-9]+}} {{%.+}}, ptrtoint (i{{[0-9]+}}* @g to i{{[0-9]+}})
-    // TLS-BLOCKS: br i1 %{{.+}}, label %[[NOT_MASTER:.+]], label %[[DONE:.+]]
-    // TLS-BLOCKS: [[NOT_MASTER]]
-    // TLS-BLOCKS: load i{{[0-9]+}}, i{{[0-9]+}}* [[G_CAPTURE_SRC]],
-    // TLS-BLOCKS: store volatile i{{[0-9]+}} %{{.+}}, i{{[0-9]+}}* @g, align 128
-    // TLS-BLOCKS: [[DONE]]
-
-    // BLOCKS: call {{.*}}void @__kmpc_barrier(
-    // TLS-BLOCKS: call {{.*}}void @__kmpc_barrier(
-    g = 1;
-    // BLOCKS: store volatile i{{[0-9]+}} 1, i{{[0-9]+}}*
-    // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-    // BLOCKS: call {{.*}}void {{%.+}}(i8
-
-    // TLS-BLOCKS: store volatile i{{[0-9]+}} 1, i{{[0-9]+}}* @g
-    // TLS-BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-    // TLS-BLOCKS: call {{.*}}void {{%.+}}(i8
-
-    ^{
-      // BLOCKS: define {{.+}} void {{@.+}}(i8*
-      // TLS-BLOCKS: define {{.+}} void {{@.+}}(i8*
-      g = 2;
-      // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
+      // threadprivate_g = g;
       // BLOCKS: call {{.*}}i8* @__kmpc_threadprivate_cached({{.+}} [[G]]
-      // BLOCKS: store volatile i{{[0-9]+}} 2, i{{[0-9]+}}*
-      // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-      // BLOCKS: ret
+      // BLOCKS: ptrtoint i{{[0-9]+}}* %{{.+}} to i{{[0-9]+}}
+      // BLOCKS: icmp ne i{{[0-9]+}} ptrtoint (i{{[0-9]+}}* [[G]] to i{{[0-9]+}}), %{{.+}}
+      // BLOCKS: br i1 %{{.+}}, label %[[NOT_MASTER:.+]], label %[[DONE:.+]]
+      // BLOCKS: [[NOT_MASTER]]
+      // BLOCKS: load i{{[0-9]+}}, i{{[0-9]+}}* [[G]], align 128
+      // BLOCKS: store volatile i{{[0-9]+}} %{{.+}}, i{{[0-9]+}}* %{{.+}}, align 128
+      // BLOCKS: [[DONE]]
 
+      // TLS-BLOCKS-DAG: [[G_CAPTURE_SRC:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** %
+      // TLS-BLOCKS-DAG: [[G_CAPTURE_SRCC:%.+]] = ptrtoint i{{[0-9]+}}* [[G_CAPTURE_SRC]] to i{{[0-9]+}}
+      // TLS-BLOCKS: icmp ne i{{[0-9]+}} {{%.+}}, ptrtoint (i{{[0-9]+}}* @g to i{{[0-9]+}})
+      // TLS-BLOCKS: br i1 %{{.+}}, label %[[NOT_MASTER:.+]], label %[[DONE:.+]]
+      // TLS-BLOCKS: [[NOT_MASTER]]
+      // TLS-BLOCKS: load i{{[0-9]+}}, i{{[0-9]+}}* [[G_CAPTURE_SRC]],
+      // TLS-BLOCKS: store volatile i{{[0-9]+}} %{{.+}}, i{{[0-9]+}}* @g, align 128
+      // TLS-BLOCKS: [[DONE]]
+
+      // BLOCKS: call {{.*}}void @__kmpc_barrier(
+      // TLS-BLOCKS: call {{.*}}void @__kmpc_barrier(
+      g = 1;
+      // BLOCKS: store volatile i{{[0-9]+}} 1, i{{[0-9]+}}*
+      // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
+      // BLOCKS: call {{.*}}void {{%.+}}(i8
+
+      // TLS-BLOCKS: store volatile i{{[0-9]+}} 1, i{{[0-9]+}}* @g
       // TLS-BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-      // TLS-BLOCKS: store volatile i{{[0-9]+}} 2, i{{[0-9]+}}* @g
-      // TLS-BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-      // TLS-BLOCKS: ret
-    }();
-  }
+      // TLS-BLOCKS: call {{.*}}void {{%.+}}(i8
+
+      ^{
+        // BLOCKS: define {{.+}} void {{@.+}}(i8*
+        // TLS-BLOCKS: define {{.+}} void {{@.+}}(i8*
+        g = 2;
+        // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
+        // BLOCKS: call {{.*}}i8* @__kmpc_threadprivate_cached({{.+}} [[G]]
+        // BLOCKS: store volatile i{{[0-9]+}} 2, i{{[0-9]+}}*
+        // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
+        // BLOCKS: ret
+
+        // TLS-BLOCKS-NOT: [[G]]{{[[^:word:]]}}
+        // TLS-BLOCKS: store volatile i{{[0-9]+}} 2, i{{[0-9]+}}* @g
+        // TLS-BLOCKS-NOT: [[G]]{{[[^:word:]]}}
+        // TLS-BLOCKS: ret
+      }();
+    }
   }();
   return 0;
 #else
@@ -492,16 +492,16 @@ struct St {
 void array_func() {
   static int a[2];
   static St s[2];
-// ARRAY: @__kmpc_fork_call(
-// ARRAY: call i8* @__kmpc_threadprivate_cached(
-// ARRAY: call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 4 %{{.+}}, i8* align 4 bitcast ([2 x i32]* @{{.+}} to i8*), i64 8, i1 false)
-// ARRAY: call nonnull align 4 dereferenceable(8) %struct.St* @{{.+}}(%struct.St* {{[^,]*}} %{{.+}}, %struct.St* nonnull align 4 dereferenceable(8) %{{.+}})
+  // ARRAY: @__kmpc_fork_call(
+  // ARRAY: call i8* @__kmpc_threadprivate_cached(
+  // ARRAY: call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 4 %{{.+}}, i8* align 4 bitcast ([2 x i32]* @{{.+}} to i8*), i64 8, i1 false)
+  // ARRAY: call nonnull align 4 dereferenceable(8) %struct.St* @{{.+}}(%struct.St* {{[^,]*}} %{{.+}}, %struct.St* nonnull align 4 dereferenceable(8) %{{.+}})
 
-// TLS-ARRAY: @__kmpc_fork_call(
-// TLS-ARRAY: [[REFT:%.+]] = load [2 x i32]*, [2 x i32]** [[ADDR:%.+]],
-// TLS-ARRAY: [[REF:%.+]] = bitcast [2 x i32]* [[REFT]] to i8*
-// TLS-ARRAY: call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 4 bitcast ([2 x i32]* @{{.+}} to i8*), i8* align 4 [[REF]], i64 8, i1 false)
-// TLS-ARRAY: call nonnull align 4 dereferenceable(8) %struct.St* @{{.+}}(%struct.St* {{[^,]*}} %{{.+}}, %struct.St* nonnull align 4 dereferenceable(8) %{{.+}})
+  // TLS-ARRAY: @__kmpc_fork_call(
+  // TLS-ARRAY: [[REFT:%.+]] = load [2 x i32]*, [2 x i32]** [[ADDR:%.+]],
+  // TLS-ARRAY: [[REF:%.+]] = bitcast [2 x i32]* [[REFT]] to i8*
+  // TLS-ARRAY: call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 4 bitcast ([2 x i32]* @{{.+}} to i8*), i8* align 4 [[REF]], i64 8, i1 false)
+  // TLS-ARRAY: call nonnull align 4 dereferenceable(8) %struct.St* @{{.+}}(%struct.St* {{[^,]*}} %{{.+}}, %struct.St* nonnull align 4 dereferenceable(8) %{{.+}})
 
 #pragma omp threadprivate(a, s)
 #pragma omp parallel copyin(a, s)
@@ -528,4 +528,3 @@ void foo() {
 // NESTED: [[T_MASTER_VAL:%.+]] = load i32, i32* [[T_MASTER]],
 // NESTED: store i32 [[T_MASTER_VAL]], i32* [[T]],
 #endif // NESTED
-

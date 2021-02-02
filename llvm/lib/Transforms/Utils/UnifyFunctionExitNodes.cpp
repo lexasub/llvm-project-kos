@@ -80,8 +80,8 @@ bool unifyReturnBlocks(Function &F) {
   // Insert a new basic block into the function, add PHI nodes (if the function
   // returns values), and convert all of the return instructions into
   // unconditional branches.
-  BasicBlock *NewRetBlock = BasicBlock::Create(F.getContext(),
-                                               "UnifiedReturnBlock", &F);
+  BasicBlock *NewRetBlock =
+      BasicBlock::Create(F.getContext(), "UnifiedReturnBlock", &F);
 
   PHINode *PN = nullptr;
   if (F.getReturnType()->isVoidTy()) {
@@ -102,7 +102,7 @@ bool unifyReturnBlocks(Function &F) {
     if (PN)
       PN->addIncoming(BB->getTerminator()->getOperand(0), BB);
 
-    BB->getInstList().pop_back();  // Remove the return insn
+    BB->getInstList().pop_back(); // Remove the return insn
     BranchInst::Create(NewRetBlock, BB);
   }
 

@@ -32,4 +32,3 @@ std::string TestBase::getLogFileName() {
                                 test_info->name() + ".log");
   return std::string(DirStr.str());
 }
-

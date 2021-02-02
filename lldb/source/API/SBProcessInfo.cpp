@@ -28,9 +28,8 @@ SBProcessInfo::SBProcessInfo(const SBProcessInfo &rhs) : m_opaque_up() {
 SBProcessInfo::~SBProcessInfo() = default;
 
 SBProcessInfo &SBProcessInfo::operator=(const SBProcessInfo &rhs) {
-  LLDB_RECORD_METHOD(lldb::SBProcessInfo &,
-                     SBProcessInfo, operator=,(const lldb::SBProcessInfo &),
-                     rhs);
+  LLDB_RECORD_METHOD(lldb::SBProcessInfo &, SBProcessInfo, operator=,
+                     (const lldb::SBProcessInfo &), rhs);
 
   if (this != &rhs)
     m_opaque_up = clone(rhs.m_opaque_up);
@@ -182,18 +181,15 @@ lldb::pid_t SBProcessInfo::GetParentProcessID() {
 namespace lldb_private {
 namespace repro {
 
-template <>
-void RegisterMethods<SBProcessInfo>(Registry &R) {
+template <> void RegisterMethods<SBProcessInfo>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBProcessInfo, ());
   LLDB_REGISTER_CONSTRUCTOR(SBProcessInfo, (const lldb::SBProcessInfo &));
-  LLDB_REGISTER_METHOD(
-      lldb::SBProcessInfo &,
-      SBProcessInfo, operator=,(const lldb::SBProcessInfo &));
+  LLDB_REGISTER_METHOD(lldb::SBProcessInfo &, SBProcessInfo, operator=,
+                       (const lldb::SBProcessInfo &));
   LLDB_REGISTER_METHOD_CONST(bool, SBProcessInfo, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBProcessInfo, operator bool, ());
   LLDB_REGISTER_METHOD(const char *, SBProcessInfo, GetName, ());
-  LLDB_REGISTER_METHOD(lldb::SBFileSpec, SBProcessInfo, GetExecutableFile,
-                       ());
+  LLDB_REGISTER_METHOD(lldb::SBFileSpec, SBProcessInfo, GetExecutableFile, ());
   LLDB_REGISTER_METHOD(lldb::pid_t, SBProcessInfo, GetProcessID, ());
   LLDB_REGISTER_METHOD(uint32_t, SBProcessInfo, GetUserID, ());
   LLDB_REGISTER_METHOD(uint32_t, SBProcessInfo, GetGroupID, ());
@@ -206,5 +202,5 @@ void RegisterMethods<SBProcessInfo>(Registry &R) {
   LLDB_REGISTER_METHOD(lldb::pid_t, SBProcessInfo, GetParentProcessID, ());
 }
 
-}
-}
+} // namespace repro
+} // namespace lldb_private

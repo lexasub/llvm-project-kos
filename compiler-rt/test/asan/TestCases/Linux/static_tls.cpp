@@ -11,7 +11,7 @@
 
 // XFAIL: aarch64
 // binutils 2.26 has a change that causes this test to fail on powerpc64.
-// UNSUPPORTED: powerpc64 
+// UNSUPPORTED: powerpc64
 
 #ifndef SHARED
 #include <stdio.h>
@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
   fprintf(stderr, "after\n");
   return 0;
 }
-#else  // SHARED
+#else // SHARED
 static __thread unsigned ThreadLocal;
 unsigned *f() {
   return &ThreadLocal;

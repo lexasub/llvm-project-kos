@@ -15,6 +15,4 @@ struct S {
 };
 auto FuncThisCallPtr = &S::FuncThisCall;
 
-int main() {
-  return 0;
-}
+int main() { return 0; }

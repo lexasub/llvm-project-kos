@@ -16,7 +16,7 @@ struct __attribute__((packed)) Arguable {
   int x;
   static void foo();
 };
-}
+} // namespace Foo
 
 struct Arguable *get_arguable();
 

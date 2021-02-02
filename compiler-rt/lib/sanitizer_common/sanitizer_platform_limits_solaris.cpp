@@ -63,129 +63,129 @@
 #include "sanitizer_platform_limits_solaris.h"
 
 namespace __sanitizer {
-  unsigned struct_utsname_sz = sizeof(struct utsname);
-  unsigned struct_stat_sz = sizeof(struct stat);
-  unsigned struct_stat64_sz = sizeof(struct stat64);
-  unsigned struct_rusage_sz = sizeof(struct rusage);
-  unsigned struct_tm_sz = sizeof(struct tm);
-  unsigned struct_passwd_sz = sizeof(struct passwd);
-  unsigned struct_group_sz = sizeof(struct group);
-  unsigned siginfo_t_sz = sizeof(siginfo_t);
-  unsigned struct_sigaction_sz = sizeof(struct sigaction);
-  unsigned struct_stack_t_sz = sizeof(stack_t);
-  unsigned struct_itimerval_sz = sizeof(struct itimerval);
-  unsigned pthread_t_sz = sizeof(pthread_t);
-  unsigned pthread_mutex_t_sz = sizeof(pthread_mutex_t);
-  unsigned pthread_cond_t_sz = sizeof(pthread_cond_t);
-  unsigned pid_t_sz = sizeof(pid_t);
-  unsigned timeval_sz = sizeof(timeval);
-  unsigned uid_t_sz = sizeof(uid_t);
-  unsigned gid_t_sz = sizeof(gid_t);
-  unsigned mbstate_t_sz = sizeof(mbstate_t);
-  unsigned sigset_t_sz = sizeof(sigset_t);
-  unsigned struct_timezone_sz = sizeof(struct timezone);
-  unsigned struct_tms_sz = sizeof(struct tms);
-  unsigned struct_sigevent_sz = sizeof(struct sigevent);
-  unsigned struct_sched_param_sz = sizeof(struct sched_param);
-  unsigned struct_statfs_sz = sizeof(struct statfs);
-  unsigned struct_sockaddr_sz = sizeof(struct sockaddr);
-  unsigned ucontext_t_sz = sizeof(ucontext_t);
-  unsigned struct_timespec_sz = sizeof(struct timespec);
+unsigned struct_utsname_sz = sizeof(struct utsname);
+unsigned struct_stat_sz = sizeof(struct stat);
+unsigned struct_stat64_sz = sizeof(struct stat64);
+unsigned struct_rusage_sz = sizeof(struct rusage);
+unsigned struct_tm_sz = sizeof(struct tm);
+unsigned struct_passwd_sz = sizeof(struct passwd);
+unsigned struct_group_sz = sizeof(struct group);
+unsigned siginfo_t_sz = sizeof(siginfo_t);
+unsigned struct_sigaction_sz = sizeof(struct sigaction);
+unsigned struct_stack_t_sz = sizeof(stack_t);
+unsigned struct_itimerval_sz = sizeof(struct itimerval);
+unsigned pthread_t_sz = sizeof(pthread_t);
+unsigned pthread_mutex_t_sz = sizeof(pthread_mutex_t);
+unsigned pthread_cond_t_sz = sizeof(pthread_cond_t);
+unsigned pid_t_sz = sizeof(pid_t);
+unsigned timeval_sz = sizeof(timeval);
+unsigned uid_t_sz = sizeof(uid_t);
+unsigned gid_t_sz = sizeof(gid_t);
+unsigned mbstate_t_sz = sizeof(mbstate_t);
+unsigned sigset_t_sz = sizeof(sigset_t);
+unsigned struct_timezone_sz = sizeof(struct timezone);
+unsigned struct_tms_sz = sizeof(struct tms);
+unsigned struct_sigevent_sz = sizeof(struct sigevent);
+unsigned struct_sched_param_sz = sizeof(struct sched_param);
+unsigned struct_statfs_sz = sizeof(struct statfs);
+unsigned struct_sockaddr_sz = sizeof(struct sockaddr);
+unsigned ucontext_t_sz = sizeof(ucontext_t);
+unsigned struct_timespec_sz = sizeof(struct timespec);
 #if SANITIZER_SOLARIS32
-  unsigned struct_statvfs64_sz = sizeof(struct statvfs64);
+unsigned struct_statvfs64_sz = sizeof(struct statvfs64);
 #endif
-  unsigned struct_statvfs_sz = sizeof(struct statvfs);
+unsigned struct_statvfs_sz = sizeof(struct statvfs);
 
-  const uptr sig_ign = (uptr)SIG_IGN;
-  const uptr sig_dfl = (uptr)SIG_DFL;
-  const uptr sig_err = (uptr)SIG_ERR;
-  const uptr sa_siginfo = (uptr)SA_SIGINFO;
+const uptr sig_ign = (uptr)SIG_IGN;
+const uptr sig_dfl = (uptr)SIG_DFL;
+const uptr sig_err = (uptr)SIG_ERR;
+const uptr sa_siginfo = (uptr)SA_SIGINFO;
 
-  int shmctl_ipc_stat = (int)IPC_STAT;
+int shmctl_ipc_stat = (int)IPC_STAT;
 
-  unsigned struct_utmp_sz = sizeof(struct utmp);
-  unsigned struct_utmpx_sz = sizeof(struct utmpx);
+unsigned struct_utmp_sz = sizeof(struct utmp);
+unsigned struct_utmpx_sz = sizeof(struct utmpx);
 
-  int map_fixed = MAP_FIXED;
+int map_fixed = MAP_FIXED;
 
-  int af_inet = (int)AF_INET;
-  int af_inet6 = (int)AF_INET6;
+int af_inet = (int)AF_INET;
+int af_inet6 = (int)AF_INET6;
 
-  uptr __sanitizer_in_addr_sz(int af) {
-    if (af == AF_INET)
-      return sizeof(struct in_addr);
-    else if (af == AF_INET6)
-      return sizeof(struct in6_addr);
-    else
-      return 0;
-  }
+uptr __sanitizer_in_addr_sz(int af) {
+  if (af == AF_INET)
+    return sizeof(struct in_addr);
+  else if (af == AF_INET6)
+    return sizeof(struct in6_addr);
+  else
+    return 0;
+}
 
-  unsigned struct_ElfW_Phdr_sz = sizeof(ElfW(Phdr));
+unsigned struct_ElfW_Phdr_sz = sizeof(ElfW(Phdr));
 
-  int glob_nomatch = GLOB_NOMATCH;
+int glob_nomatch = GLOB_NOMATCH;
 
-  unsigned path_max = PATH_MAX;
+unsigned path_max = PATH_MAX;
 
-  // ioctl arguments
-  unsigned struct_ifreq_sz = sizeof(struct ifreq);
-  unsigned struct_termios_sz = sizeof(struct termios);
-  unsigned struct_winsize_sz = sizeof(struct winsize);
+// ioctl arguments
+unsigned struct_ifreq_sz = sizeof(struct ifreq);
+unsigned struct_termios_sz = sizeof(struct termios);
+unsigned struct_winsize_sz = sizeof(struct winsize);
 
-  unsigned struct_sioc_sg_req_sz = sizeof(struct sioc_sg_req);
-  unsigned struct_sioc_vif_req_sz = sizeof(struct sioc_vif_req);
+unsigned struct_sioc_sg_req_sz = sizeof(struct sioc_sg_req);
+unsigned struct_sioc_vif_req_sz = sizeof(struct sioc_vif_req);
 
-  const unsigned IOCTL_NOT_PRESENT = 0;
+const unsigned IOCTL_NOT_PRESENT = 0;
 
-  unsigned IOCTL_FIOASYNC = FIOASYNC;
-  unsigned IOCTL_FIOCLEX = FIOCLEX;
-  unsigned IOCTL_FIOGETOWN = FIOGETOWN;
-  unsigned IOCTL_FIONBIO = FIONBIO;
-  unsigned IOCTL_FIONCLEX = FIONCLEX;
-  unsigned IOCTL_FIOSETOWN = FIOSETOWN;
-  unsigned IOCTL_SIOCADDMULTI = SIOCADDMULTI;
-  unsigned IOCTL_SIOCATMARK = SIOCATMARK;
-  unsigned IOCTL_SIOCDELMULTI = SIOCDELMULTI;
-  unsigned IOCTL_SIOCGIFADDR = SIOCGIFADDR;
-  unsigned IOCTL_SIOCGIFBRDADDR = SIOCGIFBRDADDR;
-  unsigned IOCTL_SIOCGIFCONF = SIOCGIFCONF;
-  unsigned IOCTL_SIOCGIFDSTADDR = SIOCGIFDSTADDR;
-  unsigned IOCTL_SIOCGIFFLAGS = SIOCGIFFLAGS;
-  unsigned IOCTL_SIOCGIFMETRIC = SIOCGIFMETRIC;
-  unsigned IOCTL_SIOCGIFMTU = SIOCGIFMTU;
-  unsigned IOCTL_SIOCGIFNETMASK = SIOCGIFNETMASK;
-  unsigned IOCTL_SIOCGPGRP = SIOCGPGRP;
-  unsigned IOCTL_SIOCSIFADDR = SIOCSIFADDR;
-  unsigned IOCTL_SIOCSIFBRDADDR = SIOCSIFBRDADDR;
-  unsigned IOCTL_SIOCSIFDSTADDR = SIOCSIFDSTADDR;
-  unsigned IOCTL_SIOCSIFFLAGS = SIOCSIFFLAGS;
-  unsigned IOCTL_SIOCSIFMETRIC = SIOCSIFMETRIC;
-  unsigned IOCTL_SIOCSIFMTU = SIOCSIFMTU;
-  unsigned IOCTL_SIOCSIFNETMASK = SIOCSIFNETMASK;
-  unsigned IOCTL_SIOCSPGRP = SIOCSPGRP;
-  unsigned IOCTL_TIOCEXCL = TIOCEXCL;
-  unsigned IOCTL_TIOCGETD = TIOCGETD;
-  unsigned IOCTL_TIOCGPGRP = TIOCGPGRP;
-  unsigned IOCTL_TIOCGWINSZ = TIOCGWINSZ;
-  unsigned IOCTL_TIOCMBIC = TIOCMBIC;
-  unsigned IOCTL_TIOCMBIS = TIOCMBIS;
-  unsigned IOCTL_TIOCMGET = TIOCMGET;
-  unsigned IOCTL_TIOCMSET = TIOCMSET;
-  unsigned IOCTL_TIOCNOTTY = TIOCNOTTY;
-  unsigned IOCTL_TIOCNXCL = TIOCNXCL;
-  unsigned IOCTL_TIOCOUTQ = TIOCOUTQ;
-  unsigned IOCTL_TIOCPKT = TIOCPKT;
-  unsigned IOCTL_TIOCSCTTY = TIOCSCTTY;
-  unsigned IOCTL_TIOCSETD = TIOCSETD;
-  unsigned IOCTL_TIOCSPGRP = TIOCSPGRP;
-  unsigned IOCTL_TIOCSTI = TIOCSTI;
-  unsigned IOCTL_TIOCSWINSZ = TIOCSWINSZ;
+unsigned IOCTL_FIOASYNC = FIOASYNC;
+unsigned IOCTL_FIOCLEX = FIOCLEX;
+unsigned IOCTL_FIOGETOWN = FIOGETOWN;
+unsigned IOCTL_FIONBIO = FIONBIO;
+unsigned IOCTL_FIONCLEX = FIONCLEX;
+unsigned IOCTL_FIOSETOWN = FIOSETOWN;
+unsigned IOCTL_SIOCADDMULTI = SIOCADDMULTI;
+unsigned IOCTL_SIOCATMARK = SIOCATMARK;
+unsigned IOCTL_SIOCDELMULTI = SIOCDELMULTI;
+unsigned IOCTL_SIOCGIFADDR = SIOCGIFADDR;
+unsigned IOCTL_SIOCGIFBRDADDR = SIOCGIFBRDADDR;
+unsigned IOCTL_SIOCGIFCONF = SIOCGIFCONF;
+unsigned IOCTL_SIOCGIFDSTADDR = SIOCGIFDSTADDR;
+unsigned IOCTL_SIOCGIFFLAGS = SIOCGIFFLAGS;
+unsigned IOCTL_SIOCGIFMETRIC = SIOCGIFMETRIC;
+unsigned IOCTL_SIOCGIFMTU = SIOCGIFMTU;
+unsigned IOCTL_SIOCGIFNETMASK = SIOCGIFNETMASK;
+unsigned IOCTL_SIOCGPGRP = SIOCGPGRP;
+unsigned IOCTL_SIOCSIFADDR = SIOCSIFADDR;
+unsigned IOCTL_SIOCSIFBRDADDR = SIOCSIFBRDADDR;
+unsigned IOCTL_SIOCSIFDSTADDR = SIOCSIFDSTADDR;
+unsigned IOCTL_SIOCSIFFLAGS = SIOCSIFFLAGS;
+unsigned IOCTL_SIOCSIFMETRIC = SIOCSIFMETRIC;
+unsigned IOCTL_SIOCSIFMTU = SIOCSIFMTU;
+unsigned IOCTL_SIOCSIFNETMASK = SIOCSIFNETMASK;
+unsigned IOCTL_SIOCSPGRP = SIOCSPGRP;
+unsigned IOCTL_TIOCEXCL = TIOCEXCL;
+unsigned IOCTL_TIOCGETD = TIOCGETD;
+unsigned IOCTL_TIOCGPGRP = TIOCGPGRP;
+unsigned IOCTL_TIOCGWINSZ = TIOCGWINSZ;
+unsigned IOCTL_TIOCMBIC = TIOCMBIC;
+unsigned IOCTL_TIOCMBIS = TIOCMBIS;
+unsigned IOCTL_TIOCMGET = TIOCMGET;
+unsigned IOCTL_TIOCMSET = TIOCMSET;
+unsigned IOCTL_TIOCNOTTY = TIOCNOTTY;
+unsigned IOCTL_TIOCNXCL = TIOCNXCL;
+unsigned IOCTL_TIOCOUTQ = TIOCOUTQ;
+unsigned IOCTL_TIOCPKT = TIOCPKT;
+unsigned IOCTL_TIOCSCTTY = TIOCSCTTY;
+unsigned IOCTL_TIOCSETD = TIOCSETD;
+unsigned IOCTL_TIOCSPGRP = TIOCSPGRP;
+unsigned IOCTL_TIOCSTI = TIOCSTI;
+unsigned IOCTL_TIOCSWINSZ = TIOCSWINSZ;
 
-  unsigned IOCTL_MTIOCGET = MTIOCGET;
-  unsigned IOCTL_MTIOCTOP = MTIOCTOP;
+unsigned IOCTL_MTIOCGET = MTIOCGET;
+unsigned IOCTL_MTIOCTOP = MTIOCTOP;
 
-  const int si_SEGV_MAPERR = SEGV_MAPERR;
-  const int si_SEGV_ACCERR = SEGV_ACCERR;
-} // namespace __sanitizer
+const int si_SEGV_MAPERR = SEGV_MAPERR;
+const int si_SEGV_ACCERR = SEGV_ACCERR;
+}  // namespace __sanitizer
 
 using namespace __sanitizer;
 

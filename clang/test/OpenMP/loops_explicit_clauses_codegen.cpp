@@ -8,7 +8,6 @@
 // SIMD-ONLY0-NOT: {{__kmpc|__tgt}}
 // expected-no-diagnostics
 
-
 #ifndef HEADER
 #define HEADER
 
@@ -47,17 +46,17 @@ int main(int argc, char **argv) {
 #pragma omp simd linear(k : 2)
   for (k = 0; k < argc; k++)
     bar();
-// CHECK: @{{.+}}foo
-// CHECK-NOT: @k{{.+}}!llvm.access.group
-// CHECK: i32 @{{.+}}bar{{.+}}!llvm.access.group
-// CHECK-NOT: @k{{.+}}!llvm.access.group
-// CHECK: sdiv i32
-// CHECK: store i32 %{{.+}}, i32* @k,
+  // CHECK: @{{.+}}foo
+  // CHECK-NOT: @k{{.+}}!llvm.access.group
+  // CHECK: i32 @{{.+}}bar{{.+}}!llvm.access.group
+  // CHECK-NOT: @k{{.+}}!llvm.access.group
+  // CHECK: sdiv i32
+  // CHECK: store i32 %{{.+}}, i32* @k,
   foo();
 #pragma omp simd lastprivate(k) collapse(2)
   for (int i = 0; i < 2; ++i)
     for (k = 0; k < argc; k++)
-     bar() ;
+      bar();
   foo();
 // CHECK: @{{.+}}foo
 // CHECK-NOT: @k{{.+}}!llvm.access.group
@@ -79,7 +78,7 @@ int main(int argc, char **argv) {
   for (int i = 0; i < 2; ++i)
     for (k = 0; k < argc; k++)
       bar();
-// CHECK: @{{.+}}foo
+  // CHECK: @{{.+}}foo
   foo();
   return 0;
 }
@@ -87,7 +86,7 @@ int main(int argc, char **argv) {
 struct S {
   int k;
   S(int argc) {
-  foo();
+    foo();
 // CHECK: @{{.+}}foo
 // CHECK: call void @__kmpc_for_static_init_4(
 // CHECK-NOT: getelementptr inbounds %struct.S, %struct.S* %{{.+}}, i32 0, i32 0
@@ -96,7 +95,7 @@ struct S {
 #pragma omp for private(k)
     for (k = 0; k < argc; k++)
       ;
-  foo();
+    foo();
 // CHECK: @{{.+}}foo
 // CHECK: call void @__kmpc_for_static_init_8(
 // CHECK-NOT: getelementptr inbounds %struct.S, %struct.S* %{{.+}}, i32 0, i32 0
@@ -105,7 +104,7 @@ struct S {
     for (int i = 0; i < 2; ++i)
       for (k = 0; k < argc; k++)
         ;
-  foo();
+    foo();
 // CHECK: @{{.+}}foo
 // CHECK: getelementptr inbounds %struct.S, %struct.S* %{{.+}}, i32 0, i32 0
 // CHECK: br i1
@@ -118,7 +117,7 @@ struct S {
 #pragma omp simd linear(k : 2)
     for (k = 0; k < argc; k++)
       bar();
-  foo();
+    foo();
 // CHECK: @{{.+}}foo
 // CHECK: getelementptr inbounds %struct.S, %struct.S* %{{.+}}, i32 0, i32 0
 // CHECK: br i1
@@ -132,7 +131,7 @@ struct S {
     for (int i = 0; i < 2; ++i)
       for (k = 0; k < argc; k++)
         bar();
-  foo();
+    foo();
 // CHECK: @{{.+}}foo
 // CHECK-NOT: getelementptr inbounds %struct.S, %struct.S* %{{.+}}, i32 0, i32 0
 // CHECK: br i1
@@ -145,7 +144,7 @@ struct S {
 #pragma omp simd
     for (k = 0; k < argc; k++)
       bar();
-  foo();
+    foo();
 // CHECK: @{{.+}}foo
 // CHECK-NOT: getelementptr inbounds %struct.S, %struct.S* %{{.+}}, i32 0, i32 0
 // CHECK: br i1
@@ -159,8 +158,8 @@ struct S {
     for (int i = 0; i < 2; ++i)
       for (k = 0; k < argc; k++)
         bar();
-// CHECK: @{{.+}}foo
-  foo();
+    // CHECK: @{{.+}}foo
+    foo();
   }
 } s(N);
 

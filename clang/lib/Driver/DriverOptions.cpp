@@ -33,11 +33,10 @@ namespace {
 
 class DriverOptTable : public OptTable {
 public:
-  DriverOptTable()
-    : OptTable(InfoTable) {}
+  DriverOptTable() : OptTable(InfoTable) {}
 };
 
-}
+} // namespace
 
 const llvm::opt::OptTable &clang::driver::getDriverOptTable() {
   static const DriverOptTable *Table = []() {

@@ -25,7 +25,8 @@ void test_basic() {
 #if TEST_STD_VER >= 11
   {
     using U = std::unique_ptr<VT>;
-    U u; ((void)u);
+    U u;
+    ((void)u);
     ASSERT_NOEXCEPT(u.release());
   }
 #endif

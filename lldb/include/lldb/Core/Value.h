@@ -31,7 +31,7 @@ class Module;
 class Stream;
 class Type;
 class Variable;
-}
+} // namespace lldb_private
 
 namespace lldb_private {
 

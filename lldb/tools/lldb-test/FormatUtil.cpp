@@ -33,9 +33,7 @@ void LinePrinter::Unindent(uint32_t Amount) {
   CurrentIndent = std::max<int>(0, CurrentIndent - Amount);
 }
 
-void LinePrinter::NewLine() {
-  OS << "\n";
-}
+void LinePrinter::NewLine() { OS << "\n"; }
 
 void LinePrinter::formatBinary(StringRef Label, ArrayRef<uint8_t> Data,
                                uint32_t StartOffset) {

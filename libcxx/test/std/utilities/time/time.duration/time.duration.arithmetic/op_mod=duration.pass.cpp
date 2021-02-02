@@ -19,37 +19,35 @@
 #include "../../rep.h"
 
 #if TEST_STD_VER > 14
-constexpr bool test_constexpr()
-{
-    std::chrono::microseconds us1(11);
-    std::chrono::microseconds us2(3);
-    us1 %= us2;
-    return us1.count() == 2;
+constexpr bool test_constexpr() {
+  std::chrono::microseconds us1(11);
+  std::chrono::microseconds us2(3);
+  us1 %= us2;
+  return us1.count() == 2;
 }
 #endif
 
-int main(int, char**)
-{
-    {
+int main(int, char**) {
+  {
     std::chrono::microseconds us1(11);
     std::chrono::microseconds us2(3);
     us1 %= us2;
     assert(us1.count() == 2);
     us1 %= std::chrono::milliseconds(3);
     assert(us1.count() == 2);
-    }
+  }
 
 #if TEST_STD_VER > 14
-    static_assert(test_constexpr(), "");
+  static_assert(test_constexpr(), "");
 #endif
 
 #if TEST_STD_VER >= 11
-    { // This is PR#41130
+  { // This is PR#41130
     std::chrono::nanoseconds d(5);
     NotARep n;
     d %= n;
     assert(d.count() == 5);
-    }
+  }
 #endif
 
   return 0;

@@ -10,7 +10,7 @@ struct TestNormal {
 };
 
 int main(void) {
-  Test unused;         // expected-warning {{unused variable 'unused'}}
+  Test unused; // expected-warning {{unused variable 'unused'}}
   Test used;
   TestNormal normal;
   used.use();

@@ -4,11 +4,11 @@
 namespace rdar8548050 {
 
 struct S100 {
-    char x[100];
+  char x[100];
 };
 
 struct S101 {
-    char x[101];
+  char x[101];
 };
 
 S100 f100(S100 s) { return s; }
@@ -25,7 +25,7 @@ template <> S101 foo_template(S101) { return S101(); } // expected-warning {{ret
                                                        // expected-warning@-1 {{'' is a large (101 bytes) pass-by-value argument}}
 
 typedef int Arr[200];
-void farr(Arr a) { }
+void farr(Arr a) {}
 
 struct NonPOD {
   char x[200];
@@ -36,20 +36,20 @@ NonPOD fNonPOD(NonPOD s) { return s; }
 
 template <unsigned size>
 struct TS {
-    char x[size];
+  char x[size];
 };
 
 template <unsigned size>
 void tf(TS<size> ts) {} // expected-warning {{ts' is a large (300 bytes) pass-by-value argument}}
 
 void g() {
-    TS<300> ts;
-    tf<300>(ts); // expected-note {{instantiation}}
+  TS<300> ts;
+  tf<300>(ts); // expected-note {{instantiation}}
 }
 
-}
+} // namespace rdar8548050
 
-template<typename T> class DependentPOD {
+template <typename T> class DependentPOD {
   enum b { x };
   b foo() { return x; }
 };

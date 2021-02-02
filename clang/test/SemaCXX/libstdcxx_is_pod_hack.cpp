@@ -6,16 +6,16 @@
 // GCC 4.3 and newer make __is_pod a keyword. Clang treats __is_pod as
 // a keyword *unless* it is introduced following the struct keyword.
 
-template<typename T>
-struct __is_pod { // expected-warning {{keyword '__is_pod' will be made available as an identifier}}
-  __is_pod() {}
-};
+template <typename T>
+struct __is_pod {// expected-warning {{keyword '__is_pod' will be made available as an identifier}}
+                 __is_pod(){}};
 
 __is_pod<int> ipi;
 
 // Ditto for __is_same.
-template<typename T>
-struct __is_same { // expected-warning {{keyword '__is_same' will be made available as an identifier}}
+template <typename T>
+struct __is_same {
+    // expected-warning {{keyword '__is_same' will be made available as an identifier}}
 };
 
 __is_same<int> isi;
@@ -29,8 +29,8 @@ struct test_is_signed {
 
 bool check_signed = test_is_signed::__is_signed;
 
-template<bool B> struct must_be_true {};
-template<> struct must_be_true<false>;
+template <bool B> struct must_be_true {};
+template <> struct must_be_true<false>;
 
 void foo() {
   bool b = __is_pod(int);
@@ -44,5 +44,5 @@ struct // expected-error {{declaration of anonymous struct must be a definition}
 };
 
 #if !__has_feature(is_pod)
-#  error __is_pod should still be available.
+#error __is_pod should still be available.
 #endif

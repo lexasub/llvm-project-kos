@@ -1,36 +1,43 @@
 // RUN: %clang_cc1 -triple i386-unknown-unknown -emit-llvm %s -o - | FileCheck %s
 
-extern int printf(const char*, ...);
+extern int printf(const char *, ...);
 
 // CHECK-LABEL: @_Z4testi(
-int test(int val){
- switch (val) {
- case 4:
-   do {
-     switch (6) {
-       // CHECK: call i32 (i8*, ...) @_Z6printfPKcz
-       case 6: do { case 5: printf("bad\n"); } while (0);
-     };
-   } while (0);
- }
- return 0;
+int test(int val) {
+  switch (val) {
+  case 4:
+    do {
+      switch (6) {
+      // CHECK: call i32 (i8*, ...) @_Z6printfPKcz
+      case 6:
+        do {
+        case 5:
+          printf("bad\n");
+        } while (0);
+      };
+    } while (0);
+  }
+  return 0;
 }
 
 int main(void) {
- return test(5);
+  return test(5);
 }
 
 // CHECK-LABEL: @_Z10other_testv(
 void other_test() {
-  switch(0) {
+  switch (0) {
   case 0:
     do {
     default:;
-    } while(0);
+    } while (0);
   }
 }
 
-struct X { X(); ~X(); };
+struct X {
+  X();
+  ~X();
+};
 
 void dont_call();
 void foo();
@@ -48,17 +55,26 @@ void nested_scopes() {
     // CHECK: call {{.*}} @_Z3foov(
     // CHECK-NOT: call {{.*}} @_Z3foov(
     // CHECK: call {{.*}} @_ZN1XD1Ev(
-    { X x; foo(); }
+    {
+      X x;
+      foo();
+    }
 
     // CHECK: call {{.*}} @_ZN1XC1Ev(
     // CHECK: call {{.*}} @_Z3foov(
     // CHECK: call {{.*}} @_ZN1XD1Ev(
-    { X x; foo(); }
+    {
+      X x;
+      foo();
+    }
 
     // CHECK: call {{.*}} @_ZN1XC1Ev(
     // CHECK: call {{.*}} @_Z3foov(
     // CHECK: call {{.*}} @_ZN1XD1Ev(
-    { X x; foo(); }
+    {
+      X x;
+      foo();
+    }
     break;
   }
 }
@@ -69,7 +85,10 @@ void scope_fallthrough() {
     // CHECK: call {{.*}} @_ZN1XC1Ev(
     // CHECK-NOT: call {{.*}} @_Z3foov(
     // CHECK: call {{.*}} @_ZN1XD1Ev(
-    { default: X x; }
+    {
+    default:
+      X x;
+    }
     // CHECK: call {{.*}} @_Z3foov(
     foo();
     break;
@@ -93,16 +112,23 @@ void hidden_break(bool b) {
 int hidden_var() {
   switch (1) {
   // CHECK: %[[N:.*]] = alloca i32
-  case 0: int n;
+  case 0:
+    int n;
   // CHECK: store i32 0, i32* %[[N]]
   // CHECK: load i32, i32* %[[N]]
   // CHECK: ret
-  default: n = 0; return n;
+  default:
+    n = 0;
+    return n;
   }
 }
 
 // CHECK-LABEL: @_Z13case_in_labelv(
 void case_in_label() {
   // CHECK: br label %
-  switch (1) case 1: foo: case 0: goto foo;
+  switch (1)
+  case 1:
+  foo:
+  case 0:
+    goto foo;
 }

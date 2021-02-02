@@ -51,47 +51,44 @@ ms Tolerance = ms(50);
 ms Tolerance = ms(50 * 5);
 #endif
 
-void f1()
-{
-    time_point t0 = Clock::now();
-    assert(m.try_lock_shared_for(WaitTime + Tolerance) == true);
-    time_point t1 = Clock::now();
-    m.unlock_shared();
-    ns d = t1 - t0 - WaitTime;
-    assert(d < Tolerance);  // within 50ms
+void f1() {
+  time_point t0 = Clock::now();
+  assert(m.try_lock_shared_for(WaitTime + Tolerance) == true);
+  time_point t1 = Clock::now();
+  m.unlock_shared();
+  ns d = t1 - t0 - WaitTime;
+  assert(d < Tolerance); // within 50ms
 }
 
-void f2()
-{
-    time_point t0 = Clock::now();
-    assert(m.try_lock_shared_for(WaitTime) == false);
-    time_point t1 = Clock::now();
-    ns d = t1 - t0 - WaitTime;
-    assert(d < Tolerance);  // within 50ms
+void f2() {
+  time_point t0 = Clock::now();
+  assert(m.try_lock_shared_for(WaitTime) == false);
+  time_point t1 = Clock::now();
+  ns d = t1 - t0 - WaitTime;
+  assert(d < Tolerance); // within 50ms
 }
 
-int main(int, char**)
-{
-    {
-        m.lock();
-        std::vector<std::thread> v;
-        for (int i = 0; i < 5; ++i)
-            v.push_back(support::make_test_thread(f1));
-        std::this_thread::sleep_for(WaitTime);
-        m.unlock();
-        for (auto& t : v)
-            t.join();
-    }
-    {
-        m.lock();
-        std::vector<std::thread> v;
-        for (int i = 0; i < 5; ++i)
-            v.push_back(support::make_test_thread(f2));
-        std::this_thread::sleep_for(WaitTime + Tolerance);
-        m.unlock();
-        for (auto& t : v)
-            t.join();
-    }
+int main(int, char**) {
+  {
+    m.lock();
+    std::vector<std::thread> v;
+    for (int i = 0; i < 5; ++i)
+      v.push_back(support::make_test_thread(f1));
+    std::this_thread::sleep_for(WaitTime);
+    m.unlock();
+    for (auto& t : v)
+      t.join();
+  }
+  {
+    m.lock();
+    std::vector<std::thread> v;
+    for (int i = 0; i < 5; ++i)
+      v.push_back(support::make_test_thread(f2));
+    std::this_thread::sleep_for(WaitTime + Tolerance);
+    m.unlock();
+    for (auto& t : v)
+      t.join();
+  }
 
   return 0;
 }

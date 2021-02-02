@@ -1,28 +1,26 @@
 template <typename T>
 struct Base {
-    void func();
-    int operator[](T);
+  void func();
+  int operator[](T);
 };
 
-struct Sub: public Base<int> {
-    void func();
+struct Sub : public Base<int> {
+  void func();
 };
 
 template <typename T>
-inline T myMax(T a, T b)
-{ return (a > b) ? a : b; }
+inline T myMax(T a, T b) { return (a > b) ? a : b; }
 
-int main()
-{
-    Sub inst;
-    inst.func();
-    inst[1];
-    inst.operator[](1);
+int main() {
+  Sub inst;
+  inst.func();
+  inst[1];
+  inst.operator[](1);
 
-    inst.Base<int>::operator[](1);
-    myMax<int>(1, 2);
+  inst.Base<int>::operator[](1);
+  myMax<int>(1, 2);
 
-    return 0;
+  return 0;
 }
 
 // RUN: c-index-test -test-load-source all %s | FileCheck %s

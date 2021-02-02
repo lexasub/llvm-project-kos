@@ -11,12 +11,13 @@ static // expected-error {{'main' is not allowed to be declared static}}
 #elif CONSTEXPR
 constexpr // expected-error {{'main' is not allowed to be declared constexpr}}
 #endif
-int main(int argc, char **argv)
+    int
+    main(int argc, char **argv)
 #if DELETED
-  = delete; // expected-error {{'main' is not allowed to be deleted}}
+    = delete; // expected-error {{'main' is not allowed to be deleted}}
 #else
 {
-  int (*pmain)(int, char**) = &main; // expected-error {{ISO C++ does not allow 'main' to be used by a program}}
+  int (*pmain)(int, char **) = &main; // expected-error {{ISO C++ does not allow 'main' to be used by a program}}
 
   if (argc)
     main(0, 0); // expected-error {{ISO C++ does not allow 'main' to be used by a program}}

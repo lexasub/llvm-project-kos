@@ -192,7 +192,8 @@ class LowerMatrixIntrinsics {
   LoopInfo *LI;
   OptimizationRemarkEmitter *ORE;
 
-  /// Contains estimates of the number of operations (loads, stores, compute) required to lower a matrix operation.
+  /// Contains estimates of the number of operations (loads, stores, compute)
+  /// required to lower a matrix operation.
   struct OpInfoTy {
     /// Number of stores emitted to generate this matrix.
     unsigned NumStores = 0;
@@ -1149,9 +1150,8 @@ public:
     Builder.SetInsertPoint(Copy, Copy->begin());
     AllocaInst *NewLd =
         Builder.CreateAlloca(Load->getType(), Load->getPointerAddressSpace());
-    Builder.CreateMemCpy(NewLd, NewLd->getAlign(),
-                         Load->getPointerOperand(), Load->getAlign(),
-                         LoadLoc.Size.getValue());
+    Builder.CreateMemCpy(NewLd, NewLd->getAlign(), Load->getPointerOperand(),
+                         Load->getAlign(), LoadLoc.Size.getValue());
     Builder.SetInsertPoint(Fusion, Fusion->begin());
     PHINode *PHI = Builder.CreatePHI(Load->getPointerOperandType(), 3);
     PHI->addIncoming(Load->getPointerOperand(), Check0);

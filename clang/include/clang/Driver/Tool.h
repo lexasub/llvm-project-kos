@@ -13,20 +13,20 @@
 
 namespace llvm {
 namespace opt {
-  class ArgList;
+class ArgList;
 }
-}
+} // namespace llvm
 
 namespace clang {
 namespace driver {
 
-  class Compilation;
-  class InputInfo;
-  class Job;
-  class JobAction;
-  class ToolChain;
+class Compilation;
+class InputInfo;
+class Job;
+class JobAction;
+class ToolChain;
 
-  typedef SmallVector<InputInfo, 4> InputInfoList;
+typedef SmallVector<InputInfo, 4> InputInfoList;
 
 /// Tool - Information on a specific compilation tool.
 class Tool {

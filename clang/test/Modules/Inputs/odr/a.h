@@ -8,7 +8,7 @@ struct X {
   int n;
 } x1;
 
-template<typename T>
+template <typename T>
 struct F {
   int n;
   friend bool operator==(const F &a, const F &b) { return a.n == b.n; }

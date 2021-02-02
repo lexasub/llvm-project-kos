@@ -19,23 +19,14 @@
 #include "test_macros.h"
 #include "min_allocator.h"
 
-int main(int, char**)
-{
-    {
+int main(int, char**) {
+  {
     typedef std::pair<const int, double> V;
-    V ar[] =
-    {
-        V(1, 1),
-        V(1, 1.5),
-        V(1, 2),
-        V(2, 1),
-        V(2, 1.5),
-        V(2, 2),
-        V(3, 1),
-        V(3, 1.5),
-        V(3, 2),
+    V ar[] = {
+        V(1, 1), V(1, 1.5), V(1, 2),   V(2, 1), V(2, 1.5),
+        V(2, 2), V(3, 1),   V(3, 1.5), V(3, 2),
     };
-    std::multimap<int, double> m(ar, ar+sizeof(ar)/sizeof(ar[0]));
+    std::multimap<int, double> m(ar, ar + sizeof(ar) / sizeof(ar[0]));
     assert(m.size() == 9);
     assert(distance(m.begin(), m.end()) == 9);
     assert(*m.begin() == V(1, 1));
@@ -47,23 +38,16 @@ int main(int, char**)
     assert(*next(m.begin(), 6) == V(3, 1));
     assert(*next(m.begin(), 7) == V(3, 1.5));
     assert(*next(m.begin(), 8) == V(3, 2));
-    }
+  }
 #if TEST_STD_VER >= 11
-    {
+  {
     typedef std::pair<const int, double> V;
-    V ar[] =
-    {
-        V(1, 1),
-        V(1, 1.5),
-        V(1, 2),
-        V(2, 1),
-        V(2, 1.5),
-        V(2, 2),
-        V(3, 1),
-        V(3, 1.5),
-        V(3, 2),
+    V ar[] = {
+        V(1, 1), V(1, 1.5), V(1, 2),   V(2, 1), V(2, 1.5),
+        V(2, 2), V(3, 1),   V(3, 1.5), V(3, 2),
     };
-    std::multimap<int, double, std::less<int>, min_allocator<V>> m(ar, ar+sizeof(ar)/sizeof(ar[0]));
+    std::multimap<int, double, std::less<int>, min_allocator<V> > m(
+        ar, ar + sizeof(ar) / sizeof(ar[0]));
     assert(m.size() == 9);
     assert(distance(m.begin(), m.end()) == 9);
     assert(*m.begin() == V(1, 1));
@@ -75,25 +59,18 @@ int main(int, char**)
     assert(*next(m.begin(), 6) == V(3, 1));
     assert(*next(m.begin(), 7) == V(3, 1.5));
     assert(*next(m.begin(), 8) == V(3, 2));
-    }
+  }
 #if TEST_STD_VER > 11
-    {
+  {
     typedef std::pair<const int, double> V;
-    V ar[] =
-    {
-        V(1, 1),
-        V(1, 1.5),
-        V(1, 2),
-        V(2, 1),
-        V(2, 1.5),
-        V(2, 2),
-        V(3, 1),
-        V(3, 1.5),
-        V(3, 2),
+    V ar[] = {
+        V(1, 1), V(1, 1.5), V(1, 2),   V(2, 1), V(2, 1.5),
+        V(2, 2), V(3, 1),   V(3, 1.5), V(3, 2),
     };
-    typedef min_allocator<std::pair<const int, double>> A;
+    typedef min_allocator<std::pair<const int, double> > A;
     A a;
-    std::multimap<int, double, std::less<int>, A> m(ar, ar+sizeof(ar)/sizeof(ar[0]), a);
+    std::multimap<int, double, std::less<int>, A> m(
+        ar, ar + sizeof(ar) / sizeof(ar[0]), a);
     assert(m.size() == 9);
     assert(distance(m.begin(), m.end()) == 9);
     assert(*m.begin() == V(1, 1));
@@ -106,7 +83,7 @@ int main(int, char**)
     assert(*next(m.begin(), 7) == V(3, 1.5));
     assert(*next(m.begin(), 8) == V(3, 2));
     assert(m.get_allocator() == a);
-    }
+  }
 #endif
 #endif
 

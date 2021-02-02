@@ -20,11 +20,11 @@
 
 #include "test_macros.h"
 
-
 int main(int, char**) {
   using namespace fs;
   static_assert(std::is_copy_assignable<path>::value, "");
-  static_assert(!std::is_nothrow_copy_assignable<path>::value, "should not be noexcept");
+  static_assert(!std::is_nothrow_copy_assignable<path>::value,
+                "should not be noexcept");
   const std::string s("foo");
   const path p(s);
   path p2;

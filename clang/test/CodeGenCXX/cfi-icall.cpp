@@ -11,7 +11,7 @@ struct S {};
 void f(S s) {
 }
 
-}
+} // namespace
 
 void g() {
   struct S s;

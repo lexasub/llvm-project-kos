@@ -22,13 +22,13 @@
 #include "llvm/CodeGen/MachineInstrBuilder.h"
 #include "llvm/CodeGen/MachineRegisterInfo.h"
 #include "llvm/CodeGen/RegisterScavenging.h"
+#include "llvm/CodeGen/TargetFrameLowering.h"
 #include "llvm/IR/Constants.h"
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/ErrorHandling.h"
-#include "llvm/CodeGen/TargetFrameLowering.h"
 #include "llvm/Target/TargetMachine.h"
 
 namespace llvm {
@@ -41,7 +41,7 @@ ThumbRegisterInfo::ThumbRegisterInfo() : ARMBaseRegisterInfo() {}
 
 const TargetRegisterClass *
 ThumbRegisterInfo::getLargestLegalSuperClass(const TargetRegisterClass *RC,
-                                              const MachineFunction &MF) const {
+                                             const MachineFunction &MF) const {
   if (!MF.getSubtarget<ARMSubtarget>().isThumb1Only())
     return ARMBaseRegisterInfo::getLargestLegalSuperClass(RC, MF);
 
@@ -69,13 +69,15 @@ static void emitThumb1LoadConstPool(MachineBasicBlock &MBB,
   const TargetInstrInfo &TII = *STI.getInstrInfo();
   MachineConstantPool *ConstantPool = MF.getConstantPool();
   const Constant *C = ConstantInt::get(
-          Type::getInt32Ty(MBB.getParent()->getFunction().getContext()), Val);
+      Type::getInt32Ty(MBB.getParent()->getFunction().getContext()), Val);
   unsigned Idx = ConstantPool->getConstantPoolIndex(C, Align(4));
 
   BuildMI(MBB, MBBI, dl, TII.get(ARM::tLDRpci))
-    .addReg(DestReg, getDefRegState(true), SubIdx)
-    .addConstantPoolIndex(Idx).addImm(Pred).addReg(PredReg)
-    .setMIFlags(MIFlags);
+      .addReg(DestReg, getDefRegState(true), SubIdx)
+      .addConstantPoolIndex(Idx)
+      .addImm(Pred)
+      .addReg(PredReg)
+      .setMIFlags(MIFlags);
 }
 
 static void emitThumb2LoadConstPool(MachineBasicBlock &MBB,
@@ -88,7 +90,7 @@ static void emitThumb2LoadConstPool(MachineBasicBlock &MBB,
   const TargetInstrInfo &TII = *MF.getSubtarget().getInstrInfo();
   MachineConstantPool *ConstantPool = MF.getConstantPool();
   const Constant *C = ConstantInt::get(
-           Type::getInt32Ty(MBB.getParent()->getFunction().getContext()), Val);
+      Type::getInt32Ty(MBB.getParent()->getFunction().getContext()), Val);
   unsigned Idx = ConstantPool->getConstantPoolIndex(C, Align(4));
 
   BuildMI(MBB, MBBI, dl, TII.get(ARM::t2LDRpci))
@@ -160,7 +162,8 @@ static void emitThumbRegPlusImmInReg(
         .setMIFlags(MIFlags);
   } else if (ST.genExecuteOnly()) {
     BuildMI(MBB, MBBI, dl, TII.get(ARM::t2MOVi32imm), LdReg)
-      .addImm(NumBytes).setMIFlags(MIFlags);
+        .addImm(NumBytes)
+        .setMIFlags(MIFlags);
   } else
     MRI.emitLoadConstPool(MBB, MBBI, dl, LdReg, 0, NumBytes, ARMCC::AL, 0,
                           MIFlags);
@@ -191,7 +194,8 @@ void llvm::emitThumbRegPlusImmediate(MachineBasicBlock &MBB,
                                      unsigned MIFlags) {
   bool isSub = NumBytes < 0;
   unsigned Bytes = (unsigned)NumBytes;
-  if (isSub) Bytes = -NumBytes;
+  if (isSub)
+    Bytes = -NumBytes;
 
   int CopyOpc = 0;
   unsigned CopyBits = 0;
@@ -297,8 +301,7 @@ void llvm::emitThumbRegPlusImmediate(MachineBasicBlock &MBB,
 
   // Use a constant pool, if the sequence of ADDs/SUBs is too expensive.
   if (RequiredInstrs > Threshold) {
-    emitThumbRegPlusImmInReg(MBB, MBBI, dl,
-                             DestReg, BaseReg, NumBytes, true,
+    emitThumbRegPlusImmInReg(MBB, MBBI, dl, DestReg, BaseReg, NumBytes, true,
                              TII, MRI, MIFlags);
     return;
   }
@@ -325,13 +328,14 @@ void llvm::emitThumbRegPlusImmediate(MachineBasicBlock &MBB,
     unsigned ExtraImm = std::min(Bytes, ExtraRange) / ExtraScale;
     Bytes -= ExtraImm * ExtraScale;
 
-    MachineInstrBuilder MIB = BuildMI(MBB, MBBI, dl, TII.get(ExtraOpc), DestReg);
+    MachineInstrBuilder MIB =
+        BuildMI(MBB, MBBI, dl, TII.get(ExtraOpc), DestReg);
     if (ExtraNeedsCC)
       MIB = MIB.add(t1CondCodeOp());
     MIB.addReg(BaseReg)
-       .addImm(ExtraImm)
-       .add(predOps(ARMCC::AL))
-       .setMIFlags(MIFlags);
+        .addImm(ExtraImm)
+        .add(predOps(ARMCC::AL))
+        .setMIFlags(MIFlags);
   }
 }
 
@@ -370,7 +374,7 @@ bool ThumbRegisterInfo::rewriteFrameIndex(MachineBasicBlock::iterator II,
   unsigned AddrMode = (Desc.TSFlags & ARMII::AddrModeMask);
 
   if (Opcode == ARM::tADDframe) {
-    Offset += MI.getOperand(FrameRegIdx+1).getImm();
+    Offset += MI.getOperand(FrameRegIdx + 1).getImm();
     Register DestReg = MI.getOperand(0).getReg();
 
     emitThumbRegPlusImmediate(MBB, II, dl, DestReg, FrameReg, Offset, TII,
@@ -442,7 +446,7 @@ void ThumbRegisterInfo::resolveFrameIndex(MachineInstr &MI, Register BaseReg,
     assert(i < MI.getNumOperands() && "Instr doesn't have FrameIndex operand!");
   }
   bool Done = rewriteFrameIndex(MI, i, BaseReg, Off, TII);
-  assert (Done && "Unable to resolve frame index!");
+  assert(Done && "Unable to resolve frame index!");
   (void)Done;
 }
 
@@ -472,7 +476,7 @@ void ThumbRegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator II,
   // means the stack pointer cannot be used to access the emergency spill slot
   // when !hasReservedCallFrame().
 #ifndef NDEBUG
-  if (RS && FrameReg == ARM::SP && RS->isScavengingFrameIndex(FrameIndex)){
+  if (RS && FrameReg == ARM::SP && RS->isScavengingFrameIndex(FrameIndex)) {
     assert(STI.getFrameLowering()->hasReservedCallFrame(MF) &&
            "Cannot use SP to access the emergency spill slot in "
            "functions without a reserved call frame");
@@ -484,8 +488,8 @@ void ThumbRegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator II,
 
   // Special handling of dbg_value instructions.
   if (MI.isDebugValue()) {
-    MI.getOperand(FIOperandNum).  ChangeToRegister(FrameReg, false /*isDef*/);
-    MI.getOperand(FIOperandNum+1).ChangeToImmediate(Offset);
+    MI.getOperand(FIOperandNum).ChangeToRegister(FrameReg, false /*isDef*/);
+    MI.getOperand(FIOperandNum + 1).ChangeToImmediate(Offset);
     return;
   }
 
@@ -513,8 +517,8 @@ void ThumbRegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator II,
     bool UseRR = false;
     if (Opcode == ARM::tLDRspi) {
       if (FrameReg == ARM::SP || STI.genExecuteOnly())
-        emitThumbRegPlusImmInReg(MBB, II, dl, TmpReg, FrameReg,
-                                 Offset, false, TII, *this);
+        emitThumbRegPlusImmInReg(MBB, II, dl, TmpReg, FrameReg, Offset, false,
+                                 TII, *this);
       else {
         emitLoadConstPool(MBB, II, dl, TmpReg, 0, Offset);
         UseRR = true;
@@ -529,30 +533,30 @@ void ThumbRegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator II,
     if (UseRR)
       // Use [reg, reg] addrmode. Replace the immediate operand w/ the frame
       // register. The offset is already handled in the vreg value.
-      MI.getOperand(FIOperandNum+1).ChangeToRegister(FrameReg, false, false,
-                                                     false);
+      MI.getOperand(FIOperandNum + 1)
+          .ChangeToRegister(FrameReg, false, false, false);
   } else if (MI.mayStore()) {
-      VReg = MF.getRegInfo().createVirtualRegister(&ARM::tGPRRegClass);
-      bool UseRR = false;
+    VReg = MF.getRegInfo().createVirtualRegister(&ARM::tGPRRegClass);
+    bool UseRR = false;
 
-      if (Opcode == ARM::tSTRspi) {
-        if (FrameReg == ARM::SP || STI.genExecuteOnly())
-          emitThumbRegPlusImmInReg(MBB, II, dl, VReg, FrameReg,
-                                   Offset, false, TII, *this);
-        else {
-          emitLoadConstPool(MBB, II, dl, VReg, 0, Offset);
-          UseRR = true;
-        }
-      } else
-        emitThumbRegPlusImmediate(MBB, II, dl, VReg, FrameReg, Offset, TII,
-                                  *this);
-      MI.setDesc(TII.get(UseRR ? ARM::tSTRr : ARM::tSTRi));
-      MI.getOperand(FIOperandNum).ChangeToRegister(VReg, false, false, true);
-      if (UseRR)
-        // Use [reg, reg] addrmode. Replace the immediate operand w/ the frame
-        // register. The offset is already handled in the vreg value.
-        MI.getOperand(FIOperandNum+1).ChangeToRegister(FrameReg, false, false,
-                                                       false);
+    if (Opcode == ARM::tSTRspi) {
+      if (FrameReg == ARM::SP || STI.genExecuteOnly())
+        emitThumbRegPlusImmInReg(MBB, II, dl, VReg, FrameReg, Offset, false,
+                                 TII, *this);
+      else {
+        emitLoadConstPool(MBB, II, dl, VReg, 0, Offset);
+        UseRR = true;
+      }
+    } else
+      emitThumbRegPlusImmediate(MBB, II, dl, VReg, FrameReg, Offset, TII,
+                                *this);
+    MI.setDesc(TII.get(UseRR ? ARM::tSTRr : ARM::tSTRi));
+    MI.getOperand(FIOperandNum).ChangeToRegister(VReg, false, false, true);
+    if (UseRR)
+      // Use [reg, reg] addrmode. Replace the immediate operand w/ the frame
+      // register. The offset is already handled in the vreg value.
+      MI.getOperand(FIOperandNum + 1)
+          .ChangeToRegister(FrameReg, false, false, false);
   } else {
     llvm_unreachable("Unexpected opcode!");
   }
@@ -562,8 +566,8 @@ void ThumbRegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator II,
     MIB.add(predOps(ARMCC::AL));
 }
 
-bool
-ThumbRegisterInfo::useFPForScavengingIndex(const MachineFunction &MF) const {
+bool ThumbRegisterInfo::useFPForScavengingIndex(
+    const MachineFunction &MF) const {
   if (MF.getSubtarget<ARMSubtarget>().isThumb1Only()) {
     // For Thumb1, the emergency spill slot must be some small positive
     // offset from the base/stack pointer.

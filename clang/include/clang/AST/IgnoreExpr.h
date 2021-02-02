@@ -22,7 +22,7 @@ namespace detail {
 /// Return Fn_n(...(Fn_1(E)))
 inline Expr *IgnoreExprNodesImpl(Expr *E) { return E; }
 template <typename FnTy, typename... FnTys>
-Expr *IgnoreExprNodesImpl(Expr *E, FnTy &&Fn, FnTys &&... Fns) {
+Expr *IgnoreExprNodesImpl(Expr *E, FnTy &&Fn, FnTys &&...Fns) {
   return IgnoreExprNodesImpl(Fn(E), std::forward<FnTys>(Fns)...);
 }
 } // namespace detail
@@ -30,7 +30,7 @@ Expr *IgnoreExprNodesImpl(Expr *E, FnTy &&Fn, FnTys &&... Fns) {
 /// Given an expression E and functions Fn_1,...,Fn_n : Expr * -> Expr *,
 /// Recursively apply each of the functions to E until reaching a fixed point.
 /// Note that a null E is valid; in this case nothing is done.
-template <typename... FnTys> Expr *IgnoreExprNodes(Expr *E, FnTys &&... Fns) {
+template <typename... FnTys> Expr *IgnoreExprNodes(Expr *E, FnTys &&...Fns) {
   Expr *LastE = nullptr;
   while (E != LastE) {
     LastE = E;

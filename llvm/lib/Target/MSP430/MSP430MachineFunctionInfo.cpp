@@ -10,4 +10,4 @@
 
 using namespace llvm;
 
-void MSP430MachineFunctionInfo::anchor() { }
+void MSP430MachineFunctionInfo::anchor() {}

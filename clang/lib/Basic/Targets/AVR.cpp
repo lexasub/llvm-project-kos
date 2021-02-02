@@ -289,10 +289,9 @@ bool AVRTargetInfo::isValidCPUName(StringRef Name) const {
   bool IsFamily =
       llvm::find(ValidFamilyNames, Name) != std::end(ValidFamilyNames);
 
-  bool IsMCU =
-      llvm::find_if(AVRMcus, [&](const MCUInfo &Info) {
-        return Info.Name == Name;
-      }) != std::end(AVRMcus);
+  bool IsMCU = llvm::find_if(AVRMcus, [&](const MCUInfo &Info) {
+                 return Info.Name == Name;
+               }) != std::end(AVRMcus);
   return IsFamily || IsMCU;
 }
 

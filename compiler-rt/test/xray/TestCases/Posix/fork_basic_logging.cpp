@@ -15,9 +15,9 @@
 // UNSUPPORTED: netbsd
 
 #include "xray/xray_log_interface.h"
+#include <stdint.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <stdint.h>
 #if defined(__linux__)
 #include <sys/syscall.h>
 #elif defined(__FreeBSD__)
@@ -29,8 +29,11 @@
 static uintptr_t syscall_gettid() {
   uint64_t retval;
 #ifdef __linux__
-  asm volatile("syscall" : "=a"(retval) : "a"(__NR_gettid) : "rcx", "r11",
-               "memory", "cc");
+  asm volatile("syscall"
+               : "=a"(retval)
+               : "a"(__NR_gettid)
+               : "rcx", "r11",
+                 "memory", "cc");
 #else
   long t;
   thr_self(&t);
@@ -43,54 +46,40 @@ static uintptr_t syscall_gettid() {
 
 static uint64_t parent_tid;
 
-[[clang::xray_always_instrument]]
-uint64_t __attribute__((noinline)) log_syscall_gettid()
-{
-	//don't optimize this function away
-	uint64_t tid = syscall_gettid();
-	printf("Logging tid %lu\n", tid);
-	return tid;
+[[clang::xray_always_instrument]] uint64_t __attribute__((noinline)) log_syscall_gettid() {
+  //don't optimize this function away
+  uint64_t tid = syscall_gettid();
+  printf("Logging tid %lu\n", tid);
+  return tid;
 }
 
-[[clang::xray_always_instrument, clang::xray_log_args(1)]]
-void __attribute__((noinline)) print_parent_tid(uint64_t tid)
-{
-	printf("Parent with tid %lu", tid);
+[[clang::xray_always_instrument, clang::xray_log_args(1)]] void __attribute__((noinline)) print_parent_tid(uint64_t tid) {
+  printf("Parent with tid %lu", tid);
 }
 
-[[clang::xray_always_instrument, clang::xray_log_args(1)]]
-void __attribute__((noinline)) print_child_tid(uint64_t tid)
-{
-	printf("Child with tid %lu", tid);
+[[clang::xray_always_instrument, clang::xray_log_args(1)]] void __attribute__((noinline)) print_child_tid(uint64_t tid) {
+  printf("Child with tid %lu", tid);
 }
 
-[[clang::xray_always_instrument]] void __attribute__((noinline)) print_parent_or_child()
-{
-	uint64_t tid = syscall_gettid();
-	if(tid == parent_tid)
-	{
-		print_parent_tid(tid);
-	}
-	else
-	{
-		print_child_tid(tid);
-	}
+[[clang::xray_always_instrument]] void __attribute__((noinline)) print_parent_or_child() {
+  uint64_t tid = syscall_gettid();
+  if (tid == parent_tid) {
+    print_parent_tid(tid);
+  } else {
+    print_child_tid(tid);
+  }
 }
 
-int main()
-{
-	parent_tid = log_syscall_gettid();
-	if(fork())
-	{
-		print_parent_or_child();
-  		// CHECK-DAG: Parent with tid
-	}
-	else
-	{
-		print_parent_or_child();
-  		// CHECK-DAG: Child with tid
-	}
-	return 0;
+int main() {
+  parent_tid = log_syscall_gettid();
+  if (fork()) {
+    print_parent_or_child();
+    // CHECK-DAG: Parent with tid
+  } else {
+    print_parent_or_child();
+    // CHECK-DAG: Child with tid
+  }
+  return 0;
 }
 
 // Make sure we know which thread is the parent process

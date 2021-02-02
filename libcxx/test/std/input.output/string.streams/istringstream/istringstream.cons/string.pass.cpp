@@ -19,52 +19,51 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        std::istringstream ss(" 123 456");
-        assert(ss.rdbuf() != 0);
-        assert(ss.good());
-        assert(ss.str() == " 123 456");
-        int i = 0;
-        ss >> i;
-        assert(i == 123);
-        ss >> i;
-        assert(i == 456);
-    }
-    {
-        std::istringstream ss(" 123 456", std::ios_base::out);
-        assert(ss.rdbuf() != 0);
-        assert(ss.good());
-        assert(ss.str() == " 123 456");
-        int i = 0;
-        ss >> i;
-        assert(i == 123);
-        ss >> i;
-        assert(i == 456);
-    }
-    {
-        std::wistringstream ss(L" 123 456");
-        assert(ss.rdbuf() != 0);
-        assert(ss.good());
-        assert(ss.str() == L" 123 456");
-        int i = 0;
-        ss >> i;
-        assert(i == 123);
-        ss >> i;
-        assert(i == 456);
-    }
-    {
-        std::wistringstream ss(L" 123 456", std::ios_base::out);
-        assert(ss.rdbuf() != 0);
-        assert(ss.good());
-        assert(ss.str() == L" 123 456");
-        int i = 0;
-        ss >> i;
-        assert(i == 123);
-        ss >> i;
-        assert(i == 456);
-    }
+int main(int, char**) {
+  {
+    std::istringstream ss(" 123 456");
+    assert(ss.rdbuf() != 0);
+    assert(ss.good());
+    assert(ss.str() == " 123 456");
+    int i = 0;
+    ss >> i;
+    assert(i == 123);
+    ss >> i;
+    assert(i == 456);
+  }
+  {
+    std::istringstream ss(" 123 456", std::ios_base::out);
+    assert(ss.rdbuf() != 0);
+    assert(ss.good());
+    assert(ss.str() == " 123 456");
+    int i = 0;
+    ss >> i;
+    assert(i == 123);
+    ss >> i;
+    assert(i == 456);
+  }
+  {
+    std::wistringstream ss(L" 123 456");
+    assert(ss.rdbuf() != 0);
+    assert(ss.good());
+    assert(ss.str() == L" 123 456");
+    int i = 0;
+    ss >> i;
+    assert(i == 123);
+    ss >> i;
+    assert(i == 456);
+  }
+  {
+    std::wistringstream ss(L" 123 456", std::ios_base::out);
+    assert(ss.rdbuf() != 0);
+    assert(ss.good());
+    assert(ss.str() == L" 123 456");
+    int i = 0;
+    ss >> i;
+    assert(i == 123);
+    ss >> i;
+    assert(i == 456);
+  }
 
   return 0;
 }

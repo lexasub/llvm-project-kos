@@ -2,18 +2,15 @@
 
 /* Only one expected warning per function allowed at the very end. */
 
-int func(void)
-{
+int func(void) {
   return 0;
 }
 
-int func2(void)
-{
+int func2(void) {
   return 0;
 }
 
-int funcParam(int a)
-{
+int funcParam(int a) {
   return 0;
 }
 
@@ -61,8 +58,6 @@ int checkNotEqualFloatDeclCompare6(void) {
   return (f != t); // no warning
 }
 
-
-
 int checkNotEqualCastFloatDeclCompare11(void) {
   float f = 7.1F;
   return ((int)f != (int)f); // expected-warning {{comparison of identical expressions always evaluates to false}}
@@ -73,8 +68,8 @@ int checkNotEqualCastFloatDeclCompare12(void) {
 }
 int checkNotEqualBinaryOpFloatCompare1(void) {
   int res;
-  float f= 3.14F;
-  res = (f + 3.14F != f + 3.14F);  // no warning
+  float f = 3.14F;
+  res = (f + 3.14F != f + 3.14F); // no warning
   return (0);
 }
 int checkNotEqualBinaryOpFloatCompare2(void) {
@@ -84,46 +79,43 @@ int checkNotEqualBinaryOpFloatCompare2(void) {
 }
 int checkNotEqualBinaryOpFloatCompare3(void) {
   int res;
-  float f= 3.14F;
-  res = ((int)f + 3.14F != (int)f + 3.14F);  // no warning
+  float f = 3.14F;
+  res = ((int)f + 3.14F != (int)f + 3.14F); // no warning
   return (0);
 }
 int checkNotEqualBinaryOpFloatCompare4(void) {
   int res;
-  float f= 3.14F;
-  res = ((int)f + 3.14F != (char)f + 3.14F);  // no warning
+  float f = 3.14F;
+  res = ((int)f + 3.14F != (char)f + 3.14F); // no warning
   return (0);
 }
 
 int checkNotEqualNestedBinaryOpFloatCompare1(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  float f= 3.14F;
-  res = (((int)f + (3.14F - u)*t) != ((int)f + (3.14F - u)*t));  // no warning
+  int t = 1;
+  int u = 2;
+  float f = 3.14F;
+  res = (((int)f + (3.14F - u) * t) != ((int)f + (3.14F - u) * t)); // no warning
   return (0);
 }
 
 int checkNotEqualNestedBinaryOpFloatCompare2(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  float f= 3.14F;
-  res = (((int)f + (u - 3.14F)*t) != ((int)f + (3.14F - u)*t));  // no warning
+  int t = 1;
+  int u = 2;
+  float f = 3.14F;
+  res = (((int)f + (u - 3.14F) * t) != ((int)f + (3.14F - u) * t)); // no warning
   return (0);
 }
 
 int checkNotEqualNestedBinaryOpFloatCompare3(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  float f= 3.14F;
-  res = (((int)f + (u - 3.14F)*t) != ((int)f + (3.14F - u)*(f + t != f + t)));  // no warning
+  int t = 1;
+  int u = 2;
+  float f = 3.14F;
+  res = (((int)f + (u - 3.14F) * t) != ((int)f + (3.14F - u) * (f + t != f + t))); // no warning
   return (0);
 }
-
-
-
 
 /* end '!=' with float*/
 
@@ -163,10 +155,10 @@ int checkNotEqualCastIntDeclCompare12(void) {
 }
 int checkNotEqualBinaryOpIntCompare1(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  int f= 4;
-  res = (f + 4 != f + 4);  // expected-warning {{comparison of identical expressions always evaluates to false}}
+  int t = 1;
+  int u = 2;
+  int f = 4;
+  res = (f + 4 != f + 4); // expected-warning {{comparison of identical expressions always evaluates to false}}
   return (0);
 }
 int checkNotEqualBinaryOpIntCompare2(void) {
@@ -175,66 +167,63 @@ int checkNotEqualBinaryOpIntCompare2(void) {
   return (f + 4 != g + 4); // no warning
 }
 
-
 int checkNotEqualBinaryOpIntCompare3(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  int f= 4;
-  res = ((int)f + 4 != (int)f + 4);  // expected-warning {{comparison of identical expressions always evaluates to false}}
+  int t = 1;
+  int u = 2;
+  int f = 4;
+  res = ((int)f + 4 != (int)f + 4); // expected-warning {{comparison of identical expressions always evaluates to false}}
   return (0);
 }
 int checkNotEqualBinaryOpIntCompare4(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  int f= 4;
-  res = ((int)f + 4 != (char)f + 4);  // no warning
+  int t = 1;
+  int u = 2;
+  int f = 4;
+  res = ((int)f + 4 != (char)f + 4); // no warning
   return (0);
 }
 int checkNotEqualBinaryOpIntCompare5(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  res = (u + t != u + t);  // expected-warning {{comparison of identical expressions always evaluates to false}}
+  int t = 1;
+  int u = 2;
+  res = (u + t != u + t); // expected-warning {{comparison of identical expressions always evaluates to false}}
   return (0);
 }
 
 int checkNotEqualNestedBinaryOpIntCompare1(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  int f= 3;
-  res = (((int)f + (3 - u)*t) != ((int)f + (3 - u)*t));  // expected-warning {{comparison of identical expressions always evaluates to false}}
+  int t = 1;
+  int u = 2;
+  int f = 3;
+  res = (((int)f + (3 - u) * t) != ((int)f + (3 - u) * t)); // expected-warning {{comparison of identical expressions always evaluates to false}}
   return (0);
 }
 
 int checkNotEqualNestedBinaryOpIntCompare2(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  int f= 3;
-  res = (((int)f + (u - 3)*t) != ((int)f + (3 - u)*t));  // no warning
+  int t = 1;
+  int u = 2;
+  int f = 3;
+  res = (((int)f + (u - 3) * t) != ((int)f + (3 - u) * t)); // no warning
   return (0);
 }
 
 int checkNotEqualNestedBinaryOpIntCompare3(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  int f= 3;
-  res = (((int)f + (u - 3)*t) != ((int)f + (3 - u)*(t + 1 != t + 1)));  // expected-warning {{comparison of identical expressions always evaluates to false}}
+  int t = 1;
+  int u = 2;
+  int f = 3;
+  res = (((int)f + (u - 3) * t) != ((int)f + (3 - u) * (t + 1 != t + 1))); // expected-warning {{comparison of identical expressions always evaluates to false}}
   return (0);
 }
 
 /*   end '!=' int          */
 
-
-
 /* '!=' with int pointer */
 
 int checkNotEqualIntPointerLiteralCompare1(void) {
-  int* p = 0;
+  int *p = 0;
   return (p != 0); // no warning
 }
 
@@ -244,68 +233,67 @@ int checkNotEqualIntPointerLiteralCompare2(void) {
 
 int checkNotEqualIntPointerDeclCompare1(void) {
   int k = 3;
-  int* f = &k;
-  int* g = &k;
+  int *f = &k;
+  int *g = &k;
   return (f != g); // no warning
 }
 
 int checkNotEqualCastIntPointerDeclCompare11(void) {
   int k = 7;
-  int* f = &k;
-  return ((int*)f != (int*)f); // expected-warning {{comparison of identical expressions always evaluates to false}}
+  int *f = &k;
+  return ((int *)f != (int *)f); // expected-warning {{comparison of identical expressions always evaluates to false}}
 }
 int checkNotEqualCastIntPointerDeclCompare12(void) {
   int k = 7;
-  int* f = &k;
-  return ((int*)((char*)f) != (int*)f); // no warning
+  int *f = &k;
+  return ((int *)((char *)f) != (int *)f); // no warning
 }
 int checkNotEqualBinaryOpIntPointerCompare1(void) {
   int k = 7;
   int res;
-  int* f= &k;
-  res = (f + 4 != f + 4);  // expected-warning {{comparison of identical expressions always evaluates to false}}
+  int *f = &k;
+  res = (f + 4 != f + 4); // expected-warning {{comparison of identical expressions always evaluates to false}}
   return (0);
 }
 int checkNotEqualBinaryOpIntPointerCompare2(void) {
   int k = 7;
-  int* f = &k;
-  int* g = &k;
+  int *f = &k;
+  int *g = &k;
   return (f + 4 != g + 4); // no warning
 }
-
 
 int checkNotEqualBinaryOpIntPointerCompare3(void) {
   int k = 7;
   int res;
-  int* f= &k;
-  res = ((int*)f + 4 != (int*)f + 4);  // expected-warning {{comparison of identical expressions always evaluates to false}}
+  int *f = &k;
+  res = ((int *)f + 4 != (int *)f + 4); // expected-warning {{comparison of identical expressions always evaluates to false}}
   return (0);
 }
 int checkNotEqualBinaryOpIntPointerCompare4(void) {
   int k = 7;
   int res;
-  int* f= &k;
-  res = ((int*)f + 4 != (int*)((char*)f) + 4);  // no warning
+  int *f = &k;
+  res = ((int *)f + 4 != (int *)((char *)f) + 4); // no warning
   return (0);
 }
 
 int checkNotEqualNestedBinaryOpIntPointerCompare1(void) {
   int res;
   int k = 7;
-  int t= 1;
-  int* u= &k+2;
-  int* f= &k+3;
-  res = ((f + (3)*t) != (f + (3)*t));  // expected-warning {{comparison of identical expressions always evaluates to false}}
+  int t = 1;
+  int *u = &k + 2;
+  int *f = &k + 3;
+  res = ((f + (3) * t) != (f + (3) * t)); // expected-warning {{comparison of identical expressions always evaluates to false}}
   return (0);
 }
 
 int checkNotEqualNestedBinaryOpIntPointerCompare2(void) {
   int res;
   int k = 7;
-  int t= 1;
-  int* u= &k+2;
-  int* f= &k+3;
-  res = (((3)*t + f) != (f + (3)*t));  // no warning
+  int t = 1;
+  int *u = &k + 2;
+  int *f = &k + 3;
+  res = (((3) * t + f) != (f + (3) * t)); // no warning
   return (0);
 }
 /*   end '!=' int*          */
@@ -315,28 +303,28 @@ int checkNotEqualNestedBinaryOpIntPointerCompare2(void) {
 int checkNotEqualSameFunction() {
   unsigned a = 0;
   unsigned b = 1;
-  int res = (a+func() != a+func());  // no warning
+  int res = (a + func() != a + func()); // no warning
   return (0);
 }
 
 int checkNotEqualDifferentFunction() {
   unsigned a = 0;
   unsigned b = 1;
-  int res = (a+func() != a+func2());  // no warning
+  int res = (a + func() != a + func2()); // no warning
   return (0);
 }
 
 int checkNotEqualSameFunctionSameParam() {
   unsigned a = 0;
   unsigned b = 1;
-  int res = (a+funcParam(a) != a+funcParam(a));  // no warning
+  int res = (a + funcParam(a) != a + funcParam(a)); // no warning
   return (0);
 }
 
 int checkNotEqualSameFunctionDifferentParam() {
   unsigned a = 0;
   unsigned b = 1;
-  int res = (a+funcParam(a) != a+funcParam(b));  // no warning
+  int res = (a + funcParam(a) != a + funcParam(b)); // no warning
   return (0);
 }
 
@@ -344,21 +332,19 @@ int checkNotEqualSameFunctionDifferentParam() {
 
 /*   end '!=' */
 
-
-
 /* EQ operator           */
 
 int checkEqualIntPointerDeclCompare(void) {
   int k = 3;
-  int* f = &k;
-  int* g = &k;
+  int *f = &k;
+  int *g = &k;
   return (f == g); // no warning
 }
 
 int checkEqualIntPointerDeclCompare0(void) {
   int k = 3;
-  int* f = &k;
-  return (f+1 == f+1); // expected-warning {{comparison of identical expressions always evaluates to true}}
+  int *f = &k;
+  return (f + 1 == f + 1); // expected-warning {{comparison of identical expressions always evaluates to true}}
 }
 
 /* EQ with float*/
@@ -382,7 +368,6 @@ int checkEqualFloatDeclCompare12(void) {
   return (f == f); // no warning
 }
 
-
 int checkEqualFloatDeclCompare3(void) {
   float f = 7.1F;
   return (f == 7.1F); // no warning
@@ -405,9 +390,6 @@ int checkEqualFloatDeclCompare6(void) {
   return (f == t); // no warning
 }
 
-
-
-
 int checkEqualCastFloatDeclCompare11(void) {
   float f = 7.1F;
   return ((int)f == (int)f); // expected-warning {{comparison of identical expressions always evaluates to true}}
@@ -418,8 +400,8 @@ int checkEqualCastFloatDeclCompare12(void) {
 }
 int checkEqualBinaryOpFloatCompare1(void) {
   int res;
-  float f= 3.14F;
-  res = (f + 3.14F == f + 3.14F);  // no warning
+  float f = 3.14F;
+  res = (f + 3.14F == f + 3.14F); // no warning
   return (0);
 }
 int checkEqualBinaryOpFloatCompare2(void) {
@@ -429,47 +411,43 @@ int checkEqualBinaryOpFloatCompare2(void) {
 }
 int checkEqualBinaryOpFloatCompare3(void) {
   int res;
-  float f= 3.14F;
-  res = ((int)f + 3.14F == (int)f + 3.14F);  // no warning
+  float f = 3.14F;
+  res = ((int)f + 3.14F == (int)f + 3.14F); // no warning
   return (0);
 }
 int checkEqualBinaryOpFloatCompare4(void) {
   int res;
-  float f= 3.14F;
-  res = ((int)f + 3.14F == (char)f + 3.14F);  // no warning
+  float f = 3.14F;
+  res = ((int)f + 3.14F == (char)f + 3.14F); // no warning
   return (0);
 }
 
 int checkEqualNestedBinaryOpFloatCompare1(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  float f= 3.14F;
-  res = (((int)f + (3.14F - u)*t) == ((int)f + (3.14F - u)*t));  // no warning
+  int t = 1;
+  int u = 2;
+  float f = 3.14F;
+  res = (((int)f + (3.14F - u) * t) == ((int)f + (3.14F - u) * t)); // no warning
   return (0);
 }
 
 int checkEqualNestedBinaryOpFloatCompare2(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  float f= 3.14F;
-  res = (((int)f + (u - 3.14F)*t) == ((int)f + (3.14F - u)*t));  // no warning
+  int t = 1;
+  int u = 2;
+  float f = 3.14F;
+  res = (((int)f + (u - 3.14F) * t) == ((int)f + (3.14F - u) * t)); // no warning
   return (0);
 }
 
 int checkEqualNestedBinaryOpFloatCompare3(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  float f= 3.14F;
-  res = (((int)f + (u - 3.14F)*t) == ((int)f + (3.14F - u)*(f + t == f + t)));  // no warning
+  int t = 1;
+  int u = 2;
+  float f = 3.14F;
+  res = (((int)f + (u - 3.14F) * t) == ((int)f + (3.14F - u) * (f + t == f + t))); // no warning
   return (0);
 }
-
-
-
-
 
 /* Equal with int*/
 
@@ -508,10 +486,10 @@ int checkEqualIntDeclCompare4(void) {
 
 int checkEqualBinaryOpIntCompare1(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  int f= 4;
-  res = (f + 4 == f + 4);  // expected-warning {{comparison of identical expressions always evaluates to true}}
+  int t = 1;
+  int u = 2;
+  int f = 4;
+  res = (f + 4 == f + 4); // expected-warning {{comparison of identical expressions always evaluates to true}}
   return (0);
 }
 int checkEqualBinaryOpIntCompare2(void) {
@@ -520,56 +498,54 @@ int checkEqualBinaryOpIntCompare2(void) {
   return (f + 4 == g + 4); // no warning
 }
 
-
 int checkEqualBinaryOpIntCompare3(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  int f= 4;
-  res = ((int)f + 4 == (int)f + 4);  // expected-warning {{comparison of identical expressions always evaluates to true}}
+  int t = 1;
+  int u = 2;
+  int f = 4;
+  res = ((int)f + 4 == (int)f + 4); // expected-warning {{comparison of identical expressions always evaluates to true}}
   return (0);
-
 }
 int checkEqualBinaryOpIntCompare4(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  int f= 4;
-  res = ((int)f + 4 == (char)f + 4);  // no warning
+  int t = 1;
+  int u = 2;
+  int f = 4;
+  res = ((int)f + 4 == (char)f + 4); // no warning
   return (0);
 }
 int checkEqualBinaryOpIntCompare5(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  res = (u + t == u + t);  // expected-warning {{comparison of identical expressions always evaluates to true}}
+  int t = 1;
+  int u = 2;
+  res = (u + t == u + t); // expected-warning {{comparison of identical expressions always evaluates to true}}
   return (0);
 }
 
 int checkEqualNestedBinaryOpIntCompare1(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  int f= 3;
-  res = (((int)f + (3 - u)*t) == ((int)f + (3 - u)*t));  // expected-warning {{comparison of identical expressions always evaluates to true}}
+  int t = 1;
+  int u = 2;
+  int f = 3;
+  res = (((int)f + (3 - u) * t) == ((int)f + (3 - u) * t)); // expected-warning {{comparison of identical expressions always evaluates to true}}
   return (0);
 }
 
 int checkEqualNestedBinaryOpIntCompare2(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  int f= 3;
-  res = (((int)f + (u - 3)*t) == ((int)f + (3 - u)*t));  // no warning
+  int t = 1;
+  int u = 2;
+  int f = 3;
+  res = (((int)f + (u - 3) * t) == ((int)f + (3 - u) * t)); // no warning
   return (0);
 }
 
 int checkEqualNestedBinaryOpIntCompare3(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  int f= 3;
-  res = (((int)f + (u - 3)*t) == ((int)f + (3 - u)*(t + 1 == t + 1)));  // expected-warning {{comparison of identical expressions always evaluates to true}}
+  int t = 1;
+  int u = 2;
+  int f = 3;
+  res = (((int)f + (u - 3) * t) == ((int)f + (3 - u) * (t + 1 == t + 1))); // expected-warning {{comparison of identical expressions always evaluates to true}}
   return (0);
 }
 
@@ -578,28 +554,28 @@ int checkEqualNestedBinaryOpIntCompare3(void) {
 int checkEqualSameFunction() {
   unsigned a = 0;
   unsigned b = 1;
-  int res = (a+func() == a+func());  // no warning
+  int res = (a + func() == a + func()); // no warning
   return (0);
 }
 
 int checkEqualDifferentFunction() {
   unsigned a = 0;
   unsigned b = 1;
-  int res = (a+func() == a+func2());  // no warning
+  int res = (a + func() == a + func2()); // no warning
   return (0);
 }
 
 int checkEqualSameFunctionSameParam() {
   unsigned a = 0;
   unsigned b = 1;
-  int res = (a+funcParam(a) == a+funcParam(a));  // no warning
+  int res = (a + funcParam(a) == a + funcParam(a)); // no warning
   return (0);
 }
 
 int checkEqualSameFunctionDifferentParam() {
   unsigned a = 0;
   unsigned b = 1;
-  int res = (a+funcParam(a) == a+funcParam(b));  // no warning
+  int res = (a + funcParam(a) == a + funcParam(b)); // no warning
   return (0);
 }
 
@@ -608,7 +584,6 @@ int checkEqualSameFunctionDifferentParam() {
 /*   end EQ int          */
 
 /* end EQ */
-
 
 /*  LT */
 
@@ -655,7 +630,6 @@ int checkLessThanFloatDeclCompare6(void) {
   return (f < t); // no warning
 }
 
-
 int checkLessThanCastFloatDeclCompare11(void) {
   float f = 7.1F;
   return ((int)f < (int)f); // expected-warning {{comparison of identical expressions always evaluates to false}}
@@ -666,8 +640,8 @@ int checkLessThanCastFloatDeclCompare12(void) {
 }
 int checkLessThanBinaryOpFloatCompare1(void) {
   int res;
-  float f= 3.14F;
-  res = (f + 3.14F < f + 3.14F);  // no warning
+  float f = 3.14F;
+  res = (f + 3.14F < f + 3.14F); // no warning
   return (0);
 }
 int checkLessThanBinaryOpFloatCompare2(void) {
@@ -677,48 +651,47 @@ int checkLessThanBinaryOpFloatCompare2(void) {
 }
 int checkLessThanBinaryOpFloatCompare3(void) {
   int res;
-  float f= 3.14F;
-  res = ((int)f + 3.14F < (int)f + 3.14F);  // no warning
+  float f = 3.14F;
+  res = ((int)f + 3.14F < (int)f + 3.14F); // no warning
   return (0);
 }
 int checkLessThanBinaryOpFloatCompare4(void) {
   int res;
-  float f= 3.14F;
-  res = ((int)f + 3.14F < (char)f + 3.14F);  // no warning
+  float f = 3.14F;
+  res = ((int)f + 3.14F < (char)f + 3.14F); // no warning
   return (0);
 }
 
 int checkLessThanNestedBinaryOpFloatCompare1(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  float f= 3.14F;
-  res = (((int)f + (3.14F - u)*t) < ((int)f + (3.14F - u)*t));  // no warning
+  int t = 1;
+  int u = 2;
+  float f = 3.14F;
+  res = (((int)f + (3.14F - u) * t) < ((int)f + (3.14F - u) * t)); // no warning
   return (0);
 }
 
 int checkLessThanNestedBinaryOpFloatCompare2(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  float f= 3.14F;
-  res = (((int)f + (u - 3.14F)*t) < ((int)f + (3.14F - u)*t));  // no warning
+  int t = 1;
+  int u = 2;
+  float f = 3.14F;
+  res = (((int)f + (u - 3.14F) * t) < ((int)f + (3.14F - u) * t)); // no warning
   return (0);
 }
 
 int checkLessThanNestedBinaryOpFloatCompare3(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  float f= 3.14F;
-  res = (((int)f + (u - 3.14F)*t) < ((int)f + (3.14F - u)*(f + t < f + t)));  // no warning
+  int t = 1;
+  int u = 2;
+  float f = 3.14F;
+  res = (((int)f + (u - 3.14F) * t) < ((int)f + (3.14F - u) * (f + t < f + t))); // no warning
   return (0);
 }
 
 /*  end LT with float */
 
 /*  LT with int */
-
 
 int checkLessThanIntLiteralCompare1(void) {
   return (5 < 5); // expected-warning {{comparison of identical expressions always evaluates to false}}
@@ -766,8 +739,8 @@ int checkLessThanCastIntDeclCompare12(void) {
 }
 int checkLessThanBinaryOpIntCompare1(void) {
   int res;
-  int f= 3;
-  res = (f + 3 < f + 3);  // expected-warning {{comparison of identical expressions always evaluates to false}}
+  int f = 3;
+  res = (f + 3 < f + 3); // expected-warning {{comparison of identical expressions always evaluates to false}}
   return (0);
 }
 int checkLessThanBinaryOpIntCompare2(void) {
@@ -777,48 +750,47 @@ int checkLessThanBinaryOpIntCompare2(void) {
 }
 int checkLessThanBinaryOpIntCompare3(void) {
   int res;
-  int f= 3;
-  res = ((int)f + 3 < (int)f + 3);  // expected-warning {{comparison of identical expressions always evaluates to false}}
+  int f = 3;
+  res = ((int)f + 3 < (int)f + 3); // expected-warning {{comparison of identical expressions always evaluates to false}}
   return (0);
 }
 int checkLessThanBinaryOpIntCompare4(void) {
   int res;
-  int f= 3;
-  res = ((int)f + 3 < (char)f + 3);  // no warning
+  int f = 3;
+  res = ((int)f + 3 < (char)f + 3); // no warning
   return (0);
 }
 
 int checkLessThanNestedBinaryOpIntCompare1(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  int f= 3;
-  res = (((int)f + (3 - u)*t) < ((int)f + (3 - u)*t));  // expected-warning {{comparison of identical expressions always evaluates to false}}
+  int t = 1;
+  int u = 2;
+  int f = 3;
+  res = (((int)f + (3 - u) * t) < ((int)f + (3 - u) * t)); // expected-warning {{comparison of identical expressions always evaluates to false}}
   return (0);
 }
 
 int checkLessThanNestedBinaryOpIntCompare2(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  int f= 3;
-  res = (((int)f + (u - 3)*t) < ((int)f + (3 - u)*t));  // no warning
+  int t = 1;
+  int u = 2;
+  int f = 3;
+  res = (((int)f + (u - 3) * t) < ((int)f + (3 - u) * t)); // no warning
   return (0);
 }
 
 int checkLessThanNestedBinaryOpIntCompare3(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  int f= 3;
-  res = (((int)f + (u - 3)*t) < ((int)f + (3 - u)*(t + u < t + u)));  // expected-warning {{comparison of identical expressions always evaluates to false}}
+  int t = 1;
+  int u = 2;
+  int f = 3;
+  res = (((int)f + (u - 3) * t) < ((int)f + (3 - u) * (t + u < t + u))); // expected-warning {{comparison of identical expressions always evaluates to false}}
   return (0);
 }
 
 /* end LT with int */
 
 /* end LT */
-
 
 /* GT */
 
@@ -843,7 +815,6 @@ int checkGreaterThanFloatDeclCompare12(void) {
   float f = 7.1F;
   return (f > f); // expected-warning {{comparison of identical expressions always evaluates to false}}
 }
-
 
 int checkGreaterThanFloatDeclCompare3(void) {
   float f = 7.1F;
@@ -877,8 +848,8 @@ int checkGreaterThanCastFloatDeclCompare12(void) {
 }
 int checkGreaterThanBinaryOpFloatCompare1(void) {
   int res;
-  float f= 3.14F;
-  res = (f + 3.14F > f + 3.14F);  // no warning
+  float f = 3.14F;
+  res = (f + 3.14F > f + 3.14F); // no warning
   return (0);
 }
 int checkGreaterThanBinaryOpFloatCompare2(void) {
@@ -888,48 +859,47 @@ int checkGreaterThanBinaryOpFloatCompare2(void) {
 }
 int checkGreaterThanBinaryOpFloatCompare3(void) {
   int res;
-  float f= 3.14F;
-  res = ((int)f + 3.14F > (int)f + 3.14F);  // no warning
+  float f = 3.14F;
+  res = ((int)f + 3.14F > (int)f + 3.14F); // no warning
   return (0);
 }
 int checkGreaterThanBinaryOpFloatCompare4(void) {
   int res;
-  float f= 3.14F;
-  res = ((int)f + 3.14F > (char)f + 3.14F);  // no warning
+  float f = 3.14F;
+  res = ((int)f + 3.14F > (char)f + 3.14F); // no warning
   return (0);
 }
 
 int checkGreaterThanNestedBinaryOpFloatCompare1(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  float f= 3.14F;
-  res = (((int)f + (3.14F - u)*t) > ((int)f + (3.14F - u)*t));  // no warning
+  int t = 1;
+  int u = 2;
+  float f = 3.14F;
+  res = (((int)f + (3.14F - u) * t) > ((int)f + (3.14F - u) * t)); // no warning
   return (0);
 }
 
 int checkGreaterThanNestedBinaryOpFloatCompare2(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  float f= 3.14F;
-  res = (((int)f + (u - 3.14F)*t) > ((int)f + (3.14F - u)*t));  // no warning
+  int t = 1;
+  int u = 2;
+  float f = 3.14F;
+  res = (((int)f + (u - 3.14F) * t) > ((int)f + (3.14F - u) * t)); // no warning
   return (0);
 }
 
 int checkGreaterThanNestedBinaryOpFloatCompare3(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  float f= 3.14F;
-  res = (((int)f + (u - 3.14F)*t) > ((int)f + (3.14F - u)*(f + t > f + t)));  // no warning
+  int t = 1;
+  int u = 2;
+  float f = 3.14F;
+  res = (((int)f + (u - 3.14F) * t) > ((int)f + (3.14F - u) * (f + t > f + t))); // no warning
   return (0);
 }
 
 /*  end GT with float */
 
 /*  GT with int */
-
 
 int checkGreaterThanIntLiteralCompare1(void) {
   return (5 > 5); // expected-warning {{comparison of identical expressions always evaluates to false}}
@@ -966,8 +936,8 @@ int checkGreaterThanCastIntDeclCompare12(void) {
 }
 int checkGreaterThanBinaryOpIntCompare1(void) {
   int res;
-  int f= 3;
-  res = (f + 3 > f + 3);  // expected-warning {{comparison of identical expressions always evaluates to false}}
+  int f = 3;
+  res = (f + 3 > f + 3); // expected-warning {{comparison of identical expressions always evaluates to false}}
   return (0);
 }
 int checkGreaterThanBinaryOpIntCompare2(void) {
@@ -977,48 +947,47 @@ int checkGreaterThanBinaryOpIntCompare2(void) {
 }
 int checkGreaterThanBinaryOpIntCompare3(void) {
   int res;
-  int f= 3;
-  res = ((int)f + 3 > (int)f + 3);  // expected-warning {{comparison of identical expressions always evaluates to false}}
+  int f = 3;
+  res = ((int)f + 3 > (int)f + 3); // expected-warning {{comparison of identical expressions always evaluates to false}}
   return (0);
 }
 int checkGreaterThanBinaryOpIntCompare4(void) {
   int res;
-  int f= 3;
-  res = ((int)f + 3 > (char)f + 3);  // no warning
+  int f = 3;
+  res = ((int)f + 3 > (char)f + 3); // no warning
   return (0);
 }
 
 int checkGreaterThanNestedBinaryOpIntCompare1(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  int f= 3;
-  res = (((int)f + (3 - u)*t) > ((int)f + (3 - u)*t));  // expected-warning {{comparison of identical expressions always evaluates to false}}
+  int t = 1;
+  int u = 2;
+  int f = 3;
+  res = (((int)f + (3 - u) * t) > ((int)f + (3 - u) * t)); // expected-warning {{comparison of identical expressions always evaluates to false}}
   return (0);
 }
 
 int checkGreaterThanNestedBinaryOpIntCompare2(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  int f= 3;
-  res = (((int)f + (u - 3)*t) > ((int)f + (3 - u)*t));  // no warning
+  int t = 1;
+  int u = 2;
+  int f = 3;
+  res = (((int)f + (u - 3) * t) > ((int)f + (3 - u) * t)); // no warning
   return (0);
 }
 
 int checkGreaterThanNestedBinaryOpIntCompare3(void) {
   int res;
-  int t= 1;
-  int u= 2;
-  int f= 3;
-  res = (((int)f + (u - 3)*t) > ((int)f + (3 - u)*(t + u > t + u)));  // expected-warning {{comparison of identical expressions always evaluates to false}}
+  int t = 1;
+  int u = 2;
+  int f = 3;
+  res = (((int)f + (u - 3) * t) > ((int)f + (3 - u) * (t + u > t + u))); // expected-warning {{comparison of identical expressions always evaluates to false}}
   return (0);
 }
 
 /* end GT with int */
 
 /* end GT */
-
 
 /* Checking use of identical expressions in conditional operator*/
 
@@ -1051,65 +1020,65 @@ const char *test_string() {
 void test_unsigned_expr() {
   unsigned a = 0;
   unsigned b = 0;
-  a = a > 5 ? a+b : a+b; // expected-warning {{identical expressions on both sides of ':' in conditional expression}}
+  a = a > 5 ? a + b : a + b; // expected-warning {{identical expressions on both sides of ':' in conditional expression}}
 }
 
 void test_signed_expr() {
   int a = 0;
   int b = 1;
-  a = a > 5 ? a+b : a+b; // expected-warning {{identical expressions on both sides of ':' in conditional expression}}
+  a = a > 5 ? a + b : a + b; // expected-warning {{identical expressions on both sides of ':' in conditional expression}}
 }
 
 void test_bool_expr(bool a) {
   bool b = 0;
-  a = a > 0 ? a&&b : a&&b; // expected-warning {{identical expressions on both sides of ':' in conditional expression}}
+  a = a > 0 ? a && b : a && b; // expected-warning {{identical expressions on both sides of ':' in conditional expression}}
 }
 
 void test_unsigned_expr_negative() {
   unsigned a = 0;
   unsigned b = 0;
-  a = a > 5 ? a+b : b+a; // no warning
+  a = a > 5 ? a + b : b + a; // no warning
 }
 
 void test_signed_expr_negative() {
   int a = 0;
   int b = 1;
-  a = a > 5 ? b+a : a+b; // no warning
+  a = a > 5 ? b + a : a + b; // no warning
 }
 
 void test_bool_expr_negative(bool a) {
   bool b = 0;
-  a = a > 0 ? a&&b : b&&a; // no warning
+  a = a > 0 ? a && b : b && a; // no warning
 }
 
 void test_float_expr_positive() {
   float a = 0;
   float b = 0;
-  a = a > 5 ? a+b : a+b; // expected-warning {{identical expressions on both sides of ':' in conditional expression}}
+  a = a > 5 ? a + b : a + b; // expected-warning {{identical expressions on both sides of ':' in conditional expression}}
 }
 
 void test_expr_positive_func() {
   unsigned a = 0;
   unsigned b = 1;
-  a = a > 5 ? a+func() : a+func(); // expected-warning {{identical expressions on both sides of ':' in conditional expression}}
+  a = a > 5 ? a + func() : a + func(); // expected-warning {{identical expressions on both sides of ':' in conditional expression}}
 }
 
 void test_expr_negative_func() {
   unsigned a = 0;
   unsigned b = 1;
-  a = a > 5 ? a+func() : a+func2(); // no warning
+  a = a > 5 ? a + func() : a + func2(); // no warning
 }
 
 void test_expr_positive_funcParam() {
   unsigned a = 0;
   unsigned b = 1;
-  a = a > 5 ? a+funcParam(b) : a+funcParam(b); // expected-warning {{identical expressions on both sides of ':' in conditional expression}}
+  a = a > 5 ? a + funcParam(b) : a + funcParam(b); // expected-warning {{identical expressions on both sides of ':' in conditional expression}}
 }
 
 void test_expr_negative_funcParam() {
   unsigned a = 0;
   unsigned b = 1;
-  a = a > 5 ? a+funcParam(a) : a+funcParam(b); // no warning
+  a = a > 5 ? a + funcParam(a) : a + funcParam(b); // no warning
 }
 
 void test_expr_positive_inc() {
@@ -1127,27 +1096,27 @@ void test_expr_negative_inc() {
 void test_expr_positive_assign() {
   unsigned a = 0;
   unsigned b = 1;
-  a = a > 5 ? a=1 : a=1;  // expected-warning {{identical expressions on both sides of ':' in conditional expression}}
+  a = a > 5 ? a = 1 : a = 1; // expected-warning {{identical expressions on both sides of ':' in conditional expression}}
 }
 
 void test_expr_negative_assign() {
   unsigned a = 0;
   unsigned b = 1;
-  a = a > 5 ? a=1 : a=2; // no warning
+  a = a > 5 ? a = 1 : a = 2; // no warning
 }
 
 void test_signed_nested_expr() {
   int a = 0;
   int b = 1;
   int c = 3;
-  a = a > 5 ? a+b+(c+a)*(a + b*(c+a)) : a+b+(c+a)*(a + b*(c+a)); // expected-warning {{identical expressions on both sides of ':' in conditional expression}}
+  a = a > 5 ? a + b + (c + a) * (a + b * (c + a)) : a + b + (c + a) * (a + b * (c + a)); // expected-warning {{identical expressions on both sides of ':' in conditional expression}}
 }
 
 void test_signed_nested_expr_negative() {
   int a = 0;
   int b = 1;
   int c = 3;
-  a = a > 5 ? a+b+(c+a)*(a + b*(c+a)) : a+b+(c+a)*(a + b*(a+c)); // no warning
+  a = a > 5 ? a + b + (c + a) * (a + b * (c + a)) : a + b + (c + a) * (a + b * (a + c)); // no warning
 }
 
 void test_signed_nested_cond_expr_negative() {
@@ -1232,17 +1201,17 @@ void test_identical_branches_func_arguments(bool b) {
 void test_identical_branches_cast1(bool b) {
   long v = -7;
   if (b) // no-warning
-    v = (signed int) v;
+    v = (signed int)v;
   else
-    v = (unsigned int) v;
+    v = (unsigned int)v;
 }
 
 void test_identical_branches_cast2(bool b) {
   long v = -7;
   if (b) // expected-warning {{true and false branches are identical}}
-    v = (signed int) v;
+    v = (signed int)v;
   else
-    v = (signed int) v;
+    v = (signed int)v;
 }
 
 int test_identical_branches_return_int(bool b) {
@@ -1513,10 +1482,10 @@ void test_nowarn_chained_if_stmts_3(int x) {
 }
 
 void test_warn_wchar() {
-  const wchar_t * a = 0 ? L"Warning" : L"Warning"; // expected-warning {{identical expressions on both sides of ':' in conditional expression}}
+  const wchar_t *a = 0 ? L"Warning" : L"Warning"; // expected-warning {{identical expressions on both sides of ':' in conditional expression}}
 }
 void test_nowarn_wchar() {
-  const wchar_t * a = 0 ? L"No" : L"Warning";
+  const wchar_t *a = 0 ? L"No" : L"Warning";
 }
 
 void test_nowarn_long() {

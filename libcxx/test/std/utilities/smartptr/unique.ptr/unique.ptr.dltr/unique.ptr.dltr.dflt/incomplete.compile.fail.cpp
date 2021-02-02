@@ -20,11 +20,10 @@
 
 struct A;
 
-int main(int, char**)
-{
-    std::default_delete<A> d;
-    A* p = 0;
-    d(p);
+int main(int, char**) {
+  std::default_delete<A> d;
+  A* p = 0;
+  d(p);
 
   return 0;
 }

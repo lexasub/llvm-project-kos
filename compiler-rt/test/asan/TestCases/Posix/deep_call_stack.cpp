@@ -10,8 +10,7 @@
 
 #include <stdio.h>
 
-__attribute__((noinline))
-void RecursiveFunc(int depth, int *ptr) {
+__attribute__((noinline)) void RecursiveFunc(int depth, int *ptr) {
   if ((depth % 1000) == 0)
     printf("[%05d] ptr: %p\n", depth, ptr);
   if (depth == 0)

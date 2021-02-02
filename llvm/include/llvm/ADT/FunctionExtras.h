@@ -150,7 +150,9 @@ protected:
   }
 
   CallPtrT getTrivialCallback() const {
-    return CallbackAndInlineFlag.getPointer().template get<TrivialCallback *>()->CallPtr;
+    return CallbackAndInlineFlag.getPointer()
+        .template get<TrivialCallback *>()
+        ->CallPtr;
   }
 
   NonTrivialCallbacks *getNonTrivialCallbacks() const {

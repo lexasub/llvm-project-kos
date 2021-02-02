@@ -7,7 +7,7 @@ struct Y {
   friend struct X; // expected-warning-re {{unqualified friend declaration {{.*}} is a Microsoft extension}}
   // CHECK: fix-it:"{{.*}}":{[[@LINE-1]]:17-[[@LINE-1]]:17}:"::"
 };
-}
+} // namespace name_at_tu_scope
 
 namespace enclosing_friend_decl {
 struct B;
@@ -18,11 +18,11 @@ struct A {
 protected:
   A();
 };
-}
+} // namespace ns
 struct B {
   static void f() { ns::A x; }
 };
-}
+} // namespace enclosing_friend_decl
 
 namespace enclosing_friend_qualified {
 struct B;
@@ -32,11 +32,11 @@ struct A {
 protected:
   A();
 };
-}
+} // namespace ns
 struct B {
   static void f() { ns::A x; }
 };
-}
+} // namespace enclosing_friend_qualified
 
 namespace enclosing_friend_no_tag {
 struct B;
@@ -46,11 +46,11 @@ struct A {
 protected:
   A();
 };
-}
+} // namespace ns
 struct B {
   static void f() { ns::A x; }
 };
-}
+} // namespace enclosing_friend_no_tag
 
 namespace enclosing_friend_func {
 void f();
@@ -58,12 +58,13 @@ namespace ns {
 struct A {
   // Amusingly, in MSVC, this declares ns::f(), and doesn't find the outer f().
   friend void f();
+
 protected:
   A(); // expected-note {{declared protected here}}
 };
-}
+} // namespace ns
 void f() { ns::A x; } // expected-error {{calling a protected constructor of class 'enclosing_friend_func::ns::A'}}
-}
+} // namespace enclosing_friend_func
 
 namespace test_nns_fixit_hint {
 namespace name1 {
@@ -75,10 +76,10 @@ struct Y {
   friend struct X; // expected-warning-re {{unqualified friend declaration {{.*}} is a Microsoft extension}}
   // CHECK: fix-it:"{{.*}}":{[[@LINE-1]]:17-[[@LINE-1]]:17}:"name1::name2::"
 };
-}
-}
-}
-}
+} // namespace name3
+} // namespace name2
+} // namespace name1
+} // namespace test_nns_fixit_hint
 
 // A friend declaration injects a forward declaration into the nearest enclosing
 // non-member scope.
@@ -101,4 +102,4 @@ void f() {
   Z *b;
 }
 
-}
+} // namespace friend_as_a_forward_decl

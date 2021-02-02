@@ -17,9 +17,10 @@
 
 #ifdef CK1
 
-void target_maps_parallel_integer(int a){
+void target_maps_parallel_integer(int a) {
   int ParamToKernel = a;
-#pragma omp target map(tofrom: ParamToKernel)
+#pragma omp target map(tofrom \
+                       : ParamToKernel)
   {
     ParamToKernel += 1;
   }

@@ -29,24 +29,19 @@
 std::once_flag flg0;
 long global = 0;
 
-void init0()
-{
-    ++global;
+void init0() { ++global; }
+
+void f0() {
+  std::call_once(flg0, init0);
+  assert(global == 1);
 }
 
-void f0()
-{
-    std::call_once(flg0, init0);
-    assert(global == 1);
-}
-
-int main(int, char**)
-{
-    std::thread t0 = support::make_test_thread(f0);
-    std::thread t1 = support::make_test_thread(f0);
-    t0.join();
-    t1.join();
-    assert(global == 1);
+int main(int, char**) {
+  std::thread t0 = support::make_test_thread(f0);
+  std::thread t1 = support::make_test_thread(f0);
+  t0.join();
+  t1.join();
+  assert(global == 1);
 
   return 0;
 }

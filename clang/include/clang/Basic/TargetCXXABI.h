@@ -138,9 +138,7 @@ public:
 
   TargetCXXABI(Kind kind) : TheKind(kind) {}
 
-  void set(Kind kind) {
-    TheKind = kind;
-  }
+  void set(Kind kind) { TheKind = kind; }
 
   Kind getKind() const { return TheKind; }
 
@@ -225,27 +223,19 @@ public:
   /// of the full expression as usual.  Both the caller and the callee must
   /// have access to the destructor, while only the caller needs the
   /// destructor if this is false.
-  bool areArgsDestroyedLeftToRightInCallee() const {
-    return isMicrosoft();
-  }
+  bool areArgsDestroyedLeftToRightInCallee() const { return isMicrosoft(); }
 
   /// Does this ABI have different entrypoints for complete-object
   /// and base-subobject constructors?
-  bool hasConstructorVariants() const {
-    return isItaniumFamily();
-  }
+  bool hasConstructorVariants() const { return isItaniumFamily(); }
 
   /// Does this ABI allow virtual bases to be primary base classes?
-  bool hasPrimaryVBases() const {
-    return isItaniumFamily();
-  }
+  bool hasPrimaryVBases() const { return isItaniumFamily(); }
 
   /// Does this ABI use key functions?  If so, class data such as the
   /// vtable is emitted with strong linkage by the TU containing the key
   /// function.
-  bool hasKeyFunctions() const {
-    return isItaniumFamily();
-  }
+  bool hasKeyFunctions() const { return isItaniumFamily(); }
 
   /// Can an out-of-line inline function serve as a key function?
   ///
@@ -286,7 +276,7 @@ public:
 
     case GenericAArch64:
     case GenericItanium:
-    case iOS:   // old iOS compilers did not follow this rule
+    case iOS: // old iOS compilers did not follow this rule
     case Microsoft:
     case GenericMIPS:
     case XL:
@@ -355,6 +345,6 @@ public:
   }
 };
 
-}  // end namespace clang
+} // end namespace clang
 
 #endif

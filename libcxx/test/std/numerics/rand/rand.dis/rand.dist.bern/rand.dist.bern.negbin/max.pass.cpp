@@ -18,13 +18,12 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        typedef std::negative_binomial_distribution<> D;
-        D d(4, .25);
-        assert(d.max() == std::numeric_limits<int>::max());
-    }
+int main(int, char**) {
+  {
+    typedef std::negative_binomial_distribution<> D;
+    D d(4, .25);
+    assert(d.max() == std::numeric_limits<int>::max());
+  }
 
   return 0;
 }

@@ -8,10 +8,10 @@
 // RUN: FileCheck --check-prefix=CHECK-OPT %s < %t.opt
 
 namespace {
-  struct A {
-    virtual void f() { }
-  };
-}
+struct A {
+  virtual void f() {}
+};
+} // namespace
 
 void f() { A b; }
 
@@ -20,22 +20,23 @@ struct B {
   virtual void f();
 };
 
-B::B() { }
+B::B() {}
 
 struct C : virtual B {
   C();
-  virtual void f() { } 
+  virtual void f() {}
 };
 
-C::C() { } 
+C::C() {}
 
 struct D {
   virtual void f();
 };
 
-void D::f() { }
+void D::f() {}
 
-static struct : D { } e;
+static struct : D {
+} e;
 
 // Force 'e' to be constructed and therefore have a vtable defined.
 void use_e() {
@@ -43,20 +44,20 @@ void use_e() {
 }
 
 // The destructor is the key function.
-template<typename T>
+template <typename T>
 struct E {
   virtual ~E();
 };
 
-template<typename T> E<T>::~E() { }
+template <typename T> E<T>::~E() {}
 
 // Anchor is the key function
-template<>
+template <>
 struct E<char> {
   virtual void anchor();
 };
 
-void E<char>::anchor() { }
+void E<char>::anchor() {}
 
 template struct E<short>;
 extern template struct E<int>;
@@ -69,15 +70,15 @@ void use_E() {
 }
 
 // No key function
-template<typename T>
+template <typename T>
 struct F {
-  virtual void foo() { }
+  virtual void foo() {}
 };
 
 // No key function
-template<>
+template <>
 struct F<char> {
-  virtual void foo() { }
+  virtual void foo() {}
 };
 
 template struct F<short>;
@@ -162,7 +163,7 @@ void use_F() {
 // CHECK-DAG: @"_ZTS3$_0" = internal constant
 // CHECK-DAG: @"_ZTI3$_0" = internal constant
 
-// The A vtable should have internal linkage since it is inside an anonymous 
+// The A vtable should have internal linkage since it is inside an anonymous
 // namespace.
 // CHECK-DAG: @_ZTVN12_GLOBAL__N_11AE = internal unnamed_addr constant
 // CHECK-DAG: @_ZTSN12_GLOBAL__N_11AE = internal constant
@@ -186,7 +187,7 @@ template <>
 void G<int>::f1() {}
 template <typename T>
 void G<T>::f0() {}
-void G_f0()  { new G<int>(); }
+void G_f0() { new G<int>(); }
 
 // H<int> has a key function without a body but it's a template instantiation
 // so its VTable must be emitted.
@@ -210,8 +211,11 @@ void use_H() {
 //
 // CHECK-OPT-DAG: @_ZTV1IIiE = available_externally unnamed_addr constant
 // CHECK-OPT-DAG: @_ZTT1IIiE = available_externally unnamed_addr constant
-struct VBase1 { virtual void f(); }; struct VBase2 : virtual VBase1 {};
-template<typename T>
+struct VBase1 {
+  virtual void f();
+};
+struct VBase2 : virtual VBase1 {};
+template <typename T>
 struct I : VBase2 {};
 extern template struct I<int>;
 I<int> i;

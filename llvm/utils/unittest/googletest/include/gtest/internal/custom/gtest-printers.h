@@ -66,4 +66,4 @@ inline void PrintTo(const SmallVectorImpl<char> &S, std::ostream *OS) {
 } // namespace llvm
 #endif // !GTEST_NO_LLVM_SUPPORT
 
-#endif  // GTEST_INCLUDE_GTEST_INTERNAL_CUSTOM_GTEST_PRINTERS_H_
+#endif // GTEST_INCLUDE_GTEST_INTERNAL_CUSTOM_GTEST_PRINTERS_H_

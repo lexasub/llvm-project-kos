@@ -11,10 +11,11 @@
 //===----------------------------------------------------------------------===//
 
 #include "sancov_flags.h"
+
 #include "sanitizer_flag_parser.h"
 #include "sanitizer_platform.h"
 
-SANITIZER_INTERFACE_WEAK_DEF(const char*, __sancov_default_options, void) {
+SANITIZER_INTERFACE_WEAK_DEF(const char *, __sancov_default_options, void) {
   return "";
 }
 
@@ -52,7 +53,8 @@ void InitializeSancovFlags() {
   parser.ParseStringFromEnv("SANCOV_OPTIONS");
 
   ReportUnrecognizedFlags();
-  if (f->help) parser.PrintFlagDescriptions();
+  if (f->help)
+    parser.PrintFlagDescriptions();
 }
 
 }  // namespace __sancov

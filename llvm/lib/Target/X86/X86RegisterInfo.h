@@ -19,7 +19,7 @@
 #include "X86GenRegisterInfo.inc"
 
 namespace llvm {
-  class Triple;
+class Triple;
 
 class X86RegisterInfo final : public X86GenRegisterInfo {
 private:
@@ -97,10 +97,8 @@ public:
 
   /// getCalleeSavedRegs - Return a null-terminated list of all of the
   /// callee-save registers on this target.
-  const MCPhysReg *
-  getCalleeSavedRegs(const MachineFunction* MF) const override;
-  const MCPhysReg *
-  getCalleeSavedRegsViaCopy(const MachineFunction *MF) const;
+  const MCPhysReg *getCalleeSavedRegs(const MachineFunction *MF) const override;
+  const MCPhysReg *getCalleeSavedRegsViaCopy(const MachineFunction *MF) const;
   const uint32_t *getCallPreservedMask(const MachineFunction &MF,
                                        CallingConv::ID) const override;
   const uint32_t *getNoPreservedMask() const override;
@@ -110,9 +108,9 @@ public:
   const uint32_t *getDarwinTLSCallPreservedMask() const;
 
   /// getReservedRegs - Returns a bitset indexed by physical register number
-  /// indicating if a register is a special register that has particular uses and
-  /// should be considered unavailable at all times, e.g. SP, RA. This is used by
-  /// register scavenger to determine what registers are free.
+  /// indicating if a register is a special register that has particular uses
+  /// and should be considered unavailable at all times, e.g. SP, RA. This is
+  /// used by register scavenger to determine what registers are free.
   BitVector getReservedRegs(const MachineFunction &MF) const override;
 
   void adjustStackMapLiveOutMask(uint32_t *Mask) const override;
@@ -121,8 +119,8 @@ public:
 
   bool canRealignStack(const MachineFunction &MF) const override;
 
-  void eliminateFrameIndex(MachineBasicBlock::iterator MI,
-                           int SPAdj, unsigned FIOperandNum,
+  void eliminateFrameIndex(MachineBasicBlock::iterator MI, int SPAdj,
+                           unsigned FIOperandNum,
                            RegScavenger *RS = nullptr) const override;
 
   /// findDeadCallerSavedReg - Return a caller-saved register that isn't live
@@ -151,6 +149,6 @@ public:
                              const LiveRegMatrix *Matrix) const override;
 };
 
-} // End llvm namespace
+} // namespace llvm
 
 #endif

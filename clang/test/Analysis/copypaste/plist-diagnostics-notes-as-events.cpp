@@ -16,4 +16,3 @@ int maxClone(int a, int b) { // no-note (converted into event)
     return a;
   return b;
 }
-

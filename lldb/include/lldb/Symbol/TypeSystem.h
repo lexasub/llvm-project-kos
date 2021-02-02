@@ -295,8 +295,7 @@ public:
 
   virtual void ForEachEnumerator(
       lldb::opaque_compiler_type_t type,
-      std::function<bool(const CompilerType &integer_type,
-                         ConstString name,
+      std::function<bool(const CompilerType &integer_type, ConstString name,
                          const llvm::APSInt &value)> const &callback) {}
 
   virtual uint32_t GetNumFields(lldb::opaque_compiler_type_t type) = 0;
@@ -351,8 +350,8 @@ public:
 
   virtual lldb::TemplateArgumentKind
   GetTemplateArgumentKind(lldb::opaque_compiler_type_t type, size_t idx);
-  virtual CompilerType GetTypeTemplateArgument(lldb::opaque_compiler_type_t type,
-                                           size_t idx);
+  virtual CompilerType
+  GetTypeTemplateArgument(lldb::opaque_compiler_type_t type, size_t idx);
   virtual llvm::Optional<CompilerType::IntegralTemplateArgument>
   GetIntegralTemplateArgument(lldb::opaque_compiler_type_t type, size_t idx);
 
@@ -363,7 +362,7 @@ public:
   LLVM_DUMP_METHOD virtual void
   dump(lldb::opaque_compiler_type_t type) const = 0;
 #endif
-  
+
   virtual void DumpValue(lldb::opaque_compiler_type_t type,
                          ExecutionContext *exe_ctx, Stream *s,
                          lldb::Format format, const DataExtractor &data,
@@ -453,12 +452,10 @@ public:
     return IsPointerOrReferenceType(type, nullptr);
   }
 
-  virtual UserExpression *
-  GetUserExpression(llvm::StringRef expr, llvm::StringRef prefix,
-                    lldb::LanguageType language,
-                    Expression::ResultType desired_type,
-                    const EvaluateExpressionOptions &options,
-                    ValueObject *ctx_obj) {
+  virtual UserExpression *GetUserExpression(
+      llvm::StringRef expr, llvm::StringRef prefix, lldb::LanguageType language,
+      Expression::ResultType desired_type,
+      const EvaluateExpressionOptions &options, ValueObject *ctx_obj) {
     return nullptr;
   }
 
@@ -522,7 +519,7 @@ public:
 protected:
   typedef std::map<lldb::LanguageType, lldb::TypeSystemSP> collection;
   mutable std::mutex m_mutex; ///< A mutex to keep this object happy in
-                              ///multi-threaded environments.
+                              /// multi-threaded environments.
   collection m_map;
   bool m_clear_in_progress;
 

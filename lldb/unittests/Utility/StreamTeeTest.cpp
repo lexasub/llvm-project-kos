@@ -84,16 +84,12 @@ TEST(StreamTeeTest, Write) {
 }
 
 namespace {
-  struct FlushTestStream : public Stream {
-    unsigned m_flush_count = false;
-    void Flush() override {
-      ++m_flush_count;
-    }
-    size_t WriteImpl(const void *src, size_t src_len) override {
-      return src_len;
-    }
-  };
-}
+struct FlushTestStream : public Stream {
+  unsigned m_flush_count = false;
+  void Flush() override { ++m_flush_count; }
+  size_t WriteImpl(const void *src, size_t src_len) override { return src_len; }
+};
+} // namespace
 
 TEST(StreamTeeTest, Flush) {
   // Check that Flush is distributed to all streams.

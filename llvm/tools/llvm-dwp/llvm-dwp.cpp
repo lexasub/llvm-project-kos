@@ -56,7 +56,8 @@ static cl::list<std::string> InputFiles(cl::Positional, cl::ZeroOrMore,
 
 static cl::list<std::string> ExecFilenames(
     "e", cl::ZeroOrMore,
-    cl::desc("Specify the executable/library files to get the list of *.dwo from"),
+    cl::desc(
+        "Specify the executable/library files to get the list of *.dwo from"),
     cl::value_desc("filename"), cl::cat(DwpCategory));
 
 static cl::opt<std::string> OutputFilename(cl::Required, "o",
@@ -120,8 +121,8 @@ struct CompileUnitIdentifiers {
 };
 
 static Expected<const char *>
-getIndexedString(dwarf::Form Form, DataExtractor InfoData,
-                 uint64_t &InfoOffset, StringRef StrOffsets, StringRef Str) {
+getIndexedString(dwarf::Form Form, DataExtractor InfoData, uint64_t &InfoOffset,
+                 StringRef StrOffsets, StringRef Str) {
   if (Form == dwarf::DW_FORM_string)
     return InfoData.getCStr(&InfoOffset);
   if (Form != dwarf::DW_FORM_GNU_str_index)
@@ -176,7 +177,8 @@ static Expected<CompileUnitIdentifiers> getCUIdentifiers(StringRef Abbrev,
   uint32_t Name;
   dwarf::Form Form;
   while ((Name = AbbrevData.getULEB128(&AbbrevOffset)) |
-         (Form = static_cast<dwarf::Form>(AbbrevData.getULEB128(&AbbrevOffset))) &&
+             (Form = static_cast<dwarf::Form>(
+                  AbbrevData.getULEB128(&AbbrevOffset))) &&
          (Name != 0 || Form != 0)) {
     switch (Name) {
     case dwarf::DW_AT_name: {

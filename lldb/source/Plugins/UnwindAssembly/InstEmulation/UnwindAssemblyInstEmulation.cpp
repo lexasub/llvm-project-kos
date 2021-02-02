@@ -628,10 +628,9 @@ bool UnwindAssemblyInstEmulation::WriteRegister(
         }
         break;
       case EmulateInstruction::eInfoTypeISA:
-        assert(
-            (generic_regnum == LLDB_REGNUM_GENERIC_PC ||
-             generic_regnum == LLDB_REGNUM_GENERIC_FLAGS) &&
-            "eInfoTypeISA used for popping a register other the PC/FLAGS");
+        assert((generic_regnum == LLDB_REGNUM_GENERIC_PC ||
+                generic_regnum == LLDB_REGNUM_GENERIC_FLAGS) &&
+               "eInfoTypeISA used for popping a register other the PC/FLAGS");
         if (generic_regnum != LLDB_REGNUM_GENERIC_FLAGS) {
           m_curr_row->SetRegisterLocationToSame(reg_num,
                                                 false /*must_replace*/);

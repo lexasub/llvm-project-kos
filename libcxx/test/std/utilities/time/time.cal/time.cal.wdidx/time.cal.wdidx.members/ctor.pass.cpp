@@ -26,37 +26,34 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    using weekday  = std::chrono::weekday;
-    using weekday_indexed = std::chrono::weekday_indexed;
+int main(int, char**) {
+  using weekday = std::chrono::weekday;
+  using weekday_indexed = std::chrono::weekday_indexed;
 
-    ASSERT_NOEXCEPT(weekday_indexed{});
-    ASSERT_NOEXCEPT(weekday_indexed(weekday{1}, 1));
+  ASSERT_NOEXCEPT(weekday_indexed{});
+  ASSERT_NOEXCEPT(weekday_indexed(weekday{1}, 1));
 
-    constexpr weekday_indexed wdi0{};
-    static_assert( wdi0.weekday() == weekday{}, "");
-    static_assert( wdi0.index() == 0,           "");
-    static_assert(!wdi0.ok(),                   "");
+  constexpr weekday_indexed wdi0{};
+  static_assert(wdi0.weekday() == weekday{}, "");
+  static_assert(wdi0.index() == 0, "");
+  static_assert(!wdi0.ok(), "");
 
-    constexpr weekday_indexed wdi1{std::chrono::Sunday, 2};
-    static_assert( wdi1.weekday() == std::chrono::Sunday, "");
-    static_assert( wdi1.index() == 2,                     "");
-    static_assert( wdi1.ok(),                             "");
+  constexpr weekday_indexed wdi1{std::chrono::Sunday, 2};
+  static_assert(wdi1.weekday() == std::chrono::Sunday, "");
+  static_assert(wdi1.index() == 2, "");
+  static_assert(wdi1.ok(), "");
 
-    for (unsigned i = 1; i <= 5; ++i)
-    {
-        weekday_indexed wdi(std::chrono::Tuesday, i);
-        assert( wdi.weekday() == std::chrono::Tuesday);
-        assert( wdi.index() == i);
-        assert( wdi.ok());
-    }
+  for (unsigned i = 1; i <= 5; ++i) {
+    weekday_indexed wdi(std::chrono::Tuesday, i);
+    assert(wdi.weekday() == std::chrono::Tuesday);
+    assert(wdi.index() == i);
+    assert(wdi.ok());
+  }
 
-    for (unsigned i = 6; i <= 20; ++i)
-    {
-        weekday_indexed wdi(std::chrono::Tuesday, i);
-        assert(!wdi.ok());
-    }
+  for (unsigned i = 6; i <= 20; ++i) {
+    weekday_indexed wdi(std::chrono::Tuesday, i);
+    assert(!wdi.ok());
+  }
 
   return 0;
 }

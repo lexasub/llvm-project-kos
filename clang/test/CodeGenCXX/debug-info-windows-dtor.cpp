@@ -9,8 +9,8 @@ struct B {
   virtual ~B() {}
 };
 
-template<typename T>
-struct AB: A, B {
+template <typename T>
+struct AB : A, B {
 };
 
 template struct AB<int>;

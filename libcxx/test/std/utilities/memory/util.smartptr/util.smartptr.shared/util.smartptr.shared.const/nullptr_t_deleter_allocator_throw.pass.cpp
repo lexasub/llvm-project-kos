@@ -17,33 +17,28 @@
 #include "deleter_types.h"
 #include "test_allocator.h"
 
-struct A
-{
-    static int count;
+struct A {
+  static int count;
 
-    A() {++count;}
-    A(const A&) {++count;}
-    ~A() {--count;}
+  A() { ++count; }
+  A(const A&) { ++count; }
+  ~A() { --count; }
 };
 
 int A::count = 0;
 
-int main(int, char**)
-{
-    try
-    {
-        test_allocator<A>::throw_after = 0;
-        std::shared_ptr<A> p(nullptr, test_deleter<A>(3), test_allocator<A>(5));
-        assert(false);
-    }
-    catch (std::bad_alloc&)
-    {
-        assert(A::count == 0);
-        assert(test_deleter<A>::count == 0);
-        assert(test_deleter<A>::dealloc_count == 1);
-        assert(test_allocator<A>::count == 0);
-        assert(test_allocator<A>::alloc_count == 0);
-    }
+int main(int, char**) {
+  try {
+    test_allocator<A>::throw_after = 0;
+    std::shared_ptr<A> p(nullptr, test_deleter<A>(3), test_allocator<A>(5));
+    assert(false);
+  } catch (std::bad_alloc&) {
+    assert(A::count == 0);
+    assert(test_deleter<A>::count == 0);
+    assert(test_deleter<A>::dealloc_count == 1);
+    assert(test_allocator<A>::count == 0);
+    assert(test_allocator<A>::alloc_count == 0);
+  }
 
   return 0;
 }

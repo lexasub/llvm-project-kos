@@ -11,7 +11,6 @@
 // Premap shadow range with an ifunc resolver.
 //===----------------------------------------------------------------------===//
 
-
 #ifndef ASAN_PREMAP_SHADOW_H
 #define ASAN_PREMAP_SHADOW_H
 
@@ -20,10 +19,10 @@ namespace __asan {
 // Conservative upper limit.
 uptr PremapShadowSize();
 bool PremapShadowFailed();
-}
+}  // namespace __asan
 #endif
 
 extern "C" INTERFACE_ATTRIBUTE void __asan_shadow();
 extern "C" decltype(__asan_shadow)* __asan_premap_shadow();
 
-#endif // ASAN_PREMAP_SHADOW_H
+#endif  // ASAN_PREMAP_SHADOW_H

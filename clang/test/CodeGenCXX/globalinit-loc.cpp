@@ -23,4 +23,3 @@ A a;
 int f() {
   return a.foo();
 }
-

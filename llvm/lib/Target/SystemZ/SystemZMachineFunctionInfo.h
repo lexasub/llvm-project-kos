@@ -21,8 +21,8 @@ struct GPRRegs {
   unsigned HighGPR;
   unsigned GPROffset;
   GPRRegs() : LowGPR(0), HighGPR(0), GPROffset(0) {}
-  };
-}
+};
+} // namespace SystemZ
 
 class SystemZMachineFunctionInfo : public MachineFunctionInfo {
   virtual void anchor();
@@ -39,9 +39,9 @@ class SystemZMachineFunctionInfo : public MachineFunctionInfo {
 
 public:
   explicit SystemZMachineFunctionInfo(MachineFunction &MF)
-    : VarArgsFirstGPR(0), VarArgsFirstFPR(0), VarArgsFrameIndex(0),
-      RegSaveFrameIndex(0), FramePointerSaveIndex(0), ManipulatesSP(false),
-      NumLocalDynamics(0) {}
+      : VarArgsFirstGPR(0), VarArgsFirstFPR(0), VarArgsFrameIndex(0),
+        RegSaveFrameIndex(0), FramePointerSaveIndex(0), ManipulatesSP(false),
+        NumLocalDynamics(0) {}
 
   // Get and set the first and last call-saved GPR that should be saved by
   // this function and the SP offset for the STMG.  These are 0 if no GPRs

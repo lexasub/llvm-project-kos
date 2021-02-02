@@ -16,7 +16,6 @@
 #include "llvm/Support/ErrorHandling.h"
 using namespace clang;
 
-
 /// IsStringPrefix - Return true if Str is a string prefix.
 /// 'L', 'u', 'U', or 'u8'. Including raw versions.
 static bool IsStringPrefix(StringRef Str, bool CPlusPlus11) {
@@ -34,8 +33,10 @@ static bool IsStringPrefix(StringRef Str, bool CPlusPlus11) {
 
     // Check for "u8" and "u8R"
     if (Str[0] == 'u' && Str[1] == '8') {
-      if (Str.size() == 2) return true; // "u8"
-      if (Str.size() == 3 && Str[2] == 'R') return true; // "u8R"
+      if (Str.size() == 2)
+        return true; // "u8"
+      if (Str.size() == 3 && Str[2] == 'R')
+        return true; // "u8R"
     }
   }
 
@@ -70,32 +71,32 @@ TokenConcatenation::TokenConcatenation(const Preprocessor &pp) : PP(pp) {
   memset(TokenInfo, 0, sizeof(TokenInfo));
 
   // These tokens have custom code in AvoidConcat.
-  TokenInfo[tok::identifier      ] |= aci_custom;
+  TokenInfo[tok::identifier] |= aci_custom;
   TokenInfo[tok::numeric_constant] |= aci_custom_firstchar;
-  TokenInfo[tok::period          ] |= aci_custom_firstchar;
-  TokenInfo[tok::amp             ] |= aci_custom_firstchar;
-  TokenInfo[tok::plus            ] |= aci_custom_firstchar;
-  TokenInfo[tok::minus           ] |= aci_custom_firstchar;
-  TokenInfo[tok::slash           ] |= aci_custom_firstchar;
-  TokenInfo[tok::less            ] |= aci_custom_firstchar;
-  TokenInfo[tok::greater         ] |= aci_custom_firstchar;
-  TokenInfo[tok::pipe            ] |= aci_custom_firstchar;
-  TokenInfo[tok::percent         ] |= aci_custom_firstchar;
-  TokenInfo[tok::colon           ] |= aci_custom_firstchar;
-  TokenInfo[tok::hash            ] |= aci_custom_firstchar;
-  TokenInfo[tok::arrow           ] |= aci_custom_firstchar;
+  TokenInfo[tok::period] |= aci_custom_firstchar;
+  TokenInfo[tok::amp] |= aci_custom_firstchar;
+  TokenInfo[tok::plus] |= aci_custom_firstchar;
+  TokenInfo[tok::minus] |= aci_custom_firstchar;
+  TokenInfo[tok::slash] |= aci_custom_firstchar;
+  TokenInfo[tok::less] |= aci_custom_firstchar;
+  TokenInfo[tok::greater] |= aci_custom_firstchar;
+  TokenInfo[tok::pipe] |= aci_custom_firstchar;
+  TokenInfo[tok::percent] |= aci_custom_firstchar;
+  TokenInfo[tok::colon] |= aci_custom_firstchar;
+  TokenInfo[tok::hash] |= aci_custom_firstchar;
+  TokenInfo[tok::arrow] |= aci_custom_firstchar;
 
   // These tokens have custom code in C++11 mode.
   if (PP.getLangOpts().CPlusPlus11) {
-    TokenInfo[tok::string_literal      ] |= aci_custom;
-    TokenInfo[tok::wide_string_literal ] |= aci_custom;
-    TokenInfo[tok::utf8_string_literal ] |= aci_custom;
+    TokenInfo[tok::string_literal] |= aci_custom;
+    TokenInfo[tok::wide_string_literal] |= aci_custom;
+    TokenInfo[tok::utf8_string_literal] |= aci_custom;
     TokenInfo[tok::utf16_string_literal] |= aci_custom;
     TokenInfo[tok::utf32_string_literal] |= aci_custom;
-    TokenInfo[tok::char_constant       ] |= aci_custom;
-    TokenInfo[tok::wide_char_constant  ] |= aci_custom;
-    TokenInfo[tok::utf16_char_constant ] |= aci_custom;
-    TokenInfo[tok::utf32_char_constant ] |= aci_custom;
+    TokenInfo[tok::char_constant] |= aci_custom;
+    TokenInfo[tok::wide_char_constant] |= aci_custom;
+    TokenInfo[tok::utf16_char_constant] |= aci_custom;
+    TokenInfo[tok::utf32_char_constant] |= aci_custom;
   }
 
   // These tokens have custom code in C++17 mode.
@@ -104,23 +105,23 @@ TokenConcatenation::TokenConcatenation(const Preprocessor &pp) : PP(pp) {
 
   // These tokens have custom code in C++2a mode.
   if (PP.getLangOpts().CPlusPlus20)
-    TokenInfo[tok::lessequal ] |= aci_custom_firstchar;
+    TokenInfo[tok::lessequal] |= aci_custom_firstchar;
 
   // These tokens change behavior if followed by an '='.
-  TokenInfo[tok::amp         ] |= aci_avoid_equal;           // &=
-  TokenInfo[tok::plus        ] |= aci_avoid_equal;           // +=
-  TokenInfo[tok::minus       ] |= aci_avoid_equal;           // -=
-  TokenInfo[tok::slash       ] |= aci_avoid_equal;           // /=
-  TokenInfo[tok::less        ] |= aci_avoid_equal;           // <=
-  TokenInfo[tok::greater     ] |= aci_avoid_equal;           // >=
-  TokenInfo[tok::pipe        ] |= aci_avoid_equal;           // |=
-  TokenInfo[tok::percent     ] |= aci_avoid_equal;           // %=
-  TokenInfo[tok::star        ] |= aci_avoid_equal;           // *=
-  TokenInfo[tok::exclaim     ] |= aci_avoid_equal;           // !=
-  TokenInfo[tok::lessless    ] |= aci_avoid_equal;           // <<=
-  TokenInfo[tok::greatergreater] |= aci_avoid_equal;         // >>=
-  TokenInfo[tok::caret       ] |= aci_avoid_equal;           // ^=
-  TokenInfo[tok::equal       ] |= aci_avoid_equal;           // ==
+  TokenInfo[tok::amp] |= aci_avoid_equal;            // &=
+  TokenInfo[tok::plus] |= aci_avoid_equal;           // +=
+  TokenInfo[tok::minus] |= aci_avoid_equal;          // -=
+  TokenInfo[tok::slash] |= aci_avoid_equal;          // /=
+  TokenInfo[tok::less] |= aci_avoid_equal;           // <=
+  TokenInfo[tok::greater] |= aci_avoid_equal;        // >=
+  TokenInfo[tok::pipe] |= aci_avoid_equal;           // |=
+  TokenInfo[tok::percent] |= aci_avoid_equal;        // %=
+  TokenInfo[tok::star] |= aci_avoid_equal;           // *=
+  TokenInfo[tok::exclaim] |= aci_avoid_equal;        // !=
+  TokenInfo[tok::lessless] |= aci_avoid_equal;       // <<=
+  TokenInfo[tok::greatergreater] |= aci_avoid_equal; // >>=
+  TokenInfo[tok::caret] |= aci_avoid_equal;          // ^=
+  TokenInfo[tok::equal] |= aci_avoid_equal;          // ==
 }
 
 /// GetFirstChar - Get the first character of the token \arg Tok,
@@ -182,7 +183,8 @@ bool TokenConcatenation::AvoidConcat(const Token &PrevPrevTok,
   unsigned ConcatInfo = TokenInfo[PrevKind];
 
   // If prevtok never causes a problem for anything after it, return quickly.
-  if (ConcatInfo == 0) return false;
+  if (ConcatInfo == 0)
+    return false;
 
   if (ConcatInfo & aci_avoid_equal) {
     // If the next token is '=' or '==', avoid concatenation.
@@ -241,7 +243,7 @@ bool TokenConcatenation::AvoidConcat(const Token &PrevPrevTok,
     if (!PrevTok.hasUDSuffix())
       return false;
     LLVM_FALLTHROUGH;
-  case tok::identifier:   // id+id or id+number or id+L"foo".
+  case tok::identifier: // id+id or id+number or id+L"foo".
     // id+'.'... will not append.
     if (Tok.is(tok::numeric_constant))
       return GetFirstChar(PP, Tok) != '.';
@@ -262,36 +264,35 @@ bool TokenConcatenation::AvoidConcat(const Token &PrevPrevTok,
     return IsIdentifierStringPrefix(PrevTok);
 
   case tok::numeric_constant:
-    return isPreprocessingNumberBody(FirstChar) ||
-           FirstChar == '+' || FirstChar == '-';
-  case tok::period:          // ..., .*, .1234
+    return isPreprocessingNumberBody(FirstChar) || FirstChar == '+' ||
+           FirstChar == '-';
+  case tok::period: // ..., .*, .1234
     return (FirstChar == '.' && PrevPrevTok.is(tok::period)) ||
            isDigit(FirstChar) ||
            (PP.getLangOpts().CPlusPlus && FirstChar == '*');
-  case tok::amp:             // &&
+  case tok::amp: // &&
     return FirstChar == '&';
-  case tok::plus:            // ++
+  case tok::plus: // ++
     return FirstChar == '+';
-  case tok::minus:           // --, ->, ->*
+  case tok::minus: // --, ->, ->*
     return FirstChar == '-' || FirstChar == '>';
-  case tok::slash:           //, /*, //
+  case tok::slash: //, /*, //
     return FirstChar == '*' || FirstChar == '/';
-  case tok::less:            // <<, <<=, <:, <%
+  case tok::less: // <<, <<=, <:, <%
     return FirstChar == '<' || FirstChar == ':' || FirstChar == '%';
-  case tok::greater:         // >>, >>=
+  case tok::greater: // >>, >>=
     return FirstChar == '>';
-  case tok::pipe:            // ||
+  case tok::pipe: // ||
     return FirstChar == '|';
-  case tok::percent:         // %>, %:
+  case tok::percent: // %>, %:
     return FirstChar == '>' || FirstChar == ':';
-  case tok::colon:           // ::, :>
-    return FirstChar == '>' ||
-    (PP.getLangOpts().CPlusPlus && FirstChar == ':');
-  case tok::hash:            // ##, #@, %:%:
+  case tok::colon: // ::, :>
+    return FirstChar == '>' || (PP.getLangOpts().CPlusPlus && FirstChar == ':');
+  case tok::hash: // ##, #@, %:%:
     return FirstChar == '#' || FirstChar == '@' || FirstChar == '%';
-  case tok::arrow:           // ->*
+  case tok::arrow: // ->*
     return PP.getLangOpts().CPlusPlus && FirstChar == '*';
-  case tok::lessequal:       // <=> (C++2a)
+  case tok::lessequal: // <=> (C++2a)
     return PP.getLangOpts().CPlusPlus20 && FirstChar == '>';
   }
 }

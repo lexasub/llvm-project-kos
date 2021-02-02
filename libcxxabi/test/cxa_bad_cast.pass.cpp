@@ -17,41 +17,38 @@
 #include "test_macros.h"
 
 class Base {
-  virtual void foo() {};
+  virtual void foo(){};
 };
 
 class Derived : public Base {};
 
-Derived &test_bad_cast(Base& b) {
-  return dynamic_cast<Derived&>(b);
-}
+Derived& test_bad_cast(Base& b) { return dynamic_cast<Derived&>(b); }
 
 Base gB;
 
 void my_terminate() { exit(0); }
 
-int main ()
-{
-    // swap-out the terminate handler
-    void (*default_handler)() = std::get_terminate();
-    std::set_terminate(my_terminate);
+int main() {
+  // swap-out the terminate handler
+  void (*default_handler)() = std::get_terminate();
+  std::set_terminate(my_terminate);
 
 #ifndef TEST_HAS_NO_EXCEPTIONS
-    try {
+  try {
 #endif
-        Derived &d = test_bad_cast(gB);
-        assert(false);
-        ((void)d);
+    Derived& d = test_bad_cast(gB);
+    assert(false);
+    ((void)d);
 #ifndef TEST_HAS_NO_EXCEPTIONS
-    } catch (std::bad_cast const&) {
-        // success
-        return 0;
-    } catch (...) {
-        assert(false);
-    }
+  } catch (std::bad_cast const&) {
+    // success
+    return 0;
+  } catch (...) {
+    assert(false);
+  }
 #endif
 
-    // failure, restore the default terminate handler and fire
-    std::set_terminate(default_handler);
-    std::terminate();
+  // failure, restore the default terminate handler and fire
+  std::set_terminate(default_handler);
+  std::terminate();
 }

@@ -16,14 +16,14 @@
 #include "test_macros.h"
 using namespace std::experimental;
 
-struct error_tag { };
+struct error_tag {};
 
 template <typename T, typename Error = int>
 struct expected {
 
   struct Data {
-    Data() : val(), error() { }
-    Data(T v, Error e) : val(v), error(e) { }
+    Data() : val(), error() {}
+    Data(T v, Error e) : val(v), error(e) {}
     T val;
     Error error;
   };
@@ -35,10 +35,16 @@ struct expected {
 
   struct promise_type {
     std::shared_ptr<Data> data;
-    std::shared_ptr<Data> get_return_object() { data = std::make_shared<Data>(); return data; }
+    std::shared_ptr<Data> get_return_object() {
+      data = std::make_shared<Data>();
+      return data;
+    }
     suspend_never initial_suspend() { return {}; }
     suspend_never final_suspend() noexcept { return {}; }
-    void return_value(T v) { data->val = v; data->error = {}; }
+    void return_value(T v) {
+      data->val = v;
+      data->error = {};
+    }
     void unhandled_exception() {}
   };
 

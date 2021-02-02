@@ -18,9 +18,8 @@
 #include "test_macros.h"
 #include "min_allocator.h"
 
-int main(int, char**)
-{
-    {
+int main(int, char**) {
+  {
     typedef std::deque<int> C;
     C c;
     ASSERT_NOEXCEPT(c.size());
@@ -37,10 +36,10 @@ int main(int, char**)
     assert(c.size() == 1);
     c.erase(c.begin());
     assert(c.size() == 0);
-    }
+  }
 #if TEST_STD_VER >= 11
-    {
-    typedef std::deque<int, min_allocator<int>> C;
+  {
+    typedef std::deque<int, min_allocator<int> > C;
     C c;
     ASSERT_NOEXCEPT(c.size());
     assert(c.size() == 0);
@@ -56,7 +55,7 @@ int main(int, char**)
     assert(c.size() == 1);
     c.erase(c.begin());
     assert(c.size() == 0);
-    }
+  }
 #endif
 
   return 0;

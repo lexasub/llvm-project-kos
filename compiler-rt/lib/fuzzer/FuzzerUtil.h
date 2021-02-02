@@ -48,7 +48,7 @@ void PrintMemoryProfile();
 unsigned NumberOfCpuCores();
 
 // Platform specific functions.
-void SetSignalHandler(const FuzzingOptions& Options);
+void SetSignalHandler(const FuzzingOptions &Options);
 
 void SleepSeconds(int Seconds);
 
@@ -66,8 +66,8 @@ int CloseProcessPipe(FILE *F);
 const void *SearchMemory(const void *haystack, size_t haystacklen,
                          const void *needle, size_t needlelen);
 
-std::string CloneArgsWithoutX(const Vector<std::string> &Args,
-                              const char *X1, const char *X2);
+std::string CloneArgsWithoutX(const Vector<std::string> &Args, const char *X1,
+                              const char *X2);
 
 inline std::string CloneArgsWithoutX(const Vector<std::string> &Args,
                                      const char *X) {
@@ -112,6 +112,6 @@ template <typename T> T HostToLE(T X) { return X; }
 template <typename T> T HostToLE(T X) { return Bswap(X); }
 #endif
 
-}  // namespace fuzzer
+} // namespace fuzzer
 
-#endif  // LLVM_FUZZER_UTIL_H
+#endif // LLVM_FUZZER_UTIL_H

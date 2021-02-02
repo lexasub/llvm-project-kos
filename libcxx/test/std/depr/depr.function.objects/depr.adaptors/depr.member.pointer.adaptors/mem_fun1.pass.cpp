@@ -20,18 +20,16 @@
 
 #include "test_macros.h"
 
-struct A
-{
-    char a1() {return 5;}
-    short a2(int i) {return short(i+1);}
-    int a3() const {return 1;}
-    double a4(unsigned i) const {return i-1;}
+struct A {
+  char a1() { return 5; }
+  short a2(int i) { return short(i + 1); }
+  int a3() const { return 1; }
+  double a4(unsigned i) const { return i - 1; }
 };
 
-int main(int, char**)
-{
-    A a;
-    assert(std::mem_fun(&A::a2)(&a, 5) == 6);
+int main(int, char**) {
+  A a;
+  assert(std::mem_fun(&A::a2)(&a, 5) == 6);
 
   return 0;
 }

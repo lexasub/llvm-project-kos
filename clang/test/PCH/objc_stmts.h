@@ -13,9 +13,9 @@
 @implementation TestPCH
 - (void)instMethod {
   @try {
-  } @catch(A *a) {
-  } @catch(B *b) {
-  } @catch(...) {
+  } @catch (A *a) {
+  } @catch (B *b) {
+  } @catch (...) {
   } @finally {
   }
 }

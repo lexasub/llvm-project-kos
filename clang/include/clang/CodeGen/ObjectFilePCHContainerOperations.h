@@ -37,6 +37,6 @@ class ObjectFilePCHContainerReader : public PCHContainerReader {
   /// Returns the serialized AST inside the PCH container Buffer.
   StringRef ExtractPCH(llvm::MemoryBufferRef Buffer) const override;
 };
-}
+} // namespace clang
 
 #endif

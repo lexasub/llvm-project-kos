@@ -15,10 +15,11 @@
 void dummy_ctor(void*) { assert(false && "should not be called"); }
 void dummy_dtor(void*) { assert(false && "should not be called"); }
 
-void *dummy_alloc(size_t) { assert(false && "should not be called"); }
+void* dummy_alloc(size_t) { assert(false && "should not be called"); }
 void dummy_dealloc(void*) { assert(false && "should not be called"); }
-void dummy_dealloc_sized(void*, size_t) { assert(false && "should not be called"); }
-
+void dummy_dealloc_sized(void*, size_t) {
+  assert(false && "should not be called");
+}
 
 bool check_mul_overflows(size_t x, size_t y) {
   size_t tmp = x * y;
@@ -53,7 +54,7 @@ void test_overflow_in_multiplication() {
 
   try {
     __cxxabiv1::__cxa_vec_new2(elem_count, elem_size, padding, dummy_ctor,
-                              dummy_dtor, &dummy_alloc, &dummy_dealloc);
+                               dummy_dtor, &dummy_alloc, &dummy_dealloc);
     assert(false && "allocation should fail");
   } catch (std::bad_array_new_length const&) {
     // OK
@@ -91,7 +92,6 @@ void test_overflow_in_addition() {
   } catch (...) {
     assert(false && "unexpected exception");
   }
-
 
   try {
     __cxxabiv1::__cxa_vec_new2(elem_count, elem_size, padding, dummy_ctor,

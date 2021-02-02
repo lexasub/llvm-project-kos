@@ -12,7 +12,7 @@ void *use_test2 = &test2;
 // CHECK: !DICompositeType(tag: DW_TAG_structure_type, name: "<unnamed-type-test2>"
 
 typedef struct {
-} *test3;
+} * test3;
 test3 gv3;
 void *use_test3 = &gv3;
 

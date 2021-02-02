@@ -5,13 +5,13 @@
 // pthread barriers are not available on OS X
 // UNSUPPORTED: darwin
 
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
 #include <unistd.h>
 
 const int kSize = 4;
-volatile int kIter = 10;  // prevent unwinding
+volatile int kIter = 10; // prevent unwinding
 int data[2][kSize];
 pthread_barrier_t barrier;
 
@@ -32,7 +32,7 @@ int main() {
   pthread_barrier_init(&barrier, 0, kSize);
   pthread_t th[kSize];
   for (int i = 0; i < kSize; i++)
-    pthread_create(&th[i], 0, thr, (void*)(long)i);
+    pthread_create(&th[i], 0, thr, (void *)(long)i);
   for (int i = 0; i < kSize; i++)
     pthread_join(th[i], 0);
   pthread_barrier_destroy(&barrier);

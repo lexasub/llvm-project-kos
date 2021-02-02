@@ -7,7 +7,9 @@
 using namespace NS;
 
 namespace {
-  struct X { void f(); };
-}
+struct X {
+  void f();
+};
+} // namespace
 
 void X::f() {}

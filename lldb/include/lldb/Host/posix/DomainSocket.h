@@ -32,6 +32,6 @@ protected:
 private:
   DomainSocket(NativeSocket socket, const DomainSocket &listen_socket);
 };
-}
+} // namespace lldb_private
 
 #endif // LLDB_HOST_POSIX_DOMAINSOCKET_H

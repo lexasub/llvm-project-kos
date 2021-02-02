@@ -20,7 +20,7 @@ void bar() {
 // CHECK-LABEL: declare void @_ZN7trivial3fooENS_1AE(i8*)
 
 // WIN64-LABEL: declare dso_local void @"?foo@trivial@@YAXUA@1@@Z"(i64)
-}
+} // namespace trivial
 
 namespace default_ctor {
 struct A {
@@ -41,7 +41,7 @@ void bar() {
 // CHECK-LABEL: declare void @_ZN12default_ctor3fooENS_1AE(i8*)
 
 // WIN64-LABEL: declare dso_local void @"?foo@default_ctor@@YAXUA@1@@Z"(i64)
-}
+} // namespace default_ctor
 
 namespace move_ctor {
 // The presence of a move constructor implicitly deletes the trivial copy ctor
@@ -64,7 +64,7 @@ void bar() {
 // OLDABI-LABEL: declare void @_ZN9move_ctor3fooENS_1AE(i8*)
 
 // WIN64-LABEL: declare dso_local void @"?foo@move_ctor@@YAXUA@1@@Z"(%"struct.move_ctor::A"*)
-}
+} // namespace move_ctor
 
 namespace all_deleted {
 struct A {
@@ -86,7 +86,7 @@ void bar() {
 // OLDABI-LABEL: declare void @_ZN11all_deleted3fooENS_1AE(i8*)
 
 // WIN64-LABEL: declare dso_local void @"?foo@all_deleted@@YAXUA@1@@Z"(%"struct.all_deleted::A"*)
-}
+} // namespace all_deleted
 
 namespace implicitly_deleted {
 struct A {
@@ -109,7 +109,7 @@ void bar() {
 // In MSVC 2013, the copy ctor is not deleted by a move assignment. In MSVC 2015, it is.
 // WIN64-18-LABEL: declare dso_local void @"?foo@implicitly_deleted@@YAXUA@1@@Z"(i64
 // WIN64-19-LABEL: declare dso_local void @"?foo@implicitly_deleted@@YAXUA@1@@Z"(%"struct.implicitly_deleted::A"*)
-}
+} // namespace implicitly_deleted
 
 namespace one_deleted {
 struct A {
@@ -130,7 +130,7 @@ void bar() {
 // OLDABI-LABEL: declare void @_ZN11one_deleted3fooENS_1AE(i8*)
 
 // WIN64-LABEL: declare dso_local void @"?foo@one_deleted@@YAXUA@1@@Z"(%"struct.one_deleted::A"*)
-}
+} // namespace one_deleted
 
 namespace copy_defaulted {
 struct A {
@@ -150,7 +150,7 @@ void bar() {
 // CHECK-LABEL: declare void @_ZN14copy_defaulted3fooENS_1AE(i8*)
 
 // WIN64-LABEL: declare dso_local void @"?foo@copy_defaulted@@YAXUA@1@@Z"(i64)
-}
+} // namespace copy_defaulted
 
 namespace move_defaulted {
 struct A {
@@ -170,7 +170,7 @@ void bar() {
 // CHECK-LABEL: declare void @_ZN14move_defaulted3fooENS_1AE(i8*)
 
 // WIN64-LABEL: declare dso_local void @"?foo@move_defaulted@@YAXUA@1@@Z"(%"struct.move_defaulted::A"*)
-}
+} // namespace move_defaulted
 
 namespace trivial_defaulted {
 struct A {
@@ -189,7 +189,7 @@ void bar() {
 // CHECK-LABEL: declare void @_ZN17trivial_defaulted3fooENS_1AE(i8*)
 
 // WIN64-LABEL: declare dso_local void @"?foo@trivial_defaulted@@YAXUA@1@@Z"(i64)
-}
+} // namespace trivial_defaulted
 
 namespace two_copy_ctors {
 struct A {
@@ -212,7 +212,7 @@ void bar() {
 // OLDABI-LABEL: declare void @_ZN14two_copy_ctors3fooENS_1BE(%"struct.two_copy_ctors::B"* byval
 
 // WIN64-LABEL: declare dso_local void @"?foo@two_copy_ctors@@YAXUB@1@@Z"(%"struct.two_copy_ctors::B"*)
-}
+} // namespace two_copy_ctors
 
 namespace definition_only {
 struct A {
@@ -224,7 +224,7 @@ void *foo(A a) { return a.p; }
 // NEWABI-LABEL: define{{.*}} i8* @_ZN15definition_only3fooENS_1AE(%"struct.definition_only::A"*
 // OLDABI-LABEL: define{{.*}} i8* @_ZN15definition_only3fooENS_1AE(i8*
 // WIN64-LABEL: define dso_local i8* @"?foo@definition_only@@YAPEAXUA@1@@Z"(%"struct.definition_only::A"*
-}
+} // namespace definition_only
 
 namespace deleted_by_member {
 struct B {
@@ -240,7 +240,7 @@ void *foo(A a) { return a.b.p; }
 // NEWABI-LABEL: define{{.*}} i8* @_ZN17deleted_by_member3fooENS_1AE(%"struct.deleted_by_member::A"*
 // OLDABI-LABEL: define{{.*}} i8* @_ZN17deleted_by_member3fooENS_1AE(i8*
 // WIN64-LABEL: define dso_local i8* @"?foo@deleted_by_member@@YAPEAXUA@1@@Z"(%"struct.deleted_by_member::A"*
-}
+} // namespace deleted_by_member
 
 namespace deleted_by_base {
 struct B {
@@ -255,7 +255,7 @@ void *foo(A a) { return a.p; }
 // NEWABI-LABEL: define{{.*}} i8* @_ZN15deleted_by_base3fooENS_1AE(%"struct.deleted_by_base::A"*
 // OLDABI-LABEL: define{{.*}} i8* @_ZN15deleted_by_base3fooENS_1AE(i8*
 // WIN64-LABEL: define dso_local i8* @"?foo@deleted_by_base@@YAPEAXUA@1@@Z"(%"struct.deleted_by_base::A"*
-}
+} // namespace deleted_by_base
 
 namespace deleted_by_member_copy {
 struct B {
@@ -271,7 +271,7 @@ void *foo(A a) { return a.b.p; }
 // NEWABI-LABEL: define{{.*}} i8* @_ZN22deleted_by_member_copy3fooENS_1AE(%"struct.deleted_by_member_copy::A"*
 // OLDABI-LABEL: define{{.*}} i8* @_ZN22deleted_by_member_copy3fooENS_1AE(i8*
 // WIN64-LABEL: define dso_local i8* @"?foo@deleted_by_member_copy@@YAPEAXUA@1@@Z"(%"struct.deleted_by_member_copy::A"*
-}
+} // namespace deleted_by_member_copy
 
 namespace deleted_by_base_copy {
 struct B {
@@ -286,7 +286,7 @@ void *foo(A a) { return a.p; }
 // NEWABI-LABEL: define{{.*}} i8* @_ZN20deleted_by_base_copy3fooENS_1AE(%"struct.deleted_by_base_copy::A"*
 // OLDABI-LABEL: define{{.*}} i8* @_ZN20deleted_by_base_copy3fooENS_1AE(i8*
 // WIN64-LABEL: define dso_local i8* @"?foo@deleted_by_base_copy@@YAPEAXUA@1@@Z"(%"struct.deleted_by_base_copy::A"*
-}
+} // namespace deleted_by_base_copy
 
 namespace explicit_delete {
 struct A {
@@ -298,12 +298,12 @@ struct A {
 // OLDABI-LABEL: define{{.*}} i8* @_ZN15explicit_delete3fooENS_1AE(i8*
 // WIN64-LABEL: define dso_local i8* @"?foo@explicit_delete@@YAPEAXUA@1@@Z"(%"struct.explicit_delete::A"*
 void *foo(A a) { return a.p; }
-}
+} // namespace explicit_delete
 
 namespace implicitly_deleted_copy_ctor {
 struct A {
   // No move ctor due to copy assignment.
-  A &operator=(const A&);
+  A &operator=(const A &);
   // Deleted copy ctor due to rvalue ref member.
   int &&ref;
 };
@@ -314,18 +314,22 @@ int &foo(A a) { return a.ref; }
 
 struct B {
   // Passed direct: has non-deleted trivial copy ctor.
-  B &operator=(const B&);
+  B &operator=(const B &);
   int &ref;
 };
 int &foo(B b) { return b.ref; }
 // CHECK-LABEL: define {{.*}} @_ZN28implicitly_deleted_copy_ctor3fooENS_1BE(i32*
 // WIN64-LABEL: define {{.*}} @"?foo@implicitly_deleted_copy_ctor@@YAAEAHUB@1@@Z"(i64
 
-struct X { X(const X&); };
-struct Y { Y(const Y&) = default; };
+struct X {
+  X(const X &);
+};
+struct Y {
+  Y(const Y &) = default;
+};
 
 union C {
-  C &operator=(const C&);
+  C &operator=(const C &);
   // Passed indirect: copy ctor deleted due to variant member with nontrivial copy ctor.
   X x;
   int n;
@@ -335,7 +339,7 @@ int foo(C c) { return c.n; }
 // WIN64-LABEL: define {{.*}} @"?foo@implicitly_deleted_copy_ctor@@YAHTC@1@@Z"(%"union.implicitly_deleted_copy_ctor::C"*
 
 struct D {
-  D &operator=(const D&);
+  D &operator=(const D &);
   // Passed indirect: copy ctor deleted due to variant member with nontrivial copy ctor.
   union {
     X x;
@@ -348,7 +352,7 @@ int foo(D d) { return d.n; }
 
 union E {
   // Passed direct: has non-deleted trivial copy ctor.
-  E &operator=(const E&);
+  E &operator=(const E &);
   Y y;
   int n;
 };
@@ -358,7 +362,7 @@ int foo(E e) { return e.n; }
 
 struct F {
   // Passed direct: has non-deleted trivial copy ctor.
-  F &operator=(const F&);
+  F &operator=(const F &);
   union {
     Y y;
     int n;
@@ -367,4 +371,4 @@ struct F {
 int foo(F f) { return f.n; }
 // CHECK-LABEL: define {{.*}} @_ZN28implicitly_deleted_copy_ctor3fooENS_1FE(i32
 // WIN64-LABEL: define {{.*}} @"?foo@implicitly_deleted_copy_ctor@@YAHUF@1@@Z"(i32
-}
+} // namespace implicitly_deleted_copy_ctor

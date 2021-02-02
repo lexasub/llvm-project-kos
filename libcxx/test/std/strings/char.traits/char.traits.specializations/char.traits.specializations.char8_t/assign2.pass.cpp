@@ -18,24 +18,20 @@
 #include "test_macros.h"
 
 #if defined(__cpp_lib_char8_t) && __cpp_lib_char8_t >= 201811L
-constexpr bool test_constexpr()
-{
-    char8_t c = u'1';
-    std::char_traits<char8_t>::assign(c, u'a');
-    return c == u'a';
+constexpr bool test_constexpr() {
+  char8_t c = u '1';
+  std::char_traits<char8_t>::assign(c, u 'a');
+  return c == u 'a';
 }
 
-int main(int, char**)
-{
-    char8_t c = u8'\0';
-    std::char_traits<char8_t>::assign(c, u8'a');
-    assert(c == u8'a');
-
-    static_assert(test_constexpr(), "");
-    return 0;
-}
-#else
 int main(int, char**) {
+  char8_t c = u8 '\0';
+  std::char_traits<char8_t>::assign(c, u8 'a');
+  assert(c == u8 'a');
+
+  static_assert(test_constexpr(), "");
   return 0;
 }
+#else
+int main(int, char**) { return 0; }
 #endif

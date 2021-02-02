@@ -16,11 +16,10 @@
 
 #include <memory>
 #include <cassert>
-#include <cstddef>       // for std::max_align_t
+#include <cstddef> // for std::max_align_t
 
 #include "test_macros.h"
 #include "count_new.h"
-
 
 #ifdef TEST_HAS_NO_ALIGNED_ALLOCATION
 static const bool UsingAlignedNew = false;
@@ -36,7 +35,6 @@ static const size_t MaxAligned = std::alignment_of<std::max_align_t>::value;
 
 static const size_t OverAligned = MaxAligned * 2;
 
-
 template <size_t Align>
 struct TEST_ALIGNAS(Align) AlignedType {
   char data;
@@ -47,7 +45,6 @@ struct TEST_ALIGNAS(Align) AlignedType {
 };
 template <size_t Align>
 int AlignedType<Align>::constructed = 0;
-
 
 template <size_t Align>
 void test_aligned() {
@@ -80,14 +77,14 @@ void test_aligned() {
 }
 
 int main(int, char**) {
-    test_aligned<1>();
-    test_aligned<2>();
-    test_aligned<4>();
-    test_aligned<8>();
-    test_aligned<16>();
-    test_aligned<MaxAligned>();
-    test_aligned<OverAligned>();
-    test_aligned<OverAligned * 2>();
+  test_aligned<1>();
+  test_aligned<2>();
+  test_aligned<4>();
+  test_aligned<8>();
+  test_aligned<16>();
+  test_aligned<MaxAligned>();
+  test_aligned<OverAligned>();
+  test_aligned<OverAligned * 2>();
 
   return 0;
 }

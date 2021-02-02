@@ -29,7 +29,7 @@ using namespace lldb_private;
 
 /// Default Constructor
 PlatformRemoteAppleBridge::PlatformRemoteAppleBridge()
-    : PlatformRemoteDarwinDevice () {}
+    : PlatformRemoteDarwinDevice() {}
 
 // Static Variables
 static uint32_t g_initialize_count = 0;
@@ -39,16 +39,18 @@ void PlatformRemoteAppleBridge::Initialize() {
   PlatformDarwin::Initialize();
 
   if (g_initialize_count++ == 0) {
-    PluginManager::RegisterPlugin(PlatformRemoteAppleBridge::GetPluginNameStatic(),
-                                  PlatformRemoteAppleBridge::GetDescriptionStatic(),
-                                  PlatformRemoteAppleBridge::CreateInstance);
+    PluginManager::RegisterPlugin(
+        PlatformRemoteAppleBridge::GetPluginNameStatic(),
+        PlatformRemoteAppleBridge::GetDescriptionStatic(),
+        PlatformRemoteAppleBridge::CreateInstance);
   }
 }
 
 void PlatformRemoteAppleBridge::Terminate() {
   if (g_initialize_count > 0) {
     if (--g_initialize_count == 0) {
-      PluginManager::UnregisterPlugin(PlatformRemoteAppleBridge::CreateInstance);
+      PluginManager::UnregisterPlugin(
+          PlatformRemoteAppleBridge::CreateInstance);
     }
   }
 
@@ -56,7 +58,7 @@ void PlatformRemoteAppleBridge::Terminate() {
 }
 
 PlatformSP PlatformRemoteAppleBridge::CreateInstance(bool force,
-                                                 const ArchSpec *arch) {
+                                                     const ArchSpec *arch) {
   Log *log(GetLogIfAllCategoriesSet(LIBLLDB_LOG_PLATFORM));
   if (log) {
     const char *arch_name;
@@ -142,8 +144,8 @@ const char *PlatformRemoteAppleBridge::GetDescriptionStatic() {
   return "Remote BridgeOS platform plug-in.";
 }
 
-bool PlatformRemoteAppleBridge::GetSupportedArchitectureAtIndex(uint32_t idx,
-                                                            ArchSpec &arch) {
+bool PlatformRemoteAppleBridge::GetSupportedArchitectureAtIndex(
+    uint32_t idx, ArchSpec &arch) {
   ArchSpec system_arch(GetSystemArchitecture());
 
   const ArchSpec::Core system_core = system_arch.GetCore();

@@ -128,7 +128,6 @@ public:
   size_t GetIndexOfChildWithName(ConstString name) override;
 
 private:
-
   struct SetItemDescriptor {
     lldb::addr_t item_ptr;
     lldb::ValueObjectSP valobj_sp;
@@ -140,93 +139,91 @@ private:
   D64 *m_data_64;
   std::vector<SetItemDescriptor> m_children;
 };
-  
+
 namespace Foundation1300 {
-  struct DataDescriptor_32 {
-    uint32_t _used : 26;
-    uint32_t _size;
-    uint32_t _mutations;
-    uint32_t _objs_addr;
-  };
-  
-  struct DataDescriptor_64 {
-    uint64_t _used : 58;
-    uint64_t _size;
-    uint64_t _mutations;
-    uint64_t _objs_addr;
-  };
-  
-  using NSSetMSyntheticFrontEnd =
-      GenericNSSetMSyntheticFrontEnd<DataDescriptor_32, DataDescriptor_64>;
-}
-  
+struct DataDescriptor_32 {
+  uint32_t _used : 26;
+  uint32_t _size;
+  uint32_t _mutations;
+  uint32_t _objs_addr;
+};
+
+struct DataDescriptor_64 {
+  uint64_t _used : 58;
+  uint64_t _size;
+  uint64_t _mutations;
+  uint64_t _objs_addr;
+};
+
+using NSSetMSyntheticFrontEnd =
+    GenericNSSetMSyntheticFrontEnd<DataDescriptor_32, DataDescriptor_64>;
+} // namespace Foundation1300
+
 namespace Foundation1428 {
-  struct DataDescriptor_32 {
-    uint32_t _used : 26;
-    uint32_t _size;
-    uint32_t _objs_addr;
-    uint32_t _mutations;
-  };
-  
-  struct DataDescriptor_64 {
-    uint64_t _used : 58;
-    uint64_t _size;
-    uint64_t _objs_addr;
-    uint64_t _mutations;
-  };
-  
-  using NSSetMSyntheticFrontEnd =
-      GenericNSSetMSyntheticFrontEnd<DataDescriptor_32, DataDescriptor_64>;
-}
-  
+struct DataDescriptor_32 {
+  uint32_t _used : 26;
+  uint32_t _size;
+  uint32_t _objs_addr;
+  uint32_t _mutations;
+};
+
+struct DataDescriptor_64 {
+  uint64_t _used : 58;
+  uint64_t _size;
+  uint64_t _objs_addr;
+  uint64_t _mutations;
+};
+
+using NSSetMSyntheticFrontEnd =
+    GenericNSSetMSyntheticFrontEnd<DataDescriptor_32, DataDescriptor_64>;
+} // namespace Foundation1428
+
 namespace Foundation1437 {
-  struct DataDescriptor_32 {
-    uint32_t _cow;
-    // __table storage
-    uint32_t _objs_addr;
-    uint32_t _muts;
-    uint32_t _used : 26;
-    uint32_t _szidx : 6;
-  };
-  
-  struct DataDescriptor_64 {
-    uint64_t _cow;
-    // __Table storage
-    uint64_t _objs_addr;
-    uint32_t _muts;
-    uint32_t _used : 26;
-    uint32_t _szidx : 6;
-  };
-  
-  using NSSetMSyntheticFrontEnd =
-      GenericNSSetMSyntheticFrontEnd<DataDescriptor_32, DataDescriptor_64>;
-  
-  template <typename DD>
-  uint64_t
-  __NSSetMSize_Impl(lldb_private::Process &process, lldb::addr_t valobj_addr,
-                    Status &error) {
-    const lldb::addr_t start_of_descriptor =
-        valobj_addr + process.GetAddressByteSize();
-    DD descriptor = DD();
-    process.ReadMemory(start_of_descriptor, &descriptor, sizeof(descriptor),
-                       error);
-    if (error.Fail()) {
-      return 0;
-    }
-    return descriptor._used;
+struct DataDescriptor_32 {
+  uint32_t _cow;
+  // __table storage
+  uint32_t _objs_addr;
+  uint32_t _muts;
+  uint32_t _used : 26;
+  uint32_t _szidx : 6;
+};
+
+struct DataDescriptor_64 {
+  uint64_t _cow;
+  // __Table storage
+  uint64_t _objs_addr;
+  uint32_t _muts;
+  uint32_t _used : 26;
+  uint32_t _szidx : 6;
+};
+
+using NSSetMSyntheticFrontEnd =
+    GenericNSSetMSyntheticFrontEnd<DataDescriptor_32, DataDescriptor_64>;
+
+template <typename DD>
+uint64_t __NSSetMSize_Impl(lldb_private::Process &process,
+                           lldb::addr_t valobj_addr, Status &error) {
+  const lldb::addr_t start_of_descriptor =
+      valobj_addr + process.GetAddressByteSize();
+  DD descriptor = DD();
+  process.ReadMemory(start_of_descriptor, &descriptor, sizeof(descriptor),
+                     error);
+  if (error.Fail()) {
+    return 0;
   }
-  
-  uint64_t
-  __NSSetMSize(lldb_private::Process &process, lldb::addr_t valobj_addr,
-               Status &error) {
-    if (process.GetAddressByteSize() == 4) {
-      return __NSSetMSize_Impl<DataDescriptor_32>(process, valobj_addr, error);
-    } else {
-      return __NSSetMSize_Impl<DataDescriptor_64>(process, valobj_addr, error);
-    }
+  return descriptor._used;
+}
+
+uint64_t __NSSetMSize(lldb_private::Process &process, lldb::addr_t valobj_addr,
+                      Status &error) {
+  if (process.GetAddressByteSize() == 4) {
+    return __NSSetMSize_Impl<DataDescriptor_32>(process, valobj_addr, error);
+  } else {
+    return __NSSetMSize_Impl<DataDescriptor_64>(process, valobj_addr, error);
   }
 }
-  
+} // namespace Foundation1437
+
 class NSSetCodeRunningSyntheticFrontEnd : public SyntheticChildrenFrontEnd {
 public:
   NSSetCodeRunningSyntheticFrontEnd(lldb::ValueObjectSP valobj_sp);
@@ -673,9 +670,8 @@ lldb_private::formatters::NSCFSetSyntheticFrontEnd::GetChildAtIndex(
 }
 
 template <typename D32, typename D64>
-lldb_private::formatters::
-  GenericNSSetMSyntheticFrontEnd<D32, D64>::GenericNSSetMSyntheticFrontEnd(
-    lldb::ValueObjectSP valobj_sp)
+lldb_private::formatters::GenericNSSetMSyntheticFrontEnd<
+    D32, D64>::GenericNSSetMSyntheticFrontEnd(lldb::ValueObjectSP valobj_sp)
     : SyntheticChildrenFrontEnd(*valobj_sp), m_exe_ctx_ref(), m_ptr_size(8),
       m_data_32(nullptr), m_data_64(nullptr) {
   if (valobj_sp)
@@ -683,8 +679,8 @@ lldb_private::formatters::
 }
 
 template <typename D32, typename D64>
-lldb_private::formatters::
-  GenericNSSetMSyntheticFrontEnd<D32, D64>::~GenericNSSetMSyntheticFrontEnd<D32, D64>() {
+lldb_private::formatters::GenericNSSetMSyntheticFrontEnd<
+    D32, D64>::~GenericNSSetMSyntheticFrontEnd<D32, D64>() {
   delete m_data_32;
   m_data_32 = nullptr;
   delete m_data_64;
@@ -692,10 +688,8 @@ lldb_private::formatters::
 }
 
 template <typename D32, typename D64>
-size_t
-lldb_private::formatters::
-  GenericNSSetMSyntheticFrontEnd<D32, D64>::GetIndexOfChildWithName(
-    ConstString name) {
+size_t lldb_private::formatters::GenericNSSetMSyntheticFrontEnd<
+    D32, D64>::GetIndexOfChildWithName(ConstString name) {
   const char *item_name = name.GetCString();
   uint32_t idx = ExtractIndexFromString(item_name);
   if (idx < UINT32_MAX && idx >= CalculateNumChildren())
@@ -704,18 +698,16 @@ lldb_private::formatters::
 }
 
 template <typename D32, typename D64>
-size_t
-lldb_private::formatters::
-  GenericNSSetMSyntheticFrontEnd<D32, D64>::CalculateNumChildren() {
+size_t lldb_private::formatters::GenericNSSetMSyntheticFrontEnd<
+    D32, D64>::CalculateNumChildren() {
   if (!m_data_32 && !m_data_64)
     return 0;
   return (m_data_32 ? m_data_32->_used : m_data_64->_used);
 }
 
 template <typename D32, typename D64>
-bool
-lldb_private::formatters::
-  GenericNSSetMSyntheticFrontEnd<D32, D64>::Update() {
+bool lldb_private::formatters::GenericNSSetMSyntheticFrontEnd<D32,
+                                                              D64>::Update() {
   m_children.clear();
   ValueObjectSP valobj_sp = m_backend.GetSP();
   m_ptr_size = 0;
@@ -742,12 +734,10 @@ lldb_private::formatters::
   uint64_t data_location = valobj_sp->GetAddressOf() + m_ptr_size;
   if (m_ptr_size == 4) {
     m_data_32 = new D32();
-    process_sp->ReadMemory(data_location, m_data_32, sizeof(D32),
-                           error);
+    process_sp->ReadMemory(data_location, m_data_32, sizeof(D32), error);
   } else {
     m_data_64 = new D64();
-    process_sp->ReadMemory(data_location, m_data_64, sizeof(D64),
-                           error);
+    process_sp->ReadMemory(data_location, m_data_64, sizeof(D64), error);
   }
   if (error.Fail())
     return false;
@@ -755,16 +745,14 @@ lldb_private::formatters::
 }
 
 template <typename D32, typename D64>
-bool
-lldb_private::formatters::
-  GenericNSSetMSyntheticFrontEnd<D32, D64>::MightHaveChildren() {
+bool lldb_private::formatters::GenericNSSetMSyntheticFrontEnd<
+    D32, D64>::MightHaveChildren() {
   return true;
 }
 
 template <typename D32, typename D64>
-lldb::ValueObjectSP
-lldb_private::formatters::
-  GenericNSSetMSyntheticFrontEnd<D32, D64>::GetChildAtIndex(size_t idx) {
+lldb::ValueObjectSP lldb_private::formatters::GenericNSSetMSyntheticFrontEnd<
+    D32, D64>::GetChildAtIndex(size_t idx) {
   lldb::addr_t m_objs_addr =
       (m_data_32 ? m_data_32->_objs_addr : m_data_64->_objs_addr);
 

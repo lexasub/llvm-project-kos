@@ -10,8 +10,8 @@
 #include "InputInfo.h"
 #include "ToolChains/Arch/ARM.h"
 #include "ToolChains/Clang.h"
-#include "ToolChains/InterfaceStubs.h"
 #include "ToolChains/Flang.h"
+#include "ToolChains/InterfaceStubs.h"
 #include "clang/Basic/ObjCRuntime.h"
 #include "clang/Basic/Sanitizers.h"
 #include "clang/Config/config.h"
@@ -110,17 +110,15 @@ bool ToolChain::useRelaxRelocations() const {
   return ENABLE_X86_RELAX_RELOCATIONS;
 }
 
-bool ToolChain::isNoExecStackDefault() const {
-    return false;
-}
+bool ToolChain::isNoExecStackDefault() const { return false; }
 
-const SanitizerArgs& ToolChain::getSanitizerArgs() const {
+const SanitizerArgs &ToolChain::getSanitizerArgs() const {
   if (!SanitizerArguments.get())
     SanitizerArguments.reset(new SanitizerArgs(*this, Args));
   return *SanitizerArguments.get();
 }
 
-const XRayArgs& ToolChain::getXRayArgs() const {
+const XRayArgs &ToolChain::getXRayArgs() const {
   if (!XRayArguments.get())
     XRayArguments.reset(new XRayArgs(*this, Args));
   return *XRayArguments.get();
@@ -202,8 +200,7 @@ static const DriverSuffix *parseDriverSuffix(StringRef ProgName, size_t &Pos) {
   return DS;
 }
 
-ParsedClangName
-ToolChain::getTargetAndModeFromProgramName(StringRef PN) {
+ParsedClangName ToolChain::getTargetAndModeFromProgramName(StringRef PN) {
   std::string ProgName = normalizeProgramName(PN);
   size_t SuffixPos;
   const DriverSuffix *DS = parseDriverSuffix(ProgName, SuffixPos);
@@ -214,8 +211,8 @@ ToolChain::getTargetAndModeFromProgramName(StringRef PN) {
   size_t LastComponent = ProgName.rfind('-', SuffixPos);
   if (LastComponent == std::string::npos)
     return ParsedClangName(ProgName.substr(0, SuffixEnd), DS->ModeFlag);
-  std::string ModeSuffix = ProgName.substr(LastComponent + 1,
-                                           SuffixEnd - LastComponent - 1);
+  std::string ModeSuffix =
+      ProgName.substr(LastComponent + 1, SuffixEnd - LastComponent - 1);
 
   // Infer target from the prefix.
   StringRef Prefix(ProgName);
@@ -272,9 +269,7 @@ Tool *ToolChain::getFlang() const {
   return Flang.get();
 }
 
-Tool *ToolChain::buildAssembler() const {
-  return new tools::ClangAs(*this);
-}
+Tool *ToolChain::buildAssembler() const { return new tools::ClangAs(*this); }
 
 Tool *ToolChain::buildLinker() const {
   llvm_unreachable("Linking is not supported by this toolchain");
@@ -472,7 +467,6 @@ const char *ToolChain::getCompilerRTArgString(const llvm::opt::ArgList &Args,
   return Args.MakeArgString(getCompilerRT(Args, Component, Type));
 }
 
-
 Optional<std::string> ToolChain::getRuntimePath() const {
   SmallString<128> P;
 
@@ -537,8 +531,10 @@ bool ToolChain::needsGCovInstrumentation(const llvm::opt::ArgList &Args) {
 }
 
 Tool *ToolChain::SelectTool(const JobAction &JA) const {
-  if (D.IsFlangMode() && getDriver().ShouldUseFlangCompiler(JA)) return getFlang();
-  if (getDriver().ShouldUseClangCompiler(JA)) return getClang();
+  if (D.IsFlangMode() && getDriver().ShouldUseFlangCompiler(JA))
+    return getFlang();
+  if (getDriver().ShouldUseClangCompiler(JA))
+    return getClang();
   Action::ActionClass AC = JA.getKind();
   if (AC == Action::AssembleJobClass && useIntegratedAs())
     return getClangAs();
@@ -562,7 +558,7 @@ std::string ToolChain::GetLinkerPath(bool *LinkerIsLLD,
 
   // Get -fuse-ld= first to prevent -Wunused-command-line-argument. -fuse-ld= is
   // considered as the linker flavor, e.g. "bfd", "gold", or "lld".
-  const Arg* A = Args.getLastArg(options::OPT_fuse_ld_EQ);
+  const Arg *A = Args.getLastArg(options::OPT_fuse_ld_EQ);
   StringRef UseLinker = A ? A->getValue() : CLANG_DEFAULT_LINKER;
 
   // --ld-path= takes precedence over -fuse-ld= and specifies the executable
@@ -643,9 +639,7 @@ types::ID ToolChain::LookupTypeForExtension(StringRef Ext) const {
   return id;
 }
 
-bool ToolChain::HasNativeLLVMSupport() const {
-  return false;
-}
+bool ToolChain::HasNativeLLVMSupport() const { return false; }
 
 bool ToolChain::isCrossCompiling() const {
   llvm::Triple HostTriple(LLVM_HOST_TRIPLE);
@@ -657,7 +651,8 @@ bool ToolChain::isCrossCompiling() const {
   case llvm::Triple::thumb:
   case llvm::Triple::thumbeb:
     return getArch() != llvm::Triple::arm && getArch() != llvm::Triple::thumb &&
-           getArch() != llvm::Triple::armeb && getArch() != llvm::Triple::thumbeb;
+           getArch() != llvm::Triple::armeb &&
+           getArch() != llvm::Triple::thumbeb;
   default:
     return HostTriple.getArch() != getArch();
   }
@@ -746,12 +741,10 @@ std::string ToolChain::ComputeLLVMTriple(const ArgList &Args,
       MCPU = A->getValue();
     if (const Arg *A = Args.getLastArg(options::OPT_march_EQ))
       MArch = A->getValue();
-    std::string CPU =
-        Triple.isOSBinFormatMachO()
-            ? tools::arm::getARMCPUForMArch(MArch, Triple).str()
-            : tools::arm::getARMTargetCPU(MCPU, MArch, Triple);
-    StringRef Suffix =
-      tools::arm::getLLVMArchSuffixForARM(CPU, MArch, Triple);
+    std::string CPU = Triple.isOSBinFormatMachO()
+                          ? tools::arm::getARMCPUForMArch(MArch, Triple).str()
+                          : tools::arm::getARMTargetCPU(MCPU, MArch, Triple);
+    StringRef Suffix = tools::arm::getLLVMArchSuffixForARM(CPU, MArch, Triple);
     bool IsMProfile = ARM::parseArchProfile(Suffix) == ARM::ProfileKind::M;
     bool ThumbDefault = IsMProfile || (ARM::parseArchVersion(Suffix) == 7 &&
                                        getTriple().isOSBinFormatMachO());
@@ -771,9 +764,9 @@ std::string ToolChain::ComputeLLVMTriple(const ArgList &Args,
     if (IsMProfile && ARMModeRequested) {
       if (!MCPU.empty())
         getDriver().Diag(diag::err_cpu_unsupported_isa) << CPU << "ARM";
-       else
+      else
         getDriver().Diag(diag::err_arch_unsupported_isa)
-          << tools::arm::getARMArch(MArch, getTriple()) << "ARM";
+            << tools::arm::getARMArch(MArch, getTriple()) << "ARM";
     }
 
     // Check to see if an explicit choice to use thumb has been made via
@@ -782,7 +775,7 @@ std::string ToolChain::ComputeLLVMTriple(const ArgList &Args,
     bool IsThumb = false;
     if (InputType != types::TY_PP_Asm)
       IsThumb = Args.hasFlag(options::OPT_mthumb, options::OPT_mno_thumb,
-                              ThumbDefault);
+                             ThumbDefault);
     else {
       // Ideally we would check for these flags in
       // CollectArgsForIntegratedAssembler but we can't change the ArchName at
@@ -848,9 +841,7 @@ std::string ToolChain::ComputeEffectiveClangTriple(const ArgList &Args,
   return ComputeLLVMTriple(Args, InputType);
 }
 
-std::string ToolChain::computeSysRoot() const {
-  return D.SysRoot;
-}
+std::string ToolChain::computeSysRoot() const { return D.SysRoot; }
 
 void ToolChain::AddClangSystemIncludeArgs(const ArgList &DriverArgs,
                                           ArgStringList &CC1Args) const {
@@ -871,9 +862,9 @@ void ToolChain::addProfileRTLibs(const llvm::opt::ArgList &Args,
   CmdArgs.push_back(getCompilerRTArgString(Args, "profile"));
 }
 
-ToolChain::RuntimeLibType ToolChain::GetRuntimeLibType(
-    const ArgList &Args) const {
-  const Arg* A = Args.getLastArg(options::OPT_rtlib_EQ);
+ToolChain::RuntimeLibType
+ToolChain::GetRuntimeLibType(const ArgList &Args) const {
+  const Arg *A = Args.getLastArg(options::OPT_rtlib_EQ);
   StringRef LibName = A ? A->getValue() : CLANG_DEFAULT_RTLIB;
 
   // Only use "platform" in tests to override CLANG_DEFAULT_RTLIB!
@@ -890,8 +881,8 @@ ToolChain::RuntimeLibType ToolChain::GetRuntimeLibType(
   return GetDefaultRuntimeLibType();
 }
 
-ToolChain::UnwindLibType ToolChain::GetUnwindLibType(
-    const ArgList &Args) const {
+ToolChain::UnwindLibType
+ToolChain::GetUnwindLibType(const ArgList &Args) const {
   const Arg *A = Args.getLastArg(options::OPT_unwindlib_EQ);
   StringRef LibName = A ? A->getValue() : CLANG_DEFAULT_UNWINDLIB;
 
@@ -917,7 +908,8 @@ ToolChain::UnwindLibType ToolChain::GetUnwindLibType(
   return GetDefaultUnwindLibType();
 }
 
-ToolChain::CXXStdlibType ToolChain::GetCXXStdlibType(const ArgList &Args) const{
+ToolChain::CXXStdlibType
+ToolChain::GetCXXStdlibType(const ArgList &Args) const {
   const Arg *A = Args.getLastArg(options::OPT_stdlib_EQ);
   StringRef LibName = A ? A->getValue() : CLANG_DEFAULT_CXX_STDLIB;
 
@@ -1025,7 +1017,7 @@ void ToolChain::AddCXXStdlibLibArgs(const ArgList &Args,
 void ToolChain::AddFilePathLibArgs(const ArgList &Args,
                                    ArgStringList &CmdArgs) const {
   for (const auto &LibPath : getFilePaths())
-    if(LibPath.length() > 0)
+    if (LibPath.length() > 0)
       CmdArgs.push_back(Args.MakeArgString(StringRef("-L") + LibPath));
 }
 
@@ -1041,9 +1033,9 @@ bool ToolChain::isFastMathRuntimeAvailable(const ArgList &Args,
   if (!isOptimizationLevelFast(Args)) {
     // Check if -ffast-math or -funsafe-math.
     Arg *A =
-      Args.getLastArg(options::OPT_ffast_math, options::OPT_fno_fast_math,
-                      options::OPT_funsafe_math_optimizations,
-                      options::OPT_fno_unsafe_math_optimizations);
+        Args.getLastArg(options::OPT_ffast_math, options::OPT_fno_fast_math,
+                        options::OPT_funsafe_math_optimizations,
+                        options::OPT_fno_unsafe_math_optimizations);
 
     if (!A || A->getOption().getID() == options::OPT_fno_fast_math ||
         A->getOption().getID() == options::OPT_fno_unsafe_math_optimizations)

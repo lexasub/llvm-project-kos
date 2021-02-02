@@ -5,7 +5,7 @@ void clang_analyzer_eval(bool);
 namespace basic_tests {
 struct A {
   int x;
-  A(int x): x(x) {}
+  A(int x) : x(x) {}
 };
 
 struct B : A {
@@ -30,7 +30,7 @@ void test_C() {
 namespace arguments_with_constructors {
 struct S {
   int x, y;
-  S(int x, int y): x(x), y(y) {}
+  S(int x, int y) : x(x), y(y) {}
   ~S() {}
 };
 

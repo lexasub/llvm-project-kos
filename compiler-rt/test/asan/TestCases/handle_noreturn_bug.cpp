@@ -9,7 +9,7 @@
 
 int main(int argc, char **argv) {
   int x[2];
-  int * volatile p = &x[0];
+  int *volatile p = &x[0];
   __asan_handle_no_return();
   int volatile z = p[2];
 }

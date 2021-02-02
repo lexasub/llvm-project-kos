@@ -1,7 +1,7 @@
 // RUN: %clang_analyze_cc1 -analyzer-checker=core -analyzer-config faux-bodies=true,model-path=%S/Inputs/Models -analyzer-output=plist-multi-file -verify %s -o %t
 // RUN: %normalize_plist <%t | diff -ub %S/Inputs/expected-plists/model-file.cpp.plist -
 
-typedef int* intptr;
+typedef int *intptr;
 
 // This function is modeled and the p pointer is dereferenced in the model
 // function and there is no function definition available. The modeled
@@ -23,18 +23,17 @@ int main() {
 
   int p = 0;
   if (notzero(p)) {
-   // It is known that p != 0 because of the information provided by the
-   // model of the notzero function.
+    // It is known that p != 0 because of the information provided by the
+    // model of the notzero function.
     int j = 5 / p;
   }
 
   if (notzero_notmodeled(p)) {
-   // There is no information about the value of p, because
-   // notzero_notmodeled is not modeled and the function definition
-   // is not available.
+    // There is no information about the value of p, because
+    // notzero_notmodeled is not modeled and the function definition
+    // is not available.
     int j = 5 / p; // expected-warning {{Division by zero}}
   }
 
   return 0;
 }
-

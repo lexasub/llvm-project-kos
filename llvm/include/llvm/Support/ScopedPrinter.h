@@ -265,7 +265,7 @@ public:
     printString(Label, StringRef(Value));
   }
 
-  void printString(StringRef Label, const char* Value) {
+  void printString(StringRef Label, const char *Value) {
     printString(Label, StringRef(Value));
   }
 
@@ -357,8 +357,7 @@ ScopedPrinter::printHex<support::ulittle16_t>(StringRef Label,
   startLine() << Label << ": " << hex(Value) << "\n";
 }
 
-template<char Open, char Close>
-struct DelimitedScope {
+template <char Open, char Close> struct DelimitedScope {
   explicit DelimitedScope(ScopedPrinter &W) : W(W) {
     W.startLine() << Open << '\n';
     W.indent();

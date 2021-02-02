@@ -111,7 +111,7 @@ struct CFGViewerLegacyPass : public FunctionPass {
     AU.setPreservesAll();
   }
 };
-}
+} // namespace
 
 char CFGViewerLegacyPass::ID = 0;
 INITIALIZE_PASS(CFGViewerLegacyPass, "view-cfg", "View CFG of function", false,
@@ -147,7 +147,7 @@ struct CFGOnlyViewerLegacyPass : public FunctionPass {
     AU.setPreservesAll();
   }
 };
-}
+} // namespace
 
 char CFGOnlyViewerLegacyPass::ID = 0;
 INITIALIZE_PASS(CFGOnlyViewerLegacyPass, "view-cfg-only",
@@ -184,7 +184,7 @@ struct CFGPrinterLegacyPass : public FunctionPass {
     AU.setPreservesAll();
   }
 };
-}
+} // namespace
 
 char CFGPrinterLegacyPass::ID = 0;
 INITIALIZE_PASS(CFGPrinterLegacyPass, "dot-cfg",
@@ -220,7 +220,7 @@ struct CFGOnlyPrinterLegacyPass : public FunctionPass {
     AU.setPreservesAll();
   }
 };
-}
+} // namespace
 
 char CFGOnlyPrinterLegacyPass::ID = 0;
 INITIALIZE_PASS(CFGOnlyPrinterLegacyPass, "dot-cfg-only",

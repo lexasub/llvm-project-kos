@@ -126,8 +126,8 @@ public:
   /// $ clang++ -o production a.cc b.cc -DPRODUCTION
   /// A compilation database representing the project would return both command
   /// lines for a.cc and b.cc and only the first command line for t.cc.
-  virtual std::vector<CompileCommand> getCompileCommands(
-      StringRef FilePath) const = 0;
+  virtual std::vector<CompileCommand>
+  getCompileCommands(StringRef FilePath) const = 0;
 
   /// Returns the list of all files available in the compilation database.
   ///

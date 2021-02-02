@@ -77,7 +77,7 @@ using CondRegArray = std::array<unsigned, X86::LAST_VALID_COND + 1>;
 
 class X86FlagsCopyLoweringPass : public MachineFunctionPass {
 public:
-  X86FlagsCopyLoweringPass() : MachineFunctionPass(ID) { }
+  X86FlagsCopyLoweringPass() : MachineFunctionPass(ID) {}
 
   StringRef getPassName() const override { return "X86 EFLAGS copy lowering"; }
   bool runOnMachineFunction(MachineFunction &MF) override;
@@ -341,22 +341,39 @@ static MachineBasicBlock &splitBlock(MachineBasicBlock &MBB,
 
 static X86::CondCode getCondFromFCMOV(unsigned Opcode) {
   switch (Opcode) {
-  default: return X86::COND_INVALID;
-  case X86::CMOVBE_Fp32:  case X86::CMOVBE_Fp64:  case X86::CMOVBE_Fp80:
+  default:
+    return X86::COND_INVALID;
+  case X86::CMOVBE_Fp32:
+  case X86::CMOVBE_Fp64:
+  case X86::CMOVBE_Fp80:
     return X86::COND_BE;
-  case X86::CMOVB_Fp32:   case X86::CMOVB_Fp64:   case X86::CMOVB_Fp80:
+  case X86::CMOVB_Fp32:
+  case X86::CMOVB_Fp64:
+  case X86::CMOVB_Fp80:
     return X86::COND_B;
-  case X86::CMOVE_Fp32:   case X86::CMOVE_Fp64:   case X86::CMOVE_Fp80:
+  case X86::CMOVE_Fp32:
+  case X86::CMOVE_Fp64:
+  case X86::CMOVE_Fp80:
     return X86::COND_E;
-  case X86::CMOVNBE_Fp32: case X86::CMOVNBE_Fp64: case X86::CMOVNBE_Fp80:
+  case X86::CMOVNBE_Fp32:
+  case X86::CMOVNBE_Fp64:
+  case X86::CMOVNBE_Fp80:
     return X86::COND_A;
-  case X86::CMOVNB_Fp32:  case X86::CMOVNB_Fp64:  case X86::CMOVNB_Fp80:
+  case X86::CMOVNB_Fp32:
+  case X86::CMOVNB_Fp64:
+  case X86::CMOVNB_Fp80:
     return X86::COND_AE;
-  case X86::CMOVNE_Fp32:  case X86::CMOVNE_Fp64:  case X86::CMOVNE_Fp80:
+  case X86::CMOVNE_Fp32:
+  case X86::CMOVNE_Fp64:
+  case X86::CMOVNE_Fp80:
     return X86::COND_NE;
-  case X86::CMOVNP_Fp32:  case X86::CMOVNP_Fp64:  case X86::CMOVNP_Fp80:
+  case X86::CMOVNP_Fp32:
+  case X86::CMOVNP_Fp64:
+  case X86::CMOVNP_Fp80:
     return X86::COND_NP;
-  case X86::CMOVP_Fp32:   case X86::CMOVP_Fp64:   case X86::CMOVP_Fp80:
+  case X86::CMOVP_Fp32:
+  case X86::CMOVP_Fp64:
+  case X86::CMOVP_Fp80:
     return X86::COND_P;
   }
 }
@@ -612,8 +629,7 @@ bool X86FlagsCopyLoweringPass::runOnMachineFunction(MachineFunction &MF) {
             JmpIs.push_back(&*JmpIt);
             ++JmpIt;
           } while (JmpIt != UseMBB.instr_end() &&
-                   X86::getCondFromBranch(*JmpIt) !=
-                       X86::COND_INVALID);
+                   X86::getCondFromBranch(*JmpIt) != X86::COND_INVALID);
           break;
         }
 
@@ -640,8 +656,7 @@ bool X86FlagsCopyLoweringPass::runOnMachineFunction(MachineFunction &MF) {
           FlagsKilled = true;
 
           // Generically handle remaining uses as arithmetic instructions.
-          rewriteArithmetic(*TestMBB, TestPos, TestLoc, MI, *FlagUse,
-                            CondRegs);
+          rewriteArithmetic(*TestMBB, TestPos, TestLoc, MI, *FlagUse, CondRegs);
         }
 
         // If this was the last use of the flags, we're done.
@@ -757,8 +772,8 @@ Register X86FlagsCopyLoweringPass::promoteCondToReg(
     MachineBasicBlock &TestMBB, MachineBasicBlock::iterator TestPos,
     DebugLoc TestLoc, X86::CondCode Cond) {
   Register Reg = MRI->createVirtualRegister(PromoteRC);
-  auto SetI = BuildMI(TestMBB, TestPos, TestLoc,
-                      TII->get(X86::SETCCr), Reg).addImm(Cond);
+  auto SetI = BuildMI(TestMBB, TestPos, TestLoc, TII->get(X86::SETCCr), Reg)
+                  .addImm(Cond);
   (void)SetI;
   LLVM_DEBUG(dbgs() << "    save cond: "; SetI->dump());
   ++NumSetCCsInserted;
@@ -889,21 +904,34 @@ void X86FlagsCopyLoweringPass::rewriteFCMov(MachineBasicBlock &TestMBB,
 
   auto getFCMOVOpcode = [](unsigned Opcode, bool Inverted) {
     switch (Opcode) {
-    default: llvm_unreachable("Unexpected opcode!");
-    case X86::CMOVBE_Fp32: case X86::CMOVNBE_Fp32:
-    case X86::CMOVB_Fp32:  case X86::CMOVNB_Fp32:
-    case X86::CMOVE_Fp32:  case X86::CMOVNE_Fp32:
-    case X86::CMOVP_Fp32:  case X86::CMOVNP_Fp32:
+    default:
+      llvm_unreachable("Unexpected opcode!");
+    case X86::CMOVBE_Fp32:
+    case X86::CMOVNBE_Fp32:
+    case X86::CMOVB_Fp32:
+    case X86::CMOVNB_Fp32:
+    case X86::CMOVE_Fp32:
+    case X86::CMOVNE_Fp32:
+    case X86::CMOVP_Fp32:
+    case X86::CMOVNP_Fp32:
       return Inverted ? X86::CMOVE_Fp32 : X86::CMOVNE_Fp32;
-    case X86::CMOVBE_Fp64: case X86::CMOVNBE_Fp64:
-    case X86::CMOVB_Fp64:  case X86::CMOVNB_Fp64:
-    case X86::CMOVE_Fp64:  case X86::CMOVNE_Fp64:
-    case X86::CMOVP_Fp64:  case X86::CMOVNP_Fp64:
+    case X86::CMOVBE_Fp64:
+    case X86::CMOVNBE_Fp64:
+    case X86::CMOVB_Fp64:
+    case X86::CMOVNB_Fp64:
+    case X86::CMOVE_Fp64:
+    case X86::CMOVNE_Fp64:
+    case X86::CMOVP_Fp64:
+    case X86::CMOVNP_Fp64:
       return Inverted ? X86::CMOVE_Fp64 : X86::CMOVNE_Fp64;
-    case X86::CMOVBE_Fp80: case X86::CMOVNBE_Fp80:
-    case X86::CMOVB_Fp80:  case X86::CMOVNB_Fp80:
-    case X86::CMOVE_Fp80:  case X86::CMOVNE_Fp80:
-    case X86::CMOVP_Fp80:  case X86::CMOVNP_Fp80:
+    case X86::CMOVBE_Fp80:
+    case X86::CMOVNBE_Fp80:
+    case X86::CMOVB_Fp80:
+    case X86::CMOVNB_Fp80:
+    case X86::CMOVE_Fp80:
+    case X86::CMOVNE_Fp80:
+    case X86::CMOVP_Fp80:
+    case X86::CMOVNP_Fp80:
       return Inverted ? X86::CMOVE_Fp80 : X86::CMOVNE_Fp80;
     }
   };

@@ -1,7 +1,7 @@
 // RUN: %clangxx_msan -O0 -g %s -o %t && %run %t
 //
-#include <signal.h>
 #include <assert.h>
+#include <signal.h>
 
 #include <sanitizer/msan_interface.h>
 

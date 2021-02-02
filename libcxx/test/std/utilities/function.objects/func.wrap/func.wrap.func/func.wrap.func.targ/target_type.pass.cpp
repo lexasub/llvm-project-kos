@@ -23,47 +23,44 @@
 
 #include "test_macros.h"
 
-class A
-{
-    int data_[10];
+class A {
+  int data_[10];
+
 public:
-    static int count;
+  static int count;
 
-    A()
-    {
-        ++count;
-        for (int i = 0; i < 10; ++i)
-            data_[i] = i;
-    }
+  A() {
+    ++count;
+    for (int i = 0; i < 10; ++i)
+      data_[i] = i;
+  }
 
-    A(const A&) {++count;}
+  A(const A&) { ++count; }
 
-    ~A() {--count;}
+  ~A() { --count; }
 
-    int operator()(int i) const
-    {
-        for (int j = 0; j < 10; ++j)
-            i += data_[j];
-        return i;
-    }
+  int operator()(int i) const {
+    for (int j = 0; j < 10; ++j)
+      i += data_[j];
+    return i;
+  }
 
-    int foo(int) const {return 1;}
+  int foo(int) const { return 1; }
 };
 
 int A::count = 0;
 
-int g(int) {return 0;}
+int g(int) { return 0; }
 
-int main(int, char**)
-{
-    {
+int main(int, char**) {
+  {
     std::function<int(int)> f = A();
     assert(f.target_type() == typeid(A));
-    }
-    {
+  }
+  {
     std::function<int(int)> f;
     assert(f.target_type() == typeid(void));
-    }
+  }
 
   return 0;
 }

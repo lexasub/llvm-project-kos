@@ -106,13 +106,13 @@ protected:
                                                    /// expression.
   lldb::ModuleWP m_jit_module_wp;
   Target *m_target; ///< The target for storing persistent data like types and
-                    ///variables.
+                    /// variables.
 
   bool m_can_interpret; ///< True if the expression could be evaluated
-                        ///statically; false otherwise.
+                        /// statically; false otherwise.
   lldb::addr_t m_materialized_address; ///< The address at which the arguments
-                                       ///to the expression have been
-                                       ///materialized.
+                                       /// to the expression have been
+                                       /// materialized.
   Materializer::DematerializerSP m_dematerializer_sp; ///< The dematerializer.
 };
 

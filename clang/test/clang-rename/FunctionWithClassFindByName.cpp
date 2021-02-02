@@ -1,7 +1,7 @@
 void foo() {
 }
 
-class Foo {         // CHECK: class Bar
+class Foo { // CHECK: class Bar
 };
 
 int main() {

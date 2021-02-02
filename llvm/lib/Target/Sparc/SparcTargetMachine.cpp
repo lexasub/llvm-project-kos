@@ -131,7 +131,7 @@ SparcTargetMachine::getSubtargetImpl(const Function &F) const {
     // function that reside in TargetOptions.
     resetTargetOptions(F);
     I = std::make_unique<SparcSubtarget>(TargetTriple, CPU, FS, *this,
-                                          this->is64Bit);
+                                         this->is64Bit);
   }
   return I.get();
 }
@@ -141,7 +141,7 @@ namespace {
 class SparcPassConfig : public TargetPassConfig {
 public:
   SparcPassConfig(SparcTargetMachine &TM, PassManagerBase &PM)
-    : TargetPassConfig(TM, PM) {}
+      : TargetPassConfig(TM, PM) {}
 
   SparcTargetMachine &getSparcTargetMachine() const {
     return getTM<SparcTargetMachine>();
@@ -168,23 +168,21 @@ bool SparcPassConfig::addInstSelector() {
   return false;
 }
 
-void SparcPassConfig::addPreEmitPass(){
+void SparcPassConfig::addPreEmitPass() {
   addPass(createSparcDelaySlotFillerPass());
 
-  if (this->getSparcTargetMachine().getSubtargetImpl()->insertNOPLoad())
-  {
+  if (this->getSparcTargetMachine().getSubtargetImpl()->insertNOPLoad()) {
     addPass(new InsertNOPLoad());
   }
   if (this->getSparcTargetMachine().getSubtargetImpl()->detectRoundChange()) {
     addPass(new DetectRoundChange());
   }
-  if (this->getSparcTargetMachine().getSubtargetImpl()->fixAllFDIVSQRT())
-  {
+  if (this->getSparcTargetMachine().getSubtargetImpl()->fixAllFDIVSQRT()) {
     addPass(new FixAllFDIVSQRT());
   }
 }
 
-void SparcV8TargetMachine::anchor() { }
+void SparcV8TargetMachine::anchor() {}
 
 SparcV8TargetMachine::SparcV8TargetMachine(const Target &T, const Triple &TT,
                                            StringRef CPU, StringRef FS,
@@ -194,7 +192,7 @@ SparcV8TargetMachine::SparcV8TargetMachine(const Target &T, const Triple &TT,
                                            CodeGenOpt::Level OL, bool JIT)
     : SparcTargetMachine(T, TT, CPU, FS, Options, RM, CM, OL, JIT, false) {}
 
-void SparcV9TargetMachine::anchor() { }
+void SparcV9TargetMachine::anchor() {}
 
 SparcV9TargetMachine::SparcV9TargetMachine(const Target &T, const Triple &TT,
                                            StringRef CPU, StringRef FS,

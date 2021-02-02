@@ -11,41 +11,41 @@
 #ifndef HEADER
 #define HEADER
 
-template<typename tx>
+template <typename tx>
 tx ftemplate(int n) {
   tx a = 0;
   short aa = 0;
   tx b[10];
 
-  #pragma omp target if(0)
+#pragma omp target if (0)
   {
-    #pragma omp parallel
+#pragma omp parallel
     {
       int a = 41;
     }
     a += 1;
   }
 
-  #pragma omp target
+#pragma omp target
   {
-    #pragma omp parallel
+#pragma omp parallel
     {
       int a = 42;
     }
-    #pragma omp parallel if(0)
+#pragma omp parallel if (0)
     {
       int a = 43;
     }
-    #pragma omp parallel if(1)
+#pragma omp parallel if (1)
     {
       int a = 44;
     }
     a += 1;
   }
 
-  #pragma omp target if(n>40)
+#pragma omp target if (n > 40)
   {
-    #pragma omp parallel if(n>1000)
+#pragma omp parallel if (n > 1000)
     {
       int a = 45;
 #pragma omp barrier
@@ -55,19 +55,19 @@ tx ftemplate(int n) {
     b[2] += 1;
   }
 
-  #pragma omp target
+#pragma omp target
   {
-    #pragma omp parallel
+#pragma omp parallel
     {
-    #pragma omp critical
-    ++a;
+#pragma omp critical
+      ++a;
     }
     ++a;
   }
   return a;
 }
 
-int bar(int n){
+int bar(int n) {
   int a = 0;
 
   a += ftemplate<int>(n);
@@ -372,7 +372,6 @@ int bar(int n){
 // CHECK:  [[NEW_CC_VAL:%.+]] = add nsw i32 [[CC_VAL]], 1
 // CHECK:  store i32 [[NEW_CC_VAL]], i32* [[CC]],
 // CHECK:  br label
-
 
 // CHECK: declare i32 @__kmpc_warp_active_thread_mask() #[[#CONVERGENT:]]
 // CHECK: declare void @__kmpc_syncwarp(i32) #[[#CONVERGENT:]]

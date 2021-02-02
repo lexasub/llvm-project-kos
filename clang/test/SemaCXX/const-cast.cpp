@@ -21,38 +21,36 @@ typedef int iar[100];
 typedef iar &iarr;
 typedef int (*f)(int);
 
-char ***good_const_cast_test(ccvpcvpp var)
-{
+char ***good_const_cast_test(ccvpcvpp var) {
   // Cast away deep consts and volatiles.
   char ***var2 = const_cast<cppp>(var);
   char ***const &var3 = var2;
   // Const reference to reference.
   char ***&var4 = const_cast<cpppr>(var3);
   // Drop reference. Intentionally without qualifier change.
-  char *** var5 = const_cast<cppp>(var4);
+  char ***var5 = const_cast<cppp>(var4);
   // Const array to array reference.
   const int ar[100] = {0};
-  int (&rar)[100] = const_cast<iarr>(ar);
+  int(&rar)[100] = const_cast<iarr>(ar);
   // Array decay. Intentionally without qualifier change.
-  int *pi = const_cast<int*>(ar);
+  int *pi = const_cast<int *>(ar);
   f fp = 0;
   // Don't misidentify fn** as a function pointer.
-  f *fpp = const_cast<f*>(&fp);
-  int const A::* const A::*icapcap = 0;
-  int A::* A::* iapap = const_cast<int A::* A::*>(icapcap);
-  (void)const_cast<A&&>(A());
+  f *fpp = const_cast<f *>(&fp);
+  int const A::*const A::*icapcap = 0;
+  int A::*A::*iapap = const_cast<int A::*A::*>(icapcap);
+  (void)const_cast<A &&>(A());
 #if __cplusplus <= 199711L // C++03 or earlier modes
   // expected-warning@-2 {{rvalue references are a C++11 extension}}
 #endif
   return var4;
 }
 
-short *bad_const_cast_test(char const *volatile *const volatile *var)
-{
+short *bad_const_cast_test(char const *volatile *const volatile *var) {
   // Different pointer levels.
-  char **var2 = const_cast<char**>(var); // expected-error {{const_cast from 'const char *volatile *const volatile *' to 'char **' is not allowed}}
+  char **var2 = const_cast<char **>(var); // expected-error {{const_cast from 'const char *volatile *const volatile *' to 'char **' is not allowed}}
   // Different final type.
-  short ***var3 = const_cast<short***>(var); // expected-error {{const_cast from 'const char *volatile *const volatile *' to 'short ***' is not allowed}}
+  short ***var3 = const_cast<short ***>(var); // expected-error {{const_cast from 'const char *volatile *const volatile *' to 'short ***' is not allowed}}
   // Rvalue to reference.
   char ***&var4 = const_cast<cpppr>(&var2); // expected-error {{const_cast from rvalue to reference type 'cpppr'}}
   // Non-pointer.
@@ -60,19 +58,19 @@ short *bad_const_cast_test(char const *volatile *const volatile *var)
   const int *ar[100] = {0};
   extern const int *aub[];
   // const_cast looks through arrays as of DR330.
-  (void) const_cast<int *(*)[100]>(&ar); // ok
-  (void) const_cast<int *(*)[]>(&aub); // ok
+  (void)const_cast<int *(*)[100]>(&ar); // ok
+  (void)const_cast<int *(*)[]>(&aub);   // ok
   // ... but the array bound must exactly match.
-  (void) const_cast<int *(*)[]>(&ar); // expected-error {{const_cast from 'const int *(*)[100]' to 'int *(*)[]' is not allowed}}
-  (void) const_cast<int *(*)[99]>(&ar); // expected-error {{const_cast from 'const int *(*)[100]' to 'int *(*)[99]' is not allowed}}
-  (void) const_cast<int *(*)[100]>(&aub); // expected-error {{const_cast from 'const int *(*)[]' to 'int *(*)[100]' is not allowed}}
+  (void)const_cast<int *(*)[]>(&ar);     // expected-error {{const_cast from 'const int *(*)[100]' to 'int *(*)[]' is not allowed}}
+  (void)const_cast<int *(*)[99]>(&ar);   // expected-error {{const_cast from 'const int *(*)[100]' to 'int *(*)[99]' is not allowed}}
+  (void)const_cast<int *(*)[100]>(&aub); // expected-error {{const_cast from 'const int *(*)[]' to 'int *(*)[100]' is not allowed}}
   f fp1 = 0;
   // Function pointers.
   f fp2 = const_cast<f>(fp1); // expected-error {{const_cast to 'f' (aka 'int (*)(int)'), which is not a reference, pointer-to-object, or pointer-to-data-member}}
   void (A::*mfn)() = 0;
   (void)const_cast<void (A::*)()>(mfn); // expected-error-re {{const_cast to 'void (A::*)(){{( __attribute__\(\(thiscall\)\))?}}', which is not a reference, pointer-to-object, or pointer-to-data-member}}
-  (void)const_cast<int&&>(0); // expected-error {{const_cast from rvalue to reference type 'int &&'}}
-#if __cplusplus <= 199711L // C++03 or earlier modes
+  (void)const_cast<int &&>(0);          // expected-error {{const_cast from rvalue to reference type 'int &&'}}
+#if __cplusplus <= 199711L              // C++03 or earlier modes
   // expected-warning@-2 {{rvalue references are a C++11 extension}}
 #endif
   return **var3;

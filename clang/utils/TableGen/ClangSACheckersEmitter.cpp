@@ -58,7 +58,8 @@ static std::string getStringValue(const Record &R, StringRef field) {
 }
 
 // Calculates the integer value representing the BitsInit object
-static inline uint64_t getValueFromBitsInit(const BitsInit *B, const Record &R) {
+static inline uint64_t getValueFromBitsInit(const BitsInit *B,
+                                            const Record &R) {
   assert(B->getNumBits() <= sizeof(uint64_t) * 8 && "BitInits' too long!");
 
   uint64_t Value = 0;
@@ -82,7 +83,7 @@ static std::string getCheckerDocs(const Record &R) {
     else if (V == 2)
       LandingPage = "alpha_checks.html";
   }
-  
+
   if (LandingPage.empty())
     return "";
 
@@ -96,7 +97,7 @@ static std::string getCheckerDocs(const Record &R) {
 /// CheckerBase.td.
 static std::string getCheckerOptionType(const Record &R) {
   if (BitsInit *BI = R.getValueAsBitsInit("Type")) {
-    switch(getValueFromBitsInit(BI, R)) {
+    switch (getValueFromBitsInit(BI, R)) {
     case 0:
       return "int";
     case 1:
@@ -105,15 +106,14 @@ static std::string getCheckerOptionType(const Record &R) {
       return "bool";
     }
   }
-  PrintFatalError(R.getLoc(),
-                  "unable to parse command line option type for "
-                  + getCheckerFullName(&R));
+  PrintFatalError(R.getLoc(), "unable to parse command line option type for " +
+                                  getCheckerFullName(&R));
   return "";
 }
 
 static std::string getDevelopmentStage(const Record &R) {
   if (BitsInit *BI = R.getValueAsBitsInit("DevelopmentStage")) {
-    switch(getValueFromBitsInit(BI, R)) {
+    switch (getValueFromBitsInit(BI, R)) {
     case 0:
       return "alpha";
     case 1:
@@ -121,9 +121,8 @@ static std::string getDevelopmentStage(const Record &R) {
     }
   }
 
-  PrintFatalError(R.getLoc(),
-                  "unable to parse command line option type for "
-                  + getCheckerFullName(&R));
+  PrintFatalError(R.getLoc(), "unable to parse command line option type for " +
+                                  getCheckerFullName(&R));
   return "";
 }
 
@@ -139,7 +138,8 @@ static bool isHidden(const Record *R) {
 }
 
 static void printChecker(llvm::raw_ostream &OS, const Record &R) {
-  OS << "CHECKER(" << "\"";
+  OS << "CHECKER("
+     << "\"";
   OS.write_escaped(getCheckerFullName(&R)) << "\", ";
   OS << R.getName() << ", ";
   OS << "\"";
@@ -176,8 +176,8 @@ static void printOption(llvm::raw_ostream &OS, StringRef FullName,
 }
 
 void clang::EmitClangSACheckers(RecordKeeper &Records, raw_ostream &OS) {
-  std::vector<Record*> checkers = Records.getAllDerivedDefinitions("Checker");
-  std::vector<Record*> packages = Records.getAllDerivedDefinitions("Package");
+  std::vector<Record *> checkers = Records.getAllDerivedDefinitions("Checker");
+  std::vector<Record *> packages = Records.getAllDerivedDefinitions("Package");
 
   using SortedRecords = llvm::StringMap<const Record *>;
 
@@ -194,12 +194,14 @@ void clang::EmitClangSACheckers(RecordKeeper &Records, raw_ostream &OS) {
     SortedRecords sortedPackages;
     for (unsigned i = 0, e = packages.size(); i != e; ++i)
       sortedPackages[getPackageFullName(packages[i])] = packages[i];
-  
-    for (SortedRecords::iterator
-           I = sortedPackages.begin(), E = sortedPackages.end(); I != E; ++I) {
+
+    for (SortedRecords::iterator I = sortedPackages.begin(),
+                                 E = sortedPackages.end();
+         I != E; ++I) {
       const Record &R = *I->second;
-  
-      OS << "PACKAGE(" << "\"";
+
+      OS << "PACKAGE("
+         << "\"";
       OS.write_escaped(getPackageFullName(&R)) << '\"';
       OS << ")\n";
     }
@@ -229,8 +231,8 @@ void clang::EmitClangSACheckers(RecordKeeper &Records, raw_ostream &OS) {
     if (Package->isValueUnset("PackageOptions"))
       continue;
 
-    std::vector<Record *> PackageOptions = Package
-                                       ->getValueAsListOfDefs("PackageOptions");
+    std::vector<Record *> PackageOptions =
+        Package->getValueAsListOfDefs("PackageOptions");
     for (Record *PackageOpt : PackageOptions) {
       OS << "PACKAGE_OPTION(";
       printOption(OS, getPackageFullName(Package), *PackageOpt);
@@ -270,7 +272,7 @@ void clang::EmitClangSACheckers(RecordKeeper &Records, raw_ostream &OS) {
       continue;
 
     for (const Record *Dependency :
-                            Checker->getValueAsListOfDefs("Dependencies")) {
+         Checker->getValueAsListOfDefs("Dependencies")) {
       OS << "CHECKER_DEPENDENCY(";
       OS << '\"';
       OS.write_escaped(getCheckerFullName(Checker)) << "\", ";
@@ -329,8 +331,8 @@ void clang::EmitClangSACheckers(RecordKeeper &Records, raw_ostream &OS) {
     if (Checker->isValueUnset("CheckerOptions"))
       continue;
 
-    std::vector<Record *> CheckerOptions = Checker
-                                       ->getValueAsListOfDefs("CheckerOptions");
+    std::vector<Record *> CheckerOptions =
+        Checker->getValueAsListOfDefs("CheckerOptions");
     for (Record *CheckerOpt : CheckerOptions) {
       OS << "CHECKER_OPTION(";
       printOption(OS, getCheckerFullName(Checker), *CheckerOpt);

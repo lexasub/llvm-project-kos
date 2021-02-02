@@ -34,21 +34,20 @@ void test_implicit() {
 #endif
 }
 
-int main(int, char**)
-{
-    {
-        typedef std::geometric_distribution<> D;
-        D d;
-        assert(d.p() == 0.5);
-    }
-    {
-        typedef std::geometric_distribution<> D;
-        D d(0.75);
-        assert(d.p() == 0.75);
-    }
+int main(int, char**) {
+  {
+    typedef std::geometric_distribution<> D;
+    D d;
+    assert(d.p() == 0.5);
+  }
+  {
+    typedef std::geometric_distribution<> D;
+    D d(0.75);
+    assert(d.p() == 0.75);
+  }
 
-    test_implicit<int>();
-    test_implicit<long>();
+  test_implicit<int>();
+  test_implicit<long>();
 
-    return 0;
+  return 0;
 }

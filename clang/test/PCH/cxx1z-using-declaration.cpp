@@ -11,14 +11,20 @@
 #ifndef HEADER
 #define HEADER
 
-template<typename ...T> struct A : T... {
-  using T::f ...;
-  template<typename ...U> void g(U ...u) { f(u...); }
+template <typename... T> struct A : T... {
+  using T::f...;
+  template <typename... U> void g(U... u) { f(u...); }
 };
 
-struct X { void f(); };
-struct Y { void f(int); };
-struct Z { void f(int, int); };
+struct X {
+  void f();
+};
+struct Y {
+  void f(int);
+};
+struct Z {
+  void f(int, int);
+};
 
 inline A<X, Y, Z> a;
 

@@ -29,7 +29,7 @@ namespace {
 class AMDGPUAnnotateKernelFeatures : public CallGraphSCCPass {
 private:
   const TargetMachine *TM = nullptr;
-  SmallVector<CallGraphNode*, 8> NodeList;
+  SmallVector<CallGraphNode *, 8> NodeList;
 
   bool addFeatureAttributes(Function &F);
   bool processUniformWorkGroupAttribute();
@@ -54,9 +54,9 @@ public:
 
   static bool visitConstantExpr(const ConstantExpr *CE);
   static bool visitConstantExprsRecursively(
-    const Constant *EntryC,
-    SmallPtrSet<const Constant *, 8> &ConstantExprVisited, bool IsFunc,
-    bool HasApertureRegs);
+      const Constant *EntryC,
+      SmallPtrSet<const Constant *, 8> &ConstantExprVisited, bool IsFunc,
+      bool HasApertureRegs);
 };
 
 } // end anonymous namespace
@@ -67,7 +67,6 @@ char &llvm::AMDGPUAnnotateKernelFeaturesID = AMDGPUAnnotateKernelFeatures::ID;
 
 INITIALIZE_PASS(AMDGPUAnnotateKernelFeatures, DEBUG_TYPE,
                 "Add AMDGPU function attributes", false, false)
-
 
 // The queue ptr is only needed when casting to flat, not from it.
 static bool castRequiresQueuePtr(unsigned SrcAS) {
@@ -96,9 +95,9 @@ bool AMDGPUAnnotateKernelFeatures::visitConstantExpr(const ConstantExpr *CE) {
 }
 
 bool AMDGPUAnnotateKernelFeatures::visitConstantExprsRecursively(
-  const Constant *EntryC,
-  SmallPtrSet<const Constant *, 8> &ConstantExprVisited,
-  bool IsFunc, bool HasApertureRegs) {
+    const Constant *EntryC,
+    SmallPtrSet<const Constant *, 8> &ConstantExprVisited, bool IsFunc,
+    bool HasApertureRegs) {
 
   if (!ConstantExprVisited.insert(EntryC).second)
     return false;
@@ -140,8 +139,7 @@ bool AMDGPUAnnotateKernelFeatures::visitConstantExprsRecursively(
 //
 // TODO: We should not add the attributes if the known compile time workgroup
 // size is 1 for y/z.
-static StringRef intrinsicToAttrName(Intrinsic::ID ID,
-                                     bool &NonKernelOnly,
+static StringRef intrinsicToAttrName(Intrinsic::ID ID, bool &NonKernelOnly,
                                      bool &IsQueuePtr) {
   switch (ID) {
   case Intrinsic::amdgcn_workitem_id_x:
@@ -196,10 +194,10 @@ static void copyFeaturesToFunction(Function &Parent, const Function &Callee,
                                    bool &NeedQueuePtr) {
   // X ids unnecessarily propagated to kernels.
   static constexpr StringLiteral AttrNames[] = {
-      "amdgpu-work-item-id-x",      "amdgpu-work-item-id-y",
-      "amdgpu-work-item-id-z",      "amdgpu-work-group-id-x",
-      "amdgpu-work-group-id-y",     "amdgpu-work-group-id-z",
-      "amdgpu-dispatch-ptr",        "amdgpu-dispatch-id",
+      "amdgpu-work-item-id-x",  "amdgpu-work-item-id-y",
+      "amdgpu-work-item-id-z",  "amdgpu-work-group-id-x",
+      "amdgpu-work-group-id-y", "amdgpu-work-group-id-z",
+      "amdgpu-dispatch-ptr",    "amdgpu-dispatch-id",
       "amdgpu-implicitarg-ptr"};
 
   if (handleAttr(Parent, Callee, "amdgpu-queue-ptr"))
@@ -226,7 +224,7 @@ bool AMDGPUAnnotateKernelFeatures::processUniformWorkGroupAttribute() {
 }
 
 bool AMDGPUAnnotateKernelFeatures::propagateUniformWorkGroupAttribute(
-       Function &Caller, Function &Callee) {
+    Function &Caller, Function &Callee) {
 
   // Check for externally defined function
   if (!Callee.hasExactDefinition()) {
@@ -240,7 +238,8 @@ bool AMDGPUAnnotateKernelFeatures::propagateUniformWorkGroupAttribute(
   if (Caller.hasFnAttribute("uniform-work-group-size")) {
     // Check if the value of the attribute is true
     if (Caller.getFnAttribute("uniform-work-group-size")
-        .getValueAsString().equals("true")) {
+            .getValueAsString()
+            .equals("true")) {
       // Propagate the attribute to the Callee, if it does not have it
       if (!Callee.hasFnAttribute("uniform-work-group-size")) {
         Callee.addFnAttr("uniform-work-group-size", "true");
@@ -299,8 +298,8 @@ bool AMDGPUAnnotateKernelFeatures::addFeatureAttributes(Function &F) {
           if (!IsFunc && IID == Intrinsic::amdgcn_kernarg_segment_ptr) {
             F.addFnAttr("amdgpu-kernarg-segment-ptr");
           } else {
-            StringRef AttrName = intrinsicToAttrName(IID, NonKernelOnly,
-                                                     NeedQueuePtr);
+            StringRef AttrName =
+                intrinsicToAttrName(IID, NonKernelOnly, NeedQueuePtr);
             if (!AttrName.empty() && (IsFunc || !NonKernelOnly)) {
               F.addFnAttr(AttrName);
               Changed = true;

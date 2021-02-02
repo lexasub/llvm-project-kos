@@ -113,7 +113,7 @@ protected:
   lldb::offset_t m_blocksize = 0;
   OptionalBool m_memory_tagged = eDontKnow;
 };
-  
+
 inline bool operator<(const MemoryRegionInfo &lhs,
                       const MemoryRegionInfo &rhs) {
   return lhs.GetRange() < rhs.GetRange();
@@ -136,7 +136,7 @@ public:
   using std::vector<lldb_private::MemoryRegionInfo>::vector;
 };
 
-}
+} // namespace lldb_private
 
 namespace llvm {
 template <>
@@ -148,6 +148,6 @@ struct format_provider<lldb_private::MemoryRegionInfo::OptionalBool> {
   static void format(const lldb_private::MemoryRegionInfo::OptionalBool &B,
                      raw_ostream &OS, StringRef Options);
 };
-}
+} // namespace llvm
 
 #endif // LLDB_TARGET_MEMORYREGIONINFO_H

@@ -71,7 +71,8 @@ MachineBranchProbabilityInfo::getHotSucc(MachineBasicBlock *MBB) const {
   auto MaxProb = BranchProbability::getZero();
   MachineBasicBlock *MaxSucc = nullptr;
   for (MachineBasicBlock::const_succ_iterator I = MBB->succ_begin(),
-       E = MBB->succ_end(); I != E; ++I) {
+                                              E = MBB->succ_end();
+       I != E; ++I) {
     auto Prob = getEdgeProbability(MBB, I);
     if (Prob > MaxProb) {
       MaxProb = Prob;

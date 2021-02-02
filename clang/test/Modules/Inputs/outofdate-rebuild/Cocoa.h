@@ -1,5 +1,7 @@
 // Cocoa
-#import "Foundation.h"
 #import "AppKit.h"
+#import "Foundation.h"
 
-struct A {  int i; };
+struct A {
+  int i;
+};

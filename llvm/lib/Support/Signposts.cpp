@@ -86,7 +86,7 @@ public:
 SignpostEmitter::SignpostEmitter() {
 #if HAVE_ANY_SIGNPOST_IMPL
   Impl = new SignpostEmitterImpl();
-#else  // if HAVE_ANY_SIGNPOST_IMPL
+#else // if HAVE_ANY_SIGNPOST_IMPL
   Impl = nullptr;
 #endif // if !HAVE_ANY_SIGNPOST_IMPL
 }

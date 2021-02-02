@@ -54,9 +54,7 @@ public:
   createDirectoryStream(const MSFLayout &Layout, BinaryStreamRef MsfData,
                         BumpPtrAllocator &Allocator);
 
-  support::endianness getEndian() const override {
-    return support::little;
-  }
+  support::endianness getEndian() const override { return support::little; }
 
   Error readBytes(uint32_t Offset, uint32_t Size,
                   ArrayRef<uint8_t> &Buffer) override;
@@ -121,9 +119,7 @@ public:
   createFpmStream(const MSFLayout &Layout, WritableBinaryStreamRef MsfData,
                   BumpPtrAllocator &Allocator, bool AltFpm = false);
 
-  support::endianness getEndian() const override {
-    return support::little;
-  }
+  support::endianness getEndian() const override { return support::little; }
 
   Error readBytes(uint32_t Offset, uint32_t Size,
                   ArrayRef<uint8_t> &Buffer) override;
@@ -154,7 +150,7 @@ private:
   WritableBinaryStreamRef WriteInterface;
 };
 
-} // end namespace pdb
+} // namespace msf
 } // end namespace llvm
 
 #endif // LLVM_DEBUGINFO_MSF_MAPPEDBLOCKSTREAM_H

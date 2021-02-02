@@ -24,7 +24,7 @@ namespace lld {
 namespace mach_o {
 bool parse(llvm::ArrayRef<const char *> args, MachOLinkingContext &ctx);
 }
-}
+} // namespace lld
 
 namespace {
 class DarwinLdParserTest : public testing::Test {
@@ -45,7 +45,7 @@ protected:
 
   MachOLinkingContext _ctx;
 };
-}
+} // namespace
 
 TEST_F(DarwinLdParserTest, Basic) {
   EXPECT_TRUE(parse({"foo.o", "bar.o", "-arch", "i386"}));

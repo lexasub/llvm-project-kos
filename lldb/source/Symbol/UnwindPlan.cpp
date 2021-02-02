@@ -20,8 +20,8 @@
 using namespace lldb;
 using namespace lldb_private;
 
-bool UnwindPlan::Row::RegisterLocation::
-operator==(const UnwindPlan::Row::RegisterLocation &rhs) const {
+bool UnwindPlan::Row::RegisterLocation::operator==(
+    const UnwindPlan::Row::RegisterLocation &rhs) const {
   if (m_type == rhs.m_type) {
     switch (m_type) {
     case unspecified:
@@ -78,7 +78,8 @@ GetByteOrderAndAddrSize(Thread *thread) {
   return std::make_pair(arch.GetByteOrder(), arch.GetAddressByteSize());
 }
 
-static void DumpDWARFExpr(Stream &s, llvm::ArrayRef<uint8_t> expr, Thread *thread) {
+static void DumpDWARFExpr(Stream &s, llvm::ArrayRef<uint8_t> expr,
+                          Thread *thread) {
   if (auto order_and_width = GetByteOrderAndAddrSize(thread)) {
     llvm::DataExtractor data(expr, order_and_width->first == eByteOrderLittle,
                              order_and_width->second);
@@ -163,8 +164,8 @@ static void DumpRegisterName(Stream &s, const UnwindPlan *unwind_plan,
     s.Printf("reg(%u)", reg_num);
 }
 
-bool UnwindPlan::Row::FAValue::
-operator==(const UnwindPlan::Row::FAValue &rhs) const {
+bool UnwindPlan::Row::FAValue::operator==(
+    const UnwindPlan::Row::FAValue &rhs) const {
   if (m_type == rhs.m_type) {
     switch (m_type) {
     case unspecified:
@@ -188,7 +189,7 @@ operator==(const UnwindPlan::Row::FAValue &rhs) const {
 }
 
 void UnwindPlan::Row::FAValue::Dump(Stream &s, const UnwindPlan *unwind_plan,
-                                     Thread *thread) const {
+                                    Thread *thread) const {
   switch (m_type) {
   case isRegisterPlusOffset:
     DumpRegisterName(s, unwind_plan, thread, m_value.reg.reg_num);
@@ -348,10 +349,9 @@ bool UnwindPlan::Row::SetRegisterLocationToSame(uint32_t reg_num,
 }
 
 bool UnwindPlan::Row::operator==(const UnwindPlan::Row &rhs) const {
-  return m_offset == rhs.m_offset &&
-      m_cfa_value == rhs.m_cfa_value &&
-      m_afa_value == rhs.m_afa_value &&
-      m_register_locations == rhs.m_register_locations;
+  return m_offset == rhs.m_offset && m_cfa_value == rhs.m_cfa_value &&
+         m_afa_value == rhs.m_afa_value &&
+         m_register_locations == rhs.m_register_locations;
 }
 
 void UnwindPlan::AppendRow(const UnwindPlan::RowSP &row_sp) {

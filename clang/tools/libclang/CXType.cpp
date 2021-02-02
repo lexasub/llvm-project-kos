@@ -10,11 +10,11 @@
 //
 //===--------------------------------------------------------------------===//
 
+#include "CXType.h"
 #include "CIndexer.h"
 #include "CXCursor.h"
 #include "CXString.h"
 #include "CXTranslationUnit.h"
-#include "CXType.h"
 #include "clang/AST/Decl.h"
 #include "clang/AST/DeclObjC.h"
 #include "clang/AST/DeclTemplate.h"
@@ -26,7 +26,9 @@
 using namespace clang;
 
 static CXTypeKind GetBuiltinTypeKind(const BuiltinType *BT) {
-#define BTCASE(K) case BuiltinType::K: return CXType_##K
+#define BTCASE(K)                                                              \
+  case BuiltinType::K:                                                         \
+    return CXType_##K
   switch (BT->getKind()) {
     BTCASE(Void);
     BTCASE(Bool);
@@ -41,8 +43,10 @@ static CXTypeKind GetBuiltinTypeKind(const BuiltinType *BT) {
     BTCASE(UInt128);
     BTCASE(Char_S);
     BTCASE(SChar);
-    case BuiltinType::WChar_S: return CXType_WChar;
-    case BuiltinType::WChar_U: return CXType_WChar;
+  case BuiltinType::WChar_S:
+    return CXType_WChar;
+  case BuiltinType::WChar_U:
+    return CXType_WChar;
     BTCASE(Short);
     BTCASE(Int);
     BTCASE(Long);
@@ -86,10 +90,12 @@ static CXTypeKind GetTypeKind(QualType T) {
   if (!TP)
     return CXType_Invalid;
 
-#define TKCASE(K) case Type::K: return CXType_##K
+#define TKCASE(K)                                                              \
+  case Type::K:                                                                \
+    return CXType_##K
   switch (TP->getTypeClass()) {
-    case Type::Builtin:
-      return GetBuiltinTypeKind(cast<BuiltinType>(TP));
+  case Type::Builtin:
+    return GetBuiltinTypeKind(cast<BuiltinType>(TP));
     TKCASE(Complex);
     TKCASE(Pointer);
     TKCASE(BlockPointer);
@@ -116,12 +122,11 @@ static CXTypeKind GetTypeKind(QualType T) {
     TKCASE(Pipe);
     TKCASE(Attributed);
     TKCASE(Atomic);
-    default:
-      return CXType_Unexposed;
+  default:
+    return CXType_Unexposed;
   }
 #undef TKCASE
 }
-
 
 CXType cxtype::MakeCXType(QualType T, CXTranslationUnit TU) {
   CXTypeKind TK = CXType_Invalid;
@@ -159,8 +164,7 @@ CXType cxtype::MakeCXType(QualType T, CXTranslationUnit TU) {
   if (TK == CXType_Invalid)
     TK = GetTypeKind(T);
 
-  CXType CT = { TK, { TK == CXType_Invalid ? nullptr
-                                           : T.getAsOpaquePtr(), TU } };
+  CXType CT = {TK, {TK == CXType_Invalid ? nullptr : T.getAsOpaquePtr(), TU}};
   return CT;
 }
 
@@ -182,7 +186,7 @@ GetTemplateArguments(QualType Type) {
 
   if (const auto *RecordDecl = Type->getAsCXXRecordDecl()) {
     const auto *TemplateDecl =
-      dyn_cast<ClassTemplateSpecializationDecl>(RecordDecl);
+        dyn_cast<ClassTemplateSpecializationDecl>(RecordDecl);
     if (TemplateDecl)
       return TemplateDecl->getTemplateArgs().asArray();
   }
@@ -190,7 +194,8 @@ GetTemplateArguments(QualType Type) {
   return None;
 }
 
-static Optional<QualType> TemplateArgumentToQualType(const TemplateArgument &A) {
+static Optional<QualType>
+TemplateArgumentToQualType(const TemplateArgument &A) {
   if (A.getKind() == TemplateArgument::Type)
     return A.getAsType();
   return None;
@@ -249,8 +254,8 @@ CXType clang_getCursorType(CXCursor C) {
   if (clang_isReference(C.kind)) {
     switch (C.kind) {
     case CXCursor_ObjCSuperClassRef: {
-      QualType T
-        = Context.getObjCInterfaceType(getCursorObjCSuperClassRef(C).first);
+      QualType T =
+          Context.getObjCInterfaceType(getCursorObjCSuperClassRef(C).first);
       return MakeCXType(T, TU);
     }
 
@@ -262,7 +267,6 @@ CXType clang_getCursorType(CXCursor C) {
     case CXCursor_TypeRef: {
       QualType T = Context.getTypeDeclType(getCursorTypeRef(C).first);
       return MakeCXType(T, TU);
-
     }
 
     case CXCursor_CXXBaseSpecifier:
@@ -396,8 +400,7 @@ CXType clang_getCanonicalType(CXType CT) {
   if (T.isNull())
     return MakeCXType(QualType(), GetTU(CT));
 
-  return MakeCXType(cxtu::getASTUnit(TU)->getASTContext()
-                        .getCanonicalType(T),
+  return MakeCXType(cxtu::getASTUnit(TU)->getASTContext().getCanonicalType(T),
                     TU);
 }
 
@@ -449,31 +452,31 @@ CXType clang_getPointeeType(CXType CT) {
 
 try_again:
   switch (TP->getTypeClass()) {
-    case Type::Pointer:
-      T = cast<PointerType>(TP)->getPointeeType();
-      break;
-    case Type::BlockPointer:
-      T = cast<BlockPointerType>(TP)->getPointeeType();
-      break;
-    case Type::LValueReference:
-    case Type::RValueReference:
-      T = cast<ReferenceType>(TP)->getPointeeType();
-      break;
-    case Type::ObjCObjectPointer:
-      T = cast<ObjCObjectPointerType>(TP)->getPointeeType();
-      break;
-    case Type::MemberPointer:
-      T = cast<MemberPointerType>(TP)->getPointeeType();
-      break;
-    case Type::Auto:
-    case Type::DeducedTemplateSpecialization:
-      TP = cast<DeducedType>(TP)->getDeducedType().getTypePtrOrNull();
-      if (TP)
-        goto try_again;
-      break;
-    default:
-      T = QualType();
-      break;
+  case Type::Pointer:
+    T = cast<PointerType>(TP)->getPointeeType();
+    break;
+  case Type::BlockPointer:
+    T = cast<BlockPointerType>(TP)->getPointeeType();
+    break;
+  case Type::LValueReference:
+  case Type::RValueReference:
+    T = cast<ReferenceType>(TP)->getPointeeType();
+    break;
+  case Type::ObjCObjectPointer:
+    T = cast<ObjCObjectPointerType>(TP)->getPointeeType();
+    break;
+  case Type::MemberPointer:
+    T = cast<MemberPointerType>(TP)->getPointeeType();
+    break;
+  case Type::Auto:
+  case Type::DeducedTemplateSpecialization:
+    TP = cast<DeducedType>(TP)->getDeducedType().getTypePtrOrNull();
+    if (TP)
+      goto try_again;
+    break;
+  default:
+    T = QualType();
+    break;
   }
   return MakeCXType(T, GetTU(CT));
 }
@@ -509,8 +512,9 @@ try_again:
     if (const RecordType *Record = TP->getAs<RecordType>())
       D = Record->getDecl();
     else
-      D = cast<TemplateSpecializationType>(TP)->getTemplateName()
-                                                         .getAsTemplateDecl();
+      D = cast<TemplateSpecializationType>(TP)
+              ->getTemplateName()
+              .getAsTemplateDecl();
     break;
 
   case Type::Auto:
@@ -524,7 +528,7 @@ try_again:
     D = cast<InjectedClassNameType>(TP)->getDecl();
     break;
 
-  // FIXME: Template type parameters!      
+    // FIXME: Template type parameters!
 
   case Type::Elaborated:
     TP = cast<ElaboratedType>(TP)->getNamedType().getTypePtrOrNull();
@@ -542,7 +546,10 @@ try_again:
 
 CXString clang_getTypeKindSpelling(enum CXTypeKind K) {
   const char *s = nullptr;
-#define TKIND(X) case CXType_##X: s = ""  #X  ""; break
+#define TKIND(X)                                                               \
+  case CXType_##X:                                                             \
+    s = "" #X "";                                                              \
+    break
   switch (K) {
     TKIND(Invalid);
     TKIND(Unexposed);
@@ -559,7 +566,9 @@ CXString clang_getTypeKindSpelling(enum CXTypeKind K) {
     TKIND(UInt128);
     TKIND(Char_S);
     TKIND(SChar);
-    case CXType_WChar: s = "WChar"; break;
+  case CXType_WChar:
+    s = "WChar";
+    break;
     TKIND(Short);
     TKIND(Int);
     TKIND(Long);
@@ -638,7 +647,7 @@ unsigned clang_isFunctionTypeVariadic(CXType X) {
 
   if (T->getAs<FunctionNoProtoType>())
     return 1;
-  
+
   return 0;
 }
 
@@ -646,9 +655,11 @@ CXCallingConv clang_getFunctionTypeCallingConv(CXType X) {
   QualType T = GetQualType(X);
   if (T.isNull())
     return CXCallingConv_Invalid;
-  
+
   if (const FunctionType *FD = T->getAs<FunctionType>()) {
-#define TCALLINGCONV(X) case CC_##X: return CXCallingConv_##X
+#define TCALLINGCONV(X)                                                        \
+  case CC_##X:                                                                 \
+    return CXCallingConv_##X
     switch (FD->getCallConv()) {
       TCALLINGCONV(C);
       TCALLINGCONV(X86StdCall);
@@ -666,13 +677,15 @@ CXCallingConv clang_getFunctionTypeCallingConv(CXType X) {
       TCALLINGCONV(Swift);
       TCALLINGCONV(PreserveMost);
       TCALLINGCONV(PreserveAll);
-    case CC_SpirFunction: return CXCallingConv_Unexposed;
-    case CC_OpenCLKernel: return CXCallingConv_Unexposed;
+    case CC_SpirFunction:
+      return CXCallingConv_Unexposed;
+    case CC_OpenCLKernel:
+      return CXCallingConv_Unexposed;
       break;
     }
 #undef TCALLINGCONV
   }
-  
+
   return CXCallingConv_Invalid;
 }
 
@@ -680,15 +693,15 @@ int clang_getNumArgTypes(CXType X) {
   QualType T = GetQualType(X);
   if (T.isNull())
     return -1;
-  
+
   if (const FunctionProtoType *FD = T->getAs<FunctionProtoType>()) {
     return FD->getNumParams();
   }
-  
+
   if (T->getAs<FunctionNoProtoType>()) {
     return 0;
   }
-  
+
   return -1;
 }
 
@@ -704,7 +717,7 @@ CXType clang_getArgType(CXType X, unsigned i) {
 
     return MakeCXType(FD->getParamType(i), GetTU(X));
   }
-  
+
   return MakeCXType(QualType(), GetTU(X));
 }
 
@@ -712,7 +725,7 @@ CXType clang_getResultType(CXType X) {
   QualType T = GetQualType(X);
   if (T.isNull())
     return MakeCXType(QualType(), GetTU(X));
-  
+
   if (const FunctionType *FD = T->getAs<FunctionType>())
     return MakeCXType(FD->getReturnType(), GetTU(X));
 
@@ -783,7 +796,7 @@ unsigned clang_isPODType(CXType X) {
   QualType T = GetQualType(X);
   if (T.isNull())
     return 0;
-  
+
   CXTranslationUnit TU = GetTU(X);
 
   return T.isPODType(cxtu::getASTUnit(TU)->getASTContext()) ? 1 : 0;
@@ -797,25 +810,25 @@ CXType clang_getElementType(CXType CT) {
   if (TP) {
     switch (TP->getTypeClass()) {
     case Type::ConstantArray:
-      ET = cast<ConstantArrayType> (TP)->getElementType();
+      ET = cast<ConstantArrayType>(TP)->getElementType();
       break;
     case Type::IncompleteArray:
-      ET = cast<IncompleteArrayType> (TP)->getElementType();
+      ET = cast<IncompleteArrayType>(TP)->getElementType();
       break;
     case Type::VariableArray:
-      ET = cast<VariableArrayType> (TP)->getElementType();
+      ET = cast<VariableArrayType>(TP)->getElementType();
       break;
     case Type::DependentSizedArray:
-      ET = cast<DependentSizedArrayType> (TP)->getElementType();
+      ET = cast<DependentSizedArrayType>(TP)->getElementType();
       break;
     case Type::Vector:
-      ET = cast<VectorType> (TP)->getElementType();
+      ET = cast<VectorType>(TP)->getElementType();
       break;
     case Type::ExtVector:
       ET = cast<ExtVectorType>(TP)->getElementType();
       break;
     case Type::Complex:
-      ET = cast<ComplexType> (TP)->getElementType();
+      ET = cast<ComplexType>(TP)->getElementType();
       break;
     default:
       break;
@@ -832,10 +845,10 @@ long long clang_getNumElements(CXType CT) {
   if (TP) {
     switch (TP->getTypeClass()) {
     case Type::ConstantArray:
-      result = cast<ConstantArrayType> (TP)->getSize().getSExtValue();
+      result = cast<ConstantArrayType>(TP)->getSize().getSExtValue();
       break;
     case Type::Vector:
-      result = cast<VectorType> (TP)->getNumElements();
+      result = cast<VectorType>(TP)->getNumElements();
       break;
     case Type::ExtVector:
       result = cast<ExtVectorType>(TP)->getNumElements();
@@ -855,16 +868,16 @@ CXType clang_getArrayElementType(CXType CT) {
   if (TP) {
     switch (TP->getTypeClass()) {
     case Type::ConstantArray:
-      ET = cast<ConstantArrayType> (TP)->getElementType();
+      ET = cast<ConstantArrayType>(TP)->getElementType();
       break;
     case Type::IncompleteArray:
-      ET = cast<IncompleteArrayType> (TP)->getElementType();
+      ET = cast<IncompleteArrayType>(TP)->getElementType();
       break;
     case Type::VariableArray:
-      ET = cast<VariableArrayType> (TP)->getElementType();
+      ET = cast<VariableArrayType>(TP)->getElementType();
       break;
     case Type::DependentSizedArray:
-      ET = cast<DependentSizedArrayType> (TP)->getElementType();
+      ET = cast<DependentSizedArrayType>(TP)->getElementType();
       break;
     default:
       break;
@@ -881,7 +894,7 @@ long long clang_getArraySize(CXType CT) {
   if (TP) {
     switch (TP->getTypeClass()) {
     case Type::ConstantArray:
-      result = cast<ConstantArrayType> (TP)->getSize().getSExtValue();
+      result = cast<ConstantArrayType>(TP)->getSize().getSExtValue();
       break;
     default:
       break;
@@ -923,7 +936,7 @@ CXType clang_Type_getClassType(CXType CT) {
   const Type *TP = T.getTypePtrOrNull();
 
   if (TP && TP->getTypeClass() == Type::MemberPointer) {
-    ET = QualType(cast<MemberPointerType> (TP)->getClass(), 0);
+    ET = QualType(cast<MemberPointerType>(TP)->getClass(), 0);
   }
   return MakeCXType(ET, GetTU(CT));
 }
@@ -964,7 +977,7 @@ static bool isTypeIncompleteForLayout(QualType QT) {
 }
 
 static long long visitRecordForValidation(const RecordDecl *RD) {
-  for (const auto *I : RD->fields()){
+  for (const auto *I : RD->fields()) {
     QualType FQT = I->getType();
     if (isTypeIncompleteForLayout(FQT))
       return CXTypeLayoutError_Incomplete;
@@ -983,11 +996,11 @@ static long long visitRecordForValidation(const RecordDecl *RD) {
   return 0;
 }
 
-static long long validateFieldParentType(CXCursor PC, CXType PT){
+static long long validateFieldParentType(CXCursor PC, CXType PT) {
   if (clang_isInvalid(PC.kind))
     return CXTypeLayoutError_Invalid;
   const RecordDecl *RD =
-        dyn_cast_or_null<RecordDecl>(cxcursor::getCursorDecl(PC));
+      dyn_cast_or_null<RecordDecl>(cxcursor::getCursorDecl(PC));
   // validate parent declaration
   if (!RD || RD->isInvalidDecl())
     return CXTypeLayoutError_Invalid;
@@ -1012,7 +1025,7 @@ static long long validateFieldParentType(CXCursor PC, CXType PT){
 long long clang_Type_getOffsetOf(CXType PT, const char *S) {
   // check that PT is not incomplete/dependent
   CXCursor PC = clang_getTypeDeclaration(PT);
-  long long Error = validateFieldParentType(PC,PT);
+  long long Error = validateFieldParentType(PC, PT);
   if (Error < 0)
     return Error;
   if (!S)
@@ -1022,7 +1035,7 @@ long long clang_Type_getOffsetOf(CXType PT, const char *S) {
   IdentifierInfo *II = &Ctx.Idents.get(S);
   DeclarationName FieldName(II);
   const RecordDecl *RD =
-        dyn_cast_or_null<RecordDecl>(cxcursor::getCursorDecl(PC));
+      dyn_cast_or_null<RecordDecl>(cxcursor::getCursorDecl(PC));
   // verified in validateFieldParentType
   RD = RD->getDefinition();
   RecordDecl::lookup_result Res = RD->lookup(FieldName);
@@ -1056,7 +1069,7 @@ long long clang_Cursor_getOffsetOfField(CXCursor C) {
     // we need to validate the parent type
     CXCursor PC = clang_getCursorSemanticParent(C);
     CXType PT = clang_getCursorType(PC);
-    long long Error = validateFieldParentType(PC,PT);
+    long long Error = validateFieldParentType(PC, PT);
     if (Error < 0)
       return Error;
     // proceed with the offset calculation
@@ -1078,12 +1091,12 @@ enum CXRefQualifierKind clang_Type_getCXXRefQualifier(CXType T) {
   if (!FD)
     return CXRefQualifier_None;
   switch (FD->getRefQualifier()) {
-    case RQ_None:
-      return CXRefQualifier_None;
-    case RQ_LValue:
-      return CXRefQualifier_LValue;
-    case RQ_RValue:
-      return CXRefQualifier_RValue;
+  case RQ_None:
+    return CXRefQualifier_None;
+  case RQ_LValue:
+    return CXRefQualifier_LValue;
+  case RQ_RValue:
+    return CXRefQualifier_RValue;
   }
   return CXRefQualifier_None;
 }
@@ -1105,7 +1118,7 @@ CXString clang_getDeclObjCTypeEncoding(CXCursor C) {
   ASTContext &Ctx = cxcursor::getCursorContext(C);
   std::string encoding;
 
-  if (const ObjCMethodDecl *OMD = dyn_cast<ObjCMethodDecl>(D))  {
+  if (const ObjCMethodDecl *OMD = dyn_cast<ObjCMethodDecl>(D)) {
     encoding = Ctx.getObjCEncodingForMethodDecl(OMD);
   } else if (const ObjCPropertyDecl *OPD = dyn_cast<ObjCPropertyDecl>(D))
     encoding = Ctx.getObjCEncodingForPropertyDecl(OPD, nullptr);
@@ -1117,7 +1130,8 @@ CXString clang_getDeclObjCTypeEncoding(CXCursor C) {
       Ty = Ctx.getTypeDeclType(TD);
     if (const ValueDecl *VD = dyn_cast<ValueDecl>(D))
       Ty = VD->getType();
-    else return cxstring::createRef("?");
+    else
+      return cxstring::createRef("?");
     Ctx.getObjCEncodingForType(Ty, encoding);
   }
 
@@ -1225,14 +1239,13 @@ CXType clang_Type_getObjCTypeArg(CXType CT, unsigned i) {
   return MakeCXType(TA[i], GetTU(CT));
 }
 
-unsigned clang_Type_visitFields(CXType PT,
-                                CXFieldVisitor visitor,
-                                CXClientData client_data){
+unsigned clang_Type_visitFields(CXType PT, CXFieldVisitor visitor,
+                                CXClientData client_data) {
   CXCursor PC = clang_getTypeDeclaration(PT);
   if (clang_isInvalid(PC.kind))
     return false;
   const RecordDecl *RD =
-        dyn_cast_or_null<RecordDecl>(cxcursor::getCursorDecl(PC));
+      dyn_cast_or_null<RecordDecl>(cxcursor::getCursorDecl(PC));
   if (!RD || RD->isInvalidDecl())
     return false;
   RD = RD->getDefinition();
@@ -1240,10 +1253,10 @@ unsigned clang_Type_visitFields(CXType PT,
     return false;
 
   for (RecordDecl::field_iterator I = RD->field_begin(), E = RD->field_end();
-       I != E; ++I){
+       I != E; ++I) {
     const FieldDecl *FD = dyn_cast_or_null<FieldDecl>((*I));
     // Callback to the client.
-    switch (visitor(cxcursor::MakeCXCursor(FD, GetTU(PT)), client_data)){
+    switch (visitor(cxcursor::MakeCXCursor(FD, GetTU(PT)), client_data)) {
     case CXVisit_Break:
       return true;
     case CXVisit_Continue:
@@ -1253,7 +1266,7 @@ unsigned clang_Type_visitFields(CXType PT,
   return true;
 }
 
-unsigned clang_Cursor_isAnonymous(CXCursor C){
+unsigned clang_Cursor_isAnonymous(CXCursor C) {
   if (!clang_isDeclaration(C.kind))
     return 0;
   const Decl *D = cxcursor::getCursorDecl(C);
@@ -1267,7 +1280,7 @@ unsigned clang_Cursor_isAnonymous(CXCursor C){
   return 0;
 }
 
-unsigned clang_Cursor_isAnonymousRecordDecl(CXCursor C){
+unsigned clang_Cursor_isAnonymousRecordDecl(CXCursor C) {
   if (!clang_isDeclaration(C.kind))
     return 0;
   const Decl *D = cxcursor::getCursorDecl(C);
@@ -1284,7 +1297,7 @@ unsigned clang_Cursor_isInlineNamespace(CXCursor C) {
   return ND ? ND->isInline() : 0;
 }
 
-CXType clang_Type_getNamedType(CXType CT){
+CXType clang_Type_getNamedType(CXType CT) {
   QualType T = GetQualType(CT);
   const Type *TP = T.getTypePtrOrNull();
 
@@ -1294,7 +1307,7 @@ CXType clang_Type_getNamedType(CXType CT){
   return MakeCXType(QualType(), GetTU(CT));
 }
 
-unsigned clang_Type_isTransparentTagTypedef(CXType TT){
+unsigned clang_Type_isTransparentTagTypedef(CXType TT) {
   QualType T = GetQualType(TT);
   if (auto *TT = dyn_cast_or_null<TypedefType>(T.getTypePtrOrNull())) {
     if (auto *D = TT->getDecl())
@@ -1311,14 +1324,14 @@ enum CXTypeNullabilityKind clang_Type_getNullability(CXType CT) {
   ASTContext &Ctx = cxtu::getASTUnit(GetTU(CT))->getASTContext();
   if (auto nullability = T->getNullability(Ctx)) {
     switch (*nullability) {
-      case NullabilityKind::NonNull:
-        return CXTypeNullability_NonNull;
-      case NullabilityKind::Nullable:
-        return CXTypeNullability_Nullable;
-      case NullabilityKind::NullableResult:
-        return CXTypeNullability_NullableResult;
-      case NullabilityKind::Unspecified:
-        return CXTypeNullability_Unspecified;
+    case NullabilityKind::NonNull:
+      return CXTypeNullability_NonNull;
+    case NullabilityKind::Nullable:
+      return CXTypeNullability_Nullable;
+    case NullabilityKind::NullableResult:
+      return CXTypeNullability_NullableResult;
+    case NullabilityKind::Unspecified:
+      return CXTypeNullability_Unspecified;
     }
   }
   return CXTypeNullability_Invalid;
@@ -1328,7 +1341,7 @@ CXType clang_Type_getValueType(CXType CT) {
   QualType T = GetQualType(CT);
 
   if (T.isNull() || !T->isAtomicType())
-      return MakeCXType(QualType(), GetTU(CT));
+    return MakeCXType(QualType(), GetTU(CT));
 
   const auto *AT = T->castAs<AtomicType>();
   return MakeCXType(AT->getValueType(), GetTU(CT));

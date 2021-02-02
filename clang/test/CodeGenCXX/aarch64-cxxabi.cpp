@@ -40,12 +40,12 @@ public:
 
 void guard_variables(int a) {
   static Guarded mine(a);
-// CHECK: [[GUARDBIT:%[0-9]+]] = and i8 {{%[0-9]+}}, 1
-// CHECK: icmp eq i8 [[GUARDBIT]], 0
+  // CHECK: [[GUARDBIT:%[0-9]+]] = and i8 {{%[0-9]+}}, 1
+  // CHECK: icmp eq i8 [[GUARDBIT]], 0
 
   // As guards are 64-bit, these helpers should take 64-bit pointers.
-// CHECK: call i32 @__cxa_guard_acquire(i64*
-// CHECK: call void @__cxa_guard_release(i64*
+  // CHECK: call i32 @__cxa_guard_acquire(i64*
+  // CHECK: call void @__cxa_guard_release(i64*
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -59,11 +59,10 @@ class C {
   virtual int b();
 };
 
-
 int member_pointer(C &c, int (C::*func)()) {
-// CHECK: ashr i64 %[[MEMPTRADJ:[0-9a-z.]+]], 1
-// CHECK: %[[ISVIRTUAL:[0-9]+]] = and i64 %[[MEMPTRADJ]], 1
-// CHECK: icmp ne i64 %[[ISVIRTUAL]], 0
+  // CHECK: ashr i64 %[[MEMPTRADJ:[0-9a-z.]+]], 1
+  // CHECK: %[[ISVIRTUAL:[0-9]+]] = and i64 %[[MEMPTRADJ]], 1
+  // CHECK: icmp ne i64 %[[ISVIRTUAL]], 0
   return (c.*func)();
 }
 
@@ -83,7 +82,7 @@ void va_func(__builtin_va_list l) {
 
 void test_constructor() {
   Guarded g(42);
-// CHECK: call void @_ZN7GuardedC1Ei
+  // CHECK: call void @_ZN7GuardedC1Ei
 }
 
 ////////////////////////////////////////////////////////////////////////////////

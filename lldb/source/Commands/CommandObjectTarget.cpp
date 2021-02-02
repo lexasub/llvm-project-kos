@@ -54,7 +54,6 @@
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/FormatAdapters.h"
 
-
 using namespace lldb;
 using namespace lldb_private;
 
@@ -4033,8 +4032,8 @@ public:
             "name."),
         m_current_frame_option(
             LLDB_OPT_SET_2, false, "frame", 'F',
-            "Locate the debug symbols for the currently selected frame.",
-            false, true)
+            "Locate the debug symbols for the currently selected frame.", false,
+            true)
 
   {
     m_option_group.Append(&m_uuid_option_group, LLDB_OPT_SET_ALL,
@@ -4082,8 +4081,8 @@ protected:
 
     // First extract all module specs from the symbol file
     lldb_private::ModuleSpecList symfile_module_specs;
-    if (ObjectFile::GetModuleSpecifications(module_spec.GetSymbolFileSpec(),
-                                            0, 0, symfile_module_specs)) {
+    if (ObjectFile::GetModuleSpecifications(module_spec.GetSymbolFileSpec(), 0,
+                                            0, symfile_module_specs)) {
       // Now extract the module spec that matches the target architecture
       ModuleSpec target_arch_module_spec;
       ModuleSpec symfile_module_spec;
@@ -4105,8 +4104,8 @@ protected:
         const size_t num_symfile_module_specs = symfile_module_specs.GetSize();
         for (size_t i = 0;
              i < num_symfile_module_specs && matching_modules.IsEmpty(); ++i) {
-          if (symfile_module_specs.GetModuleSpecAtIndex(
-                  i, symfile_module_spec)) {
+          if (symfile_module_specs.GetModuleSpecAtIndex(i,
+                                                        symfile_module_spec)) {
             if (symfile_module_spec.GetUUID().IsValid()) {
               // It has a UUID.  Look for this UUID in the target modules.
               ModuleSpec symfile_uuid_module_spec;
@@ -4688,10 +4687,10 @@ protected:
     m_stop_hook_sp.reset();
 
     Target &target = GetSelectedOrDummyTarget();
-    Target::StopHookSP new_hook_sp =
-        target.CreateStopHook(m_python_class_options.GetName().empty() ?
-                               Target::StopHook::StopHookKind::CommandBased
-                               : Target::StopHook::StopHookKind::ScriptBased);
+    Target::StopHookSP new_hook_sp = target.CreateStopHook(
+        m_python_class_options.GetName().empty()
+            ? Target::StopHook::StopHookKind::CommandBased
+            : Target::StopHook::StopHookKind::ScriptBased);
 
     //  First step, make the specifier.
     std::unique_ptr<SymbolContextSpecifier> specifier_up;

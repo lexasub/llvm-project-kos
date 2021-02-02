@@ -31,39 +31,38 @@
 
 namespace pmr = std::experimental::pmr;
 
-int main(int, char**)
-{
-    using V = char;
-    using DC = std::less<V>;
-    using OC = std::greater<V>;
-    {
-        using StdSet = std::set<V, DC, pmr::polymorphic_allocator<V>>;
-        using PmrSet = pmr::set<V>;
-        static_assert(std::is_same<StdSet, PmrSet>::value, "");
-    }
-    {
-        using StdSet = std::set<V, OC, pmr::polymorphic_allocator<V>>;
-        using PmrSet = pmr::set<V, OC>;
-        static_assert(std::is_same<StdSet, PmrSet>::value, "");
-    }
-    {
-        pmr::set<int> m;
-        assert(m.get_allocator().resource() == pmr::get_default_resource());
-    }
-    {
-        using StdSet = std::multiset<V, DC, pmr::polymorphic_allocator<V>>;
-        using PmrSet = pmr::multiset<V>;
-        static_assert(std::is_same<StdSet, PmrSet>::value, "");
-    }
-    {
-        using StdSet = std::multiset<V, OC, pmr::polymorphic_allocator<V>>;
-        using PmrSet = pmr::multiset<V, OC>;
-        static_assert(std::is_same<StdSet, PmrSet>::value, "");
-    }
-    {
-        pmr::multiset<int> m;
-        assert(m.get_allocator().resource() == pmr::get_default_resource());
-    }
+int main(int, char**) {
+  using V = char;
+  using DC = std::less<V>;
+  using OC = std::greater<V>;
+  {
+    using StdSet = std::set<V, DC, pmr::polymorphic_allocator<V> >;
+    using PmrSet = pmr::set<V>;
+    static_assert(std::is_same<StdSet, PmrSet>::value, "");
+  }
+  {
+    using StdSet = std::set<V, OC, pmr::polymorphic_allocator<V> >;
+    using PmrSet = pmr::set<V, OC>;
+    static_assert(std::is_same<StdSet, PmrSet>::value, "");
+  }
+  {
+    pmr::set<int> m;
+    assert(m.get_allocator().resource() == pmr::get_default_resource());
+  }
+  {
+    using StdSet = std::multiset<V, DC, pmr::polymorphic_allocator<V> >;
+    using PmrSet = pmr::multiset<V>;
+    static_assert(std::is_same<StdSet, PmrSet>::value, "");
+  }
+  {
+    using StdSet = std::multiset<V, OC, pmr::polymorphic_allocator<V> >;
+    using PmrSet = pmr::multiset<V, OC>;
+    static_assert(std::is_same<StdSet, PmrSet>::value, "");
+  }
+  {
+    pmr::multiset<int> m;
+    assert(m.get_allocator().resource() == pmr::get_default_resource());
+  }
 
   return 0;
 }

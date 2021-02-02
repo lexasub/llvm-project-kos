@@ -1,10 +1,11 @@
 // RUN: %clang_cc1 -std=c++11 -fms-extensions -Wno-microsoft -triple=i386-pc-windows-gnu -emit-llvm %s -o - | FileCheck %s
 
-__interface I {
-  int test() {
-    return 1;
-  }
-};
+__interface I{
+    int test(){
+        return 1;
+}
+}
+;
 
 struct S : I {
   virtual int test() override {

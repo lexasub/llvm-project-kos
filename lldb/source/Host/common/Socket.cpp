@@ -42,8 +42,8 @@
 #include <arpa/inet.h>
 #include <asm-generic/errno-base.h>
 #include <errno.h>
-#include <linux/tcp.h>
 #include <fcntl.h>
+#include <linux/tcp.h>
 #include <sys/syscall.h>
 #include <unistd.h>
 #endif // __ANDROID__
@@ -55,7 +55,7 @@ using namespace lldb_private;
 typedef const char *set_socket_option_arg_type;
 typedef char *get_socket_option_arg_type;
 const NativeSocket Socket::kInvalidSocketValue = INVALID_SOCKET;
-#else  // #if defined(_WIN32)
+#else // #if defined(_WIN32)
 typedef const void *set_socket_option_arg_type;
 typedef void *get_socket_option_arg_type;
 const NativeSocket Socket::kInvalidSocketValue = -1;
@@ -70,7 +70,7 @@ bool IsInterrupted() {
   return errno == EINTR;
 #endif
 }
-}
+} // namespace
 
 Socket::Socket(SocketProtocol protocol, bool should_close,
                bool child_processes_inherit)
@@ -114,17 +114,14 @@ std::unique_ptr<Socket> Socket::Create(const SocketProtocol protocol,
   std::unique_ptr<Socket> socket_up;
   switch (protocol) {
   case ProtocolTcp:
-    socket_up =
-        std::make_unique<TCPSocket>(true, child_processes_inherit);
+    socket_up = std::make_unique<TCPSocket>(true, child_processes_inherit);
     break;
   case ProtocolUdp:
-    socket_up =
-        std::make_unique<UDPSocket>(true, child_processes_inherit);
+    socket_up = std::make_unique<UDPSocket>(true, child_processes_inherit);
     break;
   case ProtocolUnixDomain:
 #if LLDB_ENABLE_POSIX
-    socket_up =
-        std::make_unique<DomainSocket>(true, child_processes_inherit);
+    socket_up = std::make_unique<DomainSocket>(true, child_processes_inherit);
 #else
     error.SetErrorString(
         "Unix domain sockets are not supported on this platform.");
@@ -132,8 +129,7 @@ std::unique_ptr<Socket> Socket::Create(const SocketProtocol protocol,
     break;
   case ProtocolUnixAbstract:
 #ifdef __linux__
-    socket_up =
-        std::make_unique<AbstractSocket>(child_processes_inherit);
+    socket_up = std::make_unique<AbstractSocket>(child_processes_inherit);
 #else
     error.SetErrorString(
         "Abstract domain sockets are not supported on this platform.");
@@ -368,8 +364,8 @@ Status Socket::Write(const void *buf, size_t &num_bytes) {
               ", src = %p, src_len = %" PRIu64 ", flags = 0) => %" PRIi64
               " (error = %s)",
               static_cast<void *>(this), static_cast<uint64_t>(m_socket), buf,
-              static_cast<uint64_t>(src_len),
-              static_cast<int64_t>(bytes_sent), error.AsCString());
+              static_cast<uint64_t>(src_len), static_cast<int64_t>(bytes_sent),
+              error.AsCString());
   }
 
   return error;

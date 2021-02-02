@@ -29,9 +29,9 @@ public:
   MachODefinedAtom(const File &f, const StringRef name, Scope scope,
                    ContentType type, Merge merge, bool thumb, bool noDeadStrip,
                    const ArrayRef<uint8_t> content, Alignment align)
-      : SimpleDefinedAtom(f), _name(name), _content(content),
-        _align(align), _contentType(type), _scope(scope), _merge(merge),
-        _thumb(thumb), _noDeadStrip(noDeadStrip) {}
+      : SimpleDefinedAtom(f), _name(name), _content(content), _align(align),
+        _contentType(type), _scope(scope), _merge(merge), _thumb(thumb),
+        _noDeadStrip(noDeadStrip) {}
 
   // Constructor for zero-fill content
   MachODefinedAtom(const File &f, const StringRef name, Scope scope,
@@ -101,9 +101,8 @@ public:
     return DefinedAtom::sectionCustomRequired;
   }
 
-  StringRef customSectionName() const override {
-    return _sectionName;
-  }
+  StringRef customSectionName() const override { return _sectionName; }
+
 private:
   StringRef _sectionName;
 };

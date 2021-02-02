@@ -2,18 +2,16 @@
 // it needs to be passed by reference.
 struct PassByRef {
   PassByRef() = default;
-  PassByRef(const PassByRef &p){x = p.x;};
+  PassByRef(const PassByRef &p) { x = p.x; };
 
   int x = 11223344;
 };
 
 PassByRef returnPassByRef() { return PassByRef(); }
-int takePassByRef(PassByRef p) {
-    return p.x;
-}
+int takePassByRef(PassByRef p) { return p.x; }
 
 int main() {
-    PassByRef p = returnPassByRef();
-    p.x = 42;
-    return takePassByRef(p); // break here
+  PassByRef p = returnPassByRef();
+  p.x = 42;
+  return takePassByRef(p); // break here
 }

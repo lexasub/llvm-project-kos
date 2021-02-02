@@ -24,33 +24,32 @@
 #include "test_convertible.h"
 #endif
 
-int main(int, char**)
-{
-    {
-        typedef std::codecvt_utf8<wchar_t> Codecvt;
-        typedef std::wstring_convert<Codecvt> Myconv;
-        Myconv myconv;
-        assert(myconv.converted() == 0);
-    }
-    {
-        typedef std::codecvt_utf8<wchar_t> Codecvt;
-        typedef std::wstring_convert<Codecvt> Myconv;
-        Myconv myconv(new Codecvt);
-        assert(myconv.converted() == 0);
+int main(int, char**) {
+  {
+    typedef std::codecvt_utf8<wchar_t> Codecvt;
+    typedef std::wstring_convert<Codecvt> Myconv;
+    Myconv myconv;
+    assert(myconv.converted() == 0);
+  }
+  {
+    typedef std::codecvt_utf8<wchar_t> Codecvt;
+    typedef std::wstring_convert<Codecvt> Myconv;
+    Myconv myconv(new Codecvt);
+    assert(myconv.converted() == 0);
 #if TEST_STD_VER > 11
-        static_assert(!std::is_convertible<Codecvt*, Myconv>::value, "");
-        static_assert( std::is_constructible<Myconv, Codecvt*>::value, "");
+    static_assert(!std::is_convertible<Codecvt*, Myconv>::value, "");
+    static_assert(std::is_constructible<Myconv, Codecvt*>::value, "");
 #endif
-    }
+  }
 
 #if TEST_STD_VER >= 11
-    {
-      typedef std::codecvt_utf8<wchar_t> Codecvt;
-      typedef std::wstring_convert<Codecvt> B;
-      static_assert(test_convertible<B>(), "");
-      static_assert(!test_convertible<B, Codecvt*>(), "");
-    }
+  {
+    typedef std::codecvt_utf8<wchar_t> Codecvt;
+    typedef std::wstring_convert<Codecvt> B;
+    static_assert(test_convertible<B>(), "");
+    static_assert(!test_convertible<B, Codecvt*>(), "");
+  }
 #endif
 
-    return 0;
+  return 0;
 }

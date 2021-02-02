@@ -22,8 +22,8 @@ namespace {
 
 struct CrashRecoveryContextImpl;
 
-static ManagedStatic<
-    sys::ThreadLocal<const CrashRecoveryContextImpl> > CurrentContext;
+static ManagedStatic<sys::ThreadLocal<const CrashRecoveryContextImpl>>
+    CurrentContext;
 
 struct CrashRecoveryContextImpl {
   // When threads are disabled, this links up all active
@@ -88,7 +88,7 @@ static ManagedStatic<std::mutex> gCrashRecoveryContextMutex;
 static bool gCrashRecoveryEnabled = false;
 
 static ManagedStatic<sys::ThreadLocal<const CrashRecoveryContext>>
-       tlIsRecoveringFromCrash;
+    tlIsRecoveringFromCrash;
 
 static void installExceptionOrSignalHandlers();
 static void uninstallExceptionOrSignalHandlers();
@@ -116,7 +116,7 @@ CrashRecoveryContext::~CrashRecoveryContext() {
   }
   tlIsRecoveringFromCrash->set(PC);
 
-  CrashRecoveryContextImpl *CRCI = (CrashRecoveryContextImpl *) Impl;
+  CrashRecoveryContextImpl *CRCI = (CrashRecoveryContextImpl *)Impl;
   delete CRCI;
 }
 
@@ -152,8 +152,8 @@ void CrashRecoveryContext::Disable() {
   uninstallExceptionOrSignalHandlers();
 }
 
-void CrashRecoveryContext::registerCleanup(CrashRecoveryContextCleanup *cleanup)
-{
+void CrashRecoveryContext::registerCleanup(
+    CrashRecoveryContextCleanup *cleanup) {
   if (!cleanup)
     return;
   if (head)
@@ -162,16 +162,15 @@ void CrashRecoveryContext::registerCleanup(CrashRecoveryContextCleanup *cleanup)
   head = cleanup;
 }
 
-void
-CrashRecoveryContext::unregisterCleanup(CrashRecoveryContextCleanup *cleanup) {
+void CrashRecoveryContext::unregisterCleanup(
+    CrashRecoveryContextCleanup *cleanup) {
   if (!cleanup)
     return;
   if (cleanup == head) {
     head = cleanup->next;
     if (head)
       head->prev = nullptr;
-  }
-  else {
+  } else {
     cleanup->prev->next = cleanup->next;
     if (cleanup->next)
       cleanup->next->prev = cleanup->prev;
@@ -261,16 +260,14 @@ bool CrashRecoveryContext::RunSafely(function_ref<void()> Fn) {
 
 #include "llvm/Support/Windows/WindowsSupport.h"
 
-static LONG CALLBACK ExceptionHandler(PEXCEPTION_POINTERS ExceptionInfo)
-{
+static LONG CALLBACK ExceptionHandler(PEXCEPTION_POINTERS ExceptionInfo) {
   // DBG_PRINTEXCEPTION_WIDE_C is not properly defined on all supported
   // compilers and platforms, so we define it manually.
   constexpr ULONG DbgPrintExceptionWideC = 0x4001000AL;
-  switch (ExceptionInfo->ExceptionRecord->ExceptionCode)
-  {
+  switch (ExceptionInfo->ExceptionRecord->ExceptionCode) {
   case DBG_PRINTEXCEPTION_C:
   case DbgPrintExceptionWideC:
-  case 0x406D1388:  // set debugger thread name
+  case 0x406D1388: // set debugger thread name
     return EXCEPTION_CONTINUE_EXECUTION;
   }
 
@@ -342,8 +339,8 @@ static void uninstallExceptionOrSignalHandlers() {
 
 #include <signal.h>
 
-static const int Signals[] =
-    { SIGABRT, SIGBUS, SIGFPE, SIGILL, SIGSEGV, SIGTRAP };
+static const int Signals[] = {SIGABRT, SIGBUS,  SIGFPE,
+                              SIGILL,  SIGSEGV, SIGTRAP};
 static const unsigned NumSignals = array_lengthof(Signals);
 static struct sigaction PrevActions[NumSignals];
 
@@ -489,7 +486,7 @@ struct RunSafelyOnThreadInfo {
 
 static void RunSafelyOnThread_Dispatch(void *UserData) {
   RunSafelyOnThreadInfo *Info =
-    reinterpret_cast<RunSafelyOnThreadInfo*>(UserData);
+      reinterpret_cast<RunSafelyOnThreadInfo *>(UserData);
 
   if (Info->UseBackgroundPriority)
     setThreadBackgroundPriority();
@@ -499,7 +496,7 @@ static void RunSafelyOnThread_Dispatch(void *UserData) {
 bool CrashRecoveryContext::RunSafelyOnThread(function_ref<void()> Fn,
                                              unsigned RequestedStackSize) {
   bool UseBackgroundPriority = hasThreadBackgroundPriority();
-  RunSafelyOnThreadInfo Info = { Fn, this, UseBackgroundPriority, false };
+  RunSafelyOnThreadInfo Info = {Fn, this, UseBackgroundPriority, false};
   llvm_execute_on_thread(RunSafelyOnThread_Dispatch, &Info,
                          RequestedStackSize == 0
                              ? llvm::None

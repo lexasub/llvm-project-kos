@@ -9,16 +9,16 @@ void ns2();
 int ns3 = 0;
 
 namespace ns0 {
-  namespace ns1 {
-    struct test0 {};
-  }
-  namespace ns2 {
-    struct test1 {};
-  }
-  namespace ns3 {
-    struct test2 {};
-  }
-}
+namespace ns1 {
+struct test0 {};
+} // namespace ns1
+namespace ns2 {
+struct test1 {};
+} // namespace ns2
+namespace ns3 {
+struct test2 {};
+} // namespace ns3
+} // namespace ns0
 
 using namespace ns0;
 
@@ -33,4 +33,3 @@ using namespace ns3;
 test0 a;
 test1 b;
 test2 c;
-

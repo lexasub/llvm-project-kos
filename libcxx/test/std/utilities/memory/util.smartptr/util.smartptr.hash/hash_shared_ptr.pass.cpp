@@ -27,8 +27,7 @@
 struct A {};
 #endif
 
-int main(int, char**)
-{
+int main(int, char**) {
   {
     int* ptr = new int;
     std::shared_ptr<int> p(ptr);
@@ -38,8 +37,8 @@ int main(int, char**)
   }
 #if TEST_STD_VER >= 11
   {
-    test_hash_enabled_for_type<std::shared_ptr<int>>();
-    test_hash_enabled_for_type<std::shared_ptr<A>>();
+    test_hash_enabled_for_type<std::shared_ptr<int> >();
+    test_hash_enabled_for_type<std::shared_ptr<A> >();
   }
 #endif
 

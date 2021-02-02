@@ -36,9 +36,8 @@ SBDeclaration::SBDeclaration(const lldb_private::Declaration *lldb_object_ptr)
 }
 
 const SBDeclaration &SBDeclaration::operator=(const SBDeclaration &rhs) {
-  LLDB_RECORD_METHOD(const lldb::SBDeclaration &,
-                     SBDeclaration, operator=,(const lldb::SBDeclaration &),
-                     rhs);
+  LLDB_RECORD_METHOD(const lldb::SBDeclaration &, SBDeclaration, operator=,
+                     (const lldb::SBDeclaration &), rhs);
 
   if (this != &rhs)
     m_opaque_up = clone(rhs.m_opaque_up);
@@ -66,11 +65,9 @@ SBFileSpec SBDeclaration::GetFileSpec() const {
   LLDB_RECORD_METHOD_CONST_NO_ARGS(lldb::SBFileSpec, SBDeclaration,
                                    GetFileSpec);
 
-
   SBFileSpec sb_file_spec;
   if (m_opaque_up.get() && m_opaque_up->GetFile())
     sb_file_spec.SetFileSpec(m_opaque_up->GetFile());
-
 
   return LLDB_RECORD_RESULT(sb_file_spec);
 }
@@ -78,11 +75,9 @@ SBFileSpec SBDeclaration::GetFileSpec() const {
 uint32_t SBDeclaration::GetLine() const {
   LLDB_RECORD_METHOD_CONST_NO_ARGS(uint32_t, SBDeclaration, GetLine);
 
-
   uint32_t line = 0;
   if (m_opaque_up)
     line = m_opaque_up->GetLine();
-
 
   return line;
 }
@@ -117,8 +112,8 @@ void SBDeclaration::SetColumn(uint32_t column) {
 }
 
 bool SBDeclaration::operator==(const SBDeclaration &rhs) const {
-  LLDB_RECORD_METHOD_CONST(
-      bool, SBDeclaration, operator==,(const lldb::SBDeclaration &), rhs);
+  LLDB_RECORD_METHOD_CONST(bool, SBDeclaration, operator==,
+                           (const lldb::SBDeclaration &), rhs);
 
   lldb_private::Declaration *lhs_ptr = m_opaque_up.get();
   lldb_private::Declaration *rhs_ptr = rhs.m_opaque_up.get();
@@ -130,8 +125,8 @@ bool SBDeclaration::operator==(const SBDeclaration &rhs) const {
 }
 
 bool SBDeclaration::operator!=(const SBDeclaration &rhs) const {
-  LLDB_RECORD_METHOD_CONST(
-      bool, SBDeclaration, operator!=,(const lldb::SBDeclaration &), rhs);
+  LLDB_RECORD_METHOD_CONST(bool, SBDeclaration, operator!=,
+                           (const lldb::SBDeclaration &), rhs);
 
   lldb_private::Declaration *lhs_ptr = m_opaque_up.get();
   lldb_private::Declaration *rhs_ptr = rhs.m_opaque_up.get();
@@ -179,29 +174,25 @@ lldb_private::Declaration *SBDeclaration::get() { return m_opaque_up.get(); }
 namespace lldb_private {
 namespace repro {
 
-template <>
-void RegisterMethods<SBDeclaration>(Registry &R) {
+template <> void RegisterMethods<SBDeclaration>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBDeclaration, ());
   LLDB_REGISTER_CONSTRUCTOR(SBDeclaration, (const lldb::SBDeclaration &));
-  LLDB_REGISTER_METHOD(
-      const lldb::SBDeclaration &,
-      SBDeclaration, operator=,(const lldb::SBDeclaration &));
+  LLDB_REGISTER_METHOD(const lldb::SBDeclaration &, SBDeclaration, operator=,
+                       (const lldb::SBDeclaration &));
   LLDB_REGISTER_METHOD_CONST(bool, SBDeclaration, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBDeclaration, operator bool, ());
-  LLDB_REGISTER_METHOD_CONST(lldb::SBFileSpec, SBDeclaration, GetFileSpec,
-                             ());
+  LLDB_REGISTER_METHOD_CONST(lldb::SBFileSpec, SBDeclaration, GetFileSpec, ());
   LLDB_REGISTER_METHOD_CONST(uint32_t, SBDeclaration, GetLine, ());
   LLDB_REGISTER_METHOD_CONST(uint32_t, SBDeclaration, GetColumn, ());
   LLDB_REGISTER_METHOD(void, SBDeclaration, SetFileSpec, (lldb::SBFileSpec));
   LLDB_REGISTER_METHOD(void, SBDeclaration, SetLine, (uint32_t));
   LLDB_REGISTER_METHOD(void, SBDeclaration, SetColumn, (uint32_t));
-  LLDB_REGISTER_METHOD_CONST(
-      bool, SBDeclaration, operator==,(const lldb::SBDeclaration &));
-  LLDB_REGISTER_METHOD_CONST(
-      bool, SBDeclaration, operator!=,(const lldb::SBDeclaration &));
-  LLDB_REGISTER_METHOD(bool, SBDeclaration, GetDescription,
-                       (lldb::SBStream &));
+  LLDB_REGISTER_METHOD_CONST(bool, SBDeclaration, operator==,
+                             (const lldb::SBDeclaration &));
+  LLDB_REGISTER_METHOD_CONST(bool, SBDeclaration, operator!=,
+                             (const lldb::SBDeclaration &));
+  LLDB_REGISTER_METHOD(bool, SBDeclaration, GetDescription, (lldb::SBStream &));
 }
 
-}
-}
+} // namespace repro
+} // namespace lldb_private

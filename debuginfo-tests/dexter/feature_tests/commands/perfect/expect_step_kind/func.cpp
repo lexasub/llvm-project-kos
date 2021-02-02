@@ -8,15 +8,12 @@
 // RUN: %dexter_regression_test -- %s | FileCheck %s
 // CHECK: func.cpp:
 
-int func(int i) {
-    return i;
-}
+int func(int i) { return i; }
 
-int main()
-{
-    func(0);
-    func(1);
-    return 0;
+int main() {
+  func(0);
+  func(1);
+  return 0;
 }
 
 // main, func, func

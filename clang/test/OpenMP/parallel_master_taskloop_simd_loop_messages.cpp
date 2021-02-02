@@ -298,7 +298,8 @@ int test_iteration_spaces() {
 
 #pragma omp parallel
 // expected-error@+1 {{unexpected OpenMP clause 'in_reduction' in directive '#pragma omp parallel master taskloop simd'}}
-#pragma omp parallel master taskloop simd in_reduction(+:ii)
+#pragma omp parallel master taskloop simd in_reduction(+ \
+                                                       : ii)
   for (ii = 0; ii < 10; ii++)
     c[ii] = a[ii];
 
@@ -340,8 +341,8 @@ int test_iteration_spaces() {
   {
 #pragma omp parallel master taskloop simd collapse(2)
     for (ii = 0; ii < 10; ii += 1)
-    for (globalii = 0; globalii < 10; globalii += 1)
-      c[globalii] += a[globalii] + ii;
+      for (globalii = 0; globalii < 10; globalii += 1)
+        c[globalii] += a[globalii] + ii;
   }
 
 #pragma omp parallel
@@ -385,7 +386,7 @@ struct iterator_traits {
 template <class Iter>
 typename iterator_traits<Iter>::difference_type
 distance(Iter first, Iter last) { return first - last; }
-}
+} // namespace std
 class Iter0 {
 public:
   Iter0() {}
@@ -640,9 +641,9 @@ void test_with_template() {
   TC<GoodIter, 100> t1;
   TC<GoodIter, -100> t2;
   t1.dotest_lt(begin, end);
-  t2.dotest_lt(begin, end);         // expected-note {{in instantiation of member function 'TC<GoodIter, -100>::dotest_lt' requested here}}
-  dotest_gt(begin, end);            // expected-note {{in instantiation of function template specialization 'dotest_gt<GoodIter, 0>' requested here}}
-  dotest_gt<unsigned, 10>(0, 100);  // expected-note {{in instantiation of function template specialization 'dotest_gt<unsigned int, 10>' requested here}}
+  t2.dotest_lt(begin, end);        // expected-note {{in instantiation of member function 'TC<GoodIter, -100>::dotest_lt' requested here}}
+  dotest_gt(begin, end);           // expected-note {{in instantiation of function template specialization 'dotest_gt<GoodIter, 0>' requested here}}
+  dotest_gt<unsigned, 10>(0, 100); // expected-note {{in instantiation of function template specialization 'dotest_gt<unsigned int, 10>' requested here}}
 }
 
 void test_loop_break() {
@@ -700,7 +701,7 @@ void test_loop_eh() {
     } catch (float f) {
       if (f > 0.1)
         throw a[i]; // expected-error {{'throw' statement cannot be used in OpenMP simd region}}
-      return; // expected-error {{cannot return from OpenMP region}}
+      return;       // expected-error {{cannot return from OpenMP region}}
     }
     switch (i) {
     case 1:
@@ -733,14 +734,15 @@ void test_loop_firstprivate_lastprivate() {
 #pragma omp parallel master taskloop simd lastprivate(s) firstprivate(s)
   for (int i = 0; i < 16; ++i)
     ;
-#pragma omp parallel master taskloop simd if(c) default(none) // expected-error {{variable 'c' must have explicitly specified data sharing attributes}} expected-note {{explicit data sharing attribute requested here}}
+#pragma omp parallel master taskloop simd if (c) default(none) // expected-error {{variable 'c' must have explicitly specified data sharing attributes}} expected-note {{explicit data sharing attribute requested here}}
   for (int i = 0; i < 16; ++i)
     ;
-#pragma omp parallel master taskloop simd if(taskloop:c) default(none) // expected-error {{variable 'c' must have explicitly specified data sharing attributes}} expected-note {{explicit data sharing attribute requested here}}
+#pragma omp parallel master taskloop simd if (taskloop \
+                                              : c) default(none) // expected-error {{variable 'c' must have explicitly specified data sharing attributes}} expected-note {{explicit data sharing attribute requested here}}
   for (int i = 0; i < 16; ++i)
     ;
-#pragma omp parallel master taskloop simd if(parallel:c) default(none)
+#pragma omp parallel master taskloop simd if (parallel \
+                                              : c) default(none)
   for (int i = 0; i < 16; ++i)
     ;
 }
-

@@ -77,7 +77,6 @@ Error YAMLOutputStyle::dump() {
   return Error::success();
 }
 
-
 Error YAMLOutputStyle::dumpFileHeaders() {
   if (opts::pdb2yaml::NoFileHeaders)
     return Error::success();

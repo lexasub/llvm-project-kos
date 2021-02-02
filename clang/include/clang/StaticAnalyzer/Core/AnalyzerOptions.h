@@ -37,21 +37,21 @@ class CheckerBase;
 enum Analyses {
 #define ANALYSIS(NAME, CMDFLAG, DESC, SCOPE) NAME,
 #include "clang/StaticAnalyzer/Core/Analyses.def"
-NumAnalyses
+  NumAnalyses
 };
 
 /// AnalysisStores - Set of available analysis store models.
 enum AnalysisStores {
 #define ANALYSIS_STORE(NAME, CMDFLAG, DESC, CREATFN) NAME##Model,
 #include "clang/StaticAnalyzer/Core/Analyses.def"
-NumStores
+  NumStores
 };
 
 /// AnalysisConstraints - Set of available constraint models.
 enum AnalysisConstraints {
 #define ANALYSIS_CONSTRAINTS(NAME, CMDFLAG, DESC, CREATFN) NAME##Model,
 #include "clang/StaticAnalyzer/Core/Analyses.def"
-NumConstraints
+  NumConstraints
 };
 
 /// AnalysisDiagClients - Set of available diagnostic clients for rendering
@@ -59,22 +59,23 @@ NumConstraints
 enum AnalysisDiagClients {
 #define ANALYSIS_DIAGNOSTICS(NAME, CMDFLAG, DESC, CREATFN) PD_##NAME,
 #include "clang/StaticAnalyzer/Core/Analyses.def"
-PD_NONE,
-NUM_ANALYSIS_DIAG_CLIENTS
+  PD_NONE,
+  NUM_ANALYSIS_DIAG_CLIENTS
 };
 
 /// AnalysisPurgeModes - Set of available strategies for dead symbol removal.
 enum AnalysisPurgeMode {
 #define ANALYSIS_PURGE(NAME, CMDFLAG, DESC) NAME,
 #include "clang/StaticAnalyzer/Core/Analyses.def"
-NumPurgeModes
+  NumPurgeModes
 };
 
-/// AnalysisInlineFunctionSelection - Set of inlining function selection heuristics.
+/// AnalysisInlineFunctionSelection - Set of inlining function selection
+/// heuristics.
 enum AnalysisInliningMode {
 #define ANALYSIS_INLINING_MODE(NAME, CMDFLAG, DESC) NAME,
 #include "clang/StaticAnalyzer/Core/Analyses.def"
-NumInliningModes
+  NumInliningModes
 };
 
 /// Describes the different kinds of C++ member functions which can be
@@ -269,8 +270,7 @@ public:
                                              SHALLOW_VAL, DEEP_VAL)            \
   ANALYZER_OPTION(TYPE, NAME, CMDFLAG, DESC, SHALLOW_VAL)
 
-#define ANALYZER_OPTION(TYPE, NAME, CMDFLAG, DESC, DEFAULT_VAL)                \
-  TYPE NAME;
+#define ANALYZER_OPTION(TYPE, NAME, CMDFLAG, DESC, DEFAULT_VAL) TYPE NAME;
 
 #include "clang/StaticAnalyzer/Core/AnalyzerOptions.def"
 #undef ANALYZER_OPTION
@@ -414,9 +414,9 @@ using AnalyzerOptionsRef = IntrusiveRefCntPtr<AnalyzerOptions>;
 
 inline UserModeKind AnalyzerOptions::getUserMode() const {
   auto K = llvm::StringSwitch<llvm::Optional<UserModeKind>>(UserMode)
-    .Case("shallow", UMK_Shallow)
-    .Case("deep", UMK_Deep)
-    .Default(None);
+               .Case("shallow", UMK_Shallow)
+               .Case("deep", UMK_Deep)
+               .Default(None);
   assert(K.hasValue() && "User mode is invalid.");
   return K.getValue();
 }

@@ -29,8 +29,8 @@ namespace {
 
 // Strange order: take words in order, but inside word, take from most to least
 // signinficant byte.
-uint8_t getByte(const uint32_t* data, size_t offset) {
-  const uint8_t* byteData = reinterpret_cast<const uint8_t*>(data);
+uint8_t getByte(const uint32_t *data, size_t offset) {
+  const uint8_t *byteData = reinterpret_cast<const uint8_t *>(data);
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
   return byteData[(offset & ~(size_t)0x03) + (3 - (offset & (size_t)0x03))];
 #elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
@@ -40,13 +40,13 @@ uint8_t getByte(const uint32_t* data, size_t offset) {
 #endif
 }
 
-const char* getNextWord(const char* data, uint32_t* out) {
-  *out = *reinterpret_cast<const uint32_t*>(data);
+const char *getNextWord(const char *data, uint32_t *out) {
+  *out = *reinterpret_cast<const uint32_t *>(data);
   return data + 4;
 }
 
-const char* getNextNibble(const char* data, uint32_t* out) {
-  *out = *reinterpret_cast<const uint16_t*>(data);
+const char *getNextNibble(const char *data, uint32_t *out) {
+  *out = *reinterpret_cast<const uint16_t *>(data);
   return data + 2;
 }
 
@@ -56,27 +56,28 @@ struct Descriptor {
     SU16 = 0, // Short descriptor, 16-bit entries
     LU16 = 1, // Long descriptor,  16-bit entries
     LU32 = 3, // Long descriptor,  32-bit entries
-    RESERVED0 =  4, RESERVED1 =  5, RESERVED2  = 6,  RESERVED3  =  7,
-    RESERVED4 =  8, RESERVED5 =  9, RESERVED6  = 10, RESERVED7  = 11,
-    RESERVED8 = 12, RESERVED9 = 13, RESERVED10 = 14, RESERVED11 = 15
+    RESERVED0 = 4,
+    RESERVED1 = 5,
+    RESERVED2 = 6,
+    RESERVED3 = 7,
+    RESERVED4 = 8,
+    RESERVED5 = 9,
+    RESERVED6 = 10,
+    RESERVED7 = 11,
+    RESERVED8 = 12,
+    RESERVED9 = 13,
+    RESERVED10 = 14,
+    RESERVED11 = 15
   } Format;
 
   // See # 9.2
-  typedef enum {
-    CLEANUP = 0x0,
-    FUNC    = 0x1,
-    CATCH   = 0x2,
-    INVALID = 0x4
-  } Kind;
+  typedef enum { CLEANUP = 0x0, FUNC = 0x1, CATCH = 0x2, INVALID = 0x4 } Kind;
 };
 
-_Unwind_Reason_Code ProcessDescriptors(
-    _Unwind_State state,
-    _Unwind_Control_Block* ucbp,
-    struct _Unwind_Context* context,
-    Descriptor::Format format,
-    const char* descriptorStart,
-    uint32_t flags) {
+_Unwind_Reason_Code
+ProcessDescriptors(_Unwind_State state, _Unwind_Control_Block *ucbp,
+                   struct _Unwind_Context *context, Descriptor::Format format,
+                   const char *descriptorStart, uint32_t flags) {
 
   // EHT is inlined in the index using compact form. No descriptors. #5
   if (flags & 0x1)
@@ -86,7 +87,7 @@ _Unwind_Reason_Code ProcessDescriptors(
   // perform phase1 or phase2 unwinding.
   (void)state;
 
-  const char* descriptor = descriptorStart;
+  const char *descriptor = descriptorStart;
   uint32_t descriptorWord;
   getNextWord(descriptor, &descriptorWord);
   while (descriptorWord) {
@@ -94,15 +95,15 @@ _Unwind_Reason_Code ProcessDescriptors(
     uint32_t length;
     uint32_t offset;
     switch (format) {
-      case Descriptor::LU32:
-        descriptor = getNextWord(descriptor, &length);
-        descriptor = getNextWord(descriptor, &offset);
-      case Descriptor::LU16:
-        descriptor = getNextNibble(descriptor, &length);
-        descriptor = getNextNibble(descriptor, &offset);
-      default:
-        assert(false);
-        return _URC_FAILURE;
+    case Descriptor::LU32:
+      descriptor = getNextWord(descriptor, &length);
+      descriptor = getNextWord(descriptor, &offset);
+    case Descriptor::LU16:
+      descriptor = getNextNibble(descriptor, &length);
+      descriptor = getNextNibble(descriptor, &offset);
+    default:
+      assert(false);
+      return _URC_FAILURE;
     }
 
     // See # 9.2 table for decoding the kind of descriptor. It's a 2-bit value.
@@ -118,44 +119,44 @@ _Unwind_Reason_Code ProcessDescriptors(
     bool isInScope = (scopeStart <= pc) && (pc < scopeEnd);
 
     switch (kind) {
-      case Descriptor::CLEANUP: {
-        // TODO(ajwong): Handle cleanup descriptors.
-        break;
-      }
-      case Descriptor::FUNC: {
-        // TODO(ajwong): Handle function descriptors.
-        break;
-      }
-      case Descriptor::CATCH: {
-        // Catch descriptors require gobbling one more word.
-        uint32_t landing_pad;
-        descriptor = getNextWord(descriptor, &landing_pad);
+    case Descriptor::CLEANUP: {
+      // TODO(ajwong): Handle cleanup descriptors.
+      break;
+    }
+    case Descriptor::FUNC: {
+      // TODO(ajwong): Handle function descriptors.
+      break;
+    }
+    case Descriptor::CATCH: {
+      // Catch descriptors require gobbling one more word.
+      uint32_t landing_pad;
+      descriptor = getNextWord(descriptor, &landing_pad);
 
-        if (isInScope) {
-          // TODO(ajwong): This is only phase1 compatible logic. Implement
-          // phase2.
-          landing_pad = signExtendPrel31(landing_pad & ~0x80000000);
-          if (landing_pad == 0xffffffff) {
-            return _URC_HANDLER_FOUND;
-          } else if (landing_pad == 0xfffffffe) {
-            return _URC_FAILURE;
-          } else {
-            /*
-            bool is_reference_type = landing_pad & 0x80000000;
-            void* matched_object;
-            if (__cxxabiv1::__cxa_type_match(
-                    ucbp, reinterpret_cast<const std::type_info *>(landing_pad),
-                    is_reference_type,
-                    &matched_object) != __cxxabiv1::ctm_failed)
-                return _URC_HANDLER_FOUND;
-                */
-            _LIBUNWIND_ABORT("Type matching not implemented");
-          }
+      if (isInScope) {
+        // TODO(ajwong): This is only phase1 compatible logic. Implement
+        // phase2.
+        landing_pad = signExtendPrel31(landing_pad & ~0x80000000);
+        if (landing_pad == 0xffffffff) {
+          return _URC_HANDLER_FOUND;
+        } else if (landing_pad == 0xfffffffe) {
+          return _URC_FAILURE;
+        } else {
+          /*
+          bool is_reference_type = landing_pad & 0x80000000;
+          void* matched_object;
+          if (__cxxabiv1::__cxa_type_match(
+                  ucbp, reinterpret_cast<const std::type_info *>(landing_pad),
+                  is_reference_type,
+                  &matched_object) != __cxxabiv1::ctm_failed)
+              return _URC_HANDLER_FOUND;
+              */
+          _LIBUNWIND_ABORT("Type matching not implemented");
         }
-        break;
       }
-      default:
-        _LIBUNWIND_ABORT("Invalid descriptor kind found.");
+      break;
+    }
+    default:
+      _LIBUNWIND_ABORT("Invalid descriptor kind found.");
     }
 
     getNextWord(descriptor, &descriptorWord);
@@ -165,11 +166,12 @@ _Unwind_Reason_Code ProcessDescriptors(
 }
 
 static _Unwind_Reason_Code unwindOneFrame(_Unwind_State state,
-                                          _Unwind_Control_Block* ucbp,
-                                          struct _Unwind_Context* context) {
+                                          _Unwind_Control_Block *ucbp,
+                                          struct _Unwind_Context *context) {
   // Read the compact model EHT entry's header # 6.3
-  const uint32_t* unwindingData = ucbp->pr_cache.ehtp;
-  assert((*unwindingData & 0xf0000000) == 0x80000000 && "Must be a compact entry");
+  const uint32_t *unwindingData = ucbp->pr_cache.ehtp;
+  assert((*unwindingData & 0xf0000000) == 0x80000000 &&
+         "Must be a compact entry");
   Descriptor::Format format =
       static_cast<Descriptor::Format>((*unwindingData & 0x0f000000) >> 24);
 
@@ -178,9 +180,8 @@ static _Unwind_Reason_Code unwindOneFrame(_Unwind_State state,
 
   // Handle descriptors before unwinding so they are processed in the context
   // of the correct stack frame.
-  _Unwind_Reason_Code result =
-      ProcessDescriptors(state, ucbp, context, format, lsda,
-                         ucbp->pr_cache.additional);
+  _Unwind_Reason_Code result = ProcessDescriptors(
+      state, ucbp, context, format, lsda, ucbp->pr_cache.additional);
 
   if (result != _URC_CONTINUE_UNWIND)
     return result;
@@ -212,8 +213,8 @@ uint32_t RegisterRange(uint8_t start, uint8_t count_minus_one) {
  * @param[out] len Number of bytes in unwind code.
  * @return Pointer to beginning of unwind code.
  */
-extern "C" const uint32_t*
-decode_eht_entry(const uint32_t* data, size_t* off, size_t* len) {
+extern "C" const uint32_t *decode_eht_entry(const uint32_t *data, size_t *off,
+                                            size_t *len) {
   if ((*data & 0x80000000) == 0) {
     // 6.2: Generic Model
     //
@@ -233,25 +234,24 @@ decode_eht_entry(const uint32_t* data, size_t* off, size_t* len) {
     Descriptor::Format format =
         static_cast<Descriptor::Format>((*data & 0x0f000000) >> 24);
     switch (format) {
-      case Descriptor::SU16:
-        *len = 4;
-        *off = 1;
-        break;
-      case Descriptor::LU16:
-      case Descriptor::LU32:
-        *len = 4 + 4 * ((*data & 0x00ff0000) >> 16);
-        *off = 2;
-        break;
-      default:
-        return nullptr;
+    case Descriptor::SU16:
+      *len = 4;
+      *off = 1;
+      break;
+    case Descriptor::LU16:
+    case Descriptor::LU32:
+      *len = 4 + 4 * ((*data & 0x00ff0000) >> 16);
+      *off = 2;
+      break;
+    default:
+      return nullptr;
     }
   }
   return data;
 }
 
-_LIBUNWIND_EXPORT _Unwind_Reason_Code
-_Unwind_VRS_Interpret(_Unwind_Context *context, const uint32_t *data,
-                      size_t offset, size_t len) {
+_LIBUNWIND_EXPORT _Unwind_Reason_Code _Unwind_VRS_Interpret(
+    _Unwind_Context *context, const uint32_t *data, size_t offset, size_t len) {
   bool wrotePC = false;
   bool finish = false;
   while (offset < len && !finish) {
@@ -266,149 +266,143 @@ _Unwind_VRS_Interpret(_Unwind_Context *context, const uint32_t *data,
       _Unwind_VRS_Set(context, _UVRSC_CORE, UNW_ARM_SP, _UVRSD_UINT32, &sp);
     } else {
       switch (byte & 0xf0) {
-        case 0x80: {
+      case 0x80: {
+        if (offset >= len)
+          return _URC_FAILURE;
+        uint32_t registers = (((uint32_t)byte & 0x0f) << 12) |
+                             (((uint32_t)getByte(data, offset++)) << 4);
+        if (!registers)
+          return _URC_FAILURE;
+        if (registers & (1 << 15))
+          wrotePC = true;
+        _Unwind_VRS_Pop(context, _UVRSC_CORE, registers, _UVRSD_UINT32);
+        break;
+      }
+      case 0x90: {
+        uint8_t reg = byte & 0x0f;
+        if (reg == 13 || reg == 15)
+          return _URC_FAILURE;
+        uint32_t sp;
+        _Unwind_VRS_Get(context, _UVRSC_CORE, UNW_ARM_R0 + reg, _UVRSD_UINT32,
+                        &sp);
+        _Unwind_VRS_Set(context, _UVRSC_CORE, UNW_ARM_SP, _UVRSD_UINT32, &sp);
+        break;
+      }
+      case 0xa0: {
+        uint32_t registers = RegisterMask(4, byte & 0x07);
+        if (byte & 0x08)
+          registers |= 1 << 14;
+        _Unwind_VRS_Pop(context, _UVRSC_CORE, registers, _UVRSD_UINT32);
+        break;
+      }
+      case 0xb0: {
+        switch (byte) {
+        case 0xb0:
+          finish = true;
+          break;
+        case 0xb1: {
           if (offset >= len)
             return _URC_FAILURE;
-          uint32_t registers =
-              (((uint32_t)byte & 0x0f) << 12) |
-              (((uint32_t)getByte(data, offset++)) << 4);
-          if (!registers)
+          uint8_t registers = getByte(data, offset++);
+          if (registers & 0xf0 || !registers)
             return _URC_FAILURE;
-          if (registers & (1 << 15))
-            wrotePC = true;
           _Unwind_VRS_Pop(context, _UVRSC_CORE, registers, _UVRSD_UINT32);
           break;
         }
-        case 0x90: {
-          uint8_t reg = byte & 0x0f;
-          if (reg == 13 || reg == 15)
-            return _URC_FAILURE;
+        case 0xb2: {
+          uint32_t addend = 0;
+          uint32_t shift = 0;
+          // This decodes a uleb128 value.
+          while (true) {
+            if (offset >= len)
+              return _URC_FAILURE;
+            uint32_t v = getByte(data, offset++);
+            addend |= (v & 0x7f) << shift;
+            if ((v & 0x80) == 0)
+              break;
+            shift += 7;
+          }
           uint32_t sp;
-          _Unwind_VRS_Get(context, _UVRSC_CORE, UNW_ARM_R0 + reg,
-                          _UVRSD_UINT32, &sp);
-          _Unwind_VRS_Set(context, _UVRSC_CORE, UNW_ARM_SP, _UVRSD_UINT32,
-                          &sp);
+          _Unwind_VRS_Get(context, _UVRSC_CORE, UNW_ARM_SP, _UVRSD_UINT32, &sp);
+          sp += 0x204 + (addend << 2);
+          _Unwind_VRS_Set(context, _UVRSC_CORE, UNW_ARM_SP, _UVRSD_UINT32, &sp);
           break;
         }
-        case 0xa0: {
-          uint32_t registers = RegisterMask(4, byte & 0x07);
-          if (byte & 0x08)
-            registers |= 1 << 14;
-          _Unwind_VRS_Pop(context, _UVRSC_CORE, registers, _UVRSD_UINT32);
+        case 0xb3: {
+          uint8_t v = getByte(data, offset++);
+          _Unwind_VRS_Pop(context, _UVRSC_VFP,
+                          RegisterRange(static_cast<uint8_t>(v >> 4), v & 0x0f),
+                          _UVRSD_VFPX);
           break;
         }
-        case 0xb0: {
-          switch (byte) {
-            case 0xb0:
-              finish = true;
-              break;
-            case 0xb1: {
-              if (offset >= len)
-                return _URC_FAILURE;
-              uint8_t registers = getByte(data, offset++);
-              if (registers & 0xf0 || !registers)
-                return _URC_FAILURE;
-              _Unwind_VRS_Pop(context, _UVRSC_CORE, registers, _UVRSD_UINT32);
-              break;
-            }
-            case 0xb2: {
-              uint32_t addend = 0;
-              uint32_t shift = 0;
-              // This decodes a uleb128 value.
-              while (true) {
-                if (offset >= len)
-                  return _URC_FAILURE;
-                uint32_t v = getByte(data, offset++);
-                addend |= (v & 0x7f) << shift;
-                if ((v & 0x80) == 0)
-                  break;
-                shift += 7;
-              }
-              uint32_t sp;
-              _Unwind_VRS_Get(context, _UVRSC_CORE, UNW_ARM_SP, _UVRSD_UINT32,
-                              &sp);
-              sp += 0x204 + (addend << 2);
-              _Unwind_VRS_Set(context, _UVRSC_CORE, UNW_ARM_SP, _UVRSD_UINT32,
-                              &sp);
-              break;
-            }
-            case 0xb3: {
-              uint8_t v = getByte(data, offset++);
-              _Unwind_VRS_Pop(context, _UVRSC_VFP,
-                              RegisterRange(static_cast<uint8_t>(v >> 4),
-                                            v & 0x0f), _UVRSD_VFPX);
-              break;
-            }
-            case 0xb4:
-            case 0xb5:
-            case 0xb6:
-            case 0xb7:
-              return _URC_FAILURE;
-            default:
-              _Unwind_VRS_Pop(context, _UVRSC_VFP,
-                              RegisterRange(8, byte & 0x07), _UVRSD_VFPX);
-              break;
-          }
+        case 0xb4:
+        case 0xb5:
+        case 0xb6:
+        case 0xb7:
+          return _URC_FAILURE;
+        default:
+          _Unwind_VRS_Pop(context, _UVRSC_VFP, RegisterRange(8, byte & 0x07),
+                          _UVRSD_VFPX);
           break;
         }
-        case 0xc0: {
-          switch (byte) {
+        break;
+      }
+      case 0xc0: {
+        switch (byte) {
 #if defined(__ARM_WMMX)
-            case 0xc0:
-            case 0xc1:
-            case 0xc2:
-            case 0xc3:
-            case 0xc4:
-            case 0xc5:
-              _Unwind_VRS_Pop(context, _UVRSC_WMMXD,
-                              RegisterRange(10, byte & 0x7), _UVRSD_DOUBLE);
-              break;
-            case 0xc6: {
-              uint8_t v = getByte(data, offset++);
-              uint8_t start = static_cast<uint8_t>(v >> 4);
-              uint8_t count_minus_one = v & 0xf;
-              if (start + count_minus_one >= 16)
-                return _URC_FAILURE;
-              _Unwind_VRS_Pop(context, _UVRSC_WMMXD,
-                              RegisterRange(start, count_minus_one),
-                              _UVRSD_DOUBLE);
-              break;
-            }
-            case 0xc7: {
-              uint8_t v = getByte(data, offset++);
-              if (!v || v & 0xf0)
-                return _URC_FAILURE;
-              _Unwind_VRS_Pop(context, _UVRSC_WMMXC, v, _UVRSD_DOUBLE);
-              break;
-            }
-#endif
-            case 0xc8:
-            case 0xc9: {
-              uint8_t v = getByte(data, offset++);
-              uint8_t start =
-                  static_cast<uint8_t>(((byte == 0xc8) ? 16 : 0) + (v >> 4));
-              uint8_t count_minus_one = v & 0xf;
-              if (start + count_minus_one >= 32)
-                return _URC_FAILURE;
-              _Unwind_VRS_Pop(context, _UVRSC_VFP,
-                              RegisterRange(start, count_minus_one),
-                              _UVRSD_DOUBLE);
-              break;
-            }
-            default:
-              return _URC_FAILURE;
-          }
+        case 0xc0:
+        case 0xc1:
+        case 0xc2:
+        case 0xc3:
+        case 0xc4:
+        case 0xc5:
+          _Unwind_VRS_Pop(context, _UVRSC_WMMXD, RegisterRange(10, byte & 0x7),
+                          _UVRSD_DOUBLE);
+          break;
+        case 0xc6: {
+          uint8_t v = getByte(data, offset++);
+          uint8_t start = static_cast<uint8_t>(v >> 4);
+          uint8_t count_minus_one = v & 0xf;
+          if (start + count_minus_one >= 16)
+            return _URC_FAILURE;
+          _Unwind_VRS_Pop(context, _UVRSC_WMMXD,
+                          RegisterRange(start, count_minus_one), _UVRSD_DOUBLE);
           break;
         }
-        case 0xd0: {
-          if (byte & 0x08)
+        case 0xc7: {
+          uint8_t v = getByte(data, offset++);
+          if (!v || v & 0xf0)
             return _URC_FAILURE;
-          _Unwind_VRS_Pop(context, _UVRSC_VFP, RegisterRange(8, byte & 0x7),
-                          _UVRSD_DOUBLE);
+          _Unwind_VRS_Pop(context, _UVRSC_WMMXC, v, _UVRSD_DOUBLE);
+          break;
+        }
+#endif
+        case 0xc8:
+        case 0xc9: {
+          uint8_t v = getByte(data, offset++);
+          uint8_t start =
+              static_cast<uint8_t>(((byte == 0xc8) ? 16 : 0) + (v >> 4));
+          uint8_t count_minus_one = v & 0xf;
+          if (start + count_minus_one >= 32)
+            return _URC_FAILURE;
+          _Unwind_VRS_Pop(context, _UVRSC_VFP,
+                          RegisterRange(start, count_minus_one), _UVRSD_DOUBLE);
           break;
         }
         default:
           return _URC_FAILURE;
+        }
+        break;
+      }
+      case 0xd0: {
+        if (byte & 0x08)
+          return _URC_FAILURE;
+        _Unwind_VRS_Pop(context, _UVRSC_VFP, RegisterRange(8, byte & 0x7),
+                        _UVRSD_DOUBLE);
+        break;
+      }
+      default:
+        return _URC_FAILURE;
       }
     }
   }
@@ -438,8 +432,9 @@ __aeabi_unwind_cpp_pr2(_Unwind_State state, _Unwind_Control_Block *ucbp,
   return unwindOneFrame(state, ucbp, context);
 }
 
-static _Unwind_Reason_Code
-unwind_phase1(unw_context_t *uc, unw_cursor_t *cursor, _Unwind_Exception *exception_object) {
+static _Unwind_Reason_Code unwind_phase1(unw_context_t *uc,
+                                         unw_cursor_t *cursor,
+                                         _Unwind_Exception *exception_object) {
   // EHABI #7.3 discusses preserving the VRS in a "temporary VRS" during
   // phase 1 and then restoring it to the "primary VRS" for phase 2. The
   // effect is phase 2 doesn't see any of the VRS manipulations from phase 1.
@@ -472,12 +467,12 @@ unwind_phase1(unw_context_t *uc, unw_cursor_t *cursor, _Unwind_Exception *except
         functionName = ".anonymous.";
       unw_word_t pc;
       __unw_get_reg(cursor, UNW_REG_IP, &pc);
-      _LIBUNWIND_TRACE_UNWINDING(
-          "unwind_phase1(ex_ojb=%p): pc=0x%" PRIxPTR ", start_ip=0x%" PRIxPTR ", func=%s, "
-          "lsda=0x%" PRIxPTR ", personality=0x%" PRIxPTR,
-          static_cast<void *>(exception_object), pc,
-          frameInfo.start_ip, functionName,
-          frameInfo.lsda, frameInfo.handler);
+      _LIBUNWIND_TRACE_UNWINDING("unwind_phase1(ex_ojb=%p): pc=0x%" PRIxPTR
+                                 ", start_ip=0x%" PRIxPTR ", func=%s, "
+                                 "lsda=0x%" PRIxPTR ", personality=0x%" PRIxPTR,
+                                 static_cast<void *>(exception_object), pc,
+                                 frameInfo.start_ip, functionName,
+                                 frameInfo.lsda, frameInfo.handler);
     }
 
     // If there is a personality routine, ask it if it will want to stop at
@@ -537,7 +532,8 @@ unwind_phase1(unw_context_t *uc, unw_cursor_t *cursor, _Unwind_Exception *except
   return _URC_NO_REASON;
 }
 
-static _Unwind_Reason_Code unwind_phase2(unw_context_t *uc, unw_cursor_t *cursor,
+static _Unwind_Reason_Code unwind_phase2(unw_context_t *uc,
+                                         unw_cursor_t *cursor,
                                          _Unwind_Exception *exception_object,
                                          bool resume) {
   // See comment at the start of unwind_phase1 regarding VRS integrity.
@@ -590,11 +586,11 @@ static _Unwind_Reason_Code unwind_phase2(unw_context_t *uc, unw_cursor_t *cursor
           (frameInfo.start_ip + offset > frameInfo.end_ip))
         functionName = ".anonymous.";
       _LIBUNWIND_TRACE_UNWINDING(
-          "unwind_phase2(ex_ojb=%p): start_ip=0x%" PRIxPTR ", func=%s, sp=0x%" PRIxPTR ", "
+          "unwind_phase2(ex_ojb=%p): start_ip=0x%" PRIxPTR
+          ", func=%s, sp=0x%" PRIxPTR ", "
           "lsda=0x%" PRIxPTR ", personality=0x%" PRIxPTR "",
           static_cast<void *>(exception_object), frameInfo.start_ip,
-          functionName, sp, frameInfo.lsda,
-          frameInfo.handler);
+          functionName, sp, frameInfo.lsda, frameInfo.handler);
     }
 
     // If there is a personality routine, tell it we are unwinding.
@@ -632,10 +628,10 @@ static _Unwind_Reason_Code unwind_phase2(unw_context_t *uc, unw_cursor_t *cursor
           unw_word_t pc;
           __unw_get_reg(cursor, UNW_REG_IP, &pc);
           __unw_get_reg(cursor, UNW_REG_SP, &sp);
-          _LIBUNWIND_TRACE_UNWINDING("unwind_phase2(ex_ojb=%p): re-entering "
-                                     "user code with ip=0x%" PRIxPTR ", sp=0x%" PRIxPTR,
-                                     static_cast<void *>(exception_object),
-                                     pc, sp);
+          _LIBUNWIND_TRACE_UNWINDING(
+              "unwind_phase2(ex_ojb=%p): re-entering "
+              "user code with ip=0x%" PRIxPTR ", sp=0x%" PRIxPTR,
+              static_cast<void *>(exception_object), pc, sp);
         }
 
         {
@@ -656,7 +652,7 @@ static _Unwind_Reason_Code unwind_phase2(unw_context_t *uc, unw_cursor_t *cursor
       default:
         // Personality routine returned an unknown result code.
         _LIBUNWIND_DEBUG_LOG("personality function returned unknown result %d",
-                      personalityResult);
+                             personalityResult);
         return _URC_FATAL_PHASE2_ERROR;
       }
     }
@@ -690,7 +686,7 @@ _Unwind_RaiseException(_Unwind_Exception *exception_object) {
   return unwind_phase2(&uc, &cursor, exception_object, false);
 }
 
-_LIBUNWIND_EXPORT void _Unwind_Complete(_Unwind_Exception* exception_object) {
+_LIBUNWIND_EXPORT void _Unwind_Complete(_Unwind_Exception *exception_object) {
   // This is to be called when exception handling completes to give us a chance
   // to perform any housekeeping. EHABI #7.2. But we have nothing to do here.
   (void)exception_object;
@@ -707,8 +703,7 @@ _LIBUNWIND_EXPORT void _Unwind_Complete(_Unwind_Exception* exception_object) {
 /// Note: re-throwing an exception (as opposed to continuing the unwind)
 /// is implemented by having the code call __cxa_rethrow() which
 /// in turn calls _Unwind_Resume_or_Rethrow().
-_LIBUNWIND_EXPORT void
-_Unwind_Resume(_Unwind_Exception *exception_object) {
+_LIBUNWIND_EXPORT void _Unwind_Resume(_Unwind_Exception *exception_object) {
   _LIBUNWIND_TRACE_API("_Unwind_Resume(ex_obj=%p)",
                        static_cast<void *>(exception_object));
   unw_context_t uc;
@@ -732,34 +727,32 @@ _Unwind_GetLanguageSpecificData(struct _Unwind_Context *context) {
   uintptr_t result = 0;
   if (__unw_get_proc_info(cursor, &frameInfo) == UNW_ESUCCESS)
     result = (uintptr_t)frameInfo.lsda;
-  _LIBUNWIND_TRACE_API(
-      "_Unwind_GetLanguageSpecificData(context=%p) => 0x%llx",
-      static_cast<void *>(context), (long long)result);
+  _LIBUNWIND_TRACE_API("_Unwind_GetLanguageSpecificData(context=%p) => 0x%llx",
+                       static_cast<void *>(context), (long long)result);
   return result;
 }
 
 static uint64_t ValueAsBitPattern(_Unwind_VRS_DataRepresentation representation,
-                                  void* valuep) {
+                                  void *valuep) {
   uint64_t value = 0;
   switch (representation) {
-    case _UVRSD_UINT32:
-    case _UVRSD_FLOAT:
-      memcpy(&value, valuep, sizeof(uint32_t));
-      break;
+  case _UVRSD_UINT32:
+  case _UVRSD_FLOAT:
+    memcpy(&value, valuep, sizeof(uint32_t));
+    break;
 
-    case _UVRSD_VFPX:
-    case _UVRSD_UINT64:
-    case _UVRSD_DOUBLE:
-      memcpy(&value, valuep, sizeof(uint64_t));
-      break;
+  case _UVRSD_VFPX:
+  case _UVRSD_UINT64:
+  case _UVRSD_DOUBLE:
+    memcpy(&value, valuep, sizeof(uint64_t));
+    break;
   }
   return value;
 }
 
-_LIBUNWIND_EXPORT _Unwind_VRS_Result
-_Unwind_VRS_Set(_Unwind_Context *context, _Unwind_VRS_RegClass regclass,
-                uint32_t regno, _Unwind_VRS_DataRepresentation representation,
-                void *valuep) {
+_LIBUNWIND_EXPORT _Unwind_VRS_Result _Unwind_VRS_Set(
+    _Unwind_Context *context, _Unwind_VRS_RegClass regclass, uint32_t regno,
+    _Unwind_VRS_DataRepresentation representation, void *valuep) {
   _LIBUNWIND_TRACE_API("_Unwind_VRS_Set(context=%p, regclass=%d, reg=%d, "
                        "rep=%d, value=0x%llX)",
                        static_cast<void *>(context), regclass, regno,
@@ -767,114 +760,110 @@ _Unwind_VRS_Set(_Unwind_Context *context, _Unwind_VRS_RegClass regclass,
                        ValueAsBitPattern(representation, valuep));
   unw_cursor_t *cursor = (unw_cursor_t *)context;
   switch (regclass) {
-    case _UVRSC_CORE:
-      if (representation != _UVRSD_UINT32 || regno > 15)
+  case _UVRSC_CORE:
+    if (representation != _UVRSD_UINT32 || regno > 15)
+      return _UVRSR_FAILED;
+    return __unw_set_reg(cursor, (unw_regnum_t)(UNW_ARM_R0 + regno),
+                         *(unw_word_t *)valuep) == UNW_ESUCCESS
+               ? _UVRSR_OK
+               : _UVRSR_FAILED;
+  case _UVRSC_VFP:
+    if (representation != _UVRSD_VFPX && representation != _UVRSD_DOUBLE)
+      return _UVRSR_FAILED;
+    if (representation == _UVRSD_VFPX) {
+      // Can only touch d0-15 with FSTMFDX.
+      if (regno > 15)
         return _UVRSR_FAILED;
-      return __unw_set_reg(cursor, (unw_regnum_t)(UNW_ARM_R0 + regno),
-                           *(unw_word_t *)valuep) == UNW_ESUCCESS
-                 ? _UVRSR_OK
-                 : _UVRSR_FAILED;
-    case _UVRSC_VFP:
-      if (representation != _UVRSD_VFPX && representation != _UVRSD_DOUBLE)
+      __unw_save_vfp_as_X(cursor);
+    } else {
+      if (regno > 31)
         return _UVRSR_FAILED;
-      if (representation == _UVRSD_VFPX) {
-        // Can only touch d0-15 with FSTMFDX.
-        if (regno > 15)
-          return _UVRSR_FAILED;
-        __unw_save_vfp_as_X(cursor);
-      } else {
-        if (regno > 31)
-          return _UVRSR_FAILED;
-      }
-      return __unw_set_fpreg(cursor, (unw_regnum_t)(UNW_ARM_D0 + regno),
-                             *(unw_fpreg_t *)valuep) == UNW_ESUCCESS
-                 ? _UVRSR_OK
-                 : _UVRSR_FAILED;
+    }
+    return __unw_set_fpreg(cursor, (unw_regnum_t)(UNW_ARM_D0 + regno),
+                           *(unw_fpreg_t *)valuep) == UNW_ESUCCESS
+               ? _UVRSR_OK
+               : _UVRSR_FAILED;
 #if defined(__ARM_WMMX)
-    case _UVRSC_WMMXC:
-      if (representation != _UVRSD_UINT32 || regno > 3)
-        return _UVRSR_FAILED;
-      return __unw_set_reg(cursor, (unw_regnum_t)(UNW_ARM_WC0 + regno),
-                           *(unw_word_t *)valuep) == UNW_ESUCCESS
-                 ? _UVRSR_OK
-                 : _UVRSR_FAILED;
-    case _UVRSC_WMMXD:
-      if (representation != _UVRSD_DOUBLE || regno > 31)
-        return _UVRSR_FAILED;
-      return __unw_set_fpreg(cursor, (unw_regnum_t)(UNW_ARM_WR0 + regno),
-                             *(unw_fpreg_t *)valuep) == UNW_ESUCCESS
-                 ? _UVRSR_OK
-                 : _UVRSR_FAILED;
+  case _UVRSC_WMMXC:
+    if (representation != _UVRSD_UINT32 || regno > 3)
+      return _UVRSR_FAILED;
+    return __unw_set_reg(cursor, (unw_regnum_t)(UNW_ARM_WC0 + regno),
+                         *(unw_word_t *)valuep) == UNW_ESUCCESS
+               ? _UVRSR_OK
+               : _UVRSR_FAILED;
+  case _UVRSC_WMMXD:
+    if (representation != _UVRSD_DOUBLE || regno > 31)
+      return _UVRSR_FAILED;
+    return __unw_set_fpreg(cursor, (unw_regnum_t)(UNW_ARM_WR0 + regno),
+                           *(unw_fpreg_t *)valuep) == UNW_ESUCCESS
+               ? _UVRSR_OK
+               : _UVRSR_FAILED;
 #else
-    case _UVRSC_WMMXC:
-    case _UVRSC_WMMXD:
-      break;
+  case _UVRSC_WMMXC:
+  case _UVRSC_WMMXD:
+    break;
 #endif
   }
   _LIBUNWIND_ABORT("unsupported register class");
 }
 
-static _Unwind_VRS_Result
-_Unwind_VRS_Get_Internal(_Unwind_Context *context,
-                         _Unwind_VRS_RegClass regclass, uint32_t regno,
-                         _Unwind_VRS_DataRepresentation representation,
-                         void *valuep) {
+static _Unwind_VRS_Result _Unwind_VRS_Get_Internal(
+    _Unwind_Context *context, _Unwind_VRS_RegClass regclass, uint32_t regno,
+    _Unwind_VRS_DataRepresentation representation, void *valuep) {
   unw_cursor_t *cursor = (unw_cursor_t *)context;
   switch (regclass) {
-    case _UVRSC_CORE:
-      if (representation != _UVRSD_UINT32 || regno > 15)
+  case _UVRSC_CORE:
+    if (representation != _UVRSD_UINT32 || regno > 15)
+      return _UVRSR_FAILED;
+    return __unw_get_reg(cursor, (unw_regnum_t)(UNW_ARM_R0 + regno),
+                         (unw_word_t *)valuep) == UNW_ESUCCESS
+               ? _UVRSR_OK
+               : _UVRSR_FAILED;
+  case _UVRSC_VFP:
+    if (representation != _UVRSD_VFPX && representation != _UVRSD_DOUBLE)
+      return _UVRSR_FAILED;
+    if (representation == _UVRSD_VFPX) {
+      // Can only touch d0-15 with FSTMFDX.
+      if (regno > 15)
         return _UVRSR_FAILED;
-      return __unw_get_reg(cursor, (unw_regnum_t)(UNW_ARM_R0 + regno),
-                           (unw_word_t *)valuep) == UNW_ESUCCESS
-                 ? _UVRSR_OK
-                 : _UVRSR_FAILED;
-    case _UVRSC_VFP:
-      if (representation != _UVRSD_VFPX && representation != _UVRSD_DOUBLE)
+      __unw_save_vfp_as_X(cursor);
+    } else {
+      if (regno > 31)
         return _UVRSR_FAILED;
-      if (representation == _UVRSD_VFPX) {
-        // Can only touch d0-15 with FSTMFDX.
-        if (regno > 15)
-          return _UVRSR_FAILED;
-        __unw_save_vfp_as_X(cursor);
-      } else {
-        if (regno > 31)
-          return _UVRSR_FAILED;
-      }
-      return __unw_get_fpreg(cursor, (unw_regnum_t)(UNW_ARM_D0 + regno),
-                             (unw_fpreg_t *)valuep) == UNW_ESUCCESS
-                 ? _UVRSR_OK
-                 : _UVRSR_FAILED;
+    }
+    return __unw_get_fpreg(cursor, (unw_regnum_t)(UNW_ARM_D0 + regno),
+                           (unw_fpreg_t *)valuep) == UNW_ESUCCESS
+               ? _UVRSR_OK
+               : _UVRSR_FAILED;
 #if defined(__ARM_WMMX)
-    case _UVRSC_WMMXC:
-      if (representation != _UVRSD_UINT32 || regno > 3)
-        return _UVRSR_FAILED;
-      return __unw_get_reg(cursor, (unw_regnum_t)(UNW_ARM_WC0 + regno),
-                           (unw_word_t *)valuep) == UNW_ESUCCESS
-                 ? _UVRSR_OK
-                 : _UVRSR_FAILED;
-    case _UVRSC_WMMXD:
-      if (representation != _UVRSD_DOUBLE || regno > 31)
-        return _UVRSR_FAILED;
-      return __unw_get_fpreg(cursor, (unw_regnum_t)(UNW_ARM_WR0 + regno),
-                             (unw_fpreg_t *)valuep) == UNW_ESUCCESS
-                 ? _UVRSR_OK
-                 : _UVRSR_FAILED;
+  case _UVRSC_WMMXC:
+    if (representation != _UVRSD_UINT32 || regno > 3)
+      return _UVRSR_FAILED;
+    return __unw_get_reg(cursor, (unw_regnum_t)(UNW_ARM_WC0 + regno),
+                         (unw_word_t *)valuep) == UNW_ESUCCESS
+               ? _UVRSR_OK
+               : _UVRSR_FAILED;
+  case _UVRSC_WMMXD:
+    if (representation != _UVRSD_DOUBLE || regno > 31)
+      return _UVRSR_FAILED;
+    return __unw_get_fpreg(cursor, (unw_regnum_t)(UNW_ARM_WR0 + regno),
+                           (unw_fpreg_t *)valuep) == UNW_ESUCCESS
+               ? _UVRSR_OK
+               : _UVRSR_FAILED;
 #else
-    case _UVRSC_WMMXC:
-    case _UVRSC_WMMXD:
-      break;
+  case _UVRSC_WMMXC:
+  case _UVRSC_WMMXD:
+    break;
 #endif
   }
   _LIBUNWIND_ABORT("unsupported register class");
 }
 
-_LIBUNWIND_EXPORT _Unwind_VRS_Result
-_Unwind_VRS_Get(_Unwind_Context *context, _Unwind_VRS_RegClass regclass,
-                uint32_t regno, _Unwind_VRS_DataRepresentation representation,
-                void *valuep) {
-  _Unwind_VRS_Result result =
-      _Unwind_VRS_Get_Internal(context, regclass, regno, representation,
-                               valuep);
+_LIBUNWIND_EXPORT _Unwind_VRS_Result _Unwind_VRS_Get(
+    _Unwind_Context *context, _Unwind_VRS_RegClass regclass, uint32_t regno,
+    _Unwind_VRS_DataRepresentation representation, void *valuep) {
+  _Unwind_VRS_Result result = _Unwind_VRS_Get_Internal(context, regclass, regno,
+                                                       representation, valuep);
   _LIBUNWIND_TRACE_API("_Unwind_VRS_Get(context=%p, regclass=%d, reg=%d, "
                        "rep=%d, value=0x%llX, result = %d)",
                        static_cast<void *>(context), regclass, regno,
@@ -892,75 +881,75 @@ _Unwind_VRS_Pop(_Unwind_Context *context, _Unwind_VRS_RegClass regclass,
                        static_cast<void *>(context), regclass, discriminator,
                        representation);
   switch (regclass) {
-    case _UVRSC_WMMXC:
+  case _UVRSC_WMMXC:
 #if !defined(__ARM_WMMX)
-      break;
+    break;
 #endif
-    case _UVRSC_CORE: {
-      if (representation != _UVRSD_UINT32)
-        return _UVRSR_FAILED;
-      // When popping SP from the stack, we don't want to override it from the
-      // computed new stack location. See EHABI #7.5.4 table 3.
-      bool poppedSP = false;
-      uint32_t* sp;
-      if (_Unwind_VRS_Get(context, _UVRSC_CORE, UNW_ARM_SP,
-                          _UVRSD_UINT32, &sp) != _UVRSR_OK) {
-        return _UVRSR_FAILED;
-      }
-      for (uint32_t i = 0; i < 16; ++i) {
-        if (!(discriminator & static_cast<uint32_t>(1 << i)))
-          continue;
-        uint32_t value = *sp++;
-        if (regclass == _UVRSC_CORE && i == 13)
-          poppedSP = true;
-        if (_Unwind_VRS_Set(context, regclass, i,
-                            _UVRSD_UINT32, &value) != _UVRSR_OK) {
-          return _UVRSR_FAILED;
-        }
-      }
-      if (!poppedSP) {
-        return _Unwind_VRS_Set(context, _UVRSC_CORE, UNW_ARM_SP,
-                               _UVRSD_UINT32, &sp);
-      }
-      return _UVRSR_OK;
+  case _UVRSC_CORE: {
+    if (representation != _UVRSD_UINT32)
+      return _UVRSR_FAILED;
+    // When popping SP from the stack, we don't want to override it from the
+    // computed new stack location. See EHABI #7.5.4 table 3.
+    bool poppedSP = false;
+    uint32_t *sp;
+    if (_Unwind_VRS_Get(context, _UVRSC_CORE, UNW_ARM_SP, _UVRSD_UINT32, &sp) !=
+        _UVRSR_OK) {
+      return _UVRSR_FAILED;
     }
-    case _UVRSC_WMMXD:
-#if !defined(__ARM_WMMX)
-      break;
-#endif
-    case _UVRSC_VFP: {
-      if (representation != _UVRSD_VFPX && representation != _UVRSD_DOUBLE)
-        return _UVRSR_FAILED;
-      uint32_t first = discriminator >> 16;
-      uint32_t count = discriminator & 0xffff;
-      uint32_t end = first+count;
-      uint32_t* sp;
-      if (_Unwind_VRS_Get(context, _UVRSC_CORE, UNW_ARM_SP,
-                          _UVRSD_UINT32, &sp) != _UVRSR_OK) {
+    for (uint32_t i = 0; i < 16; ++i) {
+      if (!(discriminator & static_cast<uint32_t>(1 << i)))
+        continue;
+      uint32_t value = *sp++;
+      if (regclass == _UVRSC_CORE && i == 13)
+        poppedSP = true;
+      if (_Unwind_VRS_Set(context, regclass, i, _UVRSD_UINT32, &value) !=
+          _UVRSR_OK) {
         return _UVRSR_FAILED;
       }
-      // For _UVRSD_VFPX, we're assuming the data is stored in FSTMX "standard
-      // format 1", which is equivalent to FSTMD + a padding word.
-      for (uint32_t i = first; i < end; ++i) {
-        // SP is only 32-bit aligned so don't copy 64-bit at a time.
-        uint64_t w0 = *sp++;
-        uint64_t w1 = *sp++;
-#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-        uint64_t value = (w1 << 32) | w0;
-#elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-        uint64_t value = (w0 << 32) | w1;
-#else
-#error "Unable to determine endianess"
-#endif
-        if (_Unwind_VRS_Set(context, regclass, i, representation, &value) !=
-            _UVRSR_OK)
-          return _UVRSR_FAILED;
-      }
-      if (representation == _UVRSD_VFPX)
-        ++sp;
+    }
+    if (!poppedSP) {
       return _Unwind_VRS_Set(context, _UVRSC_CORE, UNW_ARM_SP, _UVRSD_UINT32,
                              &sp);
     }
+    return _UVRSR_OK;
+  }
+  case _UVRSC_WMMXD:
+#if !defined(__ARM_WMMX)
+    break;
+#endif
+  case _UVRSC_VFP: {
+    if (representation != _UVRSD_VFPX && representation != _UVRSD_DOUBLE)
+      return _UVRSR_FAILED;
+    uint32_t first = discriminator >> 16;
+    uint32_t count = discriminator & 0xffff;
+    uint32_t end = first + count;
+    uint32_t *sp;
+    if (_Unwind_VRS_Get(context, _UVRSC_CORE, UNW_ARM_SP, _UVRSD_UINT32, &sp) !=
+        _UVRSR_OK) {
+      return _UVRSR_FAILED;
+    }
+    // For _UVRSD_VFPX, we're assuming the data is stored in FSTMX "standard
+    // format 1", which is equivalent to FSTMD + a padding word.
+    for (uint32_t i = first; i < end; ++i) {
+      // SP is only 32-bit aligned so don't copy 64-bit at a time.
+      uint64_t w0 = *sp++;
+      uint64_t w1 = *sp++;
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+      uint64_t value = (w1 << 32) | w0;
+#elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+      uint64_t value = (w0 << 32) | w1;
+#else
+#error "Unable to determine endianess"
+#endif
+      if (_Unwind_VRS_Set(context, regclass, i, representation, &value) !=
+          _UVRSR_OK)
+        return _UVRSR_FAILED;
+    }
+    if (representation == _UVRSD_VFPX)
+      ++sp;
+    return _Unwind_VRS_Set(context, _UVRSC_CORE, UNW_ARM_SP, _UVRSD_UINT32,
+                           &sp);
+  }
   }
   _LIBUNWIND_ABORT("unsupported register class");
 }
@@ -979,7 +968,6 @@ _Unwind_GetRegionStart(struct _Unwind_Context *context) {
   return result;
 }
 
-
 /// Called by personality handler during phase 2 if a foreign exception
 // is caught.
 _LIBUNWIND_EXPORT void
@@ -991,13 +979,12 @@ _Unwind_DeleteException(_Unwind_Exception *exception_object) {
                                            exception_object);
 }
 
-extern "C" _LIBUNWIND_EXPORT _Unwind_Reason_Code
-__gnu_unwind_frame(_Unwind_Exception *exception_object,
-                   struct _Unwind_Context *context) {
+extern "C" _LIBUNWIND_EXPORT _Unwind_Reason_Code __gnu_unwind_frame(
+    _Unwind_Exception *exception_object, struct _Unwind_Context *context) {
   unw_cursor_t *cursor = (unw_cursor_t *)context;
   if (__unw_step(cursor) != UNW_STEP_SUCCESS)
     return _URC_FAILURE;
   return _URC_OK;
 }
 
-#endif  // defined(_LIBUNWIND_ARM_EHABI)
+#endif // defined(_LIBUNWIND_ARM_EHABI)

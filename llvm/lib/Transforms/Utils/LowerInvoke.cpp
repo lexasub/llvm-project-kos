@@ -29,15 +29,15 @@ using namespace llvm;
 STATISTIC(NumInvokes, "Number of invokes replaced");
 
 namespace {
-  class LowerInvokeLegacyPass : public FunctionPass {
-  public:
-    static char ID; // Pass identification, replacement for typeid
-    explicit LowerInvokeLegacyPass() : FunctionPass(ID) {
-      initializeLowerInvokeLegacyPassPass(*PassRegistry::getPassRegistry());
-    }
-    bool runOnFunction(Function &F) override;
-  };
-}
+class LowerInvokeLegacyPass : public FunctionPass {
+public:
+  static char ID; // Pass identification, replacement for typeid
+  explicit LowerInvokeLegacyPass() : FunctionPass(ID) {
+    initializeLowerInvokeLegacyPassPass(*PassRegistry::getPassRegistry());
+  }
+  bool runOnFunction(Function &F) override;
+};
+} // namespace
 
 char LowerInvokeLegacyPass::ID = 0;
 INITIALIZE_PASS(LowerInvokeLegacyPass, "lowerinvoke",
@@ -76,9 +76,7 @@ static bool runImpl(Function &F) {
   return Changed;
 }
 
-bool LowerInvokeLegacyPass::runOnFunction(Function &F) {
-  return runImpl(F);
-}
+bool LowerInvokeLegacyPass::runOnFunction(Function &F) { return runImpl(F); }
 
 namespace llvm {
 char &LowerInvokePassID = LowerInvokeLegacyPass::ID;
@@ -94,4 +92,4 @@ PreservedAnalyses LowerInvokePass::run(Function &F,
 
   return PreservedAnalyses::none();
 }
-}
+} // namespace llvm

@@ -40,6 +40,6 @@ auto f2();
 auto f3() {
   return 0;
 }
-}
+} // namespace ns
 using ns::f2;
 using ns::f3;

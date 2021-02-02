@@ -19,10 +19,9 @@ namespace {
 
 class TrigramIndexTest : public ::testing::Test {
 protected:
-  std::unique_ptr<TrigramIndex> makeTrigramIndex(
-      std::vector<std::string> Rules) {
-    std::unique_ptr<TrigramIndex> TI =
-        std::make_unique<TrigramIndex>();
+  std::unique_ptr<TrigramIndex>
+  makeTrigramIndex(std::vector<std::string> Rules) {
+    std::unique_ptr<TrigramIndex> TI = std::make_unique<TrigramIndex>();
     for (auto &Rule : Rules)
       TI->insert(Rule);
     return TI;
@@ -30,22 +29,19 @@ protected:
 };
 
 TEST_F(TrigramIndexTest, Empty) {
-  std::unique_ptr<TrigramIndex> TI =
-      makeTrigramIndex({});
+  std::unique_ptr<TrigramIndex> TI = makeTrigramIndex({});
   EXPECT_FALSE(TI->isDefeated());
   EXPECT_TRUE(TI->isDefinitelyOut("foo"));
 }
 
 TEST_F(TrigramIndexTest, Basic) {
-  std::unique_ptr<TrigramIndex> TI =
-      makeTrigramIndex({"*hello*", "*wor.d*"});
+  std::unique_ptr<TrigramIndex> TI = makeTrigramIndex({"*hello*", "*wor.d*"});
   EXPECT_FALSE(TI->isDefeated());
   EXPECT_TRUE(TI->isDefinitelyOut("foo"));
 }
 
 TEST_F(TrigramIndexTest, NoTrigramsInRules) {
-  std::unique_ptr<TrigramIndex> TI =
-      makeTrigramIndex({"b.r", "za*az"});
+  std::unique_ptr<TrigramIndex> TI = makeTrigramIndex({"b.r", "za*az"});
   EXPECT_TRUE(TI->isDefeated());
   EXPECT_FALSE(TI->isDefinitelyOut("foo"));
   EXPECT_FALSE(TI->isDefinitelyOut("bar"));
@@ -53,8 +49,7 @@ TEST_F(TrigramIndexTest, NoTrigramsInRules) {
 }
 
 TEST_F(TrigramIndexTest, NoTrigramsInARule) {
-  std::unique_ptr<TrigramIndex> TI =
-      makeTrigramIndex({"*hello*", "*wo.ld*"});
+  std::unique_ptr<TrigramIndex> TI = makeTrigramIndex({"*hello*", "*wo.ld*"});
   EXPECT_TRUE(TI->isDefeated());
   EXPECT_FALSE(TI->isDefinitelyOut("foo"));
 }
@@ -76,20 +71,18 @@ TEST_F(TrigramIndexTest, PopularTrigram) {
 }
 
 TEST_F(TrigramIndexTest, PopularTrigram2) {
-  std::unique_ptr<TrigramIndex> TI =
-      makeTrigramIndex({"class1.h", "class2.h", "class3.h", "class4.h", "class.h"});
+  std::unique_ptr<TrigramIndex> TI = makeTrigramIndex(
+      {"class1.h", "class2.h", "class3.h", "class4.h", "class.h"});
   EXPECT_TRUE(TI->isDefeated());
 }
 
 TEST_F(TrigramIndexTest, TooComplicatedRegex) {
-  std::unique_ptr<TrigramIndex> TI =
-      makeTrigramIndex({"[0-9]+"});
+  std::unique_ptr<TrigramIndex> TI = makeTrigramIndex({"[0-9]+"});
   EXPECT_TRUE(TI->isDefeated());
 }
 
 TEST_F(TrigramIndexTest, TooComplicatedRegex2) {
-  std::unique_ptr<TrigramIndex> TI =
-      makeTrigramIndex({"foo|bar"});
+  std::unique_ptr<TrigramIndex> TI = makeTrigramIndex({"foo|bar"});
   EXPECT_TRUE(TI->isDefeated());
 }
 
@@ -108,14 +101,12 @@ TEST_F(TrigramIndexTest, EscapedSymbols) {
 }
 
 TEST_F(TrigramIndexTest, Backreference1) {
-  std::unique_ptr<TrigramIndex> TI =
-      makeTrigramIndex({"*foo\\1*"});
+  std::unique_ptr<TrigramIndex> TI = makeTrigramIndex({"*foo\\1*"});
   EXPECT_TRUE(TI->isDefeated());
 }
 
 TEST_F(TrigramIndexTest, Backreference2) {
-  std::unique_ptr<TrigramIndex> TI =
-      makeTrigramIndex({"*foo\\2*"});
+  std::unique_ptr<TrigramIndex> TI = makeTrigramIndex({"*foo\\2*"});
   EXPECT_TRUE(TI->isDefeated());
 }
 
@@ -128,4 +119,4 @@ TEST_F(TrigramIndexTest, Sequence) {
   EXPECT_TRUE(TI->isDefinitelyOut("class"));
 }
 
-}  // namespace
+} // namespace

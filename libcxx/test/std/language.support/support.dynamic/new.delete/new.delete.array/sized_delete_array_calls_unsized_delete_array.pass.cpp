@@ -22,16 +22,14 @@
 int delete_called = 0;
 int delete_nothrow_called = 0;
 
-void operator delete[](void* p) TEST_NOEXCEPT
-{
-    ++delete_called;
-    std::free(p);
+void operator delete[](void* p) TEST_NOEXCEPT {
+  ++delete_called;
+  std::free(p);
 }
 
-void operator delete[](void* p, const std::nothrow_t&) TEST_NOEXCEPT
-{
-    ++delete_nothrow_called;
-    std::free(p);
+void operator delete[](void* p, const std::nothrow_t&) TEST_NOEXCEPT {
+  ++delete_nothrow_called;
+  std::free(p);
 }
 
 // NOTE: Use a class with a non-trivial destructor as the test type in order
@@ -43,19 +41,20 @@ void operator delete[](void* p, const std::nothrow_t&) TEST_NOEXCEPT
 //   with two parameters is selected.
 // - Otherwise, it is unspecified which of the two deallocation functions is
 //   selected.
-struct A { ~A() {} };
+struct A {
+  ~A() {}
+};
 
-int main(int, char**)
-{
-    A *x = new A[3];
-    DoNotOptimize(x);
-    assert(0 == delete_called);
-    assert(0 == delete_nothrow_called);
+int main(int, char**) {
+  A* x = new A[3];
+  DoNotOptimize(x);
+  assert(0 == delete_called);
+  assert(0 == delete_nothrow_called);
 
-    delete [] x;
-    DoNotOptimize(x);
-    assert(1 == delete_called);
-    assert(0 == delete_nothrow_called);
+  delete[] x;
+  DoNotOptimize(x);
+  assert(1 == delete_called);
+  assert(0 == delete_nothrow_called);
 
   return 0;
 }

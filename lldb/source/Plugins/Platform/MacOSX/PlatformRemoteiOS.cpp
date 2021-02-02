@@ -135,8 +135,7 @@ const char *PlatformRemoteiOS::GetDescriptionStatic() {
 }
 
 /// Default Constructor
-PlatformRemoteiOS::PlatformRemoteiOS()
-    : PlatformRemoteDarwinDevice() {}
+PlatformRemoteiOS::PlatformRemoteiOS() : PlatformRemoteDarwinDevice() {}
 
 bool PlatformRemoteiOS::GetSupportedArchitectureAtIndex(uint32_t idx,
                                                         ArchSpec &arch) {

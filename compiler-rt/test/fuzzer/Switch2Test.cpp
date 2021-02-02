@@ -10,17 +10,21 @@
 #include <cstring>
 
 int Switch(int a) {
-  switch(a) {
-    case 100001: return 1;
-    case 100002: return 2;
-    case 100003: return 4;
+  switch (a) {
+  case 100001:
+    return 1;
+  case 100002:
+    return 2;
+  case 100003:
+    return 4;
   }
   return 0;
 }
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
   const int N = 3;
-  if (Size < N * sizeof(int)) return 0;
+  if (Size < N * sizeof(int))
+    return 0;
   int Res = 0;
   for (int i = 0; i < N; i++) {
     int X;
@@ -33,4 +37,3 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
   }
   return 0;
 }
-

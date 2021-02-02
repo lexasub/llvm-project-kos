@@ -11,13 +11,11 @@
 
 int GLOB_SHARED = 0;
 
-extern "C"
-void init_so() {
+extern "C" void init_so() {
   barrier_init(&barrier, 2);
 }
 
-extern "C"
-void *write_from_so(void *unused) {
+extern "C" void *write_from_so(void *unused) {
   if (unused == 0)
     barrier_wait(&barrier);
   GLOB_SHARED++;
@@ -26,7 +24,7 @@ void *write_from_so(void *unused) {
   return NULL;
 }
 
-#else  // BUILD_SO
+#else // BUILD_SO
 
 #include "test.h"
 #include <dlfcn.h>
@@ -45,7 +43,7 @@ void *write_glob(void *unused) {
 
 void race_two_threads(void *(*access_callback)(void *unused)) {
   pthread_t t1, t2;
-  pthread_create(&t1, NULL, access_callback, (void*)1);
+  pthread_create(&t1, NULL, access_callback, (void *)1);
   pthread_create(&t2, NULL, access_callback, NULL);
   pthread_join(t1, NULL);
   pthread_join(t2, NULL);
@@ -57,7 +55,7 @@ int main(int argc, char *argv[]) {
   race_two_threads(write_glob);
   // CHECK: write_glob
   void *lib = dlopen(path.c_str(), RTLD_NOW);
-    if (!lib) {
+  if (!lib) {
     printf("error in dlopen(): %s\n", dlerror());
     return 1;
   }
@@ -71,4 +69,4 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-#endif  // BUILD_SO
+#endif // BUILD_SO

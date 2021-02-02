@@ -9,7 +9,7 @@ typedef __SVInt8_t svint8_t;
 typedef svint8_t fixed_int8_t __attribute__((arm_sve_vector_bits(N)));
 typedef int8_t gnu_int8_t __attribute__((vector_size(N / 8)));
 
-template<typename T> struct S { T var; };
+template <typename T> struct S { T var; };
 
 S<fixed_int8_t> s;
 

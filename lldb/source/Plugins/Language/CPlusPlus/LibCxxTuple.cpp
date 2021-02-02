@@ -14,7 +14,7 @@ using namespace lldb_private;
 
 namespace {
 
-class TupleFrontEnd: public SyntheticChildrenFrontEnd {
+class TupleFrontEnd : public SyntheticChildrenFrontEnd {
 public:
   TupleFrontEnd(ValueObject &valobj) : SyntheticChildrenFrontEnd(valobj) {
     Update();
@@ -35,10 +35,10 @@ private:
   // objects are only destroyed when every shared pointer to any of them
   // is destroyed, so we must not store a shared pointer to any ValueObject
   // derived from our backend ValueObject (since we're in the same cluster).
-  std::vector<ValueObject*> m_elements;
-  ValueObject* m_base = nullptr;
+  std::vector<ValueObject *> m_elements;
+  ValueObject *m_base = nullptr;
 };
-}
+} // namespace
 
 bool TupleFrontEnd::Update() {
   m_elements.clear();

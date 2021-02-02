@@ -5,10 +5,10 @@ int bar();
 int test1() {
   for (int i = 0;
        i != 10;
-       ++i) {  // expected-warning {{loop will run at most once (loop increment never executed)}}
+       ++i) {    // expected-warning {{loop will run at most once (loop increment never executed)}}
     if (j == 23) // missing {}'s
       bar();
-      return 1;
+    return 1;
   }
   return 0;
   return 1; // expected-warning {{will never be executed}}
@@ -17,10 +17,10 @@ int test1() {
 int test1_B() {
   for (int i = 0;
        i != 10;
-       ++i) {  // expected-warning {{loop will run at most once (loop increment never executed)}}
+       ++i) {    // expected-warning {{loop will run at most once (loop increment never executed)}}
     if (j == 23) // missing {}'s
       bar();
-      return 1;
+    return 1;
   }
   return 0;
   return bar(); // expected-warning {{will never be executed}}
@@ -30,25 +30,28 @@ void test2(int i) {
   switch (i) {
   case 0:
     break;
-    bar();     // expected-warning {{will never be executed}}
+    bar(); // expected-warning {{will never be executed}}
   case 2:
     switch (i) {
     default:
-    a: goto a;
+    a:
+      goto a;
     }
-    bar();     // expected-warning {{will never be executed}}
+    bar(); // expected-warning {{will never be executed}}
   }
-  b: goto b;
-  bar();       // expected-warning {{will never be executed}}
+b:
+  goto b;
+  bar(); // expected-warning {{will never be executed}}
 }
 
 void test3() {
-  ^{ return;
-     bar();    // expected-warning {{will never be executed}}
+  ^{
+    return;
+    bar(); // expected-warning {{will never be executed}}
   }();
   while (++j) {
     continue;
-    bar();     // expected-warning {{will never be executed}}
+    bar(); // expected-warning {{will never be executed}}
   }
 }
 
@@ -61,11 +64,13 @@ public:
 };
 
 int pr6130(unsigned i) {
-  switch(i) {
-    case 0: return 1;
-    case 1: return 2;
-    default:
-      throw PR6130(); // no-warning
+  switch (i) {
+  case 0:
+    return 1;
+  case 1:
+    return 2;
+  default:
+    throw PR6130(); // no-warning
   }
 }
 

@@ -10,8 +10,8 @@ void (**fpp)() noexcept;
 void g(void (**pfa)() noexcept);
 void (**h())() noexcept;
 
-template<typename T> struct A {};
-template<void() noexcept> struct B {};
+template <typename T> struct A {};
+template <void() noexcept> struct B {};
 A<void() noexcept> a;
 B<f> b;
-auto *p = new decltype(f)**;
+auto *p = new decltype(f) **;

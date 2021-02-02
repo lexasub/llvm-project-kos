@@ -50,44 +50,42 @@ namespace internal {
 // function pointer or a functor.  Invoke(f) can be used as an
 // Action<F> as long as f's type is compatible with F (i.e. f can be
 // assigned to a tr1::function<F>).
-template <typename FunctionImpl>
-class InvokeAction {
- public:
+template <typename FunctionImpl> class InvokeAction {
+public:
   // The c'tor makes a copy of function_impl (either a function
   // pointer or a functor).
   explicit InvokeAction(FunctionImpl function_impl)
       : function_impl_(function_impl) {}
 
   template <typename Result, typename ArgumentTuple>
-  Result Perform(const ArgumentTuple& args) {
+  Result Perform(const ArgumentTuple &args) {
     return InvokeHelper<Result, ArgumentTuple>::Invoke(function_impl_, args);
   }
 
- private:
+private:
   FunctionImpl function_impl_;
 
   GTEST_DISALLOW_ASSIGN_(InvokeAction);
 };
 
 // Implements the Invoke(object_ptr, &Class::Method) action.
-template <class Class, typename MethodPtr>
-class InvokeMethodAction {
- public:
-  InvokeMethodAction(Class* obj_ptr, MethodPtr method_ptr)
+template <class Class, typename MethodPtr> class InvokeMethodAction {
+public:
+  InvokeMethodAction(Class *obj_ptr, MethodPtr method_ptr)
       : method_ptr_(method_ptr), obj_ptr_(obj_ptr) {}
 
   template <typename Result, typename ArgumentTuple>
-  Result Perform(const ArgumentTuple& args) const {
-    return InvokeHelper<Result, ArgumentTuple>::InvokeMethod(
-        obj_ptr_, method_ptr_, args);
+  Result Perform(const ArgumentTuple &args) const {
+    return InvokeHelper<Result, ArgumentTuple>::InvokeMethod(obj_ptr_,
+                                                             method_ptr_, args);
   }
 
- private:
+private:
   // The order of these members matters.  Reversing the order can trigger
   // warning C4121 in MSVC (see
   // http://computer-programming-forum.com/7-vc.net/6fbc30265f860ad1.htm ).
   const MethodPtr method_ptr_;
-  Class* const obj_ptr_;
+  Class *const obj_ptr_;
 
   GTEST_DISALLOW_ASSIGN_(InvokeMethodAction);
 };
@@ -96,9 +94,8 @@ class InvokeMethodAction {
 // necessary because Visual Studio deprecates ::std::copy, issuing warning 4996.
 // However Visual Studio 2010 and later do not honor #pragmas which disable that
 // warning.
-template<typename InputIterator, typename OutputIterator>
-inline OutputIterator CopyElements(InputIterator first,
-                                   InputIterator last,
+template <typename InputIterator, typename OutputIterator>
+inline OutputIterator CopyElements(InputIterator first, InputIterator last,
                                    OutputIterator output) {
   for (; first != last; ++first, ++output) {
     *output = *first;
@@ -106,15 +103,15 @@ inline OutputIterator CopyElements(InputIterator first,
   return output;
 }
 
-}  // namespace internal
+} // namespace internal
 
 // Various overloads for Invoke().
 
 // Creates an action that invokes 'function_impl' with the mock
 // function's arguments.
 template <typename FunctionImpl>
-PolymorphicAction<internal::InvokeAction<FunctionImpl> > Invoke(
-    FunctionImpl function_impl) {
+PolymorphicAction<internal::InvokeAction<FunctionImpl>>
+Invoke(FunctionImpl function_impl) {
   return MakePolymorphicAction(
       internal::InvokeAction<FunctionImpl>(function_impl));
 }
@@ -122,8 +119,8 @@ PolymorphicAction<internal::InvokeAction<FunctionImpl> > Invoke(
 // Creates an action that invokes the given method on the given object
 // with the mock function's arguments.
 template <class Class, typename MethodPtr>
-PolymorphicAction<internal::InvokeMethodAction<Class, MethodPtr> > Invoke(
-    Class* obj_ptr, MethodPtr method_ptr) {
+PolymorphicAction<internal::InvokeMethodAction<Class, MethodPtr>>
+Invoke(Class *obj_ptr, MethodPtr method_ptr) {
   return MakePolymorphicAction(
       internal::InvokeMethodAction<Class, MethodPtr>(obj_ptr, method_ptr));
 }
@@ -134,7 +131,7 @@ PolymorphicAction<internal::InvokeMethodAction<Class, MethodPtr> > Invoke(
 // argument to one that accepts (and ignores) arguments.
 template <typename InnerAction>
 inline internal::WithArgsAction<InnerAction>
-WithoutArgs(const InnerAction& action) {
+WithoutArgs(const InnerAction &action) {
   return internal::WithArgsAction<InnerAction>(action);
 }
 
@@ -145,7 +142,7 @@ WithoutArgs(const InnerAction& action) {
 // WithArgs<k>(an_action) (defined below) as a synonym.
 template <int k, typename InnerAction>
 inline internal::WithArgsAction<InnerAction, k>
-WithArg(const InnerAction& action) {
+WithArg(const InnerAction &action) {
   return internal::WithArgsAction<InnerAction, k>(action);
 }
 
@@ -155,37 +152,33 @@ WithArg(const InnerAction& action) {
 // is expanded and macro expansion cannot contain #pragma.  Therefore
 // we suppress them here.
 #ifdef _MSC_VER
-# pragma warning(push)
-# pragma warning(disable:4100)
+#pragma warning(push)
+#pragma warning(disable : 4100)
 #endif
 
 // Action ReturnArg<k>() returns the k-th argument of the mock function.
-ACTION_TEMPLATE(ReturnArg,
-                HAS_1_TEMPLATE_PARAMS(int, k),
+ACTION_TEMPLATE(ReturnArg, HAS_1_TEMPLATE_PARAMS(int, k),
                 AND_0_VALUE_PARAMS()) {
   return ::testing::get<k>(args);
 }
 
 // Action SaveArg<k>(pointer) saves the k-th (0-based) argument of the
 // mock function to *pointer.
-ACTION_TEMPLATE(SaveArg,
-                HAS_1_TEMPLATE_PARAMS(int, k),
+ACTION_TEMPLATE(SaveArg, HAS_1_TEMPLATE_PARAMS(int, k),
                 AND_1_VALUE_PARAMS(pointer)) {
   *pointer = ::testing::get<k>(args);
 }
 
 // Action SaveArgPointee<k>(pointer) saves the value pointed to
 // by the k-th (0-based) argument of the mock function to *pointer.
-ACTION_TEMPLATE(SaveArgPointee,
-                HAS_1_TEMPLATE_PARAMS(int, k),
+ACTION_TEMPLATE(SaveArgPointee, HAS_1_TEMPLATE_PARAMS(int, k),
                 AND_1_VALUE_PARAMS(pointer)) {
   *pointer = *::testing::get<k>(args);
 }
 
 // Action SetArgReferee<k>(value) assigns 'value' to the variable
 // referenced by the k-th (0-based) argument of the mock function.
-ACTION_TEMPLATE(SetArgReferee,
-                HAS_1_TEMPLATE_PARAMS(int, k),
+ACTION_TEMPLATE(SetArgReferee, HAS_1_TEMPLATE_PARAMS(int, k),
                 AND_1_VALUE_PARAMS(value)) {
   typedef typename ::testing::tuple_element<k, args_type>::type argk_type;
   // Ensures that argument #k is a reference.  If you get a compiler
@@ -201,8 +194,7 @@ ACTION_TEMPLATE(SetArgReferee,
 // (0-based) argument, which can be either a pointer or an
 // iterator. The action does not take ownership of the elements in the
 // source range.
-ACTION_TEMPLATE(SetArrayArgument,
-                HAS_1_TEMPLATE_PARAMS(int, k),
+ACTION_TEMPLATE(SetArrayArgument, HAS_1_TEMPLATE_PARAMS(int, k),
                 AND_2_VALUE_PARAMS(first, last)) {
   // Visual Studio deprecates ::std::copy, so we use our own copy in that case.
 #ifdef _MSC_VER
@@ -214,8 +206,7 @@ ACTION_TEMPLATE(SetArrayArgument,
 
 // Action DeleteArg<k>() deletes the k-th (0-based) argument of the mock
 // function.
-ACTION_TEMPLATE(DeleteArg,
-                HAS_1_TEMPLATE_PARAMS(int, k),
+ACTION_TEMPLATE(DeleteArg, HAS_1_TEMPLATE_PARAMS(int, k),
                 AND_0_VALUE_PARAMS()) {
   delete ::testing::get<k>(args);
 }
@@ -228,21 +219,21 @@ ACTION_P(ReturnPointee, pointer) { return *pointer; }
 #if GTEST_HAS_EXCEPTIONS
 
 // Suppresses the 'unreachable code' warning that VC generates in opt modes.
-# ifdef _MSC_VER
-#  pragma warning(push)          // Saves the current warning state.
-#  pragma warning(disable:4702)  // Temporarily disables warning 4702.
-# endif
-ACTION_P(Throw, exception) { throw exception; }
-# ifdef _MSC_VER
-#  pragma warning(pop)           // Restores the warning state.
-# endif
-
-#endif  // GTEST_HAS_EXCEPTIONS
-
 #ifdef _MSC_VER
-# pragma warning(pop)
+#pragma warning(push) // Saves the current warning state.
+#pragma warning(disable : 4702) // Temporarily disables warning 4702.
+#endif
+ACTION_P(Throw, exception) { throw exception; }
+#ifdef _MSC_VER
+#pragma warning(pop) // Restores the warning state.
 #endif
 
-}  // namespace testing
+#endif // GTEST_HAS_EXCEPTIONS
 
-#endif  // GMOCK_INCLUDE_GMOCK_GMOCK_MORE_ACTIONS_H_
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
+
+} // namespace testing
+
+#endif // GMOCK_INCLUDE_GMOCK_GMOCK_MORE_ACTIONS_H_

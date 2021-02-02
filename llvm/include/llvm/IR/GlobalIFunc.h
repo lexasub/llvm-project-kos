@@ -54,15 +54,9 @@ public:
   void eraseFromParent();
 
   /// These methods retrieve and set ifunc resolver function.
-  void setResolver(Constant *Resolver) {
-    setIndirectSymbol(Resolver);
-  }
-  const Constant *getResolver() const {
-    return getIndirectSymbol();
-  }
-  Constant *getResolver() {
-    return getIndirectSymbol();
-  }
+  void setResolver(Constant *Resolver) { setIndirectSymbol(Resolver); }
+  const Constant *getResolver() const { return getIndirectSymbol(); }
+  Constant *getResolver() { return getIndirectSymbol(); }
 
   // Methods for support type inquiry through isa, cast, and dyn_cast:
   static bool classof(const Value *V) {

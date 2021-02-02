@@ -19,7 +19,7 @@ bool operator==(const basic_string<char> &lhs, const basic_string<char> &rhs);
 bool operator!=(const basic_string<char> &lhs, const basic_string<char> &rhs);
 bool operator==(const basic_string<char> &lhs, const char *&rhs);
 typedef basic_string<char> string;
-}
+} // namespace std
 
 void func(bool b);
 

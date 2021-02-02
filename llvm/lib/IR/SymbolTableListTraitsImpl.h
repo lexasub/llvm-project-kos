@@ -42,11 +42,13 @@ void SymbolTableListTraits<ValueSubClass>::setSymTabObject(TPtr *Dest,
   ValueSymbolTable *NewST = getSymTab(getListOwner());
 
   // If there is nothing to do, quick exit.
-  if (OldST == NewST) return;
+  if (OldST == NewST)
+    return;
 
   // Move all the elements from the old symtab to the new one.
   ListTy &ItemList = getList(getListOwner());
-  if (ItemList.empty()) return;
+  if (ItemList.empty())
+    return;
 
   if (OldST) {
     // Remove all entries from the previous symtab.
@@ -61,7 +63,6 @@ void SymbolTableListTraits<ValueSubClass>::setSymTabObject(TPtr *Dest,
       if (I->hasName())
         NewST->reinsertValue(&*I);
   }
-
 }
 
 template <typename ValueSubClass>
@@ -119,6 +120,6 @@ void SymbolTableListTraits<ValueSubClass>::transferNodesFromList(
   }
 }
 
-} // End llvm namespace
+} // namespace llvm
 
 #endif

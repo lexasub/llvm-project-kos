@@ -25,44 +25,41 @@ using namespace fs;
 
 TEST_SUITE(file_size_test_suite)
 
-TEST_CASE(signature_test)
-{
-    const path p; ((void)p);
-    std::error_code ec; ((void)ec);
-    ASSERT_SAME_TYPE(decltype(file_size(p)), uintmax_t);
-    ASSERT_SAME_TYPE(decltype(file_size(p, ec)), uintmax_t);
-    ASSERT_NOT_NOEXCEPT(file_size(p));
-    ASSERT_NOEXCEPT(file_size(p, ec));
+TEST_CASE(signature_test) {
+  const path p;
+  ((void)p);
+  std::error_code ec;
+  ((void)ec);
+  ASSERT_SAME_TYPE(decltype(file_size(p)), uintmax_t);
+  ASSERT_SAME_TYPE(decltype(file_size(p, ec)), uintmax_t);
+  ASSERT_NOT_NOEXCEPT(file_size(p));
+  ASSERT_NOEXCEPT(file_size(p, ec));
 }
 
-TEST_CASE(file_size_empty_test)
-{
-    static_test_env static_env;
-    const path p = static_env.EmptyFile;
-    TEST_CHECK(file_size(p) == 0);
-    std::error_code ec;
-    TEST_CHECK(file_size(p, ec) == 0);
+TEST_CASE(file_size_empty_test) {
+  static_test_env static_env;
+  const path p = static_env.EmptyFile;
+  TEST_CHECK(file_size(p) == 0);
+  std::error_code ec;
+  TEST_CHECK(file_size(p, ec) == 0);
 }
 
-TEST_CASE(file_size_non_empty)
-{
-    scoped_test_env env;
-    const path p = env.create_file("file", 42);
-    TEST_CHECK(file_size(p) == 42);
-    std::error_code ec;
-    TEST_CHECK(file_size(p, ec) == 42);
+TEST_CASE(file_size_non_empty) {
+  scoped_test_env env;
+  const path p = env.create_file("file", 42);
+  TEST_CHECK(file_size(p) == 42);
+  std::error_code ec;
+  TEST_CHECK(file_size(p, ec) == 42);
 }
 
-TEST_CASE(symlink_test_case)
-{
-    static_test_env static_env;
-    const path p = static_env.File;
-    const path p2 = static_env.SymlinkToFile;
-    TEST_CHECK(file_size(p) == file_size(p2));
+TEST_CASE(symlink_test_case) {
+  static_test_env static_env;
+  const path p = static_env.File;
+  const path p2 = static_env.SymlinkToFile;
+  TEST_CHECK(file_size(p) == file_size(p2));
 }
 
-TEST_CASE(file_size_error_cases)
-{
+TEST_CASE(file_size_error_cases) {
   static_test_env static_env;
   struct {
     path p;
@@ -73,15 +70,15 @@ TEST_CASE(file_size_error_cases)
       {static_env.BadSymlink, std::errc::no_such_file_or_directory},
       {static_env.DNE, std::errc::no_such_file_or_directory},
       {"", std::errc::no_such_file_or_directory}};
-    const uintmax_t expect = static_cast<uintmax_t>(-1);
-    for (auto& TC : TestCases) {
-      std::error_code ec = GetTestEC();
-      TEST_CHECK(file_size(TC.p, ec) == expect);
-      TEST_CHECK(ErrorIs(ec, TC.expected_err));
+  const uintmax_t expect = static_cast<uintmax_t>(-1);
+  for (auto& TC : TestCases) {
+    std::error_code ec = GetTestEC();
+    TEST_CHECK(file_size(TC.p, ec) == expect);
+    TEST_CHECK(ErrorIs(ec, TC.expected_err));
 
-      ExceptionChecker Checker(TC.p, TC.expected_err, "file_size");
-      TEST_CHECK_THROW_RESULT(filesystem_error, Checker, file_size(TC.p));
-    }
+    ExceptionChecker Checker(TC.p, TC.expected_err, "file_size");
+    TEST_CHECK_THROW_RESULT(filesystem_error, Checker, file_size(TC.p));
+  }
 }
 
 TEST_SUITE_END()

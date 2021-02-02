@@ -1,17 +1,17 @@
 // RUN: %clang_cc1 -fsyntax-only -verify -std=c++98 -pedantic -Werror  %s
-int a1[] = { 1, 3, 5 };
+int a1[] = {1, 3, 5};
 void f() {
-  int a2[] = { 1, 3, 5 };
+  int a2[] = {1, 3, 5};
 }
 template <typename T>
 void tf() {
   T t;
   // Element type may be dependent
-  T a3[] = { 1, 3, 5 };
+  T a3[] = {1, 3, 5};
   // As might be the initializer list, value
-  int a5[] = { sizeof(T) };
+  int a5[] = {sizeof(T)};
   // or even type.
-  int a6[] = { t.get() };
+  int a6[] = {t.get()};
 }
 
 // Allowed by GNU extension
@@ -21,4 +21,4 @@ struct Incomplete; // expected-note {{forward declaration of 'Incomplete'}}
 struct A {
   Incomplete i; // expected-error {{field has incomplete type 'Incomplete'}}
 };
-A a[] = { 0 }; // PR13971: don't hang.
+A a[] = {0}; // PR13971: don't hang.

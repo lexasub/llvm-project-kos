@@ -23,8 +23,7 @@
 #include "test_macros.h"
 #include "MoveOnly.h"
 
-constexpr bool tests()
-{
+constexpr bool tests() {
   //  Test deduced type.
   {
     auto arr = std::to_array({1, 2, 3});
@@ -114,8 +113,7 @@ constexpr bool tests()
   return true;
 }
 
-int main(int, char**)
-{
+int main(int, char**) {
   tests();
   static_assert(tests(), "");
   return 0;

@@ -1,7 +1,6 @@
 struct foo;
 
-struct sub_foo
-{
+struct sub_foo {
   int sub_1;
   char *sub_2;
 };

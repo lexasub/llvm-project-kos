@@ -14,15 +14,15 @@ CFLAGS="-fsanitize=thread -DTHREAD_SANITIZER" and then use
 */
 
 #if defined(__has_feature) && __has_feature(thread_sanitizer)
-# define ANNOTATE_HAPPENS_BEFORE(addr) \
-    AnnotateHappensBefore(__FILE__, __LINE__, (void*)(addr))
-# define ANNOTATE_HAPPENS_AFTER(addr) \
-    AnnotateHappensAfter(__FILE__, __LINE__, (void*)(addr))
+#define ANNOTATE_HAPPENS_BEFORE(addr) \
+  AnnotateHappensBefore(__FILE__, __LINE__, (void *)(addr))
+#define ANNOTATE_HAPPENS_AFTER(addr) \
+  AnnotateHappensAfter(__FILE__, __LINE__, (void *)(addr))
 extern "C" void AnnotateHappensBefore(const char *f, int l, void *addr);
 extern "C" void AnnotateHappensAfter(const char *f, int l, void *addr);
 #else
-# define ANNOTATE_HAPPENS_BEFORE(addr)
-# define ANNOTATE_HAPPENS_AFTER(addr)
+#define ANNOTATE_HAPPENS_BEFORE(addr)
+#define ANNOTATE_HAPPENS_AFTER(addr)
 #endif
 
 int Global;
@@ -54,4 +54,3 @@ int main() {
 
 // CHECK-NOT: WARNING: ThreadSanitizer: data race
 // CHECK: DONE
-

@@ -19,12 +19,13 @@
 struct A {
   int foo() const { return 0; }
 };
-A get () { return A(); }
-template <class> struct O {
+A get() { return A(); }
+template <class>
+struct O {
   static A const e;
 };
-template <class T> A const O <T>::e = get();
+template <class T>
+A const O<T>::e = get();
 int FUNC() {
   return O<int>::e.foo();
 }
-

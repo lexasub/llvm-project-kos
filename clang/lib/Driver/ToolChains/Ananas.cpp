@@ -7,8 +7,8 @@
 //===----------------------------------------------------------------------===//
 
 #include "Ananas.h"
-#include "InputInfo.h"
 #include "CommonArgs.h"
+#include "InputInfo.h"
 #include "clang/Driver/Compilation.h"
 #include "clang/Driver/Driver.h"
 #include "clang/Driver/Options.h"
@@ -91,9 +91,11 @@ void ananas::Linker::ConstructJob(Compilation &C, const JobAction &JA,
     }
     CmdArgs.push_back(Args.MakeArgString(ToolChain.GetFilePath("crti.o")));
     if (Args.hasArg(options::OPT_shared) || Args.hasArg(options::OPT_pie)) {
-      CmdArgs.push_back(Args.MakeArgString(ToolChain.GetFilePath("crtbeginS.o")));
+      CmdArgs.push_back(
+          Args.MakeArgString(ToolChain.GetFilePath("crtbeginS.o")));
     } else {
-      CmdArgs.push_back(Args.MakeArgString(ToolChain.GetFilePath("crtbegin.o")));
+      CmdArgs.push_back(
+          Args.MakeArgString(ToolChain.GetFilePath("crtbegin.o")));
     }
   }
 

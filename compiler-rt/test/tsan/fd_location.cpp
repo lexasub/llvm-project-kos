@@ -30,4 +30,3 @@ int main() {
 // CHECK:   Location is file descriptor {{[0-9]+}} created by main thread at:
 // CHECK:     #0 pipe
 // CHECK:     #1 main
-

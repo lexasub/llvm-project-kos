@@ -3,7 +3,7 @@
 
 #include "Inputs/system-header-simulator-cxx.h"
 
-template<class T>
+template <class T>
 void f(T x);
 
 void PointerIteration() {
@@ -23,6 +23,6 @@ void PointerIteration() {
     f(i);
 
   for (auto i : UnorderedPtrSet) // expected-warning {{Iteration of pointer-like elements can result in non-deterministic ordering}} [alpha.nondeterminism.PointerIteration]
-// expected-note@-1 {{Iteration of pointer-like elements can result in non-deterministic ordering}} [alpha.nondeterminism.PointerIteration]
+                                 // expected-note@-1 {{Iteration of pointer-like elements can result in non-deterministic ordering}} [alpha.nondeterminism.PointerIteration]
     f(i);
 }

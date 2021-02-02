@@ -4,5 +4,6 @@
 void f() {
   // CHECK:      for (int arr[3]; int n : arr) {
   // CHECK-NEXT: }
-  for (int arr[3]; int n : arr) {}
+  for (int arr[3]; int n : arr) {
+  }
 }

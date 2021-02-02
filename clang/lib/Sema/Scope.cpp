@@ -22,7 +22,7 @@ void Scope::setFlags(Scope *parent, unsigned flags) {
   Flags = flags;
 
   if (parent && !(flags & FnScope)) {
-    BreakParent    = parent->BreakParent;
+    BreakParent = parent->BreakParent;
     ContinueParent = parent->ContinueParent;
   } else {
     // Control scopes do not contain the contents of nested function scopes for
@@ -34,8 +34,8 @@ void Scope::setFlags(Scope *parent, unsigned flags) {
     Depth = parent->Depth + 1;
     PrototypeDepth = parent->PrototypeDepth;
     PrototypeIndex = 0;
-    FnParent       = parent->FnParent;
-    BlockParent    = parent->BlockParent;
+    FnParent = parent->FnParent;
+    BlockParent = parent->BlockParent;
     TemplateParamParent = parent->TemplateParamParent;
     MSLastManglingParent = parent->MSLastManglingParent;
     MSCurManglingNumber = getMSLastManglingNumber();
@@ -54,7 +54,8 @@ void Scope::setFlags(Scope *parent, unsigned flags) {
   }
 
   // If this scope is a function or contains breaks/continues, remember it.
-  if (flags & FnScope)            FnParent = this;
+  if (flags & FnScope)
+    FnParent = this;
   // The MS mangler uses the number of scopes that can hold declarations as
   // part of an external name.
   if (Flags & (ClassScope | FnScope)) {
@@ -62,13 +63,18 @@ void Scope::setFlags(Scope *parent, unsigned flags) {
     MSLastManglingParent = this;
     MSCurManglingNumber = 1;
   }
-  if (flags & BreakScope)         BreakParent = this;
-  if (flags & ContinueScope)      ContinueParent = this;
-  if (flags & BlockScope)         BlockParent = this;
-  if (flags & TemplateParamScope) TemplateParamParent = this;
+  if (flags & BreakScope)
+    BreakParent = this;
+  if (flags & ContinueScope)
+    ContinueParent = this;
+  if (flags & BlockScope)
+    BlockParent = this;
+  if (flags & TemplateParamScope)
+    TemplateParamParent = this;
 
   // If this is a prototype scope, record that.
-  if (flags & FunctionPrototypeScope) PrototypeDepth++;
+  if (flags & FunctionPrototypeScope)
+    PrototypeDepth++;
 
   if (flags & DeclScope) {
     if (flags & FunctionPrototypeScope)

@@ -5,9 +5,9 @@
 // RUN: %env_lsan_opts=$LSAN_BASE:"use_tls=1" %run %t 2>&1
 // RUN: %env_lsan_opts="" %run %t 2>&1
 
+#include "sanitizer_common/print_address.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "sanitizer_common/print_address.h"
 
 __thread void *tls_var;
 

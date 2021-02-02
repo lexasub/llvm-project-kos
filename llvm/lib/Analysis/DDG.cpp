@@ -21,9 +21,9 @@ static cl::opt<bool> SimplifyDDG(
     cl::desc(
         "Simplify DDG by merging nodes that have less interesting edges."));
 
-static cl::opt<bool>
-    CreatePiBlocks("ddg-pi-blocks", cl::init(true), cl::Hidden, cl::ZeroOrMore,
-                   cl::desc("Create pi-block nodes."));
+static cl::opt<bool> CreatePiBlocks("ddg-pi-blocks", cl::init(true), cl::Hidden,
+                                    cl::ZeroOrMore,
+                                    cl::desc("Create pi-block nodes."));
 
 #define DEBUG_TYPE "ddg"
 
@@ -106,7 +106,7 @@ raw_ostream &llvm::operator<<(raw_ostream &OS, const DDGNode &N) {
 //===--------------------------------------------------------------------===//
 
 SimpleDDGNode::SimpleDDGNode(Instruction &I)
-  : DDGNode(NodeKind::SingleInstruction), InstList() {
+    : DDGNode(NodeKind::SingleInstruction), InstList() {
   assert(InstList.empty() && "Expected empty list.");
   InstList.push_back(&I);
 }

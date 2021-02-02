@@ -20,33 +20,32 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
+int main(int, char**) {
 #ifdef _LIBCPP_HAS_OPEN_WITH_WCHAR
-    {
-        std::ifstream fs;
-        assert(!fs.is_open());
-        char c = 'a';
-        fs >> c;
-        assert(fs.fail());
-        assert(c == 'a');
-        fs.open(L"test.dat");
-        assert(fs.is_open());
-        fs >> c;
-        assert(c == 'r');
-    }
-    {
-        std::wifstream fs;
-        assert(!fs.is_open());
-        wchar_t c = L'a';
-        fs >> c;
-        assert(fs.fail());
-        assert(c == L'a');
-        fs.open(L"test.dat");
-        assert(fs.is_open());
-        fs >> c;
-        assert(c == L'r');
-    }
+  {
+    std::ifstream fs;
+    assert(!fs.is_open());
+    char c = 'a';
+    fs >> c;
+    assert(fs.fail());
+    assert(c == 'a');
+    fs.open(L"test.dat");
+    assert(fs.is_open());
+    fs >> c;
+    assert(c == 'r');
+  }
+  {
+    std::wifstream fs;
+    assert(!fs.is_open());
+    wchar_t c = L'a';
+    fs >> c;
+    assert(fs.fail());
+    assert(c == L'a');
+    fs.open(L"test.dat");
+    assert(fs.is_open());
+    fs >> c;
+    assert(c == L'r');
+  }
 #endif
 
   return 0;

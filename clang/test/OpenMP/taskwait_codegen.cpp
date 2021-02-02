@@ -35,5 +35,4 @@ int main(int argc, char **argv) {
 // CHECK: [[GTID:%.+]] = call i32 @__kmpc_global_thread_num(%{{.+}}* @{{.+}})
 // CHECK: call i32 @__kmpc_omp_taskwait(%{{.+}}* @{{.+}}, i32 [[GTID]])
 
-
 #endif

@@ -21,7 +21,7 @@ struct D : virtual C {
   int xxx;
 };
 
-D::D() {}  // Forces vftable emission.
+D::D() {} // Forces vftable emission.
 
 // CHECK-LABEL: define linkonce_odr dso_local x86_thiscallcc void @"?f@D@@$4PPPPPPPM@A@AEXXZ"
 // Note that the vtordisp is applied before really adjusting to D*.
@@ -64,7 +64,7 @@ struct G : virtual F, virtual E {
   ~G();
 };
 
-G::G() {}  // Forces vftable emission.
+G::G() {} // Forces vftable emission.
 
 // CHECK-LABEL: define linkonce_odr dso_local x86_thiscallcc void @"?f@E@@$R4BA@M@PPPPPPPM@7AEXXZ"(i8*
 // CHECK: %[[COERCE_LOAD:.*]] = load %struct.E*, %struct.E** %{{.*}}

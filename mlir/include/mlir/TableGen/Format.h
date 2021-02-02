@@ -121,7 +121,7 @@ protected:
   // std::vector<Base*>.
   struct CreateAdapters {
     template <typename... Ts>
-    std::vector<llvm::detail::format_adapter *> operator()(Ts &... items) {
+    std::vector<llvm::detail::format_adapter *> operator()(Ts &...items) {
       return std::vector<llvm::detail::format_adapter *>{&items...};
     }
   };
@@ -151,19 +151,24 @@ public:
     return s.str();
   }
 
-  template <unsigned N> SmallString<N> sstr() const {
+  template <unsigned N>
+  SmallString<N> sstr() const {
     SmallString<N> result;
     llvm::raw_svector_ostream s(result);
     format(s);
     return result;
   }
 
-  template <unsigned N> operator SmallString<N>() const { return sstr<N>(); }
+  template <unsigned N>
+  operator SmallString<N>() const {
+    return sstr<N>();
+  }
 
   operator std::string() const { return str(); }
 };
 
-template <typename Tuple> class FmtObject : public FmtObjectBase {
+template <typename Tuple>
+class FmtObject : public FmtObjectBase {
   // Storage for the parameter adapters.  Since the base class erases the type
   // of the parameters, we have to own the storage for the parameters here, and
   // have the base class store type-erased pointers into this tuple.
@@ -223,7 +228,7 @@ public:
 /// 2. This utility does not support format layout because it is rarely needed
 ///    in C++ code generation.
 template <typename... Ts>
-inline auto tgfmt(StringRef fmt, const FmtContext *ctx, Ts &&... vals)
+inline auto tgfmt(StringRef fmt, const FmtContext *ctx, Ts &&...vals)
     -> FmtObject<decltype(std::make_tuple(
         llvm::detail::build_format_adapter(std::forward<Ts>(vals))...))> {
   using ParamTuple = decltype(std::make_tuple(

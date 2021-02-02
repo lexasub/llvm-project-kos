@@ -6,8 +6,8 @@
 
 // CHECK: got expected 42 exit code
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -57,8 +57,8 @@ int spawn_child(char **argv) {
   return exit_code;
 }
 #else
-#include <spawn.h>
 #include <errno.h>
+#include <spawn.h>
 #include <sys/wait.h>
 
 #if defined(__APPLE__)

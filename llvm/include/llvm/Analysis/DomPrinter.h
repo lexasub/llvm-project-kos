@@ -1,4 +1,5 @@
-//===-- DomPrinter.h - Dom printer external interface ------------*- C++ -*-===//
+//===-- DomPrinter.h - Dom printer external interface ------------*- C++
+//-*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -15,15 +16,15 @@
 #define LLVM_ANALYSIS_DOMPRINTER_H
 
 namespace llvm {
-  class FunctionPass;
-  FunctionPass *createDomPrinterPass();
-  FunctionPass *createDomOnlyPrinterPass();
-  FunctionPass *createDomViewerPass();
-  FunctionPass *createDomOnlyViewerPass();
-  FunctionPass *createPostDomPrinterPass();
-  FunctionPass *createPostDomOnlyPrinterPass();
-  FunctionPass *createPostDomViewerPass();
-  FunctionPass *createPostDomOnlyViewerPass();
-} // End llvm namespace
+class FunctionPass;
+FunctionPass *createDomPrinterPass();
+FunctionPass *createDomOnlyPrinterPass();
+FunctionPass *createDomViewerPass();
+FunctionPass *createDomOnlyViewerPass();
+FunctionPass *createPostDomPrinterPass();
+FunctionPass *createPostDomOnlyPrinterPass();
+FunctionPass *createPostDomViewerPass();
+FunctionPass *createPostDomOnlyViewerPass();
+} // namespace llvm
 
 #endif

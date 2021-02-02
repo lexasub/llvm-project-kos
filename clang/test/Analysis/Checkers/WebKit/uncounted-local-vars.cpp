@@ -91,9 +91,12 @@ RefCountable *provide_ref_ctnbl() { return nullptr; }
 
 void foo() {
   // no warnings
-  if (RefCountable *a = provide_ref_ctnbl()) { }
-  for (RefCountable *a = provide_ref_ctnbl(); a != nullptr;) { }
+  if (RefCountable *a = provide_ref_ctnbl()) {
+  }
+  for (RefCountable *a = provide_ref_ctnbl(); a != nullptr;) {
+  }
   RefCountable *array[1];
-  for (RefCountable *a : array) { }
+  for (RefCountable *a : array) {
+  }
 }
 } // namespace ignore_for_if

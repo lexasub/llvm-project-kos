@@ -29,7 +29,8 @@ class X86EVEX2VEXTablesEmitter {
   // to make the search more efficient
   std::map<uint64_t, std::vector<const CodeGenInstruction *>> VEXInsts;
 
-  typedef std::pair<const CodeGenInstruction *, const CodeGenInstruction *> Entry;
+  typedef std::pair<const CodeGenInstruction *, const CodeGenInstruction *>
+      Entry;
 
   // Represent both compress tables
   std::vector<Entry> EVEX2VEX128;
@@ -92,18 +93,20 @@ public:
     Record *RecE = EVEXInst->TheDef;
     Record *RecV = VEXInst->TheDef;
     bool EVEX_W = RecE->getValueAsBit("HasVEX_W");
-    bool VEX_W  = RecV->getValueAsBit("HasVEX_W");
-    bool VEX_WIG  = RecV->getValueAsBit("IgnoresVEX_W");
+    bool VEX_W = RecV->getValueAsBit("HasVEX_W");
+    bool VEX_WIG = RecV->getValueAsBit("IgnoresVEX_W");
     bool EVEX_WIG = RecE->getValueAsBit("IgnoresVEX_W");
     bool EVEX_W1_VEX_W0 = RecE->getValueAsBit("EVEX_W1_VEX_W0");
 
     if (RecV->getValueAsDef("OpEnc")->getName().str() != "EncVEX" ||
-        RecV->getValueAsBit("isCodeGenOnly") != RecE->getValueAsBit("isCodeGenOnly") ||
+        RecV->getValueAsBit("isCodeGenOnly") !=
+            RecE->getValueAsBit("isCodeGenOnly") ||
         // VEX/EVEX fields
         RecV->getValueAsDef("OpPrefix") != RecE->getValueAsDef("OpPrefix") ||
         RecV->getValueAsDef("OpMap") != RecE->getValueAsDef("OpMap") ||
         RecV->getValueAsBit("hasVEX_4V") != RecE->getValueAsBit("hasVEX_4V") ||
-        RecV->getValueAsBit("hasEVEX_L2") != RecE->getValueAsBit("hasEVEX_L2") ||
+        RecV->getValueAsBit("hasEVEX_L2") !=
+            RecE->getValueAsBit("hasEVEX_L2") ||
         RecV->getValueAsBit("hasVEX_L") != RecE->getValueAsBit("hasVEX_L") ||
         // Match is allowed if either is VEX_WIG, or they match, or EVEX
         // is VEX_W1X and VEX is VEX_W0.
@@ -182,8 +185,8 @@ void X86EVEX2VEXTablesEmitter::run(raw_ostream &OS) {
     // Add VEX encoded instructions to one of VEXInsts vectors according to
     // it's opcode.
     if (Inst->TheDef->getValueAsDef("OpEnc")->getName() == "EncVEX") {
-      uint64_t Opcode = getValueFromBitsInit(Inst->TheDef->
-                                             getValueAsBitsInit("Opcode"));
+      uint64_t Opcode =
+          getValueFromBitsInit(Inst->TheDef->getValueAsBitsInit("Opcode"));
       VEXInsts[Opcode].push_back(Inst);
     }
     // Add relevant EVEX encoded instructions to EVEXInsts
@@ -196,15 +199,15 @@ void X86EVEX2VEXTablesEmitter::run(raw_ostream &OS) {
   }
 
   for (const CodeGenInstruction *EVEXInst : EVEXInsts) {
-    uint64_t Opcode = getValueFromBitsInit(EVEXInst->TheDef->
-                                           getValueAsBitsInit("Opcode"));
+    uint64_t Opcode =
+        getValueFromBitsInit(EVEXInst->TheDef->getValueAsBitsInit("Opcode"));
     // For each EVEX instruction look for a VEX match in the appropriate vector
     // (instructions with the same opcode) using function object IsMatch.
     // Allow EVEX2VEXOverride to explicitly specify a match.
     const CodeGenInstruction *VEXInst = nullptr;
     if (!EVEXInst->TheDef->isValueUnset("EVEX2VEXOverride")) {
       StringRef AltInstStr =
-        EVEXInst->TheDef->getValueAsString("EVEX2VEXOverride");
+          EVEXInst->TheDef->getValueAsString("EVEX2VEXOverride");
       Record *AltInstRec = Records.getDef(AltInstStr);
       assert(AltInstRec && "EVEX2VEXOverride instruction not found!");
       VEXInst = &Target.getInstruction(AltInstRec);
@@ -228,10 +231,10 @@ void X86EVEX2VEXTablesEmitter::run(raw_ostream &OS) {
   printTable(EVEX2VEX128, OS);
   printTable(EVEX2VEX256, OS);
 }
-}
+} // namespace
 
 namespace llvm {
 void EmitX86EVEX2VEXTables(RecordKeeper &RK, raw_ostream &OS) {
   X86EVEX2VEXTablesEmitter(RK).run(OS);
 }
-}
+} // namespace llvm

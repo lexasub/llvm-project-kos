@@ -2,30 +2,30 @@
 // RUN: %clang_cc1 -fsyntax-only -verify -std=c++98 %s
 // RUN: %clang_cc1 -fsyntax-only -verify -std=c++11 %s
 
-struct Base { };
-struct Derived : Base { }; // expected-note{{candidate constructor (the implicit copy constructor) not viable}}
+struct Base {};
+struct Derived : Base {};  // expected-note{{candidate constructor (the implicit copy constructor) not viable}}
 #if __cplusplus >= 201103L // C++11 or later
 // expected-note@-2 {{candidate constructor (the implicit move constructor) not viable}}
 #endif
-struct Unrelated { };
-struct Derived2 : Base { };
-struct Diamond : Derived, Derived2 { };
+struct Unrelated {};
+struct Derived2 : Base {};
+struct Diamond : Derived, Derived2 {};
 
 struct ConvertibleToBaseRef {
-  operator Base&() const;
+  operator Base &() const;
 };
 
 struct ConvertibleToDerivedRef {
-  operator Derived&() const;
+  operator Derived &() const;
 };
 
 struct ConvertibleToBothDerivedRef {
-  operator Derived&(); // expected-note{{candidate function}}
-  operator Derived2&(); // expected-note{{candidate function}}
+  operator Derived &();  // expected-note{{candidate function}}
+  operator Derived2 &(); // expected-note{{candidate function}}
 };
 
 struct ConvertibleToIntRef {
-  operator int&();
+  operator int &();
 };
 
 struct ConvertibleToBase {
@@ -37,7 +37,7 @@ struct ConvertibleToDerived {
 };
 
 struct ConvertibleToBothDerived {
-  operator Derived(); // expected-note{{candidate function}}
+  operator Derived();  // expected-note{{candidate function}}
   operator Derived2(); // expected-note{{candidate function}}
 };
 
@@ -45,10 +45,10 @@ struct ConvertibleToInt {
   operator int();
 };
 
-template<typename T> T create();
+template <typename T> T create();
 
 // First bullet: lvalue references binding to lvalues (the simple cases).
-void bind_lvalue_to_lvalue(Base b, Derived d, 
+void bind_lvalue_to_lvalue(Base b, Derived d,
                            const Base bc, const Derived dc,
                            Diamond diamond,
                            int i) {
@@ -56,9 +56,9 @@ void bind_lvalue_to_lvalue(Base b, Derived d,
   Base &br1 = b;
   Base &br2 = d;
   Derived &dr1 = d;
-  Derived &dr2 = b; // expected-error{{non-const lvalue reference to type 'Derived' cannot bind to a value of unrelated type 'Base'}}
-  Base &br3 = bc; // expected-error{{drops 'const' qualifier}}
-  Base &br4 = dc; // expected-error{{drops 'const' qualifier}}
+  Derived &dr2 = b;    // expected-error{{non-const lvalue reference to type 'Derived' cannot bind to a value of unrelated type 'Base'}}
+  Base &br3 = bc;      // expected-error{{drops 'const' qualifier}}
+  Base &br4 = dc;      // expected-error{{drops 'const' qualifier}}
   Base &br5 = diamond; // expected-error{{ambiguous conversion from derived class 'Diamond' to base class 'Base':}}
   int &ir = i;
   long &lr = i; // expected-error{{non-const lvalue reference to type 'long' cannot bind to a value of unrelated type 'int'}}
@@ -79,16 +79,16 @@ void bind_lvalue_quals(volatile Base b, volatile Derived d,
 }
 
 void bind_lvalue_to_rvalue() {
-  Base &br1 = Base(); // expected-error{{non-const lvalue reference to type 'Base' cannot bind to a temporary of type 'Base'}}
-  Base &br2 = Derived(); // expected-error{{non-const lvalue reference to type 'Base' cannot bind to a temporary of type 'Derived'}}
-  const volatile Base &br3 = Base(); // expected-error{{volatile lvalue reference to type 'const volatile Base' cannot bind to a temporary of type 'Base'}}
+  Base &br1 = Base();                   // expected-error{{non-const lvalue reference to type 'Base' cannot bind to a temporary of type 'Base'}}
+  Base &br2 = Derived();                // expected-error{{non-const lvalue reference to type 'Base' cannot bind to a temporary of type 'Derived'}}
+  const volatile Base &br3 = Base();    // expected-error{{volatile lvalue reference to type 'const volatile Base' cannot bind to a temporary of type 'Base'}}
   const volatile Base &br4 = Derived(); // expected-error{{volatile lvalue reference to type 'const volatile Base' cannot bind to a temporary of type 'Derived'}}
 
   int &ir = 17; // expected-error{{non-const lvalue reference to type 'int' cannot bind to a temporary of type 'int'}}
 }
 
 void bind_lvalue_to_unrelated(Unrelated ur) {
-  Base &br1 = ur; // expected-error{{non-const lvalue reference to type 'Base' cannot bind to a value of unrelated type 'Unrelated'}}
+  Base &br1 = ur;                // expected-error{{non-const lvalue reference to type 'Base' cannot bind to a value of unrelated type 'Unrelated'}}
   const volatile Base &br2 = ur; // expected-error{{volatile lvalue reference to type 'const volatile Base' cannot bind to a value of unrelated type 'Unrelated'}}
 }
 
@@ -110,7 +110,7 @@ struct IntBitfield {
 };
 
 void test_bitfield(IntBitfield ib) {
-  int & ir1 = (ib.i); // expected-error{{non-const reference cannot bind to bit-field 'i'}}
+  int &ir1 = (ib.i); // expected-error{{non-const reference cannot bind to bit-field 'i'}}
 }
 
 // Second bullet: const lvalue reference binding to an rvalue with

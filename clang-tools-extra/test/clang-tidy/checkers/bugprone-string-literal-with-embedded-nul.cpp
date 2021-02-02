@@ -11,17 +11,16 @@ struct basic_string {
   basic_string();
   basic_string(const C *p, const A &a = A());
 
-  _Type& operator+=(const C* s);
-  _Type& operator=(const C* s);
+  _Type &operator+=(const C *s);
+  _Type &operator=(const C *s);
 };
 
 typedef basic_string<char, std::char_traits<char>, std::allocator<char>> string;
 typedef basic_string<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t>> wstring;
-}
+} // namespace std
 
-bool operator==(const std::string&, const char*);
-bool operator==(const char*, const std::string&);
-
+bool operator==(const std::string &, const char *);
+bool operator==(const char *, const std::string &);
 
 const char Valid[] = "This is valid \x12.";
 const char Strange[] = "This is strange \0x12 and must be fixed";
@@ -48,7 +47,10 @@ const char I[] = "\000\000\000\000";
 const char J[] = "\0\0\0\0\0\0";
 const char K[] = "";
 
-const char L[] = "\0x12" "\0x12" "\0x12" "\0x12";
+const char L[] = "\0x12"
+                 "\0x12"
+                 "\0x12"
+                 "\0x12";
 // CHECK-MESSAGES: :[[@LINE-1]]:18: warning: suspicious embedded NUL character
 
 void TestA() {
@@ -67,9 +69,11 @@ void TestA() {
   str = "abc\0def";
   // CHECK-MESSAGES: :[[@LINE-1]]:9: warning: truncated string literal
 
-  if (str == "abc\0def") return;
+  if (str == "abc\0def")
+    return;
   // CHECK-MESSAGES: :[[@LINE-1]]:14: warning: truncated string literal
-  if ("abc\0def" == str) return;
+  if ("abc\0def" == str)
+    return;
   // CHECK-MESSAGES: :[[@LINE-1]]:7: warning: truncated string literal
 }
 

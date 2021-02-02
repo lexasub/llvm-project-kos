@@ -21,8 +21,8 @@
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/StringMap.h"
-#include "llvm/ADT/StringSet.h"
 #include "llvm/ADT/StringRef.h"
+#include "llvm/ADT/StringSet.h"
 #include "llvm/Support/Allocator.h"
 #include <cassert>
 #include <cstddef>
@@ -113,7 +113,7 @@ struct HeaderFileInfo {
   HeaderFileInfo()
       : isImport(false), isPragmaOnce(false), DirInfo(SrcMgr::C_User),
         External(false), isModuleHeader(false), isCompilingModuleHeader(false),
-        Resolved(false), IndexHeaderMapHeader(false), IsValid(false)  {}
+        Resolved(false), IndexHeaderMapHeader(false), IsValid(false) {}
 
   /// Retrieve the controlling macro for this header file, if
   /// any.
@@ -124,7 +124,7 @@ struct HeaderFileInfo {
   /// it corresponds to an actual header we've included or tried to include.
   bool isNonDefault() const {
     return isImport || isPragmaOnce || NumIncludes || ControllingMacro ||
-      ControllingMacroID;
+           ControllingMacroID;
   }
 };
 
@@ -224,12 +224,12 @@ class HeaderSearch {
   /// Maps include file names (including the quotes or
   /// angle brackets) to other include file names.  This is used to support the
   /// include_alias pragma for Microsoft compatibility.
-  using IncludeAliasMap =
-      llvm::StringMap<std::string, llvm::BumpPtrAllocator>;
+  using IncludeAliasMap = llvm::StringMap<std::string, llvm::BumpPtrAllocator>;
   std::unique_ptr<IncludeAliasMap> IncludeAliases;
 
   /// This is a mapping from FileEntry -> HeaderMap, uniquing headermaps.
-  std::vector<std::pair<const FileEntry *, std::unique_ptr<HeaderMap>>> HeaderMaps;
+  std::vector<std::pair<const FileEntry *, std::unique_ptr<HeaderMap>>>
+      HeaderMaps;
 
   /// The mapping between modules and headers.
   mutable ModuleMap ModMap;
@@ -273,12 +273,12 @@ public:
                       unsigned angledDirIdx, unsigned systemDirIdx,
                       bool noCurDirSearch) {
     assert(angledDirIdx <= systemDirIdx && systemDirIdx <= dirs.size() &&
-        "Directory indices are unordered");
+           "Directory indices are unordered");
     SearchDirs = dirs;
     AngledDirIdx = angledDirIdx;
     SystemDirIdx = systemDirIdx;
     NoCurDirSearch = noCurDirSearch;
-    //LookupFileCache.clear();
+    // LookupFileCache.clear();
   }
 
   /// Add an additional search path.
@@ -337,14 +337,12 @@ public:
   StringRef getModuleCachePath() const { return ModuleCachePath; }
 
   /// Consider modules when including files from this directory.
-  void setDirectoryHasModuleMap(const DirectoryEntry* Dir) {
+  void setDirectoryHasModuleMap(const DirectoryEntry *Dir) {
     DirectoryHasModuleMap[Dir] = true;
   }
 
   /// Forget everything we know about headers so far.
-  void ClearFileInfo() {
-    FileInfo.clear();
-  }
+  void ClearFileInfo() { FileInfo.clear(); }
 
   void SetExternalLookup(ExternalPreprocessorSource *EPS) {
     ExternalLookup = EPS;
@@ -430,8 +428,7 @@ public:
   /// \return false if \#including the file will have no effect or true
   /// if we should include it.
   bool ShouldEnterIncludeFile(Preprocessor &PP, const FileEntry *File,
-                              bool isImport, bool ModulesEnabled,
-                              Module *M);
+                              bool isImport, bool ModulesEnabled, Module *M);
 
   /// Return whether the specified file is a normal header,
   /// a system header, or a C++ friendly system header.
@@ -659,8 +656,7 @@ private:
   /// frameworks.
   ///
   /// \returns The module, if found; otherwise, null.
-  Module *loadFrameworkModule(StringRef Name,
-                              const DirectoryEntry *Dir,
+  Module *loadFrameworkModule(StringRef Name, const DirectoryEntry *Dir,
                               bool IsSystem);
 
   /// Load all of the module maps within the immediate subdirectories
@@ -669,7 +665,8 @@ private:
 
   /// Find and suggest a usable module for the given file.
   ///
-  /// \return \c true if the file can be used, \c false if we are not permitted to
+  /// \return \c true if the file can be used, \c false if we are not permitted
+  /// to
   ///         find this file due to requirements from \p RequestingModule.
   bool findUsableModuleForHeader(const FileEntry *File,
                                  const DirectoryEntry *Root,
@@ -680,7 +677,8 @@ private:
   /// Find and suggest a usable module for the given file, which is part of
   /// the specified framework.
   ///
-  /// \return \c true if the file can be used, \c false if we are not permitted to
+  /// \return \c true if the file can be used, \c false if we are not permitted
+  /// to
   ///         find this file due to requirements from \p RequestingModule.
   bool findUsableModuleForFrameworkHeader(
       const FileEntry *File, StringRef FrameworkName, Module *RequestingModule,
@@ -721,9 +719,7 @@ public:
   search_dir_iterator search_dir_end() const { return SearchDirs.end(); }
   unsigned search_dir_size() const { return SearchDirs.size(); }
 
-  search_dir_iterator quoted_dir_begin() const {
-    return SearchDirs.begin();
-  }
+  search_dir_iterator quoted_dir_begin() const { return SearchDirs.begin(); }
 
   search_dir_iterator quoted_dir_end() const {
     return SearchDirs.begin() + AngledDirIdx;

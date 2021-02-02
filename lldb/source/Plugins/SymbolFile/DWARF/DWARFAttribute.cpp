@@ -7,8 +7,8 @@
 //===----------------------------------------------------------------------===//
 
 #include "DWARFAttribute.h"
-#include "DWARFUnit.h"
 #include "DWARFDebugInfo.h"
+#include "DWARFUnit.h"
 
 DWARFAttributes::DWARFAttributes() : m_infos() {}
 

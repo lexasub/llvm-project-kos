@@ -22,8 +22,8 @@
 #include <stdio.h>
 
 extern "C" {
-  int bar();
-  int baz();
+int bar();
+int baz();
 }
 
 #ifdef MAIN

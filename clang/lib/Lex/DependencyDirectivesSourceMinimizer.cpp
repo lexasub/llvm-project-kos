@@ -270,8 +270,7 @@ static const char *findLastNonSpace(const char *First, const char *Last) {
   return Last;
 }
 
-static const char *findFirstTrailingSpace(const char *First,
-                                          const char *Last) {
+static const char *findFirstTrailingSpace(const char *First, const char *Last) {
   const char *LastNonSpace = findLastNonSpace(First, Last);
   if (Last == LastNonSpace)
     return Last;
@@ -437,8 +436,7 @@ void Minimizer::printToNewline(const char *&First, const char *const End) {
     // Print up to the backslash, backing up over spaces. Preserve at least one
     // space, as the space matters when tokens are separated by a line
     // continuation.
-    append(First, findFirstTrailingSpace(
-                      First, LastBeforeTrailingSpace - 1));
+    append(First, findFirstTrailingSpace(First, LastBeforeTrailingSpace - 1));
 
     First = Last;
     skipNewline(First, End);

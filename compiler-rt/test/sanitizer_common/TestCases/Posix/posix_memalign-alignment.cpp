@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
   assert(argc == 2);
   const int alignment = atoi(argv[1]);
 
-  void* const kInitialPtrValue = reinterpret_cast<void*>(0x2a);
+  void *const kInitialPtrValue = reinterpret_cast<void *>(0x2a);
   void *p = kInitialPtrValue;
 
   errno = 0;

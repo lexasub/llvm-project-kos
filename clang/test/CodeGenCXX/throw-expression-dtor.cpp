@@ -4,11 +4,11 @@
 
 class A {
 public:
-    ~A();
+  ~A();
 };
 class B : public A {
-    void ice_throw();
+  void ice_throw();
 };
 void B::ice_throw() {
-    throw *this;
+  throw *this;
 }

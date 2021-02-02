@@ -31,6 +31,6 @@ void AvoidSpinlockCheck::check(const MatchFinder::MatchResult &Result) {
        "deprecated OSSpinLock");
 }
 
-}  // namespace darwin
-}  // namespace tidy
-}  // namespace clang
+} // namespace darwin
+} // namespace tidy
+} // namespace clang

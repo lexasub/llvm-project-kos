@@ -1,13 +1,13 @@
-class T { };
+class T {};
 
 typedef int Integer;
 
-namespace N { }
+namespace N {}
 
 void f() {
   typedef float Float;
-  
-  operator 
+
+  operator
   // RUN: %clang_cc1 -fsyntax-only -code-completion-at=%s:10:12 %s -o - | FileCheck -check-prefix=CHECK-CC1 %s
   // CHECK-CC1: +
   // CHECK-CC1: Float

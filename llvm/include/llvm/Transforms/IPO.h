@@ -94,8 +94,9 @@ ModulePass *createEliminateAvailableExternallyPass();
 /// the initializers of global constants are not deleted even if they are
 /// unused.
 ///
-ModulePass *createGVExtractionPass(std::vector<GlobalValue*>& GVs, bool
-                                  deleteFn = false, bool keepConstInit = false);
+ModulePass *createGVExtractionPass(std::vector<GlobalValue *> &GVs,
+                                   bool deleteFn = false,
+                                   bool keepConstInit = false);
 
 //===----------------------------------------------------------------------===//
 /// This pass performs iterative function importing from other modules.
@@ -288,6 +289,6 @@ ModulePass *createSampleProfileLoaderPass(StringRef Name);
 ModulePass *createWriteThinLTOBitcodePass(raw_ostream &Str,
                                           raw_ostream *ThinLinkOS = nullptr);
 
-} // End llvm namespace
+} // namespace llvm
 
 #endif

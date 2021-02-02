@@ -12,8 +12,8 @@
 #if defined(_WIN32) && !defined(__GNUC__)
 // Disable warnings from inclusion of xlocale & exception
 #pragma warning(push)
-#pragma warning(disable: 4530)
-#pragma warning(disable: 4577)
+#pragma warning(disable : 4530)
+#pragma warning(disable : 4577)
 #include <string>
 #include <vector>
 #pragma warning(pop)

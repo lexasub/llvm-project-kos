@@ -36,9 +36,7 @@ protected:
   std::unique_ptr<DominatorTree> DT;
   std::unique_ptr<LoopInfo> LI;
 
-  ProfileSummaryInfo buildPSI(Module *M) {
-    return ProfileSummaryInfo(*M);
-  }
+  ProfileSummaryInfo buildPSI(Module *M) { return ProfileSummaryInfo(*M); }
   BlockFrequencyInfo buildBFI(Function &F) {
     DT.reset(new DominatorTree(F));
     LI.reset(new LoopInfo(*DT));

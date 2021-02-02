@@ -107,154 +107,147 @@ class OperatorNewDeleted {
   void operator delete(void* ptr) = delete;
 };
 
-[[maybe_unused]] auto Lambda = [](const int&, int&&, double){};
+[[maybe_unused]] auto Lambda = [](const int&, int&&, double) {};
 
-template<class T>
-void test_not_const()
-{
-    static_assert( std::default_initializable<               T>);
-    static_assert(!std::default_initializable<const          T>);
-    static_assert( std::default_initializable<      volatile T>);
-    static_assert(!std::default_initializable<const volatile T>);
+template <class T>
+void test_not_const() {
+  static_assert(std::default_initializable<T>);
+  static_assert(!std::default_initializable<const T>);
+  static_assert(std::default_initializable<volatile T>);
+  static_assert(!std::default_initializable<const volatile T>);
 }
 
-template<class T>
-void test_true()
-{
-    static_assert( std::default_initializable<               T>);
-    static_assert( std::default_initializable<const          T>);
-    static_assert( std::default_initializable<      volatile T>);
-    static_assert( std::default_initializable<const volatile T>);
+template <class T>
+void test_true() {
+  static_assert(std::default_initializable<T>);
+  static_assert(std::default_initializable<const T>);
+  static_assert(std::default_initializable<volatile T>);
+  static_assert(std::default_initializable<const volatile T>);
 }
 
-template<class T>
-void test_false()
-{
-    static_assert(!std::default_initializable<               T>);
-    static_assert(!std::default_initializable<const          T>);
-    static_assert(!std::default_initializable<      volatile T>);
-    static_assert(!std::default_initializable<const volatile T>);
+template <class T>
+void test_false() {
+  static_assert(!std::default_initializable<T>);
+  static_assert(!std::default_initializable<const T>);
+  static_assert(!std::default_initializable<volatile T>);
+  static_assert(!std::default_initializable<const volatile T>);
 }
 
-void test()
-{
-    test_not_const<bool>();
-    test_not_const<char>();
-    test_not_const<int>();
-    test_not_const<double>();
+void test() {
+  test_not_const<bool>();
+  test_not_const<char>();
+  test_not_const<int>();
+  test_not_const<double>();
 
-    test_false    <void>();
-    test_not_const<void*>();
+  test_false<void>();
+  test_not_const<void*>();
 
-    test_not_const<int*>();
-    test_false    <int[]>();
-    test_not_const<int[1]>();
-    test_false    <int&>();
-    test_false    <int&&>();
+  test_not_const<int*>();
+  test_false<int[]>();
+  test_not_const<int[1]>();
+  test_false<int&>();
+  test_false<int&&>();
 
-    test_true     <Empty>();
+  test_true<Empty>();
 
-    test_true     <CtorDefaulted>();
-    test_false    <CtorDeleted>();
-    test_true     <DtorDefaulted>();
-    test_false    <DtorDeleted>();
+  test_true<CtorDefaulted>();
+  test_false<CtorDeleted>();
+  test_true<DtorDefaulted>();
+  test_false<DtorDeleted>();
 
-    test_true     <Noexcept>();
-    test_true     <NoexceptTrue>();
-    test_false    <NoexceptFalse>();
+  test_true<Noexcept>();
+  test_true<NoexceptTrue>();
+  test_false<NoexceptFalse>();
 
-    test_false    <CtorProtected>();
-    test_false    <CtorPrivate>();
-    test_false    <DtorProtected>();
-    test_false    <DtorPrivate>();
+  test_false<CtorProtected>();
+  test_false<CtorPrivate>();
+  test_false<DtorProtected>();
+  test_false<DtorPrivate>();
 
-    test_true     <NoexceptDependant<int>>();
-    test_false    <NoexceptDependant<double>>();
+  test_true<NoexceptDependant<int> >();
+  test_false<NoexceptDependant<double> >();
 
-    test_true     <CtorExplicit>();
-    test_false    <CtorArgument>();
-    test_true     <CtorDefaultArgument>();
-    test_true     <CtorExplicitDefaultArgument>();
+  test_true<CtorExplicit>();
+  test_false<CtorArgument>();
+  test_true<CtorDefaultArgument>();
+  test_true<CtorExplicitDefaultArgument>();
 
-    test_true     <Derived>();
-    test_false    <Abstract>();
-    test_false    <AbstractDestructor>();
+  test_true<Derived>();
+  test_false<Abstract>();
+  test_false<AbstractDestructor>();
 
-    test_true     <OperatorNewDeleted>();
+  test_true<OperatorNewDeleted>();
 
-    test_true     <decltype(Lambda)>();
-    test_not_const<void(*)(const int&)>();
-    test_not_const<void(Empty::*)(const int&)               >();
-    test_not_const<void(Empty::*)(const int&) const         >();
-    test_not_const<void(Empty::*)(const int&)       volatile>();
-    test_not_const<void(Empty::*)(const int&) const volatile>();
-    test_not_const<void(Empty::*)(const int&) &>();
-    test_not_const<void(Empty::*)(const int&) &&>();
-    test_not_const<void(Empty::*)(const int&) noexcept>();
-    test_not_const<void(Empty::*)(const int&) noexcept(true)>();
-    test_not_const<void(Empty::*)(const int&) noexcept(false)>();
+  test_true<decltype(Lambda)>();
+  test_not_const<void (*)(const int&)>();
+  test_not_const<void (Empty::*)(const int&)>();
+  test_not_const<void (Empty::*)(const int&) const>();
+  test_not_const<void (Empty::*)(const int&) volatile>();
+  test_not_const<void (Empty::*)(const int&) const volatile>();
+  test_not_const<void (Empty::*)(const int&)&>();
+  test_not_const<void (Empty::*)(const int&) &&>();
+  test_not_const<void (Empty::*)(const int&) noexcept>();
+  test_not_const<void (Empty::*)(const int&) noexcept(true)>();
+  test_not_const<void (Empty::*)(const int&) noexcept(false)>();
 
-    // Sequence containers
-    test_not_const<std::array<               int, 0>>();
-    test_not_const<std::array<               int, 1>>();
-    test_false    <std::array<const          int, 1>>();
-    test_not_const<std::array<      volatile int, 1>>();
-    test_false    <std::array<const volatile int, 1>>();
-    test_true     <std::deque<               int>>();
-    test_true     <std::deque<const          int>>();
-    test_true     <std::deque<      volatile int>>();
-    test_true     <std::deque<const volatile int>>();
-    test_true     <std::forward_list<int>>();
-    test_true     <std::list<int>>();
-    test_true     <std::vector<int>>();
+  // Sequence containers
+  test_not_const<std::array<int, 0> >();
+  test_not_const<std::array<int, 1> >();
+  test_false<std::array<const int, 1> >();
+  test_not_const<std::array<volatile int, 1> >();
+  test_false<std::array<const volatile int, 1> >();
+  test_true<std::deque<int> >();
+  test_true<std::deque<const int> >();
+  test_true<std::deque<volatile int> >();
+  test_true<std::deque<const volatile int> >();
+  test_true<std::forward_list<int> >();
+  test_true<std::list<int> >();
+  test_true<std::vector<int> >();
 
-    // Associative containers
-    test_true     <std::set<int>>();
-    test_true     <std::map<int, int>>();
-    test_true     <std::multiset<int>>();
-    test_true     <std::multimap<int, int>>();
+  // Associative containers
+  test_true<std::set<int> >();
+  test_true<std::map<int, int> >();
+  test_true<std::multiset<int> >();
+  test_true<std::multimap<int, int> >();
 
-    // Unordered associative containers
-    test_true     <std::unordered_set<int>>();
-    test_true     <std::unordered_map<int, int>>();
-    test_true     <std::unordered_multiset<int>>();
-    test_true     <std::unordered_multimap<int, int>>();
+  // Unordered associative containers
+  test_true<std::unordered_set<int> >();
+  test_true<std::unordered_map<int, int> >();
+  test_true<std::unordered_multiset<int> >();
+  test_true<std::unordered_multimap<int, int> >();
 
-    // Container adaptors
-    test_true     <std::stack<               int>>();
-    test_true     <std::stack<const          int>>();
-    test_true     <std::stack<      volatile int>>();
-    test_true     <std::stack<const volatile int>>();
-    test_true     <std::queue<int>>();
-    test_true     <std::priority_queue<int>>();
+  // Container adaptors
+  test_true<std::stack<int> >();
+  test_true<std::stack<const int> >();
+  test_true<std::stack<volatile int> >();
+  test_true<std::stack<const volatile int> >();
+  test_true<std::queue<int> >();
+  test_true<std::priority_queue<int> >();
 
-    test_true     <std::span<               int>>();
-    test_true     <std::span<const          int>>();
-    test_true     <std::span<      volatile int>>();
-    test_true     <std::span<const volatile int>>();
+  test_true<std::span<int> >();
+  test_true<std::span<const int> >();
+  test_true<std::span<volatile int> >();
+  test_true<std::span<const volatile int> >();
 
-    // Strings
-    test_true     <std::string>();
-    test_true     <std::wstring>();
-    test_true     <std::u8string>();
-    test_true     <std::u16string>();
-    test_true     <std::u32string>();
+  // Strings
+  test_true<std::string>();
+  test_true<std::wstring>();
+  test_true<std::u8string>();
+  test_true<std::u16string>();
+  test_true<std::u32string>();
 
-    // String views
-    test_true     <std::string_view>();
-    test_true     <std::wstring_view>();
-    test_true     <std::u8string_view>();
-    test_true     <std::u16string_view>();
-    test_true     <std::u32string_view>();
+  // String views
+  test_true<std::string_view>();
+  test_true<std::wstring_view>();
+  test_true<std::u8string_view>();
+  test_true<std::u16string_view>();
+  test_true<std::u32string_view>();
 
-    // Smart pointers
-    test_true     <std::unique_ptr<int>>();
-    test_true     <std::shared_ptr<int>>();
-    test_true     <std::weak_ptr<int>>();
-
+  // Smart pointers
+  test_true<std::unique_ptr<int> >();
+  test_true<std::shared_ptr<int> >();
+  test_true<std::weak_ptr<int> >();
 }
 
 // Required for MSVC internal test runner compatibility.
-int main(int, char**) {
-    return 0;
-}
+int main(int, char**) { return 0; }

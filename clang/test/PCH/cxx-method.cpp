@@ -3,7 +3,7 @@
 // RUN: %clang_cc1 -include-pch %t -verify %s
 // expected-no-diagnostics
 
-void S::m(int x) { }
+void S::m(int x) {}
 
 S::operator char *() { return 0; }
 

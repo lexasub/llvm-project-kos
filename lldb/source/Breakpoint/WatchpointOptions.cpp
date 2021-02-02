@@ -40,8 +40,8 @@ WatchpointOptions::WatchpointOptions(const WatchpointOptions &rhs)
 }
 
 // WatchpointOptions assignment operator
-const WatchpointOptions &WatchpointOptions::
-operator=(const WatchpointOptions &rhs) {
+const WatchpointOptions &
+WatchpointOptions::operator=(const WatchpointOptions &rhs) {
   m_callback = rhs.m_callback;
   m_callback_baton_sp = rhs.m_callback_baton_sp;
   m_callback_is_synchronous = rhs.m_callback_is_synchronous;

@@ -1,9 +1,5 @@
 #include "FunctionLevelLinkingTest.h"
 
-int foo() {
-  return 0;
-}
+int foo() { return 0; }
 
-int main() {
-  return foo() + bar() + baz();
-}
+int main() { return foo() + bar() + baz(); }

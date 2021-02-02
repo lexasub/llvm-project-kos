@@ -485,9 +485,9 @@ class AsyncHandlerTraits<Error(ResponseHandlerT, ArgTs...)>
 // specialized for function types) and inherits from the appropriate
 // speciilization for the given non-function type's call operator.
 template <typename HandlerT>
-class HandlerTraits
-    : public HandlerTraits<
-          decltype(&std::remove_reference<HandlerT>::type::operator())> {};
+class HandlerTraits : public HandlerTraits<decltype(
+                          &std::remove_reference<HandlerT>::type::operator())> {
+};
 
 // Traits for handlers with a given function type.
 template <typename RetT, typename... ArgTs>

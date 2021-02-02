@@ -37,8 +37,7 @@ namespace lld {
 
 class SimpleFile : public File {
 public:
-  SimpleFile(StringRef path, File::Kind kind)
-    : File(path, kind) {}
+  SimpleFile(StringRef path, File::Kind kind) : File(path, kind) {}
 
   ~SimpleFile() override {
     _defined.clear();
@@ -76,10 +75,9 @@ public:
 
   void removeDefinedAtomsIf(std::function<bool(const DefinedAtom *)> pred) {
     auto &atoms = _defined;
-    auto newEnd = std::remove_if(atoms.begin(), atoms.end(),
-                                 [&pred](OwningAtomPtr<DefinedAtom> &p) {
-                                   return pred(p.get());
-                                 });
+    auto newEnd = std::remove_if(
+        atoms.begin(), atoms.end(),
+        [&pred](OwningAtomPtr<DefinedAtom> &p) { return pred(p.get()); });
     atoms.erase(newEnd, atoms.end());
   }
 
@@ -93,9 +91,7 @@ public:
     return _shared;
   }
 
-  const AtomRange<AbsoluteAtom> absolute() const override {
-    return _absolute;
-  }
+  const AtomRange<AbsoluteAtom> absolute() const override { return _absolute; }
 
   void clearAtoms() override {
     _defined.clear();
@@ -145,9 +141,7 @@ public:
   explicit SimpleDefinedAtom(const File &f)
       : _file(f), _ordinal(f.getNextAtomOrdinalAndIncrement()) {}
 
-  ~SimpleDefinedAtom() override {
-    _references.clearAndLeakNodesUnsafely();
-  }
+  ~SimpleDefinedAtom() override { _references.clearAndLeakNodesUnsafely(); }
 
   const File &file() const override { return _file; }
 
@@ -197,8 +191,7 @@ public:
     it = reinterpret_cast<const void *>(std::next(ref).getNodePtr());
   }
 
-  void addReference(Reference::KindNamespace ns,
-                    Reference::KindArch arch,
+  void addReference(Reference::KindNamespace ns, Reference::KindArch arch,
                     Reference::KindValue kindValue, uint64_t off,
                     const Atom *target, Reference::Addend a) override {
     assert(target && "trying to create reference to nothing");
@@ -215,8 +208,9 @@ public:
     for (SimpleReference &node : _references) {
       elements.push_back(&node);
     }
-    std::sort(elements.begin(), elements.end(),
-        [] (const SimpleReference *lhs, const SimpleReference *rhs) -> bool {
+    std::sort(
+        elements.begin(), elements.end(),
+        [](const SimpleReference *lhs, const SimpleReference *rhs) -> bool {
           uint64_t lhsOffset = lhs->offsetInAtom();
           uint64_t rhsOffset = rhs->offsetInAtom();
           if (rhsOffset != lhsOffset)

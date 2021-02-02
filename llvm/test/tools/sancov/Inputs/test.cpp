@@ -9,11 +9,15 @@
 void foo();
 
 __attribute__((noinline))
-std::string bar(std::string str) { printf("bar\n"); return str; }
+std::string
+bar(std::string str) {
+  printf("bar\n");
+  return str;
+}
 
 int main(int argc, char **argv) {
-    if (argc == 2)
-        foo();
-    bar("str");
-    printf("main\n");
+  if (argc == 2)
+    foo();
+  bar("str");
+  printf("main\n");
 }

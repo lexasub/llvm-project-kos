@@ -1,9 +1,9 @@
 // RUN: %clang_cc1 -fsyntax-only %s -std=c++11 -ast-dump -ast-dump-filter AutoVar | FileCheck %s
 
 namespace {
-  class foo {
-  };
-}
+class foo {
+};
+} // namespace
 
 #pragma GCC visibility push(hidden)
 auto AutoVar = foo();

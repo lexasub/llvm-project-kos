@@ -45,7 +45,7 @@ const char *const LLVMLoopUnrollFollowupRemainder =
     "llvm.loop.unroll.followup_remainder";
 /// @}
 
-const Loop* addClonedBlockToLoopInfo(BasicBlock *OriginalBB,
+const Loop *addClonedBlockToLoopInfo(BasicBlock *OriginalBB,
                                      BasicBlock *ClonedBB, LoopInfo *LI,
                                      NewLoopsMap &NewLoops);
 

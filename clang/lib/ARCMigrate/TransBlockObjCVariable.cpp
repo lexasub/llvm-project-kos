@@ -24,8 +24,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "Transforms.h"
 #include "Internals.h"
+#include "Transforms.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/Attr.h"
 #include "clang/Basic/SourceManager.h"
@@ -36,20 +36,20 @@ using namespace trans;
 
 namespace {
 
-class RootBlockObjCVarRewriter :
-                          public RecursiveASTVisitor<RootBlockObjCVarRewriter> {
+class RootBlockObjCVarRewriter
+    : public RecursiveASTVisitor<RootBlockObjCVarRewriter> {
   llvm::DenseSet<VarDecl *> &VarsToChange;
 
   class BlockVarChecker : public RecursiveASTVisitor<BlockVarChecker> {
     VarDecl *Var;
 
     typedef RecursiveASTVisitor<BlockVarChecker> base;
+
   public:
-    BlockVarChecker(VarDecl *var) : Var(var) { }
+    BlockVarChecker(VarDecl *var) : Var(var) {}
 
     bool TraverseImplicitCastExpr(ImplicitCastExpr *castE) {
-      if (DeclRefExpr *
-            ref = dyn_cast<DeclRefExpr>(castE->getSubExpr())) {
+      if (DeclRefExpr *ref = dyn_cast<DeclRefExpr>(castE->getSubExpr())) {
         if (ref->getDecl() == Var) {
           if (castE->getCastKind() == CK_LValueToRValue)
             return true; // Using the value of the variable.
@@ -72,15 +72,14 @@ class RootBlockObjCVarRewriter :
 
 public:
   RootBlockObjCVarRewriter(llvm::DenseSet<VarDecl *> &VarsToChange)
-    : VarsToChange(VarsToChange) { }
+      : VarsToChange(VarsToChange) {}
 
   bool VisitBlockDecl(BlockDecl *block) {
     SmallVector<VarDecl *, 4> BlockVars;
 
     for (const auto &I : block->captures()) {
       VarDecl *var = I.getVariable();
-      if (I.isByRef() &&
-          var->getType()->isObjCObjectPointerType() &&
+      if (I.isByRef() && var->getType()->isObjCObjectPointerType() &&
           isImplicitStrong(var->getType())) {
         BlockVars.push_back(var);
       }
@@ -113,7 +112,7 @@ class BlockObjCVarRewriter : public RecursiveASTVisitor<BlockObjCVarRewriter> {
 
 public:
   BlockObjCVarRewriter(llvm::DenseSet<VarDecl *> &VarsToChange)
-    : VarsToChange(VarsToChange) { }
+      : VarsToChange(VarsToChange) {}
 
   bool TraverseBlockDecl(BlockDecl *block) {
     RootBlockObjCVarRewriter(VarsToChange).TraverseDecl(block);
@@ -130,17 +129,17 @@ void BlockObjCVariableTraverser::traverseBody(BodyContext &BodyCtx) {
   BlockObjCVarRewriter trans(VarsToChange);
   trans.TraverseStmt(BodyCtx.getTopStmt());
 
-  for (llvm::DenseSet<VarDecl *>::iterator
-         I = VarsToChange.begin(), E = VarsToChange.end(); I != E; ++I) {
+  for (llvm::DenseSet<VarDecl *>::iterator I = VarsToChange.begin(),
+                                           E = VarsToChange.end();
+       I != E; ++I) {
     VarDecl *var = *I;
     BlocksAttr *attr = var->getAttr<BlocksAttr>();
-    if(!attr)
+    if (!attr)
       continue;
     bool useWeak = canApplyWeak(Pass.Ctx, var->getType());
     SourceManager &SM = Pass.Ctx.getSourceManager();
     Transaction Trans(Pass.TA);
-    Pass.TA.replaceText(SM.getExpansionLoc(attr->getLocation()),
-                        "__block",
+    Pass.TA.replaceText(SM.getExpansionLoc(attr->getLocation()), "__block",
                         useWeak ? "__weak" : "__unsafe_unretained");
   }
 }

@@ -133,11 +133,10 @@ bool ValueObjectVariable::UpdateValue() {
     // expr doesn't contain DWARF bytes, it contains the constant variable
     // value bytes themselves...
     if (expr.GetExpressionData(m_data)) {
-       if (m_data.GetDataStart() && m_data.GetByteSize())
+      if (m_data.GetDataStart() && m_data.GetByteSize())
         m_value.SetBytes(m_data.GetDataStart(), m_data.GetByteSize());
       m_value.SetContext(Value::eContextTypeVariable, variable);
-    }
-    else
+    } else
       m_error.SetErrorString("empty constant data");
     // constant bytes can't be edited - sorry
     m_resolved_value.SetContext(Value::eContextTypeInvalid, nullptr);
@@ -199,8 +198,7 @@ bool ValueObjectVariable::UpdateValue() {
       case Value::eValueTypeScalar:
         // The variable value is in the Scalar value inside the m_value. We can
         // point our m_data right to it.
-        m_error =
-            m_value.GetValueAsData(&exe_ctx, m_data, GetModule().get());
+        m_error = m_value.GetValueAsData(&exe_ctx, m_data, GetModule().get());
         break;
 
       case Value::eValueTypeFileAddress:
@@ -228,8 +226,7 @@ bool ValueObjectVariable::UpdateValue() {
           // extract read its value into m_data appropriately
           Value value(m_value);
           value.SetContext(Value::eContextTypeVariable, variable);
-          m_error =
-              value.GetValueAsData(&exe_ctx, m_data, GetModule().get());
+          m_error = value.GetValueAsData(&exe_ctx, m_data, GetModule().get());
 
           SetValueDidChange(value_type != old_value.GetValueType() ||
                             m_value.GetScalar() != old_value.GetScalar());
@@ -243,7 +240,7 @@ bool ValueObjectVariable::UpdateValue() {
       m_resolved_value.SetContext(Value::eContextTypeInvalid, nullptr);
     }
   }
-  
+
   return m_error.Success();
 }
 
@@ -297,8 +294,6 @@ void ValueObjectVariable::DoUpdateChildrenAddressType(ValueObject &valobj) {
     break;
   }
 }
-
-
 
 bool ValueObjectVariable::IsInScope() {
   const ExecutionContextRef &exe_ctx_ref = GetExecutionContextRef();

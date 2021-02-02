@@ -42,8 +42,8 @@ private:
 
 void DeprecatedHeadersCheck::registerPPCallbacks(
     const SourceManager &SM, Preprocessor *PP, Preprocessor *ModuleExpanderPP) {
-    PP->addPPCallbacks(
-        ::std::make_unique<IncludeModernizePPCallbacks>(*this, getLangOpts()));
+  PP->addPPCallbacks(
+      ::std::make_unique<IncludeModernizePPCallbacks>(*this, getLangOpts()));
 }
 
 IncludeModernizePPCallbacks::IncludeModernizePPCallbacks(ClangTidyCheck &Check,
@@ -112,8 +112,9 @@ void IncludeModernizePPCallbacks::InclusionDirective(
   } else if (DeleteHeaders.count(FileName) != 0) {
     Check.diag(FilenameRange.getBegin(),
                "including '%0' has no effect in C++; consider removing it")
-        << FileName << FixItHint::CreateRemoval(
-                           SourceRange(HashLoc, FilenameRange.getEnd()));
+        << FileName
+        << FixItHint::CreateRemoval(
+               SourceRange(HashLoc, FilenameRange.getEnd()));
   }
 }
 

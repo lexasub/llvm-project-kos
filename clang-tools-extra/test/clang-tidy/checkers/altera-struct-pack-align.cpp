@@ -96,6 +96,7 @@ struct success4 {
 
 // Warnings should not trigger on struct instantiations
 void no_trigger_on_instantiation() {
-  struct bad_align3 instantiated { 'a', 0.001, 'b' };
+  struct bad_align3 instantiated {
+    'a', 0.001, 'b'
+  };
 }
-

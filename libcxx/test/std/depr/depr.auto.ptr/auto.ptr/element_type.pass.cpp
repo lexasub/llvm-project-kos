@@ -26,19 +26,17 @@
 #include "test_macros.h"
 
 template <class T>
-void
-test()
-{
-    static_assert((std::is_same<typename std::auto_ptr<T>::element_type, T>::value), "");
-    std::auto_ptr<T> p;
-    ((void)p);
+void test() {
+  static_assert(
+      (std::is_same<typename std::auto_ptr<T>::element_type, T>::value), "");
+  std::auto_ptr<T> p;
+  ((void)p);
 }
 
-int main(int, char**)
-{
-    test<int>();
-    test<double>();
-    test<void>();
+int main(int, char**) {
+  test<int>();
+  test<double>();
+  test<void>();
 
   return 0;
 }

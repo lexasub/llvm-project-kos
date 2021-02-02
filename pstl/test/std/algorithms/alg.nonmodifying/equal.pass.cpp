@@ -62,7 +62,8 @@ struct UserType
     {
         return a.key != key;
     }
-    UserType operator!()
+    UserType
+    operator!()
     {
         UserType tmp;
         tmp.key = !key;

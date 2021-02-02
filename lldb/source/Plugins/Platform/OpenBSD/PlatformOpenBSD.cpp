@@ -38,7 +38,6 @@ LLDB_PLUGIN_DEFINE(PlatformOpenBSD)
 
 static uint32_t g_initialize_count = 0;
 
-
 PlatformSP PlatformOpenBSD::CreateInstance(bool force, const ArchSpec *arch) {
   Log *log(GetLogIfAllCategoriesSet(LIBLLDB_LOG_PLATFORM));
   LLDB_LOG(log, "force = {0}, arch=({1}, {2})", force,
@@ -191,9 +190,7 @@ void PlatformOpenBSD::GetStatus(Stream &strm) {
 }
 
 // OpenBSD processes cannot yet be launched by spawning and attaching.
-bool PlatformOpenBSD::CanDebugProcess() {
-  return false;
-}
+bool PlatformOpenBSD::CanDebugProcess() { return false; }
 
 void PlatformOpenBSD::CalculateTrapHandlerSymbolNames() {
   m_trap_handlers.push_back(ConstString("_sigtramp"));

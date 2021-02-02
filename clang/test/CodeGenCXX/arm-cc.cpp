@@ -1,14 +1,15 @@
 // RUN: %clang_cc1 %s -triple=arm-unknown-linux-gnueabi -target-abi aapcs -emit-llvm -o - | FileCheck %s
 
 class SMLoc {
- const char *Ptr;
+  const char *Ptr;
+
 public:
- SMLoc();
- SMLoc(const SMLoc &RHS);
+  SMLoc();
+  SMLoc(const SMLoc &RHS);
 };
 SMLoc foo(void *p);
 void bar(void *x) {
- foo(x);
+  foo(x);
 }
 void zed(SMLoc x);
 void baz() {

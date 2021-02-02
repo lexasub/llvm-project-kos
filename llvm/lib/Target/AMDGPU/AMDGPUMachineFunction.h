@@ -24,7 +24,7 @@ class AMDGPUMachineFunction : public MachineFunctionInfo {
 
 protected:
   uint64_t ExplicitKernArgSize = 0; // Cache for this.
-  Align MaxKernArgAlign;        // Cache for this.
+  Align MaxKernArgAlign;            // Cache for this.
 
   /// Number of bytes in the LDS that are being used.
   unsigned LDSSize = 0;
@@ -61,37 +61,23 @@ protected:
 public:
   AMDGPUMachineFunction(const MachineFunction &MF);
 
-  uint64_t getExplicitKernArgSize() const {
-    return ExplicitKernArgSize;
-  }
+  uint64_t getExplicitKernArgSize() const { return ExplicitKernArgSize; }
 
   unsigned getMaxKernArgAlign() const { return MaxKernArgAlign.value(); }
 
-  unsigned getLDSSize() const {
-    return LDSSize;
-  }
+  unsigned getLDSSize() const { return LDSSize; }
 
-  AMDGPU::SIModeRegisterDefaults getMode() const {
-    return Mode;
-  }
+  AMDGPU::SIModeRegisterDefaults getMode() const { return Mode; }
 
-  bool isEntryFunction() const {
-    return IsEntryFunction;
-  }
+  bool isEntryFunction() const { return IsEntryFunction; }
 
   bool isModuleEntryFunction() const { return IsModuleEntryFunction; }
 
-  bool hasNoSignedZerosFPMath() const {
-    return NoSignedZerosFPMath;
-  }
+  bool hasNoSignedZerosFPMath() const { return NoSignedZerosFPMath; }
 
-  bool isMemoryBound() const {
-    return MemoryBound;
-  }
+  bool isMemoryBound() const { return MemoryBound; }
 
-  bool needsWaveLimiter() const {
-    return WaveLimiter;
-  }
+  bool needsWaveLimiter() const { return WaveLimiter; }
 
   unsigned allocateLDSGlobal(const DataLayout &DL, const GlobalVariable &GV);
 
@@ -100,5 +86,5 @@ public:
   void setDynLDSAlign(const DataLayout &DL, const GlobalVariable &GV);
 };
 
-}
+} // namespace llvm
 #endif

@@ -1091,7 +1091,7 @@ Error DumpOutputStyle::dumpOldFpo(PDBFile &File) {
     return Error::success();
   }
 
-  const FixedStreamArray<object::FpoData>& Records = Dbi.getOldFpoRecords();
+  const FixedStreamArray<object::FpoData> &Records = Dbi.getOldFpoRecords();
 
   P.printLine("  RVA    | Code | Locals | Params | Prolog | Saved Regs | Use "
               "BP | Has SEH | Frame Type");
@@ -1118,7 +1118,7 @@ Error DumpOutputStyle::dumpNewFpo(PDBFile &File) {
     return Error::success();
   }
 
-  const DebugFrameDataSubsectionRef& FDS = Dbi.getNewFpoRecords();
+  const DebugFrameDataSubsectionRef &FDS = Dbi.getNewFpoRecords();
 
   P.printLine("  RVA    | Code | Locals | Params | Stack | Prolog | Saved Regs "
               "| Has SEH | Has C++EH | Start | Program");
@@ -1804,7 +1804,6 @@ Error DumpOutputStyle::dumpSymbolsFromGSI(const GSIHashTable &Table,
     Pipeline.addCallbackToPipeline(Dumper);
     CVSymbolVisitor Visitor(Pipeline);
 
-
     BinaryStreamRef SymStream =
         ExpectedSyms->getSymbolArray().getUnderlyingStream();
     for (uint32_t PubSymOff : Table) {
@@ -1823,7 +1822,7 @@ Error DumpOutputStyle::dumpSymbolsFromGSI(const GSIHashTable &Table,
       AutoIndent Indent2(P);
       for (const PSHashRecord &HR : Table.HashRecords)
         P.formatLine("off = {0}, refcnt = {1}", uint32_t(HR.Off),
-          uint32_t(HR.CRef));
+                     uint32_t(HR.CRef));
     }
 
     P.formatLine("Hash Buckets");

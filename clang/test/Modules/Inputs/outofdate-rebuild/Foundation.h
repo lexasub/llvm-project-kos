@@ -1,3 +1,5 @@
 // Foundation
 #import "CoreText.h"
-struct D { int i; };
+struct D {
+  int i;
+};

@@ -3,7 +3,7 @@
 struct S1 {
   char c;
   short s; // expected-warning {{padding struct 'S1' with 1 byte to align 's'}}
-  long l; // expected-warning {{padding struct 'S1' with 4 bytes to align 'l'}}
+  long l;  // expected-warning {{padding struct 'S1' with 4 bytes to align 'l'}}
 };
 
 struct S2 { // expected-warning {{padding size of 'S2' with 3 bytes to alignment boundary}}
@@ -53,13 +53,12 @@ struct S9 {
 
 struct S10 {
   int x;
-  char a,b,c,d;
+  char a, b, c, d;
 } __attribute__((packed));
-
 
 struct S11 { // expected-warning {{packed attribute is unnecessary for 'S11'}}
   bool x;
-  char a,b,c,d;
+  char a, b, c, d;
 } __attribute__((packed));
 
 struct S12 {
@@ -73,7 +72,7 @@ struct S13 { // expected-warning {{padding size of 'S13' with 6 bits to alignmen
 };
 
 struct S14 { // expected-warning {{packed attribute is unnecessary for 'S14'}}
-  char a,b,c,d;
+  char a, b, c, d;
 } __attribute__((packed));
 
 struct S15 { // expected-warning {{packed attribute is unnecessary for 'S15'}}
@@ -82,17 +81,17 @@ struct S15 { // expected-warning {{packed attribute is unnecessary for 'S15'}}
 } __attribute__((packed));
 
 struct S16 { // expected-warning {{padding size of 'S16' with 2 bytes to alignment boundary}} expected-warning {{packed attribute is unnecessary for 'S16'}}
-  char a,b;
+  char a, b;
 } __attribute__((packed, aligned(4)));
 
 struct S17 {
   struct S16 s;
-  char a,b;
+  char a, b;
 } __attribute__((packed, aligned(2)));
 
 struct S18 { // expected-warning {{padding size of 'S18' with 2 bytes to alignment boundary}} expected-warning {{packed attribute is unnecessary for 'S18'}}
   struct S16 s;
-  char a,b;
+  char a, b;
 } __attribute__((packed, aligned(4)));
 
 struct S19 { // expected-warning {{packed attribute is unnecessary for 'S19'}}
@@ -146,8 +145,7 @@ struct S27 { // expected-warning {{padding size of 'S27' with 7 bits to alignmen
   unsigned char b : 8;
 } __attribute__((packed));
 
-
 // The warnings are emitted when the layout of the structs is computed, so we have to use them.
-void f(S1*, S2*, S3*, S4*, S5*, S6*, S7*, S8*, S9*, S10*, S11*, S12*, S13*,
-       S14*, S15*, S16*, S17*, S18*, S19*, S20*, S21*, S22*, S23*, S24*, S25*,
-       S26*, S27*){}
+void f(S1 *, S2 *, S3 *, S4 *, S5 *, S6 *, S7 *, S8 *, S9 *, S10 *, S11 *, S12 *, S13 *,
+       S14 *, S15 *, S16 *, S17 *, S18 *, S19 *, S20 *, S21 *, S22 *, S23 *, S24 *, S25 *,
+       S26 *, S27 *) {}

@@ -21,8 +21,7 @@ struct ChooseSteadyClock {
   typedef std::chrono::high_resolution_clock type;
 };
 
-template <>
-struct ChooseSteadyClock<false> {
+template <> struct ChooseSteadyClock<false> {
   typedef std::chrono::steady_clock type;
 };
 #endif
@@ -43,6 +42,6 @@ inline double ChronoClockNow() {
 
 std::string LocalDateTimeString();
 
-}  // end namespace benchmark
+} // end namespace benchmark
 
-#endif  // BENCHMARK_TIMERS_H
+#endif // BENCHMARK_TIMERS_H

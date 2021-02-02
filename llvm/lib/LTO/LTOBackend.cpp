@@ -557,7 +557,7 @@ Error lto::backend(const Config &C, AddStreamFn AddStream,
 
 static void dropDeadSymbols(Module &Mod, const GVSummaryMapTy &DefinedGlobals,
                             const ModuleSummaryIndex &Index) {
-  std::vector<GlobalValue*> DeadGVs;
+  std::vector<GlobalValue *> DeadGVs;
   for (auto &GV : Mod.global_values())
     if (GlobalValueSummary *GVS = DefinedGlobals.lookup(GV.getGUID()))
       if (!Index.isGlobalValueLive(GVS)) {

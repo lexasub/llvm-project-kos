@@ -1,12 +1,12 @@
 // Note: the run lines follow their respective tests, since line/column
 // matter in this test.
 
-template<class V>
+template <class V>
 struct S {
   void operator()(int) const {}
-  template<class T> void operator()(T) const {}
-  template<class T> void operator()(V, T, T) const {}
-  template<class T> const S<T> *operator()(const S<T> &s) const { return &s; }
+  template <class T> void operator()(T) const {}
+  template <class T> void operator()(V, T, T) const {}
+  template <class T> const S<T> *operator()(const S<T> &s) const { return &s; }
 };
 
 void foo(S<void *> &s) { s(42); }
@@ -18,9 +18,9 @@ int main() {
   s(0, s, s);
   (*S<void *>()(S<int>()))(42, 42, 42);
 
-  s(42,);
-  s(s,);
-  s(0, 42, 42,);
+  s(42, );
+  s(s, );
+  s(0, 42, 42, );
 }
 
 // RUN: c-index-test -code-completion-at=%s:16:5 %s | FileCheck -check-prefix=CHECK-CC1 %s

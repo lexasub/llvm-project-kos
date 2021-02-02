@@ -10,8 +10,9 @@
 //
 // Code for ASan stack trace.
 //===----------------------------------------------------------------------===//
-#include "asan_internal.h"
 #include "asan_stack.h"
+
+#include "asan_internal.h"
 #include "sanitizer_common/sanitizer_atomic.h"
 
 namespace __asan {
@@ -53,8 +54,10 @@ class ScopedUnwinding {
 
 }  // namespace __asan
 
-void __sanitizer::BufferedStackTrace::UnwindImpl(
-    uptr pc, uptr bp, void *context, bool request_fast, u32 max_depth) {
+void __sanitizer::BufferedStackTrace::UnwindImpl(uptr pc, uptr bp,
+                                                 void *context,
+                                                 bool request_fast,
+                                                 u32 max_depth) {
   using namespace __asan;
   size = 0;
   if (UNLIKELY(!asan_inited))

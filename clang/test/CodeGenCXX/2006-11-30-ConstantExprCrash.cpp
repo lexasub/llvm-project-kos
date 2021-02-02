@@ -8,7 +8,6 @@ struct sys_var {
   sys_var() {}
 };
 
-
 struct sys_var_thd : public sys_var {
 };
 

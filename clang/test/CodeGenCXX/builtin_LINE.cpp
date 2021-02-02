@@ -1,7 +1,7 @@
 // RUN: %clang_cc1 -std=c++1z -fblocks %s -triple x86_64-unknown-unknown -emit-llvm -o - | FileCheck %s
 
 extern "C" int sink;
-extern "C" const volatile void* volatile ptr_sink = nullptr;
+extern "C" const volatile void *volatile ptr_sink = nullptr;
 
 struct Tag1 {};
 struct Tag2 {};
@@ -16,13 +16,11 @@ int get_line_nonconstexpr(int l = __builtin_LINE()) {
   return l;
 }
 
-
 int get_line(int l = __builtin_LINE()) {
   return l;
 }
 
 int get_line2(int l = get_line()) { return l; }
-
 
 // CHECK: @global_one ={{.*}} global i32 [[@LINE+1]], align 4
 int global_one = __builtin_LINE();
@@ -61,7 +59,6 @@ void InClassInit::test_class() {
   // CHECK-NEXT: %[[CALL2:.+]] = call i32 @_Z9get_line2i(i32 %[[CALL]])
   // CHECK-NEXT: call void @_ZN11InClassInitC1E4Tag4i(%struct.InClassInit* {{[^,]*}} %test_five, i32 %[[CALL2]])
   InClassInit test_five(Tag4{});
-
 }
 // CHECK-LABEL: define{{.*}} void @_ZN11InClassInitC2Ev
 // CHECK: store i32 [[@LINE+4]], i32* %Init, align 4

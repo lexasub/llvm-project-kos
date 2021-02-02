@@ -741,17 +741,17 @@ Error UnwindTable::parseRows(const CFIProgram &CFIP, UnwindRow &Row,
 }
 
 ArrayRef<CFIProgram::OperandType[2]> CFIProgram::getOperandTypes() {
-  static OperandType OpTypes[DW_CFA_restore+1][2];
+  static OperandType OpTypes[DW_CFA_restore + 1][2];
   static bool Initialized = false;
   if (Initialized) {
-    return ArrayRef<OperandType[2]>(&OpTypes[0], DW_CFA_restore+1);
+    return ArrayRef<OperandType[2]>(&OpTypes[0], DW_CFA_restore + 1);
   }
   Initialized = true;
 
-#define DECLARE_OP2(OP, OPTYPE0, OPTYPE1)       \
-  do {                                          \
-    OpTypes[OP][0] = OPTYPE0;                   \
-    OpTypes[OP][1] = OPTYPE1;                   \
+#define DECLARE_OP2(OP, OPTYPE0, OPTYPE1)                                      \
+  do {                                                                         \
+    OpTypes[OP][0] = OPTYPE0;                                                  \
+    OpTypes[OP][1] = OPTYPE1;                                                  \
   } while (false)
 #define DECLARE_OP1(OP, OPTYPE0) DECLARE_OP2(OP, OPTYPE0, OT_None)
 #define DECLARE_OP0(OP) DECLARE_OP1(OP, OT_None)
@@ -790,7 +790,7 @@ ArrayRef<CFIProgram::OperandType[2]> CFIProgram::getOperandTypes() {
 #undef DECLARE_OP1
 #undef DECLARE_OP2
 
-  return ArrayRef<OperandType[2]>(&OpTypes[0], DW_CFA_restore+1);
+  return ArrayRef<OperandType[2]>(&OpTypes[0], DW_CFA_restore + 1);
 }
 
 /// Print \p Opcode's operand number \p OperandIdx which has value \p Operand.
@@ -809,7 +809,7 @@ void CFIProgram::printOperand(raw_ostream &OS, DIDumpOptions DumpOpts,
     if (!OpcodeName.empty())
       OS << " " << OpcodeName;
     else
-      OS << format(" Opcode %x",  Opcode);
+      OS << format(" Opcode %x", Opcode);
     break;
   }
   case OT_None:
@@ -827,19 +827,19 @@ void CFIProgram::printOperand(raw_ostream &OS, DIDumpOptions DumpOpts,
     if (CodeAlignmentFactor)
       OS << format(" %" PRId64, Operand * CodeAlignmentFactor);
     else
-      OS << format(" %" PRId64 "*code_alignment_factor" , Operand);
+      OS << format(" %" PRId64 "*code_alignment_factor", Operand);
     break;
   case OT_SignedFactDataOffset:
     if (DataAlignmentFactor)
       OS << format(" %" PRId64, int64_t(Operand) * DataAlignmentFactor);
     else
-      OS << format(" %" PRId64 "*data_alignment_factor" , int64_t(Operand));
+      OS << format(" %" PRId64 "*data_alignment_factor", int64_t(Operand));
     break;
   case OT_UnsignedFactDataOffset:
     if (DataAlignmentFactor)
       OS << format(" %" PRId64, Operand * DataAlignmentFactor);
     else
-      OS << format(" %" PRId64 "*data_alignment_factor" , Operand);
+      OS << format(" %" PRId64 "*data_alignment_factor", Operand);
     break;
   case OT_Register:
     OS << ' ';
@@ -954,8 +954,8 @@ void FDE::dump(raw_ostream &OS, DIDumpOptions DumpOpts,
   OS << "\n";
 }
 
-DWARFDebugFrame::DWARFDebugFrame(Triple::ArchType Arch,
-    bool IsEH, uint64_t EHFrameAddress)
+DWARFDebugFrame::DWARFDebugFrame(Triple::ArchType Arch, bool IsEH,
+                                 uint64_t EHFrameAddress)
     : Arch(Arch), IsEH(IsEH), EHFrameAddress(EHFrameAddress) {}
 
 DWARFDebugFrame::~DWARFDebugFrame() = default;
@@ -965,7 +965,8 @@ static void LLVM_ATTRIBUTE_UNUSED dumpDataAux(DataExtractor Data,
   errs() << "DUMP: ";
   for (int i = 0; i < Length; ++i) {
     uint8_t c = Data.getU8(&Offset);
-    errs().write_hex(c); errs() << " ";
+    errs().write_hex(c);
+    errs() << " ";
   }
   errs() << "\n";
 }
@@ -1017,8 +1018,8 @@ Error DWARFDebugFrame::parse(DWARFDataExtractor Data) {
         return createStringError(errc::not_supported,
                                  "unsupported CIE version: %" PRIu8, Version);
 
-      uint8_t AddressSize = Version < 4 ? Data.getAddressSize() :
-                                          Data.getU8(&Offset);
+      uint8_t AddressSize =
+          Version < 4 ? Data.getAddressSize() : Data.getU8(&Offset);
       Data.setAddressSize(AddressSize);
       uint8_t SegmentDescriptorSize = Version < 4 ? 0 : Data.getU8(&Offset);
       uint64_t CodeAlignmentFactor = Data.getULEB128(&Offset);

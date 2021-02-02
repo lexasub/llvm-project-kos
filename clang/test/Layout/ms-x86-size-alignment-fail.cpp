@@ -5,7 +5,10 @@
 
 extern "C" int printf(const char *fmt, ...);
 
-struct B0 { char a; B0() : a(0xB0) {} };
+struct B0 {
+  char a;
+  B0() : a(0xB0) {}
+};
 struct __declspec(align(1)) B1 {};
 
 struct A : virtual B0 {};
@@ -44,7 +47,10 @@ struct __declspec(align(1)) B : virtual B0 {};
 // CHECK-X64-NEXT:      | [sizeof=16, align=8
 // CHECK-X64-NEXT:      |  nvsize=8, nvalign=8]
 
-struct C : virtual B0 { int a; C() : a(0xC) {} };
+struct C : virtual B0 {
+  int a;
+  C() : a(0xC) {}
+};
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK-NEXT:    0 | struct C
@@ -63,7 +69,10 @@ struct C : virtual B0 { int a; C() : a(0xC) {} };
 // CHECK-X64-NEXT:      | [sizeof=24, align=8
 // CHECK-X64-NEXT:      |  nvsize=16, nvalign=8]
 
-struct D : virtual B0 { __declspec(align(1)) int a; D() : a(0xD) {} };
+struct D : virtual B0 {
+  __declspec(align(1)) int a;
+  D() : a(0xD) {}
+};
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK-NEXT:    0 | struct D
@@ -103,7 +112,10 @@ struct E : virtual B0, virtual B1 {};
 // CHECK-X64-NEXT:      | [sizeof=16, align=8
 // CHECK-X64-NEXT:      |  nvsize=8, nvalign=8]
 
-struct F { char a; virtual ~F(); };
+struct F {
+  char a;
+  virtual ~F();
+};
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK-NEXT:    0 | struct F
@@ -118,10 +130,9 @@ struct F { char a; virtual ~F(); };
 // CHECK-X64-NEXT:      | [sizeof=16, align=8
 // CHECK-X64-NEXT:      |  nvsize=16, nvalign=8]
 
-int a[
-sizeof(A)+
-sizeof(B)+
-sizeof(C)+
-sizeof(D)+
-sizeof(E)+
-sizeof(F)];
+int a[sizeof(A) +
+      sizeof(B) +
+      sizeof(C) +
+      sizeof(D) +
+      sizeof(E) +
+      sizeof(F)];

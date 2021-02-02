@@ -88,10 +88,10 @@ void test_converting_store() {
 
 int main(int, char**) {
   // TODO: adjust the tests when this assertion fails.
-  test_store<ex::native_simd<int32_t>>();
-  test_store<ex::fixed_size_simd<int32_t, 4>>();
-  test_converting_store<ex::native_simd<int32_t>>();
-  test_converting_store<ex::fixed_size_simd<int32_t, 4>>();
+  test_store<ex::native_simd<int32_t> >();
+  test_store<ex::fixed_size_simd<int32_t, 4> >();
+  test_converting_store<ex::native_simd<int32_t> >();
+  test_converting_store<ex::fixed_size_simd<int32_t, 4> >();
 
   return 0;
 }

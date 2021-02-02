@@ -31,7 +31,7 @@ namespace lldb_private {
 
 class ThreadPlanPython : public ThreadPlan {
 public:
-  ThreadPlanPython(Thread &thread, const char *class_name, 
+  ThreadPlanPython(Thread &thread, const char *class_name,
                    StructuredDataImpl *args_data);
   ~ThreadPlanPython() override;
 
@@ -57,7 +57,7 @@ protected:
   bool DoPlanExplainsStop(Event *event_ptr) override;
 
   lldb::StateType GetPlanRunState() override;
-  
+
   ScriptInterpreter *GetScriptInterpreter();
 
 private:

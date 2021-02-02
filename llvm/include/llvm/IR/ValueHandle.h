@@ -46,15 +46,14 @@ protected:
   }
 
 private:
-  PointerIntPair<ValueHandleBase**, 2, HandleBaseKind> PrevPair;
+  PointerIntPair<ValueHandleBase **, 2, HandleBaseKind> PrevPair;
   ValueHandleBase *Next = nullptr;
   Value *Val = nullptr;
 
   void setValPtr(Value *V) { Val = V; }
 
 public:
-  explicit ValueHandleBase(HandleBaseKind Kind)
-      : PrevPair(nullptr, Kind) {}
+  explicit ValueHandleBase(HandleBaseKind Kind) : PrevPair(nullptr, Kind) {}
   ValueHandleBase(HandleBaseKind Kind, Value *V)
       : PrevPair(nullptr, Kind), Val(V) {
     if (isValid(getValPtr()))
@@ -99,8 +98,7 @@ protected:
   Value *getValPtr() const { return Val; }
 
   static bool isValid(Value *V) {
-    return V &&
-           V != DenseMapInfo<Value *>::getEmptyKey() &&
+    return V && V != DenseMapInfo<Value *>::getEmptyKey() &&
            V != DenseMapInfo<Value *>::getTombstoneKey();
   }
 
@@ -145,21 +143,16 @@ class WeakVH : public ValueHandleBase {
 public:
   WeakVH() : ValueHandleBase(Weak) {}
   WeakVH(Value *P) : ValueHandleBase(Weak, P) {}
-  WeakVH(const WeakVH &RHS)
-      : ValueHandleBase(Weak, RHS) {}
+  WeakVH(const WeakVH &RHS) : ValueHandleBase(Weak, RHS) {}
 
   WeakVH &operator=(const WeakVH &RHS) = default;
 
-  Value *operator=(Value *RHS) {
-    return ValueHandleBase::operator=(RHS);
-  }
+  Value *operator=(Value *RHS) { return ValueHandleBase::operator=(RHS); }
   Value *operator=(const ValueHandleBase &RHS) {
     return ValueHandleBase::operator=(RHS);
   }
 
-  operator Value*() const {
-    return getValPtr();
-  }
+  operator Value *() const { return getValPtr(); }
 };
 
 // Specialize simplify_type to allow WeakVH to participate in
@@ -210,16 +203,12 @@ public:
 
   WeakTrackingVH &operator=(const WeakTrackingVH &RHS) = default;
 
-  Value *operator=(Value *RHS) {
-    return ValueHandleBase::operator=(RHS);
-  }
+  Value *operator=(Value *RHS) { return ValueHandleBase::operator=(RHS); }
   Value *operator=(const ValueHandleBase &RHS) {
     return ValueHandleBase::operator=(RHS);
   }
 
-  operator Value*() const {
-    return getValPtr();
-  }
+  operator Value *() const { return getValPtr(); }
 
   bool pointsToAliveValue() const {
     return ValueHandleBase::isValid(getValPtr());
@@ -274,7 +263,7 @@ class AssertingVH
 #endif
   // Convert a ValueTy*, which may be const, to the raw Value*.
   static Value *GetAsValue(Value *V) { return V; }
-  static Value *GetAsValue(const Value *V) { return const_cast<Value*>(V); }
+  static Value *GetAsValue(const Value *V) { return const_cast<Value *>(V); }
 
   ValueTy *getValPtr() const { return static_cast<ValueTy *>(getRawValPtr()); }
   void setValPtr(ValueTy *P) { setRawValPtr(GetAsValue(P)); }
@@ -290,9 +279,7 @@ public:
   AssertingVH(const AssertingVH &) = default;
 #endif
 
-  operator ValueTy*() const {
-    return getValPtr();
-  }
+  operator ValueTy *() const { return getValPtr(); }
 
   ValueTy *operator=(ValueTy *RHS) {
     setValPtr(RHS);
@@ -309,7 +296,7 @@ public:
 
 // Treat AssertingVH<T> like T* inside maps. This also allows using find_as()
 // to look up a value without constructing a value handle.
-template<typename T>
+template <typename T>
 struct DenseMapInfo<AssertingVH<T>> : DenseMapInfo<T *> {};
 
 /// Value handle that tracks a Value across RAUW.
@@ -354,15 +341,13 @@ public:
   // Convert a ValueTy*, which may be const, to the type the base
   // class expects.
   static Value *GetAsValue(Value *V) { return V; }
-  static Value *GetAsValue(const Value *V) { return const_cast<Value*>(V); }
+  static Value *GetAsValue(const Value *V) { return const_cast<Value *>(V); }
 
 public:
   TrackingVH() = default;
   TrackingVH(ValueTy *P) { setValPtr(P); }
 
-  operator ValueTy*() const {
-    return getValPtr();
-  }
+  operator ValueTy *() const { return getValPtr(); }
 
   ValueTy *operator=(ValueTy *RHS) {
     setValPtr(RHS);
@@ -382,23 +367,20 @@ public:
 /// when the pointer changes).  Unlike ValueHandleBase, this class has a vtable.
 class CallbackVH : public ValueHandleBase {
   virtual void anchor();
+
 protected:
   ~CallbackVH() = default;
   CallbackVH(const CallbackVH &) = default;
   CallbackVH &operator=(const CallbackVH &) = default;
 
-  void setValPtr(Value *P) {
-    ValueHandleBase::operator=(P);
-  }
+  void setValPtr(Value *P) { ValueHandleBase::operator=(P); }
 
 public:
   CallbackVH() : ValueHandleBase(Callback) {}
   CallbackVH(Value *P) : ValueHandleBase(Callback, P) {}
   CallbackVH(const Value *P) : CallbackVH(const_cast<Value *>(P)) {}
 
-  operator Value*() const {
-    return getValPtr();
-  }
+  operator Value *() const { return getValPtr(); }
 
   /// Callback for Value destruction.
   ///

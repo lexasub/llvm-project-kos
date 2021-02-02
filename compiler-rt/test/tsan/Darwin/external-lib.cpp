@@ -8,11 +8,11 @@
 struct MyObject;
 typedef MyObject *MyObjectRef;
 extern "C" {
-  void InitializeLibrary();
-  MyObject *ObjectCreate();
-  long ObjectRead(MyObject *);
-  void ObjectWrite(MyObject *, long);
-  void ObjectWriteAnother(MyObject *, long);
+void InitializeLibrary();
+MyObject *ObjectCreate();
+long ObjectRead(MyObject *);
+void ObjectWrite(MyObject *, long);
+void ObjectWriteAnother(MyObject *, long);
 }
 
 struct MyObject {

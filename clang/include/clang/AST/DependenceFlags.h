@@ -142,16 +142,16 @@ public:
 
   Dependence(ExprDependence D)
       : V(translate(D, ExprDependence::UnexpandedPack, UnexpandedPack) |
-             translate(D, ExprDependence::Instantiation, Instantiation) |
-             translate(D, ExprDependence::Type, Type) |
-             translate(D, ExprDependence::Value, Value) |
-             translate(D, ExprDependence::Error, Error)) {}
+          translate(D, ExprDependence::Instantiation, Instantiation) |
+          translate(D, ExprDependence::Type, Type) |
+          translate(D, ExprDependence::Value, Value) |
+          translate(D, ExprDependence::Error, Error)) {}
 
-  Dependence(NestedNameSpecifierDependence D) :
-    V ( translate(D, NNSDependence::UnexpandedPack, UnexpandedPack) |
-            translate(D, NNSDependence::Instantiation, Instantiation) |
-            translate(D, NNSDependence::Dependent, Dependent) |
-            translate(D, NNSDependence::Error, Error)) {}
+  Dependence(NestedNameSpecifierDependence D)
+      : V(translate(D, NNSDependence::UnexpandedPack, UnexpandedPack) |
+          translate(D, NNSDependence::Instantiation, Instantiation) |
+          translate(D, NNSDependence::Dependent, Dependent) |
+          translate(D, NNSDependence::Error, Error)) {}
 
   Dependence(TemplateArgumentDependence D)
       : V(translate(D, TADependence::UnexpandedPack, UnexpandedPack) |
@@ -161,9 +161,9 @@ public:
 
   Dependence(TemplateNameDependence D)
       : V(translate(D, TNDependence::UnexpandedPack, UnexpandedPack) |
-             translate(D, TNDependence::Instantiation, Instantiation) |
-             translate(D, TNDependence::Dependent, Dependent) |
-             translate(D, TNDependence::Error, Error)) {}
+          translate(D, TNDependence::Instantiation, Instantiation) |
+          translate(D, TNDependence::Dependent, Dependent) |
+          translate(D, TNDependence::Error, Error)) {}
 
   TypeDependence type() const {
     return translate(V, UnexpandedPack, TypeDependence::UnexpandedPack) |

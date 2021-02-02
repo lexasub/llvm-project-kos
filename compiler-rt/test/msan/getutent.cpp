@@ -3,8 +3,8 @@
 #ifndef __FreeBSD__
 #include <utmp.h>
 #endif
-#include <utmpx.h>
 #include <sanitizer/msan_interface.h>
+#include <utmpx.h>
 
 int main(void) {
 #ifndef __FreeBSD__

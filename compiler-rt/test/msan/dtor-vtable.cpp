@@ -15,9 +15,9 @@
 // Expected to quit due to invalid access when invoking
 // function using vtable.
 
+#include <assert.h>
 #include <sanitizer/msan_interface.h>
 #include <stdio.h>
-#include <assert.h>
 
 class A {
 public:
@@ -27,14 +27,14 @@ public:
 };
 
 class B {
- public:
+public:
   int y;
   ~B() {}
   virtual void B_Foo() {}
 };
 
 class C : public A, public B {
- public:
+public:
   int z;
   ~C() {}
   virtual void C_Foo() {}

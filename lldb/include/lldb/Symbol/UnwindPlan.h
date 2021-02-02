@@ -139,8 +139,7 @@ public:
       RestoreType GetLocationType() const { return m_type; }
 
       int32_t GetOffset() const {
-        switch(m_type)
-        {
+        switch (m_type) {
         case atCFAPlusOffset:
         case isCFAPlusOffset:
         case atAFAPlusOffset:
@@ -257,12 +256,12 @@ public:
 
       int32_t GetOffset() const {
         switch (m_type) {
-          case isRegisterPlusOffset:
-            return m_value.reg.offset;
-          case isRaSearch:
-            return m_value.ra_search_offset;
-          default:
-            return 0;
+        case isRegisterPlusOffset:
+          return m_value.reg.offset;
+        case isRaSearch:
+          return m_value.ra_search_offset;
+        default:
+          return 0;
         }
       }
 
@@ -381,8 +380,8 @@ public:
         m_return_addr_register(LLDB_INVALID_REGNUM), m_source_name(),
         m_plan_is_sourced_from_compiler(eLazyBoolCalculate),
         m_plan_is_valid_at_all_instruction_locations(eLazyBoolCalculate),
-        m_plan_is_for_signal_trap(eLazyBoolCalculate),
-        m_lsda_address(), m_personality_func_addr() {}
+        m_plan_is_for_signal_trap(eLazyBoolCalculate), m_lsda_address(),
+        m_personality_func_addr() {}
 
   // Performs a deep copy of the plan, including all the rows (expensive).
   UnwindPlan(const UnwindPlan &rhs)

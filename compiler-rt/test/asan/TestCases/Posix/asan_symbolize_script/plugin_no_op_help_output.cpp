@@ -4,4 +4,3 @@
 // CHECK: Adding --unlikely-option-name-XXX option
 // CHECK: optional arguments:
 // CHECK: --unlikely-option-name-XXX
-

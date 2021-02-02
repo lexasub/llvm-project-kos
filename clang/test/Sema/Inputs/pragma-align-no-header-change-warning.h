@@ -1,5 +1,7 @@
-#pragma options align=mac68k
+#pragma options align = mac68k
 
-struct S { int x; };
+struct S {
+  int x;
+};
 
-#pragma options align=reset
+#pragma options align = reset

@@ -1,9 +1,9 @@
 #include <stdio.h>
 
 class C {
- public:
+public:
   C() { value = 42; }
-  ~C() { }
+  ~C() {}
   int value;
 };
 

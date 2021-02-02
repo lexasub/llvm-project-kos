@@ -614,8 +614,7 @@ ClangExpressionParser::ClangExpressionParser(
     // The Darwin libc expects this macro to be set.
     lang_opts.GNUCVersion = 40201;
 
-    SetupModuleHeaderPaths(m_compiler.get(), m_include_directories,
-                           target_sp);
+    SetupModuleHeaderPaths(m_compiler.get(), m_include_directories, target_sp);
   }
 
   if (process_sp && lang_opts.ObjC) {
@@ -644,7 +643,7 @@ ClangExpressionParser::ClangExpressionParser(
   m_compiler->getCodeGenOpts().EmitDeclMetadata = true;
   m_compiler->getCodeGenOpts().InstrumentFunctions = false;
   m_compiler->getCodeGenOpts().setFramePointer(
-                                    CodeGenOptions::FramePointerKind::All);
+      CodeGenOptions::FramePointerKind::All);
   if (generate_debug_info)
     m_compiler->getCodeGenOpts().setDebugInfo(codegenoptions::FullDebugInfo);
   else
@@ -1076,8 +1075,7 @@ ClangExpressionParser::ParseInternal(DiagnosticManager &diagnostic_manager,
           if (auto fileEntry = m_compiler->getFileManager().getOptionalFileRef(
                   result_path)) {
             source_mgr.setMainFileID(source_mgr.createFileID(
-                *fileEntry,
-                SourceLocation(), SrcMgr::C_User));
+                *fileEntry, SourceLocation(), SrcMgr::C_User));
             created_main_file = true;
           }
         }

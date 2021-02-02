@@ -7,15 +7,12 @@
 // RUN: %clang_cc1 -mspeculative-load-hardening -std=c++11 -disable-llvm-passes -emit-llvm %s -o - | FileCheck %s --check-prefix=CHECK3
 // RUN: %clang_cc1 -mspeculative-load-hardening -std=c++11 -disable-llvm-passes -emit-llvm %s -o - | FileCheck %s --check-prefix=CHECK4
 
-
 // Check that we correctly set or did not set the attribute on each function despite the
 // -mno-speculative-load-hardening flag.
 // RUN: %clang -mno-speculative-load-hardening -S -std=c++11 -disable-llvm-passes -emit-llvm %s -o - | FileCheck %s --check-prefix=CHECK5
 // RUN: %clang -mno-speculative-load-hardening -S -std=c++11 -disable-llvm-passes -emit-llvm %s -o - | FileCheck %s --check-prefix=CHECK6
 
-
-[[clang::speculative_load_hardening]]
-int test1() {
+[[clang::speculative_load_hardening]] int test1() {
   return 42;
 }
 
@@ -23,8 +20,7 @@ int __attribute__((speculative_load_hardening)) test2() {
   return 42;
 }
 
-[[clang::no_speculative_load_hardening]]
-int test3() {
+[[clang::no_speculative_load_hardening]] int test3() {
   return 42;
 }
 

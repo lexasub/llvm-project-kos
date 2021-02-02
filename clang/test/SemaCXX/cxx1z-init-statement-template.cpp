@@ -11,17 +11,17 @@ public:
 
 template <unsigned int N> A parse(Buffer<N> buffer);
 
-template<unsigned int N>
+template <unsigned int N>
 void init_in_if(Buffer<N> buffer) {
   if (A a = parse(buffer); a.status > 0) {
   }
 }
 
-template<unsigned int N>
+template <unsigned int N>
 void init_in_switch(Buffer<N> buffer) {
   switch (A a = parse(buffer); a.status) {
-    default:
-      break;
+  default:
+    break;
   }
 }
 

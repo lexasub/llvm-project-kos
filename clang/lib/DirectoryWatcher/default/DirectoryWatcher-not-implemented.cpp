@@ -11,7 +11,8 @@
 using namespace llvm;
 using namespace clang;
 
-llvm::Expected<std::unique_ptr<DirectoryWatcher>> clang::DirectoryWatcher::create(
+llvm::Expected<std::unique_ptr<DirectoryWatcher>>
+clang::DirectoryWatcher::create(
     StringRef Path,
     std::function<void(llvm::ArrayRef<DirectoryWatcher::Event>, bool)> Receiver,
     bool WaitForInitialSync) {

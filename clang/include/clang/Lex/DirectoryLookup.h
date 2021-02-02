@@ -13,8 +13,8 @@
 #ifndef LLVM_CLANG_LEX_DIRECTORYLOOKUP_H
 #define LLVM_CLANG_LEX_DIRECTORYLOOKUP_H
 
-#include "clang/Basic/LLVM.h"
 #include "clang/Basic/FileManager.h"
+#include "clang/Basic/LLVM.h"
 #include "clang/Basic/SourceManager.h"
 #include "clang/Lex/ModuleMap.h"
 
@@ -29,11 +29,8 @@ class Module;
 ///
 class DirectoryLookup {
 public:
-  enum LookupType_t {
-    LT_NormalDir,
-    LT_Framework,
-    LT_HeaderMap
-  };
+  enum LookupType_t { LT_NormalDir, LT_Framework, LT_HeaderMap };
+
 private:
   union DLU { // This union is discriminated by isHeaderMap.
     /// Dir - This is the actual directory that we're referring to for a normal
@@ -123,9 +120,7 @@ public:
 
   /// Specify whether we have already searched all of the subdirectories
   /// for module maps.
-  void setSearchedAllModuleMaps(bool SAMM) {
-    SearchedAllModuleMaps = SAMM;
-  }
+  void setSearchedAllModuleMaps(bool SAMM) { SearchedAllModuleMaps = SAMM; }
 
   /// DirCharacteristic - The type of directory this is, one of the DirType enum
   /// values.
@@ -139,9 +134,7 @@ public:
   }
 
   /// Whether this header map is building a framework or not.
-  bool isIndexHeaderMap() const {
-    return isHeaderMap() && IsIndexHeaderMap;
-  }
+  bool isIndexHeaderMap() const { return isHeaderMap() && IsIndexHeaderMap; }
 
   /// LookupFile - Lookup the specified file in this search path, returning it
   /// if it exists or returning null if not.
@@ -192,6 +185,6 @@ private:
       bool &InUserSpecifiedSystemFramework, bool &IsFrameworkFound) const;
 };
 
-}  // end namespace clang
+} // end namespace clang
 
 #endif

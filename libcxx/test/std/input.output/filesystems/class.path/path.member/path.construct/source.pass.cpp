@@ -20,7 +20,6 @@
 // template <class InputIterator>
 //      path(InputIterator first, InputIterator last);
 
-
 #include "filesystem_include.h"
 #include <type_traits>
 #include <cassert>
@@ -30,8 +29,7 @@
 #include "min_allocator.h"
 #include "filesystem_test_helper.h"
 
-
-template <class CharT, class ...Args>
+template <class CharT, class... Args>
 void RunTestCaseImpl(MultiStringType const& MS, Args... args) {
   using namespace fs;
   const fs::path::value_type* Expect = MS;
@@ -81,7 +79,7 @@ void RunTestCaseImpl(MultiStringType const& MS, Args... args) {
   }
 }
 
-template <class CharT, class ...Args>
+template <class CharT, class... Args>
 void RunTestCase(MultiStringType const& MS) {
   RunTestCaseImpl<CharT>(MS);
   RunTestCaseImpl<CharT>(MS, fs::path::format::auto_format);
@@ -113,11 +111,8 @@ void test_sfinae() {
   {
     using It = output_iterator<const char*>;
     static_assert(!std::is_constructible<path, It>::value, "");
-
   }
-  {
-    static_assert(!std::is_constructible<path, int*>::value, "");
-  }
+  { static_assert(!std::is_constructible<path, int*>::value, ""); }
 }
 
 int main(int, char**) {

@@ -13,17 +13,21 @@ using namespace llvm;
 
 #define DEBUG_TYPE "armmcexpr"
 
-const ARMMCExpr*
-ARMMCExpr::create(VariantKind Kind, const MCExpr *Expr,
-                       MCContext &Ctx) {
+const ARMMCExpr *ARMMCExpr::create(VariantKind Kind, const MCExpr *Expr,
+                                   MCContext &Ctx) {
   return new (Ctx) ARMMCExpr(Kind, Expr);
 }
 
 void ARMMCExpr::printImpl(raw_ostream &OS, const MCAsmInfo *MAI) const {
   switch (Kind) {
-  default: llvm_unreachable("Invalid kind!");
-  case VK_ARM_HI16: OS << ":upper16:"; break;
-  case VK_ARM_LO16: OS << ":lower16:"; break;
+  default:
+    llvm_unreachable("Invalid kind!");
+  case VK_ARM_HI16:
+    OS << ":upper16:";
+    break;
+  case VK_ARM_LO16:
+    OS << ":lower16:";
+    break;
   }
 
   const MCExpr *Expr = getSubExpr();

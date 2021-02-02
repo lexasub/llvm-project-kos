@@ -21,8 +21,10 @@
 
 #include "min_allocator.h"
 
-int main(int, char**)
-{
-    std::function<int(int)> f(std::allocator_arg, std::allocator<int>()); // expected-error {{no matching constructor for initialization of}}
-    return 0;
+int main(int, char**) {
+  std::function<int(int)> f(
+      std::allocator_arg,
+      std::allocator<
+          int>()); // expected-error {{no matching constructor for initialization of}}
+  return 0;
 }

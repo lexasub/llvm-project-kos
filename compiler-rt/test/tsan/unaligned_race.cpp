@@ -4,7 +4,7 @@
 
 #define NOINLINE __attribute__((noinline))
 
-volatile uint64_t objs[8*2*(2 + 4 + 8)][2];
+volatile uint64_t objs[8 * 2 * (2 + 4 + 8)][2];
 
 // All this mess is to generate unique stack for each race,
 // otherwise tsan will suppress similar stacks.
@@ -12,31 +12,48 @@ volatile uint64_t objs[8*2*(2 + 4 + 8)][2];
 static NOINLINE void access(volatile void *p, int sz, int rw) {
   if (rw) {
     switch (sz) {
-    case 0: __sanitizer_unaligned_store16((void *)p, 0); break;
-    case 1: __sanitizer_unaligned_store32((void *)p, 0); break;
-    case 2: __sanitizer_unaligned_store64((void *)p, 0); break;
-    default: exit(1);
+    case 0:
+      __sanitizer_unaligned_store16((void *)p, 0);
+      break;
+    case 1:
+      __sanitizer_unaligned_store32((void *)p, 0);
+      break;
+    case 2:
+      __sanitizer_unaligned_store64((void *)p, 0);
+      break;
+    default:
+      exit(1);
     }
   } else {
     switch (sz) {
-    case 0: __sanitizer_unaligned_load16((void *)p); break;
-    case 1: __sanitizer_unaligned_load32((void *)p); break;
-    case 2: __sanitizer_unaligned_load64((void *)p); break;
-    default: exit(1);
+    case 0:
+      __sanitizer_unaligned_load16((void *)p);
+      break;
+    case 1:
+      __sanitizer_unaligned_load32((void *)p);
+      break;
+    case 2:
+      __sanitizer_unaligned_load64((void *)p);
+      break;
+    default:
+      exit(1);
     }
   }
 }
 
 static int accesssize(int sz) {
   switch (sz) {
-  case 0: return 2;
-  case 1: return 4;
-  case 2: return 8;
+  case 0:
+    return 2;
+  case 1:
+    return 4;
+  case 2:
+    return 8;
   }
   exit(1);
 }
 
-template<int off, int off2>
+template <int off, int off2>
 static NOINLINE void access3(bool main, int sz1, bool rw, volatile char *p) {
   p += off;
   if (main) {
@@ -46,13 +63,13 @@ static NOINLINE void access3(bool main, int sz1, bool rw, volatile char *p) {
     if (rw) {
       *p = 42;
     } else {
-       if (*p == 42)
-         printf("bingo!\n");
+      if (*p == 42)
+        printf("bingo!\n");
     }
   }
 }
 
-template<int off>
+template <int off>
 static NOINLINE void
 access2(bool main, int sz1, int off2, bool rw, volatile char *obj) {
   if (off2 == 0)
@@ -101,7 +118,7 @@ NOINLINE void Test(bool main) {
         for (int rw = 0; rw < 2; rw++) {
           // printf("thr=%d off=%d sz1=%d off2=%d rw=%d p=%p\n",
           //        main, off, sz1, off2, rw, obj);
-          access1(main, off, sz1, off2, rw, (char*)obj);
+          access1(main, off, sz1, off2, rw, (char *)obj);
           obj += 2;
         }
       }

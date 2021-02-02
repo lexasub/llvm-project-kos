@@ -1,9 +1,9 @@
 // RUN: %clang_tsan -O1 %s -o %t && %run %t 2>&1 | FileCheck %s
 #include "test.h"
-#include <signal.h>
-#include <unistd.h>
 #include <errno.h>
 #include <semaphore.h>
+#include <signal.h>
+#include <unistd.h>
 
 // Test that signals can be delivered to blocked pthread_cond_wait.
 // https://github.com/google/sanitizers/issues/498
@@ -18,7 +18,7 @@ void sig_handler(int sig) {
   barrier_wait(&barrier);
 }
 
-void* my_thread(void* arg) {
+void *my_thread(void *arg) {
   pthread_mutex_lock(&mutex);
   while (g_thread_run)
     pthread_cond_wait(&cond, &mutex);

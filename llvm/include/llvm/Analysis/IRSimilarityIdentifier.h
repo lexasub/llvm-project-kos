@@ -142,7 +142,7 @@ struct IRInstructionData : ilist_node<IRInstructionData> {
   /// in a greater than form. Otherwise, the predicate is unchanged.
   ///
   /// \param CI - The comparison operation to find a consistent preidcate for.
-  /// \return the consistent comparison predicate. 
+  /// \return the consistent comparison predicate.
   static CmpInst::Predicate predicateForConsistency(CmpInst *CI);
 
   /// Hashes \p Value based on its opcode, types, and operand types.
@@ -375,8 +375,7 @@ struct IRInstructionMapper {
                static_cast<unsigned>(-2) &&
            "DenseMapInfo<unsigned>'s tombstone key isn't -2!");
 
-    IDL = new (IDLAllocator->Allocate())
-        IRInstructionDataList();
+    IDL = new (IDLAllocator->Allocate()) IRInstructionDataList();
   }
 
   /// Custom InstVisitor to classify different instructions for whether it can
@@ -521,8 +520,8 @@ public:
     /// The operand values to be analyzed.
     ArrayRef<Value *> &OperVals;
 
-    /// The current mapping of global value numbers from one IRSimilarityCandidate
-    /// to another IRSimilarityCandidate.
+    /// The current mapping of global value numbers from one
+    /// IRSimilarityCandidate to another IRSimilarityCandidate.
     DenseMap<unsigned, DenseSet<unsigned>> &ValueNumberMapping;
   };
 

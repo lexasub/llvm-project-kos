@@ -63,13 +63,13 @@ int called_h(init_default_member l = init_default_member()) {
   return l.a;
 }
 
-int called_i(const init_with_list &l = init_with_list()){
+int called_i(const init_with_list &l = init_with_list()) {
   // We expect that the analyzer assumes the default value
   // when called from test5().
   return l.a;
 }
 
-int called_j(init_with_list &&l = init_with_list()){
+int called_j(init_with_list &&l = init_with_list()) {
   // We expect that the analyzer assumes the default value
   // when called from test6().
   return l.a;

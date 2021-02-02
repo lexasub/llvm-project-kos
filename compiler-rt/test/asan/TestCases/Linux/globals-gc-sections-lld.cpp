@@ -12,5 +12,5 @@ int undefined();
 __attribute__((visibility("hidden"))) int (*unused)() = undefined;
 
 int main() {
-        return 0;
+  return 0;
 }

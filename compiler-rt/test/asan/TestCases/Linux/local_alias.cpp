@@ -10,13 +10,13 @@
 // RUN: %clangxx_asan %t.o %ld_flags_rpath_exe2 %ld_flags_rpath_exe1 -o %t-EXE
 // RUN: %run %t-EXE
 
-#if defined (BUILD_INSTRUMENTED_DSO)
+#if defined(BUILD_INSTRUMENTED_DSO)
 long h = 15;
 long f = 4;
 long foo(long *p) {
   return *p;
 }
-#elif defined (BUILD_UNINSTRUMENTED_DSO)
+#elif defined(BUILD_UNINSTRUMENTED_DSO)
 long foo(long *);
 long h = 12;
 long i = 13;

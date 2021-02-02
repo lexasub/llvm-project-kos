@@ -8,10 +8,14 @@
 
 struct S {
   __attribute__((always_inline)) void foo() { bar(); }
-  __attribute__((always_inline)) void foo(int i) { if (i) bar(); }
+  __attribute__((always_inline)) void foo(int i) {
+    if (i)
+      bar();
+  }
   void bar();
 
-  template<typename T> void baz(T t) {}
+  template <typename T>
+  void baz(T t) {}
 };
 
 #ifdef FILE1

@@ -279,7 +279,7 @@ public:
 
   const_iterator end() const { return Replaces.end(); }
 
-  const_reverse_iterator rbegin() const  { return Replaces.rbegin(); }
+  const_reverse_iterator rbegin() const { return Replaces.rbegin(); }
 
   const_reverse_iterator rend() const { return Replaces.rend(); }
 

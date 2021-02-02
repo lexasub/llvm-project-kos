@@ -23,19 +23,19 @@
 
 using namespace itanium_demangle;
 
-constexpr const char *itanium_demangle::FloatData<float>::spec;
-constexpr const char *itanium_demangle::FloatData<double>::spec;
-constexpr const char *itanium_demangle::FloatData<long double>::spec;
+constexpr const char* itanium_demangle::FloatData<float>::spec;
+constexpr const char* itanium_demangle::FloatData<double>::spec;
+constexpr const char* itanium_demangle::FloatData<long double>::spec;
 
 // <discriminator> := _ <non-negative number>      # when number < 10
 //                 := __ <non-negative number> _   # when number >= 10
 //  extension      := decimal-digit+               # at the end of string
-const char *itanium_demangle::parse_discriminator(const char *first,
-                                                  const char *last) {
+const char* itanium_demangle::parse_discriminator(const char* first,
+                                                  const char* last) {
   // parse but ignore discriminator
   if (first != last) {
     if (*first == '_') {
-      const char *t1 = first + 1;
+      const char* t1 = first + 1;
       if (t1 != last) {
         if (std::isdigit(*t1))
           first = t1 + 1;
@@ -47,7 +47,7 @@ const char *itanium_demangle::parse_discriminator(const char *first,
         }
       }
     } else if (std::isdigit(*first)) {
-      const char *t1 = first + 1;
+      const char* t1 = first + 1;
       for (; t1 != last && std::isdigit(*t1); ++t1)
         ;
       if (t1 == last)
@@ -63,24 +63,26 @@ struct DumpVisitor {
   unsigned Depth = 0;
   bool PendingNewline = false;
 
-  template<typename NodeT> static constexpr bool wantsNewline(const NodeT *) {
+  template <typename NodeT>
+  static constexpr bool wantsNewline(const NodeT*) {
     return true;
   }
   static bool wantsNewline(NodeArray A) { return !A.empty(); }
   static constexpr bool wantsNewline(...) { return false; }
 
-  template<typename ...Ts> static bool anyWantNewline(Ts ...Vs) {
+  template <typename... Ts>
+  static bool anyWantNewline(Ts... Vs) {
     for (bool B : {wantsNewline(Vs)...})
       if (B)
         return true;
     return false;
   }
 
-  void printStr(const char *S) { fprintf(stderr, "%s", S); }
+  void printStr(const char* S) { fprintf(stderr, "%s", S); }
   void print(StringView SV) {
     fprintf(stderr, "\"%.*s\"", (int)SV.size(), SV.begin());
   }
-  void print(const Node *N) {
+  void print(const Node* N) {
     if (N)
       N->visit(std::ref(*this));
     else
@@ -90,7 +92,7 @@ struct DumpVisitor {
     ++Depth;
     printStr("{");
     bool First = true;
-    for (const Node *N : A) {
+    for (const Node* N : A) {
       if (First)
         print(N);
       else
@@ -133,17 +135,22 @@ struct DumpVisitor {
     }
   }
   void print(Qualifiers Qs) {
-    if (!Qs) return printStr("QualNone");
-    struct QualName { Qualifiers Q; const char *Name; } Names[] = {
-      {QualConst, "QualConst"},
-      {QualVolatile, "QualVolatile"},
-      {QualRestrict, "QualRestrict"},
+    if (!Qs)
+      return printStr("QualNone");
+    struct QualName {
+      Qualifiers Q;
+      const char* Name;
+    } Names[] = {
+        {QualConst, "QualConst"},
+        {QualVolatile, "QualVolatile"},
+        {QualRestrict, "QualRestrict"},
     };
     for (QualName Name : Names) {
       if (Qs & Name.Q) {
         printStr(Name.Name);
         Qs = Qualifiers(Qs & ~Name.Q);
-        if (Qs) printStr(" | ");
+        if (Qs)
+          printStr(" | ");
       }
     }
   }
@@ -181,13 +188,15 @@ struct DumpVisitor {
     PendingNewline = false;
   }
 
-  template<typename T> void printWithPendingNewline(T V) {
+  template <typename T>
+  void printWithPendingNewline(T V) {
     print(V);
     if (wantsNewline(V))
       PendingNewline = true;
   }
 
-  template<typename T> void printWithComma(T V) {
+  template <typename T>
+  void printWithComma(T V) {
     if (PendingNewline || wantsNewline(V)) {
       printStr(",");
       newLine();
@@ -199,18 +208,20 @@ struct DumpVisitor {
   }
 
   struct CtorArgPrinter {
-    DumpVisitor &Visitor;
+    DumpVisitor& Visitor;
 
-    template<typename T, typename ...Rest> void operator()(T V, Rest ...Vs) {
+    template <typename T, typename... Rest>
+    void operator()(T V, Rest... Vs) {
       if (Visitor.anyWantNewline(V, Vs...))
         Visitor.newLine();
       Visitor.printWithPendingNewline(V);
-      int PrintInOrder[] = { (Visitor.printWithComma(Vs), 0)..., 0 };
+      int PrintInOrder[] = {(Visitor.printWithComma(Vs), 0)..., 0};
       (void)PrintInOrder;
     }
   };
 
-  template<typename NodeT> void operator()(const NodeT *Node) {
+  template <typename NodeT>
+  void operator()(const NodeT* Node) {
     Depth += 2;
     fprintf(stderr, "%s(", itanium_demangle::NodeKind<NodeT>::name());
     Node->match(CtorArgPrinter{*this});
@@ -218,7 +229,7 @@ struct DumpVisitor {
     Depth -= 2;
   }
 
-  void operator()(const ForwardTemplateReference *Node) {
+  void operator()(const ForwardTemplateReference* Node) {
     Depth += 2;
     fprintf(stderr, "ForwardTemplateReference(");
     if (Node->Ref && !Node->Printing) {
@@ -232,7 +243,7 @@ struct DumpVisitor {
     Depth -= 2;
   }
 };
-}
+} // namespace
 
 void itanium_demangle::Node::dump() const {
   DumpVisitor V;
@@ -255,7 +266,7 @@ class BumpPointerAllocator {
   BlockMeta* BlockList = nullptr;
 
   void grow() {
-    char* NewMeta = static_cast<char *>(std::malloc(AllocSize));
+    char* NewMeta = static_cast<char*>(std::malloc(AllocSize));
     if (NewMeta == nullptr)
       std::terminate();
     BlockList = new (NewMeta) BlockMeta{BlockList, 0};
@@ -305,16 +316,16 @@ class DefaultAllocator {
 public:
   void reset() { Alloc.reset(); }
 
-  template<typename T, typename ...Args> T *makeNode(Args &&...args) {
-    return new (Alloc.allocate(sizeof(T)))
-        T(std::forward<Args>(args)...);
+  template <typename T, typename... Args>
+  T* makeNode(Args&&... args) {
+    return new (Alloc.allocate(sizeof(T))) T(std::forward<Args>(args)...);
   }
 
-  void *allocateNodeArray(size_t sz) {
-    return Alloc.allocate(sizeof(Node *) * sz);
+  void* allocateNodeArray(size_t sz) {
+    return Alloc.allocate(sizeof(Node*) * sz);
   }
 };
-}  // unnamed namespace
+} // unnamed namespace
 
 //===----------------------------------------------------------------------===//
 // Code beyond this point should not be synchronized with LLVM.
@@ -332,8 +343,8 @@ enum : int {
 }
 
 namespace __cxxabiv1 {
-extern "C" _LIBCXXABI_FUNC_VIS char *
-__cxa_demangle(const char *MangledName, char *Buf, size_t *N, int *Status) {
+extern "C" _LIBCXXABI_FUNC_VIS char*
+__cxa_demangle(const char* MangledName, char* Buf, size_t* N, int* Status) {
   if (MangledName == nullptr || (Buf != nullptr && N == nullptr)) {
     if (Status)
       *Status = demangle_invalid_args;
@@ -344,7 +355,7 @@ __cxa_demangle(const char *MangledName, char *Buf, size_t *N, int *Status) {
   Demangler Parser(MangledName, MangledName + std::strlen(MangledName));
   OutputStream S;
 
-  Node *AST = Parser.parse();
+  Node* AST = Parser.parse();
 
   if (AST == nullptr)
     InternalStatus = demangle_invalid_mangled_name;
@@ -363,4 +374,4 @@ __cxa_demangle(const char *MangledName, char *Buf, size_t *N, int *Status) {
     *Status = InternalStatus;
   return InternalStatus == demangle_success ? Buf : nullptr;
 }
-}  // __cxxabiv1
+} // namespace __cxxabiv1

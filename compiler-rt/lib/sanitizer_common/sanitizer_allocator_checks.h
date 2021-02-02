@@ -14,8 +14,8 @@
 #ifndef SANITIZER_ALLOCATOR_CHECKS_H
 #define SANITIZER_ALLOCATOR_CHECKS_H
 
-#include "sanitizer_internal_defs.h"
 #include "sanitizer_common.h"
+#include "sanitizer_internal_defs.h"
 #include "sanitizer_platform.h"
 
 namespace __sanitizer {
@@ -71,6 +71,6 @@ inline bool CheckForPvallocOverflow(uptr size, uptr page_size) {
   return RoundUpTo(size, page_size) < size;
 }
 
-} // namespace __sanitizer
+}  // namespace __sanitizer
 
 #endif  // SANITIZER_ALLOCATOR_CHECKS_H

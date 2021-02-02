@@ -10,7 +10,8 @@
 #include <cstring>
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
-  if (Size < 8) return 0;
+  if (Size < 8)
+    return 0;
   int x;
   unsigned y;
   memcpy(&x, Data, sizeof(x));
@@ -23,4 +24,3 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
   }
   return 0;
 }
-

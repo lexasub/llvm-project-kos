@@ -7,5 +7,5 @@
 // CHECK-NEXT: Symbols:
 // CHECK-NEXT: ...
 
-template<typename> struct S7 { };
-template<typename T> struct S7<T&> { };
+template <typename> struct S7 {};
+template <typename T> struct S7<T &> {};

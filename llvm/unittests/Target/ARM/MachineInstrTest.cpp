@@ -84,9 +84,8 @@ TEST(MachineInstructionDoubleWidthResult, IsCorrect) {
 
   TargetOptions Options;
   auto TM = std::unique_ptr<LLVMTargetMachine>(
-    static_cast<LLVMTargetMachine*>(
-      T->createTargetMachine(TT, "generic", "", Options, None, None,
-                             CodeGenOpt::Default)));
+      static_cast<LLVMTargetMachine *>(T->createTargetMachine(
+          TT, "generic", "", Options, None, None, CodeGenOpt::Default)));
   ARMSubtarget ST(TM->getTargetTriple(), std::string(TM->getTargetCPU()),
                   std::string(TM->getTargetFeatureString()),
                   *static_cast<const ARMBaseTargetMachine *>(TM.get()), false);
@@ -102,8 +101,8 @@ TEST(MachineInstructionDoubleWidthResult, IsCorrect) {
 
     bool Valid = (Flags & ARMII::DoubleWidthResult) != 0;
     ASSERT_EQ(DoubleWidthResult(i), Valid)
-              << MII->getName(i)
-              << ": mismatched expectation for tail-predicated safety\n";
+        << MII->getName(i)
+        << ": mismatched expectation for tail-predicated safety\n";
   }
 }
 
@@ -241,9 +240,8 @@ TEST(MachineInstructionHorizontalReduction, IsCorrect) {
 
   TargetOptions Options;
   auto TM = std::unique_ptr<LLVMTargetMachine>(
-    static_cast<LLVMTargetMachine*>(
-      T->createTargetMachine(TT, "generic", "", Options, None, None,
-                             CodeGenOpt::Default)));
+      static_cast<LLVMTargetMachine *>(T->createTargetMachine(
+          TT, "generic", "", Options, None, None, CodeGenOpt::Default)));
   ARMSubtarget ST(TM->getTargetTriple(), std::string(TM->getTargetCPU()),
                   std::string(TM->getTargetFeatureString()),
                   *static_cast<const ARMBaseTargetMachine *>(TM.get()), false);
@@ -258,8 +256,8 @@ TEST(MachineInstructionHorizontalReduction, IsCorrect) {
       continue;
     bool Valid = (Flags & ARMII::HorizontalReduction) != 0;
     ASSERT_EQ(HorizontalReduction(i), Valid)
-              << MII->getName(i)
-              << ": mismatched expectation for tail-predicated safety\n";
+        << MII->getName(i)
+        << ": mismatched expectation for tail-predicated safety\n";
   }
 }
 
@@ -341,9 +339,8 @@ TEST(MachineInstructionRetainsPreviousHalfElement, IsCorrect) {
 
   TargetOptions Options;
   auto TM = std::unique_ptr<LLVMTargetMachine>(
-    static_cast<LLVMTargetMachine*>(
-      T->createTargetMachine(TT, "generic", "", Options, None, None,
-                             CodeGenOpt::Default)));
+      static_cast<LLVMTargetMachine *>(T->createTargetMachine(
+          TT, "generic", "", Options, None, None, CodeGenOpt::Default)));
   ARMSubtarget ST(TM->getTargetTriple(), std::string(TM->getTargetCPU()),
                   std::string(TM->getTargetFeatureString()),
                   *static_cast<const ARMBaseTargetMachine *>(TM.get()), false);
@@ -359,8 +356,8 @@ TEST(MachineInstructionRetainsPreviousHalfElement, IsCorrect) {
 
     bool Valid = (Flags & ARMII::RetainsPreviousHalfElement) != 0;
     ASSERT_EQ(RetainsPreviousHalfElement(i), Valid)
-              << MII->getName(i)
-              << ": mismatched expectation for tail-predicated safety\n";
+        << MII->getName(i)
+        << ": mismatched expectation for tail-predicated safety\n";
   }
 }
 // Test for instructions that aren't immediately obviously valid within a
@@ -1034,9 +1031,8 @@ TEST(MachineInstrValidTailPredication, IsCorrect) {
 
   TargetOptions Options;
   auto TM = std::unique_ptr<LLVMTargetMachine>(
-    static_cast<LLVMTargetMachine*>(
-      T->createTargetMachine(TT, "generic", "", Options, None, None,
-                             CodeGenOpt::Default)));
+      static_cast<LLVMTargetMachine *>(T->createTargetMachine(
+          TT, "generic", "", Options, None, None, CodeGenOpt::Default)));
   ARMSubtarget ST(TM->getTargetTriple(), std::string(TM->getTargetCPU()),
                   std::string(TM->getTargetFeatureString()),
                   *static_cast<const ARMBaseTargetMachine *>(TM.get()), false);
@@ -1048,8 +1044,8 @@ TEST(MachineInstrValidTailPredication, IsCorrect) {
       continue;
     bool Valid = (Flags & ARMII::ValidForTailPredication) != 0;
     ASSERT_EQ(IsValidTPOpcode(i), Valid)
-              << MII->getName(i)
-              << ": mismatched expectation for tail-predicated safety\n";
+        << MII->getName(i)
+        << ": mismatched expectation for tail-predicated safety\n";
   }
 }
 

@@ -14,13 +14,13 @@
 #ifndef LLVM_LIB_TARGET_BPF_BTFDEBUG_H
 #define LLVM_LIB_TARGET_BPF_BTFDEBUG_H
 
+#include "BTF.h"
 #include "llvm/ADT/StringMap.h"
 #include "llvm/CodeGen/DebugHandlerBase.h"
 #include <cstdint>
 #include <map>
 #include <set>
 #include <unordered_map>
-#include "BTF.h"
 
 namespace llvm {
 
@@ -90,7 +90,9 @@ class BTFTypeInt : public BTFTypeBase {
 public:
   BTFTypeInt(uint32_t Encoding, uint32_t SizeInBits, uint32_t OffsetInBits,
              StringRef TypeName);
-  uint32_t getSize() override { return BTFTypeBase::getSize() + sizeof(uint32_t); }
+  uint32_t getSize() override {
+    return BTFTypeBase::getSize() + sizeof(uint32_t);
+  }
   void completeType(BTFDebug &BDebug) override;
   void emitType(MCStreamer &OS) override;
 };
@@ -115,7 +117,9 @@ class BTFTypeArray : public BTFTypeBase {
 
 public:
   BTFTypeArray(uint32_t ElemTypeId, uint32_t NumElems);
-  uint32_t getSize() override { return BTFTypeBase::getSize() + BTF::BTFArraySize; }
+  uint32_t getSize() override {
+    return BTFTypeBase::getSize() + BTF::BTFArraySize;
+  }
   void completeType(BTFDebug &BDebug) override;
   void emitType(MCStreamer &OS) override;
 };
@@ -258,7 +262,7 @@ class BTFDebug : public DebugHandlerBase {
   std::map<const GlobalVariable *, std::pair<int64_t, uint32_t>> PatchImms;
   std::map<StringRef, std::pair<bool, std::vector<BTFTypeDerived *>>>
       FixupDerivedTypes;
-  std::set<const Function *>ProtoFunctions;
+  std::set<const Function *> ProtoFunctions;
 
   /// Add types to TypeEntries.
   /// @{

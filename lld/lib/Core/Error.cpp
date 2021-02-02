@@ -18,9 +18,7 @@ using namespace lld;
 namespace {
 class _YamlReaderErrorCategory : public std::error_category {
 public:
-  const char* name() const noexcept override {
-    return "lld.yaml.reader";
-  }
+  const char *name() const noexcept override { return "lld.yaml.reader"; }
 
   std::string message(int ev) const override {
     switch (static_cast<YamlReaderError>(ev)) {
@@ -49,9 +47,7 @@ class dynamic_error_category : public std::error_category {
 public:
   ~dynamic_error_category() override = default;
 
-  const char *name() const noexcept override {
-    return "lld.dynamic_error";
-  }
+  const char *name() const noexcept override { return "lld.dynamic_error"; }
 
   std::string message(int ev) const override {
     assert(ev >= 0);
@@ -84,10 +80,8 @@ std::error_code make_dynamic_error_code(StringRef msg) {
 
 char GenericError::ID = 0;
 
-GenericError::GenericError(Twine Msg) : Msg(Msg.str()) { }
+GenericError::GenericError(Twine Msg) : Msg(Msg.str()) {}
 
-void GenericError::log(raw_ostream &OS) const {
-  OS << Msg;
-}
+void GenericError::log(raw_ostream &OS) const { OS << Msg; }
 
 } // namespace lld

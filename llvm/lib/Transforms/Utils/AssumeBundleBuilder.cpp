@@ -51,15 +51,15 @@ namespace {
 
 bool isUsefullToPreserve(Attribute::AttrKind Kind) {
   switch (Kind) {
-    case Attribute::NonNull:
-    case Attribute::NoUndef:
-    case Attribute::Alignment:
-    case Attribute::Dereferenceable:
-    case Attribute::DereferenceableOrNull:
-    case Attribute::Cold:
-      return true;
-    default:
-      return false;
+  case Attribute::NonNull:
+  case Attribute::NoUndef:
+  case Attribute::Alignment:
+  case Attribute::Dereferenceable:
+  case Attribute::DereferenceableOrNull:
+  case Attribute::Cold:
+    return true;
+  default:
+    return false;
   }
 }
 
@@ -104,8 +104,8 @@ struct AssumeBuilderState {
   using MapKey = std::pair<Value *, Attribute::AttrKind>;
   SmallMapVector<MapKey, unsigned, 8> AssumedKnowledgeMap;
   Instruction *InstBeingRemoved = nullptr;
-  AssumptionCache* AC = nullptr;
-  DominatorTree* DT = nullptr;
+  AssumptionCache *AC = nullptr;
+  DominatorTree *DT = nullptr;
 
   AssumeBuilderState(Module *M, Instruction *I = nullptr,
                      AssumptionCache *AC = nullptr, DominatorTree *DT = nullptr)
@@ -115,7 +115,7 @@ struct AssumeBuilderState {
     if (!InstBeingRemoved || !RK.WasOn)
       return false;
     bool HasBeenPreserved = false;
-    Use* ToUpdate = nullptr;
+    Use *ToUpdate = nullptr;
     getKnowledgeForValue(
         RK.WasOn, {RK.AttrKind}, AC,
         [&](RetainedKnowledge RKOther, Instruction *Assume,
@@ -125,8 +125,7 @@ struct AssumeBuilderState {
           if (RKOther.ArgValue >= RK.ArgValue) {
             HasBeenPreserved = true;
             return true;
-          } else if (isValidAssumeForContext(InstBeingRemoved, Assume,
-                                             DT)) {
+          } else if (isValidAssumeForContext(InstBeingRemoved, Assume, DT)) {
             HasBeenPreserved = true;
             IntrinsicInst *Intr = cast<IntrinsicInst>(Assume);
             ToUpdate = &Intr->op_begin()[Bundle->Begin + ABA_Argument];
@@ -578,7 +577,7 @@ FunctionPass *llvm::createAssumeSimplifyPass() {
 PreservedAnalyses AssumeBuilderPass::run(Function &F,
                                          FunctionAnalysisManager &AM) {
   AssumptionCache *AC = &AM.getResult<AssumptionAnalysis>(F);
-  DominatorTree* DT = AM.getCachedResult<DominatorTreeAnalysis>(F);
+  DominatorTree *DT = AM.getCachedResult<DominatorTreeAnalysis>(F);
   for (Instruction &I : instructions(F))
     salvageKnowledge(&I, AC, DT);
   return PreservedAnalyses::all();

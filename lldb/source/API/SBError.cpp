@@ -28,8 +28,8 @@ SBError::SBError(const SBError &rhs) : m_opaque_up() {
 SBError::~SBError() = default;
 
 const SBError &SBError::operator=(const SBError &rhs) {
-  LLDB_RECORD_METHOD(const lldb::SBError &,
-                     SBError, operator=,(const lldb::SBError &), rhs);
+  LLDB_RECORD_METHOD(const lldb::SBError &, SBError, operator=,
+                     (const lldb::SBError &), rhs);
 
   if (this != &rhs)
     m_opaque_up = clone(rhs.m_opaque_up);
@@ -58,7 +58,6 @@ bool SBError::Fail() const {
   if (m_opaque_up)
     ret_value = m_opaque_up->Fail();
 
-
   return ret_value;
 }
 
@@ -75,11 +74,9 @@ bool SBError::Success() const {
 uint32_t SBError::GetError() const {
   LLDB_RECORD_METHOD_CONST_NO_ARGS(uint32_t, SBError, GetError);
 
-
   uint32_t err = 0;
   if (m_opaque_up)
     err = m_opaque_up->GetError();
-
 
   return err;
 }
@@ -187,12 +184,11 @@ bool SBError::GetDescription(SBStream &description) {
 namespace lldb_private {
 namespace repro {
 
-template <>
-void RegisterMethods<SBError>(Registry &R) {
+template <> void RegisterMethods<SBError>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBError, ());
   LLDB_REGISTER_CONSTRUCTOR(SBError, (const lldb::SBError &));
-  LLDB_REGISTER_METHOD(const lldb::SBError &,
-                       SBError, operator=,(const lldb::SBError &));
+  LLDB_REGISTER_METHOD(const lldb::SBError &, SBError, operator=,
+                       (const lldb::SBError &));
   LLDB_REGISTER_METHOD_CONST(const char *, SBError, GetCString, ());
   LLDB_REGISTER_METHOD(void, SBError, Clear, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBError, Fail, ());
@@ -208,5 +204,5 @@ void RegisterMethods<SBError>(Registry &R) {
   LLDB_REGISTER_METHOD(bool, SBError, GetDescription, (lldb::SBStream &));
 }
 
-}
-}
+} // namespace repro
+} // namespace lldb_private

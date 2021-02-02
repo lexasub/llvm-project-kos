@@ -77,8 +77,7 @@ public:
 
     CPU = ABI == "o32" ? "mips32r2" : "mips64r2";
 
-    CanUseBSDABICalls = Triple.isOSFreeBSD() ||
-                        Triple.isOSOpenBSD();
+    CanUseBSDABICalls = Triple.isOSFreeBSD() || Triple.isOSOpenBSD();
   }
 
   bool isIEEE754_2008Default() const {
@@ -224,8 +223,7 @@ public:
         "$w28", "$w29", "$w30", "$w31",
         // MSA control register names
         "$msair", "$msacsr", "$msaaccess", "$msasave", "$msamodify",
-        "$msarequest", "$msamap", "$msaunmap"
-    };
+        "$msarequest", "$msamap", "$msaunmap"};
     return llvm::makeArrayRef(GCCRegNames);
   }
 
@@ -379,8 +377,7 @@ public:
         {{"s6"}, "$22"}, {{"s7"}, "$23"},        {{"t8"}, "$24"},
         {{"t9"}, "$25"}, {{"k0"}, "$26"},        {{"k1"}, "$27"},
         {{"gp"}, "$28"}, {{"sp", "$sp"}, "$29"}, {{"fp", "$fp"}, "$30"},
-        {{"ra"}, "$31"}
-    };
+        {{"ra"}, "$31"}};
     static const TargetInfo::GCCRegAlias NewABIRegAliases[] = {
         {{"at"}, "$1"},  {{"v0"}, "$2"},         {{"v1"}, "$3"},
         {{"a0"}, "$4"},  {{"a1"}, "$5"},         {{"a2"}, "$6"},
@@ -392,8 +389,7 @@ public:
         {{"s6"}, "$22"}, {{"s7"}, "$23"},        {{"t8"}, "$24"},
         {{"t9"}, "$25"}, {{"k0"}, "$26"},        {{"k1"}, "$27"},
         {{"gp"}, "$28"}, {{"sp", "$sp"}, "$29"}, {{"fp", "$fp"}, "$30"},
-        {{"ra"}, "$31"}
-    };
+        {{"ra"}, "$31"}};
     if (ABI == "o32")
       return llvm::makeArrayRef(O32RegAliases);
     return llvm::makeArrayRef(NewABIRegAliases);

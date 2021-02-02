@@ -21,10 +21,10 @@ namespace lldb_private {
 class BreakpointResolverFileLine : public BreakpointResolver {
 public:
   BreakpointResolverFileLine(const lldb::BreakpointSP &bkpt,
-                             const FileSpec &resolver,
-                             uint32_t line_no, uint32_t column,
-                             lldb::addr_t m_offset, bool check_inlines,
-                             bool skip_prologue, bool exact_match);
+                             const FileSpec &resolver, uint32_t line_no,
+                             uint32_t column, lldb::addr_t m_offset,
+                             bool check_inlines, bool skip_prologue,
+                             bool exact_match);
 
   static BreakpointResolver *
   CreateFromStructuredData(const lldb::BreakpointSP &bkpt,

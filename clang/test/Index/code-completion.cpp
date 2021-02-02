@@ -2,7 +2,7 @@
 #include "nonexistent_header.h"
 struct X {
   int member;
-  
+
   enum E { Val1 };
 };
 
@@ -15,19 +15,18 @@ struct Z : X, Y {
   double member;
   operator int() const;
 };
-struct W { };
+struct W {};
 struct Z get_Z();
-namespace N { }
+namespace N {}
 void test_Z() {
   // RUN: c-index-test -code-completion-at=%s:23:11 %s | FileCheck -check-prefix=CHECK-MEMBER %s
   get_Z().member = 17;
 }
 
+float &overloaded(int i, long second);
+double &overloaded(float f, int second);
+int &overloaded(Z z, int second);
 
-float& overloaded(int i, long second);
-double& overloaded(float f, int second);
-int& overloaded(Z z, int second);
-                
 void test_overloaded() {
   // RUN: c-index-test -code-completion-at=%s:33:18 %s | FileCheck -check-prefix=CHECK-OVERLOAD %s
   overloaded(Z(), 0);
@@ -40,11 +39,10 @@ Z::operator int() const {
 template <typename T>
 struct Foo { T member; };
 
-template<typename T> using Bar = Foo<T>;
+template <typename T> using Bar = Foo<T>;
 
 void test_template_alias() {
   // RUN: env CINDEXTEST_COMPLETION_CACHING=1 c-index-test -code-completion-at=%s:47:1 %s | FileCheck -check-prefix=CHECK-TEMPLATE-ALIAS %s
-
 }
 
 // CHECK-MEMBER: FieldDecl:{ResultType double}{TypedText member}

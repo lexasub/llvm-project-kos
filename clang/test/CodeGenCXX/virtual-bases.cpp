@@ -1,20 +1,20 @@
 // RUN: %clang_cc1 -emit-llvm %s -o - -triple=x86_64-apple-darwin10 -mconstructor-aliases | FileCheck %s
 
-struct A { 
+struct A {
   A();
 };
 
 // CHECK: @_ZN1AC1Ev ={{.*}} unnamed_addr alias {{.*}} @_ZN1AC2Ev
 // CHECK-LABEL: define{{.*}} void @_ZN1AC2Ev(%struct.A* {{[^,]*}} %this) unnamed_addr
-A::A() { }
+A::A() {}
 
-struct B : virtual A { 
+struct B : virtual A {
   B();
 };
 
 // CHECK-LABEL: define{{.*}} void @_ZN1BC2Ev(%struct.B* {{[^,]*}} %this, i8** %vtt) unnamed_addr
 // CHECK-LABEL: define{{.*}} void @_ZN1BC1Ev(%struct.B* {{[^,]*}} %this) unnamed_addr
-B::B() { }
+B::B() {}
 
 struct C : virtual A {
   C(bool);
@@ -22,20 +22,20 @@ struct C : virtual A {
 
 // CHECK-LABEL: define{{.*}} void @_ZN1CC2Eb(%struct.C* {{[^,]*}} %this, i8** %vtt, i1 zeroext %0) unnamed_addr
 // CHECK-LABEL: define{{.*}} void @_ZN1CC1Eb(%struct.C* {{[^,]*}} %this, i1 zeroext %0) unnamed_addr
-C::C(bool) { }
+C::C(bool) {}
 
 // PR6251
 namespace PR6251 {
 
 // Test that we don't call the A<char> constructor twice.
 
-template<typename T>
+template <typename T>
 struct A { A(); };
 
-struct B : virtual A<char> { };
-struct C : virtual A<char> { };
+struct B : virtual A<char> {};
+struct C : virtual A<char> {};
 
-struct D : B, C  {
+struct D : B, C {
   D();
 };
 
@@ -43,9 +43,9 @@ struct D : B, C  {
 // CHECK: call void @_ZN6PR62511AIcEC2Ev
 // CHECK-NOT: call void @_ZN6PR62511AIcEC2Ev
 // CHECK: ret void
-D::D() { }
+D::D() {}
 
-}
+} // namespace PR6251
 
 namespace virtualBaseAlignment {
 
@@ -77,6 +77,9 @@ struct B : public virtual A {
 
 struct C : public virtual B {};
 
-void test() { B b; C c; }
-
+void test() {
+  B b;
+  C c;
 }
+
+} // namespace virtualBaseAlignment

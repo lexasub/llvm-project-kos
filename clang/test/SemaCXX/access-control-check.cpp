@@ -5,11 +5,11 @@ class M {
 };
 
 class P {
-  int iP; // expected-note {{declared private here}}
+  int iP;    // expected-note {{declared private here}}
   int PPR(); // expected-note {{declared private here}}
 };
 
-class N : M,P {
+class N : M, P {
   N() {}
   int PR() { return iP + PPR(); } // expected-error 2 {{private member of 'P'}}
 };

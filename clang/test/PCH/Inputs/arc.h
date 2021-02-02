@@ -22,5 +22,3 @@ NSString *CreateNSString();
 
 typedef int array0[sizeof((BRIDGE id)CFCreateSomething())];
 typedef int array1[sizeof((BRIDGE CFTypeRef)CreateSomething())];
-
-

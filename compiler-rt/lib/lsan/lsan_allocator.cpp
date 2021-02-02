@@ -13,6 +13,7 @@
 
 #include "lsan_allocator.h"
 
+#include "lsan_common.h"
 #include "sanitizer_common/sanitizer_allocator.h"
 #include "sanitizer_common/sanitizer_allocator_checks.h"
 #include "sanitizer_common/sanitizer_allocator_interface.h"
@@ -21,7 +22,6 @@
 #include "sanitizer_common/sanitizer_internal_defs.h"
 #include "sanitizer_common/sanitizer_stackdepot.h"
 #include "sanitizer_common/sanitizer_stacktrace.h"
-#include "lsan_common.h"
 
 extern "C" void *memset(void *ptr, int value, uptr num);
 
@@ -49,16 +49,15 @@ void InitializeAllocator() {
     max_malloc_size = kMaxAllowedMallocSize;
 }
 
-void AllocatorThreadFinish() {
-  allocator.SwallowCache(GetAllocatorCache());
-}
+void AllocatorThreadFinish() { allocator.SwallowCache(GetAllocatorCache()); }
 
 static ChunkMetadata *Metadata(const void *p) {
   return reinterpret_cast<ChunkMetadata *>(allocator.GetMetaData(p));
 }
 
 static void RegisterAllocation(const StackTrace &stack, void *p, uptr size) {
-  if (!p) return;
+  if (!p)
+    return;
   ChunkMetadata *m = Metadata(p);
   CHECK(m);
   m->tag = DisabledInThisThread() ? kIgnored : kDirectlyLeaked;
@@ -68,7 +67,8 @@ static void RegisterAllocation(const StackTrace &stack, void *p, uptr size) {
 }
 
 static void RegisterDeallocation(void *p) {
-  if (!p) return;
+  if (!p)
+    return;
   ChunkMetadata *m = Metadata(p);
   CHECK(m);
   atomic_store(reinterpret_cast<atomic_uint8_t *>(m), 0, memory_order_relaxed);
@@ -99,7 +99,8 @@ void *Allocate(const StackTrace &stack, uptr size, uptr alignment,
   if (cleared && allocator.FromPrimary(p))
     memset(p, 0, size);
   RegisterAllocation(stack, p, size);
-  if (&__sanitizer_malloc_hook) __sanitizer_malloc_hook(p, size);
+  if (&__sanitizer_malloc_hook)
+    __sanitizer_malloc_hook(p, size);
   RunMallocHooks(p, size);
   return p;
 }
@@ -115,7 +116,8 @@ static void *Calloc(uptr nmemb, uptr size, const StackTrace &stack) {
 }
 
 void Deallocate(void *p) {
-  if (&__sanitizer_free_hook) __sanitizer_free_hook(p);
+  if (&__sanitizer_free_hook)
+    __sanitizer_free_hook(p);
   RunFreeHooks(p);
   RegisterDeallocation(p);
   allocator.Deallocate(GetAllocatorCache(), p);
@@ -140,7 +142,8 @@ void GetAllocatorCacheRange(uptr *begin, uptr *end) {
 
 uptr GetMallocUsableSize(const void *p) {
   ChunkMetadata *m = Metadata(p);
-  if (!m) return 0;
+  if (!m)
+    return 0;
   return m->requested_size;
 }
 
@@ -184,9 +187,7 @@ void *lsan_malloc(uptr size, const StackTrace &stack) {
   return SetErrnoOnNull(Allocate(stack, size, 1, kAlwaysClearMemory));
 }
 
-void lsan_free(void *p) {
-  Deallocate(p);
-}
+void lsan_free(void *p) { Deallocate(p); }
 
 void *lsan_realloc(void *p, uptr size, const StackTrace &stack) {
   return SetErrnoOnNull(Reallocate(stack, p, size, 1));
@@ -225,32 +226,28 @@ void *lsan_pvalloc(uptr size, const StackTrace &stack) {
   return SetErrnoOnNull(Allocate(stack, size, PageSize, kAlwaysClearMemory));
 }
 
-uptr lsan_mz_size(const void *p) {
-  return GetMallocUsableSize(p);
-}
+uptr lsan_mz_size(const void *p) { return GetMallocUsableSize(p); }
 
 ///// Interface to the common LSan module. /////
 
-void LockAllocator() {
-  allocator.ForceLock();
-}
+void LockAllocator() { allocator.ForceLock(); }
 
-void UnlockAllocator() {
-  allocator.ForceUnlock();
-}
+void UnlockAllocator() { allocator.ForceUnlock(); }
 
 void GetAllocatorGlobalRange(uptr *begin, uptr *end) {
   *begin = (uptr)&allocator;
   *end = *begin + sizeof(allocator);
 }
 
-uptr PointsIntoChunk(void* p) {
+uptr PointsIntoChunk(void *p) {
   uptr addr = reinterpret_cast<uptr>(p);
   uptr chunk = reinterpret_cast<uptr>(allocator.GetBlockBeginFastLocked(p));
-  if (!chunk) return 0;
+  if (!chunk)
+    return 0;
   // LargeMmapAllocator considers pointers to the meta-region of a chunk to be
   // valid, but we don't want that.
-  if (addr < chunk) return 0;
+  if (addr < chunk)
+    return 0;
   ChunkMetadata *m = Metadata(reinterpret_cast<void *>(chunk));
   CHECK(m);
   if (!m->allocated)
@@ -262,9 +259,7 @@ uptr PointsIntoChunk(void* p) {
   return 0;
 }
 
-uptr GetUserBegin(uptr chunk) {
-  return chunk;
-}
+uptr GetUserBegin(uptr chunk) { return chunk; }
 
 LsanMetadata::LsanMetadata(uptr chunk) {
   metadata_ = Metadata(reinterpret_cast<void *>(chunk));
@@ -297,7 +292,8 @@ void ForEachChunk(ForEachChunkCallback callback, void *arg) {
 
 IgnoreObjectResult IgnoreObjectLocked(const void *p) {
   void *chunk = allocator.GetBlockBegin(p);
-  if (!chunk || p < chunk) return kIgnoreObjectInvalid;
+  if (!chunk || p < chunk)
+    return kIgnoreObjectInvalid;
   ChunkMetadata *m = Metadata(chunk);
   CHECK(m);
   if (m->allocated && (uptr)p < (uptr)chunk + m->requested_size) {
@@ -319,7 +315,7 @@ void GetAdditionalThreadContextPtrs(ThreadContextBase *tctx, void *ptrs) {
   // live.
 }
 
-} // namespace __lsan
+}  // namespace __lsan
 
 using namespace __lsan;
 
@@ -357,14 +353,14 @@ uptr __sanitizer_get_allocated_size(const void *p) {
 
 #if !SANITIZER_SUPPORTS_WEAK_HOOKS
 // Provide default (no-op) implementation of malloc hooks.
-SANITIZER_INTERFACE_ATTRIBUTE SANITIZER_WEAK_ATTRIBUTE
-void __sanitizer_malloc_hook(void *ptr, uptr size) {
+SANITIZER_INTERFACE_ATTRIBUTE SANITIZER_WEAK_ATTRIBUTE void
+__sanitizer_malloc_hook(void *ptr, uptr size) {
   (void)ptr;
   (void)size;
 }
-SANITIZER_INTERFACE_ATTRIBUTE SANITIZER_WEAK_ATTRIBUTE
-void __sanitizer_free_hook(void *ptr) {
+SANITIZER_INTERFACE_ATTRIBUTE SANITIZER_WEAK_ATTRIBUTE void
+__sanitizer_free_hook(void *ptr) {
   (void)ptr;
 }
 #endif
-} // extern "C"
+}  // extern "C"

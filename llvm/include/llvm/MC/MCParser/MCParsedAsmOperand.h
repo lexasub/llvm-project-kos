@@ -45,7 +45,7 @@ public:
   void setConstraint(StringRef C) { Constraint = C.str(); }
   StringRef getConstraint() { return Constraint; }
 
-  void setMCOperandNum (unsigned OpNum) { MCOperandNum = OpNum; }
+  void setMCOperandNum(unsigned OpNum) { MCOperandNum = OpNum; }
   unsigned getMCOperandNum() { return MCOperandNum; }
 
   virtual StringRef getSymName() { return StringRef(); }
@@ -89,7 +89,7 @@ public:
 //===----------------------------------------------------------------------===//
 // Debugging Support
 
-inline raw_ostream& operator<<(raw_ostream &OS, const MCParsedAsmOperand &MO) {
+inline raw_ostream &operator<<(raw_ostream &OS, const MCParsedAsmOperand &MO) {
   MO.print(OS);
   return OS;
 }

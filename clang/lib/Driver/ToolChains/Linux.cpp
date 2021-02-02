@@ -249,8 +249,8 @@ Linux::Linux(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
     // to the detected gcc install, because if we are using devtoolset gcc then
     // we want to use other tools from devtoolset (e.g. ld) instead of the
     // standard system tools.
-    PPaths.push_back(Twine(GCCInstallation.getParentLibPath() +
-                     "/../bin").str());
+    PPaths.push_back(
+        Twine(GCCInstallation.getParentLibPath() + "/../bin").str());
 
   if (Arch == llvm::Triple::arm || Arch == llvm::Triple::thumb)
     ExtraOpts.push_back("-X");
@@ -332,8 +332,7 @@ Linux::Linux(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
   // 64-bit OpenEmbedded sysroots may not have a /usr/lib dir. So they cannot
   // find /usr/lib64 as it is referenced as /usr/lib/../lib64. So we handle
   // this here.
-  if (Triple.getVendor() == llvm::Triple::OpenEmbedded &&
-      Triple.isArch64Bit())
+  if (Triple.getVendor() == llvm::Triple::OpenEmbedded && Triple.isArch64Bit())
     addPathIfExists(D, SysRoot + "/usr/" + OSLibDir, Paths);
   else
     addPathIfExists(D, SysRoot + "/usr/lib/../" + OSLibDir, Paths);
@@ -648,8 +647,7 @@ void Linux::AddClangSystemIncludeArgs(const ArgList &DriverArgs,
   const StringRef MIPSN32R6ELMultiarchIncludeDirs[] = {
       "/usr/include/mipsisa64r6el-linux-gnuabin32"};
   const StringRef PPCMultiarchIncludeDirs[] = {
-      "/usr/include/powerpc-linux-gnu",
-      "/usr/include/powerpc-linux-gnuspe"};
+      "/usr/include/powerpc-linux-gnu", "/usr/include/powerpc-linux-gnuspe"};
   const StringRef PPCLEMultiarchIncludeDirs[] = {
       "/usr/include/powerpcle-linux-gnu"};
   const StringRef PPC64MultiarchIncludeDirs[] = {
@@ -833,7 +831,7 @@ void Linux::AddIAMCUIncludeArgs(const ArgList &DriverArgs,
 
 bool Linux::isPIEDefault() const {
   return (getTriple().isAndroid() && !getTriple().isAndroidVersionLT(16)) ||
-          getTriple().isMusl() || getSanitizerArgs().requiresPIE();
+         getTriple().isMusl() || getSanitizerArgs().requiresPIE();
 }
 
 bool Linux::IsAArch64OutlineAtomicsDefault(const ArgList &Args) const {
@@ -849,9 +847,7 @@ bool Linux::IsAArch64OutlineAtomicsDefault(const ArgList &Args) const {
   return true;
 }
 
-bool Linux::isNoExecStackDefault() const {
-    return getTriple().isAndroid();
-}
+bool Linux::isNoExecStackDefault() const { return getTriple().isAndroid(); }
 
 bool Linux::IsMathErrnoDefault() const {
   if (getTriple().isAndroid())

@@ -1,7 +1,7 @@
 namespace a {
 extern int kGlobalInt;
 extern const char *const kGlobalStr;
-}
+} // namespace a
 
 int kEvilInt = 2;
 

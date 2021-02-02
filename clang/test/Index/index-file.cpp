@@ -1,7 +1,7 @@
 using MyTypeAlias = int;
 
 extern "C" {
-  template < typename T > *Allocate() { }
+template <typename T> *Allocate() {}
 }
 
 // rdar://14063074
@@ -13,16 +13,16 @@ struct TS<int> {};
 template <typename T>
 void tfoo() {}
 void tfoo<int>() {}
-}
+} // namespace rdar14063074
 
 namespace crash1 {
-template<typename T> class A {
+template <typename T> class A {
   A(A &) = delete;
   void meth();
 };
 template <> void A<int>::meth();
 template class A<int>;
-}
+} // namespace crash1
 
 class B {
   mutable int x_;
@@ -31,12 +31,12 @@ class B {
   B() = default;
   B(int);
   explicit B(double);
-  B(const B&);
-  B(B&&);
+  B(const B &);
+  B(B &&);
 };
 
 class C {
-  explicit C(const C&);
+  explicit C(const C &);
 };
 
 // RUN: c-index-test -index-file %s > %t

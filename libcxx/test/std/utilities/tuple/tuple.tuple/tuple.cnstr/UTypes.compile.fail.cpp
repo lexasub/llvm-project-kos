@@ -23,30 +23,29 @@
 #include <tuple>
 #include <cassert>
 
-class MoveOnly
-{
-    MoveOnly(const MoveOnly&);
-    MoveOnly& operator=(const MoveOnly&);
+class MoveOnly {
+  MoveOnly(const MoveOnly&);
+  MoveOnly& operator=(const MoveOnly&);
 
-    int data_;
+  int data_;
+
 public:
-    explicit MoveOnly(int data = 1) : data_(data) {}
-    MoveOnly(MoveOnly&& x)
-        : data_(x.data_) {x.data_ = 0;}
-    MoveOnly& operator=(MoveOnly&& x)
-        {data_ = x.data_; x.data_ = 0; return *this;}
+  explicit MoveOnly(int data = 1) : data_(data) {}
+  MoveOnly(MoveOnly&& x) : data_(x.data_) { x.data_ = 0; }
+  MoveOnly& operator=(MoveOnly&& x) {
+    data_ = x.data_;
+    x.data_ = 0;
+    return *this;
+  }
 
-    int get() const {return data_;}
+  int get() const { return data_; }
 
-    bool operator==(const MoveOnly& x) const {return data_ == x.data_;}
-    bool operator< (const MoveOnly& x) const {return data_ <  x.data_;}
+  bool operator==(const MoveOnly& x) const { return data_ == x.data_; }
+  bool operator<(const MoveOnly& x) const { return data_ < x.data_; }
 };
 
-int main(int, char**)
-{
-    {
-        std::tuple<MoveOnly> t = 1;
-    }
+int main(int, char**) {
+  { std::tuple<MoveOnly> t = 1; }
 
   return 0;
 }

@@ -834,7 +834,7 @@ uint32_t EmulateInstructionARM::GetFramePointerRegisterNumber() const {
   case llvm::Triple::IOS:
   case llvm::Triple::TvOS:
   case llvm::Triple::WatchOS:
-  // NEED_BRIDGEOS_TRIPLE case llvm::Triple::BridgeOS:
+    // NEED_BRIDGEOS_TRIPLE case llvm::Triple::BridgeOS:
     is_apple = true;
     break;
   default:
@@ -10436,7 +10436,7 @@ bool EmulateInstructionARM::EmulateSTREX(const uint32_t opcode,
       if (!WriteRegisterUnsigned(context, eRegisterKindDWARF, dwarf_r0 + t, 0))
         return false;
     }
-#if 0  // unreachable because if true
+#if 0 // unreachable because if true
         else
         {
             // R[d] = 1;

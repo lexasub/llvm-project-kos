@@ -89,16 +89,14 @@ static MCInstPrinter *createAMDGPUMCInstPrinter(const Triple &T,
     return new AMDGPUInstPrinter(MAI, MII, MRI);
 }
 
-static MCTargetStreamer *createAMDGPUAsmTargetStreamer(MCStreamer &S,
-                                                      formatted_raw_ostream &OS,
-                                                      MCInstPrinter *InstPrint,
-                                                      bool isVerboseAsm) {
+static MCTargetStreamer *
+createAMDGPUAsmTargetStreamer(MCStreamer &S, formatted_raw_ostream &OS,
+                              MCInstPrinter *InstPrint, bool isVerboseAsm) {
   return new AMDGPUTargetAsmStreamer(S, OS);
 }
 
-static MCTargetStreamer * createAMDGPUObjectTargetStreamer(
-                                                   MCStreamer &S,
-                                                   const MCSubtargetInfo &STI) {
+static MCTargetStreamer *
+createAMDGPUObjectTargetStreamer(MCStreamer &S, const MCSubtargetInfo &STI) {
   return new AMDGPUTargetELFStreamer(S, STI);
 }
 
@@ -142,8 +140,10 @@ static MCInstrAnalysis *createAMDGPUMCInstrAnalysis(const MCInstrInfo *Info) {
 
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeAMDGPUTargetMC() {
 
-  TargetRegistry::RegisterMCInstrInfo(getTheGCNTarget(), createAMDGPUMCInstrInfo);
-  TargetRegistry::RegisterMCInstrInfo(getTheAMDGPUTarget(), createR600MCInstrInfo);
+  TargetRegistry::RegisterMCInstrInfo(getTheGCNTarget(),
+                                      createAMDGPUMCInstrInfo);
+  TargetRegistry::RegisterMCInstrInfo(getTheAMDGPUTarget(),
+                                      createR600MCInstrInfo);
   for (Target *T : {&getTheAMDGPUTarget(), &getTheGCNTarget()}) {
     RegisterMCAsmInfo<AMDGPUMCAsmInfo> X(*T);
 

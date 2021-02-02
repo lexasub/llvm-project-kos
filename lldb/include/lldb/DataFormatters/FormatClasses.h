@@ -43,8 +43,8 @@ public:
 
 class FormattersMatchCandidate {
 public:
-  FormattersMatchCandidate(ConstString name, bool strip_ptr,
-                           bool strip_ref, bool strip_tydef)
+  FormattersMatchCandidate(ConstString name, bool strip_ptr, bool strip_ref,
+                           bool strip_tydef)
       : m_type_name(name), m_stripped_pointer(strip_ptr),
         m_stripped_reference(strip_ref), m_stripped_typedef(strip_tydef) {}
 

@@ -3,9 +3,11 @@
 // RUN: %clang_cc1 -triple i386-apple-darwin -std=c++11 -emit-llvm %s -o - | \
 // RUN: FileCheck %s
 
-struct A { A(const A&, int i1 = 1); };
+struct A {
+  A(const A &, int i1 = 1);
+};
 
-struct B : A { };
+struct B : A {};
 
 A f(const B &b) {
   return b;

@@ -21,9 +21,9 @@
 #include "llvm/DebugInfo/PDB/Native/TpiStream.h"
 #include "llvm/Support/Endian.h"
 
-#include "PdbUtil.h"
 #include "CodeViewRegisterMapping.h"
 #include "PdbFPOProgramToDWARFExpression.h"
+#include "PdbUtil.h"
 
 using namespace lldb;
 using namespace lldb_private;
@@ -181,8 +181,8 @@ DWARFExpression lldb_private::npdb::MakeVFrameRelLocationExpression(
       module, [&](Stream &stream, RegisterKind &register_kind) -> bool {
         const ArchSpec &architecture = module->GetArchitecture();
 
-        if (!EmitVFrameEvaluationDWARFExpression(fpo_program, architecture.GetMachine(),
-                                                 stream))
+        if (!EmitVFrameEvaluationDWARFExpression(
+                fpo_program, architecture.GetMachine(), stream))
           return false;
 
         stream.PutHex8(llvm::dwarf::DW_OP_consts);

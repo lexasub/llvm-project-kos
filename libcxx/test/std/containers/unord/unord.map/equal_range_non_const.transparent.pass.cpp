@@ -21,45 +21,44 @@
 
 #include "test_transparent_unordered.h"
 
-int main(int, char**)
-{
-    using key_type = StoredType<int>;
-    using ilist_type = std::initializer_list<std::pair<const key_type, int> >;
+int main(int, char**) {
+  using key_type = StoredType<int>;
+  using ilist_type = std::initializer_list<std::pair<const key_type, int> >;
 
-    {
-      // Make sure conversions don't happen for transparent non-final hasher and key_equal
-      using map_type = unord_map_type<std::unordered_map, transparent_hash,
-                                 std::equal_to<> >;
-      test_transparent_equal_range<map_type>(ilist_type{{1, 2}, {2, 3}});
-    }
+  {
+    // Make sure conversions don't happen for transparent non-final hasher and key_equal
+    using map_type =
+        unord_map_type<std::unordered_map, transparent_hash, std::equal_to<> >;
+    test_transparent_equal_range<map_type>(ilist_type{{1, 2}, {2, 3}});
+  }
 
-    {
-      // Make sure conversions don't happen for transparent final hasher and key_equal
-      using map_type = unord_map_type<std::unordered_map, transparent_hash_final,
-                                 transparent_equal_final>;
-      test_transparent_equal_range<map_type>(ilist_type{{1, 2}, {2, 3}});
-    }
+  {
+    // Make sure conversions don't happen for transparent final hasher and key_equal
+    using map_type = unord_map_type<std::unordered_map, transparent_hash_final,
+                                    transparent_equal_final>;
+    test_transparent_equal_range<map_type>(ilist_type{{1, 2}, {2, 3}});
+  }
 
-    {
-      // Make sure conversions do happen for non-transparent hasher
-      using map_type = unord_map_type<std::unordered_map, non_transparent_hash,
-                                 std::equal_to<> >;
-      test_non_transparent_equal_range<map_type>(ilist_type{{1, 2}, {2, 3}});
-    }
+  {
+    // Make sure conversions do happen for non-transparent hasher
+    using map_type = unord_map_type<std::unordered_map, non_transparent_hash,
+                                    std::equal_to<> >;
+    test_non_transparent_equal_range<map_type>(ilist_type{{1, 2}, {2, 3}});
+  }
 
-    {
-      // Make sure conversions do happen for non-transparent key_equal
-      using map_type = unord_map_type<std::unordered_map, transparent_hash,
-                                 std::equal_to<key_type> >;
-      test_non_transparent_equal_range<map_type>(ilist_type{{1, 2}, {2, 3}});
-    }
+  {
+    // Make sure conversions do happen for non-transparent key_equal
+    using map_type = unord_map_type<std::unordered_map, transparent_hash,
+                                    std::equal_to<key_type> >;
+    test_non_transparent_equal_range<map_type>(ilist_type{{1, 2}, {2, 3}});
+  }
 
-    {
-      // Make sure conversions do happen for both non-transparent hasher and key_equal
-      using map_type = unord_map_type<std::unordered_map, non_transparent_hash,
-                                 std::equal_to<key_type> >;
-      test_non_transparent_equal_range<map_type>(ilist_type{{1, 2}, {2, 3}});
-    }
+  {
+    // Make sure conversions do happen for both non-transparent hasher and key_equal
+    using map_type = unord_map_type<std::unordered_map, non_transparent_hash,
+                                    std::equal_to<key_type> >;
+    test_non_transparent_equal_range<map_type>(ilist_type{{1, 2}, {2, 3}});
+  }
 
-    return 0;
+  return 0;
 }

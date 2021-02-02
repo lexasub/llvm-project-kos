@@ -16,8 +16,8 @@
 #include "llvm/CodeGen/TargetSubtargetInfo.h"
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/IR/Mangler.h"
-#include "llvm/Transforms/Utils/ModuleUtils.h"
 #include "llvm/Target/TargetMachine.h"
+#include "llvm/Transforms/Utils/ModuleUtils.h"
 
 using namespace llvm;
 
@@ -118,7 +118,7 @@ private:
   }
 };
 
-} // namespace anonymous
+} // namespace
 
 void llvm::updateCompilerUsed(Module &TheModule, const TargetMachine &TM,
                               const StringSet<> &AsmUndefinedRefs) {

@@ -19,9 +19,8 @@ class NativeThreadWindows;
 
 class NativeRegisterContextWindows : public NativeRegisterContextRegisterInfo {
 public:
-  NativeRegisterContextWindows(
-      NativeThreadProtocol &native_thread,
-      RegisterInfoInterface *reg_info_interface_p);
+  NativeRegisterContextWindows(NativeThreadProtocol &native_thread,
+                               RegisterInfoInterface *reg_info_interface_p);
 
   static std::unique_ptr<NativeRegisterContextWindows>
   CreateHostNativeRegisterContextWindows(const ArchSpec &target_arch,

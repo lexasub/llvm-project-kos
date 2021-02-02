@@ -15,7 +15,7 @@ template <> struct coroutine_handle<void> {
   template <class PromiseType>
   coroutine_handle(coroutine_handle<PromiseType>) noexcept;
 };
-}
+} // namespace std::experimental
 
 struct suspend_always {
   bool await_ready() noexcept;
@@ -40,7 +40,9 @@ template <> struct std::experimental::coroutine_traits<int> {
   };
 };
 
-struct Cleanup { ~Cleanup(); };
+struct Cleanup {
+  ~Cleanup();
+};
 void doSomething() noexcept;
 
 // CHECK: define{{.*}} i32 @_Z1fv(

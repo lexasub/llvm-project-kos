@@ -30,7 +30,7 @@
 
 class __attribute__((aligned(64))) Mutex {
  public:
-  Mutex()  { pthread_mutex_init(&m_, NULL); }
+  Mutex() { pthread_mutex_init(&m_, NULL); }
   ~Mutex() { pthread_mutex_destroy(&m_); }
   void Lock() { pthread_mutex_lock(&m_); }
   void Unlock() { pthread_mutex_unlock(&m_); }
@@ -46,7 +46,7 @@ int n_threads, n_iterations;
 
 pthread_barrier_t all_threads_ready, main_threads_ready;
 
-void* GarbageThread(void *unused) {
+void *GarbageThread(void *unused) {
   pthread_barrier_wait(&all_threads_ready);
   return 0;
 }
@@ -84,10 +84,11 @@ int main(int argc, char **argv) {
     printf("Usage: %s n_threads n_garbage_threads n_iterations\n", argv[0]);
     return 1;
   }
-  printf("%s: n_threads=%d n_garbage_threads=%d n_iterations=%d\n",
-         __FILE__, n_threads, n_garbage_threads, n_iterations);
+  printf("%s: n_threads=%d n_garbage_threads=%d n_iterations=%d\n", __FILE__,
+         n_threads, n_garbage_threads, n_iterations);
 
-  pthread_barrier_init(&all_threads_ready, NULL, n_garbage_threads + n_threads + 1);
+  pthread_barrier_init(&all_threads_ready, NULL,
+                       n_garbage_threads + n_threads + 1);
   pthread_barrier_init(&main_threads_ready, NULL, n_threads + 1);
 
   pthread_t *t = new pthread_t[n_threads];
@@ -98,7 +99,7 @@ int main(int argc, char **argv) {
       assert(status == 0);
     }
     for (int i = 0; i < n_threads; i++) {
-      int status = pthread_create(&t[i], 0, Thread, (void*)i);
+      int status = pthread_create(&t[i], 0, Thread, (void *)i);
       assert(status == 0);
     }
     pthread_barrier_wait(&all_threads_ready);
@@ -106,15 +107,14 @@ int main(int argc, char **argv) {
     for (int i = 0; i < n_garbage_threads; i++) {
       pthread_join(g_t[i], 0);
     }
-    delete [] g_t;
+    delete[] g_t;
   }
   printf("Resuming the main threads.\n");
   pthread_barrier_wait(&main_threads_ready);
 
-
   for (int i = 0; i < n_threads; i++) {
     pthread_join(t[i], 0);
   }
-  delete [] t;
+  delete[] t;
   return 0;
 }

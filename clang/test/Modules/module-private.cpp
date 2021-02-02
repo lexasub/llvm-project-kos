@@ -13,7 +13,7 @@ void test() {
 
 int test_broken() {
   HiddenStruct hidden; // expected-error{{unknown type name 'HiddenStruct'}}
-  Integer i; // expected-error{{unknown type name 'Integer'}}
+  Integer i;           // expected-error{{unknown type name 'Integer'}}
 
   int *ip = 0;
   f1(ip); // expected-error{{use of undeclared identifier 'f1'}}
@@ -21,19 +21,18 @@ int test_broken() {
   vector<int> vec; // expected-error{{no template named 'vector'}}
 
   VisibleStruct vs;
-  vs.field = 0; // expected-error{{no member named 'field' in 'VisibleStruct'}}
+  vs.field = 0;   // expected-error{{no member named 'field' in 'VisibleStruct'}}
   vs.setField(1); // expected-error{{no member named 'setField' in 'VisibleStruct'}}
 
   return hidden_var; // expected-error{{use of undeclared identifier 'hidden_var'}}
 }
 
 // Check for private redeclarations of public entities.
-template<typename T>
+template <typename T>
 class public_class_template;
 
-template<typename T>
+template <typename T>
 __module_private__ class public_class_template;
-
 
 typedef int public_typedef;
 typedef __module_private__ int public_typedef;
@@ -44,18 +43,18 @@ extern __module_private__ int public_var;
 void public_func();
 __module_private__ void public_func();
 
-template<typename T>
+template <typename T>
 void public_func_template();
-template<typename T>
+template <typename T>
 __module_private__ void public_func_template();
 
 struct public_struct;
 __module_private__ struct public_struct;
 
 // Check for attempts to make specializations private
-template<> __module_private__ void public_func_template<int>(); // expected-error{{template specialization cannot be declared __module_private__}}
+template <> __module_private__ void public_func_template<int>(); // expected-error{{template specialization cannot be declared __module_private__}}
 
-template<typename T>
+template <typename T>
 struct public_class {
   struct inner_struct;
   static int static_var;
@@ -64,14 +63,14 @@ struct public_class {
   friend __module_private__ struct public_struct_friend;
 };
 
-template<> __module_private__ struct public_class<int>::inner_struct { }; // expected-error{{member specialization cannot be declared __module_private__}}
-template<> __module_private__ int public_class<int>::static_var = 17; // expected-error{{member specialization cannot be declared __module_private__}}
+template <> __module_private__ struct public_class<int>::inner_struct {}; // expected-error{{member specialization cannot be declared __module_private__}}
+template <> __module_private__ int public_class<int>::static_var = 17;    // expected-error{{member specialization cannot be declared __module_private__}}
 
-template<>
-__module_private__ struct public_class<float> { }; // expected-error{{template specialization cannot be declared __module_private__}}
+template <>
+__module_private__ struct public_class<float> {}; // expected-error{{template specialization cannot be declared __module_private__}}
 
-template<typename T>
-__module_private__ struct public_class<T *> { }; // expected-error{{partial specialization cannot be declared __module_private__}}
+template <typename T>
+__module_private__ struct public_class<T *> {}; // expected-error{{partial specialization cannot be declared __module_private__}}
 
 // Check for attempts to make parameters and variables with automatic
 // storage module-private.
@@ -94,4 +93,4 @@ struct LikeVisibleStruct {
   virtual void setField(int f);
 };
 
-int check_struct_size[sizeof(VisibleStruct) == sizeof(LikeVisibleStruct)? 1 : -1];
+int check_struct_size[sizeof(VisibleStruct) == sizeof(LikeVisibleStruct) ? 1 : -1];

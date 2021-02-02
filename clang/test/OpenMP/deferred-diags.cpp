@@ -21,19 +21,21 @@ int foo();
 class B {
 public:
   void barB(int *isHost) {
-  #pragma omp target map(tofrom: isHost)
-     {
-       *isHost = foo();
-     }
+#pragma omp target map(tofrom \
+                       : isHost)
+    {
+      *isHost = foo();
+    }
   }
 };
 
 class A : public B {
 public:
   void barA(int *isHost) {
-  #pragma omp target map(tofrom: isHost)
-     {
-       barB(isHost);
-     }
+#pragma omp target map(tofrom \
+                       : isHost)
+    {
+      barB(isHost);
+    }
   }
 };

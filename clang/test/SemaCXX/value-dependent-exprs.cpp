@@ -44,5 +44,4 @@ class C0 {
     return __builtin_choose_expr(I, 1, 2);
   }
 #endif
-
 };

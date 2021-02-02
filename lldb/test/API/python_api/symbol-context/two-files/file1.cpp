@@ -1,8 +1,6 @@
 #include "decls.h"
 
-int g() {
-  return 1;
-}
+int g() { return 1; }
 
 struct1::~struct1() {
   int x = g(); // Break1

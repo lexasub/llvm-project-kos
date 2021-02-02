@@ -16,11 +16,10 @@
 
 void f() {}
 
-int main(int, char**)
-{
-    static_assert((std::is_same<std::new_handler, void(*)()>::value), "");
-    std::new_handler p = f;
-    assert(p == &f);
+int main(int, char**) {
+  static_assert((std::is_same<std::new_handler, void (*)()>::value), "");
+  std::new_handler p = f;
+  assert(p == &f);
 
   return 0;
 }

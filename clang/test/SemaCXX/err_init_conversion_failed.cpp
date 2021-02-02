@@ -6,8 +6,8 @@ void test0() {
 }
 
 void test1(int x = (void)0) {}
-  // expected-error@-1{{cannot initialize a parameter}}
-  // expected-note@-2{{here}}
+// expected-error@-1{{cannot initialize a parameter}}
+// expected-note@-2{{here}}
 
 int test2() {
   return (void)0;
@@ -15,7 +15,7 @@ int test2() {
 }
 
 struct S4 {
-  S4() : x((void)0) {};
+  S4() : x((void)0){};
   // expected-error@-1{{cannot initialize a member subobject}}
   int x;
 };
@@ -30,9 +30,9 @@ void test6() {
   // expected-error@-1{{cannot initialize a new value}}
 }
 
-typedef short short2 __attribute__ ((__vector_size__ (2)));
+typedef short short2 __attribute__((__vector_size__(2)));
 void test10() {
-  short2 V = { (void)0 };
+  short2 V = {(void)0};
   // expected-error@-1{{cannot initialize a vector element}}
 }
 
@@ -40,14 +40,14 @@ typedef float float2 __attribute__((ext_vector_type(2)));
 typedef float float4 __attribute__((ext_vector_type(4)));
 
 void test14(const float2 in, const float2 out) {
-  const float4 V = (float4){ in, out };
+  const float4 V = (float4){in, out};
   // expected-error@-1{{cannot initialize a compound literal initializer}}
 }
 
 namespace template_test {
 class S {
 public:
-   void foo(int);
+  void foo(int);
 };
 
 template <class P> struct S2 {
@@ -58,4 +58,4 @@ void test_15() {
   S2<S> X = {&S::foo};
   // expected-error-re@-1{{cannot initialize a member subobject of type 'void (template_test::S::*)(const int &){{( __attribute__\(\(thiscall\)\))?}}' with an rvalue of type 'void (template_test::S::*)(int){{( __attribute__\(\(thiscall\)\))?}}': type mismatch at 1st parameter ('const int &' vs 'int')}}
 }
-}
+} // namespace template_test

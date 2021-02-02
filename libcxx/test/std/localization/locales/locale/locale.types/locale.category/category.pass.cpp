@@ -17,41 +17,32 @@
 #include "test_macros.h"
 
 template <class T>
-void test(const T &) {}
+void test(const T&) {}
 
+int main(int, char**) {
+  static_assert((std::is_same<std::locale::category, int>::value), "");
+  assert(std::locale::none == 0);
+  assert(std::locale::collate);
+  assert(std::locale::ctype);
+  assert(std::locale::monetary);
+  assert(std::locale::numeric);
+  assert(std::locale::time);
+  assert(std::locale::messages);
+  assert((std::locale::collate & std::locale::ctype & std::locale::monetary &
+          std::locale::numeric & std::locale::time & std::locale::messages) ==
+         0);
+  assert((std::locale::collate | std::locale::ctype | std::locale::monetary |
+          std::locale::numeric | std::locale::time | std::locale::messages) ==
+         std::locale::all);
 
-int main(int, char**)
-{
-    static_assert((std::is_same<std::locale::category, int>::value), "");
-    assert(std::locale::none == 0);
-    assert(std::locale::collate);
-    assert(std::locale::ctype);
-    assert(std::locale::monetary);
-    assert(std::locale::numeric);
-    assert(std::locale::time);
-    assert(std::locale::messages);
-    assert((std::locale::collate
-          & std::locale::ctype
-          & std::locale::monetary
-          & std::locale::numeric
-          & std::locale::time
-          & std::locale::messages) == 0);
-    assert((std::locale::collate
-          | std::locale::ctype
-          | std::locale::monetary
-          | std::locale::numeric
-          | std::locale::time
-          | std::locale::messages)
-         == std::locale::all);
-
-    test(std::locale::none);
-    test(std::locale::collate);
-    test(std::locale::ctype);
-    test(std::locale::monetary);
-    test(std::locale::numeric);
-    test(std::locale::time);
-    test(std::locale::messages);
-    test(std::locale::all);
+  test(std::locale::none);
+  test(std::locale::collate);
+  test(std::locale::ctype);
+  test(std::locale::monetary);
+  test(std::locale::numeric);
+  test(std::locale::time);
+  test(std::locale::messages);
+  test(std::locale::all);
 
   return 0;
 }

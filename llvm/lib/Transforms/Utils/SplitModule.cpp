@@ -23,8 +23,8 @@
 #include "llvm/IR/Constants.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/GlobalAlias.h"
-#include "llvm/IR/GlobalObject.h"
 #include "llvm/IR/GlobalIndirectSymbol.h"
+#include "llvm/IR/GlobalObject.h"
 #include "llvm/IR/GlobalValue.h"
 #include "llvm/IR/GlobalVariable.h"
 #include "llvm/IR/Instruction.h"
@@ -173,11 +173,13 @@ static void findPartitions(Module &M, ClusterIDMapType &ClusterIDMap,
   // To guarantee determinism, we have to sort SCC according to size.
   // When size is the same, use leader's name.
   for (ClusterMapType::iterator I = GVtoClusterMap.begin(),
-                                E = GVtoClusterMap.end(); I != E; ++I)
+                                E = GVtoClusterMap.end();
+       I != E; ++I)
     if (I->isLeader())
       Sets.push_back(
           std::make_pair(std::distance(GVtoClusterMap.member_begin(I),
-                                       GVtoClusterMap.member_end()), I));
+                                       GVtoClusterMap.member_end()),
+                         I));
 
   llvm::sort(Sets, [](const SortType &a, const SortType &b) {
     if (a.first == b.first)

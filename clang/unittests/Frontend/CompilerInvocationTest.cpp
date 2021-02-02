@@ -342,7 +342,7 @@ TEST_F(CommandLineTest, CanGenerateCC1CommandLineSeparate) {
   ASSERT_THAT(GeneratedArgs, Contains(StrEq(TripleCStr)));
 }
 
-TEST_F(CommandLineTest,  CanGenerateCC1CommandLineSeparateRequiredPresent) {
+TEST_F(CommandLineTest, CanGenerateCC1CommandLineSeparateRequiredPresent) {
   const std::string DefaultTriple =
       llvm::Triple::normalize(llvm::sys::getDefaultTargetTriple());
   const char *Args[] = {"-triple", DefaultTriple.c_str()};

@@ -14,8 +14,8 @@
 #define LLVM_LIB_CODEGEN_ASMPRINTER_DWARFDEBUG_H
 
 #include "AddressPool.h"
-#include "DebugLocStream.h"
 #include "DebugLocEntry.h"
+#include "DebugLocStream.h"
 #include "DwarfFile.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMap.h"
@@ -71,13 +71,10 @@ class DbgEntity {
   unsigned SubclassID;
 
 public:
-  enum DbgEntityKind {
-    DbgVariableKind,
-    DbgLabelKind
-  };
+  enum DbgEntityKind { DbgVariableKind, DbgLabelKind };
 
   DbgEntity(const DINode *N, const DILocation *IA, unsigned ID)
-    : Entity(N), InlinedAt(IA), SubclassID(ID) {}
+      : Entity(N), InlinedAt(IA), SubclassID(ID) {}
   virtual ~DbgEntity() {}
 
   /// Accessors.
@@ -176,7 +173,9 @@ public:
   void setDebugLocListIndex(unsigned O) { DebugLocListIndex = O; }
   unsigned getDebugLocListIndex() const { return DebugLocListIndex; }
   void setDebugLocListTagOffset(uint8_t O) { DebugLocListTagOffset = O; }
-  Optional<uint8_t> getDebugLocListTagOffset() const { return DebugLocListTagOffset; }
+  Optional<uint8_t> getDebugLocListTagOffset() const {
+    return DebugLocListTagOffset;
+  }
   StringRef getName() const { return getVariable()->getName(); }
   const DbgValueLoc *getValueLoc() const { return ValueLoc.get(); }
   /// Get the FI entries, sorted by fragment offset.
@@ -231,11 +230,12 @@ public:
 ///
 /// Labels are collected from \c DBG_LABEL instructions.
 class DbgLabel : public DbgEntity {
-  const MCSymbol *Sym;                  /// Symbol before DBG_LABEL instruction.
+  const MCSymbol *Sym; /// Symbol before DBG_LABEL instruction.
 
 public:
   /// We need MCSymbol information to generate DW_AT_low_pc.
-  DbgLabel(const DILabel *L, const DILocation *IA, const MCSymbol *Sym = nullptr)
+  DbgLabel(const DILabel *L, const DILocation *IA,
+           const MCSymbol *Sym = nullptr)
       : DbgEntity(L, IA, DbgLabelKind), Sym(Sym) {}
 
   /// Accessors.
@@ -247,9 +247,7 @@ public:
   /// @}
 
   /// Translate tag to proper Dwarf tag.
-  dwarf::Tag getTag() const {
-    return dwarf::DW_TAG_label;
-  }
+  dwarf::Tag getTag() const { return dwarf::DW_TAG_label; }
 
   static bool classof(const DbgEntity *N) {
     return N->getDbgEntityID() == DbgLabelKind;
@@ -263,8 +261,7 @@ private:
   DbgValueLoc Value; ///< Corresponding location for the parameter value at
                      ///< the call site.
 public:
-  DbgCallSiteParam(unsigned Reg, DbgValueLoc Val)
-      : Register(Reg), Value(Val) {
+  DbgCallSiteParam(unsigned Reg, DbgValueLoc Val) : Register(Reg), Value(Val) {
     assert(Reg && "Parameter register cannot be undef");
   }
 
@@ -366,7 +363,7 @@ class DwarfDebug : public DebugHandlerBase {
   /// temp symbols inside DWARF sections.
   bool UseSectionsAsReferences = false;
 
-  ///Allow emission of the .debug_loc section.
+  /// Allow emission of the .debug_loc section.
   bool UseLocSection = true;
 
   /// Generate DWARF v4 type units.
@@ -451,21 +448,20 @@ private:
 
   using InlinedEntity = DbgValueHistoryMap::InlinedEntity;
 
-  void ensureAbstractEntityIsCreated(DwarfCompileUnit &CU,
-                                     const DINode *Node,
+  void ensureAbstractEntityIsCreated(DwarfCompileUnit &CU, const DINode *Node,
                                      const MDNode *Scope);
   void ensureAbstractEntityIsCreatedIfScoped(DwarfCompileUnit &CU,
                                              const DINode *Node,
                                              const MDNode *Scope);
 
-  DbgEntity *createConcreteEntity(DwarfCompileUnit &TheCU,
-                                  LexicalScope &Scope,
+  DbgEntity *createConcreteEntity(DwarfCompileUnit &TheCU, LexicalScope &Scope,
                                   const DINode *Node,
                                   const DILocation *Location,
                                   const MCSymbol *Sym = nullptr);
 
   /// Construct a DIE for this abstract scope.
-  void constructAbstractSubprogramScopeDIE(DwarfCompileUnit &SrcCU, LexicalScope *Scope);
+  void constructAbstractSubprogramScopeDIE(DwarfCompileUnit &SrcCU,
+                                           LexicalScope *Scope);
 
   /// Construct a DIE for the subprogram definition \p SP and return it.
   DIE &constructSubprogramDefinitionDIE(const DISubprogram *SP);
@@ -611,7 +607,7 @@ private:
                          DenseSet<InlinedEntity> &ProcessedVars);
 
   /// Build the location list for all DBG_VALUEs in the
-  /// function that describe the same variable. If the resulting 
+  /// function that describe the same variable. If the resulting
   /// list has only one entry that is valid for entire variable's
   /// scope return true.
   bool buildLocationList(SmallVectorImpl<DebugLocEntry> &DebugLoc,
@@ -668,8 +664,9 @@ public:
     bool AddrPoolUsed;
     friend class DwarfDebug;
     NonTypeUnitContext(DwarfDebug *DD);
+
   public:
-    NonTypeUnitContext(NonTypeUnitContext&&) = default;
+    NonTypeUnitContext(NonTypeUnitContext &&) = default;
     ~NonTypeUnitContext();
   };
 
@@ -721,9 +718,7 @@ public:
   }
 
   /// Returns whether to use sections as labels rather than temp symbols.
-  bool useSectionsAsReferences() const {
-    return UseSectionsAsReferences;
-  }
+  bool useSectionsAsReferences() const { return UseSectionsAsReferences; }
 
   /// Returns whether .debug_loc section should be emitted.
   bool useLocSection() const { return UseLocSection; }
@@ -754,13 +749,9 @@ public:
     return UseSegmentedStringOffsetsTable;
   }
 
-  bool emitDebugEntryValues() const {
-    return EmitDebugEntryValues;
-  }
+  bool emitDebugEntryValues() const { return EmitDebugEntryValues; }
 
-  bool useOpConvert() const {
-    return EnableOpConvert;
-  }
+  bool useOpConvert() const { return EnableOpConvert; }
 
   bool shareAcrossDWOCUs() const;
 

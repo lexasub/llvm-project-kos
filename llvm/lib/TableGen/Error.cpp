@@ -11,11 +11,11 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "llvm/TableGen/Error.h"
 #include "llvm/ADT/Twine.h"
-#include "llvm/Support/raw_ostream.h"
 #include "llvm/Support/Signals.h"
 #include "llvm/Support/WithColor.h"
-#include "llvm/TableGen/Error.h"
+#include "llvm/Support/raw_ostream.h"
 #include "llvm/TableGen/Record.h"
 #include <cstdlib>
 
@@ -42,9 +42,7 @@ static void PrintMessage(ArrayRef<SMLoc> Loc, SourceMgr::DiagKind Kind,
 
 // Functions to print notes.
 
-void PrintNote(const Twine &Msg) {
-  WithColor::note() << Msg << "\n";
-}
+void PrintNote(const Twine &Msg) { WithColor::note() << Msg << "\n"; }
 
 void PrintNote(ArrayRef<SMLoc> NoteLoc, const Twine &Msg) {
   PrintMessage(NoteLoc, SourceMgr::DK_Note, Msg);

@@ -17,12 +17,11 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    std::ios ios(0);
-    assert(ios.rdstate() == std::ios::badbit);
-    ios.setstate(std::ios::failbit);
-    assert(ios.rdstate() == (std::ios::failbit | std::ios::badbit));
+int main(int, char**) {
+  std::ios ios(0);
+  assert(ios.rdstate() == std::ios::badbit);
+  ios.setstate(std::ios::failbit);
+  assert(ios.rdstate() == (std::ios::failbit | std::ios::badbit));
 
   return 0;
 }

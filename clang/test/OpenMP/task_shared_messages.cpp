@@ -53,7 +53,7 @@ S3 h;
 namespace A {
 double x;
 #pragma omp threadprivate(x) // expected-note {{defined as threadprivate or thread local}}
-}
+} // namespace A
 namespace B {
 using A::x;
 }
@@ -65,15 +65,15 @@ int main(int argc, char **argv) {
   S5 g(5);
   int i, z;
   int &j = i;
-#pragma omp task shared                               // expected-error {{expected '(' after 'shared'}}
+#pragma omp task shared // expected-error {{expected '(' after 'shared'}}
   foo();
-#pragma omp task shared(                              // expected-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}}
+#pragma omp task shared( // expected-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}}
   foo();
-#pragma omp task shared()                             // expected-error {{expected expression}}
+#pragma omp task shared() // expected-error {{expected expression}}
   foo();
-#pragma omp task shared(argc                          // expected-error {{expected ')'}} expected-note {{to match this '('}}
+#pragma omp task shared(argc // expected-error {{expected ')'}} expected-note {{to match this '('}}
   foo();
-#pragma omp task shared(argc,                         // expected-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}}
+#pragma omp task shared(argc, // expected-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}}
   foo();
 #pragma omp task shared(argc > 0 ? argv[1] : argv[2]) // expected-error {{expected variable name}}
   foo();
@@ -93,7 +93,7 @@ int main(int argc, char **argv) {
   foo();
 #pragma omp task shared(e, g)
   foo();
-#pragma omp task shared(h, B::x)             // expected-error 2 {{threadprivate or thread local variable cannot be shared}}
+#pragma omp task shared(h, B::x) // expected-error 2 {{threadprivate or thread local variable cannot be shared}}
   foo();
 #pragma omp task private(i), shared(i) // expected-error {{private variable cannot be shared}} expected-note {{defined as private}}
   foo();

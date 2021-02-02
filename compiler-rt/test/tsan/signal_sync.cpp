@@ -1,10 +1,10 @@
 // RUN: %clang_tsan -O1 %s -o %t && %run %t 2>&1 | FileCheck %s
 // UNSUPPORTED: darwin
 #include "test.h"
-#include <signal.h>
-#include <sys/types.h>
-#include <sys/time.h>
 #include <errno.h>
+#include <signal.h>
+#include <sys/time.h>
+#include <sys/types.h>
 
 volatile int X;
 
@@ -14,9 +14,9 @@ static void handler(int sig) {
     printf("bad");
 }
 
-static void* thr(void *p) {
+static void *thr(void *p) {
   for (int i = 0; i != 1000; i++)
-    usleep(1000);  // process signals
+    usleep(1000); // process signals
   return 0;
 }
 

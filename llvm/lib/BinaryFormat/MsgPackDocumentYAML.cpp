@@ -246,4 +246,3 @@ bool msgpack::Document::fromYAML(StringRef S) {
   Yin >> getRoot();
   return !Yin.error();
 }
-

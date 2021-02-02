@@ -155,7 +155,8 @@ class CI : BI {
 };
 
 // Test templated classes.
-template <class F> class BF : public A {
+template <class F>
+class BF : public A {
 public:
   int virt_1() override { return A::virt_1() + 3; }
 };
@@ -168,7 +169,8 @@ public:
 };
 
 // Test both templated class and its parent class.
-template <class F> class DF : public BF<F> {
+template <class F>
+class DF : public BF<F> {
 public:
   DF() = default;
   int virt_1() override { return A::virt_1(); }

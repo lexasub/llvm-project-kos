@@ -24,22 +24,23 @@
 #include "test_macros.h"
 #include "min_allocator.h"
 
-int main(int, char**)
-{
-    {
+int main(int, char**) {
+  {
     typedef std::string S;
     const S s;
     assert(s[0] == 0);
     assert(s[1] == 0);
     assert(false);
-    }
+  }
 #if TEST_STD_VER >= 11
-    {
-    typedef std::basic_string<char, std::char_traits<char>, min_allocator<char>> S;
+  {
+    typedef std::basic_string<char, std::char_traits<char>,
+                              min_allocator<char> >
+        S;
     const S s;
     assert(s[0] == 0);
     assert(s[1] == 0);
     assert(false);
-    }
+  }
 #endif
 }

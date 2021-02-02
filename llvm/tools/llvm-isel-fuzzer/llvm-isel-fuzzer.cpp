@@ -39,15 +39,13 @@ using namespace llvm;
 static codegen::RegisterCodeGenFlags CGF;
 
 static cl::opt<char>
-OptLevel("O",
-         cl::desc("Optimization level. [-O0, -O1, -O2, or -O3] "
-                  "(default = '-O2')"),
-         cl::Prefix,
-         cl::ZeroOrMore,
-         cl::init(' '));
+    OptLevel("O",
+             cl::desc("Optimization level. [-O0, -O1, -O2, or -O3] "
+                      "(default = '-O2')"),
+             cl::Prefix, cl::ZeroOrMore, cl::init(' '));
 
 static cl::opt<std::string>
-TargetTriple("mtriple", cl::desc("Override target triple for module"));
+    TargetTriple("mtriple", cl::desc("Override target triple for module"));
 
 static std::unique_ptr<TargetMachine> TM;
 static std::unique_ptr<IRMutator> Mutator;
@@ -151,11 +149,20 @@ extern "C" LLVM_ATTRIBUTE_USED int LLVMFuzzerInitialize(int *argc,
   default:
     errs() << argv[0] << ": invalid optimization level.\n";
     return 1;
-  case ' ': break;
-  case '0': OLvl = CodeGenOpt::None; break;
-  case '1': OLvl = CodeGenOpt::Less; break;
-  case '2': OLvl = CodeGenOpt::Default; break;
-  case '3': OLvl = CodeGenOpt::Aggressive; break;
+  case ' ':
+    break;
+  case '0':
+    OLvl = CodeGenOpt::None;
+    break;
+  case '1':
+    OLvl = CodeGenOpt::Less;
+    break;
+  case '2':
+    OLvl = CodeGenOpt::Default;
+    break;
+  case '3':
+    OLvl = CodeGenOpt::Aggressive;
+    break;
   }
 
   TargetOptions Options = codegen::InitTargetOptionsFromCodeGenFlags(TheTriple);

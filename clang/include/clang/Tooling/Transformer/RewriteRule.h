@@ -302,8 +302,7 @@ inline RewriteRule makeRule(ast_matchers::internal::DynTypedMatcher M,
 
 /// Overload of \c makeRule for common case of only one edit.
 inline RewriteRule makeRule(ast_matchers::internal::DynTypedMatcher M,
-                            ASTEdit Edit,
-                            TextGenerator Explanation = nullptr) {
+                            ASTEdit Edit, TextGenerator Explanation = nullptr) {
   return makeRule(std::move(M), edit(std::move(Edit)), std::move(Explanation));
 }
 

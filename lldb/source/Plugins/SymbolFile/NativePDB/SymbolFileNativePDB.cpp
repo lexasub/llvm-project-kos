@@ -582,7 +582,6 @@ TypeSP SymbolFileNativePDB::CreateArrayType(PdbTypeSymId type_id,
   return array_sp;
 }
 
-
 TypeSP SymbolFileNativePDB::CreateFunctionType(PdbTypeSymId type_id,
                                                const MemberFunctionRecord &mfr,
                                                CompilerType ct) {
@@ -655,7 +654,8 @@ TypeSP SymbolFileNativePDB::CreateType(PdbTypeSymId type_id, CompilerType ct) {
   }
   if (cvt.kind() == LF_MFUNCTION) {
     MemberFunctionRecord mfr;
-    llvm::cantFail(TypeDeserializer::deserializeAs<MemberFunctionRecord>(cvt, mfr));
+    llvm::cantFail(
+        TypeDeserializer::deserializeAs<MemberFunctionRecord>(cvt, mfr));
     return CreateFunctionType(type_id, mfr, ct);
   }
 
@@ -983,9 +983,9 @@ uint32_t SymbolFileNativePDB::ResolveSymbolContext(
         sc.block = &GetOrCreateBlock(csid);
         sc.function = sc.block->CalculateSymbolContextFunction();
       }
-    resolved_flags |= eSymbolContextFunction;
-    resolved_flags |= eSymbolContextBlock;
-    break;
+      resolved_flags |= eSymbolContextFunction;
+      resolved_flags |= eSymbolContextBlock;
+      break;
     }
   }
 
@@ -1538,7 +1538,6 @@ SymbolFileNativePDB::GetDynamicArrayInfoForUID(
     lldb::user_id_t type_uid, const lldb_private::ExecutionContext *exe_ctx) {
   return llvm::None;
 }
-
 
 bool SymbolFileNativePDB::CompleteType(CompilerType &compiler_type) {
   clang::QualType qt =

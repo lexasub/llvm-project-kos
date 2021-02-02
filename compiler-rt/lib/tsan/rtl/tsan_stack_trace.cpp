@@ -10,27 +10,25 @@
 //
 //===----------------------------------------------------------------------===//
 #include "tsan_stack_trace.h"
-#include "tsan_rtl.h"
+
 #include "tsan_mman.h"
+#include "tsan_rtl.h"
 
 namespace __tsan {
 
 VarSizeStackTrace::VarSizeStackTrace()
     : StackTrace(nullptr, 0), trace_buffer(nullptr) {}
 
-VarSizeStackTrace::~VarSizeStackTrace() {
-  ResizeBuffer(0);
-}
+VarSizeStackTrace::~VarSizeStackTrace() { ResizeBuffer(0); }
 
 void VarSizeStackTrace::ResizeBuffer(uptr new_size) {
   if (trace_buffer) {
     internal_free(trace_buffer);
   }
-  trace_buffer =
-      (new_size > 0)
-          ? (uptr *)internal_alloc(MBlockStackTrace,
-                                   new_size * sizeof(trace_buffer[0]))
-          : nullptr;
+  trace_buffer = (new_size > 0)
+                     ? (uptr *)internal_alloc(
+                           MBlockStackTrace, new_size * sizeof(trace_buffer[0]))
+                     : nullptr;
   trace = trace_buffer;
   size = new_size;
 }
@@ -50,8 +48,10 @@ void VarSizeStackTrace::ReverseOrder() {
 }  // namespace __tsan
 
 #if !SANITIZER_GO
-void __sanitizer::BufferedStackTrace::UnwindImpl(
-    uptr pc, uptr bp, void *context, bool request_fast, u32 max_depth) {
+void __sanitizer::BufferedStackTrace::UnwindImpl(uptr pc, uptr bp,
+                                                 void *context,
+                                                 bool request_fast,
+                                                 u32 max_depth) {
   uptr top = 0;
   uptr bottom = 0;
   if (StackTrace::WillUseFastUnwind(request_fast)) {

@@ -77,8 +77,8 @@ extern "C" void init_lldb(void);
 // C-linkage specified, but returns UDT 'llvm::Expected<bool>' which is
 // incompatible with C
 #if _MSC_VER
-#pragma warning (push)
-#pragma warning (disable : 4190)
+#pragma warning(push)
+#pragma warning(disable : 4190)
 #endif
 
 extern "C" llvm::Expected<bool> LLDBSwigPythonBreakpointCallbackFunction(
@@ -87,7 +87,7 @@ extern "C" llvm::Expected<bool> LLDBSwigPythonBreakpointCallbackFunction(
     const lldb::BreakpointLocationSP &sb_bp_loc, StructuredDataImpl *args_impl);
 
 #if _MSC_VER
-#pragma warning (pop)
+#pragma warning(pop)
 #endif
 
 #pragma clang diagnostic pop
@@ -113,8 +113,7 @@ LLDBSwigPythonCreateCommandObject(const char *python_class_name,
 
 extern "C" void *LLDBSwigPythonCreateScriptedThreadPlan(
     const char *python_class_name, const char *session_dictionary_name,
-    StructuredDataImpl *args_data,
-    std::string &error_string,
+    StructuredDataImpl *args_data, std::string &error_string,
     const lldb::ThreadPlanSP &thread_plan_sp);
 
 extern "C" bool LLDBSWIGPythonCallThreadPlan(void *implementor,
@@ -285,9 +284,9 @@ private:
   void InitializePythonHome() {
 #if LLDB_EMBED_PYTHON_HOME
 #if PY_MAJOR_VERSION >= 3
-    typedef wchar_t* str_type;
+    typedef wchar_t *str_type;
 #else
-    typedef char* str_type;
+    typedef char *str_type;
 #endif
     static str_type g_python_home = []() -> str_type {
       const char *lldb_python_home = LLDB_PYTHON_HOME;
@@ -618,8 +617,7 @@ void ScriptInterpreterPythonImpl::IOHandlerInputComplete(IOHandler &io_handler,
 
       StructuredData::ObjectSP empty_args_sp;
       if (GenerateBreakpointCommandCallbackData(data_up->user_source,
-                                                data_up->script_source,
-                                                false)
+                                                data_up->script_source, false)
               .Success()) {
         auto baton_sp = std::make_shared<BreakpointOptions::CommandBaton>(
             std::move(data_up));
@@ -849,21 +847,19 @@ llvm::Expected<unsigned>
 ScriptInterpreterPythonImpl::GetMaxPositionalArgumentsForCallable(
     const llvm::StringRef &callable_name) {
   if (callable_name.empty()) {
-    return llvm::createStringError(
-        llvm::inconvertibleErrorCode(),
-        "called with empty callable name.");
+    return llvm::createStringError(llvm::inconvertibleErrorCode(),
+                                   "called with empty callable name.");
   }
-  Locker py_lock(this, Locker::AcquireLock |
-                 Locker::InitSession |
-                 Locker::NoSTDIN);
-  auto dict = PythonModule::MainModule()
-      .ResolveName<PythonDictionary>(m_dictionary_name);
+  Locker py_lock(this,
+                 Locker::AcquireLock | Locker::InitSession | Locker::NoSTDIN);
+  auto dict = PythonModule::MainModule().ResolveName<PythonDictionary>(
+      m_dictionary_name);
   auto pfunc = PythonObject::ResolveNameWithDictionary<PythonCallable>(
       callable_name, dict);
   if (!pfunc.IsAllocated()) {
-    return llvm::createStringError(
-        llvm::inconvertibleErrorCode(),
-        "can't find callable: %s", callable_name.str().c_str());
+    return llvm::createStringError(llvm::inconvertibleErrorCode(),
+                                   "can't find callable: %s",
+                                   callable_name.str().c_str());
   }
   llvm::Expected<PythonCallable::ArgInfo> arg_info = pfunc.GetArgInfo();
   if (!arg_info)
@@ -1234,8 +1230,8 @@ Status ScriptInterpreterPythonImpl::SetBreakpointCommandCallbackFunction(
     oneliner += "(frame, bp_loc, extra_args, internal_dict)";
   } else if (max_args >= 3) {
     if (extra_args_sp) {
-      error.SetErrorString("cannot pass extra_args to a three argument callback"
-                          );
+      error.SetErrorString(
+          "cannot pass extra_args to a three argument callback");
       return error;
     }
     uses_extra_args = false;
@@ -1256,9 +1252,8 @@ Status ScriptInterpreterPythonImpl::SetBreakpointCommandCallback(
     BreakpointOptions *bp_options,
     std::unique_ptr<BreakpointOptions::CommandData> &cmd_data_up) {
   Status error;
-  error = GenerateBreakpointCommandCallbackData(cmd_data_up->user_source,
-                                                cmd_data_up->script_source,
-                                                false);
+  error = GenerateBreakpointCommandCallbackData(
+      cmd_data_up->user_source, cmd_data_up->script_source, false);
   if (error.Fail()) {
     return error;
   }
@@ -1271,14 +1266,13 @@ Status ScriptInterpreterPythonImpl::SetBreakpointCommandCallback(
 
 Status ScriptInterpreterPythonImpl::SetBreakpointCommandCallback(
     BreakpointOptions *bp_options, const char *command_body_text) {
-  return SetBreakpointCommandCallback(bp_options, command_body_text, {},false);
+  return SetBreakpointCommandCallback(bp_options, command_body_text, {}, false);
 }
 
 // Set a Python one-liner as the callback for the breakpoint.
 Status ScriptInterpreterPythonImpl::SetBreakpointCommandCallback(
     BreakpointOptions *bp_options, const char *command_body_text,
-    StructuredData::ObjectSP extra_args_sp,
-    bool uses_extra_args) {
+    StructuredData::ObjectSP extra_args_sp, bool uses_extra_args) {
   auto data_up = std::make_unique<CommandDataPython>(extra_args_sp);
   // Split the command_body_text into lines, and pass that to
   // GenerateBreakpointCommandCallbackData.  That will wrap the body in an
@@ -1286,9 +1280,8 @@ Status ScriptInterpreterPythonImpl::SetBreakpointCommandCallback(
   // That is what the callback will actually invoke.
 
   data_up->user_source.SplitIntoLines(command_body_text);
-  Status error = GenerateBreakpointCommandCallbackData(data_up->user_source,
-                                                       data_up->script_source,
-                                                       uses_extra_args);
+  Status error = GenerateBreakpointCommandCallbackData(
+      data_up->user_source, data_up->script_source, uses_extra_args);
   if (error.Success()) {
     auto baton_sp =
         std::make_shared<BreakpointOptions::CommandBaton>(std::move(data_up));
@@ -1845,8 +1838,8 @@ StructuredData::ObjectSP ScriptInterpreterPythonImpl::CreateScriptedThreadPlan(
     Locker py_lock(this,
                    Locker::AcquireLock | Locker::InitSession | Locker::NoSTDIN);
     ret_val = LLDBSwigPythonCreateScriptedThreadPlan(
-        class_name, python_interpreter->m_dictionary_name.c_str(),
-        args_data, error_str, thread_plan_sp);
+        class_name, python_interpreter->m_dictionary_name.c_str(), args_data,
+        error_str, thread_plan_sp);
     if (!ret_val)
       return {};
   }
@@ -2163,8 +2156,7 @@ bool ScriptInterpreterPythonImpl::GenerateTypeSynthClass(
 }
 
 Status ScriptInterpreterPythonImpl::GenerateBreakpointCommandCallbackData(
-    StringList &user_input, std::string &output,
-    bool has_extra_args) {
+    StringList &user_input, std::string &output, bool has_extra_args) {
   static uint32_t num_created_functions = 0;
   user_input.RemoveBlankLines();
   StreamString sstr;

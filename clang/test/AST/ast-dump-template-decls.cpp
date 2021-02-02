@@ -30,7 +30,7 @@ void c<float, int>(float, int);
 // CHECK: TemplateArgument type 'float'
 // CHECK: TemplateArgument type 'int'
 
-template <typename Ty, template<typename> typename Uy>
+template <typename Ty, template <typename> typename Uy>
 // CHECK: FunctionTemplateDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+4]]:18> col:6 d
 // CHECK-NEXT: TemplateTypeParmDecl 0x{{[^ ]*}} <line:[[@LINE-2]]:11, col:20> col:20 referenced typename depth 0 index 0 Ty
 // CHECK-NEXT: TemplateTemplateParmDecl 0x{{[^ ]*}} <col:24, col:52> col:52 depth 0 index 1 Uy

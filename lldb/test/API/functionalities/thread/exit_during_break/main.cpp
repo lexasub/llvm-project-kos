@@ -20,90 +20,83 @@ pseudo_barrier_t g_barrier2;
 // breakpoint has been passed.
 pseudo_barrier_t g_barrier3;
 
-void *
-break_thread_func ()
-{
-    // Wait until the entire first group of threads is running
-    pseudo_barrier_wait(g_barrier1);
+void *break_thread_func() {
+  // Wait until the entire first group of threads is running
+  pseudo_barrier_wait(g_barrier1);
 
-    // Wait for the exiting thread to start
-    pseudo_barrier_wait(g_barrier2);
+  // Wait for the exiting thread to start
+  pseudo_barrier_wait(g_barrier2);
 
-    // Do something
-    g_test++;       // Set breakpoint here
+  // Do something
+  g_test++; // Set breakpoint here
 
-    // Synchronize after the breakpoint
-    pseudo_barrier_wait(g_barrier3);
+  // Synchronize after the breakpoint
+  pseudo_barrier_wait(g_barrier3);
 
-    // Return
-    return NULL;
+  // Return
+  return NULL;
 }
 
-void *
-wait_thread_func ()
-{
-    // Wait until the entire first group of threads is running
-    pseudo_barrier_wait(g_barrier1);
+void *wait_thread_func() {
+  // Wait until the entire first group of threads is running
+  pseudo_barrier_wait(g_barrier1);
 
-    // Wait for the exiting thread to start
-    pseudo_barrier_wait(g_barrier2);
+  // Wait for the exiting thread to start
+  pseudo_barrier_wait(g_barrier2);
 
-    // Wait until the breakpoint has been passed
-    pseudo_barrier_wait(g_barrier3);
+  // Wait until the breakpoint has been passed
+  pseudo_barrier_wait(g_barrier3);
 
-    // Return
-    return NULL;
+  // Return
+  return NULL;
 }
 
-void *
-exit_thread_func ()
-{
-    // Sync up with the rest of the threads.
-    pseudo_barrier_wait(g_barrier2);
+void *exit_thread_func() {
+  // Sync up with the rest of the threads.
+  pseudo_barrier_wait(g_barrier2);
 
-    // Try to make sure this thread doesn't exit until the breakpoint is hit.
-    std::this_thread::sleep_for(std::chrono::microseconds(1));
+  // Try to make sure this thread doesn't exit until the breakpoint is hit.
+  std::this_thread::sleep_for(std::chrono::microseconds(1));
 
-    // Return
-    return NULL;
+  // Return
+  return NULL;
 }
 
-int main ()
-{
+int main() {
 
-    // The first barrier waits for the non-exiting threads to start.
-    // This thread will also participate in that barrier.
-    // The idea here is to guarantee that the exiting thread will be
-    // last in the internal list maintained by the debugger.
-    pseudo_barrier_init(g_barrier1, 5);
+  // The first barrier waits for the non-exiting threads to start.
+  // This thread will also participate in that barrier.
+  // The idea here is to guarantee that the exiting thread will be
+  // last in the internal list maintained by the debugger.
+  pseudo_barrier_init(g_barrier1, 5);
 
-    // The second break synchronizes thread execution with the breakpoint.
-    pseudo_barrier_init(g_barrier2, 5);
+  // The second break synchronizes thread execution with the breakpoint.
+  pseudo_barrier_init(g_barrier2, 5);
 
-    // The third barrier keeps the waiting threads around until the breakpoint
-    // has been passed.
-    pseudo_barrier_init(g_barrier3, 4);
+  // The third barrier keeps the waiting threads around until the breakpoint
+  // has been passed.
+  pseudo_barrier_init(g_barrier3, 4);
 
-    // Create a thread to hit the breakpoint
-    std::thread thread_1(break_thread_func);
+  // Create a thread to hit the breakpoint
+  std::thread thread_1(break_thread_func);
 
-    // Create more threads to slow the debugger down during processing.
-    std::thread thread_2(wait_thread_func);
-    std::thread thread_3(wait_thread_func);
-    std::thread thread_4(wait_thread_func);
+  // Create more threads to slow the debugger down during processing.
+  std::thread thread_2(wait_thread_func);
+  std::thread thread_3(wait_thread_func);
+  std::thread thread_4(wait_thread_func);
 
-    // Wait for all these threads to get started.
-    pseudo_barrier_wait(g_barrier1);
+  // Wait for all these threads to get started.
+  pseudo_barrier_wait(g_barrier1);
 
-    // Create a thread to exit during the breakpoint
-    std::thread thread_5(exit_thread_func);
+  // Create a thread to exit during the breakpoint
+  std::thread thread_5(exit_thread_func);
 
-    // Wait for the threads to finish
-    thread_5.join();
-    thread_4.join();
-    thread_3.join();
-    thread_2.join();
-    thread_1.join();
+  // Wait for the threads to finish
+  thread_5.join();
+  thread_4.join();
+  thread_3.join();
+  thread_2.join();
+  thread_1.join();
 
-    return 0;
+  return 0;
 }

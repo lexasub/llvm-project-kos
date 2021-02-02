@@ -6,14 +6,13 @@ void foo(double);
 void foo(int, int);
 void foo(int, int, int, int);
 
-int main()
-{
-    foo(1, 2, 3);
+int main() {
+  foo(1, 2, 3);
 }
 
 // error and note suppressed by error-limit
-struct s1{};
-struct s1{};
+struct s1 {};
+struct s1 {};
 
 // CHECK: 11:5: error: no matching function for call to 'foo'
 // CHECK: 6:6: note: candidate function not viable: requires 2 arguments, but 3 were provided

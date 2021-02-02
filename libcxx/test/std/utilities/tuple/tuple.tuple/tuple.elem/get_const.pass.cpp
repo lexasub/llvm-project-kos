@@ -24,46 +24,45 @@
 
 struct Empty {};
 
-int main(int, char**)
-{
-    {
-        typedef std::tuple<int> T;
-        const T t(3);
-        assert(std::get<0>(t) == 3);
-    }
-    {
-        typedef std::tuple<std::string, int> T;
-        const T t("high", 5);
-        assert(std::get<0>(t) == "high");
-        assert(std::get<1>(t) == 5);
-    }
+int main(int, char**) {
+  {
+    typedef std::tuple<int> T;
+    const T t(3);
+    assert(std::get<0>(t) == 3);
+  }
+  {
+    typedef std::tuple<std::string, int> T;
+    const T t("high", 5);
+    assert(std::get<0>(t) == "high");
+    assert(std::get<1>(t) == 5);
+  }
 #if TEST_STD_VER > 11
-    {
-        typedef std::tuple<double, int> T;
-        constexpr T t(2.718, 5);
-        static_assert(std::get<0>(t) == 2.718, "");
-        static_assert(std::get<1>(t) == 5, "");
-    }
-    {
-        typedef std::tuple<Empty> T;
-        constexpr T t{Empty()};
-        constexpr Empty e = std::get<0>(t);
-        ((void)e); // Prevent unused warning
-    }
+  {
+    typedef std::tuple<double, int> T;
+    constexpr T t(2.718, 5);
+    static_assert(std::get<0>(t) == 2.718, "");
+    static_assert(std::get<1>(t) == 5, "");
+  }
+  {
+    typedef std::tuple<Empty> T;
+    constexpr T t{Empty()};
+    constexpr Empty e = std::get<0>(t);
+    ((void)e); // Prevent unused warning
+  }
 #endif
-    {
-        typedef std::tuple<double&, std::string, int> T;
-        double d = 1.5;
-        const T t(d, "high", 5);
-        assert(std::get<0>(t) == 1.5);
-        assert(std::get<1>(t) == "high");
-        assert(std::get<2>(t) == 5);
-        std::get<0>(t) = 2.5;
-        assert(std::get<0>(t) == 2.5);
-        assert(std::get<1>(t) == "high");
-        assert(std::get<2>(t) == 5);
-        assert(d == 2.5);
-    }
+  {
+    typedef std::tuple<double&, std::string, int> T;
+    double d = 1.5;
+    const T t(d, "high", 5);
+    assert(std::get<0>(t) == 1.5);
+    assert(std::get<1>(t) == "high");
+    assert(std::get<2>(t) == 5);
+    std::get<0>(t) = 2.5;
+    assert(std::get<0>(t) == 2.5);
+    assert(std::get<1>(t) == "high");
+    assert(std::get<2>(t) == 5);
+    assert(d == 2.5);
+  }
 
   return 0;
 }

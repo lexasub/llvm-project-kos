@@ -6,7 +6,7 @@
 #define X 927
 #endif
 
-#if ! defined(A)
+#if !defined(A)
 #define Y 37
 #else
 #define Y 927

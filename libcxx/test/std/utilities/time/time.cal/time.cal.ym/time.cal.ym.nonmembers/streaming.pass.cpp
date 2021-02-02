@@ -37,8 +37,6 @@
 //         to *abbrev if abbrev is non-null. If %z (or a modified variant) is used and
 //         successfully parsed, that value will be assigned to *offset if offset is non-null.
 
-
-
 #include <chrono>
 #include <type_traits>
 #include <cassert>
@@ -46,13 +44,12 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    using year_month = std::chrono::year_month;
-    using year       = std::chrono::year;
-    using month      = std::chrono::month;
+int main(int, char**) {
+  using year_month = std::chrono::year_month;
+  using year = std::chrono::year;
+  using month = std::chrono::month;
 
-    std::cout << year_month{year{2018}, month{3}};
+  std::cout << year_month{year{2018}, month{3}};
 
   return 0;
 }

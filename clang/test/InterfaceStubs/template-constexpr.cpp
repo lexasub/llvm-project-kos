@@ -7,5 +7,5 @@
 // CHECK-NEXT: Symbols:
 // CHECK-NEXT: ...
 
-template<typename T, T v> struct S8 { static constexpr T value = v; };
-template<typename T, T v> constexpr T S8<T, v>::value;
+template <typename T, T v> struct S8 { static constexpr T value = v; };
+template <typename T, T v> constexpr T S8<T, v>::value;

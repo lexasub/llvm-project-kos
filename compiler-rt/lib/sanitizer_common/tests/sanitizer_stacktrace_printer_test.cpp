@@ -84,10 +84,11 @@ TEST(SanitizerStacktracePrinter, RenderFrame) {
               "Function:%f FunctionOffset:%q Source:%s Line:%l "
               "Column:%c",
               frame_no, info.address, &info, false, "/path/to/", "function_");
-  EXPECT_STREQ("% Frame:42 PC:0x400000 Module:my/module ModuleOffset:0x200 "
-               "Function:foo FunctionOffset:0x100 Source:my/source Line:10 "
-               "Column:5",
-               str.data());
+  EXPECT_STREQ(
+      "% Frame:42 PC:0x400000 Module:my/module ModuleOffset:0x200 "
+      "Function:foo FunctionOffset:0x100 Source:my/source Line:10 "
+      "Column:5",
+      str.data());
   info.Clear();
   str.clear();
 

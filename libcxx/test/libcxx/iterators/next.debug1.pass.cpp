@@ -21,15 +21,13 @@
 
 #include "test_iterators.h"
 
-int main(int, char**)
-{
-    int a[] = {1, 2, 3};
+int main(int, char**) {
+  int a[] = {1, 2, 3};
 
-
-    forward_iterator<int *> it(a+1);
-	std::next(it, 1);  // should work fine
-	std::next(it, 0);  // should work fine
-    EXPECT_DEATH( std::next(it, -1) ); // can't go backwards on a FwdIter
+  forward_iterator<int*> it(a + 1);
+  std::next(it, 1);                // should work fine
+  std::next(it, 0);                // should work fine
+  EXPECT_DEATH(std::next(it, -1)); // can't go backwards on a FwdIter
 
   return 0;
 }

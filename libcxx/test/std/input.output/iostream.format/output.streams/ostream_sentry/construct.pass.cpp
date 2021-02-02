@@ -21,44 +21,39 @@
 int sync_called = 0;
 
 template <class CharT>
-struct testbuf1
-    : public std::basic_streambuf<CharT>
-{
-    testbuf1() {}
+struct testbuf1 : public std::basic_streambuf<CharT> {
+  testbuf1() {}
 
 protected:
-
-    int virtual sync()
-    {
-        ++sync_called;
-        return 1;
-    }
+  int virtual sync() {
+    ++sync_called;
+    return 1;
+  }
 };
 
-int main(int, char**)
-{
-    {
-        std::ostream os((std::streambuf*)0);
-        std::ostream::sentry s(os);
-        assert(!bool(s));
-    }
-    {
-        testbuf1<char> sb;
-        std::ostream os(&sb);
-        std::ostream::sentry s(os);
-        assert(bool(s));
-    }
-    {
-        testbuf1<char> sb;
-        std::ostream os(&sb);
-        testbuf1<char> sb2;
-        std::ostream os2(&sb2);
-        os.tie(&os2);
-        assert(sync_called == 0);
-        std::ostream::sentry s(os);
-        assert(bool(s));
-        assert(sync_called == 1);
-    }
+int main(int, char**) {
+  {
+    std::ostream os((std::streambuf*)0);
+    std::ostream::sentry s(os);
+    assert(!bool(s));
+  }
+  {
+    testbuf1<char> sb;
+    std::ostream os(&sb);
+    std::ostream::sentry s(os);
+    assert(bool(s));
+  }
+  {
+    testbuf1<char> sb;
+    std::ostream os(&sb);
+    testbuf1<char> sb2;
+    std::ostream os2(&sb2);
+    os.tie(&os2);
+    assert(sync_called == 0);
+    std::ostream::sentry s(os);
+    assert(bool(s));
+    assert(sync_called == 1);
+  }
 
   return 0;
 }

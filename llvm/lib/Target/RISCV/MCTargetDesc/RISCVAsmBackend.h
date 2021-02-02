@@ -113,6 +113,6 @@ public:
   const MCTargetOptions &getTargetOptions() const { return TargetOptions; }
   RISCVABI::ABI getTargetABI() const { return TargetABI; }
 };
-}
+} // namespace llvm
 
 #endif

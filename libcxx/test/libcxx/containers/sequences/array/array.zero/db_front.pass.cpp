@@ -17,8 +17,7 @@
 #include "test_macros.h"
 #include "debug_mode_helper.h"
 
-int main(int, char**)
-{
+int main(int, char**) {
   {
     typedef std::array<int, 0> C;
     C c = {};

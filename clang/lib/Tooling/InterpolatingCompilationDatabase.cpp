@@ -171,10 +171,9 @@ struct TransferableCommand {
 
       // Strip input and output files.
       if (Opt.matches(OPT_INPUT) || Opt.matches(OPT_o) ||
-          (ClangCLMode && (Opt.matches(OPT__SLASH_Fa) ||
-                           Opt.matches(OPT__SLASH_Fe) ||
-                           Opt.matches(OPT__SLASH_Fi) ||
-                           Opt.matches(OPT__SLASH_Fo))))
+          (ClangCLMode &&
+           (Opt.matches(OPT__SLASH_Fa) || Opt.matches(OPT__SLASH_Fe) ||
+            Opt.matches(OPT__SLASH_Fi) || Opt.matches(OPT__SLASH_Fo))))
         continue;
 
       // Strip -x, but record the overridden language.
@@ -190,8 +189,8 @@ struct TransferableCommand {
         continue;
       }
 
-      Cmd.CommandLine.insert(Cmd.CommandLine.end(),
-                             OldArgs.data() + OldPos, OldArgs.data() + Pos);
+      Cmd.CommandLine.insert(Cmd.CommandLine.end(), OldArgs.data() + OldPos,
+                             OldArgs.data() + Pos);
     }
 
     // Make use of -std iff -x was missing.
@@ -229,9 +228,10 @@ struct TransferableCommand {
     // --std flag may only be transferred if the language is the same.
     // We may consider "translating" these, e.g. c++11 -> c11.
     if (Std != LangStandard::lang_unspecified && foldType(TargetType) == Type) {
-      Result.CommandLine.emplace_back((
-          llvm::Twine(ClangCLMode ? "/std:" : "-std=") +
-          LangStandard::getLangStandardForKind(Std).getName()).str());
+      Result.CommandLine.emplace_back(
+          (llvm::Twine(ClangCLMode ? "/std:" : "-std=") +
+           LangStandard::getLangStandardForKind(Std).getName())
+              .str());
     }
     Result.CommandLine.push_back(std::string(Filename));
     Result.Heuristic = "inferred from " + Cmd.Filename;
@@ -492,7 +492,7 @@ private:
   StringSaver Strings;
   // Indexes of candidates by certain substrings.
   // String is lowercase and sorted, index points into OriginalPaths.
-  std::vector<SubstringAndIndex> Paths;      // Full path.
+  std::vector<SubstringAndIndex> Paths; // Full path.
   // Lang types obtained by guessing on the corresponding path. I-th element is
   // a type for the I-th path.
   std::vector<types::ID> Types;

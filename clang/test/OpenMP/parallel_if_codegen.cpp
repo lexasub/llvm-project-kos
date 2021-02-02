@@ -34,9 +34,10 @@ int Arg;
 void gtid_test() {
 // CHECK:  call {{.*}}void {{.+}} @__kmpc_fork_call(%{{.+}}* @{{.+}}, i{{.+}} 0, {{.+}}* [[GTID_TEST_REGION1:@.+]] to void
 #pragma omp parallel
-#pragma omp parallel if (parallel: false)
+#pragma omp parallel if (parallel \
+                         : false)
   gtid_test();
-// CHECK: ret void
+  // CHECK: ret void
 }
 
 // CHECK: define internal {{.*}}void [[GTID_TEST_REGION1]](i{{.+}}* noalias [[GTID_PARAM:%.+]], i32* noalias
@@ -60,7 +61,8 @@ int tmain(T Arg) {
   fn1();
 #pragma omp parallel if (false)
   fn2();
-#pragma omp parallel if (parallel: Arg)
+#pragma omp parallel if (parallel \
+                         : Arg)
   fn3();
   return 0;
 }

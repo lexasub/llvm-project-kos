@@ -5,7 +5,10 @@ extern "C" {
 extern int printf(const char *restrict, ...);
 }
 
-struct Val {int X; void g(); };
+struct Val {
+  int X;
+  void g();
+};
 
 struct MutableVal {
   void constFun(int) const;
@@ -19,7 +22,7 @@ struct MutableVal {
 struct NonTriviallyCopyable {
   NonTriviallyCopyable() = default;
   // Define this constructor to make this class non-trivially copyable.
-  NonTriviallyCopyable(const NonTriviallyCopyable& Ntc);
+  NonTriviallyCopyable(const NonTriviallyCopyable &Ntc);
   int X;
 };
 
@@ -44,7 +47,7 @@ struct T {
   struct iterator {
     value_type &operator*();
     const value_type &operator*() const;
-    iterator& operator ++();
+    iterator &operator++();
     bool operator!=(const iterator &other);
     void insert(value_type);
     value_type X;
@@ -55,9 +58,9 @@ struct T {
 
 struct U {
   struct iterator {
-    Val& operator*();
-    const Val& operator*()const;
-    iterator& operator ++();
+    Val &operator*();
+    const Val &operator*() const;
+    iterator &operator++();
     bool operator!=(const iterator &other);
     Val *operator->();
   };
@@ -73,20 +76,20 @@ struct X {
   S getS();
 };
 
-template<typename ElemType>
+template <typename ElemType>
 class dependent {
- public:
+public:
   dependent<ElemType>();
   struct iterator_base {
-    const ElemType& operator*()const;
-    iterator_base& operator ++();
+    const ElemType &operator*() const;
+    iterator_base &operator++();
     bool operator!=(const iterator_base &other) const;
     const ElemType *operator->() const;
   };
 
   struct iterator : iterator_base {
-    ElemType& operator*();
-    iterator& operator ++();
+    ElemType &operator*();
+    iterator &operator++();
     ElemType *operator->();
   };
 
@@ -96,11 +99,11 @@ class dependent {
   iterator begin();
   iterator end();
   unsigned size() const;
-  ElemType & operator[](unsigned);
-  const ElemType & operator[](unsigned) const;
-  ElemType & at(unsigned);
-  ElemType & at(unsigned, unsigned);
-  const ElemType & at(unsigned) const;
+  ElemType &operator[](unsigned);
+  const ElemType &operator[](unsigned) const;
+  ElemType &at(unsigned);
+  ElemType &at(unsigned, unsigned);
+  const ElemType &at(unsigned) const;
 
   // Intentionally evil.
   dependent<ElemType> operator*();
@@ -109,24 +112,24 @@ class dependent {
   void constFoo() const;
 };
 
-template<typename First, typename Second>
-class doublyDependent{
- public:
+template <typename First, typename Second>
+class doublyDependent {
+public:
   struct Value {
     First first;
     Second second;
   };
 
   struct iterator_base {
-    const Value& operator*()const;
-    iterator_base& operator ++();
+    const Value &operator*() const;
+    iterator_base &operator++();
     bool operator!=(const iterator_base &other) const;
     const Value *operator->() const;
   };
 
   struct iterator : iterator_base {
-    Value& operator*();
-    Value& operator ++();
+    Value &operator*();
+    Value &operator++();
     Value *operator->();
   };
 
@@ -137,18 +140,18 @@ class doublyDependent{
   iterator end();
 };
 
-template<typename Contained>
+template <typename Contained>
 class transparent {
- public:
+public:
   Contained *at();
   Contained *operator->();
   Contained operator*();
 };
 
-template<typename IteratorType>
+template <typename IteratorType>
 struct Nested {
-  typedef IteratorType* iterator;
-  typedef const IteratorType* const_iterator;
+  typedef IteratorType *iterator;
+  typedef const IteratorType *const_iterator;
   IteratorType *operator->();
   IteratorType operator*();
   iterator begin();
@@ -204,4 +207,4 @@ static MacroStruct *MacroSt;
 
 } // namespace Macros
 
-#endif  // STRUCTURES_H
+#endif // STRUCTURES_H

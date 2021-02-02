@@ -92,7 +92,7 @@ static bool CheckAsmLValue(Expr *E, Sema &S) {
     return false;
 
   if (E->isLValue())
-    return false;  // Cool, this is an lvalue.
+    return false; // Cool, this is an lvalue.
 
   // Okay, this is not an lvalue, but perhaps it is the result of a cast that we
   // are supposed to allow.
@@ -132,7 +132,7 @@ static bool CheckNakedParmReference(Expr *E, Sema &S) {
   if (!Func->hasAttr<NakedAttr>())
     return false;
 
-  SmallVector<Expr*, 4> WorkList;
+  SmallVector<Expr *, 4> WorkList;
   WorkList.push_back(E);
   while (WorkList.size()) {
     Expr *E = WorkList.pop_back_val();
@@ -210,8 +210,8 @@ static StringRef extractRegisterName(const Expr *Expression,
 static SourceLocation
 getClobberConflictLocation(MultiExprArg Exprs, StringLiteral **Constraints,
                            StringLiteral **Clobbers, int NumClobbers,
-                           unsigned NumLabels,
-                           const TargetInfo &Target, ASTContext &Cont) {
+                           unsigned NumLabels, const TargetInfo &Target,
+                           ASTContext &Cont) {
   llvm::StringSet<> InOutVars;
   // Collect all the input and output registers from the extended asm
   // statement in order to check for conflicts with the clobber list
@@ -243,13 +243,13 @@ StmtResult Sema::ActOnGCCAsmStmt(SourceLocation AsmLoc, bool IsSimple,
                                  unsigned NumInputs, IdentifierInfo **Names,
                                  MultiExprArg constraints, MultiExprArg Exprs,
                                  Expr *asmString, MultiExprArg clobbers,
-                                 unsigned NumLabels,
-                                 SourceLocation RParenLoc) {
+                                 unsigned NumLabels, SourceLocation RParenLoc) {
   unsigned NumClobbers = clobbers.size();
   StringLiteral **Constraints =
-    reinterpret_cast<StringLiteral**>(constraints.data());
+      reinterpret_cast<StringLiteral **>(constraints.data());
   StringLiteral *AsmString = cast<StringLiteral>(asmString);
-  StringLiteral **Clobbers = reinterpret_cast<StringLiteral**>(clobbers.data());
+  StringLiteral **Clobbers =
+      reinterpret_cast<StringLiteral **>(clobbers.data());
 
   SmallVector<TargetInfo::ConstraintInfo, 4> OutputConstraintInfos;
 
@@ -401,7 +401,7 @@ StmtResult Sema::ActOnGCCAsmStmt(SourceLocation AsmLoc, bool IsSimple,
           // integral constant expressions if they were cast to int.
           llvm::APSInt IntResult;
           if (EVResult.Val.toIntegralConstant(IntResult, InputExpr->getType(),
-                                               Context))
+                                              Context))
             if (!Info.isValidAsmImmediate(IntResult))
               return StmtError(Diag(InputExpr->getBeginLoc(),
                                     diag::err_invalid_asm_value_for_constraint)
@@ -470,11 +470,10 @@ StmtResult Sema::ActOnGCCAsmStmt(SourceLocation AsmLoc, bool IsSimple,
     }
   }
 
-  GCCAsmStmt *NS =
-    new (Context) GCCAsmStmt(Context, AsmLoc, IsSimple, IsVolatile, NumOutputs,
-                             NumInputs, Names, Constraints, Exprs.data(),
-                             AsmString, NumClobbers, Clobbers, NumLabels,
-                             RParenLoc);
+  GCCAsmStmt *NS = new (Context)
+      GCCAsmStmt(Context, AsmLoc, IsSimple, IsVolatile, NumOutputs, NumInputs,
+                 Names, Constraints, Exprs.data(), AsmString, NumClobbers,
+                 Clobbers, NumLabels, RParenLoc);
   // Validate the asm string, ensuring it makes sense given the operands we
   // have.
   SmallVector<GCCAsmStmt::AsmStringPiece, 8> Pieces;
@@ -488,7 +487,8 @@ StmtResult Sema::ActOnGCCAsmStmt(SourceLocation AsmLoc, bool IsSimple,
   // Validate constraints and modifiers.
   for (unsigned i = 0, e = Pieces.size(); i != e; ++i) {
     GCCAsmStmt::AsmStringPiece &Piece = Pieces[i];
-    if (!Piece.isOperand()) continue;
+    if (!Piece.isOperand())
+      continue;
 
     // Look for the correct constraint index.
     unsigned ConstraintIdx = Piece.getOperandNo();
@@ -568,10 +568,11 @@ StmtResult Sema::ActOnGCCAsmStmt(SourceLocation AsmLoc, bool IsSimple,
     // If this is a tied constraint, verify that the output and input have
     // either exactly the same type, or that they are int/ptr operands with the
     // same size (int/long, int*/long, are ok etc).
-    if (!Info.hasTiedOperand()) continue;
+    if (!Info.hasTiedOperand())
+      continue;
 
     unsigned TiedTo = Info.getTiedOperand();
-    unsigned InputOpNo = i+NumOutputs;
+    unsigned InputOpNo = i + NumOutputs;
     Expr *OutputExpr = Exprs[TiedTo];
     Expr *InputExpr = Exprs[InputOpNo];
 
@@ -594,13 +595,11 @@ StmtResult Sema::ActOnGCCAsmStmt(SourceLocation AsmLoc, bool IsSimple,
     QualType InTy = InputExpr->getType();
     QualType OutTy = OutputExpr->getType();
     if (Context.hasSameType(InTy, OutTy))
-      continue;  // All types can be tied to themselves.
+      continue; // All types can be tied to themselves.
 
     // Decide if the input and output are in the same domain (integer/ptr or
     // floating point.
-    enum AsmDomain {
-      AD_Int, AD_FP, AD_Other
-    } InputDomain, OutputDomain;
+    enum AsmDomain { AD_Int, AD_FP, AD_Other } InputDomain, OutputDomain;
 
     if (InTy->isIntegerType() || InTy->isPointerType())
       InputDomain = AD_Int;
@@ -662,7 +661,7 @@ StmtResult Sema::ActOnGCCAsmStmt(SourceLocation AsmLoc, bool IsSimple,
         !isOperandMentioned(InputOpNo, Pieces) &&
         InputExpr->isEvaluatable(Context)) {
       CastKind castKind =
-        (OutTy->isBooleanType() ? CK_IntegralToBoolean : CK_IntegralCast);
+          (OutTy->isBooleanType() ? CK_IntegralToBoolean : CK_IntegralCast);
       InputExpr = ImpCastExprToType(InputExpr, OutTy, castKind).get();
       Exprs[InputOpNo] = InputExpr;
       NS->setInputExpr(i, InputExpr);
@@ -678,13 +677,12 @@ StmtResult Sema::ActOnGCCAsmStmt(SourceLocation AsmLoc, bool IsSimple,
   // Check for conflicts between clobber list and input or output lists
   SourceLocation ConstraintLoc =
       getClobberConflictLocation(Exprs, Constraints, Clobbers, NumClobbers,
-                                 NumLabels,
-                                 Context.getTargetInfo(), Context);
+                                 NumLabels, Context.getTargetInfo(), Context);
   if (ConstraintLoc.isValid())
     targetDiag(ConstraintLoc, diag::error_inoutput_conflict_with_clobber);
 
   // Check for duplicate asm operand name between input, output and label lists.
-  typedef std::pair<StringRef , Expr *> NamedOperand;
+  typedef std::pair<StringRef, Expr *> NamedOperand;
   SmallVector<NamedOperand, 4> NamedOperandList;
   for (unsigned i = 0, e = NumOutputs + NumInputs + NumLabels; i != e; ++i)
     if (Names[i])
@@ -692,9 +690,9 @@ StmtResult Sema::ActOnGCCAsmStmt(SourceLocation AsmLoc, bool IsSimple,
           std::make_pair(Names[i]->getName(), Exprs[i]));
   // Sort NamedOperandList.
   std::stable_sort(NamedOperandList.begin(), NamedOperandList.end(),
-              [](const NamedOperand &LHS, const NamedOperand &RHS) {
-                return LHS.first < RHS.first;
-              });
+                   [](const NamedOperand &LHS, const NamedOperand &RHS) {
+                     return LHS.first < RHS.first;
+                   });
   // Find adjacent duplicate operand.
   SmallVector<NamedOperand, 4>::iterator Found =
       std::adjacent_find(begin(NamedOperandList), end(NamedOperandList),
@@ -754,15 +752,17 @@ ExprResult Sema::LookupInlineAsmIdentifier(CXXScopeSpec &SS,
                                         /*trailing lparen*/ false,
                                         /*is & operand*/ false,
                                         /*CorrectionCandidateCallback=*/nullptr,
-                                        /*IsInlineAsmIdentifier=*/ true);
+                                        /*IsInlineAsmIdentifier=*/true);
 
   if (IsUnevaluatedContext)
     PopExpressionEvaluationContext();
 
-  if (!Result.isUsable()) return Result;
+  if (!Result.isUsable())
+    return Result;
 
   Result = CheckPlaceholderExpr(Result.get());
-  if (!Result.isUsable()) return Result;
+  if (!Result.isUsable())
+    return Result;
 
   // Referring to parameters is not allowed in naked functions.
   if (CheckNakedParmReference(Result.get(), *this))
@@ -855,9 +855,8 @@ bool Sema::LookupInlineAsmField(StringRef Base, StringRef Member,
   return false;
 }
 
-ExprResult
-Sema::LookupInlineAsmVarDeclField(Expr *E, StringRef Member,
-                                  SourceLocation AsmLoc) {
+ExprResult Sema::LookupInlineAsmVarDeclField(Expr *E, StringRef Member,
+                                             SourceLocation AsmLoc) {
 
   QualType T = E->getType();
   if (T->isDependentType()) {
@@ -867,7 +866,8 @@ Sema::LookupInlineAsmVarDeclField(Expr *E, StringRef Member,
     return CXXDependentScopeMemberExpr::Create(
         Context, E, T, /*IsArrow=*/false, AsmLoc, NestedNameSpecifierLoc(),
         SourceLocation(),
-        /*FirstQualifierFoundInScope=*/nullptr, NameInfo, /*TemplateArgs=*/nullptr);
+        /*FirstQualifierFoundInScope=*/nullptr, NameInfo,
+        /*TemplateArgs=*/nullptr);
   }
 
   const RecordType *RT = T->getAs<RecordType>();
@@ -897,43 +897,40 @@ Sema::LookupInlineAsmVarDeclField(Expr *E, StringRef Member,
 }
 
 StmtResult Sema::ActOnMSAsmStmt(SourceLocation AsmLoc, SourceLocation LBraceLoc,
-                                ArrayRef<Token> AsmToks,
-                                StringRef AsmString,
+                                ArrayRef<Token> AsmToks, StringRef AsmString,
                                 unsigned NumOutputs, unsigned NumInputs,
                                 ArrayRef<StringRef> Constraints,
                                 ArrayRef<StringRef> Clobbers,
-                                ArrayRef<Expr*> Exprs,
-                                SourceLocation EndLoc) {
+                                ArrayRef<Expr *> Exprs, SourceLocation EndLoc) {
   bool IsSimple = (NumOutputs != 0 || NumInputs != 0);
   setFunctionHasBranchProtectedScope();
 
   for (uint64_t I = 0; I < NumOutputs + NumInputs; ++I) {
     if (Exprs[I]->getType()->isExtIntType())
-      return StmtError(
-          Diag(Exprs[I]->getBeginLoc(), diag::err_asm_invalid_type)
-          << Exprs[I]->getType() << (I < NumOutputs)
-          << Exprs[I]->getSourceRange());
+      return StmtError(Diag(Exprs[I]->getBeginLoc(), diag::err_asm_invalid_type)
+                       << Exprs[I]->getType() << (I < NumOutputs)
+                       << Exprs[I]->getSourceRange());
   }
 
-  MSAsmStmt *NS =
-    new (Context) MSAsmStmt(Context, AsmLoc, LBraceLoc, IsSimple,
-                            /*IsVolatile*/ true, AsmToks, NumOutputs, NumInputs,
-                            Constraints, Exprs, AsmString,
-                            Clobbers, EndLoc);
+  MSAsmStmt *NS = new (Context)
+      MSAsmStmt(Context, AsmLoc, LBraceLoc, IsSimple,
+                /*IsVolatile*/ true, AsmToks, NumOutputs, NumInputs,
+                Constraints, Exprs, AsmString, Clobbers, EndLoc);
   return NS;
 }
 
 LabelDecl *Sema::GetOrCreateMSAsmLabel(StringRef ExternalLabelName,
                                        SourceLocation Location,
                                        bool AlwaysCreate) {
-  LabelDecl* Label = LookupOrCreateLabel(PP.getIdentifierInfo(ExternalLabelName),
-                                         Location);
+  LabelDecl *Label =
+      LookupOrCreateLabel(PP.getIdentifierInfo(ExternalLabelName), Location);
 
   if (Label->isMSAsmLabel()) {
     // If we have previously created this label implicitly, mark it as used.
     Label->markUsed(Context);
   } else {
-    // Otherwise, insert it, but only resolve it if we have seen the label itself.
+    // Otherwise, insert it, but only resolve it if we have seen the label
+    // itself.
     std::string InternalName;
     llvm::raw_string_ostream OS(InternalName);
     // Create an internal name for the label.  The name should not be a valid
@@ -951,9 +948,9 @@ LabelDecl *Sema::GetOrCreateMSAsmLabel(StringRef ExternalLabelName,
     Label->setMSAsmLabel(OS.str());
   }
   if (AlwaysCreate) {
-    // The label might have been created implicitly from a previously encountered
-    // goto statement.  So, for both newly created and looked up labels, we mark
-    // them as resolved.
+    // The label might have been created implicitly from a previously
+    // encountered goto statement.  So, for both newly created and looked up
+    // labels, we mark them as resolved.
     Label->setMSAsmLabelResolved();
   }
   // Adjust their location for being able to generate accurate diagnostics.

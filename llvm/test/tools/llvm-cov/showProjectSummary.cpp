@@ -1,7 +1,7 @@
 // RUN: llvm-profdata merge -o %t.profdata %S/Inputs/showProjectSummary.proftext
 
-int main(int argc, char ** argv) {
-  int x=0;
+int main(int argc, char **argv) {
+  int x = 0;
   for (int i = 0; i < 20; ++i)
     x *= 2;
   if (x >= 100)

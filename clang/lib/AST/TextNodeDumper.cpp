@@ -949,7 +949,8 @@ void TextNodeDumper::VisitCallExpr(const CallExpr *Node) {
 }
 
 void TextNodeDumper::VisitCXXOperatorCallExpr(const CXXOperatorCallExpr *Node) {
-  const char *OperatorSpelling = clang::getOperatorSpelling(Node->getOperator());
+  const char *OperatorSpelling =
+      clang::getOperatorSpelling(Node->getOperator());
   if (OperatorSpelling)
     OS << " '" << OperatorSpelling << "'";
 
@@ -983,10 +984,17 @@ void TextNodeDumper::VisitDeclRefExpr(const DeclRefExpr *Node) {
     OS << ")";
   }
   switch (Node->isNonOdrUse()) {
-  case NOUR_None: break;
-  case NOUR_Unevaluated: OS << " non_odr_use_unevaluated"; break;
-  case NOUR_Constant: OS << " non_odr_use_constant"; break;
-  case NOUR_Discarded: OS << " non_odr_use_discarded"; break;
+  case NOUR_None:
+    break;
+  case NOUR_Unevaluated:
+    OS << " non_odr_use_unevaluated";
+    break;
+  case NOUR_Constant:
+    OS << " non_odr_use_constant";
+    break;
+  case NOUR_Discarded:
+    OS << " non_odr_use_discarded";
+    break;
   }
 }
 
@@ -1080,10 +1088,17 @@ void TextNodeDumper::VisitMemberExpr(const MemberExpr *Node) {
   OS << " " << (Node->isArrow() ? "->" : ".") << *Node->getMemberDecl();
   dumpPointer(Node->getMemberDecl());
   switch (Node->isNonOdrUse()) {
-  case NOUR_None: break;
-  case NOUR_Unevaluated: OS << " non_odr_use_unevaluated"; break;
-  case NOUR_Constant: OS << " non_odr_use_constant"; break;
-  case NOUR_Discarded: OS << " non_odr_use_discarded"; break;
+  case NOUR_None:
+    break;
+  case NOUR_Unevaluated:
+    OS << " non_odr_use_unevaluated";
+    break;
+  case NOUR_Constant:
+    OS << " non_odr_use_constant";
+    break;
+  case NOUR_Discarded:
+    OS << " non_odr_use_discarded";
+    break;
   }
 }
 
@@ -2279,6 +2294,4 @@ void TextNodeDumper::VisitBlockDecl(const BlockDecl *D) {
     OS << " captures_this";
 }
 
-void TextNodeDumper::VisitConceptDecl(const ConceptDecl *D) {
-  dumpName(D);
-}
+void TextNodeDumper::VisitConceptDecl(const ConceptDecl *D) { dumpName(D); }

@@ -5,12 +5,12 @@
 
 struct CtorWithClosure {
   __declspec(dllexport) CtorWithClosure(...) {}
-// CHECK-LABEL: define weak_odr dso_local dllexport x86_thiscallcc void @"??_FCtorWithClosure@@QAEXXZ"({{.*}}) {{#[0-9]+}} comdat
-// CHECK:   %[[this_addr:.*]] = alloca %struct.CtorWithClosure*, align 4
-// CHECK:   store %struct.CtorWithClosure* %this, %struct.CtorWithClosure** %[[this_addr]], align 4
-// CHECK:   %[[this:.*]] = load %struct.CtorWithClosure*, %struct.CtorWithClosure** %[[this_addr]]
-// CHECK:   call %struct.CtorWithClosure* (%struct.CtorWithClosure*, ...) @"??0CtorWithClosure@@QAA@ZZ"(%struct.CtorWithClosure* {{[^,]*}} %[[this]])
-// CHECK:   ret void
+  // CHECK-LABEL: define weak_odr dso_local dllexport x86_thiscallcc void @"??_FCtorWithClosure@@QAEXXZ"({{.*}}) {{#[0-9]+}} comdat
+  // CHECK:   %[[this_addr:.*]] = alloca %struct.CtorWithClosure*, align 4
+  // CHECK:   store %struct.CtorWithClosure* %this, %struct.CtorWithClosure** %[[this_addr]], align 4
+  // CHECK:   %[[this:.*]] = load %struct.CtorWithClosure*, %struct.CtorWithClosure** %[[this_addr]]
+  // CHECK:   call %struct.CtorWithClosure* (%struct.CtorWithClosure*, ...) @"??0CtorWithClosure@@QAA@ZZ"(%struct.CtorWithClosure* {{[^,]*}} %[[this]])
+  // CHECK:   ret void
 };
 
 struct CtorWithClosureOutOfLine {
@@ -20,20 +20,20 @@ CtorWithClosureOutOfLine::CtorWithClosureOutOfLine(...) {}
 // CHECK-LABEL: define weak_odr dso_local dllexport x86_thiscallcc void @"??_FCtorWithClosureOutOfLine@@QAEXXZ"({{.*}}) {{#[0-9]+}} comdat
 
 #define DELETE_IMPLICIT_MEMBERS(ClassName) \
-    ClassName(ClassName &&) = delete; \
-    ClassName(ClassName &) = delete; \
-    ~ClassName() = delete; \
-    ClassName &operator=(ClassName &) = delete
+  ClassName(ClassName &&) = delete;        \
+  ClassName(ClassName &) = delete;         \
+  ~ClassName() = delete;                   \
+  ClassName &operator=(ClassName &) = delete
 
 struct __declspec(dllexport) ClassWithClosure {
   DELETE_IMPLICIT_MEMBERS(ClassWithClosure);
   ClassWithClosure(...) {}
-// CHECK-LABEL: define weak_odr dso_local dllexport x86_thiscallcc void @"??_FClassWithClosure@@QAEXXZ"({{.*}}) {{#[0-9]+}} comdat
-// CHECK:   %[[this_addr:.*]] = alloca %struct.ClassWithClosure*, align 4
-// CHECK:   store %struct.ClassWithClosure* %this, %struct.ClassWithClosure** %[[this_addr]], align 4
-// CHECK:   %[[this:.*]] = load %struct.ClassWithClosure*, %struct.ClassWithClosure** %[[this_addr]]
-// CHECK:   call %struct.ClassWithClosure* (%struct.ClassWithClosure*, ...) @"??0ClassWithClosure@@QAA@ZZ"(%struct.ClassWithClosure* {{[^,]*}} %[[this]])
-// CHECK:   ret void
+  // CHECK-LABEL: define weak_odr dso_local dllexport x86_thiscallcc void @"??_FClassWithClosure@@QAEXXZ"({{.*}}) {{#[0-9]+}} comdat
+  // CHECK:   %[[this_addr:.*]] = alloca %struct.ClassWithClosure*, align 4
+  // CHECK:   store %struct.ClassWithClosure* %this, %struct.ClassWithClosure** %[[this_addr]], align 4
+  // CHECK:   %[[this:.*]] = load %struct.ClassWithClosure*, %struct.ClassWithClosure** %[[this_addr]]
+  // CHECK:   call %struct.ClassWithClosure* (%struct.ClassWithClosure*, ...) @"??0ClassWithClosure@@QAA@ZZ"(%struct.ClassWithClosure* {{[^,]*}} %[[this]])
+  // CHECK:   ret void
 };
 
 template <typename T> struct TemplateWithClosure {
@@ -54,7 +54,7 @@ template <typename T> struct __declspec(dllexport) ExportedTemplateWithClosure {
   ExportedTemplateWithClosure(int x = sizeof(T)) {}
 };
 template <> ExportedTemplateWithClosure<int>::ExportedTemplateWithClosure(int); // Don't try to emit the closure for a declaration.
-template <> ExportedTemplateWithClosure<int>::ExportedTemplateWithClosure(int) {};
+template <> ExportedTemplateWithClosure<int>::ExportedTemplateWithClosure(int){};
 // CHECK-LABEL: define weak_odr dso_local dllexport x86_thiscallcc void @"??_F?$ExportedTemplateWithClosure@H@@QAEXXZ"({{.*}}) {{#[0-9]+}} comdat
 // CHECK:   call {{.*}} @"??0?$ExportedTemplateWithClosure@H@@QAE@H@Z"({{.*}}, i32 4)
 
@@ -74,8 +74,12 @@ struct HasDtor {
   ~HasDtor();
   int o;
 };
-struct HasImplicitDtor1 { HasDtor o; };
-struct HasImplicitDtor2 { HasDtor o; };
+struct HasImplicitDtor1 {
+  HasDtor o;
+};
+struct HasImplicitDtor2 {
+  HasDtor o;
+};
 struct __declspec(dllexport) CtorClosureInline {
   CtorClosureInline(const HasImplicitDtor1 &v = {}) {}
 };

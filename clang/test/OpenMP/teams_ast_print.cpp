@@ -17,9 +17,9 @@ void foo() {}
 
 template <class T>
 struct S {
-  operator T() {return T();}
+  operator T() { return T(); }
   static T TS;
-  #pragma omp threadprivate(TS)
+#pragma omp threadprivate(TS)
 };
 
 // CHECK:      template <class T> struct S {
@@ -42,16 +42,20 @@ T tmain(T argc, T *argv) {
   S<T> s;
 #ifdef OMP5
 #pragma omp teams
-  a=2;
+  a = 2;
 #endif // OMP5
 #pragma omp target
 #pragma omp teams
-  a=2;
+  a = 2;
 #pragma omp target
-#pragma omp teams default(none), private(argc,b) firstprivate(argv) shared (d) reduction(+:c) reduction(max:e) num_teams(C) thread_limit(d*C)
+#pragma omp teams default(none), private(argc, b) firstprivate(argv) shared(d) reduction(+                  \
+                                                                                         : c) reduction(max \
+                                                                                                        : e) num_teams(C) thread_limit(d *C)
   foo();
 #pragma omp target
-#pragma omp teams reduction(^:e, f) reduction(&& : g)
+#pragma omp teams reduction(^                    \
+                            : e, f) reduction(&& \
+                                              : g)
   foo();
   return 0;
 }
@@ -102,27 +106,29 @@ T tmain(T argc, T *argv) {
 // CHECK-NEXT: #pragma omp teams reduction(^: e,f) reduction(&&: g)
 // CHECK-NEXT: foo()
 
-enum Enum { };
+enum Enum {};
 
-int main (int argc, char **argv) {
+int main(int argc, char **argv) {
   long x;
   int b = argc, c, d, e, f, g;
   static int a;
-  #pragma omp threadprivate(a)
+#pragma omp threadprivate(a)
   Enum ee;
 // CHECK: Enum ee;
 #pragma omp target
 #pragma omp teams
-// CHECK-NEXT: #pragma omp target
-// CHECK-NEXT: #pragma omp teams
-  a=2;
+  // CHECK-NEXT: #pragma omp target
+  // CHECK-NEXT: #pragma omp teams
+  a = 2;
 // CHECK-NEXT: a = 2;
 #pragma omp target
-#pragma omp teams default(none), private(argc,b) num_teams(f) firstprivate(argv) reduction(| : c, d) reduction(* : e) thread_limit(f+g)
-// CHECK-NEXT: #pragma omp target
-// CHECK-NEXT: #pragma omp teams default(none) private(argc,b) num_teams(f) firstprivate(argv) reduction(|: c,d) reduction(*: e) thread_limit(f + g)
+#pragma omp teams default(none), private(argc, b) num_teams(f) firstprivate(argv) reduction(|                   \
+                                                                                            : c, d) reduction(* \
+                                                                                                              : e) thread_limit(f + g)
+  // CHECK-NEXT: #pragma omp target
+  // CHECK-NEXT: #pragma omp teams default(none) private(argc,b) num_teams(f) firstprivate(argv) reduction(|: c,d) reduction(*: e) thread_limit(f + g)
   foo();
-// CHECK-NEXT: foo();
+  // CHECK-NEXT: foo();
   return tmain<int, 5>(b, &b) + tmain<long, 1>(x, &x);
 }
 

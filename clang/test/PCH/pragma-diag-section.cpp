@@ -15,33 +15,31 @@
 #pragma clang diagnostic ignored "-Wuninitialized"
 template <typename T>
 struct TS1 {
-    void m() {
-      T a;
-      T b = a;
-    }
+  void m() {
+    T a;
+    T b = a;
+  }
 };
 #pragma clang diagnostic pop
 
 #else
 
-
 template <typename T>
 struct TS2 {
-    void m() {
-      T a;
-      T b = a; // expected-warning {{variable 'a' is uninitialized}} \
+  void m() {
+    T a;
+    T b = a; // expected-warning {{variable 'a' is uninitialized}} \
                   expected-note@44 {{in instantiation of member function}} \
                   expected-note@31 {{initialize the variable 'a' to silence}}
-    }
+  }
 };
 
 void f() {
-    TS1<int> ts1;
-    ts1.m();
+  TS1<int> ts1;
+  ts1.m();
 
-
-    TS2<int> ts2;
-    ts2.m();
+  TS2<int> ts2;
+  ts2.m();
 }
 
 #endif

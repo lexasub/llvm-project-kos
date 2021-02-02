@@ -6,6 +6,6 @@ void S<T>::mem1();
 
 template <typename T>
 void S<T>::mem2() {
-    const int I = sizeof(T);
-      (void)I;
+  const int I = sizeof(T);
+  (void)I;
 }

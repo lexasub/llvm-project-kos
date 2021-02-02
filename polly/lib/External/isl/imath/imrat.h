@@ -36,8 +36,8 @@ extern "C" {
 #endif
 
 typedef struct {
-  mpz_t   num;    /* Numerator         */
-  mpz_t   den;    /* Denominator, <> 0 */
+  mpz_t num; /* Numerator         */
+  mpz_t den; /* Denominator, <> 0 */
 } mpq_t, *mp_rat;
 
 /* Return a pointer to the numerator. */
@@ -236,7 +236,7 @@ mp_result mp_rat_read_string(mp_rat r, mp_size radix, const char *str);
     point to the first unconsumed character in the string, after parsing.
 */
 mp_result mp_rat_read_cstring(mp_rat r, mp_size radix, const char *str,
-			      char **end);
+                              char **end);
 
 /** Sets `r` to the value represented by a zero-terminated string `str` having
     one of the following formats, each with an optional leading sign flag:
@@ -250,7 +250,7 @@ mp_result mp_rat_read_cstring(mp_rat r, mp_size radix, const char *str,
     string, after parsing.
 */
 mp_result mp_rat_read_ustring(mp_rat r, mp_size radix, const char *str,
-			      char **end);
+                              char **end);
 
 /** Sets `r` to the value represented by a zero-terminated string `str` in the
     format `"z.ffff"` including a sign flag. It returns `MP_UNDEF` if the
@@ -262,7 +262,7 @@ mp_result mp_rat_read_decimal(mp_rat r, mp_size radix, const char *str);
     effective denominator. If `end` is not NULL then `*end` is set to point to
     the first unconsumed character in the string, after parsing. */
 mp_result mp_rat_read_cdecimal(mp_rat r, mp_size radix, const char *str,
-			       char **end);
+                               char **end);
 
 #ifdef __cplusplus
 }

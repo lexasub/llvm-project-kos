@@ -95,9 +95,9 @@ public:
 
 void fNoUngardedFieldsNoReturnFuncCalledTest() {
   NoUngardedFieldsNoReturnFuncCalledTest
-    T1(NoUngardedFieldsNoReturnFuncCalledTest::Kind::A);
+      T1(NoUngardedFieldsNoReturnFuncCalledTest::Kind::A);
   NoUngardedFieldsNoReturnFuncCalledTest
-    T2(NoUngardedFieldsNoReturnFuncCalledTest::Kind::V);
+      T2(NoUngardedFieldsNoReturnFuncCalledTest::Kind::V);
 }
 
 class NoUnguardedFieldsWithUndefMethodTest {

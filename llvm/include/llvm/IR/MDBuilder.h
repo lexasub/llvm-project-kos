@@ -123,9 +123,7 @@ public:
   /// Return metadata appropriate for a TBAA root node. Each returned
   /// node is distinct from all other metadata and will never be identified
   /// (uniqued) with anything else.
-  MDNode *createAnonymousTBAARoot() {
-    return createAnonymousAARoot();
-  }
+  MDNode *createAnonymousTBAARoot() { return createAnonymousAARoot(); }
 
   /// Return metadata appropriate for an alias scope domain node.
   /// Each returned node is distinct from all other metadata and will never
@@ -166,8 +164,8 @@ public:
     uint64_t Offset;
     uint64_t Size;
     MDNode *Type;
-    TBAAStructField(uint64_t Offset, uint64_t Size, MDNode *Type) :
-      Offset(Offset), Size(Size), Type(Type) {}
+    TBAAStructField(uint64_t Offset, uint64_t Size, MDNode *Type)
+        : Offset(Offset), Size(Size), Type(Type) {}
   };
 
   /// Return metadata for a tbaa.struct node with the given
@@ -192,9 +190,9 @@ public:
 
   /// Return metadata for a TBAA type node in the TBAA type DAG with the
   /// given parent type, size in bytes, type identifier and a list of fields.
-  MDNode *createTBAATypeNode(MDNode *Parent, uint64_t Size, Metadata *Id,
-                             ArrayRef<TBAAStructField> Fields =
-                                 ArrayRef<TBAAStructField>());
+  MDNode *createTBAATypeNode(
+      MDNode *Parent, uint64_t Size, Metadata *Id,
+      ArrayRef<TBAAStructField> Fields = ArrayRef<TBAAStructField>());
 
   /// Return metadata for a TBAA access tag with the given base type,
   /// final access type, offset of the access relative to the base type, size of

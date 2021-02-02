@@ -44,16 +44,16 @@ private:
   enum Lowering { TouchAndSub, Sub, Probe };
 
   /// Deterministic-order map from WinAlloca instruction to desired lowering.
-  typedef MapVector<MachineInstr*, Lowering> LoweringMap;
+  typedef MapVector<MachineInstr *, Lowering> LoweringMap;
 
   /// Compute which lowering to use for each WinAlloca instruction.
-  void computeLowerings(MachineFunction &MF, LoweringMap& Lowerings);
+  void computeLowerings(MachineFunction &MF, LoweringMap &Lowerings);
 
   /// Get the appropriate lowering based on current offset and amount.
   Lowering getLowering(int64_t CurrentOffset, int64_t AllocaAmount);
 
   /// Lower a WinAlloca instruction.
-  void lower(MachineInstr* MI, Lowering L);
+  void lower(MachineInstr *MI, Lowering L);
 
   MachineRegisterInfo *MRI = nullptr;
   const X86Subtarget *STI = nullptr;
@@ -94,8 +94,7 @@ static int64_t getWinAllocaAmount(MachineInstr *MI, MachineRegisterInfo *MRI) {
 }
 
 X86WinAllocaExpander::Lowering
-X86WinAllocaExpander::getLowering(int64_t CurrentOffset,
-                                  int64_t AllocaAmount) {
+X86WinAllocaExpander::getLowering(int64_t CurrentOffset, int64_t AllocaAmount) {
   // For a non-constant amount or a large amount, we have to probe.
   if (AllocaAmount < 0 || AllocaAmount > StackProbeSize)
     return Probe;
@@ -144,13 +143,14 @@ void X86WinAllocaExpander::computeLowerings(MachineFunction &MF,
   // pointer depends on register spills, which have not been computed yet.
 
   // Compute the reverse post-order.
-  ReversePostOrderTraversal<MachineFunction*> RPO(&MF);
+  ReversePostOrderTraversal<MachineFunction *> RPO(&MF);
 
   for (MachineBasicBlock *MBB : RPO) {
     int64_t Offset = -1;
     for (MachineBasicBlock *Pred : MBB->predecessors())
       Offset = std::max(Offset, OutOffset[Pred]);
-    if (Offset == -1) Offset = INT32_MAX;
+    if (Offset == -1)
+      Offset = INT32_MAX;
 
     for (MachineInstr &MI : *MBB) {
       if (MI.getOpcode() == X86::WIN_ALLOCA_32 ||
@@ -195,7 +195,7 @@ static unsigned getSubOpcode(bool Is64Bit, int64_t Amount) {
   return isInt<8>(Amount) ? X86::SUB32ri8 : X86::SUB32ri;
 }
 
-void X86WinAllocaExpander::lower(MachineInstr* MI, Lowering L) {
+void X86WinAllocaExpander::lower(MachineInstr *MI, Lowering L) {
   DebugLoc DL = MI->getDebugLoc();
   MachineBasicBlock *MBB = MI->getParent();
   MachineBasicBlock::iterator I = *MI;
@@ -236,8 +236,8 @@ void X86WinAllocaExpander::lower(MachineInstr* MI, Lowering L) {
           .addReg(RegA, RegState::Undef);
     } else {
       // Sub.
-      BuildMI(*MBB, I, DL,
-              TII->get(getSubOpcode(Is64BitAlloca, Amount)), StackPtr)
+      BuildMI(*MBB, I, DL, TII->get(getSubOpcode(Is64BitAlloca, Amount)),
+              StackPtr)
           .addReg(StackPtr)
           .addImm(Amount);
     }

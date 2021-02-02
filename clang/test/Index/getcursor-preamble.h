@@ -4,5 +4,5 @@
   } aa;
   int var;
 }
--(id)foo;
+- (id)foo;
 @end

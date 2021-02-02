@@ -24,14 +24,13 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    using month_weekday   = std::chrono::month_weekday;
-    using month           = std::chrono::month;
-    using weekday_indexed = std::chrono::weekday_indexed;
-    using weekday         = std::chrono::weekday;
+int main(int, char**) {
+  using month_weekday = std::chrono::month_weekday;
+  using month = std::chrono::month;
+  using weekday_indexed = std::chrono::weekday_indexed;
+  using weekday = std::chrono::weekday;
 
-    std::cout << month_weekday{month{1}, weekday_indexed{weekday{3}, 3}};
+  std::cout << month_weekday{month{1}, weekday_indexed{weekday{3}, 3}};
 
   return 0;
 }

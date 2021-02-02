@@ -6,14 +6,14 @@
 // CHECK: @.str.1 = private unnamed_addr addrspace(4) constant [6 x i8] c"l_str\00", align 1
 // CHECK: @__const._Z1fv.l_array = private unnamed_addr addrspace(4) constant [8 x i8] c"l_array\00", align 1
 
-const char* g_str = "g_str";
+const char *g_str = "g_str";
 char g_array[] = "g_array";
 
-void g(const char* p);
+void g(const char *p);
 
 // CHECK-LABEL: define{{.*}} void @_Z1fv()
 void f() {
-  const char* l_str = "l_str";
+  const char *l_str = "l_str";
 
   // CHECK: call void @llvm.memcpy.p0i8.p4i8.i64
   char l_array[] = "l_array";
@@ -23,7 +23,7 @@ void f() {
   g(l_str);
   g(l_array);
 
-  const char* p = g_str;
+  const char *p = g_str;
   g(p);
 }
 

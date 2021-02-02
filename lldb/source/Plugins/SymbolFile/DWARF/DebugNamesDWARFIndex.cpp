@@ -22,7 +22,7 @@ DebugNamesDWARFIndex::Create(Module &module, DWARFDataExtractor debug_names,
                              DWARFDataExtractor debug_str,
                              SymbolFileDWARF &dwarf) {
   auto index_up = std::make_unique<DebugNames>(debug_names.GetAsLLVM(),
-                                                debug_str.GetAsLLVM());
+                                               debug_str.GetAsLLVM());
   if (llvm::Error E = index_up->extract())
     return std::move(E);
 
@@ -46,7 +46,8 @@ DebugNamesDWARFIndex::ToDIERef(const DebugNames::Entry &entry) {
   if (!cu_offset)
     return llvm::None;
 
-  DWARFUnit *cu = m_debug_info.GetUnitAtOffset(DIERef::Section::DebugInfo, *cu_offset);
+  DWARFUnit *cu =
+      m_debug_info.GetUnitAtOffset(DIERef::Section::DebugInfo, *cu_offset);
   if (!cu)
     return llvm::None;
 
@@ -100,8 +101,8 @@ void DebugNamesDWARFIndex::GetGlobalVariables(
 void DebugNamesDWARFIndex::GetGlobalVariables(
     const RegularExpression &regex,
     llvm::function_ref<bool(DWARFDIE die)> callback) {
-  for (const DebugNames::NameIndex &ni: *m_debug_names_up) {
-    for (DebugNames::NameTableEntry nte: ni) {
+  for (const DebugNames::NameIndex &ni : *m_debug_names_up) {
+    for (DebugNames::NameTableEntry nte : ni) {
       if (!regex.Execute(nte.getString()))
         continue;
 
@@ -125,8 +126,8 @@ void DebugNamesDWARFIndex::GetGlobalVariables(
 void DebugNamesDWARFIndex::GetGlobalVariables(
     const DWARFUnit &cu, llvm::function_ref<bool(DWARFDIE die)> callback) {
   uint64_t cu_offset = cu.GetOffset();
-  for (const DebugNames::NameIndex &ni: *m_debug_names_up) {
-    for (DebugNames::NameTableEntry nte: ni) {
+  for (const DebugNames::NameIndex &ni : *m_debug_names_up) {
+    for (DebugNames::NameTableEntry nte : ni) {
       uint64_t entry_offset = nte.getEntryOffset();
       llvm::Expected<DebugNames::Entry> entry_or = ni.getEntry(&entry_offset);
       for (; entry_or; entry_or = ni.getEntry(&entry_offset)) {
@@ -261,8 +262,8 @@ void DebugNamesDWARFIndex::GetFunctions(
 void DebugNamesDWARFIndex::GetFunctions(
     const RegularExpression &regex,
     llvm::function_ref<bool(DWARFDIE die)> callback) {
-  for (const DebugNames::NameIndex &ni: *m_debug_names_up) {
-    for (DebugNames::NameTableEntry nte: ni) {
+  for (const DebugNames::NameIndex &ni : *m_debug_names_up) {
+    for (DebugNames::NameTableEntry nte : ni) {
       if (!regex.Execute(nte.getString()))
         continue;
 

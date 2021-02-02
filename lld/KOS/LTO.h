@@ -31,7 +31,7 @@ namespace llvm {
 namespace lto {
 class LTO;
 }
-}
+} // namespace llvm
 
 namespace lld {
 namespace kos {
@@ -54,7 +54,7 @@ private:
   std::unique_ptr<llvm::raw_fd_ostream> indexFile;
   llvm::DenseSet<StringRef> thinIndices;
 };
-}
-}
+} // namespace kos
+} // namespace lld
 
 #endif

@@ -13,9 +13,9 @@
 static volatile int Sink;
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
-  std::string Str((const char*)Data, Size);
+  std::string Str((const char *)Data, Size);
   bool Eq = Str == "FooBar";
-  Sink = Str == "123456";   // Try to confuse the fuzzer
+  Sink = Str == "123456"; // Try to confuse the fuzzer
   if (Eq) {
     std::cout << "BINGO; Found the target, exiting\n";
     std::cout.flush();
@@ -23,4 +23,3 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
   }
   return 0;
 }
-

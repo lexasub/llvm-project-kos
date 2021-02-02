@@ -14,7 +14,6 @@ int h(int x) { // expected-note {{previous definition is here}}
   return g(x);
 }
 
-float f(int) { } // expected-error{{functions that differ only in their return type cannot be overloaded}}
+float f(int) {} // expected-error{{functions that differ only in their return type cannot be overloaded}}
 
-int h(int) { } // expected-error{{redefinition of 'h'}}
-
+int h(int) {} // expected-error{{redefinition of 'h'}}

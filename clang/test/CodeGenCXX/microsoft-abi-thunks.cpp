@@ -11,21 +11,23 @@ struct A {
   virtual void public_f();
   // Make sure we don't emit unneeded thunks:
   // XMANGLING-NOT: @"?public_f@A@@QAEXXZ"
- protected:
+protected:
   virtual void protected_f();
- private:
+
+private:
   virtual void private_f();
 };
 
 struct B {
   virtual ~B();
   virtual void public_f();
- protected:
+
+protected:
   virtual void protected_f();
- private:
+
+private:
   virtual void private_f();
 };
-
 
 struct C : A, B {
   C();
@@ -44,14 +46,14 @@ struct C : A, B {
   // MANGLING-DAG: @"?public_f@C@@W3AEXXZ"
   // MANGLING-X64-DAG: @"?public_f@C@@UEAAXXZ"
   // MANGLING-X64-DAG: @"?public_f@C@@W7EAAXXZ"
- protected:
+protected:
   virtual void protected_f();
   // MANGLING-DAG: @"?protected_f@C@@MAEXXZ"
   // MANGLING-DAG: @"?protected_f@C@@O3AEXXZ"
   // MANGLING-X64-DAG: @"?protected_f@C@@MEAAXXZ"
   // MANGLING-X64-DAG: @"?protected_f@C@@O7EAAXXZ"
 
- private:
+private:
   virtual void private_f();
   // MANGLING-DAG: @"?private_f@C@@EAEXXZ"
   // MANGLING-DAG: @"?private_f@C@@G3AEXXZ"
@@ -59,7 +61,7 @@ struct C : A, B {
   // MANGLING-X64-DAG: @"?private_f@C@@G7EAAXXZ"
 };
 
-C::C() {}  // Emits vftable and forces thunk generation.
+C::C() {} // Emits vftable and forces thunk generation.
 
 // CODEGEN-LABEL: define linkonce_odr dso_local x86_thiscallcc i8* @"??_EC@@W3AEPAXI@Z"(%struct.C* {{[^,]*}} %this, i32 %should_call_delete) {{.*}} comdat
 // CODEGEN:   getelementptr i8, i8* {{.*}}, i32 -4
@@ -72,24 +74,24 @@ C::C() {}  // Emits vftable and forces thunk generation.
 // CODEGEN:   call x86_thiscallcc void @"?public_f@C@@UAEXXZ"(%struct.C*
 // CODEGEN: ret
 
-void zoo(C* obj) {
+void zoo(C *obj) {
   delete obj;
 }
 
 struct D {
-  virtual B* goo();
+  virtual B *goo();
 };
 
 struct E : D {
   E();
-  virtual C* goo();
+  virtual C *goo();
   // MANGLING-DAG: @"?goo@E@@UAEPAUC@@XZ"
   // MANGLING-DAG: @"?goo@E@@QAEPAUB@@XZ"
   // MANGLING-X64-DAG: @"?goo@E@@UEAAPEAUC@@XZ"
   // MANGLING-X64-DAG: @"?goo@E@@QEAAPEAUB@@XZ"
 };
 
-E::E() {}  // Emits vftable and forces thunk generation.
+E::E() {} // Emits vftable and forces thunk generation.
 
 // CODEGEN-LABEL: define weak_odr dso_local x86_thiscallcc %struct.C* @"?goo@E@@QAEPAUB@@XZ"{{.*}} comdat
 // CODEGEN:   call x86_thiscallcc %struct.C* @"?goo@E@@UAEPAUC@@XZ"
@@ -101,12 +103,12 @@ struct F : virtual A, virtual B {
   virtual ~F();
 };
 
-F f;  // Just make sure we don't crash, e.g. mangling the complete dtor.
+F f; // Just make sure we don't crash, e.g. mangling the complete dtor.
 
-struct G : C { };
+struct G : C {};
 
 struct H : E {
-  virtual G* goo();
+  virtual G *goo();
   // MANGLING-DAG: @"?goo@H@@UAEPAUG@@XZ"
   // MANGLING-DAG: @"?goo@H@@QAEPAUB@@XZ"
   // MANGLING-DAG: @"?goo@H@@QAEPAUC@@XZ"
@@ -119,10 +121,10 @@ H h;
 
 struct I : D {
   I();
-  virtual F* goo();
+  virtual F *goo();
 };
 
-I::I() {}  // Emits vftable and forces thunk generation.
+I::I() {} // Emits vftable and forces thunk generation.
 
 // CODEGEN-LABEL: define weak_odr dso_local x86_thiscallcc %struct.{{[BF]}}* @"?goo@I@@QAEPAUB@@XZ"{{.*}} comdat
 // CODEGEN: %[[ORIG_RET:.*]] = call x86_thiscallcc %struct.F* @"?goo@I@@UAEPAUF@@XZ"
@@ -150,15 +152,15 @@ struct C : A, B {
   virtual void __stdcall foo();
 };
 C c;
-}
+} // namespace CrashOnThunksForAttributedType
 
 namespace {
 struct E : D {
   E();
-  virtual C* goo();
+  virtual C *goo();
 };
 E::E() {}
 E e;
 // Class with internal linkage has internal linkage thunks.
 // CODEGEN: define internal x86_thiscallcc %struct.C* @"?goo@E@?A0x{{[^@]*}}@@QAEPAUB@@XZ"
-}
+} // namespace

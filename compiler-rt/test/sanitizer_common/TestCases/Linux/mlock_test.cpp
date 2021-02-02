@@ -10,4 +10,3 @@ int main() {
   assert(0 == munlockall());
   assert(0 == munlock((void *)0x987, 0x654));
 }
-

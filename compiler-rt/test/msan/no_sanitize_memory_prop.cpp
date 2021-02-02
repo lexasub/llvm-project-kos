@@ -5,19 +5,19 @@
 
 // Test that (no_sanitize_memory) functions DO NOT propagate shadow.
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 __attribute__((noinline))
 __attribute__((weak))
-__attribute__((no_sanitize_memory))
-int f(int x) {
+__attribute__((no_sanitize_memory)) int
+f(int x) {
   return x;
 }
 
 int main(void) {
   int x;
-  int * volatile p = &x;
+  int *volatile p = &x;
   int y = f(*p);
   if (y)
     exit(0);

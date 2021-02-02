@@ -51,6 +51,6 @@ protected:
   NativeProcessProtocol &m_process;
   lldb::tid_t m_tid;
 };
-}
+} // namespace lldb_private
 
 #endif // LLDB_HOST_COMMON_NATIVETHREADPROTOCOL_H

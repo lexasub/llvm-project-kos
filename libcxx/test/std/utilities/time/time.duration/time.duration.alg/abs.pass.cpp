@@ -22,38 +22,36 @@
 #include "test_macros.h"
 
 template <class Duration>
-void
-test(const Duration& f, const Duration& d)
-{
-    {
+void test(const Duration& f, const Duration& d) {
+  {
     typedef decltype(std::chrono::abs(f)) R;
     static_assert((std::is_same<R, Duration>::value), "");
     assert(std::chrono::abs(f) == d);
-    }
+  }
 }
 
-int main(int, char**)
-{
-//  7290000ms is 2 hours, 1 minute, and 30 seconds
-    test(std::chrono::milliseconds( 7290000), std::chrono::milliseconds( 7290000));
-    test(std::chrono::milliseconds(-7290000), std::chrono::milliseconds( 7290000));
-    test(std::chrono::minutes( 122), std::chrono::minutes( 122));
-    test(std::chrono::minutes(-122), std::chrono::minutes( 122));
-    test(std::chrono::hours(0), std::chrono::hours(0));
+int main(int, char**) {
+  //  7290000ms is 2 hours, 1 minute, and 30 seconds
+  test(std::chrono::milliseconds(7290000), std::chrono::milliseconds(7290000));
+  test(std::chrono::milliseconds(-7290000), std::chrono::milliseconds(7290000));
+  test(std::chrono::minutes(122), std::chrono::minutes(122));
+  test(std::chrono::minutes(-122), std::chrono::minutes(122));
+  test(std::chrono::hours(0), std::chrono::hours(0));
 
-    {
-//  9000000ms is 2 hours and 30 minutes
+  {
+    //  9000000ms is 2 hours and 30 minutes
     constexpr std::chrono::hours h1 = std::chrono::abs(std::chrono::hours(-3));
     static_assert(h1.count() == 3, "");
     constexpr std::chrono::hours h2 = std::chrono::abs(std::chrono::hours(3));
     static_assert(h2.count() == 3, "");
-    }
+  }
 
-    {
-//  Make sure it works for durations that are not LCD'ed - example from LWG3091
-    constexpr auto d = std::chrono::abs(std::chrono::duration<int, std::ratio<60, 100>>{2});
+  {
+    //  Make sure it works for durations that are not LCD'ed - example from LWG3091
+    constexpr auto d =
+        std::chrono::abs(std::chrono::duration<int, std::ratio<60, 100> >{2});
     static_assert(d.count() == 2, "");
-    }
+  }
 
   return 0;
 }

@@ -72,8 +72,7 @@ static void printBlameContext(const DILineInfo &LineInfo, unsigned Context) {
   File->getBuffer().split(Lines, '\n');
 
   for (unsigned i = std::max<size_t>(1, LineInfo.Line - Context);
-       i <
-       std::min<size_t>(Lines.size() + 1, LineInfo.Line + Context + 1);
+       i < std::min<size_t>(Lines.size() + 1, LineInfo.Line + Context + 1);
        ++i) {
     if (i == LineInfo.Line)
       outs() << ">";

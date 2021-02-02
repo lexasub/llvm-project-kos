@@ -51,7 +51,7 @@ static inline const Function *parentFunctionOfValue(const Value *Val) {
     return Arg->getParent();
   return nullptr;
 } // namespace cflaa
+} // namespace cflaa
 } // namespace llvm
-}
 
 #endif // LLVM_ANALYSIS_CFLALIASANALYSISUTILS_H

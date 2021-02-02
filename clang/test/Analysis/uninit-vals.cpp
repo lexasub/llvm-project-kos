@@ -31,5 +31,4 @@ void foo() {
                     // expected-note@-1{{1st function call argument is an uninitialized value}}
 #endif
 }
-}
-
+} // namespace PerformTrivialCopyForUndefs

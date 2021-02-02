@@ -59,6 +59,6 @@ bool isKernelFunction(const Function &);
 bool getAlign(const Function &, unsigned index, unsigned &);
 bool getAlign(const CallInst &, unsigned index, unsigned &);
 
-}
+} // namespace llvm
 
 #endif

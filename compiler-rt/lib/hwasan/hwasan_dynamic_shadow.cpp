@@ -12,14 +12,15 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "hwasan.h"
 #include "hwasan_dynamic_shadow.h"
-#include "hwasan_mapping.h"
-#include "sanitizer_common/sanitizer_common.h"
-#include "sanitizer_common/sanitizer_posix.h"
 
 #include <elf.h>
 #include <link.h>
+
+#include "hwasan.h"
+#include "hwasan_mapping.h"
+#include "sanitizer_common/sanitizer_common.h"
+#include "sanitizer_common/sanitizer_posix.h"
 
 // The code in this file needs to run in an unrelocated binary. It should not
 // access any external symbol, including its own non-hidden globals.
@@ -78,8 +79,8 @@ decltype(__hwasan_shadow)* __hwasan_premap_shadow() {
 
 // __hwasan_shadow is a "function" that has the same address as the first byte
 // of the shadow mapping.
-INTERFACE_ATTRIBUTE __attribute__((ifunc("__hwasan_premap_shadow")))
-void __hwasan_shadow();
+INTERFACE_ATTRIBUTE __attribute__((ifunc("__hwasan_premap_shadow"))) void
+__hwasan_shadow();
 
 extern __attribute((weak, visibility("hidden"))) ElfW(Rela) __rela_iplt_start[],
     __rela_iplt_end[];
@@ -93,7 +94,7 @@ void InitShadowGOT() {
   // needs to be done before other ifunc resolvers (which are handled by libc)
   // because a resolver might read __hwasan_shadow.
   typedef ElfW(Addr) (*ifunc_resolver_t)(void);
-  for (ElfW(Rela) *r = __rela_iplt_start; r != __rela_iplt_end; ++r) {
+  for (ElfW(Rela)* r = __rela_iplt_start; r != __rela_iplt_end; ++r) {
     ElfW(Addr)* offset = reinterpret_cast<ElfW(Addr)*>(r->r_offset);
     ElfW(Addr) resolver = r->r_addend;
     if (resolver == reinterpret_cast<ElfW(Addr)>(&__hwasan_premap_shadow)) {

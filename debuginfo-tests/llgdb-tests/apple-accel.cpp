@@ -11,7 +11,7 @@
 // A function in a different section forces the compiler to create the
 // __debug_ranges section.
 __attribute__((section("1,__text_foo"))) void foo() {}
-int main (int argc, char const *argv[]) { return argc; }
+int main(int argc, char const *argv[]) { return argc; }
 
 // CHECK-DAG: __debug_abbrev
 // CHECK-DAG: __debug_info

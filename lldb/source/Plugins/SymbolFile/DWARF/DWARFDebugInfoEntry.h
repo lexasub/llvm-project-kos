@@ -166,13 +166,14 @@ protected:
   static DWARFDeclContext
   GetDWARFDeclContextStatic(const DWARFDebugInfoEntry *die, DWARFUnit *cu);
 
-  dw_offset_t m_offset; // Offset within the .debug_info/.debug_types
+  dw_offset_t m_offset;  // Offset within the .debug_info/.debug_types
   uint32_t m_parent_idx; // How many to subtract from "this" to get the parent.
                          // If zero this die has no parent
-  uint32_t m_sibling_idx : 31, // How many to add to "this" to get the sibling.
-      // If it is zero, then the DIE doesn't have children, or the
-      // DWARF claimed it had children but the DIE only contained
-      // a single NULL terminating child.
+  uint32_t
+      m_sibling_idx : 31, // How many to add to "this" to get the sibling.
+                          // If it is zero, then the DIE doesn't have children,
+                          // or the DWARF claimed it had children but the DIE
+                          // only contained a single NULL terminating child.
       m_has_children : 1;
   uint16_t m_abbr_idx;
   /// A copy of the DW_TAG value so we don't have to go through the compile

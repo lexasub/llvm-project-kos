@@ -44,14 +44,18 @@
 // REQUIRES: Clang
 
 #ifndef SZ
-# define SZ 4
+#define SZ 4
 #endif
 
 #if BUILD_SO
-namespace foo { char G[SZ]; }
+namespace foo {
+char G[SZ];
+}
 #else
 #include <stdio.h>
-namespace foo { char G[100]; }
+namespace foo {
+char G[100];
+}
 // CHECK: ERROR: AddressSanitizer: odr-violation
 // CHECK: size=100 'foo::G' {{.*}}odr-violation.cpp:[[@LINE-2]]:22
 // CHECK: size={{4|100}} 'foo::G'

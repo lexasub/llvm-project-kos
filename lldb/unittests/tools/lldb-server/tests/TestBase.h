@@ -19,7 +19,7 @@
 
 namespace llgs_tests {
 
-class TestBase: public ::testing::Test {
+class TestBase : public ::testing::Test {
 public:
   static void SetUpTestCase() {
     lldb_private::FileSystem::Initialize();
@@ -42,7 +42,7 @@ public:
   static std::string getLogFileName();
 };
 
-class StandardStartupTest: public TestBase {
+class StandardStartupTest : public TestBase {
 public:
   void SetUp() override {
     auto ClientOr = TestClient::launch(getLogFileName());

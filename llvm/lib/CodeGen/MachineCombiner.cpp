@@ -38,10 +38,11 @@ using namespace llvm;
 
 STATISTIC(NumInstCombined, "Number of machineinst combined");
 
-static cl::opt<unsigned>
-inc_threshold("machine-combiner-inc-threshold", cl::Hidden,
-              cl::desc("Incremental depth computation will be used for basic "
-                       "blocks with more instructions."), cl::init(500));
+static cl::opt<unsigned> inc_threshold(
+    "machine-combiner-inc-threshold", cl::Hidden,
+    cl::desc("Incremental depth computation will be used for basic "
+             "blocks with more instructions."),
+    cl::init(500));
 
 static cl::opt<bool> dump_intrs("machine-combiner-dump-subst-intrs", cl::Hidden,
                                 cl::desc("Dump all substituted intrs"),
@@ -98,13 +99,13 @@ private:
                     MachineTraceMetrics::Trace BlockTrace);
   unsigned getLatency(MachineInstr *Root, MachineInstr *NewRoot,
                       MachineTraceMetrics::Trace BlockTrace);
-  bool
-  improvesCriticalPathLen(MachineBasicBlock *MBB, MachineInstr *Root,
-                          MachineTraceMetrics::Trace BlockTrace,
-                          SmallVectorImpl<MachineInstr *> &InsInstrs,
-                          SmallVectorImpl<MachineInstr *> &DelInstrs,
-                          DenseMap<unsigned, unsigned> &InstrIdxForVirtReg,
-                          MachineCombinerPattern Pattern, bool SlackIsAccurate);
+  bool improvesCriticalPathLen(MachineBasicBlock *MBB, MachineInstr *Root,
+                               MachineTraceMetrics::Trace BlockTrace,
+                               SmallVectorImpl<MachineInstr *> &InsInstrs,
+                               SmallVectorImpl<MachineInstr *> &DelInstrs,
+                               DenseMap<unsigned, unsigned> &InstrIdxForVirtReg,
+                               MachineCombinerPattern Pattern,
+                               bool SlackIsAccurate);
   bool reduceRegisterPressure(MachineInstr &Root, MachineBasicBlock *MBB,
                               SmallVectorImpl<MachineInstr *> &InsInstrs,
                               SmallVectorImpl<MachineInstr *> &DelInstrs,
@@ -124,17 +125,17 @@ private:
   void verifyPatternOrder(MachineBasicBlock *MBB, MachineInstr &Root,
                           SmallVector<MachineCombinerPattern, 16> &Patterns);
 };
-}
+} // namespace
 
 char MachineCombiner::ID = 0;
 char &llvm::MachineCombinerID = MachineCombiner::ID;
 
-INITIALIZE_PASS_BEGIN(MachineCombiner, DEBUG_TYPE,
-                      "Machine InstCombiner", false, false)
+INITIALIZE_PASS_BEGIN(MachineCombiner, DEBUG_TYPE, "Machine InstCombiner",
+                      false, false)
 INITIALIZE_PASS_DEPENDENCY(MachineLoopInfo)
 INITIALIZE_PASS_DEPENDENCY(MachineTraceMetrics)
-INITIALIZE_PASS_END(MachineCombiner, DEBUG_TYPE, "Machine InstCombiner",
-                    false, false)
+INITIALIZE_PASS_END(MachineCombiner, DEBUG_TYPE, "Machine InstCombiner", false,
+                    false)
 
 void MachineCombiner::getAnalysisUsage(AnalysisUsage &AU) const {
   AU.setPreservesCFG();
@@ -333,8 +334,7 @@ bool MachineCombiner::improvesCriticalPathLen(
     SmallVectorImpl<MachineInstr *> &InsInstrs,
     SmallVectorImpl<MachineInstr *> &DelInstrs,
     DenseMap<unsigned, unsigned> &InstrIdxForVirtReg,
-    MachineCombinerPattern Pattern,
-    bool SlackIsAccurate) {
+    MachineCombinerPattern Pattern, bool SlackIsAccurate) {
   assert(TSchedModel.hasInstrSchedModelOrItineraries() &&
          "Missing machine model\n");
   // Get depth and latency of NewRoot and Root.
@@ -407,8 +407,8 @@ bool MachineCombiner::preservesResourceLen(
 
   // Compute current resource length
 
-  //ArrayRef<const MachineBasicBlock *> MBBarr(MBB);
-  SmallVector <const MachineBasicBlock *, 1> MBBarr;
+  // ArrayRef<const MachineBasicBlock *> MBBarr(MBB);
+  SmallVector<const MachineBasicBlock *, 1> MBBarr;
   MBBarr.push_back(MBB);
   unsigned ResLenBeforeCombine = BlockTrace.getResourceLength(MBBarr);
 
@@ -431,7 +431,7 @@ bool MachineCombiner::preservesResourceLen(
                     << " and after: " << ResLenAfterCombine << "\n";);
   LLVM_DEBUG(
       ResLenAfterCombine <=
-      ResLenBeforeCombine + TII->getExtendResourceLenLimit()
+              ResLenBeforeCombine + TII->getExtendResourceLenLimit()
           ? dbgs() << "\t\t  As result it IMPROVES/PRESERVES Resource Length\n"
           : dbgs() << "\t\t  As result it DOES NOT improve/preserve Resource "
                       "Length\n");
@@ -487,7 +487,7 @@ static void insertDeleteInstructions(MachineBasicBlock *MBB, MachineInstr &MI,
   for (auto *InstrPtr : DelInstrs) {
     InstrPtr->eraseFromParentAndMarkDBGValuesForRemoval();
     // Erase all LiveRegs defined by the removed instruction
-    for (auto I = RegUnits.begin(); I != RegUnits.end(); ) {
+    for (auto I = RegUnits.begin(); I != RegUnits.end();) {
       if (I->MI == InstrPtr)
         I = RegUnits.erase(I);
       else
@@ -614,12 +614,12 @@ bool MachineCombiner::combineInstructions(MachineBasicBlock *MBB) {
         dbgs() << "\tFor the Pattern (" << (int)P
                << ") these instructions could be removed\n";
         for (auto const *InstrPtr : DelInstrs)
-          InstrPtr->print(dbgs(), /*IsStandalone*/false, /*SkipOpers*/false,
-                          /*SkipDebugLoc*/false, /*AddNewLine*/true, TII);
+          InstrPtr->print(dbgs(), /*IsStandalone*/ false, /*SkipOpers*/ false,
+                          /*SkipDebugLoc*/ false, /*AddNewLine*/ true, TII);
         dbgs() << "\tThese instructions could replace the removed ones\n";
         for (auto const *InstrPtr : InsInstrs)
-          InstrPtr->print(dbgs(), /*IsStandalone*/false, /*SkipOpers*/false,
-                          /*SkipDebugLoc*/false, /*AddNewLine*/true, TII);
+          InstrPtr->print(dbgs(), /*IsStandalone*/ false, /*SkipOpers*/ false,
+                          /*SkipDebugLoc*/ false, /*AddNewLine*/ true, TII);
       });
 
       bool SubstituteAlways = false;
@@ -714,9 +714,9 @@ bool MachineCombiner::runOnMachineFunction(MachineFunction &MF) {
   MLI = &getAnalysis<MachineLoopInfo>();
   Traces = &getAnalysis<MachineTraceMetrics>();
   PSI = &getAnalysis<ProfileSummaryInfoWrapperPass>().getPSI();
-  MBFI = (PSI && PSI->hasProfileSummary()) ?
-         &getAnalysis<LazyMachineBlockFrequencyInfoPass>().getBFI() :
-         nullptr;
+  MBFI = (PSI && PSI->hasProfileSummary())
+             ? &getAnalysis<LazyMachineBlockFrequencyInfoPass>().getBFI()
+             : nullptr;
   MinInstr = nullptr;
   OptSize = MF.getFunction().hasOptSize();
   RegClassInfo.runOnMachineFunction(MF);

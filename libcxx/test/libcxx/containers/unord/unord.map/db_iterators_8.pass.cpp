@@ -23,12 +23,12 @@
 #include "test_macros.h"
 
 int main(int, char**) {
-    typedef std::unordered_map<int, std::string> C;
-    C c;
-    c.insert(std::make_pair(1, "one"));
-    C::iterator i = c.end();
-    C::value_type j = *i;
-    assert(false);
+  typedef std::unordered_map<int, std::string> C;
+  C c;
+  c.insert(std::make_pair(1, "one"));
+  C::iterator i = c.end();
+  C::value_type j = *i;
+  assert(false);
 
-    return 0;
+  return 0;
 }

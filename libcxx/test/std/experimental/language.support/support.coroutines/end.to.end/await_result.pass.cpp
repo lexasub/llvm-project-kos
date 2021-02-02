@@ -33,21 +33,20 @@ struct B {
   ~B() {}
   bool await_ready() { return true; }
   B await_resume() { return {}; }
-  template <typename F> void await_suspend(F) {}
+  template <typename F>
+  void await_suspend(F) {}
 };
-
 
 struct A {
   ~A() {}
   bool await_ready() { return true; }
   int await_resume() { return 42; }
-  template <typename F> void await_suspend(F) {}
+  template <typename F>
+  void await_suspend(F) {}
 };
 
 int last_value = -1;
-void set_value(int x) {
-  last_value = x;
-}
+void set_value(int x) { last_value = x; }
 
 coro_t f(int n) {
   if (n == 0) {

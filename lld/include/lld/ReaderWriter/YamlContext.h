@@ -22,7 +22,7 @@ namespace mach_o {
 namespace normalized {
 struct NormalizedFile;
 }
-}
+} // namespace mach_o
 
 using lld::mach_o::normalized::NormalizedFile;
 

@@ -29,13 +29,10 @@
 #include "make_test_thread.h"
 #include "test_macros.h"
 
-int main(int, char**)
-{
+int main(int, char**) {
   std::barrier<> b(2);
 
-  std::thread t = support::make_test_thread([&](){
-    b.arrive_and_drop();
-  });
+  std::thread t = support::make_test_thread([&]() { b.arrive_and_drop(); });
 
   b.arrive_and_wait();
   b.arrive_and_wait();

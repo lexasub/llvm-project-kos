@@ -1,3 +1,5 @@
 // CoreVideo
 #import "Foundation.h" // Foundation
-struct E { int i; };
+struct E {
+  int i;
+};

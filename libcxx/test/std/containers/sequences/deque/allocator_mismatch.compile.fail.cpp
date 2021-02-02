@@ -11,9 +11,8 @@
 
 #include <deque>
 
-int main(int, char**)
-{
-    std::deque<int, std::allocator<long> > d;
+int main(int, char**) {
+  std::deque<int, std::allocator<long> > d;
 
   return 0;
 }

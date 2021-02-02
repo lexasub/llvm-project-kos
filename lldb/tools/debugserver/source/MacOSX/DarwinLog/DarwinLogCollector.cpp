@@ -50,7 +50,9 @@ bool LookupSPICalls() {
   static bool s_has_spi;
 
   std::call_once(s_once_flag, [] {
-    dlopen ("/System/Library/PrivateFrameworks/LoggingSupport.framework/LoggingSupport", RTLD_NOW);
+    dlopen("/System/Library/PrivateFrameworks/LoggingSupport.framework/"
+           "LoggingSupport",
+           RTLD_NOW);
     s_os_activity_stream_for_pid = (os_activity_stream_for_pid_t)dlsym(
         RTLD_DEFAULT, "os_activity_stream_for_pid");
     s_os_activity_stream_resume = (os_activity_stream_resume_t)dlsym(
@@ -341,7 +343,7 @@ private:
   os_activity_stream_flag_t m_activity_stream_flags;
   LogFilterChainSP m_filter_chain_sp;
 };
-}
+} // namespace
 
 bool DarwinLogCollector::IsSupported() {
   // We're supported if we have successfully looked up the SPI entry points.
@@ -522,8 +524,9 @@ DarwinLogCollector::DarwinLogCollector(nub_process_t pid,
 DarwinLogCollector::~DarwinLogCollector() {
   // Cancel the stream.
   if (m_activity_stream) {
-    DNBLogThreadedIf(LOG_DARWIN_LOG, "tearing down activity stream "
-                                     "collector for %d",
+    DNBLogThreadedIf(LOG_DARWIN_LOG,
+                     "tearing down activity stream "
+                     "collector for %d",
                      m_pid);
     (*s_os_activity_stream_cancel)(m_activity_stream);
     m_activity_stream = 0;
@@ -565,13 +568,14 @@ bool DarwinLogCollector::HandleStreamEntry(os_activity_stream_entry_t entry,
 
     switch (entry->type) {
     case OS_ACTIVITY_STREAM_TYPE_ACTIVITY_CREATE:
-      DNBLogThreadedIf(
-          LOG_DARWIN_LOG, "received activity create: "
-                          "%s, creator aid %" PRIu64 ", unique_pid %" PRIu64
-                          "(activity id=%" PRIu64 ", parent id=%" PRIu64 ")",
-          entry->activity_create.name, entry->activity_create.creator_aid,
-          entry->activity_create.unique_pid, entry->activity_id,
-          entry->parent_id);
+      DNBLogThreadedIf(LOG_DARWIN_LOG,
+                       "received activity create: "
+                       "%s, creator aid %" PRIu64 ", unique_pid %" PRIu64
+                       "(activity id=%" PRIu64 ", parent id=%" PRIu64 ")",
+                       entry->activity_create.name,
+                       entry->activity_create.creator_aid,
+                       entry->activity_create.unique_pid, entry->activity_id,
+                       entry->parent_id);
       {
         std::lock_guard<std::mutex> locker(m_activity_info_mutex);
         m_activity_map.insert(
@@ -582,22 +586,24 @@ bool DarwinLogCollector::HandleStreamEntry(os_activity_stream_entry_t entry,
       break;
 
     case OS_ACTIVITY_STREAM_TYPE_ACTIVITY_TRANSITION:
-      DNBLogThreadedIf(
-          LOG_DARWIN_LOG, "received activity transition:"
-                          "new aid: %" PRIu64 "(activity id=%" PRIu64
-                          ", parent id=%" PRIu64 ", tid %" PRIu64 ")",
-          entry->activity_transition.transition_id, entry->activity_id,
-          entry->parent_id, entry->activity_transition.thread);
+      DNBLogThreadedIf(LOG_DARWIN_LOG,
+                       "received activity transition:"
+                       "new aid: %" PRIu64 "(activity id=%" PRIu64
+                       ", parent id=%" PRIu64 ", tid %" PRIu64 ")",
+                       entry->activity_transition.transition_id,
+                       entry->activity_id, entry->parent_id,
+                       entry->activity_transition.thread);
       break;
 
     case OS_ACTIVITY_STREAM_TYPE_LOG_MESSAGE: {
-      DNBLogThreadedIf(
-          LOG_DARWIN_LOG, "received log message: "
-                          "(activity id=%" PRIu64 ", parent id=%" PRIu64 ", "
-                          "tid %" PRIu64 "): format %s",
-          entry->activity_id, entry->parent_id, entry->log_message.thread,
-          entry->log_message.format ? entry->log_message.format
-                                    : "<invalid-format>");
+      DNBLogThreadedIf(LOG_DARWIN_LOG,
+                       "received log message: "
+                       "(activity id=%" PRIu64 ", parent id=%" PRIu64 ", "
+                       "tid %" PRIu64 "): format %s",
+                       entry->activity_id, entry->parent_id,
+                       entry->log_message.thread,
+                       entry->log_message.format ? entry->log_message.format
+                                                 : "<invalid-format>");
 
       // Do the real work here.
       {
@@ -667,8 +673,9 @@ bool DarwinLogCollector::HandleStreamEntry(os_activity_stream_entry_t entry,
     }
     }
   } else {
-    DNBLogThreadedIf(LOG_DARWIN_LOG, "HandleStreamEntry: final call, "
-                                     "error %d",
+    DNBLogThreadedIf(LOG_DARWIN_LOG,
+                     "HandleStreamEntry: final call, "
+                     "error %d",
                      error);
   }
   return true;
@@ -680,8 +687,9 @@ DarwinLogEventVector DarwinLogCollector::RemoveEvents() {
     std::lock_guard<std::mutex> locker(m_events_mutex);
     returned_events.swap(m_events);
   }
-  DNBLogThreadedIf(LOG_DARWIN_LOG, "DarwinLogCollector::%s(): removing %lu "
-                                   "queued log entries",
+  DNBLogThreadedIf(LOG_DARWIN_LOG,
+                   "DarwinLogCollector::%s(): removing %lu "
+                   "queued log entries",
                    __FUNCTION__, returned_events.size());
   return returned_events;
 }

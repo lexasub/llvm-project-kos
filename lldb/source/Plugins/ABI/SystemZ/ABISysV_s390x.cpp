@@ -112,7 +112,7 @@ enum dwarf_regnums {
 
 #define DEFINE_REG(name, size, alt, generic)                                   \
   {                                                                            \
-    #name, alt, size, 0, eEncodingUint, eFormatHex,                            \
+#name, alt, size, 0, eEncodingUint, eFormatHex,                            \
         {dwarf_##name##_s390x, dwarf_##name##_s390x, generic,                  \
          LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM },                           \
          nullptr, nullptr, nullptr, 0                                          \
@@ -185,9 +185,11 @@ size_t ABISysV_s390x::GetRedZoneSize() const { return 0; }
 // Static Functions
 
 ABISP
-ABISysV_s390x::CreateInstance(lldb::ProcessSP process_sp, const ArchSpec &arch) {
+ABISysV_s390x::CreateInstance(lldb::ProcessSP process_sp,
+                              const ArchSpec &arch) {
   if (arch.GetTriple().getArch() == llvm::Triple::systemz) {
-    return ABISP(new ABISysV_s390x(std::move(process_sp), MakeMCRegisterInfo(arch)));
+    return ABISP(
+        new ABISysV_s390x(std::move(process_sp), MakeMCRegisterInfo(arch)));
   }
   return ABISP();
 }

@@ -2,23 +2,26 @@
 // rdar://8594790
 
 struct A {
-	int x;
-	A(const A &);
-	A();
-	~A() noexcept(false);
+  int x;
+  A(const A &);
+  A();
+  ~A() noexcept(false);
 };
 
 struct B {
-	int x;
-	B(const B &);
-	B();
-	~B();
+  int x;
+  B(const B &);
+  B();
+  ~B();
 };
 
 int testA() {
-	__block A a0, a1;
-  ^{ a0.x = 1234; a1.x = 5678; };
-	return 0;
+  __block A a0, a1;
+  ^{
+    a0.x = 1234;
+    a1.x = 5678;
+  };
+  return 0;
 }
 
 // CHECK-LABEL: define internal void @__Block_byref_object_copy_
@@ -37,9 +40,12 @@ int testA() {
 // CHECK: invoke void @_Block_object_dispose(
 
 int testB() {
-	__block B b0, b1;
-  ^{ b0.x = 1234; b1.x = 5678; };
-	return 0;
+  __block B b0, b1;
+  ^{
+    b0.x = 1234;
+    b1.x = 5678;
+  };
+  return 0;
 }
 
 // CHECK-LABEL: define internal void @__Block_byref_object_copy_
@@ -54,10 +60,14 @@ int testB() {
 
 // rdar://problem/11135650
 namespace test1 {
-  struct A { int x; A(); ~A(); };
+struct A {
+  int x;
+  A();
+  ~A();
+};
 
-  void test() {
-    return;
-    __block A a;
-  }
+void test() {
+  return;
+  __block A a;
 }
+} // namespace test1

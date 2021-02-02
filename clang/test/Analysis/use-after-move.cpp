@@ -62,7 +62,7 @@ public:
   B() = default;
   B(const B &) = default;
   B(B &&) = default;
-  B& operator=(const B &q) = default;
+  B &operator=(const B &q) = default;
   void operator=(B &&b) {
     return;
   }
@@ -173,14 +173,14 @@ void simpleMoveCtorTest() {
   {
     A a;
     A b = std::move(a); // peaceful-note {{Object 'a' is moved}}
-    b = a; // peaceful-warning {{Moved-from object 'a' is copied}}
-           // peaceful-note@-1 {{Moved-from object 'a' is copied}}
+    b = a;              // peaceful-warning {{Moved-from object 'a' is copied}}
+                        // peaceful-note@-1 {{Moved-from object 'a' is copied}}
   }
   {
     A a;
     A b = std::move(a); // peaceful-note {{Object 'a' is moved}}
-    b = std::move(a); // peaceful-warning {{Moved-from object 'a' is moved}}
-                      // peaceful-note@-1 {{Moved-from object 'a' is moved}}
+    b = std::move(a);   // peaceful-warning {{Moved-from object 'a' is moved}}
+                        // peaceful-note@-1 {{Moved-from object 'a' is moved}}
   }
 }
 
@@ -189,20 +189,20 @@ void simpleMoveAssignementTest() {
     A a;
     A b;
     b = std::move(a); // peaceful-note {{Object 'a' is moved}}
-    a.foo(); // peaceful-warning {{Method called on moved-from object 'a'}}
-             // peaceful-note@-1 {{Method called on moved-from object 'a'}}
+    a.foo();          // peaceful-warning {{Method called on moved-from object 'a'}}
+                      // peaceful-note@-1 {{Method called on moved-from object 'a'}}
   }
   {
     A a;
     A b;
     b = std::move(a); // peaceful-note {{Object 'a' is moved}}
-    A c(a); // peaceful-warning {{Moved-from object 'a' is copied}}
-            // peaceful-note@-1 {{Moved-from object 'a' is copied}}
+    A c(a);           // peaceful-warning {{Moved-from object 'a' is copied}}
+                      // peaceful-note@-1 {{Moved-from object 'a' is copied}}
   }
   {
     A a;
     A b;
-    b = std::move(a); // peaceful-note {{Object 'a' is moved}}
+    b = std::move(a);  // peaceful-note {{Object 'a' is moved}}
     A c(std::move(a)); // peaceful-warning {{Moved-from object 'a' is moved}}
                        // peaceful-note@-1 {{Moved-from object 'a' is moved}}
   }
@@ -214,8 +214,8 @@ void moveInInitListTest() {
   };
   A a;
   S s{std::move(a)}; // peaceful-note {{Object 'a' is moved}}
-  a.foo(); // peaceful-warning {{Method called on moved-from object 'a'}}
-           // peaceful-note@-1 {{Method called on moved-from object 'a'}}
+  a.foo();           // peaceful-warning {{Method called on moved-from object 'a'}}
+                     // peaceful-note@-1 {{Method called on moved-from object 'a'}}
 }
 
 // Don't report a bug if the variable was assigned to in the meantime.
@@ -266,22 +266,22 @@ void reinitializationTest(int i) {
     b = std::move(a);
     a = A();
     b = std::move(a); // peaceful-note {{Object 'a' is moved}}
-    a.foo(); // peaceful-warning {{Method called on moved-from object 'a'}}
-             // peaceful-note@-1 {{Method called on moved-from object 'a'}}
+    a.foo();          // peaceful-warning {{Method called on moved-from object 'a'}}
+                      // peaceful-note@-1 {{Method called on moved-from object 'a'}}
   }
   // If a path exist where we not reinitialize the variable we report a bug.
   {
     A a;
     A b;
     b = std::move(a); // peaceful-note {{Object 'a' is moved}}
-    if (i < 10) { // peaceful-note {{Assuming 'i' is >= 10}}
-                  // peaceful-note@-1 {{Taking false branch}}
+    if (i < 10) {     // peaceful-note {{Assuming 'i' is >= 10}}
+                      // peaceful-note@-1 {{Taking false branch}}
       a = A();
     }
     if (i > 5) { // peaceful-note {{'i' is > 5}}
                  // peaceful-note@-1 {{Taking true branch}}
-      a.foo(); // peaceful-warning {{Method called on moved-from object 'a'}}
-               // peaceful-note@-1 {{Method called on moved-from object 'a'}}
+      a.foo();   // peaceful-warning {{Method called on moved-from object 'a'}}
+                 // peaceful-note@-1 {{Method called on moved-from object 'a'}}
     }
   }
 }
@@ -397,8 +397,8 @@ void uniqueTest(bool cond) {
 
   if (cond) { // peaceful-note {{Assuming 'cond' is true}}
               // peaceful-note@-1 {{Taking true branch}}
-    a.foo(); // peaceful-warning {{Method called on moved-from object 'a'}}
-             // peaceful-note@-1 {{Method called on moved-from object 'a'}}
+    a.foo();  // peaceful-warning {{Method called on moved-from object 'a'}}
+              // peaceful-note@-1 {{Method called on moved-from object 'a'}}
   }
   if (cond) {
     a.bar(); // no-warning
@@ -410,8 +410,8 @@ void uniqueTest(bool cond) {
 void uniqueTest2() {
   A a;
   A a1 = std::move(a); // peaceful-note {{Object 'a' is moved}}
-  a.foo(); // peaceful-warning {{Method called on moved-from object 'a'}}
-           // peaceful-note@-1    {{Method called on moved-from object 'a'}}
+  a.foo();             // peaceful-warning {{Method called on moved-from object 'a'}}
+                       // peaceful-note@-1    {{Method called on moved-from object 'a'}}
 
   A a2 = std::move(a); // no-warning
   a.foo();             // no-warning
@@ -426,8 +426,8 @@ void moveSafeFunctionsTest() {
   a.isEmpty();        // no-warning
   (void)a;            // no-warning
   (bool)a;            // expected-warning {{expression result unused}}
-  a.foo(); // peaceful-warning {{Method called on moved-from object 'a'}}
-           // peaceful-note@-1 {{Method called on moved-from object 'a'}}
+  a.foo();            // peaceful-warning {{Method called on moved-from object 'a'}}
+                      // peaceful-note@-1 {{Method called on moved-from object 'a'}}
 }
 
 void moveStateResetFunctionsTest() {
@@ -456,15 +456,15 @@ void moveStateResetFunctionsTest() {
     A a;
     A b = std::move(a);
     a.resize(0); // no-warning
-    a.foo();   // no-warning
-    a.b.foo(); // no-warning
+    a.foo();     // no-warning
+    a.b.foo();   // no-warning
   }
   {
     A a;
     A b = std::move(a);
     a.assign(A()); // no-warning
-    a.foo();   // no-warning
-    a.b.foo(); // no-warning
+    a.foo();       // no-warning
+    a.b.foo();     // no-warning
   }
 }
 
@@ -511,8 +511,8 @@ class memberVariablesTest {
              // aggressive-note@-1 {{Method called on moved-from object 'a'}}
 
     b = std::move(static_a); // aggressive-note {{Object 'static_a' is moved}}
-    static_a.foo(); // aggressive-warning {{Method called on moved-from object 'static_a'}}
-                    // aggressive-note@-1 {{Method called on moved-from object 'static_a'}}
+    static_a.foo();          // aggressive-warning {{Method called on moved-from object 'static_a'}}
+                             // aggressive-note@-1 {{Method called on moved-from object 'static_a'}}
   }
 };
 
@@ -520,17 +520,17 @@ void PtrAndArrayTest() {
   A *Ptr = new A(1, 1.5);
   A Arr[10];
   Arr[2] = std::move(*Ptr); // aggressive-note{{Object is moved}}
-  (*Ptr).foo(); // aggressive-warning{{Method called on moved-from object}}
-                // aggressive-note@-1{{Method called on moved-from object}}
+  (*Ptr).foo();             // aggressive-warning{{Method called on moved-from object}}
+                            // aggressive-note@-1{{Method called on moved-from object}}
 
   Ptr = &Arr[1];
   Arr[3] = std::move(Arr[1]); // aggressive-note {{Object is moved}}
-  Ptr->foo(); // aggressive-warning {{Method called on moved-from object}}
-              // aggressive-note@-1 {{Method called on moved-from object}}
+  Ptr->foo();                 // aggressive-warning {{Method called on moved-from object}}
+                              // aggressive-note@-1 {{Method called on moved-from object}}
 
   Arr[3] = std::move(Arr[2]); // aggressive-note{{Object is moved}}
-  Arr[2].foo(); // aggressive-warning{{Method called on moved-from object}}
-                // aggressive-note@-1{{Method called on moved-from object}}
+  Arr[2].foo();               // aggressive-warning{{Method called on moved-from object}}
+                              // aggressive-note@-1{{Method called on moved-from object}}
 
   Arr[2] = std::move(Arr[3]); // reinitialization
   Arr[2].foo();               // no-warning
@@ -790,30 +790,30 @@ void subRegionMoveTest() {
   {
     A a;
     B b = std::move(a.b); // aggressive-note {{Object 'b' is moved}}
-    a.b.foo(); // aggressive-warning {{Method called on moved-from object 'b'}}
-               // aggressive-note@-1 {{Method called on moved-from object 'b'}}
+    a.b.foo();            // aggressive-warning {{Method called on moved-from object 'b'}}
+                          // aggressive-note@-1 {{Method called on moved-from object 'b'}}
   }
   {
     A a;
     A a1 = std::move(a); // aggressive-note {{Calling move constructor for 'A'}}
                          // aggressive-note@-1 {{Returning from move constructor for 'A'}}
-    a.b.foo(); // aggressive-warning{{Method called on moved-from object 'b'}}
-               // aggressive-note@-1{{Method called on moved-from object 'b'}}
+    a.b.foo();           // aggressive-warning{{Method called on moved-from object 'b'}}
+                         // aggressive-note@-1{{Method called on moved-from object 'b'}}
   }
   // Don't report a misuse if any SuperRegion is already reported.
   {
     A a;
     A a1 = std::move(a); // peaceful-note {{Object 'a' is moved}}
-    a.foo(); // peaceful-warning {{Method called on moved-from object 'a'}}
-             // peaceful-note@-1 {{Method called on moved-from object 'a'}}
-    a.b.foo(); // no-warning
+    a.foo();             // peaceful-warning {{Method called on moved-from object 'a'}}
+                         // peaceful-note@-1 {{Method called on moved-from object 'a'}}
+    a.b.foo();           // no-warning
   }
   {
     C c;
     C c1 = std::move(c); // peaceful-note {{Object 'c' is moved}}
-    c.foo(); // peaceful-warning {{Method called on moved-from object 'c'}}
-             // peaceful-note@-1 {{Method called on moved-from object 'c'}}
-    c.b.foo(); // no-warning
+    c.foo();             // peaceful-warning {{Method called on moved-from object 'c'}}
+                         // peaceful-note@-1 {{Method called on moved-from object 'c'}}
+    c.b.foo();           // no-warning
   }
 }
 
@@ -834,9 +834,9 @@ void resetSuperClass2() {
 void reportSuperClass() {
   C c;
   C c1 = std::move(c); // peaceful-note {{Object 'c' is moved}}
-  c.foo(); // peaceful-warning {{Method called on moved-from object 'c'}}
-           // peaceful-note@-1 {{Method called on moved-from object 'c'}}
-  C c2 = c; // no-warning
+  c.foo();             // peaceful-warning {{Method called on moved-from object 'c'}}
+                       // peaceful-note@-1 {{Method called on moved-from object 'c'}}
+  C c2 = c;            // no-warning
 }
 
 struct Empty {};
@@ -865,7 +865,7 @@ void checkMoreLoopZombies1(bool flag) {
   while (flag) {
     Empty e{};
     if (true)
-      e; // expected-warning {{expression result unused}}
+      e;                    // expected-warning {{expression result unused}}
     Empty f = std::move(e); // no-warning
   }
 }
@@ -876,7 +876,7 @@ void checkMoreLoopZombies2(bool flag) {
   while (flag) {
     Empty e{};
     while (coin())
-      e; // expected-warning {{expression result unused}}
+      e;                    // expected-warning {{expression result unused}}
     Empty f = std::move(e); // no-warning
   }
 }
@@ -895,7 +895,7 @@ void checkMoreLoopZombies4(bool flag) {
   while (flag) {
     Empty e{};
     for (; coin();)
-      e; // expected-warning {{expression result unused}}
+      e;                    // expected-warning {{expression result unused}}
     Empty f = std::move(e); // no-warning
   }
 }
@@ -918,8 +918,8 @@ class HasSTLField {
     // Warn even in non-aggressive mode when it comes to STL, because
     // in STL the object is left in "valid but unspecified state" after move.
     std::vector<int> W = std::move(V); // expected-note {{Object 'V' of type 'std::vector' is left in a valid but unspecified state after move}}
-    V.push_back(123); // expected-warning {{Method called on moved-from object 'V'}}
-                      // expected-note@-1 {{Method called on moved-from object 'V'}}
+    V.push_back(123);                  // expected-warning {{Method called on moved-from object 'V'}}
+                                       // expected-note@-1 {{Method called on moved-from object 'V'}}
   }
 
   std::unique_ptr<int> P;
@@ -927,8 +927,8 @@ class HasSTLField {
     // unique_ptr remains in a well-defined state after move.
     std::unique_ptr<int> Q = std::move(P); // aggressive-note {{Object 'P' is moved}}
                                            // non-aggressive-note@-1 {{Smart pointer 'P' of type 'std::unique_ptr' is reset to null when moved from}}
-    P.get(); // aggressive-warning{{Method called on moved-from object 'P'}}
-             // aggressive-note@-1{{Method called on moved-from object 'P'}}
+    P.get();                               // aggressive-warning{{Method called on moved-from object 'P'}}
+                                           // aggressive-note@-1{{Method called on moved-from object 'P'}}
 
     // Because that well-defined state is null, dereference is still UB.
     // Note that in aggressive mode we already warned about 'P',
@@ -943,29 +943,29 @@ class HasSTLField {
 
 void localRValueMove(A &&a) {
   A b = std::move(a); // peaceful-note {{Object 'a' is moved}}
-  a.foo(); // peaceful-warning {{Method called on moved-from object 'a'}}
-           // peaceful-note@-1 {{Method called on moved-from object 'a'}}
+  a.foo();            // peaceful-warning {{Method called on moved-from object 'a'}}
+                      // peaceful-note@-1 {{Method called on moved-from object 'a'}}
 }
 
 void localUniquePtr(std::unique_ptr<int> P) {
   // Even though unique_ptr is safe to use after move,
   // reusing a local variable this way usually indicates a bug.
   std::unique_ptr<int> Q = std::move(P); // peaceful-note {{Object 'P' is moved}}
-  P.get(); // peaceful-warning {{Method called on moved-from object 'P'}}
-           // peaceful-note@-1 {{Method called on moved-from object 'P'}}
+  P.get();                               // peaceful-warning {{Method called on moved-from object 'P'}}
+                                         // peaceful-note@-1 {{Method called on moved-from object 'P'}}
 }
 
 void localUniquePtrWithArrow(std::unique_ptr<A> P) {
   std::unique_ptr<A> Q = std::move(P); // expected-note{{Smart pointer 'P' of type 'std::unique_ptr' is reset to null when moved from}}
-  P->foo(); // expected-warning{{Dereference of null smart pointer 'P' of type 'std::unique_ptr'}}
-            // expected-note@-1{{Dereference of null smart pointer 'P' of type 'std::unique_ptr'}}
+  P->foo();                            // expected-warning{{Dereference of null smart pointer 'P' of type 'std::unique_ptr'}}
+                                       // expected-note@-1{{Dereference of null smart pointer 'P' of type 'std::unique_ptr'}}
 }
 
 void getAfterMove(std::unique_ptr<A> P) {
   std::unique_ptr<A> Q = std::move(P); // peaceful-note {{Object 'P' is moved}}
 
   // TODO: Explain why (bool)P is false.
-  if (P) // peaceful-note{{Taking false branch}}
+  if (P)                            // peaceful-note{{Taking false branch}}
     clang_analyzer_warnIfReached(); // no-warning
 
   A *a = P.get(); // peaceful-warning {{Method called on moved-from object 'P'}}

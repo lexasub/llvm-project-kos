@@ -21,28 +21,21 @@
 
 #include "test_macros.h"
 
-class test
-    : public std::ios
-{
+class test : public std::ios {
 public:
-    test()
-    {
-        init(0);
-    }
+  test() { init(0); }
 };
 
-int main(int, char**)
-{
-    test t;
-    std::ios_base& b = t;
-    for (int i = 0; i < 10000; ++i)
-    {
-        assert(b.iword(i) == 0);
-        b.iword(i) = i;
-        assert(b.iword(i) == i);
-        for (int j = 0; j <= i; ++j)
-            assert(b.iword(j) == j);
-    }
+int main(int, char**) {
+  test t;
+  std::ios_base& b = t;
+  for (int i = 0; i < 10000; ++i) {
+    assert(b.iword(i) == 0);
+    b.iword(i) = i;
+    assert(b.iword(i) == i);
+    for (int j = 0; j <= i; ++j)
+      assert(b.iword(j) == j);
+  }
 
   return 0;
 }

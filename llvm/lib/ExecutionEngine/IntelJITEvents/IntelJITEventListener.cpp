@@ -118,26 +118,25 @@ public:
 };
 
 class IntelJITEventListener : public JITEventListener {
-  typedef DenseMap<void*, unsigned int> MethodIDMap;
+  typedef DenseMap<void *, unsigned int> MethodIDMap;
 
   std::unique_ptr<IntelJITEventsWrapper> Wrapper;
   MethodIDMap MethodIDs;
 
   typedef SmallVector<const void *, 64> MethodAddressVector;
-  typedef DenseMap<const void *, MethodAddressVector>  ObjectMap;
+  typedef DenseMap<const void *, MethodAddressVector> ObjectMap;
 
-  ObjectMap  LoadedObjectMap;
+  ObjectMap LoadedObjectMap;
   std::map<ObjectKey, OwningBinary<ObjectFile>> DebugObjects;
 
   std::map<ObjectKey, std::unique_ptr<IntelIttnotifyInfo>> KeyToIttnotify;
 
 public:
-  IntelJITEventListener(IntelJITEventsWrapper* libraryWrapper) {
-      Wrapper.reset(libraryWrapper);
+  IntelJITEventListener(IntelJITEventsWrapper *libraryWrapper) {
+    Wrapper.reset(libraryWrapper);
   }
 
-  ~IntelJITEventListener() {
-  }
+  ~IntelJITEventListener() {}
 
   void notifyObjectLoaded(ObjectKey Key, const ObjectFile &Obj,
                           const RuntimeDyld::LoadedObjectInfo &L) override;
@@ -156,17 +155,15 @@ static LineNumberInfo DILineInfoToIntelJITFormat(uintptr_t StartAddress,
   return Result;
 }
 
-static iJIT_Method_Load FunctionDescToIntelJITFormat(
-    IntelJITEventsWrapper& Wrapper,
-    const char* FnName,
-    uintptr_t FnStart,
-    size_t FnSize) {
+static iJIT_Method_Load
+FunctionDescToIntelJITFormat(IntelJITEventsWrapper &Wrapper, const char *FnName,
+                             uintptr_t FnStart, size_t FnSize) {
   iJIT_Method_Load Result;
   memset(&Result, 0, sizeof(iJIT_Method_Load));
 
   Result.method_id = Wrapper.iJIT_GetNewMethodID();
-  Result.method_name = const_cast<char*>(FnName);
-  Result.method_load_address = reinterpret_cast<void*>(FnStart);
+  Result.method_name = const_cast<char *>(FnName);
+  Result.method_load_address = reinterpret_cast<void *>(FnStart);
   Result.method_size = FnSize;
 
   Result.class_id = 0;
@@ -379,7 +376,7 @@ void IntelJITEventListener::notifyFreeingObject(ObjectKey Key) {
   }
 }
 
-}  // anonymous namespace.
+} // anonymous namespace.
 
 namespace llvm {
 JITEventListener *JITEventListener::createIntelJITEventListener() {
@@ -387,14 +384,13 @@ JITEventListener *JITEventListener::createIntelJITEventListener() {
 }
 
 // for testing
-JITEventListener *JITEventListener::createIntelJITEventListener(
-                                      IntelJITEventsWrapper* TestImpl) {
+JITEventListener *
+JITEventListener::createIntelJITEventListener(IntelJITEventsWrapper *TestImpl) {
   return new IntelJITEventListener(TestImpl);
 }
 
 } // namespace llvm
 
-LLVMJITEventListenerRef LLVMCreateIntelJITEventListener(void)
-{
+LLVMJITEventListenerRef LLVMCreateIntelJITEventListener(void) {
   return wrap(JITEventListener::createIntelJITEventListener());
 }

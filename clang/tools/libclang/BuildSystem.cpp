@@ -34,10 +34,8 @@ CXVirtualFileOverlay clang_VirtualFileOverlay_create(unsigned) {
   return wrap(new llvm::vfs::YAMLVFSWriter());
 }
 
-enum CXErrorCode
-clang_VirtualFileOverlay_addFileMapping(CXVirtualFileOverlay VFO,
-                                        const char *virtualPath,
-                                        const char *realPath) {
+enum CXErrorCode clang_VirtualFileOverlay_addFileMapping(
+    CXVirtualFileOverlay VFO, const char *virtualPath, const char *realPath) {
   if (!VFO || !virtualPath || !realPath)
     return CXError_InvalidArguments;
   if (!path::is_absolute(virtualPath))
@@ -45,9 +43,9 @@ clang_VirtualFileOverlay_addFileMapping(CXVirtualFileOverlay VFO,
   if (!path::is_absolute(realPath))
     return CXError_InvalidArguments;
 
-  for (path::const_iterator
-         PI = path::begin(virtualPath),
-         PE = path::end(virtualPath); PI != PE; ++PI) {
+  for (path::const_iterator PI = path::begin(virtualPath),
+                            PE = path::end(virtualPath);
+       PI != PE; ++PI) {
     StringRef Comp = *PI;
     if (Comp == "." || Comp == "..")
       return CXError_InvalidArguments;
@@ -78,20 +76,17 @@ clang_VirtualFileOverlay_writeToBuffer(CXVirtualFileOverlay VFO, unsigned,
   unwrap(VFO)->write(OS);
 
   StringRef Data = OS.str();
-  *out_buffer_ptr = static_cast<char*>(llvm::safe_malloc(Data.size()));
+  *out_buffer_ptr = static_cast<char *>(llvm::safe_malloc(Data.size()));
   *out_buffer_size = Data.size();
   memcpy(*out_buffer_ptr, Data.data(), Data.size());
   return CXError_Success;
 }
 
-void clang_free(void *buffer) {
-  free(buffer);
-}
+void clang_free(void *buffer) { free(buffer); }
 
 void clang_VirtualFileOverlay_dispose(CXVirtualFileOverlay VFO) {
   delete unwrap(VFO);
 }
-
 
 struct CXModuleMapDescriptorImpl {
   std::string ModuleName;
@@ -124,8 +119,8 @@ clang_ModuleMapDescriptor_setUmbrellaHeader(CXModuleMapDescriptor MMD,
 
 enum CXErrorCode
 clang_ModuleMapDescriptor_writeToBuffer(CXModuleMapDescriptor MMD, unsigned,
-                                       char **out_buffer_ptr,
-                                       unsigned *out_buffer_size) {
+                                        char **out_buffer_ptr,
+                                        unsigned *out_buffer_size) {
   if (!MMD || !out_buffer_ptr || !out_buffer_size)
     return CXError_InvalidArguments;
 
@@ -140,7 +135,7 @@ clang_ModuleMapDescriptor_writeToBuffer(CXModuleMapDescriptor MMD, unsigned,
   OS << "}\n";
 
   StringRef Data = OS.str();
-  *out_buffer_ptr = static_cast<char*>(llvm::safe_malloc(Data.size()));
+  *out_buffer_ptr = static_cast<char *>(llvm::safe_malloc(Data.size()));
   *out_buffer_size = Data.size();
   memcpy(*out_buffer_ptr, Data.data(), Data.size());
   return CXError_Success;

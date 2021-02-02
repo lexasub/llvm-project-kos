@@ -14,8 +14,8 @@
 
 #include "sanitizer_allocator_internal.h"
 #include "sanitizer_common.h"
-#include "sanitizer_flags.h"
 #include "sanitizer_file.h"
+#include "sanitizer_flags.h"
 #include "sanitizer_libc.h"
 #include "sanitizer_placement_new.h"
 
@@ -32,7 +32,7 @@ SuppressionContext::SuppressionContext(const char *suppression_types[],
 
 #if !SANITIZER_FUCHSIA
 static bool GetPathAssumingFileIsRelativeToExec(const char *file_path,
-                                                /*out*/char *new_file_path,
+                                                /*out*/ char *new_file_path,
                                                 uptr new_file_path_size) {
   InternalScopedString exec(kMaxPathLength);
   if (ReadBinaryNameCached(exec.data(), exec.size())) {
@@ -48,7 +48,7 @@ static bool GetPathAssumingFileIsRelativeToExec(const char *file_path,
 }
 
 static const char *FindFile(const char *file_path,
-                            /*out*/char *new_file_path,
+                            /*out*/ char *new_file_path,
                             uptr new_file_path_size) {
   // If we cannot find the file, check if its location is relative to
   // the location of the executable.
@@ -73,8 +73,8 @@ void SuppressionContext::ParseFromFile(const char *filename) {
   filename = FindFile(filename, new_file_path.data(), new_file_path.size());
 
   // Read the file.
-  VPrintf(1, "%s: reading suppressions file at %s\n",
-          SanitizerToolName, filename);
+  VPrintf(1, "%s: reading suppressions file at %s\n", SanitizerToolName,
+          filename);
   char *file_contents;
   uptr buffer_size;
   uptr contents_size;
@@ -118,8 +118,7 @@ void SuppressionContext::Parse(const char *str) {
   CHECK(can_parse_);
   const char *line = str;
   while (line) {
-    while (line[0] == ' ' || line[0] == '\t')
-      line++;
+    while (line[0] == ' ' || line[0] == '\t') line++;
     const char *end = internal_strchr(line, '\n');
     if (end == 0)
       end = line + internal_strlen(line);
@@ -142,7 +141,7 @@ void SuppressionContext::Parse(const char *str) {
       }
       Suppression s;
       s.type = suppression_types_[type];
-      s.templ = (char*)InternalAlloc(end2 - line + 1);
+      s.templ = (char *)InternalAlloc(end2 - line + 1);
       internal_memcpy(s.templ, line, end2 - line);
       s.templ[end2 - line] = 0;
       suppressions_.push_back(s);

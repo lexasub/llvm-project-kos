@@ -999,7 +999,7 @@ WebAssemblyTargetLowering::LowerCall(CallLoweringInfo &CLI,
     // If the callee is a GlobalAddress node (quite common, every direct call
     // is) turn it into a TargetGlobalAddress node so that LowerGlobalAddress
     // doesn't at MO_GOT which is not needed for direct calls.
-    GlobalAddressSDNode* GA = cast<GlobalAddressSDNode>(Callee);
+    GlobalAddressSDNode *GA = cast<GlobalAddressSDNode>(Callee);
     Callee = DAG.getTargetGlobalAddress(GA->getGlobal(), DL,
                                         getPointerTy(DAG.getDataLayout()),
                                         GA->getOffset());
@@ -1375,8 +1375,7 @@ SDValue WebAssemblyTargetLowering::LowerGlobalAddress(SDValue Op,
       if (GV->getValueType()->isFunctionTy()) {
         BaseName = MF.createExternalSymbolName("__table_base");
         OperandFlags = WebAssemblyII::MO_TABLE_BASE_REL;
-      }
-      else {
+      } else {
         BaseName = MF.createExternalSymbolName("__memory_base");
         OperandFlags = WebAssemblyII::MO_MEMORY_BASE_REL;
       }

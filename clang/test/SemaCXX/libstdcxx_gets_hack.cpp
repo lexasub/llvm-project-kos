@@ -12,9 +12,9 @@
 
 #pragma GCC system_header
 namespace std {
-  using ::gets;
-  using ::getx; // expected-error {{no member named 'getx'}}
-}
+using ::gets;
+using ::getx; // expected-error {{no member named 'getx'}}
+} // namespace std
 
 #else
 
@@ -22,7 +22,7 @@ namespace std {
 #include "libstdcxx_pointer_return_false_hack.cpp"
 
 namespace foo {
-  using ::gets; // expected-error {{no member named 'gets'}}
+using ::gets; // expected-error {{no member named 'gets'}}
 }
 
 #endif

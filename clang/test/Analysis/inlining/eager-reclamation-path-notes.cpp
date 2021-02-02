@@ -33,4 +33,3 @@ int memberCallBaseDisappears() {
   return ptr->getValue(); // expected-warning {{Called C++ object pointer is null}}
   // expected-note@-1 {{Called C++ object pointer is null}}
 }
-

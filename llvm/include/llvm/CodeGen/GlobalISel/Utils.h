@@ -58,14 +58,11 @@ Register constrainRegToClass(MachineRegisterInfo &MRI,
 /// location of \p InsertPt is used for the new copy.
 ///
 /// \return The virtual register constrained to the right register class.
-Register constrainOperandRegClass(const MachineFunction &MF,
-                                  const TargetRegisterInfo &TRI,
-                                  MachineRegisterInfo &MRI,
-                                  const TargetInstrInfo &TII,
-                                  const RegisterBankInfo &RBI,
-                                  MachineInstr &InsertPt,
-                                  const TargetRegisterClass &RegClass,
-                                  MachineOperand &RegMO);
+Register constrainOperandRegClass(
+    const MachineFunction &MF, const TargetRegisterInfo &TRI,
+    MachineRegisterInfo &MRI, const TargetInstrInfo &TII,
+    const RegisterBankInfo &RBI, MachineInstr &InsertPt,
+    const TargetRegisterClass &RegClass, MachineOperand &RegMO);
 
 /// Try to constrain Reg so that it is usable by argument OpIdx of the provided
 /// MCInstrDesc \p II. If this fails, create a new virtual register in the
@@ -153,7 +150,7 @@ getConstantVRegValWithLookThrough(Register VReg, const MachineRegisterInfo &MRI,
                                   bool LookThroughInstrs = true,
                                   bool HandleFConstants = true,
                                   bool LookThroughAnyExt = false);
-const ConstantFP* getConstantFPVRegVal(Register VReg,
+const ConstantFP *getConstantFPVRegVal(Register VReg,
                                        const MachineRegisterInfo &MRI);
 
 /// See if Reg is defined by an single def instruction that is
@@ -229,13 +226,14 @@ Align inferAlignFromPtrInfo(MachineFunction &MF, const MachinePointerInfo &MPO);
 ///
 /// If there is an existing live-in argument register, it will be returned.
 /// This will also ensure there is a valid copy
-Register getFunctionLiveInPhysReg(MachineFunction &MF, const TargetInstrInfo &TII,
+Register getFunctionLiveInPhysReg(MachineFunction &MF,
+                                  const TargetInstrInfo &TII,
                                   MCRegister PhysReg,
                                   const TargetRegisterClass &RC,
                                   LLT RegTy = LLT());
 
-/// Return the least common multiple type of \p OrigTy and \p TargetTy, by changing the
-/// number of vector elements or scalar bitwidth. The intent is a
+/// Return the least common multiple type of \p OrigTy and \p TargetTy, by
+/// changing the number of vector elements or scalar bitwidth. The intent is a
 /// G_MERGE_VALUES, G_BUILD_VECTOR, or G_CONCAT_VECTORS can be constructed from
 /// \p OrigTy elements, and unmerged into \p TargetTy
 LLVM_READNONE

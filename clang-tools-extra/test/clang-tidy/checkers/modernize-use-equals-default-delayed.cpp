@@ -5,5 +5,5 @@
 
 template <typename Ty>
 struct S {
-  S<Ty>& operator=(const S<Ty>&) { return *this; }
+  S<Ty> &operator=(const S<Ty> &) { return *this; }
 };

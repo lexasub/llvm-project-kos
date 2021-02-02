@@ -15,7 +15,7 @@
 
 using namespace std;
 
-int main(int, char**) {
+int main(int, char **) {
   // NOISY: {{.*}}XRay instrumentation map missing. Not initializing XRay.
   // QUIET-NOT: {{.*}}XRay instrumentation map missing. Not initializing XRay.
   // DEFAULT-NOT: {{.*}}XRay instrumentation map missing. Not initializing XRay.

@@ -16,13 +16,13 @@ class ArrayBuffer {
     visit([](auto buffer) -> char { // expected-note {{in instantiation}}
       buffer->data();
     }); // expected-warning {{non-void lambda does not return a value}}
-  } // expected-warning {{non-void function does not return a value}}
+  }     // expected-warning {{non-void function does not return a value}}
 };
 
 // pr34185
 template <typename Promise> struct coroutine_handle {
-  Promise &promise() const { return
-    *static_cast<Promise *>(nullptr); // expected-warning {{binding dereferenced null}}
+  Promise &promise() const {
+    return *static_cast<Promise *>(nullptr); // expected-warning {{binding dereferenced null}}
   }
 };
 

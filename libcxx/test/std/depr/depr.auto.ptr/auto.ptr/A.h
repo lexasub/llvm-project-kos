@@ -11,19 +11,23 @@
 
 #include <cassert>
 
-class A
-{
-    int id_;
+class A {
+  int id_;
+
 public:
-    explicit A(int id) : id_(id) {++count;}
-    A(const A& a) : id_(a.id_) {++count;}
-    ~A() {assert(id_ >= 0); id_ = -1; --count;}
+  explicit A(int id) : id_(id) { ++count; }
+  A(const A& a) : id_(a.id_) { ++count; }
+  ~A() {
+    assert(id_ >= 0);
+    id_ = -1;
+    --count;
+  }
 
-    int id() const {return id_;}
+  int id() const { return id_; }
 
-    static int count;
+  static int count;
 };
 
 int A::count = 0;
 
-#endif  // A_H
+#endif // A_H

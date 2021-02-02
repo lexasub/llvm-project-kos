@@ -3,7 +3,7 @@
 
 #ifndef __GXX_EXPERIMENTAL_CXX0X__
 #define __CONCAT(__X, __Y) __CONCAT1(__X, __Y)
-#define __CONCAT1(__X, __Y) __X ## __Y
+#define __CONCAT1(__X, __Y) __X##__Y
 
 #define static_assert(__b, __m) \
   typedef int __CONCAT(__sa, __LINE__)[__b ? 1 : -1]
@@ -22,7 +22,7 @@ template <typename T> class TenElementArray {
 
 static_assert(sizeof(TenElementArray<int>) == sizeof(int) * 10, "Array size mismatch");
 
-template<typename T, int N> class Array {
+template <typename T, int N> class Array {
   T elems[N];
 };
 

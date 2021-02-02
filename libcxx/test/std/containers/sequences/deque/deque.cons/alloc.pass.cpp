@@ -19,23 +19,20 @@
 #include "min_allocator.h"
 
 template <class T, class Allocator>
-void
-test(const Allocator& a)
-{
-    std::deque<T, Allocator> d(a);
-    assert(d.size() == 0);
-    assert(d.get_allocator() == a);
+void test(const Allocator& a) {
+  std::deque<T, Allocator> d(a);
+  assert(d.size() == 0);
+  assert(d.get_allocator() == a);
 }
 
-int main(int, char**)
-{
-    test<int>(std::allocator<int>());
-    test<NotConstructible>(test_allocator<NotConstructible>(3));
+int main(int, char**) {
+  test<int>(std::allocator<int>());
+  test<NotConstructible>(test_allocator<NotConstructible>(3));
 #if TEST_STD_VER >= 11
-    test<int>(min_allocator<int>());
-    test<NotConstructible>(min_allocator<NotConstructible>{});
-    test<int>(explicit_allocator<int>());
-    test<NotConstructible>(explicit_allocator<NotConstructible>{});
+  test<int>(min_allocator<int>());
+  test<NotConstructible>(min_allocator<NotConstructible>{});
+  test<int>(explicit_allocator<int>());
+  test<NotConstructible>(explicit_allocator<NotConstructible>{});
 #endif
 
   return 0;

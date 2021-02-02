@@ -4,15 +4,15 @@ struct X0 {
   ~X0();
 };
 
-struct X1 { };
+struct X1 {};
 
-template<typename T>
+template <typename T>
 void f() {
   X0 x0;
   X1 x1; // expected-warning{{unused variable 'x1'}}
 }
 
-template<typename T, typename U>
+template <typename T, typename U>
 void g() {
   T t;
   U u; // expected-warning{{unused variable 'u'}}

@@ -9,7 +9,7 @@
 // CHECK-MESSAGES-UPPERCASE: :[[@LINE-1]]:1: warning: including 'vERILOG.cl' may cause additional compilation errors due to the name of the kernel source file; consider renaming the included kernel source file [altera-kernel-name-restriction]
 #include "VHDL.cl"
 // CHECK-MESSAGES-UPPERCASE: :[[@LINE-1]]:1: warning: including 'VHDL.cl' may cause additional compilation errors due to the name of the kernel source file; consider renaming the included kernel source file [altera-kernel-name-restriction]
-#else 
+#else
 // These are the banned kernel filenames, and should trigger warnings
 #include "kernel.cl"
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: including 'kernel.cl' may cause additional compilation errors due to the name of the kernel source file; consider renaming the included kernel source file [altera-kernel-name-restriction]
@@ -17,7 +17,6 @@
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: including 'Verilog.cl' may cause additional compilation errors due to the name of the kernel source file; consider renaming the included kernel source file [altera-kernel-name-restriction]
 #include "vhdl.CL"
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: including 'vhdl.CL' may cause additional compilation errors due to the name of the kernel source file; consider renaming the included kernel source file [altera-kernel-name-restriction]
-
 
 // The warning should be triggered if the names are within a directory
 #include "some/dir/kernel.cl"
@@ -42,8 +41,8 @@
 
 // The files can still have the forbidden names in them, so long as they're not
 // the entire file name, and are not the kernel source file name.
-#include "some_kernel.cl"
 #include "other_Verilog.cl"
+#include "some_kernel.cl"
 #include "vhdl_number_two.cl"
 
 // Naming a directory kernel.cl, verilog.cl, or vhdl.cl is not explicitly
@@ -52,4 +51,3 @@
 #include "some/verilog.cl/foo.h"
 #include "some/vhdl.cl/foo.h"
 #endif
-

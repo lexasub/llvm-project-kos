@@ -63,15 +63,14 @@
 #else
 #define OPT_NONE __attribute__((optnone))
 #endif
-void StopForDebugger(void *, void *) OPT_NONE;
-void StopForDebugger(void *, void *)  {}
-
+void StopForDebugger(void*, void*) OPT_NONE;
+void StopForDebugger(void*, void*) {}
 
 // Prevents the compiler optimizing away the parameter in the caller function.
 template <typename Type>
-void MarkAsLive(Type &&) OPT_NONE;
+void MarkAsLive(Type&&) OPT_NONE;
 template <typename Type>
-void MarkAsLive(Type &&) {}
+void MarkAsLive(Type&&) {}
 
 // In all of the Compare(Expression)PrettyPrintTo(Regex/Chars) functions below,
 // the python script sets a breakpoint just before the call to StopForDebugger,
@@ -89,36 +88,32 @@ void MarkAsLive(Type &&) {}
 // along with the line that has invoke the function. The testing will continue
 // in either case.
 
-template <typename TypeToPrint> void ComparePrettyPrintToChars(
-    TypeToPrint value,
-    const char *expectation) {
+template <typename TypeToPrint>
+void ComparePrettyPrintToChars(TypeToPrint value, const char* expectation) {
   StopForDebugger(&value, &expectation);
 }
 
-template <typename TypeToPrint> void ComparePrettyPrintToRegex(
-    TypeToPrint value,
-    const char *expectation) {
+template <typename TypeToPrint>
+void ComparePrettyPrintToRegex(TypeToPrint value, const char* expectation) {
   StopForDebugger(&value, &expectation);
 }
 
-void CompareExpressionPrettyPrintToChars(
-    std::string value,
-    const char *expectation) {
+void CompareExpressionPrettyPrintToChars(std::string value,
+                                         const char* expectation) {
   StopForDebugger(&value, &expectation);
 }
 
-void CompareExpressionPrettyPrintToRegex(
-    std::string value,
-    const char *expectation) {
+void CompareExpressionPrettyPrintToRegex(std::string value,
+                                         const char* expectation) {
   StopForDebugger(&value, &expectation);
 }
 
 namespace example {
-  struct example_struct {
-    int a = 0;
-    int arr[1000];
-  };
-}
+struct example_struct {
+  int a = 0;
+  int arr[1000];
+};
+} // namespace example
 
 // If enabled, the self test will "fail"--because we want to be sure it properly
 // diagnoses tests that *should* fail. Evaluate the output by hand.
@@ -139,8 +134,9 @@ void framework_self_test() {
 
 // A simple pass-through allocator to check that we handle CompressedPair
 // correctly.
-template <typename T> class UncompressibleAllocator : public std::allocator<T> {
- public:
+template <typename T>
+class UncompressibleAllocator : public std::allocator<T> {
+public:
   char X;
 };
 
@@ -149,7 +145,8 @@ void string_test() {
   // The display_hint "string" adds quotes the printed result.
   ComparePrettyPrintToChars(short_string, "\"kdjflskdjf\"");
 
-  std::basic_string<char, std::char_traits<char>, UncompressibleAllocator<char>>
+  std::basic_string<char, std::char_traits<char>,
+                    UncompressibleAllocator<char> >
       long_string("mehmet bizim dostumuz agzi kirik testimiz");
   ComparePrettyPrintToChars(long_string,
                             "\"mehmet bizim dostumuz agzi kirik testimiz\"");
@@ -176,66 +173,65 @@ void string_view_test() {
 
   const char char_arr[] = "what a wonderful world";
   std::string_view wonderful(&char_arr[7], 9);
-  ComparePrettyPrintToChars(
-      wonderful, "std::string_view of length 9: \"wonderful\"");
+  ComparePrettyPrintToChars(wonderful,
+                            "std::string_view of length 9: \"wonderful\"");
 
   const char char_arr1[] = "namespace_stringview";
   string_view namespace_stringview(&char_arr1[10], 10);
-  ComparePrettyPrintToChars(
-      namespace_stringview, "std::string_view of length 10: \"stringview\"");
+  ComparePrettyPrintToChars(namespace_stringview,
+                            "std::string_view of length 10: \"stringview\"");
 }
-}
+} // namespace a_namespace
 
 void u16string_test() {
-  std::u16string test0 = u"Hello World";
+  std::u16string test0 = u "Hello World";
   ComparePrettyPrintToChars(test0, "u\"Hello World\"");
-  std::u16string test1 = u"\U00010196\u20AC\u00A3\u0024";
+  std::u16string test1 = u "\U00010196\u20AC\u00A3\u0024";
   ComparePrettyPrintToChars(test1, "u\"\U00010196\u20AC\u00A3\u0024\"");
-  std::u16string test2 = u"\u0024\u0025\u0026\u0027";
+  std::u16string test2 = u "\u0024\u0025\u0026\u0027";
   ComparePrettyPrintToChars(test2, "u\"\u0024\u0025\u0026\u0027\"");
-  std::u16string test3 = u"mehmet bizim dostumuz agzi kirik testimiz";
+  std::u16string test3 = u "mehmet bizim dostumuz agzi kirik testimiz";
   ComparePrettyPrintToChars(test3,
                             ("u\"mehmet bizim dostumuz agzi kirik testimiz\""));
 }
 
 void u32string_test() {
-  std::u32string test0 = U"Hello World";
+  std::u32string test0 = U "Hello World";
   ComparePrettyPrintToChars(test0, "U\"Hello World\"");
   std::u32string test1 =
-      U"\U0001d552\U0001d553\U0001d554\U0001d555\U0001d556\U0001d557";
+      U "\U0001d552\U0001d553\U0001d554\U0001d555\U0001d556\U0001d557";
   ComparePrettyPrintToChars(
       test1,
       ("U\"\U0001d552\U0001d553\U0001d554\U0001d555\U0001d556\U0001d557\""));
-  std::u32string test2 = U"\U00004f60\U0000597d";
+  std::u32string test2 = U "\U00004f60\U0000597d";
   ComparePrettyPrintToChars(test2, ("U\"\U00004f60\U0000597d\""));
-  std::u32string test3 = U"mehmet bizim dostumuz agzi kirik testimiz";
-  ComparePrettyPrintToChars(test3, ("U\"mehmet bizim dostumuz agzi kirik testimiz\""));
+  std::u32string test3 = U "mehmet bizim dostumuz agzi kirik testimiz";
+  ComparePrettyPrintToChars(test3,
+                            ("U\"mehmet bizim dostumuz agzi kirik testimiz\""));
 }
 
 void tuple_test() {
   std::tuple<int, int, int> test0(2, 3, 4);
   ComparePrettyPrintToChars(
-      test0,
-      "std::tuple containing = {[1] = 2, [2] = 3, [3] = 4}");
+      test0, "std::tuple containing = {[1] = 2, [2] = 3, [3] = 4}");
 
   std::tuple<> test1;
-  ComparePrettyPrintToChars(
-      test1,
-      "empty std::tuple");
+  ComparePrettyPrintToChars(test1, "empty std::tuple");
 }
 
 void unique_ptr_test() {
   std::unique_ptr<std::string> matilda(new std::string("Matilda"));
   ComparePrettyPrintToRegex(
       std::move(matilda),
-      R"(std::unique_ptr<std::string> containing = {__ptr_ = 0x[a-f0-9]+})");
+      R "(std::unique_ptr<std::string> containing = {__ptr_ = 0x[a-f0-9]+})");
   std::unique_ptr<int> forty_two(new int(42));
-  ComparePrettyPrintToRegex(std::move(forty_two),
-      R"(std::unique_ptr<int> containing = {__ptr_ = 0x[a-f0-9]+})");
+  ComparePrettyPrintToRegex(
+      std::move(forty_two),
+      R "(std::unique_ptr<int> containing = {__ptr_ = 0x[a-f0-9]+})");
 
   std::unique_ptr<int> this_is_null;
   ComparePrettyPrintToChars(std::move(this_is_null),
-      R"(std::unique_ptr is nullptr)");
+                            R "(std::unique_ptr is nullptr)");
 }
 
 void bitset_test() {
@@ -246,7 +242,8 @@ void bitset_test() {
   ComparePrettyPrintToChars(very_empty, "std::bitset<0>");
 
   std::bitset<15> b_000001111111100(1020);
-  ComparePrettyPrintToChars(b_000001111111100,
+  ComparePrettyPrintToChars(
+      b_000001111111100,
       "std::bitset<15> = {[2] = 1, [3] = 1, [4] = 1, [5] = 1, [6] = 1, "
       "[7] = 1, [8] = 1, [9] = 1}");
 
@@ -254,30 +251,30 @@ void bitset_test() {
   b_0_129_132[0] = true;
   b_0_129_132[129] = true;
   b_0_129_132[132] = true;
-  ComparePrettyPrintToChars(b_0_129_132,
-      "std::bitset<258> = {[0] = 1, [129] = 1, [132] = 1}");
+  ComparePrettyPrintToChars(
+      b_0_129_132, "std::bitset<258> = {[0] = 1, [129] = 1, [132] = 1}");
 }
 
 void list_test() {
   std::list<int> i_am_empty{};
   ComparePrettyPrintToChars(i_am_empty, "std::list is empty");
 
-  std::list<int> one_two_three {1, 2, 3};
+  std::list<int> one_two_three{1, 2, 3};
   ComparePrettyPrintToChars(one_two_three,
-      "std::list with 3 elements = {1, 2, 3}");
+                            "std::list with 3 elements = {1, 2, 3}");
 
-  std::list<std::string> colors {"red", "blue", "green"};
-  ComparePrettyPrintToChars(colors,
-      R"(std::list with 3 elements = {"red", "blue", "green"})");
+  std::list<std::string> colors{"red", "blue", "green"};
+  ComparePrettyPrintToChars(colors, R "(std::list with 3 elements = {" red
+                                      ", " blue ", " green "})");
 }
 
 void deque_test() {
   std::deque<int> i_am_empty{};
   ComparePrettyPrintToChars(i_am_empty, "std::deque is empty");
 
-  std::deque<int> one_two_three {1, 2, 3};
+  std::deque<int> one_two_three{1, 2, 3};
   ComparePrettyPrintToChars(one_two_three,
-      "std::deque with 3 elements = {1, 2, 3}");
+                            "std::deque with 3 elements = {1, 2, 3}");
 
   std::deque<example::example_struct> bfg;
   for (int i = 0; i < 10; ++i) {
@@ -291,12 +288,11 @@ void deque_test() {
   for (int i = 0; i < 3; ++i) {
     bfg.pop_back();
   }
-  ComparePrettyPrintToRegex(bfg,
-      "std::deque with 4 elements = {"
-      "{a = 3, arr = {[^}]+}}, "
-      "{a = 4, arr = {[^}]+}}, "
-      "{a = 5, arr = {[^}]+}}, "
-      "{a = 6, arr = {[^}]+}}}");
+  ComparePrettyPrintToRegex(bfg, "std::deque with 4 elements = {"
+                                 "{a = 3, arr = {[^}]+}}, "
+                                 "{a = 4, arr = {[^}]+}}, "
+                                 "{a = 5, arr = {[^}]+}}, "
+                                 "{a = 6, arr = {[^}]+}}}");
 }
 
 void map_test() {
@@ -308,8 +304,8 @@ void map_test() {
   one_two_three.insert({2, "two"});
   one_two_three.insert({3, "three"});
   ComparePrettyPrintToChars(one_two_three,
-      "std::map with 3 elements = "
-      R"({[1] = "one", [2] = "two", [3] = "three"})");
+                            "std::map with 3 elements = " R "({[1] = " one
+                            ", [2] = " two ", [3] = " three "})");
 
   std::map<int, example::example_struct> bfg;
   for (int i = 0; i < 4; ++i) {
@@ -317,12 +313,11 @@ void map_test() {
     current.a = 17 * i;
     bfg.insert({i, current});
   }
-  ComparePrettyPrintToRegex(bfg,
-      R"(std::map with 4 elements = {)"
-      R"(\[0\] = {a = 0, arr = {[^}]+}}, )"
-      R"(\[1\] = {a = 17, arr = {[^}]+}}, )"
-      R"(\[2\] = {a = 34, arr = {[^}]+}}, )"
-      R"(\[3\] = {a = 51, arr = {[^}]+}}})");
+  ComparePrettyPrintToRegex(bfg, R "(std::map with 4 elements = {)" R
+                                   "(\[0\] = {a = 0, arr = {[^}]+}}, )" R
+                                   "(\[1\] = {a = 17, arr = {[^}]+}}, )" R
+                                   "(\[2\] = {a = 34, arr = {[^}]+}}, )" R
+                                   "(\[3\] = {a = 51, arr = {[^}]+}}})");
 }
 
 void multimap_test() {
@@ -338,25 +333,26 @@ void multimap_test() {
   one_two_three.insert({1, "bir"});
 
   ComparePrettyPrintToChars(one_two_three,
-      "std::multimap with 6 elements = "
-      R"({[1] = "one", [1] = "ein", [1] = "bir", )"
-      R"([2] = "two", [2] = "zwei", [3] = "three"})");
+                            "std::multimap with 6 elements = " R "({[1] = " one
+                            ", [1] = " ein ", [1] = " bir ", )" R "([2] = " two
+                            ", [2] = " zwei ", [3] = " three "})");
 }
 
 void queue_test() {
   std::queue<int> i_am_empty;
   ComparePrettyPrintToChars(i_am_empty,
-      "std::queue wrapping = {std::deque is empty}");
+                            "std::queue wrapping = {std::deque is empty}");
 
   std::queue<int> one_two_three(std::deque<int>{1, 2, 3});
-    ComparePrettyPrintToChars(one_two_three,
-        "std::queue wrapping = {"
-        "std::deque with 3 elements = {1, 2, 3}}");
+  ComparePrettyPrintToChars(one_two_three,
+                            "std::queue wrapping = {"
+                            "std::deque with 3 elements = {1, 2, 3}}");
 }
 
 void priority_queue_test() {
   std::priority_queue<int> i_am_empty;
-  ComparePrettyPrintToChars(i_am_empty,
+  ComparePrettyPrintToChars(
+      i_am_empty,
       "std::priority_queue wrapping = {std::vector of length 0, capacity 0}");
 
   std::priority_queue<int> one_two_three;
@@ -364,9 +360,9 @@ void priority_queue_test() {
   one_two_three.push(22222);
   one_two_three.push(33333);
 
-  ComparePrettyPrintToRegex(one_two_three,
-      R"(std::priority_queue wrapping = )"
-      R"({std::vector of length 3, capacity 3 = {33333)");
+  ComparePrettyPrintToRegex(one_two_three, R
+                            "(std::priority_queue wrapping = )" R
+                            "({std::vector of length 3, capacity 3 = {33333)");
 
   ComparePrettyPrintToRegex(one_two_three, ".*11111.*");
   ComparePrettyPrintToRegex(one_two_three, ".*22222.*");
@@ -376,16 +372,16 @@ void set_test() {
   std::set<int> i_am_empty;
   ComparePrettyPrintToChars(i_am_empty, "std::set is empty");
 
-  std::set<int> one_two_three {3, 1, 2};
+  std::set<int> one_two_three{3, 1, 2};
   ComparePrettyPrintToChars(one_two_three,
-      "std::set with 3 elements = {1, 2, 3}");
+                            "std::set with 3 elements = {1, 2, 3}");
 
-  std::set<std::pair<int, int>> prime_pairs {
+  std::set<std::pair<int, int> > prime_pairs{
       std::make_pair(3, 5), std::make_pair(5, 7), std::make_pair(3, 5)};
 
-  ComparePrettyPrintToChars(prime_pairs,
-      "std::set with 2 elements = {"
-      "{first = 3, second = 5}, {first = 5, second = 7}}");
+  ComparePrettyPrintToChars(
+      prime_pairs, "std::set with 2 elements = {"
+                   "{first = 3, second = 5}, {first = 5, second = 7}}");
 
   using using_set = std::set<int>;
   using_set other{1, 2, 3};
@@ -419,17 +415,20 @@ void multiset_test() {
   std::multiset<int> i_am_empty;
   ComparePrettyPrintToChars(i_am_empty, "std::multiset is empty");
 
-  std::multiset<std::string> one_two_three {"1:one", "2:two", "3:three", "1:one"};
+  std::multiset<std::string> one_two_three{"1:one", "2:two", "3:three",
+                                           "1:one"};
   ComparePrettyPrintToChars(one_two_three,
-      "std::multiset with 4 elements = {"
-      R"("1:one", "1:one", "2:two", "3:three"})");
+                            "std::multiset with 4 elements = {" R "(" 1
+                            : one ", " 1
+                            : one ", " 2
+                            : two ", " 3
+                            : three "})");
 }
 
 void vector_test() {
   std::vector<bool> test0 = {true, false};
-  ComparePrettyPrintToChars(test0,
-                            "std::vector<bool> of "
-                            "length 2, capacity 64 = {1, 0}");
+  ComparePrettyPrintToChars(test0, "std::vector<bool> of "
+                                   "length 2, capacity 64 = {1, 0}");
   for (int i = 0; i < 31; ++i) {
     test0.push_back(true);
     test0.push_back(false);
@@ -452,28 +451,27 @@ void vector_test() {
   ComparePrettyPrintToChars(test1, "std::vector of length 0, capacity 0");
 
   std::vector<int> test2 = {5, 6, 7};
-  ComparePrettyPrintToChars(test2,
-                            "std::vector of length "
-                            "3, capacity 3 = {5, 6, 7}");
+  ComparePrettyPrintToChars(test2, "std::vector of length "
+                                   "3, capacity 3 = {5, 6, 7}");
 
-  std::vector<int, UncompressibleAllocator<int>> test3({7, 8});
-  ComparePrettyPrintToChars(std::move(test3),
-                            "std::vector of length "
-                            "2, capacity 2 = {7, 8}");
+  std::vector<int, UncompressibleAllocator<int> > test3({7, 8});
+  ComparePrettyPrintToChars(std::move(test3), "std::vector of length "
+                                              "2, capacity 2 = {7, 8}");
 }
 
 void set_iterator_test() {
-  std::set<int> one_two_three {1111, 2222, 3333};
+  std::set<int> one_two_three{1111, 2222, 3333};
   auto it = one_two_three.find(2222);
   MarkAsLive(it);
-  CompareExpressionPrettyPrintToRegex("it",
-      R"(std::__tree_const_iterator  = {\[0x[a-f0-9]+\] = 2222})");
+  CompareExpressionPrettyPrintToRegex(
+      "it", R "(std::__tree_const_iterator  = {\[0x[a-f0-9]+\] = 2222})");
 
   auto not_found = one_two_three.find(1234);
   MarkAsLive(not_found);
   // Because the end_node is not easily detected, just be sure it doesn't crash.
-  CompareExpressionPrettyPrintToRegex("not_found",
-      R"(std::__tree_const_iterator ( = {\[0x[a-f0-9]+\] = .*}|<error reading variable:.*>))");
+  CompareExpressionPrettyPrintToRegex(
+      "not_found", R "(std::__tree_const_iterator ( = {\[0x[a-f0-9]+\] = "
+                     ".*}|<error reading variable:.*>))");
 }
 
 void map_iterator_test() {
@@ -483,50 +481,50 @@ void map_iterator_test() {
   one_two_three.insert({3, "three"});
   auto it = one_two_three.begin();
   MarkAsLive(it);
-  CompareExpressionPrettyPrintToRegex("it",
-      R"(std::__map_iterator  = )"
-      R"({\[0x[a-f0-9]+\] = {first = 1, second = "one"}})");
+  CompareExpressionPrettyPrintToRegex(
+      "it", R "(std::__map_iterator  = )" R
+              "({\[0x[a-f0-9]+\] = {first = 1, second = " one "}})");
 
   auto not_found = one_two_three.find(7);
   MarkAsLive(not_found);
-  CompareExpressionPrettyPrintToRegex("not_found",
-      R"(std::__map_iterator  = {\[0x[a-f0-9]+\] =  end\(\)})");
+  CompareExpressionPrettyPrintToRegex(
+      "not_found", R "(std::__map_iterator  = {\[0x[a-f0-9]+\] =  end\(\)})");
 }
 
 void unordered_set_test() {
   std::unordered_set<int> i_am_empty;
   ComparePrettyPrintToChars(i_am_empty, "std::unordered_set is empty");
 
-  std::unordered_set<int> numbers {12345, 67890, 222333, 12345};
+  std::unordered_set<int> numbers{12345, 67890, 222333, 12345};
   numbers.erase(numbers.find(222333));
   ComparePrettyPrintToRegex(numbers, "std::unordered_set with 2 elements = ");
   ComparePrettyPrintToRegex(numbers, ".*12345.*");
   ComparePrettyPrintToRegex(numbers, ".*67890.*");
 
-  std::unordered_set<std::string> colors {"red", "blue", "green"};
+  std::unordered_set<std::string> colors{"red", "blue", "green"};
   ComparePrettyPrintToRegex(colors, "std::unordered_set with 3 elements = ");
-  ComparePrettyPrintToRegex(colors, R"(.*"red".*)");
-  ComparePrettyPrintToRegex(colors, R"(.*"blue".*)");
-  ComparePrettyPrintToRegex(colors, R"(.*"green".*)");
+  ComparePrettyPrintToRegex(colors, R "(.*" red ".*)");
+  ComparePrettyPrintToRegex(colors, R "(.*" blue ".*)");
+  ComparePrettyPrintToRegex(colors, R "(.*" green ".*)");
 }
 
 void unordered_multiset_test() {
   std::unordered_multiset<int> i_am_empty;
   ComparePrettyPrintToChars(i_am_empty, "std::unordered_multiset is empty");
 
-  std::unordered_multiset<int> numbers {12345, 67890, 222333, 12345};
+  std::unordered_multiset<int> numbers{12345, 67890, 222333, 12345};
   ComparePrettyPrintToRegex(numbers,
                             "std::unordered_multiset with 4 elements = ");
   ComparePrettyPrintToRegex(numbers, ".*12345.*12345.*");
   ComparePrettyPrintToRegex(numbers, ".*67890.*");
   ComparePrettyPrintToRegex(numbers, ".*222333.*");
 
-  std::unordered_multiset<std::string> colors {"red", "blue", "green", "red"};
+  std::unordered_multiset<std::string> colors{"red", "blue", "green", "red"};
   ComparePrettyPrintToRegex(colors,
                             "std::unordered_multiset with 4 elements = ");
-  ComparePrettyPrintToRegex(colors, R"(.*"red".*"red".*)");
-  ComparePrettyPrintToRegex(colors, R"(.*"blue".*)");
-  ComparePrettyPrintToRegex(colors, R"(.*"green".*)");
+  ComparePrettyPrintToRegex(colors, R "(.*" red ".*" red ".*)");
+  ComparePrettyPrintToRegex(colors, R "(.*" blue ".*)");
+  ComparePrettyPrintToRegex(colors, R "(.*" green ".*)");
 }
 
 void unordered_map_test() {
@@ -539,9 +537,9 @@ void unordered_map_test() {
   one_two_three.insert({3, "three"});
   ComparePrettyPrintToRegex(one_two_three,
                             "std::unordered_map with 3 elements = ");
-  ComparePrettyPrintToRegex(one_two_three, R"(.*\[1\] = "one".*)");
-  ComparePrettyPrintToRegex(one_two_three, R"(.*\[2\] = "two".*)");
-  ComparePrettyPrintToRegex(one_two_three, R"(.*\[3\] = "three".*)");
+  ComparePrettyPrintToRegex(one_two_three, R "(.*\[1\] = " one ".*)");
+  ComparePrettyPrintToRegex(one_two_three, R "(.*\[2\] = " two ".*)");
+  ComparePrettyPrintToRegex(one_two_three, R "(.*\[3\] = " three ".*)");
 }
 
 void unordered_multimap_test() {
@@ -555,9 +553,10 @@ void unordered_multimap_test() {
   one_two_three.insert({2, "two"});
   ComparePrettyPrintToRegex(one_two_three,
                             "std::unordered_multimap with 4 elements = ");
-  ComparePrettyPrintToRegex(one_two_three, R"(.*\[1\] = "one".*)");
-  ComparePrettyPrintToRegex(one_two_three, R"(.*\[2\] = "two".*\[2\] = "two")");
-  ComparePrettyPrintToRegex(one_two_three, R"(.*\[3\] = "three".*)");
+  ComparePrettyPrintToRegex(one_two_three, R "(.*\[1\] = " one ".*)");
+  ComparePrettyPrintToRegex(one_two_three,
+                            R "(.*\[2\] = " two ".*\[2\] = " two ")");
+  ComparePrettyPrintToRegex(one_two_three, R "(.*\[3\] = " three ".*)");
 }
 
 void unordered_map_iterator_test() {
@@ -568,13 +567,13 @@ void unordered_map_iterator_test() {
 
   auto ones_to_eights_begin = ones_to_eights.begin();
   MarkAsLive(ones_to_eights_begin);
-  CompareExpressionPrettyPrintToRegex("ones_to_eights_begin",
-      R"(std::__hash_map_iterator  = {\[1+\] = 8+})");
+  CompareExpressionPrettyPrintToRegex(
+      "ones_to_eights_begin", R "(std::__hash_map_iterator  = {\[1+\] = 8+})");
 
   auto not_found = ones_to_eights.find(5);
   MarkAsLive(not_found);
   CompareExpressionPrettyPrintToRegex("not_found",
-      R"(std::__hash_map_iterator = end\(\))");
+                                      R "(std::__hash_map_iterator = end\(\))");
 }
 
 void unordered_set_iterator_test() {
@@ -586,20 +585,20 @@ void unordered_set_iterator_test() {
   auto ones_begin = ones.begin();
   MarkAsLive(ones_begin);
   CompareExpressionPrettyPrintToRegex("ones_begin",
-      R"(std::__hash_const_iterator  = {1+})");
+                                      R "(std::__hash_const_iterator  = {1+})");
 
   auto not_found = ones.find(5);
   MarkAsLive(not_found);
-  CompareExpressionPrettyPrintToRegex("not_found",
-      R"(std::__hash_const_iterator = end\(\))");
+  CompareExpressionPrettyPrintToRegex("not_found", R
+                                      "(std::__hash_const_iterator = end\(\))");
 }
 
 // Check that libc++ pretty printers do not handle pointers.
 void pointer_negative_test() {
   int abc = 123;
-  int *int_ptr = &abc;
+  int* int_ptr = &abc;
   // Check that the result is equivalent to "p/r int_ptr" command.
-  ComparePrettyPrintToRegex(int_ptr, R"(\(int \*\) 0x[a-f0-9]+)");
+  ComparePrettyPrintToRegex(int_ptr, R "(\(int \*\) 0x[a-f0-9]+)");
 }
 
 void shared_ptr_test() {
@@ -607,25 +606,21 @@ void shared_ptr_test() {
   // due to which there is one more count for the pointer. Hence, all the
   // following tests are testing with expected count plus 1.
   std::shared_ptr<const int> test0 = std::make_shared<const int>(5);
-  ComparePrettyPrintToRegex(
-      test0,
-      R"(std::shared_ptr<int> count 2, weak 0 containing = {__ptr_ = 0x[a-f0-9]+})");
+  ComparePrettyPrintToRegex(test0, R "(std::shared_ptr<int> count 2, weak 0 "
+                                     "containing = {__ptr_ = 0x[a-f0-9]+})");
 
   std::shared_ptr<const int> test1(test0);
-  ComparePrettyPrintToRegex(
-      test1,
-      R"(std::shared_ptr<int> count 3, weak 0 containing = {__ptr_ = 0x[a-f0-9]+})");
+  ComparePrettyPrintToRegex(test1, R "(std::shared_ptr<int> count 3, weak 0 "
+                                     "containing = {__ptr_ = 0x[a-f0-9]+})");
 
   {
     std::weak_ptr<const int> test2 = test1;
-    ComparePrettyPrintToRegex(
-        test0,
-        R"(std::shared_ptr<int> count 3, weak 1 containing = {__ptr_ = 0x[a-f0-9]+})");
+    ComparePrettyPrintToRegex(test0, R "(std::shared_ptr<int> count 3, weak 1 "
+                                       "containing = {__ptr_ = 0x[a-f0-9]+})");
   }
 
-  ComparePrettyPrintToRegex(
-      test0,
-      R"(std::shared_ptr<int> count 3, weak 0 containing = {__ptr_ = 0x[a-f0-9]+})");
+  ComparePrettyPrintToRegex(test0, R "(std::shared_ptr<int> count 3, weak 0 "
+                                     "containing = {__ptr_ = 0x[a-f0-9]+})");
 
   std::shared_ptr<const int> test3;
   ComparePrettyPrintToChars(test3, "std::shared_ptr is nullptr");

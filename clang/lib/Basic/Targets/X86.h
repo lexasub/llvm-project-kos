@@ -127,7 +127,7 @@ class LLVM_LIBRARY_VISIBILITY X86TargetInfo : public TargetInfo {
   bool HasPTWRITE = false;
   bool HasINVPCID = false;
   bool HasENQCMD = false;
-  bool HasKL = false;      // For key locker
+  bool HasKL = false;     // For key locker
   bool HasWIDEKL = false; // For wide key locker
   bool HasHRESET = false;
   bool HasAVXVNNI = false;
@@ -268,9 +268,7 @@ public:
     return "";
   }
 
-  bool useFP16ConversionIntrinsics() const override {
-    return false;
-  }
+  bool useFP16ConversionIntrinsics() const override { return false; }
 
   void getTargetDefines(const LangOptions &Opts,
                         MacroBuilder &Builder) const override;
@@ -301,9 +299,7 @@ public:
     return "";
   }
 
-  bool supportsTargetAttributeTune() const override {
-    return true;
-  }
+  bool supportsTargetAttributeTune() const override { return true; }
 
   bool isValidCPUName(StringRef Name) const override {
     bool Only64Bit = getTriple().getArch() != llvm::Triple::x86;
@@ -353,9 +349,7 @@ public:
     }
   }
 
-  CallingConv getDefaultCallingConv() const override {
-    return CC_C;
-  }
+  CallingConv getDefaultCallingConv() const override { return CC_C; }
 
   bool hasSjLjLowering() const override { return true; }
 
@@ -383,11 +377,12 @@ public:
     LongDoubleWidth = 96;
     LongDoubleAlign = 32;
     SuitableAlign = 128;
-    resetDataLayout(Triple.isOSBinFormatMachO() ?
-                    "e-m:o-p:32:32-p270:32:32-p271:32:32-p272:64:64-f64:32:64-"
-                    "f80:32-n8:16:32-S128" :
-                    "e-m:e-p:32:32-p270:32:32-p271:32:32-p272:64:64-f64:32:64-"
-                    "f80:32-n8:16:32-S128");
+    resetDataLayout(
+        Triple.isOSBinFormatMachO()
+            ? "e-m:o-p:32:32-p270:32:32-p271:32:32-p272:64:64-f64:32:64-"
+              "f80:32-n8:16:32-S128"
+            : "e-m:e-p:32:32-p270:32:32-p271:32:32-p272:64:64-f64:32:64-"
+              "f80:32-n8:16:32-S128");
     SizeType = UnsignedInt;
     PtrDiffType = SignedInt;
     IntPtrType = SignedInt;
@@ -501,8 +496,9 @@ public:
                                                                   Diags))
       return false;
     // We now know the features we have: we can decide how to align vectors.
-    MaxVectorAlign =
-        hasFeature("avx512f") ? 512 : hasFeature("avx") ? 256 : 128;
+    MaxVectorAlign = hasFeature("avx512f") ? 512
+                     : hasFeature("avx")   ? 256
+                                           : 128;
     return true;
   }
 };
@@ -667,10 +663,10 @@ public:
     // Pointers are 32-bit in x32.
     resetDataLayout(IsX32 ? "e-m:e-p:32:32-p270:32:32-p271:32:32-p272:64:64-"
                             "i64:64-f80:128-n8:16:32:64-S128"
-                          : IsWinCOFF ? "e-m:w-p270:32:32-p271:32:32-p272:64:"
-                                        "64-i64:64-f80:128-n8:16:32:64-S128"
-                                      : "e-m:e-p270:32:32-p271:32:32-p272:64:"
-                                        "64-i64:64-f80:128-n8:16:32:64-S128");
+                    : IsWinCOFF ? "e-m:w-p270:32:32-p271:32:32-p272:64:"
+                                  "64-i64:64-f80:128-n8:16:32:64-S128"
+                                : "e-m:e-p270:32:32-p271:32:32-p272:64:"
+                                  "64-i64:64-f80:128-n8:16:32:64-S128");
 
     // Use fpret only for long double.
     RealTypeUsesObjCFPRet = (1 << TargetInfo::LongDouble);
@@ -715,9 +711,7 @@ public:
     }
   }
 
-  CallingConv getDefaultCallingConv() const override {
-    return CC_C;
-  }
+  CallingConv getDefaultCallingConv() const override { return CC_C; }
 
   // for x32 we need it here explicitly
   bool hasInt128Type() const override { return true; }
@@ -872,8 +866,9 @@ public:
                                                                   Diags))
       return false;
     // We now know the features we have: we can decide how to align vectors.
-    MaxVectorAlign =
-        hasFeature("avx512f") ? 512 : hasFeature("avx") ? 256 : 128;
+    MaxVectorAlign = hasFeature("avx512f") ? 512
+                     : hasFeature("avx")   ? 256
+                                           : 128;
     return true;
   }
 };

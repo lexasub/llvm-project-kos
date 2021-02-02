@@ -12,7 +12,6 @@
 
 #include "llvm/ADT/SmallPtrSet.h"
 #include "llvm/Analysis/AliasAnalysis.h"
-#include "llvm/Transforms/Utils/Local.h"
 #include "llvm/Analysis/ValueTracking.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/IRBuilder.h"
@@ -24,6 +23,7 @@
 #include "llvm/Support/Debug.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Transforms/Utils/BasicBlockUtils.h"
+#include "llvm/Transforms/Utils/Local.h"
 #include <cassert>
 
 using namespace llvm;
@@ -287,8 +287,8 @@ bool FlattenCFGOpt::FlattenParallelAndOr(BasicBlock *BB, IRBuilder<> &Builder) {
     CB = PBI->getSuccessor(1 - Idx);
     // Delete the conditional branch.
     FirstCondBlock->getInstList().pop_back();
-    FirstCondBlock->getInstList()
-        .splice(FirstCondBlock->end(), CB->getInstList());
+    FirstCondBlock->getInstList().splice(FirstCondBlock->end(),
+                                         CB->getInstList());
     PBI = cast<BranchInst>(FirstCondBlock->getTerminator());
     Value *CC = PBI->getCondition();
     // Merge conditions.
@@ -476,8 +476,8 @@ bool FlattenCFGOpt::MergeIfRegion(BasicBlock *BB, IRBuilder<> &Builder) {
 
   // Merge \param SecondEntryBlock into \param FirstEntryBlock.
   FirstEntryBlock->getInstList().pop_back();
-  FirstEntryBlock->getInstList()
-      .splice(FirstEntryBlock->end(), SecondEntryBlock->getInstList());
+  FirstEntryBlock->getInstList().splice(FirstEntryBlock->end(),
+                                        SecondEntryBlock->getInstList());
   BranchInst *PBI = cast<BranchInst>(FirstEntryBlock->getTerminator());
   assert(PBI->getCondition() == IfCond2);
   BasicBlock *SaveInsertBB = Builder.GetInsertBlock();

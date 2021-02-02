@@ -17,8 +17,6 @@
 #define free __real_free
 #define memset __real_memset
 
-#include "sanitizer_file.h"
-#include "sanitizer_symbolizer.h"
 #include <errno.h>
 #include <fcntl.h>
 #include <pthread.h>
@@ -27,6 +25,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
+#include "sanitizer_file.h"
+#include "sanitizer_symbolizer.h"
 
 // There is no mmap on RTEMS.  Use memalign, etc.
 #define __mmap_alloc_aligned posix_memalign
@@ -37,21 +38,13 @@ namespace __sanitizer {
 
 #include "sanitizer_syscall_generic.inc"
 
-void NORETURN internal__exit(int exitcode) {
-  _exit(exitcode);
-}
+void NORETURN internal__exit(int exitcode) { _exit(exitcode); }
 
-uptr internal_sched_yield() {
-  return sched_yield();
-}
+uptr internal_sched_yield() { return sched_yield(); }
 
-uptr internal_getpid() {
-  return getpid();
-}
+uptr internal_getpid() { return getpid(); }
 
-int internal_dlinfo(void *handle, int request, void *p) {
-  UNIMPLEMENTED();
-}
+int internal_dlinfo(void *handle, int request, void *p) { UNIMPLEMENTED(); }
 
 bool FileExists(const char *filename) {
   struct stat st;
@@ -75,8 +68,8 @@ void SleepForMillis(int millis) { usleep(millis * 1000); }
 
 bool SupportsColoredOutput(fd_t fd) { return false; }
 
-void GetThreadStackTopAndBottom(bool at_initialization,
-                                uptr *stack_top, uptr *stack_bottom) {
+void GetThreadStackTopAndBottom(bool at_initialization, uptr *stack_top,
+                                uptr *stack_bottom) {
   pthread_attr_t attr;
   pthread_attr_init(&attr);
   CHECK_EQ(pthread_getattr_np(pthread_self(), &attr), 0);
@@ -113,9 +106,7 @@ const char *DescribeSignalOrException(int signo) { UNIMPLEMENTED(); }
 
 enum MutexState { MtxUnlocked = 0, MtxLocked = 1, MtxSleeping = 2 };
 
-BlockingMutex::BlockingMutex() {
-  internal_memset(this, 0, sizeof(*this));
-}
+BlockingMutex::BlockingMutex() { internal_memset(this, 0, sizeof(*this)); }
 
 void BlockingMutex::Lock() {
   CHECK_EQ(owner_, 0);
@@ -147,7 +138,7 @@ uptr GetMaxVirtualAddress() {
 }
 
 void *MmapOrDie(uptr size, const char *mem_type, bool raw_report) {
-  void* ptr = 0;
+  void *ptr = 0;
   int res = __mmap_alloc_aligned(&ptr, GetPageSize(), size);
   if (UNLIKELY(res))
     ReportMmapFailureAndDie(size, mem_type, "allocate", res, raw_report);
@@ -157,7 +148,7 @@ void *MmapOrDie(uptr size, const char *mem_type, bool raw_report) {
 }
 
 void *MmapOrDieOnFatalError(uptr size, const char *mem_type) {
-  void* ptr = 0;
+  void *ptr = 0;
   int res = __mmap_alloc_aligned(&ptr, GetPageSize(), size);
   if (UNLIKELY(res)) {
     if (res == ENOMEM)
@@ -173,7 +164,7 @@ void *MmapAlignedOrDieOnFatalError(uptr size, uptr alignment,
                                    const char *mem_type) {
   CHECK(IsPowerOfTwo(size));
   CHECK(IsPowerOfTwo(alignment));
-  void* ptr = 0;
+  void *ptr = 0;
   int res = __mmap_alloc_aligned(&ptr, alignment, size);
   if (res)
     ReportMmapFailureAndDie(size, mem_type, "align allocate", res, false);
@@ -187,7 +178,8 @@ void *MmapNoReserveOrDie(uptr size, const char *mem_type) {
 }
 
 void UnmapOrDie(void *addr, uptr size) {
-  if (!addr || !size) return;
+  if (!addr || !size)
+    return;
   __mmap_free(addr);
   DecreaseTotalMmap(size);
 }
@@ -195,9 +187,15 @@ void UnmapOrDie(void *addr, uptr size) {
 fd_t OpenFile(const char *filename, FileAccessMode mode, error_t *errno_p) {
   int flags;
   switch (mode) {
-    case RdOnly: flags = O_RDONLY; break;
-    case WrOnly: flags = O_WRONLY | O_CREAT | O_TRUNC; break;
-    case RdWr: flags = O_RDWR | O_CREAT; break;
+    case RdOnly:
+      flags = O_RDONLY;
+      break;
+    case WrOnly:
+      flags = O_WRONLY | O_CREAT | O_TRUNC;
+      break;
+    case RdWr:
+      flags = O_RDWR | O_CREAT;
+      break;
   }
   fd_t res = open(filename, flags, 0660);
   if (internal_iserror(res, errno_p))
@@ -205,9 +203,7 @@ fd_t OpenFile(const char *filename, FileAccessMode mode, error_t *errno_p) {
   return res;
 }
 
-void CloseFile(fd_t fd) {
-  close(fd);
-}
+void CloseFile(fd_t fd) { close(fd); }
 
 bool ReadFromFile(fd_t fd, void *buff, uptr buff_size, uptr *bytes_read,
                   error_t *error_p) {
@@ -233,18 +229,14 @@ void ReleaseMemoryPagesToOS(uptr beg, uptr end) {}
 void DumpProcessMap() {}
 
 // There is no page protection so everything is "accessible."
-bool IsAccessibleMemoryRange(uptr beg, uptr size) {
-  return true;
-}
+bool IsAccessibleMemoryRange(uptr beg, uptr size) { return true; }
 
 char **GetArgv() { return nullptr; }
 char **GetEnviron() { return nullptr; }
 
-const char *GetEnv(const char *name) {
-  return getenv(name);
-}
+const char *GetEnv(const char *name) { return getenv(name); }
 
-uptr ReadBinaryName(/*out*/char *buf, uptr buf_len) {
+uptr ReadBinaryName(/*out*/ char *buf, uptr buf_len) {
   internal_strncpy(buf, "StubBinaryName", buf_len);
   return internal_strlen(buf);
 }
@@ -254,9 +246,7 @@ uptr ReadLongProcessName(/*out*/ char *buf, uptr buf_len) {
   return internal_strlen(buf);
 }
 
-bool IsPathSeparator(const char c) {
-  return c == '/';
-}
+bool IsPathSeparator(const char c) { return c == '/'; }
 
 bool IsAbsolutePath(const char *path) {
   return path != nullptr && IsPathSeparator(path[0]);
@@ -276,6 +266,6 @@ void ReportFile::Write(const char *buffer, uptr length) {
 uptr MainThreadStackBase, MainThreadStackSize;
 uptr MainThreadTlsBase, MainThreadTlsSize;
 
-} // namespace __sanitizer
+}  // namespace __sanitizer
 
 #endif  // SANITIZER_RTEMS

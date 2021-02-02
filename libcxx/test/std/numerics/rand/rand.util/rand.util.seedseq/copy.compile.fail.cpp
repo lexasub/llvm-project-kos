@@ -14,10 +14,9 @@
 
 #include <random>
 
-int main(int, char**)
-{
-    std::seed_seq s0;
-    std::seed_seq s(s0);
+int main(int, char**) {
+  std::seed_seq s0;
+  std::seed_seq s(s0);
 
   return 0;
 }

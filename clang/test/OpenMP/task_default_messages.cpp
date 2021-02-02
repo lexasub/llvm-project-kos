@@ -14,12 +14,12 @@ static int y = 0;
 static int x = 0;
 
 int main(int argc, char **argv) {
-#pragma omp task default                          // expected-error {{expected '(' after 'default'}}
-#pragma omp task default(                         // expected-error {{expected 'none', 'shared' or 'firstprivate' in OpenMP clause 'default'}} expected-error {{expected ')'}} expected-note {{to match this '('}}
-#pragma omp task default()                        // expected-error {{expected 'none', 'shared' or 'firstprivate' in OpenMP clause 'default'}}
-#pragma omp task default(none                     // expected-error {{expected ')'}} expected-note {{to match this '('}}
+#pragma omp task default // expected-error {{expected '(' after 'default'}}
+#pragma omp task default( // expected-error {{expected 'none', 'shared' or 'firstprivate' in OpenMP clause 'default'}} expected-error {{expected ')'}} expected-note {{to match this '('}}
+#pragma omp task default() // expected-error {{expected 'none', 'shared' or 'firstprivate' in OpenMP clause 'default'}}
+#pragma omp task default(none // expected-error {{expected ')'}} expected-note {{to match this '('}}
 #pragma omp task default(shared), default(shared) // expected-error {{directive '#pragma omp task' cannot contain more than one 'default' clause}}
-#pragma omp task default(x)                       // expected-error {{expected 'none', 'shared' or 'firstprivate' in OpenMP clause 'default'}}
+#pragma omp task default(x) // expected-error {{expected 'none', 'shared' or 'firstprivate' in OpenMP clause 'default'}}
   foo();
 
 #pragma omp task default(none) // expected-note {{explicit data sharing attribute requested here}}

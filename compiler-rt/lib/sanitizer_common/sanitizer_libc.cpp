@@ -10,9 +10,10 @@
 // run-time libraries. See sanitizer_libc.h for details.
 //===----------------------------------------------------------------------===//
 
+#include "sanitizer_libc.h"
+
 #include "sanitizer_allocator_internal.h"
 #include "sanitizer_common.h"
-#include "sanitizer_libc.h"
 
 namespace __sanitizer {
 
@@ -32,12 +33,13 @@ void *internal_memrchr(const void *s, int c, uptr n) {
   const char *t = (const char *)s;
   void *res = nullptr;
   for (uptr i = 0; i < n; ++i, ++t) {
-    if (*t == c) res = reinterpret_cast<void *>(const_cast<char *>(t));
+    if (*t == c)
+      res = reinterpret_cast<void *>(const_cast<char *>(t));
   }
   return res;
 }
 
-int internal_memcmp(const void* s1, const void* s2, uptr n) {
+int internal_memcmp(const void *s1, const void *s2, uptr n) {
   const char *t1 = (const char *)s1;
   const char *t2 = (const char *)s2;
   for (uptr i = 0; i < n; ++i, ++t1, ++t2)
@@ -47,21 +49,19 @@ int internal_memcmp(const void* s1, const void* s2, uptr n) {
 }
 
 void *internal_memcpy(void *dest, const void *src, uptr n) {
-  char *d = (char*)dest;
+  char *d = (char *)dest;
   const char *s = (const char *)src;
-  for (uptr i = 0; i < n; ++i)
-    d[i] = s[i];
+  for (uptr i = 0; i < n; ++i) d[i] = s[i];
   return dest;
 }
 
 void *internal_memmove(void *dest, const void *src, uptr n) {
-  char *d = (char*)dest;
+  char *d = (char *)dest;
   const char *s = (const char *)src;
   sptr i, signed_n = (sptr)n;
   CHECK_GE(signed_n, 0);
   if (d < s) {
-    for (i = 0; i < signed_n; ++i)
-      d[i] = s[i];
+    for (i = 0; i < signed_n; ++i) d[i] = s[i];
   } else {
     if (d > s && signed_n > 0) {
       for (i = signed_n - 1; i >= 0; --i) {
@@ -72,24 +72,23 @@ void *internal_memmove(void *dest, const void *src, uptr n) {
   return dest;
 }
 
-void *internal_memset(void* s, int c, uptr n) {
+void *internal_memset(void *s, int c, uptr n) {
   // Optimize for the most performance-critical case:
   if ((reinterpret_cast<uptr>(s) % 16) == 0 && (n % 16) == 0) {
-    u64 *p = reinterpret_cast<u64*>(s);
+    u64 *p = reinterpret_cast<u64 *>(s);
     u64 *e = p + n / 8;
     u64 v = c;
     v |= v << 8;
     v |= v << 16;
     v |= v << 32;
-    for (; p < e; p += 2)
-      p[0] = p[1] = v;
+    for (; p < e; p += 2) p[0] = p[1] = v;
     return s;
   }
   // The next line prevents Clang from making a call to memset() instead of the
   // loop below.
   // FIXME: building the runtime with -ffreestanding is a better idea. However
   // there currently are linktime problems due to PR12396.
-  char volatile *t = (char*)s;
+  char volatile *t = (char *)s;
   for (uptr i = 0; i < n; ++i, ++t) {
     *t = c;
   }
@@ -105,9 +104,9 @@ uptr internal_strcspn(const char *s, const char *reject) {
   return i;
 }
 
-char* internal_strdup(const char *s) {
+char *internal_strdup(const char *s) {
   uptr len = internal_strlen(s);
-  char *s2 = (char*)InternalAlloc(len + 1);
+  char *s2 = (char *)InternalAlloc(len + 1);
   internal_memcpy(s2, s, len);
   s2[len] = 0;
   return s2;
@@ -117,8 +116,10 @@ int internal_strcmp(const char *s1, const char *s2) {
   while (true) {
     unsigned c1 = *s1;
     unsigned c2 = *s2;
-    if (c1 != c2) return (c1 < c2) ? -1 : 1;
-    if (c1 == 0) break;
+    if (c1 != c2)
+      return (c1 < c2) ? -1 : 1;
+    if (c1 == 0)
+      break;
     s1++;
     s2++;
   }
@@ -129,15 +130,17 @@ int internal_strncmp(const char *s1, const char *s2, uptr n) {
   for (uptr i = 0; i < n; i++) {
     unsigned c1 = *s1;
     unsigned c2 = *s2;
-    if (c1 != c2) return (c1 < c2) ? -1 : 1;
-    if (c1 == 0) break;
+    if (c1 != c2)
+      return (c1 < c2) ? -1 : 1;
+    if (c1 == 0)
+      break;
     s1++;
     s2++;
   }
   return 0;
 }
 
-char* internal_strchr(const char *s, int c) {
+char *internal_strchr(const char *s, int c) {
   while (true) {
     if (*s == (char)c)
       return const_cast<char *>(s);
@@ -157,7 +160,8 @@ char *internal_strchrnul(const char *s, int c) {
 char *internal_strrchr(const char *s, int c) {
   const char *res = nullptr;
   for (uptr i = 0; s[i]; i++) {
-    if (s[i] == c) res = s + i;
+    if (s[i] == c)
+      res = s + i;
   }
   return const_cast<char *>(res);
 }
@@ -171,7 +175,8 @@ uptr internal_strlen(const char *s) {
 uptr internal_strlcat(char *dst, const char *src, uptr maxlen) {
   const uptr srclen = internal_strlen(src);
   const uptr dstlen = internal_strnlen(dst, maxlen);
-  if (dstlen == maxlen) return maxlen + srclen;
+  if (dstlen == maxlen)
+    return maxlen + srclen;
   if (srclen < maxlen - dstlen) {
     internal_memmove(dst + dstlen, src, srclen + 1);
   } else {
@@ -184,8 +189,7 @@ uptr internal_strlcat(char *dst, const char *src, uptr maxlen) {
 char *internal_strncat(char *dst, const char *src, uptr n) {
   uptr len = internal_strlen(dst);
   uptr i;
-  for (i = 0; i < n && src[i]; i++)
-    dst[len + i] = src[i];
+  for (i = 0; i < n && src[i]; i++) dst[len + i] = src[i];
   dst[len + i] = 0;
   return dst;
 }
@@ -203,8 +207,7 @@ uptr internal_strlcpy(char *dst, const char *src, uptr maxlen) {
 
 char *internal_strncpy(char *dst, const char *src, uptr n) {
   uptr i;
-  for (i = 0; i < n && src[i]; i++)
-    dst[i] = src[i];
+  for (i = 0; i < n && src[i]; i++) dst[i] = src[i];
   internal_memset(dst + i, '\0', n - i);
   return dst;
 }
@@ -219,7 +222,8 @@ char *internal_strstr(const char *haystack, const char *needle) {
   // This is O(N^2), but we are not using it in hot places.
   uptr len1 = internal_strlen(haystack);
   uptr len2 = internal_strlen(needle);
-  if (len1 < len2) return nullptr;
+  if (len1 < len2)
+    return nullptr;
   for (uptr pos = 0; pos <= len1 - len2; pos++) {
     if (internal_memcmp(haystack + pos, needle, len2) == 0)
       return const_cast<char *>(haystack) + pos;
@@ -265,11 +269,10 @@ bool mem_is_zero(const char *beg, uptr size) {
   uptr *aligned_end = (uptr *)RoundDownTo((uptr)end, sizeof(uptr));
   uptr all = 0;
   // Prologue.
-  for (const char *mem = beg; mem < (char*)aligned_beg && mem < end; mem++)
+  for (const char *mem = beg; mem < (char *)aligned_beg && mem < end; mem++)
     all |= *mem;
   // Aligned loop.
-  for (; aligned_beg < aligned_end; aligned_beg++)
-    all |= *aligned_beg;
+  for (; aligned_beg < aligned_end; aligned_beg++) all |= *aligned_beg;
   // Epilogue.
   if ((char *)aligned_end >= beg) {
     for (const char *mem = (char *)aligned_end; mem < end; mem++) all |= *mem;
@@ -277,4 +280,4 @@ bool mem_is_zero(const char *beg, uptr size) {
   return all == 0;
 }
 
-} // namespace __sanitizer
+}  // namespace __sanitizer

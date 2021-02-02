@@ -7,8 +7,8 @@
 //===----------------------------------------------------------------------===//
 
 #include "llvm/IR/DebugInfo.h"
-#include "llvm/IR/DIBuilder.h"
 #include "llvm/AsmParser/Parser.h"
+#include "llvm/IR/DIBuilder.h"
 #include "llvm/IR/DebugInfoMetadata.h"
 #include "llvm/IR/IntrinsicInst.h"
 #include "llvm/IR/LLVMContext.h"
@@ -191,8 +191,8 @@ TEST(DIBuilder, CreateFortranArrayTypeWithAttributes) {
   std::unique_ptr<Module> M(new Module("MyModule", Ctx));
   DIBuilder DIB(*M);
 
-  DISubrange *Subrange = DIB.getOrCreateSubrange(1,1);
-  SmallVector<Metadata*, 4> Subranges;
+  DISubrange *Subrange = DIB.getOrCreateSubrange(1, 1);
+  SmallVector<Metadata *, 4> Subranges;
   Subranges.push_back(Subrange);
   DINodeArray Subscripts = DIB.getOrCreateArray(Subranges);
 
@@ -215,9 +215,8 @@ TEST(DIBuilder, CreateFortranArrayTypeWithAttributes) {
   DIExpression *Allocated = getDIExpression(2);
   DIExpression *Rank = DIB.createConstantValueExpression(3);
 
-  DICompositeType *ArrayType = DIB.createArrayType(0, 0, nullptr, Subscripts,
-                                                   DataLocation, Associated,
-                                                   Allocated, Rank);
+  DICompositeType *ArrayType = DIB.createArrayType(
+      0, 0, nullptr, Subscripts, DataLocation, Associated, Allocated, Rank);
 
   EXPECT_TRUE(isa_and_nonnull<DICompositeType>(ArrayType));
   EXPECT_EQ(ArrayType->getRawDataLocation(), DataLocation);

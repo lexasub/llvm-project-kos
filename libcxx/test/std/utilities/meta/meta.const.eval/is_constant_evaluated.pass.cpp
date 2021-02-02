@@ -19,7 +19,7 @@
 
 #ifndef __cpp_lib_is_constant_evaluated
 #if TEST_HAS_BUILTIN(__builtin_is_constant_evaluated)
-# error __cpp_lib_is_constant_evaluated should be defined
+#error __cpp_lib_is_constant_evaluated should be defined
 #endif
 #endif
 
@@ -29,14 +29,15 @@
 #pragma clang diagnostic ignored "-Wconstant-evaluated"
 #endif
 
-template <bool> struct InTemplate {};
+template <bool>
+struct InTemplate {};
 
-int main(int, char**)
-{
+int main(int, char**) {
 #ifdef __cpp_lib_is_constant_evaluated
 #ifdef TEST_COMPILER_C1XX
-    #pragma warning(push)
-    #pragma warning(disable: 5063) // 'std::is_constant_evaluated' always evaluates to true in manifestly constant-evaluated expressions
+#pragma warning(push)
+#pragma warning(                                                               \
+    disable : 5063) // 'std::is_constant_evaluated' always evaluates to true in manifestly constant-evaluated expressions
 #endif // TEST_COMPILER_C1XX
   // Test the signature
   {
@@ -51,12 +52,13 @@ int main(int, char**)
     static_assert(std::is_constant_evaluated(), "");
     bool p = std::is_constant_evaluated();
     assert(!p);
-    ASSERT_SAME_TYPE(InTemplate<std::is_constant_evaluated()>, InTemplate<true>);
+    ASSERT_SAME_TYPE(InTemplate<std::is_constant_evaluated()>,
+                     InTemplate<true>);
     static int local_static = std::is_constant_evaluated() ? 42 : -1;
     assert(local_static == 42);
   }
 #ifdef TEST_COMPILER_C1XX
-    #pragma warning(pop)
+#pragma warning(pop)
 #endif // TEST_COMPILER_C1XX
 #endif // __cpp_lib_is_constant_evaluated
   return 0;

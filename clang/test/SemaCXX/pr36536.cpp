@@ -15,7 +15,10 @@ namespace bar {
 // close namespaces.
 // expected-error@+1 {{cannot define or redeclare 'f' here}}
 void Foo::f() {
-  switch (0) { case 0: ImplicitDefaultCtor1 o; }
+  switch (0) {
+  case 0:
+    ImplicitDefaultCtor1 o;
+  }
   // expected-error@+1 {{unknown type name 'NameInClass'}}
   NameInClass var;
 }
@@ -25,7 +28,10 @@ struct ImplicitDefaultCtor2 {};
 template <typename T> class TFoo { void f(); };
 // expected-error@+1 {{nested name specifier 'decltype(TFoo<T>())::'}}
 template <typename T> void decltype(TFoo<T>())::f() {
-  switch (0) { case 0: ImplicitDefaultCtor1 o; }
+  switch (0) {
+  case 0:
+    ImplicitDefaultCtor1 o;
+  }
 }
 
 namespace tpl2 {
@@ -39,6 +45,9 @@ template <class Y>
 template <>
 // expected-error@+1 {{nested name specifier 'A<Y>::B<double>::'}}
 void A<Y>::B<double>::mf2() {
-  switch (0) { case 0: ImplicitDefaultCtor3 o; }
+  switch (0) {
+  case 0:
+    ImplicitDefaultCtor3 o;
+  }
 }
-}
+} // namespace tpl2

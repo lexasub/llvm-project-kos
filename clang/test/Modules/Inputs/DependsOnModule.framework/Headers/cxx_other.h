@@ -1,5 +1,5 @@
 class CXXOnly {
- public:
+public:
   CXXOnly();
   ~CXXOnly();
 };

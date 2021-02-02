@@ -10,7 +10,7 @@ struct Y {
 };
 
 // CHECK-LABEL: define{{.*}} void @_Z1fiPPKc(
-void f(int argc, const char* argv[]) {
+void f(int argc, const char *argv[]) {
   // CHECK: call void @_ZN1XC1Ev
   X x;
   // CHECK: call i8* @llvm.stacksave(
@@ -27,11 +27,11 @@ void f(int argc, const char* argv[]) {
 }
 
 namespace PR11744 {
-  // Make sure this doesn't crash; there was a use-after-free issue
-  // for this testcase.
-  template<typename T> int f(int n) {
-    T arr[3][n];
-    return 3;
-  }
-  int test = f<int>(0);
+// Make sure this doesn't crash; there was a use-after-free issue
+// for this testcase.
+template <typename T> int f(int n) {
+  T arr[3][n];
+  return 3;
 }
+int test = f<int>(0);
+} // namespace PR11744

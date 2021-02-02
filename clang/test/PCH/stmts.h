@@ -1,6 +1,6 @@
 // Header for PCH test stmts.c
 
-void f0(int x) { 
+void f0(int x) {
   // NullStmt
   ;
   // IfStmt
@@ -41,7 +41,7 @@ void f0(int x) {
     x++;
   } while (x < 10);
 
- almost_done:
+almost_done:
   for (int y = x; y < 20; ++y) {
     if (x + y == 12)
       return;
@@ -49,7 +49,7 @@ void f0(int x) {
       goto almost_done;
   }
 
- done:
+done:
   x = x + 2;
 
   int z = x, *y, j = 5;
@@ -67,13 +67,13 @@ int f1(int x) {
   // variable-length array
   int array[x * 17 + 3];
 
-  return x*2;
+  return x * 2;
 }
 
-const char* what_is_my_name(void) { return __func__; }
+const char *what_is_my_name(void) { return __func__; }
 
 int computed_goto(int x) {
- start:
+start:
   x = x << 1;
   void *location = &&start;
 
@@ -86,11 +86,11 @@ int computed_goto(int x) {
       goto *location;
   }
 
-  done:
+done:
   return 5;
 }
 
-#define maxint(a,b) ({int _a = (a), _b = (b); _a > _b ? _a : _b; })
+#define maxint(a, b) ({int _a = (a), _b = (b); _a > _b ? _a : _b; })
 int weird_max(int x, int y) {
   return maxint(++x, --y);
 }

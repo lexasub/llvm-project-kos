@@ -18,20 +18,19 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    std::ios ios(0);
-    assert(ios.rdbuf() == 0);
-    assert(!ios.good());
-    std::streambuf* sb = (std::streambuf*)1;
-    std::streambuf* sb2 = ios.rdbuf(sb);
-    assert(sb2 == 0);
-    assert(ios.rdbuf() == sb);
-    assert(ios.good());
-    sb2 = ios.rdbuf(0);
-    assert(sb2 == (std::streambuf*)1);
-    assert(ios.rdbuf() == 0);
-    assert(ios.bad());
+int main(int, char**) {
+  std::ios ios(0);
+  assert(ios.rdbuf() == 0);
+  assert(!ios.good());
+  std::streambuf* sb = (std::streambuf*)1;
+  std::streambuf* sb2 = ios.rdbuf(sb);
+  assert(sb2 == 0);
+  assert(ios.rdbuf() == sb);
+  assert(ios.good());
+  sb2 = ios.rdbuf(0);
+  assert(sb2 == (std::streambuf*)1);
+  assert(ios.rdbuf() == 0);
+  assert(ios.bad());
 
   return 0;
 }

@@ -13,9 +13,9 @@ struct S {
   static const int d;
   static const int d2 = 0;
 
-  static constexpr double e = 0.0; // ok
-  static const double f = 0.0; // expected-error {{requires 'constexpr' specifier}} expected-note {{add 'constexpr'}}
-  static char *const g = 0; // expected-error {{requires 'constexpr' specifier}}
+  static constexpr double e = 0.0;  // ok
+  static const double f = 0.0;      // expected-error {{requires 'constexpr' specifier}} expected-note {{add 'constexpr'}}
+  static char *const g = 0;         // expected-error {{requires 'constexpr' specifier}}
   static const NonLit h = NonLit(); // expected-error {{must be initialized out of line}}
 
   static inline int i; // expected-note {{previous}} expected-warning 0-1{{extension}}
@@ -30,20 +30,20 @@ const int S::c;
 constexpr int S::d = 0;
 constexpr int S::d2;
 
-int S::i; // expected-error {{redefinition}}
-int S::j; // expected-error {{redefinition}}
+int S::i;       // expected-error {{redefinition}}
+int S::j;       // expected-error {{redefinition}}
 const int S::k; // ok (deprecated)
 
-template<typename T>
+template <typename T>
 struct U {
   static constexpr int a = 0;
-  static constexpr int b; // expected-error {{initializ}}
+  static constexpr int b;               // expected-error {{initializ}}
   static constexpr NonLit h = NonLit(); // expected-error {{cannot have non-literal type 'const NonLit'}}
-  static constexpr T c = T(); // expected-error {{cannot have non-literal type}}
+  static constexpr T c = T();           // expected-error {{cannot have non-literal type}}
   static const T d;
 };
 
-template<typename T> constexpr T U<T>::d = T(); // expected-error {{non-literal type 'const NonLit'}}
+template <typename T> constexpr T U<T>::d = T(); // expected-error {{non-literal type 'const NonLit'}}
 
 U<int> u1;
 U<NonLit> u2; // expected-note {{here}}

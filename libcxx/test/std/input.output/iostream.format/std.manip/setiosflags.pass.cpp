@@ -18,42 +18,39 @@
 #include "test_macros.h"
 
 template <class CharT>
-struct testbuf
-    : public std::basic_streambuf<CharT>
-{
-    testbuf() {}
+struct testbuf : public std::basic_streambuf<CharT> {
+  testbuf() {}
 };
 
-int main(int, char**)
-{
-    {
-        testbuf<char> sb;
-        std::istream is(&sb);
-        assert(!(is.flags() & std::ios_base::oct));
-        is >> std::setiosflags(std::ios_base::oct);
-        assert(is.flags() & std::ios_base::oct);
-    }
-    {
-        testbuf<char> sb;
-        std::ostream os(&sb);
-        assert(!(os.flags() & std::ios_base::oct));
-        os << std::setiosflags(std::ios_base::oct);
-        assert(os.flags() & std::ios_base::oct);
-    }
-    {
-        testbuf<wchar_t> sb;
-        std::wistream is(&sb);
-        assert(!(is.flags() & std::ios_base::oct));
-        is >> std::setiosflags(std::ios_base::oct);
-        assert(is.flags() & std::ios_base::oct);
-    }
-    {
-        testbuf<wchar_t> sb;
-        std::wostream os(&sb);
-        assert(!(os.flags() & std::ios_base::oct));
-        os << std::setiosflags(std::ios_base::oct);
-        assert(os.flags() & std::ios_base::oct);
-    }
+int main(int, char**) {
+  {
+    testbuf<char> sb;
+    std::istream is(&sb);
+    assert(!(is.flags() & std::ios_base::oct));
+    is >> std::setiosflags(std::ios_base::oct);
+    assert(is.flags() & std::ios_base::oct);
+  }
+  {
+    testbuf<char> sb;
+    std::ostream os(&sb);
+    assert(!(os.flags() & std::ios_base::oct));
+    os << std::setiosflags(std::ios_base::oct);
+    assert(os.flags() & std::ios_base::oct);
+  }
+  {
+    testbuf<wchar_t> sb;
+    std::wistream is(&sb);
+    assert(!(is.flags() & std::ios_base::oct));
+    is >> std::setiosflags(std::ios_base::oct);
+    assert(is.flags() & std::ios_base::oct);
+  }
+  {
+    testbuf<wchar_t> sb;
+    std::wostream os(&sb);
+    assert(!(os.flags() & std::ios_base::oct));
+    os << std::setiosflags(std::ios_base::oct);
+    assert(os.flags() & std::ios_base::oct);
+  }
 
   return 0;
 }

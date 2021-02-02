@@ -13,12 +13,12 @@
 // UNSUPPORTED: arm,powerpc,i386-linux && !android
 
 #ifndef BUILD_DSO
+#include "sanitizer_common/print_address.h"
 #include <assert.h>
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
-#include "sanitizer_common/print_address.h"
 
 int main(int argc, char *argv[]) {
   std::string path = std::string(argv[0]) + "-so.so";
@@ -30,7 +30,7 @@ int main(int argc, char *argv[]) {
 
   void *handle = dlopen(path.c_str(), RTLD_LAZY);
   assert(handle != 0);
-  typedef void **(* store_t)(void *p);
+  typedef void **(*store_t)(void *p);
   store_t StoreToTLS = (store_t)dlsym(handle, "StoreToTLS");
 
   // Sometimes dlerror() occurs when we broke the interceptors.
@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
 // CHECK: [[ADDR]] (1337 bytes)
 // CHECK: SUMMARY: {{(Leak|Address)}}Sanitizer:
 
-#else  // BUILD_DSO
+#else // BUILD_DSO
 // A loadable module with a large thread local section, which would require
 // allocation of a new TLS storage chunk when loaded with dlopen(). We use it
 // to test the reachability of such chunks in LSan tests.
@@ -66,4 +66,4 @@ extern "C" void **StoreToTLS(void *p) {
   huge_thread_local_array[0] = p;
   return &huge_thread_local_array[0];
 }
-#endif  // BUILD_DSO
+#endif // BUILD_DSO

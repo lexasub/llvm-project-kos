@@ -1,9 +1,9 @@
 #include "stdarg.h"
 
 namespace test1 {
-  void test1(const char *fmt, va_list ap) {
-  }
+void test1(const char *fmt, va_list ap) {
 }
+} // namespace test1
 
 class Test2 {
 public:

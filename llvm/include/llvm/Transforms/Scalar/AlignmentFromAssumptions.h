@@ -41,6 +41,6 @@ struct AlignmentFromAssumptionsPass
                             const SCEV *&AlignSCEV, const SCEV *&OffSCEV);
   bool processAssumption(CallInst *I, unsigned Idx);
 };
-}
+} // namespace llvm
 
 #endif // LLVM_TRANSFORMS_SCALAR_ALIGNMENTFROMASSUMPTIONS_H

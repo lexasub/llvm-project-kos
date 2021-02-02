@@ -19,11 +19,10 @@ namespace android {
 void CloexecCreatCheck::registerMatchers(MatchFinder *Finder) {
   auto CharPointerType = hasType(pointerType(pointee(isAnyCharacter())));
   auto MODETType = hasType(namedDecl(hasName("mode_t")));
-  registerMatchersImpl(Finder,
-                       functionDecl(isExternC(), returns(isInteger()),
-                                    hasName("creat"),
-                                    hasParameter(0, CharPointerType),
-                                    hasParameter(1, MODETType)));
+  registerMatchersImpl(Finder, functionDecl(isExternC(), returns(isInteger()),
+                                            hasName("creat"),
+                                            hasParameter(0, CharPointerType),
+                                            hasParameter(1, MODETType)));
 }
 
 void CloexecCreatCheck::check(const MatchFinder::MatchResult &Result) {

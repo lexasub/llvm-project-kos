@@ -54,6 +54,6 @@ protected:
 
   lldb::TraceOptionsSP m_traceoptions_sp;
 };
-}
+} // namespace lldb
 
 #endif // LLDB_API_SBTRACEOPTIONS_H

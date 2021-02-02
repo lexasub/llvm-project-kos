@@ -101,7 +101,8 @@ struct BlockInfoBuilder {
   /// Updates live-out information of the current block. It iterates over all
   /// successors and unifies their live-in values with the current live-out
   /// values.
-  template <typename SourceT> void updateLiveOut(SourceT &source) {
+  template <typename SourceT>
+  void updateLiveOut(SourceT &source) {
     for (Block *succ : block->getSuccessors()) {
       BlockInfoBuilder &builder = source[succ];
       llvm::set_union(outValues, builder.inValues);

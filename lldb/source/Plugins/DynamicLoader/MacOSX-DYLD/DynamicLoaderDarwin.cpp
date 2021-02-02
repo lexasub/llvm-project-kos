@@ -275,7 +275,7 @@ bool DynamicLoaderDarwin::UpdateImageLoadAddress(Module *module,
 
               changed = m_process->GetTarget().SetSectionLoadAddress(
                   section_sp, new_section_load_addr, warn_multiple);
-            } 
+            }
           }
         }
 
@@ -540,11 +540,11 @@ void DynamicLoaderDarwin::UpdateSpecialBinariesFromNewImageInfos(
   const size_t image_infos_size = image_infos.size();
   for (size_t i = 0; i < image_infos_size; i++) {
     if (image_infos[i].header.filetype == llvm::MachO::MH_DYLINKER) {
-      // In a "simulator" process (an x86 process that is 
-      // ios/tvos/watchos/bridgeos) we will have two dyld modules -- 
-      // a "dyld" that we want to keep track of, and a "dyld_sim" which 
-      // we don't need to keep track of here. If the target is an x86 
-      // system and the OS of the dyld binary is ios/tvos/watchos/bridgeos, 
+      // In a "simulator" process (an x86 process that is
+      // ios/tvos/watchos/bridgeos) we will have two dyld modules --
+      // a "dyld" that we want to keep track of, and a "dyld_sim" which
+      // we don't need to keep track of here. If the target is an x86
+      // system and the OS of the dyld binary is ios/tvos/watchos/bridgeos,
       // then we are looking at dyld_sym.
 
       // debugserver has only recently (late 2016) started sending up the os
@@ -559,11 +559,11 @@ void DynamicLoaderDarwin::UpdateSpecialBinariesFromNewImageInfos(
         if (image_infos[i].os_type != llvm::Triple::OSType::IOS &&
             image_infos[i].os_type != llvm::Triple::TvOS &&
             image_infos[i].os_type != llvm::Triple::WatchOS) {
-            // NEED_BRIDGEOS_TRIPLE image_infos[i].os_type != llvm::Triple::BridgeOS) {
+          // NEED_BRIDGEOS_TRIPLE image_infos[i].os_type !=
+          // llvm::Triple::BridgeOS) {
           dyld_idx = i;
         }
-      }
-      else {
+      } else {
         // catch-all for any other environment -- trust that dyld is actually
         // dyld
         dyld_idx = i;
@@ -666,8 +666,8 @@ bool DynamicLoaderDarwin::AddModulesUsingImageInfos(
               module_spec.SetObjectOffset(objfile->GetFileOffset() +
                                           commpage_section->GetFileOffset());
               module_spec.SetObjectSize(objfile->GetByteSize());
-              commpage_image_module_sp = target.GetOrCreateModule(module_spec, 
-                                                               true /* notify */);
+              commpage_image_module_sp =
+                  target.GetOrCreateModule(module_spec, true /* notify */);
               if (!commpage_image_module_sp ||
                   commpage_image_module_sp->GetObjectFile() == nullptr) {
                 commpage_image_module_sp = m_process->ReadModuleFromMemory(
@@ -1029,7 +1029,6 @@ void DynamicLoaderDarwin::FindEquivalentSymbols(
   RegularExpression equivalent_name_regex(equivalent_regex_buf);
   images.FindSymbolsMatchingRegExAndType(equivalent_name_regex, eSymbolTypeCode,
                                          equivalent_symbols);
-
 }
 
 lldb::ModuleSP DynamicLoaderDarwin::GetPThreadLibraryModule() {

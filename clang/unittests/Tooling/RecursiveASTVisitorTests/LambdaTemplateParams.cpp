@@ -15,7 +15,7 @@ namespace {
 
 // Matches (optional) explicit template parameters.
 class LambdaTemplateParametersVisitor
-  : public ExpectedLocationVisitor<LambdaTemplateParametersVisitor> {
+    : public ExpectedLocationVisitor<LambdaTemplateParametersVisitor> {
 public:
   bool shouldVisitImplicitCode() const { return false; }
 
@@ -40,8 +40,8 @@ public:
 
 TEST(RecursiveASTVisitor, VisitsLambdaExplicitTemplateParameters) {
   LambdaTemplateParametersVisitor Visitor;
-  Visitor.ExpectMatch("T",  2, 15);
-  Visitor.ExpectMatch("I",  2, 24);
+  Visitor.ExpectMatch("T", 2, 15);
+  Visitor.ExpectMatch("I", 2, 24);
   Visitor.ExpectMatch("TT", 2, 31);
   EXPECT_TRUE(Visitor.runOver(
       "void f() { \n"

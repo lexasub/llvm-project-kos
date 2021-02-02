@@ -33,7 +33,8 @@ ARMTargetStreamer::~ARMTargetStreamer() = default;
 
 // The constant pool handling is shared by all ARMTargetStreamer
 // implementations.
-const MCExpr *ARMTargetStreamer::addConstantPoolEntry(const MCExpr *Expr, SMLoc Loc) {
+const MCExpr *ARMTargetStreamer::addConstantPoolEntry(const MCExpr *Expr,
+                                                      SMLoc Loc) {
   return ConstantPools->addEntry(Streamer, Expr, 4, Loc);
 }
 
@@ -51,7 +52,8 @@ void ARMTargetStreamer::reset() {}
 void ARMTargetStreamer::emitInst(uint32_t Inst, char Suffix) {
   unsigned Size;
   char Buffer[4];
-  const bool LittleEndian = getStreamer().getContext().getAsmInfo()->isLittleEndian();
+  const bool LittleEndian =
+      getStreamer().getContext().getAsmInfo()->isLittleEndian();
 
   switch (Suffix) {
   case '\0':
@@ -112,8 +114,8 @@ void ARMTargetStreamer::emitArchExtension(uint64_t ArchExt) {}
 void ARMTargetStreamer::emitObjectArch(ARM::ArchKind Arch) {}
 void ARMTargetStreamer::emitFPU(unsigned FPU) {}
 void ARMTargetStreamer::finishAttributeSection() {}
-void
-ARMTargetStreamer::AnnotateTLSDescriptorSequence(const MCSymbolRefExpr *SRE) {}
+void ARMTargetStreamer::AnnotateTLSDescriptorSequence(
+    const MCSymbolRefExpr *SRE) {}
 void ARMTargetStreamer::emitThumbSet(MCSymbol *Symbol, const MCExpr *Value) {}
 
 static ARMBuildAttrs::CPUArch getArchForCPU(const MCSubtargetInfo &STI) {
@@ -181,13 +183,13 @@ void ARMTargetStreamer::emitTargetAttributes(const MCSubtargetInfo &STI) {
 
   if (STI.hasFeature(ARM::FeatureAClass)) {
     emitAttribute(ARMBuildAttrs::CPU_arch_profile,
-                      ARMBuildAttrs::ApplicationProfile);
+                  ARMBuildAttrs::ApplicationProfile);
   } else if (STI.hasFeature(ARM::FeatureRClass)) {
     emitAttribute(ARMBuildAttrs::CPU_arch_profile,
-                      ARMBuildAttrs::RealTimeProfile);
+                  ARMBuildAttrs::RealTimeProfile);
   } else if (STI.hasFeature(ARM::FeatureMClass)) {
     emitAttribute(ARMBuildAttrs::CPU_arch_profile,
-                      ARMBuildAttrs::MicroControllerProfile);
+                  ARMBuildAttrs::MicroControllerProfile);
   }
 
   emitAttribute(ARMBuildAttrs::ARM_ISA_use, STI.hasFeature(ARM::FeatureNoARM)
@@ -196,10 +198,9 @@ void ARMTargetStreamer::emitTargetAttributes(const MCSubtargetInfo &STI) {
 
   if (isV8M(STI)) {
     emitAttribute(ARMBuildAttrs::THUMB_ISA_use,
-                      ARMBuildAttrs::AllowThumbDerived);
+                  ARMBuildAttrs::AllowThumbDerived);
   } else if (STI.hasFeature(ARM::FeatureThumb2)) {
-    emitAttribute(ARMBuildAttrs::THUMB_ISA_use,
-                      ARMBuildAttrs::AllowThumb32);
+    emitAttribute(ARMBuildAttrs::THUMB_ISA_use, ARMBuildAttrs::AllowThumb32);
   } else if (STI.hasFeature(ARM::HasV4TOps)) {
     emitAttribute(ARMBuildAttrs::THUMB_ISA_use, ARMBuildAttrs::Allowed);
   }
@@ -265,7 +266,8 @@ void ARMTargetStreamer::emitTargetAttributes(const MCSubtargetInfo &STI) {
     emitAttribute(ARMBuildAttrs::MPextension_use, ARMBuildAttrs::AllowMP);
 
   if (STI.hasFeature(ARM::HasMVEFloatOps))
-    emitAttribute(ARMBuildAttrs::MVE_arch, ARMBuildAttrs::AllowMVEIntegerAndFloat);
+    emitAttribute(ARMBuildAttrs::MVE_arch,
+                  ARMBuildAttrs::AllowMVEIntegerAndFloat);
   else if (STI.hasFeature(ARM::HasMVEIntegerOps))
     emitAttribute(ARMBuildAttrs::MVE_arch, ARMBuildAttrs::AllowMVEInteger);
 
@@ -285,8 +287,7 @@ void ARMTargetStreamer::emitTargetAttributes(const MCSubtargetInfo &STI) {
     emitAttribute(ARMBuildAttrs::CPU_unaligned_access,
                   ARMBuildAttrs::Not_Allowed);
   else
-    emitAttribute(ARMBuildAttrs::CPU_unaligned_access,
-                  ARMBuildAttrs::Allowed);
+    emitAttribute(ARMBuildAttrs::CPU_unaligned_access, ARMBuildAttrs::Allowed);
 
   if (STI.hasFeature(ARM::FeatureTrustZone) &&
       STI.hasFeature(ARM::FeatureVirtualization))

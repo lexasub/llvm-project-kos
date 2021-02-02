@@ -4,10 +4,10 @@
 // RUN: %clang_cc1 -std=c++11 -DPRAGMA -fsyntax-only %s 2>&1 | FileCheck -check-prefix PRAGMA %s
 
 namespace Test {
-  typedef int T;
-  extern int a;
-  int a = 0;
-}
+typedef int T;
+extern int a;
+int a = 0;
+} // namespace Test
 
 #ifdef PRAGMA
 #pragma clang __debug dump Test
@@ -20,7 +20,7 @@ namespace Test {
 // PRAGMA-NEXT:   `-IntegerLiteral {{.*}} 'int' 0
 #endif
 
-namespace Test { }
+namespace Test {}
 
 // DECLS: Dumping Test:
 // DECLS-NEXT: NamespaceDecl {{.*}} Test

@@ -5,9 +5,9 @@
 void xxx(int argc) {
   int x; // expected-note {{initialize the variable 'x' to silence this warning}}
 #pragma omp parallel sections
-{
-  argc = x; // expected-warning {{variable 'x' is uninitialized when used here}}
-}
+  {
+    argc = x; // expected-warning {{variable 'x' is uninitialized when used here}}
+  }
 }
 
 void foo() {

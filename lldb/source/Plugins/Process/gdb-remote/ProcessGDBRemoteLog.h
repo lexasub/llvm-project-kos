@@ -35,8 +35,12 @@ class ProcessGDBRemoteLog {
 public:
   static void Initialize();
 
-  static Log *GetLogIfAllCategoriesSet(uint32_t mask) { return g_channel.GetLogIfAll(mask); }
-  static Log *GetLogIfAnyCategoryIsSet(uint32_t mask) { return g_channel.GetLogIfAny(mask); }
+  static Log *GetLogIfAllCategoriesSet(uint32_t mask) {
+    return g_channel.GetLogIfAll(mask);
+  }
+  static Log *GetLogIfAnyCategoryIsSet(uint32_t mask) {
+    return g_channel.GetLogIfAny(mask);
+  }
 };
 
 } // namespace process_gdb_remote

@@ -12,9 +12,9 @@ void clang_analyzer_eval(int);
 
 int main() {
   // Do not trust global initializers in C++.
-  clang_analyzer_eval(x == 1); // expected-warning{{TRUE}} // expected-warning{{FALSE}}
-  clang_analyzer_eval(s.a == 2); // expected-warning{{TRUE}} // expected-warning{{FALSE}}
-  clang_analyzer_eval(s.b == 3); // expected-warning{{TRUE}} // expected-warning{{FALSE}}
+  clang_analyzer_eval(x == 1);      // expected-warning{{TRUE}} // expected-warning{{FALSE}}
+  clang_analyzer_eval(s.a == 2);    // expected-warning{{TRUE}} // expected-warning{{FALSE}}
+  clang_analyzer_eval(s.b == 3);    // expected-warning{{TRUE}} // expected-warning{{FALSE}}
   clang_analyzer_eval(arr[0] == 4); // expected-warning{{TRUE}} // expected-warning{{FALSE}}
   clang_analyzer_eval(arr[1] == 5); // expected-warning{{TRUE}} // expected-warning{{FALSE}}
   clang_analyzer_eval(arr[2] == 6); // expected-warning{{TRUE}} // expected-warning{{FALSE}}

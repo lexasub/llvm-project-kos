@@ -227,7 +227,6 @@ TEST_F(SymbolFileDWARFTests, TestAbbrevInvalidNULLTag) {
   EXPECT_TRUE(bool(error));
   EXPECT_EQ("abbrev decl requires non-null tag.",
             llvm::toString(std::move(error)));
-
 }
 
 TEST_F(SymbolFileDWARFTests, TestAbbrevNullAttrValidForm) {
@@ -240,7 +239,7 @@ TEST_F(SymbolFileDWARFTests, TestAbbrevNullAttrValidForm) {
   encoder.PutULEB128(1); // Abbrev code 1
   encoder.PutULEB128(DW_TAG_compile_unit);
   encoder.PutHex8(DW_CHILDREN_no);
-  encoder.PutULEB128(0); // Invalid NULL DW_AT
+  encoder.PutULEB128(0);            // Invalid NULL DW_AT
   encoder.PutULEB128(DW_FORM_strp); // With a valid form
   encoder.PutULEB128(0);
   encoder.PutULEB128(0);
@@ -269,7 +268,7 @@ TEST_F(SymbolFileDWARFTests, TestAbbrevValidAttrNullForm) {
   encoder.PutULEB128(DW_TAG_compile_unit);
   encoder.PutHex8(DW_CHILDREN_no);
   encoder.PutULEB128(DW_AT_name); // Valid attribute
-  encoder.PutULEB128(0); // NULL form
+  encoder.PutULEB128(0);          // NULL form
   encoder.PutULEB128(0);
   encoder.PutULEB128(0);
 
@@ -309,7 +308,8 @@ TEST_F(SymbolFileDWARFTests, TestAbbrevMissingTerminator) {
   // Verify we get an error
   EXPECT_TRUE(bool(error));
   EXPECT_EQ("abbreviation declaration attribute list not terminated with a "
-            "null entry", llvm::toString(std::move(error)));
+            "null entry",
+            llvm::toString(std::move(error)));
 }
 
 TEST_F(SymbolFileDWARFTests, ParseArangesNonzeroSegmentSize) {

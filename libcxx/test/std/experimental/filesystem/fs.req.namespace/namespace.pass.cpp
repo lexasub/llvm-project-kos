@@ -19,10 +19,9 @@
 #include "test_macros.h"
 
 int main(int, char**) {
-  static_assert(std::is_same<
-          std::experimental::filesystem::path,
-          std::experimental::filesystem::v1::path
-      >::value, "");
+  static_assert(std::is_same<std::experimental::filesystem::path,
+                             std::experimental::filesystem::v1::path>::value,
+                "");
 
   return 0;
 }

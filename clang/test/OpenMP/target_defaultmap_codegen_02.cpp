@@ -27,21 +27,21 @@
 
 // CK1-LABEL: implicit_present_scalar{{.*}}(
 void implicit_present_scalar(int a) {
-  // CK1-DAG: call i32 @__tgt_target_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i8* {{.+}}, i32 1, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[SIZES]]{{.+}}, {{.+}}[[TYPES]]{{.+}}, i8** null, i8** null)
-  // CK1-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
-  // CK1-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
-  // CK1-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
-  // CK1-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
-  // CK1-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to i32**
-  // CK1-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to i32**
-  // CK1-DAG: store i32* [[DECL:%[^,]+]], i32** [[CBP1]]
-  // CK1-DAG: store i32* [[DECL]], i32** [[CP1]]
-  #pragma omp target defaultmap(present: scalar)
+// CK1-DAG: call i32 @__tgt_target_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i8* {{.+}}, i32 1, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[SIZES]]{{.+}}, {{.+}}[[TYPES]]{{.+}}, i8** null, i8** null)
+// CK1-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
+// CK1-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
+// CK1-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
+// CK1-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
+// CK1-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to i32**
+// CK1-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to i32**
+// CK1-DAG: store i32* [[DECL:%[^,]+]], i32** [[CBP1]]
+// CK1-DAG: store i32* [[DECL]], i32** [[CP1]]
+#pragma omp target defaultmap(present \
+                              : scalar)
   {
     a += 1.0;
   }
 }
-
 
 #endif
 ///==========================================================================///
@@ -71,24 +71,24 @@ void implicit_present_scalar(int a) {
 void implicit_present_aggregate(int a) {
   double darr[2] = {(double)a, (double)a};
 
-  // CK2-DAG: call i32 @__tgt_target_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i8* {{.+}}, i32 1, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[SIZES]]{{.+}}, {{.+}}[[TYPES]]{{.+}}, i8** null, i8** null)
-  // CK2-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
-  // CK2-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
-  // CK2-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
-  // CK2-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
-  // CK2-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to [2 x double]**
-  // CK2-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to [2 x double]**
-  // CK2-DAG: store [2 x double]* [[DECL:%[^,]+]], [2 x double]** [[CBP1]]
-  // CK2-DAG: store [2 x double]* [[DECL]], [2 x double]** [[CP1]]
+// CK2-DAG: call i32 @__tgt_target_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i8* {{.+}}, i32 1, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[SIZES]]{{.+}}, {{.+}}[[TYPES]]{{.+}}, i8** null, i8** null)
+// CK2-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
+// CK2-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
+// CK2-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
+// CK2-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
+// CK2-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to [2 x double]**
+// CK2-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to [2 x double]**
+// CK2-DAG: store [2 x double]* [[DECL:%[^,]+]], [2 x double]** [[CBP1]]
+// CK2-DAG: store [2 x double]* [[DECL]], [2 x double]** [[CP1]]
 
-  // CK2: call void [[KERNEL:@.+]]([2 x double]* [[DECL]])
-  #pragma omp target defaultmap(present: aggregate)
+// CK2: call void [[KERNEL:@.+]]([2 x double]* [[DECL]])
+#pragma omp target defaultmap(present \
+                              : aggregate)
   {
     darr[0] += 1.0;
     darr[1] += 1.0;
   }
 }
-
 
 #endif
 ///==========================================================================///
@@ -107,7 +107,6 @@ void implicit_present_aggregate(int a) {
 // RUN: %clang_cc1 -fopenmp-simd -fopenmp-version=51 -fopenmp-targets=i386-pc-linux-gnu -x c++ -triple i386-unknown-unknown -std=c++11 -include-pch %t -verify %s -emit-llvm -o - | FileCheck -allow-deprecated-dag-overlap  --check-prefix SIMD-ONLY8 %s
 // SIMD-ONLY8-NOT: {{__kmpc|__tgt}}
 #ifdef CK3
-
 
 // CK3-LABEL: @.__omp_offloading_{{.*}}explicit_present_pointer{{.*}}_l{{[0-9]+}}.region_id = weak constant i8 0
 
@@ -130,7 +129,8 @@ void explicit_present_pointer() {
   // CK3-DAG: store i32** [[VAR0:%.+]], i32*** [[CBP0]]
   // CK3-DAG: store i32** [[VAR0]], i32*** [[CP0]]
 
-  #pragma omp target defaultmap(present: pointer)
+#pragma omp target defaultmap(present \
+                              : pointer)
   {
     pa[50]++;
   }
@@ -162,23 +162,24 @@ void explicit_present_pointer() {
 // CK4-DAG: [[TYPES:@.+]] = {{.+}}constant [1 x i64] [i64 4640]
 
 // CK4-LABEL: implicit_present_double_complex{{.*}}(
-void implicit_present_double_complex (int a){
+void implicit_present_double_complex(int a) {
   double _Complex dc = (double)a;
 
-  // CK4-DAG: call i32 @__tgt_target_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i8* {{.+}}, i32 1, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[SIZES]]{{.+}}, {{.+}}[[TYPES]]{{.+}}, i8** null, i8** null)
-  // CK4-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
-  // CK4-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
-  // CK4-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
-  // CK4-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
-  // CK4-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to { double, double }**
-  // CK4-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to { double, double }**
-  // CK4-DAG: store { double, double }* [[PTR:%[^,]+]], { double, double }** [[CBP1]]
-  // CK4-DAG: store { double, double }* [[PTR]], { double, double }** [[CP1]]
+// CK4-DAG: call i32 @__tgt_target_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i8* {{.+}}, i32 1, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[SIZES]]{{.+}}, {{.+}}[[TYPES]]{{.+}}, i8** null, i8** null)
+// CK4-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
+// CK4-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
+// CK4-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
+// CK4-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
+// CK4-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to { double, double }**
+// CK4-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to { double, double }**
+// CK4-DAG: store { double, double }* [[PTR:%[^,]+]], { double, double }** [[CBP1]]
+// CK4-DAG: store { double, double }* [[PTR]], { double, double }** [[CP1]]
 
-  // CK4: call void [[KERNEL:@.+]]({ double, double }* [[PTR]])
-  #pragma omp target defaultmap(present:scalar)
+// CK4: call void [[KERNEL:@.+]]({ double, double }* [[PTR]])
+#pragma omp target defaultmap(present \
+                              : scalar)
   {
-   dc *= dc;
+    dc *= dc;
   }
 }
 

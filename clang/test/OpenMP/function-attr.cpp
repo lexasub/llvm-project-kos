@@ -47,8 +47,9 @@ float foo3(int n, float *a, float *b) {
   int i;
   float result;
 
-#pragma omp parallel for private(i) reduction(+:result)
-  for (i=0; i < n; i++)
+#pragma omp parallel for private(i) reduction(+ \
+                                              : result)
+  for (i = 0; i < n; i++)
     result = result + (a[i] * b[i]);
   return result;
 }

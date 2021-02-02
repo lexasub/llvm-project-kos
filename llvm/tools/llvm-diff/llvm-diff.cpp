@@ -24,7 +24,6 @@
 #include <string>
 #include <utility>
 
-
 using namespace llvm;
 
 /// Reads a module from a file.  On error, messages are written to stderr
@@ -41,7 +40,8 @@ static std::unique_ptr<Module> readModule(LLVMContext &Context,
 static void diffGlobal(DifferenceEngine &Engine, Module &L, Module &R,
                        StringRef Name) {
   // Drop leading sigils from the global name.
-  if (Name.startswith("@")) Name = Name.substr(1);
+  if (Name.startswith("@"))
+    Name = Name.substr(1);
 
   Function *LFn = L.getFunction(Name);
   Function *RFn = R.getFunction(Name);
@@ -55,12 +55,10 @@ static void diffGlobal(DifferenceEngine &Engine, Module &L, Module &R,
     errs() << "No function named @" << Name << " in right module\n";
 }
 
-static cl::opt<std::string> LeftFilename(cl::Positional,
-                                         cl::desc("<first file>"),
-                                         cl::Required);
-static cl::opt<std::string> RightFilename(cl::Positional,
-                                          cl::desc("<second file>"),
-                                          cl::Required);
+static cl::opt<std::string>
+    LeftFilename(cl::Positional, cl::desc("<first file>"), cl::Required);
+static cl::opt<std::string>
+    RightFilename(cl::Positional, cl::desc("<second file>"), cl::Required);
 static cl::list<std::string> GlobalsToCompare(cl::Positional,
                                               cl::desc("<globals to compare>"));
 
@@ -72,7 +70,8 @@ int main(int argc, char **argv) {
   // Load both modules.  Die if that fails.
   std::unique_ptr<Module> LModule = readModule(Context, LeftFilename);
   std::unique_ptr<Module> RModule = readModule(Context, RightFilename);
-  if (!LModule || !RModule) return 1;
+  if (!LModule || !RModule)
+    return 1;
 
   DiffConsumer Consumer;
   DifferenceEngine Engine(Consumer);
@@ -82,7 +81,7 @@ int main(int argc, char **argv) {
     for (unsigned I = 0, E = GlobalsToCompare.size(); I != E; ++I)
       diffGlobal(Engine, *LModule, *RModule, GlobalsToCompare[I]);
 
-  // Otherwise, diff everything in the module.
+    // Otherwise, diff everything in the module.
   } else {
     Engine.diff(LModule.get(), RModule.get());
   }

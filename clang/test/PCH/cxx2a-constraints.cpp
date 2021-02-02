@@ -9,14 +9,14 @@
 #ifndef HEADER
 #define HEADER
 
-template<typename T, typename U = char>
+template <typename T, typename U = char>
 concept SizedLike = sizeof(T) == sizeof(U);
 
-template <class T> void f(T) requires (sizeof(int) == sizeof(T)) {}
-template <class T> void f(T) requires (sizeof(char) == sizeof(T)) {}
+template <class T> void f(T) requires(sizeof(int) == sizeof(T)) {}
+template <class T> void f(T) requires(sizeof(char) == sizeof(T)) {}
 
-template <class T> requires (sizeof(int) == sizeof(T)) void g(T) {}
-template <class T> requires (sizeof(char) == sizeof(T)) void g(T) {}
+template <class T> requires(sizeof(int) == sizeof(T)) void g(T) {}
+template <class T> requires(sizeof(char) == sizeof(T)) void g(T) {}
 
 template <SizedLike<int> T> void h(T) {}
 template <SizedLike<char> T> void h(T) {}
@@ -24,7 +24,7 @@ template <SizedLike<char> T> void h(T) {}
 template <SizedLike<int> T> void i(T) {}
 template <SizedLike T> void i(T) {}
 
-void j(SizedLike<int> auto ...ints) {}
+void j(SizedLike<int> auto... ints) {}
 
 #else /*included pch*/
 

@@ -110,19 +110,19 @@ void MultipleStatics() {
 
 // Force WeakODRLinkage by using templates
 class A {
- public:
+public:
   A() {}
   ~A() {}
   int a;
 };
 
-template<typename T>
+template <typename T>
 class B {
- public:
+public:
   static A foo;
 };
 
-template<typename T> A B<T>::foo;
+template <typename T> A B<T>::foo;
 
 inline S &UnreachableStatic() {
   if (0) {
@@ -159,7 +159,9 @@ inline S &getS() {
 
 inline int enum_in_function() {
   // CHECK-LABEL: define linkonce_odr dso_local i32 @"?enum_in_function@@YAHXZ"() {{.*}} comdat
-  static enum e { foo, bar, baz } x;
+  static enum e { foo,
+                  bar,
+                  baz } x;
   // CHECK: @"?x@?1??enum_in_function@@YAHXZ@4W4e@?1??1@YAHXZ@A"
   static int y;
   // CHECK: @"?y@?1??enum_in_function@@YAHXZ@4HA"
@@ -167,7 +169,9 @@ inline int enum_in_function() {
 };
 
 struct T {
-  enum e { foo, bar, baz };
+  enum e { foo,
+           bar,
+           baz };
   int enum_in_struct() {
     // CHECK-LABEL: define linkonce_odr dso_local x86_thiscallcc i32 @"?enum_in_struct@T@@QAEHXZ"({{.*}}) {{.*}} comdat
     static int x;
@@ -180,19 +184,19 @@ inline int switch_test(int x) {
   // CHECK-LABEL: define linkonce_odr dso_local i32 @"?switch_test@@YAHH@Z"(i32 %x) {{.*}} comdat
   switch (x) {
     static int a;
-    // CHECK: @"?a@?3??switch_test@@YAHH@Z@4HA"
-    case 0:
-      a++;
-      return 1;
-    case 1:
-      static int b;
-      // CHECK: @"?b@?3??switch_test@@YAHH@Z@4HA"
-      return b++;
-    case 2: {
-      static int c;
-      // CHECK: @"?c@?4??switch_test@@YAHH@Z@4HA"
-      return b + c++;
-    }
+  // CHECK: @"?a@?3??switch_test@@YAHH@Z@4HA"
+  case 0:
+    a++;
+    return 1;
+  case 1:
+    static int b;
+    // CHECK: @"?b@?3??switch_test@@YAHH@Z@4HA"
+    return b++;
+  case 2: {
+    static int c;
+    // CHECK: @"?c@?4??switch_test@@YAHH@Z@4HA"
+    return b + c++;
+  }
   };
 }
 
@@ -200,30 +204,34 @@ int f();
 inline void switch_test2() {
   // CHECK-LABEL: define linkonce_odr dso_local void @"?switch_test2@@YAXXZ"() {{.*}} comdat
   // CHECK: @"?x@?2??switch_test2@@YAXXZ@4HA"
-  switch (1) default: static int x = f();
+  switch (1)
+  default:
+    static int x = f();
 }
 
 namespace DynamicDLLImportInitVSMangling {
-  // Failing to pop the ExprEvalContexts when instantiating a dllimport var with
-  // dynamic initializer would cause subsequent static local numberings to be
-  // incorrect.
-  struct NonPOD { NonPOD(); };
-  template <typename T> struct A { static NonPOD x; };
-  template <typename T> NonPOD A<T>::x;
-  template struct __declspec(dllimport) A<int>;
+// Failing to pop the ExprEvalContexts when instantiating a dllimport var with
+// dynamic initializer would cause subsequent static local numberings to be
+// incorrect.
+struct NonPOD {
+  NonPOD();
+};
+template <typename T> struct A { static NonPOD x; };
+template <typename T> NonPOD A<T>::x;
+template struct __declspec(dllimport) A<int>;
 
-  inline int switch_test3() {
-    // CHECK-LABEL: define linkonce_odr dso_local i32 @"?switch_test3@DynamicDLLImportInitVSMangling@@YAHXZ"() {{.*}} comdat
-    static int local;
-    // CHECK: @"?local@?1??switch_test3@DynamicDLLImportInitVSMangling@@YAHXZ@4HA"
-    return local++;
-  }
+inline int switch_test3() {
+  // CHECK-LABEL: define linkonce_odr dso_local i32 @"?switch_test3@DynamicDLLImportInitVSMangling@@YAHXZ"() {{.*}} comdat
+  static int local;
+  // CHECK: @"?local@?1??switch_test3@DynamicDLLImportInitVSMangling@@YAHXZ@4HA"
+  return local++;
 }
+} // namespace DynamicDLLImportInitVSMangling
 
 void force_usage() {
   UnreachableStatic();
   getS();
-  (void)B<int>::foo;  // (void) - force usage
+  (void)B<int>::foo; // (void) - force usage
   enum_in_function();
   (void)&T::enum_in_struct;
   switch_test(1);

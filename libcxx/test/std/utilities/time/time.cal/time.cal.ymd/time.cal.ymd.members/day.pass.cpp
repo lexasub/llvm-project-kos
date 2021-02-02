@@ -19,23 +19,21 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    using year           = std::chrono::year;
-    using month          = std::chrono::month;
-    using day            = std::chrono::day;
-    using year_month_day = std::chrono::year_month_day;
+int main(int, char**) {
+  using year = std::chrono::year;
+  using month = std::chrono::month;
+  using day = std::chrono::day;
+  using year_month_day = std::chrono::year_month_day;
 
-    ASSERT_NOEXCEPT(               std::declval<const year_month_day>().day());
-    ASSERT_SAME_TYPE(day, decltype(std::declval<const year_month_day>().day()));
+  ASSERT_NOEXCEPT(std::declval<const year_month_day>().day());
+  ASSERT_SAME_TYPE(day, decltype(std::declval<const year_month_day>().day()));
 
-    static_assert( year_month_day{}.day() == day{}, "");
+  static_assert(year_month_day{}.day() == day{}, "");
 
-    for (unsigned i = 1; i <= 50; ++i)
-    {
-        year_month_day ymd(year{1234}, month{2}, day{i});
-        assert( static_cast<unsigned>(ymd.day()) == i);
-    }
+  for (unsigned i = 1; i <= 50; ++i) {
+    year_month_day ymd(year{1234}, month{2}, day{i});
+    assert(static_cast<unsigned>(ymd.day()) == i);
+  }
 
   return 0;
 }

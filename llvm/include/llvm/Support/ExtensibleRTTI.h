@@ -85,8 +85,7 @@ public:
   }
 
   /// Check whether this instance is a subclass of QueryT.
-  template <typename QueryT>
-  bool isA() const { return isA(QueryT::classID()); }
+  template <typename QueryT> bool isA() const { return isA(QueryT::classID()); }
 
 private:
   virtual void anchor();
@@ -113,8 +112,7 @@ private:
 ///   static char ID;
 /// };
 ///
-template <typename ThisT, typename ParentT>
-class RTTIExtends : public ParentT {
+template <typename ThisT, typename ParentT> class RTTIExtends : public ParentT {
 public:
   // Inherit constructors from ParentT.
   using ParentT::ParentT;

@@ -1,19 +1,19 @@
-template < typename > struct vector {};
+template <typename> struct vector {};
 
-#include <map>
 #include "Types.h"
+#include <map>
 
 struct TString {
-   TString (char *);
+  TString(char *);
 };
 
 struct TreeInfo {};
 
 class DataInputHandler {
-   void AddTree ();
-   void SignalTreeInfo () {
-      fInputTrees[(char*)""];
-   }
-   map <TString, vector <TreeInfo> >fInputTrees;
-   map <string, bool> fExplicitTrainTest;
+  void AddTree();
+  void SignalTreeInfo() {
+    fInputTrees[(char *)""];
+  }
+  map<TString, vector<TreeInfo>> fInputTrees;
+  map<string, bool> fExplicitTrainTest;
 };

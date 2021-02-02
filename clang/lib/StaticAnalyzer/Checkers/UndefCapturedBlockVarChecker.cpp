@@ -10,8 +10,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "clang/StaticAnalyzer/Checkers/BuiltinCheckerRegistration.h"
 #include "clang/AST/Attr.h"
+#include "clang/StaticAnalyzer/Checkers/BuiltinCheckerRegistration.h"
 #include "clang/StaticAnalyzer/Core/BugReporter/BugType.h"
 #include "clang/StaticAnalyzer/Core/Checker.h"
 #include "clang/StaticAnalyzer/Core/CheckerManager.h"
@@ -25,7 +25,7 @@ using namespace ento;
 
 namespace {
 class UndefCapturedBlockVarChecker
-  : public Checker< check::PostStmt<BlockExpr> > {
+    : public Checker<check::PostStmt<BlockExpr>> {
   mutable std::unique_ptr<BugType> BT;
 
 public:
@@ -47,9 +47,8 @@ static const DeclRefExpr *FindBlockDeclRefExpr(const Stmt *S,
   return nullptr;
 }
 
-void
-UndefCapturedBlockVarChecker::checkPostStmt(const BlockExpr *BE,
-                                            CheckerContext &C) const {
+void UndefCapturedBlockVarChecker::checkPostStmt(const BlockExpr *BE,
+                                                 CheckerContext &C) const {
   if (!BE->getBlockDecl()->hasCaptures())
     return;
 
@@ -70,7 +69,7 @@ UndefCapturedBlockVarChecker::checkPostStmt(const BlockExpr *BE,
 
     // Get the VarRegion associated with VD in the local stack frame.
     if (Optional<UndefinedVal> V =
-          state->getSVal(I.getOriginalRegion()).getAs<UndefinedVal>()) {
+            state->getSVal(I.getOriginalRegion()).getAs<UndefinedVal>()) {
       if (ExplodedNode *N = C.generateErrorNode()) {
         if (!BT)
           BT.reset(
@@ -101,6 +100,7 @@ void ento::registerUndefCapturedBlockVarChecker(CheckerManager &mgr) {
   mgr.registerChecker<UndefCapturedBlockVarChecker>();
 }
 
-bool ento::shouldRegisterUndefCapturedBlockVarChecker(const CheckerManager &mgr) {
+bool ento::shouldRegisterUndefCapturedBlockVarChecker(
+    const CheckerManager &mgr) {
   return true;
 }

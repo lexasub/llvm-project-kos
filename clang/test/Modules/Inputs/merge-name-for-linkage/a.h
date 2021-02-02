@@ -1,1 +1,2 @@
-typedef union {} pthread_mutex_t;
+typedef union {
+} pthread_mutex_t;

@@ -18,7 +18,8 @@ class JITDylibSearchOrderResolver : public JITSymbolResolver {
 public:
   JITDylibSearchOrderResolver(MaterializationResponsibility &MR) : MR(MR) {}
 
-  void lookup(const LookupSet &Symbols, OnResolvedFunction OnResolved) override {
+  void lookup(const LookupSet &Symbols,
+              OnResolvedFunction OnResolved) override {
     auto &ES = MR.getTargetJITDylib().getExecutionSession();
     SymbolLookupSet InternedSymbols;
 

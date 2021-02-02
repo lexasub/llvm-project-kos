@@ -40,33 +40,33 @@
 // CK4-DAG: [[TYPES:@.+]] = {{.+}}constant [1 x i64] [i64 800]
 
 // CK4-LABEL: implicit_maps_nested_integer{{.*}}(
-void implicit_maps_nested_integer (int a){
+void implicit_maps_nested_integer(int a) {
   int i = a;
 
-  // The captures in parallel are by reference. Only the capture in target is by
-  // copy.
+// The captures in parallel are by reference. Only the capture in target is by
+// copy.
 
-  // CK4: call void {{.+}}@__kmpc_fork_call({{.+}} [[KERNELP1:@.+]] to void (i32*, i32*, ...)*), i32* {{.+}})
-  // CK4: define internal void [[KERNELP1]](i32* {{[^,]+}}, i32* {{[^,]+}}, i32* {{[^,]+}})
-  #pragma omp parallel
+// CK4: call void {{.+}}@__kmpc_fork_call({{.+}} [[KERNELP1:@.+]] to void (i32*, i32*, ...)*), i32* {{.+}})
+// CK4: define internal void [[KERNELP1]](i32* {{[^,]+}}, i32* {{[^,]+}}, i32* {{[^,]+}})
+#pragma omp parallel
   {
-    // CK4-DAG: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i8* {{.+}}, i32 1, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[SIZES]]{{.+}}, {{.+}}[[TYPES]]{{.+}}, i8** null, i8** null, i32 1, i32 0)
-    // CK4-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
-    // CK4-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
-    // CK4-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
-    // CK4-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
-    // CK4-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to i[[sz:64|32]]*
-    // CK4-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to i[[sz]]*
-    // CK4-DAG: store i[[sz]] [[VAL:%[^,]+]], i[[sz]]* [[CBP1]]
-    // CK4-DAG: store i[[sz]] [[VAL]], i[[sz]]* [[CP1]]
-    // CK4-DAG: [[VAL]] = load i[[sz]], i[[sz]]* [[ADDR:%.+]],
-    // CK4-64-DAG: [[CADDR:%.+]] = bitcast i[[sz]]* [[ADDR]] to i32*
-    // CK4-64-DAG: store i32 {{.+}}, i32* [[CADDR]],
+// CK4-DAG: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i8* {{.+}}, i32 1, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[SIZES]]{{.+}}, {{.+}}[[TYPES]]{{.+}}, i8** null, i8** null, i32 1, i32 0)
+// CK4-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
+// CK4-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
+// CK4-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
+// CK4-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
+// CK4-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to i[[sz:64|32]]*
+// CK4-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to i[[sz]]*
+// CK4-DAG: store i[[sz]] [[VAL:%[^,]+]], i[[sz]]* [[CBP1]]
+// CK4-DAG: store i[[sz]] [[VAL]], i[[sz]]* [[CP1]]
+// CK4-DAG: [[VAL]] = load i[[sz]], i[[sz]]* [[ADDR:%.+]],
+// CK4-64-DAG: [[CADDR:%.+]] = bitcast i[[sz]]* [[ADDR]] to i32*
+// CK4-64-DAG: store i32 {{.+}}, i32* [[CADDR]],
 
-    // CK4: call void [[KERNEL:@.+]](i[[sz]] [[VAL]])
-    #pragma omp target
+// CK4: call void [[KERNEL:@.+]](i[[sz]] [[VAL]])
+#pragma omp target
     {
-      #pragma omp parallel
+#pragma omp parallel
       {
         ++i;
       }

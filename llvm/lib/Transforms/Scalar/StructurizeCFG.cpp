@@ -62,10 +62,9 @@ const char FlowBlockName[] = "Flow";
 namespace {
 
 static cl::opt<bool> ForceSkipUniformRegions(
-  "structurizecfg-skip-uniform-regions",
-  cl::Hidden,
-  cl::desc("Force whether the StructurizeCFG pass skips uniform regions"),
-  cl::init(false));
+    "structurizecfg-skip-uniform-regions", cl::Hidden,
+    cl::desc("Force whether the StructurizeCFG pass skips uniform regions"),
+    cl::init(false));
 
 static cl::opt<bool>
     RelaxedUniformRegions("structurizecfg-relaxed-uniform-regions", cl::Hidden,
@@ -173,9 +172,7 @@ class NearestCommonDominator {
 public:
   explicit NearestCommonDominator(DominatorTree *DomTree) : DT(DomTree) {}
 
-  void addBlock(BasicBlock *BB) {
-    addBlock(BB, /* Remember = */ false);
-  }
+  void addBlock(BasicBlock *BB) { addBlock(BB, /* Remember = */ false); }
 
   void addAndRememberBlock(BasicBlock *BB) {
     addBlock(BB, /* Remember = */ true);
@@ -286,8 +283,7 @@ class StructurizeCFG {
 
   void killTerminator(BasicBlock *BB);
 
-  void changeExit(RegionNode *Node, BasicBlock *NewExit,
-                  bool IncludeDominator);
+  void changeExit(RegionNode *Node, BasicBlock *NewExit, bool IncludeDominator);
 
   BasicBlock *getNextFlow(BasicBlock *Dominator);
 
@@ -677,8 +673,7 @@ void StructurizeCFG::killTerminator(BasicBlock *BB) {
   if (!Term)
     return;
 
-  for (succ_iterator SI = succ_begin(BB), SE = succ_end(BB);
-       SI != SE; ++SI)
+  for (succ_iterator SI = succ_begin(BB), SE = succ_end(BB); SI != SE; ++SI)
     delPhiValues(BB, *SI);
 
   if (DA)
@@ -735,10 +730,9 @@ void StructurizeCFG::changeExit(RegionNode *Node, BasicBlock *NewExit,
 /// Create a new flow node and update dominator tree and region info
 BasicBlock *StructurizeCFG::getNextFlow(BasicBlock *Dominator) {
   LLVMContext &Context = Func->getContext();
-  BasicBlock *Insert = Order.empty() ? ParentRegion->getExit() :
-                       Order.back()->getEntry();
-  BasicBlock *Flow = BasicBlock::Create(Context, FlowBlockName,
-                                        Func, Insert);
+  BasicBlock *Insert =
+      Order.empty() ? ParentRegion->getExit() : Order.back()->getEntry();
+  BasicBlock *Flow = BasicBlock::Create(Context, FlowBlockName, Func, Insert);
   DT->addNewBlock(Flow, Dominator);
   ParentRegion->getRegionInfo()->setRegionFor(Flow, ParentRegion);
   return Flow;
@@ -764,8 +758,7 @@ BasicBlock *StructurizeCFG::needPrefix(bool NeedEmpty) {
 }
 
 /// Returns the region exit if possible, otherwise just a new flow node
-BasicBlock *StructurizeCFG::needPostfix(BasicBlock *Flow,
-                                        bool ExitUseAllowed) {
+BasicBlock *StructurizeCFG::needPostfix(BasicBlock *Flow, bool ExitUseAllowed) {
   if (!Order.empty() || !ExitUseAllowed)
     return getNextFlow(Flow);
 
@@ -777,8 +770,7 @@ BasicBlock *StructurizeCFG::needPostfix(BasicBlock *Flow,
 
 /// Set the previous node
 void StructurizeCFG::setPrevNode(BasicBlock *BB) {
-  PrevNode = ParentRegion->contains(BB) ? ParentRegion->getBBNode(BB)
-                                        : nullptr;
+  PrevNode = ParentRegion->contains(BB) ? ParentRegion->getBBNode(BB) : nullptr;
 }
 
 /// Does BB dominate all the predicates of Node?
@@ -798,7 +790,7 @@ bool StructurizeCFG::isPredictableTrue(RegionNode *Node) {
   if (!PrevNode)
     return true;
 
-  for (std::pair<BasicBlock*, Value*> Pred : Preds) {
+  for (std::pair<BasicBlock *, Value *> Pred : Preds) {
     BasicBlock *BB = Pred.first;
     Value *V = Pred.second;
 
@@ -814,8 +806,7 @@ bool StructurizeCFG::isPredictableTrue(RegionNode *Node) {
 }
 
 /// Take one node from the order vector and wire it up
-void StructurizeCFG::wireFlow(bool ExitUseAllowed,
-                              BasicBlock *LoopEnd) {
+void StructurizeCFG::wireFlow(bool ExitUseAllowed, BasicBlock *LoopEnd) {
   RegionNode *Node = Order.pop_back_val();
   Visited.insert(Node->getEntry());
 
@@ -849,8 +840,7 @@ void StructurizeCFG::wireFlow(bool ExitUseAllowed,
   }
 }
 
-void StructurizeCFG::handleLoops(bool ExitUseAllowed,
-                                 BasicBlock *LoopEnd) {
+void StructurizeCFG::handleLoops(bool ExitUseAllowed, BasicBlock *LoopEnd) {
   RegionNode *Node = Order.back();
   BasicBlock *LoopStart = Node->getEntry();
 
@@ -874,11 +864,8 @@ void StructurizeCFG::handleLoops(bool ExitUseAllowed,
   if (LoopStart == &LoopFunc->getEntryBlock()) {
     LoopStart->setName("entry.orig");
 
-    BasicBlock *NewEntry =
-      BasicBlock::Create(LoopStart->getContext(),
-                         "entry",
-                         LoopFunc,
-                         LoopStart);
+    BasicBlock *NewEntry = BasicBlock::Create(LoopStart->getContext(), "entry",
+                                              LoopFunc, LoopStart);
     BranchInst::Create(LoopStart, NewEntry);
     DT->setNewRoot(NewEntry);
   }
@@ -886,8 +873,7 @@ void StructurizeCFG::handleLoops(bool ExitUseAllowed,
   // Create an extra loop end node
   LoopEnd = needPrefix(false);
   BasicBlock *Next = needPostfix(LoopEnd, ExitUseAllowed);
-  LoopConds.push_back(BranchInst::Create(Next, LoopStart,
-                                         BoolUndef, LoopEnd));
+  LoopConds.push_back(BranchInst::Create(Next, LoopStart, BoolUndef, LoopEnd));
   addPhiValues(LoopEnd, LoopStart);
   setPrevNode(Next);
 }

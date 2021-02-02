@@ -7,10 +7,11 @@
 // RUN: | sed -e "s/ <undeserialized declarations>//" -e "s/ imported//" \
 // RUN: | FileCheck %s
 
-template<typename T>
+template <typename T>
 void f(T t) {
   T a[] = {t};
-  for (auto x : a) {}
+  for (auto x : a) {
+  }
 }
 
 void g() {

@@ -10,7 +10,6 @@
 
 #include "llvm/ADT/STLExtras.h"
 
-
 #include "lldb/Core/Debugger.h"
 #include "lldb/DataFormatters/FormattersHelpers.h"
 #include "lldb/DataFormatters/LanguageCategory.h"
@@ -173,11 +172,13 @@ void FormatManager::DisableAllCategories() {
   }
 }
 
-void FormatManager::GetPossibleMatches(
-    ValueObject &valobj, CompilerType compiler_type,
-    lldb::DynamicValueType use_dynamic, FormattersMatchVector &entries,
-    bool did_strip_ptr, bool did_strip_ref, bool did_strip_typedef,
-    bool root_level) {
+void FormatManager::GetPossibleMatches(ValueObject &valobj,
+                                       CompilerType compiler_type,
+                                       lldb::DynamicValueType use_dynamic,
+                                       FormattersMatchVector &entries,
+                                       bool did_strip_ptr, bool did_strip_ref,
+                                       bool did_strip_typedef,
+                                       bool root_level) {
   compiler_type = compiler_type.GetTypeForFormatters();
   ConstString type_name(compiler_type.GetTypeName());
   if (valobj.GetBitfieldBitSize() > 0) {
@@ -194,42 +195,39 @@ void FormatManager::GetPossibleMatches(
 
     ConstString display_type_name(compiler_type.GetTypeName());
     if (display_type_name != type_name)
-      entries.push_back({display_type_name, did_strip_ptr,
-                         did_strip_ref, did_strip_typedef});
+      entries.push_back(
+          {display_type_name, did_strip_ptr, did_strip_ref, did_strip_typedef});
   }
 
   for (bool is_rvalue_ref = true, j = true;
        j && compiler_type.IsReferenceType(nullptr, &is_rvalue_ref); j = false) {
     CompilerType non_ref_type = compiler_type.GetNonReferenceType();
-    GetPossibleMatches(
-        valobj, non_ref_type,
-        use_dynamic, entries, did_strip_ptr, true, did_strip_typedef);
+    GetPossibleMatches(valobj, non_ref_type, use_dynamic, entries,
+                       did_strip_ptr, true, did_strip_typedef);
     if (non_ref_type.IsTypedefType()) {
       CompilerType deffed_referenced_type = non_ref_type.GetTypedefedType();
       deffed_referenced_type =
           is_rvalue_ref ? deffed_referenced_type.GetRValueReferenceType()
                         : deffed_referenced_type.GetLValueReferenceType();
       GetPossibleMatches(
-          valobj, deffed_referenced_type,
-          use_dynamic, entries, did_strip_ptr, did_strip_ref,
+          valobj, deffed_referenced_type, use_dynamic, entries, did_strip_ptr,
+          did_strip_ref,
           true); // this is not exactly the usual meaning of stripping typedefs
     }
   }
 
   if (compiler_type.IsPointerType()) {
     CompilerType non_ptr_type = compiler_type.GetPointeeType();
-    GetPossibleMatches(
-        valobj, non_ptr_type,
-        use_dynamic, entries, true, did_strip_ref, did_strip_typedef);
+    GetPossibleMatches(valobj, non_ptr_type, use_dynamic, entries, true,
+                       did_strip_ref, did_strip_typedef);
     if (non_ptr_type.IsTypedefType()) {
       CompilerType deffed_pointed_type =
           non_ptr_type.GetTypedefedType().GetPointerType();
       const bool stripped_typedef = true;
-      GetPossibleMatches(
-          valobj, deffed_pointed_type,
-          use_dynamic, entries, did_strip_ptr, did_strip_ref,
-          stripped_typedef); // this is not exactly the usual meaning of
-                             // stripping typedefs
+      GetPossibleMatches(valobj, deffed_pointed_type, use_dynamic, entries,
+                         did_strip_ptr, did_strip_ref,
+                         stripped_typedef); // this is not exactly the usual
+                                            // meaning of stripping typedefs
     }
   }
 
@@ -246,11 +244,10 @@ void FormatManager::GetPossibleMatches(
       CompilerType deffed_array_type =
           element_type.GetTypedefedType().GetArrayType(array_size);
       const bool stripped_typedef = true;
-      GetPossibleMatches(
-          valobj, deffed_array_type,
-          use_dynamic, entries, did_strip_ptr, did_strip_ref,
-          stripped_typedef); // this is not exactly the usual meaning of
-                             // stripping typedefs
+      GetPossibleMatches(valobj, deffed_array_type, use_dynamic, entries,
+                         did_strip_ptr, did_strip_ref,
+                         stripped_typedef); // this is not exactly the usual
+                                            // meaning of stripping typedefs
     }
   }
 
@@ -260,8 +257,7 @@ void FormatManager::GetPossibleMatches(
       for (ConstString candidate :
            language->GetPossibleFormattersMatches(valobj, use_dynamic)) {
         entries.push_back(
-            {candidate,
-             did_strip_ptr, did_strip_ref, did_strip_typedef});
+            {candidate, did_strip_ptr, did_strip_ref, did_strip_typedef});
       }
     }
   }
@@ -269,9 +265,8 @@ void FormatManager::GetPossibleMatches(
   // try to strip typedef chains
   if (compiler_type.IsTypedefType()) {
     CompilerType deffed_type = compiler_type.GetTypedefedType();
-    GetPossibleMatches(
-        valobj, deffed_type,
-        use_dynamic, entries, did_strip_ptr, did_strip_ref, true);
+    GetPossibleMatches(valobj, deffed_type, use_dynamic, entries, did_strip_ptr,
+                       did_strip_ref, true);
   }
 
   if (root_level) {
@@ -285,8 +280,8 @@ void FormatManager::GetPossibleMatches(
         break;
       if (unqual_compiler_ast_type.GetOpaqueQualType() !=
           compiler_type.GetOpaqueQualType())
-        GetPossibleMatches(valobj, unqual_compiler_ast_type,
-                           use_dynamic, entries, did_strip_ptr, did_strip_ref,
+        GetPossibleMatches(valobj, unqual_compiler_ast_type, use_dynamic,
+                           entries, did_strip_ptr, did_strip_ref,
                            did_strip_typedef);
     } while (false);
 
@@ -294,10 +289,10 @@ void FormatManager::GetPossibleMatches(
     if (valobj.IsDynamic()) {
       lldb::ValueObjectSP static_value_sp(valobj.GetStaticValue());
       if (static_value_sp)
-        GetPossibleMatches(
-            *static_value_sp.get(), static_value_sp->GetCompilerType(),
-            use_dynamic, entries, did_strip_ptr, did_strip_ref,
-            did_strip_typedef, true);
+        GetPossibleMatches(*static_value_sp.get(),
+                           static_value_sp->GetCompilerType(), use_dynamic,
+                           entries, did_strip_ptr, did_strip_ref,
+                           did_strip_typedef, true);
     }
   }
 }
@@ -410,8 +405,8 @@ void FormatManager::ForEachCategory(TypeCategoryMap::ForEachCallback callback) {
   }
 }
 
-lldb::TypeCategoryImplSP
-FormatManager::GetCategory(ConstString category_name, bool can_create) {
+lldb::TypeCategoryImplSP FormatManager::GetCategory(ConstString category_name,
+                                                    bool can_create) {
   if (!category_name)
     return GetCategory(m_default_category_name);
   lldb::TypeCategoryImplSP category;
@@ -655,7 +650,8 @@ ImplSP FormatManager::GetCached(FormattersMatchData &match_data) {
   }
 
   m_categories_map.Get(match_data, retval_sp);
-  if (match_data.GetTypeForCache() && (!retval_sp || !retval_sp->NonCacheable())) {
+  if (match_data.GetTypeForCache() &&
+      (!retval_sp || !retval_sp->NonCacheable())) {
     LLDB_LOGF(log, "[%s] Caching %p for type %s", __FUNCTION__,
               static_cast<void *>(retval_sp.get()),
               match_data.GetTypeForCache().AsCString("<invalid>"));

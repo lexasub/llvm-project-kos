@@ -28,36 +28,33 @@ std::mutex m;
 bool f_ready = false;
 bool g_ready = false;
 
-void f()
-{
-    m.lock();
-    f_ready = true;
-    cv->notify_one();
-    delete cv;
-    m.unlock();
+void f() {
+  m.lock();
+  f_ready = true;
+  cv->notify_one();
+  delete cv;
+  m.unlock();
 }
 
-void g()
-{
-    m.lock();
-    g_ready = true;
-    cv->notify_one();
-    while (!f_ready)
-        cv->wait(m);
-    m.unlock();
+void g() {
+  m.lock();
+  g_ready = true;
+  cv->notify_one();
+  while (!f_ready)
+    cv->wait(m);
+  m.unlock();
 }
 
-int main(int, char**)
-{
-    cv = new std::condition_variable_any;
-    std::thread th2 = support::make_test_thread(g);
-    m.lock();
-    while (!g_ready)
-        cv->wait(m);
-    m.unlock();
-    std::thread th1 = support::make_test_thread(f);
-    th1.join();
-    th2.join();
+int main(int, char**) {
+  cv = new std::condition_variable_any;
+  std::thread th2 = support::make_test_thread(g);
+  m.lock();
+  while (!g_ready)
+    cv->wait(m);
+  m.unlock();
+  std::thread th1 = support::make_test_thread(f);
+  th1.join();
+  th2.join();
 
   return 0;
 }

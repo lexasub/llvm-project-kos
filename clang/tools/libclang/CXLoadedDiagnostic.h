@@ -15,15 +15,15 @@
 #define LLVM_CLANG_TOOLS_LIBCLANG_CXLOADEDDIAGNOSTIC_H
 
 #include "CIndexDiagnostic.h"
-#include "llvm/ADT/StringRef.h"
 #include "clang/Basic/LLVM.h"
+#include "llvm/ADT/StringRef.h"
 #include <vector>
 
 namespace clang {
 class CXLoadedDiagnostic : public CXDiagnosticImpl {
 public:
-  CXLoadedDiagnostic() : CXDiagnosticImpl(LoadedDiagnosticKind),
-    severity(0), category(0) {}
+  CXLoadedDiagnostic()
+      : CXDiagnosticImpl(LoadedDiagnosticKind), severity(0), category(0) {}
 
   ~CXLoadedDiagnostic() override;
 
@@ -61,12 +61,10 @@ public:
   static bool classof(const CXDiagnosticImpl *D) {
     return D->getKind() == LoadedDiagnosticKind;
   }
-  
+
   /// Decode the CXSourceLocation into file, line, column, and offset.
-  static void decodeLocation(CXSourceLocation location,
-                             CXFile *file,
-                             unsigned *line,
-                             unsigned *column,
+  static void decodeLocation(CXSourceLocation location, CXFile *file,
+                             unsigned *line, unsigned *column,
                              unsigned *offset);
 
   struct Location {
@@ -74,20 +72,20 @@ public:
     unsigned line;
     unsigned column;
     unsigned offset;
-    
-    Location() : line(0), column(0), offset(0) {}    
+
+    Location() : line(0), column(0), offset(0) {}
   };
-  
+
   Location DiagLoc;
 
   std::vector<CXSourceRange> Ranges;
-  std::vector<std::pair<CXSourceRange, const char *> > FixIts;
+  std::vector<std::pair<CXSourceRange, const char *>> FixIts;
   const char *Spelling;
   llvm::StringRef DiagOption;
   llvm::StringRef CategoryText;
   unsigned severity;
   unsigned category;
 };
-}
+} // namespace clang
 
 #endif

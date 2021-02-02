@@ -44,9 +44,7 @@ struct AddressRange {
   bool operator==(const AddressRange &R) const {
     return Start == R.Start && End == R.End;
   }
-  bool operator!=(const AddressRange &R) const {
-    return !(*this == R);
-  }
+  bool operator!=(const AddressRange &R) const { return !(*this == R); }
   bool operator<(const AddressRange &R) const {
     return std::make_pair(Start, End) < std::make_pair(R.Start, R.End);
   }
@@ -85,6 +83,7 @@ class AddressRanges {
 protected:
   using Collection = std::vector<AddressRange>;
   Collection Ranges;
+
 public:
   void clear() { Ranges.clear(); }
   bool empty() const { return Ranges.empty(); }

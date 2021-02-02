@@ -1,4 +1,4 @@
-// RUN: %clang_cc1 -fsyntax-only -verify %s 
+// RUN: %clang_cc1 -fsyntax-only -verify %s
 struct InClassInitializerOnly {
   static const int i = 0;
 };
@@ -19,6 +19,4 @@ struct InClassInitializerAndOutOfClassDirectInitializer {
 };
 int const InClassInitializerAndOutOfClassDirectInitializer::i(0); // expected-error{{static data member 'i' already has an initializer}}
 
-
-int main() { }
-
+int main() {}

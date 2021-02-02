@@ -11,5 +11,5 @@ thread_local int cxx11_tl;
 // CHECK:     thread_local int cxx11_tl;
 // CHECK: }
 void foo() {
-    thread_local int cxx11_tl;
+  thread_local int cxx11_tl;
 }

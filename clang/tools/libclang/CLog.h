@@ -23,7 +23,7 @@ class format_object_base;
 }
 
 namespace clang {
-  class FileEntry;
+class FileEntry;
 
 namespace cxindex {
 
@@ -42,6 +42,7 @@ class Logger : public RefCountedBase<Logger> {
   bool Trace;
   SmallString<64> Msg;
   llvm::raw_svector_ostream LogOS;
+
 public:
   static const char *getEnvVar() {
     static const char *sCachedVar = ::getenv("LIBCLANG_LOGGING");
@@ -70,24 +71,48 @@ public:
   Logger &operator<<(CXSourceLocation);
   Logger &operator<<(CXSourceRange);
   Logger &operator<<(CXString);
-  Logger &operator<<(llvm::StringRef Str) { LogOS << Str; return *this; }
+  Logger &operator<<(llvm::StringRef Str) {
+    LogOS << Str;
+    return *this;
+  }
   Logger &operator<<(const char *Str) {
     if (Str)
       LogOS << Str;
     return *this;
   }
-  Logger &operator<<(unsigned long N) { LogOS << N; return *this; }
-  Logger &operator<<(long N) { LogOS << N ; return *this; }
-  Logger &operator<<(unsigned int N) { LogOS << N; return *this; }
-  Logger &operator<<(int N) { LogOS << N; return *this; }
-  Logger &operator<<(char C) { LogOS << C; return *this; }
-  Logger &operator<<(unsigned char C) { LogOS << C; return *this; }
-  Logger &operator<<(signed char C) { LogOS << C; return *this; }
+  Logger &operator<<(unsigned long N) {
+    LogOS << N;
+    return *this;
+  }
+  Logger &operator<<(long N) {
+    LogOS << N;
+    return *this;
+  }
+  Logger &operator<<(unsigned int N) {
+    LogOS << N;
+    return *this;
+  }
+  Logger &operator<<(int N) {
+    LogOS << N;
+    return *this;
+  }
+  Logger &operator<<(char C) {
+    LogOS << C;
+    return *this;
+  }
+  Logger &operator<<(unsigned char C) {
+    LogOS << C;
+    return *this;
+  }
+  Logger &operator<<(signed char C) {
+    LogOS << C;
+    return *this;
+  }
   Logger &operator<<(const llvm::format_object_base &Fmt);
 };
 
-}
-}
+} // namespace cxindex
+} // namespace clang
 
 /// Macros to automate common uses of Logger. Like this:
 /// \code
@@ -95,8 +120,8 @@ public:
 ///     *Log << "blah";
 ///   }
 /// \endcode
-#define LOG_SECTION(NAME) \
-    if (clang::cxindex::LogRef Log = clang::cxindex::Logger::make(NAME))
+#define LOG_SECTION(NAME)                                                      \
+  if (clang::cxindex::LogRef Log = clang::cxindex::Logger::make(NAME))
 #define LOG_FUNC_SECTION LOG_SECTION(__func__)
 
 #endif

@@ -192,8 +192,8 @@ static bool shouldLinkerNotDedup(bool IsLinkerOnlyAction, const ArgList &Args) {
       return true;
     if (A->getOption().matches(options::OPT_O))
       return llvm::StringSwitch<bool>(A->getValue())
-                    .Case("1", true)
-                    .Default(false);
+          .Case("1", true)
+          .Default(false);
     return false; // OPT_Ofast & OPT_O4
   }
 
@@ -292,8 +292,8 @@ void darwin::Linker::AddLinkArgs(Compilation &C, const ArgList &Args,
     if ((A = Args.getLastArg(options::OPT_compatibility__version)) ||
         (A = Args.getLastArg(options::OPT_current__version)) ||
         (A = Args.getLastArg(options::OPT_install__name)))
-      D.Diag(diag::err_drv_argument_only_allowed_with) << A->getAsString(Args)
-                                                       << "-dynamiclib";
+      D.Diag(diag::err_drv_argument_only_allowed_with)
+          << A->getAsString(Args) << "-dynamiclib";
 
     Args.AddLastArg(CmdArgs, options::OPT_force__flat__namespace);
     Args.AddLastArg(CmdArgs, options::OPT_keep__private__externs);
@@ -308,8 +308,8 @@ void darwin::Linker::AddLinkArgs(Compilation &C, const ArgList &Args,
         (A = Args.getLastArg(options::OPT_force__flat__namespace)) ||
         (A = Args.getLastArg(options::OPT_keep__private__externs)) ||
         (A = Args.getLastArg(options::OPT_private__bundle)))
-      D.Diag(diag::err_drv_argument_not_allowed_with) << A->getAsString(Args)
-                                                      << "-dynamiclib";
+      D.Diag(diag::err_drv_argument_not_allowed_with)
+          << A->getAsString(Args) << "-dynamiclib";
 
     Args.AddAllArgsTranslated(CmdArgs, options::OPT_compatibility__version,
                               "-dylib_compatibility_version");
@@ -812,8 +812,8 @@ bool MachO::HasNativeLLVMSupport() const { return true; }
 ToolChain::CXXStdlibType Darwin::GetDefaultCXXStdlibType() const {
   // Default to use libc++ on OS X 10.9+ and iOS 7+.
   if ((isTargetMacOS() && !isMacosxVersionLT(10, 9)) ||
-       (isTargetIOSBased() && !isIPhoneOSVersionLT(7, 0)) ||
-       isTargetWatchOSBased())
+      (isTargetIOSBased() && !isIPhoneOSVersionLT(7, 0)) ||
+      isTargetWatchOSBased())
     return ToolChain::CST_Libcxx;
 
   return ToolChain::CST_Libstdcxx;
@@ -1127,14 +1127,14 @@ void MachO::AddLinkRuntimeLib(const ArgList &Args, ArgStringList &CmdArgs,
 
 StringRef Darwin::getPlatformFamily() const {
   switch (TargetPlatform) {
-    case DarwinPlatformKind::MacOS:
-      return "MacOSX";
-    case DarwinPlatformKind::IPhoneOS:
-      return "iPhone";
-    case DarwinPlatformKind::TvOS:
-      return "AppleTV";
-    case DarwinPlatformKind::WatchOS:
-      return "Watch";
+  case DarwinPlatformKind::MacOS:
+    return "MacOSX";
+  case DarwinPlatformKind::IPhoneOS:
+    return "iPhone";
+  case DarwinPlatformKind::TvOS:
+    return "AppleTV";
+  case DarwinPlatformKind::WatchOS:
+    return "Watch";
   }
   llvm_unreachable("Unsupported platform");
 }
@@ -1255,9 +1255,9 @@ void DarwinClang::AddLinkSanitizerLibArgs(const ArgList &Args,
   AddLinkRuntimeLib(Args, CmdArgs, Sanitizer, RLO, Shared);
 }
 
-ToolChain::RuntimeLibType DarwinClang::GetRuntimeLibType(
-    const ArgList &Args) const {
-  if (Arg* A = Args.getLastArg(options::OPT_rtlib_EQ)) {
+ToolChain::RuntimeLibType
+DarwinClang::GetRuntimeLibType(const ArgList &Args) const {
+  if (Arg *A = Args.getLastArg(options::OPT_rtlib_EQ)) {
     StringRef Value = A->getValue();
     if (Value != "compiler-rt")
       getDriver().Diag(clang::diag::err_drv_unsupported_rtlib_for_platform)
@@ -1550,8 +1550,9 @@ getDeploymentTargetFromOSVersionArg(DerivedArgList &Args,
     if (iOSVersion || TvOSVersion || WatchOSVersion) {
       TheDriver.Diag(diag::err_drv_argument_not_allowed_with)
           << OSXVersion->getAsString(Args)
-          << (iOSVersion ? iOSVersion
-                         : TvOSVersion ? TvOSVersion : WatchOSVersion)
+          << (iOSVersion    ? iOSVersion
+              : TvOSVersion ? TvOSVersion
+                            : WatchOSVersion)
                  ->getAsString(Args);
     }
     return DarwinPlatform::createOSVersionArg(Darwin::MacOS, OSXVersion);
@@ -1937,16 +1938,18 @@ void Darwin::AddDeploymentTarget(DerivedArgList &Args) const {
 
 // Returns the effective header sysroot path to use. This comes either from
 // -isysroot or --sysroot.
-llvm::StringRef DarwinClang::GetHeaderSysroot(const llvm::opt::ArgList &DriverArgs) const {
-  if(DriverArgs.hasArg(options::OPT_isysroot))
+llvm::StringRef
+DarwinClang::GetHeaderSysroot(const llvm::opt::ArgList &DriverArgs) const {
+  if (DriverArgs.hasArg(options::OPT_isysroot))
     return DriverArgs.getLastArgValue(options::OPT_isysroot);
   if (!getDriver().SysRoot.empty())
     return getDriver().SysRoot;
   return "/";
 }
 
-void DarwinClang::AddClangSystemIncludeArgs(const llvm::opt::ArgList &DriverArgs,
-                                            llvm::opt::ArgStringList &CC1Args) const {
+void DarwinClang::AddClangSystemIncludeArgs(
+    const llvm::opt::ArgList &DriverArgs,
+    llvm::opt::ArgStringList &CC1Args) const {
   const Driver &D = getDriver();
 
   llvm::StringRef Sysroot = GetHeaderSysroot(DriverArgs);
@@ -1960,9 +1963,9 @@ void DarwinClang::AddClangSystemIncludeArgs(const llvm::opt::ArgList &DriverArgs
 
   // Add <sysroot>/usr/local/include
   if (!NoStdInc && !NoStdlibInc) {
-      SmallString<128> P(Sysroot);
-      llvm::sys::path::append(P, "usr", "local", "include");
-      addSystemInclude(DriverArgs, CC1Args, P);
+    SmallString<128> P(Sysroot);
+    llvm::sys::path::append(P, "usr", "local", "include");
+    addSystemInclude(DriverArgs, CC1Args, P);
   }
 
   // Add the Clang builtin headers (<resource>/include)
@@ -1993,12 +1996,10 @@ void DarwinClang::AddClangSystemIncludeArgs(const llvm::opt::ArgList &DriverArgs
   }
 }
 
-bool DarwinClang::AddGnuCPlusPlusIncludePaths(const llvm::opt::ArgList &DriverArgs,
-                                              llvm::opt::ArgStringList &CC1Args,
-                                              llvm::SmallString<128> Base,
-                                              llvm::StringRef Version,
-                                              llvm::StringRef ArchDir,
-                                              llvm::StringRef BitDir) const {
+bool DarwinClang::AddGnuCPlusPlusIncludePaths(
+    const llvm::opt::ArgList &DriverArgs, llvm::opt::ArgStringList &CC1Args,
+    llvm::SmallString<128> Base, llvm::StringRef Version,
+    llvm::StringRef ArchDir, llvm::StringRef BitDir) const {
   llvm::sys::path::append(Base, Version);
 
   // Add the base dir
@@ -2088,47 +2089,43 @@ void DarwinClang::AddClangCXXStdlibIncludeArgs(
     llvm::Triple::ArchType arch = getTriple().getArch();
     bool IsBaseFound = true;
     switch (arch) {
-    default: break;
+    default:
+      break;
 
     case llvm::Triple::ppc:
     case llvm::Triple::ppc64:
-      IsBaseFound = AddGnuCPlusPlusIncludePaths(DriverArgs, CC1Args, UsrIncludeCxx,
-                                                "4.2.1",
-                                                "powerpc-apple-darwin10",
-                                                arch == llvm::Triple::ppc64 ? "ppc64" : "");
-      IsBaseFound |= AddGnuCPlusPlusIncludePaths(DriverArgs, CC1Args, UsrIncludeCxx,
-                                                "4.0.0", "powerpc-apple-darwin10",
-                                                 arch == llvm::Triple::ppc64 ? "ppc64" : "");
+      IsBaseFound = AddGnuCPlusPlusIncludePaths(
+          DriverArgs, CC1Args, UsrIncludeCxx, "4.2.1", "powerpc-apple-darwin10",
+          arch == llvm::Triple::ppc64 ? "ppc64" : "");
+      IsBaseFound |= AddGnuCPlusPlusIncludePaths(
+          DriverArgs, CC1Args, UsrIncludeCxx, "4.0.0", "powerpc-apple-darwin10",
+          arch == llvm::Triple::ppc64 ? "ppc64" : "");
       break;
 
     case llvm::Triple::x86:
     case llvm::Triple::x86_64:
-      IsBaseFound = AddGnuCPlusPlusIncludePaths(DriverArgs, CC1Args, UsrIncludeCxx,
-                                                "4.2.1",
-                                                "i686-apple-darwin10",
-                                                arch == llvm::Triple::x86_64 ? "x86_64" : "");
-      IsBaseFound |= AddGnuCPlusPlusIncludePaths(DriverArgs, CC1Args, UsrIncludeCxx,
-                                                "4.0.0", "i686-apple-darwin8",
-                                                 "");
+      IsBaseFound = AddGnuCPlusPlusIncludePaths(
+          DriverArgs, CC1Args, UsrIncludeCxx, "4.2.1", "i686-apple-darwin10",
+          arch == llvm::Triple::x86_64 ? "x86_64" : "");
+      IsBaseFound |=
+          AddGnuCPlusPlusIncludePaths(DriverArgs, CC1Args, UsrIncludeCxx,
+                                      "4.0.0", "i686-apple-darwin8", "");
       break;
 
     case llvm::Triple::arm:
     case llvm::Triple::thumb:
-      IsBaseFound = AddGnuCPlusPlusIncludePaths(DriverArgs, CC1Args, UsrIncludeCxx,
-                                                "4.2.1",
-                                                "arm-apple-darwin10",
-                                                "v7");
-      IsBaseFound |= AddGnuCPlusPlusIncludePaths(DriverArgs, CC1Args, UsrIncludeCxx,
-                                                "4.2.1",
-                                                "arm-apple-darwin10",
-                                                 "v6");
+      IsBaseFound =
+          AddGnuCPlusPlusIncludePaths(DriverArgs, CC1Args, UsrIncludeCxx,
+                                      "4.2.1", "arm-apple-darwin10", "v7");
+      IsBaseFound |=
+          AddGnuCPlusPlusIncludePaths(DriverArgs, CC1Args, UsrIncludeCxx,
+                                      "4.2.1", "arm-apple-darwin10", "v6");
       break;
 
     case llvm::Triple::aarch64:
-      IsBaseFound = AddGnuCPlusPlusIncludePaths(DriverArgs, CC1Args, UsrIncludeCxx,
-                                                "4.2.1",
-                                                "arm64-apple-darwin10",
-                                                "");
+      IsBaseFound =
+          AddGnuCPlusPlusIncludePaths(DriverArgs, CC1Args, UsrIncludeCxx,
+                                      "4.2.1", "arm64-apple-darwin10", "");
       break;
     }
 
@@ -2391,8 +2388,7 @@ DerivedArgList *MachO::TranslateArgs(const DerivedArgList &Args,
   return DAL;
 }
 
-void MachO::AddLinkRuntimeLibArgs(const ArgList &Args,
-                                  ArgStringList &CmdArgs,
+void MachO::AddLinkRuntimeLibArgs(const ArgList &Args, ArgStringList &CmdArgs,
                                   bool ForceLinkBuiltinRT) const {
   // Embedded targets are simple at the moment, not supporting sanitizers and
   // with different libraries for each member of the product { static, PIC } x
@@ -2428,9 +2424,9 @@ bool Darwin::isAlignedAllocationUnavailable() const {
   return TargetVersion < alignedAllocMinVersion(OS);
 }
 
-void Darwin::addClangTargetOptions(const llvm::opt::ArgList &DriverArgs,
-                                   llvm::opt::ArgStringList &CC1Args,
-                                   Action::OffloadKind DeviceOffloadKind) const {
+void Darwin::addClangTargetOptions(
+    const llvm::opt::ArgList &DriverArgs, llvm::opt::ArgStringList &CC1Args,
+    Action::OffloadKind DeviceOffloadKind) const {
   // Pass "-faligned-alloc-unavailable" only when the user hasn't manually
   // enabled or disabled aligned allocations.
   if (!DriverArgs.hasArgNoClaim(options::OPT_faligned_allocation,
@@ -2482,7 +2478,7 @@ Darwin::TranslateArgs(const DerivedArgList &Args, StringRef BoundArch,
   // it is set here.
   if (isTargetWatchOSBased() ||
       (isTargetIOSBased() && !isIPhoneOSVersionLT(6, 0))) {
-    for (ArgList::iterator it = DAL->begin(), ie = DAL->end(); it != ie; ) {
+    for (ArgList::iterator it = DAL->begin(), ie = DAL->end(); it != ie;) {
       Arg *A = *it;
       ++it;
       if (A->getOption().getID() != options::OPT_mkernel &&
@@ -2771,8 +2767,8 @@ SanitizerMask Darwin::getSupportedSanitizers() const {
   // Prior to 10.9, macOS shipped a version of the C++ standard library without
   // C++11 support. The same is true of iOS prior to version 5. These OS'es are
   // incompatible with -fsanitize=vptr.
-  if (!(isTargetMacOS() && isMacosxVersionLT(10, 9))
-      && !(isTargetIPhoneOS() && isIPhoneOSVersionLT(5, 0)))
+  if (!(isTargetMacOS() && isMacosxVersionLT(10, 9)) &&
+      !(isTargetIPhoneOS() && isIPhoneOSVersionLT(5, 0)))
     Res |= SanitizerKind::Vptr;
 
   if ((IsX86_64 || IsAArch64) && isTargetMacOS()) {

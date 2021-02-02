@@ -9,7 +9,7 @@ public:
   void push_back(T &&) {}
 
   template <typename... Args>
-  void emplace_back(Args &&... args){};
+  void emplace_back(Args &&...args){};
 };
 } // namespace std
 
@@ -36,4 +36,3 @@ int should_use_emplace(std::vector<Foo> &v) {
   // CHECK-FIXES: v.emplace_back();
   // CHECK-MESSAGES: warning: use emplace_back instead of push_back [hicpp-use-emplace,modernize-use-emplace]
 }
-

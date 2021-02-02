@@ -17,56 +17,44 @@
 #include <cassert>
 
 struct X {
-  template<bool Noexcept> void f() noexcept(Noexcept) {}
+  template <bool Noexcept>
+  void f() noexcept(Noexcept) {}
 };
-template<bool Noexcept> using FnType = void (X::*)() noexcept(Noexcept);
+template <bool Noexcept>
+using FnType = void (X::*)() noexcept(Noexcept);
 
-template<bool ThrowNoexcept, bool CatchNoexcept>
-void check()
-{
-    try
-    {
-        auto p = &X::f<ThrowNoexcept>;
-        throw p;
-        assert(false);
-    }
-    catch (FnType<CatchNoexcept> p)
-    {
-        assert(ThrowNoexcept || !CatchNoexcept);
-        assert(p == &X::f<ThrowNoexcept>);
-    }
-    catch (...)
-    {
-        assert(!ThrowNoexcept && CatchNoexcept);
-    }
+template <bool ThrowNoexcept, bool CatchNoexcept>
+void check() {
+  try {
+    auto p = &X::f<ThrowNoexcept>;
+    throw p;
+    assert(false);
+  } catch (FnType<CatchNoexcept> p) {
+    assert(ThrowNoexcept || !CatchNoexcept);
+    assert(p == &X::f<ThrowNoexcept>);
+  } catch (...) {
+    assert(!ThrowNoexcept && CatchNoexcept);
+  }
 }
 
 void check_deep() {
-    FnType<true> p = &X::f<true>;
-    try
-    {
-        throw &p;
-    }
-    catch (FnType<false> *q)
-    {
-        assert(false);
-    }
-    catch (FnType<true> *q)
-    {
-    }
-    catch (...)
-    {
-        assert(false);
-    }
+  FnType<true> p = &X::f<true>;
+  try {
+    throw &p;
+  } catch (FnType<false>* q) {
+    assert(false);
+  } catch (FnType<true>* q) {
+  } catch (...) {
+    assert(false);
+  }
 }
 
-int main(int, char**)
-{
-    check<false, false>();
-    check<false, true>();
-    check<true, false>();
-    check<true, true>();
-    check_deep();
+int main(int, char**) {
+  check<false, false>();
+  check<false, true>();
+  check<true, false>();
+  check<true, true>();
+  check_deep();
 
-    return 0;
+  return 0;
 }

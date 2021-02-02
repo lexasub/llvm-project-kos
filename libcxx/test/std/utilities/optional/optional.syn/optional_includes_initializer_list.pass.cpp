@@ -15,12 +15,11 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    using std::optional;
+int main(int, char**) {
+  using std::optional;
 
-    std::initializer_list<int> list;
-    (void)list;
+  std::initializer_list<int> list;
+  (void)list;
 
   return 0;
 }

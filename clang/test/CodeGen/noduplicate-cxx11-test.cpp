@@ -7,14 +7,12 @@
 
 int noduplicatedfun [[clang::noduplicate]] (int a) {
 
-  return a+1;
-
+  return a + 1;
 }
 
 int main() {
 
   return noduplicatedfun(5);
-
 }
 
 // CHECK: attributes [[NI]] = { noduplicate {{.*}}nounwind{{.*}} }

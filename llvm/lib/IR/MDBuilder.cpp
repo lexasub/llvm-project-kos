@@ -52,9 +52,7 @@ MDNode *MDBuilder::createBranchWeights(ArrayRef<uint32_t> Weights) {
   return MDNode::get(Context, Vals);
 }
 
-MDNode *MDBuilder::createUnpredictable() {
-  return MDNode::get(Context, None);
-}
+MDNode *MDBuilder::createUnpredictable() { return MDNode::get(Context, None); }
 
 MDNode *MDBuilder::createFunctionEntryCount(
     uint64_t Count, bool Synthetic,
@@ -76,9 +74,8 @@ MDNode *MDBuilder::createFunctionEntryCount(
 }
 
 MDNode *MDBuilder::createFunctionSectionPrefix(StringRef Prefix) {
-  return MDNode::get(Context,
-                     {createString("function_section_prefix"),
-                      createString(Prefix)});
+  return MDNode::get(
+      Context, {createString("function_section_prefix"), createString(Prefix)});
 }
 
 MDNode *MDBuilder::createRange(const APInt &Lo, const APInt &Hi) {
@@ -140,7 +137,7 @@ MDNode *MDBuilder::mergeCallbackEncodings(MDNode *ExistingCallbacks,
 
     auto *OldCBCalleeIdxAsCM = cast<ConstantAsMetadata>(Ops[u]);
     uint64_t OldCBCalleeIdx =
-      cast<ConstantInt>(OldCBCalleeIdxAsCM->getValue())->getZExtValue();
+        cast<ConstantInt>(OldCBCalleeIdxAsCM->getValue())->getZExtValue();
     (void)OldCBCalleeIdx;
     assert(NewCBCalleeIdx != OldCBCalleeIdx &&
            "Cannot map a callback callee index twice!");
@@ -300,8 +297,8 @@ MDNode *MDBuilder::createMutableTBAAAccessTag(MDNode *Tag) {
 
 MDNode *MDBuilder::createIrrLoopHeaderWeight(uint64_t Weight) {
   Metadata *Vals[] = {
-    createString("loop_header_weight"),
-    createConstant(ConstantInt::get(Type::getInt64Ty(Context), Weight)),
+      createString("loop_header_weight"),
+      createConstant(ConstantInt::get(Type::getInt64Ty(Context), Weight)),
   };
   return MDNode::get(Context, Vals);
 }

@@ -14,8 +14,8 @@ using namespace llvm;
 namespace {
 
 typedef IntervalMap<unsigned, unsigned, 4> UUMap;
-typedef IntervalMap<unsigned, unsigned, 4,
-                    IntervalMapHalfOpenInfo<unsigned>> UUHalfOpenMap;
+typedef IntervalMap<unsigned, unsigned, 4, IntervalMapHalfOpenInfo<unsigned>>
+    UUHalfOpenMap;
 
 // Empty map tests
 TEST(IntervalMapTest, EmptyMap) {
@@ -26,8 +26,8 @@ TEST(IntervalMapTest, EmptyMap) {
   // Lookup on empty map.
   EXPECT_EQ(0u, map.lookup(0));
   EXPECT_EQ(7u, map.lookup(0, 7));
-  EXPECT_EQ(0u, map.lookup(~0u-1));
-  EXPECT_EQ(7u, map.lookup(~0u-1, 7));
+  EXPECT_EQ(0u, map.lookup(~0u - 1));
+  EXPECT_EQ(7u, map.lookup(~0u - 1, 7));
 
   // Iterators.
   EXPECT_TRUE(map.begin() == map.begin());
@@ -78,7 +78,7 @@ TEST(IntervalMapTest, SingleEntryMap) {
   EXPECT_EQ(1u, map.lookup(150));
   EXPECT_EQ(0u, map.lookup(151));
   EXPECT_EQ(0u, map.lookup(200));
-  EXPECT_EQ(0u, map.lookup(~0u-1));
+  EXPECT_EQ(0u, map.lookup(~0u - 1));
 
   // Iterators.
   EXPECT_TRUE(map.begin() == map.begin());
@@ -385,9 +385,9 @@ TEST(IntervalMapTest, Branched) {
   // Insert enough intervals to force a branched tree.
   // This creates 9 leaf nodes with 11 elements each, tree height = 1.
   for (unsigned i = 1; i < 100; ++i) {
-    map.insert(10*i, 10*i+5, i);
+    map.insert(10 * i, 10 * i + 5, i);
     EXPECT_EQ(10u, map.start());
-    EXPECT_EQ(10*i+5, map.stop());
+    EXPECT_EQ(10 * i + 5, map.stop());
   }
 
   // Tree limits.
@@ -397,18 +397,18 @@ TEST(IntervalMapTest, Branched) {
 
   // Tree lookup.
   for (unsigned i = 1; i < 100; ++i) {
-    EXPECT_EQ(0u, map.lookup(10*i-1));
-    EXPECT_EQ(i, map.lookup(10*i));
-    EXPECT_EQ(i, map.lookup(10*i+5));
-    EXPECT_EQ(0u, map.lookup(10*i+6));
+    EXPECT_EQ(0u, map.lookup(10 * i - 1));
+    EXPECT_EQ(i, map.lookup(10 * i));
+    EXPECT_EQ(i, map.lookup(10 * i + 5));
+    EXPECT_EQ(0u, map.lookup(10 * i + 6));
   }
 
   // Forward iteration.
   UUMap::iterator I = map.begin();
   for (unsigned i = 1; i < 100; ++i) {
     ASSERT_TRUE(I.valid());
-    EXPECT_EQ(10*i, I.start());
-    EXPECT_EQ(10*i+5, I.stop());
+    EXPECT_EQ(10 * i, I.start());
+    EXPECT_EQ(10 * i + 5, I.stop());
     EXPECT_EQ(i, *I);
     ++I;
   }
@@ -419,8 +419,8 @@ TEST(IntervalMapTest, Branched) {
   for (unsigned i = 99; i; --i) {
     --I;
     ASSERT_TRUE(I.valid());
-    EXPECT_EQ(10*i, I.start());
-    EXPECT_EQ(10*i+5, I.stop());
+    EXPECT_EQ(10 * i, I.start());
+    EXPECT_EQ(10 * i + 5, I.stop());
     EXPECT_EQ(i, *I);
   }
   EXPECT_TRUE(I == map.begin());
@@ -527,7 +527,7 @@ TEST(IntervalMapTest, Branched2) {
 
   // Insert enough intervals to force a height >= 2 tree.
   for (unsigned i = 1; i < 1000; ++i)
-    map.insert(10*i, 10*i+5, i);
+    map.insert(10 * i, 10 * i + 5, i);
 
   // Tree limits.
   EXPECT_FALSE(map.empty());
@@ -536,18 +536,18 @@ TEST(IntervalMapTest, Branched2) {
 
   // Tree lookup.
   for (unsigned i = 1; i < 1000; ++i) {
-    EXPECT_EQ(0u, map.lookup(10*i-1));
-    EXPECT_EQ(i, map.lookup(10*i));
-    EXPECT_EQ(i, map.lookup(10*i+5));
-    EXPECT_EQ(0u, map.lookup(10*i+6));
+    EXPECT_EQ(0u, map.lookup(10 * i - 1));
+    EXPECT_EQ(i, map.lookup(10 * i));
+    EXPECT_EQ(i, map.lookup(10 * i + 5));
+    EXPECT_EQ(0u, map.lookup(10 * i + 6));
   }
 
   // Forward iteration.
   UUMap::iterator I = map.begin();
   for (unsigned i = 1; i < 1000; ++i) {
     ASSERT_TRUE(I.valid());
-    EXPECT_EQ(10*i, I.start());
-    EXPECT_EQ(10*i+5, I.stop());
+    EXPECT_EQ(10 * i, I.start());
+    EXPECT_EQ(10 * i + 5, I.stop());
     EXPECT_EQ(i, *I);
     ++I;
   }
@@ -558,8 +558,8 @@ TEST(IntervalMapTest, Branched2) {
   for (unsigned i = 999; i; --i) {
     --I;
     ASSERT_TRUE(I.valid());
-    EXPECT_EQ(10*i, I.start());
-    EXPECT_EQ(10*i+5, I.stop());
+    EXPECT_EQ(10 * i, I.start());
+    EXPECT_EQ(10 * i + 5, I.stop());
     EXPECT_EQ(i, *I);
   }
   EXPECT_TRUE(I == map.begin());
@@ -606,10 +606,10 @@ TEST(IntervalMapTest, RandomCoalescing) {
 
   unsigned x = 100;
   for (unsigned i = 0; i != 4096; ++i) {
-    map.insert(10*x, 10*x+9, 1);
-    EXPECT_GE(10*x, map.start());
-    EXPECT_LE(10*x+9, map.stop());
-    x = (5*x+1)%4096;
+    map.insert(10 * x, 10 * x + 9, 1);
+    EXPECT_GE(10 * x, map.start());
+    EXPECT_LE(10 * x + 9, map.stop());
+    x = (5 * x + 1) % 4096;
   }
 
   // Map should be fully coalesced after that exercise.
@@ -617,7 +617,6 @@ TEST(IntervalMapTest, RandomCoalescing) {
   EXPECT_EQ(0u, map.start());
   EXPECT_EQ(40959u, map.stop());
   EXPECT_EQ(1, std::distance(map.begin(), map.end()));
-
 }
 
 TEST(IntervalMapTest, Overlaps) {
@@ -665,7 +664,7 @@ TEST(IntervalMapTest, OverlapsHalfOpen) {
 }
 
 TEST(IntervalMapOverlapsTest, SmallMaps) {
-  typedef IntervalMapOverlaps<UUMap,UUMap> UUOverlaps;
+  typedef IntervalMapOverlaps<UUMap, UUMap> UUOverlaps;
   UUMap::Allocator allocator;
   UUMap mapA(allocator);
   UUMap mapB(allocator);
@@ -709,22 +708,22 @@ TEST(IntervalMapOverlapsTest, SmallMaps) {
 }
 
 TEST(IntervalMapOverlapsTest, BigMaps) {
-  typedef IntervalMapOverlaps<UUMap,UUMap> UUOverlaps;
+  typedef IntervalMapOverlaps<UUMap, UUMap> UUOverlaps;
   UUMap::Allocator allocator;
   UUMap mapA(allocator);
   UUMap mapB(allocator);
 
   // [0;4] [10;14] [20;24] ...
   for (unsigned n = 0; n != 100; ++n)
-    mapA.insert(10*n, 10*n+4, n);
+    mapA.insert(10 * n, 10 * n + 4, n);
 
   // [5;6] [15;16] [25;26] ...
   for (unsigned n = 10; n != 20; ++n)
-    mapB.insert(10*n+5, 10*n+6, n);
+    mapB.insert(10 * n + 5, 10 * n + 6, n);
 
   // [208;209] [218;219] ...
   for (unsigned n = 20; n != 30; ++n)
-    mapB.insert(10*n+8, 10*n+9, n);
+    mapB.insert(10 * n + 8, 10 * n + 9, n);
 
   // insert some overlapping segments.
   mapB.insert(400, 400, 400);

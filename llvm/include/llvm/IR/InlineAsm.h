@@ -30,10 +30,7 @@ template <class ConstantClass> class ConstantUniqueMap;
 
 class InlineAsm final : public Value {
 public:
-  enum AsmDialect {
-    AD_ATT,
-    AD_Intel
-  };
+  enum AsmDialect { AD_ATT, AD_Intel };
 
 private:
   friend struct InlineAsmKeyType;
@@ -71,7 +68,7 @@ public:
   /// getType - InlineAsm's are always pointers.
   ///
   PointerType *getType() const {
-    return reinterpret_cast<PointerType*>(Value::getType());
+    return reinterpret_cast<PointerType *>(Value::getType());
   }
 
   /// getFunctionType - InlineAsm's are always pointers to functions.
@@ -89,9 +86,9 @@ public:
 
   // Constraint String Parsing
   enum ConstraintPrefix {
-    isInput,            // 'x'
-    isOutput,           // '=x'
-    isClobber           // '~x'
+    isInput,  // 'x'
+    isOutput, // '=x'
+    isClobber // '~x'
   };
 
   using ConstraintCodeVector = std::vector<std::string>;
@@ -209,12 +206,12 @@ public:
     Op_InputChain = 0,
     Op_AsmString = 1,
     Op_MDNode = 2,
-    Op_ExtraInfo = 3,    // HasSideEffects, IsAlignStack, AsmDialect.
+    Op_ExtraInfo = 3, // HasSideEffects, IsAlignStack, AsmDialect.
     Op_FirstOperand = 4,
 
     // Fixed operands on an INLINEASM MachineInstr.
     MIOp_AsmString = 0,
-    MIOp_ExtraInfo = 1,    // HasSideEffects, IsAlignStack, AsmDialect.
+    MIOp_ExtraInfo = 1, // HasSideEffects, IsAlignStack, AsmDialect.
     MIOp_FirstOperand = 2,
 
     // Interpretation of the MIOp_ExtraInfo bit field.
@@ -273,7 +270,9 @@ public:
     return Kind | (NumOps << 3);
   }
 
-  static bool isRegDefKind(unsigned Flag){ return getKind(Flag) == Kind_RegDef;}
+  static bool isRegDefKind(unsigned Flag) {
+    return getKind(Flag) == Kind_RegDef;
+  }
   static bool isImmKind(unsigned Flag) { return getKind(Flag) == Kind_Imm; }
   static bool isMemKind(unsigned Flag) { return getKind(Flag) == Kind_Mem; }
   static bool isRegDefEarlyClobberKind(unsigned Flag) {
@@ -302,7 +301,8 @@ public:
     // Store RC + 1, reserve the value 0 to mean 'no register class'.
     ++RC;
     assert(!isImmKind(InputFlag) && "Immediates cannot have a register class");
-    assert(!isMemKind(InputFlag) && "Memory operand cannot have a register class");
+    assert(!isMemKind(InputFlag) &&
+           "Memory operand cannot have a register class");
     assert(RC <= 0x7fff && "Too large register class ID");
     assert((InputFlag & ~0xffff) == 0 && "High bits already contain data");
     return InputFlag | (RC << 16);
@@ -323,9 +323,7 @@ public:
     return InputFlag & ~(0x7fff << Constraints_ShiftAmount);
   }
 
-  static unsigned getKind(unsigned Flags) {
-    return Flags & 7;
-  }
+  static unsigned getKind(unsigned Flags) { return Flags & 7; }
 
   static unsigned getMemoryConstraintID(unsigned Flag) {
     assert(isMemKind(Flag));

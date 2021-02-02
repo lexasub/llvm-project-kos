@@ -8,7 +8,6 @@
 
 #include "lldb/Utility/DataBufferHeap.h"
 
-
 using namespace lldb_private;
 
 // Default constructor

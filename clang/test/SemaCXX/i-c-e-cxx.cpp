@@ -18,44 +18,43 @@ void f() {
 }
 
 int a() {
-  const int t=t; // expected-note {{declared here}}
+  const int t = t; // expected-note {{declared here}}
 
-  switch(1) { // do not warn that 1 is not a case value;
-              // 't' might have been expected to evalaute to 1
-    case t:; // expected-note {{initializer of 't' is not a constant expression}}
+  switch (1) { // do not warn that 1 is not a case value;
+               // 't' might have been expected to evalaute to 1
+  case t:;     // expected-note {{initializer of 't' is not a constant expression}}
 #if __cplusplus <= 199711L
-    // expected-error@-2 {{not an integral constant expression}}
+  // expected-error@-2 {{not an integral constant expression}}
 #else
-    // expected-error@-4 {{case value is not a constant expression}}
+  // expected-error@-4 {{case value is not a constant expression}}
 #endif
   }
 }
 
 // PR6206:  out-of-line definitions are legit
 namespace pr6206 {
-  class Foo {
-  public:
-    static const int kBar;
-  };
+class Foo {
+public:
+  static const int kBar;
+};
 
-  const int Foo::kBar = 20;
-  
-  char Test() {
-    char str[Foo::kBar];
-    str[0] = '0';
-    return str[0];
-  }
+const int Foo::kBar = 20;
+
+char Test() {
+  char str[Foo::kBar];
+  str[0] = '0';
+  return str[0];
 }
+} // namespace pr6206
 
 // PR6373:  default arguments don't count.
 void pr6373(const unsigned x = 0) {
   unsigned max = 80 / x;
 }
 
-
 // rdar://9204520
 namespace rdar9204520 {
-  
+
 struct A {
   static const int B = int(0.75 * 1000 * 1000);
 #if __cplusplus <= 199711L
@@ -64,19 +63,22 @@ struct A {
 };
 
 int foo() { return A::B; }
-}
+} // namespace rdar9204520
 
 // PR11040
 const int x = 10;
-int* y = reinterpret_cast<const char&>(x); // expected-error {{cannot initialize}}
+int *y = reinterpret_cast<const char &>(x); // expected-error {{cannot initialize}}
 
 // This isn't an integral constant expression, but make sure it folds anyway.
-struct PR8836 { char _; long long a; };
+struct PR8836 {
+  char _;
+  long long a;
+};
 #if __cplusplus <= 199711L
 // expected-warning@-2 {{'long long' is a C++11 extension}}
 #endif
 
-int PR8836test[(__typeof(sizeof(int)))&reinterpret_cast<const volatile char&>((((PR8836*)0)->a))];
+int PR8836test[(__typeof(sizeof(int))) & reinterpret_cast<const volatile char &>((((PR8836 *)0)->a))];
 // expected-warning@-1 0-1{{C99 feature}} expected-warning@-1 {{folded to constant array as an extension}}
 // expected-note@-2 {{cast that performs the conversions of a reinterpret_cast is not allowed in a constant expression}}
 

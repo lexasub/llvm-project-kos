@@ -127,18 +127,19 @@ static inline bool isPrefixedOrGrouping(const Option *O) {
          O->getFormattingFlag() == cl::AlwaysPrefix;
 }
 
-
 namespace {
 
 class PrintArg {
   StringRef ArgName;
   size_t Pad;
+
 public:
-  PrintArg(StringRef ArgName, size_t Pad = DefaultPad) : ArgName(ArgName), Pad(Pad) {}
+  PrintArg(StringRef ArgName, size_t Pad = DefaultPad)
+      : ArgName(ArgName), Pad(Pad) {}
   friend raw_ostream &operator<<(raw_ostream &OS, const PrintArg &);
 };
 
-raw_ostream &operator<<(raw_ostream &OS, const PrintArg& Arg) {
+raw_ostream &operator<<(raw_ostream &OS, const PrintArg &Arg) {
   OS << argPrefix(Arg.ArgName, Arg.Pad) << Arg.ArgName;
   return OS;
 }
@@ -156,7 +157,7 @@ public:
   // This collects Options added with the cl::DefaultOption flag. Since they can
   // be overridden, they are not added to the appropriate SubCommands until
   // ParseCommandLineOptions actually runs.
-  SmallVector<Option*, 4> DefaultOptions;
+  SmallVector<Option *, 4> DefaultOptions;
 
   // This collects the different option categories that have been registered.
   SmallPtrSet<OptionCategory *, 16> RegisteredOptionCategories;
@@ -356,8 +357,8 @@ public:
   void registerCategory(OptionCategory *cat) {
     assert(count_if(RegisteredOptionCategories,
                     [cat](const OptionCategory *Category) {
-             return cat->getName() == Category->getName();
-           }) == 0 &&
+                      return cat->getName() == Category->getName();
+                    }) == 0 &&
            "Duplicate option categories");
 
     RegisteredOptionCategories.insert(cat);
@@ -814,9 +815,7 @@ static bool isWhitespace(char C) {
   return C == ' ' || C == '\t' || C == '\r' || C == '\n';
 }
 
-static bool isWhitespaceOrNull(char C) {
-  return isWhitespace(C) || C == '\0';
-}
+static bool isWhitespaceOrNull(char C) { return isWhitespace(C) || C == '\0'; }
 
 static bool isQuote(char C) { return C == '\"' || C == '\''; }
 
@@ -1079,10 +1078,11 @@ static bool hasUTF8ByteOrderMark(ArrayRef<char> S) {
 }
 
 // FName must be an absolute path.
-static llvm::Error ExpandResponseFile(
-    StringRef FName, StringSaver &Saver, TokenizerCallback Tokenizer,
-    SmallVectorImpl<const char *> &NewArgv, bool MarkEOLs, bool RelativeNames,
-    llvm::vfs::FileSystem &FS) {
+static llvm::Error ExpandResponseFile(StringRef FName, StringSaver &Saver,
+                                      TokenizerCallback Tokenizer,
+                                      SmallVectorImpl<const char *> &NewArgv,
+                                      bool MarkEOLs, bool RelativeNames,
+                                      llvm::vfs::FileSystem &FS) {
   assert(sys::path::is_absolute(FName));
   llvm::ErrorOr<std::unique_ptr<MemoryBuffer>> MemBufOrErr =
       FS.getBufferForFile(FName);
@@ -1330,9 +1330,10 @@ bool CommandLineParser::ParseCommandLineOptions(int argc,
   BumpPtrAllocator A;
   StringSaver Saver(A);
   ExpandResponseFiles(Saver,
-         Triple(sys::getProcessTriple()).isOSWindows() ?
-         cl::TokenizeWindowsCommandLine : cl::TokenizeGNUCommandLine,
-         newArgv);
+                      Triple(sys::getProcessTriple()).isOSWindows()
+                          ? cl::TokenizeWindowsCommandLine
+                          : cl::TokenizeGNUCommandLine,
+                      newArgv);
   argv = &newArgv[0];
   argc = static_cast<int>(newArgv.size());
 
@@ -1368,7 +1369,7 @@ bool CommandLineParser::ParseCommandLineOptions(int argc,
   auto &SinkOpts = ChosenSubCommand->SinkOpts;
   auto &OptionsMap = ChosenSubCommand->OptionsMap;
 
-  for (auto *O: DefaultOptions) {
+  for (auto *O : DefaultOptions) {
     addOption(O, true);
   }
 
@@ -1532,22 +1533,22 @@ bool CommandLineParser::ParseCommandLineOptions(int argc,
       if ((Handler->getMiscFlags() & PositionalEatsArgs) && !Value.empty()) {
         Handler->error("This argument does not take a value.\n"
                        "\tInstead, it consumes any positional arguments until "
-                       "the next recognized option.", *Errs);
+                       "the next recognized option.",
+                       *Errs);
         ErrorParsing = true;
       }
       ActivePositionalArg = Handler;
-    }
-    else
+    } else
       ErrorParsing |= ProvideOption(Handler, ArgName, Value, argc, argv, i);
   }
 
   // Check and handle positional arguments now...
   if (NumPositionalRequired > PositionalVals.size()) {
-      *Errs << ProgramName
-             << ": Not enough positional command line arguments specified!\n"
-             << "Must specify at least " << NumPositionalRequired
-             << " positional argument" << (NumPositionalRequired > 1 ? "s" : "")
-             << ": See: " << argv[0] << " --help\n";
+    *Errs << ProgramName
+          << ": Not enough positional command line arguments specified!\n"
+          << "Must specify at least " << NumPositionalRequired
+          << " positional argument" << (NumPositionalRequired > 1 ? "s" : "")
+          << ": See: " << argv[0] << " --help\n";
 
     ErrorParsing = true;
   } else if (!HasUnlimitedPositionals &&
@@ -1710,9 +1711,7 @@ static StringRef getValueStr(const Option &O, StringRef DefaultMsg) {
 //
 
 // Return the width of the option tag for printing...
-size_t alias::getOptionWidth() const {
-  return argPlusPrefixesSize(ArgStr);
-}
+size_t alias::getOptionWidth() const { return argPlusPrefixesSize(ArgStr); }
 
 void Option::printHelpStr(StringRef HelpStr, size_t Indent,
                           size_t FirstLineIndentedBy) {
@@ -1925,8 +1924,7 @@ static bool shouldPrintOption(StringRef Name, StringRef Description,
 // Return the width of the option tag for printing...
 size_t generic_parser_base::getOptionWidth(const Option &O) const {
   if (O.hasArgStr()) {
-    size_t Size =
-        argPlusPrefixesSize(O.ArgStr) + EqValue.size();
+    size_t Size = argPlusPrefixesSize(O.ArgStr) + EqValue.size();
     for (unsigned i = 0, e = getNumOptions(); i != e; ++i) {
       StringRef Name = getOption(i);
       if (!shouldPrintOption(Name, getDescription(i), O))
@@ -1964,8 +1962,7 @@ void generic_parser_base::printOptionInfo(const Option &O,
 
     outs() << PrintArg(O.ArgStr) << EqValue;
     Option::printHelpStr(O.HelpStr, GlobalWidth,
-                         EqValue.size() +
-                             argPlusPrefixesSize(O.ArgStr));
+                         EqValue.size() + argPlusPrefixesSize(O.ArgStr));
     for (unsigned i = 0, e = getNumOptions(); i != e; ++i) {
       StringRef OptionName = getOption(i);
       StringRef Description = getDescription(i);
@@ -2453,23 +2450,23 @@ static std::vector<VersionPrinterTy> *ExtraVersionPrinters = nullptr;
 #if defined(__GNUC__)
 // GCC and GCC-compatible compilers define __OPTIMIZE__ when optimizations are
 // enabled.
-# if defined(__OPTIMIZE__)
-#  define LLVM_IS_DEBUG_BUILD 0
-# else
-#  define LLVM_IS_DEBUG_BUILD 1
-# endif
+#if defined(__OPTIMIZE__)
+#define LLVM_IS_DEBUG_BUILD 0
+#else
+#define LLVM_IS_DEBUG_BUILD 1
+#endif
 #elif defined(_MSC_VER)
 // MSVC doesn't have a predefined macro indicating if optimizations are enabled.
 // Use _DEBUG instead. This macro actually corresponds to the choice between
 // debug and release CRTs, but it is a reasonable proxy.
-# if defined(_DEBUG)
-#  define LLVM_IS_DEBUG_BUILD 1
-# else
-#  define LLVM_IS_DEBUG_BUILD 0
-# endif
+#if defined(_DEBUG)
+#define LLVM_IS_DEBUG_BUILD 1
+#else
+#define LLVM_IS_DEBUG_BUILD 0
+#endif
 #else
 // Otherwise, for an unknown compiler, assume this is an optimized build.
-# define LLVM_IS_DEBUG_BUILD 0
+#define LLVM_IS_DEBUG_BUILD 0
 #endif
 
 namespace {
@@ -2551,7 +2548,9 @@ void cl::PrintHelpMessage(bool Hidden, bool Categorized) {
 /// Utility function for printing version number.
 void cl::PrintVersionMessage() { VersionPrinterInstance.print(); }
 
-void cl::SetVersionPrinter(VersionPrinterTy func) { OverrideVersionPrinter = func; }
+void cl::SetVersionPrinter(VersionPrinterTy func) {
+  OverrideVersionPrinter = func;
+}
 
 void cl::AddExtraVersionPrinter(VersionPrinterTy func) {
   if (!ExtraVersionPrinters)
@@ -2575,8 +2574,7 @@ cl::getRegisteredSubcommands() {
 void cl::HideUnrelatedOptions(cl::OptionCategory &Category, SubCommand &Sub) {
   for (auto &I : Sub.OptionsMap) {
     for (auto &Cat : I.second->Categories) {
-      if (Cat != &Category &&
-          Cat != &GenericCategory)
+      if (Cat != &Category && Cat != &GenericCategory)
         I.second->setHiddenFlag(cl::ReallyHidden);
     }
   }

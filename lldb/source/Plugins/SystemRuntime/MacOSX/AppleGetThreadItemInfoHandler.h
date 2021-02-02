@@ -106,6 +106,6 @@ private:
   std::mutex m_get_thread_item_info_retbuffer_mutex;
 };
 
-} // using namespace lldb_private
+} // namespace lldb_private
 
 #endif // LLDB_SOURCE_PLUGINS_SYSTEMRUNTIME_MACOSX_APPLEGETTHREADITEMINFOHANDLER_H

@@ -6,13 +6,13 @@ void foo() {
 }
 
 int main(int argc, char **argv) {
-  #pragma omp target parallel nowait( // expected-warning {{extra tokens at the end of '#pragma omp target parallel' are ignored}}
+#pragma omp target parallel nowait( // expected-warning {{extra tokens at the end of '#pragma omp target parallel' are ignored}}
   foo();
-  #pragma omp target parallel nowait (argc)) // expected-warning {{extra tokens at the end of '#pragma omp target parallel' are ignored}}
+#pragma omp target parallel nowait(argc)) // expected-warning {{extra tokens at the end of '#pragma omp target parallel' are ignored}}
   foo();
-  #pragma omp target parallel nowait device (-10u)
+#pragma omp target parallel nowait device(-10u)
   foo();
-  #pragma omp target parallel nowait (3.14) device (-10u) // expected-warning {{extra tokens at the end of '#pragma omp target parallel' are ignored}}
+#pragma omp target parallel nowait(3.14) device(-10u) // expected-warning {{extra tokens at the end of '#pragma omp target parallel' are ignored}}
   foo();
 
   return 0;

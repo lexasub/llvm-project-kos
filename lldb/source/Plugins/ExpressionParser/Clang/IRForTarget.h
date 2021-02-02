@@ -35,7 +35,7 @@ class Module;
 class StoreInst;
 class DataLayout;
 class Value;
-}
+} // namespace llvm
 
 namespace clang {
 class NamedDecl;
@@ -45,7 +45,7 @@ namespace lldb_private {
 class ClangExpressionDeclMap;
 class IRExecutionUnit;
 class IRMemoryMap;
-}
+} // namespace lldb_private
 
 /// \class IRForTarget IRForTarget.h "lldb/Expression/IRForTarget.h"
 /// Transforms the IR for a function to run in the target
@@ -421,7 +421,7 @@ private:
 
   /// Flags
   bool m_resolve_vars; ///< True if external variable references and persistent
-                       ///variable references should be resolved
+                       /// variable references should be resolved
   lldb_private::ConstString
       m_func_name; ///< The name of the function to translate
   lldb_private::ConstString
@@ -429,11 +429,11 @@ private:
   lldb_private::TypeFromParser
       m_result_type;      ///< The type of the result variable.
   llvm::Module *m_module; ///< The module being processed, or NULL if that has
-                          ///not been determined yet.
+                          /// not been determined yet.
   std::unique_ptr<llvm::DataLayout> m_target_data; ///< The target data for the
-                                                   ///module being processed, or
-                                                   ///NULL if there is no
-                                                   ///module.
+                                                   /// module being processed,
+                                                   /// or NULL if there is no
+                                                   /// module.
   lldb_private::ClangExpressionDeclMap
       *m_decl_map; ///< The DeclMap containing the Decls
   llvm::FunctionCallee
@@ -443,9 +443,9 @@ private:
   llvm::FunctionCallee m_sel_registerName; ///< The address of the function
                                            /// sel_registerName, cast to the
                                            /// appropriate function pointer type
-  llvm::FunctionCallee m_objc_getClass; ///< The address of the function
-                                        /// objc_getClass, cast to the
-                                        /// appropriate function pointer type
+  llvm::FunctionCallee m_objc_getClass;    ///< The address of the function
+                                           /// objc_getClass, cast to the
+                                           /// appropriate function pointer type
   llvm::IntegerType
       *m_intptr_ty; ///< The type of an integer large enough to hold a pointer.
   lldb_private::Stream
@@ -454,11 +454,11 @@ private:
       m_execution_unit; ///< The execution unit containing the IR being created.
 
   llvm::StoreInst *m_result_store; ///< If non-NULL, the store instruction that
-                                   ///writes to the result variable.  If
+                                   /// writes to the result variable.  If
                                    /// m_has_side_effects is true, this is
                                    /// NULL.
   bool m_result_is_pointer; ///< True if the function's result in the AST is a
-                            ///pointer (see comments in
+                            /// pointer (see comments in
                             /// ASTResultSynthesizer::SynthesizeBodyResult)
 
   /// A placeholder that will be replaced by a pointer to the final location of

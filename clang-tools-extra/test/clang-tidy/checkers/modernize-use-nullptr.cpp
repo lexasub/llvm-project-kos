@@ -21,28 +21,27 @@ void func() {
   void *CallTest = make_null();
 
   int var = 1;
-  void *CommaTest = (var+=2, make_null());
+  void *CommaTest = (var += 2, make_null());
 
-  int *CastTest = static_cast<int*>(make_null());
+  int *CastTest = static_cast<int *>(make_null());
 }
 
-void dummy(int*) {}
+void dummy(int *) {}
 void side_effect() {}
 
 #define MACRO_EXPANSION_HAS_NULL \
-  void foo() { \
-    dummy(0); \
-    dummy(NULL); \
-    side_effect(); \
+  void foo() {                   \
+    dummy(0);                    \
+    dummy(NULL);                 \
+    side_effect();               \
   }
 
 MACRO_EXPANSION_HAS_NULL;
 #undef MACRO_EXPANSION_HAS_NULL
 
-
 void test_macro_expansion1() {
 #define MACRO_EXPANSION_HAS_NULL \
-  dummy(NULL); \
+  dummy(NULL);                   \
   side_effect();
 
   MACRO_EXPANSION_HAS_NULL;
@@ -53,7 +52,7 @@ void test_macro_expansion1() {
 // Test macro expansion with cast sequence, PR15572.
 void test_macro_expansion2() {
 #define MACRO_EXPANSION_HAS_NULL \
-  dummy((int*)0); \
+  dummy((int *)0);               \
   side_effect();
 
   MACRO_EXPANSION_HAS_NULL;
@@ -63,10 +62,10 @@ void test_macro_expansion2() {
 
 void test_macro_expansion3() {
 #define MACRO_EXPANSION_HAS_NULL \
-  dummy(NULL); \
+  dummy(NULL);                   \
   side_effect();
 
-#define OUTER_MACRO \
+#define OUTER_MACRO         \
   MACRO_EXPANSION_HAS_NULL; \
   side_effect();
 
@@ -84,16 +83,18 @@ void test_macro_expansion4() {
 #undef MY_NULL
 }
 
-#define IS_EQ(x, y) if (x != y) return;
+#define IS_EQ(x, y) \
+  if (x != y)       \
+    return;
 void test_macro_args() {
   int i = 0;
   int *Ptr;
 
-  IS_EQ(static_cast<int*>(0), Ptr);
+  IS_EQ(static_cast<int *>(0), Ptr);
   // CHECK-MESSAGES: :[[@LINE-1]]:27: warning: use nullptr
   // CHECK-FIXES: IS_EQ(static_cast<int*>(nullptr), Ptr);
 
-  IS_EQ(0, Ptr);    // literal
+  IS_EQ(0, Ptr); // literal
   // CHECK-MESSAGES: :[[@LINE-1]]:9: warning: use nullptr
   // CHECK-FIXES: IS_EQ(nullptr, Ptr);
 
@@ -102,7 +103,9 @@ void test_macro_args() {
   // CHECK-FIXES: IS_EQ(nullptr, Ptr);
 
   // These are ok since the null literal is not spelled within a macro.
-#define myassert(x) if (!(x)) return;
+#define myassert(x) \
+  if (!(x))         \
+    return;
   myassert(0 == Ptr);
   // CHECK-MESSAGES: :[[@LINE-1]]:12: warning: use nullptr
   // CHECK-FIXES: myassert(nullptr == Ptr);
@@ -144,7 +147,9 @@ void test_macro_args() {
 
   // Ok since null literal not within macro. However, now testing macro
   // used as arg to another macro.
-#define decorate(EXPR) side_effect(); EXPR;
+#define decorate(EXPR) \
+  side_effect();       \
+  EXPR;
   decorate(IS_EQ(NULL, Ptr));
   // CHECK-MESSAGES: :[[@LINE-1]]:18: warning: use nullptr
   // CHECK-FIXES: decorate(IS_EQ(nullptr, Ptr));
@@ -155,12 +160,22 @@ void test_macro_args() {
   // This macro causes a NullToPointer cast to happen where 0 is assigned to z
   // but the 0 literal cannot be replaced because it is also used as an
   // integer in the comparison.
-#define INT_AND_PTR_USE(X) do { int *z = X; if (X == 4) break; } while(false)
+#define INT_AND_PTR_USE(X) \
+  do {                     \
+    int *z = X;            \
+    if (X == 4)            \
+      break;               \
+  } while (false)
   INT_AND_PTR_USE(0);
 
   // Both uses of X in this case result in NullToPointer casts so replacement
   // is possible.
-#define PTR_AND_PTR_USE(X) do { int *z = X; if (X != z) break; } while(false)
+#define PTR_AND_PTR_USE(X) \
+  do {                     \
+    int *z = X;            \
+    if (X != z)            \
+      break;               \
+  } while (false)
   PTR_AND_PTR_USE(0);
   // CHECK-MESSAGES: :[[@LINE-1]]:19: warning: use nullptr
   // CHECK-FIXES: PTR_AND_PTR_USE(nullptr);
@@ -174,7 +189,8 @@ void test_macro_args() {
   OPTIONAL_CODE(NOT_NULL);
   CALL(NOT_NULL);
 
-#define ENTRY(X) {X}
+#define ENTRY(X) \
+  { X }
   struct A {
     int *Ptr;
   } a[2] = {ENTRY(0), {0}};
@@ -210,7 +226,7 @@ void test_macro_args() {
 class NoDef;
 char function(NoDef *p);
 #define F(x) (sizeof(function(x)) == 1)
-template<class T, T t>
+template <class T, T t>
 class C {};
 C<bool, F(0)> c;
 // CHECK-MESSAGES: :[[@LINE-1]]:11: warning: use nullptr
@@ -231,10 +247,10 @@ void test_default_argument() {
 // Test on two neighbour CXXDefaultArgExprs nodes.
 typedef unsigned long long uint64;
 struct ZZ {
-  explicit ZZ(uint64, const uint64* = NULL) {}
-// CHECK-MESSAGES: :[[@LINE-1]]:39: warning: use nullptr
-// CHECK-FIXES: explicit ZZ(uint64, const uint64* = nullptr) {}
-  operator bool()  { return true; }
+  explicit ZZ(uint64, const uint64 * = NULL) {}
+  // CHECK-MESSAGES: :[[@LINE-1]]:39: warning: use nullptr
+  // CHECK-FIXES: explicit ZZ(uint64, const uint64* = nullptr) {}
+  operator bool() { return true; }
 };
 
 uint64 Hash(uint64 seed = 0) { return 0; }
@@ -245,20 +261,20 @@ void f() {
 }
 
 // Test on ignoring substituted template types.
-template<typename T>
+template <typename T>
 class TemplateClass {
- public:
+public:
   explicit TemplateClass(int a, T default_value = 0) {}
 
   void h(T *default_value = 0) {}
 
-  void f(int* p = 0) {}
-// CHECK-MESSAGES: :[[@LINE-1]]:19: warning: use nullptr
-// CHECK-FIXES: void f(int* p = nullptr) {}
+  void f(int *p = 0) {}
+  // CHECK-MESSAGES: :[[@LINE-1]]:19: warning: use nullptr
+  // CHECK-FIXES: void f(int* p = nullptr) {}
 };
 
 void IgnoreSubstTemplateType() {
-  TemplateClass<int*> a(1);
+  TemplateClass<int *> a(1);
 }
 
 // Test on casting nullptr.
@@ -267,12 +283,12 @@ struct G {
   // CHECK-MESSAGES: :[[@LINE-1]]:35: warning: use nullptr
   // CHECK-FIXES: explicit G(bool, const char * = nullptr) {}
 };
-bool g(const char*);
+bool g(const char *);
 void test_cast_nullptr() {
   G(g(nullptr));
   G(g((nullptr)));
-  G(g(static_cast<char*>(nullptr)));
-  G(g(static_cast<const char*>(nullptr)));
+  G(g(static_cast<char *>(nullptr)));
+  G(g(static_cast<const char *>(nullptr)));
 }
 
 // Test on recognizing multiple NULLs.
@@ -285,20 +301,20 @@ public:
 bool h(int *, int *, int * = nullptr);
 void test_multiple_nulls() {
   T(h(NULL, NULL));
-// CHECK-MESSAGES: :[[@LINE-1]]:7: warning: use nullptr
-// CHECK-MESSAGES: :[[@LINE-2]]:13: warning: use nullptr
-// CHECK-FIXES: T(h(nullptr, nullptr));
+  // CHECK-MESSAGES: :[[@LINE-1]]:7: warning: use nullptr
+  // CHECK-MESSAGES: :[[@LINE-2]]:13: warning: use nullptr
+  // CHECK-FIXES: T(h(nullptr, nullptr));
   T(h(NULL, nullptr));
-// CHECK-MESSAGES: :[[@LINE-1]]:7: warning: use nullptr
-// CHECK-FIXES: T(h(nullptr, nullptr));
+  // CHECK-MESSAGES: :[[@LINE-1]]:7: warning: use nullptr
+  // CHECK-FIXES: T(h(nullptr, nullptr));
   T(h(nullptr, NULL));
-// CHECK-MESSAGES: :[[@LINE-1]]:16: warning: use nullptr
-// CHECK-FIXES: T(h(nullptr, nullptr));
+  // CHECK-MESSAGES: :[[@LINE-1]]:16: warning: use nullptr
+  // CHECK-FIXES: T(h(nullptr, nullptr));
   T(h(nullptr, nullptr));
   T(h(NULL, NULL, NULL));
-// CHECK-MESSAGES: :[[@LINE-1]]:7: warning: use nullptr
-// CHECK-MESSAGES: :[[@LINE-2]]:13: warning: use nullptr
-// CHECK-MESSAGES: :[[@LINE-3]]:19: warning: use nullptr
-// CHECK-FIXES: T(h(nullptr, nullptr, nullptr));
+  // CHECK-MESSAGES: :[[@LINE-1]]:7: warning: use nullptr
+  // CHECK-MESSAGES: :[[@LINE-2]]:13: warning: use nullptr
+  // CHECK-MESSAGES: :[[@LINE-3]]:19: warning: use nullptr
+  // CHECK-FIXES: T(h(nullptr, nullptr, nullptr));
 }
 #undef T

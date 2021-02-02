@@ -412,10 +412,10 @@ public:
 
   bool CalculateMD5(const FileSpec &file_spec, uint64_t &high, uint64_t &low);
 
-  lldb::DataBufferSP ReadRegister(
-      lldb::tid_t tid,
-      uint32_t
-          reg_num); // Must be the eRegisterKindProcessPlugin register number
+  lldb::DataBufferSP
+  ReadRegister(lldb::tid_t tid,
+               uint32_t reg_num); // Must be the eRegisterKindProcessPlugin
+                                  // register number
 
   lldb::DataBufferSP ReadAllRegisters(lldb::tid_t tid);
 

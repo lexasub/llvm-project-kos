@@ -1,4 +1,4 @@
 
-#define STR          "nexus"
+#define STR "nexus"
 
 int zool;

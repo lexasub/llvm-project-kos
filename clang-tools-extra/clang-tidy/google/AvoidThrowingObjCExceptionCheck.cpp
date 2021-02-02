@@ -41,7 +41,7 @@ void AvoidThrowingObjCExceptionCheck::check(
        "Objective-C errors");
 }
 
-}  // namespace objc
-}  // namespace google
-}  // namespace tidy
-}  // namespace clang
+} // namespace objc
+} // namespace google
+} // namespace tidy
+} // namespace clang

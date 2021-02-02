@@ -5,5 +5,3 @@ struct var_outer {
   static int var;
 };
 #endif
-
-

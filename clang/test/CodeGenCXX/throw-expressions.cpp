@@ -1,7 +1,7 @@
 // RUN: %clang_cc1 -fcxx-exceptions -fexceptions -Wno-unreachable-code -Werror -triple x86_64-linux-gnu -emit-llvm -o - %s | FileCheck %s
 
 int val = 42;
-int& test1() {
+int &test1() {
   return throw val, val;
 }
 
@@ -69,23 +69,23 @@ int test6(bool x, bool y, int z) {
 // CHECK: ret i32
 
 namespace DR1560 {
-  struct A {
-    ~A();
-  };
-  extern bool b;
-  A get();
-  // CHECK-LABEL: @_ZN6DR15601bE
-  const A &r = b ? get() : throw 0;
-  // CHECK-NOT: call {{.*}}@_ZN6DR15601AD1Ev
-  // CHECK: call {{.*}} @__cxa_atexit({{.*}} @_ZN6DR15601AD1Ev {{.*}} @_ZGRN6DR15601rE
-  // CHECK-NOT: call {{.*}}@_ZN6DR15601AD1Ev
+struct A {
+  ~A();
+};
+extern bool b;
+A get();
+// CHECK-LABEL: @_ZN6DR15601bE
+const A &r = b ? get() : throw 0;
+// CHECK-NOT: call {{.*}}@_ZN6DR15601AD1Ev
+// CHECK: call {{.*}} @__cxa_atexit({{.*}} @_ZN6DR15601AD1Ev {{.*}} @_ZGRN6DR15601rE
+// CHECK-NOT: call {{.*}}@_ZN6DR15601AD1Ev
 
-  // PR28184
-  void conditional_throw() {
-    int a;
-    (true ? throw 0 : a) = 0; // CHECK: call void @__cxa_throw({{.*}})
-  }
+// PR28184
+void conditional_throw() {
+  int a;
+  (true ? throw 0 : a) = 0; // CHECK: call void @__cxa_throw({{.*}})
 }
+} // namespace DR1560
 
 // CHECK-LABEL: define{{.*}} void @_Z5test7b(
 void test7(bool cond) {

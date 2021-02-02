@@ -7,8 +7,8 @@
 //===----------------------------------------------------------------------===//
 
 #include "llvm/CodeGen/GlobalISel/LegalizerInfo.h"
-#include "llvm/CodeGen/TargetOpcodes.h"
 #include "GISelMITest.h"
+#include "llvm/CodeGen/TargetOpcodes.h"
 #include "gtest/gtest.h"
 
 using namespace llvm;
@@ -16,21 +16,44 @@ using namespace LegalizeActions;
 
 // Define a couple of pretty printers to help debugging when things go wrong.
 namespace llvm {
-std::ostream &
-operator<<(std::ostream &OS, const LegalizeAction Act) {
+std::ostream &operator<<(std::ostream &OS, const LegalizeAction Act) {
   switch (Act) {
-  case Lower: OS << "Lower"; break;
-  case Legal: OS << "Legal"; break;
-  case NarrowScalar: OS << "NarrowScalar"; break;
-  case WidenScalar:  OS << "WidenScalar"; break;
-  case FewerElements:  OS << "FewerElements"; break;
-  case MoreElements:  OS << "MoreElements"; break;
-  case Libcall: OS << "Libcall"; break;
-  case Custom: OS << "Custom"; break;
-  case Bitcast: OS << "Bitcast"; break;
-  case Unsupported: OS << "Unsupported"; break;
-  case NotFound: OS << "NotFound"; break;
-  case UseLegacyRules: OS << "UseLegacyRules"; break;
+  case Lower:
+    OS << "Lower";
+    break;
+  case Legal:
+    OS << "Legal";
+    break;
+  case NarrowScalar:
+    OS << "NarrowScalar";
+    break;
+  case WidenScalar:
+    OS << "WidenScalar";
+    break;
+  case FewerElements:
+    OS << "FewerElements";
+    break;
+  case MoreElements:
+    OS << "MoreElements";
+    break;
+  case Libcall:
+    OS << "Libcall";
+    break;
+  case Custom:
+    OS << "Custom";
+    break;
+  case Bitcast:
+    OS << "Bitcast";
+    break;
+  case Unsupported:
+    OS << "Unsupported";
+    break;
+  case NotFound:
+    OS << "NotFound";
+    break;
+  case UseLegacyRules:
+    OS << "UseLegacyRules";
+    break;
   }
   return OS;
 }
@@ -40,10 +63,9 @@ std::ostream &operator<<(std::ostream &OS, const llvm::LegalizeActionStep Ty) {
      << Ty.NewType << ')';
   return OS;
 }
-}
+} // namespace llvm
 
 namespace {
-
 
 TEST(LegalizerInfoTest, ScalarRISC) {
   using namespace TargetOpcode;
@@ -141,12 +163,10 @@ TEST(LegalizerInfoTest, MultipleTypes) {
             LegalizeActionStep(Legal, 0, LLT{}));
 
   // Make sure we also handle unusual sizes
-  EXPECT_EQ(
-      L.getAction({G_PTRTOINT, {LLT::scalar(65), s64}}),
-      LegalizeActionStep(NarrowScalar, 0, s64));
-  EXPECT_EQ(
-      L.getAction({G_PTRTOINT, {s64, LLT::pointer(0, 32)}}),
-      LegalizeActionStep(Unsupported, 1, LLT::pointer(0, 32)));
+  EXPECT_EQ(L.getAction({G_PTRTOINT, {LLT::scalar(65), s64}}),
+            LegalizeActionStep(NarrowScalar, 0, s64));
+  EXPECT_EQ(L.getAction({G_PTRTOINT, {s64, LLT::pointer(0, 32)}}),
+            LegalizeActionStep(Unsupported, 1, LLT::pointer(0, 32)));
 }
 
 TEST(LegalizerInfoTest, MultipleSteps) {
@@ -196,7 +216,7 @@ TEST(LegalizerInfoTest, SizeChangeStrategy) {
   EXPECT_EQ(L.getAction({G_UREM, {LLT::scalar(33)}}),
             LegalizeActionStep(Unsupported, 0, LLT::scalar(33)));
 }
-}
+} // namespace
 
 #define EXPECT_ACTION(Action, Index, Type, Query)                              \
   do {                                                                         \
@@ -231,22 +251,22 @@ TEST(LegalizerInfoTest, RuleSets) {
     LegalizerInfo LI;
 
     LI.getActionDefinitionsBuilder(G_IMPLICIT_DEF)
-      .legalFor({v4s32, v4p0})
-      .moreElementsToNextPow2(0);
+        .legalFor({v4s32, v4p0})
+        .moreElementsToNextPow2(0);
     LI.computeTables();
 
     EXPECT_ACTION(Unsupported, 0, LLT(), LegalityQuery(G_IMPLICIT_DEF, {s32}));
-    EXPECT_ACTION(Unsupported, 0, LLT(), LegalityQuery(G_IMPLICIT_DEF, {v2s32}));
+    EXPECT_ACTION(Unsupported, 0, LLT(),
+                  LegalityQuery(G_IMPLICIT_DEF, {v2s32}));
     EXPECT_ACTION(MoreElements, 0, v4p0, LegalityQuery(G_IMPLICIT_DEF, {v3p0}));
-    EXPECT_ACTION(MoreElements, 0, v4s32, LegalityQuery(G_IMPLICIT_DEF, {v3s32}));
+    EXPECT_ACTION(MoreElements, 0, v4s32,
+                  LegalityQuery(G_IMPLICIT_DEF, {v3s32}));
   }
 
   // Test minScalarOrElt
   {
     LegalizerInfo LI;
-    LI.getActionDefinitionsBuilder(G_OR)
-      .legalFor({s32})
-      .minScalarOrElt(0, s32);
+    LI.getActionDefinitionsBuilder(G_OR).legalFor({s32}).minScalarOrElt(0, s32);
     LI.computeTables();
 
     EXPECT_ACTION(WidenScalar, 0, s32, LegalityQuery(G_OR, {s16}));
@@ -256,9 +276,8 @@ TEST(LegalizerInfoTest, RuleSets) {
   // Test maxScalarOrELt
   {
     LegalizerInfo LI;
-    LI.getActionDefinitionsBuilder(G_AND)
-      .legalFor({s16})
-      .maxScalarOrElt(0, s16);
+    LI.getActionDefinitionsBuilder(G_AND).legalFor({s16}).maxScalarOrElt(0,
+                                                                         s16);
     LI.computeTables();
 
     EXPECT_ACTION(NarrowScalar, 0, s16, LegalityQuery(G_AND, {s32}));
@@ -268,9 +287,8 @@ TEST(LegalizerInfoTest, RuleSets) {
   // Test clampScalarOrElt
   {
     LegalizerInfo LI;
-    LI.getActionDefinitionsBuilder(G_XOR)
-      .legalFor({s16})
-      .clampScalarOrElt(0, s16, s32);
+    LI.getActionDefinitionsBuilder(G_XOR).legalFor({s16}).clampScalarOrElt(
+        0, s16, s32);
     LI.computeTables();
 
     EXPECT_ACTION(NarrowScalar, 0, s32, LegalityQuery(G_XOR, {s64}));
@@ -284,9 +302,7 @@ TEST(LegalizerInfoTest, RuleSets) {
   // Test minScalar
   {
     LegalizerInfo LI;
-    LI.getActionDefinitionsBuilder(G_OR)
-      .legalFor({s32})
-      .minScalar(0, s32);
+    LI.getActionDefinitionsBuilder(G_OR).legalFor({s32}).minScalar(0, s32);
     LI.computeTables();
 
     // Only handle scalars, ignore vectors.
@@ -297,9 +313,7 @@ TEST(LegalizerInfoTest, RuleSets) {
   // Test maxScalar
   {
     LegalizerInfo LI;
-    LI.getActionDefinitionsBuilder(G_AND)
-      .legalFor({s16})
-      .maxScalar(0, s16);
+    LI.getActionDefinitionsBuilder(G_AND).legalFor({s16}).maxScalar(0, s16);
     LI.computeTables();
 
     // Only handle scalars, ignore vectors.
@@ -311,9 +325,8 @@ TEST(LegalizerInfoTest, RuleSets) {
   {
     LegalizerInfo LI;
 
-    LI.getActionDefinitionsBuilder(G_XOR)
-      .legalFor({s16})
-      .clampScalar(0, s16, s32);
+    LI.getActionDefinitionsBuilder(G_XOR).legalFor({s16}).clampScalar(0, s16,
+                                                                      s32);
     LI.computeTables();
 
     EXPECT_ACTION(NarrowScalar, 0, s32, LegalityQuery(G_XOR, {s64}));
@@ -329,8 +342,8 @@ TEST(LegalizerInfoTest, RuleSets) {
     LegalizerInfo LI;
 
     LI.getActionDefinitionsBuilder(G_AND)
-      .legalFor({s32})
-      .widenScalarOrEltToNextPow2(0, 32);
+        .legalFor({s32})
+        .widenScalarOrEltToNextPow2(0, 32);
     LI.computeTables();
 
     // Handle scalars and vectors
@@ -344,9 +357,8 @@ TEST(LegalizerInfoTest, RuleSets) {
   {
     LegalizerInfo LI;
 
-    LI.getActionDefinitionsBuilder(G_AND)
-      .legalFor({s32})
-      .widenScalarToNextPow2(0, 32);
+    LI.getActionDefinitionsBuilder(G_AND).legalFor({s32}).widenScalarToNextPow2(
+        0, 32);
     LI.computeTables();
 
     EXPECT_ACTION(WidenScalar, 0, s32, LegalityQuery(G_AND, {s5}));
@@ -366,23 +378,23 @@ TEST(LegalizerInfoTest, MMOAlignment) {
 
   {
     LegalizerInfo LI;
-    LI.getActionDefinitionsBuilder(G_LOAD)
-      .legalForTypesWithMemDesc({{s32, p0, 32, 32}});
+    LI.getActionDefinitionsBuilder(G_LOAD).legalForTypesWithMemDesc(
+        {{s32, p0, 32, 32}});
 
     LI.computeTables();
 
     EXPECT_ACTION(Legal, 0, LLT(),
                   LegalityQuery(G_LOAD, {s32, p0},
                                 LegalityQuery::MemDesc{
-                                  32, 32, AtomicOrdering::NotAtomic}));
+                                    32, 32, AtomicOrdering::NotAtomic}));
     EXPECT_ACTION(Unsupported, 0, LLT(),
                   LegalityQuery(G_LOAD, {s32, p0},
                                 LegalityQuery::MemDesc{
-                                  32, 16, AtomicOrdering::NotAtomic }));
+                                    32, 16, AtomicOrdering::NotAtomic}));
     EXPECT_ACTION(Unsupported, 0, LLT(),
                   LegalityQuery(G_LOAD, {s32, p0},
                                 LegalityQuery::MemDesc{
-                                  32, 8, AtomicOrdering::NotAtomic}));
+                                    32, 8, AtomicOrdering::NotAtomic}));
   }
 
   // Test that the maximum supported alignment value isn't truncated
@@ -391,19 +403,20 @@ TEST(LegalizerInfoTest, MMOAlignment) {
     const uint64_t MaxAlignment = UINT64_C(1) << 29;
     const uint64_t MaxAlignInBits = 8 * MaxAlignment;
     LegalizerInfo LI;
-    LI.getActionDefinitionsBuilder(G_LOAD)
-      .legalForTypesWithMemDesc({{s32, p0, 32, MaxAlignInBits}});
+    LI.getActionDefinitionsBuilder(G_LOAD).legalForTypesWithMemDesc(
+        {{s32, p0, 32, MaxAlignInBits}});
 
     LI.computeTables();
 
-    EXPECT_ACTION(Legal, 0, LLT(),
-                  LegalityQuery(G_LOAD, {s32, p0},
-                                LegalityQuery::MemDesc{32,
-                                    MaxAlignInBits, AtomicOrdering::NotAtomic}));
+    EXPECT_ACTION(
+        Legal, 0, LLT(),
+        LegalityQuery(G_LOAD, {s32, p0},
+                      LegalityQuery::MemDesc{32, MaxAlignInBits,
+                                             AtomicOrdering::NotAtomic}));
     EXPECT_ACTION(Unsupported, 0, LLT(),
                   LegalityQuery(G_LOAD, {s32, p0},
                                 LegalityQuery::MemDesc{
-                                  32, 8, AtomicOrdering::NotAtomic }));
+                                    32, 8, AtomicOrdering::NotAtomic}));
   }
 }
 

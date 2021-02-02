@@ -34,7 +34,7 @@ class FunctionType;
 class PointerType;
 class Value;
 class LLVMContext;
-}
+} // namespace llvm
 
 namespace clang {
 namespace CodeGen {
@@ -43,22 +43,22 @@ class CGBlockInfo;
 
 // Flags stored in __block variables.
 enum BlockByrefFlags {
-  BLOCK_BYREF_HAS_COPY_DISPOSE         = (1   << 25), // compiler
-  BLOCK_BYREF_LAYOUT_MASK              = (0xF << 28), // compiler
-  BLOCK_BYREF_LAYOUT_EXTENDED          = (1   << 28),
-  BLOCK_BYREF_LAYOUT_NON_OBJECT        = (2   << 28),
-  BLOCK_BYREF_LAYOUT_STRONG            = (3   << 28),
-  BLOCK_BYREF_LAYOUT_WEAK              = (4   << 28),
-  BLOCK_BYREF_LAYOUT_UNRETAINED        = (5   << 28)
+  BLOCK_BYREF_HAS_COPY_DISPOSE = (1 << 25), // compiler
+  BLOCK_BYREF_LAYOUT_MASK = (0xF << 28),    // compiler
+  BLOCK_BYREF_LAYOUT_EXTENDED = (1 << 28),
+  BLOCK_BYREF_LAYOUT_NON_OBJECT = (2 << 28),
+  BLOCK_BYREF_LAYOUT_STRONG = (3 << 28),
+  BLOCK_BYREF_LAYOUT_WEAK = (4 << 28),
+  BLOCK_BYREF_LAYOUT_UNRETAINED = (5 << 28)
 };
 
 enum BlockLiteralFlags {
-  BLOCK_IS_NOESCAPE      =  (1 << 23),
-  BLOCK_HAS_COPY_DISPOSE =  (1 << 25),
-  BLOCK_HAS_CXX_OBJ =       (1 << 26),
-  BLOCK_IS_GLOBAL =         (1 << 28),
-  BLOCK_USE_STRET =         (1 << 29),
-  BLOCK_HAS_SIGNATURE  =    (1 << 30),
+  BLOCK_IS_NOESCAPE = (1 << 23),
+  BLOCK_HAS_COPY_DISPOSE = (1 << 25),
+  BLOCK_HAS_CXX_OBJ = (1 << 26),
+  BLOCK_IS_GLOBAL = (1 << 28),
+  BLOCK_USE_STRET = (1 << 29),
+  BLOCK_HAS_SIGNATURE = (1 << 30),
   BLOCK_HAS_EXTENDED_LAYOUT = (1u << 31)
 };
 class BlockFlags {
@@ -83,26 +83,24 @@ public:
   friend bool operator&(BlockFlags l, BlockFlags r) {
     return (l.flags & r.flags);
   }
-  bool operator==(BlockFlags r) {
-    return (flags == r.flags);
-  }
+  bool operator==(BlockFlags r) { return (flags == r.flags); }
 };
 inline BlockFlags operator|(BlockLiteralFlags l, BlockLiteralFlags r) {
   return BlockFlags(l) | BlockFlags(r);
 }
 
 enum BlockFieldFlag_t {
-  BLOCK_FIELD_IS_OBJECT   = 0x03,  /* id, NSObject, __attribute__((NSObject)),
-                                    block, ... */
-  BLOCK_FIELD_IS_BLOCK    = 0x07,  /* a block variable */
+  BLOCK_FIELD_IS_OBJECT = 0x03, /* id, NSObject, __attribute__((NSObject)),
+                                 block, ... */
+  BLOCK_FIELD_IS_BLOCK = 0x07,  /* a block variable */
 
-  BLOCK_FIELD_IS_BYREF    = 0x08,  /* the on stack structure holding the __block
-                                    variable */
-  BLOCK_FIELD_IS_WEAK     = 0x10,  /* declared __weak, only used in byref copy
-                                    helpers */
-  BLOCK_FIELD_IS_ARC      = 0x40,  /* field has ARC-specific semantics */
-  BLOCK_BYREF_CALLER      = 128,   /* called from __block (byref) copy/dispose
-                                      support routines */
+  BLOCK_FIELD_IS_BYREF = 0x08, /* the on stack structure holding the __block
+                                variable */
+  BLOCK_FIELD_IS_WEAK = 0x10,  /* declared __weak, only used in byref copy
+                                helpers */
+  BLOCK_FIELD_IS_ARC = 0x40,   /* field has ARC-specific semantics */
+  BLOCK_BYREF_CALLER = 128,    /* called from __block (byref) copy/dispose
+                                  support routines */
   BLOCK_BYREF_CURRENT_MAX = 256
 };
 
@@ -110,6 +108,7 @@ class BlockFieldFlags {
   uint32_t flags;
 
   BlockFieldFlags(uint32_t flags) : flags(flags) {}
+
 public:
   BlockFieldFlags() : flags(0) {}
   BlockFieldFlags(BlockFieldFlag_t flag) : flags(flag) {}
@@ -131,9 +130,7 @@ public:
   friend bool operator&(BlockFieldFlags l, BlockFieldFlags r) {
     return (l.flags & r.flags);
   }
-  bool operator==(BlockFieldFlags Other) const {
-    return flags == Other.flags;
-  }
+  bool operator==(BlockFieldFlags Other) const { return flags == Other.flags; }
 };
 inline BlockFieldFlags operator|(BlockFieldFlag_t l, BlockFieldFlag_t r) {
   return BlockFieldFlags(l) | BlockFieldFlags(r);
@@ -190,12 +187,10 @@ public:
 
     llvm::Value *getConstant() const {
       assert(isConstant());
-      return reinterpret_cast<llvm::Value*>(Data);
+      return reinterpret_cast<llvm::Value *>(Data);
     }
 
-    QualType fieldType() const {
-      return FieldType;
-    }
+    QualType fieldType() const { return FieldType; }
 
     static Capture makeIndex(unsigned index, CharUnits offset,
                              QualType FieldType) {
@@ -239,7 +234,7 @@ public:
   bool CapturesNonExternalType : 1;
 
   /// The mapping of allocated indexes within the block.
-  llvm::DenseMap<const VarDecl*, Capture> Captures;
+  llvm::DenseMap<const VarDecl *, Capture> Captures;
 
   Address LocalAddress;
   llvm::StructType *StructureType;
@@ -264,11 +259,10 @@ public:
   CGBlockInfo *NextBlockInfo;
 
   const Capture &getCapture(const VarDecl *var) const {
-    return const_cast<CGBlockInfo*>(this)->getCapture(var);
+    return const_cast<CGBlockInfo *>(this)->getCapture(var);
   }
   Capture &getCapture(const VarDecl *var) {
-    llvm::DenseMap<const VarDecl*, Capture>::iterator
-      it = Captures.find(var);
+    llvm::DenseMap<const VarDecl *, Capture>::iterator it = Captures.find(var);
     assert(it != Captures.end() && "no entry for variable!");
     return it->second;
   }
@@ -288,7 +282,7 @@ public:
   }
 };
 
-}  // end namespace CodeGen
-}  // end namespace clang
+} // end namespace CodeGen
+} // end namespace clang
 
 #endif

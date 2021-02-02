@@ -17,14 +17,13 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        std::ostrstream out;
-        out << 123 << ' ' << 4.5 << ' ' << "dog" << std::ends;
-        assert(out.str() == std::string("123 4.5 dog"));
-        out.freeze(false);
-    }
+int main(int, char**) {
+  {
+    std::ostrstream out;
+    out << 123 << ' ' << 4.5 << ' ' << "dog" << std::ends;
+    assert(out.str() == std::string("123 4.5 dog"));
+    out.freeze(false);
+  }
 
   return 0;
 }

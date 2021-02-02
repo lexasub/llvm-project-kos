@@ -15,10 +15,9 @@
 
 #include <utility>
 
-
 int main(int, char**) {
-    std::piecewise_construct_t x = std::piecewise_construct;
-    (void)x;
+  std::piecewise_construct_t x = std::piecewise_construct;
+  (void)x;
 
-    return 0;
+  return 0;
 }

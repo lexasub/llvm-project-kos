@@ -18,7 +18,8 @@
 
 template <class Dur>
 void test() {
-  ASSERT_SAME_TYPE(std::chrono::file_time<Dur>, std::chrono::time_point<std::chrono::file_clock, Dur>);
+  ASSERT_SAME_TYPE(std::chrono::file_time<Dur>,
+                   std::chrono::time_point<std::chrono::file_clock, Dur>);
 }
 
 int main(int, char**) {

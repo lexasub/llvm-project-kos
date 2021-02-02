@@ -146,19 +146,32 @@ static int getLibCallID(const MachineFunction &MF,
   switch (MaxReg) {
   default:
     llvm_unreachable("Something has gone wrong!");
-  case /*s11*/ RISCV::X27: return 12;
-  case /*s10*/ RISCV::X26: return 11;
-  case /*s9*/  RISCV::X25: return 10;
-  case /*s8*/  RISCV::X24: return 9;
-  case /*s7*/  RISCV::X23: return 8;
-  case /*s6*/  RISCV::X22: return 7;
-  case /*s5*/  RISCV::X21: return 6;
-  case /*s4*/  RISCV::X20: return 5;
-  case /*s3*/  RISCV::X19: return 4;
-  case /*s2*/  RISCV::X18: return 3;
-  case /*s1*/  RISCV::X9:  return 2;
-  case /*s0*/  RISCV::X8:  return 1;
-  case /*ra*/  RISCV::X1:  return 0;
+  case /*s11*/ RISCV::X27:
+    return 12;
+  case /*s10*/ RISCV::X26:
+    return 11;
+  case /*s9*/ RISCV::X25:
+    return 10;
+  case /*s8*/ RISCV::X24:
+    return 9;
+  case /*s7*/ RISCV::X23:
+    return 8;
+  case /*s6*/ RISCV::X22:
+    return 7;
+  case /*s5*/ RISCV::X21:
+    return 6;
+  case /*s4*/ RISCV::X20:
+    return 5;
+  case /*s3*/ RISCV::X19:
+    return 4;
+  case /*s2*/ RISCV::X18:
+    return 3;
+  case /*s1*/ RISCV::X9:
+    return 2;
+  case /*s0*/ RISCV::X8:
+    return 1;
+  case /*ra*/ RISCV::X1:
+    return 0;
   }
 }
 
@@ -168,20 +181,10 @@ static const char *
 getSpillLibCallName(const MachineFunction &MF,
                     const std::vector<CalleeSavedInfo> &CSI) {
   static const char *const SpillLibCalls[] = {
-    "__riscv_save_0",
-    "__riscv_save_1",
-    "__riscv_save_2",
-    "__riscv_save_3",
-    "__riscv_save_4",
-    "__riscv_save_5",
-    "__riscv_save_6",
-    "__riscv_save_7",
-    "__riscv_save_8",
-    "__riscv_save_9",
-    "__riscv_save_10",
-    "__riscv_save_11",
-    "__riscv_save_12"
-  };
+      "__riscv_save_0", "__riscv_save_1", "__riscv_save_2",  "__riscv_save_3",
+      "__riscv_save_4", "__riscv_save_5", "__riscv_save_6",  "__riscv_save_7",
+      "__riscv_save_8", "__riscv_save_9", "__riscv_save_10", "__riscv_save_11",
+      "__riscv_save_12"};
 
   int LibCallID = getLibCallID(MF, CSI);
   if (LibCallID == -1)
@@ -195,20 +198,11 @@ static const char *
 getRestoreLibCallName(const MachineFunction &MF,
                       const std::vector<CalleeSavedInfo> &CSI) {
   static const char *const RestoreLibCalls[] = {
-    "__riscv_restore_0",
-    "__riscv_restore_1",
-    "__riscv_restore_2",
-    "__riscv_restore_3",
-    "__riscv_restore_4",
-    "__riscv_restore_5",
-    "__riscv_restore_6",
-    "__riscv_restore_7",
-    "__riscv_restore_8",
-    "__riscv_restore_9",
-    "__riscv_restore_10",
-    "__riscv_restore_11",
-    "__riscv_restore_12"
-  };
+      "__riscv_restore_0", "__riscv_restore_1",  "__riscv_restore_2",
+      "__riscv_restore_3", "__riscv_restore_4",  "__riscv_restore_5",
+      "__riscv_restore_6", "__riscv_restore_7",  "__riscv_restore_8",
+      "__riscv_restore_9", "__riscv_restore_10", "__riscv_restore_11",
+      "__riscv_restore_12"};
 
   int LibCallID = getLibCallID(MF, CSI);
   if (LibCallID == -1)
@@ -409,7 +403,7 @@ void RISCVFrameLowering::emitPrologue(MachineFunction &MF,
     // Offsets for objects with fixed locations (IE: those saved by libcall) are
     // simply calculated from the frame index.
     if (FrameIdx < 0)
-      Offset = FrameIdx * (int64_t) STI.getXLen() / 8;
+      Offset = FrameIdx * (int64_t)STI.getXLen() / 8;
     else
       Offset = MFI.getObjectOffset(Entry.getFrameIdx()) -
                RVFI->getLibCallStackSize();
@@ -514,8 +508,8 @@ void RISCVFrameLowering::emitEpilogue(MachineFunction &MF,
       MBBI = MBB.getLastNonDebugInstr();
     DL = MBBI->getDebugLoc();
 
-    // If this is not a terminator, the actual insert location should be after the
-    // last instruction.
+    // If this is not a terminator, the actual insert location should be after
+    // the last instruction.
     if (!MBBI->isTerminator())
       MBBI = std::next(MBBI);
 
@@ -646,11 +640,12 @@ void RISCVFrameLowering::determineCalleeSaves(MachineFunction &MF,
 
   if (MF.getFunction().hasFnAttribute("interrupt") && MFI.hasCalls()) {
 
-    static const MCPhysReg CSRegs[] = { RISCV::X1,      /* ra */
-      RISCV::X5, RISCV::X6, RISCV::X7,                  /* t0-t2 */
-      RISCV::X10, RISCV::X11,                           /* a0-a1, a2-a7 */
-      RISCV::X12, RISCV::X13, RISCV::X14, RISCV::X15, RISCV::X16, RISCV::X17,
-      RISCV::X28, RISCV::X29, RISCV::X30, RISCV::X31, 0 /* t3-t6 */
+    static const MCPhysReg CSRegs[] = {
+        RISCV::X1,                         /* ra */
+        RISCV::X5,  RISCV::X6,  RISCV::X7, /* t0-t2 */
+        RISCV::X10, RISCV::X11,            /* a0-a1, a2-a7 */
+        RISCV::X12, RISCV::X13, RISCV::X14, RISCV::X15, RISCV::X16, RISCV::X17,
+        RISCV::X28, RISCV::X29, RISCV::X30, RISCV::X31, 0 /* t3-t6 */
     };
 
     for (unsigned i = 0; CSRegs[i]; ++i)
@@ -659,7 +654,7 @@ void RISCVFrameLowering::determineCalleeSaves(MachineFunction &MF,
     if (MF.getSubtarget<RISCVSubtarget>().hasStdExtF()) {
 
       // If interrupt is enabled, this list contains all FP registers.
-      const MCPhysReg * Regs = MF.getRegInfo().getCalleeSavedRegs();
+      const MCPhysReg *Regs = MF.getRegInfo().getCalleeSavedRegs();
 
       for (unsigned i = 0; Regs[i]; ++i)
         if (RISCV::FPR16RegClass.contains(Regs[i]) ||

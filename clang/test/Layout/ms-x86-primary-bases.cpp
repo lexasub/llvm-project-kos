@@ -5,12 +5,33 @@
 
 extern "C" int printf(const char *fmt, ...);
 
-struct B0 { int a; B0() : a(0xf00000B0) { printf("B0 = %p\n", this); } virtual void f() { printf("B0"); } };
-struct B1 { int a; B1() : a(0xf00000B1) { printf("B1 = %p\n", this); } virtual void g() { printf("B1"); } };
-struct B2 { int a; B2() : a(0xf00000B2) { printf("B1 = %p\n", this); } };
-struct B0X { int a; B0X() : a(0xf00000B0) {} };
-struct B1X { int a; B1X() : a(0xf00000B1) {} virtual void f() { printf("B0"); } };
-struct B2X : virtual B1X { int a; B2X() : a(0xf00000B2) {} };
+struct B0 {
+  int a;
+  B0() : a(0xf00000B0) { printf("B0 = %p\n", this); }
+  virtual void f() { printf("B0"); }
+};
+struct B1 {
+  int a;
+  B1() : a(0xf00000B1) { printf("B1 = %p\n", this); }
+  virtual void g() { printf("B1"); }
+};
+struct B2 {
+  int a;
+  B2() : a(0xf00000B2) { printf("B1 = %p\n", this); }
+};
+struct B0X {
+  int a;
+  B0X() : a(0xf00000B0) {}
+};
+struct B1X {
+  int a;
+  B1X() : a(0xf00000B1) {}
+  virtual void f() { printf("B0"); }
+};
+struct B2X : virtual B1X {
+  int a;
+  B2X() : a(0xf00000B2) {}
+};
 
 struct A : virtual B0 {
 };
@@ -35,7 +56,7 @@ struct A : virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=8, nvalign=8]
 
 struct B : virtual B0 {
-	virtual void f() { printf("B"); }
+  virtual void f() { printf("B"); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -56,7 +77,7 @@ struct B : virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=8, nvalign=8]
 
 struct C : virtual B0 {
-	virtual void g() { printf("A"); }
+  virtual void g() { printf("A"); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -79,8 +100,8 @@ struct C : virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=16, nvalign=8]
 
 struct D : virtual B2, virtual B0 {
-	virtual void f() { printf("D"); }
-	virtual void g() { printf("D"); }
+  virtual void f() { printf("D"); }
+  virtual void g() { printf("D"); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -109,8 +130,8 @@ struct D : virtual B2, virtual B0 {
 // CHECK-X64-NEXT:      |  nvsize=16, nvalign=8]
 
 struct E : B0, virtual B1 {
-	virtual void f() { printf("E"); }
-	virtual void g() { printf("E"); }
+  virtual void f() { printf("E"); }
+  virtual void g() { printf("E"); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -164,7 +185,11 @@ struct F : virtual B0, virtual B1 {
 // CHECK-X64-NEXT:      | [sizeof=40, align=8
 // CHECK-X64-NEXT:      |  nvsize=8, nvalign=8]
 
-struct AX : B0X, B1X { int a; AX() : a(0xf000000A) {} virtual void f() { printf("A"); } };
+struct AX : B0X, B1X {
+  int a;
+  AX() : a(0xf000000A) {}
+  virtual void f() { printf("A"); }
+};
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK: *** Dumping AST Record Layout
@@ -191,7 +216,11 @@ struct AX : B0X, B1X { int a; AX() : a(0xf000000A) {} virtual void f() { printf(
 // CHECK-X64-NEXT:      | [sizeof=24, align=8
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
-struct BX : B0X, B1X { int a; BX() : a(0xf000000B) {} virtual void g() { printf("B"); } };
+struct BX : B0X, B1X {
+  int a;
+  BX() : a(0xf000000B) {}
+  virtual void g() { printf("B"); }
+};
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK-NEXT:    0 | struct BX
@@ -214,7 +243,11 @@ struct BX : B0X, B1X { int a; BX() : a(0xf000000B) {} virtual void g() { printf(
 // CHECK-X64-NEXT:      | [sizeof=24, align=8
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
-struct CX : B0X, B2X { int a; CX() : a(0xf000000C) {} virtual void g() { printf("C"); } };
+struct CX : B0X, B2X {
+  int a;
+  CX() : a(0xf000000C) {}
+  virtual void g() { printf("C"); }
+};
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK: *** Dumping AST Record Layout
@@ -247,7 +280,11 @@ struct CX : B0X, B2X { int a; CX() : a(0xf000000C) {} virtual void g() { printf(
 // CHECK-X64-NEXT:      | [sizeof=56, align=8
 // CHECK-X64-NEXT:      |  nvsize=40, nvalign=8]
 
-struct DX : virtual B1X { int a; DX() : a(0xf000000D) {} virtual void f() { printf("D"); } };
+struct DX : virtual B1X {
+  int a;
+  DX() : a(0xf000000D) {}
+  virtual void f() { printf("D"); }
+};
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK-NEXT:    0 | struct DX
@@ -270,7 +307,11 @@ struct DX : virtual B1X { int a; DX() : a(0xf000000D) {} virtual void f() { prin
 // CHECK-X64-NEXT:      | [sizeof=40, align=8
 // CHECK-X64-NEXT:      |  nvsize=16, nvalign=8]
 
-struct EX : virtual B1X { int a; EX() : a(0xf000000E) {} virtual void g() { printf("E"); } };
+struct EX : virtual B1X {
+  int a;
+  EX() : a(0xf000000E) {}
+  virtual void g() { printf("E"); }
+};
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK-NEXT:    0 | struct EX
@@ -293,7 +334,10 @@ struct EX : virtual B1X { int a; EX() : a(0xf000000E) {} virtual void g() { prin
 // CHECK-X64-NEXT:      | [sizeof=40, align=8
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
-struct FX : virtual B1X { int a; FX() : a(0xf000000F) {} };
+struct FX : virtual B1X {
+  int a;
+  FX() : a(0xf000000F) {}
+};
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK-NEXT:    0 | struct FX
@@ -314,16 +358,15 @@ struct FX : virtual B1X { int a; FX() : a(0xf000000F) {} };
 // CHECK-X64-NEXT:      | [sizeof=32, align=8
 // CHECK-X64-NEXT:      |  nvsize=16, nvalign=8]
 
-int a[
-sizeof(A)+
-sizeof(B)+
-sizeof(C)+
-sizeof(D)+
-sizeof(E)+
-sizeof(F)+
-sizeof(AX)+
-sizeof(BX)+
-sizeof(CX)+
-sizeof(DX)+
-sizeof(EX)+
-sizeof(FX)];
+int a[sizeof(A) +
+      sizeof(B) +
+      sizeof(C) +
+      sizeof(D) +
+      sizeof(E) +
+      sizeof(F) +
+      sizeof(AX) +
+      sizeof(BX) +
+      sizeof(CX) +
+      sizeof(DX) +
+      sizeof(EX) +
+      sizeof(FX)];

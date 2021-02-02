@@ -114,13 +114,9 @@ public:
 
   /// Returns the total size of the type in bytes, i.e. number of whole bytes
   /// needed to represent the size in bits. Must only be called on sized types.
-  unsigned getSizeInBytes() const {
-    return (getSizeInBits() + 7) / 8;
-  }
+  unsigned getSizeInBytes() const { return (getSizeInBits() + 7) / 8; }
 
-  LLT getScalarType() const {
-    return isVector() ? getElementType() : *this;
-  }
+  LLT getScalarType() const { return isVector() ? getElementType() : *this; }
 
   /// If this type is a vector, return a vector with the same number of elements
   /// but the new element type. Otherwise, return the new element type.
@@ -302,12 +298,12 @@ private:
   }
 };
 
-inline raw_ostream& operator<<(raw_ostream &OS, const LLT &Ty) {
+inline raw_ostream &operator<<(raw_ostream &OS, const LLT &Ty) {
   Ty.print(OS);
   return OS;
 }
 
-template<> struct DenseMapInfo<LLT> {
+template <> struct DenseMapInfo<LLT> {
   static inline LLT getEmptyKey() {
     LLT Invalid;
     Invalid.IsPointer = true;
@@ -322,11 +318,9 @@ template<> struct DenseMapInfo<LLT> {
     uint64_t Val = Ty.getUniqueRAWLLTData();
     return DenseMapInfo<uint64_t>::getHashValue(Val);
   }
-  static bool isEqual(const LLT &LHS, const LLT &RHS) {
-    return LHS == RHS;
-  }
+  static bool isEqual(const LLT &LHS, const LLT &RHS) { return LHS == RHS; }
 };
 
-}
+} // namespace llvm
 
 #endif // LLVM_SUPPORT_LOWLEVELTYPEIMPL_H

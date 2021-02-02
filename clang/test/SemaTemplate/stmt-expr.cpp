@@ -4,9 +4,9 @@
 // where the statement-expression contains no labels).
 template <typename... T> void f1() {
   int arr[] = {
-    ({
-      T(); // expected-error {{unexpanded parameter pack}}
-    }) ... // expected-error {{does not contain any unexpanded parameter packs}}
+      ({
+        T(); // expected-error {{unexpanded parameter pack}}
+      })...  // expected-error {{does not contain any unexpanded parameter packs}}
   };
 }
 
@@ -15,25 +15,23 @@ template <typename... T> void f1() {
 template <typename... T> void f2() {
   [] {
     int arr[] = {
-      T() + ({
-      foo:
-        T t; // expected-error {{unexpanded parameter pack}}
-        goto foo;
-        0;
-      }) ...
-    };
+        T() + ({
+          foo:
+            T t; // expected-error {{unexpanded parameter pack}}
+            goto foo;
+            0;
+        })...};
   };
 }
 
 template <typename... T> void f3() {
   ({
     int arr[] = {
-      [] {
-      foo:
-        T t; // OK, expanded within compound statement
-        goto foo;
-        return 0;
-      } ...
-    };
+        [] {
+          foo:
+            T t; // OK, expanded within compound statement
+            goto foo;
+            return 0;
+        }...};
   });
 }

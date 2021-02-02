@@ -39,14 +39,14 @@ using namespace llvm;
 //===----------------------------------------------------------------------===//
 
 namespace llvm {
-  class DataLayout;
-  class DominatorTree;
-  class Function;
-  class Instruction;
-  class TargetLibraryInfo;
-  class TruncInst;
-  class Type;
-  class Value;
+class DataLayout;
+class DominatorTree;
+class Function;
+class Instruction;
+class TargetLibraryInfo;
+class TruncInst;
+class Type;
+class Value;
 
 class TruncInstCombine {
   TargetLibraryInfo &TLI;

@@ -7,17 +7,17 @@
 // RUN: %clang_cc1 -triple x86_64-linux-gnu -fprofile-instrument-use-path=%T.profdata -fprofile-remapping-file=%S/Inputs/profile-remap.map -fexperimental-new-pass-manager -O2 %s -emit-llvm -o - | FileCheck %s --check-prefixes=CHECK,CHECK-INSTR
 
 namespace Foo {
-  struct X {};
-  bool cond();
-  void bar();
-  void baz();
-  void function(X x) {
-    if (cond())
-      bar();
-    else
-      baz();
-  }
+struct X {};
+bool cond();
+void bar();
+void baz();
+void function(X x) {
+  if (cond())
+    bar();
+  else
+    baz();
 }
+} // namespace Foo
 
 // CHECK: define {{.*}} @_ZN3Foo8functionENS_1XE() {{.*}} !prof [[FUNC_ENTRY:![0-9]*]]
 // CHECK: br i1 {{.*}} !prof [[BR_WEIGHTS:![0-9]*]]

@@ -3,22 +3,24 @@
 // RUN: %clang_cc1 %s -emit-llvm -triple x86_64-linux-gnu -std=c++11 -o - | FileCheck %s
 // RUN: %clang_cc1 %s -emit-llvm -triple powerpc64le-unknown-linux-gnu -std=c++11 -o - | FileCheck %s
 
-struct __attribute__((abi_tag("A", "B"))) A { };
+struct __attribute__((abi_tag("A", "B"))) A {};
 
-struct B: A { };
+struct B : A {};
 
-template<class T>
+template <class T>
 
 struct C {
 };
 
-struct D { A* p; };
+struct D {
+  A *p;
+};
 
-template<class T>
+template <class T>
 struct __attribute__((abi_tag("C", "D"))) E {
 };
 
-struct __attribute__((abi_tag("A", "B"))) F { };
+struct __attribute__((abi_tag("A", "B"))) F {};
 
 A a1;
 // CHECK-DAG: @_Z2a1B1AB1B =
@@ -42,14 +44,14 @@ E<int> a6;
 E<A> a7;
 // CHECK-DAG: @_Z2a7B1AB1BB1CB1D =
 
-template<>
+template <>
 struct E<float> {
   static float a8;
 };
 float E<float>::a8;
 // CHECK-DAG: @_ZN1EB1CB1DIfE2a8E =
 
-template<>
+template <>
 struct E<F> {
   static bool a9;
 };
@@ -71,56 +73,56 @@ A10 B11::b;
 // B11[abi:A]::b[abi:B]
 // CHECK-DAG: @_ZN3B11B1A1bB1BE =
 
-__attribute__ ((abi_tag("C", "D")))
-void* f1() {
+__attribute__((abi_tag("C", "D"))) void *f1() {
   return 0;
 }
 // CHECK-DAG: define {{.*}} @_Z2f1B1CB1Dv(
 
-__attribute__ ((abi_tag("C", "D")))
-A* f2() {
+__attribute__((abi_tag("C", "D")))
+A *
+f2() {
   return 0;
 }
 // CHECK-DAG: define {{.*}} @_Z2f2B1AB1BB1CB1Dv(
 
-B* f3() {
+B *f3() {
   return 0;
 }
 // CHECK-DAG: define {{.*}} @_Z2f3v(
 
-C<A>* f4() {
+C<A> *f4() {
   return 0;
 }
 // CHECK-DAG: define {{.*}} @_Z2f4B1AB1Bv(
 
-D* f5() {
+D *f5() {
   return 0;
 }
 // CHECK-DAG: define {{.*}} @_Z2f5v(
 
-E<char>* f6() {
+E<char> *f6() {
   return 0;
 }
 // CHECK-DAG: define {{.*}} @_Z2f6B1CB1Dv(
 
-E<A>* f7() {
+E<A> *f7() {
   return 0;
 }
 // CHECK-DAG: define {{.*}} @_Z2f7B1AB1BB1CB1Dv(
 
-void f8(E<A>*) {
+void f8(E<A> *) {
 }
 // CHECK-DAG: define {{.*}} @_Z2f8P1EB1CB1DI1AB1AB1BE(
 
 inline namespace Names1 __attribute__((__abi_tag__)) {
-    class C1 {};
-}
+  class C1 {};
+} // namespace )
 C1 f9() { return C1(); }
 // CHECK-DAG: @_Z2f9B6Names1v(
 
 inline namespace Names2 __attribute__((__abi_tag__("Tag1", "Tag2"))) {
-    class C2 {};
-}
+  class C2 {};
+} // namespace )
 C2 f10() { return C2(); }
 // CHECK-DAG: @_Z3f10B4Tag1B4Tag2v(
 
@@ -134,7 +136,7 @@ A f12(A) { return A(); }
 
 inline void f13() {
   struct L {
-    static E<int>* foo() {
+    static E<int> *foo() {
       static A10 a;
       return 0;
     }
@@ -162,7 +164,7 @@ A14 A14::f14() {
 // A14[abi:TAG]::f14()
 // CHECK-DAG: define {{.+}} @_ZN3A14B3TAG3f14Ev(
 
-template<class T>
+template <class T>
 T f15() {
   return T();
 }
@@ -172,7 +174,7 @@ void f15_test() {
 // A14[abi:TAG] f15<A14[abi:TAG]>()
 // CHECK-DAG: define linkonce_odr {{.+}} @_Z3f15I3A14B3TAGET_v(
 
-template<class T>
+template <class T>
 A14 f16() {
   return A14();
 }
@@ -182,9 +184,9 @@ void f16_test() {
 // A14[abi:TAG] f16<int>()
 // CHECK-DAG: define linkonce_odr {{.+}} @_Z3f16IiE3A14B3TAGv(
 
-template<class T>
+template <class T>
 struct __attribute__((abi_tag("TAG"))) A17 {
-  A17 operator+(const A17& a) {
+  A17 operator+(const A17 &a) {
     return a;
   }
 };
@@ -205,30 +207,30 @@ void f18_test() {
 // CHECK-DAG: define linkonce_odr {{.+}} @_ZN3A18cv1AB1AB1BEv(
 
 namespace N19 {
-  class A {};
-  class __attribute__((abi_tag("B"))) B {};
-  class D {};
-  class F {};
+class A {};
+class __attribute__((abi_tag("B"))) B {};
+class D {};
+class F {};
 
-  template<typename T, B F(T, D)>
-  class C {};
+template <typename T, B F(T, D)>
+class C {};
 
-  B foo(A, D);
-}
-void f19_test(N19::C<N19::A,  &N19::foo>, N19::F, N19::D) {
+B foo(A, D);
+} // namespace N19
+void f19_test(N19::C<N19::A, &N19::foo>, N19::F, N19::D) {
 }
 // f19_test(N19::C<N19::A, &N19::foo[abi:B]>, N19::F, N19::D)
 // CHECK-DAG: define {{(dso_local )?}}void @_Z8f19_testN3N191CINS_1AEXadL_ZNS_3fooB1BES1_NS_1DEEEEENS_1FES2_(
 
 namespace pr30440 {
 
-template<class F> void g(F);
-template<class ...A> auto h(A ...a)->decltype (g (0, g < a > (a) ...)) {
+template <class F> void g(F);
+template <class... A> auto h(A... a) -> decltype(g(0, g<a>(a)...)) {
 }
 // CHECK-DAG: define {{.*}} @_ZN7pr304401hIJEEEDTcl1gLi0Espcl1gIXfp_EEfp_EEEDpT_(
 
-void pr30440_test () {
+void pr30440_test() {
   h();
 }
 
-}
+} // namespace pr30440

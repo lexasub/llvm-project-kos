@@ -33,10 +33,7 @@ class LLVM_LIBRARY_VISIBILITY ARMTargetInfo : public TargetInfo {
     FPARMV8 = (1 << 4)
   };
 
-  enum MVEMode {
-      MVE_INT = (1 << 0),
-      MVE_FP  = (1 << 1)
-  };
+  enum MVEMode { MVE_INT = (1 << 0), MVE_FP = (1 << 1) };
 
   // Possible HWDiv features.
   enum HWDivMode { HWDivThumb = (1 << 0), HWDivARM = (1 << 1) };
@@ -146,16 +143,14 @@ public:
 
   bool setFPMath(StringRef Name) override;
 
-  bool useFP16ConversionIntrinsics() const override {
-    return false;
-  }
+  bool useFP16ConversionIntrinsics() const override { return false; }
 
   void getTargetDefinesARMV81A(const LangOptions &Opts,
                                MacroBuilder &Builder) const;
   void getTargetDefinesARMV82A(const LangOptions &Opts,
                                MacroBuilder &Builder) const;
   void getTargetDefinesARMV83A(const LangOptions &Opts,
-                                 MacroBuilder &Builder) const;
+                               MacroBuilder &Builder) const;
   void getTargetDefines(const LangOptions &Opts,
                         MacroBuilder &Builder) const override;
 
@@ -186,7 +181,7 @@ public:
   bool hasSjLjLowering() const override;
 
   bool hasExtIntType() const override { return true; }
-  
+
   const char *getBFloat16Mangling() const override { return "u6__bf16"; };
 };
 

@@ -242,14 +242,14 @@ bool ProfileSummaryInfo::isFunctionHotOrColdInCallGraphNthPercentile(
 // Like isFunctionHotInCallGraph but for a given cutoff.
 bool ProfileSummaryInfo::isFunctionHotInCallGraphNthPercentile(
     int PercentileCutoff, const Function *F, BlockFrequencyInfo &BFI) const {
-  return isFunctionHotOrColdInCallGraphNthPercentile<true>(
-      PercentileCutoff, F, BFI);
+  return isFunctionHotOrColdInCallGraphNthPercentile<true>(PercentileCutoff, F,
+                                                           BFI);
 }
 
 bool ProfileSummaryInfo::isFunctionColdInCallGraphNthPercentile(
     int PercentileCutoff, const Function *F, BlockFrequencyInfo &BFI) const {
-  return isFunctionHotOrColdInCallGraphNthPercentile<false>(
-      PercentileCutoff, F, BFI);
+  return isFunctionHotOrColdInCallGraphNthPercentile<false>(PercentileCutoff, F,
+                                                            BFI);
 }
 
 /// Returns true if the function's entry is a cold. If it returns false, it

@@ -1,1 +1,1 @@
-#define _PTHREAD_MUTEX_SIG_init   0x32AAABA7
+#define _PTHREAD_MUTEX_SIG_init 0x32AAABA7

@@ -1,13 +1,13 @@
 // RUN: %clang_cc1 -std=c++11 %s -Wunused -Wno-unused-lambda-capture -verify
 
 struct MoveOnly {
-  MoveOnly(MoveOnly&&);
-  MoveOnly(const MoveOnly&);
+  MoveOnly(MoveOnly &&);
+  MoveOnly(const MoveOnly &);
 };
 
-template<typename T> T &&move(T&);
+template <typename T> T &&move(T &);
 void test_special_member_functions(MoveOnly mo, int i) {
-  auto lambda1 = [i]() { }; // expected-note 2{{lambda expression begins here}} expected-note 2{{candidate}}
+  auto lambda1 = [i]() {}; // expected-note 2{{lambda expression begins here}} expected-note 2{{candidate}}
 
   // Default constructor
   decltype(lambda1) lambda2; // expected-error{{no matching constructor}}

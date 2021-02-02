@@ -48,8 +48,7 @@ ms FailureWaitTime = ms(50);
 // thread is actually executing.
 static std::atomic<unsigned> countDown;
 
-void f1()
-{
+void f1() {
   --countDown;
   time_point t0 = Clock::now();
   assert(m.try_lock_shared_until(Clock::now() + SuccessWaitTime) == true);
@@ -58,15 +57,13 @@ void f1()
   assert(t1 - t0 <= SuccessWaitTime);
 }
 
-void f2()
-{
+void f2() {
   time_point t0 = Clock::now();
   assert(m.try_lock_shared_until(Clock::now() + FailureWaitTime) == false);
   assert(Clock::now() - t0 >= FailureWaitTime);
 }
 
-int main(int, char**)
-{
+int main(int, char**) {
   int threads = 5;
   {
     countDown.store(threads);

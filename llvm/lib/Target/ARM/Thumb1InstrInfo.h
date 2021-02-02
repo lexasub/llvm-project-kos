@@ -17,10 +17,11 @@
 #include "ThumbRegisterInfo.h"
 
 namespace llvm {
-  class ARMSubtarget;
+class ARMSubtarget;
 
 class Thumb1InstrInfo : public ARMBaseInstrInfo {
   ThumbRegisterInfo RI;
+
 public:
   explicit Thumb1InstrInfo(const ARMSubtarget &STI);
 
@@ -41,21 +42,21 @@ public:
                    const DebugLoc &DL, MCRegister DestReg, MCRegister SrcReg,
                    bool KillSrc) const override;
   void storeRegToStackSlot(MachineBasicBlock &MBB,
-                           MachineBasicBlock::iterator MBBI,
-                           Register SrcReg, bool isKill, int FrameIndex,
+                           MachineBasicBlock::iterator MBBI, Register SrcReg,
+                           bool isKill, int FrameIndex,
                            const TargetRegisterClass *RC,
                            const TargetRegisterInfo *TRI) const override;
 
   void loadRegFromStackSlot(MachineBasicBlock &MBB,
-                            MachineBasicBlock::iterator MBBI,
-                            Register DestReg, int FrameIndex,
-                            const TargetRegisterClass *RC,
+                            MachineBasicBlock::iterator MBBI, Register DestReg,
+                            int FrameIndex, const TargetRegisterClass *RC,
                             const TargetRegisterInfo *TRI) const override;
 
   bool canCopyGluedNodeDuringSchedule(SDNode *N) const override;
+
 private:
   void expandLoadStackGuard(MachineBasicBlock::iterator MI) const override;
 };
-}
+} // namespace llvm
 
 #endif

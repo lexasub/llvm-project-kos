@@ -2,7 +2,6 @@
 // RUN: %clang_cc1 -pedantic-errors -std=c++2a -include-pch %t -verify %s
 // RUN: %clang_cc1 -pedantic-errors -std=c++2a -include-pch %t -emit-llvm %s -o -
 
-
 #ifndef HEADER
 #define HEADER
 

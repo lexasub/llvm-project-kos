@@ -96,8 +96,7 @@ void PPCTargetInfo::getTargetDefines(const LangOptions &Opts,
       getTriple().getArch() == llvm::Triple::ppcle) {
     Builder.defineMacro("_LITTLE_ENDIAN");
   } else {
-    if (!getTriple().isOSNetBSD() &&
-        !getTriple().isOSOpenBSD())
+    if (!getTriple().isOSNetBSD() && !getTriple().isOSOpenBSD())
       Builder.defineMacro("_BIG_ENDIAN");
   }
 
@@ -114,7 +113,7 @@ void PPCTargetInfo::getTargetDefines(const LangOptions &Opts,
     Builder.defineMacro("_CALL_LINUX", "1");
 
   // Subtarget options.
-  if (!getTriple().isOSAIX()){
+  if (!getTriple().isOSAIX()) {
     Builder.defineMacro("__NATURAL_ALIGNMENT__");
   }
   Builder.defineMacro("__REGISTER_PREFIX__", "");
@@ -318,9 +317,8 @@ bool PPCTargetInfo::initFeatureMap(
                         .Case("pwr9", true)
                         .Case("pwr8", true)
                         .Default(false);
-  Features["float128"] = llvm::StringSwitch<bool>(CPU)
-                        .Case("pwr9", true)
-                        .Default(false);
+  Features["float128"] =
+      llvm::StringSwitch<bool>(CPU).Case("pwr9", true).Default(false);
 
   Features["spe"] = llvm::StringSwitch<bool>(CPU)
                         .Case("8548", true)
@@ -462,8 +460,7 @@ const char *const PPCTargetInfo::GCCRegNames[] = {
     "v4",  "v5",     "v6",   "v7",      "v8",      "v9",  "v10", "v11", "v12",
     "v13", "v14",    "v15",  "v16",     "v17",     "v18", "v19", "v20", "v21",
     "v22", "v23",    "v24",  "v25",     "v26",     "v27", "v28", "v29", "v30",
-    "v31", "vrsave", "vscr", "spe_acc", "spefscr", "sfp"
-};
+    "v31", "vrsave", "vscr", "spe_acc", "spefscr", "sfp"};
 
 ArrayRef<const char *> PPCTargetInfo::getGCCRegNames() const {
   return llvm::makeArrayRef(GCCRegNames);
@@ -497,10 +494,10 @@ ArrayRef<TargetInfo::GCCRegAlias> PPCTargetInfo::getGCCRegAliases() const {
 
 // PPC ELFABIv2 DWARF Definitoin "Table 2.26. Mappings of Common Registers".
 // vs0 ~ vs31 is mapping to 32 - 63,
-// vs32 ~ vs63 is mapping to 77 - 108. 
+// vs32 ~ vs63 is mapping to 77 - 108.
 const TargetInfo::AddlRegName GCCAddlRegNames[] = {
     // Table of additional register names to use in user input.
-    {{"vs0"}, 32},   {{"vs1"}, 33},   {{"vs2"}, 34},   {{"vs3"}, 35}, 
+    {{"vs0"}, 32},   {{"vs1"}, 33},   {{"vs2"}, 34},   {{"vs3"}, 35},
     {{"vs4"}, 36},   {{"vs5"}, 37},   {{"vs6"}, 38},   {{"vs7"}, 39},
     {{"vs8"}, 40},   {{"vs9"}, 41},   {{"vs10"}, 42},  {{"vs11"}, 43},
     {{"vs12"}, 44},  {{"vs13"}, 45},  {{"vs14"}, 46},  {{"vs15"}, 47},
@@ -521,8 +518,8 @@ const TargetInfo::AddlRegName GCCAddlRegNames[] = {
 ArrayRef<TargetInfo::AddlRegName> PPCTargetInfo::getGCCAddlRegNames() const {
   if (ABI == "elfv2")
     return llvm::makeArrayRef(GCCAddlRegNames);
-  else 
-    return TargetInfo::getGCCAddlRegNames(); 
+  else
+    return TargetInfo::getGCCAddlRegNames();
 }
 
 static constexpr llvm::StringLiteral ValidCPUNames[] = {

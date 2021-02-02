@@ -10,7 +10,7 @@
 // understandable.
 //   RUN: FileCheck --input-file=%t.plist %s
 
-void print(const void*);
+void print(const void *);
 
 //===----------------------------------------------------------------------===//
 // Tests for non-function-like macro expansions.
@@ -152,7 +152,7 @@ void undefinedMacroInsideAnotherMacroTest() {
 // tok::l_paren/tok::r_paren, but why not test them.
 
 #define TO_NULL_AND_PRINT(x, str) \
-  x = 0; \
+  x = 0;                          \
   print(str)
 
 void macroArgContainsCommaInStringTest() {
@@ -182,7 +182,7 @@ void macroArgContainsRParenInStringTest() {
 // CHECK: <key>name</key><string>TO_NULL_AND_PRINT</string>
 // CHECK-NEXT: <key>expansion</key><string>a = 0; print( &quot;Will this ) cause a crash?&quot;)</string>
 
-#define CALL_FUNCTION(funcCall)   \
+#define CALL_FUNCTION(funcCall) \
   funcCall
 
 // Function calls do contain both tok::comma and tok::l_paren/tok::r_paren.
@@ -230,7 +230,7 @@ void commaInBracketsTest() {
   const char str[] = "Hello!";
   // You need to add parantheses around a lambda expression to compile this,
   // else the comma in the capture will be parsed as divider of macro args.
-  CALL_LAMBDA(([&ptr, str] () mutable { TO_NULL(&ptr); }));
+  CALL_LAMBDA(([&ptr, str]() mutable { TO_NULL(&ptr); }));
   *ptr = 5; // expected-warning{{Dereference of null pointer}}
 }
 
@@ -265,7 +265,7 @@ void commaInBracesTest() {
 void emptyParamTest() {
   int *ptr;
 
-  POTENTIALLY_EMPTY_PARAM(,ptr);
+  POTENTIALLY_EMPTY_PARAM(, ptr);
   *ptr = 5; // expected-warning{{Dereference of null pointer}}
 }
 
@@ -274,7 +274,6 @@ void emptyParamTest() {
 
 #define NESTED_EMPTY_PARAM(a, b) \
   POTENTIALLY_EMPTY_PARAM(a, b);
-
 
 void nestedEmptyParamTest() {
   int *ptr;
@@ -302,8 +301,8 @@ void lParenRParenInNestedMacro() {
 // Tests for variadic macro arguments.
 //===----------------------------------------------------------------------===//
 
-template <typename ...Args>
-void variadicFunc(Args ...args);
+template <typename... Args>
+void variadicFunc(Args... args);
 
 #define VARIADIC_SET_TO_NULL(ptr, ...) \
   ptr = nullptr;                       \
@@ -386,7 +385,7 @@ void macroArgContainsHashInStringTest() {
 //===----------------------------------------------------------------------===//
 
 #define IF(Condition) \
-  if ( Condition )
+  if (Condition)
 
 #define L_BRACE {
 #define R_BRACE }
@@ -398,19 +397,19 @@ void macroArgContainsHashInStringTest() {
 #define RETURN return
 #define ZERO 0
 
-#define EUCLIDEAN_ALGORITHM(A, B)                                              \
-  IF(A LESS ZERO) L_BRACE                                                      \
-    A EQUALS NEGATIVE A SEMICOLON                                              \
-  R_BRACE                                                                      \
-  IF(B LESS ZERO) L_BRACE                                                      \
-    B EQUALS NEGATIVE B SEMICOLON                                              \
-  R_BRACE                                                                      \
-                                                                               \
-  /* This is where a while loop would be, but that seems to be too complex */  \
-  /* for the analyzer just yet. Let's just pretend that this algorithm     */  \
-  /* works.                                                                */  \
-                                                                               \
-  RETURN B / (B - B) SEMICOLON
+#define EUCLIDEAN_ALGORITHM(A, B)                                                                                                                                                                                                                             \
+  IF(A LESS ZERO)                                                                                                                                                                                                                                             \
+      L_BRACE                                                                                                                                                                                                                                                 \
+          A EQUALS NEGATIVE A SEMICOLON                                                                                                                                                                                                                       \
+              R_BRACE                                                                                                                                                                                                                                         \
+              IF(B LESS ZERO) L_BRACE                                                                                                                                                                                                                         \
+                  B EQUALS NEGATIVE B SEMICOLON                                                                                                                                                                                                               \
+                      R_BRACE                                                                                                                                                                                                                                 \
+                                                                                                                                                                                                                                                              \
+                          /* This is where a while loop would be, but that seems to be too complex */ /* for the analyzer just yet. Let's just pretend that this algorithm     */ /* works.                                                                */ \
+                                                                                                                                                                                                                                                              \
+                          RETURN B /                                                                                                                                                                                                                          \
+      (B - B) SEMICOLON
 
 int getLowestCommonDenominator(int A, int B) {
   EUCLIDEAN_ALGORITHM(A, B) // expected-warning{{Division by zero}}
@@ -423,9 +422,9 @@ void testVeryComplexAlgorithm() {
 // CHECK: <key>name</key><string>EUCLIDEAN_ALGORITHM</string>
 // CHECK-NEXT: <key>expansion</key><string>if (A&lt;0 ){A=-A;} if ( B&lt;0 ){ B=- B;}return B / ( B - B);</string>
 
-#define YET_ANOTHER_SET_TO_NULL(x, y, z)   \
-  print((void *) x);                       \
-  print((void *) y);                       \
+#define YET_ANOTHER_SET_TO_NULL(x, y, z) \
+  print((void *)x);                      \
+  print((void *)y);                      \
   z = nullptr;
 
 #define DO_NOTHING(str) str
@@ -453,7 +452,8 @@ void recursiveMacroUser() {
 // CHECK: <key>name</key><string>value</string>
 // CHECK-NEXT: <key>expansion</key><string>garbage_</string>
 
-#define FOO(x) int foo() { return x; }
+#define FOO(x) \
+  int foo() { return x; }
 #define APPLY_ZERO1(function) function(0)
 
 APPLY_ZERO1(FOO)
@@ -462,7 +462,8 @@ void useZeroApplier1() { (void)(1 / foo()); } // expected-warning{{Division by z
 // CHECK: <key>name</key><string>APPLY_ZERO1</string>
 // CHECK-NEXT: <key>expansion</key><string>int foo() { return x; }(0)</string>
 
-#define BAR(x) int bar() { return x; }
+#define BAR(x) \
+  int bar() { return x; }
 #define APPLY_ZERO2 BAR(0)
 
 APPLY_ZERO2
@@ -473,7 +474,8 @@ void useZeroApplier2() { (void)(1 / bar()); } // expected-warning{{Division by z
 
 void foo(int &x, const char *str);
 
-#define PARAMS_RESOLVE_TO_VA_ARGS(i, fmt) foo(i, fmt); \
+#define PARAMS_RESOLVE_TO_VA_ARGS(i, fmt) \
+  foo(i, fmt);                            \
   i = 0;
 #define DISPATCH(...) PARAMS_RESOLVE_TO_VA_ARGS(__VA_ARGS__);
 
@@ -487,7 +489,8 @@ void mulitpleParamsResolveToVA_ARGS(void) {
 
 void variadicCFunction(int &x, const char *str, ...);
 
-#define CONCAT_VA_ARGS(i, fmt, ...) variadicCFunction(i, fmt, ##__VA_ARGS__); \
+#define CONCAT_VA_ARGS(i, fmt, ...)         \
+  variadicCFunction(i, fmt, ##__VA_ARGS__); \
   i = 0;
 
 void concatVA_ARGS(void) {
@@ -507,7 +510,8 @@ void concatVA_ARGSEmpty(void) {
 // CHECK: <key>name</key><string>CONCAT_VA_ARGS</string>
 // CHECK-NEXT: <key>expansion</key><string>variadicCFunction(x, &quot;You need to construct&quot;,);x = 0;</string>
 
-#define STRINGIFIED_VA_ARGS(i, fmt, ...) variadicCFunction(i, fmt, #__VA_ARGS__); \
+#define STRINGIFIED_VA_ARGS(i, fmt, ...)   \
+  variadicCFunction(i, fmt, #__VA_ARGS__); \
   i = 0;
 
 void stringifyVA_ARGS(void) {
@@ -531,7 +535,7 @@ void stringifyVA_ARGSEmpty(void) {
 // CHECK-NEXT: <key>expansion</key><string>variadicCFunction(x, &quot;Additional supply depots required.&quot;, &quot;)&quot;;x = 0;</string>
 
 // bz44493: Support GNU-style named variadic arguments in plister
-#define BZ44493_GNUVA(i, args...)  --(i);
+#define BZ44493_GNUVA(i, args...) --(i);
 
 int bz44493(void) {
   int a = 2;

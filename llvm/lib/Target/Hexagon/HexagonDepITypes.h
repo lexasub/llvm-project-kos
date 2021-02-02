@@ -60,4 +60,4 @@ enum Type {
   TypeV4LDST = 50,
 };
 }
-}
+} // namespace llvm

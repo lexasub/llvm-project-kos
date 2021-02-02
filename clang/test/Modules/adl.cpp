@@ -9,8 +9,8 @@ module a {
 #pragma clang module contents
 #pragma clang module begin a.x
 namespace N {
-  template<typename T> extern int f(T) { return 0; }
-}
+template <typename T> extern int f(T) { return 0; }
+} // namespace N
 #pragma clang module end
 
 #pragma clang module begin a.y
@@ -19,7 +19,9 @@ using N::f;
 #pragma clang module end
 #pragma clang module endbuild
 
-namespace N { struct A {}; }
+namespace N {
+struct A {};
+} // namespace N
 struct B {};
 
 #ifndef ONLY_Y

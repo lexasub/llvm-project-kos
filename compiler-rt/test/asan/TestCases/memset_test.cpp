@@ -31,16 +31,16 @@
 // RUN:     FileCheck %s --check-prefix=CHECK-MEMCPY_SIZE_OVERFLOW
 
 #include <assert.h>
-#include <string.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <sanitizer/asan_interface.h>
 
 typedef void *(*memcpy_t)(void *, const void *, size_t);
 
 int main(int argc, char **argv) {
-  char * volatile p = (char *)malloc(3000);
+  char *volatile p = (char *)malloc(3000);
   __asan_poison_memory_region(p + 512, 32);
 #if defined(TEST_MEMSET)
   memset(p, 0, 3000);
@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
   // CHECK-MEMSET: AddressSanitizer: use-after-poison on address
   // CHECK-MEMSET: in {{.*}}memset
 #else
-  char * volatile q = (char *)malloc(3000);
+  char *volatile q = (char *)malloc(3000);
 #if defined(TEST_MEMCPY)
   memcpy(q, p, 3000);
   // CHECK-MEMCPY: AddressSanitizer: use-after-poison on address

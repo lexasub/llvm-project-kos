@@ -150,8 +150,8 @@ void callt() {
 
 // CHECK-LABEL: define {{.*}}myAdd{{.*}}
 float myAdd(int i, float f) {
-  if (i<0)
-  return 1.0 + 2.0;
+  if (i < 0)
+    return 1.0 + 2.0;
   // Check that floating point constant folding doesn't occur if
   // #pragma STC FENV_ACCESS is enabled.
   //CHECK-FENV: llvm.experimental.constrained.fadd{{.*}}double 1.0{{.*}}double 2.0{{.*}}
@@ -167,32 +167,38 @@ namespace ns {
 // Check that pragma float_control can appear in namespace.
 #pragma float_control(except, on, push)
 float exc_on(double x, float zero) {
-// CHECK-NS: define {{.*}}exc_on{{.*}}
-  {} try {
+  // CHECK-NS: define {{.*}}exc_on{{.*}}
+  {}
+  try {
     x = 1.0 / zero; /* division by zero, the result unused */
-//CHECK-NS: llvm.experimental.constrained.fdiv{{.*}}
-  } catch (...) {}
+                    //CHECK-NS: llvm.experimental.constrained.fdiv{{.*}}
+  } catch (...) {
+  }
   return zero;
 }
-}
+} // namespace ns
 
 // Check pragma is still effective after namespace closes
 float exc_still_on(double x, float zero) {
-// CHECK-NS: define {{.*}}exc_still_on{{.*}}
-  {} try {
+  // CHECK-NS: define {{.*}}exc_still_on{{.*}}
+  {}
+  try {
     x = 1.0 / zero; /* division by zero, the result unused */
-//CHECK-NS: llvm.experimental.constrained.fdiv{{.*}}
-  } catch (...) {}
+                    //CHECK-NS: llvm.experimental.constrained.fdiv{{.*}}
+  } catch (...) {
+  }
   return zero;
 }
 
 #pragma float_control(pop)
 float exc_off(double x, float zero) {
-// CHECK-NS: define {{.*}}exc_off{{.*}}
-  {} try {
+  // CHECK-NS: define {{.*}}exc_off{{.*}}
+  {}
+  try {
     x = 1.0 / zero; /* division by zero, the result unused */
-//CHECK-NS: fdiv double
-  } catch (...) {}
+                    //CHECK-NS: fdiv double
+  } catch (...) {
+  }
   return zero;
 }
 
@@ -200,14 +206,16 @@ namespace fc_template_namespace {
 #pragma float_control(except, on, push)
 template <class T>
 T exc_on(double x, T zero) {
-// CHECK-NS: define {{.*}}fc_template_namespace{{.*}}
-  {} try {
+  // CHECK-NS: define {{.*}}fc_template_namespace{{.*}}
+  {}
+  try {
     x = 1.0 / zero; /* division by zero, the result unused */
-//CHECK-NS: llvm.experimental.constrained.fdiv{{.*}}
-  } catch (...) {}
+                    //CHECK-NS: llvm.experimental.constrained.fdiv{{.*}}
+  } catch (...) {
+  }
   return zero;
 }
-}
+} // namespace fc_template_namespace
 
 #pragma float_control(pop)
 float xx(double x, float z) {
@@ -216,16 +224,16 @@ float xx(double x, float z) {
 #endif // EXCEPT
 
 float try_lam(float x, unsigned n) {
-// CHECK: define {{.*}}try_lam{{.*}}class.anon{{.*}}
+  // CHECK: define {{.*}}try_lam{{.*}}class.anon{{.*}}
   float result;
   auto t =
-        // Lambda expression begins
-        [](float a, float b) {
-#pragma float_control( except, on)
-            return a * b;
-//CHECK: llvm.experimental.constrained.fmul{{.*}}fpexcept.strict
-        } // end of lambda expression
-  (1.0f,2.0f);
+      // Lambda expression begins
+      [](float a, float b) {
+#pragma float_control(except, on)
+        return a * b;
+        //CHECK: llvm.experimental.constrained.fmul{{.*}}fpexcept.strict
+      } // end of lambda expression
+  (1.0f, 2.0f);
   result = x + t;
   return result;
 }

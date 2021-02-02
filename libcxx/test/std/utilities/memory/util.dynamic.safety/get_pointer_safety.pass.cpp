@@ -17,24 +17,20 @@
 
 #include "test_macros.h"
 
-
 void test_pr26961() {
   std::pointer_safety d;
   d = std::get_pointer_safety();
   assert(d == std::get_pointer_safety());
 }
 
-int main(int, char**)
-{
+int main(int, char**) {
   {
     std::pointer_safety r = std::get_pointer_safety();
     assert(r == std::pointer_safety::relaxed ||
            r == std::pointer_safety::preferred ||
            r == std::pointer_safety::strict);
   }
-  {
-    test_pr26961();
-  }
+  { test_pr26961(); }
 
   return 0;
 }

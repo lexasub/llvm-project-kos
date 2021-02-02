@@ -24,9 +24,7 @@ using namespace clang;
 TextDiagnosticPrinter::TextDiagnosticPrinter(raw_ostream &os,
                                              DiagnosticOptions *diags,
                                              bool _OwnsOutputStream)
-  : OS(os), DiagOpts(diags),
-    OwnsOutputStream(_OwnsOutputStream) {
-}
+    : OS(os), DiagOpts(diags), OwnsOutputStream(_OwnsOutputStream) {}
 
 TextDiagnosticPrinter::~TextDiagnosticPrinter() {
   if (OwnsOutputStream)
@@ -39,9 +37,7 @@ void TextDiagnosticPrinter::BeginSourceFile(const LangOptions &LO,
   TextDiag.reset(new TextDiagnostic(OS, LO, &*DiagOpts));
 }
 
-void TextDiagnosticPrinter::EndSourceFile() {
-  TextDiag.reset();
-}
+void TextDiagnosticPrinter::EndSourceFile() { TextDiag.reset(); }
 
 /// Print any diagnostic option information to a raw_ostream.
 ///
@@ -90,7 +86,7 @@ static void printDiagnosticOptions(raw_ostream &OS,
   // If the user wants to see category information, include it too.
   if (DiagOpts.ShowCategories) {
     unsigned DiagCategory =
-      DiagnosticIDs::getCategoryNumberForDiag(Info.getID());
+        DiagnosticIDs::getCategoryNumberForDiag(Info.getID());
     if (DiagCategory) {
       OS << (Started ? "," : " [");
       Started = true;

@@ -5,7 +5,7 @@
 
 _Pragma("clang optimize off")
 
-void foo(int p) {
+    void foo(int p) {
   auto lambda = [&p]() { ++p; };
   lambda();
   // CHECK: define {{.*}} @"_ZZ3fooiENK3$_0clEv"({{.*}}) #[[LAMBDA_ATR:[0-9]+]]
@@ -13,4 +13,4 @@ void foo(int p) {
 
 _Pragma("clang optimize on")
 
-// CHECK: attributes #[[LAMBDA_ATR]] = { {{.*}} optnone {{.*}} }
+    // CHECK: attributes #[[LAMBDA_ATR]] = { {{.*}} optnone {{.*}} }

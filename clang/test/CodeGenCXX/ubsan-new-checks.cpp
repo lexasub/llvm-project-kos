@@ -24,8 +24,8 @@ struct S5 {
   float32x2_t x;
 };
 
-void *operator new (unsigned long, void *p) { return p; }
-void *operator new[] (unsigned long, void *p) { return p; }
+void *operator new(unsigned long, void *p) { return p; }
+void *operator new[](unsigned long, void *p) { return p; }
 
 S1 *func_01() {
   // CHECK-LABEL: define {{.*}} @_Z7func_01v
@@ -91,13 +91,12 @@ S3 *func_08() {
   return new S3[10];
 }
 
-
 S2 *func_10(void *p) {
   // CHECK-LABEL: define {{.*}} @_Z7func_10Pv
   // CHECK:       and i64 %{{.*}}, 31, !nosanitize
   // CHECK:       icmp eq i64 %{{.*}}, 0, !nosanitize
   // CHECK:       ret %struct.S2*
-  return new(p) S2;
+  return new (p) S2;
 }
 
 S2 *func_11(void *p) {
@@ -107,7 +106,7 @@ S2 *func_11(void *p) {
   // CHECK-NOT:   and i64 %{{.*}}, 31, !nosanitize
   // CHECK-NOT:   icmp eq i64 %{{.*}}, 0, !nosanitize
   // CHECK:       ret %struct.S2*
-  return new(p) S2[10];
+  return new (p) S2[10];
 }
 
 float32x2_t *func_12() {

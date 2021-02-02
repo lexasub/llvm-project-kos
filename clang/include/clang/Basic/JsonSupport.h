@@ -111,8 +111,8 @@ inline void printSourceLocationAsJson(raw_ostream &Out, SourceLocation Loc,
     std::replace(filename.begin(), filename.end(), '\\', '/');
 #endif
     Out << "\"line\": " << PLoc.getLine()
-        << ", \"column\": " << PLoc.getColumn()
-        << ", \"file\": \"" << filename << "\"";
+        << ", \"column\": " << PLoc.getColumn() << ", \"file\": \"" << filename
+        << "\"";
     if (AddBraces)
       Out << " }";
     return;

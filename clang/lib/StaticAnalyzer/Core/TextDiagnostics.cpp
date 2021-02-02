@@ -86,7 +86,7 @@ public:
     };
 
     for (std::vector<const PathDiagnostic *>::iterator I = Diags.begin(),
-         E = Diags.end();
+                                                       E = Diags.end();
          I != E; ++I) {
       const PathDiagnostic *PD = *I;
       std::string WarningMsg = (DiagOpts.ShouldDisplayDiagnosticName
@@ -104,8 +104,7 @@ public:
           continue;
 
         reportPiece(NoteID, Piece->getLocation().asLocation(),
-                    Piece->getString(), Piece->getRanges(),
-                    Piece->getFixits());
+                    Piece->getString(), Piece->getRanges(), Piece->getFixits());
       }
 
       if (!ShouldDisplayPathNotes)
@@ -118,8 +117,7 @@ public:
           continue;
 
         reportPiece(NoteID, Piece->getLocation().asLocation(),
-                    Piece->getString(), Piece->getRanges(),
-                    Piece->getFixits());
+                    Piece->getString(), Piece->getRanges(), Piece->getFixits());
       }
     }
 

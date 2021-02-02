@@ -24,14 +24,13 @@ const int *foo3() {
 };
 
 const int *foo4() {
-    return &S::OutOfLine_Def_Ref;
+  return &S::OutOfLine_Def_Ref;
 };
 
 const int S::Inline_Def_NotRef;
 const int S::Inline_Def_Ref;
 const int S::OutOfLine_Def_NotRef = 5;
 const int S::OutOfLine_Def_Ref = 5;
-
 
 // No initialization.
 // CHECK-DAG: @"?NoInit_Ref@S@@2HB" = external dso_local constant i32

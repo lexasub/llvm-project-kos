@@ -34,6 +34,6 @@ struct LowerExpectIntrinsicPass : PassInfoMixin<LowerExpectIntrinsicPass> {
 
 extern cl::opt<uint32_t> LikelyBranchWeight;
 extern cl::opt<uint32_t> UnlikelyBranchWeight;
-}
+} // namespace llvm
 
 #endif

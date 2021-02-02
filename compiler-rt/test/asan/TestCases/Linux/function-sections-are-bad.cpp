@@ -17,7 +17,8 @@ int main(int argc, char *argv[]) {
   snprintf(path, sizeof(path), "%s-so.so", argv[0]);
 
   void *handle = dlopen(path, RTLD_LAZY);
-  if (!handle) fprintf(stderr, "%s\n", dlerror());
+  if (!handle)
+    fprintf(stderr, "%s\n", dlerror());
   assert(handle != 0);
 
   typedef void (*F)();
@@ -25,7 +26,7 @@ int main(int argc, char *argv[]) {
   printf("%s\n", dlerror());
   assert(dlerror() == 0);
   f();
-  
+
   dlclose(handle);
   return 0;
 }

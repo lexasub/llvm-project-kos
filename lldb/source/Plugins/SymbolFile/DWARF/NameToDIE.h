@@ -44,8 +44,7 @@ public:
 
   void
   ForEach(std::function<bool(lldb_private::ConstString name,
-                             const DIERef &die_ref)> const
-              &callback) const;
+                             const DIERef &die_ref)> const &callback) const;
 
 protected:
   lldb_private::UniqueCStringMap<DIERef> m_map;

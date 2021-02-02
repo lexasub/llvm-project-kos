@@ -34,7 +34,7 @@ struct foobar {
 };
 
 template struct foobar<void>;
-}
+} // namespace test1
 
 namespace test2 {
 // test that when the destrucor is linkonce_odr we just replace every use of
@@ -48,7 +48,7 @@ template <typename T> struct foobar {
   foobar() { g(); }
 };
 foobar<void> x;
-}
+} // namespace test2
 
 namespace test3 {
 // test that instead of an internal alias we just use the other destructor
@@ -63,98 +63,98 @@ struct A {
 };
 
 struct B : public A {};
-}
+} // namespace
 
 B x;
-}
+} // namespace test3
 
 namespace test4 {
-  // Test that we don't produce aliases from B to A. We cannot because we cannot
-  // guarantee that they will be present in every TU. Instead, we just call
-  // A's destructor directly.
+// Test that we don't produce aliases from B to A. We cannot because we cannot
+// guarantee that they will be present in every TU. Instead, we just call
+// A's destructor directly.
 
-  // CHECK1: define internal void @__cxx_global_var_init.2()
-  // CHECK1: call i32 @__cxa_atexit{{.*}}_ZN5test41AD2Ev
-  // CHECK1: define linkonce_odr void @_ZN5test41AD2Ev({{.*}} comdat align
+// CHECK1: define internal void @__cxx_global_var_init.2()
+// CHECK1: call i32 @__cxa_atexit{{.*}}_ZN5test41AD2Ev
+// CHECK1: define linkonce_odr void @_ZN5test41AD2Ev({{.*}} comdat align
 
-  // test that we don't do this optimization at -O0 so that the debugger can
-  // see both destructors.
-  // NOOPT: define internal void @__cxx_global_var_init.2()
-  // NOOPT: call i32 @__cxa_atexit{{.*}}@_ZN5test41BD2Ev
-  // NOOPT: define linkonce_odr void @_ZN5test41BD2Ev({{.*}} comdat align
-  struct A {
-    virtual ~A() {}
-  };
-  struct B : public A{
-    ~B() {}
-  };
-  B X;
-}
+// test that we don't do this optimization at -O0 so that the debugger can
+// see both destructors.
+// NOOPT: define internal void @__cxx_global_var_init.2()
+// NOOPT: call i32 @__cxa_atexit{{.*}}@_ZN5test41BD2Ev
+// NOOPT: define linkonce_odr void @_ZN5test41BD2Ev({{.*}} comdat align
+struct A {
+  virtual ~A() {}
+};
+struct B : public A {
+  ~B() {}
+};
+B X;
+} // namespace test4
 
 namespace test5 {
-  // similar to test4, but with an internal B.
+// similar to test4, but with an internal B.
 
-  // CHECK2: define internal void @__cxx_global_var_init.3()
-  // CHECK2: call i32 @__cxa_atexit{{.*}}_ZN5test51AD2Ev
-  // CHECK2: define linkonce_odr void @_ZN5test51AD2Ev({{.*}} comdat align
-  struct A {
-    virtual ~A() {}
-  };
-  namespace {
-  struct B : public A{
-    ~B() {}
-  };
-  }
-  B X;
-}
+// CHECK2: define internal void @__cxx_global_var_init.3()
+// CHECK2: call i32 @__cxa_atexit{{.*}}_ZN5test51AD2Ev
+// CHECK2: define linkonce_odr void @_ZN5test51AD2Ev({{.*}} comdat align
+struct A {
+  virtual ~A() {}
+};
+namespace {
+struct B : public A {
+  ~B() {}
+};
+} // namespace
+B X;
+} // namespace test5
 
 namespace test6 {
-  // Test that we use ~A directly, even when ~A is not defined. The symbol for
-  // ~B would have been internal and still contain a reference to ~A.
-  struct A {
-    virtual ~A();
-  };
-  namespace {
-  struct B : public A {
-    ~B() {}
-  };
-  }
-  B X;
-  // CHECK3: define internal void @__cxx_global_var_init.4()
-  // CHECK3: call i32 @__cxa_atexit({{.*}}@_ZN5test61AD2Ev
-}
+// Test that we use ~A directly, even when ~A is not defined. The symbol for
+// ~B would have been internal and still contain a reference to ~A.
+struct A {
+  virtual ~A();
+};
+namespace {
+struct B : public A {
+  ~B() {}
+};
+} // namespace
+B X;
+// CHECK3: define internal void @__cxx_global_var_init.4()
+// CHECK3: call i32 @__cxa_atexit({{.*}}@_ZN5test61AD2Ev
+} // namespace test6
 
 namespace test7 {
-  // Test that we don't produce an alias from ~B to ~A<int> (or crash figuring
-  // out if we should).
-  // pr17875.
-  // CHECK3: define{{.*}} void @_ZN5test71BD2Ev
-  template <typename> struct A {
-    ~A() {}
-  };
-  class B : A<int> {
-    ~B();
-  };
-  template class A<int>;
-  B::~B() {}
-}
+// Test that we don't produce an alias from ~B to ~A<int> (or crash figuring
+// out if we should).
+// pr17875.
+// CHECK3: define{{.*}} void @_ZN5test71BD2Ev
+template <typename> struct A {
+  ~A() {}
+};
+class B : A<int> {
+  ~B();
+};
+template class A<int>;
+B::~B() {}
+} // namespace test7
 
 namespace test8 {
-  // Test that we replace ~zed with ~bar which is an alias to ~foo.
-  // CHECK4: @_ZN5test83barD2Ev ={{.*}} unnamed_addr alias {{.*}} @_ZN5test83fooD2Ev
-  // CHECK4: define internal void @__cxx_global_var_init.5()
-  // CHECK4: call i32 @__cxa_atexit({{.*}}@_ZN5test83barD2Ev
-  struct foo {
-    ~foo();
-  };
-  foo::~foo() {}
-  struct bar : public foo {
-    ~bar();
-  };
-  bar::~bar() {}
-  struct zed : public bar {};
-  zed foo;
-}
+// Test that we replace ~zed with ~bar which is an alias to ~foo.
+// CHECK4: @_ZN5test83barD2Ev ={{.*}} unnamed_addr alias {{.*}} @_ZN5test83fooD2Ev
+// CHECK4: define internal void @__cxx_global_var_init.5()
+// CHECK4: call i32 @__cxa_atexit({{.*}}@_ZN5test83barD2Ev
+struct foo {
+  ~foo();
+};
+foo::~foo() {}
+struct bar : public foo {
+  ~bar();
+};
+bar::~bar() {}
+struct zed : public bar {};
+zed foo;
+} // namespace test8
 
 namespace test9 {
 struct foo {
@@ -170,7 +170,7 @@ void zed() {
   // CHECK4: call void @_ZN5test93barD2Ev
   bar ptr;
 }
-}
+} // namespace test9
 
 // CHECK5: @_ZTV1C = linkonce_odr unnamed_addr constant { [4 x i8*] } {{[^@]*}}@_ZTI1C {{[^@]*}}@_ZN1CD2Ev {{[^@]*}}@_ZN1CD0Ev {{[^@]*}}]
 // r194296 replaced C::~C with B::~B without emitting the later.
@@ -196,8 +196,7 @@ extern template class B<char>;
 class C : B<char> {
 };
 
-void
-fn1() {
+void fn1() {
   new C;
 }
 
@@ -209,7 +208,7 @@ struct bar {
 };
 bar::~bar() {
 }
-} // closing the namespace causes ~bar to be sent to CodeGen
+} // namespace test10
 namespace test10 {
 template <typename T>
 struct foo : public bar {
@@ -219,7 +218,7 @@ template <typename T>
 foo<T>::~foo() {}
 template class foo<int>;
 // CHECK5: define weak_odr void @_ZN6test103fooIiED2Ev({{.*}} comdat($_ZN6test103fooIiED5Ev)
-}
+} // namespace test10
 
 namespace test11 {
 // Test that when we don't have to worry about COMDATs we produce an alias
@@ -234,7 +233,7 @@ struct foo : public bar {
 foo::~foo() {}
 // CHECK6: @_ZN6test113fooD2Ev ={{.*}} unnamed_addr alias {{.*}} @_ZN6test113barD2Ev
 // CHECK6: @_ZN6test113fooD1Ev ={{.*}} unnamed_addr alias {{.*}} @_ZN6test113fooD2Ev
-}
+} // namespace test11
 
 namespace test12 {
 template <int>
@@ -245,4 +244,4 @@ struct foo {
 template class foo<1>;
 // CHECK6: @_ZN6test123fooILi1EED1Ev = weak_odr unnamed_addr alias {{.*}} @_ZN6test123fooILi1EED2Ev
 // CHECK6: define weak_odr void @_ZN6test123fooILi1EED2Ev({{.*}}) {{.*}} comdat($_ZN6test123fooILi1EED5Ev)
-}
+} // namespace test12

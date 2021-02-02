@@ -20,15 +20,18 @@
 #include "llvm/Support/raw_ostream.h"
 using namespace llvm;
 
-static const char *const PSVNames[] = {
-    "Stack", "GOT", "JumpTable", "ConstantPool", "FixedStack",
-    "GlobalValueCallEntry", "ExternalSymbolCallEntry"};
+static const char *const PSVNames[] = {"Stack",
+                                       "GOT",
+                                       "JumpTable",
+                                       "ConstantPool",
+                                       "FixedStack",
+                                       "GlobalValueCallEntry",
+                                       "ExternalSymbolCallEntry"};
 
 PseudoSourceValue::PseudoSourceValue(unsigned Kind, const TargetInstrInfo &TII)
     : Kind(Kind) {
   AddressSpace = TII.getAddressSpaceForPseudoSourceKind(Kind);
 }
-
 
 PseudoSourceValue::~PseudoSourceValue() {}
 
@@ -96,8 +99,7 @@ bool CallEntryPseudoSourceValue::mayAlias(const MachineFrameInfo *) const {
 }
 
 GlobalValuePseudoSourceValue::GlobalValuePseudoSourceValue(
-    const GlobalValue *GV,
-    const TargetInstrInfo &TII)
+    const GlobalValue *GV, const TargetInstrInfo &TII)
     : CallEntryPseudoSourceValue(GlobalValueCallEntry, TII), GV(GV) {}
 ExternalSymbolPseudoSourceValue::ExternalSymbolPseudoSourceValue(
     const char *ES, const TargetInstrInfo &TII)
@@ -105,8 +107,7 @@ ExternalSymbolPseudoSourceValue::ExternalSymbolPseudoSourceValue(
 
 PseudoSourceValueManager::PseudoSourceValueManager(
     const TargetInstrInfo &TIInfo)
-    : TII(TIInfo),
-      StackPSV(PseudoSourceValue::Stack, TII),
+    : TII(TIInfo), StackPSV(PseudoSourceValue::Stack, TII),
       GOTPSV(PseudoSourceValue::GOT, TII),
       JumpTablePSV(PseudoSourceValue::JumpTable, TII),
       ConstantPoolPSV(PseudoSourceValue::ConstantPool, TII) {}
@@ -125,8 +126,7 @@ const PseudoSourceValue *PseudoSourceValueManager::getJumpTable() {
   return &JumpTablePSV;
 }
 
-const PseudoSourceValue *
-PseudoSourceValueManager::getFixedStack(int FI) {
+const PseudoSourceValue *PseudoSourceValueManager::getFixedStack(int FI) {
   std::unique_ptr<FixedStackPseudoSourceValue> &V = FSValues[FI];
   if (!V)
     V = std::make_unique<FixedStackPseudoSourceValue>(FI, TII);

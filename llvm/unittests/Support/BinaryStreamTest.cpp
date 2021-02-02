@@ -17,7 +17,6 @@
 
 #include "gtest/gtest.h"
 
-
 using namespace llvm;
 using namespace llvm::support;
 
@@ -25,8 +24,7 @@ namespace {
 
 class BrokenStream : public WritableBinaryStream {
 public:
-  BrokenStream(MutableArrayRef<uint8_t> Data, endianness Endian,
-                      uint32_t Align)
+  BrokenStream(MutableArrayRef<uint8_t> Data, endianness Endian, uint32_t Align)
       : Data(Data), PartitionIndex(alignDown(Data.size() / 2, Align)),
         Endian(Endian) {}
 
@@ -146,8 +144,8 @@ protected:
     for (uint32_t I = 0; I < NumEndians; ++I) {
       auto InByteStream =
           std::make_unique<BinaryByteStream>(InputData, Endians[I]);
-      auto InBrokenStream = std::make_unique<BrokenStream>(
-          BrokenInputData, Endians[I], Align);
+      auto InBrokenStream =
+          std::make_unique<BrokenStream>(BrokenInputData, Endians[I], Align);
 
       Streams[I * 2].Input = std::move(InByteStream);
       Streams[I * 2 + 1].Input = std::move(InBrokenStream);
@@ -161,8 +159,8 @@ protected:
     for (uint32_t I = 0; I < NumEndians; ++I) {
       Streams[I * 2].Output =
           std::make_unique<MutableBinaryByteStream>(OutputData, Endians[I]);
-      Streams[I * 2 + 1].Output = std::make_unique<BrokenStream>(
-          BrokenOutputData, Endians[I], Align);
+      Streams[I * 2 + 1].Output =
+          std::make_unique<BrokenStream>(BrokenOutputData, Endians[I], Align);
     }
   }
 
@@ -170,8 +168,8 @@ protected:
     for (uint32_t I = 0; I < NumEndians; ++I) {
       Streams[I * 2].Output =
           std::make_unique<MutableBinaryByteStream>(InputData, Endians[I]);
-      Streams[I * 2 + 1].Output = std::make_unique<BrokenStream>(
-          BrokenInputData, Endians[I], Align);
+      Streams[I * 2 + 1].Output =
+          std::make_unique<BrokenStream>(BrokenInputData, Endians[I], Align);
     }
   }
 
@@ -179,8 +177,8 @@ protected:
     for (uint32_t I = 0; I < NumEndians; ++I) {
       Streams[I * 2].Input =
           std::make_unique<BinaryByteStream>(OutputData, Endians[I]);
-      Streams[I * 2 + 1].Input = std::make_unique<BrokenStream>(
-          BrokenOutputData, Endians[I], Align);
+      Streams[I * 2 + 1].Input =
+          std::make_unique<BrokenStream>(BrokenOutputData, Endians[I], Align);
     }
   }
 
@@ -438,7 +436,7 @@ TEST_F(BinaryStreamTest, FixedStreamArray) {
 TEST_F(BinaryStreamTest, FixedStreamArrayIteratorArrow) {
   std::vector<std::pair<uint32_t, uint32_t>> Pairs = {{867, 5309}, {555, 1212}};
   ArrayRef<uint8_t> PairBytes(reinterpret_cast<uint8_t *>(Pairs.data()),
-    Pairs.size() * sizeof(Pairs[0]));
+                              Pairs.size() * sizeof(Pairs[0]));
 
   initializeInput(PairBytes, alignof(uint32_t));
 
@@ -696,7 +694,7 @@ TEST_F(BinaryStreamTest, StreamReaderObject) {
   std::vector<Foo> Foos;
   Foos.push_back({-42, 42.42, 42});
   Foos.push_back({100, 3.1415, static_cast<char>(-89)});
-  Foos.push_back({200, 2.718, static_cast<char>(-12) });
+  Foos.push_back({200, 2.718, static_cast<char>(-12)});
 
   const uint8_t *Bytes = reinterpret_cast<const uint8_t *>(&Foos[0]);
 
@@ -848,7 +846,7 @@ TEST_F(BinaryStreamTest, StreamWriterAppend) {
     EXPECT_EQ(Str, S);
   }
 }
-}
+} // namespace
 
 namespace {
 struct BinaryItemStreamObject {
@@ -856,7 +854,7 @@ struct BinaryItemStreamObject {
 
   ArrayRef<uint8_t> Bytes;
 };
-}
+} // namespace
 
 namespace llvm {
 template <> struct BinaryItemTraits<BinaryItemStreamObject> {
@@ -868,7 +866,7 @@ template <> struct BinaryItemTraits<BinaryItemStreamObject> {
     return Item.Bytes;
   }
 };
-}
+} // namespace llvm
 
 namespace {
 
@@ -882,8 +880,8 @@ TEST_F(BinaryStreamTest, BinaryItemStream) {
   std::vector<Foo> Foos = {{1, 1.0}, {2, 2.0}, {3, 3.0}};
   BumpPtrAllocator Allocator;
   for (const auto &F : Foos) {
-    uint8_t *Ptr = static_cast<uint8_t *>(Allocator.Allocate(sizeof(Foo),
-                                                             alignof(Foo)));
+    uint8_t *Ptr =
+        static_cast<uint8_t *>(Allocator.Allocate(sizeof(Foo), alignof(Foo)));
     MutableArrayRef<uint8_t> Buffer(Ptr, sizeof(Foo));
     MutableBinaryByteStream Stream(Buffer, llvm::support::big);
     BinaryStreamWriter Writer(Stream);

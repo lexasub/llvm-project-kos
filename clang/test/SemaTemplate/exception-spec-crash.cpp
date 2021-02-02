@@ -15,12 +15,11 @@ class allocator<char> {};
 template <class _Allocator>
 class basic_string {
   typedef _Allocator allocator_type;
-  basic_string(basic_string &&__str)
-  noexcept(is_nothrow_move_constructible<allocator_type>::value);
+  basic_string(basic_string &&__str) noexcept(is_nothrow_move_constructible<allocator_type>::value);
 };
 
 class Foo {
   Foo(Foo &&) noexcept = default;
   Foo &operator=(Foo &&) noexcept = default;
-  basic_string<allocator<char> > vectorFoo_;
+  basic_string<allocator<char>> vectorFoo_;
 };

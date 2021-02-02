@@ -14,9 +14,9 @@
 #include <type_traits>
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    static_assert((std::is_same<std::basic_regex<wchar_t>, std::wregex>::value), "");
+int main(int, char**) {
+  static_assert((std::is_same<std::basic_regex<wchar_t>, std::wregex>::value),
+                "");
 
   return 0;
 }

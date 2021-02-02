@@ -37,16 +37,16 @@ using namespace llvm;
 using AvailableValsTy = DenseMap<MachineBasicBlock *, Register>;
 
 static AvailableValsTy &getAvailableVals(void *AV) {
-  return *static_cast<AvailableValsTy*>(AV);
+  return *static_cast<AvailableValsTy *>(AV);
 }
 
 MachineSSAUpdater::MachineSSAUpdater(MachineFunction &MF,
-                                     SmallVectorImpl<MachineInstr*> *NewPHI)
-  : InsertedPHIs(NewPHI), TII(MF.getSubtarget().getInstrInfo()),
-    MRI(&MF.getRegInfo()) {}
+                                     SmallVectorImpl<MachineInstr *> *NewPHI)
+    : InsertedPHIs(NewPHI), TII(MF.getSubtarget().getInstrInfo()),
+      MRI(&MF.getRegInfo()) {}
 
 MachineSSAUpdater::~MachineSSAUpdater() {
-  delete static_cast<AvailableValsTy*>(AV);
+  delete static_cast<AvailableValsTy *>(AV);
 }
 
 /// Initialize - Reset this object to get ready for a new set of SSA
@@ -64,8 +64,8 @@ void MachineSSAUpdater::Initialize(Register V) {
   Initialize(MRI->getRegClass(V));
 }
 
-/// HasValueForBlock - Return true if the MachineSSAUpdater already has a value for
-/// the specified block.
+/// HasValueForBlock - Return true if the MachineSSAUpdater already has a value
+/// for the specified block.
 bool MachineSSAUpdater::HasValueForBlock(MachineBasicBlock *BB) const {
   return getAvailableVals(AV).count(BB);
 }
@@ -82,9 +82,9 @@ Register MachineSSAUpdater::GetValueAtEndOfBlock(MachineBasicBlock *BB) {
   return GetValueAtEndOfBlockInternal(BB);
 }
 
-static
-Register LookForIdenticalPHI(MachineBasicBlock *BB,
-        SmallVectorImpl<std::pair<MachineBasicBlock *, Register>> &PredValues) {
+static Register LookForIdenticalPHI(
+    MachineBasicBlock *BB,
+    SmallVectorImpl<std::pair<MachineBasicBlock *, Register>> &PredValues) {
   if (BB->empty())
     return Register();
 
@@ -99,7 +99,7 @@ Register LookForIdenticalPHI(MachineBasicBlock *BB,
     bool Same = true;
     for (unsigned i = 1, e = I->getNumOperands(); i != e; i += 2) {
       Register SrcReg = I->getOperand(i).getReg();
-      MachineBasicBlock *SrcBB = I->getOperand(i+1).getMBB();
+      MachineBasicBlock *SrcBB = I->getOperand(i + 1).getMBB();
       if (AVals[SrcBB] != SrcReg) {
         Same = false;
         break;
@@ -115,12 +115,11 @@ Register LookForIdenticalPHI(MachineBasicBlock *BB,
 /// InsertNewDef - Insert an empty PHI or IMPLICIT_DEF instruction which define
 /// a value of the given register class at the start of the specified basic
 /// block. It returns the virtual register defined by the instruction.
-static
-MachineInstrBuilder InsertNewDef(unsigned Opcode,
-                           MachineBasicBlock *BB, MachineBasicBlock::iterator I,
-                           const TargetRegisterClass *RC,
-                           MachineRegisterInfo *MRI,
-                           const TargetInstrInfo *TII) {
+static MachineInstrBuilder InsertNewDef(unsigned Opcode, MachineBasicBlock *BB,
+                                        MachineBasicBlock::iterator I,
+                                        const TargetRegisterClass *RC,
+                                        MachineRegisterInfo *MRI,
+                                        const TargetInstrInfo *TII) {
   Register NewVR = MRI->createVirtualRegister(RC);
   return BuildMI(*BB, I, DebugLoc(), TII->get(Opcode), NewVR);
 }
@@ -152,20 +151,21 @@ Register MachineSSAUpdater::GetValueInMiddleOfBlock(MachineBasicBlock *BB) {
   // If there are no predecessors, just return undef.
   if (BB->pred_empty()) {
     // Insert an implicit_def to represent an undef value.
-    MachineInstr *NewDef = InsertNewDef(TargetOpcode::IMPLICIT_DEF,
-                                        BB, BB->getFirstTerminator(),
-                                        VRC, MRI, TII);
+    MachineInstr *NewDef =
+        InsertNewDef(TargetOpcode::IMPLICIT_DEF, BB, BB->getFirstTerminator(),
+                     VRC, MRI, TII);
     return NewDef->getOperand(0).getReg();
   }
 
   // Otherwise, we have the hard case.  Get the live-in values for each
   // predecessor.
-  SmallVector<std::pair<MachineBasicBlock*, Register>, 8> PredValues;
+  SmallVector<std::pair<MachineBasicBlock *, Register>, 8> PredValues;
   Register SingularValue;
 
   bool isFirstPred = true;
   for (MachineBasicBlock::pred_iterator PI = BB->pred_begin(),
-         E = BB->pred_end(); PI != E; ++PI) {
+                                        E = BB->pred_end();
+       PI != E; ++PI) {
     MachineBasicBlock *PredBB = *PI;
     Register PredVal = GetValueAtEndOfBlockInternal(PredBB);
     PredValues.push_back(std::make_pair(PredBB, PredVal));
@@ -189,8 +189,8 @@ Register MachineSSAUpdater::GetValueInMiddleOfBlock(MachineBasicBlock *BB) {
 
   // Otherwise, we do need a PHI: insert one now.
   MachineBasicBlock::iterator Loc = BB->empty() ? BB->end() : BB->begin();
-  MachineInstrBuilder InsertedPHI = InsertNewDef(TargetOpcode::PHI, BB,
-                                                 Loc, VRC, MRI, TII);
+  MachineInstrBuilder InsertedPHI =
+      InsertNewDef(TargetOpcode::PHI, BB, Loc, VRC, MRI, TII);
 
   // Fill in all the predecessors of the PHI.
   for (unsigned i = 0, e = PredValues.size(); i != e; ++i)
@@ -204,18 +204,18 @@ Register MachineSSAUpdater::GetValueInMiddleOfBlock(MachineBasicBlock *BB) {
   }
 
   // If the client wants to know about all new instructions, tell it.
-  if (InsertedPHIs) InsertedPHIs->push_back(InsertedPHI);
+  if (InsertedPHIs)
+    InsertedPHIs->push_back(InsertedPHI);
 
   LLVM_DEBUG(dbgs() << "  Inserted PHI: " << *InsertedPHI << "\n");
   return InsertedPHI.getReg(0);
 }
 
-static
-MachineBasicBlock *findCorrespondingPred(const MachineInstr *MI,
-                                         MachineOperand *U) {
+static MachineBasicBlock *findCorrespondingPred(const MachineInstr *MI,
+                                                MachineOperand *U) {
   for (unsigned i = 1, e = MI->getNumOperands(); i != e; i += 2) {
     if (&MI->getOperand(i) == U)
-      return MI->getOperand(i+1).getMBB();
+      return MI->getOperand(i + 1).getMBB();
   }
 
   llvm_unreachable("MachineOperand::getParent() failure?");
@@ -240,8 +240,7 @@ void MachineSSAUpdater::RewriteUse(MachineOperand &U) {
 /// template, specialized for MachineSSAUpdater.
 namespace llvm {
 
-template<>
-class SSAUpdaterTraits<MachineSSAUpdater> {
+template <> class SSAUpdaterTraits<MachineSSAUpdater> {
 public:
   using BlkT = MachineBasicBlock;
   using ValT = Register;
@@ -259,18 +258,21 @@ public:
 
   public:
     explicit PHI_iterator(MachineInstr *P) // begin iterator
-      : PHI(P), idx(1) {}
+        : PHI(P), idx(1) {}
     PHI_iterator(MachineInstr *P, bool) // end iterator
-      : PHI(P), idx(PHI->getNumOperands()) {}
+        : PHI(P), idx(PHI->getNumOperands()) {}
 
-    PHI_iterator &operator++() { idx += 2; return *this; }
-    bool operator==(const PHI_iterator& x) const { return idx == x.idx; }
-    bool operator!=(const PHI_iterator& x) const { return !operator==(x); }
+    PHI_iterator &operator++() {
+      idx += 2;
+      return *this;
+    }
+    bool operator==(const PHI_iterator &x) const { return idx == x.idx; }
+    bool operator!=(const PHI_iterator &x) const { return !operator==(x); }
 
     unsigned getIncomingValue() { return PHI->getOperand(idx).getReg(); }
 
     MachineBasicBlock *getIncomingBlock() {
-      return PHI->getOperand(idx+1).getMBB();
+      return PHI->getOperand(idx + 1).getMBB();
     }
   };
 
@@ -282,8 +284,9 @@ public:
 
   /// FindPredecessorBlocks - Put the predecessors of BB into the Preds
   /// vector.
-  static void FindPredecessorBlocks(MachineBasicBlock *BB,
-                                    SmallVectorImpl<MachineBasicBlock*> *Preds){
+  static void
+  FindPredecessorBlocks(MachineBasicBlock *BB,
+                        SmallVectorImpl<MachineBasicBlock *> *Preds) {
     append_range(*Preds, BB->predecessors());
   }
 
@@ -292,10 +295,9 @@ public:
   static Register GetUndefVal(MachineBasicBlock *BB,
                               MachineSSAUpdater *Updater) {
     // Insert an implicit_def to represent an undef value.
-    MachineInstr *NewDef = InsertNewDef(TargetOpcode::IMPLICIT_DEF,
-                                        BB, BB->getFirstNonPHI(),
-                                        Updater->VRC, Updater->MRI,
-                                        Updater->TII);
+    MachineInstr *NewDef =
+        InsertNewDef(TargetOpcode::IMPLICIT_DEF, BB, BB->getFirstNonPHI(),
+                     Updater->VRC, Updater->MRI, Updater->TII);
     return NewDef->getOperand(0).getReg();
   }
 
@@ -304,9 +306,8 @@ public:
   static Register CreateEmptyPHI(MachineBasicBlock *BB, unsigned NumPreds,
                                  MachineSSAUpdater *Updater) {
     MachineBasicBlock::iterator Loc = BB->empty() ? BB->end() : BB->begin();
-    MachineInstr *PHI = InsertNewDef(TargetOpcode::PHI, BB, Loc,
-                                     Updater->VRC, Updater->MRI,
-                                     Updater->TII);
+    MachineInstr *PHI = InsertNewDef(TargetOpcode::PHI, BB, Loc, Updater->VRC,
+                                     Updater->MRI, Updater->TII);
     return PHI->getOperand(0).getReg();
   }
 
@@ -352,7 +353,8 @@ public:
 /// for the specified BB and if so, return it.  If not, construct SSA form by
 /// first calculating the required placement of PHIs and then inserting new
 /// PHIs where needed.
-Register MachineSSAUpdater::GetValueAtEndOfBlockInternal(MachineBasicBlock *BB){
+Register
+MachineSSAUpdater::GetValueAtEndOfBlockInternal(MachineBasicBlock *BB) {
   AvailableValsTy &AvailableVals = getAvailableVals(AV);
   if (Register V = AvailableVals[BB])
     return V;

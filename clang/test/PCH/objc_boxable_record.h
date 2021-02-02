@@ -2,4 +2,3 @@
 struct boxable {
   int dummy;
 };
-

@@ -6,10 +6,10 @@
 // CHECK:   FieldOffsets: [0, 32, 32]
 struct S {
   short _s;
-//union {
-    int _su0;
-    char _su1;
-//};
+  //union {
+  int _su0;
+  char _su1;
+  //};
 };
 
 // CHECK: Type: union U
@@ -18,13 +18,13 @@ struct S {
 // CHECK:   FieldOffsets: [0, 0, 32, 64, 68, 73]
 union U {
   short _u;
-//struct {
-    char _us0;
-    int _us1;
-    unsigned _us20 : 4;
-    unsigned _us21 : 5;
-    unsigned _us22 : 6;
-//};
+  //struct {
+  char _us0;
+  int _us1;
+  unsigned _us20 : 4;
+  unsigned _us21 : 5;
+  unsigned _us22 : 6;
+  //};
 };
 
 void use_structs() {

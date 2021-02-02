@@ -12,7 +12,9 @@ struct awaitable {
   void await_resume();
 } a;
 
-struct object { ~object() {} };
+struct object {
+  ~object() {}
+};
 
 struct promise_void_return_value {
   void get_return_object();

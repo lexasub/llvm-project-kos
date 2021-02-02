@@ -33,7 +33,7 @@ void float16_normal_literals() {
 }
 
 void float16_hexadecimal_literals() {
-// _Float16
+  // _Float16
 
   static constexpr auto v13 = 0xfp0f16;
   // CHECK-MESSAGES: :[[@LINE-1]]:31: warning: floating point literal has suffix 'f16', which is not uppercase
@@ -47,5 +47,4 @@ void float16_hexadecimal_literals() {
   static constexpr auto v14 = 0xfp0F16; // OK.
   static_assert(is_same<decltype(v14), const _Float16>::value, "");
   static_assert(v14 == 0xfp0F16, "");
-
 }

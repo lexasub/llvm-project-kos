@@ -15,24 +15,24 @@ export
 // expected-error@#2 {{can only be used within a module interface unit}}
 // expected-note@+2 1+{{add 'export'}}
 #endif
-module M;
+    module M;
 
 export int b; // #1
 namespace N {
-  export int c; // #2
+export int c; // #2
 }
 
 #ifdef ERRORS
-namespace { // expected-note 2{{anonymous namespace begins here}}
-  export int d1; // expected-error {{export declaration appears within anonymous namespace}}
-  namespace X {
-    export int d2; // expected-error {{export declaration appears within anonymous namespace}}
-  }
+namespace {    // expected-note 2{{anonymous namespace begins here}}
+export int d1; // expected-error {{export declaration appears within anonymous namespace}}
+namespace X {
+export int d2; // expected-error {{export declaration appears within anonymous namespace}}
 }
+} // namespace
 
-export export int e; // expected-error {{within another export declaration}}
+export export int e;     // expected-error {{within another export declaration}}
 export { export int f; } // expected-error {{within another export declaration}} expected-note {{export block begins here}}
 
-module :private; // expected-note {{private module fragment begins here}}
-export int priv; // expected-error {{export declaration cannot be used in a private module fragment}}
+module : private; // expected-note {{private module fragment begins here}}
+export int priv;  // expected-error {{export declaration cannot be used in a private module fragment}}
 #endif

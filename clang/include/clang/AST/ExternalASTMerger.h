@@ -56,6 +56,7 @@ public:
 
   typedef std::map<const DeclContext *, DCOrigin> OriginMap;
   typedef std::vector<std::unique_ptr<ASTImporter>> ImporterVector;
+
 private:
   /// One importer exists for each source.
   ImporterVector Importers;
@@ -180,10 +181,11 @@ public:
 
   /// Sets the current log stream.
   void SetLogStream(llvm::raw_string_ostream &Stream) { LogStream = &Stream; }
+
 private:
   /// Records and origin in Origins.
   void RecordOriginImpl(const DeclContext *ToDC, DCOrigin Origin,
-                                  ASTImporter &importer);
+                        ASTImporter &importer);
 
   /// Performs an action for every DeclContext that is identified as
   /// corresponding (either by forced origin or by name lookup) to DC.

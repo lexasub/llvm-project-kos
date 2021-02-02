@@ -8,12 +8,11 @@
 
 #include <ext/hash_map>
 
-int main(int, char**)
-{
-    __gnu_cxx::hash_map<int, int> m;
-    m[1] = 1;
-    const __gnu_cxx::hash_map<int, int> &cm = m;
-    cm.find(1)->second = 2;  // error
+int main(int, char**) {
+  __gnu_cxx::hash_map<int, int> m;
+  m[1] = 1;
+  const __gnu_cxx::hash_map<int, int>& cm = m;
+  cm.find(1)->second = 2; // error
 
   return 0;
 }

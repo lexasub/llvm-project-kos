@@ -40,38 +40,38 @@ static unsigned CpCount = 0;
 bool CopyPropagation::interpretAsCopy(const MachineInstr *MI, EqualityMap &EM) {
   unsigned Opc = MI->getOpcode();
   switch (Opc) {
-    case TargetOpcode::COPY: {
-      const MachineOperand &Dst = MI->getOperand(0);
-      const MachineOperand &Src = MI->getOperand(1);
-      RegisterRef DstR = DFG.makeRegRef(Dst.getReg(), Dst.getSubReg());
-      RegisterRef SrcR = DFG.makeRegRef(Src.getReg(), Src.getSubReg());
-      assert(Register::isPhysicalRegister(DstR.Reg));
-      assert(Register::isPhysicalRegister(SrcR.Reg));
-      const TargetRegisterInfo &TRI = DFG.getTRI();
-      if (TRI.getMinimalPhysRegClass(DstR.Reg) !=
-          TRI.getMinimalPhysRegClass(SrcR.Reg))
-        return false;
-      EM.insert(std::make_pair(DstR, SrcR));
-      return true;
-    }
-    case TargetOpcode::REG_SEQUENCE:
-      llvm_unreachable("Unexpected REG_SEQUENCE");
+  case TargetOpcode::COPY: {
+    const MachineOperand &Dst = MI->getOperand(0);
+    const MachineOperand &Src = MI->getOperand(1);
+    RegisterRef DstR = DFG.makeRegRef(Dst.getReg(), Dst.getSubReg());
+    RegisterRef SrcR = DFG.makeRegRef(Src.getReg(), Src.getSubReg());
+    assert(Register::isPhysicalRegister(DstR.Reg));
+    assert(Register::isPhysicalRegister(SrcR.Reg));
+    const TargetRegisterInfo &TRI = DFG.getTRI();
+    if (TRI.getMinimalPhysRegClass(DstR.Reg) !=
+        TRI.getMinimalPhysRegClass(SrcR.Reg))
+      return false;
+    EM.insert(std::make_pair(DstR, SrcR));
+    return true;
+  }
+  case TargetOpcode::REG_SEQUENCE:
+    llvm_unreachable("Unexpected REG_SEQUENCE");
   }
   return false;
 }
 
-void CopyPropagation::recordCopy(NodeAddr<StmtNode*> SA, EqualityMap &EM) {
+void CopyPropagation::recordCopy(NodeAddr<StmtNode *> SA, EqualityMap &EM) {
   CopyMap.insert(std::make_pair(SA.Id, EM));
   Copies.push_back(SA.Id);
 }
 
 bool CopyPropagation::scanBlock(MachineBasicBlock *B) {
   bool Changed = false;
-  NodeAddr<BlockNode*> BA = DFG.findBlock(B);
+  NodeAddr<BlockNode *> BA = DFG.findBlock(B);
 
-  for (NodeAddr<InstrNode*> IA : BA.Addr->members(DFG)) {
+  for (NodeAddr<InstrNode *> IA : BA.Addr->members(DFG)) {
     if (DFG.IsCode<NodeAttrs::Stmt>(IA)) {
-      NodeAddr<StmtNode*> SA = IA;
+      NodeAddr<StmtNode *> SA = IA;
       EqualityMap EM;
       if (interpretAsCopy(SA.Addr->getCode(), EM))
         recordCopy(SA, EM);
@@ -86,8 +86,8 @@ bool CopyPropagation::scanBlock(MachineBasicBlock *B) {
 }
 
 NodeId CopyPropagation::getLocalReachingDef(RegisterRef RefRR,
-      NodeAddr<InstrNode*> IA) {
-  NodeAddr<RefNode*> RA = L.getNearestAliasedRef(RefRR, IA);
+                                            NodeAddr<InstrNode *> IA) {
+  NodeAddr<RefNode *> RA = L.getNearestAliasedRef(RefRR, IA);
   if (RA.Id != 0) {
     if (RA.Addr->getKind() == NodeAttrs::Def)
       return RA.Id;
@@ -104,7 +104,7 @@ bool CopyPropagation::run() {
   if (trace()) {
     dbgs() << "Copies:\n";
     for (NodeId I : Copies) {
-      dbgs() << "Instr: " << *DFG.addr<StmtNode*>(I).Addr->getCode();
+      dbgs() << "Instr: " << *DFG.addr<StmtNode *>(I).Addr->getCode();
       dbgs() << "   eq: {";
       for (auto J : CopyMap[I])
         dbgs() << ' ' << Print<RegisterRef>(J.first, DFG) << '='
@@ -118,7 +118,7 @@ bool CopyPropagation::run() {
   bool HasLimit = CpLimit.getNumOccurrences() > 0;
 #endif
 
-  auto MinPhysReg = [this] (RegisterRef RR) -> unsigned {
+  auto MinPhysReg = [this](RegisterRef RR) -> unsigned {
     const TargetRegisterInfo &TRI = DFG.getTRI();
     const TargetRegisterClass &RC = *TRI.getMinimalPhysRegClass(RR.Reg);
     if ((RC.LaneMask & RR.Mask) == RC.LaneMask)
@@ -135,13 +135,13 @@ bool CopyPropagation::run() {
     if (HasLimit && CpCount >= CpLimit)
       break;
 #endif
-    auto SA = DFG.addr<InstrNode*>(C);
+    auto SA = DFG.addr<InstrNode *>(C);
     auto FS = CopyMap.find(SA.Id);
     if (FS == CopyMap.end())
       continue;
 
     EqualityMap &EM = FS->second;
-    for (NodeAddr<DefNode*> DA : SA.Addr->members_if(DFG.IsDef, DFG)) {
+    for (NodeAddr<DefNode *> DA : SA.Addr->members_if(DFG.IsDef, DFG)) {
       RegisterRef DR = DA.Addr->getRegRef(DFG);
       auto FR = EM.find(DR);
       if (FR == EM.end())
@@ -153,7 +153,7 @@ bool CopyPropagation::run() {
       NodeId AtCopy = getLocalReachingDef(SR, SA);
 
       for (NodeId N = DA.Addr->getReachedUse(), NextN; N; N = NextN) {
-        auto UA = DFG.addr<UseNode*>(N);
+        auto UA = DFG.addr<UseNode *>(N);
         NextN = UA.Addr->getSibling();
         uint16_t F = UA.Addr->getFlags();
         if ((F & NodeAttrs::PhiRef) || (F & NodeAttrs::Fixed))
@@ -161,7 +161,7 @@ bool CopyPropagation::run() {
         if (UA.Addr->getRegRef(DFG) != DR)
           continue;
 
-        NodeAddr<InstrNode*> IA = UA.Addr->getOwner(DFG);
+        NodeAddr<InstrNode *> IA = UA.Addr->getOwner(DFG);
         assert(DFG.IsCode<NodeAttrs::Stmt>(IA));
         NodeId AtUse = getLocalReachingDef(SR, IA);
         if (AtCopy != AtUse)
@@ -171,9 +171,9 @@ bool CopyPropagation::run() {
         if (Op.isTied())
           continue;
         if (trace()) {
-          dbgs() << "Can replace " << Print<RegisterRef>(DR, DFG)
-                 << " with " << Print<RegisterRef>(SR, DFG) << " in "
-                 << *NodeAddr<StmtNode*>(IA).Addr->getCode();
+          dbgs() << "Can replace " << Print<RegisterRef>(DR, DFG) << " with "
+                 << Print<RegisterRef>(SR, DFG) << " in "
+                 << *NodeAddr<StmtNode *>(IA).Addr->getCode();
         }
 
         unsigned NewReg = MinPhysReg(SR);
@@ -181,18 +181,18 @@ bool CopyPropagation::run() {
         Op.setSubReg(0);
         DFG.unlinkUse(UA, false);
         if (AtCopy != 0) {
-          UA.Addr->linkToDef(UA.Id, DFG.addr<DefNode*>(AtCopy));
+          UA.Addr->linkToDef(UA.Id, DFG.addr<DefNode *>(AtCopy));
         } else {
           UA.Addr->setReachingDef(0);
           UA.Addr->setSibling(0);
         }
 
         Changed = true;
-  #ifndef NDEBUG
+#ifndef NDEBUG
         if (HasLimit && CpCount >= CpLimit)
           break;
         CpCount++;
-  #endif
+#endif
 
         auto FC = CopyMap.find(IA.Id);
         if (FC != CopyMap.end()) {
@@ -206,8 +206,8 @@ bool CopyPropagation::run() {
           }
         }
       } // for (N in reached-uses)
-    } // for (DA in defs)
-  } // for (C in Copies)
+    }   // for (DA in defs)
+  }     // for (C in Copies)
 
   return Changed;
 }

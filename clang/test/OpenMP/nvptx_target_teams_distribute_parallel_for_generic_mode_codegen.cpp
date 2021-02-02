@@ -20,8 +20,10 @@ int a;
 int foo(int *a);
 
 int main(int argc, char **argv) {
-#pragma omp target teams distribute parallel for map(tofrom:a) if(target:argc) schedule(static, a)
-  for (int i= 0; i < argc; ++i)
+#pragma omp target teams distribute parallel for map(tofrom          \
+                                                     : a) if (target \
+                                                              : argc) schedule(static, a)
+  for (int i = 0; i < argc; ++i)
     a = foo(&i) + foo(&a) + foo(&argc);
   return 0;
 }
@@ -37,7 +39,6 @@ int main(int argc, char **argv) {
 
 // CHECK: call void [[PARALLEL:@.+]](i32* %{{.*}}, i32* %{{.+}}, i{{64|32}} %{{.+}}, i{{64|32}} %{{.*}}, i{{64|32}} %{{.*}}, i32* %{{.*}})
 // CHECK: br label %
-
 
 // CHECK: call void @__kmpc_for_static_fini(%struct.ident_t* @
 

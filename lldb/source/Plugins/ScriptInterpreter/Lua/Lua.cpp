@@ -22,8 +22,8 @@ using namespace lldb;
 // C-linkage specified, but returns UDT 'llvm::Expected<bool>' which is
 // incompatible with C
 #if _MSC_VER
-#pragma warning (push)
-#pragma warning (disable : 4190)
+#pragma warning(push)
+#pragma warning(disable : 4190)
 #endif
 
 extern "C" llvm::Expected<bool> LLDBSwigLuaBreakpointCallbackFunction(
@@ -31,7 +31,7 @@ extern "C" llvm::Expected<bool> LLDBSwigLuaBreakpointCallbackFunction(
     lldb::BreakpointLocationSP bp_loc_sp, StructuredDataImpl *extra_args_impl);
 
 #if _MSC_VER
-#pragma warning (pop)
+#pragma warning(pop)
 #endif
 
 #pragma clang diagnostic pop

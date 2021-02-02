@@ -4,18 +4,18 @@
 // Test the readv() interceptor.
 
 #include <assert.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <sys/uio.h>
 #include <time.h>
+#include <unistd.h>
 
 int main() {
   char buf[2011];
   struct iovec iov[2];
 #ifdef POSITIVE
-  char * volatile buf_ = buf;
+  char *volatile buf_ = buf;
   iov[0].iov_base = buf_ - 1;
 #else
   iov[0].iov_base = buf + 1;

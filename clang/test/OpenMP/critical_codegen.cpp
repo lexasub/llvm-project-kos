@@ -22,7 +22,10 @@
 
 // ALL:       define {{.*}}void [[FOO:@.+]]()
 
-void foo() { extern void mayThrow(); mayThrow(); }
+void foo() {
+  extern void mayThrow();
+  mayThrow();
+}
 
 // ALL-LABEL: @main
 // TERM_DEBUG-LABEL: @main

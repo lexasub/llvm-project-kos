@@ -37,8 +37,11 @@ bool fooPtr1(int x) {
 
 // Test that we respect the template arguments of function templates
 
-template<typename T, unsigned N>
-bool templateFunc() { unsigned i = N; return false; }
+template <typename T, unsigned N>
+bool templateFunc() {
+  unsigned i = N;
+  return false;
+}
 
 bool fooTemplate1(int x) {
   if (x > 0)
@@ -70,7 +73,7 @@ bool fooTemplate3(int x) {
 class X {};
 class XX {};
 
-template<typename T1, typename T2>
+template <typename T1, typename T2>
 bool templatePaddingFunc() { return false; }
 
 bool fooTemplatePadding1(int x) {
@@ -91,7 +94,7 @@ bool fooTemplatePadding2(int x) {
 
 // Test that we don't crash on member functions of template instantiations.
 
-template<typename T>
+template <typename T>
 struct A {
   void foo(T t) {}
 };

@@ -11,7 +11,7 @@ int HelperC1::I = 0;
 class HelperC2 {};
 
 class HelperC3 {
- public:
+public:
   static int I;
 };
 

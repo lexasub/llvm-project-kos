@@ -14,7 +14,13 @@
 #include <istream>
 #include <utility>
 
-struct Foo { };
+struct Foo {};
 
-using X = decltype(std::declval<std::istream>() >> std::declval<Foo&>()); // expected-error {{invalid operands to binary expression}}
-using Y = decltype(std::declval<std::istream>() >> std::declval<Foo>()); // expected-error {{invalid operands to binary expression}}
+using X = decltype(
+    std::declval<std::istream>() >>
+    std::declval<
+        Foo&>()); // expected-error {{invalid operands to binary expression}}
+using Y = decltype(
+    std::declval<std::istream>() >>
+    std::declval<
+        Foo>()); // expected-error {{invalid operands to binary expression}}

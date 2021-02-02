@@ -34,7 +34,7 @@ template <typename T, int N> int callCalloc() {
   // CHECK: ret i32 64
   return __builtin_object_size(my_malloc(sizeof(T) * N), 0);
 }
-}
+} // namespace templates
 
 namespace templated_alloc_size {
 using size_t = unsigned long;

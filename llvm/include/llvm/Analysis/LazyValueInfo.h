@@ -18,14 +18,14 @@
 #include "llvm/Pass.h"
 
 namespace llvm {
-  class AssumptionCache;
-  class Constant;
-  class ConstantRange;
-  class DataLayout;
-  class DominatorTree;
-  class Instruction;
-  class TargetLibraryInfo;
-  class Value;
+class AssumptionCache;
+class Constant;
+class ConstantRange;
+class DataLayout;
+class DominatorTree;
+class Instruction;
+class TargetLibraryInfo;
+class Value;
 
 /// This pass computes, caches, and vends lazy value constraint information.
 class LazyValueInfo {
@@ -34,8 +34,9 @@ class LazyValueInfo {
   const DataLayout *DL = nullptr;
   class TargetLibraryInfo *TLI = nullptr;
   void *PImpl = nullptr;
-  LazyValueInfo(const LazyValueInfo&) = delete;
-  void operator=(const LazyValueInfo&) = delete;
+  LazyValueInfo(const LazyValueInfo &) = delete;
+  void operator=(const LazyValueInfo &) = delete;
+
 public:
   ~LazyValueInfo();
   LazyValueInfo() {}
@@ -57,9 +58,7 @@ public:
   }
 
   /// This is used to return true/false/dunno results.
-  enum Tristate {
-    Unknown = -1, False = 0, True = 1
-  };
+  enum Tristate { Unknown = -1, False = 0, True = 1 };
 
   // Public query interface.
 
@@ -132,8 +131,9 @@ private:
 
 /// Wrapper around LazyValueInfo.
 class LazyValueInfoWrapperPass : public FunctionPass {
-  LazyValueInfoWrapperPass(const LazyValueInfoWrapperPass&) = delete;
-  void operator=(const LazyValueInfoWrapperPass&) = delete;
+  LazyValueInfoWrapperPass(const LazyValueInfoWrapperPass &) = delete;
+  void operator=(const LazyValueInfoWrapperPass &) = delete;
+
 public:
   static char ID;
   LazyValueInfoWrapperPass();
@@ -146,11 +146,11 @@ public:
   void getAnalysisUsage(AnalysisUsage &AU) const override;
   void releaseMemory() override;
   bool runOnFunction(Function &F) override;
+
 private:
   LazyValueInfo Info;
 };
 
-}  // end namespace llvm
+} // end namespace llvm
 
 #endif
-

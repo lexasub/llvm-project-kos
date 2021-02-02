@@ -12,27 +12,27 @@
 namespace basic {
 
 class A {
- public:
-  A() { }
+public:
+  A() {}
   ~A();
 };
 
 void no_constructor_destructor_infinite_recursion() {
   A a;
 
-// CHECK:      define linkonce_odr dso_local x86_thiscallcc %"class.basic::A"* @"??0A@basic@@QAE@XZ"(%"class.basic::A"* {{[^,]*}} returned {{[^,]*}} %this) {{.*}} comdat {{.*}} {
-// CHECK:        [[THIS_ADDR:%[.0-9A-Z_a-z]+]] = alloca %"class.basic::A"*, align 4
-// CHECK-NEXT:   store %"class.basic::A"* %this, %"class.basic::A"** [[THIS_ADDR]], align 4
-// CHECK-NEXT:   [[T1:%[.0-9A-Z_a-z]+]] = load %"class.basic::A"*, %"class.basic::A"** [[THIS_ADDR]]
-// CHECK-NEXT:   ret %"class.basic::A"* [[T1]]
-// CHECK-NEXT: }
+  // CHECK:      define linkonce_odr dso_local x86_thiscallcc %"class.basic::A"* @"??0A@basic@@QAE@XZ"(%"class.basic::A"* {{[^,]*}} returned {{[^,]*}} %this) {{.*}} comdat {{.*}} {
+  // CHECK:        [[THIS_ADDR:%[.0-9A-Z_a-z]+]] = alloca %"class.basic::A"*, align 4
+  // CHECK-NEXT:   store %"class.basic::A"* %this, %"class.basic::A"** [[THIS_ADDR]], align 4
+  // CHECK-NEXT:   [[T1:%[.0-9A-Z_a-z]+]] = load %"class.basic::A"*, %"class.basic::A"** [[THIS_ADDR]]
+  // CHECK-NEXT:   ret %"class.basic::A"* [[T1]]
+  // CHECK-NEXT: }
 }
 
 A::~A() {
-// Make sure that the destructor doesn't call itself:
-// CHECK: define {{.*}} @"??1A@basic@@QAE@XZ"
-// CHECK-NOT: call void @"??1A@basic@@QAE@XZ"
-// CHECK: ret
+  // Make sure that the destructor doesn't call itself:
+  // CHECK: define {{.*}} @"??1A@basic@@QAE@XZ"
+  // CHECK-NOT: call void @"??1A@basic@@QAE@XZ"
+  // CHECK: ret
 }
 
 struct B {
@@ -47,25 +47,25 @@ B::B() {
 
 struct C {
   virtual ~C() {
-// DTORS:      define linkonce_odr dso_local x86_thiscallcc i8* @"??_GC@basic@@UAEPAXI@Z"(%"struct.basic::C"* {{[^,]*}} %this, i32 %should_call_delete) {{.*}} comdat {{.*}} {
-// DTORS:        store i32 %should_call_delete, i32* %[[SHOULD_DELETE_VAR:[0-9a-z._]+]], align 4
-// DTORS:        store i8* %{{.*}}, i8** %[[RETVAL:[0-9a-z._]+]]
-// DTORS:        %[[SHOULD_DELETE_VALUE:[0-9a-z._]+]] = load i32, i32* %[[SHOULD_DELETE_VAR]]
-// DTORS:        call x86_thiscallcc void @"??1C@basic@@UAE@XZ"(%"struct.basic::C"* {{[^,]*}} %[[THIS:[0-9a-z]+]])
-// DTORS-NEXT:   %[[CONDITION:[0-9]+]] = icmp eq i32 %[[SHOULD_DELETE_VALUE]], 0
-// DTORS-NEXT:   br i1 %[[CONDITION]], label %[[CONTINUE_LABEL:[0-9a-z._]+]], label %[[CALL_DELETE_LABEL:[0-9a-z._]+]]
-//
-// DTORS:      [[CALL_DELETE_LABEL]]
-// DTORS-NEXT:   %[[THIS_AS_VOID:[0-9a-z]+]] = bitcast %"struct.basic::C"* %[[THIS]] to i8*
-// DTORS-NEXT:   call void @"??3@YAXPAX@Z"(i8* %[[THIS_AS_VOID]])
-// DTORS-NEXT:   br label %[[CONTINUE_LABEL]]
-//
-// DTORS:      [[CONTINUE_LABEL]]
-// DTORS-NEXT:   %[[RET:.*]] = load i8*, i8** %[[RETVAL]]
-// DTORS-NEXT:   ret i8* %[[RET]]
+    // DTORS:      define linkonce_odr dso_local x86_thiscallcc i8* @"??_GC@basic@@UAEPAXI@Z"(%"struct.basic::C"* {{[^,]*}} %this, i32 %should_call_delete) {{.*}} comdat {{.*}} {
+    // DTORS:        store i32 %should_call_delete, i32* %[[SHOULD_DELETE_VAR:[0-9a-z._]+]], align 4
+    // DTORS:        store i8* %{{.*}}, i8** %[[RETVAL:[0-9a-z._]+]]
+    // DTORS:        %[[SHOULD_DELETE_VALUE:[0-9a-z._]+]] = load i32, i32* %[[SHOULD_DELETE_VAR]]
+    // DTORS:        call x86_thiscallcc void @"??1C@basic@@UAE@XZ"(%"struct.basic::C"* {{[^,]*}} %[[THIS:[0-9a-z]+]])
+    // DTORS-NEXT:   %[[CONDITION:[0-9]+]] = icmp eq i32 %[[SHOULD_DELETE_VALUE]], 0
+    // DTORS-NEXT:   br i1 %[[CONDITION]], label %[[CONTINUE_LABEL:[0-9a-z._]+]], label %[[CALL_DELETE_LABEL:[0-9a-z._]+]]
+    //
+    // DTORS:      [[CALL_DELETE_LABEL]]
+    // DTORS-NEXT:   %[[THIS_AS_VOID:[0-9a-z]+]] = bitcast %"struct.basic::C"* %[[THIS]] to i8*
+    // DTORS-NEXT:   call void @"??3@YAXPAX@Z"(i8* %[[THIS_AS_VOID]])
+    // DTORS-NEXT:   br label %[[CONTINUE_LABEL]]
+    //
+    // DTORS:      [[CONTINUE_LABEL]]
+    // DTORS-NEXT:   %[[RET:.*]] = load i8*, i8** %[[RETVAL]]
+    // DTORS-NEXT:   ret i8* %[[RET]]
 
-// Check that we do the mangling correctly on x64.
-// DTORS-X64:  @"??_GC@basic@@UEAAPEAXI@Z"
+    // Check that we do the mangling correctly on x64.
+    // DTORS-X64:  @"??_GC@basic@@UEAAPEAXI@Z"
   }
   virtual void foo();
 };
@@ -75,52 +75,52 @@ void C::foo() {}
 
 void check_vftable_offset() {
   C c;
-// The vftable pointer should point at the beginning of the vftable.
-// CHECK: [[THIS_PTR:%[0-9]+]] = bitcast %"struct.basic::C"* {{.*}} to i32 (...)***
-// CHECK: store i32 (...)** bitcast ({ [2 x i8*] }* @"??_7C@basic@@6B@" to i32 (...)**), i32 (...)*** [[THIS_PTR]]
+  // The vftable pointer should point at the beginning of the vftable.
+  // CHECK: [[THIS_PTR:%[0-9]+]] = bitcast %"struct.basic::C"* {{.*}} to i32 (...)***
+  // CHECK: store i32 (...)** bitcast ({ [2 x i8*] }* @"??_7C@basic@@6B@" to i32 (...)**), i32 (...)*** [[THIS_PTR]]
 }
 
 void call_complete_dtor(C *obj_ptr) {
-// CHECK: define dso_local void @"?call_complete_dtor@basic@@YAXPAUC@1@@Z"(%"struct.basic::C"* %obj_ptr)
+  // CHECK: define dso_local void @"?call_complete_dtor@basic@@YAXPAUC@1@@Z"(%"struct.basic::C"* %obj_ptr)
   obj_ptr->~C();
-// CHECK: %[[OBJ_PTR_VALUE:.*]] = load %"struct.basic::C"*, %"struct.basic::C"** %{{.*}}, align 4
-// CHECK-NEXT: %[[PVTABLE:.*]] = bitcast %"struct.basic::C"* %[[OBJ_PTR_VALUE]] to i8* (%"struct.basic::C"*, i32)***
-// CHECK-NEXT: %[[VTABLE:.*]] = load i8* (%"struct.basic::C"*, i32)**, i8* (%"struct.basic::C"*, i32)*** %[[PVTABLE]]
-// CHECK-NEXT: %[[PVDTOR:.*]] = getelementptr inbounds i8* (%"struct.basic::C"*, i32)*, i8* (%"struct.basic::C"*, i32)** %[[VTABLE]], i64 0
-// CHECK-NEXT: %[[VDTOR:.*]] = load i8* (%"struct.basic::C"*, i32)*, i8* (%"struct.basic::C"*, i32)** %[[PVDTOR]]
-// CHECK-NEXT: call x86_thiscallcc i8* %[[VDTOR]](%"struct.basic::C"* {{[^,]*}} %[[OBJ_PTR_VALUE]], i32 0)
-// CHECK-NEXT: ret void
+  // CHECK: %[[OBJ_PTR_VALUE:.*]] = load %"struct.basic::C"*, %"struct.basic::C"** %{{.*}}, align 4
+  // CHECK-NEXT: %[[PVTABLE:.*]] = bitcast %"struct.basic::C"* %[[OBJ_PTR_VALUE]] to i8* (%"struct.basic::C"*, i32)***
+  // CHECK-NEXT: %[[VTABLE:.*]] = load i8* (%"struct.basic::C"*, i32)**, i8* (%"struct.basic::C"*, i32)*** %[[PVTABLE]]
+  // CHECK-NEXT: %[[PVDTOR:.*]] = getelementptr inbounds i8* (%"struct.basic::C"*, i32)*, i8* (%"struct.basic::C"*, i32)** %[[VTABLE]], i64 0
+  // CHECK-NEXT: %[[VDTOR:.*]] = load i8* (%"struct.basic::C"*, i32)*, i8* (%"struct.basic::C"*, i32)** %[[PVDTOR]]
+  // CHECK-NEXT: call x86_thiscallcc i8* %[[VDTOR]](%"struct.basic::C"* {{[^,]*}} %[[OBJ_PTR_VALUE]], i32 0)
+  // CHECK-NEXT: ret void
 }
 
 void call_deleting_dtor(C *obj_ptr) {
-// CHECK: define dso_local void @"?call_deleting_dtor@basic@@YAXPAUC@1@@Z"(%"struct.basic::C"* %obj_ptr)
+  // CHECK: define dso_local void @"?call_deleting_dtor@basic@@YAXPAUC@1@@Z"(%"struct.basic::C"* %obj_ptr)
   delete obj_ptr;
-// CHECK:      %[[OBJ_PTR_VALUE:.*]] = load %"struct.basic::C"*, %"struct.basic::C"** %{{.*}}, align 4
-// CHECK:      br i1 {{.*}}, label %[[DELETE_NULL:.*]], label %[[DELETE_NOTNULL:.*]]
+  // CHECK:      %[[OBJ_PTR_VALUE:.*]] = load %"struct.basic::C"*, %"struct.basic::C"** %{{.*}}, align 4
+  // CHECK:      br i1 {{.*}}, label %[[DELETE_NULL:.*]], label %[[DELETE_NOTNULL:.*]]
 
-// CHECK:      [[DELETE_NOTNULL]]
-// CHECK-NEXT:   %[[PVTABLE:.*]] = bitcast %"struct.basic::C"* %[[OBJ_PTR_VALUE]] to i8* (%"struct.basic::C"*, i32)***
-// CHECK-NEXT:   %[[VTABLE:.*]] = load i8* (%"struct.basic::C"*, i32)**, i8* (%"struct.basic::C"*, i32)*** %[[PVTABLE]]
-// CHECK-NEXT:   %[[PVDTOR:.*]] = getelementptr inbounds i8* (%"struct.basic::C"*, i32)*, i8* (%"struct.basic::C"*, i32)** %[[VTABLE]], i64 0
-// CHECK-NEXT:   %[[VDTOR:.*]] = load i8* (%"struct.basic::C"*, i32)*, i8* (%"struct.basic::C"*, i32)** %[[PVDTOR]]
-// CHECK-NEXT:   call x86_thiscallcc i8* %[[VDTOR]](%"struct.basic::C"* {{[^,]*}} %[[OBJ_PTR_VALUE]], i32 1)
-// CHECK:      ret void
+  // CHECK:      [[DELETE_NOTNULL]]
+  // CHECK-NEXT:   %[[PVTABLE:.*]] = bitcast %"struct.basic::C"* %[[OBJ_PTR_VALUE]] to i8* (%"struct.basic::C"*, i32)***
+  // CHECK-NEXT:   %[[VTABLE:.*]] = load i8* (%"struct.basic::C"*, i32)**, i8* (%"struct.basic::C"*, i32)*** %[[PVTABLE]]
+  // CHECK-NEXT:   %[[PVDTOR:.*]] = getelementptr inbounds i8* (%"struct.basic::C"*, i32)*, i8* (%"struct.basic::C"*, i32)** %[[VTABLE]], i64 0
+  // CHECK-NEXT:   %[[VDTOR:.*]] = load i8* (%"struct.basic::C"*, i32)*, i8* (%"struct.basic::C"*, i32)** %[[PVDTOR]]
+  // CHECK-NEXT:   call x86_thiscallcc i8* %[[VDTOR]](%"struct.basic::C"* {{[^,]*}} %[[OBJ_PTR_VALUE]], i32 1)
+  // CHECK:      ret void
 }
 
 void call_deleting_dtor_and_global_delete(C *obj_ptr) {
-// CHECK: define dso_local void @"?call_deleting_dtor_and_global_delete@basic@@YAXPAUC@1@@Z"(%"struct.basic::C"* %obj_ptr)
+  // CHECK: define dso_local void @"?call_deleting_dtor_and_global_delete@basic@@YAXPAUC@1@@Z"(%"struct.basic::C"* %obj_ptr)
   ::delete obj_ptr;
-// CHECK:      %[[OBJ_PTR_VALUE:.*]] = load %"struct.basic::C"*, %"struct.basic::C"** %{{.*}}, align 4
-// CHECK:      br i1 {{.*}}, label %[[DELETE_NULL:.*]], label %[[DELETE_NOTNULL:.*]]
+  // CHECK:      %[[OBJ_PTR_VALUE:.*]] = load %"struct.basic::C"*, %"struct.basic::C"** %{{.*}}, align 4
+  // CHECK:      br i1 {{.*}}, label %[[DELETE_NULL:.*]], label %[[DELETE_NOTNULL:.*]]
 
-// CHECK:      [[DELETE_NOTNULL]]
-// CHECK-NEXT:   %[[PVTABLE:.*]] = bitcast %"struct.basic::C"* %[[OBJ_PTR_VALUE]] to i8* (%"struct.basic::C"*, i32)***
-// CHECK-NEXT:   %[[VTABLE:.*]] = load i8* (%"struct.basic::C"*, i32)**, i8* (%"struct.basic::C"*, i32)*** %[[PVTABLE]]
-// CHECK-NEXT:   %[[PVDTOR:.*]] = getelementptr inbounds i8* (%"struct.basic::C"*, i32)*, i8* (%"struct.basic::C"*, i32)** %[[VTABLE]], i64 0
-// CHECK-NEXT:   %[[VDTOR:.*]] = load i8* (%"struct.basic::C"*, i32)*, i8* (%"struct.basic::C"*, i32)** %[[PVDTOR]]
-// CHECK-NEXT:   %[[CALL:.*]] = call x86_thiscallcc i8* %[[VDTOR]](%"struct.basic::C"* {{[^,]*}} %[[OBJ_PTR_VALUE]], i32 0)
-// CHECK-NEXT:   call void @"??3@YAXPAX@Z"(i8* %[[CALL]])
-// CHECK:      ret void
+  // CHECK:      [[DELETE_NOTNULL]]
+  // CHECK-NEXT:   %[[PVTABLE:.*]] = bitcast %"struct.basic::C"* %[[OBJ_PTR_VALUE]] to i8* (%"struct.basic::C"*, i32)***
+  // CHECK-NEXT:   %[[VTABLE:.*]] = load i8* (%"struct.basic::C"*, i32)**, i8* (%"struct.basic::C"*, i32)*** %[[PVTABLE]]
+  // CHECK-NEXT:   %[[PVDTOR:.*]] = getelementptr inbounds i8* (%"struct.basic::C"*, i32)*, i8* (%"struct.basic::C"*, i32)** %[[VTABLE]], i64 0
+  // CHECK-NEXT:   %[[VDTOR:.*]] = load i8* (%"struct.basic::C"*, i32)*, i8* (%"struct.basic::C"*, i32)** %[[PVDTOR]]
+  // CHECK-NEXT:   %[[CALL:.*]] = call x86_thiscallcc i8* %[[VDTOR]](%"struct.basic::C"* {{[^,]*}} %[[OBJ_PTR_VALUE]], i32 0)
+  // CHECK-NEXT:   call void @"??3@YAXPAX@Z"(i8* %[[CALL]])
+  // CHECK:      ret void
 }
 
 struct D {
@@ -145,7 +145,7 @@ void use_D() { D c; }
 namespace dtor_in_second_nvbase {
 
 struct A {
-  virtual void f();  // A needs vftable to be primary.
+  virtual void f(); // A needs vftable to be primary.
 };
 struct B {
   virtual ~B();
@@ -155,18 +155,18 @@ struct C : A, B {
 };
 
 C::~C() {
-// CHECK-LABEL: define dso_local x86_thiscallcc void @"??1C@dtor_in_second_nvbase@@UAE@XZ"
-// CHECK:       (%"struct.dtor_in_second_nvbase::C"* {{[^,]*}} %this)
-//      No this adjustment!
-// CHECK-NOT: getelementptr
-// CHECK:   load %"struct.dtor_in_second_nvbase::C"*, %"struct.dtor_in_second_nvbase::C"** %{{.*}}
-//      Now we this-adjust before calling ~B.
-// CHECK:   bitcast %"struct.dtor_in_second_nvbase::C"* %{{.*}} to i8*
-// CHECK:   getelementptr inbounds i8, i8* %{{.*}}, i32 4
-// CHECK:   bitcast i8* %{{.*}} to %"struct.dtor_in_second_nvbase::B"*
-// CHECK:   call x86_thiscallcc void @"??1B@dtor_in_second_nvbase@@UAE@XZ"
-// CHECK:       (%"struct.dtor_in_second_nvbase::B"* {{[^,]*}} %{{.*}})
-// CHECK:   ret void
+  // CHECK-LABEL: define dso_local x86_thiscallcc void @"??1C@dtor_in_second_nvbase@@UAE@XZ"
+  // CHECK:       (%"struct.dtor_in_second_nvbase::C"* {{[^,]*}} %this)
+  //      No this adjustment!
+  // CHECK-NOT: getelementptr
+  // CHECK:   load %"struct.dtor_in_second_nvbase::C"*, %"struct.dtor_in_second_nvbase::C"** %{{.*}}
+  //      Now we this-adjust before calling ~B.
+  // CHECK:   bitcast %"struct.dtor_in_second_nvbase::C"* %{{.*}} to i8*
+  // CHECK:   getelementptr inbounds i8, i8* %{{.*}}, i32 4
+  // CHECK:   bitcast i8* %{{.*}} to %"struct.dtor_in_second_nvbase::B"*
+  // CHECK:   call x86_thiscallcc void @"??1B@dtor_in_second_nvbase@@UAE@XZ"
+  // CHECK:       (%"struct.dtor_in_second_nvbase::B"* {{[^,]*}} %{{.*}})
+  // CHECK:   ret void
 }
 
 void foo() {
@@ -180,28 +180,42 @@ void foo() {
 // DTORS2:   %[[CALL:.*]] = tail call x86_thiscallcc i8* @"??_GC@dtor_in_second_nvbase@@UAEPAXI@Z"
 // DTORS2:   ret i8* %[[CALL]]
 
-}
+} // namespace dtor_in_second_nvbase
 
 namespace test2 {
 // Just like dtor_in_second_nvbase, except put that in a vbase of a diamond.
 
 // C's dtor is in the non-primary base.
-struct A { virtual void f(); };
-struct B { virtual ~B(); };
-struct C : A, B { virtual ~C(); int c; };
+struct A {
+  virtual void f();
+};
+struct B {
+  virtual ~B();
+};
+struct C : A, B {
+  virtual ~C();
+  int c;
+};
 
 // Diamond hierarchy, with C as the shared vbase.
-struct D : virtual C { int d; };
-struct E : virtual C { int e; };
-struct F : D, E { ~F(); int f; };
+struct D : virtual C {
+  int d;
+};
+struct E : virtual C {
+  int e;
+};
+struct F : D, E {
+  ~F();
+  int f;
+};
 
 F::~F() {
-// CHECK-LABEL: define dso_local x86_thiscallcc void @"??1F@test2@@UAE@XZ"(%"struct.test2::F"*{{[^,]*}})
-//      Do an adjustment from C vbase subobject to F as though F was the
-//      complete type.
-// CHECK:   getelementptr inbounds i8, i8* %{{.*}}, i32 -20
-// CHECK:   bitcast i8* %{{.*}} to %"struct.test2::F"*
-// CHECK:   store %"struct.test2::F"*
+  // CHECK-LABEL: define dso_local x86_thiscallcc void @"??1F@test2@@UAE@XZ"(%"struct.test2::F"*{{[^,]*}})
+  //      Do an adjustment from C vbase subobject to F as though F was the
+  //      complete type.
+  // CHECK:   getelementptr inbounds i8, i8* %{{.*}}, i32 -20
+  // CHECK:   bitcast i8* %{{.*}} to %"struct.test2::F"*
+  // CHECK:   store %"struct.test2::F"*
 }
 
 void foo() {
@@ -214,7 +228,7 @@ void foo() {
 // DTORS3:   call x86_thiscallcc void @"??1F@test2@@UAE@XZ"
 // DTORS3:   ret void
 
-}
+} // namespace test2
 
 namespace constructors {
 
@@ -345,24 +359,30 @@ struct A {
 
 void call_nv_complete(A *a) {
   a->~A();
-// CHECK: define dso_local void @"?call_nv_complete@dtors@@YAXPAUA@1@@Z"
-// CHECK: call x86_thiscallcc void @"??1A@dtors@@QAE@XZ"
-// CHECK: ret
+  // CHECK: define dso_local void @"?call_nv_complete@dtors@@YAXPAUA@1@@Z"
+  // CHECK: call x86_thiscallcc void @"??1A@dtors@@QAE@XZ"
+  // CHECK: ret
 }
 
 // CHECK: declare dso_local x86_thiscallcc void @"??1A@dtors@@QAE@XZ"
 
 // Now try some virtual bases, where we need the complete dtor.
 
-struct B : virtual A { ~B(); };
-struct C : virtual A { ~C(); };
-struct D : B, C { ~D(); };
+struct B : virtual A {
+  ~B();
+};
+struct C : virtual A {
+  ~C();
+};
+struct D : B, C {
+  ~D();
+};
 
 void call_vbase_complete(D *d) {
   d->~D();
-// CHECK: define dso_local void @"?call_vbase_complete@dtors@@YAXPAUD@1@@Z"
-// CHECK: call x86_thiscallcc void @"??_DD@dtors@@QAEXXZ"(%"struct.dtors::D"* {{[^,]*}} %{{[^,]+}})
-// CHECK: ret
+  // CHECK: define dso_local void @"?call_vbase_complete@dtors@@YAXPAUD@1@@Z"
+  // CHECK: call x86_thiscallcc void @"??_DD@dtors@@QAEXXZ"(%"struct.dtors::D"* {{[^,]*}} %{{[^,]+}})
+  // CHECK: ret
 }
 
 // The complete dtor should call the base dtors for D and the vbase A (once).
@@ -376,9 +396,9 @@ void call_vbase_complete(D *d) {
 
 void destroy_d_complete() {
   D d;
-// CHECK: define dso_local void @"?destroy_d_complete@dtors@@YAXXZ"
-// CHECK: call x86_thiscallcc void @"??_DD@dtors@@QAEXXZ"(%"struct.dtors::D"* {{[^,]*}} %{{[^,]+}})
-// CHECK: ret
+  // CHECK: define dso_local void @"?destroy_d_complete@dtors@@YAXXZ"
+  // CHECK: call x86_thiscallcc void @"??_DD@dtors@@QAEXXZ"(%"struct.dtors::D"* {{[^,]*}} %{{[^,]+}})
+  // CHECK: ret
 }
 
 // FIXME: Clang manually inlines the deletion, so we don't get a call to the
@@ -386,16 +406,16 @@ void destroy_d_complete() {
 // a vftable.
 void call_nv_deleting_dtor(D *d) {
   delete d;
-// CHECK: define dso_local void @"?call_nv_deleting_dtor@dtors@@YAXPAUD@1@@Z"
-// CHECK: call x86_thiscallcc void @"??_DD@dtors@@QAEXXZ"(%"struct.dtors::D"* {{[^,]*}} %{{[^,]+}})
-// CHECK: call void @"??3@YAXPAX@Z"
-// CHECK: ret
+  // CHECK: define dso_local void @"?call_nv_deleting_dtor@dtors@@YAXPAUD@1@@Z"
+  // CHECK: call x86_thiscallcc void @"??_DD@dtors@@QAEXXZ"(%"struct.dtors::D"* {{[^,]*}} %{{[^,]+}})
+  // CHECK: call void @"??3@YAXPAX@Z"
+  // CHECK: ret
 }
 
-}
+} // namespace dtors
 
 namespace test1 {
-struct A { };
+struct A {};
 struct B : virtual A {
   B(int *a);
   B(const char *a, ...);
@@ -421,7 +441,7 @@ void construct_b() {
 // CHECK:               (%"struct.test1::B"* {{.*}}, i32* {{.*}}, i32 1)
 // CHECK: call %"struct.test1::B"* (%"struct.test1::B"*, i32, i8*, ...) @"??0B@test1@@QAA@PBDZZ"
 // CHECK:               (%"struct.test1::B"* {{.*}}, i32 1, i8* {{.*}}, i32 1, i32 2)
-}
+} // namespace test1
 
 namespace implicit_copy_vtable {
 // This was a crash that only reproduced in ABIs without key functions.
@@ -441,7 +461,7 @@ struct MoveOnly {
 MoveOnly &&f();
 void g() { new MoveOnly(f()); }
 // CHECK: store {{.*}} @"??_7MoveOnly@implicit_copy_vtable@@6B@"
-}
+} // namespace implicit_copy_vtable
 
 namespace delegating_ctor {
 struct Y {};
@@ -450,7 +470,7 @@ struct X : virtual Y {
   X();
 };
 X::X(int) : X() {}
-}
+} // namespace delegating_ctor
 // CHECK: define dso_local x86_thiscallcc %"struct.delegating_ctor::X"* @"??0X@delegating_ctor@@QAE@H@Z"(
 // CHECK:  %[[is_most_derived_addr:.*]] = alloca i32, align 4
 // CHECK:  store i32 %is_most_derived, i32* %[[is_most_derived_addr]]
@@ -461,11 +481,11 @@ X::X(int) : X() {}
 // linkonce_odr.
 namespace {
 struct A {
-  virtual ~A() { }
+  virtual ~A() {}
 };
-}
+} // namespace
 void *getA() {
-  return (void*)new A();
+  return (void *)new A();
 }
 // CHECK: define internal x86_thiscallcc i8* @"??_GA@?A0x{{[^@]*}}@@UAEPAXI@Z"
 // CHECK:               (%"struct.(anonymous namespace)::A"* {{[^,]*}} %this, i32 %should_call_delete)
@@ -475,11 +495,11 @@ void *getA() {
 // Check that we correctly transform __stdcall to __thiscall for ctors and
 // dtors.
 class G {
- public:
-  __stdcall G() {};
-// DTORS4: define linkonce_odr dso_local x86_thiscallcc %class.G* @"??0G@@QAE@XZ"
-  __stdcall ~G() {};
-// DTORS4: define linkonce_odr dso_local x86_thiscallcc void @"??1G@@QAE@XZ"
+public:
+  __stdcall G(){};
+  // DTORS4: define linkonce_odr dso_local x86_thiscallcc %class.G* @"??0G@@QAE@XZ"
+  __stdcall ~G(){};
+  // DTORS4: define linkonce_odr dso_local x86_thiscallcc void @"??1G@@QAE@XZ"
 };
 
 extern void testG() {

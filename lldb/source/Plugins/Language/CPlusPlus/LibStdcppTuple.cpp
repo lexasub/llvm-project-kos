@@ -42,7 +42,7 @@ private:
   // objects are only destroyed when every shared pointer to any of them
   // is destroyed, so we must not store a shared pointer to any ValueObject
   // derived from our backend ValueObject (since we're in the same cluster).
-  std::vector<ValueObject*> m_members;
+  std::vector<ValueObject *> m_members;
 };
 
 } // end of anonymous namespace
@@ -77,7 +77,8 @@ bool LibStdcppTupleSyntheticFrontEnd::Update() {
         if (value_sp) {
           StreamString name;
           name.Printf("[%zd]", m_members.size());
-          m_members.push_back(value_sp->Clone(ConstString(name.GetString())).get());
+          m_members.push_back(
+              value_sp->Clone(ConstString(name.GetString())).get());
         }
       }
     }
@@ -99,8 +100,8 @@ size_t LibStdcppTupleSyntheticFrontEnd::CalculateNumChildren() {
   return m_members.size();
 }
 
-size_t LibStdcppTupleSyntheticFrontEnd::GetIndexOfChildWithName(
-    ConstString name) {
+size_t
+LibStdcppTupleSyntheticFrontEnd::GetIndexOfChildWithName(ConstString name) {
   return ExtractIndexFromString(name.GetCString());
 }
 

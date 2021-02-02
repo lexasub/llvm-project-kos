@@ -45,6 +45,7 @@ void good_new_strlen(char *name) {
 
 class C {
   char c;
+
 public:
   static void *operator new[](std::size_t count) {
     return ::operator new(count);

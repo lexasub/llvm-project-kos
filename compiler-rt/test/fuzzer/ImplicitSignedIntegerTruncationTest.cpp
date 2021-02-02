@@ -20,7 +20,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
     if (Size > 1 && Data[1] == 'i') {
       Sink = 2;
       if (Size > 2 && Data[2] == '!') {
-        Large = Large + 1;  // 'char overflow'.
+        Large = Large + 1; // 'char overflow'.
       }
     }
   }

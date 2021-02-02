@@ -3,6 +3,7 @@
 
 class EverythingMayBeUsed {
   int x;
+
 public:
   template <class T>
   void f() {

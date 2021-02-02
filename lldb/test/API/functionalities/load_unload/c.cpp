@@ -1,5 +1,1 @@
-extern "C" int
-c_function ()
-{
-    return 600;
-}
+extern "C" int c_function() { return 600; }

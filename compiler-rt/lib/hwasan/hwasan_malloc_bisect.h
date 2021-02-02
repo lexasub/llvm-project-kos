@@ -10,8 +10,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "sanitizer_common/sanitizer_hash.h"
 #include "hwasan.h"
+#include "sanitizer_common/sanitizer_hash.h"
 
 namespace __hwasan {
 

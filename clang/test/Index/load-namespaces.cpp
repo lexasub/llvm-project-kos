@@ -1,13 +1,13 @@
 // Test is line- and column-sensitive; see below.
 
 namespace std {
-  namespace rel_ops {
-    void f();
-  }
+namespace rel_ops {
+void f();
 }
+} // namespace std
 
 namespace std {
-  void g();
+void g();
 }
 
 namespace std98 = std;
@@ -16,7 +16,7 @@ namespace std0x = std98;
 using namespace std0x;
 
 namespace std {
-  int g(int);
+int g(int);
 }
 
 using std::g;

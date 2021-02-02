@@ -245,9 +245,9 @@ size_t ObjectFileJIT::ReadSectionData(lldb_private::Section *section,
   return 0;
 }
 
-size_t ObjectFileJIT::ReadSectionData(
-    lldb_private::Section *section,
-    lldb_private::DataExtractor &section_data) {
+size_t
+ObjectFileJIT::ReadSectionData(lldb_private::Section *section,
+                               lldb_private::DataExtractor &section_data) {
   if (section->GetFileSize()) {
     const void *src = (void *)(uintptr_t)section->GetFileOffset();
 

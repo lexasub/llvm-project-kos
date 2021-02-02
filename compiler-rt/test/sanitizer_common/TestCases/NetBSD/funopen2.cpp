@@ -26,12 +26,12 @@ ssize_t f_read(void *cookie, void *buf, size_t len) {
   assert(cookie == &cookie_var);
   assert(len >= 6);
   printf("READ CALLED; len=%zd\n", len);
-  return strlcpy((char*)buf, "test\n", len);
+  return strlcpy((char *)buf, "test\n", len);
 }
 
 ssize_t f_write(void *cookie, const void *buf, size_t len) {
   assert(cookie == &cookie_var);
-  char *data = strndup((char*)buf, len);
+  char *data = strndup((char *)buf, len);
   assert(data);
   printf("WRITE CALLED: %s\n", data);
   free(data);

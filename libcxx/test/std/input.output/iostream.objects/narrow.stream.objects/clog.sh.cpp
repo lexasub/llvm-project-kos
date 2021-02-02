@@ -17,6 +17,6 @@
 #include <iostream>
 
 int main(int, char**) {
-    std::clog << "1234";
-    return 0;
+  std::clog << "1234";
+  return 0;
 }

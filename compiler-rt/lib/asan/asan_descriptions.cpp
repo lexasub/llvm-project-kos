@@ -12,6 +12,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "asan_descriptions.h"
+
 #include "asan_mapping.h"
 #include "asan_report.h"
 #include "asan_stack.h"
@@ -85,16 +86,20 @@ static bool GetShadowKind(uptr addr, ShadowKind *shadow_kind) {
 
 bool DescribeAddressIfShadow(uptr addr) {
   ShadowAddressDescription descr;
-  if (!GetShadowAddressInformation(addr, &descr)) return false;
+  if (!GetShadowAddressInformation(addr, &descr))
+    return false;
   descr.Print();
   return true;
 }
 
 bool GetShadowAddressInformation(uptr addr, ShadowAddressDescription *descr) {
-  if (AddrIsInMem(addr)) return false;
+  if (AddrIsInMem(addr))
+    return false;
   ShadowKind shadow_kind;
-  if (!GetShadowKind(addr, &shadow_kind)) return false;
-  if (shadow_kind != kShadowKindGap) descr->shadow_byte = *(u8 *)addr;
+  if (!GetShadowKind(addr, &shadow_kind))
+    return false;
+  if (shadow_kind != kShadowKindGap)
+    descr->shadow_byte = *(u8 *)addr;
   descr->addr = addr;
   descr->kind = shadow_kind;
   return true;
@@ -194,7 +199,8 @@ bool DescribeAddressIfHeap(uptr addr, uptr access_size) {
 bool GetStackAddressInformation(uptr addr, uptr access_size,
                                 StackAddressDescription *descr) {
   AsanThread *t = FindThreadByStackAddress(addr);
-  if (!t) return false;
+  if (!t)
+    return false;
 
   descr->addr = addr;
   descr->tid = t->tid();
@@ -268,7 +274,8 @@ static void PrintAccessAndVarIntersection(const StackVarDescr &var, uptr addr,
 
 bool DescribeAddressIfStack(uptr addr, uptr access_size) {
   StackAddressDescription descr;
-  if (!GetStackAddressInformation(addr, access_size, &descr)) return false;
+  if (!GetStackAddressInformation(addr, access_size, &descr))
+    return false;
   descr.Print();
   return true;
 }
@@ -283,7 +290,8 @@ static void DescribeAddressRelativeToGlobal(uptr addr, uptr access_size,
     str.append("%p is located %zd bytes to the left", (void *)addr,
                g.beg - addr);
   } else if (addr + access_size > g.beg + g.size) {
-    if (addr < g.beg + g.size) addr = g.beg + g.size;
+    if (addr < g.beg + g.size)
+      addr = g.beg + g.size;
     str.append("%p is located %zd bytes to the right", (void *)addr,
                addr - (g.beg + g.size));
   } else {
@@ -312,7 +320,8 @@ bool GetGlobalAddressInformation(uptr addr, uptr access_size,
 bool DescribeAddressIfGlobal(uptr addr, uptr access_size,
                              const char *bug_type) {
   GlobalAddressDescription descr;
-  if (!GetGlobalAddressInformation(addr, access_size, &descr)) return false;
+  if (!GetGlobalAddressInformation(addr, access_size, &descr))
+    return false;
 
   descr.Print(bug_type);
   return true;
@@ -336,15 +345,14 @@ void GlobalAddressDescription::Print(const char *bug_type) const {
 
 bool GlobalAddressDescription::PointsInsideTheSameVariable(
     const GlobalAddressDescription &other) const {
-  if (size == 0 || other.size == 0) return false;
+  if (size == 0 || other.size == 0)
+    return false;
 
   for (uptr i = 0; i < size; i++) {
     const __asan_global &a = globals[i];
     for (uptr j = 0; j < other.size; j++) {
       const __asan_global &b = other.globals[j];
-      if (a.beg == b.beg &&
-          a.beg <= addr &&
-          b.beg <= other.addr &&
+      if (a.beg == b.beg && a.beg <= addr && b.beg <= other.addr &&
           (addr + access_size) < (a.beg + a.size) &&
           (other.addr + other.access_size) < (b.beg + b.size))
         return true;
@@ -432,7 +440,8 @@ void HeapAddressDescription::Print() const {
   }
   alloc_stack.Print();
   DescribeThread(GetCurrentThread());
-  if (free_thread) DescribeThread(free_thread);
+  if (free_thread)
+    DescribeThread(free_thread);
   DescribeThread(alloc_thread);
 }
 

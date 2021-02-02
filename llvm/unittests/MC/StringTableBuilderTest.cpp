@@ -60,7 +60,7 @@ TEST(StringTableBuilderTest, BasicWinCOFF) {
 
   ExpectedSize =
       support::endian::byte_swap<uint32_t, support::little>(ExpectedSize);
-  Expected.append((const char*)&ExpectedSize, 4);
+  Expected.append((const char *)&ExpectedSize, 4);
   Expected += "pygmy hippopotamus";
   Expected += '\x00';
   Expected += "river horse";
@@ -236,4 +236,4 @@ TEST(StringTableBuilderTest, MachO64LinkedInOrder) {
   EXPECT_EQ(6U, B.getOffset("ba"));
   EXPECT_EQ(9U, B.getOffset("f"));
 }
-}
+} // namespace

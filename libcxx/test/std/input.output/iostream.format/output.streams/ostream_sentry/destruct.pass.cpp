@@ -21,59 +21,51 @@
 int sync_called = 0;
 
 template <class CharT>
-struct testbuf1
-    : public std::basic_streambuf<CharT>
-{
-    testbuf1() {}
+struct testbuf1 : public std::basic_streambuf<CharT> {
+  testbuf1() {}
 
 protected:
-
-    int virtual sync()
-    {
-        ++sync_called;
-        return 1;
-    }
+  int virtual sync() {
+    ++sync_called;
+    return 1;
+  }
 };
 
-int main(int, char**)
-{
-    {
-        std::ostream os((std::streambuf*)0);
-        std::ostream::sentry s(os);
-        assert(!bool(s));
-    }
-    assert(sync_called == 0);
-    {
-        testbuf1<char> sb;
-        std::ostream os(&sb);
-        std::ostream::sentry s(os);
-        assert(bool(s));
-    }
-    assert(sync_called == 0);
-    {
-        testbuf1<char> sb;
-        std::ostream os(&sb);
-        std::ostream::sentry s(os);
-        assert(bool(s));
-        unitbuf(os);
+int main(int, char**) {
+  {
+    std::ostream os((std::streambuf*)0);
+    std::ostream::sentry s(os);
+    assert(!bool(s));
+  }
+  assert(sync_called == 0);
+  {
+    testbuf1<char> sb;
+    std::ostream os(&sb);
+    std::ostream::sentry s(os);
+    assert(bool(s));
+  }
+  assert(sync_called == 0);
+  {
+    testbuf1<char> sb;
+    std::ostream os(&sb);
+    std::ostream::sentry s(os);
+    assert(bool(s));
+    unitbuf(os);
+  }
+  assert(sync_called == 1);
+#ifndef TEST_HAS_NO_EXCEPTIONS
+  {
+    testbuf1<char> sb;
+    std::ostream os(&sb);
+    try {
+      std::ostream::sentry s(os);
+      assert(bool(s));
+      unitbuf(os);
+      throw 1;
+    } catch (...) {
     }
     assert(sync_called == 1);
-#ifndef TEST_HAS_NO_EXCEPTIONS
-    {
-        testbuf1<char> sb;
-        std::ostream os(&sb);
-        try
-        {
-            std::ostream::sentry s(os);
-            assert(bool(s));
-            unitbuf(os);
-            throw 1;
-        }
-        catch (...)
-        {
-        }
-        assert(sync_called == 1);
-    }
+  }
 #endif
 
   return 0;

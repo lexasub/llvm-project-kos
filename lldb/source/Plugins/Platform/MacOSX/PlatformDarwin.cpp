@@ -1173,7 +1173,9 @@ static FileSpec GetXcodeSelectPath() {
 BreakpointSP PlatformDarwin::SetThreadCreationBreakpoint(Target &target) {
   BreakpointSP bp_sp;
   static const char *g_bp_names[] = {
-      "start_wqthread", "_pthread_wqthread", "_pthread_start",
+      "start_wqthread",
+      "_pthread_wqthread",
+      "_pthread_start",
   };
 
   static const char *g_bp_modules[] = {"libsystem_c.dylib",
@@ -1376,8 +1378,7 @@ PlatformDarwin::ParseVersionBuildDir(llvm::StringRef dir) {
   llvm::StringRef build_str;
   std::tie(version_str, build_str) = dir.split(' ');
   llvm::VersionTuple version;
-  if (!version.tryParse(version_str) ||
-      build_str.empty()) {
+  if (!version.tryParse(version_str) || build_str.empty()) {
     if (build_str.consume_front("(")) {
       size_t pos = build_str.find(')');
       build = build_str.slice(0, pos);
@@ -1511,11 +1512,11 @@ PlatformDarwin::ExtractCrashInfoAnnotations(Process &process) {
 }
 
 void PlatformDarwin::AddClangModuleCompilationOptionsForSDKType(
-    Target *target, std::vector<std::string> &options, XcodeSDK::Type sdk_type) {
+    Target *target, std::vector<std::string> &options,
+    XcodeSDK::Type sdk_type) {
   const std::vector<std::string> apple_arguments = {
-      "-x",       "objective-c++", "-fobjc-arc",
-      "-fblocks", "-D_ISO646_H",   "-D__ISO646_H",
-      "-fgnuc-version=4.2.1"};
+      "-x",          "objective-c++", "-fobjc-arc",          "-fblocks",
+      "-D_ISO646_H", "-D__ISO646_H",  "-fgnuc-version=4.2.1"};
 
   options.insert(options.end(), apple_arguments.begin(), apple_arguments.end());
 
@@ -1661,7 +1662,6 @@ lldb_private::FileSpec PlatformDarwin::LocateExecutable(const char *basename) {
   // once so we don't keep doing the work over and over.
   static llvm::once_flag g_once_flag;
   llvm::call_once(g_once_flag, []() {
-
     // When locating executables, trust the DEVELOPER_DIR first if it is set
     FileSpec xcode_contents_dir = HostInfo::GetXcodeContentsDirectory();
     if (xcode_contents_dir) {
@@ -1753,7 +1753,8 @@ lldb_private::Status PlatformDarwin::FindBundleBinaryInExecSearchPaths(
 
     size_t num_module_search_paths = module_search_paths_ptr->GetSize();
     for (size_t i = 0; i < num_module_search_paths; ++i) {
-      Log *log_verbose = lldb_private::GetLogIfAllCategoriesSet(LIBLLDB_LOG_HOST);
+      Log *log_verbose =
+          lldb_private::GetLogIfAllCategoriesSet(LIBLLDB_LOG_HOST);
       LLDB_LOGF(
           log_verbose,
           "PlatformRemoteDarwinDevice::GetSharedModule searching for binary in "

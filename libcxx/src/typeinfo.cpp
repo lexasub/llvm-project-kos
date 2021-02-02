@@ -11,13 +11,13 @@
 #if defined(_LIBCPP_ABI_MICROSOFT) && !defined(_LIBCPP_ABI_VCRUNTIME)
 #include <string.h>
 
-int std::type_info::__compare(const type_info &__rhs) const _NOEXCEPT {
+int std::type_info::__compare(const type_info& __rhs) const _NOEXCEPT {
   if (&__data == &__rhs.__data)
     return 0;
   return strcmp(&__data.__decorated_name[1], &__rhs.__data.__decorated_name[1]);
 }
 
-const char *std::type_info::name() const _NOEXCEPT {
+const char* std::type_info::name() const _NOEXCEPT {
   // TODO(compnerd) cache demangled &__data.__decorated_name[1]
   return &__data.__decorated_name[1];
 }
@@ -46,12 +46,8 @@ size_t std::type_info::hash_code() const _NOEXCEPT {
 #endif // _LIBCPP_ABI_MICROSOFT
 
 // FIXME: Remove the _LIBCPP_BUILDING_HAS_NO_ABI_LIBRARY configuration.
-#if (!defined(LIBCXX_BUILDING_LIBCXXABI) &&               \
-     !defined(LIBCXXRT) &&                                \
-     !defined(__GLIBCXX__) &&                             \
-     !defined(_LIBCPP_ABI_VCRUNTIME)) ||                  \
+#if (!defined(LIBCXX_BUILDING_LIBCXXABI) && !defined(LIBCXXRT) &&              \
+     !defined(__GLIBCXX__) && !defined(_LIBCPP_ABI_VCRUNTIME)) ||              \
     defined(_LIBCPP_BUILDING_HAS_NO_ABI_LIBRARY)
-std::type_info::~type_info()
-{
-}
+std::type_info::~type_info() {}
 #endif

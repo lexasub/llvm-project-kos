@@ -10,17 +10,19 @@
 //
 //===----------------------------------------------------------------------===//
 #include <string.h>
+
 #include "asan_test_utils.h"
 #if defined(_GNU_SOURCE)
 #include <strings.h>  // for bcmp
 #endif
 #include <vector>
 
-template<typename T>
+template <typename T>
 void MemSetOOBTestTemplate(size_t length) {
-  if (length == 0) return;
+  if (length == 0)
+    return;
   size_t size = Ident(sizeof(T) * length);
-  T *array = Ident((T*)malloc(size));
+  T *array = Ident((T *)malloc(size));
   int element = Ident(42);
   int zero = Ident(0);
   void *(*MEMSET)(void *s, int c, size_t n) = Ident(memset);
@@ -38,9 +40,8 @@ void MemSetOOBTestTemplate(size_t length) {
   MEMSET(array + length + 1, 0, zero);
 
   // try to memset bytes to the right of array
-  EXPECT_DEATH(MEMSET(array, 0, size + 1),
-               RightOOBWriteMessage(0));
-  EXPECT_DEATH(MEMSET((char*)(array + length) - 1, element, 6),
+  EXPECT_DEATH(MEMSET(array, 0, size + 1), RightOOBWriteMessage(0));
+  EXPECT_DEATH(MEMSET((char *)(array + length) - 1, element, 6),
                RightOOBWriteMessage(0));
   EXPECT_DEATH(MEMSET(array + 1, element, size + sizeof(T)),
                RightOOBWriteMessage(0));
@@ -49,10 +50,9 @@ void MemSetOOBTestTemplate(size_t length) {
                RightOOBWriteMessage(sizeof(T)));
 
   // try to memset bytes to the left of array
-  EXPECT_DEATH(MEMSET((char*)array - 1, element, size),
+  EXPECT_DEATH(MEMSET((char *)array - 1, element, size),
                LeftOOBWriteMessage(1));
-  EXPECT_DEATH(MEMSET((char*)array - 5, 0, 6),
-               LeftOOBWriteMessage(5));
+  EXPECT_DEATH(MEMSET((char *)array - 5, 0, 6), LeftOOBWriteMessage(5));
   if (length >= 100) {
     // Large OOB, we find it only if the redzone is large enough.
     EXPECT_DEATH(memset(array - 5, element, size + 5 * sizeof(T)),
@@ -63,7 +63,7 @@ void MemSetOOBTestTemplate(size_t length) {
                LeftOOBWriteMessage(2 * sizeof(T)));
 
   // try to memset bytes both to the left & to the right
-  EXPECT_DEATH(MEMSET((char*)array - 2, element, size + 4),
+  EXPECT_DEATH(MEMSET((char *)array - 2, element, size + 4),
                LeftOOBWriteMessage(2));
 
   free(array);
@@ -84,13 +84,14 @@ static bool AllocateTwoAdjacentArrays(char **x1, char **x2, size_t size) {
   bool res = false;
   for (size_t i = 0; i < 1000U && !res; i++) {
     v.push_back(reinterpret_cast<uintptr_t>(new char[size]));
-    if (i == 0) continue;
+    if (i == 0)
+      continue;
     sort(v.begin(), v.end());
     for (size_t j = 1; j < v.size(); j++) {
-      assert(v[j] > v[j-1]);
-      if ((size_t)(v[j] - v[j-1]) < size * 2) {
-        *x2 = reinterpret_cast<char*>(v[j]);
-        *x1 = reinterpret_cast<char*>(v[j-1]);
+      assert(v[j] > v[j - 1]);
+      if ((size_t)(v[j] - v[j - 1]) < size * 2) {
+        *x2 = reinterpret_cast<char *>(v[j]);
+        *x1 = reinterpret_cast<char *>(v[j - 1]);
         res = true;
         break;
       }
@@ -99,9 +100,11 @@ static bool AllocateTwoAdjacentArrays(char **x1, char **x2, size_t size) {
 
   for (size_t i = 0; i < v.size(); i++) {
     char *p = reinterpret_cast<char *>(v[i]);
-    if (res && p == *x1) continue;
-    if (res && p == *x2) continue;
-    delete [] p;
+    if (res && p == *x1)
+      continue;
+    if (res && p == *x2)
+      continue;
+    delete[] p;
   }
   return res;
 }
@@ -115,8 +118,8 @@ TEST(AddressSanitizer, LargeOOBInMemset) {
     // Do a memset on x1 with huge out-of-bound access that will end up in x2.
     EXPECT_DEATH(Ident(memset)(x1, 0, size * 2),
                  "is located 0 bytes to the right");
-    delete [] x1;
-    delete [] x2;
+    delete[] x1;
+    delete[] x2;
     return;
   }
   assert(0 && "Did not find two adjacent malloc-ed pointers");
@@ -125,10 +128,11 @@ TEST(AddressSanitizer, LargeOOBInMemset) {
 // Same test for memcpy and memmove functions
 template <typename T, class M>
 void MemTransferOOBTestTemplate(size_t length) {
-  if (length == 0) return;
+  if (length == 0)
+    return;
   size_t size = Ident(sizeof(T) * length);
-  T *src = Ident((T*)malloc(size));
-  T *dest = Ident((T*)malloc(size));
+  T *src = Ident((T *)malloc(size));
+  T *dest = Ident((T *)malloc(size));
   int zero = Ident(0);
 
   // valid transfer of bytes between arrays
@@ -144,34 +148,29 @@ void MemTransferOOBTestTemplate(size_t length) {
   M::transfer(dest, src, zero);
 
   // try to change mem to the right of dest
-  EXPECT_DEATH(M::transfer(dest + 1, src, size),
-               RightOOBWriteMessage(0));
-  EXPECT_DEATH(M::transfer((char*)(dest + length) - 1, src, 5),
+  EXPECT_DEATH(M::transfer(dest + 1, src, size), RightOOBWriteMessage(0));
+  EXPECT_DEATH(M::transfer((char *)(dest + length) - 1, src, 5),
                RightOOBWriteMessage(0));
 
   // try to change mem to the left of dest
   EXPECT_DEATH(M::transfer(dest - 2, src, size),
                LeftOOBWriteMessage(2 * sizeof(T)));
-  EXPECT_DEATH(M::transfer((char*)dest - 3, src, 4),
-               LeftOOBWriteMessage(3));
+  EXPECT_DEATH(M::transfer((char *)dest - 3, src, 4), LeftOOBWriteMessage(3));
 
   // try to access mem to the right of src
-  EXPECT_DEATH(M::transfer(dest, src + 2, size),
-               RightOOBReadMessage(0));
-  EXPECT_DEATH(M::transfer(dest, (char*)(src + length) - 3, 6),
+  EXPECT_DEATH(M::transfer(dest, src + 2, size), RightOOBReadMessage(0));
+  EXPECT_DEATH(M::transfer(dest, (char *)(src + length) - 3, 6),
                RightOOBReadMessage(0));
 
   // try to access mem to the left of src
-  EXPECT_DEATH(M::transfer(dest, src - 1, size),
-               LeftOOBReadMessage(sizeof(T)));
-  EXPECT_DEATH(M::transfer(dest, (char*)src - 6, 7),
-               LeftOOBReadMessage(6));
+  EXPECT_DEATH(M::transfer(dest, src - 1, size), LeftOOBReadMessage(sizeof(T)));
+  EXPECT_DEATH(M::transfer(dest, (char *)src - 6, 7), LeftOOBReadMessage(6));
 
   // Generally we don't need to test cases where both accessing src and writing
   // to dest address to poisoned memory.
 
-  T *big_src = Ident((T*)malloc(size * 2));
-  T *big_dest = Ident((T*)malloc(size * 2));
+  T *big_src = Ident((T *)malloc(size * 2));
+  T *big_dest = Ident((T *)malloc(size * 2));
   // try to change mem to both sides of dest
   EXPECT_DEATH(M::transfer(dest - 1, big_src, size * 2),
                LeftOOBWriteMessage(sizeof(T)));
@@ -187,7 +186,7 @@ void MemTransferOOBTestTemplate(size_t length) {
 
 class MemCpyWrapper {
  public:
-  static void* transfer(void *to, const void *from, size_t size) {
+  static void *transfer(void *to, const void *from, size_t size) {
     return Ident(memcpy)(to, from, size);
   }
 };
@@ -199,7 +198,7 @@ TEST(AddressSanitizer, MemCpyOOBTest) {
 
 class MemMoveWrapper {
  public:
-  static void* transfer(void *to, const void *from, size_t size) {
+  static void *transfer(void *to, const void *from, size_t size) {
     return Ident(memmove)(to, from, size);
   }
 };

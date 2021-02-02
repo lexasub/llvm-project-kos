@@ -18,8 +18,12 @@ template <class T>
 T tmain(T argc) {
   static T a;
   int *b;
-#pragma omp depobj(a) depend(in:argc, ([4][*b][4])b)
-#pragma omp depobj(a) depend(iterator(i=0:*b), in: b[i])
+#pragma omp depobj(a) depend(in \
+                             : argc, ([4][*b][4])b)
+#pragma omp depobj(a) depend(iterator(i = 0  \
+                                      : *b), \
+                             in              \
+                             : b[i])
 #pragma omp depobj(argc) destroy
 #pragma omp depobj(argc) update(inout)
   return argc;
@@ -42,12 +46,13 @@ int main(int argc, char **argv) {
   omp_depend_t b;
 // CHECK: static omp_depend_t a;
 // CHECK-NEXT: omp_depend_t b;
-#pragma omp depobj(a) depend(out:argc, argv)
+#pragma omp depobj(a) depend(out \
+                             : argc, argv)
 #pragma omp depobj(b) destroy
 #pragma omp depobj(b) update(mutexinoutset)
-// CHECK-NEXT: #pragma omp depobj (a) depend(out : argc,argv)
-// CHECK-NEXT: #pragma omp depobj (b) destroy
-// CHECK-NEXT: #pragma omp depobj (b) update(mutexinoutset)
+  // CHECK-NEXT: #pragma omp depobj (a) depend(out : argc,argv)
+  // CHECK-NEXT: #pragma omp depobj (b) destroy
+  // CHECK-NEXT: #pragma omp depobj (b) update(mutexinoutset)
   (void)tmain(a), tmain(b);
   return 0;
 }

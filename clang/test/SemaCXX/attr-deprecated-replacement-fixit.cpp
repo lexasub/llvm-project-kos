@@ -14,7 +14,7 @@
 
 void f_8(int) __attribute__((deprecated("message", "new8"))); // expected-note {{'f_8' has been explicitly marked deprecated here}}
 void new8(int);
-void f_2(int) __attribute__((availability(macosx,deprecated=9.0,replacement="new2"))); // expected-note {{'f_2' has been explicitly marked deprecated here}}
+void f_2(int) __attribute__((availability(macosx, deprecated = 9.0, replacement = "new2"))); // expected-note {{'f_2' has been explicitly marked deprecated here}}
 void new2(int);
 void test() {
   f_8(0); // expected-warning{{'f_8' is deprecated}}

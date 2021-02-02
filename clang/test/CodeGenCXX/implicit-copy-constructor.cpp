@@ -1,20 +1,20 @@
 // RUN: %clang_cc1 -triple x86_64-apple-darwin10 -emit-llvm -o - %s -std=c++11 | FileCheck %s
 
-struct A { 
+struct A {
   A();
-  A(const A&);
-  A(A&);
+  A(const A &);
+  A(A &);
   ~A();
 };
 
 struct B {
   B();
-  B(B&);
+  B(B &);
 };
 
 struct C {
   C() {}
-  C(C& other, A a = A());
+  C(C &other, A a = A());
   int i, j;
 };
 
@@ -22,7 +22,7 @@ struct POD {
   int array[3][4];
 };
 
-struct D : A, B, virtual C { 
+struct D : A, B, virtual C {
   D();
   int scalar;
   int scalar_array[2][3];
@@ -59,51 +59,61 @@ void f(D d) {
 // CHECK: {{call void @llvm.memcpy.p0i8.p0i8.i64.*i64 300}}
 // CHECK: ret void
 
-
-template<class T> struct X0 { void f0(T * ) { } };
-template <class > struct X1 { X1( X1& , int = 0 ) { } };
-struct X2 { X1<int> result; };
-void test_X2()
-{
+template <class T> struct X0 {
+  void f0(T *) {}
+};
+template <class> struct X1 {
+  X1(X1 &, int = 0) {}
+};
+struct X2 {
+  X1<int> result;
+};
+void test_X2() {
   typedef X2 impl;
   typedef X0<impl> pimpl;
-  impl* i;
+  impl *i;
   pimpl pdata;
-  pdata.f0( new impl(*i));
+  pdata.f0(new impl(*i));
 }
 
 // rdar://problem/9598341
 namespace test3 {
-  struct A { A(const A&); A&operator=(const A&); };
-  struct B { A a; unsigned : 0; };
-  void test(const B &x) {
-    B y = x;
-    y = x;
-  }
+struct A {
+  A(const A &);
+  A &operator=(const A &);
+};
+struct B {
+  A a;
+  unsigned : 0;
+};
+void test(const B &x) {
+  B y = x;
+  y = x;
 }
+} // namespace test3
 
 namespace test4 {
-  // When determining whether to implement an array copy as a memcpy, look at
-  // whether the *selected* constructor is trivial.
-  struct S {
-    int arr[5][5];
-    S(S &);
-    S(const S &) = default;
-  };
-  // CHECK: @_ZN5test42f1
-  void f1(S a) {
-    // CHECK-NOT: memcpy
-    // CHECK: call void @_ZN5test41SC1ERS0_
-    // CHECK-NOT: memcpy
-    S b(a);
-    // CHECK: }
-  }
-  // CHECK: @_ZN5test42f2
-  void f2(const S a) {
-    // CHECK-NOT: call void @_ZN5test41SC1ERS0_
-    // CHECK: memcpy
-    // CHECK-NOT: call void @_ZN5test41SC1ERS0_
-    S b(a);
-    // CHECK: }
-  }
+// When determining whether to implement an array copy as a memcpy, look at
+// whether the *selected* constructor is trivial.
+struct S {
+  int arr[5][5];
+  S(S &);
+  S(const S &) = default;
+};
+// CHECK: @_ZN5test42f1
+void f1(S a) {
+  // CHECK-NOT: memcpy
+  // CHECK: call void @_ZN5test41SC1ERS0_
+  // CHECK-NOT: memcpy
+  S b(a);
+  // CHECK: }
 }
+// CHECK: @_ZN5test42f2
+void f2(const S a) {
+  // CHECK-NOT: call void @_ZN5test41SC1ERS0_
+  // CHECK: memcpy
+  // CHECK-NOT: call void @_ZN5test41SC1ERS0_
+  S b(a);
+  // CHECK: }
+}
+} // namespace test4

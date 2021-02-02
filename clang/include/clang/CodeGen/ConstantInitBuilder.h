@@ -15,12 +15,12 @@
 #ifndef LLVM_CLANG_CODEGEN_CONSTANTINITBUILDER_H
 #define LLVM_CLANG_CODEGEN_CONSTANTINITBUILDER_H
 
+#include "clang/AST/CharUnits.h"
+#include "clang/CodeGen/ConstantInitFuture.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/IR/Constants.h"
 #include "llvm/IR/GlobalValue.h"
-#include "clang/AST/CharUnits.h"
-#include "clang/CodeGen/ConstantInitFuture.h"
 
 #include <vector>
 
@@ -51,19 +51,18 @@ class CodeGenModule;
 class ConstantInitBuilderBase {
   struct SelfReference {
     llvm::GlobalVariable *Dummy;
-    llvm::SmallVector<llvm::Constant*, 4> Indices;
+    llvm::SmallVector<llvm::Constant *, 4> Indices;
 
     SelfReference(llvm::GlobalVariable *dummy) : Dummy(dummy) {}
   };
   CodeGenModule &CGM;
-  llvm::SmallVector<llvm::Constant*, 16> Buffer;
+  llvm::SmallVector<llvm::Constant *, 16> Buffer;
   std::vector<SelfReference> SelfReferences;
   bool Frozen = false;
 
   friend class ConstantInitFuture;
   friend class ConstantAggregateBuilderBase;
-  template <class, class>
-  friend class ConstantAggregateBuilderTemplateBase;
+  template <class, class> friend class ConstantAggregateBuilderTemplateBase;
 
 protected:
   explicit ConstantInitBuilderBase(CodeGenModule &CGM) : CGM(CGM) {}
@@ -76,10 +75,9 @@ protected:
 private:
   llvm::GlobalVariable *createGlobal(llvm::Constant *initializer,
                                      const llvm::Twine &name,
-                                     CharUnits alignment,
-                                     bool constant = false,
-                                     llvm::GlobalValue::LinkageTypes linkage
-                                       = llvm::GlobalValue::InternalLinkage,
+                                     CharUnits alignment, bool constant = false,
+                                     llvm::GlobalValue::LinkageTypes linkage =
+                                         llvm::GlobalValue::InternalLinkage,
                                      unsigned addressSpace = 0);
 
   ConstantInitFuture createFuture(llvm::Constant *initializer);
@@ -105,11 +103,11 @@ protected:
   bool Packed = false;
   mutable CharUnits CachedOffsetFromGlobal;
 
-  llvm::SmallVectorImpl<llvm::Constant*> &getBuffer() {
+  llvm::SmallVectorImpl<llvm::Constant *> &getBuffer() {
     return Builder.Buffer;
   }
 
-  const llvm::SmallVectorImpl<llvm::Constant*> &getBuffer() const {
+  const llvm::SmallVectorImpl<llvm::Constant *> &getBuffer() const {
     return Builder.Buffer;
   }
 
@@ -134,12 +132,10 @@ protected:
     assert(!Finished && "builder already finished");
     Finished = true;
     if (Parent) {
-      assert(Parent->Frozen &&
-             "parent not frozen while child builder active");
+      assert(Parent->Frozen && "parent not frozen while child builder active");
       Parent->Frozen = false;
     } else {
-      assert(Builder.Frozen &&
-             "builder not frozen while child builder active");
+      assert(Builder.Frozen && "builder not frozen while child builder active");
       Builder.Frozen = false;
     }
   }
@@ -147,20 +143,20 @@ protected:
 public:
   // Not copyable.
   ConstantAggregateBuilderBase(const ConstantAggregateBuilderBase &) = delete;
-  ConstantAggregateBuilderBase &operator=(const ConstantAggregateBuilderBase &)
-    = delete;
+  ConstantAggregateBuilderBase &
+  operator=(const ConstantAggregateBuilderBase &) = delete;
 
   // Movable, mostly to allow returning.  But we have to write this out
   // properly to satisfy the assert in the destructor.
   ConstantAggregateBuilderBase(ConstantAggregateBuilderBase &&other)
-    : Builder(other.Builder), Parent(other.Parent), Begin(other.Begin),
-      CachedOffsetEnd(other.CachedOffsetEnd),
-      Finished(other.Finished), Frozen(other.Frozen), Packed(other.Packed),
-      CachedOffsetFromGlobal(other.CachedOffsetFromGlobal) {
+      : Builder(other.Builder), Parent(other.Parent), Begin(other.Begin),
+        CachedOffsetEnd(other.CachedOffsetEnd), Finished(other.Finished),
+        Frozen(other.Frozen), Packed(other.Packed),
+        CachedOffsetFromGlobal(other.CachedOffsetFromGlobal) {
     other.Finished = true;
   }
-  ConstantAggregateBuilderBase &operator=(ConstantAggregateBuilderBase &&other)
-    = delete;
+  ConstantAggregateBuilderBase &
+  operator=(ConstantAggregateBuilderBase &&other) = delete;
 
   /// Return the number of elements that have been added to
   /// this struct or array.
@@ -172,9 +168,7 @@ public:
   }
 
   /// Return true if no elements have yet been added to this struct or array.
-  bool empty() const {
-    return size() == 0;
-  }
+  bool empty() const { return size() == 0; }
 
   /// Abandon this builder completely.
   void abandon() {
@@ -194,8 +188,7 @@ public:
   void addSize(CharUnits size);
 
   /// Add an integer value of a specific type.
-  void addInt(llvm::IntegerType *intTy, uint64_t value,
-              bool isSigned = false) {
+  void addInt(llvm::IntegerType *intTy, uint64_t value, bool isSigned = false) {
     add(llvm::ConstantInt::get(intTy, value, isSigned));
   }
 
@@ -237,13 +230,12 @@ public:
   /// constant offset.  This is primarily useful when the relative
   /// offset is known to be a multiple of (say) four and therefore
   /// the tag can be used to express an extra two bits of information.
-  void addTaggedRelativeOffset(llvm::IntegerType *type,
-                               llvm::Constant *address,
+  void addTaggedRelativeOffset(llvm::IntegerType *type, llvm::Constant *address,
                                unsigned tag) {
     llvm::Constant *offset = getRelativeOffset(type, address);
     if (tag) {
-      offset = llvm::ConstantExpr::getAdd(offset,
-                                          llvm::ConstantInt::get(type, tag));
+      offset =
+          llvm::ConstantExpr::getAdd(offset, llvm::ConstantInt::get(type, tag));
     }
     add(offset);
   }
@@ -317,8 +309,8 @@ public:
   /// type can differ from the type of the actual element.
   llvm::Constant *getAddrOfPosition(llvm::Type *type, size_t position);
 
-  llvm::ArrayRef<llvm::Constant*> getGEPIndicesToCurrentPosition(
-                           llvm::SmallVectorImpl<llvm::Constant*> &indices) {
+  llvm::ArrayRef<llvm::Constant *> getGEPIndicesToCurrentPosition(
+      llvm::SmallVectorImpl<llvm::Constant *> &indices) {
     getGEPIndicesTo(indices, Builder.Buffer.size());
     return indices;
   }
@@ -328,7 +320,7 @@ protected:
   llvm::Constant *finishStruct(llvm::StructType *structTy);
 
 private:
-  void getGEPIndicesTo(llvm::SmallVectorImpl<llvm::Constant*> &indices,
+  void getGEPIndicesTo(llvm::SmallVectorImpl<llvm::Constant *> &indices,
                        size_t position) const;
 
   llvm::Constant *getRelativeOffset(llvm::IntegerType *offsetType,
@@ -345,6 +337,7 @@ template <class Impl, class Traits>
 class ConstantAggregateBuilderTemplateBase
     : public Traits::AggregateBuilderBase {
   using super = typename Traits::AggregateBuilderBase;
+
 public:
   using InitBuilder = typename Traits::InitBuilder;
   using ArrayBuilder = typename Traits::ArrayBuilder;
@@ -354,17 +347,17 @@ public:
 protected:
   ConstantAggregateBuilderTemplateBase(InitBuilder &builder,
                                        AggregateBuilderBase *parent)
-    : super(builder, parent) {}
+      : super(builder, parent) {}
 
-  Impl &asImpl() { return *static_cast<Impl*>(this); }
+  Impl &asImpl() { return *static_cast<Impl *>(this); }
 
 public:
   ArrayBuilder beginArray(llvm::Type *eltTy = nullptr) {
-    return ArrayBuilder(static_cast<InitBuilder&>(this->Builder), this, eltTy);
+    return ArrayBuilder(static_cast<InitBuilder &>(this->Builder), this, eltTy);
   }
 
   StructBuilder beginStruct(llvm::StructType *ty = nullptr) {
-    return StructBuilder(static_cast<InitBuilder&>(this->Builder), this, ty);
+    return StructBuilder(static_cast<InitBuilder &>(this->Builder), this, ty);
   }
 
   /// Given that this builder was created by beginning an array or struct
@@ -415,10 +408,11 @@ public:
 
 template <class Traits>
 class ConstantArrayBuilderTemplateBase
-  : public ConstantAggregateBuilderTemplateBase<typename Traits::ArrayBuilder,
-                                                Traits> {
+    : public ConstantAggregateBuilderTemplateBase<typename Traits::ArrayBuilder,
+                                                  Traits> {
   using super =
-    ConstantAggregateBuilderTemplateBase<typename Traits::ArrayBuilder, Traits>;
+      ConstantAggregateBuilderTemplateBase<typename Traits::ArrayBuilder,
+                                           Traits>;
 
 public:
   using InitBuilder = typename Traits::InitBuilder;
@@ -427,14 +421,13 @@ public:
 private:
   llvm::Type *EltTy;
 
-  template <class, class>
-  friend class ConstantAggregateBuilderTemplateBase;
+  template <class, class> friend class ConstantAggregateBuilderTemplateBase;
 
 protected:
   ConstantArrayBuilderTemplateBase(InitBuilder &builder,
                                    AggregateBuilderBase *parent,
                                    llvm::Type *eltTy)
-    : super(builder, parent), EltTy(eltTy) {}
+      : super(builder, parent), EltTy(eltTy) {}
 
 private:
   /// Form an array constant from the values that have been added to this
@@ -451,10 +444,11 @@ private:
 /// supported extension methods.
 template <class Traits>
 class ConstantStructBuilderTemplateBase
-  : public ConstantAggregateBuilderTemplateBase<typename Traits::StructBuilder,
-                                                Traits> {
+    : public ConstantAggregateBuilderTemplateBase<
+          typename Traits::StructBuilder, Traits> {
   using super =
-    ConstantAggregateBuilderTemplateBase<typename Traits::StructBuilder,Traits>;
+      ConstantAggregateBuilderTemplateBase<typename Traits::StructBuilder,
+                                           Traits>;
 
 public:
   using InitBuilder = typename Traits::InitBuilder;
@@ -463,21 +457,19 @@ public:
 private:
   llvm::StructType *StructTy;
 
-  template <class, class>
-  friend class ConstantAggregateBuilderTemplateBase;
+  template <class, class> friend class ConstantAggregateBuilderTemplateBase;
 
 protected:
   ConstantStructBuilderTemplateBase(InitBuilder &builder,
                                     AggregateBuilderBase *parent,
                                     llvm::StructType *structTy)
-    : super(builder, parent), StructTy(structTy) {
-    if (structTy) this->Packed = structTy->isPacked();
+      : super(builder, parent), StructTy(structTy) {
+    if (structTy)
+      this->Packed = structTy->isPacked();
   }
 
 public:
-  void setPacked(bool packed) {
-    this->Packed = packed;
-  }
+  void setPacked(bool packed) { this->Packed = packed; }
 
   /// Use the given type for the struct if its element count is correct.
   /// Don't add more elements after calling this.
@@ -504,7 +496,7 @@ template <class Traits>
 class ConstantInitBuilderTemplateBase : public ConstantInitBuilderBase {
 protected:
   ConstantInitBuilderTemplateBase(CodeGenModule &CGM)
-    : ConstantInitBuilderBase(CGM) {}
+      : ConstantInitBuilderBase(CGM) {}
 
 public:
   using InitBuilder = typename Traits::InitBuilder;
@@ -512,11 +504,11 @@ public:
   using StructBuilder = typename Traits::StructBuilder;
 
   ArrayBuilder beginArray(llvm::Type *eltTy = nullptr) {
-    return ArrayBuilder(static_cast<InitBuilder&>(*this), nullptr, eltTy);
+    return ArrayBuilder(static_cast<InitBuilder &>(*this), nullptr, eltTy);
   }
 
   StructBuilder beginStruct(llvm::StructType *structTy = nullptr) {
-    return StructBuilder(static_cast<InitBuilder&>(*this), nullptr, structTy);
+    return StructBuilder(static_cast<InitBuilder &>(*this), nullptr, structTy);
   }
 };
 
@@ -535,33 +527,30 @@ struct ConstantInitBuilderTraits {
 class ConstantInitBuilder
     : public ConstantInitBuilderTemplateBase<ConstantInitBuilderTraits> {
 public:
-  explicit ConstantInitBuilder(CodeGenModule &CGM) :
-    ConstantInitBuilderTemplateBase(CGM) {}
+  explicit ConstantInitBuilder(CodeGenModule &CGM)
+      : ConstantInitBuilderTemplateBase(CGM) {}
 };
 
 /// A helper class of ConstantInitBuilder, used for building constant
 /// array initializers.
 class ConstantArrayBuilder
     : public ConstantArrayBuilderTemplateBase<ConstantInitBuilderTraits> {
-  template <class Traits>
-  friend class ConstantInitBuilderTemplateBase;
+  template <class Traits> friend class ConstantInitBuilderTemplateBase;
 
   // The use of explicit qualification is a GCC workaround.
   template <class Impl, class Traits>
   friend class CodeGen::ConstantAggregateBuilderTemplateBase;
 
   ConstantArrayBuilder(ConstantInitBuilder &builder,
-                       ConstantAggregateBuilderBase *parent,
-                       llvm::Type *eltTy)
-    : ConstantArrayBuilderTemplateBase(builder, parent, eltTy) {}
+                       ConstantAggregateBuilderBase *parent, llvm::Type *eltTy)
+      : ConstantArrayBuilderTemplateBase(builder, parent, eltTy) {}
 };
 
 /// A helper class of ConstantInitBuilder, used for building constant
 /// struct initializers.
 class ConstantStructBuilder
     : public ConstantStructBuilderTemplateBase<ConstantInitBuilderTraits> {
-  template <class Traits>
-  friend class ConstantInitBuilderTemplateBase;
+  template <class Traits> friend class ConstantInitBuilderTemplateBase;
 
   // The use of explicit qualification is a GCC workaround.
   template <class Impl, class Traits>
@@ -570,10 +559,10 @@ class ConstantStructBuilder
   ConstantStructBuilder(ConstantInitBuilder &builder,
                         ConstantAggregateBuilderBase *parent,
                         llvm::StructType *structTy)
-    : ConstantStructBuilderTemplateBase(builder, parent, structTy) {}
+      : ConstantStructBuilderTemplateBase(builder, parent, structTy) {}
 };
 
-}  // end namespace CodeGen
-}  // end namespace clang
+} // end namespace CodeGen
+} // end namespace clang
 
 #endif

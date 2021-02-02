@@ -44,10 +44,10 @@ TEST(CommandMangler, Everything) {
   std::vector<std::string> Cmd = {"clang++", "-Xclang", "-load", "-Xclang",
                                   "plugin",  "-MF",     "dep",   "foo.cc"};
   Mangler.adjust(Cmd);
-  EXPECT_THAT(Cmd, ElementsAre(testPath("fake/clang++"), "foo.cc",
-                               "-fsyntax-only",
-                               "-resource-dir=" + testPath("fake/resources"),
-                               "-isysroot", testPath("fake/sysroot")));
+  EXPECT_THAT(Cmd,
+              ElementsAre(testPath("fake/clang++"), "foo.cc", "-fsyntax-only",
+                          "-resource-dir=" + testPath("fake/resources"),
+                          "-isysroot", testPath("fake/sysroot")));
 }
 
 TEST(CommandMangler, ResourceDir) {
@@ -73,7 +73,7 @@ TEST(CommandMangler, StripPlugins) {
   std::vector<std::string> Cmd = {"clang++", "-Xclang", "-load",
                                   "-Xclang", "plugin",  "foo.cc"};
   Mangler.adjust(Cmd);
-  for (const char* Stripped : {"-Xclang", "-load", "plugin"})
+  for (const char *Stripped : {"-Xclang", "-load", "plugin"})
     EXPECT_THAT(Cmd, Not(Contains(Stripped)));
 }
 
@@ -82,7 +82,7 @@ TEST(CommandMangler, StripOutput) {
   std::vector<std::string> Cmd = {"clang++", "-MF", "dependency", "-c",
                                   "foo.cc"};
   Mangler.adjust(Cmd);
-  for (const char* Stripped : {"-MF", "dependency"})
+  for (const char *Stripped : {"-MF", "dependency"})
     EXPECT_THAT(Cmd, Not(Contains(Stripped)));
 }
 
@@ -368,9 +368,8 @@ TEST(ArgStripperTest, OrderDependent) {
 }
 
 TEST(PrintArgvTest, All) {
-  std::vector<llvm::StringRef> Args = {
-      "one", "two", "thr ee", "f\"o\"ur", "fi\\ve", "$"
-  };
+  std::vector<llvm::StringRef> Args = {"one",      "two",    "thr ee",
+                                       "f\"o\"ur", "fi\\ve", "$"};
   const char *Expected = R"(one two "thr ee" "f\"o\"ur" "fi\\ve" $)";
   EXPECT_EQ(Expected, printArgv(Args));
 }
@@ -378,4 +377,3 @@ TEST(PrintArgvTest, All) {
 } // namespace
 } // namespace clangd
 } // namespace clang
-

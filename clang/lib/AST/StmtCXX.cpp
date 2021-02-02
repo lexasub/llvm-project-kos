@@ -83,8 +83,9 @@ const VarDecl *CXXForRangeStmt::getLoopVariable() const {
   return const_cast<CXXForRangeStmt *>(this)->getLoopVariable();
 }
 
-CoroutineBodyStmt *CoroutineBodyStmt::Create(
-    const ASTContext &C, CoroutineBodyStmt::CtorArgs const &Args) {
+CoroutineBodyStmt *
+CoroutineBodyStmt::Create(const ASTContext &C,
+                          CoroutineBodyStmt::CtorArgs const &Args) {
   std::size_t Size = totalSizeToAlloc<Stmt *>(
       CoroutineBodyStmt::FirstParamMove + Args.ParamMoves.size());
 
@@ -94,8 +95,8 @@ CoroutineBodyStmt *CoroutineBodyStmt::Create(
 
 CoroutineBodyStmt *CoroutineBodyStmt::Create(const ASTContext &C, EmptyShell,
                                              unsigned NumParams) {
-  std::size_t Size = totalSizeToAlloc<Stmt *>(
-      CoroutineBodyStmt::FirstParamMove + NumParams);
+  std::size_t Size =
+      totalSizeToAlloc<Stmt *>(CoroutineBodyStmt::FirstParamMove + NumParams);
 
   void *Mem = C.Allocate(Size, alignof(CoroutineBodyStmt));
   auto *Result = new (Mem) CoroutineBodyStmt(CtorArgs());

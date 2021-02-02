@@ -149,7 +149,7 @@ DIE *DwarfCompileUnit::getOrCreateGlobalVariableDIE(
   // case such construction creates the DIE.
   auto *CB = GVContext ? dyn_cast<DICommonBlock>(GVContext) : nullptr;
   DIE *ContextDIE = CB ? getOrCreateCommonBlock(CB, GlobalExprs)
-    : getOrCreateContextDIE(GVContext);
+                       : getOrCreateContextDIE(GVContext);
 
   // Add to map.
   DIE *VariableDIE = &createAndAddDIE(GV->getTag(), *ContextDIE, GV);
@@ -198,8 +198,9 @@ DIE *DwarfCompileUnit::getOrCreateGlobalVariableDIE(
   return VariableDIE;
 }
 
-void DwarfCompileUnit::addLocationAttribute(
-    DIE *VariableDIE, const DIGlobalVariable *GV, ArrayRef<GlobalExpr> GlobalExprs) {
+void DwarfCompileUnit::addLocationAttribute(DIE *VariableDIE,
+                                            const DIGlobalVariable *GV,
+                                            ArrayRef<GlobalExpr> GlobalExprs) {
   bool addToAccelTable = false;
   DIELoc *Loc = nullptr;
   Optional<unsigned> NVPTXAddressSpace;
@@ -355,8 +356,7 @@ void DwarfCompileUnit::addRange(RangeSpan Range) {
   // emitted into and the subprogram was contained within. If these are the
   // same then extend our current range, otherwise add this as a new range.
   if (CURanges.empty() || !SameAsPrevCU ||
-      (&CURanges.back().End->getSection() !=
-       &Range.End->getSection())) {
+      (&CURanges.back().End->getSection() != &Range.End->getSection())) {
     CURanges.push_back(Range);
     return;
   }
@@ -381,8 +381,8 @@ void DwarfCompileUnit::initStmtList() {
   // left in the skeleton CU and so not included.
   // The line table entries are not always emitted in assembly, so it
   // is not okay to use line_table_start here.
-      addSectionLabel(getUnitDie(), dwarf::DW_AT_stmt_list, LineTableStartSym,
-                      TLOF.getDwarfLineSection()->getBeginSymbol());
+  addSectionLabel(getUnitDie(), dwarf::DW_AT_stmt_list, LineTableStartSym,
+                  TLOF.getDwarfLineSection()->getBeginSymbol());
 }
 
 void DwarfCompileUnit::applyStmtList(DIE &D) {
@@ -452,9 +452,9 @@ DIE &DwarfCompileUnit::updateSubprogramScopeDIE(const DISubprogram *SP) {
       // are (with entries in .debug_addr).
       if (FrameBase.Location.WasmLoc.Kind == TI_GLOBAL_RELOC && !isDwoUnit()) {
         // These need to be relocatable.
-        assert(FrameBase.Location.WasmLoc.Index == 0);  // Only SP so far.
-        auto SPSym = cast<MCSymbolWasm>(
-          Asm->GetExternalSymbolSymbol("__stack_pointer"));
+        assert(FrameBase.Location.WasmLoc.Index == 0); // Only SP so far.
+        auto SPSym =
+            cast<MCSymbolWasm>(Asm->GetExternalSymbolSymbol("__stack_pointer"));
         // FIXME: this repeats what WebAssemblyMCInstLower::
         // GetExternalSymbolSymbol does, since if there's no code that
         // refers to this symbol, we have to set it here.
@@ -477,7 +477,7 @@ DIE &DwarfCompileUnit::updateSubprogramScopeDIE(const DISubprogram *SP) {
         DIEDwarfExpression DwarfExpr(*Asm, *this, *Loc);
         DIExpressionCursor Cursor({});
         DwarfExpr.addWasmLocation(FrameBase.Location.WasmLoc.Kind,
-            FrameBase.Location.WasmLoc.Index);
+                                  FrameBase.Location.WasmLoc.Index);
         DwarfExpr.addExpression(std::move(Cursor));
         addBlock(*SPDie, dwarf::DW_AT_frame_base, DwarfExpr.finalize());
       }
@@ -1037,13 +1037,16 @@ void DwarfCompileUnit::constructAbstractSubprogramScopeDIE(
 
   // Passing null as the associated node because the abstract definition
   // shouldn't be found by lookup.
-  AbsDef = &ContextCU->createAndAddDIE(dwarf::DW_TAG_subprogram, *ContextDIE, nullptr);
+  AbsDef = &ContextCU->createAndAddDIE(dwarf::DW_TAG_subprogram, *ContextDIE,
+                                       nullptr);
   ContextCU->applySubprogramAttributesToDefinition(SP, *AbsDef);
 
   if (!ContextCU->includeMinimalInlineScopes())
-    ContextCU->addUInt(*AbsDef, dwarf::DW_AT_inline, None, dwarf::DW_INL_inlined);
+    ContextCU->addUInt(*AbsDef, dwarf::DW_AT_inline, None,
+                       dwarf::DW_INL_inlined);
   if (DIE *ObjectPointer = ContextCU->createAndAddScopeChildren(Scope, *AbsDef))
-    ContextCU->addDIEEntry(*AbsDef, dwarf::DW_AT_object_pointer, *ObjectPointer);
+    ContextCU->addDIEEntry(*AbsDef, dwarf::DW_AT_object_pointer,
+                           *ObjectPointer);
 }
 
 bool DwarfCompileUnit::useGNUAnalogForDwarf5Feature() const {
@@ -1097,8 +1100,7 @@ DwarfCompileUnit::getDwarf5OrGNULocationAtom(dwarf::LocationAtom Loc) const {
   }
 }
 
-DIE &DwarfCompileUnit::constructCallSiteEntryDIE(DIE &ScopeDIE,
-                                                 DIE *CalleeDIE,
+DIE &DwarfCompileUnit::constructCallSiteEntryDIE(DIE &ScopeDIE, DIE *CalleeDIE,
                                                  bool IsTail,
                                                  const MCSymbol *PCAddr,
                                                  const MCSymbol *CallAddr,
@@ -1255,12 +1257,13 @@ void DwarfCompileUnit::createAbstractEntity(const DINode *Node,
   assert(Scope && Scope->isAbstractScope());
   auto &Entity = getAbstractEntities()[Node];
   if (isa<const DILocalVariable>(Node)) {
-    Entity = std::make_unique<DbgVariable>(
-                        cast<const DILocalVariable>(Node), nullptr /* IA */);;
+    Entity = std::make_unique<DbgVariable>(cast<const DILocalVariable>(Node),
+                                           nullptr /* IA */);
+    ;
     DU->addScopeVariable(Scope, cast<DbgVariable>(Entity.get()));
   } else if (isa<const DILabel>(Node)) {
-    Entity = std::make_unique<DbgLabel>(
-                        cast<const DILabel>(Node), nullptr /* IA */);
+    Entity =
+        std::make_unique<DbgLabel>(cast<const DILabel>(Node), nullptr /* IA */);
     DU->addScopeLabel(Scope, cast<DbgLabel>(Entity.get()));
   }
 }
@@ -1272,9 +1275,9 @@ void DwarfCompileUnit::emitHeader(bool UseOffsets) {
     Asm->OutStreamer->emitLabel(LabelBegin);
   }
 
-  dwarf::UnitType UT = Skeleton ? dwarf::DW_UT_split_compile
-                                : DD->useSplitDwarf() ? dwarf::DW_UT_skeleton
-                                                      : dwarf::DW_UT_compile;
+  dwarf::UnitType UT = Skeleton              ? dwarf::DW_UT_split_compile
+                       : DD->useSplitDwarf() ? dwarf::DW_UT_skeleton
+                                             : dwarf::DW_UT_compile;
   DwarfUnit::emitCommonHeader(UseOffsets, UT);
   if (DD->getDwarfVersion() >= 5 && UT != dwarf::DW_UT_compile)
     Asm->emitInt64(getDWOId());
@@ -1453,7 +1456,8 @@ bool DwarfCompileUnit::isDwoUnit() const {
   return DD->useSplitDwarf() && Skeleton;
 }
 
-void DwarfCompileUnit::finishNonUnitTypeDIE(DIE& D, const DICompositeType *CTy) {
+void DwarfCompileUnit::finishNonUnitTypeDIE(DIE &D,
+                                            const DICompositeType *CTy) {
   constructTypeDIE(D, CTy);
 }
 
@@ -1483,11 +1487,12 @@ void DwarfCompileUnit::createBaseTypeDIEs() {
   // child list.
   for (auto &Btr : reverse(ExprRefedBaseTypes)) {
     DIE &Die = getUnitDie().addChildFront(
-      DIE::get(DIEValueAllocator, dwarf::DW_TAG_base_type));
+        DIE::get(DIEValueAllocator, dwarf::DW_TAG_base_type));
     SmallString<32> Str;
     addString(Die, dwarf::DW_AT_name,
-              Twine(dwarf::AttributeEncodingString(Btr.Encoding) +
-                    "_" + Twine(Btr.BitSize)).toStringRef(Str));
+              Twine(dwarf::AttributeEncodingString(Btr.Encoding) + "_" +
+                    Twine(Btr.BitSize))
+                  .toStringRef(Str));
     addUInt(Die, dwarf::DW_AT_encoding, dwarf::DW_FORM_data1, Btr.Encoding);
     addUInt(Die, dwarf::DW_AT_byte_size, None, Btr.BitSize / 8);
 

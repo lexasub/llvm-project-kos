@@ -41,7 +41,7 @@ struct minig {
   }
   int current_value() { return p.promise().current_value; }
 
-  minig(minig &&rhs) : p(rhs.p) { rhs.p = nullptr; }
+  minig(minig&& rhs) : p(rhs.p) { rhs.p = nullptr; }
 
   ~minig() {
     if (p)
@@ -49,12 +49,11 @@ struct minig {
   }
 
 private:
-  explicit minig(promise_type *p)
+  explicit minig(promise_type* p)
       : p(coroutine_handle<promise_type>::from_promise(*p)) {}
 
   coroutine_handle<promise_type> p;
 };
-
 
 minig mini_count(int n) {
   for (int i = 0; i < n; i++) {
@@ -82,16 +81,16 @@ void test_count() {
 
 void test_range() {
   int sum = 0;
-   for (auto v: range(1, 20))
-      sum += v;
-   assert(sum == 190);
+  for (auto v : range(1, 20))
+    sum += v;
+  assert(sum == 190);
 }
 
 void test_mini_generator() {
   int sum = 0;
   auto g = mini_count(5);
   while (g.move_next()) {
-     sum += g.current_value();
+    sum += g.current_value();
   }
   assert(sum == 10);
 }

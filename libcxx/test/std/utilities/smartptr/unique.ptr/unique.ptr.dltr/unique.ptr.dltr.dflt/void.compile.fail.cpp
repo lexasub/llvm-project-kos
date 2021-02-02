@@ -18,11 +18,10 @@
 #include <memory>
 #include <cassert>
 
-int main(int, char**)
-{
-    std::default_delete<const void> d;
-    const void* p = 0;
-    d(p);
+int main(int, char**) {
+  std::default_delete<const void> d;
+  const void* p = 0;
+  d(p);
 
   return 0;
 }

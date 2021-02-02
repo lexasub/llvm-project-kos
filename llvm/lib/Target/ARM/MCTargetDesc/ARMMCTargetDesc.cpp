@@ -158,7 +158,7 @@ std::string ARM_MC::ParseARMTriple(const Triple &TT, StringRef CPU) {
   std::string ARMArchFeature;
 
   ARM::ArchKind ArchID = ARM::parseArch(TT.getArchName());
-  if (ArchID != ARM::ArchKind::INVALID &&  (CPU.empty() || CPU == "generic"))
+  if (ArchID != ARM::ArchKind::INVALID && (CPU.empty() || CPU == "generic"))
     ARMArchFeature = (ARMArchFeature + "+" + ARM::getArchName(ArchID)).str();
 
   if (TT.isThumb()) {
@@ -400,20 +400,22 @@ public:
 
   bool isUnconditionalBranch(const MCInst &Inst) const override {
     // BCCs with the "always" predicate are unconditional branches.
-    if (Inst.getOpcode() == ARM::Bcc && Inst.getOperand(1).getImm()==ARMCC::AL)
+    if (Inst.getOpcode() == ARM::Bcc &&
+        Inst.getOperand(1).getImm() == ARMCC::AL)
       return true;
     return MCInstrAnalysis::isUnconditionalBranch(Inst);
   }
 
   bool isConditionalBranch(const MCInst &Inst) const override {
     // BCCs with the "always" predicate are unconditional branches.
-    if (Inst.getOpcode() == ARM::Bcc && Inst.getOperand(1).getImm()==ARMCC::AL)
+    if (Inst.getOpcode() == ARM::Bcc &&
+        Inst.getOperand(1).getImm() == ARMCC::AL)
       return false;
     return MCInstrAnalysis::isConditionalBranch(Inst);
   }
 
-  bool evaluateBranch(const MCInst &Inst, uint64_t Addr,
-                      uint64_t Size, uint64_t &Target) const override {
+  bool evaluateBranch(const MCInst &Inst, uint64_t Addr, uint64_t Size,
+                      uint64_t &Target) const override {
     // We only handle PCRel branches for now.
     if (Inst.getNumOperands() == 0 ||
         Info->get(Inst.getOpcode()).OpInfo[0].OperandType !=
@@ -421,7 +423,7 @@ public:
       return false;
 
     int64_t Imm = Inst.getOperand(0).getImm();
-    Target = Addr+Imm+8; // In ARM mode the PC is always off by 8 bytes.
+    Target = Addr + Imm + 8; // In ARM mode the PC is always off by 8 bytes.
     return true;
   }
 };
@@ -464,7 +466,7 @@ public:
   }
 };
 
-}
+} // namespace
 
 static MCInstrAnalysis *createARMMCInstrAnalysis(const MCInstrInfo *Info) {
   return new ARMMCInstrAnalysis(Info);

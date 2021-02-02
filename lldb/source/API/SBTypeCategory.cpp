@@ -606,11 +606,10 @@ bool SBTypeCategory::GetDescription(lldb::SBStream &description,
   return true;
 }
 
-lldb::SBTypeCategory &SBTypeCategory::
-operator=(const lldb::SBTypeCategory &rhs) {
-  LLDB_RECORD_METHOD(lldb::SBTypeCategory &,
-                     SBTypeCategory, operator=,(const lldb::SBTypeCategory &),
-                     rhs);
+lldb::SBTypeCategory &
+SBTypeCategory::operator=(const lldb::SBTypeCategory &rhs) {
+  LLDB_RECORD_METHOD(lldb::SBTypeCategory &, SBTypeCategory, operator=,
+                     (const lldb::SBTypeCategory &), rhs);
 
   if (this != &rhs) {
     m_opaque_sp = rhs.m_opaque_sp;
@@ -619,7 +618,7 @@ operator=(const lldb::SBTypeCategory &rhs) {
 }
 
 bool SBTypeCategory::operator==(lldb::SBTypeCategory &rhs) {
-  LLDB_RECORD_METHOD(bool, SBTypeCategory, operator==,(lldb::SBTypeCategory &),
+  LLDB_RECORD_METHOD(bool, SBTypeCategory, operator==, (lldb::SBTypeCategory &),
                      rhs);
 
   if (!IsValid())
@@ -629,7 +628,7 @@ bool SBTypeCategory::operator==(lldb::SBTypeCategory &rhs) {
 }
 
 bool SBTypeCategory::operator!=(lldb::SBTypeCategory &rhs) {
-  LLDB_RECORD_METHOD(bool, SBTypeCategory, operator!=,(lldb::SBTypeCategory &),
+  LLDB_RECORD_METHOD(bool, SBTypeCategory, operator!=, (lldb::SBTypeCategory &),
                      rhs);
 
   if (!IsValid())
@@ -663,8 +662,7 @@ bool SBTypeCategory::IsDefaultCategory() {
 namespace lldb_private {
 namespace repro {
 
-template <>
-void RegisterMethods<SBTypeCategory>(Registry &R) {
+template <> void RegisterMethods<SBTypeCategory>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBTypeCategory, ());
   LLDB_REGISTER_CONSTRUCTOR(SBTypeCategory, (const lldb::SBTypeCategory &));
   LLDB_REGISTER_METHOD_CONST(bool, SBTypeCategory, IsValid, ());
@@ -675,8 +673,7 @@ void RegisterMethods<SBTypeCategory>(Registry &R) {
   LLDB_REGISTER_METHOD(lldb::LanguageType, SBTypeCategory, GetLanguageAtIndex,
                        (uint32_t));
   LLDB_REGISTER_METHOD(uint32_t, SBTypeCategory, GetNumLanguages, ());
-  LLDB_REGISTER_METHOD(void, SBTypeCategory, AddLanguage,
-                       (lldb::LanguageType));
+  LLDB_REGISTER_METHOD(void, SBTypeCategory, AddLanguage, (lldb::LanguageType));
   LLDB_REGISTER_METHOD(uint32_t, SBTypeCategory, GetNumFormats, ());
   LLDB_REGISTER_METHOD(uint32_t, SBTypeCategory, GetNumSummaries, ());
   LLDB_REGISTER_METHOD(uint32_t, SBTypeCategory, GetNumFilters, ());
@@ -723,14 +720,13 @@ void RegisterMethods<SBTypeCategory>(Registry &R) {
                        (lldb::SBTypeNameSpecifier));
   LLDB_REGISTER_METHOD(bool, SBTypeCategory, GetDescription,
                        (lldb::SBStream &, lldb::DescriptionLevel));
-  LLDB_REGISTER_METHOD(
-      lldb::SBTypeCategory &,
-      SBTypeCategory, operator=,(const lldb::SBTypeCategory &));
-  LLDB_REGISTER_METHOD(bool,
-                       SBTypeCategory, operator==,(lldb::SBTypeCategory &));
-  LLDB_REGISTER_METHOD(bool,
-                       SBTypeCategory, operator!=,(lldb::SBTypeCategory &));
+  LLDB_REGISTER_METHOD(lldb::SBTypeCategory &, SBTypeCategory, operator=,
+                       (const lldb::SBTypeCategory &));
+  LLDB_REGISTER_METHOD(bool, SBTypeCategory, operator==,
+                       (lldb::SBTypeCategory &));
+  LLDB_REGISTER_METHOD(bool, SBTypeCategory, operator!=,
+                       (lldb::SBTypeCategory &));
 }
 
-}
-}
+} // namespace repro
+} // namespace lldb_private

@@ -44,7 +44,6 @@
 #include "lldb/Host/android/HostInfoAndroid.h"
 #endif
 
-
 using namespace lldb;
 using namespace lldb_private::process_gdb_remote;
 using namespace lldb_private;
@@ -291,7 +290,7 @@ GDBRemoteCommunicationServerCommon::Handle_qHostInfo(
   response.PutCString("hostname:");
   response.PutStringAsRawHex8("127.0.0.1");
   response.PutChar(';');
-#else  // #if defined(__arm__) || defined(__arm64__) || defined(__aarch64__)
+#else // #if defined(__arm__) || defined(__arm64__) || defined(__aarch64__)
   if (HostInfo::GetHostname(s)) {
     response.PutCString("hostname:");
     response.PutStringAsRawHex8(s);
@@ -299,7 +298,7 @@ GDBRemoteCommunicationServerCommon::Handle_qHostInfo(
   }
 #endif // #if defined(__arm__) || defined(__arm64__) || defined(__aarch64__)
 
-#else  // #if defined(__APPLE__)
+#else // #if defined(__APPLE__)
   if (HostInfo::GetHostname(s)) {
     response.PutCString("hostname:");
     response.PutStringAsRawHex8(s);

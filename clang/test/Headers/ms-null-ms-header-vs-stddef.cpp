@@ -10,7 +10,7 @@
 // __null is used as a type annotation in MS headers, with __null defined to
 // nothing in regular builds. This should continue to work even with stddef.h
 // included.
-void f(__null void* p) { }
+void f(__null void *p) {}
 
 // NULL should work fine even with __null defined to nothing.
-void* p = NULL;
+void *p = NULL;

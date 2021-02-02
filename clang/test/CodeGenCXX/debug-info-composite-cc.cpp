@@ -24,7 +24,6 @@ struct Podlike {
   ~Podlike() = default;
 } podlike;
 
-
 // This is a POD type.
 // CHECK-DAG: !DICompositeType({{.*}}, name: "Pod",{{.*}}flags: DIFlagTypePassByValue
 struct Pod {
@@ -35,7 +34,7 @@ struct Pod {
 // CHECK-DAG: !DICompositeType({{.*}}, name: "Complex",{{.*}}flags: DIFlagTypePassByReference
 struct Complex {
   Complex() {}
-  Complex(Complex &Copy) : i(Copy.i) {};
+  Complex(Complex &Copy) : i(Copy.i){};
   int i;
 } complex;
 

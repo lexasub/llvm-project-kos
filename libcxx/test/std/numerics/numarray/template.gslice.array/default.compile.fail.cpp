@@ -15,9 +15,8 @@
 #include <valarray>
 #include <type_traits>
 
-int main(int, char**)
-{
-    std::gslice_array<int> gs;
+int main(int, char**) {
+  std::gslice_array<int> gs;
 
   return 0;
 }

@@ -14,25 +14,25 @@ int test_add() {
 
 static void mmm(int y) {
   if (y != 0)
-      y++;
-  y = y/y;
+    y++;
+  y = y / y;
 }
 
 static int foo(int x, int y) {
-    mmm(y);
-    if (x != 0)
-      x++;
-    return 5/x;
+  mmm(y);
+  if (x != 0)
+    x++;
+  return 5 / x;
 }
 
 void aaa() {
-  foo(1,2);
+  foo(1, 2);
 }
 
 void bbb(int y) {
   int x = (y > 2);
-  ^ {
-      foo(x, y);
+  ^{
+    foo(x, y);
   }();
 }
 void ccc();
@@ -52,12 +52,12 @@ void test_single_call() {
 }
 
 namespace SomeNS {
-template<typename T>
+template <typename T>
 void templ(T t) {
   ccc();
 }
 
-template<>
+template <>
 void templ<double>(double t) {
   eee();
 }
@@ -66,35 +66,35 @@ void templUser() {
   templ(5);
   templ(5.5);
 }
-}
+} // namespace SomeNS
 
 namespace Lambdas {
-  void Callee(){}
+void Callee() {}
 
-  void f1() {
-    [](int i) {
-      Callee();
-    }(1);
-    [](auto i) {
-      Callee();
-    }(1);
-  }
+void f1() {
+  [](int i) {
+    Callee();
+  }(1);
+  [](auto i) {
+    Callee();
+  }(1);
 }
+} // namespace Lambdas
 
 namespace CallDecl {
-  void SomeDecl();
-  void SomeOtherDecl();
-  void SomeDef() {}
+void SomeDecl();
+void SomeOtherDecl();
+void SomeDef() {}
 
-  void Caller() {
-    SomeDecl();
-    SomeOtherDecl();
-  }
-
-  void SomeOtherDecl() {
-    SomeDef();
-  }
+void Caller() {
+  SomeDecl();
+  SomeOtherDecl();
 }
+
+void SomeOtherDecl() {
+  SomeDef();
+}
+} // namespace CallDecl
 
 // CHECK:--- Call graph Dump ---
 // CHECK-NEXT: {{Function: < root > calls: get5 add test_add mmm foo aaa < > bbb ddd ccc eee fff do_nothing test_single_call SomeNS::templ SomeNS::templ SomeNS::templUser Lambdas::Callee Lambdas::f1 Lambdas::f1\(\)::\(anonymous class\)::operator\(\) Lambdas::f1\(\)::\(anonymous class\)::operator\(\) CallDecl::SomeDef CallDecl::Caller CallDecl::SomeDecl CallDecl::SomeOtherDecl $}}

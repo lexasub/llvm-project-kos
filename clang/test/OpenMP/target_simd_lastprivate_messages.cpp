@@ -33,7 +33,7 @@ public:
   S2(S2 &s2) : a(s2.a) {}
   S2 &operator=(const S2 &);
   const S2 &operator=(const S2 &) const;
-  static float S2s; // expected-note {{static data member is predetermined as shared}}
+  static float S2s;        // expected-note {{static data member is predetermined as shared}}
   static const float S2sc; // expected-note {{'S2sc' declared here}}
 };
 const float S2::S2sc = 0;
@@ -52,7 +52,7 @@ const S3 ca[5];     // expected-note {{'ca' defined here}}
 extern const int f; // expected-note {{'f' declared here}}
 class S4 {
   int a;
-  S4();             // expected-note 3 {{implicitly declared private here}}
+  S4(); // expected-note 3 {{implicitly declared private here}}
   S4(const S4 &s4);
 
 public:
@@ -84,7 +84,7 @@ int foomain(int argc, char **argv) {
   I g(5);
   int i;
   int &j = i;
-  S6 s(0); // omp50-note {{'s' defined here}}
+  S6 s(0);                          // omp50-note {{'s' defined here}}
 #pragma omp target simd lastprivate // expected-error {{expected '(' after 'lastprivate'}}
   for (int k = 0; k < argc; ++k)
     ++k;
@@ -103,13 +103,19 @@ int foomain(int argc, char **argv) {
 #pragma omp target simd lastprivate(argc > 0 ? argv[1] : argv[2]) // expected-error {{expected variable name}}
   for (int k = 0; k < argc; ++k)
     ++k;
-#pragma omp target simd lastprivate(argc) allocate , allocate(, allocate(omp_default , allocate(omp_default_mem_alloc, allocate(omp_default_mem_alloc:, allocate(omp_default_mem_alloc: argc, allocate(omp_default_mem_alloc: argv), allocate(argv) // expected-error {{expected '(' after 'allocate'}} expected-error 2 {{expected expression}} expected-error 2 {{expected ')'}} expected-error {{use of undeclared identifier 'omp_default'}} expected-note 2 {{to match this '('}}
+#pragma omp target simd lastprivate(argc) allocate, allocate(, allocate(omp_default, allocate(omp_default_mem_alloc, allocate(omp_default_mem_alloc:, allocate(omp_default_mem_alloc                  \
+                                                                                                                                                               : argc, allocate(omp_default_mem_alloc \
+                                                                                                                                                                                : argv),              \
+                                                                                                                                                                 allocate(argv) // expected-error {{expected '(' after 'allocate'}} expected-error 2 {{expected expression}} expected-error 2 {{expected ')'}} expected-error {{use of undeclared identifier 'omp_default'}} expected-note 2 {{to match this '('}}
   for (int k = 0; k < argc; ++k)
     ++k;
-#pragma omp target simd lastprivate(conditional: s,argc) lastprivate(conditional: // omp45-error 2 {{use of undeclared identifier 'conditional'}} omp50-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}} omp50-error {{expected list item of scalar type in 'lastprivate' clause with 'conditional' modifier}}
+#pragma omp target simd lastprivate(conditional                        \
+                                    : s, argc) lastprivate(conditional \
+                                                           : // omp45-error 2 {{use of undeclared identifier 'conditional'}} omp50-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}} omp50-error {{expected list item of scalar type in 'lastprivate' clause with 'conditional' modifier}}
   for (int k = 0; k < argc; ++k)
     ++k;
-#pragma omp target simd lastprivate(foo:argc) // omp50-error {{expected 'conditional' in OpenMP clause 'lastprivate'}} omp45-error {{expected ',' or ')' in 'lastprivate' clause}} omp45-error {{expected ')'}} omp45-error {{expected variable name}} omp45-note {{to match this '('}}
+#pragma omp target simd lastprivate(foo \
+                                    : argc) // omp50-error {{expected 'conditional' in OpenMP clause 'lastprivate'}} omp45-error {{expected ',' or ')' in 'lastprivate' clause}} omp45-error {{expected ')'}} omp45-error {{expected variable name}} omp45-note {{to match this '('}}
   for (int k = 0; k < argc; ++k)
     ++k;
 #pragma omp target simd lastprivate(S1) // expected-error {{'S1' does not refer to a value}}
@@ -131,7 +137,8 @@ int foomain(int argc, char **argv) {
   {
     int v = 0;
     int i;
-#pragma omp target simd lastprivate(i) allocate(omp_thread_mem_alloc: i) // expected-warning {{allocator with the 'thread' trait access has unspecified behavior on 'target simd' directive}}
+#pragma omp target simd lastprivate(i) allocate(omp_thread_mem_alloc \
+                                                : i) // expected-warning {{allocator with the 'thread' trait access has unspecified behavior on 'target simd' directive}}
     for (int k = 0; k < argc; ++k) {
       i = k;
       v += i;
@@ -151,7 +158,7 @@ int foomain(int argc, char **argv) {
 namespace A {
 double x;
 #pragma omp threadprivate(x) // expected-note {{defined as threadprivate or thread local}}
-}
+} // namespace A
 namespace B {
 using A::x;
 }
@@ -239,7 +246,8 @@ int main(int argc, char **argv) {
 #pragma omp target simd lastprivate(xa)
   for (i = 0; i < argc; ++i)
     foo();
-#pragma omp parallel reduction(+ : xa)
+#pragma omp parallel reduction(+ \
+                               : xa)
 #pragma omp target simd lastprivate(xa)
   for (i = 0; i < argc; ++i)
     foo();

@@ -39,7 +39,9 @@ int a = 1.5;
 // CHECK2: :[[@LINE+3]]:11: warning: single-argument constructors must be marked explicit
 // CHECK3: :[[@LINE+2]]:11: warning: single-argument constructors must be marked explicit
 // CHECK5: :[[@LINE+1]]:11: warning: single-argument constructors must be marked explicit
-class A { A(int) {} };
+class A {
+  A(int) {}
+};
 
 #define MACRO_FROM_COMMAND_LINE
 // CHECK4: :[[@LINE-1]]:9: warning: 'MACRO_FROM_COMMAND_LINE' macro redefined

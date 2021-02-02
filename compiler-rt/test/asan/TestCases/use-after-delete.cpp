@@ -6,7 +6,7 @@
 
 #include <stdlib.h>
 int main() {
-  char * volatile x = new char[10];
+  char *volatile x = new char[10];
   delete[] x;
   return x[5];
   // CHECK: {{.*ERROR: AddressSanitizer: heap-use-after-free on address}}

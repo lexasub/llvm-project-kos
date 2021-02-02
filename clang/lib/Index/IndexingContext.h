@@ -17,23 +17,23 @@
 #include "llvm/ADT/ArrayRef.h"
 
 namespace clang {
-  class ASTContext;
-  class Decl;
-  class DeclGroupRef;
-  class ImportDecl;
-  class TagDecl;
-  class TypeSourceInfo;
-  class NamedDecl;
-  class ObjCMethodDecl;
-  class DeclContext;
-  class NestedNameSpecifierLoc;
-  class Stmt;
-  class Expr;
-  class TypeLoc;
-  class SourceLocation;
+class ASTContext;
+class Decl;
+class DeclGroupRef;
+class ImportDecl;
+class TagDecl;
+class TypeSourceInfo;
+class NamedDecl;
+class ObjCMethodDecl;
+class DeclContext;
+class NestedNameSpecifierLoc;
+class Stmt;
+class Expr;
+class TypeLoc;
+class SourceLocation;
 
 namespace index {
-  class IndexDataConsumer;
+class IndexDataConsumer;
 
 class IndexingContext {
   IndexingOptions IndexOpts;
@@ -42,7 +42,7 @@ class IndexingContext {
 
 public:
   IndexingContext(IndexingOptions IndexOpts, IndexDataConsumer &DataConsumer)
-    : IndexOpts(IndexOpts), DataConsumer(DataConsumer) {}
+      : IndexOpts(IndexOpts), DataConsumer(DataConsumer) {}
 
   const IndexingOptions &getIndexOpts() const { return IndexOpts; }
   IndexDataConsumer &getDataConsumer() { return DataConsumer; }
@@ -53,9 +53,7 @@ public:
 
   const LangOptions &getLangOpts() const;
 
-  bool shouldSuppressRefs() const {
-    return false;
-  }
+  bool shouldSuppressRefs() const { return false; }
 
   bool shouldIndexFunctionLocalSymbols() const;
 
@@ -76,12 +74,10 @@ public:
                   const DeclContext *DC = nullptr);
 
   bool handleReference(const NamedDecl *D, SourceLocation Loc,
-                       const NamedDecl *Parent,
-                       const DeclContext *DC,
+                       const NamedDecl *Parent, const DeclContext *DC,
                        SymbolRoleSet Roles = SymbolRoleSet(),
                        ArrayRef<SymbolRelation> Relations = None,
-                       const Expr *RefE = nullptr,
-                       const Decl *RefD = nullptr);
+                       const Expr *RefE = nullptr, const Decl *RefD = nullptr);
 
   void handleMacroDefined(const IdentifierInfo &Name, SourceLocation Loc,
                           const MacroInfo &MI);
@@ -100,13 +96,11 @@ public:
                     ArrayRef<SymbolRelation> Relations = None);
 
   void indexTypeSourceInfo(TypeSourceInfo *TInfo, const NamedDecl *Parent,
-                           const DeclContext *DC = nullptr,
-                           bool isBase = false,
+                           const DeclContext *DC = nullptr, bool isBase = false,
                            bool isIBType = false);
 
   void indexTypeLoc(TypeLoc TL, const NamedDecl *Parent,
-                    const DeclContext *DC = nullptr,
-                    bool isBase = false,
+                    const DeclContext *DC = nullptr, bool isBase = false,
                     bool isIBType = false);
 
   void indexNestedNameSpecifierLoc(NestedNameSpecifierLoc NNS,
@@ -124,12 +118,10 @@ public:
 private:
   bool shouldIgnoreIfImplicit(const Decl *D);
 
-  bool handleDeclOccurrence(const Decl *D, SourceLocation Loc,
-                            bool IsRef, const Decl *Parent,
-                            SymbolRoleSet Roles,
+  bool handleDeclOccurrence(const Decl *D, SourceLocation Loc, bool IsRef,
+                            const Decl *Parent, SymbolRoleSet Roles,
                             ArrayRef<SymbolRelation> Relations,
-                            const Expr *RefE,
-                            const Decl *RefD,
+                            const Expr *RefE, const Decl *RefD,
                             const DeclContext *ContainerDC);
 };
 

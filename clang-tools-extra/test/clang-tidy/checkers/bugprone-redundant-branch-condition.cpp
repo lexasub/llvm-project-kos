@@ -6,7 +6,7 @@ extern unsigned fireFighters;
 bool isBurning();
 bool isReallyBurning();
 bool isCollapsing();
-bool tryToExtinguish(bool&);
+bool tryToExtinguish(bool &);
 bool tryToExtinguishByVal(bool);
 void tryPutFireOut();
 bool callTheFD();
@@ -145,7 +145,7 @@ void positive_direct_outer_and_lhs() {
   if (onFire && fireFighters < 10) {
     if (onFire) {
       // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: redundant condition 'onFire' [bugprone-redundant-branch-condition]
-    // CHECK-FIXES: {{^\ *$}}
+      // CHECK-FIXES: {{^\ *$}}
       scream();
     }
     // CHECK-FIXES: {{^\ *$}}
@@ -235,7 +235,7 @@ void positive_indirect_outer_and_lhs_inner_or_lhs() {
         // CHECK-FIXES: {{^\ *$}}
         scream();
       }
-    // CHECK-FIXES: {{^\ *$}}
+      // CHECK-FIXES: {{^\ *$}}
     }
   }
 }
@@ -321,7 +321,7 @@ void positive_direct_inner_outer_and_rhs_and_rhs() {
   if (fireFighters < 10 && onFire) {
     if (peopleInTheBuilding > 0 && onFire) {
       // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: redundant condition 'onFire' [bugprone-redundant-branch-condition]
-        // CHECK-FIXES: if (peopleInTheBuilding > 0 ) {
+      // CHECK-FIXES: if (peopleInTheBuilding > 0 ) {
       scream();
     }
   }

@@ -36,7 +36,7 @@ struct thread {
   thread() {}
   thread(thread &&other) {}
   template <class Function, class... Args>
-  explicit thread(Function &&f, Args &&... args) {
+  explicit thread(Function &&f, Args &&...args) {
     f(std::forward<Args>(args)...);
   }
   thread(const thread &) = delete;
@@ -45,7 +45,7 @@ struct thread {
   static unsigned hardware_concurrency() { return 1; };
 };
 
-}
+} // namespace llvm
 
 #endif // LLVM_ENABLE_THREADS
 

@@ -97,7 +97,8 @@ private:
 
   bool IsRegisterFileReduced(lldb_private::RegisterContext &reg_ctx) const;
 
-  using lldb_private::RegInfoBasedABI::RegInfoBasedABI; // Call CreateInstance instead.
+  using lldb_private::RegInfoBasedABI::RegInfoBasedABI; // Call CreateInstance
+                                                        // instead.
 
   using RegisterFileFlag = llvm::Optional<bool>;
   mutable RegisterFileFlag m_is_reg_file_reduced;

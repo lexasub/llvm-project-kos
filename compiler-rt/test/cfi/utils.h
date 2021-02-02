@@ -2,7 +2,10 @@
 #define UTILS_H
 
 inline void break_optimization(void *arg) {
-  __asm__ __volatile__("" : : "r" (arg) : "memory");
+  __asm__ __volatile__(""
+                       :
+                       : "r"(arg)
+                       : "memory");
 }
 
 // Tests will instantiate this class to pad out bit sets to test out the
@@ -19,7 +22,7 @@ inline void break_optimization(void *arg) {
 template <typename T, unsigned I>
 struct Deriver : T {
   Deriver() {
-    break_optimization(new Deriver<T, I-1>);
+    break_optimization(new Deriver<T, I - 1>);
   }
   virtual void f() {}
   virtual void g() {}

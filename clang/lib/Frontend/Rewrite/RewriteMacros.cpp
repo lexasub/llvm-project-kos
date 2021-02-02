@@ -11,10 +11,10 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "clang/Rewrite/Frontend/Rewriters.h"
 #include "clang/Basic/SourceManager.h"
 #include "clang/Lex/Preprocessor.h"
 #include "clang/Rewrite/Core/Rewriter.h"
+#include "clang/Rewrite/Frontend/Rewriters.h"
 #include "llvm/Support/Path.h"
 #include "llvm/Support/raw_ostream.h"
 #include <cstdio>
@@ -41,7 +41,6 @@ static bool isSameToken(Token &RawTok, Token &PPTok) {
   return false;
 }
 
-
 /// GetNextRawTok - Return the next raw token in the stream, skipping over
 /// comments if ReturnComment is false.
 static const Token &GetNextRawTok(const std::vector<Token> &RawTokens,
@@ -54,7 +53,6 @@ static const Token &GetNextRawTok(const std::vector<Token> &RawTokens,
 
   return RawTokens[CurTok++];
 }
-
 
 /// LexRawTokensFromMainFile - Lets all the raw tokens from the main file into
 /// the specified vector.
@@ -84,7 +82,6 @@ static void LexRawTokensFromMainFile(Preprocessor &PP,
   } while (RawTok.isNot(tok::eof));
 }
 
-
 /// RewriteMacrosInInput - Implement -rewrite-macros mode.
 void clang::RewriteMacrosInInput(Preprocessor &PP, raw_ostream *OS) {
   SourceManager &SM = PP.getSourceManager();
@@ -97,7 +94,6 @@ void clang::RewriteMacrosInInput(Preprocessor &PP, raw_ostream *OS) {
   LexRawTokensFromMainFile(PP, RawTokens);
   unsigned CurRawTok = 0;
   Token RawTok = GetNextRawTok(RawTokens, CurRawTok, false);
-
 
   // Get the first preprocessing token.
   PP.EnterMainSourceFile();
@@ -132,8 +128,8 @@ void clang::RewriteMacrosInInput(Preprocessor &PP, raw_ostream *OS) {
           // Comment out #warning.
           RB.InsertTextAfter(SM.getFileOffset(RawTok.getLocation()), "//");
         } else if (II->getName() == "pragma" &&
-                   RawTokens[CurRawTok+1].is(tok::identifier) &&
-                   (RawTokens[CurRawTok+1].getIdentifierInfo()->getName() ==
+                   RawTokens[CurRawTok + 1].is(tok::identifier) &&
+                   (RawTokens[CurRawTok + 1].getIdentifierInfo()->getName() ==
                     "mark")) {
           // Comment out #pragma mark.
           RB.InsertTextAfter(SM.getFileOffset(RawTok.getLocation()), "//");
@@ -170,7 +166,7 @@ void clang::RewriteMacrosInInput(Preprocessor &PP, raw_ostream *OS) {
       unsigned EndPos;
 
       do {
-        EndPos = RawOffs+RawTok.getLength();
+        EndPos = RawOffs + RawTok.getLength();
 
         RawTok = GetNextRawTok(RawTokens, CurRawTok, true);
         RawOffs = SM.getFileOffset(RawTok.getLocation());
@@ -206,8 +202,8 @@ void clang::RewriteMacrosInInput(Preprocessor &PP, raw_ostream *OS) {
   // Get the buffer corresponding to MainFileID.  If we haven't changed it, then
   // we are done.
   if (const RewriteBuffer *RewriteBuf =
-      Rewrite.getRewriteBufferFor(SM.getMainFileID())) {
-    //printf("Changed:\n");
+          Rewrite.getRewriteBufferFor(SM.getMainFileID())) {
+    // printf("Changed:\n");
     *OS << std::string(RewriteBuf->begin(), RewriteBuf->end());
   } else {
     fprintf(stderr, "No changes\n");

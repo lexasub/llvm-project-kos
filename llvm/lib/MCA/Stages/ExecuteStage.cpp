@@ -203,7 +203,7 @@ Error ExecuteStage::execute(InstRef &IR) {
   unsigned NumMicroOps = Inst.getNumMicroOps();
   NumDispatchedOpcodes += NumMicroOps;
   notifyReservedOrReleasedBuffers(IR, /* Reserved */ true);
- 
+
   if (!IsReadyInstruction) {
     if (Inst.isPending())
       notifyInstructionPending(IR);

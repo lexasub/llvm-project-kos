@@ -52,7 +52,6 @@ public:
 
   /// Lower a MachineInstr to an MCInst
   void lower(const MachineInstr *MI, MCInst &OutMI) const;
-
 };
 
 class R600MCInstLower : public AMDGPUMCInstLower {
@@ -64,15 +63,14 @@ public:
   void lower(const MachineInstr *MI, MCInst &OutMI) const;
 };
 
-
 } // End anonymous namespace
 
 #include "AMDGPUGenMCPseudoLowering.inc"
 
 AMDGPUMCInstLower::AMDGPUMCInstLower(MCContext &ctx,
                                      const TargetSubtargetInfo &st,
-                                     const AsmPrinter &ap):
-  Ctx(ctx), ST(st), AP(ap) { }
+                                     const AsmPrinter &ap)
+    : Ctx(ctx), ST(st), AP(ap) {}
 
 static MCSymbolRefExpr::VariantKind getVariantKind(unsigned MOFlags) {
   switch (MOFlags) {
@@ -95,11 +93,11 @@ static MCSymbolRefExpr::VariantKind getVariantKind(unsigned MOFlags) {
   }
 }
 
-const MCExpr *AMDGPUMCInstLower::getLongBranchBlockExpr(
-  const MachineBasicBlock &SrcBB,
-  const MachineOperand &MO) const {
-  const MCExpr *DestBBSym
-    = MCSymbolRefExpr::create(MO.getMBB()->getSymbol(), Ctx);
+const MCExpr *
+AMDGPUMCInstLower::getLongBranchBlockExpr(const MachineBasicBlock &SrcBB,
+                                          const MachineOperand &MO) const {
+  const MCExpr *DestBBSym =
+      MCSymbolRefExpr::create(MO.getMBB()->getSymbol(), Ctx);
   const MCExpr *SrcBBSym = MCSymbolRefExpr::create(SrcBB.getSymbol(), Ctx);
 
   // FIXME: The first half of this assert should be removed. This should
@@ -135,10 +133,10 @@ bool AMDGPUMCInstLower::lowerOperand(const MachineOperand &MO,
   case MachineOperand::MO_MachineBasicBlock: {
     if (MO.getTargetFlags() != 0) {
       MCOp = MCOperand::createExpr(
-        getLongBranchBlockExpr(*MO.getParent()->getParent(), MO));
+          getLongBranchBlockExpr(*MO.getParent()->getParent(), MO));
     } else {
       MCOp = MCOperand::createExpr(
-        MCSymbolRefExpr::create(MO.getMBB()->getSymbol(), Ctx));
+          MCSymbolRefExpr::create(MO.getMBB()->getSymbol(), Ctx));
     }
 
     return true;
@@ -149,11 +147,11 @@ bool AMDGPUMCInstLower::lowerOperand(const MachineOperand &MO,
     AP.getNameWithPrefix(SymbolName, GV);
     MCSymbol *Sym = Ctx.getOrCreateSymbol(SymbolName);
     const MCExpr *Expr =
-      MCSymbolRefExpr::create(Sym, getVariantKind(MO.getTargetFlags()),Ctx);
+        MCSymbolRefExpr::create(Sym, getVariantKind(MO.getTargetFlags()), Ctx);
     int64_t Offset = MO.getOffset();
     if (Offset != 0) {
-      Expr = MCBinaryExpr::createAdd(Expr,
-                                     MCConstantExpr::create(Offset, Ctx), Ctx);
+      Expr = MCBinaryExpr::createAdd(Expr, MCConstantExpr::create(Offset, Ctx),
+                                     Ctx);
     }
     MCOp = MCOperand::createExpr(Expr);
     return true;
@@ -173,7 +171,7 @@ bool AMDGPUMCInstLower::lowerOperand(const MachineOperand &MO,
 
 void AMDGPUMCInstLower::lower(const MachineInstr *MI, MCInst &OutMI) const {
   unsigned Opcode = MI->getOpcode();
-  const auto *TII = static_cast<const SIInstrInfo*>(ST.getInstrInfo());
+  const auto *TII = static_cast<const SIInstrInfo *>(ST.getInstrInfo());
 
   // FIXME: Should be able to handle this with emitPseudoExpansionLowering. We
   // need to select it to the subtarget specific version, and there's no way to
@@ -199,7 +197,8 @@ void AMDGPUMCInstLower::lower(const MachineInstr *MI, MCInst &OutMI) const {
   if (MCOpcode == -1) {
     LLVMContext &C = MI->getParent()->getParent()->getFunction().getContext();
     C.emitError("AMDGPUMCInstLower::lower - Pseudo instruction doesn't have "
-                "a target-specific version: " + Twine(MI->getOpcode()));
+                "a target-specific version: " +
+                Twine(MI->getOpcode()));
   }
 
   OutMI.setOpcode(MCOpcode);
@@ -228,7 +227,7 @@ static const MCExpr *lowerAddrSpaceCast(const TargetMachine &TM,
   // TargetMachine does not support llvm-style cast. Use C++-style cast.
   // This is safe since TM is always of type AMDGPUTargetMachine or its
   // derived class.
-  auto &AT = static_cast<const AMDGPUTargetMachine&>(TM);
+  auto &AT = static_cast<const AMDGPUTargetMachine &>(TM);
   auto *CE = dyn_cast<ConstantExpr>(CV);
 
   // Lower null pointers in private and local address space.
@@ -240,7 +239,7 @@ static const MCExpr *lowerAddrSpaceCast(const TargetMachine &TM,
     if (Op->isNullValue() && AT.getNullPointerValue(SrcAddr) == 0) {
       auto DstAddr = CE->getType()->getPointerAddressSpace();
       return MCConstantExpr::create(AT.getNullPointerValue(DstAddr),
-        OutContext);
+                                    OutContext);
     }
   }
   return nullptr;
@@ -283,8 +282,8 @@ void AMDGPUAsmPrinter::emitInstruction(const MachineInstr *MI) {
         raw_svector_ostream Str(BBStr);
 
         const MachineBasicBlock *MBB = MI->getOperand(0).getMBB();
-        const MCSymbolRefExpr *Expr
-          = MCSymbolRefExpr::create(MBB->getSymbol(), OutContext);
+        const MCSymbolRefExpr *Expr =
+            MCSymbolRefExpr::create(MBB->getSymbol(), OutContext);
         Expr->print(Str, MAI);
         OutStreamer->emitRawComment(Twine(" mask branch ") + BBStr);
       }
@@ -370,8 +369,8 @@ void AMDGPUAsmPrinter::emitInstruction(const MachineInstr *MI) {
 }
 
 R600MCInstLower::R600MCInstLower(MCContext &Ctx, const R600Subtarget &ST,
-                                 const AsmPrinter &AP) :
-        AMDGPUMCInstLower(Ctx, ST, AP) { }
+                                 const AsmPrinter &AP)
+    : AMDGPUMCInstLower(Ctx, ST, AP) {}
 
 void R600MCInstLower::lower(const MachineInstr *MI, MCInst &OutMI) const {
   OutMI.setOpcode(MI->getOpcode());
@@ -404,7 +403,7 @@ void R600AsmPrinter::emitInstruction(const MachineInstr *MI) {
     MCInst TmpInst;
     MCInstLowering.lower(MI, TmpInst);
     EmitToStreamer(*OutStreamer, TmpInst);
- }
+  }
 }
 
 const MCExpr *R600AsmPrinter::lowerConstant(const Constant *CV) {

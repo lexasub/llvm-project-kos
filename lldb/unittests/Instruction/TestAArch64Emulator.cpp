@@ -23,7 +23,8 @@ struct Arch64EmulatorTester : public EmulateInstructionARM64 {
   Arch64EmulatorTester()
       : EmulateInstructionARM64(ArchSpec("arm64-apple-ios")) {}
 
-  static uint64_t AddWithCarry(uint32_t N, uint64_t x, uint64_t y, bool carry_in,
+  static uint64_t AddWithCarry(uint32_t N, uint64_t x, uint64_t y,
+                               bool carry_in,
                                EmulateInstructionARM64::ProcState &proc_state) {
     return EmulateInstructionARM64::AddWithCarry(N, x, y, carry_in, proc_state);
   }

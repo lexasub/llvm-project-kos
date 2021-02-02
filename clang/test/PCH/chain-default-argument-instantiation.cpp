@@ -17,12 +17,12 @@
 // Primary header.
 
 namespace rdar23810407 {
-  template<typename T> int f(T t) {
-    extern T rdar23810407_variable;
-    return 0;
-  }
-  template<typename T> int g(int a = f([] {}));
+template <typename T> int f(T t) {
+  extern T rdar23810407_variable;
+  return 0;
 }
+template <typename T> int g(int a = f([] {}));
+} // namespace rdar23810407
 
 //===----------------------------------------------------------------------===//
 #elif not defined(HEADER2)

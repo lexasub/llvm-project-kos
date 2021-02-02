@@ -8,6 +8,7 @@ int main(void) {
   struct sched_param param;
   int res = sched_getparam(0, &param);
   assert(res == 0);
-  if (param.sched_priority == 42) printf(".\n");
+  if (param.sched_priority == 42)
+    printf(".\n");
   return 0;
 }

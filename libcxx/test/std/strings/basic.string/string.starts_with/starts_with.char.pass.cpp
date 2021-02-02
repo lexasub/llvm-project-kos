@@ -16,20 +16,19 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
+int main(int, char**) {
+  {
     typedef std::string S;
-    S  s1 {};
-    S  s2 { "abcde", 5 };
+    S s1{};
+    S s2{"abcde", 5};
 
     ASSERT_NOEXCEPT(s1.starts_with('e'));
 
-    assert (!s1.starts_with('a'));
-    assert (!s1.starts_with('x'));
-    assert ( s2.starts_with('a'));
-    assert (!s2.starts_with('x'));
-    }
+    assert(!s1.starts_with('a'));
+    assert(!s1.starts_with('x'));
+    assert(s2.starts_with('a'));
+    assert(!s2.starts_with('x'));
+  }
 
   return 0;
 }

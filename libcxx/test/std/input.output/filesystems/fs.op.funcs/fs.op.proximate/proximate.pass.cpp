@@ -23,7 +23,6 @@
 #include "rapid-cxx-test.h"
 #include "filesystem_test_helper.h"
 
-
 static int count_path_elems(const fs::path& p) {
   int count = 0;
   for (auto& elem : p) {
@@ -35,16 +34,16 @@ static int count_path_elems(const fs::path& p) {
 
 TEST_SUITE(filesystem_proximate_path_test_suite)
 
-
-TEST_CASE(signature_test)
-{
-    using fs::path;
-    const path p; ((void)p);
-    std::error_code ec; ((void)ec);
-    ASSERT_NOT_NOEXCEPT(proximate(p));
-    ASSERT_NOT_NOEXCEPT(proximate(p, p));
-    ASSERT_NOT_NOEXCEPT(proximate(p, ec));
-    ASSERT_NOT_NOEXCEPT(proximate(p, p, ec));
+TEST_CASE(signature_test) {
+  using fs::path;
+  const path p;
+  ((void)p);
+  std::error_code ec;
+  ((void)ec);
+  ASSERT_NOT_NOEXCEPT(proximate(p));
+  ASSERT_NOT_NOEXCEPT(proximate(p, p));
+  ASSERT_NOT_NOEXCEPT(proximate(p, ec));
+  ASSERT_NOT_NOEXCEPT(proximate(p, p, ec));
 }
 
 TEST_CASE(basic_test) {
@@ -55,7 +54,7 @@ TEST_CASE(basic_test) {
   TEST_REQUIRE(!cwd.native().empty());
   int cwd_depth = count_path_elems(cwd);
   path dot_dot_to_root;
-  for (int i=0; i < cwd_depth; ++i)
+  for (int i = 0; i < cwd_depth; ++i)
     dot_dot_to_root /= "..";
   path relative_cwd = cwd.native().substr(1);
   // clang-format off
@@ -100,30 +99,32 @@ TEST_CASE(basic_test) {
     const fs::path output = fs::proximate(p, TC.base, ec);
     if (ec) {
       TEST_CHECK(!ec);
-      std::fprintf(stderr, "TEST CASE #%d FAILED:\n"
-                  "  Input: '%s'\n"
-                  "  Base: '%s'\n"
-                  "  Expected: '%s'\n",
-        ID, TC.input.string().c_str(), TC.base.string().c_str(),
-        TC.expect.string().c_str());
+      std::fprintf(stderr,
+                   "TEST CASE #%d FAILED:\n"
+                   "  Input: '%s'\n"
+                   "  Base: '%s'\n"
+                   "  Expected: '%s'\n",
+                   ID, TC.input.string().c_str(), TC.base.string().c_str(),
+                   TC.expect.string().c_str());
     } else if (!PathEq(output, TC.expect)) {
       TEST_CHECK(PathEq(output, TC.expect));
 
       const path canon_input = fs::weakly_canonical(TC.input);
       const path canon_base = fs::weakly_canonical(TC.base);
       const path lexically_p = canon_input.lexically_proximate(canon_base);
-      std::fprintf(stderr, "TEST CASE #%d FAILED:\n"
-                  "  Input: '%s'\n"
-                  "  Base: '%s'\n"
-                  "  Expected: '%s'\n"
-                  "  Output: '%s'\n"
-                  "  Lex Prox: '%s'\n"
-                  "  Canon Input: '%s'\n"
-                  "  Canon Base: '%s'\n",
-        ID, TC.input.string().c_str(), TC.base.string().c_str(),
-        TC.expect.string().c_str(), output.string().c_str(),
-        lexically_p.string().c_str(), canon_input.string().c_str(),
-        canon_base.string().c_str());
+      std::fprintf(stderr,
+                   "TEST CASE #%d FAILED:\n"
+                   "  Input: '%s'\n"
+                   "  Base: '%s'\n"
+                   "  Expected: '%s'\n"
+                   "  Output: '%s'\n"
+                   "  Lex Prox: '%s'\n"
+                   "  Canon Input: '%s'\n"
+                   "  Canon Base: '%s'\n",
+                   ID, TC.input.string().c_str(), TC.base.string().c_str(),
+                   TC.expect.string().c_str(), output.string().c_str(),
+                   lexically_p.string().c_str(), canon_input.string().c_str(),
+                   canon_base.string().c_str());
     }
   }
 }

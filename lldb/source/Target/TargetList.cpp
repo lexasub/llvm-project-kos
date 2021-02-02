@@ -165,7 +165,7 @@ Status TargetList::CreateTargetInternal(
         module_spec.GetArchitecture() = arch;
         if (module_specs.FindMatchingModuleSpec(module_spec,
                                                 matching_module_spec))
-            update_platform_arch(matching_module_spec.GetArchitecture());
+          update_platform_arch(matching_module_spec.GetArchitecture());
       } else {
         // Fat binary. No architecture specified, check if there is
         // only one platform for all of the architectures.
@@ -329,7 +329,7 @@ Status TargetList::CreateTargetInternal(Debugger &debugger,
 
     if (file.IsRelative() && !user_exe_path.empty()) {
       llvm::SmallString<64> cwd;
-      if (! llvm::sys::fs::current_path(cwd)) {
+      if (!llvm::sys::fs::current_path(cwd)) {
         FileSpec cwd_file(cwd.c_str());
         cwd_file.AppendPathComponent(file);
         if (FileSystem::Instance().Exists(cwd_file))
@@ -415,7 +415,8 @@ bool TargetList::DeleteTarget(TargetSP &target_sp) {
 TargetSP TargetList::FindTargetWithExecutableAndArchitecture(
     const FileSpec &exe_file_spec, const ArchSpec *exe_arch_ptr) const {
   std::lock_guard<std::recursive_mutex> guard(m_target_list_mutex);
-  auto it = std::find_if(m_target_list.begin(), m_target_list.end(),
+  auto it = std::find_if(
+      m_target_list.begin(), m_target_list.end(),
       [&exe_file_spec, exe_arch_ptr](const TargetSP &item) {
         Module *exe_module = item->GetExecutableModulePointer();
         if (!exe_module ||
@@ -435,10 +436,10 @@ TargetSP TargetList::FindTargetWithExecutableAndArchitecture(
 TargetSP TargetList::FindTargetWithProcessID(lldb::pid_t pid) const {
   std::lock_guard<std::recursive_mutex> guard(m_target_list_mutex);
   auto it = std::find_if(m_target_list.begin(), m_target_list.end(),
-      [pid](const TargetSP &item) {
-        auto *process_ptr = item->GetProcessSP().get();
-        return process_ptr && (process_ptr->GetID() == pid);
-      });
+                         [pid](const TargetSP &item) {
+                           auto *process_ptr = item->GetProcessSP().get();
+                           return process_ptr && (process_ptr->GetID() == pid);
+                         });
 
   if (it != m_target_list.end())
     return *it;
@@ -453,9 +454,9 @@ TargetSP TargetList::FindTargetWithProcess(Process *process) const {
 
   std::lock_guard<std::recursive_mutex> guard(m_target_list_mutex);
   auto it = std::find_if(m_target_list.begin(), m_target_list.end(),
-      [process](const TargetSP &item) {
-        return item->GetProcessSP().get() == process;
-      });
+                         [process](const TargetSP &item) {
+                           return item->GetProcessSP().get() == process;
+                         });
 
   if (it != m_target_list.end())
     target_sp = *it;
@@ -469,7 +470,8 @@ TargetSP TargetList::GetTargetSP(Target *target) const {
     return target_sp;
 
   std::lock_guard<std::recursive_mutex> guard(m_target_list_mutex);
-  auto it = std::find_if(m_target_list.begin(), m_target_list.end(),
+  auto it = std::find_if(
+      m_target_list.begin(), m_target_list.end(),
       [target](const TargetSP &item) { return item.get() == target; });
   if (it != m_target_list.end())
     target_sp = *it;

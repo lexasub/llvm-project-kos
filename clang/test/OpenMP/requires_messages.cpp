@@ -50,20 +50,20 @@ int a;
 #pragma omp requires unified_shared_memory, unified_address, reverse_offload, dynamic_allocators, atomic_default_mem_order(seq_cst) // expected-error {{Only one unified_shared_memory clause can appear on a requires directive in a single translation unit}} expected-error{{Only one unified_address clause can appear on a requires directive in a single translation unit}} expected-error{{Only one reverse_offload clause can appear on a requires directive in a single translation unit}} expected-error{{Only one dynamic_allocators clause can appear on a requires directive in a single translation unit}} expected-error {{Only one atomic_default_mem_order clause can appear on a requires directive in a single translation unit}}
 
 namespace A {
-  #pragma omp requires unified_address // expected-error {{Only one unified_address clause can appear on a requires directive in a single translation unit}}
-  namespace B {
-    #pragma omp requires unified_address // expected-error {{Only one unified_address clause can appear on a requires directive in a single translation unit}}
-  }
+#pragma omp requires unified_address // expected-error {{Only one unified_address clause can appear on a requires directive in a single translation unit}}
+namespace B {
+#pragma omp requires unified_address // expected-error {{Only one unified_address clause can appear on a requires directive in a single translation unit}}
 }
+} // namespace A
 
 template <typename T> T foo() {
-  #pragma omp requires unified_address // expected-error {{unexpected OpenMP directive '#pragma omp requires'}}
+#pragma omp requires unified_address // expected-error {{unexpected OpenMP directive '#pragma omp requires'}}
 }
 
 class C {
-  #pragma omp requires unified_address // expected-error {{'#pragma omp requires' directive must appear only in file scope}}
+#pragma omp requires unified_address // expected-error {{'#pragma omp requires' directive must appear only in file scope}}
 };
 
 int main() {
-  #pragma omp requires unified_address // expected-error {{unexpected OpenMP directive '#pragma omp requires'}}
+#pragma omp requires unified_address // expected-error {{unexpected OpenMP directive '#pragma omp requires'}}
 }

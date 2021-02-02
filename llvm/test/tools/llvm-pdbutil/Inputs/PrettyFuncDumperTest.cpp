@@ -8,33 +8,33 @@ FuncPtrA FuncVarA;
 typedef float (*FuncPtrB)(void);
 FuncPtrB FuncVarB;
 
-typedef int(*VariadicFuncPtrTypedef)(char, double, ...);
+typedef int (*VariadicFuncPtrTypedef)(char, double, ...);
 VariadicFuncPtrTypedef VariadicFuncVar;
 
 void Func(int array[]) { return; }
 
-template <int N=1, class ...T>
-void TemplateFunc(T ...Arg) {
+template <int N = 1, class... T>
+void TemplateFunc(T... Arg) {
   return;
 }
 
 namespace {
-  void Func(int& a, const double b, volatile bool c) { return; }
-}
+void Func(int &a, const double b, volatile bool c) { return; }
+} // namespace
 
 namespace NS {
-  void Func(char a, int b, ...) {
-    return;
-  }
+void Func(char a, int b, ...) {
+  return;
 }
+} // namespace NS
 
 namespace MemberFuncsTest {
-  class A {
-  public:
-    int FuncA() { return 1; }
-    void FuncB(int a, ...) {}
-  };
-}
+class A {
+public:
+  int FuncA() { return 1; }
+  void FuncB(int a, ...) {}
+};
+} // namespace MemberFuncsTest
 
 int main() {
   MemberFuncsTest::A v1;

@@ -1,7 +1,6 @@
 #include "redeclarations.h"
 
-class A
-{
+class A {
 };
 
 // RUN: env CINDEXTEST_EDITING=1 c-index-test -test-load-source-reparse 2 all -I%S/Inputs -fno-delayed-template-parsing -fno-ms-compatibility -fno-ms-extensions %s | FileCheck %s

@@ -4,15 +4,17 @@ template <class Element>
 void foo() {
 }
 template <>
- __attribute__((visibility("hidden")))  // expected-note {{previous attribute is here}}
-void foo<int>();
+__attribute__((visibility("hidden"))) // expected-note {{previous attribute is here}}
+void
+foo<int>();
 
 template <>
 void foo<int>();
 
 template <>
- __attribute__((visibility("default"))) // expected-error {{visibility does not match previous declaration}}
-void foo<int>() {
+__attribute__((visibility("default"))) // expected-error {{visibility does not match previous declaration}}
+void
+foo<int>() {
 }
 
 struct x3 {

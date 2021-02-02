@@ -23,7 +23,7 @@ int readBadGlobal() {
 // A function which is broken, but excluded in the blacklist.
 int brokenFunction(int argc) {
   char x[10] = {0};
-  return x[argc * 10];  // BOOM
+  return x[argc * 10]; // BOOM
 }
 
 // This function is defined in Helpers/blacklist-extra.cpp, a source file which

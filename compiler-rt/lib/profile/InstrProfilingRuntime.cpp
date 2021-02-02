@@ -18,11 +18,9 @@ namespace {
 
 class RegisterRuntime {
 public:
-  RegisterRuntime() {
-    __llvm_profile_initialize();
-  }
+  RegisterRuntime() { __llvm_profile_initialize(); }
 };
 
 RegisterRuntime Registration;
 
-}
+} // namespace

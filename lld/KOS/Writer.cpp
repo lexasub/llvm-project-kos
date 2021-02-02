@@ -22,7 +22,7 @@ using namespace lld;
 using namespace lld::kos;
 
 struct Menuet02Header {
-  char magic[8] = { 'M', 'E', 'N', 'U', 'E', 'T', '0', '2' };
+  char magic[8] = {'M', 'E', 'N', 'U', 'E', 'T', '0', '2'};
   uint32_t version = 1;
   uint32_t start;
   uint32_t end;
@@ -98,9 +98,7 @@ static Timer diskCommitTimer("Commit Output File", Timer::root());
 
 void lld::kos::writeResult() { Writer().run(); }
 
-void OutputSection::addChunk(Chunk *c) {
-  chunks.push_back(c);
-}
+void OutputSection::addChunk(Chunk *c) { chunks.push_back(c); }
 
 void OutputSection::insertChunkAtStart(Chunk *c) {
   chunks.insert(chunks.begin(), c);
@@ -142,9 +140,11 @@ void Writer::run() {
   dyn_cast<DefinedAbsolute>(symtab->findUnderscore("__hdr_params"))->setVA(28);
   dyn_cast<DefinedAbsolute>(symtab->findUnderscore("__hdr_path"))->setVA(32);
 
-  dyn_cast<DefinedAbsolute>(symtab->findUnderscore("__params"))->setVA(sizeOfImage);
+  dyn_cast<DefinedAbsolute>(symtab->findUnderscore("__params"))
+      ->setVA(sizeOfImage);
   sizeOfImage += 1024;
-  dyn_cast<DefinedAbsolute>(symtab->findUnderscore("__path"))->setVA(sizeOfImage);
+  dyn_cast<DefinedAbsolute>(symtab->findUnderscore("__path"))
+      ->setVA(sizeOfImage);
   sizeOfImage += 4096;
 
   removeEmptySections();
@@ -232,8 +232,8 @@ void Writer::createSections() {
     if (shouldStripSectionSuffix(sc, name))
       name = name.split('$').first;
 
-    PartialSection *pSec = createPartialSection(name,
-                                                c->getOutputCharacteristics());
+    PartialSection *pSec =
+        createPartialSection(name, c->getOutputCharacteristics());
     pSec->chunks.push_back(c);
   }
 
@@ -350,7 +350,7 @@ void Writer::writeHeader() {
 
   memcpy(buf, hdr.magic, sizeof(hdr.magic));
   buf += sizeof(hdr.magic);
-  
+
   put32(hdr.version); // version
   put32(hdr.start);
   put32(hdr.end);
@@ -394,4 +394,3 @@ PartialSection *Writer::createPartialSection(StringRef name,
   pSec = make<PartialSection>(name, outChars);
   return pSec;
 }
-

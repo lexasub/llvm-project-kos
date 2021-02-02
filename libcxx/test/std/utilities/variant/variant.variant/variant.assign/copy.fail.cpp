@@ -16,18 +16,18 @@
 #include <variant>
 #include <type_traits>
 
-struct NotCopyConstructible
-{
-    NotCopyConstructible() = default;
-    NotCopyConstructible(NotCopyConstructible const&) = delete;
+struct NotCopyConstructible {
+  NotCopyConstructible() = default;
+  NotCopyConstructible(NotCopyConstructible const&) = delete;
 };
 
-int main(int, char**)
-{
-    static_assert(!std::is_copy_constructible_v<NotCopyConstructible>);
+int main(int, char**) {
+  static_assert(!std::is_copy_constructible_v<NotCopyConstructible>);
 
-    std::variant<NotCopyConstructible> v;
-    std::variant<NotCopyConstructible> v1;
-    std::variant<NotCopyConstructible> v2(v); // expected-error {{call to implicitly-deleted copy constructor of 'std::variant<NotCopyConstructible>'}}
-    v1 = v; // expected-error-re {{object of type 'std:{{.*}}:variant<NotCopyConstructible>' cannot be assigned because its copy assignment operator is implicitly deleted}}
+  std::variant<NotCopyConstructible> v;
+  std::variant<NotCopyConstructible> v1;
+  std::variant<NotCopyConstructible> v2(
+      v); // expected-error {{call to implicitly-deleted copy constructor of 'std::variant<NotCopyConstructible>'}}
+  v1 =
+      v; // expected-error-re {{object of type 'std:{{.*}}:variant<NotCopyConstructible>' cannot be assigned because its copy assignment operator is implicitly deleted}}
 }

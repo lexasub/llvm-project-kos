@@ -229,7 +229,8 @@ static BaseIndexOffset matchLSNode(const LSBaseSDNode *N,
             Offset -= Off;
           else
             Offset += Off;
-          Base = DAG.getTargetLoweringInfo().unwrapAddress(LSBase->getBasePtr());
+          Base =
+              DAG.getTargetLoweringInfo().unwrapAddress(LSBase->getBasePtr());
           continue;
         }
       break;
@@ -293,11 +294,9 @@ BaseIndexOffset BaseIndexOffset::match(const SDNode *N,
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
 
-LLVM_DUMP_METHOD void BaseIndexOffset::dump() const {
-  print(dbgs());
-}
+LLVM_DUMP_METHOD void BaseIndexOffset::dump() const { print(dbgs()); }
 
-void BaseIndexOffset::print(raw_ostream& OS) const {
+void BaseIndexOffset::print(raw_ostream &OS) const {
   OS << "BaseIndexOffset base=[";
   Base->print(OS);
   OS << "] index=[";

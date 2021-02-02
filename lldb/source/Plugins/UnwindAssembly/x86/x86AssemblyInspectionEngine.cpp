@@ -668,7 +668,7 @@ bool x86AssemblyInspectionEngine::mov_reg_to_local_stack_frame_p(
 }
 
 // Returns true if this is a jmp instruction where we can't
-// know the destination address statically. 
+// know the destination address statically.
 //
 // ff e0                                   jmpq   *%rax
 // ff e1                                   jmpq   *%rcx
@@ -720,71 +720,70 @@ bool x86AssemblyInspectionEngine::jmp_to_reg_p() {
 // that may be branch/jumped to.
 //
 // Cannot determine the offset of a JMP that jumps to the address in
-// a register ("jmpq *%rax") or offset from a register value 
+// a register ("jmpq *%rax") or offset from a register value
 // ("jmpq *0x28(%rax)"), this method will return false on those
 // instructions.
 //
 // These instructions all end in either a relative 8/16/32 bit value
 // depending on the instruction and the current execution mode of the
-// inferior process.  Once we know the size of the opcode instruction, 
+// inferior process.  Once we know the size of the opcode instruction,
 // we can use the total instruction length to determine the size of
 // the relative offset without having to compute it correctly.
 
-bool x86AssemblyInspectionEngine::pc_rel_branch_or_jump_p (
-    const int instruction_length, int &offset)
-{
+bool x86AssemblyInspectionEngine::pc_rel_branch_or_jump_p(
+    const int instruction_length, int &offset) {
   int opcode_size = 0;
 
   uint8_t b1 = m_cur_insn[0];
 
   switch (b1) {
-    case 0x77: // JA/JNBE rel8
-    case 0x73: // JAE/JNB/JNC rel8
-    case 0x72: // JB/JC/JNAE rel8
-    case 0x76: // JBE/JNA rel8
-    case 0xe3: // JCXZ/JECXZ/JRCXZ rel8
-    case 0x74: // JE/JZ rel8
-    case 0x7f: // JG/JNLE rel8
-    case 0x7d: // JGE/JNL rel8
-    case 0x7c: // JL/JNGE rel8
-    case 0x7e: // JNG/JLE rel8
-    case 0x71: // JNO rel8
-    case 0x7b: // JNP/JPO rel8
-    case 0x79: // JNS rel8
-    case 0x75: // JNE/JNZ rel8
-    case 0x70: // JO rel8
-    case 0x7a: // JP/JPE rel8
-    case 0x78: // JS rel8
-    case 0xeb: // JMP rel8
-    case 0xe9: // JMP rel16/rel32
-      opcode_size = 1;
-      break;
-    default:
-      break;
+  case 0x77: // JA/JNBE rel8
+  case 0x73: // JAE/JNB/JNC rel8
+  case 0x72: // JB/JC/JNAE rel8
+  case 0x76: // JBE/JNA rel8
+  case 0xe3: // JCXZ/JECXZ/JRCXZ rel8
+  case 0x74: // JE/JZ rel8
+  case 0x7f: // JG/JNLE rel8
+  case 0x7d: // JGE/JNL rel8
+  case 0x7c: // JL/JNGE rel8
+  case 0x7e: // JNG/JLE rel8
+  case 0x71: // JNO rel8
+  case 0x7b: // JNP/JPO rel8
+  case 0x79: // JNS rel8
+  case 0x75: // JNE/JNZ rel8
+  case 0x70: // JO rel8
+  case 0x7a: // JP/JPE rel8
+  case 0x78: // JS rel8
+  case 0xeb: // JMP rel8
+  case 0xe9: // JMP rel16/rel32
+    opcode_size = 1;
+    break;
+  default:
+    break;
   }
   if (b1 == 0x0f && opcode_size == 0) {
     uint8_t b2 = m_cur_insn[1];
     switch (b2) {
-      case 0x87: // JA/JNBE rel16/rel32
-      case 0x86: // JBE/JNA rel16/rel32
-      case 0x84: // JE/JZ rel16/rel32
-      case 0x8f: // JG/JNLE rel16/rel32
-      case 0x8d: // JNL/JGE rel16/rel32
-      case 0x8e: // JLE rel16/rel32
-      case 0x82: // JB/JC/JNAE rel16/rel32
-      case 0x83: // JAE/JNB/JNC rel16/rel32
-      case 0x85: // JNE/JNZ rel16/rel32
-      case 0x8c: // JL/JNGE rel16/rel32
-      case 0x81: // JNO rel16/rel32
-      case 0x8b: // JNP/JPO rel16/rel32
-      case 0x89: // JNS rel16/rel32
-      case 0x80: // JO rel16/rel32
-      case 0x8a: // JP rel16/rel32
-      case 0x88: // JS rel16/rel32
-        opcode_size = 2;
-        break;
-      default:
-        break;
+    case 0x87: // JA/JNBE rel16/rel32
+    case 0x86: // JBE/JNA rel16/rel32
+    case 0x84: // JE/JZ rel16/rel32
+    case 0x8f: // JG/JNLE rel16/rel32
+    case 0x8d: // JNL/JGE rel16/rel32
+    case 0x8e: // JLE rel16/rel32
+    case 0x82: // JB/JC/JNAE rel16/rel32
+    case 0x83: // JAE/JNB/JNC rel16/rel32
+    case 0x85: // JNE/JNZ rel16/rel32
+    case 0x8c: // JL/JNGE rel16/rel32
+    case 0x81: // JNO rel16/rel32
+    case 0x8b: // JNP/JPO rel16/rel32
+    case 0x89: // JNS rel16/rel32
+    case 0x80: // JO rel16/rel32
+    case 0x8a: // JP rel16/rel32
+    case 0x88: // JS rel16/rel32
+      opcode_size = 2;
+      break;
+    default:
+      break;
     }
   }
 
@@ -793,13 +792,13 @@ bool x86AssemblyInspectionEngine::pc_rel_branch_or_jump_p (
 
   offset = 0;
   if (instruction_length - opcode_size == 1) {
-    int8_t rel8 = (int8_t) *(m_cur_insn + opcode_size);
+    int8_t rel8 = (int8_t) * (m_cur_insn + opcode_size);
     offset = rel8;
   } else if (instruction_length - opcode_size == 2) {
-    int16_t rel16 = extract_2_signed (m_cur_insn + opcode_size);
+    int16_t rel16 = extract_2_signed(m_cur_insn + opcode_size);
     offset = rel16;
   } else if (instruction_length - opcode_size == 4) {
-    int32_t rel32 = extract_4_signed (m_cur_insn + opcode_size);
+    int32_t rel32 = extract_4_signed(m_cur_insn + opcode_size);
     offset = rel32;
   } else {
     return false;
@@ -811,13 +810,11 @@ bool x86AssemblyInspectionEngine::pc_rel_branch_or_jump_p (
 // a branch/jump within the bounds of this same function.
 // Cannot predict where a jump through a register value ("jmpq *%rax")
 // will go, so it will return false on that instruction.
-bool x86AssemblyInspectionEngine::local_branch_p (
-    const addr_t current_func_text_offset,
-    const AddressRange &func_range,
-    const int instruction_length,
-    addr_t &target_insn_offset) {
+bool x86AssemblyInspectionEngine::local_branch_p(
+    const addr_t current_func_text_offset, const AddressRange &func_range,
+    const int instruction_length, addr_t &target_insn_offset) {
   int offset;
-  if (pc_rel_branch_or_jump_p (instruction_length, offset) && offset != 0) {
+  if (pc_rel_branch_or_jump_p(instruction_length, offset) && offset != 0) {
     addr_t next_pc_value = current_func_text_offset + instruction_length;
     if (offset < 0 && addr_t(-offset) > current_func_text_offset) {
       // Branch target is before the start of this function
@@ -827,7 +824,8 @@ bool x86AssemblyInspectionEngine::local_branch_p (
       // Branch targets outside this function's bounds
       return false;
     }
-    // This instruction branches to target_insn_offset (byte offset into the function)
+    // This instruction branches to target_insn_offset (byte offset into the
+    // function)
     target_insn_offset = next_pc_value + offset;
     return true;
   }
@@ -838,14 +836,14 @@ bool x86AssemblyInspectionEngine::local_branch_p (
 // branch/jump to another function.
 // Cannot predict where a jump through a register value ("jmpq *%rax")
 // will go, so it will return false on that instruction.
-bool x86AssemblyInspectionEngine::non_local_branch_p (
-    const addr_t current_func_text_offset,
-    const AddressRange &func_range,
+bool x86AssemblyInspectionEngine::non_local_branch_p(
+    const addr_t current_func_text_offset, const AddressRange &func_range,
     const int instruction_length) {
   int offset;
   addr_t target_insn_offset;
-  if (pc_rel_branch_or_jump_p (instruction_length, offset)) {
-    return !local_branch_p(current_func_text_offset,func_range,instruction_length,target_insn_offset);
+  if (pc_rel_branch_or_jump_p(instruction_length, offset)) {
+    return !local_branch_p(current_func_text_offset, func_range,
+                           instruction_length, target_insn_offset);
   }
   return false;
 }
@@ -884,12 +882,11 @@ int32_t x86AssemblyInspectionEngine::extract_4_signed(uint8_t *b) {
   return v;
 }
 
+bool x86AssemblyInspectionEngine::instruction_length(
+    uint8_t *insn_p, int &length, uint32_t buffer_remaining_bytes) {
 
-bool x86AssemblyInspectionEngine::instruction_length(uint8_t *insn_p,
-                                                     int &length, 
-                                                     uint32_t buffer_remaining_bytes) {
-
-  uint32_t max_op_byte_size = std::min(buffer_remaining_bytes, m_arch.GetMaximumOpcodeByteSize());
+  uint32_t max_op_byte_size =
+      std::min(buffer_remaining_bytes, m_arch.GetMaximumOpcodeByteSize());
   llvm::SmallVector<uint8_t, 32> opcode_data;
   opcode_data.resize(max_op_byte_size);
 
@@ -980,9 +977,9 @@ bool x86AssemblyInspectionEngine::GetNonCallSiteUnwindPlanFromAssembly(
     bool row_updated = false; // The UnwindPlan::Row 'row' has been updated
 
     m_cur_insn = data + current_func_text_offset;
-    if (!instruction_length(m_cur_insn, insn_len, size - current_func_text_offset)
-        || insn_len == 0 
-        || insn_len > kMaxInstructionByteSize) {
+    if (!instruction_length(m_cur_insn, insn_len,
+                            size - current_func_text_offset) ||
+        insn_len == 0 || insn_len > kMaxInstructionByteSize) {
       // An unrecognized/junk instruction
       break;
     }
@@ -993,32 +990,31 @@ bool x86AssemblyInspectionEngine::GetNonCallSiteUnwindPlanFromAssembly(
 
     if (mov_rsp_rbp_pattern_p()) {
       if (fa_value_ptr->GetRegisterNumber() == m_lldb_sp_regnum) {
-        fa_value_ptr->SetIsRegisterPlusOffset(
-            m_lldb_fp_regnum, fa_value_ptr->GetOffset());
+        fa_value_ptr->SetIsRegisterPlusOffset(m_lldb_fp_regnum,
+                                              fa_value_ptr->GetOffset());
         row_updated = true;
       }
     }
 
     else if (mov_rsp_rbx_pattern_p()) {
       if (fa_value_ptr->GetRegisterNumber() == m_lldb_sp_regnum) {
-        fa_value_ptr->SetIsRegisterPlusOffset(
-            m_lldb_alt_fp_regnum, fa_value_ptr->GetOffset());
+        fa_value_ptr->SetIsRegisterPlusOffset(m_lldb_alt_fp_regnum,
+                                              fa_value_ptr->GetOffset());
         row_updated = true;
       }
     }
 
     else if (and_rsp_pattern_p()) {
       current_sp_bytes_offset_from_fa = 0;
-      afa_value.SetIsRegisterPlusOffset(
-          m_lldb_sp_regnum, current_sp_bytes_offset_from_fa);
+      afa_value.SetIsRegisterPlusOffset(m_lldb_sp_regnum,
+                                        current_sp_bytes_offset_from_fa);
       fa_value_ptr = &afa_value;
       is_aligned = true;
       row_updated = true;
     }
 
     else if (mov_rbp_rsp_pattern_p()) {
-      if (is_aligned && cfa_value.GetRegisterNumber() == m_lldb_fp_regnum)
-      {
+      if (is_aligned && cfa_value.GetRegisterNumber() == m_lldb_fp_regnum) {
         is_aligned = false;
         fa_value_ptr = &cfa_value;
         afa_value.SetUnspecified();
@@ -1029,8 +1025,7 @@ bool x86AssemblyInspectionEngine::GetNonCallSiteUnwindPlanFromAssembly(
     }
 
     else if (mov_rbx_rsp_pattern_p()) {
-      if (is_aligned && cfa_value.GetRegisterNumber() == m_lldb_alt_fp_regnum)
-      {
+      if (is_aligned && cfa_value.GetRegisterNumber() == m_lldb_alt_fp_regnum) {
         is_aligned = false;
         fa_value_ptr = &cfa_value;
         afa_value.SetUnspecified();
@@ -1064,9 +1059,9 @@ bool x86AssemblyInspectionEngine::GetNonCallSiteUnwindPlanFromAssembly(
           !saved_registers[machine_regno]) {
         UnwindPlan::Row::RegisterLocation regloc;
         if (is_aligned)
-            regloc.SetAtAFAPlusOffset(-current_sp_bytes_offset_from_fa);
+          regloc.SetAtAFAPlusOffset(-current_sp_bytes_offset_from_fa);
         else
-            regloc.SetAtCFAPlusOffset(-current_sp_bytes_offset_from_fa);
+          regloc.SetAtCFAPlusOffset(-current_sp_bytes_offset_from_fa);
         row->SetRegisterInfo(lldb_regno, regloc);
         saved_registers[machine_regno] = true;
         row_updated = true;
@@ -1083,8 +1078,8 @@ bool x86AssemblyInspectionEngine::GetNonCallSiteUnwindPlanFromAssembly(
         row->RemoveRegisterInfo(lldb_regno);
 
         if (lldb_regno == fa_value_ptr->GetRegisterNumber()) {
-          fa_value_ptr->SetIsRegisterPlusOffset(
-              m_lldb_sp_regnum, fa_value_ptr->GetOffset());
+          fa_value_ptr->SetIsRegisterPlusOffset(m_lldb_sp_regnum,
+                                                fa_value_ptr->GetOffset());
         }
 
         in_epilogue = true;
@@ -1094,8 +1089,8 @@ bool x86AssemblyInspectionEngine::GetNonCallSiteUnwindPlanFromAssembly(
       // the POP instruction has moved the stack pointer - if the FA is set in
       // terms of the stack pointer, we need to add a new row of instructions.
       if (fa_value_ptr->GetRegisterNumber() == m_lldb_sp_regnum) {
-        fa_value_ptr->SetIsRegisterPlusOffset(
-            m_lldb_sp_regnum, current_sp_bytes_offset_from_fa);
+        fa_value_ptr->SetIsRegisterPlusOffset(m_lldb_sp_regnum,
+                                              current_sp_bytes_offset_from_fa);
         row_updated = true;
       }
     }
@@ -1103,8 +1098,8 @@ bool x86AssemblyInspectionEngine::GetNonCallSiteUnwindPlanFromAssembly(
     else if (pop_misc_reg_p()) {
       current_sp_bytes_offset_from_fa -= m_wordsize;
       if (fa_value_ptr->GetRegisterNumber() == m_lldb_sp_regnum) {
-        fa_value_ptr->SetIsRegisterPlusOffset(
-            m_lldb_sp_regnum, current_sp_bytes_offset_from_fa);
+        fa_value_ptr->SetIsRegisterPlusOffset(m_lldb_sp_regnum,
+                                              current_sp_bytes_offset_from_fa);
         row_updated = true;
       }
     }
@@ -1120,18 +1115,16 @@ bool x86AssemblyInspectionEngine::GetNonCallSiteUnwindPlanFromAssembly(
         row_updated = true;
       }
 
-      if (is_aligned && cfa_value.GetRegisterNumber() == m_lldb_fp_regnum)
-      {
+      if (is_aligned && cfa_value.GetRegisterNumber() == m_lldb_fp_regnum) {
         is_aligned = false;
         fa_value_ptr = &cfa_value;
         afa_value.SetUnspecified();
         row_updated = true;
       }
 
-      if (fa_value_ptr->GetRegisterNumber() == m_lldb_fp_regnum)
-      {
-        fa_value_ptr->SetIsRegisterPlusOffset(
-            m_lldb_sp_regnum, fa_value_ptr->GetOffset());
+      if (fa_value_ptr->GetRegisterNumber() == m_lldb_fp_regnum) {
+        fa_value_ptr->SetIsRegisterPlusOffset(m_lldb_sp_regnum,
+                                              fa_value_ptr->GetOffset());
 
         current_sp_bytes_offset_from_fa = fa_value_ptr->GetOffset();
       }
@@ -1139,8 +1132,8 @@ bool x86AssemblyInspectionEngine::GetNonCallSiteUnwindPlanFromAssembly(
       current_sp_bytes_offset_from_fa -= m_wordsize;
 
       if (fa_value_ptr->GetRegisterNumber() == m_lldb_sp_regnum) {
-        fa_value_ptr->SetIsRegisterPlusOffset(
-            m_lldb_sp_regnum, current_sp_bytes_offset_from_fa);
+        fa_value_ptr->SetIsRegisterPlusOffset(m_lldb_sp_regnum,
+                                              current_sp_bytes_offset_from_fa);
         row_updated = true;
       }
 
@@ -1161,9 +1154,9 @@ bool x86AssemblyInspectionEngine::GetNonCallSiteUnwindPlanFromAssembly(
       // 16.  So we want to say that the value is stored at the FA address -
       // 96.
       if (is_aligned)
-          regloc.SetAtAFAPlusOffset(-(stack_offset + fa_value_ptr->GetOffset()));
+        regloc.SetAtAFAPlusOffset(-(stack_offset + fa_value_ptr->GetOffset()));
       else
-          regloc.SetAtCFAPlusOffset(-(stack_offset + fa_value_ptr->GetOffset()));
+        regloc.SetAtCFAPlusOffset(-(stack_offset + fa_value_ptr->GetOffset()));
 
       row->SetRegisterInfo(lldb_regno, regloc);
 
@@ -1207,8 +1200,7 @@ bool x86AssemblyInspectionEngine::GetNonCallSiteUnwindPlanFromAssembly(
     }
 
     else if (lea_rbp_rsp_pattern_p(stack_offset)) {
-      if (is_aligned &&
-          cfa_value.GetRegisterNumber() == m_lldb_fp_regnum) {
+      if (is_aligned && cfa_value.GetRegisterNumber() == m_lldb_fp_regnum) {
         is_aligned = false;
         fa_value_ptr = &cfa_value;
         afa_value.SetUnspecified();
@@ -1216,34 +1208,35 @@ bool x86AssemblyInspectionEngine::GetNonCallSiteUnwindPlanFromAssembly(
       }
       if (fa_value_ptr->GetRegisterNumber() == m_lldb_fp_regnum) {
         current_sp_bytes_offset_from_fa =
-          fa_value_ptr->GetOffset() - stack_offset;
+            fa_value_ptr->GetOffset() - stack_offset;
       }
     }
 
     else if (lea_rbx_rsp_pattern_p(stack_offset)) {
-      if (is_aligned &&
-          cfa_value.GetRegisterNumber() == m_lldb_alt_fp_regnum) {
+      if (is_aligned && cfa_value.GetRegisterNumber() == m_lldb_alt_fp_regnum) {
         is_aligned = false;
         fa_value_ptr = &cfa_value;
         afa_value.SetUnspecified();
         row_updated = true;
       }
       if (fa_value_ptr->GetRegisterNumber() == m_lldb_alt_fp_regnum) {
-        current_sp_bytes_offset_from_fa = fa_value_ptr->GetOffset() - stack_offset;
+        current_sp_bytes_offset_from_fa =
+            fa_value_ptr->GetOffset() - stack_offset;
       }
     }
 
-    else if (prologue_completed_row.get() && 
+    else if (prologue_completed_row.get() &&
              (ret_pattern_p() ||
-              non_local_branch_p (current_func_text_offset, func_range, insn_len) ||
+              non_local_branch_p(current_func_text_offset, func_range,
+                                 insn_len) ||
               jmp_to_reg_p())) {
       // Check if the current instruction is the end of an epilogue sequence,
       // and if so, re-instate the prologue-completed unwind state.
 
-      // The current instruction is a branch/jump outside this function, 
-      // a ret, or a jump through a register value which we cannot 
-      // determine the effcts of.  Verify that the stack frame state 
-      // has been unwound to the same as it was at function entry to avoid 
+      // The current instruction is a branch/jump outside this function,
+      // a ret, or a jump through a register value which we cannot
+      // determine the effcts of.  Verify that the stack frame state
+      // has been unwound to the same as it was at function entry to avoid
       // mis-identifying a JMP instruction as an epilogue.
       UnwindPlan::Row::RegisterLocation sp, pc;
       if (row->GetRegisterInfo(m_lldb_sp_regnum, sp) &&
@@ -1253,7 +1246,7 @@ bool x86AssemblyInspectionEngine::GetNonCallSiteUnwindPlanFromAssembly(
         // the original unwind state.
         if (ret_pattern_p() ||
             (sp.IsCFAPlusOffset() && sp.GetOffset() == 0 &&
-            pc.IsAtCFAPlusOffset() && pc.GetOffset() == -m_wordsize)) {
+             pc.IsAtCFAPlusOffset() && pc.GetOffset() == -m_wordsize)) {
           // Reinstate the saved prologue setup for any instructions that come
           // after the epilogue
 
@@ -1265,8 +1258,10 @@ bool x86AssemblyInspectionEngine::GetNonCallSiteUnwindPlanFromAssembly(
           is_aligned = prologue_completed_is_aligned;
 
           saved_registers.clear();
-          saved_registers.resize(prologue_completed_saved_registers.size(), false);
-          for (size_t i = 0; i < prologue_completed_saved_registers.size(); ++i) {
+          saved_registers.resize(prologue_completed_saved_registers.size(),
+                                 false);
+          for (size_t i = 0; i < prologue_completed_saved_registers.size();
+               ++i) {
             saved_registers[i] = prologue_completed_saved_registers[i];
           }
 
@@ -1590,9 +1585,8 @@ bool x86AssemblyInspectionEngine::FindFirstNonPrologueInstruction(
     int scratch;
 
     m_cur_insn = data + offset;
-    if (!instruction_length(m_cur_insn, insn_len, size - offset) 
-        || insn_len > kMaxInstructionByteSize 
-        || insn_len == 0) {
+    if (!instruction_length(m_cur_insn, insn_len, size - offset) ||
+        insn_len > kMaxInstructionByteSize || insn_len == 0) {
       // An error parsing the instruction, i.e. probably data/garbage - stop
       // scanning
       break;

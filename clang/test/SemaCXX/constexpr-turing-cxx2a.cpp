@@ -3,7 +3,8 @@
 
 const unsigned halt = (unsigned)-1;
 
-enum Dir { L, R };
+enum Dir { L,
+           R };
 struct Action {
   bool tape;
   Dir dir;
@@ -15,15 +16,27 @@ using State = Action[2];
 struct Tape {
   constexpr Tape() = default;
   constexpr ~Tape() {
-    if (l) { l->r = nullptr; delete l; }
-    if (r) { r->l = nullptr; delete r; }
+    if (l) {
+      l->r = nullptr;
+      delete l;
+    }
+    if (r) {
+      r->l = nullptr;
+      delete r;
+    }
   }
   constexpr Tape *left() {
-    if (!l) { l = new Tape; l->r = this; }
+    if (!l) {
+      l = new Tape;
+      l->r = this;
+    }
     return l;
   }
   constexpr Tape *right() {
-    if (!r) { r = new Tape; r->l = this; }
+    if (!r) {
+      r = new Tape;
+      r->l = this;
+    }
     return r;
   }
   Tape *l = nullptr;
@@ -51,16 +64,15 @@ constexpr unsigned run(const State *tm) {
 
 // 3-state busy beaver. S(bb3) = 21.
 constexpr State bb3[] = {
-  { { true, R, 1 }, { true, R, halt } },
-  { { true, L, 1 }, { false, R, 2 } },
-  { { true, L, 2 }, { true, L, 0 } }
-};
+    {{true, R, 1}, {true, R, halt}},
+    {{true, L, 1}, {false, R, 2}},
+    {{true, L, 2}, {true, L, 0}}};
 static_assert(run(bb3) == 21, "");
 
 // 4-state busy beaver. S(bb4) = 107.
 constexpr State bb4[] = {
-  { { true, R, 1 }, { true, L, 1 } },
-  { { true, L, 0 }, { false, L, 2 } },
-  { { true, R, halt }, { true, L, 3 } },
-  { { true, R, 3 }, { false, R, 0 } } };
+    {{true, R, 1}, {true, L, 1}},
+    {{true, L, 0}, {false, L, 2}},
+    {{true, R, halt}, {true, L, 3}},
+    {{true, R, 3}, {false, R, 0}}};
 static_assert(run(bb4) == 107, "");

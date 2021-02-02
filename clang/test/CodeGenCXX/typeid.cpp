@@ -4,7 +4,9 @@
 namespace Test1 {
 
 // PR7400
-struct A { virtual void f(); };
+struct A {
+  virtual void f();
+};
 
 // CHECK: @_ZN5Test16int_tiE ={{.*}} constant %"class.std::type_info"* bitcast (i8** @_ZTIi to %"class.std::type_info"*), align 8
 const std::type_info &int_ti = typeid(int);
@@ -45,6 +47,6 @@ const char *f() {
   return 0;
 }
 
-}
+} // namespace Test1
 
 // CHECK: attributes [[NR]] = { noreturn }

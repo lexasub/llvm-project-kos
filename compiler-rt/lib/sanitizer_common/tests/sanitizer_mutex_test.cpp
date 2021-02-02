@@ -10,23 +10,20 @@
 //
 //===----------------------------------------------------------------------===//
 #include "sanitizer_common/sanitizer_mutex.h"
-#include "sanitizer_common/sanitizer_common.h"
-
-#include "sanitizer_pthread_wrappers.h"
-
-#include "gtest/gtest.h"
 
 #include <string.h>
 
+#include "gtest/gtest.h"
+#include "sanitizer_common/sanitizer_common.h"
+#include "sanitizer_pthread_wrappers.h"
+
 namespace __sanitizer {
 
-template<typename MutexType>
+template <typename MutexType>
 class TestData {
  public:
-  explicit TestData(MutexType *mtx)
-      : mtx_(mtx) {
-    for (int i = 0; i < kSize; i++)
-      data_[i] = 0;
+  explicit TestData(MutexType *mtx) : mtx_(mtx) {
+    for (int i = 0; i < kSize; i++) data_[i] = 0;
   }
 
   void Write() {
@@ -68,14 +65,14 @@ class TestData {
 
 const int kThreads = 8;
 #if SANITIZER_DEBUG
-const int kIters = 16*1024;
+const int kIters = 16 * 1024;
 #else
-const int kIters = 64*1024;
+const int kIters = 64 * 1024;
 #endif
 
-template<typename MutexType>
+template <typename MutexType>
 static void *lock_thread(void *param) {
-  TestData<MutexType> *data = (TestData<MutexType>*)param;
+  TestData<MutexType> *data = (TestData<MutexType> *)param;
   for (int i = 0; i < kIters; i++) {
     data->Write();
     data->Backoff();
@@ -83,9 +80,9 @@ static void *lock_thread(void *param) {
   return 0;
 }
 
-template<typename MutexType>
+template <typename MutexType>
 static void *try_thread(void *param) {
-  TestData<MutexType> *data = (TestData<MutexType>*)param;
+  TestData<MutexType> *data = (TestData<MutexType> *)param;
   for (int i = 0; i < kIters; i++) {
     data->TryWrite();
     data->Backoff();
@@ -93,7 +90,7 @@ static void *try_thread(void *param) {
   return 0;
 }
 
-template<typename MutexType>
+template <typename MutexType>
 static void check_locked(MutexType *mtx) {
   GenericScopedLock<MutexType> l(mtx);
   mtx->CheckLocked();
@@ -106,8 +103,7 @@ TEST(SanitizerCommon, SpinMutex) {
   pthread_t threads[kThreads];
   for (int i = 0; i < kThreads; i++)
     PTHREAD_CREATE(&threads[i], 0, lock_thread<SpinMutex>, &data);
-  for (int i = 0; i < kThreads; i++)
-    PTHREAD_JOIN(threads[i], 0);
+  for (int i = 0; i < kThreads; i++) PTHREAD_JOIN(threads[i], 0);
 }
 
 TEST(SanitizerCommon, SpinMutexTry) {
@@ -117,19 +113,17 @@ TEST(SanitizerCommon, SpinMutexTry) {
   pthread_t threads[kThreads];
   for (int i = 0; i < kThreads; i++)
     PTHREAD_CREATE(&threads[i], 0, try_thread<SpinMutex>, &data);
-  for (int i = 0; i < kThreads; i++)
-    PTHREAD_JOIN(threads[i], 0);
+  for (int i = 0; i < kThreads; i++) PTHREAD_JOIN(threads[i], 0);
 }
 
 TEST(SanitizerCommon, BlockingMutex) {
   u64 mtxmem[1024] = {};
-  BlockingMutex *mtx = new(mtxmem) BlockingMutex(LINKER_INITIALIZED);
+  BlockingMutex *mtx = new (mtxmem) BlockingMutex(LINKER_INITIALIZED);
   TestData<BlockingMutex> data(mtx);
   pthread_t threads[kThreads];
   for (int i = 0; i < kThreads; i++)
     PTHREAD_CREATE(&threads[i], 0, lock_thread<BlockingMutex>, &data);
-  for (int i = 0; i < kThreads; i++)
-    PTHREAD_JOIN(threads[i], 0);
+  for (int i = 0; i < kThreads; i++) PTHREAD_JOIN(threads[i], 0);
   check_locked(mtx);
 }
 

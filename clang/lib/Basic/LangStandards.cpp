@@ -19,8 +19,9 @@ const LangStandard &LangStandard::getLangStandardForKind(Kind K) {
   switch (K) {
   case lang_unspecified:
     llvm::report_fatal_error("getLangStandardForKind() on unspecified kind");
-#define LANGSTANDARD(id, name, lang, desc, features) \
-    case lang_##id: return Lang_##id;
+#define LANGSTANDARD(id, name, lang, desc, features)                           \
+  case lang_##id:                                                              \
+    return Lang_##id;
 #include "clang/Basic/LangStandards.def"
   }
   llvm_unreachable("Invalid language kind!");
@@ -41,5 +42,3 @@ const LangStandard *LangStandard::getLangStandardForName(StringRef Name) {
 
   return &getLangStandardForKind(K);
 }
-
-

@@ -16,61 +16,56 @@
 
 namespace llvm {
 
-  // Relocation model types.
-  namespace Reloc {
-    // Cannot be named PIC due to collision with -DPIC
-    enum Model { Static, PIC_, DynamicNoPIC, ROPI, RWPI, ROPI_RWPI };
-  }
+// Relocation model types.
+namespace Reloc {
+// Cannot be named PIC due to collision with -DPIC
+enum Model { Static, PIC_, DynamicNoPIC, ROPI, RWPI, ROPI_RWPI };
+} // namespace Reloc
 
-  // Code model types.
-  namespace CodeModel {
-    // Sync changes with CodeGenCWrappers.h.
-    enum Model { Tiny, Small, Kernel, Medium, Large };
-  }
+// Code model types.
+namespace CodeModel {
+// Sync changes with CodeGenCWrappers.h.
+enum Model { Tiny, Small, Kernel, Medium, Large };
+} // namespace CodeModel
 
-  namespace PICLevel {
-    // This is used to map -fpic/-fPIC.
-    enum Level { NotPIC=0, SmallPIC=1, BigPIC=2 };
-  }
+namespace PICLevel {
+// This is used to map -fpic/-fPIC.
+enum Level { NotPIC = 0, SmallPIC = 1, BigPIC = 2 };
+} // namespace PICLevel
 
-  namespace PIELevel {
-    enum Level { Default=0, Small=1, Large=2 };
-  }
+namespace PIELevel {
+enum Level { Default = 0, Small = 1, Large = 2 };
+}
 
-  // TLS models.
-  namespace TLSModel {
-    enum Model {
-      GeneralDynamic,
-      LocalDynamic,
-      InitialExec,
-      LocalExec
-    };
-  }
+// TLS models.
+namespace TLSModel {
+enum Model { GeneralDynamic, LocalDynamic, InitialExec, LocalExec };
+}
 
-  // Code generation optimization level.
-  namespace CodeGenOpt {
-    enum Level {
-      None = 0,      // -O0
-      Less = 1,      // -O1
-      Default = 2,   // -O2, -Os
-      Aggressive = 3 // -O3
-    };
-  }
+// Code generation optimization level.
+namespace CodeGenOpt {
+enum Level {
+  None = 0,      // -O0
+  Less = 1,      // -O1
+  Default = 2,   // -O2, -Os
+  Aggressive = 3 // -O3
+};
+}
 
-  /// These enums are meant to be passed into addPassesToEmitFile to indicate
-  /// what type of file to emit, and returned by it to indicate what type of
-  /// file could actually be made.
-  enum CodeGenFileType {
-    CGFT_AssemblyFile,
-    CGFT_ObjectFile,
-    CGFT_Null         // Do not emit any output.
-  };
+/// These enums are meant to be passed into addPassesToEmitFile to indicate
+/// what type of file to emit, and returned by it to indicate what type of
+/// file could actually be made.
+enum CodeGenFileType {
+  CGFT_AssemblyFile,
+  CGFT_ObjectFile,
+  CGFT_Null // Do not emit any output.
+};
 
-  // Specify effect of frame pointer elimination optimization.
-  namespace FramePointer {
-    enum FP {All, NonLeaf, None};
-  }
+// Specify effect of frame pointer elimination optimization.
+namespace FramePointer {
+enum FP { All, NonLeaf, None };
+}
 
-}  // end llvm namespace
+} // namespace llvm
 
 #endif

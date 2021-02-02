@@ -192,7 +192,7 @@ size_t EmulationStateARM::WritePseudoMemory(
 
   if (length <= 4) {
     uint32_t value;
-    memcpy (&value, dst, sizeof (uint32_t));
+    memcpy(&value, dst, sizeof(uint32_t));
     if (endian::InlHostByteOrder() == lldb::eByteOrderBig)
       value = llvm::ByteSwap_32(value);
 
@@ -201,7 +201,7 @@ size_t EmulationStateARM::WritePseudoMemory(
   } else if (length == 8) {
     uint32_t value1;
     uint32_t value2;
-    memcpy (&value1, dst, sizeof (uint32_t));
+    memcpy(&value1, dst, sizeof(uint32_t));
     memcpy(&value2, static_cast<const uint8_t *>(dst) + sizeof(uint32_t),
            sizeof(uint32_t));
     if (endian::InlHostByteOrder() == lldb::eByteOrderBig) {

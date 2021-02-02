@@ -1,8 +1,8 @@
 // RUN: %clang_cc1 -fsyntax-only -std=c++11 -code-completion-at=%s:12:9 %s -o - | FileCheck %s
 
 // PR14381: need constexpr function bodies always, even if code-completing.
-template<int> struct S;
-template<> struct S<1> {
+template <int> struct S;
+template <> struct S<1> {
   typedef int type;
 };
 constexpr int f() {
@@ -10,4 +10,4 @@ constexpr int f() {
 }
 
 S<f()>::
-// CHECK: COMPLETION: type : type
+    // CHECK: COMPLETION: type : type

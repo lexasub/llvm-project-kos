@@ -7,7 +7,7 @@
 //===----------------------------------------------------------------------===//
 //
 // Note: This file is used on Darwin by debugserver, so it needs to remain as
-//       self contained as possible, and devoid of references to LLVM unless 
+//       self contained as possible, and devoid of references to LLVM unless
 //       there is compelling reason.
 //
 //===----------------------------------------------------------------------===//
@@ -174,8 +174,8 @@ bool SocketAddress::SetPort(uint16_t port) {
 }
 
 // SocketAddress assignment operator
-const SocketAddress &SocketAddress::
-operator=(const struct addrinfo *addr_info) {
+const SocketAddress &
+SocketAddress::operator=(const struct addrinfo *addr_info) {
   Clear();
   if (addr_info && addr_info->ai_addr && addr_info->ai_addrlen > 0 &&
       size_t(addr_info->ai_addrlen) <= sizeof m_socket_addr) {
@@ -199,8 +199,8 @@ const SocketAddress &SocketAddress::operator=(const struct sockaddr_in6 &s) {
   return *this;
 }
 
-const SocketAddress &SocketAddress::
-operator=(const struct sockaddr_storage &s) {
+const SocketAddress &
+SocketAddress::operator=(const struct sockaddr_storage &s) {
   m_socket_addr.sa_storage = s;
   return *this;
 }

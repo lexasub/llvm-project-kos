@@ -116,21 +116,21 @@ public:
   static lldb::BreakpointPreconditionSP
   GetExceptionPrecondition(lldb::LanguageType language, bool throw_bp);
 
-  virtual lldb::ValueObjectSP GetExceptionObjectForThread(
-      lldb::ThreadSP thread_sp) {
+  virtual lldb::ValueObjectSP
+  GetExceptionObjectForThread(lldb::ThreadSP thread_sp) {
     return lldb::ValueObjectSP();
   }
 
-  virtual lldb::ThreadSP GetBacktraceThreadFromException(
-      lldb::ValueObjectSP thread_sp) {
+  virtual lldb::ThreadSP
+  GetBacktraceThreadFromException(lldb::ValueObjectSP thread_sp) {
     return lldb::ThreadSP();
   }
 
   virtual DeclVendor *GetDeclVendor() { return nullptr; }
 
   virtual lldb::BreakpointResolverSP
-  CreateExceptionResolver(const lldb::BreakpointSP &bkpt,
-                          bool catch_bp, bool throw_bp) = 0;
+  CreateExceptionResolver(const lldb::BreakpointSP &bkpt, bool catch_bp,
+                          bool throw_bp) = 0;
 
   virtual lldb::SearchFilterSP CreateExceptionSearchFilter() {
     return m_process->GetTarget().GetSearchFilterForModule(nullptr);

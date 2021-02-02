@@ -28,7 +28,7 @@ std::string getAArch64TargetCPU(const llvm::opt::ArgList &Args,
                                 const llvm::Triple &Triple, llvm::opt::Arg *&A);
 
 } // end namespace aarch64
-} // end namespace target
+} // namespace tools
 } // end namespace driver
 } // end namespace clang
 

@@ -68,9 +68,7 @@ public:
   void fillValidCPUList(SmallVectorImpl<StringRef> &Values) const override;
   bool setCPU(const std::string &Name) override;
 
-  bool useFP16ConversionIntrinsics() const override {
-    return false;
-  }
+  bool useFP16ConversionIntrinsics() const override { return false; }
 
   void getTargetDefinesARMV81A(const LangOptions &Opts,
                                MacroBuilder &Builder) const;
@@ -143,7 +141,8 @@ public:
   AArch64leTargetInfo(const llvm::Triple &Triple, const TargetOptions &Opts);
 
   void getTargetDefines(const LangOptions &Opts,
-                            MacroBuilder &Builder) const override;
+                        MacroBuilder &Builder) const override;
+
 private:
   void setDataLayout() override;
 };
@@ -153,8 +152,7 @@ class LLVM_LIBRARY_VISIBILITY WindowsARM64TargetInfo
   const llvm::Triple Triple;
 
 public:
-  WindowsARM64TargetInfo(const llvm::Triple &Triple,
-                         const TargetOptions &Opts);
+  WindowsARM64TargetInfo(const llvm::Triple &Triple, const TargetOptions &Opts);
 
   void setDataLayout() override;
 
@@ -198,11 +196,12 @@ private:
 class LLVM_LIBRARY_VISIBILITY DarwinAArch64TargetInfo
     : public DarwinTargetInfo<AArch64leTargetInfo> {
 public:
-  DarwinAArch64TargetInfo(const llvm::Triple &Triple, const TargetOptions &Opts);
+  DarwinAArch64TargetInfo(const llvm::Triple &Triple,
+                          const TargetOptions &Opts);
 
   BuiltinVaListKind getBuiltinVaListKind() const override;
 
- protected:
+protected:
   void getOSDefines(const LangOptions &Opts, const llvm::Triple &Triple,
                     MacroBuilder &Builder) const override;
 };

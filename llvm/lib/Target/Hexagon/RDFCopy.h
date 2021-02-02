@@ -9,10 +9,10 @@
 #ifndef LLVM_LIB_TARGET_HEXAGON_RDFCOPY_H
 #define LLVM_LIB_TARGET_HEXAGON_RDFCOPY_H
 
+#include "llvm/CodeGen/MachineFunction.h"
 #include "llvm/CodeGen/RDFGraph.h"
 #include "llvm/CodeGen/RDFLiveness.h"
 #include "llvm/CodeGen/RDFRegisters.h"
-#include "llvm/CodeGen/MachineFunction.h"
 #include <map>
 #include <vector>
 
@@ -24,35 +24,35 @@ class MachineInstr;
 
 namespace rdf {
 
-  struct CopyPropagation {
-    CopyPropagation(DataFlowGraph &dfg) : MDT(dfg.getDT()), DFG(dfg),
-        L(dfg.getMF().getRegInfo(), dfg) {}
+struct CopyPropagation {
+  CopyPropagation(DataFlowGraph &dfg)
+      : MDT(dfg.getDT()), DFG(dfg), L(dfg.getMF().getRegInfo(), dfg) {}
 
-    virtual ~CopyPropagation() = default;
+  virtual ~CopyPropagation() = default;
 
-    bool run();
-    void trace(bool On) { Trace = On; }
-    bool trace() const { return Trace; }
-    DataFlowGraph &getDFG() { return DFG; }
+  bool run();
+  void trace(bool On) { Trace = On; }
+  bool trace() const { return Trace; }
+  DataFlowGraph &getDFG() { return DFG; }
 
-    using EqualityMap = std::map<RegisterRef, RegisterRef>;
+  using EqualityMap = std::map<RegisterRef, RegisterRef>;
 
-    virtual bool interpretAsCopy(const MachineInstr *MI, EqualityMap &EM);
+  virtual bool interpretAsCopy(const MachineInstr *MI, EqualityMap &EM);
 
-  private:
-    const MachineDominatorTree &MDT;
-    DataFlowGraph &DFG;
-    Liveness L;
-    bool Trace = false;
+private:
+  const MachineDominatorTree &MDT;
+  DataFlowGraph &DFG;
+  Liveness L;
+  bool Trace = false;
 
-    // map: statement -> (map: dst reg -> src reg)
-    std::map<NodeId, EqualityMap> CopyMap;
-    std::vector<NodeId> Copies;
+  // map: statement -> (map: dst reg -> src reg)
+  std::map<NodeId, EqualityMap> CopyMap;
+  std::vector<NodeId> Copies;
 
-    void recordCopy(NodeAddr<StmtNode*> SA, EqualityMap &EM);
-    bool scanBlock(MachineBasicBlock *B);
-    NodeId getLocalReachingDef(RegisterRef RefRR, NodeAddr<InstrNode*> IA);
-  };
+  void recordCopy(NodeAddr<StmtNode *> SA, EqualityMap &EM);
+  bool scanBlock(MachineBasicBlock *B);
+  NodeId getLocalReachingDef(RegisterRef RefRR, NodeAddr<InstrNode *> IA);
+};
 
 } // end namespace rdf
 

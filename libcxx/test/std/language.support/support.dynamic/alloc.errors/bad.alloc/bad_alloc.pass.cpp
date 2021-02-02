@@ -14,17 +14,16 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    static_assert((std::is_base_of<std::exception, std::bad_alloc>::value),
-                 "std::is_base_of<std::exception, std::bad_alloc>::value");
-    static_assert(std::is_polymorphic<std::bad_alloc>::value,
-                 "std::is_polymorphic<std::bad_alloc>::value");
-    std::bad_alloc b;
-    std::bad_alloc b2 = b;
-    b2 = b;
-    const char* w = b2.what();
-    assert(w);
+int main(int, char**) {
+  static_assert((std::is_base_of<std::exception, std::bad_alloc>::value),
+                "std::is_base_of<std::exception, std::bad_alloc>::value");
+  static_assert(std::is_polymorphic<std::bad_alloc>::value,
+                "std::is_polymorphic<std::bad_alloc>::value");
+  std::bad_alloc b;
+  std::bad_alloc b2 = b;
+  b2 = b;
+  const char* w = b2.what();
+  assert(w);
 
   return 0;
 }

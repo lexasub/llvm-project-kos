@@ -135,7 +135,7 @@ TEST_F(MainLoopTest, UnmonitoredSignal) {
   MainLoop loop;
   Status error;
   struct sigaction sa;
-  sa.sa_sigaction = [](int, siginfo_t *, void *) { };
+  sa.sa_sigaction = [](int, siginfo_t *, void *) {};
   sa.sa_flags = SA_SIGINFO; // important: no SA_RESTART
   sigemptyset(&sa.sa_mask);
   ASSERT_EQ(0, sigaction(SIGUSR2, &sa, nullptr));

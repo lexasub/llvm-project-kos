@@ -111,9 +111,9 @@ struct PdbObject {
 
   BumpPtrAllocator &Allocator;
 };
-}
-}
-}
+} // namespace yaml
+} // namespace pdb
+} // namespace llvm
 
 LLVM_YAML_DECLARE_MAPPING_TRAITS(pdb::yaml::PdbObject)
 LLVM_YAML_DECLARE_MAPPING_TRAITS(pdb::yaml::MSFHeaders)

@@ -75,6 +75,6 @@ public:
   ARMAttributeParser()
       : ELFAttributeParser(ARMBuildAttrs::ARMAttributeTags, "aeabi") {}
 };
-}
+} // namespace llvm
 
 #endif

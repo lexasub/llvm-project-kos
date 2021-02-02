@@ -20,41 +20,40 @@
 #include "test_macros.h"
 #include "count_new.h"
 
-struct B
-{
-    static int count;
+struct B {
+  static int count;
 
-    B() {++count;}
-    B(const B&) {++count;}
-    virtual ~B() {--count;}
+  B() { ++count; }
+  B(const B&) { ++count; }
+  virtual ~B() { --count; }
 };
 
 int B::count = 0;
 
-struct A
-    : public B
-{
-    static int count;
+struct A : public B {
+  static int count;
 
-    A() {++count;}
-    A(const A& other) : B(other) {++count;}
-    ~A() {--count;}
+  A() { ++count; }
+  A(const A& other) : B(other) { ++count; }
+  ~A() { --count; }
 };
 
 int A::count = 0;
 
-void fn ( const std::shared_ptr<int> &) {}
-void fn ( const std::shared_ptr<B> &) { assert (false); }
+void fn(const std::shared_ptr<int>&) {}
+void fn(const std::shared_ptr<B>&) { assert(false); }
 
 template <typename T>
-void assert_deleter ( T * ) { assert(false); }
+void assert_deleter(T*) {
+  assert(false);
+}
 
 namespace adl {
 struct D {
-    void operator()(int *) const {}
+  void operator()(int*) const {}
 };
 void ref(D);
-}
+} // namespace adl
 
 template <class T>
 struct StatefulDeleter {
@@ -69,71 +68,68 @@ struct StatefulDeleter {
   }
 };
 
-int main(int, char**)
-{
-    {
-        std::unique_ptr<A> ptr(new A);
-        A* raw_ptr = ptr.get();
-        std::shared_ptr<B> p(std::move(ptr));
-        assert(A::count == 1);
-        assert(B::count == 1);
-        assert(p.use_count() == 1);
-        assert(p.get() == raw_ptr);
-        assert(ptr.get() == 0);
-    }
+int main(int, char**) {
+  {
+    std::unique_ptr<A> ptr(new A);
+    A* raw_ptr = ptr.get();
+    std::shared_ptr<B> p(std::move(ptr));
+    assert(A::count == 1);
+    assert(B::count == 1);
+    assert(p.use_count() == 1);
+    assert(p.get() == raw_ptr);
+    assert(ptr.get() == 0);
+  }
 #ifndef TEST_HAS_NO_EXCEPTIONS
-    assert(A::count == 0);
-    {
-        std::unique_ptr<A> ptr(new A);
-        A* raw_ptr = ptr.get();
-        globalMemCounter.throw_after = 0;
-        try
-        {
-            std::shared_ptr<B> p(std::move(ptr));
-            assert(false);
-        }
-        catch (...)
-        {
-            assert(A::count == 1);
-            assert(B::count == 1);
-            assert(ptr.get() == raw_ptr);
-        }
+  assert(A::count == 0);
+  {
+    std::unique_ptr<A> ptr(new A);
+    A* raw_ptr = ptr.get();
+    globalMemCounter.throw_after = 0;
+    try {
+      std::shared_ptr<B> p(std::move(ptr));
+      assert(false);
+    } catch (...) {
+      assert(A::count == 1);
+      assert(B::count == 1);
+      assert(ptr.get() == raw_ptr);
     }
+  }
 #endif
 
 #if TEST_STD_VER > 14
-    {
-      std::unique_ptr<int> ptr;
-      std::shared_ptr<int> p(std::move(ptr));
-      assert(p.get() == 0);
-      assert(p.use_count() == 0);
-    }
+  {
+    std::unique_ptr<int> ptr;
+    std::shared_ptr<int> p(std::move(ptr));
+    assert(p.get() == 0);
+    assert(p.use_count() == 0);
+  }
 #endif
 
-    {
-      StatefulDeleter<A> d;
-      std::unique_ptr<A, StatefulDeleter<A>&> u(new A, d);
-      std::shared_ptr<A> p(std::move(u));
-      d.state = 42;
-      assert(A::count == 1);
-    }
-    assert(A::count == 0);
+  {
+    StatefulDeleter<A> d;
+    std::unique_ptr<A, StatefulDeleter<A>&> u(new A, d);
+    std::shared_ptr<A> p(std::move(u));
+    d.state = 42;
+    assert(A::count == 1);
+  }
+  assert(A::count == 0);
 
-    { // LWG 2399
-        fn(std::unique_ptr<int>(new int));
-    }
+  { // LWG 2399
+    fn(std::unique_ptr<int>(new int));
+  }
 #if TEST_STD_VER >= 14
-    { // LWG 2415
-        std::unique_ptr<int, void (*)(int*)> p(nullptr, assert_deleter<int>);
-        std::shared_ptr<int> p2(std::move(p)); // should not call deleter when going out of scope
-    }
+  { // LWG 2415
+    std::unique_ptr<int, void (*)(int*)> p(nullptr, assert_deleter<int>);
+    std::shared_ptr<int> p2(
+        std::move(p)); // should not call deleter when going out of scope
+  }
 #endif
 
-    {
+  {
     adl::D d;
     std::unique_ptr<int, adl::D&> u(nullptr, d);
     std::shared_ptr<int> s = std::move(u);
-    }
+  }
 
   return 0;
 }

@@ -1,1 +1,4 @@
-struct X { X(); virtual ~X(); };
+struct X {
+  X();
+  virtual ~X();
+};

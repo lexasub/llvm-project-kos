@@ -674,9 +674,9 @@ Status Scalar::SetValueFromCString(const char *value_str, Encoding encoding,
     // FIXME: It's not possible to unambiguously map a byte size to a floating
     // point type. This function should be refactored to take an explicit
     // semantics argument.
-    const llvm::fltSemantics &sem =
-        byte_size <= 4 ? APFloat::IEEEsingle()
-                       : byte_size <= 8 ? APFloat::IEEEdouble()
+    const llvm::fltSemantics &sem = byte_size <= 4 ? APFloat::IEEEsingle()
+                                    : byte_size <= 8
+                                        ? APFloat::IEEEdouble()
                                         : APFloat::x87DoubleExtended();
     APFloat f(sem);
     if (llvm::Expected<APFloat::opStatus> op =
@@ -891,7 +891,8 @@ bool Scalar::SetBit(uint32_t bit) {
   return false;
 }
 
-llvm::raw_ostream &lldb_private::operator<<(llvm::raw_ostream &os, const Scalar &scalar) {
+llvm::raw_ostream &lldb_private::operator<<(llvm::raw_ostream &os,
+                                            const Scalar &scalar) {
   StreamString s;
   scalar.GetValue(&s, /*show_type*/ true);
   return os << s.GetString();

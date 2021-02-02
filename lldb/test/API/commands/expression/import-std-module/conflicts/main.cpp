@@ -1,6 +1,6 @@
+#include <cmath>
 #include <cstdlib>
 #include <utility>
-#include <cmath>
 
 int main(int argc, char **argv) {
   std::size_t f = argc;

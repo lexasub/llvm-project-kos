@@ -15,4 +15,3 @@ test block_1
 // C-NOT: test block_2
 test block_2
 #endif
-

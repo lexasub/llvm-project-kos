@@ -55,18 +55,16 @@ cl::opt<bool> RunPartialInlining("enable-partial-inlining", cl::init(false),
                                  cl::Hidden, cl::ZeroOrMore,
                                  cl::desc("Run Partial inlinining pass"));
 
-static cl::opt<bool>
-UseGVNAfterVectorization("use-gvn-after-vectorization",
-  cl::init(false), cl::Hidden,
-  cl::desc("Run GVN instead of Early CSE after vectorization passes"));
+static cl::opt<bool> UseGVNAfterVectorization(
+    "use-gvn-after-vectorization", cl::init(false), cl::Hidden,
+    cl::desc("Run GVN instead of Early CSE after vectorization passes"));
 
 cl::opt<bool> ExtraVectorizerPasses(
     "extra-vectorizer-passes", cl::init(false), cl::Hidden,
     cl::desc("Run cleanup optimization passes after vectorization."));
 
-static cl::opt<bool>
-RunLoopRerolling("reroll-loops", cl::Hidden,
-                 cl::desc("Run the loop rerolling pass"));
+static cl::opt<bool> RunLoopRerolling("reroll-loops", cl::Hidden,
+                                      cl::desc("Run the loop rerolling pass"));
 
 cl::opt<bool> RunNewGVN("enable-newgvn", cl::init(false), cl::Hidden,
                         cl::desc("Run the NewGVN pass"));
@@ -105,10 +103,11 @@ static cl::opt<bool>
                          cl::desc("Enable performing ThinLTO."));
 
 cl::opt<bool> EnableHotColdSplit("hot-cold-split", cl::init(false),
-    cl::ZeroOrMore, cl::desc("Enable hot-cold splitting pass"));
+                                 cl::ZeroOrMore,
+                                 cl::desc("Enable hot-cold splitting pass"));
 
 cl::opt<bool> EnableIROutliner("ir-outliner", cl::init(false), cl::Hidden,
-    cl::desc("Enable ir outliner pass"));
+                               cl::desc("Enable ir outliner pass"));
 
 static cl::opt<bool> UseLoopVersioningLICM(
     "enable-loop-versioning-licm", cl::init(false), cl::Hidden,
@@ -156,9 +155,9 @@ cl::opt<bool> EnableOrderFileInstrumentation(
     "enable-order-file-instrumentation", cl::init(false), cl::Hidden,
     cl::desc("Enable order file instrumentation (default = off)"));
 
-cl::opt<bool> EnableMatrix(
-    "enable-matrix", cl::init(false), cl::Hidden,
-    cl::desc("Enable lowering of the matrix intrinsics"));
+cl::opt<bool>
+    EnableMatrix("enable-matrix", cl::init(false), cl::Hidden,
+                 cl::desc("Enable lowering of the matrix intrinsics"));
 
 cl::opt<bool> EnableConstraintElimination(
     "enable-constraint-elimination", cl::init(false), cl::Hidden,
@@ -180,34 +179,34 @@ cl::opt<AttributorRunOption> AttributorRun(
 extern cl::opt<bool> EnableKnowledgeRetention;
 
 PassManagerBuilder::PassManagerBuilder() {
-    OptLevel = 2;
-    SizeLevel = 0;
-    LibraryInfo = nullptr;
-    Inliner = nullptr;
-    DisableUnrollLoops = false;
-    SLPVectorize = false;
-    LoopVectorize = true;
-    LoopsInterleaved = true;
-    RerollLoops = RunLoopRerolling;
-    NewGVN = RunNewGVN;
-    LicmMssaOptCap = SetLicmMssaOptCap;
-    LicmMssaNoAccForPromotionCap = SetLicmMssaNoAccForPromotionCap;
-    DisableGVNLoadPRE = false;
-    ForgetAllSCEVInLoopUnroll = ForgetSCEVInLoopUnroll;
-    VerifyInput = false;
-    VerifyOutput = false;
-    MergeFunctions = false;
-    PrepareForLTO = false;
-    EnablePGOInstrGen = false;
-    EnablePGOCSInstrGen = false;
-    EnablePGOCSInstrUse = false;
-    PGOInstrGen = "";
-    PGOInstrUse = "";
-    PGOSampleUse = "";
-    PrepareForThinLTO = EnablePrepareForThinLTO;
-    PerformThinLTO = EnablePerformThinLTO;
-    DivergentTarget = false;
-    CallGraphProfile = true;
+  OptLevel = 2;
+  SizeLevel = 0;
+  LibraryInfo = nullptr;
+  Inliner = nullptr;
+  DisableUnrollLoops = false;
+  SLPVectorize = false;
+  LoopVectorize = true;
+  LoopsInterleaved = true;
+  RerollLoops = RunLoopRerolling;
+  NewGVN = RunNewGVN;
+  LicmMssaOptCap = SetLicmMssaOptCap;
+  LicmMssaNoAccForPromotionCap = SetLicmMssaNoAccForPromotionCap;
+  DisableGVNLoadPRE = false;
+  ForgetAllSCEVInLoopUnroll = ForgetSCEVInLoopUnroll;
+  VerifyInput = false;
+  VerifyOutput = false;
+  MergeFunctions = false;
+  PrepareForLTO = false;
+  EnablePGOInstrGen = false;
+  EnablePGOCSInstrGen = false;
+  EnablePGOCSInstrUse = false;
+  PGOInstrGen = "";
+  PGOInstrUse = "";
+  PGOSampleUse = "";
+  PrepareForThinLTO = EnablePrepareForThinLTO;
+  PerformThinLTO = EnablePerformThinLTO;
+  DivergentTarget = false;
+  CallGraphProfile = true;
 }
 
 PassManagerBuilder::~PassManagerBuilder() {
@@ -313,7 +312,8 @@ void PassManagerBuilder::populateFunctionPassManager(
   if (EnableMatrix && OptLevel == 0)
     FPM.add(createLowerMatrixIntrinsicsMinimalPass());
 
-  if (OptLevel == 0) return;
+  if (OptLevel == 0)
+    return;
 
   addInitialAliasAnalysisPasses(FPM);
 
@@ -380,9 +380,11 @@ void PassManagerBuilder::addFunctionSimplificationPasses(
     legacy::PassManagerBase &MPM) {
   // Start of function pass.
   // Break up aggregate allocas, using SSAUpdater.
-  assert(OptLevel >= 1 && "Calling function optimizer with no optimization level!");
+  assert(OptLevel >= 1 &&
+         "Calling function optimizer with no optimization level!");
   MPM.add(createSROAPass());
-  MPM.add(createEarlyCSEPass(true /* Enable mem-ssa. */)); // Catch trivial redundancies
+  MPM.add(createEarlyCSEPass(
+      true /* Enable mem-ssa. */)); // Catch trivial redundancies
   if (EnableKnowledgeRetention)
     MPM.add(createAssumeSimplifyPass());
 
@@ -399,13 +401,14 @@ void PassManagerBuilder::addFunctionSimplificationPasses(
     MPM.add(createConstraintEliminationPass());
 
   if (OptLevel > 1) {
-    // Speculative execution if the target has divergent branches; otherwise nop.
+    // Speculative execution if the target has divergent branches; otherwise
+    // nop.
     MPM.add(createSpeculativeExecutionIfHasBranchDivergencePass());
 
-    MPM.add(createJumpThreadingPass());         // Thread jumps.
+    MPM.add(createJumpThreadingPass());              // Thread jumps.
     MPM.add(createCorrelatedValuePropagationPass()); // Propagate conditionals
   }
-  MPM.add(createCFGSimplificationPass());     // Merge & remove BBs
+  MPM.add(createCFGSimplificationPass()); // Merge & remove BBs
   // Combine silly seq's
   if (OptLevel > 2)
     MPM.add(createAggressiveInstCombinerPass());
@@ -421,7 +424,7 @@ void PassManagerBuilder::addFunctionSimplificationPasses(
   // TODO: Investigate the cost/benefit of tail call elimination on debugging.
   if (OptLevel > 1)
     MPM.add(createTailCallEliminationPass()); // Eliminate tail calls
-  MPM.add(createCFGSimplificationPass());      // Merge & remove BBs
+  MPM.add(createCFGSimplificationPass());     // Merge & remove BBs
   MPM.add(createReassociatePass());           // Reassociate expressions
 
   // Begin the loop pass pipeline.
@@ -450,10 +453,10 @@ void PassManagerBuilder::addFunctionSimplificationPasses(
     MPM.add(createLoopFlattenPass()); // Flatten loops
     MPM.add(createLoopSimplifyCFGPass());
   }
-  MPM.add(createLoopIdiomPass());             // Recognize idioms like memset.
-  MPM.add(createIndVarSimplifyPass());        // Canonicalize indvars
+  MPM.add(createLoopIdiomPass());      // Recognize idioms like memset.
+  MPM.add(createIndVarSimplifyPass()); // Canonicalize indvars
   addExtensionsToPM(EP_LateLoopOptimizations, MPM);
-  MPM.add(createLoopDeletionPass());          // Delete dead loops
+  MPM.add(createLoopDeletionPass()); // Delete dead loops
 
   if (EnableLoopInterchange)
     MPM.add(createLoopInterchangePass()); // Interchange loops
@@ -472,8 +475,8 @@ void PassManagerBuilder::addFunctionSimplificationPasses(
     MPM.add(NewGVN ? createNewGVNPass()
                    : createGVNPass(DisableGVNLoadPRE)); // Remove redundancies
   }
-  MPM.add(createMemCpyOptPass());             // Remove memcpy / form memset
-  MPM.add(createSCCPPass());                  // Constant prop with SCCP
+  MPM.add(createMemCpyOptPass()); // Remove memcpy / form memset
+  MPM.add(createSCCPPass());      // Constant prop with SCCP
 
   if (EnableConstraintElimination)
     MPM.add(createConstraintEliminationPass());
@@ -481,21 +484,21 @@ void PassManagerBuilder::addFunctionSimplificationPasses(
   // Delete dead bit computations (instcombine runs after to fold away the dead
   // computations, and then ADCE will run later to exploit any new DCE
   // opportunities that creates).
-  MPM.add(createBitTrackingDCEPass());        // Delete dead bit computations
+  MPM.add(createBitTrackingDCEPass()); // Delete dead bit computations
 
   // Run instcombine after redundancy elimination to exploit opportunities
   // opened up by them.
   MPM.add(createInstructionCombiningPass());
   addExtensionsToPM(EP_Peephole, MPM);
   if (OptLevel > 1) {
-    MPM.add(createJumpThreadingPass());         // Thread jumps
+    MPM.add(createJumpThreadingPass()); // Thread jumps
     MPM.add(createCorrelatedValuePropagationPass());
   }
   MPM.add(createAggressiveDCEPass()); // Delete dead instructions
 
   // TODO: Investigate if this is too expensive at O1.
   if (OptLevel > 1) {
-    MPM.add(createDeadStoreEliminationPass());  // Delete dead stores
+    MPM.add(createDeadStoreEliminationPass()); // Delete dead stores
     MPM.add(createLICMPass(LicmMssaOptCap, LicmMssaNoAccForPromotionCap));
   }
 
@@ -616,7 +619,7 @@ void PassManagerBuilder::populateModulePassManager(
   if (OptLevel > 2)
     MPM.add(createCallSiteSplittingPass());
 
-  MPM.add(createIPSCCPPass());          // IP SCCP
+  MPM.add(createIPSCCPPass()); // IP SCCP
   MPM.add(createCalledValuePropagationPass());
 
   MPM.add(createGlobalOptimizerPass()); // Optimize out global vars
@@ -740,7 +743,7 @@ void PassManagerBuilder::populateModulePassManager(
   // size. By placing it just after inlining other optimizations which runs
   // later might get benefit of no-alias assumption in clone loop.
   if (UseLoopVersioningLICM) {
-    MPM.add(createLoopVersioningLICMPass());    // Do LoopVersioningLICM
+    MPM.add(createLoopVersioningLICMPass()); // Do LoopVersioningLICM
     MPM.add(createLICMPass(LicmMssaOptCap, LicmMssaNoAccForPromotionCap));
   }
 
@@ -874,8 +877,8 @@ void PassManagerBuilder::populateModulePassManager(
   // GlobalOpt already deletes dead functions and globals, at -O2 try a
   // late pass of GlobalDCE.  It is capable of deleting dead cycles.
   if (OptLevel > 1) {
-    MPM.add(createGlobalDCEPass());         // Remove dead fns and globals.
-    MPM.add(createConstantMergePass());     // Merge dup global constants
+    MPM.add(createGlobalDCEPass());     // Remove dead fns and globals.
+    MPM.add(createConstantMergePass()); // Merge dup global constants
   }
 
   // See comment in the new PM for justification of scheduling splitting at
@@ -1011,7 +1014,7 @@ void PassManagerBuilder::addLTOOptimizationPasses(legacy::PassManagerBase &PM) {
     Inliner = nullptr;
   }
 
-  PM.add(createPruneEHPass());   // Remove dead EH info.
+  PM.add(createPruneEHPass()); // Remove dead EH info.
 
   // CSFDO instrumentation and use pass.
   addPGOInstrPasses(PM, /* IsCS */ true);
@@ -1055,7 +1058,7 @@ void PassManagerBuilder::addLTOOptimizationPasses(legacy::PassManagerBase &PM) {
   PM.add(createLICMPass(LicmMssaOptCap, LicmMssaNoAccForPromotionCap));
   PM.add(NewGVN ? createNewGVNPass()
                 : createGVNPass(DisableGVNLoadPRE)); // Remove redundancies.
-  PM.add(createMemCpyOptPass());            // Remove dead memcpys.
+  PM.add(createMemCpyOptPass());                     // Remove dead memcpys.
 
   // Nuke dead stores.
   PM.add(createDeadStoreEliminationPass());
@@ -1086,10 +1089,10 @@ void PassManagerBuilder::addLTOOptimizationPasses(legacy::PassManagerBase &PM) {
   // Now that we've optimized loops (in particular loop induction variables),
   // we may have exposed more scalar opportunities. Run parts of the scalar
   // optimizer again at this point.
-  PM.add(createInstructionCombiningPass()); // Initial cleanup
+  PM.add(createInstructionCombiningPass());               // Initial cleanup
   PM.add(createCFGSimplificationPass(SimplifyCFGOptions() // if-convert
                                          .hoistCommonInsts(true)));
-  PM.add(createSCCPPass()); // Propagate exposed constants
+  PM.add(createSCCPPass());                 // Propagate exposed constants
   PM.add(createInstructionCombiningPass()); // Clean up again
   PM.add(createBitTrackingDCEPass());
 
@@ -1217,57 +1220,49 @@ void LLVMPassManagerBuilderDispose(LLVMPassManagerBuilderRef PMB) {
   delete Builder;
 }
 
-void
-LLVMPassManagerBuilderSetOptLevel(LLVMPassManagerBuilderRef PMB,
-                                  unsigned OptLevel) {
+void LLVMPassManagerBuilderSetOptLevel(LLVMPassManagerBuilderRef PMB,
+                                       unsigned OptLevel) {
   PassManagerBuilder *Builder = unwrap(PMB);
   Builder->OptLevel = OptLevel;
 }
 
-void
-LLVMPassManagerBuilderSetSizeLevel(LLVMPassManagerBuilderRef PMB,
-                                   unsigned SizeLevel) {
+void LLVMPassManagerBuilderSetSizeLevel(LLVMPassManagerBuilderRef PMB,
+                                        unsigned SizeLevel) {
   PassManagerBuilder *Builder = unwrap(PMB);
   Builder->SizeLevel = SizeLevel;
 }
 
-void
-LLVMPassManagerBuilderSetDisableUnitAtATime(LLVMPassManagerBuilderRef PMB,
-                                            LLVMBool Value) {
+void LLVMPassManagerBuilderSetDisableUnitAtATime(LLVMPassManagerBuilderRef PMB,
+                                                 LLVMBool Value) {
   // NOTE: The DisableUnitAtATime switch has been removed.
 }
 
-void
-LLVMPassManagerBuilderSetDisableUnrollLoops(LLVMPassManagerBuilderRef PMB,
-                                            LLVMBool Value) {
+void LLVMPassManagerBuilderSetDisableUnrollLoops(LLVMPassManagerBuilderRef PMB,
+                                                 LLVMBool Value) {
   PassManagerBuilder *Builder = unwrap(PMB);
   Builder->DisableUnrollLoops = Value;
 }
 
-void
-LLVMPassManagerBuilderSetDisableSimplifyLibCalls(LLVMPassManagerBuilderRef PMB,
-                                                 LLVMBool Value) {
+void LLVMPassManagerBuilderSetDisableSimplifyLibCalls(
+    LLVMPassManagerBuilderRef PMB, LLVMBool Value) {
   // NOTE: The simplify-libcalls pass has been removed.
 }
 
-void
-LLVMPassManagerBuilderUseInlinerWithThreshold(LLVMPassManagerBuilderRef PMB,
-                                              unsigned Threshold) {
+void LLVMPassManagerBuilderUseInlinerWithThreshold(
+    LLVMPassManagerBuilderRef PMB, unsigned Threshold) {
   PassManagerBuilder *Builder = unwrap(PMB);
   Builder->Inliner = createFunctionInliningPass(Threshold);
 }
 
-void
-LLVMPassManagerBuilderPopulateFunctionPassManager(LLVMPassManagerBuilderRef PMB,
-                                                  LLVMPassManagerRef PM) {
+void LLVMPassManagerBuilderPopulateFunctionPassManager(
+    LLVMPassManagerBuilderRef PMB, LLVMPassManagerRef PM) {
   PassManagerBuilder *Builder = unwrap(PMB);
   legacy::FunctionPassManager *FPM = unwrap<legacy::FunctionPassManager>(PM);
   Builder->populateFunctionPassManager(*FPM);
 }
 
-void
-LLVMPassManagerBuilderPopulateModulePassManager(LLVMPassManagerBuilderRef PMB,
-                                                LLVMPassManagerRef PM) {
+void LLVMPassManagerBuilderPopulateModulePassManager(
+    LLVMPassManagerBuilderRef PMB, LLVMPassManagerRef PM) {
   PassManagerBuilder *Builder = unwrap(PMB);
   legacy::PassManagerBase *MPM = unwrap(PM);
   Builder->populateModulePassManager(*MPM);

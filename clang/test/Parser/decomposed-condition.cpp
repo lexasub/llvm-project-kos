@@ -1,19 +1,19 @@
 // RUN: %clang_cc1 -std=c++1z %s -verify
 
 namespace std {
-  template<typename> struct tuple_size;
-  template<int, typename> struct tuple_element;
-}
+template <typename> struct tuple_size;
+template <int, typename> struct tuple_element;
+} // namespace std
 
 struct Get {
-  template<int> int get() { return 0; }
+  template <int> int get() { return 0; }
   operator bool() { return true; }
 };
 
 namespace std {
-  template<> struct tuple_size<Get> { static constexpr int value = 1; };
-  template<> struct tuple_element<0, Get> { using type = int; };
-}
+template <> struct tuple_size<Get> { static constexpr int value = 1; };
+template <> struct tuple_element<0, Get> { using type = int; };
+} // namespace std
 
 struct Na {
   bool flag;
@@ -78,7 +78,7 @@ int h(IntegerLike x) {
     ;
   switch (auto [ok, d] = g()) // expected-warning {{ISO C++17 does not permit structured binding declaration in a condition}} expected-error {{statement requires expression of integer type ('Na' invalid)}}
     ;
-  switch (auto [value] = Get()) {// expected-warning {{ISO C++17 does not permit structured binding declaration in a condition}}
+  switch (auto [value] = Get()) { // expected-warning {{ISO C++17 does not permit structured binding declaration in a condition}}
   // expected-warning@-1{{switch condition has boolean value}}
   case 1:
     return value;

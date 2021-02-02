@@ -89,8 +89,8 @@ public:
   void SetObjectSP(const StructuredData::ObjectSP &obj) { m_data_sp = obj; }
 
   lldb::StructuredDataType GetType() const {
-    return (m_data_sp ? m_data_sp->GetType() :
-        lldb::eStructuredDataTypeInvalid);
+    return (m_data_sp ? m_data_sp->GetType()
+                      : lldb::eStructuredDataTypeInvalid);
   }
 
   size_t GetSize() const {

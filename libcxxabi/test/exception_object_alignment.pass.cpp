@@ -23,7 +23,7 @@ struct S {
 
 int main(int, char**) {
 #if !defined(_LIBCXXABI_ARM_EHABI)
-  void *p = __cxxabiv1::__cxa_allocate_exception(16);
+  void* p = __cxxabiv1::__cxa_allocate_exception(16);
   auto i = reinterpret_cast<uintptr_t>(p);
   auto a = std::alignment_of<S>::value;
   assert(i % a == 0);

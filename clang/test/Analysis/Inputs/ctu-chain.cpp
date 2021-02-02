@@ -17,4 +17,4 @@ public:
 int chcls::chf4(int x) {
   return x * 3;
 }
-}
+} // namespace chns

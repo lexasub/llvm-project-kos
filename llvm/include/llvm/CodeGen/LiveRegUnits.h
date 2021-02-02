@@ -36,9 +36,7 @@ public:
   LiveRegUnits() = default;
 
   /// Constructs and initialize an empty LiveRegUnits set.
-  LiveRegUnits(const TargetRegisterInfo &TRI) {
-    init(TRI);
-  }
+  LiveRegUnits(const TargetRegisterInfo &TRI) { init(TRI); }
 
   /// For a machine instruction \p MI, adds all register units used in
   /// \p UsedRegUnits and defined or clobbered in \p ModifiedRegUnits. This is
@@ -141,17 +139,11 @@ public:
   void addLiveIns(const MachineBasicBlock &MBB);
 
   /// Adds all register units marked in the bitvector \p RegUnits.
-  void addUnits(const BitVector &RegUnits) {
-    Units |= RegUnits;
-  }
+  void addUnits(const BitVector &RegUnits) { Units |= RegUnits; }
   /// Removes all register units marked in the bitvector \p RegUnits.
-  void removeUnits(const BitVector &RegUnits) {
-    Units.reset(RegUnits);
-  }
+  void removeUnits(const BitVector &RegUnits) { Units.reset(RegUnits); }
   /// Return the internal bitvector representation of the set.
-  const BitVector &getBitVector() const {
-    return Units;
-  }
+  const BitVector &getBitVector() const { return Units; }
 
 private:
   /// Adds pristine registers. Pristine registers are callee saved registers

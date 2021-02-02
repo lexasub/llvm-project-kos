@@ -6,64 +6,74 @@ struct S {};
 struct T : S {};
 struct U {
   U() = default;
-  U(const U&) = default;
+  U(const U &) = default;
 };
 
 struct V {
   V() = default;
-  V(const V&) noexcept;
+  V(const V &)
+  noexcept;
 };
 
 struct W {
   W() = default;
-  W(const W&) noexcept(false);
+  W(const W &)
+  noexcept(false);
 };
 
 struct X {
   X() = default;
-  X(const X&) {}
+  X(const X &) {}
 };
 
 struct Y {
   Y() = default;
-  Y(const Y&) throw();
+  Y(const Y &)
+  throw();
 };
 
 struct Z {
   Z() = default;
-  Z(const Z&) throw(int);
+  Z(const Z &)
+  throw(int);
 };
 
 void g() noexcept(false);
 
 struct A {
   A() = default;
-  A(const A&) noexcept(noexcept(g()));
+  A(const A &)
+  noexcept(noexcept(g()));
 };
 
 struct B {
   B() = default;
-  B(const B&) = default;
-  B(const A&) noexcept(false);
+  B(const B &) = default;
+  B(const A &)
+  noexcept(false);
 };
 
 class C {
   W M; // W is not no-throw copy constructible
 public:
   C() = default;
-  C(const C&) = default;
+  C(const C &) = default;
 };
 
 struct D {
   D() = default;
-  D(const D&) noexcept(false);
-  D(D&) noexcept(true);
+  D(const D &)
+  noexcept(false);
+  D(D &)
+  noexcept(true);
 };
 
 struct E {
   E() = default;
-  E(E&) noexcept(true);
-  E(const E&) noexcept(false);
+  E(E &)
+  noexcept(true);
+  E(const E &)
+  noexcept(false);
 };
 
 struct Allocates {
@@ -85,13 +95,13 @@ struct OptionallyAllocates {
 };
 
 void f() {
-  throw 12; // ok
+  throw 12;     // ok
   throw "test"; // ok
-  throw S(); // ok
-  throw T(); // ok
-  throw U(); // ok
-  throw V(); // ok
-  throw W(); // match, noexcept(false)
+  throw S();    // ok
+  throw T();    // ok
+  throw U();    // ok
+  throw V();    // ok
+  throw W();    // match, noexcept(false)
   // CHECK-MESSAGES: :[[@LINE-1]]:9: warning: thrown exception type is not nothrow copy constructible [cert-err60-cpp]
   throw X(); // match, no noexcept clause, nontrivial
   // CHECK-MESSAGES: :[[@LINE-1]]:9: warning: thrown exception type is not nothrow copy constructible
@@ -114,7 +124,8 @@ void f() {
 
 namespace PR25574 {
 struct B {
-  B(const B&) noexcept;
+  B(const B &)
+  noexcept;
 };
 
 struct D : B {
@@ -126,4 +137,4 @@ template <typename T>
 void f() {
   throw D();
 }
-}
+} // namespace PR25574

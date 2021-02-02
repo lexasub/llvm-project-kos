@@ -10,6 +10,6 @@ int main() {
   // CHECK: OVERLOAD: [#void#]find(<#int#>)
 
   // Also check when the lhs is an explicit pr-value.
-  (m+0)->find(10);
+  (m + 0)->find(10);
   // RUN: %clang_cc1 -fsyntax-only -code-completion-at=%s:13:15 %s -o - | FileCheck %s
 }

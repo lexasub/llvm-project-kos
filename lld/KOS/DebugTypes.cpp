@@ -200,7 +200,7 @@ TpiSource *lld::kos::makeTypeServerSource(PDBInputFile *pdbInputFile) {
 }
 
 TpiSource *lld::kos::makeUseTypeServerSource(ObjFile *file,
-                                              TypeServer2Record ts) {
+                                             TypeServer2Record ts) {
   return make<UseTypeServerSource>(file, ts);
 }
 
@@ -209,7 +209,7 @@ TpiSource *lld::kos::makePrecompSource(ObjFile *file) {
 }
 
 TpiSource *lld::kos::makeUsePrecompSource(ObjFile *file,
-                                           PrecompRecord precomp) {
+                                          PrecompRecord precomp) {
   return make<UsePrecompSource>(file, precomp);
 }
 

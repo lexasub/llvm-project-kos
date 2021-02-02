@@ -47,7 +47,6 @@
 #include "hwasan_allocator.h"
 #include "hwasan_flags.h"
 #include "hwasan_thread.h"
-
 #include "sanitizer_common/sanitizer_placement_new.h"
 
 namespace __hwasan {
@@ -191,4 +190,4 @@ class HwasanThreadList {
 void InitThreadList(uptr storage, uptr size);
 HwasanThreadList &hwasanThreadList();
 
-} // namespace
+}  // namespace __hwasan

@@ -61,7 +61,7 @@ public:
   IntervalPartition(IntervalPartition &I, bool);
 
   // print - Show contents in human readable format...
-  void print(raw_ostream &O, const Module* = nullptr) const override;
+  void print(raw_ostream &O, const Module * = nullptr) const override;
 
   // getRootInterval() - Return the root interval that contains the starting
   // block of the function.
@@ -85,7 +85,7 @@ public:
   }
 
   // Interface to Intervals vector...
-  const std::vector<Interval*> &getIntervals() const { return Intervals; }
+  const std::vector<Interval *> &getIntervals() const { return Intervals; }
 
   // releaseMemory - Reset state back to before function was analyzed
   void releaseMemory() override;

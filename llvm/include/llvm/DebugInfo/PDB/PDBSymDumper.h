@@ -72,7 +72,7 @@ public:
 private:
   bool RequireImpl;
 };
-}
-}
+} // namespace pdb
+} // namespace llvm
 
 #endif

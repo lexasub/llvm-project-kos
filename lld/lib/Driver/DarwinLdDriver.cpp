@@ -92,8 +92,8 @@ public:
   DarwinLdOptTable() : OptTable(InfoTable) {}
 };
 
-static std::vector<std::unique_ptr<File>>
-makeErrorFile(StringRef path, std::error_code ec) {
+static std::vector<std::unique_ptr<File>> makeErrorFile(StringRef path,
+                                                        std::error_code ec) {
   std::vector<std::unique_ptr<File>> result;
   result.push_back(std::make_unique<ErrorFile>(path, ec));
   return result;
@@ -169,7 +169,7 @@ static std::error_code parseExportsList(StringRef exportFilePath,
                                         MachOLinkingContext &ctx) {
   // Map in export list file.
   ErrorOr<std::unique_ptr<MemoryBuffer>> mb =
-                                   MemoryBuffer::getFileOrSTDIN(exportFilePath);
+      MemoryBuffer::getFileOrSTDIN(exportFilePath);
   if (std::error_code ec = mb.getError())
     return ec;
   ctx.addInputFileDependency(exportFilePath);
@@ -199,7 +199,7 @@ static std::error_code parseOrderFile(StringRef orderFilePath,
                                       MachOLinkingContext &ctx) {
   // Map in order file.
   ErrorOr<std::unique_ptr<MemoryBuffer>> mb =
-                                   MemoryBuffer::getFileOrSTDIN(orderFilePath);
+      MemoryBuffer::getFileOrSTDIN(orderFilePath);
   if (std::error_code ec = mb.getError())
     return ec;
   ctx.addInputFileDependency(orderFilePath);
@@ -229,7 +229,7 @@ static std::error_code parseOrderFile(StringRef orderFilePath,
         prefix = "";
       }
     } else
-     sym = prefixAndSym.first;
+      sym = prefixAndSym.first;
     if (!sym.empty()) {
       ctx.appendOrderedSymbol(sym, prefix);
       // llvm::errs() << sym << ", prefix=" << prefix << "\n";
@@ -258,7 +258,7 @@ static llvm::Error loadFileList(StringRef fileListPath,
   ctx.addInputFileDependency(filePath);
   // Map in file list file.
   ErrorOr<std::unique_ptr<MemoryBuffer>> mb =
-                                        MemoryBuffer::getFileOrSTDIN(filePath);
+      MemoryBuffer::getFileOrSTDIN(filePath);
   if (std::error_code ec = mb.getError())
     return llvm::errorCodeToError(ec);
   StringRef buffer = mb->get()->getBuffer();
@@ -278,9 +278,8 @@ static llvm::Error loadFileList(StringRef fileListPath,
       path = ctx.copy(line);
     }
     if (!ctx.pathExists(path)) {
-      return llvm::make_error<GenericError>(Twine("File not found '")
-                                            + path
-                                            + "'");
+      return llvm::make_error<GenericError>(Twine("File not found '") + path +
+                                            "'");
     }
     if (ctx.testingFileUsage()) {
       message("Found filelist entry " + canonicalizePath(path));
@@ -520,9 +519,9 @@ bool parse(llvm::ArrayRef<const char *> args, MachOLinkingContext &ctx) {
 
   // Handle -sectalign segname sectname align
   for (auto &alignArg : parsedArgs.filtered(OPT_sectalign)) {
-    const char* segName   = alignArg->getValue(0);
-    const char* sectName  = alignArg->getValue(1);
-    const char* alignStr  = alignArg->getValue(2);
+    const char *segName = alignArg->getValue(0);
+    const char *sectName = alignArg->getValue(1);
+    const char *alignStr = alignArg->getValue(2);
     if ((alignStr[0] == '0') && (alignStr[1] == 'x'))
       alignStr += 2;
     unsigned long long alignValue;
@@ -784,38 +783,38 @@ bool parse(llvm::ArrayRef<const char *> args, MachOLinkingContext &ctx) {
     // default to adding version load command for dynamic code,
     // static code must opt-in
     switch (ctx.outputMachOType()) {
-      case llvm::MachO::MH_OBJECT:
-        ctx.setGenerateVersionLoadCommand(false);
-        break;
-      case llvm::MachO::MH_EXECUTE:
-        // dynamic executables default to generating a version load command,
-        // while static executables only generate it if required.
-        if (isStaticExecutable) {
-          if (flagOn)
-            ctx.setGenerateVersionLoadCommand(true);
-        } else {
-          if (!flagOff)
-            ctx.setGenerateVersionLoadCommand(true);
-        }
-        break;
-      case llvm::MachO::MH_PRELOAD:
-      case llvm::MachO::MH_KEXT_BUNDLE:
+    case llvm::MachO::MH_OBJECT:
+      ctx.setGenerateVersionLoadCommand(false);
+      break;
+    case llvm::MachO::MH_EXECUTE:
+      // dynamic executables default to generating a version load command,
+      // while static executables only generate it if required.
+      if (isStaticExecutable) {
         if (flagOn)
           ctx.setGenerateVersionLoadCommand(true);
-        break;
-      case llvm::MachO::MH_DYLINKER:
-      case llvm::MachO::MH_DYLIB:
-      case llvm::MachO::MH_BUNDLE:
+      } else {
         if (!flagOff)
           ctx.setGenerateVersionLoadCommand(true);
-        break;
-      case llvm::MachO::MH_FVMLIB:
-      case llvm::MachO::MH_DYLDLINK:
-      case llvm::MachO::MH_DYLIB_STUB:
-      case llvm::MachO::MH_DSYM:
-        // We don't generate load commands for these file types, even if
-        // forced on.
-        break;
+      }
+      break;
+    case llvm::MachO::MH_PRELOAD:
+    case llvm::MachO::MH_KEXT_BUNDLE:
+      if (flagOn)
+        ctx.setGenerateVersionLoadCommand(true);
+      break;
+    case llvm::MachO::MH_DYLINKER:
+    case llvm::MachO::MH_DYLIB:
+    case llvm::MachO::MH_BUNDLE:
+      if (!flagOff)
+        ctx.setGenerateVersionLoadCommand(true);
+      break;
+    case llvm::MachO::MH_FVMLIB:
+    case llvm::MachO::MH_DYLDLINK:
+    case llvm::MachO::MH_DYLIB_STUB:
+    case llvm::MachO::MH_DSYM:
+      // We don't generate load commands for these file types, even if
+      // forced on.
+      break;
     }
   }
 
@@ -832,38 +831,38 @@ bool parse(llvm::ArrayRef<const char *> args, MachOLinkingContext &ctx) {
     // default to adding functions start for dynamic code, static code must
     // opt-in
     switch (ctx.outputMachOType()) {
-      case llvm::MachO::MH_OBJECT:
-        ctx.setGenerateFunctionStartsLoadCommand(false);
-        break;
-      case llvm::MachO::MH_EXECUTE:
-        // dynamic executables default to generating a version load command,
-        // while static executables only generate it if required.
-        if (isStaticExecutable) {
-          if (flagOn)
-            ctx.setGenerateFunctionStartsLoadCommand(true);
-        } else {
-          if (!flagOff)
-            ctx.setGenerateFunctionStartsLoadCommand(true);
-        }
-        break;
-      case llvm::MachO::MH_PRELOAD:
-      case llvm::MachO::MH_KEXT_BUNDLE:
+    case llvm::MachO::MH_OBJECT:
+      ctx.setGenerateFunctionStartsLoadCommand(false);
+      break;
+    case llvm::MachO::MH_EXECUTE:
+      // dynamic executables default to generating a version load command,
+      // while static executables only generate it if required.
+      if (isStaticExecutable) {
         if (flagOn)
           ctx.setGenerateFunctionStartsLoadCommand(true);
-        break;
-      case llvm::MachO::MH_DYLINKER:
-      case llvm::MachO::MH_DYLIB:
-      case llvm::MachO::MH_BUNDLE:
+      } else {
         if (!flagOff)
           ctx.setGenerateFunctionStartsLoadCommand(true);
-        break;
-      case llvm::MachO::MH_FVMLIB:
-      case llvm::MachO::MH_DYLDLINK:
-      case llvm::MachO::MH_DYLIB_STUB:
-      case llvm::MachO::MH_DSYM:
-        // We don't generate load commands for these file types, even if
-        // forced on.
-        break;
+      }
+      break;
+    case llvm::MachO::MH_PRELOAD:
+    case llvm::MachO::MH_KEXT_BUNDLE:
+      if (flagOn)
+        ctx.setGenerateFunctionStartsLoadCommand(true);
+      break;
+    case llvm::MachO::MH_DYLINKER:
+    case llvm::MachO::MH_DYLIB:
+    case llvm::MachO::MH_BUNDLE:
+      if (!flagOff)
+        ctx.setGenerateFunctionStartsLoadCommand(true);
+      break;
+    case llvm::MachO::MH_FVMLIB:
+    case llvm::MachO::MH_DYLDLINK:
+    case llvm::MachO::MH_DYLIB_STUB:
+    case llvm::MachO::MH_DSYM:
+      // We don't generate load commands for these file types, even if
+      // forced on.
+      break;
     }
   }
 
@@ -880,47 +879,46 @@ bool parse(llvm::ArrayRef<const char *> args, MachOLinkingContext &ctx) {
     // default to adding data in code for dynamic code, static code must
     // opt-in
     switch (ctx.outputMachOType()) {
-      case llvm::MachO::MH_OBJECT:
-        if (!flagOff)
-          ctx.setGenerateDataInCodeLoadCommand(true);
-        break;
-      case llvm::MachO::MH_EXECUTE:
-        // dynamic executables default to generating a version load command,
-        // while static executables only generate it if required.
-        if (isStaticExecutable) {
-          if (flagOn)
-            ctx.setGenerateDataInCodeLoadCommand(true);
-        } else {
-          if (!flagOff)
-            ctx.setGenerateDataInCodeLoadCommand(true);
-        }
-        break;
-      case llvm::MachO::MH_PRELOAD:
-      case llvm::MachO::MH_KEXT_BUNDLE:
+    case llvm::MachO::MH_OBJECT:
+      if (!flagOff)
+        ctx.setGenerateDataInCodeLoadCommand(true);
+      break;
+    case llvm::MachO::MH_EXECUTE:
+      // dynamic executables default to generating a version load command,
+      // while static executables only generate it if required.
+      if (isStaticExecutable) {
         if (flagOn)
           ctx.setGenerateDataInCodeLoadCommand(true);
-        break;
-      case llvm::MachO::MH_DYLINKER:
-      case llvm::MachO::MH_DYLIB:
-      case llvm::MachO::MH_BUNDLE:
+      } else {
         if (!flagOff)
           ctx.setGenerateDataInCodeLoadCommand(true);
-        break;
-      case llvm::MachO::MH_FVMLIB:
-      case llvm::MachO::MH_DYLDLINK:
-      case llvm::MachO::MH_DYLIB_STUB:
-      case llvm::MachO::MH_DSYM:
-        // We don't generate load commands for these file types, even if
-        // forced on.
-        break;
+      }
+      break;
+    case llvm::MachO::MH_PRELOAD:
+    case llvm::MachO::MH_KEXT_BUNDLE:
+      if (flagOn)
+        ctx.setGenerateDataInCodeLoadCommand(true);
+      break;
+    case llvm::MachO::MH_DYLINKER:
+    case llvm::MachO::MH_DYLIB:
+    case llvm::MachO::MH_BUNDLE:
+      if (!flagOff)
+        ctx.setGenerateDataInCodeLoadCommand(true);
+      break;
+    case llvm::MachO::MH_FVMLIB:
+    case llvm::MachO::MH_DYLDLINK:
+    case llvm::MachO::MH_DYLIB_STUB:
+    case llvm::MachO::MH_DSYM:
+      // We don't generate load commands for these file types, even if
+      // forced on.
+      break;
     }
   }
 
   // Handle sdk_version
   if (llvm::opt::Arg *arg = parsedArgs.getLastArg(OPT_sdk_version)) {
     uint32_t sdkVersion = 0;
-    if (MachOLinkingContext::parsePackedVersion(arg->getValue(),
-                                                sdkVersion)) {
+    if (MachOLinkingContext::parsePackedVersion(arg->getValue(), sdkVersion)) {
       error("malformed sdkVersion value");
       return false;
     }
@@ -938,8 +936,7 @@ bool parse(llvm::ArrayRef<const char *> args, MachOLinkingContext &ctx) {
   // Handle source_version
   if (llvm::opt::Arg *arg = parsedArgs.getLastArg(OPT_source_version)) {
     uint64_t version = 0;
-    if (MachOLinkingContext::parsePackedVersion(arg->getValue(),
-                                                version)) {
+    if (MachOLinkingContext::parsePackedVersion(arg->getValue(), version)) {
       error("malformed source_version value");
       return false;
     }
@@ -969,8 +966,8 @@ bool parse(llvm::ArrayRef<const char *> args, MachOLinkingContext &ctx) {
   // Handle -order_file <file>
   for (auto orderFile : parsedArgs.filtered(OPT_order_file)) {
     if (std::error_code ec = parseOrderFile(orderFile->getValue(), ctx)) {
-      error(ec.message() + ", processing '-order_file " + orderFile->getValue()
-            + "'");
+      error(ec.message() + ", processing '-order_file " +
+            orderFile->getValue() + "'");
       return false;
     }
   }
@@ -1025,21 +1022,21 @@ bool parse(llvm::ArrayRef<const char *> args, MachOLinkingContext &ctx) {
   // Handle -rpath <path>
   if (parsedArgs.hasArg(OPT_rpath)) {
     switch (ctx.outputMachOType()) {
-      case llvm::MachO::MH_EXECUTE:
-      case llvm::MachO::MH_DYLIB:
-      case llvm::MachO::MH_BUNDLE:
-        if (!ctx.minOS("10.5", "2.0")) {
-          if (ctx.os() == MachOLinkingContext::OS::macOSX)
-            error("-rpath can only be used when targeting OS X 10.5 or later");
-          else
-            error("-rpath can only be used when targeting iOS 2.0 or later");
-          return false;
-        }
-        break;
-      default:
-        error("-rpath can only be used when creating a dynamic final linked "
-              "image");
+    case llvm::MachO::MH_EXECUTE:
+    case llvm::MachO::MH_DYLIB:
+    case llvm::MachO::MH_BUNDLE:
+      if (!ctx.minOS("10.5", "2.0")) {
+        if (ctx.os() == MachOLinkingContext::OS::macOSX)
+          error("-rpath can only be used when targeting OS X 10.5 or later");
+        else
+          error("-rpath can only be used when targeting iOS 2.0 or later");
         return false;
+      }
+      break;
+    default:
+      error("-rpath can only be used when creating a dynamic final linked "
+            "image");
+      return false;
     }
 
     for (auto rPath : parsedArgs.filtered(OPT_rpath)) {
@@ -1104,21 +1101,20 @@ bool parse(llvm::ArrayRef<const char *> args, MachOLinkingContext &ctx) {
       }
       break;
     case OPT_sectcreate: {
-        const char* seg  = arg->getValue(0);
-        const char* sect = arg->getValue(1);
-        const char* fileName = arg->getValue(2);
+      const char *seg = arg->getValue(0);
+      const char *sect = arg->getValue(1);
+      const char *fileName = arg->getValue(2);
 
-        ErrorOr<std::unique_ptr<MemoryBuffer>> contentOrErr =
+      ErrorOr<std::unique_ptr<MemoryBuffer>> contentOrErr =
           MemoryBuffer::getFile(fileName);
 
-        if (!contentOrErr) {
-          error("can't open -sectcreate file " + Twine(fileName));
-          return false;
-        }
-
-        ctx.addSectCreateSection(seg, sect, std::move(*contentOrErr));
+      if (!contentOrErr) {
+        error("can't open -sectcreate file " + Twine(fileName));
+        return false;
       }
-      break;
+
+      ctx.addSectCreateSection(seg, sect, std::move(*contentOrErr));
+    } break;
     }
   }
 
@@ -1220,7 +1216,6 @@ bool link(llvm::ArrayRef<const char *> args, bool CanExitEarly,
   // Call exit() if we can to avoid calling destructors.
   if (CanExitEarly)
     exitLld(errorCount() ? 1 : 0);
-
 
   return true;
 }

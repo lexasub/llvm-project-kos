@@ -54,9 +54,8 @@
 // Check target registration is registered as a Ctor.
 // CHECK: appending global [1 x { i32, void ()*, i8* }] [{ i32, void ()*, i8* } { i32 0, void ()* @.omp_offloading.requires_reg, i8* null }]
 
-
-template<typename tx, typename ty>
-struct TT{
+template <typename tx, typename ty>
+struct TT {
   tx X;
   ty Y;
 };
@@ -248,6 +247,5 @@ int foo(int n) {
 // CHECK:       [[BP1:%.+]] = load i[[SZ]], i[[SZ]]* [[BP1_PTR]],
 // CHECK:       call void [[HVT2]](i[[SZ]] [[BP1]])
 // CHECK:       ret i32 0
-
 
 #endif

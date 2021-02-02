@@ -20,13 +20,12 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        std::string s;
-        s.pop_back();
-        assert(false);
-    }
+int main(int, char**) {
+  {
+    std::string s;
+    s.pop_back();
+    assert(false);
+  }
 
-    return 0;
+  return 0;
 }

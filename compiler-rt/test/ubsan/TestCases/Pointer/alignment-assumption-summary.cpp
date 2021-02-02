@@ -5,7 +5,7 @@
 
 #include <stdlib.h>
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
   char *ptr = (char *)malloc(2);
 
   __builtin_assume_aligned(ptr + 1, 0x8000);

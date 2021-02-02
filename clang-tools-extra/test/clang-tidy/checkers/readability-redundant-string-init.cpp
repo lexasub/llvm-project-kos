@@ -12,7 +12,7 @@ class char_traits {};
 template <typename C, typename T = std::char_traits<C>, typename A = std::allocator<C>>
 struct basic_string {
   basic_string();
-  basic_string(const basic_string&);
+  basic_string(const basic_string &);
   basic_string(const C *, const A &a = A());
   ~basic_string();
 };
@@ -32,7 +32,7 @@ struct basic_string_view {
 };
 typedef basic_string_view<char> string_view;
 typedef basic_string_view<wchar_t> wstring_view;
-}
+} // namespace std
 
 void f() {
   std::string a = "";
@@ -144,7 +144,8 @@ void templ() {
 }
 
 #define M(x) x
-#define N { std::string s = ""; }
+#define N \
+  { std::string s = ""; }
 // CHECK-FIXES: #define N { std::string s = ""; }
 
 void h() {
@@ -156,9 +157,9 @@ void h() {
   // CHECK-FIXES: M({ std::string s; })
 
   N
-  // CHECK-MESSAGES: [[@LINE-1]]:3: warning: redundant string initialization
-  // CHECK-FIXES: N
-  N
+      // CHECK-MESSAGES: [[@LINE-1]]:3: warning: redundant string initialization
+      // CHECK-FIXES: N
+      N
   // CHECK-MESSAGES: [[@LINE-1]]:3: warning: redundant string initialization
   // CHECK-FIXES: N
 }
@@ -174,10 +175,14 @@ void i() {
   STRING b = "";
   // CHECK-MESSAGES: [[@LINE-1]]:10: warning: redundant string initialization
   // CHECK-FIXES: STRING b;
-  MyString c = "" "" "";
+  MyString c = ""
+               ""
+               "";
   // CHECK-MESSAGES: [[@LINE-1]]:12: warning: redundant string initialization
   // CHECK-FIXES: MyString c;
-  STRING d = "" "" "";
+  STRING d = ""
+             ""
+             "";
   // CHECK-MESSAGES: [[@LINE-1]]:10: warning: redundant string initialization
   // CHECK-FIXES: STRING d;
   DECL_STRING(e, "");
@@ -217,7 +222,7 @@ void k() {
 
 // These cases should not generate warnings.
 extern void Param1(std::string param = "");
-extern void Param2(const std::string& param = "");
+extern void Param2(const std::string &param = "");
 void Param3(std::string param = "") {}
 void Param4(STRING param = "") {}
 
@@ -228,7 +233,7 @@ struct TestString {
   TestString(const char *);
   ~TestString();
 };
-}
+} // namespace our
 
 void ourTestStringTests() {
   our::TestString a = "";
@@ -288,7 +293,7 @@ struct basic_string {
 };
 typedef basic_string<char> string;
 typedef basic_string<wchar_t> wstring;
-}
+} // namespace other
 
 // other::TestString, other::string, other::wstring are unrelated to the types
 // being checked. No warnings / fixes should be produced for these types.

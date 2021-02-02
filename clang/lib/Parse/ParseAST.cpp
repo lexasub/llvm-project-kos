@@ -40,14 +40,13 @@ public:
   ResetStackCleanup(llvm::CrashRecoveryContext *Context, const void *Top)
       : llvm::CrashRecoveryContextCleanupBase<ResetStackCleanup, const void>(
             Context, Top) {}
-  void recoverResources() override {
-    llvm::RestorePrettyStackState(resource);
-  }
+  void recoverResources() override { llvm::RestorePrettyStackState(resource); }
 };
 
 /// If a crash happens while the parser is active, an entry is printed for it.
 class PrettyStackTraceParserEntry : public llvm::PrettyStackTraceEntry {
   const Parser &P;
+
 public:
   PrettyStackTraceParserEntry(const Parser &p) : P(p) {}
   void print(raw_ostream &OS) const override;
@@ -86,7 +85,7 @@ void PrettyStackTraceParserEntry::print(raw_ostream &OS) const {
   }
 }
 
-}  // namespace
+} // namespace
 
 //===----------------------------------------------------------------------===//
 // Public interface to the file
@@ -96,9 +95,8 @@ void PrettyStackTraceParserEntry::print(raw_ostream &OS) const {
 /// the file is parsed.  This inserts the parsed decls into the translation unit
 /// held by Ctx.
 ///
-void clang::ParseAST(Preprocessor &PP, ASTConsumer *Consumer,
-                     ASTContext &Ctx, bool PrintStats,
-                     TranslationUnitKind TUKind,
+void clang::ParseAST(Preprocessor &PP, ASTConsumer *Consumer, ASTContext &Ctx,
+                     bool PrintStats, TranslationUnitKind TUKind,
                      CodeCompleteConsumer *CompletionConsumer,
                      bool SkipFunctionBodies) {
 
@@ -137,8 +135,8 @@ void clang::ParseAST(Sema &S, bool PrintStats, bool SkipFunctionBodies) {
   PrettyStackTraceParserEntry CrashInfo(P);
 
   // Recover resources if we crash before exiting this method.
-  llvm::CrashRecoveryContextCleanupRegistrar<Parser>
-    CleanupParser(ParseOP.get());
+  llvm::CrashRecoveryContextCleanupRegistrar<Parser> CleanupParser(
+      ParseOP.get());
 
   S.getPreprocessor().EnterMainSourceFile();
   ExternalASTSource *External = S.getASTContext().getExternalSource();
@@ -180,7 +178,8 @@ void clang::ParseAST(Sema &S, bool PrintStats, bool SkipFunctionBodies) {
   std::swap(OldCollectStats, S.CollectStats);
   if (PrintStats) {
     llvm::errs() << "\nSTATISTICS:\n";
-    if (HaveLexer) P.getActions().PrintStats();
+    if (HaveLexer)
+      P.getActions().PrintStats();
     S.getASTContext().PrintStats();
     Decl::PrintStats();
     Stmt::PrintStats();

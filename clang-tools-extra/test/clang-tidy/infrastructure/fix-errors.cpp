@@ -7,7 +7,9 @@
 // RUN: FileCheck -input-file=%t.cpp -check-prefix=CHECK-FIX2 %s
 // RUN: FileCheck -input-file=%t.msg -check-prefix=CHECK-MESSAGES2 %s
 
-class A { A(int i); }
+class A {
+  A(int i);
+}
 // CHECK-FIX: class A { A(int i); }{{$}}
 // CHECK-MESSAGES: Fixes have NOT been applied.
 // CHECK-FIX2: class A { explicit A(int i); };

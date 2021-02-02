@@ -133,8 +133,7 @@ public:
 
   template <typename T>
   bool parseStackObjectsDebugInfo(PerFunctionMIParsingState &PFS,
-                                  const T &Object,
-                                  int FrameIdx);
+                                  const T &Object, int FrameIdx);
 
   bool initializeConstantPool(PerFunctionMIParsingState &PFS,
                               MachineConstantPool &ConstantPool,
@@ -163,7 +162,8 @@ private:
   void computeFunctionProperties(MachineFunction &MF);
 
   void setupDebugValueTracking(MachineFunction &MF,
-    PerFunctionMIParsingState &PFS, const yaml::MachineFunction &YamlMF);
+                               PerFunctionMIParsingState &PFS,
+                               const yaml::MachineFunction &YamlMF);
 };
 
 } // end namespace llvm
@@ -422,9 +422,8 @@ void MIRParserImpl::setupDebugValueTracking(
   }
 }
 
-bool
-MIRParserImpl::initializeMachineFunction(const yaml::MachineFunction &YamlMF,
-                                         MachineFunction &MF) {
+bool MIRParserImpl::initializeMachineFunction(
+    const yaml::MachineFunction &YamlMF, MachineFunction &MF) {
   // TODO: Recreate the machine function.
   if (Target) {
     // Avoid clearing state if we're using the same subtarget again.
@@ -461,7 +460,8 @@ MIRParserImpl::initializeMachineFunction(const yaml::MachineFunction &YamlMF,
   SMDiagnostic Error;
   SourceMgr BlockSM;
   BlockSM.AddNewSourceBuffer(
-      MemoryBuffer::getMemBuffer(BlockStr, "",/*RequiresNullTerminator=*/false),
+      MemoryBuffer::getMemBuffer(BlockStr, "",
+                                 /*RequiresNullTerminator=*/false),
       SMLoc());
   PFS.SM = &BlockSM;
   if (parseMachineBasicBlockDefinitions(PFS, BlockStr, Error)) {
@@ -578,8 +578,9 @@ bool MIRParserImpl::parseRegisterInfo(PerFunctionMIParsingState &PFS,
 
     if (!VReg.PreferredRegister.Value.empty()) {
       if (Info.Kind != VRegInfo::NORMAL)
-        return error(VReg.Class.SourceRange.Start,
-              Twine("preferred register can only be set for normal vregs"));
+        return error(
+            VReg.Class.SourceRange.Start,
+            Twine("preferred register can only be set for normal vregs"));
 
       if (parseRegisterReference(PFS, Info.PreferredReg,
                                  VReg.PreferredRegister.Value, Error))
@@ -625,12 +626,12 @@ bool MIRParserImpl::setupRegisterInfo(const PerFunctionMIParsingState &PFS,
   MachineRegisterInfo &MRI = MF.getRegInfo();
   bool Error = false;
   // Create VRegs
-  auto populateVRegInfo = [&] (const VRegInfo &Info, Twine Name) {
+  auto populateVRegInfo = [&](const VRegInfo &Info, Twine Name) {
     Register Reg = Info.VReg;
     switch (Info.Kind) {
     case VRegInfo::UNKNOWN:
-      error(Twine("Cannot determine class/bank of virtual register ") +
-            Name + " in function '" + MF.getName() + "'");
+      error(Twine("Cannot determine class/bank of virtual register ") + Name +
+            " in function '" + MF.getName() + "'");
       Error = true;
       break;
     case VRegInfo::NORMAL:
@@ -729,8 +730,8 @@ bool MIRParserImpl::initializeFrameInfo(PerFunctionMIParsingState &PFS,
                    Twine("StackID is not supported by target"));
     MFI.setStackID(ObjectIdx, Object.StackID);
     MFI.setObjectAlignment(ObjectIdx, Object.Alignment.valueOrOne());
-    if (!PFS.FixedStackObjectSlots.insert(std::make_pair(Object.ID.Value,
-                                                         ObjectIdx))
+    if (!PFS.FixedStackObjectSlots
+             .insert(std::make_pair(Object.ID.Value, ObjectIdx))
              .second)
       return error(Object.ID.SourceRange.Start,
                    Twine("redefinition of fixed stack object '%fixed-stack.") +
@@ -798,8 +799,8 @@ bool MIRParserImpl::initializeFrameInfo(PerFunctionMIParsingState &PFS,
   return false;
 }
 
-bool MIRParserImpl::parseCalleeSavedRegister(PerFunctionMIParsingState &PFS,
-    std::vector<CalleeSavedInfo> &CSIInfo,
+bool MIRParserImpl::parseCalleeSavedRegister(
+    PerFunctionMIParsingState &PFS, std::vector<CalleeSavedInfo> &CSIInfo,
     const yaml::StringValue &RegisterSource, bool IsRestored, int FrameIdx) {
   if (RegisterSource.Value.empty())
     return false;
@@ -830,7 +831,7 @@ static bool typecheckMDNode(T *&Result, MDNode *Node,
 
 template <typename T>
 bool MIRParserImpl::parseStackObjectsDebugInfo(PerFunctionMIParsingState &PFS,
-    const T &Object, int FrameIdx) {
+                                               const T &Object, int FrameIdx) {
   // Debug information can only be attached to stack objects; Fixed stack
   // objects aren't supported.
   MDNode *Var = nullptr, *Expr = nullptr, *Loc = nullptr;
@@ -851,8 +852,8 @@ bool MIRParserImpl::parseStackObjectsDebugInfo(PerFunctionMIParsingState &PFS,
   return false;
 }
 
-bool MIRParserImpl::parseMDNode(PerFunctionMIParsingState &PFS,
-    MDNode *&Node, const yaml::StringValue &Source) {
+bool MIRParserImpl::parseMDNode(PerFunctionMIParsingState &PFS, MDNode *&Node,
+                                const yaml::StringValue &Source) {
   if (Source.Value.empty())
     return false;
   SMDiagnostic Error;
@@ -861,8 +862,9 @@ bool MIRParserImpl::parseMDNode(PerFunctionMIParsingState &PFS,
   return false;
 }
 
-bool MIRParserImpl::initializeConstantPool(PerFunctionMIParsingState &PFS,
-    MachineConstantPool &ConstantPool, const yaml::MachineFunction &YamlMF) {
+bool MIRParserImpl::initializeConstantPool(
+    PerFunctionMIParsingState &PFS, MachineConstantPool &ConstantPool,
+    const yaml::MachineFunction &YamlMF) {
   DenseMap<unsigned, unsigned> &ConstantPoolSlots = PFS.ConstantPoolSlots;
   const MachineFunction &MF = PFS.MF;
   const auto &M = *MF.getFunction().getParent();
@@ -889,8 +891,8 @@ bool MIRParserImpl::initializeConstantPool(PerFunctionMIParsingState &PFS,
   return false;
 }
 
-bool MIRParserImpl::initializeJumpTableInfo(PerFunctionMIParsingState &PFS,
-    const yaml::MachineJumpTable &YamlJTI) {
+bool MIRParserImpl::initializeJumpTableInfo(
+    PerFunctionMIParsingState &PFS, const yaml::MachineJumpTable &YamlJTI) {
   MachineJumpTableInfo *JTI = PFS.MF.getOrCreateJumpTableInfo(YamlJTI.Kind);
   for (const auto &Entry : YamlJTI.Entries) {
     std::vector<MachineBasicBlock *> Blocks;

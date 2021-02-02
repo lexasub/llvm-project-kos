@@ -31,10 +31,7 @@ namespace {
 cl::opt<bool> Quiet("debugify-quiet",
                     cl::desc("Suppress verbose debugify output"));
 
-enum class Level {
-  Locations,
-  LocationsAndVariables
-};
+enum class Level { Locations, LocationsAndVariables };
 cl::opt<Level> DebugifyLevel(
     "debugify-level", cl::desc("Kind of debug info to add"),
     cl::values(clEnumValN(Level::Locations, "locations", "Locations only"),

@@ -21,18 +21,18 @@
 #include "clang/Analysis/DomainSpecific/ObjCNoReturn.h"
 #include "clang/Analysis/ProgramPoint.h"
 #include "clang/Basic/LLVM.h"
-#include "clang/StaticAnalyzer/Core/CheckerManager.h"
 #include "clang/StaticAnalyzer/Core/BugReporter/BugReporter.h"
 #include "clang/StaticAnalyzer/Core/BugReporter/BugReporterVisitors.h"
+#include "clang/StaticAnalyzer/Core/CheckerManager.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/AnalysisManager.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/CoreEngine.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/FunctionSummary.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/ProgramState.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/ProgramStateTrait.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/ProgramState_Fwd.h"
-#include "clang/StaticAnalyzer/Core/PathSensitive/Store.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/SValBuilder.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/SVals.h"
+#include "clang/StaticAnalyzer/Core/PathSensitive/Store.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/WorkList.h"
 #include "llvm/ADT/ArrayRef.h"
 #include <cassert>
@@ -182,8 +182,8 @@ private:
 
 public:
   ExprEngine(cross_tu::CrossTranslationUnitContext &CTU, AnalysisManager &mgr,
-             SetOfConstDecls *VisitedCalleesIn,
-             FunctionSummariesTy *FS, InliningModes HowToInlineIn);
+             SetOfConstDecls *VisitedCalleesIn, FunctionSummariesTy *FS,
+             InliningModes HowToInlineIn);
 
   virtual ~ExprEngine() = default;
 
@@ -219,8 +219,7 @@ public:
 
   BugReporter &getBugReporter() { return BR; }
 
-  cross_tu::CrossTranslationUnitContext *
-  getCrossTranslationUnitContext() {
+  cross_tu::CrossTranslationUnitContext *getCrossTranslationUnitContext() {
     return &CTU;
   }
 
@@ -235,11 +234,10 @@ public:
   void enqueueEndOfPath(ExplodedNodeSet &S);
   void GenerateCallExitNode(ExplodedNode *N);
 
-
   /// Dump graph to the specified filename.
   /// If filename is empty, generate a temporary one.
   /// \return The filename the graph is written into.
-  std::string DumpGraph(bool trim = false, StringRef Filename="");
+  std::string DumpGraph(bool trim = false, StringRef Filename = "");
 
   /// Dump the graph consisting of the given nodes to a specified filename.
   /// Generate a temporary filename if it's not provided.
@@ -286,10 +284,11 @@ public:
   ///        \p ReferenceStmt must either be a ReturnStmt or \c NULL. Otherwise,
   ///        it must be ProgramPoint::PreStmtPurgeDeadSymbolsKind (the default)
   ///        and \p ReferenceStmt must be valid (non-null).
-  void removeDead(ExplodedNode *Node, ExplodedNodeSet &Out,
-            const Stmt *ReferenceStmt, const LocationContext *LC,
-            const Stmt *DiagnosticStmt = nullptr,
-            ProgramPoint::Kind K = ProgramPoint::PreStmtPurgeDeadSymbolsKind);
+  void
+  removeDead(ExplodedNode *Node, ExplodedNodeSet &Out,
+             const Stmt *ReferenceStmt, const LocationContext *LC,
+             const Stmt *DiagnosticStmt = nullptr,
+             ProgramPoint::Kind K = ProgramPoint::PreStmtPurgeDeadSymbolsKind);
 
   /// processCFGElement - Called by CoreEngine. Used to generate new successor
   ///  nodes by processing the 'effects' of a CFG element.
@@ -298,7 +297,7 @@ public:
 
   void ProcessStmt(const Stmt *S, ExplodedNode *Pred);
 
-  void ProcessLoopExit(const Stmt* S, ExplodedNode *Pred);
+  void ProcessLoopExit(const Stmt *S, ExplodedNode *Pred);
 
   void ProcessInitializer(const CFGInitializer I, ExplodedNode *Pred);
 
@@ -306,16 +305,16 @@ public:
 
   void ProcessNewAllocator(const CXXNewExpr *NE, ExplodedNode *Pred);
 
-  void ProcessAutomaticObjDtor(const CFGAutomaticObjDtor D,
-                               ExplodedNode *Pred, ExplodedNodeSet &Dst);
-  void ProcessDeleteDtor(const CFGDeleteDtor D,
-                         ExplodedNode *Pred, ExplodedNodeSet &Dst);
-  void ProcessBaseDtor(const CFGBaseDtor D,
-                       ExplodedNode *Pred, ExplodedNodeSet &Dst);
-  void ProcessMemberDtor(const CFGMemberDtor D,
-                         ExplodedNode *Pred, ExplodedNodeSet &Dst);
-  void ProcessTemporaryDtor(const CFGTemporaryDtor D,
-                            ExplodedNode *Pred, ExplodedNodeSet &Dst);
+  void ProcessAutomaticObjDtor(const CFGAutomaticObjDtor D, ExplodedNode *Pred,
+                               ExplodedNodeSet &Dst);
+  void ProcessDeleteDtor(const CFGDeleteDtor D, ExplodedNode *Pred,
+                         ExplodedNodeSet &Dst);
+  void ProcessBaseDtor(const CFGBaseDtor D, ExplodedNode *Pred,
+                       ExplodedNodeSet &Dst);
+  void ProcessMemberDtor(const CFGMemberDtor D, ExplodedNode *Pred,
+                         ExplodedNodeSet &Dst);
+  void ProcessTemporaryDtor(const CFGTemporaryDtor D, ExplodedNode *Pred,
+                            ExplodedNodeSet &Dst);
 
   /// Called by CoreEngine when processing the entrance of a CFGBlock.
   void processCFGBlockEntrance(const BlockEdge &L,
@@ -324,12 +323,9 @@ public:
 
   /// ProcessBranch - Called by CoreEngine.  Used to generate successor
   ///  nodes by processing the 'effects' of a branch condition.
-  void processBranch(const Stmt *Condition,
-                     NodeBuilderContext& BuilderCtx,
-                     ExplodedNode *Pred,
-                     ExplodedNodeSet &Dst,
-                     const CFGBlock *DstT,
-                     const CFGBlock *DstF);
+  void processBranch(const Stmt *Condition, NodeBuilderContext &BuilderCtx,
+                     ExplodedNode *Pred, ExplodedNodeSet &Dst,
+                     const CFGBlock *DstT, const CFGBlock *DstF);
 
   /// Called by CoreEngine.
   /// Used to generate successor nodes for temporary destructors depending
@@ -343,39 +339,34 @@ public:
   /// Called by CoreEngine.  Used to processing branching behavior
   /// at static initializers.
   void processStaticInitializer(const DeclStmt *DS,
-                                NodeBuilderContext& BuilderCtx,
-                                ExplodedNode *Pred,
-                                ExplodedNodeSet &Dst,
-                                const CFGBlock *DstT,
-                                const CFGBlock *DstF);
+                                NodeBuilderContext &BuilderCtx,
+                                ExplodedNode *Pred, ExplodedNodeSet &Dst,
+                                const CFGBlock *DstT, const CFGBlock *DstF);
 
   /// processIndirectGoto - Called by CoreEngine.  Used to generate successor
   ///  nodes by processing the 'effects' of a computed goto jump.
-  void processIndirectGoto(IndirectGotoNodeBuilder& builder);
+  void processIndirectGoto(IndirectGotoNodeBuilder &builder);
 
   /// ProcessSwitch - Called by CoreEngine.  Used to generate successor
   ///  nodes by processing the 'effects' of a switch statement.
-  void processSwitch(SwitchNodeBuilder& builder);
+  void processSwitch(SwitchNodeBuilder &builder);
 
   /// Called by CoreEngine.  Used to notify checkers that processing a
   /// function has begun. Called for both inlined and and top-level functions.
-  void processBeginOfFunction(NodeBuilderContext &BC,
-                              ExplodedNode *Pred, ExplodedNodeSet &Dst,
-                              const BlockEdge &L);
+  void processBeginOfFunction(NodeBuilderContext &BC, ExplodedNode *Pred,
+                              ExplodedNodeSet &Dst, const BlockEdge &L);
 
   /// Called by CoreEngine.  Used to notify checkers that processing a
   /// function has ended. Called for both inlined and and top-level functions.
-  void processEndOfFunction(NodeBuilderContext& BC,
-                            ExplodedNode *Pred,
+  void processEndOfFunction(NodeBuilderContext &BC, ExplodedNode *Pred,
                             const ReturnStmt *RS = nullptr);
 
   /// Remove dead bindings/symbols before exiting a function.
-  void removeDeadOnEndOfFunction(NodeBuilderContext& BC,
-                                 ExplodedNode *Pred,
+  void removeDeadOnEndOfFunction(NodeBuilderContext &BC, ExplodedNode *Pred,
                                  ExplodedNodeSet &Dst);
 
   /// Generate the entry node of the callee.
-  void processCallEnter(NodeBuilderContext& BC, CallEnter CE,
+  void processCallEnter(NodeBuilderContext &BC, CallEnter CE,
                         ExplodedNode *Pred);
 
   /// Generate the sequence of nodes that simulate the call exit and the post
@@ -390,20 +381,19 @@ public:
   ProgramStateRef processAssume(ProgramStateRef state, SVal cond,
                                 bool assumption);
 
-  /// processRegionChanges - Called by ProgramStateManager whenever a change is made
+  /// processRegionChanges - Called by ProgramStateManager whenever a change is
+  /// made
   ///  to the store. Used to update checkers that track region values.
   ProgramStateRef
   processRegionChanges(ProgramStateRef state,
                        const InvalidatedSymbols *invalidated,
                        ArrayRef<const MemRegion *> ExplicitRegions,
                        ArrayRef<const MemRegion *> Regions,
-                       const LocationContext *LCtx,
-                       const CallEvent *Call);
+                       const LocationContext *LCtx, const CallEvent *Call);
 
-  inline ProgramStateRef
-  processRegionChange(ProgramStateRef state,
-                      const MemRegion* MR,
-                      const LocationContext *LCtx) {
+  inline ProgramStateRef processRegionChange(ProgramStateRef state,
+                                             const MemRegion *MR,
+                                             const LocationContext *LCtx) {
     return processRegionChanges(state, nullptr, MR, MR, LCtx, nullptr);
   }
 
@@ -421,15 +411,12 @@ public:
   }
 
   // FIXME: Remove when we migrate over to just using SValBuilder.
-  BasicValueFactory &getBasicVals() {
-    return StateMgr.getBasicVals();
-  }
+  BasicValueFactory &getBasicVals() { return StateMgr.getBasicVals(); }
 
   SymbolManager &getSymbolManager() { return SymMgr; }
   MemRegionManager &getRegionManager() { return MRMgr; }
 
   NoteTag::Factory &getNoteTags() { return Engine.getNoteTags(); }
-
 
   // Functions for external checking of whether we have unfinished work
   bool wasBlocksExhausted() const { return Engine.wasBlocksExhausted(); }
@@ -444,8 +431,7 @@ public:
   void Visit(const Stmt *S, ExplodedNode *Pred, ExplodedNodeSet &Dst);
 
   /// VisitArraySubscriptExpr - Transfer function for array accesses.
-  void VisitArraySubscriptExpr(const ArraySubscriptExpr *Ex,
-                               ExplodedNode *Pred,
+  void VisitArraySubscriptExpr(const ArraySubscriptExpr *Ex, ExplodedNode *Pred,
                                ExplodedNodeSet &Dst);
 
   /// VisitGCCAsmStmt - Transfer function logic for inline asm.
@@ -465,9 +451,8 @@ public:
                        ExplodedNodeSet &Dst);
 
   /// VisitBinaryOperator - Transfer function logic for binary operators.
-  void VisitBinaryOperator(const BinaryOperator* B, ExplodedNode *Pred,
+  void VisitBinaryOperator(const BinaryOperator *B, ExplodedNode *Pred,
                            ExplodedNodeSet &Dst);
-
 
   /// VisitCall - Transfer function for function calls.
   void VisitCallExpr(const CallExpr *CE, ExplodedNode *Pred,
@@ -497,7 +482,7 @@ public:
                          ExplodedNodeSet &Dst);
 
   /// VisitLogicalExpr - Transfer function logic for '&&', '||'
-  void VisitLogicalExpr(const BinaryOperator* B, ExplodedNode *Pred,
+  void VisitLogicalExpr(const BinaryOperator *B, ExplodedNode *Pred,
                         ExplodedNodeSet &Dst);
 
   /// VisitMemberExpr - Transfer function for member expressions.
@@ -537,11 +522,11 @@ public:
                                      ExplodedNode *Pred, ExplodedNodeSet &Dst);
 
   /// VisitUnaryOperator - Transfer function logic for unary operators.
-  void VisitUnaryOperator(const UnaryOperator* B, ExplodedNode *Pred,
+  void VisitUnaryOperator(const UnaryOperator *B, ExplodedNode *Pred,
                           ExplodedNodeSet &Dst);
 
   /// Handle ++ and -- (both pre- and post-increment).
-  void VisitIncrementDecrementOperator(const UnaryOperator* U,
+  void VisitIncrementDecrementOperator(const UnaryOperator *U,
                                        ExplodedNode *Pred,
                                        ExplodedNodeSet &Dst);
 
@@ -553,7 +538,7 @@ public:
                          ExplodedNodeSet &Dst);
 
   void VisitCXXThisExpr(const CXXThisExpr *TE, ExplodedNode *Pred,
-                        ExplodedNodeSet & Dst);
+                        ExplodedNodeSet &Dst);
 
   void VisitCXXConstructExpr(const CXXConstructExpr *E, ExplodedNode *Pred,
                              ExplodedNodeSet &Dst);
@@ -562,12 +547,10 @@ public:
                                      ExplodedNode *Pred, ExplodedNodeSet &Dst);
 
   void VisitCXXDestructor(QualType ObjectType, const MemRegion *Dest,
-                          const Stmt *S, bool IsBaseDtor,
-                          ExplodedNode *Pred, ExplodedNodeSet &Dst,
-                          EvalCallOptions &Options);
+                          const Stmt *S, bool IsBaseDtor, ExplodedNode *Pred,
+                          ExplodedNodeSet &Dst, EvalCallOptions &Options);
 
-  void VisitCXXNewAllocatorCall(const CXXNewExpr *CNE,
-                                ExplodedNode *Pred,
+  void VisitCXXNewAllocatorCall(const CXXNewExpr *CNE, ExplodedNode *Pred,
                                 ExplodedNodeSet &Dst);
 
   void VisitCXXNewExpr(const CXXNewExpr *CNE, ExplodedNode *Pred,
@@ -578,17 +561,17 @@ public:
 
   /// Create a C++ temporary object for an rvalue.
   void CreateCXXTemporaryObject(const MaterializeTemporaryExpr *ME,
-                                ExplodedNode *Pred,
-                                ExplodedNodeSet &Dst);
+                                ExplodedNode *Pred, ExplodedNodeSet &Dst);
 
-  /// evalEagerlyAssumeBinOpBifurcation - Given the nodes in 'Src', eagerly assume symbolic
+  /// evalEagerlyAssumeBinOpBifurcation - Given the nodes in 'Src', eagerly
+  /// assume symbolic
   ///  expressions of the form 'x != 0' and generate new nodes (stored in Dst)
   ///  with those assumptions.
-  void evalEagerlyAssumeBinOpBifurcation(ExplodedNodeSet &Dst, ExplodedNodeSet &Src,
-                         const Expr *Ex);
+  void evalEagerlyAssumeBinOpBifurcation(ExplodedNodeSet &Dst,
+                                         ExplodedNodeSet &Src, const Expr *Ex);
 
   static std::pair<const ProgramPointTag *, const ProgramPointTag *>
-    geteagerlyAssumeBinOpBifurcationTags();
+  geteagerlyAssumeBinOpBifurcationTags();
 
   SVal evalMinus(SVal X) {
     return X.isValid() ? svalBuilder.evalMinus(X.castAs<NonLoc>()) : X;
@@ -607,27 +590,26 @@ public:
   ProgramStateRef handleLVectorSplat(ProgramStateRef state,
                                      const LocationContext *LCtx,
                                      const CastExpr *CastE,
-                                     StmtNodeBuilder &Bldr,
-                                     ExplodedNode *Pred);
+                                     StmtNodeBuilder &Bldr, ExplodedNode *Pred);
 
-  void handleUOExtension(ExplodedNodeSet::iterator I,
-                         const UnaryOperator* U,
+  void handleUOExtension(ExplodedNodeSet::iterator I, const UnaryOperator *U,
                          StmtNodeBuilder &Bldr);
 
 public:
-  SVal evalBinOp(ProgramStateRef state, BinaryOperator::Opcode op,
-                 NonLoc L, NonLoc R, QualType T) {
+  SVal evalBinOp(ProgramStateRef state, BinaryOperator::Opcode op, NonLoc L,
+                 NonLoc R, QualType T) {
     return svalBuilder.evalBinOpNN(state, op, L, R, T);
   }
 
-  SVal evalBinOp(ProgramStateRef state, BinaryOperator::Opcode op,
-                 NonLoc L, SVal R, QualType T) {
-    return R.isValid() ? svalBuilder.evalBinOpNN(state, op, L,
-                                                 R.castAs<NonLoc>(), T) : R;
+  SVal evalBinOp(ProgramStateRef state, BinaryOperator::Opcode op, NonLoc L,
+                 SVal R, QualType T) {
+    return R.isValid()
+               ? svalBuilder.evalBinOpNN(state, op, L, R.castAs<NonLoc>(), T)
+               : R;
   }
 
-  SVal evalBinOp(ProgramStateRef ST, BinaryOperator::Opcode Op,
-                 SVal LHS, SVal RHS, QualType T) {
+  SVal evalBinOp(ProgramStateRef ST, BinaryOperator::Opcode Op, SVal LHS,
+                 SVal RHS, QualType T) {
     return svalBuilder.evalBinOp(ST, Op, LHS, RHS, T);
   }
 
@@ -640,20 +622,19 @@ public:
                              const LocationContext *LC);
 
   /// Call PointerEscape callback when a value escapes as a result of bind.
-  ProgramStateRef processPointerEscapedOnBind(
-      ProgramStateRef State, ArrayRef<std::pair<SVal, SVal>> LocAndVals,
-      const LocationContext *LCtx, PointerEscapeKind Kind,
-      const CallEvent *Call);
+  ProgramStateRef
+  processPointerEscapedOnBind(ProgramStateRef State,
+                              ArrayRef<std::pair<SVal, SVal>> LocAndVals,
+                              const LocationContext *LCtx,
+                              PointerEscapeKind Kind, const CallEvent *Call);
 
   /// Call PointerEscape callback when a value escapes as a result of
   /// region invalidation.
   /// \param[in] ITraits Specifies invalidation traits for regions/symbols.
   ProgramStateRef notifyCheckersOfPointerEscape(
-                           ProgramStateRef State,
-                           const InvalidatedSymbols *Invalidated,
-                           ArrayRef<const MemRegion *> ExplicitRegions,
-                           const CallEvent *Call,
-                           RegionAndSymbolInvalidationTraits &ITraits);
+      ProgramStateRef State, const InvalidatedSymbols *Invalidated,
+      ArrayRef<const MemRegion *> ExplicitRegions, const CallEvent *Call,
+      RegionAndSymbolInvalidationTraits &ITraits);
 
 private:
   /// evalBind - Handle the semantics of binding a value to a specific location.
@@ -662,10 +643,9 @@ private:
                 SVal location, SVal Val, bool atDeclInit = false,
                 const ProgramPoint *PP = nullptr);
 
-  ProgramStateRef
-  processPointerEscapedOnBind(ProgramStateRef State,
-                              SVal Loc, SVal Val,
-                              const LocationContext *LCtx);
+  ProgramStateRef processPointerEscapedOnBind(ProgramStateRef State, SVal Loc,
+                                              SVal Val,
+                                              const LocationContext *LCtx);
 
   /// A simple wrapper when you only need to notify checkers of pointer-escape
   /// of some values.
@@ -681,19 +661,16 @@ public:
   // same as state->getLValue(Ex).
   /// Simulate a read of the result of Ex.
   void evalLoad(ExplodedNodeSet &Dst,
-                const Expr *NodeEx,  /* Eventually will be a CFGStmt */
-                const Expr *BoundExpr,
-                ExplodedNode *Pred,
-                ProgramStateRef St,
-                SVal location,
-                const ProgramPointTag *tag = nullptr,
+                const Expr *NodeEx, /* Eventually will be a CFGStmt */
+                const Expr *BoundExpr, ExplodedNode *Pred, ProgramStateRef St,
+                SVal location, const ProgramPointTag *tag = nullptr,
                 QualType LoadTy = QualType());
 
   // FIXME: 'tag' should be removed, and a LocationContext should be used
   // instead.
   void evalStore(ExplodedNodeSet &Dst, const Expr *AssignE, const Expr *StoreE,
-                 ExplodedNode *Pred, ProgramStateRef St, SVal TargetLV, SVal Val,
-                 const ProgramPointTag *tag = nullptr);
+                 ExplodedNode *Pred, ProgramStateRef St, SVal TargetLV,
+                 SVal Val, const ProgramPointTag *tag = nullptr);
 
   /// Return the CFG element corresponding to the worklist element
   /// that is currently being processed by ExprEngine.
@@ -723,9 +700,10 @@ public:
   /// out-parameter CallOpts; in such cases a fake temporary region is
   /// returned, which is better than nothing but does not represent
   /// the actual behavior of the program.
-  SVal computeObjectUnderConstruction(
-      const Expr *E, ProgramStateRef State, const LocationContext *LCtx,
-      const ConstructionContext *CC, EvalCallOptions &CallOpts);
+  SVal computeObjectUnderConstruction(const Expr *E, ProgramStateRef State,
+                                      const LocationContext *LCtx,
+                                      const ConstructionContext *CC,
+                                      EvalCallOptions &CallOpts);
 
   /// Update the program state with all the path-sensitive information
   /// that's necessary to perform construction of an object with a given
@@ -753,21 +731,15 @@ private:
                                   const CallEvent &Call);
 
   void evalLoadCommon(ExplodedNodeSet &Dst,
-                      const Expr *NodeEx,  /* Eventually will be a CFGStmt */
-                      const Expr *BoundEx,
-                      ExplodedNode *Pred,
-                      ProgramStateRef St,
-                      SVal location,
-                      const ProgramPointTag *tag,
-                      QualType LoadTy);
+                      const Expr *NodeEx, /* Eventually will be a CFGStmt */
+                      const Expr *BoundEx, ExplodedNode *Pred,
+                      ProgramStateRef St, SVal location,
+                      const ProgramPointTag *tag, QualType LoadTy);
 
   void evalLocation(ExplodedNodeSet &Dst,
                     const Stmt *NodeEx, /* This will eventually be a CFGStmt */
-                    const Stmt *BoundEx,
-                    ExplodedNode *Pred,
-                    ProgramStateRef St,
-                    SVal location,
-                    bool isLoad);
+                    const Stmt *BoundEx, ExplodedNode *Pred, ProgramStateRef St,
+                    SVal location, bool isLoad);
 
   /// Count the stack depth and determine if the call is recursive.
   void examineStackFrames(const Decl *D, const LocationContext *LCtx,
@@ -820,9 +792,8 @@ private:
 
   /// Either inline or process the call conservatively (or both), based
   /// on DynamicDispatchBifurcation data.
-  void BifurcateCall(const MemRegion *BifurReg,
-                     const CallEvent &Call, const Decl *D, NodeBuilder &Bldr,
-                     ExplodedNode *Pred);
+  void BifurcateCall(const MemRegion *BifurReg, const CallEvent &Call,
+                     const Decl *D, NodeBuilder &Bldr, ExplodedNode *Pred);
 
   bool replayWithoutInlining(ExplodedNode *P, const LocationContext *CalleeLC);
 
@@ -885,6 +856,7 @@ public:
   LLVM_NODISCARD static bool hasMoreIteration(ProgramStateRef State,
                                               const ObjCForCollectionStmt *O,
                                               const LocationContext *LC);
+
 private:
   /// Store the location of a C++ object corresponding to a statement
   /// until the statement is actually encountered. For example, if a DeclStmt
@@ -938,10 +910,10 @@ private:
 /// The GDM stores the corresponding CallExpr pointer.
 // FIXME: This does not use the nice trait macros because it must be accessible
 // from multiple translation units.
-struct ReplayWithoutInlining{};
+struct ReplayWithoutInlining {};
 template <>
-struct ProgramStateTrait<ReplayWithoutInlining> :
-  public ProgramStatePartialTrait<const void*> {
+struct ProgramStateTrait<ReplayWithoutInlining>
+    : public ProgramStatePartialTrait<const void *> {
   static void *GDMIndex();
 };
 

@@ -25,4 +25,3 @@ void bench() {
 }
 
 // CHECK: DONE
-

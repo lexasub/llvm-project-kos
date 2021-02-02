@@ -3,9 +3,9 @@
 // RUN: %clang_cl_asan -Od -DEXE %s -Fe%te.exe
 // RUN: %env_asan_opts=report_globals=1 %run %te.exe %t.dll 2>&1 | FileCheck %s
 
-#include <windows.h>
 #include <stdio.h>
 #include <string.h>
+#include <windows.h>
 
 extern "C" {
 #if defined(EXE)
@@ -16,16 +16,16 @@ int main(int argc, char **argv) {
   }
   const char *dll_name = argv[1];
 
-// CHECK: time to load DLL
+  // CHECK: time to load DLL
   printf("time to load DLL\n");
   fflush(0);
 
-// CHECK: in DLL(reason=1)
-// CHECK: in DLL(reason=0)
-// CHECK: in DLL(reason=1)
-// CHECK: in DLL(reason=0)
-// CHECK: in DLL(reason=1)
-// CHECK: in DLL(reason=0)
+  // CHECK: in DLL(reason=1)
+  // CHECK: in DLL(reason=0)
+  // CHECK: in DLL(reason=1)
+  // CHECK: in DLL(reason=0)
+  // CHECK: in DLL(reason=1)
+  // CHECK: in DLL(reason=0)
   for (int i = 0; i < 30; ++i) {
     HMODULE dll = LoadLibrary(dll_name);
     if (dll == NULL)
@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
       return 4;
   }
 
-// CHECK: All OK!
+  // CHECK: All OK!
   printf("All OK!\n");
   fflush(0);
 }
@@ -46,6 +46,6 @@ BOOL WINAPI DllMain(HMODULE, DWORD reason, LPVOID) {
   return TRUE;
 }
 #else
-# error oops!
+#error oops!
 #endif
 }

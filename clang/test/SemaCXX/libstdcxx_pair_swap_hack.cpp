@@ -30,27 +30,27 @@ using namespace std;
 #endif
 
 namespace std {
-  template<typename T> void swap(T &, T &);
-  template<typename T> void do_swap(T &a, T &b) noexcept(noexcept(swap(a, b))) {
-    swap(a, b);
-  }
+template <typename T> void swap(T &, T &);
+template <typename T> void do_swap(T &a, T &b) noexcept(noexcept(swap(a, b))) {
+  swap(a, b);
+}
 
 #ifdef NAMESPACE
-  namespace NAMESPACE {
+namespace NAMESPACE {
 #define STD_CLASS std::NAMESPACE::CLASS
 #else
 #define STD_CLASS std::CLASS
 #endif
 
-  template<typename A, typename B> struct CLASS {
+template <typename A, typename B> struct CLASS {
 #ifdef MSVC
-    void swap(CLASS &other) noexcept(noexcept(do_swap(member, other.member)));
+  void swap(CLASS &other) noexcept(noexcept(do_swap(member, other.member)));
 #endif
-    A member;
+  A member;
 #ifndef MSVC
-    void swap(CLASS &other) noexcept(noexcept(swap(member, other.member)));
+  void swap(CLASS &other) noexcept(noexcept(swap(member, other.member)));
 #endif
-  };
+};
 
 //  template<typename T> void do_swap(T &, T &);
 //  template<typename A> struct vector {
@@ -59,9 +59,9 @@ namespace std {
 //  };
 
 #ifdef NAMESPACE
-  }
-#endif
 }
+#endif
+} // namespace std
 
 #else
 
@@ -79,16 +79,16 @@ static_assert(noexcept(px.swap(px)), "");
 static_assert(!noexcept(pi.swap(pi)), "");
 
 namespace sad {
-  template<typename T> void swap(T &, T &);
+template <typename T> void swap(T &, T &);
 
-  template<typename A, typename B> struct CLASS {
-    void swap(CLASS &other) noexcept(noexcept(swap(*this, other))); // expected-error {{too many arguments}} expected-note {{declared here}}
-    // expected-error@-1{{uses itself}} expected-note@-1{{in instantiation of}}
-  };
+template <typename A, typename B> struct CLASS {
+  void swap(CLASS &other) noexcept(noexcept(swap(*this, other))); // expected-error {{too many arguments}} expected-note {{declared here}}
+  // expected-error@-1{{uses itself}} expected-note@-1{{in instantiation of}}
+};
 
-  CLASS<int, int> pi;
+CLASS<int, int> pi;
 
-  static_assert(!noexcept(pi.swap(pi)), ""); // expected-note 2{{in instantiation of exception specification for 'swap'}}
-}
+static_assert(!noexcept(pi.swap(pi)), ""); // expected-note 2{{in instantiation of exception specification for 'swap'}}
+} // namespace sad
 
 #endif

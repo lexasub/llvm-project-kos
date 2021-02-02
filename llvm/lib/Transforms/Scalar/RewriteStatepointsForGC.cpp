@@ -93,8 +93,8 @@ static cl::opt<bool> PrintBasePointers("spp-print-base-pointers", cl::Hidden,
 // Cost threshold measuring when it is profitable to rematerialize value instead
 // of relocating it
 static cl::opt<unsigned>
-RematerializationThreshold("spp-rematerialization-threshold", cl::Hidden,
-                           cl::init(6));
+    RematerializationThreshold("spp-rematerialization-threshold", cl::Hidden,
+                               cl::init(6));
 
 #ifdef EXPENSIVE_CHECKS
 static bool ClobberNonLive = true;
@@ -406,14 +406,14 @@ namespace {
 /// but it can also be an arbitrary derived pointer.
 struct BaseDefiningValueResult {
   /// Contains the value which is the base defining value.
-  Value * const BDV;
+  Value *const BDV;
 
   /// True if the base defining value is also known to be an actual base
   /// pointer.
   const bool IsKnownBase;
 
   BaseDefiningValueResult(Value *BDV, bool IsKnownBase)
-    : BDV(BDV), IsKnownBase(IsKnownBase) {
+      : BDV(BDV), IsKnownBase(IsKnownBase) {
 #ifndef NDEBUG
     // Check consistency between new and old means of checking whether a BDV is
     // a base.
@@ -436,8 +436,7 @@ static BaseDefiningValueResult findBaseDefiningValue(Value *I);
 /// vector returned is a BDV (and possibly a base) of the entire vector 'I'.
 /// If the later, the return pointer is a BDV (or possibly a base) for the
 /// particular element in 'I'.
-static BaseDefiningValueResult
-findBaseDefiningValueOfVector(Value *I) {
+static BaseDefiningValueResult findBaseDefiningValueOfVector(Value *I) {
   // Each case parallels findBaseDefiningValue below, see that code for
   // detailed motivation.
 
@@ -781,27 +780,27 @@ static Value *findBasePointer(Value *I, DefiningValueMapTy &Cache) {
   if (isKnownBaseResult(Def) && areBothVectorOrScalar(Def, I))
     return Def;
 
-  // Here's the rough algorithm:
-  // - For every SSA value, construct a mapping to either an actual base
-  //   pointer or a PHI which obscures the base pointer.
-  // - Construct a mapping from PHI to unknown TOP state.  Use an
-  //   optimistic algorithm to propagate base pointer information.  Lattice
-  //   looks like:
-  //   UNKNOWN
-  //   b1 b2 b3 b4
-  //   CONFLICT
-  //   When algorithm terminates, all PHIs will either have a single concrete
-  //   base or be in a conflict state.
-  // - For every conflict, insert a dummy PHI node without arguments.  Add
-  //   these to the base[Instruction] = BasePtr mapping.  For every
-  //   non-conflict, add the actual base.
-  //  - For every conflict, add arguments for the base[a] of each input
-  //   arguments.
-  //
-  // Note: A simpler form of this would be to add the conflict form of all
-  // PHIs without running the optimistic algorithm.  This would be
-  // analogous to pessimistic data flow and would likely lead to an
-  // overall worse solution.
+    // Here's the rough algorithm:
+    // - For every SSA value, construct a mapping to either an actual base
+    //   pointer or a PHI which obscures the base pointer.
+    // - Construct a mapping from PHI to unknown TOP state.  Use an
+    //   optimistic algorithm to propagate base pointer information.  Lattice
+    //   looks like:
+    //   UNKNOWN
+    //   b1 b2 b3 b4
+    //   CONFLICT
+    //   When algorithm terminates, all PHIs will either have a single concrete
+    //   base or be in a conflict state.
+    // - For every conflict, insert a dummy PHI node without arguments.  Add
+    //   these to the base[Instruction] = BasePtr mapping.  For every
+    //   non-conflict, add the actual base.
+    //  - For every conflict, add arguments for the base[a] of each input
+    //   arguments.
+    //
+    // Note: A simpler form of this would be to add the conflict form of all
+    // PHIs without running the optimistic algorithm.  This would be
+    // analogous to pessimistic data flow and would likely lead to an
+    // overall worse solution.
 
 #ifndef NDEBUG
   auto isExpectedBDVType = [](Value *BDV) {
@@ -821,7 +820,7 @@ static Value *findBasePointer(Value *I, DefiningValueMapTy &Cache) {
   // Recursively fill in all base defining values reachable from the initial
   // one for which we don't already know a definite base value for
   /* scope */ {
-    SmallVector<Value*, 16> Worklist;
+    SmallVector<Value *, 16> Worklist;
     Worklist.push_back(Def);
     States.insert({Def, BDVState()});
     while (!Worklist.empty()) {
@@ -837,7 +836,8 @@ static Value *findBasePointer(Value *I, DefiningValueMapTy &Cache) {
           // correct BDV for InVal, by creating an entry in the lattice
           // (States).
           return;
-        assert(isExpectedBDVType(Base) && "the only non-base values "
+        assert(isExpectedBDVType(Base) &&
+               "the only non-base values "
                "we see should be base defining values");
         if (States.insert(std::make_pair(Base, BDVState())).second)
           Worklist.push_back(Base);
@@ -856,8 +856,7 @@ static Value *findBasePointer(Value *I, DefiningValueMapTy &Cache) {
       } else if (auto *SV = dyn_cast<ShuffleVectorInst>(Current)) {
         visitIncomingValue(SV->getOperand(0));
         visitIncomingValue(SV->getOperand(1));
-      }
-      else {
+      } else {
         llvm_unreachable("Unimplemented instruction case");
       }
     }
@@ -896,8 +895,8 @@ static Value *findBasePointer(Value *I, DefiningValueMapTy &Cache) {
       // type (scalar versus vector) from a possible known base should be in the
       // lattice.
       assert((!isKnownBaseResult(BDV) ||
-             !areBothVectorOrScalar(BDV, Pair.second.getBaseValue())) &&
-                 "why did it get added?");
+              !areBothVectorOrScalar(BDV, Pair.second.getBaseValue())) &&
+             "why did it get added?");
 
       // Given an input value for the current instruction, return a BDVState
       // instance which represents the BDV of that value.
@@ -919,7 +918,7 @@ static Value *findBasePointer(Value *I, DefiningValueMapTy &Cache) {
         // useful in that it drives us to conflict if our input is.
         NewState =
             meetBDVState(NewState, getStateForInput(EE->getVectorOperand()));
-      } else if (auto *IE = dyn_cast<InsertElementInst>(BDV)){
+      } else if (auto *IE = dyn_cast<InsertElementInst>(BDV)) {
         // Given there's a inherent type mismatch between the operands, will
         // *always* produce Conflict.
         NewState = meetBDVState(NewState, getStateForInput(IE->getOperand(0)));
@@ -996,7 +995,8 @@ static Value *findBasePointer(Value *I, DefiningValueMapTy &Cache) {
     // Only values that do not have known bases or those that have differing
     // type (scalar versus vector) from a possible known base should be in the
     // lattice.
-    assert((!isKnownBaseResult(I) || !areBothVectorOrScalar(I, State.getBaseValue())) &&
+    assert((!isKnownBaseResult(I) ||
+            !areBothVectorOrScalar(I, State.getBaseValue())) &&
            "why did it get added?");
     assert(!State.isUnknown() && "Optimistic algorithm didn't complete!");
 
@@ -1010,7 +1010,7 @@ static Value *findBasePointer(Value *I, DefiningValueMapTy &Cache) {
 
     /// Create and insert a new instruction which will represent the base of
     /// the given instruction 'I'.
-    auto MakeBaseInstPlaceholder = [](Instruction *I) -> Instruction* {
+    auto MakeBaseInstPlaceholder = [](Instruction *I) -> Instruction * {
       if (isa<PHINode>(I)) {
         BasicBlock *BB = I->getParent();
         int NumPreds = pred_size(BB);
@@ -1145,7 +1145,8 @@ static Value *findBasePointer(Value *I, DefiningValueMapTy &Cache) {
       // Find the instruction which produces the base for each input.  We may
       // need to insert a bitcast.
       BaseEE->setOperand(0, getBaseForInput(InVal, BaseEE));
-    } else if (auto *BaseIE = dyn_cast<InsertElementInst>(State.getBaseValue())){
+    } else if (auto *BaseIE =
+                   dyn_cast<InsertElementInst>(State.getBaseValue())) {
       auto *BdvIE = cast<InsertElementInst>(BDV);
       auto UpdateOperand = [&](int OperandIdx) {
         Value *InVal = BdvIE->getOperand(OperandIdx);
@@ -1215,10 +1216,9 @@ static Value *findBasePointer(Value *I, DefiningValueMapTy &Cache) {
 // post condition: PointerToBase contains one (derived, base) pair for every
 // pointer in live.  Note that derived can be equal to base if the original
 // pointer was a base pointer.
-static void
-findBasePointers(const StatepointLiveSetTy &live,
-                 MapVector<Value *, Value *> &PointerToBase,
-                 DominatorTree *DT, DefiningValueMapTy &DVCache) {
+static void findBasePointers(const StatepointLiveSetTy &live,
+                             MapVector<Value *, Value *> &PointerToBase,
+                             DominatorTree *DT, DefiningValueMapTy &DVCache) {
   for (Value *ptr : live) {
     Value *base = findBasePointer(ptr, DVCache);
     assert(base && "failed to find base pointer");
@@ -1245,7 +1245,8 @@ static void findBasePointers(DominatorTree &DT, DefiningValueMapTy &DVCache,
       Pair.first->printAsOperand(errs(), false);
       errs() << " base ";
       Pair.second->printAsOperand(errs(), false);
-      errs() << "\n";;
+      errs() << "\n";
+      ;
     }
   }
 
@@ -1277,9 +1278,9 @@ static void recomputeLiveInValues(
 // starting one of the successor blocks.  We also need to be able to insert the
 // gc.relocates only on the path which goes through the statepoint.  We might
 // need to split an edge to make this possible.
-static BasicBlock *
-normalizeForInvokeSafepoint(BasicBlock *BB, BasicBlock *InvokeParent,
-                            DominatorTree &DT) {
+static BasicBlock *normalizeForInvokeSafepoint(BasicBlock *BB,
+                                               BasicBlock *InvokeParent,
+                                               DominatorTree &DT) {
   BasicBlock *Ret = BB;
   if (!BB->getUniquePredecessor())
     Ret = SplitBlockPredecessors(BB, InvokeParent, "", &DT);
@@ -1347,7 +1348,7 @@ static void CreateGCRelocates(ArrayRef<Value *> LiveVariables,
   // towards a single unified pointer type anyways, we can just cast everything
   // to an i8* of the right address space.  A bitcast is added later to convert
   // gc_relocate to the actual value's type.
-  auto getGCRelocateDecl = [&] (Type *Ty) {
+  auto getGCRelocateDecl = [&](Type *Ty) {
     assert(isHandledGCPointerType(Ty));
     auto AS = Ty->getScalarType()->getPointerAddressSpace();
     Type *NewTy = Type::getInt8PtrTy(M->getContext(), AS);
@@ -1566,8 +1567,8 @@ makeStatepointExplicitImpl(CallBase *Call, /* to replace */
         unsigned AddressSpace = Derived->getType()->getPointerAddressSpace();
         unsigned IntPtrSize = DL.getPointerSizeInBits(AddressSpace);
         Value *Base = Result.PointerToBase.find(Derived)->second;
-        Value *Base_int = Builder.CreatePtrToInt(
-            Base, Type::getIntNTy(Context, IntPtrSize));
+        Value *Base_int =
+            Builder.CreatePtrToInt(Base, Type::getIntNTy(Context, IntPtrSize));
         Value *Derived_int = Builder.CreatePtrToInt(
             Derived, Type::getIntNTy(Context, IntPtrSize));
         return std::make_pair(Base, Builder.CreateSub(Derived_int, Base_int));
@@ -1800,10 +1801,9 @@ insertRelocationStores(iterator_range<Value::user_iterator> GCRelocs,
     assert(Relocate->getNextNode() &&
            "Should always have one since it's not a terminator");
     IRBuilder<> Builder(Relocate->getNextNode());
-    Value *CastedRelocatedValue =
-      Builder.CreateBitCast(Relocate,
-                            cast<AllocaInst>(Alloca)->getAllocatedType(),
-                            suffixed_name_or(Relocate, ".casted", ""));
+    Value *CastedRelocatedValue = Builder.CreateBitCast(
+        Relocate, cast<AllocaInst>(Alloca)->getAllocatedType(),
+        suffixed_name_or(Relocate, ".casted", ""));
 
     new StoreInst(CastedRelocatedValue, Alloca,
                   cast<Instruction>(CastedRelocatedValue)->getNextNode());
@@ -1820,7 +1820,7 @@ static void insertRematerializationStores(
     const RematerializedValueMapTy &RematerializedValues,
     DenseMap<Value *, AllocaInst *> &AllocaMap,
     DenseSet<Value *> &VisitedLiveValues) {
-  for (auto RematerializedValuePair: RematerializedValues) {
+  for (auto RematerializedValuePair : RematerializedValues) {
     Instruction *RematerializedValue = RematerializedValuePair.first;
     Value *OriginalValue = RematerializedValuePair.second;
 
@@ -1838,9 +1838,9 @@ static void insertRematerializationStores(
 }
 
 /// Do all the relocation update via allocas and mem2reg
-static void relocationViaAlloca(
-    Function &F, DominatorTree &DT, ArrayRef<Value *> Live,
-    ArrayRef<PartiallyConstructedSafepointRecord> Records) {
+static void
+relocationViaAlloca(Function &F, DominatorTree &DT, ArrayRef<Value *> Live,
+                    ArrayRef<PartiallyConstructedSafepointRecord> Records) {
 #ifndef NDEBUG
   // record initial number of (static) allocas; we'll check we have the same
   // number when we get done.
@@ -1861,9 +1861,9 @@ static void relocationViaAlloca(
   // "PromotableAllocas"
   const DataLayout &DL = F.getParent()->getDataLayout();
   auto emitAllocaFor = [&](Value *LiveValue) {
-    AllocaInst *Alloca = new AllocaInst(LiveValue->getType(),
-                                        DL.getAllocaAddrSpace(), "",
-                                        F.getEntryBlock().getFirstNonPHI());
+    AllocaInst *Alloca =
+        new AllocaInst(LiveValue->getType(), DL.getAllocaAddrSpace(), "",
+                       F.getEntryBlock().getFirstNonPHI());
     AllocaMap[LiveValue] = Alloca;
     PromotableAllocas.push_back(Alloca);
   };
@@ -2083,9 +2083,8 @@ static void findLiveReferences(
 // (currently it is GEP's and casts). The returned root is  examined by the
 // callers of findRematerializableChainToBasePointer.  Fills "ChainToBase" array
 // with all visited values.
-static Value* findRematerializableChainToBasePointer(
-  SmallVectorImpl<Instruction*> &ChainToBase,
-  Value *CurrentValue) {
+static Value *findRematerializableChainToBasePointer(
+    SmallVectorImpl<Instruction *> &ChainToBase, Value *CurrentValue) {
   if (GetElementPtrInst *GEP = dyn_cast<GetElementPtrInst>(CurrentValue)) {
     ChainToBase.push_back(GEP);
     return findRematerializableChainToBasePointer(ChainToBase,
@@ -2142,7 +2141,8 @@ chainToBasePointerCost(SmallVectorImpl<Instruction *> &Chain,
   return Cost;
 }
 
-static bool AreEquivalentPhiNodes(PHINode &OrigRootPhi, PHINode &AlternateRootPhi) {
+static bool AreEquivalentPhiNodes(PHINode &OrigRootPhi,
+                                  PHINode &AlternateRootPhi) {
   unsigned PhiNum = OrigRootPhi.getNumIncomingValues();
   if (PhiNum != AlternateRootPhi.getNumIncomingValues() ||
       OrigRootPhi.getParent() != AlternateRootPhi.getParent())
@@ -2181,24 +2181,23 @@ static void rematerializeLiveValues(CallBase *Call,
   // We can not di this in following loop due to iterator invalidation.
   SmallVector<Value *, 32> LiveValuesToBeDeleted;
 
-  for (Value *LiveValue: Info.LiveSet) {
+  for (Value *LiveValue : Info.LiveSet) {
     // For each live pointer find its defining chain
     SmallVector<Instruction *, 3> ChainToBase;
     assert(Info.PointerToBase.count(LiveValue));
     Value *RootOfChain =
-      findRematerializableChainToBasePointer(ChainToBase,
-                                             LiveValue);
+        findRematerializableChainToBasePointer(ChainToBase, LiveValue);
 
     // Nothing to do, or chain is too long
-    if ( ChainToBase.size() == 0 ||
-        ChainToBase.size() > ChainLengthThreshold)
+    if (ChainToBase.size() == 0 || ChainToBase.size() > ChainLengthThreshold)
       continue;
 
     // Handle the scenario where the RootOfChain is not equal to the
     // Base Value, but they are essentially the same phi values.
     if (RootOfChain != Info.PointerToBase[LiveValue]) {
       PHINode *OrigRootPhi = dyn_cast<PHINode>(RootOfChain);
-      PHINode *AlternateRootPhi = dyn_cast<PHINode>(Info.PointerToBase[LiveValue]);
+      PHINode *AlternateRootPhi =
+          dyn_cast<PHINode>(Info.PointerToBase[LiveValue]);
       if (!OrigRootPhi || !AlternateRootPhi)
         continue;
       // PHI nodes that have the same incoming values, and belonging to the same
@@ -2221,8 +2220,8 @@ static void rematerializeLiveValues(CallBase *Call,
     InstructionCost Cost = chainToBasePointerCost(ChainToBase, TTI);
     // TODO: We can also account for cases when we will be able to remove some
     //       of the rematerialized values by later optimization passes. I.e if
-    //       we rematerialized several intersecting chains. Or if original values
-    //       don't have any uses besides this statepoint.
+    //       we rematerialized several intersecting chains. Or if original
+    //       values don't have any uses besides this statepoint.
 
     // For invokes we need to rematerialize each chain twice - for normal and
     // for unwind basic blocks. Model this by multiplying cost by two.
@@ -2244,11 +2243,12 @@ static void rematerializeLiveValues(CallBase *Call,
     // Utility function which clones all instructions from "ChainToBase"
     // and inserts them before "InsertBefore". Returns rematerialized value
     // which should be used after statepoint.
-    auto rematerializeChain = [&ChainToBase](
-        Instruction *InsertBefore, Value *RootOfChain, Value *AlternateLiveBase) {
+    auto rematerializeChain = [&ChainToBase](Instruction *InsertBefore,
+                                             Value *RootOfChain,
+                                             Value *AlternateLiveBase) {
       Instruction *LastClonedValue = nullptr;
       Instruction *LastValue = nullptr;
-      for (Instruction *Instr: ChainToBase) {
+      for (Instruction *Instr : ChainToBase) {
         // Only GEP's and casts are supported as we need to be careful to not
         // introduce any new uses of pointers not in the liveset.
         // Note that it's fine to introduce new uses of pointers which were
@@ -2319,7 +2319,7 @@ static void rematerializeLiveValues(CallBase *Call,
   }
 
   // Remove rematerializaed values from the live set
-  for (auto LiveValue: LiveValuesToBeDeleted) {
+  for (auto LiveValue : LiveValuesToBeDeleted) {
     Info.LiveSet.remove(LiveValue);
   }
 }
@@ -2581,13 +2581,11 @@ static void stripInvalidMetadataFromInstruction(Instruction &I) {
   // changed once it became dereferenceable. This is no longer true after RS4GC.
   // Similar reasoning applies to invariant.group metadata, which applies to
   // loads within a group.
-  unsigned ValidMetadataAfterRS4GC[] = {LLVMContext::MD_tbaa,
-                         LLVMContext::MD_range,
-                         LLVMContext::MD_alias_scope,
-                         LLVMContext::MD_nontemporal,
-                         LLVMContext::MD_nonnull,
-                         LLVMContext::MD_align,
-                         LLVMContext::MD_type};
+  unsigned ValidMetadataAfterRS4GC[] = {
+      LLVMContext::MD_tbaa,        LLVMContext::MD_range,
+      LLVMContext::MD_alias_scope, LLVMContext::MD_nontemporal,
+      LLVMContext::MD_nonnull,     LLVMContext::MD_align,
+      LLVMContext::MD_type};
 
   // Drops all metadata on the instruction other than ValidMetadataAfterRS4GC.
   I.dropUnknownNonDebugMetadata(ValidMetadataAfterRS4GC);
@@ -2602,7 +2600,7 @@ static void stripNonValidDataFromBody(Function &F) {
 
   // Set of invariantstart instructions that we need to remove.
   // Use this to avoid invalidating the instruction iterator.
-  SmallVector<IntrinsicInst*, 12> InvariantStartInstructions;
+  SmallVector<IntrinsicInst *, 12> InvariantStartInstructions;
 
   for (Instruction &I : instructions(F)) {
     // invariant.start on memory location implies that the referenced memory
@@ -2719,7 +2717,7 @@ bool RewriteStatepointsForGC::runOnFunction(Function &F, DominatorTree &DT,
       // removeUnreachableBlocks can remove some blocks for which
       // isReachableFromEntry() returns true.
       assert(DT.isReachableFromEntry(I.getParent()) &&
-            "no unreachable blocks expected");
+             "no unreachable blocks expected");
       ParsePointNeeded.push_back(cast<CallBase>(&I));
     }
   }

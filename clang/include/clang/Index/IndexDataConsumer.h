@@ -13,13 +13,13 @@
 #include "clang/Lex/Preprocessor.h"
 
 namespace clang {
-  class ASTContext;
-  class DeclContext;
-  class Expr;
-  class FileID;
-  class IdentifierInfo;
-  class ImportDecl;
-  class MacroInfo;
+class ASTContext;
+class DeclContext;
+class Expr;
+class FileID;
+class IdentifierInfo;
+class ImportDecl;
+class MacroInfo;
 
 namespace index {
 

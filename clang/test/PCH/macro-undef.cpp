@@ -10,13 +10,13 @@
 #define HEADER
 
 #define NULL 0
-template<typename T>
+template <typename T>
 void *f() {
   void *p;  // @15
   return p; // @16
 }
 #undef NULL
-template<typename T>
+template <typename T>
 void *g() {
   void *p;  // @21
   return p; // @22

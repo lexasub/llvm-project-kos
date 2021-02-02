@@ -20,9 +20,9 @@
 #include <unistd.h>
 #include <unwind.h>
 
-_Unwind_Reason_Code frame_handler(struct _Unwind_Context* ctx, void* arg) {
+_Unwind_Reason_Code frame_handler(struct _Unwind_Context *ctx, void *arg) {
   (void)arg;
-  Dl_info info = { 0, 0, 0, 0 };
+  Dl_info info = {0, 0, 0, 0};
 
   // Unwind util the main is reached, above frames depend on the platform and
   // architecture.
@@ -39,7 +39,7 @@ void signal_handler(int signum) {
   _Exit(-1);
 }
 
-int main(int, char**) {
+int main(int, char **) {
   signal(SIGUSR1, signal_handler);
   kill(getpid(), SIGUSR1);
   return -2;

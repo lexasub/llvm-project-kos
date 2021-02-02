@@ -14,7 +14,6 @@
 
 #include "llvm/ADT/DenseSet.h"
 
-
 namespace lldb_private {
 
 template <typename _ElementType, typename _MutexType = std::mutex>

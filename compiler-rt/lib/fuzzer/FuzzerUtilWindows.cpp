@@ -28,72 +28,71 @@
 
 namespace fuzzer {
 
-static const FuzzingOptions* HandlerOpt = nullptr;
+static const FuzzingOptions *HandlerOpt = nullptr;
 
 static LONG CALLBACK ExceptionHandler(PEXCEPTION_POINTERS ExceptionInfo) {
   switch (ExceptionInfo->ExceptionRecord->ExceptionCode) {
-    case EXCEPTION_ACCESS_VIOLATION:
-    case EXCEPTION_ARRAY_BOUNDS_EXCEEDED:
-    case EXCEPTION_STACK_OVERFLOW:
-      if (HandlerOpt->HandleSegv)
-        Fuzzer::StaticCrashSignalCallback();
-      break;
-    case EXCEPTION_DATATYPE_MISALIGNMENT:
-    case EXCEPTION_IN_PAGE_ERROR:
-      if (HandlerOpt->HandleBus)
-        Fuzzer::StaticCrashSignalCallback();
-      break;
-    case EXCEPTION_ILLEGAL_INSTRUCTION:
-    case EXCEPTION_PRIV_INSTRUCTION:
-      if (HandlerOpt->HandleIll)
-        Fuzzer::StaticCrashSignalCallback();
-      break;
-    case EXCEPTION_FLT_DENORMAL_OPERAND:
-    case EXCEPTION_FLT_DIVIDE_BY_ZERO:
-    case EXCEPTION_FLT_INEXACT_RESULT:
-    case EXCEPTION_FLT_INVALID_OPERATION:
-    case EXCEPTION_FLT_OVERFLOW:
-    case EXCEPTION_FLT_STACK_CHECK:
-    case EXCEPTION_FLT_UNDERFLOW:
-    case EXCEPTION_INT_DIVIDE_BY_ZERO:
-    case EXCEPTION_INT_OVERFLOW:
-      if (HandlerOpt->HandleFpe)
-        Fuzzer::StaticCrashSignalCallback();
-      break;
-    // This is an undocumented exception code corresponding to a Visual C++
-    // Exception.
-    //
-    // See: https://devblogs.microsoft.com/oldnewthing/20100730-00/?p=13273
-    case 0xE06D7363:
-      if (HandlerOpt->HandleWinExcept)
-        Fuzzer::StaticCrashSignalCallback();
-      break;
-      // TODO: Handle (Options.HandleXfsz)
+  case EXCEPTION_ACCESS_VIOLATION:
+  case EXCEPTION_ARRAY_BOUNDS_EXCEEDED:
+  case EXCEPTION_STACK_OVERFLOW:
+    if (HandlerOpt->HandleSegv)
+      Fuzzer::StaticCrashSignalCallback();
+    break;
+  case EXCEPTION_DATATYPE_MISALIGNMENT:
+  case EXCEPTION_IN_PAGE_ERROR:
+    if (HandlerOpt->HandleBus)
+      Fuzzer::StaticCrashSignalCallback();
+    break;
+  case EXCEPTION_ILLEGAL_INSTRUCTION:
+  case EXCEPTION_PRIV_INSTRUCTION:
+    if (HandlerOpt->HandleIll)
+      Fuzzer::StaticCrashSignalCallback();
+    break;
+  case EXCEPTION_FLT_DENORMAL_OPERAND:
+  case EXCEPTION_FLT_DIVIDE_BY_ZERO:
+  case EXCEPTION_FLT_INEXACT_RESULT:
+  case EXCEPTION_FLT_INVALID_OPERATION:
+  case EXCEPTION_FLT_OVERFLOW:
+  case EXCEPTION_FLT_STACK_CHECK:
+  case EXCEPTION_FLT_UNDERFLOW:
+  case EXCEPTION_INT_DIVIDE_BY_ZERO:
+  case EXCEPTION_INT_OVERFLOW:
+    if (HandlerOpt->HandleFpe)
+      Fuzzer::StaticCrashSignalCallback();
+    break;
+  // This is an undocumented exception code corresponding to a Visual C++
+  // Exception.
+  //
+  // See: https://devblogs.microsoft.com/oldnewthing/20100730-00/?p=13273
+  case 0xE06D7363:
+    if (HandlerOpt->HandleWinExcept)
+      Fuzzer::StaticCrashSignalCallback();
+    break;
+    // TODO: Handle (Options.HandleXfsz)
   }
   return EXCEPTION_CONTINUE_SEARCH;
 }
 
 BOOL WINAPI CtrlHandler(DWORD dwCtrlType) {
   switch (dwCtrlType) {
-    case CTRL_C_EVENT:
-      if (HandlerOpt->HandleInt)
-        Fuzzer::StaticInterruptCallback();
-      return TRUE;
-    case CTRL_BREAK_EVENT:
-      if (HandlerOpt->HandleTerm)
-        Fuzzer::StaticInterruptCallback();
-      return TRUE;
+  case CTRL_C_EVENT:
+    if (HandlerOpt->HandleInt)
+      Fuzzer::StaticInterruptCallback();
+    return TRUE;
+  case CTRL_BREAK_EVENT:
+    if (HandlerOpt->HandleTerm)
+      Fuzzer::StaticInterruptCallback();
+    return TRUE;
   }
   return FALSE;
 }
 
-void CALLBACK AlarmHandler(PVOID, BOOLEAN) {
-  Fuzzer::StaticAlarmCallback();
-}
+void CALLBACK AlarmHandler(PVOID, BOOLEAN) { Fuzzer::StaticAlarmCallback(); }
 
 class TimerQ {
   HANDLE TimerQueue;
- public:
+
+public:
   TimerQ() : TimerQueue(NULL) {}
   ~TimerQ() {
     if (TimerQueue)
@@ -109,7 +108,7 @@ class TimerQ {
     }
     HANDLE Timer;
     if (!CreateTimerQueueTimer(&Timer, TimerQueue, AlarmHandler, NULL,
-        Seconds*1000, Seconds*1000, 0)) {
+                               Seconds * 1000, Seconds * 1000, 0)) {
       Printf("libFuzzer: CreateTimerQueueTimer failed.\n");
       exit(1);
     }
@@ -120,7 +119,7 @@ static TimerQ Timer;
 
 static void CrashHandler(int) { Fuzzer::StaticCrashSignalCallback(); }
 
-void SetSignalHandler(const FuzzingOptions& Options) {
+void SetSignalHandler(const FuzzingOptions &Options) {
   HandlerOpt = &Options;
 
   if (Options.HandleAlrm && Options.UnitTimeoutSec > 0)
@@ -130,7 +129,7 @@ void SetSignalHandler(const FuzzingOptions& Options) {
     if (!SetConsoleCtrlHandler(CtrlHandler, TRUE)) {
       DWORD LastError = GetLastError();
       Printf("libFuzzer: SetConsoleCtrlHandler failed (Error code: %lu).\n",
-        LastError);
+             LastError);
       exit(1);
     }
 
@@ -160,9 +159,7 @@ FILE *OpenProcessPipe(const char *Command, const char *Mode) {
   return _popen(Command, Mode);
 }
 
-int CloseProcessPipe(FILE *F) {
-  return _pclose(F);
-}
+int CloseProcessPipe(FILE *F) { return _pclose(F); }
 
 int ExecuteCommand(const Command &Cmd) {
   std::string CmdLine = Cmd.toString();
@@ -217,7 +214,7 @@ std::string SearchRegexCmd(const std::string &Regex) {
 }
 
 void DiscardOutput(int Fd) {
-  FILE* Temp = fopen("nul", "w");
+  FILE *Temp = fopen("nul", "w");
   if (!Temp)
     return;
   _dup2(_fileno(Temp), Fd);

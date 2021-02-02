@@ -25,33 +25,33 @@ class PragmaNamespace;
 class Preprocessor;
 class Token;
 
+/**
+ * Describes how the pragma was introduced, e.g., with \#pragma,
+ * _Pragma, or __pragma.
+ */
+enum PragmaIntroducerKind {
   /**
-   * Describes how the pragma was introduced, e.g., with \#pragma,
-   * _Pragma, or __pragma.
+   * The pragma was introduced via \#pragma.
    */
-  enum PragmaIntroducerKind {
-    /**
-     * The pragma was introduced via \#pragma.
-     */
-    PIK_HashPragma,
+  PIK_HashPragma,
 
-    /**
-     * The pragma was introduced via the C99 _Pragma(string-literal).
-     */
-    PIK__Pragma,
+  /**
+   * The pragma was introduced via the C99 _Pragma(string-literal).
+   */
+  PIK__Pragma,
 
-    /**
-     * The pragma was introduced via the Microsoft
-     * __pragma(token-string).
-     */
-    PIK___pragma
-  };
+  /**
+   * The pragma was introduced via the Microsoft
+   * __pragma(token-string).
+   */
+  PIK___pragma
+};
 
-  /// Describes how and where the pragma was introduced.
-  struct PragmaIntroducer {
-    PragmaIntroducerKind Kind;
-    SourceLocation Loc;
-  };
+/// Describes how and where the pragma was introduced.
+struct PragmaIntroducer {
+  PragmaIntroducerKind Kind;
+  SourceLocation Loc;
+};
 
 /// PragmaHandler - Instances of this interface defined to handle the various
 /// pragmas that the language front-end uses.  Each handler optionally has a
@@ -105,8 +105,7 @@ public:
   /// specified name.  If not, return the handler for the null name if it
   /// exists, otherwise return null.  If IgnoreNull is true (the default) then
   /// the null handler isn't returned on failure to match.
-  PragmaHandler *FindHandler(StringRef Name,
-                             bool IgnoreNull = true) const;
+  PragmaHandler *FindHandler(StringRef Name, bool IgnoreNull = true) const;
 
   /// AddPragma - Add a pragma to this namespace.
   void AddPragma(PragmaHandler *Handler);

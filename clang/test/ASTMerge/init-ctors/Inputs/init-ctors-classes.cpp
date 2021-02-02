@@ -1,5 +1,4 @@
-class A_base
-{
+class A_base {
 public:
   int x;
   A_base() : x(0) {
@@ -8,12 +7,13 @@ public:
   }
 };
 
-class A : public A_base
-{
+class A : public A_base {
 public:
   int y;
-  struct { int z; };
+  struct {
+    int z;
+  };
   int array[2];
-  A(int _x) : A_base(_x), y(0), z(1), array{{2},{3}} {
+  A(int _x) : A_base(_x), y(0), z(1), array{{2}, {3}} {
   }
 };

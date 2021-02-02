@@ -5,5 +5,4 @@
 // the syntax is consumed without backtracking.
 
 // type-specifier-seq in conversion-type-id
-template <typename T> requires T::operator short
-unsigned int foo(); // expected-error {{C++ requires a type specifier for all declarations}}
+template <typename T> requires T::operator short unsigned int foo(); // expected-error {{C++ requires a type specifier for all declarations}}

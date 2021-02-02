@@ -19,20 +19,16 @@
 #include "propagate_const_helpers.h"
 #include <cassert>
 
-using std::experimental::propagate_const;
 using std::nullptr_t;
+using std::experimental::propagate_const;
 
-constexpr bool operator!=(const X &lhs, const X &rhs) {
+constexpr bool operator!=(const X& lhs, const X& rhs) {
   return lhs.i_ != rhs.i_;
 }
 
-constexpr bool operator!=(const X &, const nullptr_t &) {
-  return true;
-}
+constexpr bool operator!=(const X&, const nullptr_t&) { return true; }
 
-constexpr bool operator!=(const nullptr_t &, const X &) {
-  return true;
-}
+constexpr bool operator!=(const nullptr_t&, const X&) { return true; }
 
 int main(int, char**) {
   constexpr X x1_1(1);
@@ -57,8 +53,8 @@ int main(int, char**) {
   static_assert(!(p1_1 != x1_1), "");
   static_assert(p1_1 != x3_2, "");
 
-  static_assert(p1_1!=nullptr,"");
-  static_assert(nullptr!=p1_1,"");
+  static_assert(p1_1 != nullptr, "");
+  static_assert(nullptr != p1_1, "");
 
   return 0;
 }

@@ -13,7 +13,7 @@ struct S {
   };
 };
 
-template<typename T>
+template <typename T>
 struct U {
   T *r = &q;
   T q = 42;

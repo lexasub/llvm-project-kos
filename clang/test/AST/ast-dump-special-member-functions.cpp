@@ -81,7 +81,7 @@ struct SimpleCopyConstructor {
 struct NotSimpleCopyConstructor {
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+3]]:1> line:[[@LINE-1]]:8 struct NotSimpleCopyConstructor definition
   // CHECK-NOT: CopyConstructor {{.*}}simple{{.*}}
-  NotSimpleCopyConstructor(const NotSimpleCopyConstructor&) = delete;
+  NotSimpleCopyConstructor(const NotSimpleCopyConstructor &) = delete;
 };
 
 struct TrivialCopyConstructor {
@@ -93,13 +93,13 @@ struct TrivialCopyConstructor {
 struct NontrivialCopyConstructor {
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+3]]:1> line:[[@LINE-1]]:8 struct NontrivialCopyConstructor definition
   // CHECK: CopyConstructor {{.*}}non_trivial{{.*}}
-  NontrivialCopyConstructor(const NontrivialCopyConstructor&) {}
+  NontrivialCopyConstructor(const NontrivialCopyConstructor &) {}
 };
 
 struct UserDeclaredCopyConstructor {
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+3]]:1> line:[[@LINE-1]]:8 struct UserDeclaredCopyConstructor definition
   // CHECK: CopyConstructor {{.*}}user_declared{{.*}}
-  UserDeclaredCopyConstructor(const UserDeclaredCopyConstructor&) {}
+  UserDeclaredCopyConstructor(const UserDeclaredCopyConstructor &) {}
 };
 
 struct NonUserDeclaredCopyConstructor {
@@ -110,13 +110,13 @@ struct NonUserDeclaredCopyConstructor {
 struct CopyConstructorHasConstParam {
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+3]]:1> line:[[@LINE-1]]:8 struct CopyConstructorHasConstParam definition
   // CHECK: CopyConstructor {{.*}}has_const_param{{.*}}
-  CopyConstructorHasConstParam(const CopyConstructorHasConstParam&) {}
+  CopyConstructorHasConstParam(const CopyConstructorHasConstParam &) {}
 };
 
 struct CopyConstructorDoesNotHaveConstParam {
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+3]]:1> line:[[@LINE-1]]:8 struct CopyConstructorDoesNotHaveConstParam definition
   // CHECK-NOT: CopyConstructor {{.*}} has_const_param{{.*}}
-  CopyConstructorDoesNotHaveConstParam(CopyConstructorDoesNotHaveConstParam&) {}
+  CopyConstructorDoesNotHaveConstParam(CopyConstructorDoesNotHaveConstParam &) {}
 };
 
 struct NeedsImplicitCopyConstructor {
@@ -128,7 +128,7 @@ struct NeedsImplicitCopyConstructor {
 struct DoesNotNeedImplicitCopyConstructor {
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+3]]:1> line:[[@LINE-1]]:8 struct DoesNotNeedImplicitCopyConstructor definition
   // CHECK-NOT: CopyConstructor {{.*}}needs_implicit{{.*}}
-  DoesNotNeedImplicitCopyConstructor(const DoesNotNeedImplicitCopyConstructor&) {}
+  DoesNotNeedImplicitCopyConstructor(const DoesNotNeedImplicitCopyConstructor &) {}
 };
 
 struct DeletedDestructor {
@@ -150,18 +150,18 @@ struct DefaultedCopyConstructorIsDeleted {
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+4]]:1> line:[[@LINE-1]]:8 struct DefaultedCopyConstructorIsDeleted definition
   // CHECK: CopyConstructor {{.*}}defaulted_is_deleted{{.*}}
   int &&i;
-  DefaultedCopyConstructorIsDeleted(const DefaultedCopyConstructorIsDeleted&) = default;
+  DefaultedCopyConstructorIsDeleted(const DefaultedCopyConstructorIsDeleted &) = default;
 };
 
 struct DefaultedCopyConstructorIsNotDeleted {
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+4]]:1> line:[[@LINE-1]]:8 struct DefaultedCopyConstructorIsNotDeleted definition
   // CHECK-NOT: CopyConstructor {{.*}}defaulted_is_deleted{{.*}}
   int i;
-  DefaultedCopyConstructorIsNotDeleted(const DefaultedCopyConstructorIsNotDeleted&) = default;
+  DefaultedCopyConstructorIsNotDeleted(const DefaultedCopyConstructorIsNotDeleted &) = default;
 };
 
 struct BaseWithoutCopyConstructorConstParam {
-  BaseWithoutCopyConstructorConstParam(BaseWithoutCopyConstructorConstParam&);
+  BaseWithoutCopyConstructorConstParam(BaseWithoutCopyConstructorConstParam &);
 };
 
 struct ImplicitCopyConstructorHasConstParam {
@@ -182,7 +182,7 @@ struct MoveConstructorExists {
 struct MoveConstructorDoesNotExist {
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+3]]:1> line:[[@LINE-1]]:8 struct MoveConstructorDoesNotExist definition
   // CHECK-NOT: MoveConstructor {{.*}}exists{{.*}}
-  MoveConstructorDoesNotExist(const MoveConstructorDoesNotExist&);
+  MoveConstructorDoesNotExist(const MoveConstructorDoesNotExist &);
 };
 
 struct SimpleMoveConstructor {
@@ -194,7 +194,7 @@ struct SimpleMoveConstructor {
 struct NotSimpleMoveConstructor {
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+3]]:1> line:[[@LINE-1]]:8 struct NotSimpleMoveConstructor definition
   // CHECK-NOT: MoveConstructor {{.*}}simple{{.*}}
-  NotSimpleMoveConstructor(NotSimpleMoveConstructor&&) = delete;
+  NotSimpleMoveConstructor(NotSimpleMoveConstructor &&) = delete;
 };
 
 struct TrivialMoveConstructor {
@@ -206,13 +206,13 @@ struct TrivialMoveConstructor {
 struct NontrivialMoveConstructor {
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+3]]:1> line:[[@LINE-1]]:8 struct NontrivialMoveConstructor definition
   // CHECK: MoveConstructor {{.*}}non_trivial{{.*}}
-  NontrivialMoveConstructor(NontrivialMoveConstructor&&) {}
+  NontrivialMoveConstructor(NontrivialMoveConstructor &&) {}
 };
 
 struct UserDeclaredMoveConstructor {
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+3]]:1> line:[[@LINE-1]]:8 struct UserDeclaredMoveConstructor definition
   // CHECK: MoveConstructor {{.*}}user_declared{{.*}}
-  UserDeclaredMoveConstructor(UserDeclaredMoveConstructor&&) {}
+  UserDeclaredMoveConstructor(UserDeclaredMoveConstructor &&) {}
 };
 
 struct NonUserDeclaredMoveConstructor {
@@ -229,7 +229,7 @@ struct NeedsImplicitMoveConstructor {
 struct DoesNotNeedImplicitMoveConstructor {
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+3]]:1> line:[[@LINE-1]]:8 struct DoesNotNeedImplicitMoveConstructor definition
   // CHECK-NOT: MoveConstructor {{.*}}needs_implicit{{.*}}
-  DoesNotNeedImplicitMoveConstructor(DoesNotNeedImplicitMoveConstructor&&) {}
+  DoesNotNeedImplicitMoveConstructor(DoesNotNeedImplicitMoveConstructor &&) {}
 };
 
 struct MoveConstructorNeedsOverloadResolution : virtual DeletedDestructor {
@@ -247,31 +247,31 @@ struct MoveConstructorDoesNotNeedOverloadResolution {
 struct TrivialCopyAssignment {
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+3]]:1> line:[[@LINE-1]]:8 struct TrivialCopyAssignment definition
   // CHECK: CopyAssignment {{.*}} trivial{{.*}}
-  TrivialCopyAssignment& operator=(const TrivialCopyAssignment&) = default;
+  TrivialCopyAssignment &operator=(const TrivialCopyAssignment &) = default;
 };
 
 struct NontrivialCopyAssignment {
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+3]]:1> line:[[@LINE-1]]:8 struct NontrivialCopyAssignment definition
   // CHECK: CopyAssignment {{.*}}non_trivial{{.*}}
-  NontrivialCopyAssignment& operator=(const NontrivialCopyAssignment&) {}
+  NontrivialCopyAssignment &operator=(const NontrivialCopyAssignment &) {}
 };
 
 struct CopyAssignmentHasConstParam {
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+3]]:1> line:[[@LINE-1]]:8 struct CopyAssignmentHasConstParam definition
   // CHECK: CopyAssignment {{.*}}has_const_param{{.*}}
-  CopyAssignmentHasConstParam& operator=(const CopyAssignmentHasConstParam&) {}
+  CopyAssignmentHasConstParam &operator=(const CopyAssignmentHasConstParam &) {}
 };
 
 struct CopyAssignmentDoesNotHaveConstParam {
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+3]]:1> line:[[@LINE-1]]:8 struct CopyAssignmentDoesNotHaveConstParam definition
   // CHECK-NOT: CopyAssignment {{.*}} has_const_param{{.*}}
-  CopyAssignmentDoesNotHaveConstParam& operator=(CopyAssignmentDoesNotHaveConstParam&) {}
+  CopyAssignmentDoesNotHaveConstParam &operator=(CopyAssignmentDoesNotHaveConstParam &) {}
 };
 
 struct UserDeclaredCopyAssignment {
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+3]]:1> line:[[@LINE-1]]:8 struct UserDeclaredCopyAssignment definition
   // CHECK: CopyAssignment {{.*}}user_declared{{.*}}
-  UserDeclaredCopyAssignment& operator=(const UserDeclaredCopyAssignment&) {}
+  UserDeclaredCopyAssignment &operator=(const UserDeclaredCopyAssignment &) {}
 };
 
 struct NonUserDeclaredCopyAssignment {
@@ -288,11 +288,11 @@ struct NeedsImplicitCopyAssignment {
 struct DoesNotNeedImplicitCopyAssignment {
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+3]]:1> line:[[@LINE-1]]:8 struct DoesNotNeedImplicitCopyAssignment definition
   // CHECK-NOT: CopyAssignment {{.*}}needs_implicit{{.*}}
-  DoesNotNeedImplicitCopyAssignment& operator=(const DoesNotNeedImplicitCopyAssignment&) {}
+  DoesNotNeedImplicitCopyAssignment &operator=(const DoesNotNeedImplicitCopyAssignment &) {}
 };
 
 struct DeclaresCopyAssignment {
-  DeclaresCopyAssignment &operator=(const DeclaresCopyAssignment&) &;
+  DeclaresCopyAssignment &operator=(const DeclaresCopyAssignment &) &;
 };
 
 struct CopyAssignmentNeedsOverloadResolution {
@@ -307,7 +307,7 @@ struct CopyAssignmentDoesNotNeedOverloadResolution {
 };
 
 struct BaseWithoutCopyAssignmentConstParam {
-  BaseWithoutCopyAssignmentConstParam& operator=(BaseWithoutCopyAssignmentConstParam&);
+  BaseWithoutCopyAssignmentConstParam &operator=(BaseWithoutCopyAssignmentConstParam &);
 };
 
 struct ImplicitCopyAssignmentHasConstParam {
@@ -328,7 +328,7 @@ struct MoveAssignmentExists {
 struct MoveAssignmentDoesNotExist {
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+3]]:1> line:[[@LINE-1]]:8 struct MoveAssignmentDoesNotExist definition
   // CHECK-NOT: MoveAssignment {{.*}}exists{{.*}}
-  MoveAssignmentDoesNotExist& operator=(const MoveAssignmentDoesNotExist&);
+  MoveAssignmentDoesNotExist &operator=(const MoveAssignmentDoesNotExist &);
 };
 
 struct SimpleMoveAssignment {
@@ -340,7 +340,7 @@ struct SimpleMoveAssignment {
 struct NotSimpleMoveAssignment {
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+3]]:1> line:[[@LINE-1]]:8 struct NotSimpleMoveAssignment definition
   // CHECK-NOT: MoveAssignment {{.*}}simple{{.*}}
-  NotSimpleMoveAssignment& operator=(NotSimpleMoveAssignment&&) = delete;
+  NotSimpleMoveAssignment &operator=(NotSimpleMoveAssignment &&) = delete;
 };
 
 struct TrivialMoveAssignment {
@@ -352,13 +352,13 @@ struct TrivialMoveAssignment {
 struct NontrivialMoveAssignment {
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+3]]:1> line:[[@LINE-1]]:8 struct NontrivialMoveAssignment definition
   // CHECK: MoveAssignment {{.*}}non_trivial{{.*}}
-  NontrivialMoveAssignment& operator=(NontrivialMoveAssignment&&) {}
+  NontrivialMoveAssignment &operator=(NontrivialMoveAssignment &&) {}
 };
 
 struct UserDeclaredMoveAssignment {
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+3]]:1> line:[[@LINE-1]]:8 struct UserDeclaredMoveAssignment definition
   // CHECK: MoveAssignment {{.*}}user_declared{{.*}}
-  UserDeclaredMoveAssignment& operator=(UserDeclaredMoveAssignment&&) {}
+  UserDeclaredMoveAssignment &operator=(UserDeclaredMoveAssignment &&) {}
 };
 
 struct NonUserDeclaredMoveAssignment {
@@ -375,7 +375,7 @@ struct NeedsImplicitMoveAssignment {
 struct DoesNotNeedImplicitMoveAssignment {
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+3]]:1> line:[[@LINE-1]]:8 struct DoesNotNeedImplicitMoveAssignment definition
   // CHECK-NOT: MoveAssignment {{.*}}needs_implicit{{.*}}
-  DoesNotNeedImplicitMoveAssignment& operator=(DoesNotNeedImplicitMoveAssignment&&) {}
+  DoesNotNeedImplicitMoveAssignment &operator=(DoesNotNeedImplicitMoveAssignment &&) {}
 };
 
 struct MoveAssignmentNeedsOverloadResolution : virtual DeletedDestructor {

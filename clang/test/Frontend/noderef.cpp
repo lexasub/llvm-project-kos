@@ -126,16 +126,16 @@ class B {
 };
 
 void test_lambdas() {
-  auto l = [](int NODEREF *x){  // expected-note{{x declared here}}
-    return *x;  // expected-warning{{dereferencing x; was declared with a 'noderef' type}}
+  auto l = [](int NODEREF *x) { // expected-note{{x declared here}}
+    return *x;                  // expected-warning{{dereferencing x; was declared with a 'noderef' type}}
   };
 }
 
-int NODEREF *glob_ptr;  // expected-note{{glob_ptr declared here}}
-int glob_int = *glob_ptr;  // expected-warning{{dereferencing glob_ptr; was declared with a 'noderef' type}}
+int NODEREF *glob_ptr;    // expected-note{{glob_ptr declared here}}
+int glob_int = *glob_ptr; // expected-warning{{dereferencing glob_ptr; was declared with a 'noderef' type}}
 
 void cast_from_void_ptr(NODEREF void *x) {
-  int *a = static_cast<int *>(x);      // expected-warning{{casting to dereferenceable pointer removes 'noderef' attribute}}
+  int *a = static_cast<int *>(x); // expected-warning{{casting to dereferenceable pointer removes 'noderef' attribute}}
 
   // Allow regular C-style casts and C-style through reinterpret_casts to be holes
   int *b = reinterpret_cast<int *>(x);

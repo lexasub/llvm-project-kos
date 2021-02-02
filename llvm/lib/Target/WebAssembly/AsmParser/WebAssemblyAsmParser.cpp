@@ -628,7 +628,7 @@ public:
           parseSingleInteger(true, Operands);
           if (checkForP2AlignIfLoadStore(Operands, Name))
             return true;
-        } else if(Lexer.is(AsmToken::Real)) {
+        } else if (Lexer.is(AsmToken::Real)) {
           if (parseSingleFloat(true, Operands))
             return true;
         } else if (!parseSpecialFloatMaybe(true, Operands)) {
@@ -886,7 +886,8 @@ public:
         DirectiveID.getString() == ".int16" ||
         DirectiveID.getString() == ".int32" ||
         DirectiveID.getString() == ".int64") {
-      if (CheckDataSection()) return true;
+      if (CheckDataSection())
+        return true;
       const MCExpr *Val;
       SMLoc End;
       if (Parser.parseExpression(Val, End))
@@ -898,7 +899,8 @@ public:
     }
 
     if (DirectiveID.getString() == ".asciz") {
-      if (CheckDataSection()) return true;
+      if (CheckDataSection())
+        return true;
       std::string S;
       if (Parser.parseEscapedString(S))
         return error("Cannot parse string constant: ", Lexer.getTok());
@@ -1026,7 +1028,8 @@ public:
   void onEndOfFunction() {
     // Automatically output a .size directive, so it becomes optional for the
     // user.
-    if (!LastFunctionLabel) return;
+    if (!LastFunctionLabel)
+      return;
     auto TempSym = getContext().createLinkerPrivateTempSymbol();
     getStreamer().emitLabel(TempSym);
     auto Start = MCSymbolRefExpr::create(LastFunctionLabel, getContext());

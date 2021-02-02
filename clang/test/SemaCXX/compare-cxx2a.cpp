@@ -20,115 +20,115 @@ void self_compare() {
   int *b = nullptr;
   S s;
 
-  (void)(a <=> a); // expected-warning {{self-comparison always evaluates to 'std::strong_ordering::equal'}}
-  (void)(b <=> b); // expected-warning {{self-comparison always evaluates to 'std::strong_ordering::equal'}}
+  (void)(a <=> a);            // expected-warning {{self-comparison always evaluates to 'std::strong_ordering::equal'}}
+  (void)(b <=> b);            // expected-warning {{self-comparison always evaluates to 'std::strong_ordering::equal'}}
   (void)(s.x[a] <=> S::x[a]); // expected-warning {{self-comparison always evaluates to 'std::strong_ordering::equal'}}
 }
 
 void test0(long a, unsigned long b) {
-  enum EnumA : int {A};
-  enum EnumB {B};
-  enum EnumC {C = 0x10000};
+  enum EnumA : int { A };
+  enum EnumB { B };
+  enum EnumC { C = 0x10000 };
 
   (void)((short)a <=> (unsigned short)b);
 
   // (a,b)
   (void)(a <=> (unsigned long)b); // expected-error {{argument to 'operator<=>' cannot be narrowed}}
-  (void)(a <=> (unsigned int) b);
-  (void)(a <=> (unsigned short) b);
-  (void)(a <=> (unsigned char) b);
+  (void)(a <=> (unsigned int)b);
+  (void)(a <=> (unsigned short)b);
+  (void)(a <=> (unsigned char)b);
   (void)((long)a <=> b);                // expected-error {{argument to 'operator<=>' cannot be narrowed}}
   (void)((int)a <=> b);                 // expected-error {{argument to 'operator<=>' cannot be narrowed}}
   (void)((short)a <=> b);               // expected-error {{argument to 'operator<=>' cannot be narrowed}}
   (void)((signed char)a <=> b);         // expected-error {{argument to 'operator<=>' cannot be narrowed}}
   (void)((long)a <=> (unsigned long)b); // expected-error {{argument to 'operator<=>' cannot be narrowed}}
   (void)((int)a <=> (unsigned int)b);   // expected-error {{argument to 'operator<=>' cannot be narrowed}}
-  (void)((short) a <=> (unsigned short) b);
-  (void)((signed char) a <=> (unsigned char) b);
+  (void)((short)a <=> (unsigned short)b);
+  (void)((signed char)a <=> (unsigned char)b);
 
   // (A,b)
-  (void)(A <=> (unsigned long) b);
-  (void)(A <=> (unsigned int) b);
-  (void)(A <=> (unsigned short) b);
-  (void)(A <=> (unsigned char) b);
-  (void)((long) A <=> b);
-  (void)((int) A <=> b);
-  (void)((short) A <=> b);
-  (void)((signed char) A <=> b);
-  (void)((long) A <=> (unsigned long) b);
-  (void)((int) A <=> (unsigned int) b);
-  (void)((short) A <=> (unsigned short) b);
-  (void)((signed char) A <=> (unsigned char) b);
+  (void)(A <=> (unsigned long)b);
+  (void)(A <=> (unsigned int)b);
+  (void)(A <=> (unsigned short)b);
+  (void)(A <=> (unsigned char)b);
+  (void)((long)A <=> b);
+  (void)((int)A <=> b);
+  (void)((short)A <=> b);
+  (void)((signed char)A <=> b);
+  (void)((long)A <=> (unsigned long)b);
+  (void)((int)A <=> (unsigned int)b);
+  (void)((short)A <=> (unsigned short)b);
+  (void)((signed char)A <=> (unsigned char)b);
 
   // (a,B)
-  (void)(a <=> (unsigned long) B); // expected-error {{argument to 'operator<=>' cannot be narrowed from type 'long' to 'unsigned long'}}
-  (void)(a <=> (unsigned int) B);
-  (void)(a <=> (unsigned short) B);
-  (void)(a <=> (unsigned char) B);
-  (void)((long) a <=> B);
-  (void)((int) a <=> B);
-  (void)((short) a <=> B);
-  (void)((signed char) a <=> B);
-  (void)((long) a <=> (unsigned long) B); // expected-error {{argument to 'operator<=>' cannot be narrowed from type 'long' to 'unsigned long'}}
-  (void)((int) a <=> (unsigned int) B); // expected-error {{argument to 'operator<=>' cannot be narrowed from type 'int' to 'unsigned int'}}
-  (void)((short) a <=> (unsigned short) B);
-  (void)((signed char) a <=> (unsigned char) B);
+  (void)(a <=> (unsigned long)B); // expected-error {{argument to 'operator<=>' cannot be narrowed from type 'long' to 'unsigned long'}}
+  (void)(a <=> (unsigned int)B);
+  (void)(a <=> (unsigned short)B);
+  (void)(a <=> (unsigned char)B);
+  (void)((long)a <=> B);
+  (void)((int)a <=> B);
+  (void)((short)a <=> B);
+  (void)((signed char)a <=> B);
+  (void)((long)a <=> (unsigned long)B); // expected-error {{argument to 'operator<=>' cannot be narrowed from type 'long' to 'unsigned long'}}
+  (void)((int)a <=> (unsigned int)B);   // expected-error {{argument to 'operator<=>' cannot be narrowed from type 'int' to 'unsigned int'}}
+  (void)((short)a <=> (unsigned short)B);
+  (void)((signed char)a <=> (unsigned char)B);
 
   // (C,b)
-  (void)(C <=> (unsigned long) b);
-  (void)(C <=> (unsigned int) b);
-  (void)(C <=> (unsigned short) b); // expected-warning {{comparison of constant 'C' (65536) with expression of type 'unsigned short' is always 'std::strong_ordering::greater'}}
-  (void)(C <=> (unsigned char) b);  // expected-warning {{comparison of constant 'C' (65536) with expression of type 'unsigned char' is always 'std::strong_ordering::greater'}}
-  (void)((long) C <=> b);
-  (void)((int) C <=> b);
-  (void)((short) C <=> b);
-  (void)((signed char) C <=> b);
-  (void)((long) C <=> (unsigned long) b);
-  (void)((int) C <=> (unsigned int) b);
-  (void)((short) C <=> (unsigned short) b);
-  (void)((signed char) C <=> (unsigned char) b);
+  (void)(C <=> (unsigned long)b);
+  (void)(C <=> (unsigned int)b);
+  (void)(C <=> (unsigned short)b); // expected-warning {{comparison of constant 'C' (65536) with expression of type 'unsigned short' is always 'std::strong_ordering::greater'}}
+  (void)(C <=> (unsigned char)b);  // expected-warning {{comparison of constant 'C' (65536) with expression of type 'unsigned char' is always 'std::strong_ordering::greater'}}
+  (void)((long)C <=> b);
+  (void)((int)C <=> b);
+  (void)((short)C <=> b);
+  (void)((signed char)C <=> b);
+  (void)((long)C <=> (unsigned long)b);
+  (void)((int)C <=> (unsigned int)b);
+  (void)((short)C <=> (unsigned short)b);
+  (void)((signed char)C <=> (unsigned char)b);
 
   // (a,C)
-  (void)(a <=> (unsigned long) C); // expected-error {{argument to 'operator<=>' cannot be narrowed from type 'long' to 'unsigned long'}}
-  (void)(a <=> (unsigned int) C);
-  (void)(a <=> (unsigned short) C);
-  (void)(a <=> (unsigned char) C);
-  (void)((long) a <=> C);
-  (void)((int) a <=> C);
-  (void)((short) a <=> C); // expected-warning {{comparison of constant 'C' (65536) with expression of type 'short' is always 'std::strong_ordering::less'}}
-  (void)((signed char) a <=> C); // expected-warning {{comparison of constant 'C' (65536) with expression of type 'signed char' is always 'std::strong_ordering::less'}}
-  (void)((long) a <=> (unsigned long) C); // expected-error {{argument to 'operator<=>' cannot be narrowed from type 'long' to 'unsigned long'}}
-  (void)((int) a <=> (unsigned int) C); // expected-error {{argument to 'operator<=>' cannot be narrowed from type 'int' to 'unsigned int'}}
-  (void)((short) a <=> (unsigned short) C);
-  (void)((signed char) a <=> (unsigned char) C);
+  (void)(a <=> (unsigned long)C); // expected-error {{argument to 'operator<=>' cannot be narrowed from type 'long' to 'unsigned long'}}
+  (void)(a <=> (unsigned int)C);
+  (void)(a <=> (unsigned short)C);
+  (void)(a <=> (unsigned char)C);
+  (void)((long)a <=> C);
+  (void)((int)a <=> C);
+  (void)((short)a <=> C);               // expected-warning {{comparison of constant 'C' (65536) with expression of type 'short' is always 'std::strong_ordering::less'}}
+  (void)((signed char)a <=> C);         // expected-warning {{comparison of constant 'C' (65536) with expression of type 'signed char' is always 'std::strong_ordering::less'}}
+  (void)((long)a <=> (unsigned long)C); // expected-error {{argument to 'operator<=>' cannot be narrowed from type 'long' to 'unsigned long'}}
+  (void)((int)a <=> (unsigned int)C);   // expected-error {{argument to 'operator<=>' cannot be narrowed from type 'int' to 'unsigned int'}}
+  (void)((short)a <=> (unsigned short)C);
+  (void)((signed char)a <=> (unsigned char)C);
 
   // (0x80000,b)
-  (void)(0x80000 <=> (unsigned long) b);
-  (void)(0x80000 <=> (unsigned int) b);
-  (void)(0x80000 <=> (unsigned short) b); // expected-warning {{result of comparison of constant 524288 with expression of type 'unsigned short' is always 'std::strong_ordering::greater'}}
-  (void)(0x80000 <=> (unsigned char) b); // expected-warning {{result of comparison of constant 524288 with expression of type 'unsigned char' is always 'std::strong_ordering::greater'}}
-  (void)((long) 0x80000 <=> b);
-  (void)((int) 0x80000 <=> b);
-  (void)((short) 0x80000 <=> b);
-  (void)((signed char) 0x80000 <=> b);
-  (void)((long) 0x80000 <=> (unsigned long) b);
-  (void)((int) 0x80000 <=> (unsigned int) b);
-  (void)((short) 0x80000 <=> (unsigned short) b);
-  (void)((signed char) 0x80000 <=> (unsigned char) b);
+  (void)(0x80000 <=> (unsigned long)b);
+  (void)(0x80000 <=> (unsigned int)b);
+  (void)(0x80000 <=> (unsigned short)b); // expected-warning {{result of comparison of constant 524288 with expression of type 'unsigned short' is always 'std::strong_ordering::greater'}}
+  (void)(0x80000 <=> (unsigned char)b);  // expected-warning {{result of comparison of constant 524288 with expression of type 'unsigned char' is always 'std::strong_ordering::greater'}}
+  (void)((long)0x80000 <=> b);
+  (void)((int)0x80000 <=> b);
+  (void)((short)0x80000 <=> b);
+  (void)((signed char)0x80000 <=> b);
+  (void)((long)0x80000 <=> (unsigned long)b);
+  (void)((int)0x80000 <=> (unsigned int)b);
+  (void)((short)0x80000 <=> (unsigned short)b);
+  (void)((signed char)0x80000 <=> (unsigned char)b);
 
   // (a,0x80000)
   (void)(a <=> (unsigned long)0x80000); // expected-error {{argument to 'operator<=>' cannot be narrowed}}
-  (void)(a <=> (unsigned int) 0x80000);
-  (void)(a <=> (unsigned short) 0x80000);
-  (void)(a <=> (unsigned char) 0x80000);
-  (void)((long) a <=> 0x80000);
-  (void)((int) a <=> 0x80000);
-  (void)((short) a <=> 0x80000); // expected-warning {{comparison of constant 524288 with expression of type 'short' is always 'std::strong_ordering::less'}}
-  (void)((signed char) a <=> 0x80000); // expected-warning {{comparison of constant 524288 with expression of type 'signed char' is always 'std::strong_ordering::less'}}
+  (void)(a <=> (unsigned int)0x80000);
+  (void)(a <=> (unsigned short)0x80000);
+  (void)(a <=> (unsigned char)0x80000);
+  (void)((long)a <=> 0x80000);
+  (void)((int)a <=> 0x80000);
+  (void)((short)a <=> 0x80000);               // expected-warning {{comparison of constant 524288 with expression of type 'short' is always 'std::strong_ordering::less'}}
+  (void)((signed char)a <=> 0x80000);         // expected-warning {{comparison of constant 524288 with expression of type 'signed char' is always 'std::strong_ordering::less'}}
   (void)((long)a <=> (unsigned long)0x80000); // expected-error {{argument to 'operator<=>' cannot be narrowed}}
   (void)((int)a <=> (unsigned int)0x80000);   // expected-error {{argument to 'operator<=>' cannot be narrowed}}
-  (void)((short) a <=> (unsigned short) 0x80000);
-  (void)((signed char) a <=> (unsigned char) 0x80000);
+  (void)((short)a <=> (unsigned short)0x80000);
+  (void)((signed char)a <=> (unsigned char)0x80000);
 }
 
 void test5(bool b, bool b2) {
@@ -181,7 +181,7 @@ void test7(unsigned long other) {
 
   // Common signed, other unsigned, constant signed
   (void)((unsigned char)other <=> (int)(0xff));
-  (void)((unsigned char)other <=> (int)(0xffff));  // expected-warning{{less}}
+  (void)((unsigned char)other <=> (int)(0xffff)); // expected-warning{{less}}
 
   // Common signed, other unsigned, constant unsigned
   (void)((unsigned char)other <=> (unsigned short)(0xff));
@@ -219,12 +219,12 @@ using MemDataTy = long(Class::*);
 
 void test_nullptr(int *x, FnTy *fp, MemFnTy memp, MemDataTy memdp) {
   auto r1 = (nullptr <=> nullptr); // expected-error {{invalid operands}}
-  auto r2 = (nullptr <=> x); // expected-error {{invalid operands}}
-  auto r3 = (fp <=> nullptr); // expected-error {{invalid operands}}
-  auto r4 = (0 <=> fp); // expected-error {{ordered comparison between pointer and zero}}
-  auto r5 = (nullptr <=> memp); // expected-error {{invalid operands}}
-  auto r6 = (0 <=> memdp); // expected-error {{invalid operands}}
-  auto r7 = (0 <=> nullptr); // expected-error {{invalid operands}}
+  auto r2 = (nullptr <=> x);       // expected-error {{invalid operands}}
+  auto r3 = (fp <=> nullptr);      // expected-error {{invalid operands}}
+  auto r4 = (0 <=> fp);            // expected-error {{ordered comparison between pointer and zero}}
+  auto r5 = (nullptr <=> memp);    // expected-error {{invalid operands}}
+  auto r6 = (0 <=> memdp);         // expected-error {{invalid operands}}
+  auto r7 = (0 <=> nullptr);       // expected-error {{invalid operands}}
 }
 
 void test_memptr(MemFnTy mf, MemDataTy md) {
@@ -247,9 +247,13 @@ template auto test_template_overflow<0>();
 template auto test_template_overflow<-1>(); // expected-note {{requested here}}
 
 void test_enum_integral_compare() {
-  enum EnumA : int {A, ANeg = -1, AMax = __INT_MAX__};
-  enum EnumB : unsigned {B, BMax = __UINT32_MAX__ };
-  enum EnumC : int {C = -1, C0 = 0};
+  enum EnumA : int { A,
+                     ANeg = -1,
+                     AMax = __INT_MAX__ };
+  enum EnumB : unsigned { B,
+                          BMax = __UINT32_MAX__ };
+  enum EnumC : int { C = -1,
+                     C0 = 0 };
 
   (void)(A <=> C); // expected-error {{invalid operands to binary expression ('EnumA' and 'EnumC')}}
 
@@ -270,7 +274,8 @@ void test_enum_integral_compare() {
 
 namespace EnumCompareTests {
 
-enum class EnumA { A, A2 };
+enum class EnumA { A,
+                   A2 };
 enum class EnumB { B };
 enum class EnumC : unsigned { C };
 
@@ -394,41 +399,41 @@ enum class StrongE {};
 enum WeakE { E_One,
              E_Two };
 
-void test_diag(_Complex int ci, _Complex float cf, _Complex double cd, int i, float f, StrongE E1, WeakE E2, int *p) {  // expected-warning 3 {{'_Complex' is a C99 extension}}
-  (void)(ci <=> (_Complex int &)ci); // expected-warning {{'_Complex' is a C99 extension}} expected-error {{invalid operands}}
-  (void)(ci <=> cf); // expected-error {{invalid operands}}
-  (void)(ci <=> i); // expected-error {{invalid operands}}
-  (void)(ci <=> f); // expected-error {{invalid operands}}
-  (void)(cf <=> i); // expected-error {{invalid operands}}
-  (void)(cf <=> f); // expected-error {{invalid operands}}
-  (void)(ci <=> p); // expected-error {{invalid operands}}
-  (void)(ci <=> E1); // expected-error {{invalid operands}}
-  (void)(E2 <=> cf); // expected-error {{invalid operands}}
+void test_diag(_Complex int ci, _Complex float cf, _Complex double cd, int i, float f, StrongE E1, WeakE E2, int *p) { // expected-warning 3 {{'_Complex' is a C99 extension}}
+  (void)(ci <=> (_Complex int &)ci);                                                                                   // expected-warning {{'_Complex' is a C99 extension}} expected-error {{invalid operands}}
+  (void)(ci <=> cf);                                                                                                   // expected-error {{invalid operands}}
+  (void)(ci <=> i);                                                                                                    // expected-error {{invalid operands}}
+  (void)(ci <=> f);                                                                                                    // expected-error {{invalid operands}}
+  (void)(cf <=> i);                                                                                                    // expected-error {{invalid operands}}
+  (void)(cf <=> f);                                                                                                    // expected-error {{invalid operands}}
+  (void)(ci <=> p);                                                                                                    // expected-error {{invalid operands}}
+  (void)(ci <=> E1);                                                                                                   // expected-error {{invalid operands}}
+  (void)(E2 <=> cf);                                                                                                   // expected-error {{invalid operands}}
 }
 
 void test_int(_Complex int x, _Complex int y) { // expected-warning 2 {{'_Complex' is a C99 extension}}
-  auto r = x <=> y; // expected-error {{invalid operands}}
+  auto r = x <=> y;                             // expected-error {{invalid operands}}
 }
 
 void test_double(_Complex double x, _Complex double y) { // expected-warning 2 {{'_Complex' is a C99 extension}}
-  auto r = x <=> y; // expected-error {{invalid operands}}
+  auto r = x <=> y;                                      // expected-error {{invalid operands}}
 }
 
 } // namespace ComplexTest
 
 namespace Vector {
-  typedef __attribute__((ext_vector_type(4))) int V;
-  void f(V v1, V v2) {
-    // This would logically result in a vector of std::strong_ordering, but we
-    // don't support vectors of class type. We could model this as a vector of
-    // int (-1 / 0 / 1), but that doesn't extend to floating-point types (how
-    // to represent 'unordered')? For now, just reject.
-    (void)(v1 <=> v2); // expected-error {{three-way comparison between vectors is not supported}}
-  }
+typedef __attribute__((ext_vector_type(4))) int V;
+void f(V v1, V v2) {
+  // This would logically result in a vector of std::strong_ordering, but we
+  // don't support vectors of class type. We could model this as a vector of
+  // int (-1 / 0 / 1), but that doesn't extend to floating-point types (how
+  // to represent 'unordered')? For now, just reject.
+  (void)(v1 <=> v2); // expected-error {{three-way comparison between vectors is not supported}}
 }
+} // namespace Vector
 
 namespace PR44992 {
-  extern "C++" struct s {
-    friend auto operator<=>(s const &, s const &) = default;
-  };
-}
+extern "C++" struct s {
+  friend auto operator<=>(s const &, s const &) = default;
+};
+} // namespace PR44992

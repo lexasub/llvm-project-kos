@@ -17,7 +17,7 @@
 #define HEADER
 
 struct S {
-  S(): a(0) {}
+  S() : a(0) {}
   S(int v) : a(v) {}
   int a;
   typedef int type;
@@ -55,10 +55,10 @@ class S8 : public S7<S> {
   S8() {}
 
 public:
-  S8(int v) : S7<S>(v){
+  S8(int v) : S7<S>(v) {
 #pragma omp target
 #pragma omp teams
-#pragma omp distribute simd private(a) private(this->a) private(S7<S>::a)
+#pragma omp distribute simd private(a) private(this->a) private(S7 <S>::a)
     for (int k = 0; k < a.a; ++k)
       ++this->a.a;
   }
@@ -79,7 +79,7 @@ template <class T, int N>
 T tmain(T argc) {
   T b = argc, c, d, e, f, h;
   static T a;
-// CHECK: static T a;
+  // CHECK: static T a;
   static T g;
 #pragma omp threadprivate(g)
 
@@ -88,26 +88,27 @@ T tmain(T argc) {
 #pragma omp distribute simd dist_schedule(static, a) firstprivate(a)
   for (int i = 0; i < 2; ++i)
     a = 2;
-// CHECK: #pragma omp distribute simd dist_schedule(static, a) firstprivate(a)
-// CHECK-NEXT: for (int i = 0; i < 2; ++i)
-// CHECK-NEXT: a = 2;
+    // CHECK: #pragma omp distribute simd dist_schedule(static, a) firstprivate(a)
+    // CHECK-NEXT: for (int i = 0; i < 2; ++i)
+    // CHECK-NEXT: a = 2;
 
 #pragma omp target
 #pragma omp teams
-#pragma omp distribute simd private(argc, b), firstprivate(c, d), lastprivate(f) collapse(N) reduction(+ : h) dist_schedule(static,N)
+#pragma omp distribute simd private(argc, b), firstprivate(c, d), lastprivate(f) collapse(N) reduction(+ \
+                                                                                                       : h) dist_schedule(static, N)
   for (int i = 0; i < 2; ++i)
     for (int j = 0; j < 2; ++j)
       for (int k = 0; k < 10; ++k)
         for (int m = 0; m < 10; ++m)
           for (int n = 0; n < 10; ++n)
             a++;
-// CHECK: #pragma omp distribute simd private(argc,b) firstprivate(c,d) lastprivate(f) collapse(N) reduction(+: h) dist_schedule(static, N)
-// CHECK-NEXT: for (int i = 0; i < 2; ++i)
-// CHECK-NEXT: for (int j = 0; j < 2; ++j)
-// CHECK-NEXT: for (int k = 0; k < 10; ++k)
-// CHECK-NEXT: for (int m = 0; m < 10; ++m)
-// CHECK-NEXT: for (int n = 0; n < 10; ++n)
-// CHECK-NEXT: a++;
+  // CHECK: #pragma omp distribute simd private(argc,b) firstprivate(c,d) lastprivate(f) collapse(N) reduction(+: h) dist_schedule(static, N)
+  // CHECK-NEXT: for (int i = 0; i < 2; ++i)
+  // CHECK-NEXT: for (int j = 0; j < 2; ++j)
+  // CHECK-NEXT: for (int k = 0; k < 10; ++k)
+  // CHECK-NEXT: for (int m = 0; m < 10; ++m)
+  // CHECK-NEXT: for (int n = 0; n < 10; ++n)
+  // CHECK-NEXT: a++;
   return T();
 }
 
@@ -115,7 +116,7 @@ int main(int argc, char **argv) {
   int b = argc, c, d, e, f, h;
   int x[200];
   static int a;
-// CHECK: static int a;
+  // CHECK: static int a;
   static float g;
 #pragma omp threadprivate(g)
 
@@ -124,42 +125,45 @@ int main(int argc, char **argv) {
 #pragma omp distribute simd dist_schedule(static, a) private(a)
   for (int i = 0; i < 2; ++i)
     a = 2;
-// CHECK: #pragma omp distribute simd  dist_schedule(static, a) private(a)
-// CHECK-NEXT: for (int i = 0; i < 2; ++i)
-// CHECK-NEXT: a = 2;
+    // CHECK: #pragma omp distribute simd  dist_schedule(static, a) private(a)
+    // CHECK-NEXT: for (int i = 0; i < 2; ++i)
+    // CHECK-NEXT: a = 2;
 
 #pragma omp target
 #pragma omp teams
 #ifdef OMP5
-#pragma omp distribute simd private(argc, b), firstprivate(argv, c), lastprivate(d, f) collapse(2) reduction(+ : h) dist_schedule(static, b) if(simd:argc)
+#pragma omp distribute simd private(argc, b), firstprivate(argv, c), lastprivate(d, f) collapse(2) reduction(+                                      \
+                                                                                                             : h) dist_schedule(static, b) if (simd \
+                                                                                                                                               : argc)
 #else
-#pragma omp distribute simd private(argc, b), firstprivate(argv, c), lastprivate(d, f) collapse(2) reduction(+ : h) dist_schedule(static, b)
+#pragma omp distribute simd private(argc, b), firstprivate(argv, c), lastprivate(d, f) collapse(2) reduction(+ \
+                                                                                                             : h) dist_schedule(static, b)
 #endif // OMP5
   for (int i = 0; i < 10; ++i)
     for (int j = 0; j < 10; ++j)
-            a++;
-// OMP45: #pragma omp distribute simd private(argc,b) firstprivate(argv,c) lastprivate(d,f) collapse(2) reduction(+: h) dist_schedule(static, b)
-// OMP50: #pragma omp distribute simd private(argc,b) firstprivate(argv,c) lastprivate(d,f) collapse(2) reduction(+: h) dist_schedule(static, b) if(simd: argc)
-// CHECK-NEXT: for (int i = 0; i < 10; ++i)
-// CHECK-NEXT: for (int j = 0; j < 10; ++j)
-// CHECK-NEXT: a++;
+      a++;
+  // OMP45: #pragma omp distribute simd private(argc,b) firstprivate(argv,c) lastprivate(d,f) collapse(2) reduction(+: h) dist_schedule(static, b)
+  // OMP50: #pragma omp distribute simd private(argc,b) firstprivate(argv,c) lastprivate(d,f) collapse(2) reduction(+: h) dist_schedule(static, b) if(simd: argc)
+  // CHECK-NEXT: for (int i = 0; i < 10; ++i)
+  // CHECK-NEXT: for (int j = 0; j < 10; ++j)
+  // CHECK-NEXT: a++;
 
   int i;
 #pragma omp target
 #pragma omp teams
 #ifdef OMP5
-#pragma omp distribute simd aligned(x:8) linear(i:2) safelen(8) simdlen(8) if(argc) nontemporal(argc, c, d) order(concurrent)
+#pragma omp distribute simd aligned(x : 8) linear(i : 2) safelen(8) simdlen(8) if (argc) nontemporal(argc, c, d) order(concurrent)
 #else
-#pragma omp distribute simd aligned(x:8) linear(i:2) safelen(8) simdlen(8)
+#pragma omp distribute simd aligned(x : 8) linear(i : 2) safelen(8) simdlen(8)
 #endif // OMP5
   for (i = 0; i < 100; i++)
     for (int j = 0; j < 200; j++)
       a += h + x[j];
-// OMP45: #pragma omp distribute simd aligned(x: 8) linear(i: 2) safelen(8) simdlen(8)
-// OMP50: #pragma omp distribute simd aligned(x: 8) linear(i: 2) safelen(8) simdlen(8) if(argc) nontemporal(argc,c,d) order(concurrent)
-// CHECK-NEXT: for (i = 0; i < 100; i++)
-// CHECK-NEXT: for (int j = 0; j < 200; j++)
-// CHECK-NEXT: a += h + x[j];
+  // OMP45: #pragma omp distribute simd aligned(x: 8) linear(i: 2) safelen(8) simdlen(8)
+  // OMP50: #pragma omp distribute simd aligned(x: 8) linear(i: 2) safelen(8) simdlen(8) if(argc) nontemporal(argc,c,d) order(concurrent)
+  // CHECK-NEXT: for (i = 0; i < 100; i++)
+  // CHECK-NEXT: for (int j = 0; j < 200; j++)
+  // CHECK-NEXT: a += h + x[j];
 
   return (tmain<int, 5>(argc) + tmain<char, 1>(argv[0][0]));
 }

@@ -106,12 +106,12 @@ unsigned HexagonResource::setWeight(unsigned s) {
 }
 
 HexagonCVIResource::HexagonCVIResource(MCInstrInfo const &MCII,
-                                       MCSubtargetInfo const &STI,
-                                       unsigned s,
+                                       MCSubtargetInfo const &STI, unsigned s,
                                        MCInst const *id)
     : HexagonResource(s) {
 
-  const unsigned ItinUnits = HexagonMCInstrInfo::getCVIResources(MCII, STI, *id);
+  const unsigned ItinUnits =
+      HexagonMCInstrInfo::getCVIResources(MCII, STI, *id);
   unsigned Lanes;
   const unsigned Units = HexagonConvertUnits(ItinUnits, &Lanes);
 
@@ -138,8 +138,7 @@ struct CVIUnits {
 };
 using HVXInstsT = SmallVector<struct CVIUnits, 8>;
 
-static unsigned makeAllBits(unsigned startBit, unsigned Lanes)
-{
+static unsigned makeAllBits(unsigned startBit, unsigned Lanes) {
   for (unsigned i = 1; i < Lanes; ++i)
     startBit = (startBit << 1) | startBit;
   return startBit;
@@ -183,7 +182,6 @@ void HexagonShuffler::append(MCInst const &ID, MCInst const *Extender,
 
   Packet.push_back(PI);
 }
-
 
 static const unsigned Slot0Mask = 1 << 0;
 static const unsigned Slot1Mask = 1 << 1;
@@ -305,7 +303,6 @@ void HexagonShuffler::restrictBranchOrder(HexagonPacketSummary const &Summary) {
 
   reportError("invalid instruction packet: out of slots");
 }
-
 
 void HexagonShuffler::permitNonSlot() {
   for (HexagonInstr &ISJ : insts()) {
@@ -616,13 +613,12 @@ HexagonShuffler::tryAuction(HexagonPacketSummary const &Summary) const {
         return AuctionCore.bid(I.Core.getUnits());
       });
 
-  LLVM_DEBUG(
-    dbgs() << "Shuffle attempt: " << (ValidSlots ? "passed" : "failed")
-           << "\n";
-    for (HexagonInstr const &ISJ : insts(PacketResult))
-      dbgs() << "\t" << HexagonMCInstrInfo::getName(MCII, *ISJ.ID) << ": "
-             << llvm::format_hex(ISJ.Core.getUnits(), 4, true) << "\n";
-  );
+  LLVM_DEBUG(dbgs() << "Shuffle attempt: " << (ValidSlots ? "passed" : "failed")
+                    << "\n";
+             for (HexagonInstr const &ISJ
+                  : insts(PacketResult)) dbgs()
+             << "\t" << HexagonMCInstrInfo::getName(MCII, *ISJ.ID) << ": "
+             << llvm::format_hex(ISJ.Core.getUnits(), 4, true) << "\n";);
 
   Optional<HexagonPacket> Res;
   if (ValidSlots)
@@ -667,19 +663,18 @@ bool HexagonShuffler::shuffle() {
         ++emptySlots;
     }
 
-  LLVM_DEBUG(
-    for (HexagonInstr const &ISJ : insts()) {
-      dbgs().write_hex(ISJ.Core.getUnits());
-      if (ISJ.CVI.isValid()) {
-        dbgs() << '/';
-        dbgs().write_hex(ISJ.CVI.getUnits()) << '|';
-        dbgs() << ISJ.CVI.getLanes();
-      }
-      dbgs() << ':'
-             << HexagonMCInstrInfo::getDesc(MCII, ISJ.getDesc()).getOpcode()
-             << '\n';
-    } dbgs() << '\n';
-  );
+  LLVM_DEBUG(for (HexagonInstr const &ISJ
+                  : insts()) {
+    dbgs().write_hex(ISJ.Core.getUnits());
+    if (ISJ.CVI.isValid()) {
+      dbgs() << '/';
+      dbgs().write_hex(ISJ.CVI.getUnits()) << '|';
+      dbgs() << ISJ.CVI.getLanes();
+    }
+    dbgs() << ':'
+           << HexagonMCInstrInfo::getDesc(MCII, ISJ.getDesc()).getOpcode()
+           << '\n';
+  } dbgs() << '\n';);
 
   return Ok;
 }

@@ -53,14 +53,12 @@ static bool test_codegen_fns_ran;
 
 struct MyASTConsumer : public ASTConsumer {
   std::unique_ptr<CodeGenerator> Builder;
-  std::vector<Decl*> toplevel_decls;
+  std::vector<Decl *> toplevel_decls;
 
   MyASTConsumer(std::unique_ptr<CodeGenerator> Builder_in)
-    : ASTConsumer(), Builder(std::move(Builder_in))
-  {
-  }
+      : ASTConsumer(), Builder(std::move(Builder_in)) {}
 
-  ~MyASTConsumer() { }
+  ~MyASTConsumer() {}
 
   void Initialize(ASTContext &Context) override;
   void HandleCXXStaticMemberVarInstantiation(VarDecl *VD) override;
@@ -138,12 +136,12 @@ void MyASTConsumer::AssignInheritanceModel(CXXRecordDecl *RD) {
 }
 
 void MyASTConsumer::HandleCXXStaticMemberVarInstantiation(VarDecl *VD) {
-   Builder->HandleCXXStaticMemberVarInstantiation(VD);
+  Builder->HandleCXXStaticMemberVarInstantiation(VD);
 }
 
 void MyASTConsumer::HandleVTable(CXXRecordDecl *RD) {
-   Builder->HandleVTable(RD);
- }
+  Builder->HandleVTable(RD);
+}
 
 ASTMutationListener *MyASTConsumer::GetASTMutationListener() {
   return Builder->GetASTMutationListener();
@@ -153,9 +151,7 @@ ASTDeserializationListener *MyASTConsumer::GetASTDeserializationListener() {
   return Builder->GetASTDeserializationListener();
 }
 
-void MyASTConsumer::PrintStats() {
-  Builder->PrintStats();
-}
+void MyASTConsumer::PrintStats() { Builder->PrintStats(); }
 
 bool MyASTConsumer::shouldSkipFunctionBody(Decl *D) {
   return Builder->shouldSkipFunctionBody(D);
@@ -173,7 +169,7 @@ static void test_codegen_fns(MyASTConsumer *my) {
 
   CodeGen::CodeGenModule &CGM = my->Builder->CGM();
 
-  for (auto decl : my->toplevel_decls ) {
+  for (auto decl : my->toplevel_decls) {
     if (FunctionDecl *fd = dyn_cast<FunctionDecl>(decl)) {
       if (fd->getName() == "mytest_fn") {
         Constant *c = my->Builder->GetAddrOfGlobal(GlobalDecl(fd), false);
@@ -185,7 +181,7 @@ static void test_codegen_fns(MyASTConsumer *my) {
         }
         mytest_fn_ok = true;
       }
-    } else if(clang::RecordDecl *rd = dyn_cast<RecordDecl>(decl)) {
+    } else if (clang::RecordDecl *rd = dyn_cast<RecordDecl>(decl)) {
       if (rd->getName() == "mytest_struct") {
         RecordDecl *def = rd->getDefinition();
         ASSERT_TRUE(def != NULL);
@@ -201,7 +197,7 @@ static void test_codegen_fns(MyASTConsumer *my) {
           dbgs() << "\n";
         }
 
-        auto* structTy = dyn_cast<llvm::StructType>(llvmTy);
+        auto *structTy = dyn_cast<llvm::StructType>(llvmTy);
         ASSERT_TRUE(structTy != NULL);
 
         // Check getLLVMFieldNumber
@@ -210,9 +206,12 @@ static void test_codegen_fns(MyASTConsumer *my) {
         FieldDecl *zField = NULL;
 
         for (auto field : rd->fields()) {
-          if (field->getName() == "x") xField = field;
-          if (field->getName() == "y") yField = field;
-          if (field->getName() == "z") zField = field;
+          if (field->getName() == "x")
+            xField = field;
+          if (field->getName() == "y")
+            yField = field;
+          if (field->getName() == "z")
+            zField = field;
         }
 
         ASSERT_TRUE(xField != NULL);
@@ -226,9 +225,9 @@ static void test_codegen_fns(MyASTConsumer *my) {
         ASSERT_NE(x, y);
         ASSERT_NE(y, z);
 
-        llvm::Type* xTy = structTy->getTypeAtIndex(x);
-        llvm::Type* yTy = structTy->getTypeAtIndex(y);
-        llvm::Type* zTy = structTy->getTypeAtIndex(z);
+        llvm::Type *xTy = structTy->getTypeAtIndex(x);
+        llvm::Type *yTy = structTy->getTypeAtIndex(y);
+        llvm::Type *zTy = structTy->getTypeAtIndex(z);
 
         ASSERT_TRUE(xTy != NULL);
         ASSERT_TRUE(yTy != NULL);
@@ -263,8 +262,8 @@ TEST(CodeGenExternalTest, CodeGenExternalTest) {
   LO.CPlusPlus = 1;
   LO.CPlusPlus11 = 1;
   TestCompiler Compiler(LO);
-  auto CustomASTConsumer
-    = std::make_unique<MyASTConsumer>(std::move(Compiler.CG));
+  auto CustomASTConsumer =
+      std::make_unique<MyASTConsumer>(std::move(Compiler.CG));
 
   Compiler.init(TestProgram, std::move(CustomASTConsumer));
 

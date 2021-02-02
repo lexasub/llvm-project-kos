@@ -28,7 +28,7 @@ ModuleFile::~ModuleFile() {
   delete static_cast<ASTSelectorLookupTable *>(SelectorLookupTable);
 }
 
-template<typename Key, typename Offset, unsigned InitialCapacity>
+template <typename Key, typename Offset, unsigned InitialCapacity>
 static void
 dumpLocalRemap(StringRef Name,
                const ContinuousRangeMap<Key, Offset, InitialCapacity> &Map) {

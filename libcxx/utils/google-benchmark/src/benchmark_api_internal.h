@@ -1,15 +1,15 @@
 #ifndef BENCHMARK_API_INTERNAL_H
 #define BENCHMARK_API_INTERNAL_H
 
-#include "benchmark/benchmark.h"
-#include "commandlineflags.h"
-
 #include <cmath>
 #include <iosfwd>
 #include <limits>
 #include <memory>
 #include <string>
 #include <vector>
+
+#include "benchmark/benchmark.h"
+#include "commandlineflags.h"
 
 namespace benchmark {
 namespace internal {

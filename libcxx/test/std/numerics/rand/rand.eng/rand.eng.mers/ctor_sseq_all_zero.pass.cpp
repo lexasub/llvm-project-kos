@@ -48,7 +48,8 @@ struct all_zero_seed_seq {
   }
 
   std::size_t size() const { return 0u; }
-  template <typename OutputIterator> void param(OutputIterator) const {}
+  template <typename OutputIterator>
+  void param(OutputIterator) const {}
 };
 
 template <typename result_type, std::size_t word_size>
@@ -58,12 +59,8 @@ void test(void) {
   const std::size_t tempering_l = word_size;
 
   all_zero_seed_seq q;
-  std::mersenne_twister_engine<result_type, word_size, state_size,
-                               shift_size,
-                               0u,
-                               0x0,
-                               0u, 0x0, 0u, 0x0, 0u, 0x0,
-                               tempering_l,
+  std::mersenne_twister_engine<result_type, word_size, state_size, shift_size,
+                               0u, 0x0, 0u, 0x0, 0u, 0x0, 0u, 0x0, tempering_l,
                                0u>
       e(q);
 

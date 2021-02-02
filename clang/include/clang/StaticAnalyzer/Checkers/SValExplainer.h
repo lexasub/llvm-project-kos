@@ -45,13 +45,9 @@ private:
 public:
   SValExplainer(ASTContext &Ctx) : ACtx(Ctx) {}
 
-  std::string VisitUnknownVal(UnknownVal V) {
-    return "unknown value";
-  }
+  std::string VisitUnknownVal(UnknownVal V) { return "unknown value"; }
 
-  std::string VisitUndefinedVal(UndefinedVal V) {
-    return "undefined value";
-  }
+  std::string VisitUndefinedVal(UndefinedVal V) { return "undefined value"; }
 
   std::string VisitLocMemRegionVal(loc::MemRegionVal V) {
     const MemRegion *R = V.getRegion();
@@ -104,8 +100,8 @@ public:
   }
 
   std::string VisitSymbolDerived(const SymbolDerived *S) {
-    return "value derived from (" + Visit(S->getParentSymbol()) +
-           ") for " + Visit(S->getRegion());
+    return "value derived from (" + Visit(S->getParentSymbol()) + ") for " +
+           Visit(S->getRegion());
   }
 
   std::string VisitSymbolExtent(const SymbolExtent *S) {
@@ -131,8 +127,8 @@ public:
 
   std::string VisitSymSymExpr(const SymSymExpr *S) {
     return "(" + Visit(S->getLHS()) + ") " +
-           std::string(BinaryOperator::getOpcodeStr(S->getOpcode())) +
-           " (" + Visit(S->getRHS()) + ")";
+           std::string(BinaryOperator::getOpcodeStr(S->getOpcode())) + " (" +
+           Visit(S->getRHS()) + ")";
   }
 
   // TODO: SymbolCast doesn't appear in practice.
@@ -145,8 +141,10 @@ public:
       return "'this' object";
     // Objective-C objects are not normal symbolic regions. At least,
     // they're always on the heap.
-    if (R->getSymbol()->getType()
-            .getCanonicalType()->getAs<ObjCObjectPointerType>())
+    if (R->getSymbol()
+            ->getType()
+            .getCanonicalType()
+            ->getAs<ObjCObjectPointerType>())
       return "object at " + Visit(R->getSymbol());
     // Other heap-based symbolic regions are also special.
     if (isa<HeapSpaceRegion>(R->getMemorySpace()))
@@ -254,8 +252,8 @@ public:
     std::string Str;
     llvm::raw_string_ostream OS(Str);
     OS << V;
-    return "a value unsupported by the explainer: (" +
-           std::string(OS.str()) + ")";
+    return "a value unsupported by the explainer: (" + std::string(OS.str()) +
+           ")";
   }
 
   std::string VisitSymExpr(SymbolRef S) {

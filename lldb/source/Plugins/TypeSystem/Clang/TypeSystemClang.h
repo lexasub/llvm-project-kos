@@ -77,7 +77,8 @@ public:
   TypePayloadClang() = default;
   explicit TypePayloadClang(OptionalClangModuleID owning_module,
                             bool is_complete_objc_class = false);
-  explicit TypePayloadClang(uint32_t opaque_payload) : m_payload(opaque_payload) {}
+  explicit TypePayloadClang(uint32_t opaque_payload)
+      : m_payload(opaque_payload) {}
   operator Type::Payload() { return m_payload; }
 
   static constexpr unsigned ObjCClassBit = 1 << 31;
@@ -92,7 +93,7 @@ public:
   void SetOwningModule(OptionalClangModuleID id);
   /// \}
 };
-  
+
 /// A TypeSystem implementation based on Clang.
 ///
 /// This class uses a single clang::ASTContext as the backend for storing
@@ -325,13 +326,13 @@ public:
       if (pack_name && !packed_args)
         return false;
       return args.size() == names.size() &&
-        (!packed_args || !packed_args->packed_args);
+             (!packed_args || !packed_args->packed_args);
     }
 
     llvm::SmallVector<const char *, 2> names;
     llvm::SmallVector<clang::TemplateArgument, 2> args;
-    
-    const char * pack_name = nullptr;
+
+    const char *pack_name = nullptr;
     std::unique_ptr<TemplateParameterInfos> packed_args;
   };
 
@@ -548,7 +549,7 @@ public:
 #ifndef NDEBUG
   bool Verify(lldb::opaque_compiler_type_t type) override;
 #endif
-  
+
   bool IsArrayType(lldb::opaque_compiler_type_t type,
                    CompilerType *element_type, uint64_t *size,
                    bool *is_incomplete) override;
@@ -736,7 +737,7 @@ public:
   const llvm::fltSemantics &GetFloatTypeSemantics(size_t byte_size) override;
 
   llvm::Optional<uint64_t> GetByteSize(lldb::opaque_compiler_type_t type,
-                       ExecutionContextScope *exe_scope) {
+                                       ExecutionContextScope *exe_scope) {
     if (llvm::Optional<uint64_t> bit_size = GetBitSize(type, exe_scope))
       return (*bit_size + 7) / 8;
     return llvm::None;
@@ -765,13 +766,11 @@ public:
   GetBasicTypeEnumeration(lldb::opaque_compiler_type_t type) override;
 
   static lldb::BasicType
-  GetBasicTypeEnumeration(lldb::opaque_compiler_type_t type,
-                          ConstString name);
+  GetBasicTypeEnumeration(lldb::opaque_compiler_type_t type, ConstString name);
 
   void ForEachEnumerator(
       lldb::opaque_compiler_type_t type,
-      std::function<bool(const CompilerType &integer_type,
-                         ConstString name,
+      std::function<bool(const CompilerType &integer_type, ConstString name,
                          const llvm::APSInt &value)> const &callback) override;
 
   uint32_t GetNumFields(lldb::opaque_compiler_type_t type) override;
@@ -1174,12 +1173,12 @@ public:
     return GetForTarget(target, InferIsolatedASTKindFromLangOpts(lang_opts));
   }
 
-  UserExpression *
-  GetUserExpression(llvm::StringRef expr, llvm::StringRef prefix,
-                    lldb::LanguageType language,
-                    Expression::ResultType desired_type,
-                    const EvaluateExpressionOptions &options,
-                    ValueObject *ctx_obj) override;
+  UserExpression *GetUserExpression(llvm::StringRef expr,
+                                    llvm::StringRef prefix,
+                                    lldb::LanguageType language,
+                                    Expression::ResultType desired_type,
+                                    const EvaluateExpressionOptions &options,
+                                    ValueObject *ctx_obj) override;
 
   FunctionCaller *GetFunctionCaller(const CompilerType &return_type,
                                     const Address &function_address,

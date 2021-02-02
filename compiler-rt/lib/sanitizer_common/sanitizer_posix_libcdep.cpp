@@ -15,14 +15,6 @@
 
 #if SANITIZER_POSIX
 
-#include "sanitizer_common.h"
-#include "sanitizer_flags.h"
-#include "sanitizer_platform_limits_netbsd.h"
-#include "sanitizer_platform_limits_posix.h"
-#include "sanitizer_platform_limits_solaris.h"
-#include "sanitizer_posix.h"
-#include "sanitizer_procmaps.h"
-
 #include <errno.h>
 #include <fcntl.h>
 #include <pthread.h>
@@ -36,6 +28,14 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include "sanitizer_common.h"
+#include "sanitizer_flags.h"
+#include "sanitizer_platform_limits_netbsd.h"
+#include "sanitizer_platform_limits_posix.h"
+#include "sanitizer_platform_limits_solaris.h"
+#include "sanitizer_posix.h"
+#include "sanitizer_procmaps.h"
+
 #if SANITIZER_FREEBSD
 // The MAP_NORESERVE define has been removed in FreeBSD 11.x, and even before
 // that, it was never implemented.  So just define it to zero.
@@ -47,13 +47,9 @@ typedef void (*sa_sigaction_t)(int, siginfo_t *, void *);
 
 namespace __sanitizer {
 
-u32 GetUid() {
-  return getuid();
-}
+u32 GetUid() { return getuid(); }
 
-uptr GetThreadSelf() {
-  return (uptr)pthread_self();
-}
+uptr GetThreadSelf() { return (uptr)pthread_self(); }
 
 void ReleaseMemoryPagesToOS(uptr beg, uptr end) {
   uptr page_size = GetPageSizeCached();
@@ -128,13 +124,9 @@ void SetAddressSpaceUnlimited() {
   CHECK(AddressSpaceIsUnlimited());
 }
 
-void SleepForSeconds(int seconds) {
-  sleep(seconds);
-}
+void SleepForSeconds(int seconds) { sleep(seconds); }
 
-void SleepForMillis(int millis) {
-  usleep(millis * 1000);
-}
+void SleepForMillis(int millis) { usleep(millis * 1000); }
 
 void Abort() {
 #if !SANITIZER_GO
@@ -159,9 +151,7 @@ int Atexit(void (*function)(void)) {
 #endif
 }
 
-bool SupportsColoredOutput(fd_t fd) {
-  return isatty(fd) != 0;
-}
+bool SupportsColoredOutput(fd_t fd) { return isatty(fd) != 0; }
 
 #if !SANITIZER_GO
 // TODO(glider): different tools may require different altstack size.
@@ -172,12 +162,13 @@ void SetAlternateSignalStack() {
   CHECK_EQ(0, sigaltstack(nullptr, &oldstack));
   // If the alternate stack is already in place, do nothing.
   // Android always sets an alternate stack, but it's too small for us.
-  if (!SANITIZER_ANDROID && !(oldstack.ss_flags & SS_DISABLE)) return;
+  if (!SANITIZER_ANDROID && !(oldstack.ss_flags & SS_DISABLE))
+    return;
   // TODO(glider): the mapped stack should have the MAP_STACK flag in the
   // future. It is not required by man 2 sigaltstack now (they're using
   // malloc()).
-  void* base = MmapOrDie(kAltStackSize, __func__);
-  altstack.ss_sp = (char*) base;
+  void *base = MmapOrDie(kAltStackSize, __func__);
+  altstack.ss_sp = (char *)base;
   altstack.ss_flags = 0;
   altstack.ss_size = kAltStackSize;
   CHECK_EQ(0, sigaltstack(&altstack, nullptr));
@@ -192,9 +183,9 @@ void UnsetAlternateSignalStack() {
   UnmapOrDie(oldstack.ss_sp, oldstack.ss_size);
 }
 
-static void MaybeInstallSigaction(int signum,
-                                  SignalHandlerType handler) {
-  if (GetHandleSignalMode(signum) == kHandleSignalNo) return;
+static void MaybeInstallSigaction(int signum, SignalHandlerType handler) {
+  if (GetHandleSignalMode(signum) == kHandleSignalNo)
+    return;
 
   struct sigaction sigact;
   internal_memset(&sigact, 0, sizeof(sigact));
@@ -202,7 +193,8 @@ static void MaybeInstallSigaction(int signum,
   // Do not block the signal from being received in that signal's handler.
   // Clients are responsible for handling this correctly.
   sigact.sa_flags = SA_SIGINFO | SA_NODEFER;
-  if (common_flags()->use_sigaltstack) sigact.sa_flags |= SA_ONSTACK;
+  if (common_flags()->use_sigaltstack)
+    sigact.sa_flags |= SA_ONSTACK;
   CHECK_EQ(0, internal_sigaction(signum, &sigact, nullptr));
   VReport(1, "Installed the sigaction for signal %d\n", signum);
 }
@@ -211,7 +203,8 @@ void InstallDeadlySignalHandlers(SignalHandlerType handler) {
   // Set the alternate signal stack for the main thread.
   // This will cause SetAlternateSignalStack to be called twice, but the stack
   // will be actually set only once.
-  if (common_flags()->use_sigaltstack) SetAlternateSignalStack();
+  if (common_flags()->use_sigaltstack)
+    SetAlternateSignalStack();
   MaybeInstallSigaction(SIGSEGV, handler);
   MaybeInstallSigaction(SIGBUS, handler);
   MaybeInstallSigaction(SIGABRT, handler);
@@ -309,9 +302,10 @@ static bool MmapFixed(uptr fixed_addr, uptr size, int additional_flags,
                 MAP_PRIVATE | MAP_FIXED | additional_flags | MAP_ANON, name);
   int reserrno;
   if (internal_iserror(p, &reserrno)) {
-    Report("ERROR: %s failed to "
-           "allocate 0x%zx (%zd) bytes at address %zx (errno: %d)\n",
-           SanitizerToolName, size, size, fixed_addr, reserrno);
+    Report(
+        "ERROR: %s failed to "
+        "allocate 0x%zx (%zd) bytes at address %zx (errno: %d)\n",
+        SanitizerToolName, size, size, fixed_addr, reserrno);
     return false;
   }
   IncreaseTotalMmap(size);
@@ -361,11 +355,11 @@ void ReservedAddressRange::Unmap(uptr addr, uptr size) {
   CHECK_LE(size, size_);
   if (addr == reinterpret_cast<uptr>(base_))
     // If we unmap the whole range, just null out the base.
-    base_ = (size == size_) ? nullptr : reinterpret_cast<void*>(addr + size);
+    base_ = (size == size_) ? nullptr : reinterpret_cast<void *>(addr + size);
   else
     CHECK_EQ(addr + size, reinterpret_cast<uptr>(base_) + size_);
   size_ -= size;
-  UnmapOrDie(reinterpret_cast<void*>(addr), size);
+  UnmapOrDie(reinterpret_cast<void *>(addr), size);
 }
 
 void *MmapFixedNoAccess(uptr fixed_addr, uptr size, const char *name) {
@@ -381,9 +375,9 @@ void *MmapNoAccess(uptr size) {
 
 // This function is defined elsewhere if we intercepted pthread_attr_getstack.
 extern "C" {
-SANITIZER_WEAK_ATTRIBUTE int
-real_pthread_attr_getstack(void *attr, void **addr, size_t *size);
-} // extern "C"
+SANITIZER_WEAK_ATTRIBUTE int real_pthread_attr_getstack(void *attr, void **addr,
+                                                        size_t *size);
+}  // extern "C"
 
 int my_pthread_attr_getstack(void *attr, void **addr, uptr *size) {
 #if !SANITIZER_GO && !SANITIZER_MAC
@@ -399,12 +393,12 @@ void AdjustStackSize(void *attr_) {
   pthread_attr_t *attr = (pthread_attr_t *)attr_;
   uptr stackaddr = 0;
   uptr stacksize = 0;
-  my_pthread_attr_getstack(attr, (void**)&stackaddr, &stacksize);
+  my_pthread_attr_getstack(attr, (void **)&stackaddr, &stacksize);
   // GLibC will return (0 - stacksize) as the stack address in the case when
   // stacksize is set, but stackaddr is not.
   bool stack_set = (stackaddr != 0) && (stackaddr + stacksize != 0);
   // We place a lot of tool data into TLS, account for that.
-  const uptr minstacksize = GetTlsSize() + 128*1024;
+  const uptr minstacksize = GetTlsSize() + 128 * 1024;
   if (stacksize < minstacksize) {
     if (!stack_set) {
       if (stacksize != 0) {
@@ -413,13 +407,15 @@ void AdjustStackSize(void *attr_) {
         pthread_attr_setstacksize(attr, minstacksize);
       }
     } else {
-      Printf("Sanitizer: pre-allocated stack size is insufficient: "
-             "%zu < %zu\n", stacksize, minstacksize);
+      Printf(
+          "Sanitizer: pre-allocated stack size is insufficient: "
+          "%zu < %zu\n",
+          stacksize, minstacksize);
       Printf("Sanitizer: pthread_create is likely to fail.\n");
     }
   }
 }
-#endif // !SANITIZER_GO
+#endif  // !SANITIZER_GO
 
 pid_t StartSubprocess(const char *program, const char *const argv[],
                       const char *const envp[], fd_t stdin_fd, fd_t stdout_fd,
@@ -496,10 +492,8 @@ int WaitForProcess(pid_t pid) {
   return process_status;
 }
 
-bool IsStateDetached(int state) {
-  return state == PTHREAD_CREATE_DETACHED;
-}
+bool IsStateDetached(int state) { return state == PTHREAD_CREATE_DETACHED; }
 
-} // namespace __sanitizer
+}  // namespace __sanitizer
 
-#endif // SANITIZER_POSIX
+#endif  // SANITIZER_POSIX

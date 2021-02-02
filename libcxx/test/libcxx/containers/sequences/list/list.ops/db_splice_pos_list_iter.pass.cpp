@@ -21,14 +21,13 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        std::list<int> v1(3);
-        std::list<int> v2(3);
-        v1.splice(v1.begin(), v2, v1.begin());
-        assert(false);
-    }
+int main(int, char**) {
+  {
+    std::list<int> v1(3);
+    std::list<int> v2(3);
+    v1.splice(v1.begin(), v2, v1.begin());
+    assert(false);
+  }
 
   return 0;
 }

@@ -297,16 +297,16 @@ int test_iteration_spaces() {
 
 // expected-error@+3 {{expected loop invariant expression or '<invariant1> * ii + <invariant2>' kind of expression}}
 #pragma omp for collapse(2)
-    for (ii = 10 + 25; ii < 1000; ii += 1)
-      for (kk = ii * 10 + 25; kk < ii / ii - 23; kk += 1)
-        ;
+  for (ii = 10 + 25; ii < 1000; ii += 1)
+    for (kk = ii * 10 + 25; kk < ii / ii - 23; kk += 1)
+      ;
 
 // expected-error@+4 {{expected loop invariant expression or '<invariant1> * ii + <invariant2>' kind of expression}}
 #pragma omp for collapse(3)
-    for (ii = 10 + 25; ii < 1000; ii += 1)
-      for (jj = 10 + 25; jj < 1000; jj += 1)
-        for (kk = ii * 10 + 25; kk < jj - 23; kk += 1)
-          ;
+  for (ii = 10 + 25; ii < 1000; ii += 1)
+    for (jj = 10 + 25; jj < 1000; jj += 1)
+      for (kk = ii * 10 + 25; kk < jj - 23; kk += 1)
+        ;
 
 #pragma omp parallel
 // expected-note@+2  {{defined as firstprivate}}
@@ -365,8 +365,8 @@ int test_iteration_spaces() {
   {
 #pragma omp for collapse(2)
     for (ii = 0; ii < 10; ii += 1)
-    for (globalii = 0; globalii < 10; globalii += 1)
-      c[globalii] += a[globalii] + ii;
+      for (globalii = 0; globalii < 10; globalii += 1)
+        c[globalii] += a[globalii] + ii;
   }
 
 #pragma omp parallel
@@ -410,7 +410,7 @@ struct iterator_traits {
 template <class Iter>
 typename iterator_traits<Iter>::difference_type
 distance(Iter first, Iter last) { return first - last; }
-}
+} // namespace std
 class Iter0 {
 public:
   Iter0() {}
@@ -627,6 +627,7 @@ int test_with_random_access_iterator() {
 template <typename IT, int ST>
 class TC {
   int ii, iii, kk;
+
 public:
   enum { myconstant = 42 };
   int ub();
@@ -635,14 +636,14 @@ public:
 // expected-error@+3 3 {{the loop initializer expression depends on the current loop control variable}}
 // expected-error@+2 6 {{the loop condition expression depends on the current loop control variable}}
 #pragma omp for
-  for (ii = ii * 10 + 25; ii < ii / ii - 23; ii += 1)
-    ;
+    for (ii = ii * 10 + 25; ii < ii / ii - 23; ii += 1)
+      ;
 
 // Check that member function calls and enum constants in the condition is
 // handled.
 #pragma omp for
-  for (ii = 0; ii < ub() + this->myconstant; ii += 1) // expected-no-error
-    ;
+    for (ii = 0; ii < ub() + this->myconstant; ii += 1) // expected-no-error
+      ;
 
 #pragma omp parallel
 // expected-error@+4 2 {{expected loop invariant expression or '<invariant1> * ii + <invariant2>' kind of expression}}
@@ -723,10 +724,10 @@ void test_with_template() {
   GoodIter begin, end;
   TC<GoodIter, 100> t1;
   TC<GoodIter, -100> t2;
-  t1.dotest_lt(begin, end);         // expected-note {{in instantiation of member function 'TC<GoodIter, 100>::dotest_lt' requested here}}
-  t2.dotest_lt(begin, end);         // expected-note {{in instantiation of member function 'TC<GoodIter, -100>::dotest_lt' requested here}}
-  dotest_gt(begin, end);            // expected-note {{in instantiation of function template specialization 'dotest_gt<GoodIter, 0>' requested here}}
-  dotest_gt<unsigned, 10>(0, 100);  // expected-note {{in instantiation of function template specialization 'dotest_gt<unsigned int, 10>' requested here}}
+  t1.dotest_lt(begin, end);        // expected-note {{in instantiation of member function 'TC<GoodIter, 100>::dotest_lt' requested here}}
+  t2.dotest_lt(begin, end);        // expected-note {{in instantiation of member function 'TC<GoodIter, -100>::dotest_lt' requested here}}
+  dotest_gt(begin, end);           // expected-note {{in instantiation of function template specialization 'dotest_gt<GoodIter, 0>' requested here}}
+  dotest_gt<unsigned, 10>(0, 100); // expected-note {{in instantiation of function template specialization 'dotest_gt<unsigned int, 10>' requested here}}
 }
 
 void test_loop_break() {

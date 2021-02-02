@@ -15,13 +15,13 @@
 
 // CHECK-MM: WRITE of size 4
 
-extern "C" void foo(int* a) {
+extern "C" void foo(int *a) {
   // CHECK-MM: #0 0x{{.+}} in foo {{.*}}asan-symbolize-with-module-map.cpp:[[@LINE+1]]
   *a = 5;
 }
 
 int main() {
-  int* a = (int*) malloc(sizeof(int));
+  int *a = (int *)malloc(sizeof(int));
   if (!a)
     return 0;
   free(a);

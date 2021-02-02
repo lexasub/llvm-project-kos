@@ -18,7 +18,7 @@
 static volatile char *x;
 
 int main() {
-  x = (char*)malloc(10);
+  x = (char *)malloc(10);
   x[0] = 0;
   delete x;
 }

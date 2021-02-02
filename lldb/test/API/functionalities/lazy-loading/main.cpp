@@ -1,10 +1,18 @@
 //----------------------------------------------------------------------------//
 // Struct loading declarations.
 
-struct StructFirstMember { int i; };
-struct StructBehindPointer { int i; };
-struct StructBehindRef { int i; };
-struct StructMember { int i; };
+struct StructFirstMember {
+  int i;
+};
+struct StructBehindPointer {
+  int i;
+};
+struct StructBehindRef {
+  int i;
+};
+struct StructMember {
+  int i;
+};
 
 StructBehindRef struct_instance;
 
@@ -22,9 +30,15 @@ struct OtherStruct {
 //----------------------------------------------------------------------------//
 // Class loading declarations.
 
-struct ClassMember { int i; };
-struct UnusedClassMember { int i; };
-struct UnusedClassMemberPtr { int i; };
+struct ClassMember {
+  int i;
+};
+struct UnusedClassMember {
+  int i;
+};
+struct UnusedClassMemberPtr {
+  int i;
+};
 
 namespace NS {
 class ClassInNamespace {
@@ -40,7 +54,7 @@ public:
     return member.i; // Location: class function
   }
 };
-};
+}; // namespace NS
 
 //----------------------------------------------------------------------------//
 // Function we can stop in.

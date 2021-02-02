@@ -14,10 +14,9 @@
 
 using namespace llvm;
 
-SystemZConstantPoolValue::
-SystemZConstantPoolValue(const GlobalValue *gv,
-                         SystemZCP::SystemZCPModifier modifier)
-  : MachineConstantPoolValue(gv->getType()), GV(gv), Modifier(modifier) {}
+SystemZConstantPoolValue::SystemZConstantPoolValue(
+    const GlobalValue *gv, SystemZCP::SystemZCPModifier modifier)
+    : MachineConstantPoolValue(gv->getType()), GV(gv), Modifier(modifier) {}
 
 SystemZConstantPoolValue *
 SystemZConstantPoolValue::Create(const GlobalValue *GV,
@@ -31,8 +30,8 @@ int SystemZConstantPoolValue::getExistingMachineCPValue(MachineConstantPool *CP,
   for (unsigned I = 0, E = Constants.size(); I != E; ++I) {
     if (Constants[I].isMachineConstantPoolEntry() &&
         Constants[I].getAlign() >= Alignment) {
-      auto *ZCPV =
-        static_cast<SystemZConstantPoolValue *>(Constants[I].Val.MachineCPVal);
+      auto *ZCPV = static_cast<SystemZConstantPoolValue *>(
+          Constants[I].Val.MachineCPVal);
       if (ZCPV->GV == GV && ZCPV->Modifier == Modifier)
         return I;
     }

@@ -2,7 +2,7 @@
 
 // The important part is that we do not crash.
 
-template<typename T> T declval();
+template <typename T> T declval();
 
 template <typename T>
 auto Call(T x) -> decltype(declval<T>()(0)) {} // expected-note{{candidate template ignored}}

@@ -24,15 +24,15 @@ using namespace clang::targets;
 
 const Builtin::Info AArch64TargetInfo::BuiltinInfo[] = {
 #define BUILTIN(ID, TYPE, ATTRS)                                               \
-   {#ID, TYPE, ATTRS, nullptr, ALL_LANGUAGES, nullptr},
+  {#ID, TYPE, ATTRS, nullptr, ALL_LANGUAGES, nullptr},
 #include "clang/Basic/BuiltinsNEON.def"
 
 #define BUILTIN(ID, TYPE, ATTRS)                                               \
-   {#ID, TYPE, ATTRS, nullptr, ALL_LANGUAGES, nullptr},
+  {#ID, TYPE, ATTRS, nullptr, ALL_LANGUAGES, nullptr},
 #include "clang/Basic/BuiltinsSVE.def"
 
 #define BUILTIN(ID, TYPE, ATTRS)                                               \
-   {#ID, TYPE, ATTRS, nullptr, ALL_LANGUAGES, nullptr},
+  {#ID, TYPE, ATTRS, nullptr, ALL_LANGUAGES, nullptr},
 #define LANGBUILTIN(ID, TYPE, ATTRS, LANG)                                     \
   {#ID, TYPE, ATTRS, nullptr, LANG, nullptr},
 #define TARGET_HEADER_BUILTIN(ID, TYPE, ATTRS, HEADER, LANGS, FEATURE)         \
@@ -54,7 +54,8 @@ AArch64TargetInfo::AArch64TargetInfo(const llvm::Triple &Triple,
     IntMaxType = SignedLong;
   }
 
-  // All AArch64 implementations support ARMv8 FP, which makes half a legal type.
+  // All AArch64 implementations support ARMv8 FP, which makes half a legal
+  // type.
   HasLegalHalfType = true;
   HasFloat16 = true;
 
@@ -295,7 +296,7 @@ void AArch64TargetInfo::getTargetDefines(const LangOptions &Opts,
   if ((FPU & NeonMode) && HasFullFP16)
     Builder.defineMacro("__ARM_FEATURE_FP16_VECTOR_ARITHMETIC", "1");
   if (HasFullFP16)
-   Builder.defineMacro("__ARM_FEATURE_FP16_SCALAR_ARITHMETIC", "1");
+    Builder.defineMacro("__ARM_FEATURE_FP16_SCALAR_ARITHMETIC", "1");
 
   if (HasDotProd)
     Builder.defineMacro("__ARM_FEATURE_DOTPROD", "1");
@@ -581,14 +582,13 @@ const char *const AArch64TargetInfo::GCCRegNames[] = {
     "v23", "v24", "v25", "v26", "v27", "v28", "v29", "v30", "v31",
 
     // SVE vector registers
-    "z0",  "z1",  "z2",  "z3",  "z4",  "z5",  "z6",  "z7",  "z8",  "z9",  "z10",
-    "z11", "z12", "z13", "z14", "z15", "z16", "z17", "z18", "z19", "z20", "z21",
-    "z22", "z23", "z24", "z25", "z26", "z27", "z28", "z29", "z30", "z31",
+    "z0", "z1", "z2", "z3", "z4", "z5", "z6", "z7", "z8", "z9", "z10", "z11",
+    "z12", "z13", "z14", "z15", "z16", "z17", "z18", "z19", "z20", "z21", "z22",
+    "z23", "z24", "z25", "z26", "z27", "z28", "z29", "z30", "z31",
 
     // SVE predicate registers
-    "p0",  "p1",  "p2",  "p3",  "p4",  "p5",  "p6",  "p7",  "p8",  "p9",  "p10",
-    "p11", "p12", "p13", "p14", "p15"
-};
+    "p0", "p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "p9", "p10", "p11",
+    "p12", "p13", "p14", "p15"};
 
 ArrayRef<const char *> AArch64TargetInfo::getGCCRegNames() const {
   return llvm::makeArrayRef(GCCRegNames);
@@ -737,7 +737,7 @@ AArch64leTargetInfo::AArch64leTargetInfo(const llvm::Triple &Triple,
 
 void AArch64leTargetInfo::setDataLayout() {
   if (getTriple().isOSBinFormatMachO()) {
-    if(getTriple().isArch32Bit())
+    if (getTriple().isArch32Bit())
       resetDataLayout("e-m:o-p:32:32-i64:64-i128:128-n32:64-S128");
     else
       resetDataLayout("e-m:o-i64:64-i128:128-n32:64-S128");
@@ -841,12 +841,12 @@ unsigned MicrosoftARM64TargetInfo::getMinGlobalAlign(uint64_t TypeSize) const {
   // below document, replicate that to keep alignment consistent with object
   // files compiled by MSVC.
   // https://docs.microsoft.com/en-us/cpp/build/arm64-windows-abi-conventions
-  if (TypeSize >= 512) {              // TypeSize >= 64 bytes
-    Align = std::max(Align, 128u);    // align type at least 16 bytes
-  } else if (TypeSize >= 64) {        // TypeSize >= 8 bytes
-    Align = std::max(Align, 64u);     // align type at least 8 butes
-  } else if (TypeSize >= 16) {        // TypeSize >= 2 bytes
-    Align = std::max(Align, 32u);     // align type at least 4 bytes
+  if (TypeSize >= 512) {           // TypeSize >= 64 bytes
+    Align = std::max(Align, 128u); // align type at least 16 bytes
+  } else if (TypeSize >= 64) {     // TypeSize >= 8 bytes
+    Align = std::max(Align, 64u);  // align type at least 8 butes
+  } else if (TypeSize >= 16) {     // TypeSize >= 2 bytes
+    Align = std::max(Align, 32u);  // align type at least 4 bytes
   }
   return Align;
 }

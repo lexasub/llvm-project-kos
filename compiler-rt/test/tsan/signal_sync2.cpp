@@ -1,13 +1,13 @@
 // RUN: %clangxx_tsan -O1 %s -o %t && %run %t 2>&1 | FileCheck %s
 // UNSUPPORTED: darwin
+#include <errno.h>
 #include <pthread.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <signal.h>
-#include <sys/types.h>
 #include <sys/time.h>
+#include <sys/types.h>
 #include <unistd.h>
-#include <errno.h>
 
 // Test synchronization in signal handled within IgnoreSync region.
 
@@ -32,7 +32,7 @@ static void handler(int sig) {
   __atomic_store_n(&ready[pos], 1, __ATOMIC_RELEASE);
 }
 
-static void* thr(void *p) {
+static void *thr(void *p) {
   AnnotateIgnoreSyncBegin(__FILE__, __LINE__);
   __atomic_store_n(&process_signals, 1, __ATOMIC_RELAXED);
   while (!__atomic_load_n(&done, __ATOMIC_RELAXED)) {

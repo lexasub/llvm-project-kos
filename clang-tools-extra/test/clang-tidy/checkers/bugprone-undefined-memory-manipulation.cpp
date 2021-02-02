@@ -8,7 +8,7 @@ namespace std {
 using ::memcpy;
 using ::memmove;
 using ::memset;
-}
+} // namespace std
 
 namespace types {
 // TriviallyCopyable types:
@@ -83,7 +83,7 @@ void memmove_temp(S *a, T *b) {
 namespace aliases {
 using Copy2 = types::Copy;
 typedef types::Move Move2;
-}
+} // namespace aliases
 
 void notTriviallyCopyable() {
   types::Plain p; // TriviallyCopyable for variety

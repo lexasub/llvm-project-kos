@@ -31,10 +31,9 @@
 #define NOMINMAX
 #include <winsock2.h>
 #else
-#include <sys/time.h>
 #include <sys/select.h>
+#include <sys/time.h>
 #endif
-
 
 SelectHelper::SelectHelper()
     : m_fd_map(), m_end_time() // Infinite timeout unless

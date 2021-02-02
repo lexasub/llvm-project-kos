@@ -23,7 +23,7 @@ int main(int, char**) {
   test_library_hash_specializations_available();
   {
     test_hash_enabled_for_type<std::vector<bool> >();
-    test_hash_enabled_for_type<std::vector<bool, min_allocator<bool>>>();
+    test_hash_enabled_for_type<std::vector<bool, min_allocator<bool> > >();
   }
 
   return 0;

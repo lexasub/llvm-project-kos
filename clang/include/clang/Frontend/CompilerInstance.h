@@ -32,7 +32,7 @@ namespace llvm {
 class raw_fd_ostream;
 class Timer;
 class TimerGroup;
-}
+} // namespace llvm
 
 namespace clang {
 class ASTContext;
@@ -180,6 +180,7 @@ class CompilerInstance : public ModuleLoader {
 
   CompilerInstance(const CompilerInstance &) = delete;
   void operator=(const CompilerInstance &) = delete;
+
 public:
   explicit CompilerInstance(
       std::shared_ptr<PCHContainerOperations> PCHContainerOps =
@@ -238,21 +239,15 @@ public:
 
   /// Set the flag indicating whether we should (re)build the global
   /// module index.
-  void setBuildGlobalModuleIndex(bool Build) {
-    BuildGlobalModuleIndex = Build;
-  }
+  void setBuildGlobalModuleIndex(bool Build) { BuildGlobalModuleIndex = Build; }
 
   /// }
   /// @name Forwarding Methods
   /// {
 
-  AnalyzerOptionsRef getAnalyzerOpts() {
-    return Invocation->getAnalyzerOpts();
-  }
+  AnalyzerOptionsRef getAnalyzerOpts() { return Invocation->getAnalyzerOpts(); }
 
-  CodeGenOptions &getCodeGenOpts() {
-    return Invocation->getCodeGenOpts();
-  }
+  CodeGenOptions &getCodeGenOpts() { return Invocation->getCodeGenOpts(); }
   const CodeGenOptions &getCodeGenOpts() const {
     return Invocation->getCodeGenOpts();
   }
@@ -278,9 +273,7 @@ public:
     return Invocation->getFileSystemOpts();
   }
 
-  FrontendOptions &getFrontendOpts() {
-    return Invocation->getFrontendOpts();
-  }
+  FrontendOptions &getFrontendOpts() { return Invocation->getFrontendOpts(); }
   const FrontendOptions &getFrontendOpts() const {
     return Invocation->getFrontendOpts();
   }
@@ -295,12 +288,8 @@ public:
     return Invocation->getHeaderSearchOptsPtr();
   }
 
-  LangOptions &getLangOpts() {
-    return *Invocation->getLangOpts();
-  }
-  const LangOptions &getLangOpts() const {
-    return *Invocation->getLangOpts();
-  }
+  LangOptions &getLangOpts() { return *Invocation->getLangOpts(); }
+  const LangOptions &getLangOpts() const { return *Invocation->getLangOpts(); }
 
   PreprocessorOptions &getPreprocessorOpts() {
     return Invocation->getPreprocessorOpts();
@@ -316,9 +305,7 @@ public:
     return Invocation->getPreprocessorOutputOpts();
   }
 
-  TargetOptions &getTargetOpts() {
-    return Invocation->getTargetOpts();
-  }
+  TargetOptions &getTargetOpts() { return Invocation->getTargetOpts(); }
   const TargetOptions &getTargetOpts() const {
     return Invocation->getTargetOpts();
   }
@@ -355,9 +342,7 @@ public:
   void setVerboseOutputStream(std::unique_ptr<raw_ostream> Value);
 
   /// Get the current stream for verbose output.
-  raw_ostream &getVerboseOutputStream() {
-    return *VerboseOutputStream;
-  }
+  raw_ostream &getVerboseOutputStream() { return *VerboseOutputStream; }
 
   /// }
   /// @name Target Info
@@ -512,8 +497,8 @@ public:
   void setASTReader(IntrusiveRefCntPtr<ASTReader> Reader);
 
   std::shared_ptr<ModuleDependencyCollector> getModuleDepCollector() const;
-  void setModuleDepCollector(
-      std::shared_ptr<ModuleDependencyCollector> Collector);
+  void
+  setModuleDepCollector(std::shared_ptr<ModuleDependencyCollector> Collector);
 
   std::shared_ptr<PCHContainerOperations> getPCHContainerOperations() const {
     return ThePCHContainerOperations;
@@ -621,11 +606,9 @@ public:
   /// used by some diagnostics printers (for logging purposes only).
   ///
   /// \return The new object on success, or null on failure.
-  static IntrusiveRefCntPtr<DiagnosticsEngine>
-  createDiagnostics(DiagnosticOptions *Opts,
-                    DiagnosticConsumer *Client = nullptr,
-                    bool ShouldOwnClient = true,
-                    const CodeGenOptions *CodeGenOpts = nullptr);
+  static IntrusiveRefCntPtr<DiagnosticsEngine> createDiagnostics(
+      DiagnosticOptions *Opts, DiagnosticConsumer *Client = nullptr,
+      bool ShouldOwnClient = true, const CodeGenOptions *CodeGenOpts = nullptr);
 
   /// Create the file manager and replace any existing one with it.
   ///
@@ -697,11 +680,9 @@ public:
   /// RemoveFileOnSignal, temporary files will be forced on.
   ///
   /// \return - Null on error.
-  std::unique_ptr<raw_pwrite_stream>
-  createDefaultOutputFile(bool Binary = true, StringRef BaseInput = "",
-                          StringRef Extension = "",
-                          bool RemoveFileOnSignal = true,
-                          bool CreateMissingDirectories = false);
+  std::unique_ptr<raw_pwrite_stream> createDefaultOutputFile(
+      bool Binary = true, StringRef BaseInput = "", StringRef Extension = "",
+      bool RemoveFileOnSignal = true, bool CreateMissingDirectories = false);
 
   /// Create a new output file, optionally deriving the output path name, and
   /// add it to the list of tracked output files.

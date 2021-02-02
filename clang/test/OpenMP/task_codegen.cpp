@@ -41,8 +41,8 @@ struct S {
 int a;
 // CHECK-LABEL: @main
 int main() {
-// CHECK: [[B:%.+]] = alloca i8
-// CHECK: [[S:%.+]] = alloca [2 x [[STRUCT_S]]]
+  // CHECK: [[B:%.+]] = alloca i8
+  // CHECK: [[S:%.+]] = alloca [2 x [[STRUCT_S]]]
   char b;
   S s[2];
   int arr[10][a];
@@ -114,7 +114,8 @@ int main() {
 // CHECK: store i8 1, i8* [[T0]]
 // CHECK: bitcast [[KMP_DEPEND_INFO]]* [[DEP_BASE]] to i8*
 // CHECK: call i32 @__kmpc_omp_task_with_deps([[IDENT_T]]* @{{.+}}, i32 {{%.*}}, i8* [[ORIG_TASK_PTR]], i32 4, i8* %{{[^,]+}}, i32 0, i8* null)
-#pragma omp task shared(a, s) depend(in : a, b, s, arr[:])
+#pragma omp task shared(a, s) depend(in \
+                                     : a, b, s, arr[:])
   {
     a = 15;
     s[1].a = 10;
@@ -159,7 +160,8 @@ int main() {
 // CHECK: store i8 3, i8*
 // CHECK: bitcast [[KMP_DEPEND_INFO]]* %{{.+}} to i8*
 // CHECK: call i32 @__kmpc_omp_task_with_deps([[IDENT_T]]* @{{.+}}, i32 {{%.*}}, i8* [[ORIG_TASK_PTR]], i32 2, i8* %{{[^,]+}}, i32 0, i8* null)
-#pragma omp task untied depend(out : s[0], arr[4:][b])
+#pragma omp task untied depend(out \
+                               : s[0], arr [4:][b])
   {
     a = 1;
   }
@@ -196,7 +198,8 @@ int main() {
 // CHECK: store i8 4, i8*
 // CHECK: bitcast [[KMP_DEPEND_INFO]]* %{{.+}} to i8*
 // CHECK: call i32 @__kmpc_omp_task_with_deps([[IDENT_T]]* @{{.+}}, i32 {{%.*}}, i8* [[ORIG_TASK_PTR]], i32 2, i8* %{{[^,]+}}, i32 0, i8* null)
-#pragma omp task untied depend(mutexinoutset: s[0], arr[4:][b])
+#pragma omp task untied depend(mutexinoutset \
+                               : s[0], arr [4:][b])
   {
     a = 1;
   }
@@ -242,7 +245,8 @@ int main() {
 // CHECK: store i8 3, i8*
 // CHECK: bitcast [[KMP_DEPEND_INFO]]* %{{.+}} to i8*
 // CHECK: call i32 @__kmpc_omp_task_with_deps([[IDENT_T]]* @{{.+}}, i32 {{%.*}}, i8* [[ORIG_TASK_PTR]], i32 3, i8* %{{[^,]+}}, i32 0, i8* null)
-#pragma omp task final(true) depend(inout: a, s[1], arr[:a][3:])
+#pragma omp task final(true) depend(inout \
+                                    : a, s[1], arr[:a] [3:])
   {
     a = 2;
   }
@@ -273,7 +277,8 @@ int main() {
   }
 // CHECK: [[ORIG_TASK_PTR:%.+]] = call i8* @__kmpc_omp_task_alloc([[IDENT_T]]* @{{.+}}, i32 {{%.*}}, i32 0, i64 256, i64 1, i32 (i32, i8*)* bitcast (i32 (i32, [[KMP_TASK_T]]{{.*}}*)* [[TASK_ENTRY6:@.+]] to i32 (i32, i8*)*))
 // CHECK: call i32 @__kmpc_omp_task([[IDENT_T]]* @{{.+}}, i32 {{%.*}}, i8* [[ORIG_TASK_PTR]])
-#pragma omp task untied firstprivate(c) allocate(omp_pteam_mem_alloc:c)
+#pragma omp task untied firstprivate(c) allocate(omp_pteam_mem_alloc \
+                                                 : c)
   {
     S s1, s2;
 #ifdef UNTIEDRT

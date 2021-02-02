@@ -111,8 +111,8 @@ enum dwarf_regnums {
 // Note that the size and offset will be updated by platform-specific classes.
 #define DEFINE_GPR(reg, alt, kind1, kind2, kind3, kind4)                       \
   {                                                                            \
-    #reg, alt, 8, 0, eEncodingUint, eFormatHex, {kind1, kind2, kind3, kind4 }, \
-                                                 nullptr, nullptr, nullptr, 0  \
+#reg, alt, 8, 0, eEncodingUint, eFormatHex,                                \
+        {kind1, kind2, kind3, kind4 }, nullptr, nullptr, nullptr, 0            \
   }
 
 static const RegisterInfo g_register_infos[] = {

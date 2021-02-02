@@ -20,18 +20,17 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        std::ifstream fs("test.dat");
-        std::filebuf* fb = fs.rdbuf();
-        assert(fb->sgetc() == 'r');
-    }
-    {
-        std::wifstream fs("test.dat");
-        std::wfilebuf* fb = fs.rdbuf();
-        assert(fb->sgetc() == L'r');
-    }
+int main(int, char**) {
+  {
+    std::ifstream fs("test.dat");
+    std::filebuf* fb = fs.rdbuf();
+    assert(fb->sgetc() == 'r');
+  }
+  {
+    std::wifstream fs("test.dat");
+    std::wfilebuf* fb = fs.rdbuf();
+    assert(fb->sgetc() == L'r');
+  }
 
   return 0;
 }

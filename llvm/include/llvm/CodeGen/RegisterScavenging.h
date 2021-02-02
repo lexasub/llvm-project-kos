@@ -34,7 +34,7 @@ class TargetRegisterInfo;
 class RegScavenger {
   const TargetRegisterInfo *TRI;
   const TargetInstrInfo *TII;
-  MachineRegisterInfo* MRI;
+  MachineRegisterInfo *MRI;
   MachineBasicBlock *MBB = nullptr;
   MachineBasicBlock::iterator MBBI;
   unsigned NumRegUnits = 0;
@@ -85,8 +85,10 @@ public:
   /// Move the internal MBB iterator and update register states until
   /// it has processed the specific iterator.
   void forward(MachineBasicBlock::iterator I) {
-    if (!Tracking && MBB->begin() != I) forward();
-    while (MBBI != I) forward();
+    if (!Tracking && MBB->begin() != I)
+      forward();
+    while (MBBI != I)
+      forward();
   }
 
   /// Update internal register state and move MBB iterator backwards.
@@ -127,7 +129,8 @@ public:
   /// Query whether a frame index is a scavenging frame index.
   bool isScavengingFrameIndex(int FI) const {
     for (SmallVectorImpl<ScavengedInfo>::const_iterator I = Scavenged.begin(),
-         IE = Scavenged.end(); I != IE; ++I)
+                                                        IE = Scavenged.end();
+         I != IE; ++I)
       if (I->FrameIndex == FI)
         return true;
 
@@ -137,7 +140,8 @@ public:
   /// Get an array of scavenging frame indices.
   void getScavengingFrameIndices(SmallVectorImpl<int> &A) const {
     for (SmallVectorImpl<ScavengedInfo>::const_iterator I = Scavenged.begin(),
-         IE = Scavenged.end(); I != IE; ++I)
+                                                        IE = Scavenged.end();
+         I != IE; ++I)
       if (I->FrameIndex >= 0)
         A.push_back(I->FrameIndex);
   }
@@ -182,12 +186,8 @@ private:
 
   /// setUsed / setUnused - Mark the state of one or a number of register units.
   ///
-  void setUsed(const BitVector &RegUnits) {
-    LiveUnits.addUnits(RegUnits);
-  }
-  void setUnused(const BitVector &RegUnits) {
-    LiveUnits.removeUnits(RegUnits);
-  }
+  void setUsed(const BitVector &RegUnits) { LiveUnits.addUnits(RegUnits); }
+  void setUnused(const BitVector &RegUnits) { LiveUnits.removeUnits(RegUnits); }
 
   /// Processes the current instruction and fill the KillRegUnits and
   /// DefRegUnits bit vectors.
@@ -204,8 +204,7 @@ private:
   ///
   /// No more than InstrLimit instructions are inspected.
   Register findSurvivorReg(MachineBasicBlock::iterator StartMI,
-                           BitVector &Candidates,
-                           unsigned InstrLimit,
+                           BitVector &Candidates, unsigned InstrLimit,
                            MachineBasicBlock::iterator &UseMI);
 
   /// Initialize RegisterScavenger.

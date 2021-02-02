@@ -2,8 +2,8 @@
 
 struct A {
   A(int);
-  A(A&&);
-  A(const A&);
+  A(A &&);
+  A(const A &);
   ~A();
 
   operator bool();
@@ -20,7 +20,7 @@ void g() {
   // CHECK-NOT: alloca
   // CHECK-NOT: call
   // CHECK: call {{.*}} @_Z1fv({{.*}}* sret({{.*}}) align 4 %[[A]])
-  A a = A( A{ f() } );
+  A a = A(A{f()});
   // CHECK-NOT: call
 
   // CHECK: call void @_Z1hv(

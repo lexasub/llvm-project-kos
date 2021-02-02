@@ -10,6 +10,4 @@
 
 // The comparison operators are tested as part of [path.compare]
 // in class.path/path.members/path.compare.pass.cpp
-int main(int, char**) {
-  return 0;
-}
+int main(int, char**) { return 0; }

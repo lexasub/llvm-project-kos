@@ -6,7 +6,7 @@
 // expected-no-diagnostics
 
 #include "c.h"
-template<typename T> struct X { T t; };
+template <typename T> struct X { T t; };
 typedef X<A> XA;
 struct B;
 

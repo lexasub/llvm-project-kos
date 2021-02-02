@@ -4,7 +4,7 @@ struct A {
   virtual ~A() = default;
 };
 
-struct B: public A {
+struct B : public A {
   int j = 42;
 };
 
@@ -24,10 +24,6 @@ A::A() = default;
 
 } // namespace ns
 
-int foo(A *a) {
-  return a->f();
-}
+int foo(A *a) { return a->f(); }
 
-int main() {
-  return foo(new B);
-}
+int main() { return foo(new B); }

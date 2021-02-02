@@ -32,8 +32,8 @@ void WriteToFile(const Unit &U, const std::string &Path);
 void AppendToFile(const uint8_t *Data, size_t Size, const std::string &Path);
 void AppendToFile(const std::string &Data, const std::string &Path);
 
-void ReadDirToVectorOfUnits(const char *Path, Vector<Unit> *V,
-                            long *Epoch, size_t MaxSize, bool ExitOnError);
+void ReadDirToVectorOfUnits(const char *Path, Vector<Unit> *V, long *Epoch,
+                            size_t MaxSize, bool ExitOnError);
 
 // Returns "Dir/FileName" or equivalent for the current OS.
 std::string DirPlusFile(const std::string &DirPath,
@@ -91,7 +91,7 @@ bool IsSeparator(char C);
 // Similar to the basename utility: returns the file name w/o the dir prefix.
 std::string Basename(const std::string &Path);
 
-FILE* OpenFile(int Fd, const char *Mode);
+FILE *OpenFile(int Fd, const char *Mode);
 
 int CloseFile(int Fd);
 
@@ -107,6 +107,6 @@ void RmDir(const std::string &Path);
 
 const std::string &getDevNull();
 
-}  // namespace fuzzer
+} // namespace fuzzer
 
-#endif  // LLVM_FUZZER_IO_H
+#endif // LLVM_FUZZER_IO_H

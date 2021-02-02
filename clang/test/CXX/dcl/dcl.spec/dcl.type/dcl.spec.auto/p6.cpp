@@ -1,21 +1,21 @@
 // RUN:  %clang_cc1 -std=c++2a -verify %s
 
-template<typename T, unsigned size>
+template <typename T, unsigned size>
 concept LargerThan = sizeof(T) > size;
 // expected-note@-1 2{{because 'sizeof(char) > 1U' (1 > 1) evaluated to false}}
 // expected-note@-2 {{because 'sizeof(int) > 10U' (4 > 10) evaluated to false}}
 // expected-note@-3 {{because 'sizeof(int) > 4U' (4 > 4) evaluated to false}}
 
-template<typename T>
+template <typename T>
 concept Large = LargerThan<T, 1>;
 // expected-note@-1 2{{because 'LargerThan<char, 1>' evaluated to false}}
 
 namespace X {
-  template<typename T, unsigned size>
-  concept SmallerThan = sizeof(T) < size;
-  template<typename T>
-  concept Small = SmallerThan<T, 2>;
-}
+template <typename T, unsigned size>
+concept SmallerThan = sizeof(T) < size;
+template <typename T>
+concept Small = SmallerThan<T, 2>;
+} // namespace X
 
 Large auto test1() { // expected-error{{deduced type 'char' does not satisfy 'Large'}}
   Large auto i = 'a';

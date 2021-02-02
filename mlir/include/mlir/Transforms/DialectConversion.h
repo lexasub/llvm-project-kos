@@ -599,22 +599,26 @@ public:
 
   /// Register a legality action for the given operation.
   void setOpAction(OperationName op, LegalizationAction action);
-  template <typename OpT> void setOpAction(LegalizationAction action) {
+  template <typename OpT>
+  void setOpAction(LegalizationAction action) {
     setOpAction(OperationName(OpT::getOperationName(), &ctx), action);
   }
 
   /// Register the given operations as legal.
-  template <typename OpT> void addLegalOp() {
+  template <typename OpT>
+  void addLegalOp() {
     setOpAction<OpT>(LegalizationAction::Legal);
   }
-  template <typename OpT, typename OpT2, typename... OpTs> void addLegalOp() {
+  template <typename OpT, typename OpT2, typename... OpTs>
+  void addLegalOp() {
     addLegalOp<OpT>();
     addLegalOp<OpT2, OpTs...>();
   }
 
   /// Register the given operation as dynamically legal, i.e. requiring custom
   /// handling by the target via 'isDynamicallyLegal'.
-  template <typename OpT> void addDynamicallyLegalOp() {
+  template <typename OpT>
+  void addDynamicallyLegalOp() {
     setOpAction<OpT>(LegalizationAction::Dynamic);
   }
   template <typename OpT, typename OpT2, typename... OpTs>
@@ -646,10 +650,12 @@ public:
 
   /// Register the given operation as illegal, i.e. this operation is known to
   /// not be supported by this target.
-  template <typename OpT> void addIllegalOp() {
+  template <typename OpT>
+  void addIllegalOp() {
     setOpAction<OpT>(LegalizationAction::Illegal);
   }
-  template <typename OpT, typename OpT2, typename... OpTs> void addIllegalOp() {
+  template <typename OpT, typename OpT2, typename... OpTs>
+  void addIllegalOp() {
     addIllegalOp<OpT>();
     addIllegalOp<OpT2, OpTs...>();
   }
@@ -687,7 +693,8 @@ public:
     SmallVector<StringRef, 2> dialectNames({name, names...});
     setDialectAction(dialectNames, LegalizationAction::Legal);
   }
-  template <typename... Args> void addLegalDialect() {
+  template <typename... Args>
+  void addLegalDialect() {
     SmallVector<StringRef, 2> dialectNames({Args::getDialectNamespace()...});
     setDialectAction(dialectNames, LegalizationAction::Legal);
   }
@@ -731,7 +738,8 @@ public:
     SmallVector<StringRef, 2> dialectNames({name, names...});
     setDialectAction(dialectNames, LegalizationAction::Illegal);
   }
-  template <typename... Args> void addIllegalDialect() {
+  template <typename... Args>
+  void addIllegalDialect() {
     SmallVector<StringRef, 2> dialectNames({Args::getDialectNamespace()...});
     setDialectAction(dialectNames, LegalizationAction::Illegal);
   }

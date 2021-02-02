@@ -13,10 +13,10 @@
 // RUN: %clangxx_msan %s -fno-sanitize-memory-use-after-dtor -o %t && MSAN_OPTIONS=poison_in_dtor=1 not %run %t > %t.out 2>&1
 // RUN: FileCheck %s --check-prefix=CHECK-UAD-OFF < %t.out
 
-#include <sanitizer/msan_interface.h>
 #include <assert.h>
-#include <stdio.h>
 #include <new>
+#include <sanitizer/msan_interface.h>
+#include <stdio.h>
 
 struct Simple {
   int x_;
@@ -32,10 +32,10 @@ int main() {
   unsigned long buf[1];
   assert(sizeof(Simple) <= sizeof(buf));
 
-  Simple *s = new(&buf) Simple();
+  Simple *s = new (&buf) Simple();
   s->~Simple();
 
-  fprintf(stderr, "\n");  // Need output to parse for CHECK-UAD-OFF case
+  fprintf(stderr, "\n"); // Need output to parse for CHECK-UAD-OFF case
   return s->x_;
 
   // CHECK-UAD: WARNING: MemorySanitizer: use-of-uninitialized-value

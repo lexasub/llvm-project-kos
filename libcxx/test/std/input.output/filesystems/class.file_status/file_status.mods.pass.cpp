@@ -21,7 +21,6 @@
 
 #include "test_macros.h"
 
-
 int main(int, char**) {
   using namespace fs;
 
@@ -31,8 +30,9 @@ int main(int, char**) {
   {
     static_assert(noexcept(st.type(file_type::regular)),
                   "operation must be noexcept");
-    static_assert(std::is_same<decltype(st.type(file_type::regular)), void>::value,
-                 "operation must return void");
+    static_assert(
+        std::is_same<decltype(st.type(file_type::regular)), void>::value,
+        "operation must return void");
     assert(st.type() != file_type::regular);
     st.type(file_type::regular);
     assert(st.type() == file_type::regular);
@@ -41,8 +41,9 @@ int main(int, char**) {
   {
     static_assert(noexcept(st.permissions(perms::owner_read)),
                   "operation must be noexcept");
-    static_assert(std::is_same<decltype(st.permissions(perms::owner_read)), void>::value,
-                 "operation must return void");
+    static_assert(
+        std::is_same<decltype(st.permissions(perms::owner_read)), void>::value,
+        "operation must return void");
     assert(st.permissions() != perms::owner_read);
     st.permissions(perms::owner_read);
     assert(st.permissions() == perms::owner_read);

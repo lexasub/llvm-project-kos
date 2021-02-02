@@ -1,1 +1,3 @@
-typedef struct { int x; } TypedefStructVisible_t;
+typedef struct {
+  int x;
+} TypedefStructVisible_t;

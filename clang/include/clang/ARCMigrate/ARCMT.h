@@ -14,12 +14,12 @@
 #include "clang/Frontend/CompilerInvocation.h"
 
 namespace clang {
-  class ASTContext;
-  class DiagnosticConsumer;
-  class PCHContainerOperations;
+class ASTContext;
+class DiagnosticConsumer;
+class PCHContainerOperations;
 
 namespace arcmt {
-  class MigrationPass;
+class MigrationPass;
 
 /// Creates an AST with the provided CompilerInvocation but with these
 /// changes:
@@ -37,22 +37,20 @@ namespace arcmt {
 /// the pre-migration ARC diagnostics.
 ///
 /// \returns false if no error is produced, true otherwise.
-bool
-checkForManualIssues(CompilerInvocation &CI, const FrontendInputFile &Input,
-                     std::shared_ptr<PCHContainerOperations> PCHContainerOps,
-                     DiagnosticConsumer *DiagClient,
-                     bool emitPremigrationARCErrors = false,
-                     StringRef plistOut = StringRef());
+bool checkForManualIssues(
+    CompilerInvocation &CI, const FrontendInputFile &Input,
+    std::shared_ptr<PCHContainerOperations> PCHContainerOps,
+    DiagnosticConsumer *DiagClient, bool emitPremigrationARCErrors = false,
+    StringRef plistOut = StringRef());
 
 /// Works similar to checkForManualIssues but instead of checking, it
 /// applies automatic modifications to source files to conform to ARC.
 ///
 /// \returns false if no error is produced, true otherwise.
-bool
-applyTransformations(CompilerInvocation &origCI,
-                     const FrontendInputFile &Input,
-                     std::shared_ptr<PCHContainerOperations> PCHContainerOps,
-                     DiagnosticConsumer *DiagClient);
+bool applyTransformations(
+    CompilerInvocation &origCI, const FrontendInputFile &Input,
+    std::shared_ptr<PCHContainerOperations> PCHContainerOps,
+    DiagnosticConsumer *DiagClient);
 
 /// Applies automatic modifications and produces temporary files
 /// and metadata into the \p outputDir path.
@@ -75,18 +73,16 @@ bool migrateWithTemporaryFiles(
 /// migrateWithTemporaryFiles produced.
 ///
 /// \returns false if no error is produced, true otherwise.
-bool getFileRemappings(std::vector<std::pair<std::string,std::string> > &remap,
-                       StringRef outputDir,
-                       DiagnosticConsumer *DiagClient);
+bool getFileRemappings(std::vector<std::pair<std::string, std::string>> &remap,
+                       StringRef outputDir, DiagnosticConsumer *DiagClient);
 
 /// Get the set of file remappings from a list of files with remapping
 /// info.
 ///
 /// \returns false if no error is produced, true otherwise.
 bool getFileRemappingsFromFileList(
-                        std::vector<std::pair<std::string,std::string> > &remap,
-                        ArrayRef<StringRef> remapFiles,
-                        DiagnosticConsumer *DiagClient);
+    std::vector<std::pair<std::string, std::string>> &remap,
+    ArrayRef<StringRef> remapFiles, DiagnosticConsumer *DiagClient);
 
 typedef void (*TransformFn)(MigrationPass &pass);
 
@@ -111,11 +107,11 @@ public:
   public:
     virtual ~RewriteListener();
 
-    virtual void start(ASTContext &Ctx) { }
-    virtual void finish() { }
+    virtual void start(ASTContext &Ctx) {}
+    virtual void finish() {}
 
-    virtual void insert(SourceLocation loc, StringRef text) { }
-    virtual void remove(CharSourceRange range) { }
+    virtual void insert(SourceLocation loc, StringRef text) {}
+    virtual void remove(CharSourceRange range) {}
   };
 
   bool applyTransform(TransformFn trans, RewriteListener *listener = nullptr);
@@ -125,6 +121,6 @@ public:
 
 } // end namespace arcmt
 
-}  // end namespace clang
+} // end namespace clang
 
 #endif

@@ -14,9 +14,9 @@
 #ifndef LLVM_CLANG_LEX_MACROINFO_H
 #define LLVM_CLANG_LEX_MACROINFO_H
 
-#include "clang/Lex/Token.h"
 #include "clang/Basic/LLVM.h"
 #include "clang/Basic/SourceLocation.h"
+#include "clang/Lex/Token.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/FoldingSet.h"
 #include "llvm/ADT/PointerIntPair.h"
@@ -162,7 +162,7 @@ public:
   /// Set the specified list of identifiers as the parameter list for
   /// this macro.
   void setParameterList(ArrayRef<IdentifierInfo *> List,
-                       llvm::BumpPtrAllocator &PPAllocator) {
+                        llvm::BumpPtrAllocator &PPAllocator) {
     assert(ParameterList == nullptr && NumParameters == 0 &&
            "Parameter list already set!");
     if (List.empty())
@@ -289,11 +289,7 @@ private:
 /// create additional DefMacroDirectives for the same MacroInfo.
 class MacroDirective {
 public:
-  enum Kind {
-    MD_Define,
-    MD_Undefine,
-    MD_Visibility
-  };
+  enum Kind { MD_Define, MD_Undefine, MD_Visibility };
 
 protected:
   /// Previous macro directive for the same identifier, or nullptr.

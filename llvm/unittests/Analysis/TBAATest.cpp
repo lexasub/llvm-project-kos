@@ -86,5 +86,5 @@ TEST_F(TBAATest, checkTBAAMerging) {
   EXPECT_TRUE(!verifyFunction(*F));
 }
 
-} // end anonymous namspace
-} // end llvm namespace
+} // namespace
+} // namespace llvm

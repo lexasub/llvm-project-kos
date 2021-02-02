@@ -11,8 +11,7 @@
 // RUN: cd "%t"
 // RUN: not %run_clang_tidy "test.cpp"
 
-int main()
-{
-  int* x = new int();
+int main() {
+  int *x = new int();
   delete x;
 }

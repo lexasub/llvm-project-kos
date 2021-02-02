@@ -119,7 +119,8 @@ class AArch64RegisterBankInfo final : public AArch64GenRegisterBankInfo {
 
   /// \returns true if \p MI only uses and defines FPRs.
   bool hasFPConstraints(const MachineInstr &MI, const MachineRegisterInfo &MRI,
-                     const TargetRegisterInfo &TRI, unsigned Depth = 0) const;
+                        const TargetRegisterInfo &TRI,
+                        unsigned Depth = 0) const;
 
   /// \returns true if \p MI only uses FPRs.
   bool onlyUsesFP(const MachineInstr &MI, const MachineRegisterInfo &MRI,
@@ -144,5 +145,5 @@ public:
   const InstructionMapping &
   getInstrMapping(const MachineInstr &MI) const override;
 };
-} // End llvm namespace.
+} // namespace llvm
 #endif

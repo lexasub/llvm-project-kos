@@ -3,9 +3,9 @@
 // RUN: not %run %t 2>&1 | FileCheck %s
 #include <sanitizer/common_interface_defs.h>
 #include <sched.h>
-#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 int main() {
   __sanitizer_sandbox_arguments args = {0};
@@ -23,6 +23,6 @@ int main() {
     return 2;
   }
 
-  *(volatile int*)0x42 = 0;
-// CHECK-NOT: CHECK failed
+  *(volatile int *)0x42 = 0;
+  // CHECK-NOT: CHECK failed
 }

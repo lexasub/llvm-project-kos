@@ -39,7 +39,7 @@ template <size_t Index> struct IndexedWriter {
 };
 
 template <uint8_t Kind, class... Values>
-Error writeMetadata(support::endian::Writer &OS, Values &&... Ds) {
+Error writeMetadata(support::endian::Writer &OS, Values &&...Ds) {
   // The first bit in the first byte of metadata records is always set to 1, so
   // we ensure this is the case when we write out the first byte of the record.
   uint8_t FirstByte = (static_cast<uint8_t>(Kind) << 1) | uint8_t{0x01u};

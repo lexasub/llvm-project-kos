@@ -9,5 +9,5 @@ typedef void (*Func_t)();
 // CHECK-NEXT: RelCont | rdar32474406 | c:@N@rdar32474406
 // CHECK: [[@LINE+2]]:14 | function/C | foo | c:@N@rdar32474406@F@foo# | __ZN12rdar324744063fooEv | Ref,RelCont | rel: 1
 // CHECK-NEXT: RelCont | rdar32474406 | c:@N@rdar32474406
-Func_t[] = { foo }; // invalid decomposition
-}
+Func_t[] = {foo}; // invalid decomposition
+} // namespace rdar32474406

@@ -8,7 +8,7 @@
 struct A {
   A &operator=(const A &);
 
-  template<typename T>
+  template <typename T>
   A &operator=(T &&) { return T::error; } // expected-error {{no member named 'error' in 'A'}}
 };
 

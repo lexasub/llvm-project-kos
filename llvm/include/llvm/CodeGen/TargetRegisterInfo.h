@@ -47,7 +47,7 @@ class TargetRegisterClass {
 public:
   using iterator = const MCPhysReg *;
   using const_iterator = const MCPhysReg *;
-  using sc_iterator = const TargetRegisterClass* const *;
+  using sc_iterator = const TargetRegisterClass *const *;
 
   // Instance variables filled by tablegen, do not use!
   const MCRegisterClass *MC;
@@ -63,15 +63,15 @@ public:
   /// class. See also the CoveredBySubRegs description in Target.td.
   const bool CoveredBySubRegs;
   const sc_iterator SuperClasses;
-  ArrayRef<MCPhysReg> (*OrderFunc)(const MachineFunction&);
+  ArrayRef<MCPhysReg> (*OrderFunc)(const MachineFunction &);
 
   /// Return the register class ID number.
   unsigned getID() const { return MC->getID(); }
 
   /// begin/end - Return all of the registers in this class.
   ///
-  iterator       begin() const { return MC->begin(); }
-  iterator         end() const { return MC->end(); }
+  iterator begin() const { return MC->begin(); }
+  iterator end() const { return MC->end(); }
 
   /// Return the number of registers in this class.
   unsigned getNumRegs() const { return MC->getNumRegs(); }
@@ -82,9 +82,7 @@ public:
   }
 
   /// Return the specified register in the class.
-  MCRegister getRegister(unsigned i) const {
-    return MC->getRegister(i);
-  }
+  MCRegister getRegister(unsigned i) const { return MC->getRegister(i); }
 
   /// Return true if the specified register is included in this register class.
   /// This does not include virtual registers.
@@ -153,9 +151,7 @@ public:
   ///
   /// See the implementation of hasSubClassEq for an example of how it
   /// can be used.
-  const uint32_t *getSubClassMask() const {
-    return SubClassMask;
-  }
+  const uint32_t *getSubClassMask() const { return SubClassMask; }
 
   /// Returns a 0-terminated list of sub-register indices that project some
   /// super-register class into this register class. The list has an entry for
@@ -164,22 +160,16 @@ public:
   ///   There exists SuperRC where:
   ///     For all Reg in SuperRC:
   ///       this->contains(Reg:Idx)
-  const uint16_t *getSuperRegIndices() const {
-    return SuperRegIndices;
-  }
+  const uint16_t *getSuperRegIndices() const { return SuperRegIndices; }
 
   /// Returns a NULL-terminated list of super-classes.  The
   /// classes are ordered by ID which is also a topological ordering from large
   /// to small classes.  The list does NOT include the current class.
-  sc_iterator getSuperClasses() const {
-    return SuperClasses;
-  }
+  sc_iterator getSuperClasses() const { return SuperClasses; }
 
   /// Return true if this TargetRegisterClass is a subset
   /// class of at least one other TargetRegisterClass.
-  bool isASubClass() const {
-    return SuperClasses[0] != nullptr;
-  }
+  bool isASubClass() const { return SuperClasses[0] != nullptr; }
 
   /// Returns the preferred order for allocating registers from this register
   /// class in MF. The raw order comes directly from the .td file and may
@@ -201,9 +191,7 @@ public:
   /// Returns the combination of all lane masks of register in this class.
   /// The lane masks of the registers are the combination of all lane masks
   /// of their subregisters. Returns 1 if there are no subregisters.
-  LaneBitmask getLaneMask() const {
-    return LaneMask;
-  }
+  LaneBitmask getLaneMask() const { return LaneMask; }
 };
 
 /// Extra information, not in MCRegisterDesc, about registers.
@@ -230,32 +218,29 @@ struct RegClassWeight {
 ///
 class TargetRegisterInfo : public MCRegisterInfo {
 public:
-  using regclass_iterator = const TargetRegisterClass * const *;
+  using regclass_iterator = const TargetRegisterClass *const *;
   using vt_iterator = const MVT::SimpleValueType *;
   struct RegClassInfo {
     unsigned RegSize, SpillSize, SpillAlignment;
     vt_iterator VTList;
   };
+
 private:
-  const TargetRegisterInfoDesc *InfoDesc;     // Extra desc array for codegen
-  const char *const *SubRegIndexNames;        // Names of subreg indexes.
+  const TargetRegisterInfoDesc *InfoDesc; // Extra desc array for codegen
+  const char *const *SubRegIndexNames;    // Names of subreg indexes.
   // Pointer to array of lane masks, one per sub-reg index.
   const LaneBitmask *SubRegIndexLaneMasks;
 
-  regclass_iterator RegClassBegin, RegClassEnd;   // List of regclasses
+  regclass_iterator RegClassBegin, RegClassEnd; // List of regclasses
   LaneBitmask CoveringLanes;
   const RegClassInfo *const RCInfos;
   unsigned HwMode;
 
 protected:
-  TargetRegisterInfo(const TargetRegisterInfoDesc *ID,
-                     regclass_iterator RCB,
-                     regclass_iterator RCE,
-                     const char *const *SRINames,
-                     const LaneBitmask *SRILaneMasks,
-                     LaneBitmask CoveringLanes,
-                     const RegClassInfo *const RCIs,
-                     unsigned Mode = 0);
+  TargetRegisterInfo(const TargetRegisterInfoDesc *ID, regclass_iterator RCB,
+                     regclass_iterator RCE, const char *const *SRINames,
+                     const LaneBitmask *SRILaneMasks, LaneBitmask CoveringLanes,
+                     const RegClassInfo *const RCIs, unsigned Mode = 0);
   virtual ~TargetRegisterInfo();
 
 public:
@@ -323,7 +308,7 @@ public:
   /// Return the maximal subclass of the given register class that is
   /// allocatable or NULL.
   const TargetRegisterClass *
-    getAllocatableClass(const TargetRegisterClass *RC) const;
+  getAllocatableClass(const TargetRegisterClass *RC) const;
 
   /// Returns a bitset indexed by register number indicating if a register is
   /// allocatable or not. If a register class is specified, returns the subset
@@ -351,7 +336,7 @@ public:
   const char *getSubRegIndexName(unsigned SubIdx) const {
     assert(SubIdx && SubIdx < getNumSubRegIndices() &&
            "This is not a subregister index");
-    return SubRegIndexNames[SubIdx-1];
+    return SubRegIndexNames[SubIdx - 1];
   }
 
   /// Return a bitmask representing the parts of a register that are covered by
@@ -391,7 +376,8 @@ public:
   /// Returns true if the two registers are equal or alias each other.
   /// The registers may be virtual registers.
   bool regsOverlap(Register regA, Register regB) const {
-    if (regA == regB) return true;
+    if (regA == regB)
+      return true;
     if (!regA.isPhysical() || !regB.isPhysical())
       return false;
 
@@ -399,9 +385,12 @@ public:
     MCRegUnitIterator RUA(regA.asMCReg(), this);
     MCRegUnitIterator RUB(regB.asMCReg(), this);
     do {
-      if (*RUA == *RUB) return true;
-      if (*RUA < *RUB) ++RUA;
-      else             ++RUB;
+      if (*RUA == *RUB)
+        return true;
+      if (*RUA < *RUB)
+        ++RUA;
+      else
+        ++RUB;
     } while (RUA.isValid() && RUB.isValid());
     return false;
   }
@@ -438,7 +427,7 @@ public:
   /// Notice: This function does not take into account disabled CSRs.
   ///         In most cases you will want to use instead the function
   ///         getCalleeSavedRegs that is implemented in MachineRegisterInfo.
-  virtual const MCPhysReg*
+  virtual const MCPhysReg *
   getCalleeSavedRegs(const MachineFunction *MF) const = 0;
 
   /// Return a mask of call-preserved registers for the given calling convention
@@ -604,8 +593,10 @@ public:
   /// ssub_0:S0 - ssub_3:S3 subregs.
   /// If you compose subreg indices dsub_1, ssub_0 you get ssub_2.
   unsigned composeSubRegIndices(unsigned a, unsigned b) const {
-    if (!a) return b;
-    if (!b) return a;
+    if (!a)
+      return b;
+    if (!b)
+      return a;
     return composeSubRegIndicesImpl(a, b);
   }
 
@@ -644,8 +635,8 @@ protected:
   }
 
   /// Overridden by TableGen in targets that have sub-registers.
-  virtual LaneBitmask
-  composeSubRegIndexLaneMaskImpl(unsigned, LaneBitmask) const {
+  virtual LaneBitmask composeSubRegIndexLaneMaskImpl(unsigned,
+                                                     LaneBitmask) const {
     llvm_unreachable("Target has no sub-registers");
   }
 
@@ -684,7 +675,7 @@ public:
   /// corresponding argument register class.
   ///
   /// The function returns NULL if no register class can be found.
-  const TargetRegisterClass*
+  const TargetRegisterClass *
   getCommonSuperRegClass(const TargetRegisterClass *RCA, unsigned SubA,
                          const TargetRegisterClass *RCB, unsigned SubB,
                          unsigned &PreA, unsigned &PreB) const;
@@ -706,7 +697,7 @@ public:
   }
 
   unsigned getNumRegClasses() const {
-    return (unsigned)(regclass_end()-regclass_begin());
+    return (unsigned)(regclass_end() - regclass_begin());
   }
 
   /// Returns the register class associated with the enumeration value.
@@ -731,7 +722,7 @@ public:
   /// If a target supports multiple different pointer register classes,
   /// kind specifies which one is indicated.
   virtual const TargetRegisterClass *
-  getPointerRegClass(const MachineFunction &MF, unsigned Kind=0) const {
+  getPointerRegClass(const MachineFunction &MF, unsigned Kind = 0) const {
     llvm_unreachable("Target didn't implement getPointerRegClass!");
   }
 
@@ -777,8 +768,8 @@ public:
   }
 
   /// Get the weight in units of pressure for this register class.
-  virtual const RegClassWeight &getRegClassWeight(
-    const TargetRegisterClass *RC) const = 0;
+  virtual const RegClassWeight &
+  getRegClassWeight(const TargetRegisterClass *RC) const = 0;
 
   /// Returns size in bits of a phys/virtual/generic register.
   unsigned getRegSizeInBits(Register Reg, const MachineRegisterInfo &MRI) const;
@@ -799,8 +790,8 @@ public:
 
   /// Get the dimensions of register pressure impacted by this register class.
   /// Returns a -1 terminated array of pressure set IDs.
-  virtual const int *getRegClassPressureSets(
-    const TargetRegisterClass *RC) const = 0;
+  virtual const int *
+  getRegClassPressureSets(const TargetRegisterClass *RC) const = 0;
 
   /// Get the dimensions of register pressure impacted by this register unit.
   /// Returns a -1 terminated array of pressure set IDs.
@@ -873,8 +864,8 @@ public:
 
   /// Returns true if the target requires using the RegScavenger directly for
   /// frame elimination despite using requiresFrameIndexScavenging.
-  virtual bool requiresFrameIndexReplacementScavenging(
-      const MachineFunction &MF) const {
+  virtual bool
+  requiresFrameIndexReplacementScavenging(const MachineFunction &MF) const {
     return false;
   }
 
@@ -952,9 +943,9 @@ public:
                                 SmallVectorImpl<uint64_t> &Ops) const;
 
   /// Prepends a DWARF expression for \p Offset to DIExpression \p Expr.
-  DIExpression *
-  prependOffsetExpression(const DIExpression *Expr, unsigned PrependFlags,
-                          const StackOffset &Offset) const;
+  DIExpression *prependOffsetExpression(const DIExpression *Expr,
+                                        unsigned PrependFlags,
+                                        const StackOffset &Offset) const;
 
   /// Spill the register so it can be used by the register scavenger.
   /// Return true if the register was spilled, false otherwise.
@@ -975,8 +966,8 @@ public:
   /// as long as it keeps the iterator pointing at the finished product.
   /// SPAdj is the SP adjustment due to call frame setup instruction.
   /// FIOperandNum is the FI operand number.
-  virtual void eliminateFrameIndex(MachineBasicBlock::iterator MI,
-                                   int SPAdj, unsigned FIOperandNum,
+  virtual void eliminateFrameIndex(MachineBasicBlock::iterator MI, int SPAdj,
+                                   unsigned FIOperandNum,
                                    RegScavenger *RS = nullptr) const = 0;
 
   /// Return the assembly name for \p Reg.
@@ -995,13 +986,13 @@ public:
 
   /// SrcRC and DstRC will be morphed into NewRC if this returns true.
   virtual bool shouldCoalesce(MachineInstr *MI,
-                              const TargetRegisterClass *SrcRC,
-                              unsigned SubReg,
+                              const TargetRegisterClass *SrcRC, unsigned SubReg,
                               const TargetRegisterClass *DstRC,
                               unsigned DstSubReg,
                               const TargetRegisterClass *NewRC,
-                              LiveIntervals &LIS) const
-  { return true; }
+                              LiveIntervals &LIS) const {
+    return true;
+  }
 
   /// Region split has a high compile time cost especially for large live range.
   /// This method is used to decide whether or not \p VirtReg should
@@ -1051,7 +1042,8 @@ public:
 
   /// Returns true if for every register in the set all super registers are part
   /// of the set as well.
-  bool checkAllSuperRegsMarked(const BitVector &RegisterSet,
+  bool checkAllSuperRegsMarked(
+      const BitVector &RegisterSet,
       ArrayRef<MCPhysReg> Exceptions = ArrayRef<MCPhysReg>()) const;
 
   virtual const TargetRegisterClass *
@@ -1094,10 +1086,9 @@ public:
   /// Create a SuperRegClassIterator that visits all the super-register classes
   /// of RC. When IncludeSelf is set, also include the (0, sub-classes) entry.
   SuperRegClassIterator(const TargetRegisterClass *RC,
-                        const TargetRegisterInfo *TRI,
-                        bool IncludeSelf = false)
-    : RCMaskWords((TRI->getNumRegClasses() + 31) / 32),
-      Idx(RC->getSuperRegIndices()), Mask(RC->getSubClassMask()) {
+                        const TargetRegisterInfo *TRI, bool IncludeSelf = false)
+      : RCMaskWords((TRI->getNumRegClasses() + 31) / 32),
+        Idx(RC->getSuperRegIndices()), Mask(RC->getSubClassMask()) {
     if (!IncludeSelf)
       ++*this;
   }

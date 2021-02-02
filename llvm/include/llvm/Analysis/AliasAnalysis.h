@@ -576,7 +576,7 @@ public:
   /// read or write from memory that is inaccessible from LLVM IR.
   static bool doesAccessInaccessibleMem(FunctionModRefBehavior MRB) {
     return isModOrRefSet(createModRefInfo(MRB)) &&
-             ((unsigned)MRB & FMRL_InaccessibleMem);
+           ((unsigned)MRB & FMRL_InaccessibleMem);
   }
 
   /// Checks if functions with the specified behavior are known to read and
@@ -715,7 +715,8 @@ public:
   /// Early exits in callCapturesBefore may lead to ModRefInfo::Must not being
   /// set.
   ModRefInfo callCapturesBefore(const Instruction *I,
-                                const MemoryLocation &MemLoc, DominatorTree *DT);
+                                const MemoryLocation &MemLoc,
+                                DominatorTree *DT);
 
   /// A convenience wrapper to synthesize a memory location.
   ModRefInfo callCapturesBefore(const Instruction *I, const Value *P,
@@ -1035,7 +1036,8 @@ protected:
     }
 
     FunctionModRefBehavior getModRefBehavior(const Function *F) {
-      return AAR ? AAR->getModRefBehavior(F) : CurrentResult.getModRefBehavior(F);
+      return AAR ? AAR->getModRefBehavior(F)
+                 : CurrentResult.getModRefBehavior(F);
     }
 
     ModRefInfo getModRefInfo(const CallBase *Call, const MemoryLocation &Loc,
@@ -1163,11 +1165,11 @@ private:
 
   SmallVector<void (*)(Function &F, FunctionAnalysisManager &AM,
                        AAResults &AAResults),
-              4> ResultGetters;
+              4>
+      ResultGetters;
 
   template <typename AnalysisT>
-  static void getFunctionAAResultImpl(Function &F,
-                                      FunctionAnalysisManager &AM,
+  static void getFunctionAAResultImpl(Function &F, FunctionAnalysisManager &AM,
                                       AAResults &AAResults) {
     AAResults.addAAResult(AM.template getResult<AnalysisT>(F));
     AAResults.addAADependencyID(AnalysisT::ID());

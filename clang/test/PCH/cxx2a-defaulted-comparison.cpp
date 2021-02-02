@@ -12,42 +12,42 @@
 #define INCLUDED
 
 namespace std {
-  struct strong_ordering {
-    int n;
-    constexpr operator int() const { return n; }
-    static const strong_ordering equal, greater, less;
-  };
-  constexpr strong_ordering strong_ordering::equal = {0};
-  constexpr strong_ordering strong_ordering::greater = {1};
-  constexpr strong_ordering strong_ordering::less = {-1};
-}
+struct strong_ordering {
+  int n;
+  constexpr operator int() const { return n; }
+  static const strong_ordering equal, greater, less;
+};
+constexpr strong_ordering strong_ordering::equal = {0};
+constexpr strong_ordering strong_ordering::greater = {1};
+constexpr strong_ordering strong_ordering::less = {-1};
+} // namespace std
 
 // Ensure that we can round-trip DefaultedFunctionInfo through an AST file.
 namespace LookupContext {
-  struct A {};
+struct A {};
 
-  namespace N {
-    template <typename T> auto f() {
-      bool operator==(const T &, const T &);
-      bool operator<(const T &, const T &);
-      struct B {
-        T a;
-        std::strong_ordering operator<=>(const B &) const = default;
-      };
-      return B();
-    }
-  }
+namespace N {
+template <typename T> auto f() {
+  bool operator==(const T &, const T &);
+  bool operator<(const T &, const T &);
+  struct B {
+    T a;
+    std::strong_ordering operator<=>(const B &) const = default;
+  };
+  return B();
 }
+} // namespace N
+} // namespace LookupContext
 
 #else
 
 namespace LookupContext {
-  namespace M {
-    bool operator<=>(const A &, const A &) = delete;
-    bool operator==(const A &, const A &) = delete;
-    bool operator<(const A &, const A &) = delete;
-    bool cmp = N::f<A>() < N::f<A>();
-  }
-}
+namespace M {
+bool operator<=>(const A &, const A &) = delete;
+bool operator==(const A &, const A &) = delete;
+bool operator<(const A &, const A &) = delete;
+bool cmp = N::f<A>() < N::f<A>();
+} // namespace M
+} // namespace LookupContext
 
 #endif

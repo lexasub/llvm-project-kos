@@ -1,4 +1,5 @@
-@protocol P @end
+@protocol P
+@end
 
 @interface NSMutableArray
 - (id)objectAtIndexedSubscript:(unsigned int)index;
@@ -23,4 +24,3 @@ void all() {
 
   dictionary[key] = newObject;
 }
-

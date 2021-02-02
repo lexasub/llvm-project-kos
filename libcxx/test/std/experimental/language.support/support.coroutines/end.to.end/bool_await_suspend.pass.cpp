@@ -36,13 +36,19 @@ struct coro_t {
 struct NoSuspend {
   bool await_ready() { return false; }
   void await_resume() {}
-  template <typename F> bool await_suspend(F) { return false; }
+  template <typename F>
+  bool await_suspend(F) {
+    return false;
+  }
 };
 
 struct DoSuspend {
   bool await_ready() { return false; }
   void await_resume() {}
-  template <typename F> bool await_suspend(F) { return true; }
+  template <typename F>
+  bool await_suspend(F) {
+    return true;
+  }
 };
 
 bool f_started, f_resumed = false;

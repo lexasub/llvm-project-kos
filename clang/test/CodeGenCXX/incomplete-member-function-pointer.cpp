@@ -2,7 +2,7 @@
 // PR7040
 struct fake_tuple;
 struct connection {
-    void bar(fake_tuple);
+  void bar(fake_tuple);
 };
 void (connection::*a)(fake_tuple) = &connection::bar;
 void f() {

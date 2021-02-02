@@ -27,7 +27,7 @@ class TagDecl;
 class PrinterHelper {
 public:
   virtual ~PrinterHelper();
-  virtual bool handledStmt(Stmt* E, raw_ostream& OS) = 0;
+  virtual bool handledStmt(Stmt *E, raw_ostream &OS) = 0;
 };
 
 /// Callbacks to use to customize the behavior of the pretty-printer.

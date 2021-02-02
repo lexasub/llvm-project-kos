@@ -3,14 +3,14 @@
 
 // RUN: %clang_cc1 -triple %itanium_abi_triple -std=c++11 -fprofile-instrument=clang -fcoverage-mapping -dump-coverage-mapping -emit-llvm-only -main-file-name branch-templates.cpp %s | FileCheck %s
 
-template<typename T>
+template <typename T>
 void unused(T x) {
   return;
 }
 
-template<typename T>
+template <typename T>
 int func(T x) {
-  if(x)
+  if (x)
     return 0;
   else
     return 1;

@@ -84,8 +84,8 @@ bool WorkaroundNeeded() {
   }
 
   int status;
-  ::pid_t wpid = llvm::sys::RetryAfterSignal(-1, waitpid,
-      child_pid, &status, __WALL);
+  ::pid_t wpid =
+      llvm::sys::RetryAfterSignal(-1, waitpid, child_pid, &status, __WALL);
   if (wpid != child_pid || !WIFSTOPPED(status)) {
     LLDB_LOG(log, "waitpid() failed (status = {0:x}): {1}", status,
              Status(errno, eErrorTypePOSIX));
@@ -114,8 +114,7 @@ bool WorkaroundNeeded() {
       break;
     }
 
-    wpid = llvm::sys::RetryAfterSignal(-1, waitpid,
-        child_pid, &status, __WALL);
+    wpid = llvm::sys::RetryAfterSignal(-1, waitpid, child_pid, &status, __WALL);
     if (wpid != child_pid || !WIFSTOPPED(status)) {
       LLDB_LOG(log, "waitpid() failed (status = {0:x}): {1}", status,
                Status(errno, eErrorTypePOSIX));
@@ -130,9 +129,8 @@ bool WorkaroundNeeded() {
 
   // cpu is either the index of the first broken cpu, or CPU_SETSIZE.
   if (cpu == 0) {
-    LLDB_LOG(log,
-             "SINGLE STEPPING ON FIRST CPU IS NOT WORKING. DEBUGGING "
-             "LIKELY TO BE UNRELIABLE.");
+    LLDB_LOG(log, "SINGLE STEPPING ON FIRST CPU IS NOT WORKING. DEBUGGING "
+                  "LIKELY TO BE UNRELIABLE.");
     // No point in trying to fiddle with the affinities, just give it our best
     // shot and see how it goes.
     return false;

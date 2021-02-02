@@ -10,7 +10,6 @@
 #ifndef _LIBCPP_FENV_H
 #define _LIBCPP_FENV_H
 
-
 /*
     fenv.h synopsis
 
@@ -70,7 +69,6 @@ extern "C++" {
 #undef fegetexceptflag
 #endif
 
-
 #ifdef feraiseexcept
 #undef feraiseexcept
 #endif
@@ -78,7 +76,6 @@ extern "C++" {
 #ifdef fesetexceptflag
 #undef fesetexceptflag
 #endif
-
 
 #ifdef fetestexcept
 #undef fetestexcept
@@ -99,7 +96,6 @@ extern "C++" {
 #ifdef feholdexcept
 #undef feholdexcept
 #endif
-
 
 #ifdef fesetenv
 #undef fesetenv

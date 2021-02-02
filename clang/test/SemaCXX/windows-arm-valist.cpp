@@ -4,10 +4,14 @@
 #include <stdarg.h>
 
 template <typename lhs_, typename rhs_>
-struct is_same { enum { value = 0 }; };
+struct is_same {
+  enum { value = 0 };
+};
 
 template <typename type_>
-struct is_same<type_, type_> { enum { value = 1 }; };
+struct is_same<type_, type_> {
+  enum { value = 1 };
+};
 
 void check() {
   va_list va;

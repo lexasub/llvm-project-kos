@@ -2,6 +2,6 @@
 
 struct X {
   static struct A a;
-  static inline struct B b; // expected-error {{incomplete type}} expected-note {{forward decl}}
+  static inline struct B b;      // expected-error {{incomplete type}} expected-note {{forward decl}}
   static inline struct C c = {}; // expected-error {{incomplete type}} expected-note {{forward decl}}
 };

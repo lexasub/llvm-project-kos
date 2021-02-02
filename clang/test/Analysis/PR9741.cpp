@@ -2,7 +2,7 @@
 // expected-no-diagnostics
 
 void f() {
-  int a[] = { 1, 2, 3 };
+  int a[] = {1, 2, 3};
   unsigned int u = 0;
   for (auto x : a)
     ;

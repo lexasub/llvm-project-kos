@@ -24,31 +24,30 @@
 #include "test_macros.h"
 
 template <class ToDuration, class FromDuration>
-void
-test(const FromDuration& f, const ToDuration& d)
-{
-    {
+void test(const FromDuration& f, const ToDuration& d) {
+  {
     typedef decltype(std::chrono::ceil<ToDuration>(f)) R;
     static_assert((std::is_same<R, ToDuration>::value), "");
     assert(std::chrono::ceil<ToDuration>(f) == d);
-    }
+  }
 }
 
-int main(int, char**)
-{
-//  7290000ms is 2 hours, 1 minute, and 30 seconds
-    test(std::chrono::milliseconds( 7290000), std::chrono::hours( 3));
-    test(std::chrono::milliseconds(-7290000), std::chrono::hours(-2));
-    test(std::chrono::milliseconds( 7290000), std::chrono::minutes( 122));
-    test(std::chrono::milliseconds(-7290000), std::chrono::minutes(-121));
+int main(int, char**) {
+  //  7290000ms is 2 hours, 1 minute, and 30 seconds
+  test(std::chrono::milliseconds(7290000), std::chrono::hours(3));
+  test(std::chrono::milliseconds(-7290000), std::chrono::hours(-2));
+  test(std::chrono::milliseconds(7290000), std::chrono::minutes(122));
+  test(std::chrono::milliseconds(-7290000), std::chrono::minutes(-121));
 
-    {
-//  9000000ms is 2 hours and 30 minutes
-    constexpr std::chrono::hours h1 = std::chrono::ceil<std::chrono::hours>(std::chrono::milliseconds(9000000));
+  {
+    //  9000000ms is 2 hours and 30 minutes
+    constexpr std::chrono::hours h1 = std::chrono::ceil<std::chrono::hours>(
+        std::chrono::milliseconds(9000000));
     static_assert(h1.count() == 3, "");
-    constexpr std::chrono::hours h2 = std::chrono::ceil<std::chrono::hours>(std::chrono::milliseconds(-9000000));
+    constexpr std::chrono::hours h2 = std::chrono::ceil<std::chrono::hours>(
+        std::chrono::milliseconds(-9000000));
     static_assert(h2.count() == -2, "");
-    }
+  }
 
   return 0;
 }

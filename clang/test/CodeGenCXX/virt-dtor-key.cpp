@@ -3,8 +3,8 @@
 // CHECK: @_ZTI3foo ={{.*}} constant
 // CHECK-MINGW: @_ZTI3foo = linkonce_odr
 class foo {
-   foo();
-   virtual ~foo();
+  foo();
+  virtual ~foo();
 };
 
 foo::~foo() {

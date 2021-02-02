@@ -4,12 +4,12 @@
 int X = 0;
 
 void MySleep() {
-  sleep(1);  // the sleep that must appear in the report
+  sleep(1); // the sleep that must appear in the report
 }
 
 void *Thread(void *p) {
   barrier_wait(&barrier);
-  MySleep();  // Assume the main thread has done the write.
+  MySleep(); // Assume the main thread has done the write.
   X = 42;
   return 0;
 }

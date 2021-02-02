@@ -19,23 +19,26 @@
 // CHECK-DAG: {{@__omp_offloading_.+l33}}_exec_mode = weak constant i8 0
 // CHECK-DAG: {{@__omp_offloading_.+l38}}_exec_mode = weak constant i8 0
 
-template<typename tx>
+template <typename tx>
 tx ftemplate(int n) {
   tx a = 0;
   short aa = 0;
   tx b[10];
 
-  #pragma omp target parallel if(target: 0)
+#pragma omp target parallel if (target : 0)
   {
     a += 1;
   }
 
-  #pragma omp target parallel map(tofrom: aa)
+#pragma omp target parallel map(tofrom \
+                                : aa)
   {
     aa += 1;
   }
 
-  #pragma omp target parallel map(tofrom:a, aa, b) if(target: n>40)
+#pragma omp target parallel map(tofrom                 \
+                                : a, aa, b) if (target \
+                                                : n > 40)
   {
     a += 1;
     aa += 1;
@@ -45,7 +48,7 @@ tx ftemplate(int n) {
   return a;
 }
 
-int bar(int n){
+int bar(int n) {
   int a = 0;
 
   a += ftemplate<int>(n);
@@ -53,7 +56,7 @@ int bar(int n){
   return a;
 }
 
-  // CHECK-NOT: define {{.*}}void {{@__omp_offloading_.+template.+l17}}
+// CHECK-NOT: define {{.*}}void {{@__omp_offloading_.+template.+l17}}
 
 // CHECK-LABEL: define {{.*}}void {{@__omp_offloading_.+template.+l33}}(
 // CHECK: [[AA_ADDR:%.+]] = alloca i16*, align

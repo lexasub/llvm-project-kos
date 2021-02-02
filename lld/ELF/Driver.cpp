@@ -193,8 +193,8 @@ std::vector<std::pair<MemoryBufferRef, uint64_t>> static getArchiveMembers(
     v.push_back(std::make_pair(mbref, c.getChildOffset()));
   }
   if (err)
-    fatal(mb.getBufferIdentifier() + ": Archive::children failed: " +
-          toString(std::move(err)));
+    fatal(mb.getBufferIdentifier() +
+          ": Archive::children failed: " + toString(std::move(err)));
 
   // Take ownership of memory buffers created for members of thin archives.
   for (std::unique_ptr<MemoryBuffer> &mb : file->takeThinBuffers())
@@ -571,11 +571,11 @@ void LinkerDriver::linkerMain(ArrayRef<const char *> argsArr) {
   }
 
   if (config->timeTraceEnabled) {
-    if (auto E = timeTraceProfilerWrite(args.getLastArgValue(OPT_time_trace_file_eq).str(),
-                                        config->outputFile)) {
-      handleAllErrors(std::move(E), [&](const StringError &SE) {
-        error(SE.getMessage());
-      });
+    if (auto E = timeTraceProfilerWrite(
+            args.getLastArgValue(OPT_time_trace_file_eq).str(),
+            config->outputFile)) {
+      handleAllErrors(std::move(E),
+                      [&](const StringError &SE) { error(SE.getMessage()); });
       return;
     }
 
@@ -951,7 +951,8 @@ static void readConfigs(opt::InputArgList &args) {
       args.hasFlag(OPT_optimize_bb_jumps, OPT_no_optimize_bb_jumps, false);
   config->demangle = args.hasFlag(OPT_demangle, OPT_no_demangle, true);
   config->dependencyFile = args.getLastArgValue(OPT_dependency_file);
-  config->dependentLibraries = args.hasFlag(OPT_dependent_libraries, OPT_no_dependent_libraries, true);
+  config->dependentLibraries =
+      args.hasFlag(OPT_dependent_libraries, OPT_no_dependent_libraries, true);
   config->disableVerify = args.hasArg(OPT_disable_verify);
   config->discard = getDiscard(args);
   config->dwoDir = args.getLastArgValue(OPT_plugin_opt_dwo_dir_eq);
@@ -975,8 +976,8 @@ static void readConfigs(opt::InputArgList &args) {
       args.hasFlag(OPT_export_dynamic, OPT_no_export_dynamic, false);
   config->filterList = args::getStrings(args, OPT_filter);
   config->fini = args.getLastArgValue(OPT_fini, "_fini");
-  config->fixCortexA53Errata843419 = args.hasArg(OPT_fix_cortex_a53_843419) &&
-                                     !args.hasArg(OPT_relocatable);
+  config->fixCortexA53Errata843419 =
+      args.hasArg(OPT_fix_cortex_a53_843419) && !args.hasArg(OPT_relocatable);
   config->fixCortexA8 =
       args.hasArg(OPT_fix_cortex_a8) && !args.hasArg(OPT_relocatable);
   config->fortranCommon =
@@ -1048,20 +1049,21 @@ static void readConfigs(opt::InputArgList &args) {
   config->printGcSections =
       args.hasFlag(OPT_print_gc_sections, OPT_no_print_gc_sections, false);
   config->printArchiveStats = args.getLastArgValue(OPT_print_archive_stats);
-  config->printSymbolOrder =
-      args.getLastArgValue(OPT_print_symbol_order);
+  config->printSymbolOrder = args.getLastArgValue(OPT_print_symbol_order);
   config->rpath = getRpath(args);
   config->relocatable = args.hasArg(OPT_relocatable);
   config->saveTemps = args.hasArg(OPT_save_temps);
   if (args.hasArg(OPT_shuffle_sections))
-    config->shuffleSectionSeed = args::getInteger(args, OPT_shuffle_sections, 0);
+    config->shuffleSectionSeed =
+        args::getInteger(args, OPT_shuffle_sections, 0);
   config->searchPaths = args::getStrings(args, OPT_library_path);
   config->sectionStartMap = getSectionStartMap(args);
   config->shared = args.hasArg(OPT_shared);
   config->singleRoRx = !args.hasFlag(OPT_rosegment, OPT_no_rosegment, true);
   config->soName = args.getLastArgValue(OPT_soname);
   config->sortSection = getSortSection(args);
-  config->splitStackAdjustSize = args::getInteger(args, OPT_split_stack_adjust_size, 16384);
+  config->splitStackAdjustSize =
+      args::getInteger(args, OPT_split_stack_adjust_size, 16384);
   config->strip = getStrip(args);
   config->sysroot = args.getLastArgValue(OPT_sysroot);
   config->target1Rel = args.hasFlag(OPT_target1_rel, OPT_target1_abs, false);
@@ -1238,11 +1240,11 @@ static void readConfigs(opt::InputArgList &args) {
   std::tie(config->androidPackDynRelocs, config->relrPackDynRelocs) =
       getPackDynRelocs(args);
 
-  if (auto *arg = args.getLastArg(OPT_symbol_ordering_file)){
+  if (auto *arg = args.getLastArg(OPT_symbol_ordering_file)) {
     if (args.hasArg(OPT_call_graph_ordering_file))
       error("--symbol-ordering-file and --call-graph-order-file "
             "may not be used together");
-    if (Optional<MemoryBufferRef> buffer = readFile(arg->getValue())){
+    if (Optional<MemoryBufferRef> buffer = readFile(arg->getValue())) {
       config->symbolOrderingFile = getSymbolOrderingFile(*buffer);
       // Also need to disable CallGraphProfileSort to prevent
       // LLD order symbols with CGProfile
@@ -1455,7 +1457,8 @@ void LinkerDriver::createFiles(opt::InputArgList &args) {
         error("unbalanced --push-state/--pop-state");
         break;
       }
-      std::tie(config->asNeeded, config->isStatic, inWholeArchive) = stack.back();
+      std::tie(config->asNeeded, config->isStatic, inWholeArchive) =
+          stack.back();
       stack.pop_back();
       break;
     }
@@ -2304,10 +2307,12 @@ template <class ELFT> void LinkerDriver::link(opt::InputArgList &args) {
   // Replace common symbols with regular symbols.
   replaceCommonSymbols();
 
-  // Split SHF_MERGE and .eh_frame sections into pieces in preparation for garbage collection.
+  // Split SHF_MERGE and .eh_frame sections into pieces in preparation for
+  // garbage collection.
   splitSections<ELFT>();
 
-  // Garbage collection and removal of shared symbols from unused shared objects.
+  // Garbage collection and removal of shared symbols from unused shared
+  // objects.
   markLive<ELFT>();
   demoteSharedSymbols();
 
@@ -2354,7 +2359,8 @@ template <class ELFT> void LinkerDriver::link(opt::InputArgList &args) {
   }
 
   // Two input sections with different output sections should not be folded.
-  // ICF runs after processSectionCommands() so that we know the output sections.
+  // ICF runs after processSectionCommands() so that we know the output
+  // sections.
   if (config->icf != ICFLevel::None) {
     findKeepUniqueSections<ELFT>(args);
     doIcf<ELFT>();

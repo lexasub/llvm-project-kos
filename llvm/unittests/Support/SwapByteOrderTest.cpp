@@ -114,7 +114,7 @@ TEST(getSwappedBytes, uint32_t) {
 
 TEST(getSwappedBytes, uint64_t) {
   EXPECT_EQ(uint64_t(0x1122334455667788ULL),
-    sys::getSwappedBytes(uint64_t(0x8877665544332211ULL)));
+            sys::getSwappedBytes(uint64_t(0x8877665544332211ULL)));
 }
 
 TEST(getSwappedBytes, int8_t) {
@@ -131,7 +131,7 @@ TEST(getSwappedBytes, int32_t) {
 
 TEST(getSwappedBytes, int64_t) {
   EXPECT_EQ(int64_t(0x1122334455667788LL),
-    sys::getSwappedBytes(int64_t(0x8877665544332211LL)));
+            sys::getSwappedBytes(int64_t(0x8877665544332211LL)));
 }
 
 TEST(getSwappedBytes, float) {
@@ -144,7 +144,7 @@ TEST(getSwappedBytes, double) {
   EXPECT_EQ(6.32404026676795576546008054871e-322, sys::getSwappedBytes(-0.0));
   // 0x1122334455667788
   EXPECT_EQ(-7.08687663657301358331704585496e-268,
-    sys::getSwappedBytes(3.84141202447173065923064450234e-226));
+            sys::getSwappedBytes(3.84141202447173065923064450234e-226));
 }
 
 TEST(swapByteOrder, uint8_t) {
@@ -207,4 +207,4 @@ TEST(swapByteOrder, double) {
   EXPECT_EQ(3.84141202447173065923064450234e-226, value);
 }
 
-}
+} // namespace

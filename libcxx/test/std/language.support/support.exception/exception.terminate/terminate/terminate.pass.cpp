@@ -14,16 +14,12 @@
 
 #include "test_macros.h"
 
-void f1()
-{
-    std::exit(0);
-}
+void f1() { std::exit(0); }
 
-int main(int, char**)
-{
-    std::set_terminate(f1);
-    std::terminate();
-    assert(false);
+int main(int, char**) {
+  std::set_terminate(f1);
+  std::terminate();
+  assert(false);
 
   return 0;
 }

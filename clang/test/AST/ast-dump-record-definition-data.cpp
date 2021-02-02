@@ -9,11 +9,11 @@
 // RUN: | FileCheck -strict-whitespace %s
 
 void f() {
-  auto IsNotGenericLambda = [](){};
+  auto IsNotGenericLambda = []() {};
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <col:29> col:29 implicit class definition
   // CHECK-NOT: DefinitionData {{.*}}generic{{.*}}
   // CHECK-NEXT: DefinitionData {{.*}}lambda{{.*}}
-  auto IsGenericLambda = [](auto){};
+  auto IsGenericLambda = [](auto) {};
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <col:26> col:26 implicit class definition
   // CHECK-NEXT: DefinitionData {{.*}}generic{{.*}}lambda{{.*}}
 }
@@ -21,13 +21,13 @@ void f() {
 struct CanPassInRegisters {
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+3]]:1> line:[[@LINE-1]]:8 struct CanPassInRegisters definition
   // CHECK-NEXT: DefinitionData {{.*}}pass_in_registers{{.*}}
-  CanPassInRegisters(const CanPassInRegisters&) = default;
+  CanPassInRegisters(const CanPassInRegisters &) = default;
 };
 
 struct CantPassInRegisters {
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+3]]:1> line:[[@LINE-1]]:8 struct CantPassInRegisters definition
   // CHECK-NOT: DefinitionData {{.*}}pass_in_registers{{.*}}
-  CantPassInRegisters(const CantPassInRegisters&) = delete;
+  CantPassInRegisters(const CantPassInRegisters &) = delete;
 };
 
 struct IsEmpty {
@@ -74,7 +74,7 @@ struct IsTriviallyCopyable {
 struct IsNotTriviallyCopyable {
   // CHECK: CXXRecordDecl 0x{{[^ ]*}} <line:[[@LINE-1]]:1, line:[[@LINE+3]]:1> line:[[@LINE-1]]:8 struct IsNotTriviallyCopyable definition
   // CHECK-NOT: DefinitionData {{.*}}trivially_copyable{{.*}}
-  IsNotTriviallyCopyable(const IsNotTriviallyCopyable&) {}
+  IsNotTriviallyCopyable(const IsNotTriviallyCopyable &) {}
 };
 
 struct IsPOD {

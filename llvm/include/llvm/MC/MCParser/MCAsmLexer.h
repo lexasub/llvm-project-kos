@@ -33,7 +33,6 @@ public:
   virtual void HandleComment(SMLoc Loc, StringRef CommentText) = 0;
 };
 
-
 /// Generic assembler lexer interface, for use by target specific assembly
 /// lexers.
 class MCAsmLexer {
@@ -101,9 +100,7 @@ public:
   SMLoc getLoc() const;
 
   /// Get the current (last) lexed token.
-  const AsmToken &getTok() const {
-    return CurTok[0];
-  }
+  const AsmToken &getTok() const { return CurTok[0]; }
 
   /// Look ahead at the next token to be lexed.
   const AsmToken peekTok(bool ShouldSkipSpace = true) {
@@ -123,14 +120,10 @@ public:
                             bool ShouldSkipSpace = true) = 0;
 
   /// Get the current error location
-  SMLoc getErrLoc() {
-    return ErrLoc;
-  }
+  SMLoc getErrLoc() { return ErrLoc; }
 
   /// Get the current error string
-  const std::string &getErr() {
-    return Err;
-  }
+  const std::string &getErr() { return Err; }
 
   /// Get the kind of current token.
   AsmToken::TokenKind getKind() const { return getTok().getKind(); }

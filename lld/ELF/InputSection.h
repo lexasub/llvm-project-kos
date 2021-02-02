@@ -194,8 +194,7 @@ public:
 
   // Get the function symbol that encloses this offset from within the
   // section.
-  template <class ELFT>
-  Defined *getEnclosingFunction(uint64_t offset);
+  template <class ELFT> Defined *getEnclosingFunction(uint64_t offset);
 
   // Returns a source location string. Used to construct an error message.
   template <class ELFT> std::string getLocation(uint64_t offset);
@@ -229,7 +228,6 @@ public:
   // information.
   template <typename ELFT>
   void adjustSplitStackFunctionPrologues(uint8_t *buf, uint8_t *end);
-
 
   template <typename T> llvm::ArrayRef<T> getDataAs() const {
     size_t s = data().size();

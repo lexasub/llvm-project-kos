@@ -17,10 +17,8 @@
 
 #include <numeric>
 
-
-int main(int, char**)
-{
-    std::lcm<int, const bool>(2, true);
+int main(int, char**) {
+  std::lcm<int, const bool>(2, true);
 
   return 0;
 }

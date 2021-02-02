@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
-#else  // BUILD_DSO
+#else // BUILD_DSO
 __thread char huge_thread_local_array[1 << 12];
 
 extern "C" void StoreToTLS(char c) {

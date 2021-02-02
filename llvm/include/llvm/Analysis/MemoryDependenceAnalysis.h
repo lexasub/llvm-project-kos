@@ -316,7 +316,7 @@ private:
   /// local dependencies.
   DenseMap<AssertingVH<const Value>, NonLocalDepResult> NonLocalDefsCache;
   using ReverseNonLocalDefsCacheTy =
-    DenseMap<Instruction *, SmallPtrSet<const Value*, 4>>;
+      DenseMap<Instruction *, SmallPtrSet<const Value *, 4>>;
   ReverseNonLocalDefsCacheTy ReverseNonLocalDefsCache;
 
   /// This map stores the cached results of doing a pointer lookup at the
@@ -506,7 +506,8 @@ public:
   using Result = MemoryDependenceResults;
 
   MemoryDependenceAnalysis();
-  MemoryDependenceAnalysis(unsigned DefaultBlockScanLimit) : DefaultBlockScanLimit(DefaultBlockScanLimit) { }
+  MemoryDependenceAnalysis(unsigned DefaultBlockScanLimit)
+      : DefaultBlockScanLimit(DefaultBlockScanLimit) {}
 
   MemoryDependenceResults run(Function &F, FunctionAnalysisManager &AM);
 };

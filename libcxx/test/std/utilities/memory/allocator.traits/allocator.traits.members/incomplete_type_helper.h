@@ -4,10 +4,13 @@
 #include "min_allocator.h"
 
 namespace NS {
-  struct Incomplete;
+struct Incomplete;
 }
 
-template <class T> struct Holder { T value; };
+template <class T>
+struct Holder {
+  T value;
+};
 
 typedef Holder<NS::Incomplete> IncompleteHolder;
 

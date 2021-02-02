@@ -74,7 +74,7 @@ protected:
   explicit SmallPtrSetImplBase(const void **SmallStorage, unsigned SmallSize)
       : SmallArray(SmallStorage), CurArray(SmallStorage),
         CurArraySize(SmallSize), NumNonEmpty(0), NumTombstones(0) {
-    assert(SmallSize && (SmallSize & (SmallSize-1)) == 0 &&
+    assert(SmallSize && (SmallSize & (SmallSize - 1)) == 0 &&
            "Initial size must be a power of two!");
   }
 
@@ -107,12 +107,12 @@ public:
   }
 
 protected:
-  static void *getTombstoneMarker() { return reinterpret_cast<void*>(-2); }
+  static void *getTombstoneMarker() { return reinterpret_cast<void *>(-2); }
 
   static void *getEmptyMarker() {
     // Note that -1 is chosen to make clear() efficiently implementable with
     // memset and because it's not a valid pointer value.
-    return reinterpret_cast<void*>(-1);
+    return reinterpret_cast<void *>(-1);
   }
 
   const void **EndPointer() const {
@@ -158,7 +158,7 @@ protected:
   /// return true, otherwise return false.  This is hidden from the client so
   /// that the derived class can check that the right type of pointer is passed
   /// in.
-  bool erase_imp(const void * Ptr) {
+  bool erase_imp(const void *Ptr) {
     const void *const *P = find_imp(Ptr);
     if (P == EndPointer())
       return false;
@@ -173,11 +173,12 @@ protected:
   /// Returns the raw pointer needed to construct an iterator.  If element not
   /// found, this will be EndPointer.  Otherwise, it will be a pointer to the
   /// slot which stores Ptr;
-  const void *const * find_imp(const void * Ptr) const {
+  const void *const *find_imp(const void *Ptr) const {
     if (isSmall()) {
       // Linear search for the item.
-      for (const void *const *APtr = SmallArray,
-                      *const *E = SmallArray + NumNonEmpty; APtr != E; ++APtr)
+      for (const void *const *APtr = SmallArray, *const *E =
+                                                     SmallArray + NumNonEmpty;
+           APtr != E; ++APtr)
         if (*APtr == Ptr)
           return APtr;
       return EndPointer();
@@ -195,7 +196,7 @@ private:
 
   std::pair<const void *const *, bool> insert_imp_big(const void *Ptr);
 
-  const void * const *FindBucketFor(const void *Ptr) const;
+  const void *const *FindBucketFor(const void *Ptr) const;
   void shrink_and_clear();
 
   /// Grow - Allocate a larger backing store for the buckets and move it over.
@@ -224,8 +225,8 @@ protected:
   const void *const *End;
 
 public:
-  explicit SmallPtrSetIteratorImpl(const void *const *BP, const void*const *E)
-    : Bucket(BP), End(E) {
+  explicit SmallPtrSetIteratorImpl(const void *const *BP, const void *const *E)
+      : Bucket(BP), End(E) {
     if (shouldReverseIterate()) {
       RetreatIfNotValid();
       return;
@@ -287,10 +288,10 @@ public:
       return PtrTraits::getFromVoidPointer(const_cast<void *>(Bucket[-1]));
     }
     assert(Bucket < End);
-    return PtrTraits::getFromVoidPointer(const_cast<void*>(*Bucket));
+    return PtrTraits::getFromVoidPointer(const_cast<void *>(*Bucket));
   }
 
-  inline SmallPtrSetIterator& operator++() {          // Preincrement
+  inline SmallPtrSetIterator &operator++() { // Preincrement
     assert(isHandleInSync() && "invalid iterator access!");
     if (shouldReverseIterate()) {
       --Bucket;
@@ -302,7 +303,7 @@ public:
     return *this;
   }
 
-  SmallPtrSetIterator operator++(int) {        // Postincrement
+  SmallPtrSetIterator operator++(int) { // Postincrement
     SmallPtrSetIterator tmp = *this;
     ++*this;
     return tmp;
@@ -311,27 +312,23 @@ public:
 
 /// RoundUpToPowerOfTwo - This is a helper template that rounds N up to the next
 /// power of two (which means N itself if N is already a power of two).
-template<unsigned N>
-struct RoundUpToPowerOfTwo;
+template <unsigned N> struct RoundUpToPowerOfTwo;
 
 /// RoundUpToPowerOfTwoH - If N is not a power of two, increase it.  This is a
 /// helper template used to implement RoundUpToPowerOfTwo.
-template<unsigned N, bool isPowerTwo>
-struct RoundUpToPowerOfTwoH {
+template <unsigned N, bool isPowerTwo> struct RoundUpToPowerOfTwoH {
   enum { Val = N };
 };
-template<unsigned N>
-struct RoundUpToPowerOfTwoH<N, false> {
+template <unsigned N> struct RoundUpToPowerOfTwoH<N, false> {
   enum {
     // We could just use NextVal = N+1, but this converges faster.  N|(N-1) sets
     // the right-most zero bits to one all at once, e.g. 0b0011000 -> 0b0011111.
-    Val = RoundUpToPowerOfTwo<(N|(N-1)) + 1>::Val
+    Val = RoundUpToPowerOfTwo<(N | (N - 1)) + 1>::Val
   };
 };
 
-template<unsigned N>
-struct RoundUpToPowerOfTwo {
-  enum { Val = RoundUpToPowerOfTwoH<N, (N&(N-1)) == 0>::Val };
+template <unsigned N> struct RoundUpToPowerOfTwo {
+  enum { Val = RoundUpToPowerOfTwoH<N, (N & (N - 1)) == 0>::Val };
 };
 
 /// A templated base class for \c SmallPtrSet which provides the
@@ -339,8 +336,7 @@ struct RoundUpToPowerOfTwo {
 ///
 /// This is particularly useful for passing around between interface boundaries
 /// to avoid encoding a particular small size in the interface boundary.
-template <typename PtrType>
-class SmallPtrSetImpl : public SmallPtrSetImplBase {
+template <typename PtrType> class SmallPtrSetImpl : public SmallPtrSetImplBase {
   using ConstPtrType = typename add_const_past_pointer<PtrType>::type;
   using PtrTraits = PointerLikeTypeTraits<PtrType>;
   using ConstPtrTraits = PointerLikeTypeTraits<ConstPtrType>;
@@ -382,8 +378,7 @@ public:
     return find_imp(ConstPtrTraits::getAsVoidPointer(Ptr)) != EndPointer();
   }
 
-  template <typename IterT>
-  void insert(IterT I, IterT E) {
+  template <typename IterT> void insert(IterT I, IterT E) {
     for (; I != E; ++I)
       insert(*I);
   }
@@ -438,7 +433,7 @@ bool operator!=(const SmallPtrSetImpl<PtrType> &LHS,
 /// SmallSize or less elements.  This internally rounds up SmallSize to the next
 /// power of two if it is not already a power of two.  See the comments above
 /// SmallPtrSetImplBase for details of the algorithm.
-template<class PtrType, unsigned SmallSize>
+template <class PtrType, unsigned SmallSize>
 class SmallPtrSet : public SmallPtrSetImpl<PtrType> {
   // In small mode SmallPtrSet uses linear search for the elements, so it is
   // not a good idea to choose this value too high. You may consider using a
@@ -458,7 +453,7 @@ public:
   SmallPtrSet(SmallPtrSet &&that)
       : BaseT(SmallStorage, SmallSizePowTwo, std::move(that)) {}
 
-  template<typename It>
+  template <typename It>
   SmallPtrSet(It I, It E) : BaseT(SmallStorage, SmallSizePowTwo) {
     this->insert(I, E);
   }
@@ -499,11 +494,11 @@ public:
 
 namespace std {
 
-  /// Implement std::swap in terms of SmallPtrSet swap.
-  template<class T, unsigned N>
-  inline void swap(llvm::SmallPtrSet<T, N> &LHS, llvm::SmallPtrSet<T, N> &RHS) {
-    LHS.swap(RHS);
-  }
+/// Implement std::swap in terms of SmallPtrSet swap.
+template <class T, unsigned N>
+inline void swap(llvm::SmallPtrSet<T, N> &LHS, llvm::SmallPtrSet<T, N> &RHS) {
+  LHS.swap(RHS);
+}
 
 } // end namespace std
 

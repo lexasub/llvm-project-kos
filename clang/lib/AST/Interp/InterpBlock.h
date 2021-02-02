@@ -14,10 +14,10 @@
 #define LLVM_CLANG_AST_INTERP_BLOCK_H
 
 #include "Descriptor.h"
+#include "clang/AST/ComparisonCategories.h"
 #include "clang/AST/Decl.h"
 #include "clang/AST/DeclCXX.h"
 #include "clang/AST/Expr.h"
-#include "clang/AST/ComparisonCategories.h"
 #include "llvm/ADT/PointerUnion.h"
 #include "llvm/Support/raw_ostream.h"
 
@@ -64,8 +64,7 @@ public:
   char *data() { return reinterpret_cast<char *>(this + 1); }
 
   /// Returns a view over the data.
-  template <typename T>
-  T &deref() { return *reinterpret_cast<T *>(data()); }
+  template <typename T> T &deref() { return *reinterpret_cast<T *>(data()); }
 
   /// Invokes the constructor.
   void invokeCtor() {
@@ -81,7 +80,7 @@ protected:
   friend class InterpState;
 
   Block(Descriptor *Desc, bool IsExtern, bool IsStatic, bool IsDead)
-    : IsStatic(IsStatic), IsExtern(IsExtern), IsDead(true), Desc(Desc) {}
+      : IsStatic(IsStatic), IsExtern(IsExtern), IsDead(true), Desc(Desc) {}
 
   // Deletes a dead block at the end of its lifetime.
   void cleanup();

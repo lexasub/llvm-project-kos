@@ -54,8 +54,7 @@ namespace internal {
 ///   functions in VariantValue.
 /// Used to verify and extract the matcher arguments below.
 template <class T> struct ArgTypeTraits;
-template <class T> struct ArgTypeTraits<const T &> : public ArgTypeTraits<T> {
-};
+template <class T> struct ArgTypeTraits<const T &> : public ArgTypeTraits<T> {};
 
 template <> struct ArgTypeTraits<std::string> {
   static bool hasCorrectType(const VariantValue &Value) {
@@ -67,9 +66,7 @@ template <> struct ArgTypeTraits<std::string> {
     return Value.getString();
   }
 
-  static ArgKind getKind() {
-    return ArgKind(ArgKind::AK_String);
-  }
+  static ArgKind getKind() { return ArgKind(ArgKind::AK_String); }
 
   static llvm::Optional<std::string> getBestGuess(const VariantValue &) {
     return llvm::None;
@@ -77,11 +74,10 @@ template <> struct ArgTypeTraits<std::string> {
 };
 
 template <>
-struct ArgTypeTraits<StringRef> : public ArgTypeTraits<std::string> {
-};
+struct ArgTypeTraits<StringRef> : public ArgTypeTraits<std::string> {};
 
 template <class T> struct ArgTypeTraits<ast_matchers::internal::Matcher<T>> {
-  static bool hasCorrectType(const VariantValue& Value) {
+  static bool hasCorrectType(const VariantValue &Value) {
     return Value.isMatcher();
   }
   static bool hasCorrectValue(const VariantValue &Value) {
@@ -107,13 +103,9 @@ template <> struct ArgTypeTraits<bool> {
   }
   static bool hasCorrectValue(const VariantValue &Value) { return true; }
 
-  static bool get(const VariantValue &Value) {
-    return Value.getBoolean();
-  }
+  static bool get(const VariantValue &Value) { return Value.getBoolean(); }
 
-  static ArgKind getKind() {
-    return ArgKind(ArgKind::AK_Boolean);
-  }
+  static ArgKind getKind() { return ArgKind(ArgKind::AK_Boolean); }
 
   static llvm::Optional<std::string> getBestGuess(const VariantValue &) {
     return llvm::None;
@@ -126,13 +118,9 @@ template <> struct ArgTypeTraits<double> {
   }
   static bool hasCorrectValue(const VariantValue &Value) { return true; }
 
-  static double get(const VariantValue &Value) {
-    return Value.getDouble();
-  }
+  static double get(const VariantValue &Value) { return Value.getDouble(); }
 
-  static ArgKind getKind() {
-    return ArgKind(ArgKind::AK_Double);
-  }
+  static ArgKind getKind() { return ArgKind(ArgKind::AK_Double); }
 
   static llvm::Optional<std::string> getBestGuess(const VariantValue &) {
     return llvm::None;
@@ -145,13 +133,9 @@ template <> struct ArgTypeTraits<unsigned> {
   }
   static bool hasCorrectValue(const VariantValue &Value) { return true; }
 
-  static unsigned get(const VariantValue &Value) {
-    return Value.getUnsigned();
-  }
+  static unsigned get(const VariantValue &Value) { return Value.getUnsigned(); }
 
-  static ArgKind getKind() {
-    return ArgKind(ArgKind::AK_Unsigned);
-  }
+  static ArgKind getKind() { return ArgKind(ArgKind::AK_Unsigned); }
 
   static llvm::Optional<std::string> getBestGuess(const VariantValue &) {
     return llvm::None;
@@ -173,7 +157,7 @@ public:
   static bool hasCorrectType(const VariantValue &Value) {
     return Value.isString();
   }
-  static bool hasCorrectValue(const VariantValue& Value) {
+  static bool hasCorrectValue(const VariantValue &Value) {
     return getAttrKind(Value.getString()).hasValue();
   }
 
@@ -181,9 +165,7 @@ public:
     return *getAttrKind(Value.getString());
   }
 
-  static ArgKind getKind() {
-    return ArgKind(ArgKind::AK_String);
-  }
+  static ArgKind getKind() { return ArgKind(ArgKind::AK_String); }
 
   static llvm::Optional<std::string> getBestGuess(const VariantValue &Value);
 };
@@ -203,7 +185,7 @@ public:
   static bool hasCorrectType(const VariantValue &Value) {
     return Value.isString();
   }
-  static bool hasCorrectValue(const VariantValue& Value) {
+  static bool hasCorrectValue(const VariantValue &Value) {
     return getCastKind(Value.getString()).hasValue();
   }
 
@@ -211,9 +193,7 @@ public:
     return *getCastKind(Value.getString());
   }
 
-  static ArgKind getKind() {
-    return ArgKind(ArgKind::AK_String);
-  }
+  static ArgKind getKind() { return ArgKind(ArgKind::AK_String); }
 
   static llvm::Optional<std::string> getBestGuess(const VariantValue &Value);
 };
@@ -226,7 +206,7 @@ public:
   static bool hasCorrectType(const VariantValue &Value) {
     return Value.isString();
   }
-  static bool hasCorrectValue(const VariantValue& Value) {
+  static bool hasCorrectValue(const VariantValue &Value) {
     return getFlags(Value.getString()).hasValue();
   }
 
@@ -253,7 +233,7 @@ public:
   static bool hasCorrectType(const VariantValue &Value) {
     return Value.isString();
   }
-  static bool hasCorrectValue(const VariantValue& Value) {
+  static bool hasCorrectValue(const VariantValue &Value) {
     return getClauseKind(Value.getString()).hasValue();
   }
 
@@ -284,7 +264,7 @@ public:
   static bool hasCorrectType(const VariantValue &Value) {
     return Value.isString();
   }
-  static bool hasCorrectValue(const VariantValue& Value) {
+  static bool hasCorrectValue(const VariantValue &Value) {
     return getUnaryOrTypeTraitKind(Value.getString()).hasValue();
   }
 
@@ -380,8 +360,7 @@ public:
         RetKinds(RetKinds.begin(), RetKinds.end()),
         ArgKinds(ArgKinds.begin(), ArgKinds.end()) {}
 
-  VariantMatcher create(SourceRange NameRange,
-                        ArrayRef<ParserValue> Args,
+  VariantMatcher create(SourceRange NameRange, ArrayRef<ParserValue> Args,
                         Diagnostics *Error) const override {
     return Marshaller(Func, MatcherName, NameRange, Args, Error);
   }
@@ -402,7 +381,7 @@ public:
 
 private:
   const MarshallerType Marshaller;
-  void (* const Func)();
+  void (*const Func)();
   const std::string MatcherName;
   const std::vector<ASTNodeKind> RetKinds;
   const std::vector<ArgKind> ArgKinds;
@@ -433,9 +412,9 @@ inline VariantMatcher outvalueToVariantMatcher(const DynTypedMatcher &Matcher) {
 }
 
 template <typename T>
-static VariantMatcher outvalueToVariantMatcher(const T &PolyMatcher,
-                                               typename T::ReturnTypes * =
-                                                   nullptr) {
+static VariantMatcher
+outvalueToVariantMatcher(const T &PolyMatcher,
+                         typename T::ReturnTypes * = nullptr) {
   std::vector<DynTypedMatcher> Matchers;
   mergePolyMatchers(PolyMatcher, Matchers, typename T::ReturnTypes());
   VariantMatcher Out = VariantMatcher::PolymorphicMatcher(std::move(Matchers));
@@ -454,8 +433,7 @@ inline void
 buildReturnTypeVectorFromTypeList<ast_matchers::internal::EmptyTypeList>(
     std::vector<ASTNodeKind> &RetTypes) {}
 
-template <typename T>
-struct BuildReturnTypeVector {
+template <typename T> struct BuildReturnTypeVector {
   static void build(std::vector<ASTNodeKind> &RetTypes) {
     buildReturnTypeVectorFromTypeList<typename T::ReturnTypes>(RetTypes);
   }
@@ -491,7 +469,8 @@ variadicMatcherDescriptor(StringRef MatcherName, SourceRange NameRange,
     const VariantValue &Value = Arg.Value;
     if (!ArgTraits::hasCorrectType(Value)) {
       Error->addError(Arg.Range, Error->ET_RegistryWrongArgType)
-          << (i + 1) << ArgTraits::getKind().asString() << Value.getTypeAsString();
+          << (i + 1) << ArgTraits::getKind().asString()
+          << Value.getTypeAsString();
       HasError = true;
       break;
     }
@@ -519,8 +498,8 @@ variadicMatcherDescriptor(StringRef MatcherName, SourceRange NameRange,
 
   VariantMatcher Out;
   if (!HasError) {
-    Out = outvalueToVariantMatcher(Func(llvm::makeArrayRef(InnerArgs,
-                                                           Args.size())));
+    Out = outvalueToVariantMatcher(
+        Func(llvm::makeArrayRef(InnerArgs, Args.size())));
   }
 
   for (size_t i = 0, e = Args.size(); i != e; ++i) {
@@ -532,11 +511,10 @@ variadicMatcherDescriptor(StringRef MatcherName, SourceRange NameRange,
 
 /// Matcher descriptor for variadic functions.
 ///
-/// This class simply wraps a VariadicFunction with the right signature to export
-/// it as a MatcherDescriptor.
-/// This allows us to have one implementation of the interface for as many free
-/// functions as we want, reducing the number of symbols and size of the
-/// object file.
+/// This class simply wraps a VariadicFunction with the right signature to
+/// export it as a MatcherDescriptor. This allows us to have one implementation
+/// of the interface for as many free functions as we want, reducing the number
+/// of symbols and size of the object file.
 class VariadicFuncMatcherDescriptor : public MatcherDescriptor {
 public:
   using RunFunc = VariantMatcher (*)(StringRef MatcherName,
@@ -555,8 +533,7 @@ public:
     BuildReturnTypeVector<ResultT>::build(RetKinds);
   }
 
-  VariantMatcher create(SourceRange NameRange,
-                        ArrayRef<ParserValue> Args,
+  VariantMatcher create(SourceRange NameRange, ArrayRef<ParserValue> Args,
                         Diagnostics *Error) const override {
     return Func(MatcherName, NameRange, Args, Error);
   }
@@ -599,7 +576,7 @@ public:
     // DerivedKind are unrelated (in which case it will always fail), so set
     // Specificity to 0.
     if (VariadicFuncMatcherDescriptor::isConvertibleTo(Kind, Specificity,
-                                                 LeastDerivedKind)) {
+                                                       LeastDerivedKind)) {
       if (Kind.isSame(DerivedKind) || !Kind.isBaseOf(DerivedKind)) {
         if (Specificity)
           *Specificity = 0;
@@ -644,10 +621,9 @@ private:
 
 /// 0-arg marshaller function.
 template <typename ReturnType>
-static VariantMatcher matcherMarshall0(void (*Func)(), StringRef MatcherName,
-                                       SourceRange NameRange,
-                                       ArrayRef<ParserValue> Args,
-                                       Diagnostics *Error) {
+static VariantMatcher
+matcherMarshall0(void (*Func)(), StringRef MatcherName, SourceRange NameRange,
+                 ArrayRef<ParserValue> Args, Diagnostics *Error) {
   using FuncType = ReturnType (*)();
   CHECK_ARG_COUNT(0);
   return outvalueToVariantMatcher(reinterpret_cast<FuncType>(Func)());
@@ -655,10 +631,9 @@ static VariantMatcher matcherMarshall0(void (*Func)(), StringRef MatcherName,
 
 /// 1-arg marshaller function.
 template <typename ReturnType, typename ArgType1>
-static VariantMatcher matcherMarshall1(void (*Func)(), StringRef MatcherName,
-                                       SourceRange NameRange,
-                                       ArrayRef<ParserValue> Args,
-                                       Diagnostics *Error) {
+static VariantMatcher
+matcherMarshall1(void (*Func)(), StringRef MatcherName, SourceRange NameRange,
+                 ArrayRef<ParserValue> Args, Diagnostics *Error) {
   using FuncType = ReturnType (*)(ArgType1);
   CHECK_ARG_COUNT(1);
   CHECK_ARG_TYPE(0, ArgType1);
@@ -668,10 +643,9 @@ static VariantMatcher matcherMarshall1(void (*Func)(), StringRef MatcherName,
 
 /// 2-arg marshaller function.
 template <typename ReturnType, typename ArgType1, typename ArgType2>
-static VariantMatcher matcherMarshall2(void (*Func)(), StringRef MatcherName,
-                                       SourceRange NameRange,
-                                       ArrayRef<ParserValue> Args,
-                                       Diagnostics *Error) {
+static VariantMatcher
+matcherMarshall2(void (*Func)(), StringRef MatcherName, SourceRange NameRange,
+                 ArrayRef<ParserValue> Args, Diagnostics *Error) {
   using FuncType = ReturnType (*)(ArgType1, ArgType2);
   CHECK_ARG_COUNT(2);
   CHECK_ARG_TYPE(0, ArgType1);
@@ -697,16 +671,16 @@ public:
   }
 
 private:
-  using AdaptativeFunc = ast_matchers::internal::ArgumentAdaptingMatcherFunc<
-      ArgumentAdapterT, FromTypes, ToTypes>;
+  using AdaptativeFunc =
+      ast_matchers::internal::ArgumentAdaptingMatcherFunc<ArgumentAdapterT,
+                                                          FromTypes, ToTypes>;
 
   /// End case for the recursion
   static void collect(ast_matchers::internal::EmptyTypeList) {}
 
   /// Recursive case. Get the overload for the head of the list, and
   ///   recurse to the tail.
-  template <typename FromTypeList>
-  inline void collect(FromTypeList);
+  template <typename FromTypeList> inline void collect(FromTypeList);
 
   StringRef Name;
   std::vector<std::unique_ptr<MatcherDescriptor>> &Out;
@@ -726,8 +700,7 @@ public:
 
   ~OverloadedMatcherDescriptor() override = default;
 
-  VariantMatcher create(SourceRange NameRange,
-                        ArrayRef<ParserValue> Args,
+  VariantMatcher create(SourceRange NameRange, ArrayRef<ParserValue> Args,
                         Diagnostics *Error) const override {
     std::vector<VariantMatcher> Constructed;
     Diagnostics::OverloadContext Ctx(Error);
@@ -738,7 +711,8 @@ public:
       }
     }
 
-    if (Constructed.empty()) return VariantMatcher(); // No overload matched.
+    if (Constructed.empty())
+      return VariantMatcher(); // No overload matched.
     // We ignore the errors if any matcher succeeded.
     Ctx.revertErrors();
     if (Constructed.size() > 1) {
@@ -872,8 +846,7 @@ public:
       : MinCount(MinCount), MaxCount(MaxCount), Op(Op),
         MatcherName(MatcherName) {}
 
-  VariantMatcher create(SourceRange NameRange,
-                        ArrayRef<ParserValue> Args,
+  VariantMatcher create(SourceRange NameRange, ArrayRef<ParserValue> Args,
                         Diagnostics *Error) const override {
     if (Args.size() < MinCount || MaxCount < Args.size()) {
       const std::string MaxStr =
@@ -1022,8 +995,8 @@ makeMatcherAutoMarshall(ReturnType (*Func)(ArgType1, ArgType2),
                         StringRef MatcherName) {
   std::vector<ASTNodeKind> RetTypes;
   BuildReturnTypeVector<ReturnType>::build(RetTypes);
-  ArgKind AKs[] = { ArgTypeTraits<ArgType1>::getKind(),
-                    ArgTypeTraits<ArgType2>::getKind() };
+  ArgKind AKs[] = {ArgTypeTraits<ArgType1>::getKind(),
+                   ArgTypeTraits<ArgType2>::getKind()};
   return std::make_unique<FixedArgCountMatcherDescriptor>(
       matcherMarshall2<ReturnType, ArgType1, ArgType2>,
       reinterpret_cast<void (*)()>(Func), MatcherName, RetTypes, AKs);
@@ -1076,8 +1049,9 @@ std::unique_ptr<MatcherDescriptor> makeMatcherAutoMarshall(
 template <template <typename ToArg, typename FromArg> class ArgumentAdapterT,
           typename FromTypes, typename ToTypes>
 template <typename FromTypeList>
-inline void AdaptativeOverloadCollector<ArgumentAdapterT, FromTypes,
-                                        ToTypes>::collect(FromTypeList) {
+inline void
+AdaptativeOverloadCollector<ArgumentAdapterT, FromTypes, ToTypes>::collect(
+    FromTypeList) {
   Out.push_back(makeMatcherAutoMarshall(
       &AdaptativeFunc::template create<typename FromTypeList::head>, Name));
   collect(typename FromTypeList::tail());

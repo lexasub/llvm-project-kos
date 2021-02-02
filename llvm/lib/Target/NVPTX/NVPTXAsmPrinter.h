@@ -71,17 +71,17 @@ class LLVM_LIBRARY_VISIBILITY NVPTXAsmPrinter : public AsmPrinter {
     //
     // We first layout the aggregate in 'buffer' in bytes, except for
     // those symbol addresses. For the i-th symbol address in the
-    //aggregate, its corresponding 4-byte or 8-byte elements in 'buffer'
+    // aggregate, its corresponding 4-byte or 8-byte elements in 'buffer'
     // are filled with 0s. symbolPosInBuffer[i-1] records its position
     // in 'buffer', and Symbols[i-1] records the Value*.
     //
     // Once we have this AggBuffer setup, we can choose how to print
     // it out.
   public:
-    unsigned numSymbols;   // number of symbol addresses
+    unsigned numSymbols; // number of symbol addresses
 
   private:
-    const unsigned size;   // size of the buffer in bytes
+    const unsigned size;               // size of the buffer in bytes
     std::vector<unsigned char> buffer; // the buffer
     SmallVector<unsigned, 4> symbolPosInBuffer;
     SmallVector<const Value *, 4> Symbols;
@@ -142,7 +142,7 @@ class LLVM_LIBRARY_VISIBILITY NVPTXAsmPrinter : public AsmPrinter {
         for (unsigned i = 0; i < size; i++) {
           if (i)
             O << ", ";
-          O << (unsigned int) buffer[i];
+          O << (unsigned int)buffer[i];
         }
       } else {
         // print out in 4-bytes or 8-bytes
@@ -174,7 +174,7 @@ class LLVM_LIBRARY_VISIBILITY NVPTXAsmPrinter : public AsmPrinter {
               }
             } else if (const ConstantExpr *CExpr = dyn_cast<ConstantExpr>(v0)) {
               const MCExpr *Expr =
-                AP.lowerConstantForGV(cast<Constant>(CExpr), false);
+                  AP.lowerConstantForGV(cast<Constant>(CExpr), false);
               AP.printMCExpr(*Expr, O);
             } else
               llvm_unreachable("symbol type unknown");

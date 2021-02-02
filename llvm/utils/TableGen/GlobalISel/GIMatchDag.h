@@ -35,14 +35,11 @@ public:
     return OperandListCtx.makeMIPredicateOperandList();
   }
 
-
   const GIMatchDagOperandList &makeTwoMOPredicateOperandList() {
     return OperandListCtx.makeTwoMOPredicateOperandList();
   }
 
-  void print(raw_ostream &OS) const {
-    OperandListCtx.print(OS);
-  }
+  void print(raw_ostream &OS) const { OperandListCtx.print(OS); }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   LLVM_DUMP_METHOD void dump() const { print(errs()); }
@@ -180,7 +177,7 @@ public:
     return make_range(predicates_begin(), predicates_end());
   }
 
-  template <class... Args> GIMatchDagInstr *addInstrNode(Args &&... args) {
+  template <class... Args> GIMatchDagInstr *addInstrNode(Args &&...args) {
     auto Obj =
         std::make_unique<GIMatchDagInstr>(*this, std::forward<Args>(args)...);
     auto ObjRaw = Obj.get();
@@ -188,15 +185,14 @@ public:
     return ObjRaw;
   }
 
-  template <class T, class... Args>
-  T *addPredicateNode(Args &&... args) {
+  template <class T, class... Args> T *addPredicateNode(Args &&...args) {
     auto Obj = std::make_unique<T>(getContext(), std::forward<Args>(args)...);
     auto ObjRaw = Obj.get();
     PredicateNodes.push_back(std::move(Obj));
     return ObjRaw;
   }
 
-  template <class... Args> GIMatchDagEdge *addEdge(Args &&... args) {
+  template <class... Args> GIMatchDagEdge *addEdge(Args &&...args) {
     auto Obj = std::make_unique<GIMatchDagEdge>(std::forward<Args>(args)...);
     auto ObjRaw = Obj.get();
     Edges.push_back(std::move(Obj));
@@ -204,7 +200,7 @@ public:
   }
 
   template <class... Args>
-  GIMatchDagPredicateDependencyEdge *addPredicateDependency(Args &&... args) {
+  GIMatchDagPredicateDependencyEdge *addPredicateDependency(Args &&...args) {
     auto Obj = std::make_unique<GIMatchDagPredicateDependencyEdge>(
         std::forward<Args>(args)...);
     auto ObjRaw = Obj.get();

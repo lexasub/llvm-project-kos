@@ -6,8 +6,6 @@
 
 #include "header.h"
 
-
-
 int f1(int n, ABC v1, ABC v2) {
   // CHECK-MESSAGES: [[@LINE-1]]:19: warning: the parameter 'v1' is copied for each invocation but only used as a const reference; consider making it a const reference [performance-unnecessary-value-param]
   // CHECK-MESSAGES: [[@LINE-2]]:27: warning: the parameter 'v2' is copied for each invocation but only used as a const reference; consider making it a const reference [performance-unnecessary-value-param]

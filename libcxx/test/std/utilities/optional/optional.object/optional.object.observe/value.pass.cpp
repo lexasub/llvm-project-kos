@@ -24,58 +24,50 @@
 
 #include "test_macros.h"
 
-using std::optional;
 using std::bad_optional_access;
+using std::optional;
 
-struct X
-{
-    X() = default;
-    X(const X&) = delete;
-    constexpr int test() const & {return 3;}
-    int test() & {return 4;}
-    constexpr int test() const && {return 5;}
-    int test() && {return 6;}
+struct X {
+  X() = default;
+  X(const X&) = delete;
+  constexpr int test() const& { return 3; }
+  int test() & { return 4; }
+  constexpr int test() const&& { return 5; }
+  int test() && { return 6; }
 };
 
-struct Y
-{
-    constexpr int test() & {return 7;}
+struct Y {
+  constexpr int test() & { return 7; }
 };
 
-constexpr int
-test()
-{
-    optional<Y> opt{Y{}};
-    return opt.value().test();
+constexpr int test() {
+  optional<Y> opt{Y{}};
+  return opt.value().test();
 }
 
-
-int main(int, char**)
-{
-    {
-        optional<X> opt; ((void)opt);
-        ASSERT_NOT_NOEXCEPT(opt.value());
-        ASSERT_SAME_TYPE(decltype(opt.value()), X&);
-    }
-    {
-        optional<X> opt;
-        opt.emplace();
-        assert(opt.value().test() == 4);
-    }
+int main(int, char**) {
+  {
+    optional<X> opt;
+    ((void)opt);
+    ASSERT_NOT_NOEXCEPT(opt.value());
+    ASSERT_SAME_TYPE(decltype(opt.value()), X&);
+  }
+  {
+    optional<X> opt;
+    opt.emplace();
+    assert(opt.value().test() == 4);
+  }
 #ifndef TEST_HAS_NO_EXCEPTIONS
-    {
-        optional<X> opt;
-        try
-        {
-            (void)opt.value();
-            assert(false);
-        }
-        catch (const bad_optional_access&)
-        {
-        }
+  {
+    optional<X> opt;
+    try {
+      (void)opt.value();
+      assert(false);
+    } catch (const bad_optional_access&) {
     }
+  }
 #endif
-    static_assert(test() == 7, "");
+  static_assert(test() == 7, "");
 
   return 0;
 }

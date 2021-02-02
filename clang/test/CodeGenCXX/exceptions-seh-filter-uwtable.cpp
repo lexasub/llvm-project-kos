@@ -44,5 +44,4 @@ void at() {
     ar->ad();
   } __except (aq(*ar, _exception_code(), 0, 0)) {
   }
-
 }

@@ -41,14 +41,13 @@ public:
     unsigned InstCount;
     unsigned IAMInstCount; // Indirect access memory instruction count
     unsigned LSMInstCount; // Large stride memory instruction count
-    FuncInfo() : MemInstCount(0), InstCount(0), IAMInstCount(0),
-                 LSMInstCount(0) {}
+    FuncInfo()
+        : MemInstCount(0), InstCount(0), IAMInstCount(0), LSMInstCount(0) {}
   };
 
-  typedef ValueMap<const Function*, FuncInfo> FuncInfoMap;
+  typedef ValueMap<const Function *, FuncInfo> FuncInfoMap;
 
 private:
-
   FuncInfoMap FIM;
 };
 } // namespace llvm

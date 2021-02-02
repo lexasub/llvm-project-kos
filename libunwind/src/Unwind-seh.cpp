@@ -16,27 +16,27 @@
 
 #include <unwind.h>
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdlib.h>
 
-#include <windef.h>
 #include <excpt.h>
-#include <winnt.h>
 #include <ntstatus.h>
+#include <windef.h>
+#include <winnt.h>
 
-#include "libunwind_ext.h"
 #include "UnwindCursor.hpp"
+#include "libunwind_ext.h"
 
 using namespace libunwind;
 
 #define STATUS_USER_DEFINED (1u << 29)
 
-#define STATUS_GCC_MAGIC  (('G' << 16) | ('C' << 8) | 'C')
+#define STATUS_GCC_MAGIC (('G' << 16) | ('C' << 8) | 'C')
 
-#define MAKE_CUSTOM_STATUS(s, c) \
+#define MAKE_CUSTOM_STATUS(s, c)                                               \
   ((NTSTATUS)(((s) << 30) | STATUS_USER_DEFINED | (c)))
-#define MAKE_GCC_EXCEPTION(c) \
+#define MAKE_GCC_EXCEPTION(c)                                                  \
   MAKE_CUSTOM_STATUS(STATUS_SEVERITY_SUCCESS, STATUS_GCC_MAGIC | ((c) << 24))
 
 /// SEH exception raised by libunwind when the program calls
@@ -109,7 +109,7 @@ _GCC_specific_handler(PEXCEPTION_RECORD ms_exc, PVOID frame, PCONTEXT ms_ctx,
 
     if (!IS_UNWINDING(ms_exc->ExceptionFlags)) {
       if (ours && ms_exc->NumberParameters > 1)
-        action =  (_Unwind_Action)(_UA_CLEANUP_PHASE | _UA_FORCE_UNWIND);
+        action = (_Unwind_Action)(_UA_CLEANUP_PHASE | _UA_FORCE_UNWIND);
       else
         action = _UA_SEARCH_PHASE;
     } else {
@@ -125,7 +125,8 @@ _GCC_specific_handler(PEXCEPTION_RECORD ms_exc, PVOID frame, PCONTEXT ms_ctx,
                              (void *)pers, action, exc->exception_class,
                              (void *)exc, (void *)ctx);
   urc = pers(1, action, exc->exception_class, exc, ctx);
-  _LIBUNWIND_TRACE_UNWINDING("_GCC_specific_handler() personality returned %d", urc);
+  _LIBUNWIND_TRACE_UNWINDING("_GCC_specific_handler() personality returned %d",
+                             urc);
   switch (urc) {
   case _URC_CONTINUE_UNWIND:
     // If we're in phase 2, and the personality routine said to continue
@@ -148,13 +149,15 @@ _GCC_specific_handler(PEXCEPTION_RECORD ms_exc, PVOID frame, PCONTEXT ms_ctx,
     }
     // FIXME: Indicate target frame in foreign case!
     // phase 2: the clean up phase
-    RtlUnwindEx(frame, (PVOID)disp->ControlPc, ms_exc, exc, ms_ctx, disp->HistoryTable);
+    RtlUnwindEx(frame, (PVOID)disp->ControlPc, ms_exc, exc, ms_ctx,
+                disp->HistoryTable);
     _LIBUNWIND_ABORT("RtlUnwindEx() failed");
   case _URC_INSTALL_CONTEXT: {
     // If we were called by __libunwind_seh_personality(), indicate that
     // a handler was found; otherwise, it's time to initiate a collided
     // unwind to the target.
-    if (ours && !IS_UNWINDING(ms_exc->ExceptionFlags) && ms_exc->NumberParameters > 1)
+    if (ours && !IS_UNWINDING(ms_exc->ExceptionFlags) &&
+        ms_exc->NumberParameters > 1)
       return 4 /* ExecptionExecuteHandler in mingw */;
     // This should never happen in phase 1.
     if (!IS_UNWINDING(ms_exc->ExceptionFlags))
@@ -184,11 +187,13 @@ _GCC_specific_handler(PEXCEPTION_RECORD ms_exc, PVOID frame, PCONTEXT ms_ctx,
     // Don't use the one that was passed in; we don't want to overwrite the
     // context in the DISPATCHER_CONTEXT.
     CONTEXT new_ctx;
-    RtlUnwindEx(frame, (PVOID)target, ms_exc, (PVOID)retval, &new_ctx, disp->HistoryTable);
+    RtlUnwindEx(frame, (PVOID)target, ms_exc, (PVOID)retval, &new_ctx,
+                disp->HistoryTable);
     _LIBUNWIND_ABORT("RtlUnwindEx() failed");
   }
   // Anything else indicates a serious problem.
-  default: return ExceptionContinueExecution;
+  default:
+    return ExceptionContinueExecution;
   }
 }
 
@@ -197,13 +202,14 @@ _GCC_specific_handler(PEXCEPTION_RECORD ms_exc, PVOID frame, PCONTEXT ms_ctx,
 /// turn (at least, for Itanium-style frames) calls the real Itanium
 /// personality function (see \c _GCC_specific_handler()).
 extern "C" _Unwind_Reason_Code
-__libunwind_seh_personality(int version, _Unwind_Action state,
-                            uint64_t klass, _Unwind_Exception *exc,
+__libunwind_seh_personality(int version, _Unwind_Action state, uint64_t klass,
+                            _Unwind_Exception *exc,
                             struct _Unwind_Context *context) {
   (void)version;
   (void)klass;
   EXCEPTION_RECORD ms_exc;
-  bool phase2 = (state & (_UA_SEARCH_PHASE|_UA_CLEANUP_PHASE)) == _UA_CLEANUP_PHASE;
+  bool phase2 =
+      (state & (_UA_SEARCH_PHASE | _UA_CLEANUP_PHASE)) == _UA_CLEANUP_PHASE;
   ms_exc.ExceptionCode = STATUS_GCC_THROW;
   ms_exc.ExceptionFlags = 0;
   ms_exc.NumberParameters = 3;
@@ -212,12 +218,12 @@ __libunwind_seh_personality(int version, _Unwind_Action state,
   ms_exc.ExceptionInformation[2] = state;
   DISPATCHER_CONTEXT *disp_ctx =
       __unw_seh_get_disp_ctx((unw_cursor_t *)context);
-  EXCEPTION_DISPOSITION ms_act = disp_ctx->LanguageHandler(&ms_exc,
-                                                           (PVOID)disp_ctx->EstablisherFrame,
-                                                           disp_ctx->ContextRecord,
-                                                           disp_ctx);
+  EXCEPTION_DISPOSITION ms_act =
+      disp_ctx->LanguageHandler(&ms_exc, (PVOID)disp_ctx->EstablisherFrame,
+                                disp_ctx->ContextRecord, disp_ctx);
   switch (ms_act) {
-  case ExceptionContinueSearch: return _URC_CONTINUE_UNWIND;
+  case ExceptionContinueSearch:
+    return _URC_CONTINUE_UNWIND;
   case 4 /*ExceptionExecuteHandler*/:
     return phase2 ? _URC_INSTALL_CONTEXT : _URC_HANDLER_FOUND;
   default:
@@ -226,8 +232,7 @@ __libunwind_seh_personality(int version, _Unwind_Action state,
 }
 
 static _Unwind_Reason_Code
-unwind_phase2_forced(unw_context_t *uc,
-                     _Unwind_Exception *exception_object,
+unwind_phase2_forced(unw_context_t *uc, _Unwind_Exception *exception_object,
                      _Unwind_Stop_Fn stop, void *stop_parameter) {
   unw_cursor_t cursor2;
   __unw_init_local(&cursor2, uc);
@@ -358,8 +363,7 @@ _Unwind_RaiseException(_Unwind_Exception *exception_object) {
 /// Note: re-throwing an exception (as opposed to continuing the unwind)
 /// is implemented by having the code call \c __cxa_rethrow() which
 /// in turn calls \c _Unwind_Resume_or_Rethrow().
-_LIBUNWIND_EXPORT void
-_Unwind_Resume(_Unwind_Exception *exception_object) {
+_LIBUNWIND_EXPORT void _Unwind_Resume(_Unwind_Exception *exception_object) {
   _LIBUNWIND_TRACE_API("_Unwind_Resume(ex_obj=%p)", (void *)exception_object);
 
   if (exception_object->private_[0] != 0) {
@@ -367,7 +371,7 @@ _Unwind_Resume(_Unwind_Exception *exception_object) {
 
     __unw_getcontext(&uc);
     unwind_phase2_forced(&uc, exception_object,
-                         (_Unwind_Stop_Fn) exception_object->private_[0],
+                         (_Unwind_Stop_Fn)exception_object->private_[0],
                          (void *)exception_object->private_[4]);
   } else {
     // Recover the parameters for the unwind from the exception object
@@ -386,8 +390,8 @@ _Unwind_Resume(_Unwind_Exception *exception_object) {
     ms_exc.ExceptionInformation[2] = exception_object->private_[2];
     ms_exc.ExceptionInformation[3] = exception_object->private_[3];
     RtlUnwindEx((PVOID)exception_object->private_[1],
-                (PVOID)exception_object->private_[2], &ms_exc,
-                exception_object, &ms_ctx, &hist);
+                (PVOID)exception_object->private_[2], &ms_exc, exception_object,
+                &ms_ctx, &hist);
   }
 
   // Clients assume _Unwind_Resume() does not return, so all we can do is abort.
@@ -398,8 +402,8 @@ _Unwind_Resume(_Unwind_Exception *exception_object) {
 /// Unwinds stack, calling "stop" function at each frame.
 /// Could be used to implement \c longjmp().
 _LIBUNWIND_EXPORT _Unwind_Reason_Code
-_Unwind_ForcedUnwind(_Unwind_Exception *exception_object,
-                     _Unwind_Stop_Fn stop, void *stop_parameter) {
+_Unwind_ForcedUnwind(_Unwind_Exception *exception_object, _Unwind_Stop_Fn stop,
+                     void *stop_parameter) {
   _LIBUNWIND_TRACE_API("_Unwind_ForcedUnwind(ex_obj=%p, stop=%p)",
                        (void *)exception_object, (void *)(uintptr_t)stop);
   unw_context_t uc;
@@ -407,8 +411,8 @@ _Unwind_ForcedUnwind(_Unwind_Exception *exception_object,
 
   // Mark that this is a forced unwind, so _Unwind_Resume() can do
   // the right thing.
-  exception_object->private_[0] = (uintptr_t) stop;
-  exception_object->private_[4] = (uintptr_t) stop_parameter;
+  exception_object->private_[0] = (uintptr_t)stop;
+  exception_object->private_[4] = (uintptr_t)stop_parameter;
 
   // do it
   return unwind_phase2_forced(&uc, exception_object, stop, stop_parameter);
@@ -430,7 +434,8 @@ _Unwind_GetLanguageSpecificData(struct _Unwind_Context *context) {
 _LIBUNWIND_EXPORT uintptr_t
 _Unwind_GetRegionStart(struct _Unwind_Context *context) {
   DISPATCHER_CONTEXT *disp = __unw_seh_get_disp_ctx((unw_cursor_t *)context);
-  uintptr_t result = (uintptr_t)disp->FunctionEntry->BeginAddress + disp->ImageBase;
+  uintptr_t result =
+      (uintptr_t)disp->FunctionEntry->BeginAddress + disp->ImageBase;
   _LIBUNWIND_TRACE_API("_Unwind_GetRegionStart(context=%p) => 0x%" PRIxPTR,
                        (void *)context, result);
   return result;
@@ -438,21 +443,24 @@ _Unwind_GetRegionStart(struct _Unwind_Context *context) {
 
 static int __unw_init_seh(unw_cursor_t *cursor, CONTEXT *context) {
 #ifdef _LIBUNWIND_TARGET_X86_64
-  new (reinterpret_cast<UnwindCursor<LocalAddressSpace, Registers_x86_64> *>(cursor))
+  new (reinterpret_cast<UnwindCursor<LocalAddressSpace, Registers_x86_64> *>(
+      cursor))
       UnwindCursor<LocalAddressSpace, Registers_x86_64>(
           context, LocalAddressSpace::sThisAddressSpace);
   auto *co = reinterpret_cast<AbstractUnwindCursor *>(cursor);
   co->setInfoBasedOnIPRegister();
   return UNW_ESUCCESS;
 #elif defined(_LIBUNWIND_TARGET_ARM)
-  new (reinterpret_cast<UnwindCursor<LocalAddressSpace, Registers_arm> *>(cursor))
+  new (reinterpret_cast<UnwindCursor<LocalAddressSpace, Registers_arm> *>(
+      cursor))
       UnwindCursor<LocalAddressSpace, Registers_arm>(
           context, LocalAddressSpace::sThisAddressSpace);
   auto *co = reinterpret_cast<AbstractUnwindCursor *>(cursor);
   co->setInfoBasedOnIPRegister();
   return UNW_ESUCCESS;
 #elif defined(_LIBUNWIND_TARGET_AARCH64)
-  new (reinterpret_cast<UnwindCursor<LocalAddressSpace, Registers_arm64> *>(cursor))
+  new (reinterpret_cast<UnwindCursor<LocalAddressSpace, Registers_arm64> *>(
+      cursor))
       UnwindCursor<LocalAddressSpace, Registers_arm64>(
           context, LocalAddressSpace::sThisAddressSpace);
   auto *co = reinterpret_cast<AbstractUnwindCursor *>(cursor);
@@ -465,11 +473,17 @@ static int __unw_init_seh(unw_cursor_t *cursor, CONTEXT *context) {
 
 static DISPATCHER_CONTEXT *__unw_seh_get_disp_ctx(unw_cursor_t *cursor) {
 #ifdef _LIBUNWIND_TARGET_X86_64
-  return reinterpret_cast<UnwindCursor<LocalAddressSpace, Registers_x86_64> *>(cursor)->getDispatcherContext();
+  return reinterpret_cast<UnwindCursor<LocalAddressSpace, Registers_x86_64> *>(
+             cursor)
+      ->getDispatcherContext();
 #elif defined(_LIBUNWIND_TARGET_ARM)
-  return reinterpret_cast<UnwindCursor<LocalAddressSpace, Registers_arm> *>(cursor)->getDispatcherContext();
+  return reinterpret_cast<UnwindCursor<LocalAddressSpace, Registers_arm> *>(
+             cursor)
+      ->getDispatcherContext();
 #elif defined(_LIBUNWIND_TARGET_AARCH64)
-  return reinterpret_cast<UnwindCursor<LocalAddressSpace, Registers_arm64> *>(cursor)->getDispatcherContext();
+  return reinterpret_cast<UnwindCursor<LocalAddressSpace, Registers_arm64> *>(
+             cursor)
+      ->getDispatcherContext();
 #else
   return nullptr;
 #endif
@@ -478,11 +492,14 @@ static DISPATCHER_CONTEXT *__unw_seh_get_disp_ctx(unw_cursor_t *cursor) {
 static void __unw_seh_set_disp_ctx(unw_cursor_t *cursor,
                                    DISPATCHER_CONTEXT *disp) {
 #ifdef _LIBUNWIND_TARGET_X86_64
-  reinterpret_cast<UnwindCursor<LocalAddressSpace, Registers_x86_64> *>(cursor)->setDispatcherContext(disp);
+  reinterpret_cast<UnwindCursor<LocalAddressSpace, Registers_x86_64> *>(cursor)
+      ->setDispatcherContext(disp);
 #elif defined(_LIBUNWIND_TARGET_ARM)
-  reinterpret_cast<UnwindCursor<LocalAddressSpace, Registers_arm> *>(cursor)->setDispatcherContext(disp);
+  reinterpret_cast<UnwindCursor<LocalAddressSpace, Registers_arm> *>(cursor)
+      ->setDispatcherContext(disp);
 #elif defined(_LIBUNWIND_TARGET_AARCH64)
-  reinterpret_cast<UnwindCursor<LocalAddressSpace, Registers_arm64> *>(cursor)->setDispatcherContext(disp);
+  reinterpret_cast<UnwindCursor<LocalAddressSpace, Registers_arm64> *>(cursor)
+      ->setDispatcherContext(disp);
 #endif
 }
 

@@ -15,11 +15,11 @@
  *	D -> [b]
  */
 struct gpu_array_bound {
-	isl_val *size;
-	isl_aff *lb;
+  isl_val *size;
+  isl_aff *lb;
 
-	isl_val *stride;
-	isl_aff *shift;
+  isl_val *stride;
+  isl_aff *shift;
 };
 
 /* A tile of an outer array.
@@ -43,12 +43,12 @@ struct gpu_array_bound {
  * of the computed schedule.
  */
 struct gpu_array_tile {
-	isl_ctx *ctx;
-	int requires_unroll;
-	int depth;
-	int n;
-	struct gpu_array_bound *bound;
-	isl_multi_aff *tiling;
+  isl_ctx *ctx;
+  int requires_unroll;
+  int depth;
+  int n;
+  struct gpu_array_bound *bound;
+  isl_multi_aff *tiling;
 };
 
 struct gpu_array_tile *gpu_array_tile_create(isl_ctx *ctx, int n_index);

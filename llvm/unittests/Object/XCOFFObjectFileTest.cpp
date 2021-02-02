@@ -6,8 +6,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "llvm/Object/ELFObjectFile.h"
 #include "llvm/Object/XCOFFObjectFile.h"
+#include "llvm/Object/ELFObjectFile.h"
 #include "llvm/Testing/Support/Error.h"
 #include "gtest/gtest.h"
 

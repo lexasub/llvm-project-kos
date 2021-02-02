@@ -39,9 +39,7 @@ class PDBSymbolData;
 ///
 /// \return
 ///     The DWARF expression corresponding to the location data of \a symbol.
-lldb_private::DWARFExpression
-ConvertPDBLocationToDWARFExpression(lldb::ModuleSP module,
-                                    const llvm::pdb::PDBSymbolData &symbol,
-                                    const lldb_private::Variable::RangeList &ranges,
-                                    bool &is_constant);
+lldb_private::DWARFExpression ConvertPDBLocationToDWARFExpression(
+    lldb::ModuleSP module, const llvm::pdb::PDBSymbolData &symbol,
+    const lldb_private::Variable::RangeList &ranges, bool &is_constant);
 #endif

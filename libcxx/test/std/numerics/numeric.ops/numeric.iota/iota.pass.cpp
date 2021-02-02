@@ -21,33 +21,28 @@
 #include "test_iterators.h"
 
 template <class InIter>
-TEST_CONSTEXPR_CXX20 void
-test()
-{
-    int ia[] = {1, 2, 3, 4, 5};
-    int ir[] = {5, 6, 7, 8, 9};
-    const unsigned s = sizeof(ia) / sizeof(ia[0]);
-    std::iota(InIter(ia), InIter(ia+s), 5);
-    for (unsigned i = 0; i < s; ++i)
-        assert(ia[i] == ir[i]);
+TEST_CONSTEXPR_CXX20 void test() {
+  int ia[] = {1, 2, 3, 4, 5};
+  int ir[] = {5, 6, 7, 8, 9};
+  const unsigned s = sizeof(ia) / sizeof(ia[0]);
+  std::iota(InIter(ia), InIter(ia + s), 5);
+  for (unsigned i = 0; i < s; ++i)
+    assert(ia[i] == ir[i]);
 }
 
-TEST_CONSTEXPR_CXX20 bool
-test()
-{
-    test<forward_iterator<int*> >();
-    test<bidirectional_iterator<int*> >();
-    test<random_access_iterator<int*> >();
-    test<int*>();
+TEST_CONSTEXPR_CXX20 bool test() {
+  test<forward_iterator<int*> >();
+  test<bidirectional_iterator<int*> >();
+  test<random_access_iterator<int*> >();
+  test<int*>();
 
-    return true;
+  return true;
 }
 
-int main(int, char**)
-{
-    test();
+int main(int, char**) {
+  test();
 #if TEST_STD_VER > 17
-    static_assert(test());
+  static_assert(test());
 #endif
-    return 0;
+  return 0;
 }

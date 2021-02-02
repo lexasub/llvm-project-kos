@@ -18,13 +18,13 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "clang/StaticAnalyzer/Checkers/BuiltinCheckerRegistration.h"
 #include "clang/Analysis/SelectorExtras.h"
+#include "clang/StaticAnalyzer/Checkers/BuiltinCheckerRegistration.h"
 #include "clang/StaticAnalyzer/Core/Checker.h"
 #include "clang/StaticAnalyzer/Core/CheckerManager.h"
+#include "clang/StaticAnalyzer/Core/PathSensitive/CallEvent.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/CheckerContext.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/CheckerHelpers.h"
-#include "clang/StaticAnalyzer/Core/PathSensitive/CallEvent.h"
 
 using namespace clang;
 using namespace ento;
@@ -42,10 +42,9 @@ REGISTER_MAP_WITH_PROGRAMSTATE(NullImplicationMap, SymbolRef, SymbolRef)
 
 namespace {
 
-class TrustNonnullChecker : public Checker<check::PostCall,
-                                           check::PostObjCMessage,
-                                           check::DeadSymbols,
-                                           eval::Assume> {
+class TrustNonnullChecker
+    : public Checker<check::PostCall, check::PostObjCMessage,
+                     check::DeadSymbols, eval::Assume> {
   // Do not try to iterate over symbols with higher complexity.
   static unsigned constexpr ComplexityThreshold = 10;
   Selector ObjectForKeyedSubscriptSel;
@@ -62,14 +61,13 @@ public:
             getKeywordSelector(Ctx, "setObject", "forKeyedSubscript")),
         SetObjectForKeySel(getKeywordSelector(Ctx, "setObject", "forKey")) {}
 
-  ProgramStateRef evalAssume(ProgramStateRef State,
-                             SVal Cond,
+  ProgramStateRef evalAssume(ProgramStateRef State, SVal Cond,
                              bool Assumption) const {
     const SymbolRef CondS = Cond.getAsSymbol();
     if (!CondS || CondS->computeComplexity() > ComplexityThreshold)
       return State;
 
-    for (auto B=CondS->symbol_begin(), E=CondS->symbol_end(); B != E; ++B) {
+    for (auto B = CondS->symbol_begin(), E = CondS->symbol_end(); B != E; ++B) {
       const SymbolRef Antecedent = *B;
       State = addImplication(Antecedent, State, true);
       State = addImplication(Antecedent, State, false);
@@ -140,7 +138,6 @@ public:
   }
 
 private:
-
   /// \returns State with GDM \p MapName where all dead symbols were
   // removed.
   template <typename MapName>
@@ -194,7 +191,7 @@ private:
 
   /// \return Whether \p ID has a superclass by the name \p ClassName.
   bool interfaceHasSuperclass(const ObjCInterfaceDecl *ID,
-                         StringRef ClassName) const {
+                              StringRef ClassName) const {
     if (ID->getIdentifier()->getName() == ClassName)
       return true;
 
@@ -203,7 +200,6 @@ private:
 
     return false;
   }
-
 
   /// \return a state with an optional implication added (if exists)
   /// from a map of recorded implications.
@@ -225,8 +221,8 @@ private:
     SVal AntecedentV = SVB.makeSymbolVal(Antecedent);
     ProgramStateRef State = InputState;
 
-    if ((Negated && InputState->isNonNull(AntecedentV).isConstrainedTrue())
-        || (!Negated && InputState->isNull(AntecedentV).isConstrainedTrue())) {
+    if ((Negated && InputState->isNonNull(AntecedentV).isConstrainedTrue()) ||
+        (!Negated && InputState->isNull(AntecedentV).isConstrainedTrue())) {
       SVal ConsequentS = SVB.makeSymbolVal(*Consequent);
       State = InputState->assume(ConsequentS.castAs<DefinedSVal>(), Negated);
       if (!State)
@@ -246,7 +242,7 @@ private:
   }
 };
 
-} // end empty namespace
+} // namespace
 
 void ento::registerTrustNonnullChecker(CheckerManager &Mgr) {
   Mgr.registerChecker<TrustNonnullChecker>(Mgr.getASTContext());

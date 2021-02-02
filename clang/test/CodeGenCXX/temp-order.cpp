@@ -13,7 +13,6 @@ struct TempTracker {
   unsigned Product, Index;
 
   TempTracker() : Product(1), Index(0) {}
-
 };
 
 // FIXME: This can be used to check elision as well, if P = 0 hacks are removed.
@@ -23,7 +22,7 @@ struct A {
   bool Truth;
 
   A(TempTracker &_TT, unsigned _P, bool _Truth = true)
-    : TT(_TT), P(_P), Truth(_Truth) {}
+      : TT(_TT), P(_P), Truth(_Truth) {}
   A(const A &RHS) : TT(RHS.TT), P(RHS.P), Truth(RHS.Truth) { RHS.P = 0; }
   ~A() {
     if (P)
@@ -38,7 +37,7 @@ struct A {
     return *this;
   }
 
-  operator bool () { return Truth; }
+  operator bool() { return Truth; }
 };
 
 // 3, 7, 2
@@ -141,7 +140,7 @@ static unsigned f7() {
 // 5, 2
 static unsigned f8() {
   TempTracker tt;
-  
+
   {
     (void)((A(tt, 2) || A(tt, 3)) && A(tt, 5));
   }
@@ -157,58 +156,56 @@ extern "C" void print(const char *Name, unsigned N);
 #define ORDER5(a, b, c, d, e) (ORDER4(a, b, c, d) * pow(e, 5))
 #define ORDER6(a, b, c, d, e, f) (ORDER5(a, b, c, d, e) * pow(f, 6))
 void test() {
-// CHECK: call void @print(i8* {{.*}}, i32 1176)
+  // CHECK: call void @print(i8* {{.*}}, i32 1176)
   print("f0", f0());
   if (f0() != ORDER3(3, 7, 2))
     error();
 
-// CHECK: call void @print(i8* {{.*}}, i32 411600)
+  // CHECK: call void @print(i8* {{.*}}, i32 411600)
   print("f1", f1());
   if (f1() != ORDER4(3, 5, 7, 2))
     error();
 
-// CHECK: call void @print(i8* {{.*}}, i32 246960)
+  // CHECK: call void @print(i8* {{.*}}, i32 246960)
   print("f2", f2());
   if (f2() != ORDER4(5, 3, 7, 2))
     error();
 
-// CHECK: call void @print(i8* {{.*}}, i32 1341648)
+  // CHECK: call void @print(i8* {{.*}}, i32 1341648)
   print("f3", f3());
   if (f3() != ORDER4(7, 3, 11, 2))
     error();
 
-// CHECK: call void @print(i8* {{.*}}, i32 1176)
+  // CHECK: call void @print(i8* {{.*}}, i32 1176)
   print("f4", f4());
   if (f4() != ORDER3(3, 7, 2))
     error();
 
-// CHECK: call void @print(i8* {{.*}}, i32 246960)
+  // CHECK: call void @print(i8* {{.*}}, i32 246960)
   print("f5", f5());
   if (f5() != ORDER4(5, 3, 7, 2))
     error();
 
-// CHECK: call void @print(i8* {{.*}}, i32 1251552576)
+  // CHECK: call void @print(i8* {{.*}}, i32 1251552576)
   print("f6", f6());
   if (f6() != ORDER6(3, 7, 11, 5, 13, 2))
     error();
 
-//  CHECK: call void @print(i8* {{.*}}, i32 20)
+  //  CHECK: call void @print(i8* {{.*}}, i32 20)
   print("f7", f7());
   if (f7() != ORDER2(5, 2))
     error();
 
-//  CHECK: call void @print(i8* {{.*}}, i32 20)
+  //  CHECK: call void @print(i8* {{.*}}, i32 20)
   print("f8", f8());
   if (f8() != ORDER2(5, 2))
     error();
 }
 
-
-
 #ifdef HARNESS
 
-#include <cstdlib>
 #include <cstdio>
+#include <cstdlib>
 
 extern "C" void error() {
   abort();

@@ -10,7 +10,6 @@
 
 #include "NativeRegisterContextLinux_mips64.h"
 
-
 #include "Plugins/Process/Linux/NativeProcessLinux.h"
 #include "Plugins/Process/Linux/Procfs.h"
 #include "Plugins/Process/POSIX/ProcessPOSIXLog.h"
@@ -80,7 +79,7 @@ std::unique_ptr<NativeRegisterContextLinux>
 NativeRegisterContextLinux::CreateHostNativeRegisterContextLinux(
     const ArchSpec &target_arch, NativeThreadProtocol &native_thread) {
   return std::make_unique<NativeRegisterContextLinux_mips64>(target_arch,
-                                                              native_thread);
+                                                             native_thread);
 }
 
 #define REG_CONTEXT_SIZE                                                       \
@@ -92,7 +91,7 @@ NativeRegisterContextLinux::CreateHostNativeRegisterContextLinux(
 static RegisterInfoInterface *
 CreateRegisterInfoInterface(const ArchSpec &target_arch) {
   if ((target_arch.GetMachine() == llvm::Triple::mips) ||
-       (target_arch.GetMachine() == llvm::Triple::mipsel)) {
+      (target_arch.GetMachine() == llvm::Triple::mipsel)) {
     // 32-bit hosts run with a RegisterContextLinux_mips context.
     return new RegisterContextLinux_mips(
         target_arch, NativeRegisterContextLinux_mips64::IsMSAAvailable());
@@ -153,14 +152,14 @@ uint32_t NativeRegisterContextLinux_mips64::GetRegisterSetCount() const {
   switch (GetRegisterInfoInterface().GetTargetArchitecture().GetMachine()) {
   case llvm::Triple::mips64:
   case llvm::Triple::mips64el: {
-    const auto context = static_cast<const RegisterContextLinux_mips64 &>
-                         (GetRegisterInfoInterface());
+    const auto context = static_cast<const RegisterContextLinux_mips64 &>(
+        GetRegisterInfoInterface());
     return context.GetRegisterSetCount();
   }
   case llvm::Triple::mips:
   case llvm::Triple::mipsel: {
-    const auto context = static_cast<const RegisterContextLinux_mips &>
-                         (GetRegisterInfoInterface());
+    const auto context = static_cast<const RegisterContextLinux_mips &>(
+        GetRegisterInfoInterface());
     return context.GetRegisterSetCount();
   }
   default:
@@ -198,7 +197,7 @@ lldb::addr_t NativeRegisterContextLinux_mips64::GetPCfromBreakpointLocation(
      * to the delayed branch instruction rather then the instruction
      * in the delay slot. If the CAUSE.BD flag is set then adjust the
      * PC based on the size of the branch instruction.
-    */
+     */
     if ((cause & (1 << 31)) != 0) {
       lldb::addr_t branch_delay = 0;
       branch_delay =
@@ -221,14 +220,14 @@ NativeRegisterContextLinux_mips64::GetRegisterSet(uint32_t set_index) const {
   switch (GetRegisterInfoInterface().GetTargetArchitecture().GetMachine()) {
   case llvm::Triple::mips64:
   case llvm::Triple::mips64el: {
-    const auto context = static_cast<const RegisterContextLinux_mips64 &>
-                          (GetRegisterInfoInterface());
+    const auto context = static_cast<const RegisterContextLinux_mips64 &>(
+        GetRegisterInfoInterface());
     return context.GetRegisterSet(set_index);
   }
   case llvm::Triple::mips:
   case llvm::Triple::mipsel: {
-    const auto context = static_cast<const RegisterContextLinux_mips &>
-                         (GetRegisterInfoInterface());
+    const auto context = static_cast<const RegisterContextLinux_mips &>(
+        GetRegisterInfoInterface());
     return context.GetRegisterSet(set_index);
   }
   default:
@@ -916,7 +915,7 @@ static bool WriteRegisterCallback(EmulateInstruction *instruction, void *baton,
  * the load/store instruction. This will give the exact address used to
  * read/write the variable. Send this exact address to client so that
  * it can decide to stop or continue the thread.
-*/
+ */
 lldb::addr_t
 NativeRegisterContextLinux_mips64::GetWatchpointHitAddress(uint32_t wp_index) {
   if (wp_index >= NumSupportedHardwareWatchpoints())
@@ -931,8 +930,8 @@ NativeRegisterContextLinux_mips64::GetWatchpointHitAddress(uint32_t wp_index) {
   if (emulator_up == nullptr)
     return LLDB_INVALID_ADDRESS;
 
-  EmulatorBaton baton(
-      static_cast<NativeProcessLinux *>(&m_thread.GetProcess()), this);
+  EmulatorBaton baton(static_cast<NativeProcessLinux *>(&m_thread.GetProcess()),
+                      this);
   emulator_up->SetBaton(&baton);
   emulator_up->SetReadMemCallback(&ReadMemoryCallback);
   emulator_up->SetReadRegCallback(&ReadRegisterCallback);

@@ -12,8 +12,8 @@ extern "C" void __sanitizer_cov_trace_pc_indir(void *callee) {
   last_callee = callee;
 }
 #else
-#include <stdio.h>
 #include <assert.h>
+#include <stdio.h>
 extern int pc_count;
 extern void *last_callee;
 

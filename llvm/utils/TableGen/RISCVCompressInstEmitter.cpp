@@ -599,7 +599,7 @@ void RISCVCompressInstEmitter::emitCompressInstEmitter(raw_ostream &o,
     FuncH.indent(25) << "const MCInst &MI,\n";
     FuncH.indent(25) << "const MCSubtargetInfo &STI,\n";
     FuncH.indent(25) << "MCContext &Context) {\n";
-  } else if (EType == EmitterType::Uncompress){
+  } else if (EType == EmitterType::Uncompress) {
     FuncH << "static bool uncompressInst(MCInst &OutInst,\n";
     FuncH.indent(27) << "const MCInst &MI,\n";
     FuncH.indent(27) << "const MCRegisterInfo &MRI,\n";
@@ -631,9 +631,9 @@ void RISCVCompressInstEmitter::emitCompressInstEmitter(raw_ostream &o,
   CaseStream << "    default: return false;\n";
 
   bool CompressOrCheck =
-    EType == EmitterType::Compress || EType == EmitterType::CheckCompress;
+      EType == EmitterType::Compress || EType == EmitterType::CheckCompress;
   bool CompressOrUncompress =
-    EType == EmitterType::Compress || EType == EmitterType::Uncompress;
+      EType == EmitterType::Compress || EType == EmitterType::Uncompress;
 
   for (auto &CompressPat : CompressPatterns) {
     if (EType == EmitterType::Uncompress && CompressPat.IsCompressOnly)
@@ -644,13 +644,15 @@ void RISCVCompressInstEmitter::emitCompressInstEmitter(raw_ostream &o,
     raw_string_ostream CondStream(CondString);
     raw_string_ostream CodeStream(CodeString);
     CodeGenInstruction &Source =
-        CompressOrCheck ?  CompressPat.Source : CompressPat.Dest;
+        CompressOrCheck ? CompressPat.Source : CompressPat.Dest;
     CodeGenInstruction &Dest =
         CompressOrCheck ? CompressPat.Dest : CompressPat.Source;
-    IndexedMap<OpData> SourceOperandMap = CompressOrCheck ?
-      CompressPat.SourceOperandMap : CompressPat.DestOperandMap;
-    IndexedMap<OpData> &DestOperandMap = CompressOrCheck ?
-      CompressPat.DestOperandMap : CompressPat.SourceOperandMap;
+    IndexedMap<OpData> SourceOperandMap = CompressOrCheck
+                                              ? CompressPat.SourceOperandMap
+                                              : CompressPat.DestOperandMap;
+    IndexedMap<OpData> &DestOperandMap = CompressOrCheck
+                                             ? CompressPat.DestOperandMap
+                                             : CompressPat.SourceOperandMap;
 
     CurOp = Source.TheDef->getName();
     // Check current and previous opcode to decide to continue or end a case.

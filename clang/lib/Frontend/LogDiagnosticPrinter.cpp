@@ -25,19 +25,24 @@ LogDiagnosticPrinter::LogDiagnosticPrinter(
 
 static StringRef getLevelName(DiagnosticsEngine::Level Level) {
   switch (Level) {
-  case DiagnosticsEngine::Ignored: return "ignored";
-  case DiagnosticsEngine::Remark:  return "remark";
-  case DiagnosticsEngine::Note:    return "note";
-  case DiagnosticsEngine::Warning: return "warning";
-  case DiagnosticsEngine::Error:   return "error";
-  case DiagnosticsEngine::Fatal:   return "fatal error";
+  case DiagnosticsEngine::Ignored:
+    return "ignored";
+  case DiagnosticsEngine::Remark:
+    return "remark";
+  case DiagnosticsEngine::Note:
+    return "note";
+  case DiagnosticsEngine::Warning:
+    return "warning";
+  case DiagnosticsEngine::Error:
+    return "error";
+  case DiagnosticsEngine::Fatal:
+    return "fatal error";
   }
   llvm_unreachable("Invalid DiagnosticsEngine level!");
 }
 
-void
-LogDiagnosticPrinter::EmitDiagEntry(llvm::raw_ostream &OS,
-                                    const LogDiagnosticPrinter::DiagEntry &DE) {
+void LogDiagnosticPrinter::EmitDiagEntry(
+    llvm::raw_ostream &OS, const LogDiagnosticPrinter::DiagEntry &DE) {
   OS << "    <dict>\n";
   OS << "      <key>level</key>\n"
      << "      ";
@@ -162,4 +167,3 @@ void LogDiagnosticPrinter::HandleDiagnostic(DiagnosticsEngine::Level Level,
   // Record the diagnostic entry.
   Entries.push_back(DE);
 }
-

@@ -6,9 +6,9 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "clang/ASTMatchers/GtestMatchers.h"
 #include "ASTMatchersTest.h"
 #include "clang/ASTMatchers/ASTMatchers.h"
-#include "clang/ASTMatchers/GtestMatchers.h"
 
 namespace clang {
 namespace ast_matchers {

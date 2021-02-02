@@ -10,28 +10,28 @@
 void test_type_trait() {
   // An unary type trait.
   enum E {};
-  (void) __is_enum(E);
+  (void)__is_enum(E);
   // A binary type trait.
-  (void) __is_same(int ,float);
+  (void)__is_same(int, float);
   // An n-ary type trait.
-  (void) __is_constructible(int, int, int, int);
+  (void)__is_constructible(int, int, int, int);
 }
 
 void test_array_type_trait() {
   // An array type trait.
-  (void) __array_rank(int[10][20]);
+  (void)__array_rank(int[10][20]);
 }
 
 void test_expression_trait() {
   // An expression trait.
-  (void) __is_lvalue_expr(1);
+  (void)__is_lvalue_expr(1);
 }
 
 void test_unary_expr_or_type_trait() {
   // Some UETTs.
-  (void) sizeof(int);
-  (void) alignof(int);
-  (void) __alignof(int);
+  (void)sizeof(int);
+  (void)alignof(int);
+  (void)__alignof(int);
 }
 // CHECK: TranslationUnitDecl {{.*}} <<invalid sloc>> <invalid sloc>{{( <undeserialized declarations>)?}}
 // CHECK: |-FunctionDecl {{.*}} <{{.*}}ast-dump-traits.cpp:10:1, line:18:1> line:10:6{{( imported)?}} test_type_trait 'void ()'

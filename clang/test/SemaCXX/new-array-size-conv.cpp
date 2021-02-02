@@ -2,10 +2,9 @@
 // RUN: %clang_cc1 -fsyntax-only -pedantic -verify -std=c++98 %s
 // RUN: %clang_cc1 -fsyntax-only -pedantic -verify -std=c++11 %s
 
-struct ValueInt
-{
+struct ValueInt {
   ValueInt(int v = 0) : ValueLength(v) {}
-  operator int () const { return ValueLength; } // expected-note 3{{conversion to integral type 'int' declared here}}
+  operator int() const { return ValueLength; } // expected-note 3{{conversion to integral type 'int' declared here}}
 private:
   int ValueLength;
 };
@@ -15,11 +14,10 @@ struct ValueEnum {
   operator E() const; // expected-note{{conversion to enumeration type 'E' declared here}}
 };
 
-struct ValueBoth : ValueInt, ValueEnum { };
+struct ValueBoth : ValueInt, ValueEnum {};
 
-struct IndirectValueInt : ValueInt { };
-struct TwoValueInts : ValueInt, IndirectValueInt { }; // expected-warning{{direct base 'ValueInt' is inaccessible due to ambiguity:\n    struct TwoValueInts -> struct ValueInt\n    struct TwoValueInts -> struct IndirectValueInt -> struct ValueInt}}
-
+struct IndirectValueInt : ValueInt {};
+struct TwoValueInts : ValueInt, IndirectValueInt {}; // expected-warning{{direct base 'ValueInt' is inaccessible due to ambiguity:\n    struct TwoValueInts -> struct ValueInt\n    struct TwoValueInts -> struct IndirectValueInt -> struct ValueInt}}
 
 void test() {
   (void)new int[ValueInt(10)];

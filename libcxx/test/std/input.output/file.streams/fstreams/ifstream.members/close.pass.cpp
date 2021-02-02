@@ -20,24 +20,23 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        std::ifstream fs;
-        assert(!fs.is_open());
-        fs.open("test.dat");
-        assert(fs.is_open());
-        fs.close();
-        assert(!fs.is_open());
-    }
-    {
-        std::wifstream fs;
-        assert(!fs.is_open());
-        fs.open("test.dat");
-        assert(fs.is_open());
-        fs.close();
-        assert(!fs.is_open());
-    }
+int main(int, char**) {
+  {
+    std::ifstream fs;
+    assert(!fs.is_open());
+    fs.open("test.dat");
+    assert(fs.is_open());
+    fs.close();
+    assert(!fs.is_open());
+  }
+  {
+    std::wifstream fs;
+    assert(!fs.is_open());
+    fs.open("test.dat");
+    assert(fs.is_open());
+    fs.close();
+    assert(!fs.is_open());
+  }
 
   return 0;
 }

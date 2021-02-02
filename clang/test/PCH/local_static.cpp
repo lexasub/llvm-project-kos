@@ -22,4 +22,3 @@ void test(Bar &b) {
 
 // CHECK: @_ZZ4testR3BarE1s = internal global i32 0, align 4
 // CHECK: @_ZZN3Bar1fIiEEvvE1y = linkonce_odr constant i32 0, align 4
-

@@ -7,11 +7,11 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
+#include <functional>
 #include <iostream>
 #include <ostream>
 #include <random>
 #include <string.h>
-#include <functional>
 
 static const char *Separator = "-########-";
 static const char *Target = "A-########-B";
@@ -31,7 +31,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
     sink--;
 
   if (TargetHash == StrHash) {
-    std::cout << "BINGO; Found the target, exiting\n" << std::flush;
+    std::cout << "BINGO; Found the target, exiting\n"
+              << std::flush;
     exit(1);
   }
   return 0;

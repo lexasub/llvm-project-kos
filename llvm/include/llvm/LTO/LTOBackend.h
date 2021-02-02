@@ -71,7 +71,7 @@ bool loadReferencedModules(
     MapVector<llvm::StringRef, llvm::BitcodeModule> &ModuleMap,
     std::vector<std::unique_ptr<llvm::MemoryBuffer>>
         &OwnedImportsLifetimeManager);
-}
-}
+} // namespace lto
+} // namespace llvm
 
 #endif

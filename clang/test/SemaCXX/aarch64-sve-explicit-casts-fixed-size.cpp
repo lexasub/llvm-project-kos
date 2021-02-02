@@ -19,14 +19,14 @@ typedef svint64_t fixed_int64_t FIXED_ATTR;
 // SVE VLSTs can be cast to SVE VLATs, regardless of lane size.
 // NOTE: the list below is NOT exhaustive for all SVE types.
 
-#define CAST(from, to) \
-    void from##_to_##to(from a, to b) { \
-        b = (to) a; \
-    }
+#define CAST(from, to)                \
+  void from##_to_##to(from a, to b) { \
+    b = (to)a;                        \
+  }
 
 #define TESTCASE(ty1, ty2) \
-    CAST(ty1, ty2) \
-    CAST(ty2, ty1)
+  CAST(ty1, ty2)           \
+  CAST(ty2, ty1)
 
 TESTCASE(fixed_float32_t, svfloat32_t)
 TESTCASE(fixed_float32_t, svfloat64_t)

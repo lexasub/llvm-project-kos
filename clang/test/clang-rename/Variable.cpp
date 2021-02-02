@@ -1,23 +1,23 @@
 #define NAMESPACE namespace A
 NAMESPACE {
-int Foo;          /* Test 1 */        // CHECK: int Bar;
+  int Foo; /* Test 1 */ // CHECK: int Bar;
 }
-int Foo;                              // CHECK: int Foo;
-int Qux = Foo;                        // CHECK: int Qux = Foo;
-int Baz = A::Foo; /* Test 2 */        // CHECK: Baz = A::Bar;
+int Foo;                       // CHECK: int Foo;
+int Qux = Foo;                 // CHECK: int Qux = Foo;
+int Baz = A::Foo; /* Test 2 */ // CHECK: Baz = A::Bar;
 void fun() {
   struct {
-    int Foo;                          // CHECK: int Foo;
+    int Foo; // CHECK: int Foo;
   } b = {100};
-  int Foo = 100;                      // CHECK: int Foo = 100;
-  Baz = Foo;                          // CHECK: Baz = Foo;
+  int Foo = 100; // CHECK: int Foo = 100;
+  Baz = Foo;     // CHECK: Baz = Foo;
   {
-    extern int Foo;                   // CHECK: extern int Foo;
-    Baz = Foo;                        // CHECK: Baz = Foo;
-    Foo = A::Foo /* Test 3 */ + Baz;  // CHECK: Foo = A::Bar /* Test 3 */ + Baz;
-    A::Foo /* Test 4 */ = b.Foo;      // CHECK: A::Bar /* Test 4 */ = b.Foo;
+    extern int Foo;                  // CHECK: extern int Foo;
+    Baz = Foo;                       // CHECK: Baz = Foo;
+    Foo = A::Foo /* Test 3 */ + Baz; // CHECK: Foo = A::Bar /* Test 3 */ + Baz;
+    A::Foo /* Test 4 */ = b.Foo;     // CHECK: A::Bar /* Test 4 */ = b.Foo;
   }
-  Foo = b.Foo;                        // Foo = b.Foo;
+  Foo = b.Foo; // Foo = b.Foo;
 }
 
 // Test 1.

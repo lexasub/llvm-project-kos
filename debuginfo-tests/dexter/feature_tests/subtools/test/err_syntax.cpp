@@ -15,7 +15,5 @@
 // CHECK:// {{Dex}}ExpectWatchValue(,'a', 3, 3, 3, 3, on_line=0)
 // CHECK:                       ^
 
-int main(){
-    return 0;
-}
+int main() { return 0; }
 // DexExpectWatchValue(,'a', 3, 3, 3, 3, on_line=0)

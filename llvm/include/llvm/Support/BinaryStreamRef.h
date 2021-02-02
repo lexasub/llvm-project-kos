@@ -210,8 +210,7 @@ struct BinarySubstreamRef {
   }
   BinarySubstreamRef keep_front(uint32_t N) const { return slice(0, N); }
 
-  std::pair<BinarySubstreamRef, BinarySubstreamRef>
-  split(uint32_t Off) const {
+  std::pair<BinarySubstreamRef, BinarySubstreamRef> split(uint32_t Off) const {
     return std::make_pair(keep_front(Off), drop_front(Off));
   }
 

@@ -31,7 +31,7 @@
 #include <stdlib.h>
 
 int main(int argc, char **argv) {
-  char *volatile x = (char*)malloc(5 * sizeof(char));
+  char *volatile x = (char *)malloc(5 * sizeof(char));
   if (x[0])
     exit(0);
   fprintf(stderr, "Done\n");

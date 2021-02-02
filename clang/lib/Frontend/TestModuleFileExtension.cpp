@@ -15,11 +15,10 @@
 using namespace clang;
 using namespace clang::serialization;
 
-TestModuleFileExtension::Writer::~Writer() { }
+TestModuleFileExtension::Writer::~Writer() {}
 
 void TestModuleFileExtension::Writer::writeExtensionContents(
-       Sema &SemaRef,
-       llvm::BitstreamWriter &Stream) {
+    Sema &SemaRef, llvm::BitstreamWriter &Stream) {
   using namespace llvm;
 
   // Write an abbreviation for this record.
@@ -43,8 +42,7 @@ void TestModuleFileExtension::Writer::writeExtensionContents(
 
 TestModuleFileExtension::Reader::Reader(ModuleFileExtension *Ext,
                                         const llvm::BitstreamCursor &InStream)
-  : ModuleFileExtensionReader(Ext), Stream(InStream)
-{
+    : ModuleFileExtensionReader(Ext), Stream(InStream) {
   // Read the extension block.
   SmallVector<uint64_t, 4> Record;
   while (true) {
@@ -82,17 +80,17 @@ TestModuleFileExtension::Reader::Reader(ModuleFileExtension *Ext,
   }
 }
 
-TestModuleFileExtension::Reader::~Reader() { }
+TestModuleFileExtension::Reader::~Reader() {}
 
-TestModuleFileExtension::~TestModuleFileExtension() { }
+TestModuleFileExtension::~TestModuleFileExtension() {}
 
 ModuleFileExtensionMetadata
 TestModuleFileExtension::getExtensionMetadata() const {
-  return { BlockName, MajorVersion, MinorVersion, UserInfo };
+  return {BlockName, MajorVersion, MinorVersion, UserInfo};
 }
 
-llvm::hash_code TestModuleFileExtension::hashExtension(
-                  llvm::hash_code Code) const {
+llvm::hash_code
+TestModuleFileExtension::hashExtension(llvm::hash_code Code) const {
   if (Hashed) {
     Code = llvm::hash_combine(Code, BlockName);
     Code = llvm::hash_combine(Code, MajorVersion);
@@ -110,20 +108,18 @@ TestModuleFileExtension::createExtensionWriter(ASTWriter &) {
 
 std::unique_ptr<ModuleFileExtensionReader>
 TestModuleFileExtension::createExtensionReader(
-  const ModuleFileExtensionMetadata &Metadata,
-  ASTReader &Reader, serialization::ModuleFile &Mod,
-  const llvm::BitstreamCursor &Stream)
-{
+    const ModuleFileExtensionMetadata &Metadata, ASTReader &Reader,
+    serialization::ModuleFile &Mod, const llvm::BitstreamCursor &Stream) {
   assert(Metadata.BlockName == BlockName && "Wrong block name");
   if (std::make_pair(Metadata.MajorVersion, Metadata.MinorVersion) !=
-        std::make_pair(MajorVersion, MinorVersion)) {
+      std::make_pair(MajorVersion, MinorVersion)) {
     Reader.getDiags().Report(Mod.ImportLoc,
                              diag::err_test_module_file_extension_version)
-      << BlockName << Metadata.MajorVersion << Metadata.MinorVersion
-      << MajorVersion << MinorVersion;
+        << BlockName << Metadata.MajorVersion << Metadata.MinorVersion
+        << MajorVersion << MinorVersion;
     return nullptr;
   }
 
   return std::unique_ptr<ModuleFileExtensionReader>(
-                                                    new TestModuleFileExtension::Reader(this, Stream));
+      new TestModuleFileExtension::Reader(this, Stream));
 }

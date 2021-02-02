@@ -20,10 +20,9 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    std::function<int(int)> f;
-    assert(!f);
+int main(int, char**) {
+  std::function<int(int)> f;
+  assert(!f);
 
   return 0;
 }

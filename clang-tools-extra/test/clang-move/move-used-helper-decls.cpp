@@ -27,7 +27,6 @@
 // CHECK-OLD-CLASS1-CPP: void Class2::f() {
 // CHECK-OLD-CLASS1-CPP:   HelperFun1();
 
-
 // ----------------------------------------------------------------------------
 // Test moving used helper function and its transitively used static variables.
 // ----------------------------------------------------------------------------
@@ -63,7 +62,6 @@
 // CHECK-OLD-CLASS2-CPP: void Class5::f() {
 // CHECK-OLD-CLASS2-CPP-NEXT: int Result = K1 + K2 + K3;
 
-
 // ----------------------------------------------------------------------------
 // Test using a static member variable of a helper class.
 // ----------------------------------------------------------------------------
@@ -95,7 +93,6 @@
 // CHECK-OLD-CLASS3-CPP-NOT: int HelperC1::I = 0;
 // CHECK-OLD-CLASS3-CPP: class HelperC2 {};
 
-
 // ----------------------------------------------------------------------------
 // Test moving helper classes.
 // ----------------------------------------------------------------------------
@@ -115,7 +112,6 @@
 // CHECK-NEW-CLASS4-CPP-NEXT: } // namespace a
 
 // CHECK-OLD-CLASS4-CPP-NOT: class HelperC2 {};
-
 
 // ----------------------------------------------------------------------------
 // Test moving helper variables and helper functions together.
@@ -149,7 +145,6 @@
 // CHECK-OLD-CLASS5-CPP: static const int K4 = HelperC3::I;
 // CHECK-OLD-CLASS5-CPP-NOT: void Class5::f() {
 
-
 // ----------------------------------------------------------------------------
 // Test moving helper variables and their transitively used helper classes.
 // ----------------------------------------------------------------------------
@@ -182,7 +177,6 @@
 // CHECK-OLD-CLASS6-CPP-NOT: int HelperC3::I = 0;
 // CHECK-OLD-CLASS6-CPP-NOT: static const int K4 = HelperC3::I;
 
-
 // ----------------------------------------------------------------------------
 // Test moving classes where its methods use helpers.
 // ----------------------------------------------------------------------------
@@ -214,7 +208,6 @@
 // CHECK-OLD-CLASS7-CPP-NOT: int Class7::f() {
 // CHECK-OLD-CLASS7-CPP-NOT: int Class7::g() {
 
-
 // ----------------------------------------------------------------------------
 // Test moving helper function and its transitively used helper variables.
 // ----------------------------------------------------------------------------
@@ -239,7 +232,6 @@
 // CHECK-OLD-FUN1-CPP-NOT: static const int K5 = 5;
 // CHECK-OLD-FUN1-CPP-NOT: static int HelperFun5() {
 // CHECK-OLD-FUN1-CPP-NOT: void Fun1() { HelperFun5(); }
-
 
 // ----------------------------------------------------------------------------
 // Test no moving helpers when moving inline functions in header.
@@ -301,7 +293,6 @@
 // RUN: FileCheck -input-file=%T/used-helper-decls/helper_decls_test.h -allow-empty -check-prefix=CHECK-EMPTY %s
 // RUN: FileCheck -input-file=%T/used-helper-decls/helper_decls_test.cpp -allow-empty -check-prefix=CHECK-EMPTY %s
 
-
 // CHECK-NEW-H: namespace a {
 // CHECK-NEW-H-NEXT: class Class1 {
 // CHECK-NEW-H-NEXT:   void f();
@@ -337,7 +328,6 @@
 // CHECK-NEW-H-NEXT: inline void Fun2() {}
 // CHECK-NEW-H-SAME: {{[[:space:]]}}
 // CHECK-NEW-H-NEXT: } // namespace a
-
 
 // CHECK-NEW-CPP: namespace {
 // CHECK-NEW-CPP-NEXT: class HelperC1 {

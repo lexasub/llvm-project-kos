@@ -11,7 +11,6 @@
 // UNSUPPORTED: sanitizer-new-delete
 // XFAIL: libcpp-no-vcruntime
 
-
 #include <new>
 #include <cstddef>
 #include <cstdlib>
@@ -22,40 +21,37 @@
 
 int new_called = 0;
 
-void* operator new(std::size_t s) TEST_THROW_SPEC(std::bad_alloc)
-{
-    ++new_called;
-    void* ret = std::malloc(s);
-    if (!ret) std::abort(); // placate MSVC's unchecked malloc warning
-    return  ret;
+void* operator new(std::size_t s) TEST_THROW_SPEC(std::bad_alloc) {
+  ++new_called;
+  void* ret = std::malloc(s);
+  if (!ret)
+    std::abort(); // placate MSVC's unchecked malloc warning
+  return ret;
 }
 
-void  operator delete(void* p) TEST_NOEXCEPT
-{
-    --new_called;
-    std::free(p);
+void operator delete(void* p)TEST_NOEXCEPT {
+  --new_called;
+  std::free(p);
 }
 
 int A_constructed = 0;
 
-struct A
-{
-    A() {++A_constructed;}
-    ~A() {--A_constructed;}
+struct A {
+  A() { ++A_constructed; }
+  ~A() { --A_constructed; }
 };
 
-int main(int, char**)
-{
-    new_called = 0;
-    A *ap = new A[3];
-    DoNotOptimize(ap);
-    assert(ap);
-    assert(A_constructed == 3);
-    assert(new_called == 1);
-    delete [] ap;
-    DoNotOptimize(ap);
-    assert(A_constructed == 0);
-    assert(new_called == 0);
+int main(int, char**) {
+  new_called = 0;
+  A* ap = new A[3];
+  DoNotOptimize(ap);
+  assert(ap);
+  assert(A_constructed == 3);
+  assert(new_called == 1);
+  delete[] ap;
+  DoNotOptimize(ap);
+  assert(A_constructed == 0);
+  assert(new_called == 0);
 
   return 0;
 }

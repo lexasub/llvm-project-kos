@@ -48,13 +48,17 @@
 
 // For now, just verify this doesn't crash.
 namespace test0 {
-  struct Obj {};
+struct Obj {};
 
-  struct Base {           virtual const Obj *foo() = 0; };
-  struct Derived : Base { virtual       Obj *foo() { return new Obj(); } };
+struct Base {
+  virtual const Obj *foo() = 0;
+};
+struct Derived : Base {
+  virtual Obj *foo() { return new Obj(); }
+};
 
-  void test(Derived *D) { D->foo(); }
-}
+void test(Derived *D) { D->foo(); }
+} // namespace test0
 
 namespace Test1 {
 // CHECK-1:      Vtable for 'Test1::A' (3 entries).
@@ -68,9 +72,9 @@ namespace Test1 {
 struct A {
   virtual void f();
 };
-void A::f() { }
+void A::f() {}
 
-}
+} // namespace Test1
 
 namespace Test2 {
 
@@ -98,13 +102,13 @@ namespace Test2 {
 struct A {
   virtual void f();
   virtual void f() const;
-  
-  virtual A* g(int a);
+
+  virtual A *g(int a);
   virtual ~A();
   virtual void h();
-  virtual A& operator=(const A&);
+  virtual A &operator=(const A &);
 };
-void A::f() { }
+void A::f() {}
 
 // Another simple vtable dumper test.
 
@@ -127,9 +131,9 @@ struct B {
   virtual void g() = 0;
   virtual ~B() = 0;
 };
-void B::f() { }
+void B::f() {}
 
-}
+} // namespace Test2
 
 namespace Test3 {
 
@@ -148,7 +152,7 @@ namespace Test3 {
 struct A {
   virtual void f();
 };
-void A::f() { } 
+void A::f() {}
 
 // CHECK-5:     Vtable for 'Test3::B' (4 entries).
 // CHECK-5-NEXT:  0 | offset_to_top (0)
@@ -165,7 +169,7 @@ struct B : A {
   virtual void f();
   virtual void g();
 };
-void B::f() { }
+void B::f() {}
 
 // CHECK-6:     Vtable for 'Test3::C' (5 entries).
 // CHECK-6-NEXT:  0 | offset_to_top (0)
@@ -183,7 +187,7 @@ struct C : A {
   virtual void g();
   virtual void h();
 };
-void C::g() { }
+void C::g() {}
 
 // CHECK-7:     Vtable for 'Test3::D' (5 entries).
 // CHECK-7-NEXT:  0 | offset_to_top (0)
@@ -205,16 +209,22 @@ struct D : B {
   virtual void h();
 };
 
-void D::f() { } 
-}
+void D::f() {}
+} // namespace Test3
 
 namespace Test4 {
 
 // Test non-virtual result adjustments.
 
-struct R1 { int r1; };
-struct R2 { int r2; };
-struct R3 : R1, R2 { int r3; };
+struct R1 {
+  int r1;
+};
+struct R2 {
+  int r2;
+};
+struct R3 : R1, R2 {
+  int r3;
+};
 
 struct A {
   virtual R2 *f();
@@ -237,11 +247,15 @@ struct B : A {
 R3 *B::f() { return 0; }
 
 // Test virtual result adjustments.
-struct V1 { int v1; };
-struct V2 : virtual V1 { int v1; };
+struct V1 {
+  int v1;
+};
+struct V2 : virtual V1 {
+  int v1;
+};
 
 struct C {
-  virtual V1 *f(); 
+  virtual V1 *f();
 };
 
 // CHECK-9:     Vtable for 'Test4::D' (4 entries).
@@ -261,7 +275,9 @@ struct D : C {
 V2 *D::f() { return 0; };
 
 // Virtual result adjustments with an additional non-virtual adjustment.
-struct V3 : virtual R3 { int r3; };
+struct V3 : virtual R3 {
+  int r3;
+};
 
 // CHECK-10:     Vtable for 'Test4::E' (4 entries).
 // CHECK-10-NEXT:   0 | offset_to_top (0)
@@ -277,7 +293,7 @@ struct V3 : virtual R3 { int r3; };
 struct E : A {
   virtual V3 *f();
 };
-V3 *E::f() { return 0;}
+V3 *E::f() { return 0; }
 
 // Test that a pure virtual member doesn't get a thunk.
 
@@ -297,9 +313,9 @@ struct F : A {
   virtual void g();
   virtual R3 *f() = 0;
 };
-void F::g() { }
+void F::g() {}
 
-}
+} // namespace Test4
 
 namespace Test5 {
 
@@ -341,8 +357,8 @@ struct B2 : A {
 struct C : B1, B2 {
   virtual void h();
 };
-void C::h() { }  
-}
+void C::h() {}
+} // namespace Test5
 
 namespace Test6 {
 
@@ -374,9 +390,9 @@ struct A2 {
 struct C : A1, A2 {
   virtual void f();
 };
-void C::f() { }
+void C::f() {}
 
-}
+} // namespace Test6
 
 namespace Test7 {
 
@@ -388,10 +404,12 @@ struct A {
   int a;
 };
 
-struct B1 : A { };
-struct B2 : A { };
+struct B1 : A {};
+struct B2 : A {};
 
-struct C { virtual void c(); };
+struct C {
+  virtual void c();
+};
 
 // CHECK-14:     Vtable for 'Test7::D' (10 entries).
 // CHECK-14-NEXT:   0 | offset_to_top (0)
@@ -418,16 +436,16 @@ struct C { virtual void c(); };
 struct D : C, B1, B2 {
   virtual void f();
 };
-void D::f() { }
+void D::f() {}
 
-}
+} // namespace Test7
 
 namespace Test8 {
 
 // Test that we don't try to layout vtables for classes that don't have
 // virtual bases or virtual member functions.
 
-struct A { };
+struct A {};
 
 // CHECK-15:     Vtable for 'Test8::B' (3 entries).
 // CHECK-15-NEXT:   0 | offset_to_top (0)
@@ -440,16 +458,20 @@ struct A { };
 struct B : A {
   virtual void f();
 };
-void B::f() { }
+void B::f() {}
 
-}
+} // namespace Test8
 
 namespace Test9 {
 
 // Simple test of vbase offsets.
 
-struct A1 { int a1; };
-struct A2 { int a2; };
+struct A1 {
+  int a1;
+};
+struct A2 {
+  int a2;
+};
 
 // CHECK-16:     Vtable for 'Test9::B' (5 entries).
 // CHECK-16-NEXT:   0 | vbase_offset (16)
@@ -467,17 +489,20 @@ struct B : virtual A1, virtual A2 {
   virtual void f();
 };
 
+void B::f() {}
 
-void B::f() { }
-
-}
+} // namespace Test9
 
 namespace Test10 {
 
 // Test for a bug where we would not emit secondary vtables for bases
 // of a primary base.
-struct A1 { virtual void a1(); };
-struct A2 { virtual void a2(); };
+struct A1 {
+  virtual void a1();
+};
+struct A2 {
+  virtual void a2();
+};
 
 // CHECK-17:     Vtable for 'Test10::C' (7 entries).
 // CHECK-17-NEXT:   0 | offset_to_top (0)
@@ -501,15 +526,19 @@ struct B : A1, A2 {
 struct C : B {
   virtual void f();
 };
-void C::f() { }
+void C::f() {}
 
-}
+} // namespace Test10
 
 namespace Test11 {
 
 // Very simple test of vtables for virtual bases.
-struct A1 { int a; };
-struct A2 { int b; };
+struct A1 {
+  int a;
+};
+struct A2 {
+  int b;
+};
 
 struct B : A1, virtual A2 {
   int b;
@@ -531,9 +560,9 @@ struct B : A1, virtual A2 {
 struct C : virtual B {
   virtual void f();
 };
-void C::f() { }
+void C::f() {}
 
-}
+} // namespace Test11
 
 namespace Test12 {
 
@@ -594,9 +623,9 @@ struct B : virtual A {
 
   virtual void a();
 };
-void B::f() { } 
+void B::f() {}
 
-}
+} // namespace Test12
 
 namespace Test13 {
 
@@ -625,21 +654,21 @@ struct B : virtual A {
 struct C : virtual B, virtual A {
   virtual void f();
 };
-void C::f() { }
+void C::f() {}
 
-}
+} // namespace Test13
 
 namespace Test14 {
 
 // Verify that we handle A being a non-virtual base of B, which is a virtual base.
 
-struct A { 
-  virtual void f(); 
+struct A {
+  virtual void f();
 };
 
-struct B : A { };
+struct B : A {};
 
-struct C : virtual B { };
+struct C : virtual B {};
 
 // CHECK-21:      Vtable for 'Test14::D' (5 entries).
 // CHECK-21-NEXT:    0 | vbase_offset (0)
@@ -655,19 +684,23 @@ struct C : virtual B { };
 // CHECK-21:      VTable indices for 'Test14::D' (1 entries).
 // CHECK-21-NEXT:    0 | void Test14::D::f()
 struct D : C, virtual B {
- virtual void f();
+  virtual void f();
 };
-void D::f() { }
+void D::f() {}
 
-}
+} // namespace Test14
 
 namespace Test15 {
 
 // Test that we don't emit an extra vtable for B since it's a primary base of C.
-struct A { virtual void a(); };
-struct B { virtual void b(); };
+struct A {
+  virtual void a();
+};
+struct B {
+  virtual void b();
+};
 
-struct C : virtual B { };
+struct C : virtual B {};
 
 // CHECK-22:      Vtable for 'Test15::D' (11 entries).
 // CHECK-22-NEXT:    0 | vbase_offset (8)
@@ -688,21 +721,27 @@ struct C : virtual B { };
 //
 // CHECK-22:      VTable indices for 'Test15::D' (1 entries).
 // CHECK-22-NEXT:    1 | void Test15::D::f()
-struct D : A, virtual B, virtual C { 
+struct D : A, virtual B, virtual C {
   virtual void f();
 };
-void D::f() { } 
+void D::f() {}
 
-}
+} // namespace Test15
 
 namespace Test16 {
 
 // Test that destructors share vcall offsets.
 
-struct A { virtual ~A(); };
-struct B { virtual ~B(); };
+struct A {
+  virtual ~A();
+};
+struct B {
+  virtual ~B();
+};
 
-struct C : A, B { virtual ~C(); };
+struct C : A, B {
+  virtual ~C();
+};
 
 // CHECK-23:      Vtable for 'Test16::D' (15 entries).
 // CHECK-23-NEXT:    0 | vbase_offset (8)
@@ -736,17 +775,25 @@ struct C : A, B { virtual ~C(); };
 struct D : virtual C {
   virtual void f();
 };
-void D::f() { } 
+void D::f() {}
 
-}
+} // namespace Test16
 
 namespace Test17 {
 
 // Test that we don't mark E::f in the C-in-E vtable as unused.
-struct A { virtual void f(); };
-struct B : virtual A { virtual void f(); };
-struct C : virtual A { virtual void f(); };
-struct D : virtual B, virtual C { virtual void f(); };
+struct A {
+  virtual void f();
+};
+struct B : virtual A {
+  virtual void f();
+};
+struct C : virtual A {
+  virtual void f();
+};
+struct D : virtual B, virtual C {
+  virtual void f();
+};
 
 // CHECK-24:      Vtable for 'Test17::E' (13 entries).
 // CHECK-24-NEXT:    0 | vbase_offset (0)
@@ -772,11 +819,11 @@ struct D : virtual B, virtual C { virtual void f(); };
 // CHECK-24:      VTable indices for 'Test17::E' (1 entries).
 // CHECK-24-NEXT:    0 | void Test17::E::f()
 class E : virtual D {
-  virtual void f();  
+  virtual void f();
 };
 void E::f() {}
 
-}
+} // namespace Test17
 
 namespace Test18 {
 
@@ -890,14 +937,13 @@ struct C : A, B {
 // CHECK-25-NEXT:   11 | void Test18::B::f()
 // CHECK-25-NEXT:        [this adjustment: 0 non-virtual, -24 vcall offset offset]
 // CHECK-25-NEXT:   12 | void Test18::A::g()
-struct D : virtual B, virtual C, virtual A 
-{
+struct D : virtual B, virtual C, virtual A {
   virtual void f();
   virtual void h();
 };
 void D::f() {}
 
-}
+} // namespace Test18
 
 namespace Test19 {
 
@@ -946,9 +992,9 @@ struct C {
 struct D : C, B, virtual A {
   virtual void f();
 };
-void D::f() { }
+void D::f() {}
 
-}
+} // namespace Test19
 
 namespace Test20 {
 
@@ -959,7 +1005,7 @@ struct A {
   virtual void g();
 };
 
-struct B : A { };
+struct B : A {};
 
 // CHECK-27:      Vtable for 'Test20::C' (9 entries).
 // CHECK-27-NEXT:    0 | offset_to_top (0)
@@ -983,22 +1029,22 @@ struct C : A, B {
   virtual void f() = 0;
   virtual void h();
 };
-void C::h() { }
+void C::h() {}
 
-}
+} // namespace Test20
 
 namespace Test21 {
 
 // Test that we get vbase offsets right in secondary vtables.
-struct A { 
+struct A {
   virtual void f();
 };
 
-struct B : virtual A { };
-class C : virtual B { };
-class D : virtual C { };
+struct B : virtual A {};
+class C : virtual B {};
+class D : virtual C {};
 
-class E : virtual C { };
+class E : virtual C {};
 
 // CHECK-28:      Vtable for 'Test21::F' (16 entries).
 // CHECK-28-NEXT:    0 | vbase_offset (8)
@@ -1036,19 +1082,19 @@ class E : virtual C { };
 class F : virtual D, virtual E {
   virtual void f();
 };
-void F::f() { }
+void F::f() {}
 
-}
+} // namespace Test21
 
 namespace Test22 {
 
 // Very simple construction vtable test.
 struct V1 {
   int v1;
-}; 
+};
 
 struct V2 : virtual V1 {
-  int v2; 
+  int v2;
 };
 
 // CHECK-29:      Vtable for 'Test22::C' (8 entries).
@@ -1072,12 +1118,12 @@ struct V2 : virtual V1 {
 // CHECK-29-NEXT:    2 | Test22::V2 RTTI
 
 struct C : virtual V1, virtual V2 {
-  int c; 
-  virtual void f(); 
+  int c;
+  virtual void f();
 };
-void C::f() { } 
+void C::f() {}
 
-}
+} // namespace Test22
 
 namespace Test23 {
 
@@ -1127,9 +1173,9 @@ struct D : virtual A, virtual B, C {
 
   void f();
 };
-void D::f() { } 
-  D d;
-}
+void D::f() {}
+D d;
+} // namespace Test23
 
 namespace Test24 {
 
@@ -1139,8 +1185,8 @@ struct A {
   virtual void f();
 };
 
-struct B : virtual A { };
-struct C : virtual A { };
+struct B : virtual A {};
+struct C : virtual A {};
 
 // CHECK-31:      Vtable for 'Test24::D' (10 entries).
 // CHECK-31-NEXT:    0 | vbase_offset (0)
@@ -1185,20 +1231,20 @@ struct C : virtual A { };
 struct D : B, C {
   virtual void f();
 };
-void D::f() { }
+void D::f() {}
 
-}
+} // namespace Test24
 
 namespace Test25 {
-  
+
 // This mainly tests that we don't assert on this class hierarchy.
 
 struct V {
   virtual void f();
 };
 
-struct A : virtual V { };
-struct B : virtual V { };
+struct A : virtual V {};
+struct B : virtual V {};
 
 // CHECK-32:      Vtable for 'Test25::C' (11 entries).
 // CHECK-32-NEXT:    0 | vbase_offset (0)
@@ -1244,9 +1290,9 @@ struct B : virtual V { };
 struct C : A, virtual V, B {
   virtual void g();
 };
-void C::g() { }
+void C::g() {}
 
-}
+} // namespace Test25
 
 namespace Test26 {
 
@@ -1302,9 +1348,9 @@ struct C : virtual A {
 class D : virtual B, virtual C {
   virtual void d();
 };
-void D::d() { } 
+void D::d() {}
 
-}
+} // namespace Test26
 
 namespace Test27 {
 
@@ -1366,9 +1412,9 @@ struct D : A, virtual B, C {
 struct E : D {
   virtual void e();
 };
-void E::e() { }
+void E::e() {}
 
-}
+} // namespace Test27
 
 namespace Test28 {
 
@@ -1435,17 +1481,17 @@ struct D : virtual C {
 struct E : D {
   virtual void e();
 };
-void E::e() { }
+void E::e() {}
 
-}
+} // namespace Test28
 
 namespace Test29 {
 
 // Test that the covariant return thunk for B::f will have a virtual 'this' adjustment,
 // matching gcc.
 
-struct V1 { };
-struct V2 : virtual V1 { };
+struct V1 {};
+struct V2 : virtual V1 {};
 
 struct A {
   virtual V1 *f();
@@ -1470,30 +1516,30 @@ struct B : virtual A {
 };
 V2 *B::f() { return 0; }
 
-}
+} // namespace Test29
 
 namespace Test30 {
 
 // Test that we don't assert when generating a vtable for F.
-struct A { };
+struct A {};
 
 struct B : virtual A {
- int i;
+  int i;
 };
 
 struct C {
- virtual void f();
+  virtual void f();
 };
 
-struct D : virtual C, B { };
-struct E : virtual D { };
+struct D : virtual C, B {};
+struct E : virtual D {};
 
 struct F : E {
- virtual void f();
+  virtual void f();
 };
-void F::f() { }
+void F::f() {}
 
-}
+} // namespace Test30
 
 namespace Test31 {
 
@@ -1532,9 +1578,9 @@ struct C : A, virtual B {
 struct D : virtual C {
   virtual void f();
 };
-void D::f() { }
+void D::f() {}
 
-}
+} // namespace Test31
 
 namespace Test32 {
 
@@ -1544,9 +1590,9 @@ struct A {
   virtual void f();
 };
 
-struct B : virtual A { };
-struct C : A, virtual B { };
-struct D : virtual B { };
+struct B : virtual A {};
+struct C : A, virtual B {};
+struct D : virtual B {};
 
 // CHECK-38:      Virtual base offset offsets for 'Test32::E' (3 entries).
 // CHECK-38-NEXT:    Test32::A | -32
@@ -1555,9 +1601,9 @@ struct D : virtual B { };
 struct E : C, virtual D {
   virtual void f();
 };
-void E::f() { }
+void E::f() {}
 
-}
+} // namespace Test32
 
 namespace Test33 {
 
@@ -1575,9 +1621,9 @@ struct C : virtual A, virtual B {
   virtual void c();
 };
 
-struct D : virtual C { };
+struct D : virtual C {};
 
-struct E : A, D { 
+struct E : A, D {
   virtual void e();
 };
 
@@ -1626,9 +1672,9 @@ struct E : A, D {
 struct F : virtual E, A {
   virtual void f();
 };
-void F::f() { }
+void F::f() {}
 
-}
+} // namespace Test33
 
 namespace Test34 {
 
@@ -1637,13 +1683,13 @@ namespace Test34 {
 struct A {
   virtual void a();
 };
-struct B : virtual A { };
+struct B : virtual A {};
 
 struct C : B, A {
   virtual void c();
 };
 
-struct D : A, C { };
+struct D : A, C {};
 
 struct E : virtual D {
   virtual void e();
@@ -1682,40 +1728,40 @@ struct E : virtual D {
 struct F : E {
   virtual void f();
 };
-void F::f() { }
+void F::f() {}
 
-}
+} // namespace Test34
 
 namespace Test35 {
 
 // Test that we lay out the virtual bases of 'Test35::H' in the correct order.
 
 struct A {
- virtual void a();
+  virtual void a();
 
- int i;
+  int i;
 };
 
 struct B : virtual A {
- virtual void b();
+  virtual void b();
 };
 
 struct C {
- virtual void c();
+  virtual void c();
 };
 
 struct D : C, virtual B {
- virtual void d();
+  virtual void d();
 };
 
 struct E : D {
- virtual void e();
+  virtual void e();
 
- bool b;
+  bool b;
 };
 
-struct F : virtual D { };
-struct G : virtual E { };
+struct F : virtual D {};
+struct G : virtual E {};
 
 // CHECK-41:      Vtable for 'Test35::H' (32 entries).
 // CHECK-41-NEXT:    0 | vbase_offset (32)
@@ -1770,24 +1816,24 @@ struct G : virtual E { };
 // CHECK-41:      VTable indices for 'Test35::H' (1 entries).
 // CHECK-41-NEXT:    2 | void Test35::H::h()
 struct H : F, G {
- virtual void h();
+  virtual void h();
 };
-void H::h() { }
+void H::h() {}
 
-}
+} // namespace Test35
 
 namespace Test36 {
 
 // Test that we don't mark B::f as unused in the vtable for D.
 
 struct A {
- virtual void f();
+  virtual void f();
 };
 
-struct B : virtual A { };
+struct B : virtual A {};
 
 struct C : virtual A {
- virtual void f();
+  virtual void f();
 };
 
 // CHECK-42:      Vtable for 'Test36::D' (12 entries).
@@ -1812,117 +1858,117 @@ struct C : virtual A {
 // CHECK-42:      VTable indices for 'Test36::D' (1 entries).
 // CHECK-42-NEXT:    1 | void Test36::D::g()
 struct D : virtual B, C {
- virtual void g();
+  virtual void g();
 };
-void D::g() { }
+void D::g() {}
 
-}
+} // namespace Test36
 
 namespace Test37 {
 
 // Test that we give C::f the right vtable index. (PR9660).
 struct A {
-	virtual A* f() = 0; 
+  virtual A *f() = 0;
 };
 
 struct B : virtual A {
-  virtual B* f();
+  virtual B *f();
 };
 
 // CHECK-43:      VTable indices for 'Test37::C' (1 entries).
 // CHECK-43-NEXT:    1 | Test37::C *Test37::C::f()
 struct C : B {
-  virtual C* f();
+  virtual C *f();
 };
 
-C* C::f() { return 0; }
+C *C::f() { return 0; }
 
-}
+} // namespace Test37
 
 // rdar://problem/10959710
 namespace Test38 {
-  struct A {
-    virtual void *foo();
-    virtual const void *foo() const;
-  };
+struct A {
+  virtual void *foo();
+  virtual const void *foo() const;
+};
 
-  // CHECK-44:      Vtable for 'Test38::B' (7 entries).
-  // CHECK-44-NEXT:    0 | vbase_offset (0)
-  // CHECK-44-NEXT:    1 | vcall_offset (0)
-  // CHECK-44-NEXT:    2 | vcall_offset (0)
-  // CHECK-44-NEXT:    3 | offset_to_top (0)
-  // CHECK-44-NEXT:    4 | Test38::B RTTI
-  // CHECK-44-NEXT:        -- (Test38::A, 0) vtable address --
-  // CHECK-44-NEXT:        -- (Test38::B, 0) vtable address --
-  // CHECK-44-NEXT:    5 | void *Test38::B::foo()
-  // CHECK-44-NEXT:    6 | const void *Test38::B::foo() const
-  //
-  // CHECK-44:      VTable indices for 'Test38::B' (2 entries).
-  // CHECK-44-NEXT:    0 | void *Test38::B::foo()
-  // CHECK-44-NEXT:    1 | const void *Test38::B::foo() const
-  class B : virtual public A {
-    void *foo();
-    const void *foo() const;
-  };
+// CHECK-44:      Vtable for 'Test38::B' (7 entries).
+// CHECK-44-NEXT:    0 | vbase_offset (0)
+// CHECK-44-NEXT:    1 | vcall_offset (0)
+// CHECK-44-NEXT:    2 | vcall_offset (0)
+// CHECK-44-NEXT:    3 | offset_to_top (0)
+// CHECK-44-NEXT:    4 | Test38::B RTTI
+// CHECK-44-NEXT:        -- (Test38::A, 0) vtable address --
+// CHECK-44-NEXT:        -- (Test38::B, 0) vtable address --
+// CHECK-44-NEXT:    5 | void *Test38::B::foo()
+// CHECK-44-NEXT:    6 | const void *Test38::B::foo() const
+//
+// CHECK-44:      VTable indices for 'Test38::B' (2 entries).
+// CHECK-44-NEXT:    0 | void *Test38::B::foo()
+// CHECK-44-NEXT:    1 | const void *Test38::B::foo() const
+class B : virtual public A {
+  void *foo();
+  const void *foo() const;
+};
 
-  void *B::foo() { return 0; }
-}
+void *B::foo() { return 0; }
+} // namespace Test38
 
 namespace Test39 {
-  struct A {
-    virtual void foo() = delete;
-  };
+struct A {
+  virtual void foo() = delete;
+};
 
-  // CHECK-45:      Vtable for 'Test39::B' (4 entries).
-  // CHECK-45-NEXT:    0 | offset_to_top (0)
-  // CHECK-45-NEXT:    1 | Test39::B RTTI
-  // CHECK-45-NEXT:        -- (Test39::A, 0) vtable address --
-  // CHECK-45-NEXT:        -- (Test39::B, 0) vtable address --
-  // CHECK-45-NEXT:    2 | void Test39::A::foo() [deleted]
-  // CHECK-45-NEXT:    3 | void Test39::B::foo2()
-  //
-  // CHECK-45:      VTable indices for 'Test39::B' (1 entries).
-  // CHECK-45-NEXT:    1 | void Test39::B::foo2()
-  struct B: A {
-    virtual void foo2();
-  };
+// CHECK-45:      Vtable for 'Test39::B' (4 entries).
+// CHECK-45-NEXT:    0 | offset_to_top (0)
+// CHECK-45-NEXT:    1 | Test39::B RTTI
+// CHECK-45-NEXT:        -- (Test39::A, 0) vtable address --
+// CHECK-45-NEXT:        -- (Test39::B, 0) vtable address --
+// CHECK-45-NEXT:    2 | void Test39::A::foo() [deleted]
+// CHECK-45-NEXT:    3 | void Test39::B::foo2()
+//
+// CHECK-45:      VTable indices for 'Test39::B' (1 entries).
+// CHECK-45-NEXT:    1 | void Test39::B::foo2()
+struct B : A {
+  virtual void foo2();
+};
 
-  void B::foo2() {
-  }
+void B::foo2() {
 }
+} // namespace Test39
 
 namespace Test40 {
-  struct A {
-    virtual void foo() = 0;
-  };
+struct A {
+  virtual void foo() = 0;
+};
 
-  struct B : public A {
-    virtual void foo();
-  };
+struct B : public A {
+  virtual void foo();
+};
 
-  struct C: public B {
-    // CHECK-46: VTable indices for 'Test40::C' (8 entries).
-    // CHECK-46-NEXT: 1 | int Test40::C::f(int)
-    // CHECK-46-NEXT: 2 | int Test40::C::f()
-    // CHECK-46-NEXT: 3 | int Test40::C::g(int)
-    // CHECK-46-NEXT: 4 | int Test40::C::g()
-    // CHECK-46-NEXT: 5 | int Test40::C::h(int)
-    // CHECK-46-NEXT: 6 | int Test40::C::h()
-    // CHECK-46-NEXT: 7 | int Test40::C::i(int)
-    // CHECK-46-NEXT: 8 | int Test40::C::i()
-    virtual int f(int);
-    virtual int f();
-    virtual int g(int);
-    virtual int g();
-    virtual int h(int);
-    virtual int h();
-    virtual int i(int);
-    virtual int i();
-  };
-  // Force C's vtable to be generated.
-  int C::f() { return 1; }
+struct C : public B {
+  // CHECK-46: VTable indices for 'Test40::C' (8 entries).
+  // CHECK-46-NEXT: 1 | int Test40::C::f(int)
+  // CHECK-46-NEXT: 2 | int Test40::C::f()
+  // CHECK-46-NEXT: 3 | int Test40::C::g(int)
+  // CHECK-46-NEXT: 4 | int Test40::C::g()
+  // CHECK-46-NEXT: 5 | int Test40::C::h(int)
+  // CHECK-46-NEXT: 6 | int Test40::C::h()
+  // CHECK-46-NEXT: 7 | int Test40::C::i(int)
+  // CHECK-46-NEXT: 8 | int Test40::C::i()
+  virtual int f(int);
+  virtual int f();
+  virtual int g(int);
+  virtual int g();
+  virtual int h(int);
+  virtual int h();
+  virtual int i(int);
+  virtual int i();
+};
+// Force C's vtable to be generated.
+int C::f() { return 1; }
 
-  class D : C {};
+class D : C {};
 
-  D d;
-}
+D d;
+} // namespace Test40

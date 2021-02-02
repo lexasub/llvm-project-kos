@@ -4,11 +4,11 @@
 // CHECK: my_thread_callback
 // CHECK: ran_before_main: 1
 
-#include <windows.h>
 #include <stdio.h>
 #include <string.h>
+#include <windows.h>
 
-#pragma comment (lib, "dbghelp")
+#pragma comment(lib, "dbghelp")
 
 static bool ran_before_main = false;
 

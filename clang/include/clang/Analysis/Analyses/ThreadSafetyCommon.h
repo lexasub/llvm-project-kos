@@ -92,7 +92,7 @@ inline std::string toString(const til::SExpr *E) {
   return ss.str();
 }
 
-}  // namespace sx
+} // namespace sx
 
 // This class defines the interface of a clang CFG Visitor.
 // CFGWalker will invoke the following methods.
@@ -166,8 +166,7 @@ public:
   }
 
   // Traverse the CFG, calling methods on V as appropriate.
-  template <class Visitor>
-  void walk(Visitor &V) {
+  template <class Visitor> void walk(Visitor &V) {
     PostOrderCFGView::CFGBlockSet VisitedBlocks(CFGraph);
 
     V.enterCFG(CFGraph, getDecl(), &CFGraph->getEntry());
@@ -179,7 +178,7 @@ public:
 
       // Process predecessors, handling back edges last
       if (V.visitPredecessors()) {
-        SmallVector<CFGBlock*, 4> BackEdges;
+        SmallVector<CFGBlock *, 4> BackEdges;
         // Process successors
         for (CFGBlock::const_pred_iterator SI = CurrBlock->pred_begin(),
                                            SE = CurrBlock->pred_end();
@@ -224,7 +223,7 @@ public:
 
       // Process successors, handling back edges first.
       if (V.visitSuccessors()) {
-        SmallVector<CFGBlock*, 8> ForwardEdges;
+        SmallVector<CFGBlock *, 8> ForwardEdges;
 
         // Process successors
         for (CFGBlock::const_succ_iterator SI = CurrBlock->succ_begin(),
@@ -270,7 +269,7 @@ private:
 class CapabilityExpr {
 private:
   /// The capability expression.
-  const til::SExpr* CapExpr;
+  const til::SExpr *CapExpr;
 
   /// True if this is a negative capability.
   bool Negated;
@@ -278,12 +277,10 @@ private:
 public:
   CapabilityExpr(const til::SExpr *E, bool Neg) : CapExpr(E), Negated(Neg) {}
 
-  const til::SExpr* sexpr() const { return CapExpr; }
+  const til::SExpr *sexpr() const { return CapExpr; }
   bool negative() const { return Negated; }
 
-  CapabilityExpr operator!() const {
-    return CapabilityExpr(CapExpr, !Negated);
-  }
+  CapabilityExpr operator!() const { return CapabilityExpr(CapExpr, !Negated); }
 
   bool equals(const CapabilityExpr &other) const {
     return (Negated == other.Negated) && sx::equals(CapExpr, other.CapExpr);
@@ -299,10 +296,10 @@ public:
 
   bool partiallyMatches(const CapabilityExpr &other) const {
     return (Negated == other.Negated) &&
-            sx::partiallyMatches(CapExpr, other.CapExpr);
+           sx::partiallyMatches(CapExpr, other.CapExpr);
   }
 
-  const ValueDecl* valueDecl() const {
+  const ValueDecl *valueDecl() const {
     if (Negated || CapExpr == nullptr)
       return nullptr;
     if (const auto *P = dyn_cast<til::Project>(CapExpr))
@@ -339,7 +336,7 @@ public:
   /// by the lock_returned attribute.
   struct CallingContext {
     // The previous context; or 0 if none.
-    CallingContext  *Prev;
+    CallingContext *Prev;
 
     // The decl to which the attr is attached.
     const NamedDecl *AttrDecl;
@@ -369,7 +366,8 @@ public:
   // Translate a clang expression in an attribute to a til::SExpr.
   // Constructs the context from D, DeclExp, and SelfDecl.
   CapabilityExpr translateAttrExpr(const Expr *AttrExp, const NamedDecl *D,
-                                   const Expr *DeclExp, VarDecl *SelfD=nullptr);
+                                   const Expr *DeclExp,
+                                   VarDecl *SelfD = nullptr);
 
   CapabilityExpr translateAttrExpr(const Expr *AttrExp, CallingContext *Ctx);
 
@@ -377,7 +375,7 @@ public:
   // Also performs substitution of variables; Ctx provides the context.
   // Dispatches on the type of S.
   til::SExpr *translate(const Stmt *S, CallingContext *Ctx);
-  til::SCFG  *buildCFG(CFGWalker &Walker);
+  til::SCFG *buildCFG(CFGWalker &Walker);
 
   til::SExpr *lookupStmt(const Stmt *S);
 
@@ -392,8 +390,7 @@ private:
   // We implement the CFGVisitor API
   friend class CFGWalker;
 
-  til::SExpr *translateDeclRefExpr(const DeclRefExpr *DRE,
-                                   CallingContext *Ctx) ;
+  til::SExpr *translateDeclRefExpr(const DeclRefExpr *DRE, CallingContext *Ctx);
   til::SExpr *translateCXXThisExpr(const CXXThisExpr *TE, CallingContext *Ctx);
   til::SExpr *translateMemberExpr(const MemberExpr *ME, CallingContext *Ctx);
   til::SExpr *translateObjCIVarRefExpr(const ObjCIvarRefExpr *IVRE,
@@ -406,19 +403,19 @@ private:
                                            CallingContext *Ctx);
   til::SExpr *translateUnaryOperator(const UnaryOperator *UO,
                                      CallingContext *Ctx);
-  til::SExpr *translateBinOp(til::TIL_BinaryOpcode Op,
-                             const BinaryOperator *BO,
+  til::SExpr *translateBinOp(til::TIL_BinaryOpcode Op, const BinaryOperator *BO,
                              CallingContext *Ctx, bool Reverse = false);
   til::SExpr *translateBinAssign(til::TIL_BinaryOpcode Op,
-                                 const BinaryOperator *BO,
-                                 CallingContext *Ctx, bool Assign = false);
+                                 const BinaryOperator *BO, CallingContext *Ctx,
+                                 bool Assign = false);
   til::SExpr *translateBinaryOperator(const BinaryOperator *BO,
                                       CallingContext *Ctx);
   til::SExpr *translateCastExpr(const CastExpr *CE, CallingContext *Ctx);
   til::SExpr *translateArraySubscriptExpr(const ArraySubscriptExpr *E,
                                           CallingContext *Ctx);
-  til::SExpr *translateAbstractConditionalOperator(
-      const AbstractConditionalOperator *C, CallingContext *Ctx);
+  til::SExpr *
+  translateAbstractConditionalOperator(const AbstractConditionalOperator *C,
+                                       CallingContext *Ctx);
 
   til::SExpr *translateDeclStmt(const DeclStmt *S, CallingContext *Ctx);
 

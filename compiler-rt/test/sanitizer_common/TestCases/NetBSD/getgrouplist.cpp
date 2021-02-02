@@ -1,8 +1,8 @@
 // RUN: %clangxx -O0 -g %s -o %t && %run %t
 
+#include <grp.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <grp.h>
 
 int main(void) {
   gid_t *groups;

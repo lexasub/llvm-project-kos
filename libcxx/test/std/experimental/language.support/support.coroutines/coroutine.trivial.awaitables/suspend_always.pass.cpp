@@ -24,15 +24,16 @@ constexpr SuspendT constexpr_sa;
 
 constexpr bool check_suspend_constexpr() {
   SuspendT s{};
-  const SuspendT scopy(s); ((void)scopy);
-  SuspendT smove(std::move(s)); ((void)smove);
+  const SuspendT scopy(s);
+  ((void)scopy);
+  SuspendT smove(std::move(s));
+  ((void)smove);
   s = scopy;
   s = std::move(smove);
   return true;
 }
 
-int main(int, char**)
-{
+int main(int, char**) {
   using H = coro::coroutine_handle<>;
   using S = SuspendT;
   H h{};

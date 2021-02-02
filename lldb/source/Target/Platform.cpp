@@ -119,7 +119,7 @@ bool PlatformProperties::SetModuleCacheDirectory(const FileSpec &dir_spec) {
 void PlatformProperties::SetDefaultModuleCacheDirectory(
     const FileSpec &dir_spec) {
   auto f_spec_opt = m_collection_sp->GetPropertyAtIndexAsOptionValueFileSpec(
-        nullptr, false, ePropertyModuleCacheDirectory);
+      nullptr, false, ePropertyModuleCacheDirectory);
   assert(f_spec_opt);
   f_spec_opt->SetDefaultValue(dir_spec);
 }
@@ -343,9 +343,8 @@ PlatformSP Platform::Create(const ArchSpec &arch, ArchSpec *platform_arch_ptr,
          ++idx) {
       if (create_callback) {
         platform_sp = create_callback(false, &arch);
-        if (platform_sp &&
-            platform_sp->IsCompatibleArchitecture(arch, true,
-                                                  platform_arch_ptr)) {
+        if (platform_sp && platform_sp->IsCompatibleArchitecture(
+                               arch, true, platform_arch_ptr)) {
           std::lock_guard<std::recursive_mutex> guard(GetPlatformListMutex());
           GetPlatformList().push_back(platform_sp);
           return platform_sp;
@@ -358,9 +357,8 @@ PlatformSP Platform::Create(const ArchSpec &arch, ArchSpec *platform_arch_ptr,
          ++idx) {
       if (create_callback) {
         platform_sp = create_callback(false, &arch);
-        if (platform_sp &&
-            platform_sp->IsCompatibleArchitecture(arch, false,
-                                                  platform_arch_ptr)) {
+        if (platform_sp && platform_sp->IsCompatibleArchitecture(
+                               arch, false, platform_arch_ptr)) {
           std::lock_guard<std::recursive_mutex> guard(GetPlatformListMutex());
           GetPlatformList().push_back(platform_sp);
           return platform_sp;
@@ -375,7 +373,8 @@ PlatformSP Platform::Create(const ArchSpec &arch, ArchSpec *platform_arch_ptr,
   return platform_sp;
 }
 
-ArchSpec Platform::GetAugmentedArchSpec(Platform *platform, llvm::StringRef triple) {
+ArchSpec Platform::GetAugmentedArchSpec(Platform *platform,
+                                        llvm::StringRef triple) {
   if (platform)
     return platform->GetAugmentedArchSpec(triple);
   return HostInfo::GetAugmentedArchSpec(triple);
@@ -572,7 +571,8 @@ RecurseCopy_Callback(void *baton, llvm::sys::fs::file_type ft,
     if (error.Fail()) {
       rc_baton->error.SetErrorStringWithFormat(
           "unable to setup directory %s on remote end", dst_dir.GetCString());
-      return FileSystem::eEnumerateDirectoryResultQuit; // got an error, bail out
+      return FileSystem::eEnumerateDirectoryResultQuit; // got an error, bail
+                                                        // out
     }
 
     // now recurse
@@ -588,7 +588,8 @@ RecurseCopy_Callback(void *baton, llvm::sys::fs::file_type ft,
                                               RecurseCopy_Callback, &rc_baton2);
     if (rc_baton2.error.Fail()) {
       rc_baton->error.SetErrorString(rc_baton2.error.AsCString());
-      return FileSystem::eEnumerateDirectoryResultQuit; // got an error, bail out
+      return FileSystem::eEnumerateDirectoryResultQuit; // got an error, bail
+                                                        // out
     }
     return FileSystem::eEnumerateDirectoryResultNext;
   } break;
@@ -604,13 +605,15 @@ RecurseCopy_Callback(void *baton, llvm::sys::fs::file_type ft,
     rc_baton->error = FileSystem::Instance().Readlink(src, src_resolved);
 
     if (rc_baton->error.Fail())
-      return FileSystem::eEnumerateDirectoryResultQuit; // got an error, bail out
+      return FileSystem::eEnumerateDirectoryResultQuit; // got an error, bail
+                                                        // out
 
     rc_baton->error =
         rc_baton->platform_ptr->CreateSymlink(dst_file, src_resolved);
 
     if (rc_baton->error.Fail())
-      return FileSystem::eEnumerateDirectoryResultQuit; // got an error, bail out
+      return FileSystem::eEnumerateDirectoryResultQuit; // got an error, bail
+                                                        // out
 
     return FileSystem::eEnumerateDirectoryResultNext;
   } break;
@@ -623,7 +626,8 @@ RecurseCopy_Callback(void *baton, llvm::sys::fs::file_type ft,
     Status err = rc_baton->platform_ptr->PutFile(src, dst_file);
     if (err.Fail()) {
       rc_baton->error.SetErrorString(err.AsCString());
-      return FileSystem::eEnumerateDirectoryResultQuit; // got an error, bail out
+      return FileSystem::eEnumerateDirectoryResultQuit; // got an error, bail
+                                                        // out
     }
     return FileSystem::eEnumerateDirectoryResultNext;
   } break;
@@ -752,7 +756,8 @@ bool Platform::SetWorkingDirectory(const FileSpec &file_spec) {
   if (IsHost()) {
     Log *log = GetLogIfAnyCategoriesSet(LIBLLDB_LOG_PLATFORM);
     LLDB_LOG(log, "{0}", file_spec);
-    if (std::error_code ec = llvm::sys::fs::set_current_path(file_spec.GetPath())) {
+    if (std::error_code ec =
+            llvm::sys::fs::set_current_path(file_spec.GetPath())) {
       LLDB_LOG(log, "error: {0}", ec.message());
       return false;
     }
@@ -1239,10 +1244,11 @@ Status Platform::PutFile(const FileSpec &source, const FileSpec &destination,
   if (permissions == 0)
     permissions = lldb::eFilePermissionsFileDefault;
 
-  lldb::user_id_t dest_file = OpenFile(
-      destination, File::eOpenOptionCanCreate | File::eOpenOptionWrite |
-                       File::eOpenOptionTruncate | File::eOpenOptionCloseOnExec,
-      permissions, error);
+  lldb::user_id_t dest_file =
+      OpenFile(destination,
+               File::eOpenOptionCanCreate | File::eOpenOptionWrite |
+                   File::eOpenOptionTruncate | File::eOpenOptionCloseOnExec,
+               permissions, error);
   LLDB_LOGF(log, "dest_file = %" PRIu64 "\n", dest_file);
 
   if (error.Fail())
@@ -1368,31 +1374,82 @@ const char *Platform::GetLocalCacheDirectory() {
 }
 
 static constexpr OptionDefinition g_rsync_option_table[] = {
-    {LLDB_OPT_SET_ALL, false, "rsync", 'r', OptionParser::eNoArgument, nullptr,
-     {}, 0, eArgTypeNone, "Enable rsync."},
-    {LLDB_OPT_SET_ALL, false, "rsync-opts", 'R',
-     OptionParser::eRequiredArgument, nullptr, {}, 0, eArgTypeCommandName,
+    {LLDB_OPT_SET_ALL,
+     false,
+     "rsync",
+     'r',
+     OptionParser::eNoArgument,
+     nullptr,
+     {},
+     0,
+     eArgTypeNone,
+     "Enable rsync."},
+    {LLDB_OPT_SET_ALL,
+     false,
+     "rsync-opts",
+     'R',
+     OptionParser::eRequiredArgument,
+     nullptr,
+     {},
+     0,
+     eArgTypeCommandName,
      "Platform-specific options required for rsync to work."},
-    {LLDB_OPT_SET_ALL, false, "rsync-prefix", 'P',
-     OptionParser::eRequiredArgument, nullptr, {}, 0, eArgTypeCommandName,
+    {LLDB_OPT_SET_ALL,
+     false,
+     "rsync-prefix",
+     'P',
+     OptionParser::eRequiredArgument,
+     nullptr,
+     {},
+     0,
+     eArgTypeCommandName,
      "Platform-specific rsync prefix put before the remote path."},
-    {LLDB_OPT_SET_ALL, false, "ignore-remote-hostname", 'i',
-     OptionParser::eNoArgument, nullptr, {}, 0, eArgTypeNone,
+    {LLDB_OPT_SET_ALL,
+     false,
+     "ignore-remote-hostname",
+     'i',
+     OptionParser::eNoArgument,
+     nullptr,
+     {},
+     0,
+     eArgTypeNone,
      "Do not automatically fill in the remote hostname when composing the "
      "rsync command."},
 };
 
 static constexpr OptionDefinition g_ssh_option_table[] = {
-    {LLDB_OPT_SET_ALL, false, "ssh", 's', OptionParser::eNoArgument, nullptr,
-     {}, 0, eArgTypeNone, "Enable SSH."},
-    {LLDB_OPT_SET_ALL, false, "ssh-opts", 'S', OptionParser::eRequiredArgument,
-     nullptr, {}, 0, eArgTypeCommandName,
+    {LLDB_OPT_SET_ALL,
+     false,
+     "ssh",
+     's',
+     OptionParser::eNoArgument,
+     nullptr,
+     {},
+     0,
+     eArgTypeNone,
+     "Enable SSH."},
+    {LLDB_OPT_SET_ALL,
+     false,
+     "ssh-opts",
+     'S',
+     OptionParser::eRequiredArgument,
+     nullptr,
+     {},
+     0,
+     eArgTypeCommandName,
      "Platform-specific options required for SSH to work."},
 };
 
 static constexpr OptionDefinition g_caching_option_table[] = {
-    {LLDB_OPT_SET_ALL, false, "local-cache-dir", 'c',
-     OptionParser::eRequiredArgument, nullptr, {}, 0, eArgTypePath,
+    {LLDB_OPT_SET_ALL,
+     false,
+     "local-cache-dir",
+     'c',
+     OptionParser::eRequiredArgument,
+     nullptr,
+     {},
+     0,
+     eArgTypePath,
      "Path in which to store local copies of files."},
 };
 
@@ -1534,12 +1591,13 @@ Status Platform::GetCachedExecutable(
 Status Platform::LoadCachedExecutable(
     const ModuleSpec &module_spec, lldb::ModuleSP &module_sp,
     const FileSpecList *module_search_paths_ptr, Platform &remote_platform) {
-  return GetRemoteSharedModule(module_spec, nullptr, module_sp,
-                               [&](const ModuleSpec &spec) {
-                                 return remote_platform.ResolveExecutable(
-                                     spec, module_sp, module_search_paths_ptr);
-                               },
-                               nullptr);
+  return GetRemoteSharedModule(
+      module_spec, nullptr, module_sp,
+      [&](const ModuleSpec &spec) {
+        return remote_platform.ResolveExecutable(spec, module_sp,
+                                                 module_search_paths_ptr);
+      },
+      nullptr);
 }
 
 Status Platform::GetRemoteSharedModule(const ModuleSpec &module_spec,
@@ -1633,7 +1691,6 @@ bool Platform::GetCachedSharedModule(const ModuleSpec &module_spec,
         return DownloadModuleSlice(
             module_spec.GetFileSpec(), module_spec.GetObjectOffset(),
             module_spec.GetObjectSize(), tmp_download_file_spec);
-
       },
       [this](const ModuleSP &module_sp,
              const FileSpec &tmp_download_file_spec) {
@@ -1768,12 +1825,12 @@ uint32_t Platform::DoLoadImage(lldb_private::Process *process,
   return LLDB_INVALID_IMAGE_TOKEN;
 }
 
-uint32_t Platform::LoadImageUsingPaths(lldb_private::Process *process,
-                               const lldb_private::FileSpec &remote_filename,
-                               const std::vector<std::string> &paths,
-                               lldb_private::Status &error,
-                               lldb_private::FileSpec *loaded_path)
-{
+uint32_t
+Platform::LoadImageUsingPaths(lldb_private::Process *process,
+                              const lldb_private::FileSpec &remote_filename,
+                              const std::vector<std::string> &paths,
+                              lldb_private::Status &error,
+                              lldb_private::FileSpec *loaded_path) {
   FileSpec file_to_use;
   if (remote_filename.IsAbsolute())
     file_to_use = FileSpec(remote_filename.GetFilename().GetStringRef(),
@@ -1887,7 +1944,7 @@ size_t Platform::GetSoftwareBreakpointTrapOpcode(Target &target,
   } break;
 
   case llvm::Triple::arc: {
-    static const uint8_t g_hex_opcode[] = { 0xff, 0x7f };
+    static const uint8_t g_hex_opcode[] = {0xff, 0x7f};
     trap_opcode = g_hex_opcode;
     trap_opcode_size = sizeof(g_hex_opcode);
   } break;

@@ -10,8 +10,8 @@ namespace locale {
 int columnWidth(StringRef s);
 bool isPrint(int c);
 
-}
-}
-}
+} // namespace locale
+} // namespace sys
+} // namespace llvm
 
 #endif // LLVM_SUPPORT_LOCALE_H

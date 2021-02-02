@@ -45,11 +45,13 @@
 namespace Blocks {
 #if defined(FIRST)
 struct S1 {
-  void (^block)(int x) = ^(int x) { };
+  void (^block)(int x) = ^(int x) {
+  };
 };
 #elif defined(SECOND)
 struct S1 {
-  void (^block)(int x) = ^(int y) { };
+  void (^block)(int x) = ^(int y) {
+  };
 };
 #else
 S1 s1;
@@ -57,11 +59,15 @@ S1 s1;
 
 #if defined(FIRST)
 struct S2 {
-  int (^block)(int x) = ^(int x) { return x + 1; };
+  int (^block)(int x) = ^(int x) {
+    return x + 1;
+  };
 };
 #elif defined(SECOND)
 struct S2 {
-  int (^block)(int x) = ^(int x) { return x; };
+  int (^block)(int x) = ^(int x) {
+    return x;
+  };
 };
 #else
 S2 s2;
@@ -81,8 +87,10 @@ S3 s3;
 // expected-note@second.h:* {{declaration of 'run' does not match}}
 #endif
 
-#define DECLS                                       \
-  int (^block)(int x) = ^(int x) { return x + x; }; \
+#define DECLS                      \
+  int (^block)(int x) = ^(int x) { \
+    return x + x;                  \
+  };                               \
   void run(int (^block)(int x, int y));
 
 #if defined(FIRST) || defined(SECOND)
@@ -105,7 +113,7 @@ Invalid1 i1;
 #endif
 
 #undef DECLS
-}
+} // namespace Blocks
 
 // Keep macros contained to one file.
 #ifdef FIRST

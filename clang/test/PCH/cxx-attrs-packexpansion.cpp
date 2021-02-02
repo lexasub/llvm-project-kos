@@ -8,18 +8,18 @@
 #ifndef HEADER
 #define HEADER
 
-template<typename T, typename... Types>
+template <typename T, typename... Types>
 struct static_variant {
-    alignas(Types...) T storage[10];
+  alignas(Types...) T storage[10];
 };
 
 #else
 
 struct A {
-    static_variant<int> a;
+  static_variant<int> a;
 };
 struct B {
-    static_variant<A> _b;
+  static_variant<A> _b;
 };
 
 #endif

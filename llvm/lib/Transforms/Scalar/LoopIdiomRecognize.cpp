@@ -225,7 +225,7 @@ private:
   bool recognizePopcount();
   void transformLoopToPopcount(BasicBlock *PreCondBB, Instruction *CntInst,
                                PHINode *CntPhi, Value *Var);
-  bool recognizeAndInsertFFS();  /// Find First Set: ctlz or cttz
+  bool recognizeAndInsertFFS(); /// Find First Set: ctlz or cttz
   void transformLoopToCountable(Intrinsic::ID IntrinID, BasicBlock *PreCondBB,
                                 Instruction *CntInst, PHINode *CntPhi,
                                 Value *Var, Instruction *DefX,
@@ -665,7 +665,8 @@ bool LoopIdiomRecognize::processLoopStores(SmallVectorImpl<StoreInst *> &SL,
     const SCEVAddRecExpr *FirstStoreEv =
         cast<SCEVAddRecExpr>(SE->getSCEV(FirstStorePtr));
     APInt FirstStride = getStoreStride(FirstStoreEv);
-    unsigned FirstStoreSize = DL->getTypeStoreSize(SL[i]->getValueOperand()->getType());
+    unsigned FirstStoreSize =
+        DL->getTypeStoreSize(SL[i]->getValueOperand()->getType());
 
     // See if we can optimize just this store in isolation.
     if (FirstStride == FirstStoreSize || -FirstStride == FirstStoreSize) {
@@ -1176,8 +1177,7 @@ bool LoopIdiomRecognize::processLoopStoreOfLoopLoad(StoreInst *SI,
     // Note that unordered atomic loads/stores are *required* by the spec to
     // have an alignment but non-atomic loads/stores may not.
     NewCall = Builder.CreateElementUnorderedAtomicMemCpy(
-        StoreBasePtr, StoreAlign, LoadBasePtr, LoadAlign, NumBytes,
-        StoreSize);
+        StoreBasePtr, StoreAlign, LoadBasePtr, LoadAlign, NumBytes, StoreSize);
   }
   NewCall->setDebugLoc(SI->getDebugLoc());
 
@@ -1349,8 +1349,7 @@ static bool detectPopcountIdiom(Loop *CurLoop, BasicBlock *PreCondBB,
     ConstantInt *Dec = dyn_cast<ConstantInt>(SubOneOp->getOperand(1));
     if (!Dec ||
         !((SubOneOp->getOpcode() == Instruction::Sub && Dec->isOne()) ||
-          (SubOneOp->getOpcode() == Instruction::Add &&
-           Dec->isMinusOne()))) {
+          (SubOneOp->getOpcode() == Instruction::Add && Dec->isMinusOne()))) {
       return false;
     }
   }
@@ -1463,8 +1462,8 @@ static bool detectShiftUntilZeroIdiom(Loop *CurLoop, const DataLayout &DL,
   // step 2: detect instructions corresponding to "x.next = x >> 1 or x << 1"
   if (!DefX || !DefX->isShift())
     return false;
-  IntrinID = DefX->getOpcode() == Instruction::Shl ? Intrinsic::cttz :
-                                                     Intrinsic::ctlz;
+  IntrinID =
+      DefX->getOpcode() == Instruction::Shl ? Intrinsic::cttz : Intrinsic::ctlz;
   ConstantInt *Shft = dyn_cast<ConstantInt>(DefX->getOperand(1));
   if (!Shft || !Shft->isOne())
     return false;
@@ -1531,8 +1530,8 @@ bool LoopIdiomRecognize::recognizeAndInsertFFS() {
   // this is always 6.
   size_t IdiomCanonicalSize = 6;
 
-  if (!detectShiftUntilZeroIdiom(CurLoop, *DL, IntrinID, InitX,
-                                 CntInst, CntPhi, DefX))
+  if (!detectShiftUntilZeroIdiom(CurLoop, *DL, IntrinID, InitX, CntInst, CntPhi,
+                                 DefX))
     return false;
 
   bool IsCntPhiUsedOutsideLoop = false;
@@ -1597,10 +1596,9 @@ bool LoopIdiomRecognize::recognizeAndInsertFFS() {
       std::distance(InstWithoutDebugIt.begin(), InstWithoutDebugIt.end());
 
   IntrinsicCostAttributes Attrs(IntrinID, InitX->getType(), Args);
-  int Cost =
-    TTI->getIntrinsicInstrCost(Attrs, TargetTransformInfo::TCK_SizeAndLatency);
-  if (HeaderSize != IdiomCanonicalSize &&
-      Cost > TargetTransformInfo::TCC_Basic)
+  int Cost = TTI->getIntrinsicInstrCost(
+      Attrs, TargetTransformInfo::TCK_SizeAndLatency);
+  if (HeaderSize != IdiomCanonicalSize && Cost > TargetTransformInfo::TCC_Basic)
     return false;
 
   transformLoopToCountable(IntrinID, PH, CntInst, CntPhi, InitX, DefX,
@@ -1790,8 +1788,7 @@ void LoopIdiomRecognize::transformLoopToCountable(
 
   Builder.SetInsertPoint(LbCond);
   Instruction *TcDec = cast<Instruction>(
-      Builder.CreateSub(TcPhi, ConstantInt::get(Ty, 1),
-                        "tcdec", false, true));
+      Builder.CreateSub(TcPhi, ConstantInt::get(Ty, 1), "tcdec", false, true));
 
   TcPhi->addIncoming(Count, Preheader);
   TcPhi->addIncoming(TcDec, Body);
@@ -1896,9 +1893,8 @@ void LoopIdiomRecognize::transformLoopToPopcount(BasicBlock *PreCondBB,
     PHINode *TcPhi = PHINode::Create(Ty, 2, "tcphi", &Body->front());
 
     Builder.SetInsertPoint(LbCond);
-    Instruction *TcDec = cast<Instruction>(
-        Builder.CreateSub(TcPhi, ConstantInt::get(Ty, 1),
-                          "tcdec", false, true));
+    Instruction *TcDec = cast<Instruction>(Builder.CreateSub(
+        TcPhi, ConstantInt::get(Ty, 1), "tcdec", false, true));
 
     TcPhi->addIncoming(TripCnt, PreHead);
     TcPhi->addIncoming(TcDec, Body);

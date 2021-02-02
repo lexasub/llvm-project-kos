@@ -2,39 +2,39 @@
 
 // expected-no-diagnostics
 
-void check(int&) = delete;
-void check(int const&) { }
+void check(int &) = delete;
+void check(int const &) {}
 
 template <typename>
 struct A {
-    union {
-        int b;
-    };
+  union {
+    int b;
+  };
+  struct {
+    int c;
+  };
+  union {
     struct {
-      int c;
-    };
-    union {
-      struct {
-        union {
+      union {
+        struct {
           struct {
-            struct {
-              int d;
-            };
+            int d;
           };
         };
       };
     };
-    int e;
-    void foo() const {
-      check(b);
-      check(c);
-      check(d);
-      check(d);
-      check(e);
-    }
+  };
+  int e;
+  void foo() const {
+    check(b);
+    check(c);
+    check(d);
+    check(d);
+    check(e);
+  }
 };
 
-int main(){
-    A<int> a;
-    a.foo();
+int main() {
+  A<int> a;
+  a.foo();
 }

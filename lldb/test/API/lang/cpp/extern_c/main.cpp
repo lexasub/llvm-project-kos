@@ -1,20 +1,16 @@
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
 
-extern "C"
-{
-   int foo();
+extern "C" {
+int foo();
 };
 
-int foo()
-{
-    puts("foo");
-    return 2;
+int foo() {
+  puts("foo");
+  return 2;
 }
 
-int main (int argc, char const *argv[], char const *envp[])
-{          
-    foo();
-    return 0; //% self.expect("expression -- foo()", substrs = ['2'])
+int main(int argc, char const *argv[], char const *envp[]) {
+  foo();
+  return 0; //% self.expect("expression -- foo()", substrs = ['2'])
 }
-

@@ -62,7 +62,7 @@ private:
   Value *optimizeMemPCpyChk(CallInst *CI, IRBuilderBase &B);
   Value *optimizeMemCCpyChk(CallInst *CI, IRBuilderBase &B);
   Value *optimizeSNPrintfChk(CallInst *CI, IRBuilderBase &B);
-  Value *optimizeSPrintfChk(CallInst *CI,IRBuilderBase &B);
+  Value *optimizeSPrintfChk(CallInst *CI, IRBuilderBase &B);
   Value *optimizeStrCatChk(CallInst *CI, IRBuilderBase &B);
   Value *optimizeStrLCat(CallInst *CI, IRBuilderBase &B);
   Value *optimizeStrNCatChk(CallInst *CI, IRBuilderBase &B);
@@ -137,8 +137,8 @@ private:
 public:
   LibCallSimplifier(
       const DataLayout &DL, const TargetLibraryInfo *TLI,
-      OptimizationRemarkEmitter &ORE,
-      BlockFrequencyInfo *BFI, ProfileSummaryInfo *PSI,
+      OptimizationRemarkEmitter &ORE, BlockFrequencyInfo *BFI,
+      ProfileSummaryInfo *PSI,
       function_ref<void(Instruction *, Value *)> Replacer =
           &replaceAllUsesWithDefault,
       function_ref<void(Instruction *)> Eraser = &eraseFromParentDefault);
@@ -239,8 +239,9 @@ private:
   bool hasFloatVersion(StringRef FuncName);
 
   /// Shared code to optimize strlen+wcslen.
-  Value *optimizeStringLength(CallInst *CI, IRBuilderBase &B, unsigned CharSize);
+  Value *optimizeStringLength(CallInst *CI, IRBuilderBase &B,
+                              unsigned CharSize);
 };
-} // End llvm namespace
+} // namespace llvm
 
 #endif

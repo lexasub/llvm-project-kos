@@ -29,7 +29,8 @@ protected:
   void GetUnwindPlan(addr_t file_addr, UnwindPlan &plan) const;
 };
 
-void PECallFrameInfoTest::GetUnwindPlan(addr_t file_addr, UnwindPlan &plan) const {
+void PECallFrameInfoTest::GetUnwindPlan(addr_t file_addr,
+                                        UnwindPlan &plan) const {
   llvm::Expected<TestFile> ExpectedFile = TestFile::fromYaml(
       R"(
 --- !COFF

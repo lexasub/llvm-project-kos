@@ -8,12 +8,12 @@
 //   zero-initialization, default-initialization, and value-initialization.
 
 typedef int &IR;
-IR r; // expected-error {{declaration of reference variable 'r' requires an initializer}}
+IR r;         // expected-error {{declaration of reference variable 'r' requires an initializer}}
 int n = IR(); // expected-error {{reference to type 'int' requires an initializer}}
 
 #if __cplusplus < 201103L
 struct S { // expected-error {{implicit default constructor for 'S' must explicitly initialize the reference member}}
-  int &x; // expected-note {{declared here}} expected-error 3{{reference to type 'int' requires an initializer}}
+  int &x;  // expected-note {{declared here}} expected-error 3{{reference to type 'int' requires an initializer}}
 };
 S s; // expected-note {{implicit default constructor for 'S' first required here}}
 S f() {
@@ -21,7 +21,7 @@ S f() {
 }
 
 struct T
-  : S { // expected-note 2{{in value-initialization of type 'S' here}}
+    : S { // expected-note 2{{in value-initialization of type 'S' here}}
 };
 T t = T(); // expected-note {{in value-initialization of type 'T' here}}
 
@@ -39,7 +39,7 @@ S f() {
 }
 
 struct T
-  : S { // expected-note 2{{because base class 'S' has a deleted default constructor}}
+    : S { // expected-note 2{{because base class 'S' has a deleted default constructor}}
 };
 T t = T(); // expected-error {{deleted default constructor}}
 
@@ -60,7 +60,7 @@ struct V {
 V v = V(); // ok
 struct W {
   int n;
-  S s = { n }; // expected-warning 0-1{{C++11}}
+  S s = {n}; // expected-warning 0-1{{C++11}}
 };
 W w = W(); // ok
 

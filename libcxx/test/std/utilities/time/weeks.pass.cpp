@@ -17,15 +17,17 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    typedef std::chrono::weeks D;
-    typedef D::rep Rep;
-    typedef D::period Period;
-    static_assert(std::is_signed<Rep>::value, "");
-    static_assert(std::is_integral<Rep>::value, "");
-    static_assert(std::numeric_limits<Rep>::digits >= 22, "");
-    static_assert(std::is_same_v<Period, std::ratio_multiply<std::ratio<7>, std::chrono::days::period>>, "");
+int main(int, char**) {
+  typedef std::chrono::weeks D;
+  typedef D::rep Rep;
+  typedef D::period Period;
+  static_assert(std::is_signed<Rep>::value, "");
+  static_assert(std::is_integral<Rep>::value, "");
+  static_assert(std::numeric_limits<Rep>::digits >= 22, "");
+  static_assert(
+      std::is_same_v<Period, std::ratio_multiply<std::ratio<7>,
+                                                 std::chrono::days::period> >,
+      "");
 
   return 0;
 }

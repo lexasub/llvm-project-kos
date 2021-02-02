@@ -17,7 +17,6 @@
 // equal_range shall not participate in overload resolution unless the
 // qualified-id Compare::is_transparent is valid and denotes a type
 
-
 #include <map>
 #include <cassert>
 
@@ -28,10 +27,9 @@
 #error "This test requires is C++14 (or later)"
 #else
 
-int main(int, char**)
-{
-    typedef std::multimap<int, double, transparent_less_not_a_type> M;
+int main(int, char**) {
+  typedef std::multimap<int, double, transparent_less_not_a_type> M;
 
-    TEST_IGNORE_NODISCARD M().count(C2Int{5});
+  TEST_IGNORE_NODISCARD M().count(C2Int{5});
 }
 #endif

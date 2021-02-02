@@ -70,9 +70,8 @@ static inline bool operator<(const OptTable::Info &A, const OptTable::Info &B) {
   if (int N = StrCmpOptionName(A.Name, B.Name))
     return N < 0;
 
-  for (const char * const *APre = A.Prefixes,
-                  * const *BPre = B.Prefixes;
-                          *APre != nullptr && *BPre != nullptr; ++APre, ++BPre){
+  for (const char *const *APre = A.Prefixes, *const *BPre = B.Prefixes;
+       *APre != nullptr && *BPre != nullptr; ++APre, ++BPre) {
     if (int N = StrCmpOptionName(*APre, *BPre))
       return N < 0;
   }
@@ -120,14 +119,15 @@ OptTable::OptTable(ArrayRef<Info> OptionInfos, bool IgnoreCase)
   // Check that everything after the first searchable option is a
   // regular option class.
   for (unsigned i = FirstSearchableIndex, e = getNumOptions(); i != e; ++i) {
-    Option::OptionClass Kind = (Option::OptionClass) getInfo(i + 1).Kind;
+    Option::OptionClass Kind = (Option::OptionClass)getInfo(i + 1).Kind;
     assert((Kind != Option::InputClass && Kind != Option::UnknownClass &&
             Kind != Option::GroupClass) &&
            "Special options should be defined first!");
   }
 
   // Check that options are in order.
-  for (unsigned i = FirstSearchableIndex + 1, e = getNumOptions(); i != e; ++i){
+  for (unsigned i = FirstSearchableIndex + 1, e = getNumOptions(); i != e;
+       ++i) {
     if (!(getInfo(i) < getInfo(i + 1))) {
       getOption(i).dump();
       getOption(i + 1).dump();
@@ -137,8 +137,8 @@ OptTable::OptTable(ArrayRef<Info> OptionInfos, bool IgnoreCase)
 #endif
 
   // Build prefixes.
-  for (unsigned i = FirstSearchableIndex + 1, e = getNumOptions() + 1;
-                i != e; ++i) {
+  for (unsigned i = FirstSearchableIndex + 1, e = getNumOptions() + 1; i != e;
+       ++i) {
     if (const char *const *P = getInfo(i).Prefixes) {
       for (; *P != nullptr; ++P) {
         PrefixesUnion.insert(*P);
@@ -148,10 +148,11 @@ OptTable::OptTable(ArrayRef<Info> OptionInfos, bool IgnoreCase)
 
   // Build prefix chars.
   for (StringSet<>::const_iterator I = PrefixesUnion.begin(),
-                                   E = PrefixesUnion.end(); I != E; ++I) {
+                                   E = PrefixesUnion.end();
+       I != E; ++I) {
     StringRef Prefix = I->getKey();
     for (StringRef::const_iterator C = Prefix.begin(), CE = Prefix.end();
-                                   C != CE; ++C)
+         C != CE; ++C)
       if (!is_contained(PrefixChars, *C))
         PrefixChars.push_back(*C);
   }
@@ -163,15 +164,15 @@ const Option OptTable::getOption(OptSpecifier Opt) const {
   unsigned id = Opt.getID();
   if (id == 0)
     return Option(nullptr, nullptr);
-  assert((unsigned) (id - 1) < getNumOptions() && "Invalid ID.");
+  assert((unsigned)(id - 1) < getNumOptions() && "Invalid ID.");
   return Option(&getInfo(id), this);
 }
 
 static bool isInput(const StringSet<> &Prefixes, StringRef Arg) {
   if (Arg == "-")
     return true;
-  for (StringSet<>::const_iterator I = Prefixes.begin(),
-                                   E = Prefixes.end(); I != E; ++I)
+  for (StringSet<>::const_iterator I = Prefixes.begin(), E = Prefixes.end();
+       I != E; ++I)
     if (Arg.startswith(I->getKey()))
       return false;
   return true;
@@ -180,13 +181,12 @@ static bool isInput(const StringSet<> &Prefixes, StringRef Arg) {
 /// \returns Matched size. 0 means no match.
 static unsigned matchOption(const OptTable::Info *I, StringRef Str,
                             bool IgnoreCase) {
-  for (const char * const *Pre = I->Prefixes; *Pre != nullptr; ++Pre) {
+  for (const char *const *Pre = I->Prefixes; *Pre != nullptr; ++Pre) {
     StringRef Prefix(*Pre);
     if (Str.startswith(Prefix)) {
       StringRef Rest = Str.substr(Prefix.size());
-      bool Matched = IgnoreCase
-          ? Rest.startswith_lower(I->Name)
-          : Rest.startswith(I->Name);
+      bool Matched = IgnoreCase ? Rest.startswith_lower(I->Name)
+                                : Rest.startswith(I->Name);
       if (Matched)
         return Prefix.size() + StringRef(I->Name).size();
     }
@@ -527,7 +527,9 @@ static std::string getOptionHelpName(const OptTable &Opts, OptSpecifier Id) {
 
   // Add metavar, if used.
   switch (O.getKind()) {
-  case Option::GroupClass: case Option::InputClass: case Option::UnknownClass:
+  case Option::GroupClass:
+  case Option::InputClass:
+  case Option::UnknownClass:
     llvm_unreachable("Invalid option with help text.");
 
   case Option::MultiArgClass:
@@ -535,10 +537,9 @@ static std::string getOptionHelpName(const OptTable &Opts, OptSpecifier Id) {
       // For MultiArgs, metavar is full list of all argument names.
       Name += ' ';
       Name += MetaVarName;
-    }
-    else {
+    } else {
       // For MultiArgs<N>, if metavar not supplied, print <value> N times.
-      for (unsigned i=0, e=O.getNumArgs(); i< e; ++i) {
+      for (unsigned i = 0, e = O.getNumArgs(); i < e; ++i) {
         Name += " <value>";
       }
     }
@@ -550,11 +551,14 @@ static std::string getOptionHelpName(const OptTable &Opts, OptSpecifier Id) {
   case Option::ValuesClass:
     break;
 
-  case Option::SeparateClass: case Option::JoinedOrSeparateClass:
-  case Option::RemainingArgsClass: case Option::RemainingArgsJoinedClass:
+  case Option::SeparateClass:
+  case Option::JoinedOrSeparateClass:
+  case Option::RemainingArgsClass:
+  case Option::RemainingArgsJoinedClass:
     Name += ' ';
     LLVM_FALLTHROUGH;
-  case Option::JoinedClass: case Option::CommaJoinedClass:
+  case Option::JoinedClass:
+  case Option::CommaJoinedClass:
   case Option::JoinedAndSeparateClass:
     if (const char *MetaVarName = Opts.getOptionMetaVar(Id))
       Name += MetaVarName;
@@ -662,7 +666,7 @@ void OptTable::PrintHelp(raw_ostream &OS, const char *Usage, const char *Title,
     }
   }
 
-  for (auto& OptionGroup : GroupedOptionHelp) {
+  for (auto &OptionGroup : GroupedOptionHelp) {
     if (OptionGroup.first != GroupedOptionHelp.begin()->first)
       OS << "\n";
     PrintHelpOptionList(OS, OptionGroup.first, OptionGroup.second);

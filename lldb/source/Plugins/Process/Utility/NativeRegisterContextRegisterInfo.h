@@ -36,5 +36,5 @@ public:
 protected:
   std::unique_ptr<RegisterInfoInterface> m_register_info_interface_up;
 };
-}
+} // namespace lldb_private
 #endif

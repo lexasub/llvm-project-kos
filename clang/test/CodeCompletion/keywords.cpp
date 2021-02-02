@@ -6,7 +6,7 @@ int variable = 0;
 
 class Class {
 public:
-  Class() { }
+  Class() {}
 
   int method(int x) {
     return x + 1;

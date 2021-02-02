@@ -15,7 +15,7 @@
 namespace clang {
 namespace clangd {
 
-PreambleFileStatusCache::PreambleFileStatusCache(llvm::StringRef MainFilePath){
+PreambleFileStatusCache::PreambleFileStatusCache(llvm::StringRef MainFilePath) {
   assert(llvm::sys::path::is_absolute(MainFilePath));
   llvm::SmallString<256> MainFileCanonical(MainFilePath);
   llvm::sys::path::remove_dots(MainFileCanonical, /*remove_dot_dot=*/true);

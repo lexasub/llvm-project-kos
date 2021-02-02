@@ -5,16 +5,12 @@
 
 template <class scriptmemberptr> int InitMember(scriptmemberptr);
 
-template <class> 
-struct contentmap
-{
-  static void InitDataMap()
-  { InitMember(&contentmap::SizeHolder); }
+template <class>
+struct contentmap {
+  static void InitDataMap() { InitMember(&contentmap::SizeHolder); }
   int SizeHolder;
 };
 
-void ReadFrom( )
-{
+void ReadFrom() {
   contentmap<int>::InitDataMap();
 }
-

@@ -1,6 +1,8 @@
 // RUN: %clang_cc1 -std=c++11 %s -ast-dump | FileCheck %s
 
-struct A { ~A() = delete; };
+struct A {
+  ~A() = delete;
+};
 // CHECK-LABEL: CXXRecordDecl {{.*}} struct A
 // CHECK: Destructor trivial user_declared
 
@@ -12,7 +14,9 @@ struct C : B {};
 // CHECK-LABEL: CXXRecordDecl {{.*}} struct C
 // CHECK: Destructor trivial needs_overload_resolution
 
-struct D { ~D(); };
+struct D {
+  ~D();
+};
 struct E : D {};
 union U {
   E e;

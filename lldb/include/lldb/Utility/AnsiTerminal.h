@@ -140,7 +140,7 @@ inline std::string FormatAnsiTerminalCodes(llvm::StringRef format,
   }
   return fmt;
 }
-}
+} // namespace ansi
 } // namespace lldb_private
 
 #endif

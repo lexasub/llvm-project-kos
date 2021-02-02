@@ -30,7 +30,6 @@
 // RUN: MSAN_OPTIONS=origin_history_size=7,origin_history_per_stack_limit=0 not %run %t >%t.out 2>&1
 // RUN: FileCheck %s --check-prefix=CHECK7 < %t.out
 
-
 // Heap origin, with calls.
 // RUN: %clangxx_msan -mllvm -msan-instrumentation-with-call-threshold=0 -fsanitize-memory-track-origins=2 -O3 %s -o %t
 
@@ -45,7 +44,6 @@
 
 // RUN: MSAN_OPTIONS=origin_history_size=7,origin_history_per_stack_limit=0 not %run %t >%t.out 2>&1
 // RUN: FileCheck %s --check-prefix=CHECK7 < %t.out
-
 
 // Stack origin, with calls.
 // RUN: %clangxx_msan -DSTACK -mllvm -msan-instrumentation-with-call-threshold=0 -fsanitize-memory-track-origins=2 -O3 %s -o %t
@@ -95,7 +93,8 @@ void line_flush() {
 void buffered_write(const char *p, size_t sz) {
   while (sz > 0) {
     size_t copy_sz = end - cur;
-    if (sz < copy_sz) copy_sz = sz;
+    if (sz < copy_sz)
+      copy_sz = sz;
     memcpy(cur, p, copy_sz);
     cur += copy_sz;
     sz -= copy_sz;

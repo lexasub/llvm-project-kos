@@ -18,24 +18,20 @@
 
 #if SANITIZER_NETBSD
 
-#include "sanitizer_stoptheworld.h"
-
-#include "sanitizer_atomic.h"
-#include "sanitizer_platform_limits_posix.h"
-
-#include <sys/types.h>
-
-#include <sys/ptrace.h>
-#include <sys/uio.h>
-#include <sys/wait.h>
-
-#include <machine/reg.h>
-
 #include <elf.h>
 #include <errno.h>
+#include <machine/reg.h>
 #include <sched.h>
 #include <signal.h>
 #include <stddef.h>
+#include <sys/ptrace.h>
+#include <sys/types.h>
+#include <sys/uio.h>
+#include <sys/wait.h>
+
+#include "sanitizer_atomic.h"
+#include "sanitizer_platform_limits_posix.h"
+#include "sanitizer_stoptheworld.h"
 
 #define internal_sigaction_norestorer internal_sigaction
 

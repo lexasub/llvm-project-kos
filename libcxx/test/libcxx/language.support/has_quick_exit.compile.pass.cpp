@@ -15,5 +15,5 @@
 #include "test_macros.h"
 
 #if defined(TEST_HAS_QUICK_EXIT) != defined(_LIBCPP_HAS_QUICK_EXIT)
-#   error "TEST_HAS_QUICK_EXIT and _LIBCPP_HAS_QUICK_EXIT are out of sync"
+#error "TEST_HAS_QUICK_EXIT and _LIBCPP_HAS_QUICK_EXIT are out of sync"
 #endif

@@ -22,16 +22,15 @@ unsigned gCounter = 0;
 
 void my_terminate() { exit(0); }
 
-int main ()
-{
-    // should not call std::terminate()
-    __cxxabiv1::__cxa_rethrow_primary_exception(nullptr);
+int main() {
+  // should not call std::terminate()
+  __cxxabiv1::__cxa_rethrow_primary_exception(nullptr);
 
-    std::set_terminate(my_terminate);
+  std::set_terminate(my_terminate);
 
-    // should call std::terminate()
-    __cxxabiv1::__cxa_rethrow_primary_exception((void*) &gCounter);
-    assert(false);
+  // should call std::terminate()
+  __cxxabiv1::__cxa_rethrow_primary_exception((void*)&gCounter);
+  assert(false);
 
-    return 0;
+  return 0;
 }

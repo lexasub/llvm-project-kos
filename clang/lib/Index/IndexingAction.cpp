@@ -45,7 +45,7 @@ public:
 
   void MacroUndefined(const Token &MacroNameTok, const MacroDefinition &MD,
                       const MacroDirective *Undef) override {
-    if (!MD.getMacroInfo())  // Ignore noop #undef.
+    if (!MD.getMacroInfo()) // Ignore noop #undef.
       return;
     IndexCtx->handleMacroUndefined(*MacroNameTok.getIdentifierInfo(),
                                    MacroNameTok.getLocation(),
@@ -154,7 +154,7 @@ index::createIndexingAction(std::shared_ptr<IndexDataConsumer> DataConsumer,
 }
 
 static bool topLevelDeclVisitor(void *context, const Decl *D) {
-  IndexingContext &IndexCtx = *static_cast<IndexingContext*>(context);
+  IndexingContext &IndexCtx = *static_cast<IndexingContext *>(context);
   return IndexCtx.indexTopLevelDecl(D);
 }
 

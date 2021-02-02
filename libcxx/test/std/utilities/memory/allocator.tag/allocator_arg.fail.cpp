@@ -21,9 +21,8 @@
 
 #include <memory>
 
+std::allocator_arg_t f() {
+  return {};
+} // expected-error 1 {{chosen constructor is explicit in copy-initialization}}
 
-std::allocator_arg_t f() { return {}; } // expected-error 1 {{chosen constructor is explicit in copy-initialization}}
-
-int main(int, char**) {
-    return 0;
-}
+int main(int, char**) { return 0; }

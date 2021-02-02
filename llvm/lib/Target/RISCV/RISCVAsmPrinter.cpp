@@ -71,7 +71,7 @@ public:
 private:
   void emitAttributes();
 };
-}
+} // namespace
 
 #define GEN_COMPRESS_INSTR
 #include "RISCVGenCompressInstEmitter.inc"
@@ -168,7 +168,7 @@ bool RISCVAsmPrinter::runOnMachineFunction(MachineFunction &MF) {
   // Set the current MCSubtargetInfo to a copy which has the correct
   // feature bits for the current MachineFunction
   MCSubtargetInfo &NewSTI =
-    OutStreamer->getContext().getSubtargetCopy(*TM.getMCSubtargetInfo());
+      OutStreamer->getContext().getSubtargetCopy(*TM.getMCSubtargetInfo());
   NewSTI.setFeatureBits(MF.getSubtarget().getFeatureBits());
   STI = &NewSTI;
 

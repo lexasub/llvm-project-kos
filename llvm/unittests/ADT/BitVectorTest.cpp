@@ -16,8 +16,7 @@ using namespace llvm;
 namespace {
 
 // Test fixture
-template <typename T>
-class BitVectorTest : public ::testing::Test { };
+template <typename T> class BitVectorTest : public ::testing::Test {};
 
 // Test both BitVector and SmallBitVector with the same suite of tests.
 typedef ::testing::Types<BitVector, SmallBitVector> BitVectorTestTypes;
@@ -781,7 +780,7 @@ TYPED_TEST(BitVectorTest, ProxyIndex) {
 
 TYPED_TEST(BitVectorTest, PortableBitMask) {
   TypeParam A;
-  const uint32_t Mask1[] = { 0x80000000, 6, 5 };
+  const uint32_t Mask1[] = {0x80000000, 6, 5};
 
   A.resize(10);
   A.setBitsInMask(Mask1, 1);
@@ -809,7 +808,7 @@ TYPED_TEST(BitVectorTest, PortableBitMask) {
   EXPECT_EQ(4u, A.count());
 
   A.setBitsNotInMask(Mask1, 1);
-  EXPECT_EQ(32u+3u, A.count());
+  EXPECT_EQ(32u + 3u, A.count());
 
   A.setBitsNotInMask(Mask1, 3);
   EXPECT_EQ(65u, A.count());
@@ -820,10 +819,10 @@ TYPED_TEST(BitVectorTest, PortableBitMask) {
   A.clear();
   A.resize(128);
   A.setBitsNotInMask(Mask1, 3);
-  EXPECT_EQ(96u-5u, A.count());
+  EXPECT_EQ(96u - 5u, A.count());
 
   A.clearBitsNotInMask(Mask1, 1);
-  EXPECT_EQ(64-4u, A.count());
+  EXPECT_EQ(64 - 4u, A.count());
 }
 
 TYPED_TEST(BitVectorTest, BinOps) {
@@ -984,9 +983,9 @@ TYPED_TEST(BitVectorTest, RangeOps) {
   A.set(1, 255);
 
   EXPECT_FALSE(A.test(0));
-  EXPECT_TRUE( A.test(1));
-  EXPECT_TRUE( A.test(23));
-  EXPECT_TRUE( A.test(254));
+  EXPECT_TRUE(A.test(1));
+  EXPECT_TRUE(A.test(23));
+  EXPECT_TRUE(A.test(254));
   EXPECT_FALSE(A.test(255));
 
   TypeParam B;
@@ -994,11 +993,11 @@ TYPED_TEST(BitVectorTest, RangeOps) {
   B.set();
   B.reset(1, 255);
 
-  EXPECT_TRUE( B.test(0));
+  EXPECT_TRUE(B.test(0));
   EXPECT_FALSE(B.test(1));
   EXPECT_FALSE(B.test(23));
   EXPECT_FALSE(B.test(254));
-  EXPECT_TRUE( B.test(255));
+  EXPECT_TRUE(B.test(255));
 
   TypeParam C;
   C.resize(3);
@@ -1006,8 +1005,8 @@ TYPED_TEST(BitVectorTest, RangeOps) {
   C.set(0, 1);
 
   EXPECT_TRUE(C.test(0));
-  EXPECT_FALSE( C.test(1));
-  EXPECT_FALSE( C.test(2));
+  EXPECT_FALSE(C.test(1));
+  EXPECT_FALSE(C.test(2));
 
   TypeParam D;
   D.resize(3);
@@ -1015,8 +1014,8 @@ TYPED_TEST(BitVectorTest, RangeOps) {
   D.reset(0, 1);
 
   EXPECT_FALSE(D.test(0));
-  EXPECT_TRUE( D.test(1));
-  EXPECT_TRUE( D.test(2));
+  EXPECT_TRUE(D.test(1));
+  EXPECT_TRUE(D.test(2));
 
   TypeParam E;
   E.resize(128);
@@ -1024,8 +1023,8 @@ TYPED_TEST(BitVectorTest, RangeOps) {
   E.set(1, 33);
 
   EXPECT_FALSE(E.test(0));
-  EXPECT_TRUE( E.test(1));
-  EXPECT_TRUE( E.test(32));
+  EXPECT_TRUE(E.test(1));
+  EXPECT_TRUE(E.test(32));
   EXPECT_FALSE(E.test(33));
 
   TypeParam BufferOverrun;
@@ -1096,8 +1095,7 @@ TYPED_TEST(BitVectorTest, MoveAssignment) {
   EXPECT_EQ(C, B);
 }
 
-template<class TypeParam>
-static void testEmpty(const TypeParam &A) {
+template <class TypeParam> static void testEmpty(const TypeParam &A) {
   EXPECT_TRUE(A.empty());
   EXPECT_EQ((size_t)0, A.size());
   EXPECT_EQ((size_t)0, A.count());

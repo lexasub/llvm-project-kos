@@ -77,8 +77,7 @@ static void Init() {
 #endif
 }
 
-__attribute__((section(".preinit_array"), used))
-void (*__local_test_preinit)(void) = Init;
+__attribute__((section(".preinit_array"), used)) void (*__local_test_preinit)(void) = Init;
 
 bool ExpectUserHandler() {
 #if defined(TEST_INSTALL_SIG_HANDLER) || defined(TEST_INSTALL_SIG_ACTION)

@@ -12,7 +12,7 @@ struct A {
 
 struct B {
   B(const A &a) : a(a) {}
-// CHECK-MESSAGES: :[[@LINE-1]]:5: warning: pass by value and use std::move [modernize-pass-by-value]
-// CHECK-FIXES: B(A a) : a(std::move(a)) {}
+  // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: pass by value and use std::move [modernize-pass-by-value]
+  // CHECK-FIXES: B(A a) : a(std::move(a)) {}
   A a;
 };

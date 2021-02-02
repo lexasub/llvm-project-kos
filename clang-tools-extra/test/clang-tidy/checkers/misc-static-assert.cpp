@@ -4,8 +4,8 @@ void abort() {}
 #ifdef NDEBUG
 #define assert(x) 1
 #else
-#define assert(x)                                                              \
-  if (!(x))                                                                    \
+#define assert(x) \
+  if (!(x))       \
   abort()
 #endif
 
@@ -34,7 +34,8 @@ public:
   constexpr bool method() { return true; }
 };
 
-template <class T> void doSomething(T t) {
+template <class T>
+void doSomething(T t) {
   assert(myfunc(1, 2));
   // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: found assert() that could be replaced by static_assert() [misc-static-assert]
   // CHECK-FIXES: {{^  }}static_assert(myfunc(1, 2), "");
@@ -85,7 +86,7 @@ int main() {
   assert(false && "Don't report me!");
   // CHECK-FIXES: {{^  }}assert(false && "Don't report me!");
 
-#define NULL ((void*)0)
+#define NULL ((void *)0)
   assert(NULL && "Don't report me!");
   // CHECK-FIXES: {{^  }}assert(NULL && "Don't report me!");
 
@@ -123,14 +124,14 @@ int main() {
   assert(false);
 #undef false
 
-  assert(10==5 && "Report me!");
+  assert(10 == 5 && "Report me!");
   // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: found assert() that could be
   // CHECK-FIXES: {{^  }}static_assert(10==5 , "Report me!");
 
   assert(strlen("12345") == 5);
   // CHECK-FIXES: {{^  }}assert(strlen("12345") == 5);
 
-#define assert(e) (__builtin_expect(!(e), 0) ? print (#e, __FILE__, __LINE__) : (void)0)
+#define assert(e) (__builtin_expect(!(e), 0) ? print(#e, __FILE__, __LINE__) : (void)0)
   assert(false);
   // CHECK-FIXES: {{^  }}assert(false);
 

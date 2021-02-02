@@ -11,11 +11,11 @@
 
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMap.h"
-#include "llvm/ADT/iterator_range.h"
 #include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/Twine.h"
+#include "llvm/ADT/iterator_range.h"
 #include "llvm/Option/Arg.h"
 #include "llvm/Option/OptSpecifier.h"
 #include "llvm/Option/Option.h"
@@ -36,8 +36,7 @@ class raw_ostream;
 namespace opt {
 
 /// arg_iterator - Iterates through arguments stored inside an ArgList.
-template<typename BaseIter, unsigned NumOptSpecifiers = 0>
-class arg_iterator {
+template <typename BaseIter, unsigned NumOptSpecifiers = 0> class arg_iterator {
   /// The current argument and the end of the sequence we're iterating.
   BaseIter Current, End;
 
@@ -122,9 +121,10 @@ public:
   using const_reverse_iterator =
       arg_iterator<arglist_type::const_reverse_iterator>;
 
-  template<unsigned N> using filtered_iterator =
-      arg_iterator<arglist_type::const_iterator, N>;
-  template<unsigned N> using filtered_reverse_iterator =
+  template <unsigned N>
+  using filtered_iterator = arg_iterator<arglist_type::const_iterator, N>;
+  template <unsigned N>
+  using filtered_reverse_iterator =
       arg_iterator<arglist_type::const_reverse_iterator, N>;
 
 private:
@@ -200,9 +200,9 @@ public:
   const_reverse_iterator rbegin() const { return {Args.rbegin(), Args.rend()}; }
   const_reverse_iterator rend() const { return {Args.rend(), Args.rend()}; }
 
-  template<typename ...OptSpecifiers>
+  template <typename... OptSpecifiers>
   iterator_range<filtered_iterator<sizeof...(OptSpecifiers)>>
-  filtered(OptSpecifiers ...Ids) const {
+  filtered(OptSpecifiers... Ids) const {
     OptRange Range = getRange({toOptSpecifier(Ids)...});
     auto B = Args.begin() + Range.first;
     auto E = Args.begin() + Range.second;
@@ -211,9 +211,9 @@ public:
                       Iterator(E, E, {toOptSpecifier(Ids)...}));
   }
 
-  template<typename ...OptSpecifiers>
+  template <typename... OptSpecifiers>
   iterator_range<filtered_reverse_iterator<sizeof...(OptSpecifiers)>>
-  filtered_reverse(OptSpecifiers ...Ids) const {
+  filtered_reverse(OptSpecifiers... Ids) const {
     OptRange Range = getRange({toOptSpecifier(Ids)...});
     auto B = Args.rend() - Range.second;
     auto E = Args.rend() - Range.first;
@@ -236,18 +236,17 @@ public:
   /// hasArg - Does the arg list contain any option matching \p Id.
   ///
   /// \p Claim Whether the argument should be claimed, if it exists.
-  template<typename ...OptSpecifiers>
-  bool hasArgNoClaim(OptSpecifiers ...Ids) const {
+  template <typename... OptSpecifiers>
+  bool hasArgNoClaim(OptSpecifiers... Ids) const {
     return getLastArgNoClaim(Ids...) != nullptr;
   }
-  template<typename ...OptSpecifiers>
-  bool hasArg(OptSpecifiers ...Ids) const {
+  template <typename... OptSpecifiers> bool hasArg(OptSpecifiers... Ids) const {
     return getLastArg(Ids...) != nullptr;
   }
 
   /// Return the last argument matching \p Id, or null.
-  template<typename ...OptSpecifiers>
-  Arg *getLastArg(OptSpecifiers ...Ids) const {
+  template <typename... OptSpecifiers>
+  Arg *getLastArg(OptSpecifiers... Ids) const {
     Arg *Res = nullptr;
     for (Arg *A : filtered(Ids...)) {
       Res = A;
@@ -258,8 +257,8 @@ public:
 
   /// Return the last argument matching \p Id, or null. Do not "claim" the
   /// option (don't mark it as having been used).
-  template<typename ...OptSpecifiers>
-  Arg *getLastArgNoClaim(OptSpecifiers ...Ids) const {
+  template <typename... OptSpecifiers>
+  Arg *getLastArgNoClaim(OptSpecifiers... Ids) const {
     for (Arg *A : filtered_reverse(Ids...))
       return A;
     return nullptr;
@@ -292,7 +291,7 @@ public:
   /// true if the option is present, false if the negation is present, and
   /// \p Default if neither option is given. If both the option and its
   /// negation are present, the last one wins.
-  bool hasFlag(OptSpecifier Pos, OptSpecifier Neg, bool Default=true) const;
+  bool hasFlag(OptSpecifier Pos, OptSpecifier Neg, bool Default = true) const;
 
   /// hasFlag - Given an option \p Pos, an alias \p PosAlias and its negative
   /// form \p Neg, return true if the option or its alias is present, false if
@@ -302,8 +301,8 @@ public:
                bool Default = true) const;
 
   /// Render only the last argument match \p Id0, if present.
-  template<typename ...OptSpecifiers>
-  void AddLastArg(ArgStringList &Output, OptSpecifiers ...Ids) const {
+  template <typename... OptSpecifiers>
+  void AddLastArg(ArgStringList &Output, OptSpecifiers... Ids) const {
     if (Arg *A = getLastArg(Ids...)) // Calls claim() on all Ids's Args.
       A->render(*this, Output);
   }
@@ -331,8 +330,7 @@ public:
   /// \param Joined - If true, render the argument as joined with
   /// the option specifier.
   void AddAllArgsTranslated(ArgStringList &Output, OptSpecifier Id0,
-                            const char *Translation,
-                            bool Joined = false) const;
+                            const char *Translation, bool Joined = false) const;
 
   /// ClaimAllArgs - Claim all arguments which match the given
   /// option id.
@@ -357,7 +355,7 @@ public:
   /// Create an arg string for (\p LHS + \p RHS), reusing the
   /// string at \p Index if possible.
   const char *GetOrMakeJoinedArgString(unsigned Index, StringRef LHS,
-                                        StringRef RHS) const;
+                                       StringRef RHS) const;
 
   void print(raw_ostream &O) const;
   void dump() const;
@@ -390,7 +388,7 @@ private:
 public:
   InputArgList() : NumInputArgStrings(0) {}
 
-  InputArgList(const char* const *ArgBegin, const char* const *ArgEnd);
+  InputArgList(const char *const *ArgBegin, const char *const *ArgEnd);
 
   InputArgList(InputArgList &&RHS)
       : ArgList(std::move(RHS)), ArgStrings(std::move(RHS.ArgStrings)),
@@ -416,9 +414,7 @@ public:
     ArgStrings[Index] = MakeArgString(S);
   }
 
-  unsigned getNumInputArgStrings() const override {
-    return NumInputArgStrings;
-  }
+  unsigned getNumInputArgStrings() const override { return NumInputArgStrings; }
 
   /// @name Arg Synthesis
   /// @{
@@ -454,9 +450,7 @@ public:
     return BaseArgs.getNumInputArgStrings();
   }
 
-  const InputArgList &getBaseArgs() const {
-    return BaseArgs;
-  }
+  const InputArgList &getBaseArgs() const { return BaseArgs; }
 
   /// @name Arg Synthesis
   /// @{
@@ -477,23 +471,20 @@ public:
   /// AddPositionalArg - Construct a new Positional arg for the given option
   /// \p Id, with the provided \p Value and append it to the argument
   /// list.
-  void AddPositionalArg(const Arg *BaseArg, const Option Opt,
-                        StringRef Value) {
+  void AddPositionalArg(const Arg *BaseArg, const Option Opt, StringRef Value) {
     append(MakePositionalArg(BaseArg, Opt, Value));
   }
 
   /// AddSeparateArg - Construct a new Positional arg for the given option
   /// \p Id, with the provided \p Value and append it to the argument
   /// list.
-  void AddSeparateArg(const Arg *BaseArg, const Option Opt,
-                      StringRef Value) {
+  void AddSeparateArg(const Arg *BaseArg, const Option Opt, StringRef Value) {
     append(MakeSeparateArg(BaseArg, Opt, Value));
   }
 
   /// AddJoinedArg - Construct a new Positional arg for the given option
   /// \p Id, with the provided \p Value and append it to the argument list.
-  void AddJoinedArg(const Arg *BaseArg, const Option Opt,
-                    StringRef Value) {
+  void AddJoinedArg(const Arg *BaseArg, const Option Opt, StringRef Value) {
     append(MakeJoinedArg(BaseArg, Opt, Value));
   }
 
@@ -503,17 +494,17 @@ public:
   /// MakePositionalArg - Construct a new Positional arg for the
   /// given option \p Id, with the provided \p Value.
   Arg *MakePositionalArg(const Arg *BaseArg, const Option Opt,
-                          StringRef Value) const;
+                         StringRef Value) const;
 
   /// MakeSeparateArg - Construct a new Positional arg for the
   /// given option \p Id, with the provided \p Value.
   Arg *MakeSeparateArg(const Arg *BaseArg, const Option Opt,
-                        StringRef Value) const;
+                       StringRef Value) const;
 
   /// MakeJoinedArg - Construct a new Positional arg for the
   /// given option \p Id, with the provided \p Value.
   Arg *MakeJoinedArg(const Arg *BaseArg, const Option Opt,
-                      StringRef Value) const;
+                     StringRef Value) const;
 
   /// @}
 };

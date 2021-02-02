@@ -36,7 +36,7 @@ namespace llvm {
 class StringRef;
 
 class TrigramIndex {
- public:
+public:
   /// Inserts a new Regex into the index.
   void insert(const std::string &Regex);
 
@@ -47,7 +47,8 @@ class TrigramIndex {
   /// Returned true, iff the heuristic is defeated and not useful.
   /// In this case isDefinitelyOut always returns false.
   bool isDefeated() { return Defeated; }
- private:
+
+private:
   // If true, the rules are too complicated for the check to work, and full
   // regex matching is needed for every rule.
   bool Defeated = false;
@@ -63,6 +64,6 @@ class TrigramIndex {
   std::unordered_map<unsigned, SmallVector<size_t, 4>> Index{256};
 };
 
-}  // namespace llvm
+} // namespace llvm
 
-#endif  // LLVM_SUPPORT_TRIGRAMINDEX_H
+#endif // LLVM_SUPPORT_TRIGRAMINDEX_H

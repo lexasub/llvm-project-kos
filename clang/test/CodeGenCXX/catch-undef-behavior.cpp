@@ -175,8 +175,10 @@ bool sour_bool(bool *p) {
   return *p;
 }
 
-enum E1 { e1a = 0, e1b = 127 } e1;
-enum E2 { e2a = -1, e2b = 64 } e2;
+enum E1 { e1a = 0,
+          e1b = 127 } e1;
+enum E2 { e2a = -1,
+          e2b = 64 } e2;
 enum E3 { e3a = (1u << 31) - 1 } e3;
 
 // CHECK-LABEL: @_Z14bad_enum_value
@@ -224,7 +226,7 @@ void bad_downcast_pointer(S *p) {
 
   // CHECK: call void @__ubsan_handle_dynamic_type_cache_miss
   // CHECK: br label
-  (void) static_cast<T*>(p);
+  (void)static_cast<T *>(p);
 }
 
 // CHECK-LABEL: @_Z22bad_downcast_reference
@@ -249,7 +251,7 @@ void bad_downcast_reference(S &p) {
 
   // CHECK: call void @__ubsan_handle_dynamic_type_cache_miss
   // CHECK: br label
-  (void) static_cast<T&>(p);
+  (void)static_cast<T &>(p);
 }
 
 // CHECK-LABEL: @_Z11array_index
@@ -369,7 +371,7 @@ class C : public A, public B // align=16
 
 // CHECK-LABEL: define{{.*}} void @_Z16downcast_pointerP1B(%class.B* %b)
 void downcast_pointer(B *b) {
-  (void) static_cast<C*>(b);
+  (void)static_cast<C *>(b);
   // Alignment check from EmitTypeCheck(TCK_DowncastPointer, ...)
   // CHECK: [[SUB:%[.a-z0-9]*]] = getelementptr inbounds i8, i8* {{.*}}, i64 -16
   // CHECK-NEXT: [[C:%.+]] = bitcast i8* [[SUB]] to %class.C*
@@ -386,7 +388,7 @@ void downcast_pointer(B *b) {
 
 // CHECK-LABEL: define{{.*}} void @_Z18downcast_referenceR1B(%class.B* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %b)
 void downcast_reference(B &b) {
-  (void) static_cast<C&>(b);
+  (void)static_cast<C &>(b);
   // Alignment check from EmitTypeCheck(TCK_DowncastReference, ...)
   // CHECK:      [[SUB:%[.a-z0-9]*]] = getelementptr inbounds i8, i8* {{.*}}, i64 -16
   // CHECK-NEXT: [[C:%.+]] = bitcast i8* [[SUB]] to %class.C*
@@ -427,32 +429,37 @@ void indirect_function_call(void (*p)(int)) {
 }
 
 namespace VBaseObjectSize {
-  // Note: C is laid out such that offsetof(C, B) + sizeof(B) extends outside
-  // the C object.
-  struct alignas(16) A { void *a1, *a2; };
-  struct B : virtual A { void *b; void* g(); };
-  struct C : virtual A, virtual B { };
-  // CHECK-LABEL: define {{.*}} @_ZN15VBaseObjectSize1fERNS_1BE(
-  B &f(B &b) {
-    // Size check: check for nvsize(B) == 16 (do not require size(B) == 32)
-    // CHECK: [[SIZE:%.+]] = call i{{32|64}} @llvm.objectsize.i64.p0i8(
-    // CHECK: icmp uge i{{32|64}} [[SIZE]], 16,
+// Note: C is laid out such that offsetof(C, B) + sizeof(B) extends outside
+// the C object.
+struct alignas(16) A {
+  void *a1, *a2;
+};
+struct B : virtual A {
+  void *b;
+  void *g();
+};
+struct C : virtual A, virtual B {};
+// CHECK-LABEL: define {{.*}} @_ZN15VBaseObjectSize1fERNS_1BE(
+B &f(B &b) {
+  // Size check: check for nvsize(B) == 16 (do not require size(B) == 32)
+  // CHECK: [[SIZE:%.+]] = call i{{32|64}} @llvm.objectsize.i64.p0i8(
+  // CHECK: icmp uge i{{32|64}} [[SIZE]], 16,
 
-    // Alignment check: check for nvalign(B) == 8 (do not require align(B) == 16)
-    // CHECK: [[PTRTOINT:%.+]] = ptrtoint {{.*}} to i64,
-    // CHECK: and i64 [[PTRTOINT]], 7,
-    return b;
-  }
-
-  // CHECK-LABEL: define {{.*}} @_ZN15VBaseObjectSize1B1gEv(
-  void *B::g() {
-    // Ensure that the check on the "this" pointer also uses the proper
-    // alignment. We should be using nvalign(B) == 8, not 16.
-    // CHECK: [[PTRTOINT:%.+]] = ptrtoint {{.*}} to i64,
-    // CHECK: and i64 [[PTRTOINT]], 7
-    return nullptr;
-  }
+  // Alignment check: check for nvalign(B) == 8 (do not require align(B) == 16)
+  // CHECK: [[PTRTOINT:%.+]] = ptrtoint {{.*}} to i64,
+  // CHECK: and i64 [[PTRTOINT]], 7,
+  return b;
 }
+
+// CHECK-LABEL: define {{.*}} @_ZN15VBaseObjectSize1B1gEv(
+void *B::g() {
+  // Ensure that the check on the "this" pointer also uses the proper
+  // alignment. We should be using nvalign(B) == 8, not 16.
+  // CHECK: [[PTRTOINT:%.+]] = ptrtoint {{.*}} to i64,
+  // CHECK: and i64 [[PTRTOINT]], 7
+  return nullptr;
+}
+} // namespace VBaseObjectSize
 
 namespace FunctionSanitizerVirtualCalls {
 struct A {
@@ -512,15 +519,17 @@ void force_irgen() {
 // CHECK-LABEL: define linkonce_odr void @_ZN29FunctionSanitizerVirtualCalls1B1qEv
 // CHECK: prologue
 
-}
+} // namespace FunctionSanitizerVirtualCalls
 
 namespace UpcastPointerTest {
 struct S {};
-struct T : S { double d; };
+struct T : S {
+  double d;
+};
 struct V : virtual S {};
 
 // CHECK-LABEL: upcast_pointer
-S* upcast_pointer(T* t) {
+S *upcast_pointer(T *t) {
   // Check for null pointer
   // CHECK: %[[NONNULL:.*]] = icmp ne {{.*}}, null
   // CHECK: br i1 %[[NONNULL]]
@@ -544,95 +553,97 @@ void upcast_to_vbase() {
   // CHECK: call i64 @llvm.objectsize
   // CHECK: call void @__ubsan_handle_type_mismatch
   // CHECK: call void @__ubsan_handle_dynamic_type_cache_miss
-  const S& s = getV();
+  const S &s = getV();
 }
-}
+} // namespace UpcastPointerTest
 
 struct nothrow {};
 void *operator new[](__SIZE_TYPE__, nothrow) noexcept;
 
 namespace NothrowNew {
-  struct X { X(); };
+struct X {
+  X();
+};
 
-  // CHECK-LABEL: define{{.*}}nothrow_new_trivial
-  void *nothrow_new_trivial() {
-    // CHECK: %[[is_null:.*]] = icmp eq i8*{{.*}}, null
-    // CHECK: br i1 %[[is_null]], label %[[null:.*]], label %[[nonnull:.*]]
+// CHECK-LABEL: define{{.*}}nothrow_new_trivial
+void *nothrow_new_trivial() {
+  // CHECK: %[[is_null:.*]] = icmp eq i8*{{.*}}, null
+  // CHECK: br i1 %[[is_null]], label %[[null:.*]], label %[[nonnull:.*]]
 
-    // CHECK: [[nonnull]]:
-    // CHECK: llvm.objectsize
-    // CHECK: icmp uge i64 {{.*}}, 123456,
-    // CHECK: br i1
-    //
-    // CHECK: call {{.*}}__ubsan_handle_type_mismatch
-    //
-    // CHECK: [[null]]:
-    // CHECK-NOT: {{ }}br{{ }}
-    // CHECK: ret
-    return new (nothrow{}) char[123456];
-  }
-
-  // CHECK-LABEL: define{{.*}}nothrow_new_nontrivial
-  void *nothrow_new_nontrivial() {
-    // CHECK: %[[is_null:.*]] = icmp eq i8*{{.*}}, null
-    // CHECK: br i1 %[[is_null]], label %[[null:.*]], label %[[nonnull:.*]]
-
-    // CHECK: [[nonnull]]:
-    // CHECK: llvm.objectsize
-    // CHECK: icmp uge i64 {{.*}}, 123456,
-    // CHECK: br i1
-    //
-    // CHECK: call {{.*}}__ubsan_handle_type_mismatch
-    //
-    // CHECK: call {{.*}}_ZN10NothrowNew1XC1Ev
-    //
-    // CHECK: [[null]]:
-    // CHECK-NOT: {{ }}br{{ }}
-    // CHECK: ret
-    return new (nothrow{}) X[123456];
-  }
-
-  // CHECK-LABEL: define{{.*}}throwing_new
-  void *throwing_new(int size) {
-    // CHECK: icmp ne i8*{{.*}}, null
-    // CHECK: %[[size:.*]] = mul
-    // CHECK: llvm.objectsize
-    // CHECK: icmp uge i64 {{.*}}, %[[size]],
-    // CHECK: %[[ok:.*]] = and
-    // CHECK: br i1 %[[ok]], label %[[good:.*]], label %[[bad:[^,]*]]
-    //
-    // CHECK: [[bad]]:
-    // CHECK: call {{.*}}__ubsan_handle_type_mismatch
-    //
-    // CHECK: [[good]]:
-    // CHECK-NOT: {{ }}br{{ }}
-    // CHECK: ret
-    return new char[size];
-  }
-
-  // CHECK-LABEL: define{{.*}}nothrow_new_zero_size
-  void *nothrow_new_zero_size() {
-    // CHECK: %[[nonnull:.*]] = icmp ne i8*{{.*}}, null
-    // CHECK-NOT: llvm.objectsize
-    // CHECK: br i1 %[[nonnull]], label %[[good:.*]], label %[[bad:[^,]*]]
-    //
-    // CHECK: [[bad]]:
-    // CHECK: call {{.*}}__ubsan_handle_type_mismatch
-    //
-    // CHECK: [[good]]:
-    // CHECK-NOT: {{ }}br{{ }}
-    // CHECK: ret
-    return new char[0];
-  }
-
-  // CHECK-LABEL: define{{.*}}throwing_new_zero_size
-  void *throwing_new_zero_size() {
-    // Nothing to check here.
-    // CHECK-NOT: __ubsan_handle_type_mismatch
-    return new (nothrow{}) char[0];
-    // CHECK: ret
-  }
+  // CHECK: [[nonnull]]:
+  // CHECK: llvm.objectsize
+  // CHECK: icmp uge i64 {{.*}}, 123456,
+  // CHECK: br i1
+  //
+  // CHECK: call {{.*}}__ubsan_handle_type_mismatch
+  //
+  // CHECK: [[null]]:
+  // CHECK-NOT: {{ }}br{{ }}
+  // CHECK: ret
+  return new (nothrow{}) char[123456];
 }
+
+// CHECK-LABEL: define{{.*}}nothrow_new_nontrivial
+void *nothrow_new_nontrivial() {
+  // CHECK: %[[is_null:.*]] = icmp eq i8*{{.*}}, null
+  // CHECK: br i1 %[[is_null]], label %[[null:.*]], label %[[nonnull:.*]]
+
+  // CHECK: [[nonnull]]:
+  // CHECK: llvm.objectsize
+  // CHECK: icmp uge i64 {{.*}}, 123456,
+  // CHECK: br i1
+  //
+  // CHECK: call {{.*}}__ubsan_handle_type_mismatch
+  //
+  // CHECK: call {{.*}}_ZN10NothrowNew1XC1Ev
+  //
+  // CHECK: [[null]]:
+  // CHECK-NOT: {{ }}br{{ }}
+  // CHECK: ret
+  return new (nothrow{}) X[123456];
+}
+
+// CHECK-LABEL: define{{.*}}throwing_new
+void *throwing_new(int size) {
+  // CHECK: icmp ne i8*{{.*}}, null
+  // CHECK: %[[size:.*]] = mul
+  // CHECK: llvm.objectsize
+  // CHECK: icmp uge i64 {{.*}}, %[[size]],
+  // CHECK: %[[ok:.*]] = and
+  // CHECK: br i1 %[[ok]], label %[[good:.*]], label %[[bad:[^,]*]]
+  //
+  // CHECK: [[bad]]:
+  // CHECK: call {{.*}}__ubsan_handle_type_mismatch
+  //
+  // CHECK: [[good]]:
+  // CHECK-NOT: {{ }}br{{ }}
+  // CHECK: ret
+  return new char[size];
+}
+
+// CHECK-LABEL: define{{.*}}nothrow_new_zero_size
+void *nothrow_new_zero_size() {
+  // CHECK: %[[nonnull:.*]] = icmp ne i8*{{.*}}, null
+  // CHECK-NOT: llvm.objectsize
+  // CHECK: br i1 %[[nonnull]], label %[[good:.*]], label %[[bad:[^,]*]]
+  //
+  // CHECK: [[bad]]:
+  // CHECK: call {{.*}}__ubsan_handle_type_mismatch
+  //
+  // CHECK: [[good]]:
+  // CHECK-NOT: {{ }}br{{ }}
+  // CHECK: ret
+  return new char[0];
+}
+
+// CHECK-LABEL: define{{.*}}throwing_new_zero_size
+void *throwing_new_zero_size() {
+  // Nothing to check here.
+  // CHECK-NOT: __ubsan_handle_type_mismatch
+  return new (nothrow{}) char[0];
+  // CHECK: ret
+}
+} // namespace NothrowNew
 
 struct ThisAlign {
   void this_align_lambda();
@@ -653,91 +664,96 @@ void ThisAlign::this_align_lambda() {
   // CHECK: %[[this_inner_isaligned:.*]] = icmp eq i{{32|64}} %[[this_inner_misalignment]], 0
   // CHECK: %[[this_inner_valid:.*]] = and i1 %[[this_inner_isnonnull]], %[[this_inner_isaligned]],
   // CHECK: br i1 %[[this_inner_valid:.*]]
-  [&] { return this; } ();
+  [&] { return this; }();
 }
 
 namespace CopyValueRepresentation {
-  // CHECK-LABEL: define {{.*}} @_ZN23CopyValueRepresentation2S3aSERKS0_
-  // CHECK-NOT: call {{.*}} @__ubsan_handle_load_invalid_value
-  // CHECK-LABEL: define {{.*}} @_ZN23CopyValueRepresentation2S4aSEOS0_
-  // CHECK-NOT: call {{.*}} @__ubsan_handle_load_invalid_value
-  // CHECK-LABEL: define {{.*}} @_ZN23CopyValueRepresentation2S1C2ERKS0_
-  // CHECK-NOT: call {{.*}} __ubsan_handle_load_invalid_value
-  // CHECK-LABEL: define {{.*}} @_ZN23CopyValueRepresentation2S2C2ERKS0_
-  // CHECK: __ubsan_handle_load_invalid_value
-  // CHECK-LABEL: define {{.*}} @_ZN23CopyValueRepresentation2S5C2ERKS0_
-  // CHECK-NOT: call {{.*}} __ubsan_handle_load_invalid_value
+// CHECK-LABEL: define {{.*}} @_ZN23CopyValueRepresentation2S3aSERKS0_
+// CHECK-NOT: call {{.*}} @__ubsan_handle_load_invalid_value
+// CHECK-LABEL: define {{.*}} @_ZN23CopyValueRepresentation2S4aSEOS0_
+// CHECK-NOT: call {{.*}} @__ubsan_handle_load_invalid_value
+// CHECK-LABEL: define {{.*}} @_ZN23CopyValueRepresentation2S1C2ERKS0_
+// CHECK-NOT: call {{.*}} __ubsan_handle_load_invalid_value
+// CHECK-LABEL: define {{.*}} @_ZN23CopyValueRepresentation2S2C2ERKS0_
+// CHECK: __ubsan_handle_load_invalid_value
+// CHECK-LABEL: define {{.*}} @_ZN23CopyValueRepresentation2S5C2ERKS0_
+// CHECK-NOT: call {{.*}} __ubsan_handle_load_invalid_value
 
-  struct CustomCopy { CustomCopy(); CustomCopy(const CustomCopy&); };
-  struct S1 {
-    CustomCopy CC;
-    bool b;
-  };
-  void callee1(S1);
-  void test1() {
-    S1 s11;
-    callee1(s11);
-    S1 s12;
-    s12 = s11;
-  }
-
-  static bool some_global_bool;
-  struct ExprCopy {
-    ExprCopy();
-    ExprCopy(const ExprCopy&, bool b = some_global_bool);
-  };
-  struct S2 {
-    ExprCopy EC;
-    bool b;
-  };
-  void callee2(S2);
-  void test2(void) {
-    S2 s21;
-    callee2(s21);
-    S2 s22;
-    s22 = s21;
-  }
-
-  struct CustomAssign { CustomAssign &operator=(const CustomAssign&); };
-  struct S3 {
-    CustomAssign CA;
-    bool b;
-  };
-  void test3() {
-    S3 x, y;
-    x = y;
-  }
-
-  struct CustomMove {
-    CustomMove();
-    CustomMove(const CustomMove&&);
-    CustomMove &operator=(const CustomMove&&);
-  };
-  struct S4 {
-    CustomMove CM;
-    bool b;
-  };
-  void test4() {
-    S4 x, y;
-    x = static_cast<S4&&>(y);
-  }
-
-  struct EnumCustomCopy {
-    EnumCustomCopy();
-    EnumCustomCopy(const EnumCustomCopy&);
-  };
-  struct S5 {
-    EnumCustomCopy ECC;
-    bool b;
-  };
-  void callee5(S5);
-  void test5() {
-    S5 s51;
-    callee5(s51);
-    S5 s52;
-    s52 = s51;
-  }
+struct CustomCopy {
+  CustomCopy();
+  CustomCopy(const CustomCopy &);
+};
+struct S1 {
+  CustomCopy CC;
+  bool b;
+};
+void callee1(S1);
+void test1() {
+  S1 s11;
+  callee1(s11);
+  S1 s12;
+  s12 = s11;
 }
+
+static bool some_global_bool;
+struct ExprCopy {
+  ExprCopy();
+  ExprCopy(const ExprCopy &, bool b = some_global_bool);
+};
+struct S2 {
+  ExprCopy EC;
+  bool b;
+};
+void callee2(S2);
+void test2(void) {
+  S2 s21;
+  callee2(s21);
+  S2 s22;
+  s22 = s21;
+}
+
+struct CustomAssign {
+  CustomAssign &operator=(const CustomAssign &);
+};
+struct S3 {
+  CustomAssign CA;
+  bool b;
+};
+void test3() {
+  S3 x, y;
+  x = y;
+}
+
+struct CustomMove {
+  CustomMove();
+  CustomMove(const CustomMove &&);
+  CustomMove &operator=(const CustomMove &&);
+};
+struct S4 {
+  CustomMove CM;
+  bool b;
+};
+void test4() {
+  S4 x, y;
+  x = static_cast<S4 &&>(y);
+}
+
+struct EnumCustomCopy {
+  EnumCustomCopy();
+  EnumCustomCopy(const EnumCustomCopy &);
+};
+struct S5 {
+  EnumCustomCopy ECC;
+  bool b;
+};
+void callee5(S5);
+void test5() {
+  S5 s51;
+  callee5(s51);
+  S5 s52;
+  s52 = s51;
+}
+} // namespace CopyValueRepresentation
 
 void ThisAlign::this_align_lambda_2() {
   // CHECK-LABEL: define internal void @"_ZZN9ThisAlign19this_align_lambda_2EvENK3$_1clEv"

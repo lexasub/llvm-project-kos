@@ -19,7 +19,7 @@ struct B : A {
 SA(1, sizeof(B) == 12);
 
 struct C {
-// Make fields private so C won't be a POD type.
+  // Make fields private so C won't be a POD type.
 private:
   int a;
   char b;
@@ -46,8 +46,10 @@ struct __attribute__((packed)) F : E {
 
 SA(5, sizeof(F) == 6);
 
-struct G { G(); };
-struct H : G { };
+struct G {
+  G();
+};
+struct H : G {};
 
 SA(6, sizeof(H) == 1);
 
@@ -61,546 +63,565 @@ SA(6_1, sizeof(I) == 5);
 // PR5580
 namespace PR5580 {
 
-class A { bool iv0 : 1; };
-SA(7, sizeof(A) == 1);  
+class A {
+  bool iv0 : 1;
+};
+SA(7, sizeof(A) == 1);
 
-class B : A { bool iv0 : 1; };
+class B : A {
+  bool iv0 : 1;
+};
 SA(8, sizeof(B) == 2);
 
-struct C { bool iv0 : 1; };
-SA(9, sizeof(C) == 1);  
+struct C {
+  bool iv0 : 1;
+};
+SA(9, sizeof(C) == 1);
 
-struct D : C { bool iv0 : 1; };
+struct D : C {
+  bool iv0 : 1;
+};
 SA(10, sizeof(D) == 2);
 
-}
+} // namespace PR5580
 
 namespace Test1 {
 
 // Test that we don't assert on this hierarchy.
-struct A { };
-struct B : A { virtual void b(); };
-class C : virtual A { int c; };
-struct D : virtual B { };
-struct E : C, virtual D { };
-class F : virtual E { };
-struct G : virtual E, F { };
+struct A {};
+struct B : A {
+  virtual void b();
+};
+class C : virtual A {
+  int c;
+};
+struct D : virtual B {};
+struct E : C, virtual D {};
+class F : virtual E {};
+struct G : virtual E, F {};
 
 SA(0, sizeof(G) == 24);
 
-}
+} // namespace Test1
 
 namespace Test2 {
 
 // Test that this somewhat complex class structure is laid out correctly.
-struct A { };
-struct B : A { virtual void b(); };
-struct C : virtual B { };
-struct D : virtual A { };
-struct E : virtual B, D { };
-struct F : E, virtual C { };
-struct G : virtual F, A { };
-struct H { G g; };
+struct A {};
+struct B : A {
+  virtual void b();
+};
+struct C : virtual B {};
+struct D : virtual A {};
+struct E : virtual B, D {};
+struct F : E, virtual C {};
+struct G : virtual F, A {};
+struct H {
+  G g;
+};
 
 SA(0, sizeof(H) == 24);
 
-}
+} // namespace Test2
 
 namespace PR16537 {
 namespace test1 {
-  struct pod_in_11_only {
-  private:
-    long long x;
-  };
-   
-  struct tail_padded_pod_in_11_only {
-    pod_in_11_only pod11;
-    char tail_padding;
-  };
-    
-  struct might_use_tail_padding : public tail_padded_pod_in_11_only {
-    char may_go_into_tail_padding;
-  };
+struct pod_in_11_only {
+private:
+  long long x;
+};
 
-  SA(0, sizeof(might_use_tail_padding) == 16);
-}
+struct tail_padded_pod_in_11_only {
+  pod_in_11_only pod11;
+  char tail_padding;
+};
+
+struct might_use_tail_padding : public tail_padded_pod_in_11_only {
+  char may_go_into_tail_padding;
+};
+
+SA(0, sizeof(might_use_tail_padding) == 16);
+} // namespace test1
 
 namespace test2 {
-  struct pod_in_11_only {
-  private:
-    long long x;
-  };
-   
-  struct tail_padded_pod_in_11_only {
-    pod_in_11_only pod11 __attribute__((aligned(16)));
-  };
-    
-  struct might_use_tail_padding : public tail_padded_pod_in_11_only {
-    char may_go_into_tail_padding;
-  };
+struct pod_in_11_only {
+private:
+  long long x;
+};
 
-  SA(0, sizeof(might_use_tail_padding) == 16);
-}
+struct tail_padded_pod_in_11_only {
+  pod_in_11_only pod11 __attribute__((aligned(16)));
+};
+
+struct might_use_tail_padding : public tail_padded_pod_in_11_only {
+  char may_go_into_tail_padding;
+};
+
+SA(0, sizeof(might_use_tail_padding) == 16);
+} // namespace test2
 
 namespace test3 {
-  struct pod_in_11_only {
-  private:
-    long long x;
-  };
-   
-  struct tail_padded_pod_in_11_only {
-    pod_in_11_only pod11;
-    char tail_padding;
-  };
+struct pod_in_11_only {
+private:
+  long long x;
+};
 
-  struct second_base {
-      char foo;
-  };
-    
-  struct might_use_tail_padding : public tail_padded_pod_in_11_only, public second_base {
+struct tail_padded_pod_in_11_only {
+  pod_in_11_only pod11;
+  char tail_padding;
+};
 
-  };
-  SA(0, sizeof(might_use_tail_padding) == 16);
-}
+struct second_base {
+  char foo;
+};
+
+struct might_use_tail_padding : public tail_padded_pod_in_11_only, public second_base {
+};
+SA(0, sizeof(might_use_tail_padding) == 16);
+} // namespace test3
 
 namespace test4 {
-  struct pod_in_11_only {
-  private:
-    long long x;
-  };
-   
-  struct tail_padded_pod_in_11_only {
-    pod_in_11_only pod11;
-    char tail_padding;
-  };
+struct pod_in_11_only {
+private:
+  long long x;
+};
 
-  struct second_base {
-    char foo;
-  };
-    
-  struct might_use_tail_padding : public tail_padded_pod_in_11_only, public second_base {
-    char may_go_into_tail_padding;
-  };
-  SA(0, sizeof(might_use_tail_padding) == 16);
-}
+struct tail_padded_pod_in_11_only {
+  pod_in_11_only pod11;
+  char tail_padding;
+};
+
+struct second_base {
+  char foo;
+};
+
+struct might_use_tail_padding : public tail_padded_pod_in_11_only, public second_base {
+  char may_go_into_tail_padding;
+};
+SA(0, sizeof(might_use_tail_padding) == 16);
+} // namespace test4
 
 namespace test5 {
-  struct pod_in_11_only {
-  private:
-    long long x;
-  };
+struct pod_in_11_only {
+private:
+  long long x;
+};
 
-  struct pod_in_11_only2 {
-  private:
-    long long x;
-  };
-   
-  struct tail_padded_pod_in_11_only {
-    pod_in_11_only pod11;
-    char tail_padding;
-  };
+struct pod_in_11_only2 {
+private:
+  long long x;
+};
 
-  struct second_base {
-    pod_in_11_only2 two;
-    char foo;
-  };
-    
-  struct might_use_tail_padding : public tail_padded_pod_in_11_only, public second_base {
-    char may_go_into_tail_padding;
-  };
-  SA(0, sizeof(might_use_tail_padding) == 32);
-}
+struct tail_padded_pod_in_11_only {
+  pod_in_11_only pod11;
+  char tail_padding;
+};
+
+struct second_base {
+  pod_in_11_only2 two;
+  char foo;
+};
+
+struct might_use_tail_padding : public tail_padded_pod_in_11_only, public second_base {
+  char may_go_into_tail_padding;
+};
+SA(0, sizeof(might_use_tail_padding) == 32);
+} // namespace test5
 
 namespace test6 {
-  struct pod_in_11_only {
-  private:
-    long long x;
-  };
+struct pod_in_11_only {
+private:
+  long long x;
+};
 
-  struct pod_in_11_only2 {
-  private:
-    long long x;
-  };
-   
-  struct tail_padded_pod_in_11_only {
-    pod_in_11_only pod11;
-    char tail_padding;
-  };
+struct pod_in_11_only2 {
+private:
+  long long x;
+};
 
-  struct second_base {
-    pod_in_11_only2 two;
-    char foo;
-  };
-    
-  struct might_use_tail_padding : public tail_padded_pod_in_11_only, public second_base {
-    char may_go_into_tail_padding;
-  };
-  SA(0, sizeof(might_use_tail_padding) == 32);
-}
+struct tail_padded_pod_in_11_only {
+  pod_in_11_only pod11;
+  char tail_padding;
+};
+
+struct second_base {
+  pod_in_11_only2 two;
+  char foo;
+};
+
+struct might_use_tail_padding : public tail_padded_pod_in_11_only, public second_base {
+  char may_go_into_tail_padding;
+};
+SA(0, sizeof(might_use_tail_padding) == 32);
+} // namespace test6
 
 namespace test7 {
-  struct pod_in_11_only {
-  private:
-    long long x;
-  };
-   
-  struct tail_padded_pod_in_11_only {
-    pod_in_11_only pod11;
-    pod_in_11_only pod12;
-    char tail_padding;
-  };
-    
-  struct might_use_tail_padding : public tail_padded_pod_in_11_only {
-    char may_go_into_tail_padding;
-  };
+struct pod_in_11_only {
+private:
+  long long x;
+};
 
-  SA(0, sizeof(might_use_tail_padding) == 24);
-}
+struct tail_padded_pod_in_11_only {
+  pod_in_11_only pod11;
+  pod_in_11_only pod12;
+  char tail_padding;
+};
+
+struct might_use_tail_padding : public tail_padded_pod_in_11_only {
+  char may_go_into_tail_padding;
+};
+
+SA(0, sizeof(might_use_tail_padding) == 24);
+} // namespace test7
 
 namespace test8 {
-  struct pod_in_11_only {
-  private:
-    long long x;
-  };
-   
-  struct tail_padded_pod_in_11_only {
-    pod_in_11_only pod11;
-    char tail_padding;
-  };
+struct pod_in_11_only {
+private:
+  long long x;
+};
 
-  struct another_layer {
-    tail_padded_pod_in_11_only pod;
-    char padding;
-  };
-    
-  struct might_use_tail_padding : public another_layer {
-    char may_go_into_tail_padding;
-  };
+struct tail_padded_pod_in_11_only {
+  pod_in_11_only pod11;
+  char tail_padding;
+};
 
-  SA(0, sizeof(might_use_tail_padding) == 24);
-}
+struct another_layer {
+  tail_padded_pod_in_11_only pod;
+  char padding;
+};
+
+struct might_use_tail_padding : public another_layer {
+  char may_go_into_tail_padding;
+};
+
+SA(0, sizeof(might_use_tail_padding) == 24);
+} // namespace test8
 
 namespace test9 {
-  struct pod_in_11_only {
-  private:
-    long long x;
-  };
-   
-  struct tail_padded_pod_in_11_only {
-    pod_in_11_only pod11;
-    char tail_padding;
-  };
+struct pod_in_11_only {
+private:
+  long long x;
+};
 
-  struct another_layer : tail_padded_pod_in_11_only {
-  };
-    
-  struct might_use_tail_padding : public another_layer {
-    char may_go_into_tail_padding;
-  };
+struct tail_padded_pod_in_11_only {
+  pod_in_11_only pod11;
+  char tail_padding;
+};
 
-  SA(0, sizeof(might_use_tail_padding) == 16);
-}
+struct another_layer : tail_padded_pod_in_11_only {
+};
+
+struct might_use_tail_padding : public another_layer {
+  char may_go_into_tail_padding;
+};
+
+SA(0, sizeof(might_use_tail_padding) == 16);
+} // namespace test9
 
 namespace test10 {
-  struct pod_in_11_only {
-  private:
-    long long x;
-  };
-   
-  struct A {
-    pod_in_11_only a;
-    char apad;
-  };
+struct pod_in_11_only {
+private:
+  long long x;
+};
 
-  struct B {
-    char b;
-  };
+struct A {
+  pod_in_11_only a;
+  char apad;
+};
 
-  struct C {
-    pod_in_11_only c;
-    char cpad;
-  };
+struct B {
+  char b;
+};
 
-  struct D {
-    char d;
-  };
-    
-  struct might_use_tail_padding : public A, public B, public C, public D {
-  };
+struct C {
+  pod_in_11_only c;
+  char cpad;
+};
 
-  SA(0, sizeof(might_use_tail_padding) == 32);
-}
+struct D {
+  char d;
+};
+
+struct might_use_tail_padding : public A, public B, public C, public D {
+};
+
+SA(0, sizeof(might_use_tail_padding) == 32);
+} // namespace test10
 
 namespace test11 {
-  struct pod_in_11_only {
-  private:
-    long long x;
-  };
-   
-  struct A {
-    pod_in_11_only a;
-    char apad;
-  };
+struct pod_in_11_only {
+private:
+  long long x;
+};
 
-  struct B {
-    char b_pre;
-    pod_in_11_only b;
-    char bpad;
-  };
+struct A {
+  pod_in_11_only a;
+  char apad;
+};
 
-  struct C {
-    char c_pre;
-    pod_in_11_only c;
-    char cpad;
-  };
+struct B {
+  char b_pre;
+  pod_in_11_only b;
+  char bpad;
+};
 
-  struct D {
-    char d_pre;
-    pod_in_11_only d;
-    char dpad;
-  };
-    
-  struct might_use_tail_padding : public A, public B, public C, public D {
-    char m;
-  };
+struct C {
+  char c_pre;
+  pod_in_11_only c;
+  char cpad;
+};
 
-  SA(0, sizeof(might_use_tail_padding) == 88);
-}
+struct D {
+  char d_pre;
+  pod_in_11_only d;
+  char dpad;
+};
+
+struct might_use_tail_padding : public A, public B, public C, public D {
+  char m;
+};
+
+SA(0, sizeof(might_use_tail_padding) == 88);
+} // namespace test11
 
 namespace test12 {
-  struct pod_in_11_only {
-  private:
-    long long x;
-  };
-   
-  struct A {
-    pod_in_11_only a __attribute__((aligned(128)));
-  };
+struct pod_in_11_only {
+private:
+  long long x;
+};
 
-  struct B {
-    char bpad;
-  };
+struct A {
+  pod_in_11_only a __attribute__((aligned(128)));
+};
 
-  struct C {
-    char cpad;
-  };
+struct B {
+  char bpad;
+};
 
-  struct D {
-    char dpad;
-  };
-    
-  struct might_use_tail_padding : public A, public B, public C, public D {
-    char m;
-  };
-  SA(0, sizeof(might_use_tail_padding) == 128);
-}
+struct C {
+  char cpad;
+};
+
+struct D {
+  char dpad;
+};
+
+struct might_use_tail_padding : public A, public B, public C, public D {
+  char m;
+};
+SA(0, sizeof(might_use_tail_padding) == 128);
+} // namespace test12
 
 namespace test13 {
-  struct pod_in_11_only {
-  private:
-    long long x;
-  };
-   
-  struct A {
-    pod_in_11_only a;
-    char apad;
-  };
+struct pod_in_11_only {
+private:
+  long long x;
+};
 
-  struct B {
-  };
+struct A {
+  pod_in_11_only a;
+  char apad;
+};
 
-  struct C {
-    char c_pre;
-    pod_in_11_only c;
-    char cpad;
-  };
+struct B {
+};
 
-  struct D {
-  };
-    
-  struct might_use_tail_padding : public A, public B, public C, public D {
-    char m;
-  };
-  SA(0, sizeof(might_use_tail_padding) == 40);
-}
+struct C {
+  char c_pre;
+  pod_in_11_only c;
+  char cpad;
+};
+
+struct D {
+};
+
+struct might_use_tail_padding : public A, public B, public C, public D {
+  char m;
+};
+SA(0, sizeof(might_use_tail_padding) == 40);
+} // namespace test13
 
 namespace test14 {
-  struct pod_in_11_only {
-  private:
-    long long x;
-  };
-   
-  struct A {
-    pod_in_11_only a;
-    char apad;
-  };
+struct pod_in_11_only {
+private:
+  long long x;
+};
 
-  struct might_use_tail_padding : public A {
-    struct {
-      int : 0;
-    } x;
-  };
-  SA(0, sizeof(might_use_tail_padding) == 16);
-}
+struct A {
+  pod_in_11_only a;
+  char apad;
+};
+
+struct might_use_tail_padding : public A {
+  struct {
+    int : 0;
+  } x;
+};
+SA(0, sizeof(might_use_tail_padding) == 16);
+} // namespace test14
 
 namespace test15 {
-  struct pod_in_11_only {
-  private:
-    long long x;
-  };
-   
-  struct A {
-    pod_in_11_only a;
-    char apad;
-  };
+struct pod_in_11_only {
+private:
+  long long x;
+};
 
-  struct might_use_tail_padding : public A {
-    struct {
-      char a:1;
-      char b:2;
-      char c:2;
-      char d:2;
-      char e:1;
-    } x;
-  };
-  SA(0, sizeof(might_use_tail_padding) == 16);
-}
+struct A {
+  pod_in_11_only a;
+  char apad;
+};
+
+struct might_use_tail_padding : public A {
+  struct {
+    char a : 1;
+    char b : 2;
+    char c : 2;
+    char d : 2;
+    char e : 1;
+  } x;
+};
+SA(0, sizeof(might_use_tail_padding) == 16);
+} // namespace test15
 
 namespace test16 {
-  struct pod_in_11_only {
-  private:
-    long long x;
-  };
-   
-  struct A  {
-    pod_in_11_only a;
-    char apad;
-  };
+struct pod_in_11_only {
+private:
+  long long x;
+};
 
-  struct B {
-    char bpod;
-    pod_in_11_only b;
-    char bpad;
-  };
+struct A {
+  pod_in_11_only a;
+  char apad;
+};
 
-  struct C : public A, public B {
-  };
-  
-  struct D : public C {
-  };
+struct B {
+  char bpod;
+  pod_in_11_only b;
+  char bpad;
+};
 
-  struct might_use_tail_padding : public D {
-    char m;
-  };
-  SA(0, sizeof(might_use_tail_padding) == 40);
-}
+struct C : public A, public B {
+};
+
+struct D : public C {
+};
+
+struct might_use_tail_padding : public D {
+  char m;
+};
+SA(0, sizeof(might_use_tail_padding) == 40);
+} // namespace test16
 
 namespace test17 {
-  struct pod_in_11_only {
-  private:
-    long long x;
-  };
-   
-  struct A {
-    pod_in_11_only a __attribute__((aligned(512)));
-  };
+struct pod_in_11_only {
+private:
+  long long x;
+};
 
-  struct B {
-    char bpad;
-    pod_in_11_only foo;
-    char btail;
-  };
+struct A {
+  pod_in_11_only a __attribute__((aligned(512)));
+};
 
-  struct C {
-    char cpad;
-  };
+struct B {
+  char bpad;
+  pod_in_11_only foo;
+  char btail;
+};
 
-  struct D {
-    char dpad;
-  };
-    
-  struct might_use_tail_padding : public A, public B, public C, public D {
-    char a;
-  };
-  SA(0, sizeof(might_use_tail_padding) == 512);
-}
+struct C {
+  char cpad;
+};
+
+struct D {
+  char dpad;
+};
+
+struct might_use_tail_padding : public A, public B, public C, public D {
+  char a;
+};
+SA(0, sizeof(might_use_tail_padding) == 512);
+} // namespace test17
 
 namespace test18 {
-  struct pod_in_11_only {
-  private:
-    long long x;
-  };
-   
-  struct A  {
-    pod_in_11_only a;
-    char apad;
-  };
+struct pod_in_11_only {
+private:
+  long long x;
+};
 
-  struct B {
-    char bpod;
-    pod_in_11_only b;
-    char bpad;
-  };
+struct A {
+  pod_in_11_only a;
+  char apad;
+};
 
-  struct A1  {
-    pod_in_11_only a;
-    char apad;
-  };
+struct B {
+  char bpod;
+  pod_in_11_only b;
+  char bpad;
+};
 
-  struct B1 {
-    char bpod;
-    pod_in_11_only b;
-    char bpad;
-  };
+struct A1 {
+  pod_in_11_only a;
+  char apad;
+};
 
-  struct C : public A, public B {
-  };
+struct B1 {
+  char bpod;
+  pod_in_11_only b;
+  char bpad;
+};
 
-  struct D : public A1, public B1 {
-  };
+struct C : public A, public B {
+};
 
-  struct E : public D, public C {
-  };
+struct D : public A1, public B1 {
+};
 
-  struct F : public E {
-  };
+struct E : public D, public C {
+};
 
-  struct might_use_tail_padding : public F {
-    char m;
-  };
-  SA(0, sizeof(might_use_tail_padding) == 80);
-}
+struct F : public E {
+};
+
+struct might_use_tail_padding : public F {
+  char m;
+};
+SA(0, sizeof(might_use_tail_padding) == 80);
+} // namespace test18
 } // namespace PR16537
 
 namespace PR37275 {
-  struct X { char c; };
+struct X {
+  char c;
+};
 
-  struct A { int n; };
-  _Static_assert(_Alignof(A) == _Alignof(int), "");
+struct A {
+  int n;
+};
+_Static_assert(_Alignof(A) == _Alignof(int), "");
 
-  // __attribute__((packed)) does not apply to base classes.
-  struct __attribute__((packed)) B : X, A {};
+// __attribute__((packed)) does not apply to base classes.
+struct __attribute__((packed)) B : X, A {};
 #if defined(CLANG_ABI_COMPAT) && CLANG_ABI_COMPAT <= 6
-  _Static_assert(_Alignof(B) == 1, "");
-  _Static_assert(__builtin_offsetof(B, n) == 1, "");
+_Static_assert(_Alignof(B) == 1, "");
+_Static_assert(__builtin_offsetof(B, n) == 1, "");
 #else
-  _Static_assert(_Alignof(B) == _Alignof(int), "");
-  _Static_assert(__builtin_offsetof(B, n) == 4, "");
+_Static_assert(_Alignof(B) == _Alignof(int), "");
+_Static_assert(__builtin_offsetof(B, n) == 4, "");
 #endif
 
-  // #pragma pack does, though.
+// #pragma pack does, though.
 #pragma pack(push, 2)
-  struct C : X, A {};
-  _Static_assert(_Alignof(C) == 2, "");
-  _Static_assert(__builtin_offsetof(C, n) == 2, "");
+struct C : X, A {};
+_Static_assert(_Alignof(C) == 2, "");
+_Static_assert(__builtin_offsetof(C, n) == 2, "");
 
-  struct __attribute__((packed)) D : X, A {};
+struct __attribute__((packed)) D : X, A {};
 #if defined(CLANG_ABI_COMPAT) && CLANG_ABI_COMPAT <= 6
-  _Static_assert(_Alignof(D) == 1, "");
-  _Static_assert(__builtin_offsetof(D, n) == 1, "");
+_Static_assert(_Alignof(D) == 1, "");
+_Static_assert(__builtin_offsetof(D, n) == 1, "");
 #else
-  _Static_assert(_Alignof(D) == 2, "");
-  _Static_assert(__builtin_offsetof(D, n) == 2, "");
+_Static_assert(_Alignof(D) == 2, "");
+_Static_assert(__builtin_offsetof(D, n) == 2, "");
 #endif
 #pragma pack(pop)
-}
+} // namespace PR37275

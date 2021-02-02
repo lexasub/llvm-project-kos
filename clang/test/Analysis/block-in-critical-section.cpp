@@ -7,21 +7,21 @@ struct mutex {
   void lock() {}
   void unlock() {}
 };
-template<typename T>
+template <typename T>
 struct lock_guard {
   lock_guard<T>(std::mutex) {}
   ~lock_guard<T>() {}
 };
-template<typename T>
+template <typename T>
 struct unique_lock {
   unique_lock<T>(std::mutex) {}
   ~unique_lock<T>() {}
 };
-template<typename T>
+template <typename T>
 struct not_real_lock {
   not_real_lock<T>(std::mutex) {}
 };
-}
+} // namespace std
 
 void getc() {}
 void fgets() {}
@@ -41,54 +41,54 @@ void testBlockInCriticalSectionWithStdMutex() {
   std::mutex m;
   m.lock();
   sleep(3); // expected-warning {{Call to blocking function 'sleep' inside of critical section}}
-  getc(); // expected-warning {{Call to blocking function 'getc' inside of critical section}}
-  fgets(); // expected-warning {{Call to blocking function 'fgets' inside of critical section}}
-  read(); // expected-warning {{Call to blocking function 'read' inside of critical section}}
-  recv(); // expected-warning {{Call to blocking function 'recv' inside of critical section}}
+  getc();   // expected-warning {{Call to blocking function 'getc' inside of critical section}}
+  fgets();  // expected-warning {{Call to blocking function 'fgets' inside of critical section}}
+  read();   // expected-warning {{Call to blocking function 'read' inside of critical section}}
+  recv();   // expected-warning {{Call to blocking function 'recv' inside of critical section}}
   m.unlock();
 }
 
 void testBlockInCriticalSectionWithPthreadMutex() {
   pthread_mutex_lock();
   sleep(3); // expected-warning {{Call to blocking function 'sleep' inside of critical section}}
-  getc(); // expected-warning {{Call to blocking function 'getc' inside of critical section}}
-  fgets(); // expected-warning {{Call to blocking function 'fgets' inside of critical section}}
-  read(); // expected-warning {{Call to blocking function 'read' inside of critical section}}
-  recv(); // expected-warning {{Call to blocking function 'recv' inside of critical section}}
+  getc();   // expected-warning {{Call to blocking function 'getc' inside of critical section}}
+  fgets();  // expected-warning {{Call to blocking function 'fgets' inside of critical section}}
+  read();   // expected-warning {{Call to blocking function 'read' inside of critical section}}
+  recv();   // expected-warning {{Call to blocking function 'recv' inside of critical section}}
   pthread_mutex_unlock();
 
   pthread_mutex_trylock();
   sleep(3); // expected-warning {{Call to blocking function 'sleep' inside of critical section}}
-  getc(); // expected-warning {{Call to blocking function 'getc' inside of critical section}}
-  fgets(); // expected-warning {{Call to blocking function 'fgets' inside of critical section}}
-  read(); // expected-warning {{Call to blocking function 'read' inside of critical section}}
-  recv(); // expected-warning {{Call to blocking function 'recv' inside of critical section}}
+  getc();   // expected-warning {{Call to blocking function 'getc' inside of critical section}}
+  fgets();  // expected-warning {{Call to blocking function 'fgets' inside of critical section}}
+  read();   // expected-warning {{Call to blocking function 'read' inside of critical section}}
+  recv();   // expected-warning {{Call to blocking function 'recv' inside of critical section}}
   pthread_mutex_unlock();
 }
 
 void testBlockInCriticalSectionC11Locks() {
   mtx_lock();
   sleep(3); // expected-warning {{Call to blocking function 'sleep' inside of critical section}}
-  getc(); // expected-warning {{Call to blocking function 'getc' inside of critical section}}
-  fgets(); // expected-warning {{Call to blocking function 'fgets' inside of critical section}}
-  read(); // expected-warning {{Call to blocking function 'read' inside of critical section}}
-  recv(); // expected-warning {{Call to blocking function 'recv' inside of critical section}}
+  getc();   // expected-warning {{Call to blocking function 'getc' inside of critical section}}
+  fgets();  // expected-warning {{Call to blocking function 'fgets' inside of critical section}}
+  read();   // expected-warning {{Call to blocking function 'read' inside of critical section}}
+  recv();   // expected-warning {{Call to blocking function 'recv' inside of critical section}}
   mtx_unlock();
 
   mtx_timedlock();
   sleep(3); // expected-warning {{Call to blocking function 'sleep' inside of critical section}}
-  getc(); // expected-warning {{Call to blocking function 'getc' inside of critical section}}
-  fgets(); // expected-warning {{Call to blocking function 'fgets' inside of critical section}}
-  read(); // expected-warning {{Call to blocking function 'read' inside of critical section}}
-  recv(); // expected-warning {{Call to blocking function 'recv' inside of critical section}}
+  getc();   // expected-warning {{Call to blocking function 'getc' inside of critical section}}
+  fgets();  // expected-warning {{Call to blocking function 'fgets' inside of critical section}}
+  read();   // expected-warning {{Call to blocking function 'read' inside of critical section}}
+  recv();   // expected-warning {{Call to blocking function 'recv' inside of critical section}}
   mtx_unlock();
 
   mtx_trylock();
   sleep(3); // expected-warning {{Call to blocking function 'sleep' inside of critical section}}
-  getc(); // expected-warning {{Call to blocking function 'getc' inside of critical section}}
-  fgets(); // expected-warning {{Call to blocking function 'fgets' inside of critical section}}
-  read(); // expected-warning {{Call to blocking function 'read' inside of critical section}}
-  recv(); // expected-warning {{Call to blocking function 'recv' inside of critical section}}
+  getc();   // expected-warning {{Call to blocking function 'getc' inside of critical section}}
+  fgets();  // expected-warning {{Call to blocking function 'fgets' inside of critical section}}
+  read();   // expected-warning {{Call to blocking function 'read' inside of critical section}}
+  recv();   // expected-warning {{Call to blocking function 'recv' inside of critical section}}
   mtx_unlock();
 }
 

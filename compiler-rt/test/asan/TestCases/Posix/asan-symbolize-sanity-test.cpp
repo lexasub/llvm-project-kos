@@ -20,7 +20,7 @@
 
 using std::string;
 
-typedef void (fun_t)(int*, int);
+typedef void(fun_t)(int *, int);
 
 int main(int argc, char *argv[]) {
   string path = string(argv[0]) + "-so.so";
@@ -30,12 +30,13 @@ int main(int argc, char *argv[]) {
     printf("error in dlopen(): %s\n", dlerror());
     return 1;
   }
-  fun_t *inc2 = (fun_t*)dlsym(lib, "inc2");
-  if (!inc2) return 1;
+  fun_t *inc2 = (fun_t *)dlsym(lib, "inc2");
+  if (!inc2)
+    return 1;
   printf("ok\n");
-  int *array = (int*)malloc(40);
+  int *array = (int *)malloc(40);
   inc2(array, 1);
-  inc2(array, -1);  // BOOM
+  inc2(array, -1); // BOOM
   // CHECK: ERROR: AddressSanitizer: heap-buffer-overflow
   // CHECK: READ of size 4 at 0x{{.*}}
   // CHECK: #0 {{.*}} in inc2 {{.*}}asan-symbolize-sanity-test.cpp:[[@LINE+21]]
@@ -45,20 +46,18 @@ int main(int argc, char *argv[]) {
   // CHECK: #{{.*}} in main {{.*}}asan-symbolize-sanity-test.cpp:[[@LINE-9]]
   return 0;
 }
-#else  // SHARED_LIBS
+#else // SHARED_LIBS
 #include <stdio.h>
 #include <string.h>
 
 int pad[10];
 int GLOB[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
-extern "C"
-void inc(int index) {
+extern "C" void inc(int index) {
   GLOB[index]++;
 }
 
-extern "C"
-void inc2(int *a, int index) {
+extern "C" void inc2(int *a, int index) {
   a[index]++;
 }
-#endif  // SHARED_LIBS
+#endif // SHARED_LIBS

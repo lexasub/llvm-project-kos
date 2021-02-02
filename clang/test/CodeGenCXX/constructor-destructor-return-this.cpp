@@ -29,8 +29,8 @@ private:
   int *i_;
 };
 
-B::B(int *i) : i_(i) { }
-B::~B() { }
+B::B(int *i) : i_(i) {}
+B::~B() {}
 
 // CHECKGEN-LABEL: define{{.*}} void @_ZN1BC2EPi(%class.B* {{[^,]*}} %this, i32* %i)
 // CHECKGEN-LABEL: define{{.*}} void @_ZN1BC1EPi(%class.B* {{[^,]*}} %this, i32* %i)
@@ -59,12 +59,13 @@ class C : public A, public B {
 public:
   C(int *i, char *c);
   virtual ~C();
+
 private:
   char *c_;
 };
 
-C::C(int *i, char *c) : B(i), c_(c) { }
-C::~C() { }
+C::C(int *i, char *c) : B(i), c_(c) {}
+C::~C() {}
 
 // CHECKGEN-LABEL: define{{.*}} void @_ZN1CC2EPiPc(%class.C* {{[^,]*}} %this, i32* %i, i8* %c)
 // CHECKGEN-LABEL: define{{.*}} void @_ZN1CC1EPiPc(%class.C* {{[^,]*}} %this, i32* %i, i8* %c)
@@ -107,8 +108,8 @@ public:
   ~D();
 };
 
-D::D() { }
-D::~D() { }
+D::D() {}
+D::~D() {}
 
 // CHECKGEN-LABEL: define{{.*}} void @_ZN1DC2Ev(%class.D* {{[^,]*}} %this, i8** %vtt)
 // CHECKGEN-LABEL: define{{.*}} void @_ZN1DC1Ev(%class.D* {{[^,]*}} %this)
@@ -139,11 +140,11 @@ public:
   virtual ~E();
 };
 
-E* gete();
+E *gete();
 
 void test_destructor() {
-  const E& e1 = E();
-  E* e2 = gete();
+  const E &e1 = E();
+  E *e2 = gete();
   e2->~E();
 }
 

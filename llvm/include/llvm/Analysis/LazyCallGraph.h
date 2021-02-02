@@ -1184,14 +1184,14 @@ private:
   /// Allocates an SCC and constructs it using the graph allocator.
   ///
   /// The arguments are forwarded to the constructor.
-  template <typename... Ts> SCC *createSCC(Ts &&... Args) {
+  template <typename... Ts> SCC *createSCC(Ts &&...Args) {
     return new (SCCBPA.Allocate()) SCC(std::forward<Ts>(Args)...);
   }
 
   /// Allocates a RefSCC and constructs it using the graph allocator.
   ///
   /// The arguments are forwarded to the constructor.
-  template <typename... Ts> RefSCC *createRefSCC(Ts &&... Args) {
+  template <typename... Ts> RefSCC *createRefSCC(Ts &&...Args) {
     return new (RefSCCBPA.Allocate()) RefSCC(std::forward<Ts>(Args)...);
   }
 

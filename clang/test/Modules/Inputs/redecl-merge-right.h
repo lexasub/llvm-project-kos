@@ -4,7 +4,7 @@
 @end
 
 @interface A : Super
-- (Super*)init;
+- (Super *)init;
 @end
 
 @class B;
@@ -24,7 +24,7 @@
 struct S1;
 struct S2;
 
-void consume_S1(struct S1*);
+void consume_S1(struct S1 *);
 struct S2 *produce_S2(void);
 
 // Test declarations in different modules with no common initial
@@ -48,7 +48,8 @@ int *explicit_func(void);
 
 struct explicit_struct;
 
-@protocol P4, P3;
+@protocol P4
+, P3;
 @protocol P3;
 @protocol P3;
 @protocol P3;
@@ -56,7 +57,7 @@ struct explicit_struct;
 struct S3;
 struct S4;
 
-void consume_S3(struct S3*);
+void consume_S3(struct S3 *);
 struct S4 *produce_S4(void);
 
 typedef int T1;
@@ -69,9 +70,6 @@ int func1(int x) { return x; }
 int func1(int);
 static int func2(int);
 
-
-
-
 // Spacing matters!
 extern int var1;
 extern int var2;
@@ -82,7 +80,7 @@ int ONE;
 @import redecl_merge_top.Explicit;
 const int one = ONE;
 
-@interface ClassWithDef 
+@interface ClassWithDef
 - (void)method;
 @end
 

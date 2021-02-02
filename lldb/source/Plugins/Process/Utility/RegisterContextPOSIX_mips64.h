@@ -16,12 +16,11 @@
 
 class RegisterContextPOSIX_mips64 : public lldb_private::RegisterContext {
 public:
-
-  enum Register_count{
-      gpr_registers_count = 0,
-      fpr_registers_count,
-      msa_registers_count,
-      register_set_count
+  enum Register_count {
+    gpr_registers_count = 0,
+    fpr_registers_count,
+    msa_registers_count,
+    register_set_count
   };
 
   RegisterContextPOSIX_mips64(

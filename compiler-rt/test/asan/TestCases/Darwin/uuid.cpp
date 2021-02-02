@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
   // CHECK-NEXT: cmdsize 24
   // CHECK-NEXT: uuid [[UUID:[0-9A-F-]{36}]]
 
-  char *x = (char*)malloc(10 * sizeof(char));
+  char *x = (char *)malloc(10 * sizeof(char));
   free(x);
   char mybuf[10];
   memcpy(mybuf, x, 10);

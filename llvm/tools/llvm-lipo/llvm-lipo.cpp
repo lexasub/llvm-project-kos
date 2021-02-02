@@ -328,11 +328,10 @@ readInputBinaries(ArrayRef<InputFile> InputFiles) {
         !B->isIR())
       reportError("File " + IF.FileName + " has unsupported binary format");
     if (IF.ArchType && (B->isMachO() || B->isArchive() || B->isIR())) {
-      const auto S = B->isMachO()
-                         ? Slice(*cast<MachOObjectFile>(B))
-                         : B->isArchive()
-                               ? createSliceFromArchive(*cast<Archive>(B))
-                               : createSliceFromIR(*cast<IRObjectFile>(B), 0);
+      const auto S = B->isMachO() ? Slice(*cast<MachOObjectFile>(B))
+                     : B->isArchive()
+                         ? createSliceFromArchive(*cast<Archive>(B))
+                         : createSliceFromIR(*cast<IRObjectFile>(B), 0);
       const auto SpecifiedCPUType = MachO::getCPUTypeFromArchitecture(
                                         MachO::getArchitectureFromName(
                                             Triple(*IF.ArchType).getArchName()))
@@ -429,7 +428,7 @@ static void printBinaryArchs(const Binary *Binary, raw_ostream &OS) {
   Expected<Slice> SliceOrErr = createSliceFromIR(*IR, 0);
   if (!SliceOrErr)
     reportError(IR->getFileName(), SliceOrErr.takeError());
-  
+
   OS << SliceOrErr->getArchString() << " \n";
 }
 
@@ -623,8 +622,7 @@ LLVM_ATTRIBUTE_NORETURN
 static void extractSlice(ArrayRef<OwningBinary<Binary>> InputBinaries,
                          const StringMap<const uint32_t> &Alignments,
                          StringRef ArchType, StringRef OutputFileName) {
-  assert(!ArchType.empty() &&
-         "The architecture type should be non-empty");
+  assert(!ArchType.empty() && "The architecture type should be non-empty");
   assert(InputBinaries.size() == 1 && "Incorrect number of input binaries");
   assert(!OutputFileName.empty() && "Thin expects a single output file");
 
@@ -642,9 +640,9 @@ static void extractSlice(ArrayRef<OwningBinary<Binary>> InputBinaries,
   });
 
   if (Slices.empty())
-    reportError(
-        "fat input file " + InputBinaries.front().getBinary()->getFileName() +
-        " does not contain the specified architecture " + ArchType);
+    reportError("fat input file " +
+                InputBinaries.front().getBinary()->getFileName() +
+                " does not contain the specified architecture " + ArchType);
 
   llvm::stable_sort(Slices);
   if (Error E = writeUniversalBinary(Slices, OutputFileName))

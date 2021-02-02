@@ -34,9 +34,7 @@ public:
 
   bool runOnMachineFunction(MachineFunction &MF) override;
 
-  StringRef getPassName() const override {
-    return "SI post-RA bundler";
-  }
+  StringRef getPassName() const override { return "SI post-RA bundler"; }
 
   void getAnalysisUsage(AnalysisUsage &AU) const override {
     AU.setPreservesAll();
@@ -49,7 +47,6 @@ private:
   SmallSet<Register, 16> Defs;
 
   bool isDependentLoad(const MachineInstr &MI) const;
-
 };
 
 } // End anonymous namespace.

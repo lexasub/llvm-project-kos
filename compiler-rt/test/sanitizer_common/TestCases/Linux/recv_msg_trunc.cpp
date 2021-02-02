@@ -4,12 +4,12 @@
 //
 // UNSUPPORTED: android
 
+#include <assert.h>
+#include <netinet/ip.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/ip.h>
-#include <assert.h>
+#include <sys/types.h>
 
 int main() {
   int fd_0 = socket(AF_INET, SOCK_DGRAM, 0);
@@ -33,4 +33,3 @@ int main() {
 
   return 0;
 }
-

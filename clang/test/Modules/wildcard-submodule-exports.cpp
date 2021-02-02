@@ -23,4 +23,3 @@ void test_C_Two() {
 void test_B_One() {
   short *B1_ptr = B1;
 }
-

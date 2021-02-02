@@ -74,7 +74,7 @@ public:
 
   bool runOnMachineFunction(MachineFunction &MF) override;
 };
-}
+} // namespace
 
 // -----------------------------------------------------------------------------
 
@@ -200,11 +200,12 @@ bool LowerIntrinsics::DoLowering(Function &F, GCStrategy &S) {
 
       Function *F = CI->getCalledFunction();
       switch (F->getIntrinsicID()) {
-      default: break;
+      default:
+        break;
       case Intrinsic::gcwrite: {
         // Replace a write barrier with a simple store.
-        Value *St = new StoreInst(CI->getArgOperand(0),
-                                  CI->getArgOperand(2), CI);
+        Value *St =
+            new StoreInst(CI->getArgOperand(0), CI->getArgOperand(2), CI);
         CI->replaceAllUsesWith(St);
         CI->eraseFromParent();
         MadeChange = true;
@@ -271,8 +272,8 @@ void GCMachineCodeAnalysis::VisitCallPoint(MachineBasicBlock::iterator CI) {
 
 void GCMachineCodeAnalysis::FindSafePoints(MachineFunction &MF) {
   for (MachineBasicBlock &MBB : MF)
-    for (MachineBasicBlock::iterator MI = MBB.begin(), ME = MBB.end();
-         MI != ME; ++MI)
+    for (MachineBasicBlock::iterator MI = MBB.begin(), ME = MBB.end(); MI != ME;
+         ++MI)
       if (MI->isCall()) {
         // Do not treat tail or sibling call sites as safe points.  This is
         // legal since any arguments passed to the callee which live in the
@@ -317,8 +318,8 @@ bool GCMachineCodeAnalysis::runOnMachineFunction(MachineFunction &MF) {
   // size, we use UINT64_MAX to represent this.
   const MachineFrameInfo &MFI = MF.getFrameInfo();
   const TargetRegisterInfo *RegInfo = MF.getSubtarget().getRegisterInfo();
-  const bool DynamicFrameSize = MFI.hasVarSizedObjects() ||
-    RegInfo->needsStackRealignment(MF);
+  const bool DynamicFrameSize =
+      MFI.hasVarSizedObjects() || RegInfo->needsStackRealignment(MF);
   FI->setFrameSize(DynamicFrameSize ? UINT64_MAX : MFI.getStackSize());
 
   // Find all safe points.

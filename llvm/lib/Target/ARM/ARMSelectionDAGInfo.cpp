@@ -59,11 +59,7 @@ SDValue ARMSelectionDAGInfo::EmitSpecializedLibcall(
   }
 
   // Choose the most-aligned libcall variant that we can
-  enum {
-    ALIGN1 = 0,
-    ALIGN4,
-    ALIGN8
-  } AlignVariant;
+  enum { ALIGN1 = 0, ALIGN4, ALIGN8 } AlignVariant;
   if ((Align & 7) == 0)
     AlignVariant = ALIGN8;
   else if ((Align & 3) == 0)
@@ -105,11 +101,10 @@ SDValue ARMSelectionDAGInfo::EmitSpecializedLibcall(
   }
 
   char const *FunctionNames[4][3] = {
-    { "__aeabi_memcpy",  "__aeabi_memcpy4",  "__aeabi_memcpy8"  },
-    { "__aeabi_memmove", "__aeabi_memmove4", "__aeabi_memmove8" },
-    { "__aeabi_memset",  "__aeabi_memset4",  "__aeabi_memset8"  },
-    { "__aeabi_memclr",  "__aeabi_memclr4",  "__aeabi_memclr8"  }
-  };
+      {"__aeabi_memcpy", "__aeabi_memcpy4", "__aeabi_memcpy8"},
+      {"__aeabi_memmove", "__aeabi_memmove4", "__aeabi_memmove8"},
+      {"__aeabi_memset", "__aeabi_memset4", "__aeabi_memset8"},
+      {"__aeabi_memclr", "__aeabi_memclr4", "__aeabi_memclr8"}};
   TargetLowering::CallLoweringInfo CLI(DAG);
   CLI.setDebugLoc(dl)
       .setChain(Chain)
@@ -119,7 +114,7 @@ SDValue ARMSelectionDAGInfo::EmitSpecializedLibcall(
                                 TLI->getPointerTy(DAG.getDataLayout())),
           std::move(Args))
       .setDiscardResult();
-  std::pair<SDValue,SDValue> CallResult = TLI->LowerCallTo(CLI);
+  std::pair<SDValue, SDValue> CallResult = TLI->LowerCallTo(CLI);
 
   return CallResult.second;
 }
@@ -218,8 +213,7 @@ SDValue ARMSelectionDAGInfo::EmitTargetCodeForMemcpy(
     SrcOff += VTSize;
     BytesLeft -= VTSize;
   }
-  Chain = DAG.getNode(ISD::TokenFactor, dl, MVT::Other,
-                      makeArrayRef(TFOps, i));
+  Chain = DAG.getNode(ISD::TokenFactor, dl, MVT::Other, makeArrayRef(TFOps, i));
 
   i = 0;
   BytesLeft = BytesLeftSave;
@@ -234,8 +228,7 @@ SDValue ARMSelectionDAGInfo::EmitTargetCodeForMemcpy(
     DstOff += VTSize;
     BytesLeft -= VTSize;
   }
-  return DAG.getNode(ISD::TokenFactor, dl, MVT::Other,
-                     makeArrayRef(TFOps, i));
+  return DAG.getNode(ISD::TokenFactor, dl, MVT::Other, makeArrayRef(TFOps, i));
 }
 
 SDValue ARMSelectionDAGInfo::EmitTargetCodeForMemmove(

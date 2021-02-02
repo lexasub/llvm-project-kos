@@ -10,10 +10,10 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "clang/Parse/Parser.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/Basic/Diagnostic.h"
 #include "clang/Basic/TargetInfo.h"
+#include "clang/Parse/Parser.h"
 #include "clang/Parse/RAIIObjectsForParser.h"
 #include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/StringExtras.h"
@@ -58,8 +58,7 @@ public:
                                  bool IsUnevaluatedContext) override;
 
   StringRef LookupInlineAsmLabel(StringRef Identifier, llvm::SourceMgr &LSM,
-                                 llvm::SMLoc Location,
-                                 bool Create) override;
+                                 llvm::SMLoc Location, bool Create) override;
 
   bool LookupInlineAsmField(StringRef Base, StringRef Member,
                             unsigned &Offset) override {
@@ -81,7 +80,7 @@ private:
 
   void handleDiagnostic(const llvm::SMDiagnostic &D);
 };
-}
+} // namespace
 
 void ClangAsmParserCallback::LookupInlineAsmIdentifier(
     StringRef &LineBuf, llvm::InlineAsmIdentifierInfo &Info,
@@ -936,10 +935,14 @@ bool Parser::ParseAsmOperandsOpt(SmallVectorImpl<IdentifierInfo *> &Names,
 
 const char *Parser::GNUAsmQualifiers::getQualifierName(AQ Qualifier) {
   switch (Qualifier) {
-    case AQ_volatile: return "volatile";
-    case AQ_inline: return "inline";
-    case AQ_goto: return "goto";
-    case AQ_unspecified: return "unspecified";
+  case AQ_volatile:
+    return "volatile";
+  case AQ_inline:
+    return "inline";
+  case AQ_goto:
+    return "goto";
+  case AQ_unspecified:
+    return "unspecified";
   }
   llvm_unreachable("Unknown GNUAsmQualifier");
 }
@@ -947,10 +950,14 @@ const char *Parser::GNUAsmQualifiers::getQualifierName(AQ Qualifier) {
 Parser::GNUAsmQualifiers::AQ
 Parser::getGNUAsmQualifier(const Token &Tok) const {
   switch (Tok.getKind()) {
-    case tok::kw_volatile: return GNUAsmQualifiers::AQ_volatile;
-    case tok::kw_inline: return GNUAsmQualifiers::AQ_inline;
-    case tok::kw_goto: return GNUAsmQualifiers::AQ_goto;
-    default: return GNUAsmQualifiers::AQ_unspecified;
+  case tok::kw_volatile:
+    return GNUAsmQualifiers::AQ_volatile;
+  case tok::kw_inline:
+    return GNUAsmQualifiers::AQ_inline;
+  case tok::kw_goto:
+    return GNUAsmQualifiers::AQ_goto;
+  default:
+    return GNUAsmQualifiers::AQ_unspecified;
   }
 }
 bool Parser::GNUAsmQualifiers::setAsmQualifier(AQ Qualifier) {

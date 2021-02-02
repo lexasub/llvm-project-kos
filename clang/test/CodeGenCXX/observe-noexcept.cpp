@@ -4,13 +4,13 @@
 // correctly generate complex arithmetic.
 
 // CHECK-LABEL: ffcomplex
-void ffcomplex (int a) {
+void ffcomplex(int a) {
   double _Complex dc = (double)a;
 
   // CHECK: call { double, double } @__muldc3(double %{{.+}}, double %{{.+}}, double %{{.+}}, double %{{.+}})
   dc *= dc;
-  // CHECK: call {{.+}} @__kmpc_fork_call({{.+}} [[REGNAME1:@.*]] to void (i32*, i32*, ...)*), { double, double }* %{{.+}})
-  #pragma omp parallel
+// CHECK: call {{.+}} @__kmpc_fork_call({{.+}} [[REGNAME1:@.*]] to void (i32*, i32*, ...)*), { double, double }* %{{.+}})
+#pragma omp parallel
   {
     dc *= dc;
   }
@@ -32,8 +32,8 @@ void foo(int a, int b) {
 
   void (*fptr)(void) noexcept = fnoexcp;
 
-  // CHECK: call {{.+}} @__kmpc_fork_call({{.+}} [[REGNAME2:@.*]] to void (i32*, i32*, ...)*), void ()** %{{.+}})
-  #pragma omp parallel
+// CHECK: call {{.+}} @__kmpc_fork_call({{.+}} [[REGNAME2:@.*]] to void (i32*, i32*, ...)*), void ()** %{{.+}})
+#pragma omp parallel
   {
     fptr();
   }

@@ -174,12 +174,14 @@ bool DWARFExpression::Operation::extract(DataExtractor Data,
     case Operation::WasmLocationArg:
       assert(Operand == 1);
       switch (Operands[0]) {
-      case 0: case 1: case 2:
+      case 0:
+      case 1:
+      case 2:
         Operands[Operand] = Data.getULEB128(&Offset);
         break;
       case 3: // global as uint32
-         Operands[Operand] = Data.getU32(&Offset);
-         break;
+        Operands[Operand] = Data.getU32(&Offset);
+        break;
       default:
         return false; // Unknown Wasm location
       }
@@ -216,8 +218,7 @@ static void prettyPrintBaseTypeRef(DWARFUnit *U, raw_ostream &OS,
     if (auto Name = Die.find(dwarf::DW_AT_name))
       OS << " \"" << Name->getAsCString() << "\"";
   } else {
-    OS << format(" <invalid base_type ref: 0x%" PRIx64 ">",
-                 Operands[Operand]);
+    OS << format(" <invalid base_type ref: 0x%" PRIx64 ">", Operands[Operand]);
   }
 }
 
@@ -294,11 +295,14 @@ bool DWARFExpression::Operation::print(raw_ostream &OS, DIDumpOptions DumpOpts,
     } else if (Size == Operation::WasmLocationArg) {
       assert(Operand == 1);
       switch (Operands[0]) {
-      case 0: case 1: case 2:
+      case 0:
+      case 1:
+      case 2:
       case 3: // global as uint32
         OS << format(" 0x%" PRIx64, Operands[Operand]);
         break;
-      default: assert(false);
+      default:
+        assert(false);
       }
     } else if (Size == Operation::SizeBlock) {
       uint64_t Offset = Operands[Operand];
@@ -307,8 +311,7 @@ bool DWARFExpression::Operation::print(raw_ostream &OS, DIDumpOptions DumpOpts,
     } else {
       if (Signed)
         OS << format(" %+" PRId64, (int64_t)Operands[Operand]);
-      else if (Opcode != DW_OP_entry_value &&
-               Opcode != DW_OP_GNU_entry_value)
+      else if (Opcode != DW_OP_entry_value && Opcode != DW_OP_GNU_entry_value)
         OS << format(" 0x%" PRIx64, Operands[Operand]);
     }
   }

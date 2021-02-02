@@ -1,21 +1,33 @@
 // RUN: %clang_cc1 -std=c++1z -triple x86_64-linux-gnu -emit-llvm -o - %s | FileCheck %s
 
 namespace std {
-  using size_t = decltype(sizeof(0));
-  template<typename> struct tuple_size;
-  template<size_t, typename> struct tuple_element;
-}
+using size_t = decltype(sizeof(0));
+template <typename> struct tuple_size;
+template <size_t, typename> struct tuple_element;
+} // namespace std
 
-struct Y { int n; };
-struct X { X(); X(Y); X(const X&); ~X(); };
+struct Y {
+  int n;
+};
+struct X {
+  X();
+  X(Y);
+  X(const X &);
+  ~X();
+};
 
-struct A { int a : 13; bool b; };
+struct A {
+  int a : 13;
+  bool b;
+};
 
 struct B {};
-template<> struct std::tuple_size<B> { enum { value = 2 }; };
-template<> struct std::tuple_element<0,B> { using type = X; };
-template<> struct std::tuple_element<1,B> { using type = const int&; };
-template<int N> auto get(B) {
+template <> struct std::tuple_size<B> {
+  enum { value = 2 };
+};
+template <> struct std::tuple_element<0, B> { using type = X; };
+template <> struct std::tuple_element<1, B> { using type = const int &; };
+template <int N> auto get(B) {
   if constexpr (N == 0)
     return Y();
   else
@@ -28,7 +40,7 @@ typedef int D __attribute__((ext_vector_type(2)));
 
 using E = _Complex int;
 
-template<typename T> T &make();
+template <typename T> T &make();
 
 // CHECK: @_ZDC2a12a2E ={{.*}} global {{.*}} zeroinitializer, align 4
 auto [a1, a2] = make<A>();

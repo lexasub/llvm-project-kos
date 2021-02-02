@@ -1,13 +1,13 @@
 // RUN: %clangxx_tsan %s -o %t && %run %t 2>&1 | FileCheck %s
 
+#include <errno.h>
 #include <pthread.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <signal.h>
-#include <sys/types.h>
 #include <sys/time.h>
+#include <sys/types.h>
 #include <unistd.h>
-#include <errno.h>
 
 volatile bool signal_delivered;
 
@@ -16,12 +16,13 @@ static void handler(int sig) {
     signal_delivered = true;
 }
 
-static void* thr(void *p) {
+static void *thr(void *p) {
   sigset_t sigset;
   sigemptyset(&sigset);
   sigaddset(&sigset, SIGALRM);
   int ret = pthread_sigmask(SIG_UNBLOCK, &sigset, NULL);
-  if (ret) abort();
+  if (ret)
+    abort();
 
   struct sigaction act = {};
   act.sa_handler = &handler;
@@ -59,7 +60,8 @@ int main() {
   sigemptyset(&sigset);
   sigaddset(&sigset, SIGALRM);
   int ret = pthread_sigmask(SIG_BLOCK, &sigset, NULL);
-  if (ret) abort();
+  if (ret)
+    abort();
 
   pthread_t th;
   pthread_create(&th, 0, thr, 0);

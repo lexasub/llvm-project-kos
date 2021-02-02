@@ -8,10 +8,10 @@ typedef short __v8hi __attribute__((__vector_size__(16)));
 
 template <int Imm>
 __v8hi test(__v8hi a) {
-    if (Imm < 4)
-      return __builtin_ia32_pshuflw(a, 0x55 * Imm);
-    else
-      return __builtin_ia32_pshuflw(a, 0x55 * (Imm - 4));
+  if (Imm < 4)
+    return __builtin_ia32_pshuflw(a, 0x55 * Imm);
+  else
+    return __builtin_ia32_pshuflw(a, 0x55 * (Imm - 4));
 }
 
 template __v8hi test<0>(__v8hi);

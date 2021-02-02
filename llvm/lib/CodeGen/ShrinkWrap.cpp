@@ -95,8 +95,8 @@ STATISTIC(NumCandidatesDropped,
           "Number of shrink-wrapping candidates dropped because of frequency");
 
 static cl::opt<cl::boolOrDefault>
-EnableShrinkWrapOpt("enable-shrink-wrap", cl::Hidden,
-                    cl::desc("enable the shrink-wrapping pass"));
+    EnableShrinkWrapOpt("enable-shrink-wrap", cl::Hidden,
+                        cl::desc("enable the shrink-wrapping pass"));
 
 namespace {
 
@@ -233,7 +233,7 @@ public:
 
   MachineFunctionProperties getRequiredProperties() const override {
     return MachineFunctionProperties().set(
-      MachineFunctionProperties::Property::NoVRegs);
+        MachineFunctionProperties::Property::NoVRegs);
   }
 
   StringRef getPassName() const override { return "Shrink Wrapping analysis"; }
@@ -418,12 +418,12 @@ void ShrinkWrap::updateSaveRestorePoints(MachineBasicBlock &MBB,
       } else {
         // If the loop does not exit, there is no point in looking
         // for a post-dominator outside the loop.
-        SmallVector<MachineBasicBlock*, 4> ExitBlocks;
+        SmallVector<MachineBasicBlock *, 4> ExitBlocks;
         MLI->getLoopFor(Restore)->getExitingBlocks(ExitBlocks);
         // Push Restore outside of this loop.
         // Look for the immediate post-dominator of the loop exits.
         MachineBasicBlock *IPdom = Restore;
-        for (MachineBasicBlock *LoopExitBB: ExitBlocks) {
+        for (MachineBasicBlock *LoopExitBB : ExitBlocks) {
           IPdom = FindIDom<>(*IPdom, LoopExitBB->successors(), *MPDT);
           if (!IPdom)
             break;

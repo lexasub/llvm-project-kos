@@ -1,6 +1,6 @@
 // RUN: %check_clang_tidy %s google-explicit-constructor %t
 
-template<typename T>
+template <typename T>
 struct A { A(T); };
 // CHECK-MESSAGES: :[[@LINE-1]]:12: warning: single-argument constructors must be marked explicit
 

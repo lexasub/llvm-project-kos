@@ -429,7 +429,7 @@ static std::string getMacroExpandedString(clang::Preprocessor &PP,
     const clang::Token *ArgTok = Args->getUnexpArgument(ArgNo);
     if (Args->ArgNeedsPreexpansion(ArgTok, PP))
       ResultArgToks = &(const_cast<clang::MacroArgs *>(Args))
-          ->getPreExpArgument(ArgNo, PP)[0];
+                           ->getPreExpArgument(ArgNo, PP)[0];
     else
       ResultArgToks = ArgTok; // Use non-preexpanded Tokens.
     // If the arg token didn't expand into anything, ignore it.
@@ -459,10 +459,7 @@ static std::string getMacroExpandedString(clang::Preprocessor &PP,
 namespace {
 
 // ConditionValueKind strings.
-const char *
-ConditionValueKindStrings[] = {
-  "(not evaluated)", "false", "true"
-};
+const char *ConditionValueKindStrings[] = {"(not evaluated)", "false", "true"};
 
 // Preprocessor item key.
 //
@@ -634,7 +631,9 @@ public:
 // for use in telling the user the nested include path to the header.
 class ConditionalExpansionInstance {
 public:
-  ConditionalExpansionInstance(clang::PPCallbacks::ConditionValueKind ConditionValue, InclusionPathHandle H)
+  ConditionalExpansionInstance(
+      clang::PPCallbacks::ConditionValueKind ConditionValue,
+      InclusionPathHandle H)
       : ConditionValue(ConditionValue) {
     InclusionPathHandles.push_back(H);
   }
@@ -681,8 +680,8 @@ public:
   ConditionalTracker() {}
 
   // Find a matching condition expansion instance.
-  ConditionalExpansionInstance *
-  findConditionalExpansionInstance(clang::PPCallbacks::ConditionValueKind ConditionValue) {
+  ConditionalExpansionInstance *findConditionalExpansionInstance(
+      clang::PPCallbacks::ConditionValueKind ConditionValue) {
     for (auto I = ConditionalExpansionInstances.begin(),
               E = ConditionalExpansionInstances.end();
          I != E; ++I) {
@@ -694,9 +693,9 @@ public:
   }
 
   // Add a conditional expansion instance.
-  void
-  addConditionalExpansionInstance(clang::PPCallbacks::ConditionValueKind ConditionValue,
-                                  InclusionPathHandle InclusionPathHandle) {
+  void addConditionalExpansionInstance(
+      clang::PPCallbacks::ConditionValueKind ConditionValue,
+      InclusionPathHandle InclusionPathHandle) {
     ConditionalExpansionInstances.push_back(
         ConditionalExpansionInstance(ConditionValue, InclusionPathHandle));
   }
@@ -768,12 +767,12 @@ private:
 // Preprocessor macro expansion item map types.
 typedef std::map<PPItemKey, MacroExpansionTracker> MacroExpansionMap;
 typedef std::map<PPItemKey, MacroExpansionTracker>::iterator
-MacroExpansionMapIter;
+    MacroExpansionMapIter;
 
 // Preprocessor conditional expansion item map types.
 typedef std::map<PPItemKey, ConditionalTracker> ConditionalExpansionMap;
 typedef std::map<PPItemKey, ConditionalTracker>::iterator
-ConditionalExpansionMapIter;
+    ConditionalExpansionMapIter;
 
 // Preprocessor tracker for modularize.
 //
@@ -782,14 +781,14 @@ ConditionalExpansionMapIter;
 class PreprocessorTrackerImpl : public PreprocessorTracker {
 public:
   PreprocessorTrackerImpl(llvm::SmallVector<std::string, 32> &Headers,
-        bool DoBlockCheckHeaderListOnly)
+                          bool DoBlockCheckHeaderListOnly)
       : BlockCheckHeaderListOnly(DoBlockCheckHeaderListOnly),
         CurrentInclusionPathHandle(InclusionPathHandleInvalid),
         InNestedHeader(false) {
     // Use canonical header path representation.
     for (llvm::ArrayRef<std::string>::iterator I = Headers.begin(),
-      E = Headers.end();
-      I != E; ++I) {
+                                               E = Headers.end();
+         I != E; ++I) {
       HeaderList.push_back(getCanonicalPath(*I));
     }
   }
@@ -802,8 +801,8 @@ public:
     HeadersInThisCompile.clear();
     assert((HeaderStack.size() == 0) && "Header stack should be empty.");
     pushHeaderHandle(addHeader(rootHeaderFile));
-    PP.addPPCallbacks(std::make_unique<PreprocessorCallbacks>(*this, PP,
-                                                               rootHeaderFile));
+    PP.addPPCallbacks(
+        std::make_unique<PreprocessorCallbacks>(*this, PP, rootHeaderFile));
   }
   // Handle exiting a preprocessing session.
   void handlePreprocessorExit() override { HeaderStack.clear(); }
@@ -925,8 +924,8 @@ public:
   bool isHeaderListHeader(llvm::StringRef HeaderPath) const {
     std::string CanonicalPath = getCanonicalPath(HeaderPath);
     for (llvm::ArrayRef<std::string>::iterator I = HeaderList.begin(),
-        E = HeaderList.end();
-        I != E; ++I) {
+                                               E = HeaderList.end();
+         I != E; ++I) {
       if (*I == CanonicalPath)
         return true;
     }
@@ -1080,13 +1079,13 @@ public:
   }
 
   // Add a conditional expansion instance.
-  void
-  addConditionalExpansionInstance(clang::Preprocessor &PP, HeaderHandle H,
-                                  clang::SourceLocation InstanceLoc,
-                                  clang::tok::PPKeywordKind DirectiveKind,
-                                  clang::PPCallbacks::ConditionValueKind ConditionValue,
-                                  llvm::StringRef ConditionUnexpanded,
-                                  InclusionPathHandle InclusionPathHandle) {
+  void addConditionalExpansionInstance(
+      clang::Preprocessor &PP, HeaderHandle H,
+      clang::SourceLocation InstanceLoc,
+      clang::tok::PPKeywordKind DirectiveKind,
+      clang::PPCallbacks::ConditionValueKind ConditionValue,
+      llvm::StringRef ConditionUnexpanded,
+      InclusionPathHandle InclusionPathHandle) {
     // Ignore header guards, assuming the header guard is the only conditional.
     if (InNestedHeader)
       return;
@@ -1265,9 +1264,9 @@ private:
 PreprocessorTracker::~PreprocessorTracker() {}
 
 // Create instance of PreprocessorTracker.
-PreprocessorTracker *PreprocessorTracker::create(
-    llvm::SmallVector<std::string, 32> &Headers,
-    bool DoBlockCheckHeaderListOnly) {
+PreprocessorTracker *
+PreprocessorTracker::create(llvm::SmallVector<std::string, 32> &Headers,
+                            bool DoBlockCheckHeaderListOnly) {
   return new PreprocessorTrackerImpl(Headers, DoBlockCheckHeaderListOnly);
 }
 
@@ -1340,19 +1339,19 @@ void PreprocessorCallbacks::Defined(const clang::Token &MacroNameTok,
       (MI ? "true" : "false"), PPTracker.getCurrentInclusionPathHandle());
 }
 
-void PreprocessorCallbacks::If(clang::SourceLocation Loc,
-                               clang::SourceRange ConditionRange,
-                               clang::PPCallbacks::ConditionValueKind ConditionResult) {
+void PreprocessorCallbacks::If(
+    clang::SourceLocation Loc, clang::SourceRange ConditionRange,
+    clang::PPCallbacks::ConditionValueKind ConditionResult) {
   std::string Unexpanded(getSourceString(PP, ConditionRange));
   PPTracker.addConditionalExpansionInstance(
       PP, PPTracker.getCurrentHeaderHandle(), Loc, clang::tok::pp_if,
       ConditionResult, Unexpanded, PPTracker.getCurrentInclusionPathHandle());
 }
 
-void PreprocessorCallbacks::Elif(clang::SourceLocation Loc,
-                                 clang::SourceRange ConditionRange,
-                                 clang::PPCallbacks::ConditionValueKind ConditionResult,
-                                 clang::SourceLocation IfLoc) {
+void PreprocessorCallbacks::Elif(
+    clang::SourceLocation Loc, clang::SourceRange ConditionRange,
+    clang::PPCallbacks::ConditionValueKind ConditionResult,
+    clang::SourceLocation IfLoc) {
   std::string Unexpanded(getSourceString(PP, ConditionRange));
   PPTracker.addConditionalExpansionInstance(
       PP, PPTracker.getCurrentHeaderHandle(), Loc, clang::tok::pp_elif,
@@ -1363,7 +1362,7 @@ void PreprocessorCallbacks::Ifdef(clang::SourceLocation Loc,
                                   const clang::Token &MacroNameTok,
                                   const clang::MacroDefinition &MD) {
   clang::PPCallbacks::ConditionValueKind IsDefined =
-    (MD ? clang::PPCallbacks::CVK_True : clang::PPCallbacks::CVK_False );
+      (MD ? clang::PPCallbacks::CVK_True : clang::PPCallbacks::CVK_False);
   PPTracker.addConditionalExpansionInstance(
       PP, PPTracker.getCurrentHeaderHandle(), Loc, clang::tok::pp_ifdef,
       IsDefined, PP.getSpelling(MacroNameTok),
@@ -1374,7 +1373,7 @@ void PreprocessorCallbacks::Ifndef(clang::SourceLocation Loc,
                                    const clang::Token &MacroNameTok,
                                    const clang::MacroDefinition &MD) {
   clang::PPCallbacks::ConditionValueKind IsNotDefined =
-    (!MD ? clang::PPCallbacks::CVK_True : clang::PPCallbacks::CVK_False );
+      (!MD ? clang::PPCallbacks::CVK_True : clang::PPCallbacks::CVK_False);
   PPTracker.addConditionalExpansionInstance(
       PP, PPTracker.getCurrentHeaderHandle(), Loc, clang::tok::pp_ifndef,
       IsNotDefined, PP.getSpelling(MacroNameTok),

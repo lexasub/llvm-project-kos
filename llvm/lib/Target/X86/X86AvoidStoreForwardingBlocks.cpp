@@ -71,7 +71,7 @@ using DisplacementSizeMap = std::map<int64_t, unsigned>;
 class X86AvoidSFBPass : public MachineFunctionPass {
 public:
   static char ID;
-  X86AvoidSFBPass() : MachineFunctionPass(ID) { }
+  X86AvoidSFBPass() : MachineFunctionPass(ID) {}
 
   StringRef getPassName() const override {
     return "X86 Avoid Store Forwarding Blocks";
@@ -315,7 +315,8 @@ static bool isRelevantAddressingMode(MachineInstr *MI) {
   const MachineOperand &Disp = getDispOperand(MI);
   const MachineOperand &Scale = MI->getOperand(AddrOffset + X86::AddrScaleAmt);
   const MachineOperand &Index = MI->getOperand(AddrOffset + X86::AddrIndexReg);
-  const MachineOperand &Segment = MI->getOperand(AddrOffset + X86::AddrSegmentReg);
+  const MachineOperand &Segment =
+      MI->getOperand(AddrOffset + X86::AddrSegmentReg);
 
   if (!((Base.isReg() && Base.getReg() != X86::NoRegister) || Base.isFI()))
     return false;
@@ -551,8 +552,8 @@ void X86AvoidSFBPass::findPotentiallylBlockedCopies(MachineFunction &MF) {
         if (StoreMI.getParent() == MI.getParent() &&
             isPotentialBlockedMemCpyPair(MI.getOpcode(), StoreMI.getOpcode()) &&
             isRelevantAddressingMode(&MI) &&
-            isRelevantAddressingMode(&StoreMI) &&
-            MI.hasOneMemOperand() && StoreMI.hasOneMemOperand()) {
+            isRelevantAddressingMode(&StoreMI) && MI.hasOneMemOperand() &&
+            StoreMI.hasOneMemOperand()) {
           if (!alias(**MI.memoperands_begin(), **StoreMI.memoperands_begin()))
             BlockedLoadsStoresPairs.push_back(std::make_pair(&MI, &StoreMI));
         }
@@ -562,7 +563,7 @@ void X86AvoidSFBPass::findPotentiallylBlockedCopies(MachineFunction &MF) {
 
 unsigned X86AvoidSFBPass::getRegSizeInBytes(MachineInstr *LoadInst) {
   const auto *TRC = TII->getRegClass(TII->get(LoadInst->getOpcode()), 0, TRI,
-                              *LoadInst->getParent()->getParent());
+                                     *LoadInst->getParent()->getParent());
   return TRI->getRegSizeInBits(*TRC) / 8;
 }
 

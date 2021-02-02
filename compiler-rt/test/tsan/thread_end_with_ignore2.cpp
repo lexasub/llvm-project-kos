@@ -9,4 +9,3 @@ int main() {
 // CHECK:   Ignore was enabled at:
 // CHECK:     #0 AnnotateIgnoreWritesBegin
 // CHECK:     #1 main
-

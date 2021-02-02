@@ -21,8 +21,7 @@ static pthread_key_t PThreadKey;
 
 __attribute__((tls_model("initial-exec")))
 THREADLOCAL ThreadState ScudoThreadState = ThreadNotInitialized;
-__attribute__((tls_model("initial-exec")))
-THREADLOCAL ScudoTSD TSD;
+__attribute__((tls_model("initial-exec"))) THREADLOCAL ScudoTSD TSD;
 
 // Fallback TSD for when the thread isn't initialized yet or is torn down. It
 // can be shared between multiple threads and as such must be locked.
@@ -45,7 +44,6 @@ static void teardownThread(void *Ptr) {
   ScudoThreadState = ThreadTornDown;
 }
 
-
 static void initOnce() {
   CHECK_EQ(pthread_key_create(&PThreadKey, teardownThread), 0);
   initScudo();
@@ -56,12 +54,14 @@ void initThread(bool MinimalInit) {
   CHECK_EQ(pthread_once(&GlobalInitialized, initOnce), 0);
   if (UNLIKELY(MinimalInit))
     return;
-  CHECK_EQ(pthread_setspecific(PThreadKey, reinterpret_cast<void *>(
-      GetPthreadDestructorIterations())), 0);
+  CHECK_EQ(pthread_setspecific(
+               PThreadKey,
+               reinterpret_cast<void *>(GetPthreadDestructorIterations())),
+           0);
   TSD.init();
   ScudoThreadState = ThreadInitialized;
 }
 
-}  // namespace __scudo
+} // namespace __scudo
 
-#endif  // SCUDO_TSD_EXCLUSIVE
+#endif // SCUDO_TSD_EXCLUSIVE

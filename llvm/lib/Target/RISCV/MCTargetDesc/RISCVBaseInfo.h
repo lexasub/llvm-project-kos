@@ -123,12 +123,7 @@ enum OperandType : unsigned {
 
 // Describes the predecessor/successor bits used in the FENCE instruction.
 namespace RISCVFenceField {
-enum FenceField {
-  I = 8,
-  O = 4,
-  R = 2,
-  W = 1
-};
+enum FenceField { I = 8, O = 4, R = 2, W = 1 };
 }
 
 // Describes the supported floating point rounding mode encodings.

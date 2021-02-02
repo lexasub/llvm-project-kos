@@ -25,7 +25,7 @@ inline int f0() {
     int f;
   };
 
-  return a+c;
+  return a + c;
 }
 
 inline void nop() {
@@ -35,8 +35,7 @@ inline void nop() {
   };
 }
 
-int f1 (int a, int c) {
+int f1(int a, int c) {
   nop();
-  return a+c+f0();
+  return a + c + f0();
 }
-

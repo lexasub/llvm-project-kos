@@ -19,6 +19,6 @@ namespace llvm {
 /// to AMDGPUPassConfig::createMachineScheduler() to have an effect.
 std::unique_ptr<ScheduleDAGMutation> createAMDGPUMacroFusionDAGMutation();
 
-} // llvm
+} // namespace llvm
 
 #endif // LLVM_LIB_TARGET_AMDGPU_AMDGPUMACROFUSION_H

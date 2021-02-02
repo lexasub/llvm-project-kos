@@ -65,8 +65,8 @@ static constexpr OptionDefinition g_option_table[] = {
      "Number of bytes to use to watch a region."}};
 
 bool OptionGroupWatchpoint::IsWatchSizeSupported(uint32_t watch_size) {
-  for (const auto& size : g_watch_size) {
-    if (0  == size.value)
+  for (const auto &size : g_watch_size) {
+    if (0 == size.value)
       break;
     if (watch_size == size.value)
       return true;

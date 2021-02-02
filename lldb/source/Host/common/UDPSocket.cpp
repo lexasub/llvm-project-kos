@@ -27,7 +27,7 @@ const int kDomain = AF_INET;
 const int kType = SOCK_DGRAM;
 
 static const char *g_not_supported_error = "Not supported";
-}
+} // namespace
 
 UDPSocket::UDPSocket(NativeSocket socket) : Socket(ProtocolUdp, true, true) {
   m_socket = socket;
@@ -112,9 +112,10 @@ UDPSocket::Connect(llvm::StringRef name, bool child_processes_inherit) {
 
   // Only bind to the loopback address if we are expecting a connection from
   // localhost to avoid any firewall issues.
-  const bool bind_addr_success = (host_str == "127.0.0.1" || host_str == "localhost")
-                                     ? bind_addr.SetToLocalhost(kDomain, port)
-                                     : bind_addr.SetToAnyAddress(kDomain, port);
+  const bool bind_addr_success =
+      (host_str == "127.0.0.1" || host_str == "localhost")
+          ? bind_addr.SetToLocalhost(kDomain, port)
+          : bind_addr.SetToAnyAddress(kDomain, port);
 
   if (!bind_addr_success) {
     error.SetErrorString("Failed to get hostspec to bind for");
@@ -126,7 +127,7 @@ UDPSocket::Connect(llvm::StringRef name, bool child_processes_inherit) {
   err = ::bind(socket->GetNativeSocket(), bind_addr, bind_addr.GetLength());
 
   struct sockaddr_in source_info;
-  socklen_t address_len = sizeof (struct sockaddr_in);
+  socklen_t address_len = sizeof(struct sockaddr_in);
   err = ::getsockname(socket->GetNativeSocket(),
                       (struct sockaddr *)&source_info, &address_len);
 

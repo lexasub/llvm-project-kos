@@ -98,7 +98,7 @@ public:
   }
 
   /// Creates a TypeSourceInfo for the given type.
-  TypeSourceInfo *getTypeSourceInfo(ASTContext& Context, QualType T) {
+  TypeSourceInfo *getTypeSourceInfo(ASTContext &Context, QualType T) {
 #ifndef NDEBUG
     assert(T == LastTy && "type doesn't match last type pushed!");
 #endif
@@ -123,7 +123,6 @@ public:
   }
 
 private:
-
   TypeLoc pushImpl(QualType T, size_t LocalSize, unsigned LocalAlignment);
 
   /// Grow to the given capacity.
@@ -143,6 +142,6 @@ private:
   }
 };
 
-}
+} // namespace clang
 
 #endif

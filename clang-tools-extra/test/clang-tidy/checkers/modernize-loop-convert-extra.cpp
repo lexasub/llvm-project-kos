@@ -159,7 +159,11 @@ void aliasing() {
   // CHECK-FIXES: for (int Alias : IntArr)
   // CHECK-FIXES-NEXT: for (unsigned J = 0; Alias; ++J)
 
-  struct IntRef { IntRef(); IntRef(const int& i); operator int*(); };
+  struct IntRef {
+    IntRef();
+    IntRef(const int &i);
+    operator int *();
+  };
   for (int I = 0; I < N; ++I) {
     IntRef Int(IntArr[I]);
   }
@@ -169,7 +173,7 @@ void aliasing() {
 
   int *PtrArr[N];
   for (unsigned I = 0; I < N; ++I) {
-    const int* const P = PtrArr[I];
+    const int *const P = PtrArr[I];
     printf("%d\n", *P);
   }
   // CHECK-MESSAGES: :[[@LINE-4]]:3: warning: use range-based for loop instead
@@ -242,7 +246,7 @@ void refs_and_vals() {
   dependent<int> Dep, Other;
   for (dependent<int>::iterator It = Dep.begin(), E = Dep.end(); It != E; ++It) {
     printf("%d\n", *It);
-    const int& Idx = Other[0];
+    const int &Idx = Other[0];
     unsigned Othersize = Other.size();
   }
   // CHECK-MESSAGES: :[[@LINE-5]]:3: warning: use range-based for loop instead
@@ -251,7 +255,7 @@ void refs_and_vals() {
   // CHECK-FIXES-NEXT: const int& Idx = Other[0];
   // CHECK-FIXES-NEXT: unsigned Othersize = Other.size();
 
-  for (int i = 0; i <  Other.size(); ++i) {
+  for (int i = 0; i < Other.size(); ++i) {
     Other.at(i);
   }
   // CHECK-MESSAGES: :[[@LINE-3]]:3: warning: use range-based for loop instead
@@ -260,7 +264,7 @@ void refs_and_vals() {
 
   for (int I = 0, E = Dep.size(); I != E; ++I) {
     int Idx = Other.at(I);
-    Other.at(I, I);  // Should not trigger assert failure.
+    Other.at(I, I); // Should not trigger assert failure.
   }
 }
 
@@ -324,7 +328,7 @@ namespace ns {
 struct St {
   int X;
 };
-}
+} // namespace ns
 
 void sameNames() {
   int Num = 0;
@@ -425,7 +429,7 @@ void typeConflict() {
   // Using the name "Val", although it is the name of an existing struct, is
   // safe in this loop since it will only exist within this scope.
   for (T::iterator It = Vals.begin(), E = Vals.end(); It != E; ++It)
-    (void) *It;
+    (void)*It;
   // CHECK-MESSAGES: :[[@LINE-2]]:3: warning: use range-based for loop instead
   // CHECK-FIXES: for (int & Val : Vals)
 
@@ -443,7 +447,7 @@ void typeConflict() {
   // Naming the variable "TD" within this loop is safe because the typedef
   // was never used within the loop.
   for (U::iterator It = TDs.begin(), E = TDs.end(); It != E; ++It)
-    (void) *It;
+    (void)*It;
   // CHECK-MESSAGES: :[[@LINE-2]]:3: warning: use range-based for loop instead
   // CHECK-FIXES: for (auto & TD : TDs)
 
@@ -451,7 +455,7 @@ void typeConflict() {
   for (U::iterator It = TDs.begin(), E = TDs.end(); It != E; ++It) {
     TD V;
     V.X = 5;
-    (void) *It;
+    (void)*It;
   }
   // CHECK-MESSAGES: :[[@LINE-5]]:3: warning: use range-based for loop instead
   // CHECK-FIXES: for (auto & It : TDs)
@@ -468,7 +472,7 @@ void typeConflict() {
   // CHECK-FIXES-NEXT: It = sizeof(St);
 }
 
-} // namespace NamingConflict
+} // namespace NamingConlict
 
 namespace FreeBeginEnd {
 
@@ -509,7 +513,7 @@ namespace Nesting {
 void g(S::iterator It);
 void const_g(S::const_iterator It);
 class Foo {
- public:
+public:
   void g(S::iterator It);
   void const_g(S::const_iterator It);
 };
@@ -622,7 +626,6 @@ void f() {
   }
   // CHECK-MESSAGES: :[[@LINE-7]]:3: warning: use range-based for loop instead
   // CHECK-FIXES: for (auto & Ss : NestS)
-
 }
 
 } // namespace Nesting
@@ -794,11 +797,15 @@ void different_type() {
 
 } // namespace SingleIterator
 
-
 namespace Macros {
 
-#define TWO_PARAM(x, y) if (x == y) {}
-#define THREE_PARAM(x, y, z) if (x == y) {z;}
+#define TWO_PARAM(x, y) \
+  if (x == y) {         \
+  }
+#define THREE_PARAM(x, y, z) \
+  if (x == y) {              \
+    z;                       \
+  }
 
 const int N = 10;
 int Arr[N];
@@ -833,13 +840,14 @@ namespace Templates {
 template <class Container>
 void set_union(Container &container) {
   for (typename Container::const_iterator SI = container.begin(),
-       SE = container.end(); SI != SE; ++SI) {
-    (void) *SI;
+                                          SE = container.end();
+       SI != SE; ++SI) {
+    (void)*SI;
   }
 
   S Ss;
   for (S::iterator SI = Ss.begin(), SE = Ss.end(); SI != SE; ++SI)
-    (void) *SI;
+    (void)*SI;
   // CHECK-MESSAGES: :[[@LINE-2]]:3: warning: use range-based for loop instead
   // CHECK-FIXES: for (auto & SI : Ss)
 }
@@ -879,7 +887,6 @@ void capturesIndex() {
   // CHECK-FIXES: for (int I : Arr)
   // CHECK-FIXES-NEXT: auto F3 = [&Arr, &I]() { int R3 = I; };
 
-
   for (int I = 0; I < N; ++I)
     auto F4 = [&Arr, &I]() { int R4 = Arr[I]; };
   // CHECK-MESSAGES: :[[@LINE-2]]:3: warning: use range-based for loop instead
@@ -892,7 +899,6 @@ void capturesIndex() {
   // CHECK-MESSAGES: :[[@LINE-2]]:3: warning: use range-based for loop instead
   // CHECK-FIXES: for (int & I : Arr)
   // CHECK-FIXES-NEXT: auto F5 = [&Arr, &I]() { int &R5 = I; };
-
 
   for (int I = 0; I < N; ++I)
     auto F6 = [&Arr, &I]() { int &R6 = Arr[I]; };
@@ -1044,8 +1050,12 @@ void captureByValue() {
 
 namespace InitLists {
 
-struct D { int Ii; };
-struct E { D Dd; };
+struct D {
+  int Ii;
+};
+struct E {
+  D Dd;
+};
 int g(int B);
 
 void f() {
@@ -1055,11 +1065,11 @@ void f() {
   // Subtrees of InitListExpr are visited twice. Test that we do not do repeated
   // replacements.
   for (unsigned I = 0; I < N; ++I) {
-    int A{ Array[I] };
-    int B{ g(Array[I]) };
-    int C{ g( { Array[I] } ) };
-    D Dd{ { g( { Array[I] } ) } };
-    E Ee{ { { g( { Array[I] } ) } } };
+    int A{Array[I]};
+    int B{g(Array[I])};
+    int C{g({Array[I]})};
+    D Dd{{g({Array[I]})}};
+    E Ee{{{g({Array[I]})}}};
   }
   // CHECK-MESSAGES: :[[@LINE-7]]:3: warning: use range-based for loop instead
   // CHECK-FIXES: for (int I : Array)
@@ -1074,12 +1084,12 @@ void f() {
 
 void bug28341() {
   char v[5];
-  for(int i = 0; i < 5; ++i) {
-      unsigned char value = v[i];
-      if (value > 127)
-        ;
-  // CHECK-MESSAGES: :[[@LINE-4]]:3: warning: use range-based for loop instead
-  // CHECK-FIXES: for(unsigned char value : v)
-  // CHECK-FIXES-NEXT: if (value > 127)
+  for (int i = 0; i < 5; ++i) {
+    unsigned char value = v[i];
+    if (value > 127)
+      ;
+    // CHECK-MESSAGES: :[[@LINE-4]]:3: warning: use range-based for loop instead
+    // CHECK-FIXES: for(unsigned char value : v)
+    // CHECK-FIXES-NEXT: if (value > 127)
   }
 }

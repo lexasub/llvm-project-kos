@@ -308,7 +308,7 @@ public:
   }
   void setJumpTableEntryInfo(int Idx, unsigned Size, MCSymbol *PCRelSym) {
     if ((unsigned)Idx >= JumpTableEntryInfo.size())
-      JumpTableEntryInfo.resize(Idx+1);
+      JumpTableEntryInfo.resize(Idx + 1);
     JumpTableEntryInfo[Idx] = std::make_pair(Size, PCRelSym);
   }
 

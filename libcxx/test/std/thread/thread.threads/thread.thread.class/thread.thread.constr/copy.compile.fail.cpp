@@ -14,9 +14,10 @@
 
 #include <thread>
 
-int main(int, char**)
-{
-    std::thread t0; (void)t0;
-    std::thread t1(t0); (void)t1;
-    return 0;
+int main(int, char**) {
+  std::thread t0;
+  (void)t0;
+  std::thread t1(t0);
+  (void)t1;
+  return 0;
 }

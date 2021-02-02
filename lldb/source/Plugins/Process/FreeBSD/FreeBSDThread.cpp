@@ -550,8 +550,8 @@ void FreeBSDThread::SignalNotify(const ProcessMessage &message) {
   if (message.GetKind() == ProcessMessage::eCrashMessage) {
     std::string stop_description = GetCrashReasonString(
         message.GetCrashReason(), message.GetFaultAddress());
-    SetStopInfo(StopInfo::CreateStopReasonWithSignal(
-        *this, signo, stop_description.c_str()));
+    SetStopInfo(StopInfo::CreateStopReasonWithSignal(*this, signo,
+                                                     stop_description.c_str()));
   } else {
     SetStopInfo(StopInfo::CreateStopReasonWithSignal(*this, signo));
   }

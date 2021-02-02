@@ -28,7 +28,7 @@ inline unsigned encodeSLEB128(int64_t Value, raw_ostream &OS,
     uint8_t Byte = Value & 0x7f;
     // NOTE: this assumes that this signed shift is an arithmetic right shift.
     Value >>= 7;
-    More = !((((Value == 0 ) && ((Byte & 0x40) == 0)) ||
+    More = !((((Value == 0) && ((Byte & 0x40) == 0)) ||
               ((Value == -1) && ((Byte & 0x40) != 0))));
     Count++;
     if (More || Count < PadTo)
@@ -57,7 +57,7 @@ inline unsigned encodeSLEB128(int64_t Value, uint8_t *p, unsigned PadTo = 0) {
     uint8_t Byte = Value & 0x7f;
     // NOTE: this assumes that this signed shift is an arithmetic right shift.
     Value >>= 7;
-    More = !((((Value == 0 ) && ((Byte & 0x40) == 0)) ||
+    More = !((((Value == 0) && ((Byte & 0x40) == 0)) ||
               ((Value == -1) && ((Byte & 0x40) != 0))));
     Count++;
     if (More || Count < PadTo)
@@ -101,8 +101,7 @@ inline unsigned encodeULEB128(uint64_t Value, raw_ostream &OS,
 
 /// Utility function to encode a ULEB128 value to a buffer. Returns
 /// the length in bytes of the encoded value.
-inline unsigned encodeULEB128(uint64_t Value, uint8_t *p,
-                              unsigned PadTo = 0) {
+inline unsigned encodeULEB128(uint64_t Value, uint8_t *p, unsigned PadTo = 0) {
   uint8_t *orig_p = p;
   unsigned Count = 0;
   do {

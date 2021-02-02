@@ -22,17 +22,17 @@
 
 #include "test_macros.h"
 
-struct X{
-    typedef std::function<void(X&)> callback_type;
-    virtual ~X() {}
+struct X {
+  typedef std::function<void(X&)> callback_type;
+  virtual ~X() {}
+
 private:
-    callback_type _cb;
+  callback_type _cb;
 };
 
 struct IncompleteReturnType {
-  std::function<IncompleteReturnType ()> fn;
+  std::function<IncompleteReturnType()> fn;
 };
-
 
 int called = 0;
 IncompleteReturnType test_fn() {
@@ -42,8 +42,7 @@ IncompleteReturnType test_fn() {
 }
 
 // See llvm.org/PR34298
-void test_pr34298()
-{
+void test_pr34298() {
   static_assert(std::is_copy_constructible<IncompleteReturnType>::value, "");
   static_assert(std::is_copy_assignable<IncompleteReturnType>::value, "");
   {

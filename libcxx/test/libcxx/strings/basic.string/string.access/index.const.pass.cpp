@@ -21,11 +21,11 @@
 #include "test_macros.h"
 
 int main(int, char**) {
-    std::string const s;
-    char c = s[0];
-    assert(c == '\0');
-    c = s[1];
-    assert(false);
+  std::string const s;
+  char c = s[0];
+  assert(c == '\0');
+  c = s[1];
+  assert(false);
 
-    return 0;
+  return 0;
 }

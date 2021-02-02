@@ -5116,7 +5116,7 @@ const ToolChain &Driver::getToolChain(const ArgList &Args,
         TC = std::make_unique<toolchains::VEToolChain>(*this, Target, Args);
 
       else*/
-        TC = std::make_unique<toolchains::Kolibri>(*this, Target, Args);
+      TC = std::make_unique<toolchains::Kolibri>(*this, Target, Args);
       break;
     case llvm::Triple::Linux:
     case llvm::Triple::ELFIAMCU:

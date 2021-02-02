@@ -100,10 +100,10 @@ public:
 
   /// Return true if new group must begin.
   bool mustBeginGroup(const MachineInstr *MI,
-                          const MCSchedClassDesc *SC = nullptr) const;
+                      const MCSchedClassDesc *SC = nullptr) const;
   /// Return true if current group must end.
   bool mustEndGroup(const MachineInstr *MI,
-                          const MCSchedClassDesc *SC = nullptr) const;
+                    const MCSchedClassDesc *SC = nullptr) const;
 
   /// Return the number of issue slots required for this MI.
   unsigned getNumMicroOps(const MachineInstr *MI,
@@ -147,15 +147,11 @@ public:
 
   /// Multiply number of micro-ops by this factor to normalize it
   /// relative to other resources.
-  unsigned getMicroOpFactor() const {
-    return MicroOpFactor;
-  }
+  unsigned getMicroOpFactor() const { return MicroOpFactor; }
 
   /// Multiply cycle count by this factor to normalize it relative to
   /// other resources. This is the number of resource units per cycle.
-  unsigned getLatencyFactor() const {
-    return ResourceLCM;
-  }
+  unsigned getLatencyFactor() const { return ResourceLCM; }
 
   /// Number of micro-ops that may be buffered for OOO execution.
   unsigned getMicroOpBufferSize() const { return SchedModel.MicroOpBufferSize; }
@@ -172,8 +168,8 @@ public:
   /// when the operand indices are already known. UseMI may be NULL for an
   /// unknown user.
   unsigned computeOperandLatency(const MachineInstr *DefMI, unsigned DefOperIdx,
-                                 const MachineInstr *UseMI, unsigned UseOperIdx)
-    const;
+                                 const MachineInstr *UseMI,
+                                 unsigned UseOperIdx) const;
 
   /// Compute the instruction latency based on the available machine
   /// model.
@@ -190,7 +186,6 @@ public:
                                bool UseDefaultDefLatency = true) const;
   unsigned computeInstrLatency(const MCInst &Inst) const;
   unsigned computeInstrLatency(unsigned Opcode) const;
-
 
   /// Output dependency latency of a pair of defs of the same register.
   ///

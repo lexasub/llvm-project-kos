@@ -37,52 +37,50 @@ static cl::opt<bool>
     ClEnableVFE("enable-vfe", cl::Hidden, cl::init(true), cl::ZeroOrMore,
                 cl::desc("Enable virtual function elimination"));
 
-STATISTIC(NumAliases  , "Number of global aliases removed");
+STATISTIC(NumAliases, "Number of global aliases removed");
 STATISTIC(NumFunctions, "Number of functions removed");
-STATISTIC(NumIFuncs,    "Number of indirect functions removed");
+STATISTIC(NumIFuncs, "Number of indirect functions removed");
 STATISTIC(NumVariables, "Number of global variables removed");
-STATISTIC(NumVFuncs,    "Number of virtual functions removed");
+STATISTIC(NumVFuncs, "Number of virtual functions removed");
 
 namespace {
-  class GlobalDCELegacyPass : public ModulePass {
-  public:
-    static char ID; // Pass identification, replacement for typeid
-    GlobalDCELegacyPass() : ModulePass(ID) {
-      initializeGlobalDCELegacyPassPass(*PassRegistry::getPassRegistry());
-    }
+class GlobalDCELegacyPass : public ModulePass {
+public:
+  static char ID; // Pass identification, replacement for typeid
+  GlobalDCELegacyPass() : ModulePass(ID) {
+    initializeGlobalDCELegacyPassPass(*PassRegistry::getPassRegistry());
+  }
 
-    // run - Do the GlobalDCE pass on the specified module, optionally updating
-    // the specified callgraph to reflect the changes.
-    //
-    bool runOnModule(Module &M) override {
-      if (skipModule(M))
-        return false;
+  // run - Do the GlobalDCE pass on the specified module, optionally updating
+  // the specified callgraph to reflect the changes.
+  //
+  bool runOnModule(Module &M) override {
+    if (skipModule(M))
+      return false;
 
-      // We need a minimally functional dummy module analysis manager. It needs
-      // to at least know about the possibility of proxying a function analysis
-      // manager.
-      FunctionAnalysisManager DummyFAM;
-      ModuleAnalysisManager DummyMAM;
-      DummyMAM.registerPass(
-          [&] { return FunctionAnalysisManagerModuleProxy(DummyFAM); });
+    // We need a minimally functional dummy module analysis manager. It needs
+    // to at least know about the possibility of proxying a function analysis
+    // manager.
+    FunctionAnalysisManager DummyFAM;
+    ModuleAnalysisManager DummyMAM;
+    DummyMAM.registerPass(
+        [&] { return FunctionAnalysisManagerModuleProxy(DummyFAM); });
 
-      auto PA = Impl.run(M, DummyMAM);
-      return !PA.areAllPreserved();
-    }
+    auto PA = Impl.run(M, DummyMAM);
+    return !PA.areAllPreserved();
+  }
 
-  private:
-    GlobalDCEPass Impl;
-  };
-}
+private:
+  GlobalDCEPass Impl;
+};
+} // namespace
 
 char GlobalDCELegacyPass::ID = 0;
-INITIALIZE_PASS(GlobalDCELegacyPass, "globaldce",
-                "Dead Global Elimination", false, false)
+INITIALIZE_PASS(GlobalDCELegacyPass, "globaldce", "Dead Global Elimination",
+                false, false)
 
 // Public interface to the GlobalDCEPass.
-ModulePass *llvm::createGlobalDCEPass() {
-  return new GlobalDCELegacyPass();
-}
+ModulePass *llvm::createGlobalDCEPass() { return new GlobalDCELegacyPass(); }
 
 /// Returns true if F is effectively empty.
 static bool isEmptyFunction(Function *F) {
@@ -279,11 +277,10 @@ void GlobalDCEPass::AddVirtualFunctionDependencies(Module &M) {
 
   ScanTypeCheckedLoadIntrinsics(M);
 
-  LLVM_DEBUG(
-    dbgs() << "VFE safe vtables:\n";
-    for (auto *VTable : VFESafeVTables)
-      dbgs() << "  " << VTable->getName() << "\n";
-  );
+  LLVM_DEBUG(dbgs() << "VFE safe vtables:\n"; for (auto *VTable
+                                                   : VFESafeVTables) dbgs()
+                                              << "  " << VTable->getName()
+                                              << "\n";);
 }
 
 PreservedAnalyses GlobalDCEPass::run(Module &M, ModuleAnalysisManager &MAM) {
@@ -366,7 +363,7 @@ PreservedAnalyses GlobalDCEPass::run(Module &M, ModuleAnalysisManager &MAM) {
   std::vector<GlobalVariable *> DeadGlobalVars; // Keep track of dead globals
   for (GlobalVariable &GV : M.globals())
     if (!AliveGlobals.count(&GV)) {
-      DeadGlobalVars.push_back(&GV);         // Keep track of dead globals
+      DeadGlobalVars.push_back(&GV); // Keep track of dead globals
       if (GV.hasInitializer()) {
         Constant *Init = GV.getInitializer();
         GV.setInitializer(nullptr);
@@ -379,13 +376,13 @@ PreservedAnalyses GlobalDCEPass::run(Module &M, ModuleAnalysisManager &MAM) {
   std::vector<Function *> DeadFunctions;
   for (Function &F : M)
     if (!AliveGlobals.count(&F)) {
-      DeadFunctions.push_back(&F);         // Keep track of dead globals
+      DeadFunctions.push_back(&F); // Keep track of dead globals
       if (!F.isDeclaration())
         F.deleteBody();
     }
 
   // The third pass drops targets of aliases which are dead...
-  std::vector<GlobalAlias*> DeadAliases;
+  std::vector<GlobalAlias *> DeadAliases;
   for (GlobalAlias &GA : M.aliases())
     if (!AliveGlobals.count(&GA)) {
       DeadAliases.push_back(&GA);
@@ -393,7 +390,7 @@ PreservedAnalyses GlobalDCEPass::run(Module &M, ModuleAnalysisManager &MAM) {
     }
 
   // The fourth pass drops targets of ifuncs which are dead...
-  std::vector<GlobalIFunc*> DeadIFuncs;
+  std::vector<GlobalIFunc *> DeadIFuncs;
   for (GlobalIFunc &GIF : M.ifuncs())
     if (!AliveGlobals.count(&GIF)) {
       DeadIFuncs.push_back(&GIF);

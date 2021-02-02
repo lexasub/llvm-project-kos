@@ -54,7 +54,7 @@ const int &compat_use_after_redecl3 = compat::g;
 // CHECK-DAG: @_ZN6compat1fE = weak_odr constant i32 6
 // CHECK-DAG: @_ZN6compat1gE = linkonce_odr constant i32 7
 
-template<typename T> struct X {
+template <typename T> struct X {
   static int a;
   static inline int b;
   static int c;
@@ -66,17 +66,17 @@ template<typename T> struct X {
 // CHECK-NOT: @_ZN1XIiE1cE
 // CHECK: @_ZN1XIiE1dE = linkonce_odr constant i32 40
 // CHECK: @_ZN1XIiE1eE = linkonce_odr global i32 50
-template<> inline int X<int>::a = 10;
+template <> inline int X<int>::a = 10;
 int &use3 = X<int>::a;
-template<> int X<int>::b = 20;
-template<> inline int X<int>::c = 30;
-template<typename T> constexpr int X<T>::d = 40;
-template<typename T> inline int X<T>::e = 50;
+template <> int X<int>::b = 20;
+template <> inline int X<int>::c = 30;
+template <typename T> constexpr int X<T>::d = 40;
+template <typename T> inline int X<T>::e = 50;
 const int *use_x_int_d = &X<int>::d;
 const int *use_x_int_e = &X<int>::e;
 
-template<typename T> struct Y;
-template<> struct Y<int> {
+template <typename T> struct Y;
+template <> struct Y<int> {
   static constexpr int a = 123;
   static constexpr int b = 456;
   static constexpr int c = 789;
@@ -103,7 +103,7 @@ const int &yib = Y<int>::b;
 // CHECK-LABEL: define {{.*}}global_var_init
 // CHECK: call i32 @_Z1fv
 
-template<typename T> inline int d = f();
+template <typename T> inline int d = f();
 int e = d<int>;
 
 // CHECK-LABEL: define {{.*}}global_var_init{{.*}}comdat
@@ -118,7 +118,9 @@ struct Marker2 {};
 
 template <typename>
 struct Foo {
-  struct Bar { Bar(); };
+  struct Bar {
+    Bar();
+  };
   inline static Bar bar;
 };
 
@@ -136,4 +138,4 @@ void run() {
 // CHECK: call void @_ZN7PR355993FooINS_7Marker1EE3BarC1Ev
 // CHECK-LABEL: define {{.*}}global_var_init{{.*}}comdat
 // CHECK: call void @_ZN7PR355993FooINS_7Marker2EE3BarC1Ev
-}
+} // namespace PR35599

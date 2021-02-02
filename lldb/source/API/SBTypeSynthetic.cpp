@@ -133,11 +133,10 @@ bool SBTypeSynthetic::GetDescription(lldb::SBStream &description,
   return false;
 }
 
-lldb::SBTypeSynthetic &SBTypeSynthetic::
-operator=(const lldb::SBTypeSynthetic &rhs) {
-  LLDB_RECORD_METHOD(lldb::SBTypeSynthetic &,
-                     SBTypeSynthetic, operator=,(const lldb::SBTypeSynthetic &),
-                     rhs);
+lldb::SBTypeSynthetic &
+SBTypeSynthetic::operator=(const lldb::SBTypeSynthetic &rhs) {
+  LLDB_RECORD_METHOD(lldb::SBTypeSynthetic &, SBTypeSynthetic, operator=,
+                     (const lldb::SBTypeSynthetic &), rhs);
 
   if (this != &rhs) {
     m_opaque_sp = rhs.m_opaque_sp;
@@ -146,8 +145,8 @@ operator=(const lldb::SBTypeSynthetic &rhs) {
 }
 
 bool SBTypeSynthetic::operator==(lldb::SBTypeSynthetic &rhs) {
-  LLDB_RECORD_METHOD(
-      bool, SBTypeSynthetic, operator==,(lldb::SBTypeSynthetic &), rhs);
+  LLDB_RECORD_METHOD(bool, SBTypeSynthetic, operator==,
+                     (lldb::SBTypeSynthetic &), rhs);
 
   if (!IsValid())
     return !rhs.IsValid();
@@ -174,8 +173,8 @@ bool SBTypeSynthetic::IsEqualTo(lldb::SBTypeSynthetic &rhs) {
 }
 
 bool SBTypeSynthetic::operator!=(lldb::SBTypeSynthetic &rhs) {
-  LLDB_RECORD_METHOD(
-      bool, SBTypeSynthetic, operator!=,(lldb::SBTypeSynthetic &), rhs);
+  LLDB_RECORD_METHOD(bool, SBTypeSynthetic, operator!=,
+                     (lldb::SBTypeSynthetic &), rhs);
 
   if (!IsValid())
     return !rhs.IsValid();
@@ -213,8 +212,7 @@ bool SBTypeSynthetic::CopyOnWrite_Impl() {
 namespace lldb_private {
 namespace repro {
 
-template <>
-void RegisterMethods<SBTypeSynthetic>(Registry &R) {
+template <> void RegisterMethods<SBTypeSynthetic>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBTypeSynthetic, ());
   LLDB_REGISTER_STATIC_METHOD(lldb::SBTypeSynthetic, SBTypeSynthetic,
                               CreateWithClassName, (const char *, uint32_t));
@@ -232,16 +230,15 @@ void RegisterMethods<SBTypeSynthetic>(Registry &R) {
   LLDB_REGISTER_METHOD(void, SBTypeSynthetic, SetOptions, (uint32_t));
   LLDB_REGISTER_METHOD(bool, SBTypeSynthetic, GetDescription,
                        (lldb::SBStream &, lldb::DescriptionLevel));
-  LLDB_REGISTER_METHOD(
-      lldb::SBTypeSynthetic &,
-      SBTypeSynthetic, operator=,(const lldb::SBTypeSynthetic &));
-  LLDB_REGISTER_METHOD(bool,
-                       SBTypeSynthetic, operator==,(lldb::SBTypeSynthetic &));
+  LLDB_REGISTER_METHOD(lldb::SBTypeSynthetic &, SBTypeSynthetic, operator=,
+                       (const lldb::SBTypeSynthetic &));
+  LLDB_REGISTER_METHOD(bool, SBTypeSynthetic, operator==,
+                       (lldb::SBTypeSynthetic &));
   LLDB_REGISTER_METHOD(bool, SBTypeSynthetic, IsEqualTo,
                        (lldb::SBTypeSynthetic &));
-  LLDB_REGISTER_METHOD(bool,
-                       SBTypeSynthetic, operator!=,(lldb::SBTypeSynthetic &));
+  LLDB_REGISTER_METHOD(bool, SBTypeSynthetic, operator!=,
+                       (lldb::SBTypeSynthetic &));
 }
 
-}
-}
+} // namespace repro
+} // namespace lldb_private

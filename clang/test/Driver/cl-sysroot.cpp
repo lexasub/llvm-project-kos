@@ -13,18 +13,18 @@
 // CHECK: "-internal-isystem" "[[ROOT]]{{/|\\\\}}Windows Kits{{/|\\\\}}10{{/|\\\\}}Include{{/|\\\\}}10.0.19041.0{{/|\\\\}}um"
 // CHECK: "-internal-isystem" "[[ROOT]]{{/|\\\\}}Windows Kits{{/|\\\\}}10{{/|\\\\}}Include{{/|\\\\}}10.0.19041.0{{/|\\\\}}winrt"
 
-#--- VC/Tools/MSVC/27.1828.18284/include/string
+#-- - VC / Tools / MSVC / 27.1828.18284 / include / string
 namespace std {
 class mystring {
 public:
   bool empty();
 };
-}
+} // namespace std
 
-#--- Windows Kits/10/Include/10.0.19041.0/ucrt/assert.h
+#-- - Windows Kits / 10 / Include / 10.0.19041.0 / ucrt / assert.h
 #define myassert(X)
 
-#--- foo.cpp
+#-- - foo.cpp
 #include <assert.h>
 #include <string>
 

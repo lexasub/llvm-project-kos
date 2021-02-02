@@ -12,7 +12,7 @@
 #ifdef EXPORT_FRAGS
 export // expected-error {{global module fragment cannot be exported}}
 #endif
-module;
+    module;
 #ifdef NO_MODULE_DECL
 // expected-error@-2 {{missing 'module' declaration at end of global module fragment introduced here}}
 #endif
@@ -40,7 +40,7 @@ module; // expected-error {{'module;' introducing a global module fragment can a
 #ifdef EXPORT_FRAGS
 export // expected-error {{private module fragment cannot be exported}}
 #endif
-module :private; // #priv-frag
+    module : private; // #priv-frag
 #ifdef NO_MODULE_DECL
 // expected-error@-2 {{private module fragment declaration with no preceding module declaration}}
 #endif
@@ -48,10 +48,9 @@ module :private; // #priv-frag
 
 int b; // ok
 
-
 #ifndef NO_PRIVATE_FRAG
 #ifndef NO_MODULE_DECL
-module :private; // expected-error {{private module fragment redefined}}
+module : private; // expected-error {{private module fragment redefined}}
 // expected-note@#priv-frag {{previous definition is here}}
 #endif
 #endif

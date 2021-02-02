@@ -25,6 +25,6 @@ public:
                                            unsigned ByteAlign,
                                            unsigned AccessGranularity){};
 };
-}
+} // namespace llvm
 
 #endif

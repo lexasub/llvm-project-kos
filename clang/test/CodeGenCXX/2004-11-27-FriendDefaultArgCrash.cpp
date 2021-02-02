@@ -3,7 +3,7 @@
 // PR447
 
 namespace nm {
-  struct str {
-    friend void foo(int arg = 0) {};
-  };
-}
+struct str {
+  friend void foo(int arg = 0){};
+};
+} // namespace nm

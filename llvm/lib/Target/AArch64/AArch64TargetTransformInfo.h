@@ -169,8 +169,7 @@ public:
   bool useNeonVector(const Type *Ty) const;
 
   int getMemoryOpCost(unsigned Opcode, Type *Src, MaybeAlign Alignment,
-                      unsigned AddressSpace,
-                      TTI::TargetCostKind CostKind,
+                      unsigned AddressSpace, TTI::TargetCostKind CostKind,
                       const Instruction *I = nullptr);
 
   int getCostOfKeepingLiveOverCall(ArrayRef<Type *> Tys);
@@ -194,12 +193,12 @@ public:
     if (Ty->isPointerTy())
       return true;
 
-    if (Ty->isBFloatTy() || Ty->isHalfTy() ||
-        Ty->isFloatTy() || Ty->isDoubleTy())
+    if (Ty->isBFloatTy() || Ty->isHalfTy() || Ty->isFloatTy() ||
+        Ty->isDoubleTy())
       return true;
 
-    if (Ty->isIntegerTy(8) || Ty->isIntegerTy(16) ||
-        Ty->isIntegerTy(32) || Ty->isIntegerTy(64))
+    if (Ty->isIntegerTy(8) || Ty->isIntegerTy(16) || Ty->isIntegerTy(32) ||
+        Ty->isIntegerTy(64))
       return true;
 
     return false;
@@ -243,18 +242,16 @@ public:
 
   bool shouldExpandReduction(const IntrinsicInst *II) const { return false; }
 
-  unsigned getGISelRematGlobalCost() const {
-    return 2;
-  }
+  unsigned getGISelRematGlobalCost() const { return 2; }
 
   bool supportsScalableVectors() const { return ST->hasSVE(); }
 
   bool useReductionIntrinsic(unsigned Opcode, Type *Ty,
                              TTI::ReductionFlags Flags) const;
 
-  int getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
-                                 bool IsPairwiseForm,
-                                 TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput);
+  int getArithmeticReductionCost(
+      unsigned Opcode, VectorType *Ty, bool IsPairwiseForm,
+      TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput);
 
   int getShuffleCost(TTI::ShuffleKind Kind, VectorType *Tp, int Index,
                      VectorType *SubTp);

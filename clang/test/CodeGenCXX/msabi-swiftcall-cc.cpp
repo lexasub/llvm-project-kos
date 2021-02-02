@@ -5,31 +5,31 @@ void __attribute__((__swiftcall__)) f() {}
 // CHECK-DAG: @"?f@@YSXXZ"
 // CHECK-64-DAG: @"?f@@YSXXZ"
 
-void (__attribute__((__swiftcall__)) *p)();
+void(__attribute__((__swiftcall__)) * p)();
 // CHECK-DAG: @"?p@@3P6SXXZA"
 // CHECK-64-DAG: @"?p@@3P6SXXZEA
 
 namespace {
-void __attribute__((__swiftcall__)) __attribute__((__used__)) f() { }
-}
+void __attribute__((__swiftcall__)) __attribute__((__used__)) f() {}
+} // namespace
 // CHECK-DAG: @"?f@?A0x{{[^@]*}}@@YSXXZ"
 // CHECK-64-DAG: @"?f@?A0x{{[^@]*}}@@YSXXZ"
 
 namespace n {
 void __attribute__((__swiftcall__)) f() {}
-}
+} // namespace n
 // CHECK-DAG: @"?f@n@@YSXXZ"
 // CHECK-64-DAG: @"?f@n@@YSXXZ"
 
 struct __declspec(dllexport) S {
   S(const S &) = delete;
-  S & operator=(const S &) = delete;
-  void __attribute__((__swiftcall__)) m() { }
+  S &operator=(const S &) = delete;
+  void __attribute__((__swiftcall__)) m() {}
 };
 // CHECK-DAG: @"?m@S@@QASXXZ"
 // CHECK-64-DAG: @"?m@S@@QEASXXZ"
 
-void f(void (__attribute__((__swiftcall__))())) {}
+void f(void(__attribute__((__swiftcall__)) ())) {}
 // CHECK-DAG: @"?f@@YAXP6SXXZ@Z"
 // CHECK-64-DAG: @"?f@@YAXP6SXXZ@Z"
 
@@ -37,31 +37,30 @@ void __attribute__((__preserve_most__)) g() {}
 // CHECK-DAG: @"?g@@YUXXZ"
 // CHECK-64-DAG: @"?g@@YUXXZ"
 
-void (__attribute__((__preserve_most__)) *q)();
+void(__attribute__((__preserve_most__)) * q)();
 // CHECK-DAG: @"?q@@3P6UXXZA"
 // CHECK-64-DAG: @"?q@@3P6UXXZEA"
 
 namespace {
 void __attribute__((__preserve_most__)) __attribute__((__used__)) g() {}
-}
+} // namespace
 // CHECK-DAG: @"?g@?A0x{{[^@]*}}@@YUXXZ"
 // CHECK-64-DAG: @"?g@?A0x{{[^@]*}}@@YUXXZ"
 
 namespace n {
 void __attribute__((__preserve_most__)) g() {}
-}
+} // namespace n
 // CHECK-DAG: @"?g@n@@YUXXZ"
 // CHECK-64-DAG: @"?g@n@@YUXXZ"
 
 struct __declspec(dllexport) T {
   T(const T &) = delete;
-  T & operator=(const T &) = delete;
+  T &operator=(const T &) = delete;
   void __attribute__((__preserve_most__)) m() {}
 };
 // CHECK-DAG: @"?m@T@@QAUXXZ"
 // CHECK-64-DAG: @"?m@T@@QEAUXXZ"
 
-void g(void (__attribute__((__preserve_most__))())) {}
+void g(void(__attribute__((__preserve_most__)) ())) {}
 // CHECK-DAG: @"?g@@YAXP6UXXZ@Z"
 // CHECK-64-DAG: @"?g@@YAXP6UXXZ@Z"
-

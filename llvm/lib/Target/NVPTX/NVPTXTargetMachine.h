@@ -67,13 +67,12 @@ public:
 
   TargetTransformInfo getTargetTransformInfo(const Function &F) override;
 
-  bool isMachineVerifierClean() const override {
-    return false;
-  }
+  bool isMachineVerifierClean() const override { return false; }
 }; // NVPTXTargetMachine.
 
 class NVPTXTargetMachine32 : public NVPTXTargetMachine {
   virtual void anchor();
+
 public:
   NVPTXTargetMachine32(const Target &T, const Triple &TT, StringRef CPU,
                        StringRef FS, const TargetOptions &Options,
@@ -83,6 +82,7 @@ public:
 
 class NVPTXTargetMachine64 : public NVPTXTargetMachine {
   virtual void anchor();
+
 public:
   NVPTXTargetMachine64(const Target &T, const Triple &TT, StringRef CPU,
                        StringRef FS, const TargetOptions &Options,

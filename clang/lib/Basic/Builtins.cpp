@@ -18,13 +18,14 @@
 using namespace clang;
 
 static const Builtin::Info BuiltinInfo[] = {
-  { "not a builtin function", nullptr, nullptr, nullptr, ALL_LANGUAGES,nullptr},
+    {"not a builtin function", nullptr, nullptr, nullptr, ALL_LANGUAGES,
+     nullptr},
 #define BUILTIN(ID, TYPE, ATTRS)                                               \
-  { #ID, TYPE, ATTRS, nullptr, ALL_LANGUAGES, nullptr },
+  {#ID, TYPE, ATTRS, nullptr, ALL_LANGUAGES, nullptr},
 #define LANGBUILTIN(ID, TYPE, ATTRS, LANGS)                                    \
-  { #ID, TYPE, ATTRS, nullptr, LANGS, nullptr },
+  {#ID, TYPE, ATTRS, nullptr, LANGS, nullptr},
 #define LIBBUILTIN(ID, TYPE, ATTRS, HEADER, LANGS)                             \
-  { #ID, TYPE, ATTRS, HEADER, LANGS, nullptr },
+  {#ID, TYPE, ATTRS, HEADER, LANGS, nullptr},
 #include "clang/Basic/Builtins.def"
 };
 
@@ -61,19 +62,20 @@ bool Builtin::Context::builtinIsSupported(const Builtin::Info &BuiltinInfo,
       (LangOpts.NoBuiltin || LangOpts.isNoBuiltinFunc(BuiltinInfo.Name)) &&
       strchr(BuiltinInfo.Attributes, 'f');
   bool MathBuiltinsUnsupported =
-    LangOpts.NoMathBuiltin && BuiltinInfo.HeaderName &&
-    llvm::StringRef(BuiltinInfo.HeaderName).equals("math.h");
+      LangOpts.NoMathBuiltin && BuiltinInfo.HeaderName &&
+      llvm::StringRef(BuiltinInfo.HeaderName).equals("math.h");
   bool GnuModeUnsupported = !LangOpts.GNUMode && (BuiltinInfo.Langs & GNU_LANG);
   bool MSModeUnsupported =
       !LangOpts.MicrosoftExt && (BuiltinInfo.Langs & MS_LANG);
   bool ObjCUnsupported = !LangOpts.ObjC && BuiltinInfo.Langs == OBJC_LANG;
-  bool OclC1Unsupported = (LangOpts.OpenCLVersion / 100) != 1 &&
-                          (BuiltinInfo.Langs & ALL_OCLC_LANGUAGES ) ==  OCLC1X_LANG;
+  bool OclC1Unsupported =
+      (LangOpts.OpenCLVersion / 100) != 1 &&
+      (BuiltinInfo.Langs & ALL_OCLC_LANGUAGES) == OCLC1X_LANG;
   bool OclC2Unsupported =
       (LangOpts.OpenCLVersion != 200 && !LangOpts.OpenCLCPlusPlus) &&
       (BuiltinInfo.Langs & ALL_OCLC_LANGUAGES) == OCLC20_LANG;
-  bool OclCUnsupported = !LangOpts.OpenCL &&
-                         (BuiltinInfo.Langs & ALL_OCLC_LANGUAGES);
+  bool OclCUnsupported =
+      !LangOpts.OpenCL && (BuiltinInfo.Langs & ALL_OCLC_LANGUAGES);
   bool OpenMPUnsupported = !LangOpts.OpenMP && BuiltinInfo.Langs == OMP_LANG;
   bool CPlusPlusUnsupported =
       !LangOpts.CPlusPlus && BuiltinInfo.Langs == CXX_LANG;
@@ -87,9 +89,9 @@ bool Builtin::Context::builtinIsSupported(const Builtin::Info &BuiltinInfo,
 /// appropriate builtin ID # and mark any non-portable builtin identifiers as
 /// such.
 void Builtin::Context::initializeBuiltins(IdentifierTable &Table,
-                                          const LangOptions& LangOpts) {
+                                          const LangOptions &LangOpts) {
   // Step #1: mark all target-independent builtins with their ID's.
-  for (unsigned i = Builtin::NotBuiltin+1; i != Builtin::FirstTSBuiltin; ++i)
+  for (unsigned i = Builtin::NotBuiltin + 1; i != Builtin::FirstTSBuiltin; ++i)
     if (builtinIsSupported(BuiltinInfo[i], LangOpts)) {
       Table.get(BuiltinInfo[i].Name).setBuiltinID(i);
     }
@@ -128,8 +130,7 @@ unsigned Builtin::Context::getRequiredVectorWidth(unsigned ID) const {
 bool Builtin::Context::isLike(unsigned ID, unsigned &FormatIdx,
                               bool &HasVAListArg, const char *Fmt) const {
   assert(Fmt && "Not passed a format string");
-  assert(::strlen(Fmt) == 2 &&
-         "Format string needs to be two characters long");
+  assert(::strlen(Fmt) == 2 && "Format string needs to be two characters long");
   assert(::toupper(Fmt[0]) == Fmt[1] &&
          "Format string is not in the form \"xX\"");
 
@@ -186,8 +187,6 @@ bool Builtin::Context::performsCallback(unsigned ID,
 }
 
 bool Builtin::Context::canBeRedeclared(unsigned ID) const {
-  return ID == Builtin::NotBuiltin ||
-         ID == Builtin::BI__va_start ||
-         (!hasReferenceArgsOrResult(ID) &&
-          !hasCustomTypechecking(ID));
+  return ID == Builtin::NotBuiltin || ID == Builtin::BI__va_start ||
+         (!hasReferenceArgsOrResult(ID) && !hasCustomTypechecking(ID));
 }

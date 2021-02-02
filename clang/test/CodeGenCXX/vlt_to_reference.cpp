@@ -2,21 +2,19 @@
 
 // CHECK-LABEL: @main
 
-struct dyn_array { 
-    int size;
-    int data[];
+struct dyn_array {
+  int size;
+  int data[];
 };
 
 int foo(dyn_array **&d) {
   return (*d)->data[1];
 }
 
-int main()
-{
-    dyn_array **d;
-    return foo(d);
+int main() {
+  dyn_array **d;
+  return foo(d);
 
-    // CHECK: call {{.+}} @{{.+}}foo{{.+}}(
-    // CHECK: ret i{{[0-9]+}}
+  // CHECK: call {{.+}} @{{.+}}foo{{.+}}(
+  // CHECK: ret i{{[0-9]+}}
 }
-

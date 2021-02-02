@@ -8,18 +8,18 @@ namespace std {
 
 template <typename T>
 class vector {
- public:
-  using const_iterator = const T*;
-  using iterator = T*;
+public:
+  using const_iterator = const T *;
+  using iterator = T *;
   using size_type = int;
 
-  void assign(size_type count, const T& value);
-  iterator insert(const_iterator pos, const T& value);
-  iterator insert(const_iterator pos, T&& value);
-  iterator insert(const_iterator pos, size_type count, const T& value);
-  void push_back(const T&);
-  void push_back(T&&);
-  void resize(size_type count, const T& value);
+  void assign(size_type count, const T &value);
+  iterator insert(const_iterator pos, const T &value);
+  iterator insert(const_iterator pos, T &&value);
+  iterator insert(const_iterator pos, size_type count, const T &value);
+  void push_back(const T &);
+  void push_back(T &&);
+  void resize(size_type count, const T &value);
 };
 
 template <typename, typename>
@@ -27,30 +27,30 @@ class pair {};
 
 template <typename T>
 class set {
- public:
-  using const_iterator = const T*;
-  using iterator = T*;
+public:
+  using const_iterator = const T *;
+  using iterator = T *;
 
-  std::pair<iterator, bool> insert(const T& value);
-  std::pair<iterator, bool> insert(T&& value);
-  iterator insert(const_iterator hint, const T& value);
-  iterator insert(const_iterator hint, T&& value);
+  std::pair<iterator, bool> insert(const T &value);
+  std::pair<iterator, bool> insert(T &&value);
+  iterator insert(const_iterator hint, const T &value);
+  iterator insert(const_iterator hint, T &&value);
 };
 
 template <typename Key, typename Value>
 class map {
- public:
+public:
   using value_type = pair<Key, Value>;
-  value_type& operator[](const Key& key);
-  value_type& operator[](Key&& key);
+  value_type &operator[](const Key &key);
+  value_type &operator[](Key &&key);
 };
 
 class basic_string_view;
 
 class basic_string {
- public:
+public:
   basic_string();
-  basic_string(const char*);
+  basic_string(const char *);
 
   operator basic_string_view() const noexcept;
 
@@ -60,24 +60,24 @@ class basic_string {
 typedef basic_string string;
 
 class basic_string_view {
- public:
-  basic_string_view(const char*);
+public:
+  basic_string_view(const char *);
 };
 
 typedef basic_string_view string_view;
 
-}  // namespace std
+} // namespace std
 
 namespace llvm {
 
 class StringRef {
- public:
+public:
   StringRef();
-  StringRef(const char*);
-  StringRef(const std::string&);
+  StringRef(const char *);
+  StringRef(const std::string &);
 };
 
-}  // namespace llvm
+} // namespace llvm
 
 std::string ReturnsAString();
 
@@ -91,7 +91,7 @@ void Positives() {
   view1 = std::string();
   // CHECK-MESSAGES: [[@LINE-1]]:3: warning: std::basic_string_view outlives
 
-  const std::string& str_ref = "";
+  const std::string &str_ref = "";
   std::string_view view3 = true ? "A" : str_ref;
   // CHECK-MESSAGES: [[@LINE-1]]:20: warning: std::basic_string_view outlives
   view3 = true ? "A" : str_ref;
@@ -110,33 +110,33 @@ const char static_array[] = "A";
 std::string_view ReturnStatements(int i, std::string value_arg,
                                   const std::string &ref_arg) {
   const char array[] = "A";
-  const char* ptr = "A";
+  const char *ptr = "A";
   std::string s;
   static std::string ss;
   switch (i) {
-    // Bad cases
-    case 0:
-      return array;  // refers to local
-      // CHECK-MESSAGES: [[@LINE-1]]:7: warning: std::basic_string_view outliv
-    case 1:
-      return s;  // refers to local
-      // CHECK-MESSAGES: [[@LINE-1]]:7: warning: std::basic_string_view outliv
-    case 2:
-      return std::string();  // refers to temporary
-      // CHECK-MESSAGES: [[@LINE-1]]:7: warning: std::basic_string_view outliv
-    case 3:
-      return value_arg;  // refers to by-value arg
-      // CHECK-MESSAGES: [[@LINE-1]]:7: warning: std::basic_string_view outliv
+  // Bad cases
+  case 0:
+    return array; // refers to local
+    // CHECK-MESSAGES: [[@LINE-1]]:7: warning: std::basic_string_view outliv
+  case 1:
+    return s; // refers to local
+    // CHECK-MESSAGES: [[@LINE-1]]:7: warning: std::basic_string_view outliv
+  case 2:
+    return std::string(); // refers to temporary
+    // CHECK-MESSAGES: [[@LINE-1]]:7: warning: std::basic_string_view outliv
+  case 3:
+    return value_arg; // refers to by-value arg
+    // CHECK-MESSAGES: [[@LINE-1]]:7: warning: std::basic_string_view outliv
 
-    // Ok cases
-    case 100:
-      return ss;  // refers to static
-    case 101:
-      return static_array;  // refers to static
-    case 102:
-      return ptr;  // pointer is ok
-    case 103:
-      return ref_arg;  // refers to by-ref arg
+  // Ok cases
+  case 100:
+    return ss; // refers to static
+  case 101:
+    return static_array; // refers to static
+  case 102:
+    return ptr; // pointer is ok
+  case 103:
+    return ref_arg; // refers to by-ref arg
   }
 
   struct S {
@@ -148,11 +148,11 @@ std::string_view ReturnStatements(int i, std::string value_arg,
     // This should not warn. The string is bound by reference.
     return s;
   };
-  (void)[=]() -> std::string_view {
+  (void)[=]()->std::string_view {
     // This should not warn. The reference is valid as long as the lambda.
     return s;
   };
-  (void)[=]() -> std::string_view {
+  (void)[=]()->std::string_view {
     // FIXME: This one should warn. We are returning a reference to a local
     // lambda variable.
     std::string local;

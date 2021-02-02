@@ -153,9 +153,7 @@ void LLVMAddScalarizerPass(LLVMPassManagerRef PM) {
   unwrap(PM)->add(createScalarizerPass());
 }
 
-void LLVMAddGVNPass(LLVMPassManagerRef PM) {
-  unwrap(PM)->add(createGVNPass());
-}
+void LLVMAddGVNPass(LLVMPassManagerRef PM) { unwrap(PM)->add(createGVNPass()); }
 
 void LLVMAddNewGVNPass(LLVMPassManagerRef PM) {
   unwrap(PM)->add(createNewGVNPass());
@@ -271,11 +269,11 @@ void LLVMAddCorrelatedValuePropagationPass(LLVMPassManagerRef PM) {
 }
 
 void LLVMAddEarlyCSEPass(LLVMPassManagerRef PM) {
-  unwrap(PM)->add(createEarlyCSEPass(false/*=UseMemorySSA*/));
+  unwrap(PM)->add(createEarlyCSEPass(false /*=UseMemorySSA*/));
 }
 
 void LLVMAddEarlyCSEMemSSAPass(LLVMPassManagerRef PM) {
-  unwrap(PM)->add(createEarlyCSEPass(true/*=UseMemorySSA*/));
+  unwrap(PM)->add(createEarlyCSEPass(true /*=UseMemorySSA*/));
 }
 
 void LLVMAddGVNHoistLegacyPass(LLVMPassManagerRef PM) {

@@ -385,8 +385,7 @@ void RangeSet::print(raw_ostream &os) const {
     else
       os << ", ";
 
-    os << '[' << i->From().toString(10) << ", " << i->To().toString(10)
-       << ']';
+    os << '[' << i->From().toString(10) << ", " << i->To().toString(10) << ']';
   }
   os << " }";
 }

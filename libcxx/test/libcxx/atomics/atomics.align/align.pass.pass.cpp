@@ -62,7 +62,7 @@ int main(int, char**) {
   CHECK_ALIGNMENT(long long);
   CHECK_ALIGNMENT(unsigned long long);
   CHECK_ALIGNMENT(std::nullptr_t);
-  CHECK_ALIGNMENT(void *);
+  CHECK_ALIGNMENT(void*);
   CHECK_ALIGNMENT(float);
   CHECK_ALIGNMENT(double);
   CHECK_ALIGNMENT(long double);
@@ -81,15 +81,21 @@ int main(int, char**) {
   CHECK_ALIGNMENT(double __attribute__((vector_size(4 * sizeof(double)))));
   CHECK_ALIGNMENT(double __attribute__((vector_size(16 * sizeof(double)))));
   CHECK_ALIGNMENT(double __attribute__((vector_size(32 * sizeof(double)))));
-  CHECK_ALIGNMENT(struct Empty {});
+  CHECK_ALIGNMENT(struct Empty{});
   CHECK_ALIGNMENT(struct OneInt { int i; });
   CHECK_ALIGNMENT(struct IntArr2 { int i[2]; });
   CHECK_ALIGNMENT(struct LLIArr2 { long long int i[2]; });
   CHECK_ALIGNMENT(struct LLIArr4 { long long int i[4]; });
   CHECK_ALIGNMENT(struct LLIArr8 { long long int i[8]; });
   CHECK_ALIGNMENT(struct LLIArr16 { long long int i[16]; });
-  CHECK_ALIGNMENT(struct Padding { char c; /* padding */ long long int i; });
-  CHECK_ALIGNMENT(union IntFloat { int i; float f; });
+  CHECK_ALIGNMENT(struct Padding {
+    char c; /* padding */
+    long long int i;
+  });
+  CHECK_ALIGNMENT(union IntFloat {
+    int i;
+    float f;
+  });
 
   return 0;
 }

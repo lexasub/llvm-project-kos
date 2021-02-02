@@ -43,6 +43,7 @@ class CallLowering {
   const TargetLowering *TLI;
 
   virtual void anchor();
+
 public:
   struct BaseArgInfo {
     Type *Ty;
@@ -139,9 +140,7 @@ public:
 
     /// Returns true if the handler is dealing with incoming arguments,
     /// i.e. those that move values from some physical location to vregs.
-    bool isIncomingArgumentHandler() const {
-      return IsIncomingArgumentHandler;
-    }
+    bool isIncomingArgumentHandler() const { return IsIncomingArgumentHandler; }
 
     /// Materialize a VReg containing the address of the specified
     /// stack-based object. This is either based on a FrameIndex or
@@ -218,13 +217,10 @@ public:
 
 protected:
   /// Getter for generic TargetLowering class.
-  const TargetLowering *getTLI() const {
-    return TLI;
-  }
+  const TargetLowering *getTLI() const { return TLI; }
 
   /// Getter for target specific TargetLowering class.
-  template <class XXXTargetLowering>
-    const XXXTargetLowering *getTLI() const {
+  template <class XXXTargetLowering> const XXXTargetLowering *getTLI() const {
     return static_cast<const XXXTargetLowering *>(TLI);
   }
 
@@ -316,9 +312,7 @@ public:
   /// \return true if the target is capable of handling swifterror values that
   /// have been promoted to a specified register. The extended versions of
   /// lowerReturn and lowerCall should be implemented.
-  virtual bool supportSwiftError() const {
-    return false;
-  }
+  virtual bool supportSwiftError() const { return false; }
 
   /// Load the returned value from the stack into virtual registers in \p VRegs.
   /// It uses the frame index \p FI and the start offset from \p DemoteReg.

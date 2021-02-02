@@ -29,6 +29,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "llvm/CodeGen/MachinePipeliner.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/BitVector.h"
 #include "llvm/ADT/DenseMap.h"
@@ -54,7 +55,6 @@
 #include "llvm/CodeGen/MachineLoopInfo.h"
 #include "llvm/CodeGen/MachineMemOperand.h"
 #include "llvm/CodeGen/MachineOperand.h"
-#include "llvm/CodeGen/MachinePipeliner.h"
 #include "llvm/CodeGen/MachineRegisterInfo.h"
 #include "llvm/CodeGen/ModuloSchedule.h"
 #include "llvm/CodeGen/RegisterPressure.h"
@@ -118,8 +118,8 @@ static cl::opt<bool> EnableSWPOptSize("enable-pipeliner-opt-size",
 
 /// A command line argument to limit minimum initial interval for pipelining.
 static cl::opt<int> SwpMaxMii("pipeliner-max-mii",
-                              cl::desc("Size limit for the MII."),
-                              cl::Hidden, cl::init(27));
+                              cl::desc("Size limit for the MII."), cl::Hidden,
+                              cl::init(27));
 
 /// A command line argument to limit the number of stages in the pipeline.
 static cl::opt<int>
@@ -168,10 +168,9 @@ static cl::opt<bool> ExperimentalCodeGen(
 namespace llvm {
 
 // A command line option to enable the CopyToPhi DAG mutation.
-cl::opt<bool>
-    SwpEnableCopyToPhi("pipeliner-enable-copytophi", cl::ReallyHidden,
-                       cl::init(true), cl::ZeroOrMore,
-                       cl::desc("Enable CopyToPhi DAG Mutation"));
+cl::opt<bool> SwpEnableCopyToPhi("pipeliner-enable-copytophi", cl::ReallyHidden,
+                                 cl::init(true), cl::ZeroOrMore,
+                                 cl::desc("Enable CopyToPhi DAG Mutation"));
 
 } // end namespace llvm
 
@@ -188,8 +187,8 @@ INITIALIZE_PASS_DEPENDENCY(AAResultsWrapperPass)
 INITIALIZE_PASS_DEPENDENCY(MachineLoopInfo)
 INITIALIZE_PASS_DEPENDENCY(MachineDominatorTree)
 INITIALIZE_PASS_DEPENDENCY(LiveIntervals)
-INITIALIZE_PASS_END(MachinePipeliner, DEBUG_TYPE,
-                    "Modulo Software Pipelining", false, false)
+INITIALIZE_PASS_END(MachinePipeliner, DEBUG_TYPE, "Modulo Software Pipelining",
+                    false, false)
 
 /// The "main" function for implementing Swing Modulo Scheduling.
 bool MachinePipeliner::runOnMachineFunction(MachineFunction &mf) {
@@ -302,11 +301,12 @@ void MachinePipeliner::setPragmaPipelineOptions(MachineLoop &L) {
       continue;
 
     if (S->getString() == "llvm.loop.pipeline.initiationinterval") {
-      assert(MD->getNumOperands() == 2 &&
-             "Pipeline initiation interval hint metadata should have two operands.");
+      assert(MD->getNumOperands() == 2 && "Pipeline initiation interval hint "
+                                          "metadata should have two operands.");
       II_setByPragma =
           mdconst::extract<ConstantInt>(MD->getOperand(1))->getZExtValue();
-      assert(II_setByPragma >= 1 && "Pipeline initiation interval must be positive.");
+      assert(II_setByPragma >= 1 &&
+             "Pipeline initiation interval must be positive.");
     } else if (S->getString() == "llvm.loop.pipeline.disable") {
       disabledByPragma = true;
     }
@@ -398,12 +398,12 @@ void MachinePipeliner::preprocessPhiNodes(MachineBasicBlock &B) {
       // If the operand uses a subregister, replace it with a new register
       // without subregisters, and generate a copy to the new register.
       Register NewReg = MRI.createVirtualRegister(RC);
-      MachineBasicBlock &PredB = *PI.getOperand(i+1).getMBB();
+      MachineBasicBlock &PredB = *PI.getOperand(i + 1).getMBB();
       MachineBasicBlock::iterator At = PredB.getFirstTerminator();
       const DebugLoc &DL = PredB.findDebugLoc(At);
-      auto Copy = BuildMI(PredB, At, DL, TII->get(TargetOpcode::COPY), NewReg)
-                    .addReg(RegOp.getReg(), getRegState(RegOp),
-                            RegOp.getSubReg());
+      auto Copy =
+          BuildMI(PredB, At, DL, TII->get(TargetOpcode::COPY), NewReg)
+              .addReg(RegOp.getReg(), getRegState(RegOp), RegOp.getSubReg());
       Slots.insertMachineInstrInMaps(*Copy);
       RegOp.setReg(NewReg);
       RegOp.setSubReg(0);
@@ -562,7 +562,7 @@ void SwingSchedulerDAG::schedule() {
   SMSchedule Schedule(Pass.MF);
   Scheduled = schedulePipeline(Schedule);
 
-  if (!Scheduled){
+  if (!Scheduled) {
     LLVM_DEBUG(dbgs() << "No schedule found, return\n");
     NumFailNoSchedule++;
     Pass.ORE->emit([&]() {
@@ -739,7 +739,7 @@ static void getUnderlyingObjects(const MachineInstr *MI,
 void SwingSchedulerDAG::addLoopCarriedDependences(AliasAnalysis *AA) {
   MapVector<const Value *, SmallVector<SUnit *, 4>> PendingLoads;
   Value *UnknownValue =
-    UndefValue::get(Type::getVoidTy(MF.getFunction().getContext()));
+      UndefValue::get(Type::getVoidTy(MF.getFunction().getContext()));
   for (auto &SU : SUnits) {
     MachineInstr &MI = *SU.getInstr();
     if (isDependenceBarrier(MI, AA))
@@ -1096,7 +1096,7 @@ struct FuncUnitSorter {
 unsigned SwingSchedulerDAG::calculateResMII() {
 
   LLVM_DEBUG(dbgs() << "calculateResMII:\n");
-  SmallVector<ResourceManager*, 8> Resources;
+  SmallVector<ResourceManager *, 8> Resources;
   MachineBasicBlock *MBB = Loop.getHeader();
   Resources.push_back(new ResourceManager(&MF.getSubtarget()));
 
@@ -1651,14 +1651,14 @@ static void computeLiveOuts(MachineFunction &MF, RegPressureTracker &RPTracker,
         Register Reg = MO.getReg();
         if (Register::isVirtualRegister(Reg)) {
           if (!Uses.count(Reg))
-            LiveOutRegs.push_back(RegisterMaskPair(Reg,
-                                                   LaneBitmask::getNone()));
+            LiveOutRegs.push_back(
+                RegisterMaskPair(Reg, LaneBitmask::getNone()));
         } else if (MRI.isAllocatable(Reg)) {
           for (MCRegUnitIterator Units(Reg.asMCReg(), TRI); Units.isValid();
                ++Units)
             if (!Uses.count(*Units))
-              LiveOutRegs.push_back(RegisterMaskPair(*Units,
-                                                     LaneBitmask::getNone()));
+              LiveOutRegs.push_back(
+                  RegisterMaskPair(*Units, LaneBitmask::getNone()));
         }
       }
   RPTracker.addLiveRegs(LiveOutRegs);
@@ -2043,8 +2043,8 @@ void SwingSchedulerDAG::computeNodeOrder(NodeSetType &NodeSets) {
 /// of the instructions, if possible. Return true if a schedule is found.
 bool SwingSchedulerDAG::schedulePipeline(SMSchedule &Schedule) {
 
-  if (NodeOrder.empty()){
-    LLVM_DEBUG(dbgs() << "NodeOrder is empty! abort scheduling\n" );
+  if (NodeOrder.empty()) {
+    LLVM_DEBUG(dbgs() << "NodeOrder is empty! abort scheduling\n");
     return false;
   }
 
@@ -2872,7 +2872,7 @@ void SwingSchedulerDAG::fixupRegisterOverlaps(std::deque<SUnit *> &Instrs) {
         // Check that the instruction appears in the InstrChanges structure,
         // which contains instructions that can have the offset updated.
         DenseMap<SUnit *, std::pair<unsigned, int64_t>>::iterator It =
-          InstrChanges.find(SU);
+            InstrChanges.find(SU);
         if (It != InstrChanges.end()) {
           unsigned BasePos, OffsetPos;
           // Update the base register and adjust the offset.

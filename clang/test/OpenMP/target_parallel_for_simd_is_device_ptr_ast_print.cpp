@@ -15,7 +15,7 @@ struct ST {
 typedef int arr[10];
 typedef ST STarr[10];
 struct SA {
-  const int da[5] = { 0 };
+  const int da[5] = {0};
   ST g[10];
   STarr &rg = g;
   int i;
@@ -26,28 +26,28 @@ struct SA {
   arr &raa = aa;
   void func(int arg) {
 #pragma omp target parallel for simd is_device_ptr(k)
-  for (int i=0; i<100; i++)
-    ;
+    for (int i = 0; i < 100; i++)
+      ;
 #pragma omp target parallel for simd is_device_ptr(z)
-  for (int i=0; i<100; i++)
-    ;
+    for (int i = 0; i < 100; i++)
+      ;
 #pragma omp target parallel for simd is_device_ptr(aa) // OK
-  for (int i=0; i<100; i++)
-    ;
+    for (int i = 0; i < 100; i++)
+      ;
 #pragma omp target parallel for simd is_device_ptr(raa) // OK
-  for (int i=0; i<100; i++)
-    ;
+    for (int i = 0; i < 100; i++)
+      ;
 #pragma omp target parallel for simd is_device_ptr(g) // OK
-  for (int i=0; i<100; i++)
-    ;
+    for (int i = 0; i < 100; i++)
+      ;
 #pragma omp target parallel for simd is_device_ptr(rg) // OK
-  for (int i=0; i<100; i++)
-    ;
+    for (int i = 0; i < 100; i++)
+      ;
 #pragma omp target parallel for simd is_device_ptr(da) // OK
-  for (int i=0; i<100; i++)
-    ;
-  return;
- }
+    for (int i = 0; i < 100; i++)
+      ;
+    return;
+  }
 };
 // CHECK: struct SA
 // CHECK-NEXT: const int da[5] = {0};
@@ -116,9 +116,10 @@ struct S1;
 extern S1 a;
 class S2 {
   mutable int a;
+
 public:
-  S2():a(0) { }
-  S2(S2 &s2):a(s2.a) { }
+  S2() : a(0) {}
+  S2(S2 &s2) : a(s2.a) {}
   static float S2s;
   static const float S2sc;
 };
@@ -127,9 +128,10 @@ const S2 b;
 const S2 ba[5];
 class S3 {
   int a;
+
 public:
-  S3():a(0) { }
-  S3(S3 &s3):a(s3.a) { }
+  S3() : a(0) {}
+  S3(S3 &s3) : a(s3.a) {}
 };
 const S3 c;
 const S3 ca[5];
@@ -138,15 +140,17 @@ class S4 {
   int a;
   S4();
   S4(const S4 &s4);
+
 public:
-  S4(int v):a(v) { }
+  S4(int v) : a(v) {}
 };
 class S5 {
   int a;
-  S5():a(0) {}
-  S5(const S5 &s5):a(s5.a) { }
+  S5() : a(0) {}
+  S5(const S5 &s5) : a(s5.a) {}
+
 public:
-  S5(int v):a(v) { }
+  S5(int v) : a(v) {}
 };
 
 S3 h;
@@ -158,7 +162,7 @@ typedef struct {
 
 template <typename T>
 T tmain(T argc) {
-  const T da[5] = { 0 };
+  const T da[5] = {0};
   S6 h[10];
   auto &rh = h;
   T i;
@@ -168,25 +172,25 @@ T tmain(T argc) {
   T aa[10];
   auto &raa = aa;
 #pragma omp target parallel for simd is_device_ptr(k)
-  for (int i=0; i<100; i++)
+  for (int i = 0; i < 100; i++)
     ;
 #pragma omp target parallel for simd is_device_ptr(z)
-  for (int i=0; i<100; i++)
+  for (int i = 0; i < 100; i++)
     ;
 #pragma omp target parallel for simd is_device_ptr(aa)
-  for (int i=0; i<100; i++)
+  for (int i = 0; i < 100; i++)
     ;
 #pragma omp target parallel for simd is_device_ptr(raa)
-  for (int i=0; i<100; i++)
+  for (int i = 0; i < 100; i++)
     ;
 #pragma omp target parallel for simd is_device_ptr(h)
-  for (int i=0; i<100; i++)
+  for (int i = 0; i < 100; i++)
     ;
 #pragma omp target parallel for simd is_device_ptr(rh)
-  for (int i=0; i<100; i++)
+  for (int i = 0; i < 100; i++)
     ;
 #pragma omp target parallel for simd is_device_ptr(da)
-  for (int i=0; i<100; i++)
+  for (int i = 0; i < 100; i++)
     ;
   return 0;
 }
@@ -257,7 +261,7 @@ T tmain(T argc) {
 
 // CHECK-LABEL: int main(int argc, char **argv) {
 int main(int argc, char **argv) {
-  const int da[5] = { 0 };
+  const int da[5] = {0};
   S6 h[10];
   auto &rh = h;
   int i;
@@ -276,47 +280,47 @@ int main(int argc, char **argv) {
 // CHECK-NEXT: int aa[10];
 // CHECK-NEXT: auto &raa = aa;
 #pragma omp target parallel for simd is_device_ptr(k)
-// CHECK-NEXT: #pragma omp target parallel for simd is_device_ptr(k)
-  for (int i=0; i<100; i++)
+  // CHECK-NEXT: #pragma omp target parallel for simd is_device_ptr(k)
+  for (int i = 0; i < 100; i++)
     ;
 // CHECK-NEXT: for (int i = 0; i < 100; i++)
 // CHECK-NEXT: ;
 #pragma omp target parallel for simd is_device_ptr(z)
-// CHECK-NEXT: #pragma omp target parallel for simd is_device_ptr(z)
-  for (int i=0; i<100; i++)
+  // CHECK-NEXT: #pragma omp target parallel for simd is_device_ptr(z)
+  for (int i = 0; i < 100; i++)
     ;
 // CHECK-NEXT: for (int i = 0; i < 100; i++)
 // CHECK-NEXT: ;
 #pragma omp target parallel for simd is_device_ptr(aa)
-// CHECK-NEXT: #pragma omp target parallel for simd is_device_ptr(aa)
-  for (int i=0; i<100; i++)
+  // CHECK-NEXT: #pragma omp target parallel for simd is_device_ptr(aa)
+  for (int i = 0; i < 100; i++)
     ;
 // CHECK-NEXT: for (int i = 0; i < 100; i++)
 // CHECK-NEXT: ;
 #pragma omp target parallel for simd is_device_ptr(raa)
-// CHECK-NEXT: #pragma omp target parallel for simd is_device_ptr(raa)
-  for (int i=0; i<100; i++)
+  // CHECK-NEXT: #pragma omp target parallel for simd is_device_ptr(raa)
+  for (int i = 0; i < 100; i++)
     ;
 // CHECK-NEXT: for (int i = 0; i < 100; i++)
 // CHECK-NEXT: ;
 #pragma omp target parallel for simd is_device_ptr(h)
-// CHECK-NEXT: #pragma omp target parallel for simd is_device_ptr(h)
-  for (int i=0; i<100; i++)
+  // CHECK-NEXT: #pragma omp target parallel for simd is_device_ptr(h)
+  for (int i = 0; i < 100; i++)
     ;
 // CHECK-NEXT: for (int i = 0; i < 100; i++)
 // CHECK-NEXT: ;
 #pragma omp target parallel for simd is_device_ptr(rh)
-// CHECK-NEXT: #pragma omp target parallel for simd is_device_ptr(rh)
-  for (int i=0; i<100; i++)
+  // CHECK-NEXT: #pragma omp target parallel for simd is_device_ptr(rh)
+  for (int i = 0; i < 100; i++)
     ;
 // CHECK-NEXT: for (int i = 0; i < 100; i++)
 // CHECK-NEXT: ;
 #pragma omp target parallel for simd is_device_ptr(da)
-// CHECK-NEXT: #pragma omp target parallel for simd is_device_ptr(da)
-  for (int i=0; i<100; i++)
+  // CHECK-NEXT: #pragma omp target parallel for simd is_device_ptr(da)
+  for (int i = 0; i < 100; i++)
     ;
-// CHECK-NEXT: for (int i = 0; i < 100; i++)
-// CHECK-NEXT: ;
+  // CHECK-NEXT: for (int i = 0; i < 100; i++)
+  // CHECK-NEXT: ;
   return tmain<int>(argc) + *tmain<int *>(&argc);
 }
 #endif

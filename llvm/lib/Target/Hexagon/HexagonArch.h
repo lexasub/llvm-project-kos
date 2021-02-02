@@ -9,10 +9,10 @@
 #ifndef LLVM_LIB_TARGET_HEXAGON_HEXAGONARCH_H
 #define LLVM_LIB_TARGET_HEXAGON_HEXAGONARCH_H
 
+#include "HexagonDepArch.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/Optional.h"
 #include "llvm/ADT/StringRef.h"
-#include "HexagonDepArch.h"
 #include <algorithm>
 
 namespace llvm {
@@ -34,4 +34,4 @@ llvm::Optional<ArchEnum> GetCpu(ArchCont const &ArchList, Val CPUString) {
 }
 } // namespace Hexagon
 } // namespace llvm
-#endif  // LLVM_LIB_TARGET_HEXAGON_HEXAGONARCH_H
+#endif // LLVM_LIB_TARGET_HEXAGON_HEXAGONARCH_H

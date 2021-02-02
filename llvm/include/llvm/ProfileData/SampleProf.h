@@ -339,7 +339,8 @@ public:
   }
 
   /// Sort call targets in descending order of call frequency.
-  static const SortedCallTargetSet SortCallTargets(const CallTargetMap &Targets) {
+  static const SortedCallTargetSet
+  SortCallTargets(const CallTargetMap &Targets) {
     SortedCallTargetSet SortedTargets;
     for (const auto &I : Targets) {
       SortedTargets.emplace(I.first(), I.second);
@@ -393,9 +394,10 @@ public:
     setContext(ContextStr, CState);
   }
 
-  // Promote context by removing top frames (represented by `ContextStrToRemove`).
-  // Note that with string representation of context, the promotion is effectively
-  // a substr operation with `ContextStrToRemove` removed from left.
+  // Promote context by removing top frames (represented by
+  // `ContextStrToRemove`). Note that with string representation of context, the
+  // promotion is effectively a substr operation with `ContextStrToRemove`
+  // removed from left.
   void promoteOnPath(StringRef ContextStrToRemove) {
     assert(FullContext.startswith(ContextStrToRemove));
 
@@ -772,7 +774,7 @@ public:
   }
 
   static StringRef getCanonicalFnName(StringRef FnName, StringRef Attr = "") {
-    static const char *knownSuffixes[] = { ".llvm.", ".part." };
+    static const char *knownSuffixes[] = {".llvm.", ".part."};
     if (Attr == "" || Attr == "all") {
       return FnName.split('.').first;
     } else if (Attr == "selected") {
@@ -806,7 +808,8 @@ public:
     if (!UseMD5)
       return Name;
 
-    assert(GUIDToFuncNameMap && "GUIDToFuncNameMap needs to be popluated first");
+    assert(GUIDToFuncNameMap &&
+           "GUIDToFuncNameMap needs to be popluated first");
     return GUIDToFuncNameMap->lookup(std::stoull(Name.data()));
   }
 

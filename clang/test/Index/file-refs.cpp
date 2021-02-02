@@ -1,10 +1,10 @@
 namespace NS {
-  class C {
-  public:
-    C() { }
-    void m();
-  };
-}
+class C {
+public:
+  C() {}
+  void m();
+};
+} // namespace NS
 
 void NS::C::m() {
   C c;
@@ -40,11 +40,11 @@ typedef S Cake;
 
 void f() {
   Cake p;
-  p = Test2::S(0,2);
-  p = Test2::Cake(0,2);
+  p = Test2::S(0, 2);
+  p = Test2::Cake(0, 2);
 }
 
-}
+} // namespace Test2
 
 // RUN: c-index-test \
 

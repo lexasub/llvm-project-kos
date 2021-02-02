@@ -25,7 +25,7 @@ const AliasAttr AttrUnknown = 1 << AttrUnknownIndex;
 const AliasAttr AttrGlobal = 1 << AttrGlobalIndex;
 const AliasAttr AttrCaller = 1 << AttrCallerIndex;
 const AliasAttr ExternalAttrMask = AttrEscaped | AttrUnknown | AttrGlobal;
-}
+} // namespace
 
 AliasAttrs getAttrNone() { return AttrNone; }
 
@@ -100,5 +100,5 @@ Optional<InstantiatedAttr> instantiateExternalAttribute(ExternalAttribute EAttr,
     return None;
   return InstantiatedAttr{*Value, EAttr.Attr};
 }
-}
-}
+} // namespace cflaa
+} // namespace llvm

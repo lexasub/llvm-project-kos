@@ -41,7 +41,7 @@ namespace {
 
 // Returns true if the given Loc is valid for edit. We don't edit the
 // SourceLocations that are valid or in temporary buffer.
-bool IsValidEditLoc(const clang::SourceManager& SM, clang::SourceLocation Loc) {
+bool IsValidEditLoc(const clang::SourceManager &SM, clang::SourceLocation Loc) {
   if (Loc.isInvalid())
     return false;
   const clang::FullSourceLoc FullLoc(Loc, SM);
@@ -194,7 +194,7 @@ public:
     if (isInUSRSet(Decl)) {
       // For the case of renaming an alias template, we actually rename the
       // underlying alias declaration of the template.
-      if (const auto* TAT = dyn_cast<TypeAliasTemplateDecl>(Decl))
+      if (const auto *TAT = dyn_cast<TypeAliasTemplateDecl>(Decl))
         Decl = TAT->getTemplatedDecl();
 
       auto StartLoc = Decl->getLocation();
@@ -218,10 +218,10 @@ public:
     auto EndLoc = Expr->getMemberLoc();
     if (isInUSRSet(Decl)) {
       RenameInfos.push_back({StartLoc, EndLoc,
-                            /*FromDecl=*/nullptr,
-                            /*Context=*/nullptr,
-                            /*Specifier=*/nullptr,
-                            /*IgnorePrefixQualifiers=*/true});
+                             /*FromDecl=*/nullptr,
+                             /*Context=*/nullptr,
+                             /*Specifier=*/nullptr,
+                             /*IgnorePrefixQualifiers=*/true});
     }
     return true;
   }
@@ -449,7 +449,7 @@ private:
   // Get the supported declaration from a given typeLoc. If the declaration type
   // is not supported, returns nullptr.
   const NamedDecl *getSupportedDeclFromTypeLoc(TypeLoc Loc) {
-    if (const auto* TT = Loc.getType()->getAs<clang::TypedefType>())
+    if (const auto *TT = Loc.getType()->getAs<clang::TypedefType>())
       return TT->getDecl();
     if (const auto *RD = Loc.getType()->getAsCXXRecordDecl())
       return RD;

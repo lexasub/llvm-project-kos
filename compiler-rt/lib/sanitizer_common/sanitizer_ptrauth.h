@@ -20,4 +20,4 @@
 
 #define STRIP_PC(pc) ((uptr)ptrauth_strip(pc, 0))
 
-#endif // SANITIZER_PTRAUTH_H
+#endif  // SANITIZER_PTRAUTH_H

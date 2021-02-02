@@ -5,16 +5,16 @@
 #include <stdio.h>
 
 int main() {
-  int *p = (int*)malloc(1024 * sizeof(int));
+  int *p = (int *)malloc(1024 * sizeof(int));
   p[512] = 0;
   free(p);
 
-  p = (int*)malloc(128);
-  p = (int*)realloc(p, 2048 * sizeof(int));
+  p = (int *)malloc(128);
+  p = (int *)realloc(p, 2048 * sizeof(int));
   p[1024] = 0;
   free(p);
 
-  p = (int*)calloc(16, sizeof(int));
+  p = (int *)calloc(16, sizeof(int));
   if (p[8] != 0)
     return 1;
   p[15]++;
@@ -28,10 +28,10 @@ int main() {
 
   p = new int[42];
   p[15]++;
-  delete [] p;
+  delete[] p;
 
   printf("All ok\n");
-// CHECK: All ok
+  // CHECK: All ok
 
   return 0;
 }

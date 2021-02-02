@@ -49,7 +49,6 @@ Defaulted_Non_Trivial def_non_trivial;
 // CHECK: call void {{.*}}Defaulted_Non_TrivialD2
 // CHECK: ret void
 
-
 // Note: ordering is important. In the emitted bytecode, these
 // second dtors defined after the first. Explicitly checked here
 // to confirm that all invoked dtors have member poisoning

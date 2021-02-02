@@ -18,7 +18,7 @@ int main() {
 #else
   double v = 1.1;
 #endif
-  double* volatile p = &v;
+  double *volatile p = &v;
   int x = to_int(*p);
   return !x;
 }

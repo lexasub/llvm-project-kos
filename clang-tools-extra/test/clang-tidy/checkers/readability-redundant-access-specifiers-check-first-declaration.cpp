@@ -36,7 +36,9 @@ class ValidInnerStruct {
   };
 };
 
-#define MIXIN private: int b;
+#define MIXIN \
+private:      \
+  int b;
 
 class ValidMacro {
   MIXIN

@@ -142,23 +142,22 @@ enum {
 // register state structures are defined correctly and have the correct sizes
 // and offsets.
 #define DEFINE_GPR(reg, alt)                                                   \
-  #reg, alt, sizeof(((RegisterContextDarwin_i386::GPR *) NULL)->reg),          \
-                    GPR_OFFSET(reg), eEncodingUint, eFormatHex
+#reg, alt, sizeof(((RegisterContextDarwin_i386::GPR *)NULL)->reg),           \
+      GPR_OFFSET(reg), eEncodingUint, eFormatHex
 #define DEFINE_FPU_UINT(reg)                                                   \
-  #reg, NULL, sizeof(((RegisterContextDarwin_i386::FPU *) NULL)->reg),         \
-                     FPU_OFFSET(reg), eEncodingUint, eFormatHex
+#reg, NULL, sizeof(((RegisterContextDarwin_i386::FPU *)NULL)->reg),          \
+      FPU_OFFSET(reg), eEncodingUint, eFormatHex
 #define DEFINE_FPU_VECT(reg, i)                                                \
-  #reg #i, NULL,                                                               \
-      sizeof(((RegisterContextDarwin_i386::FPU *) NULL)->reg[i].bytes),        \
-              FPU_OFFSET(reg[i]), eEncodingVector, eFormatVectorOfUInt8,       \
-                         {LLDB_INVALID_REGNUM, dwarf_##reg##i,                 \
-                          LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,            \
-                          fpu_##reg##i },                                      \
-                          nullptr, nullptr, nullptr, 0
+#reg #i, NULL,                                                               \
+      sizeof(((RegisterContextDarwin_i386::FPU *)NULL)->reg[i].bytes),         \
+      FPU_OFFSET(reg[i]), eEncodingVector, eFormatVectorOfUInt8,               \
+      {LLDB_INVALID_REGNUM, dwarf_##reg##i, LLDB_INVALID_REGNUM,               \
+       LLDB_INVALID_REGNUM, fpu_##reg##i },                                    \
+       nullptr, nullptr, nullptr, 0
 
 #define DEFINE_EXC(reg)                                                        \
-  #reg, NULL, sizeof(((RegisterContextDarwin_i386::EXC *) NULL)->reg),         \
-                     EXC_OFFSET(reg), eEncodingUint, eFormatHex
+#reg, NULL, sizeof(((RegisterContextDarwin_i386::EXC *)NULL)->reg),          \
+      EXC_OFFSET(reg), eEncodingUint, eFormatHex
 #define REG_CONTEXT_SIZE                                                       \
   (sizeof(RegisterContextDarwin_i386::GPR) +                                   \
    sizeof(RegisterContextDarwin_i386::FPU) +                                   \
@@ -459,7 +458,10 @@ const size_t k_num_exc_registers = llvm::array_lengthof(g_exc_regnums);
 // information for the all register set need not be filled in.
 static const RegisterSet g_reg_sets[] = {
     {
-        "General Purpose Registers", "gpr", k_num_gpr_registers, g_gpr_regnums,
+        "General Purpose Registers",
+        "gpr",
+        k_num_gpr_registers,
+        g_gpr_regnums,
     },
     {"Floating Point Registers", "fpu", k_num_fpu_registers, g_fpu_regnums},
     {"Exception State Registers", "exc", k_num_exc_registers, g_exc_regnums}};
@@ -669,7 +671,7 @@ bool RegisterContextDarwin_i386::ReadRegister(const RegisterInfo *reg_info,
     // These values don't fit into scalar types,
     // RegisterContext::ReadRegisterBytes() must be used for these registers
     //::memcpy (reg_value.value.vector.uint8, fpu.stmm[reg - fpu_stmm0].bytes,
-    //10);
+    // 10);
     return false;
 
   case fpu_xmm0:
@@ -683,7 +685,7 @@ bool RegisterContextDarwin_i386::ReadRegister(const RegisterInfo *reg_info,
     // These values don't fit into scalar types,
     // RegisterContext::ReadRegisterBytes() must be used for these registers
     //::memcpy (reg_value.value.vector.uint8, fpu.xmm[reg - fpu_xmm0].bytes,
-    //16);
+    // 16);
     return false;
 
   case exc_trapno:

@@ -26,7 +26,7 @@ static void printLine(raw_ostream &OS, const Twine &Prefix, char Fill,
          "header line exceeds max limit");
   OS << Prefix;
   for (size_t i = (size_t)OS.tell() - Pos, e = MAX_LINE_LEN - Suffix.size();
-         i < e; ++i)
+       i < e; ++i)
     OS << Fill;
   OS << Suffix << '\n';
 }
@@ -46,7 +46,7 @@ void llvm::emitSourceFileHeader(StringRef Desc, raw_ostream &OS) {
   } while (Pos < Desc.size());
   printLine(OS, Prefix, ' ', Suffix);
   printLine(OS, Prefix + "Automatically generated file, do not edit!", ' ',
-    Suffix);
+            Suffix);
   printLine(OS, Prefix, ' ', Suffix);
   printLine(OS, "\\*===", '-', "===*/");
   OS << '\n';

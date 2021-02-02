@@ -19,25 +19,22 @@
 
 #include "../A.h"
 
-void
-test()
-{
-    {
+void test() {
+  {
     A* p = new A(1);
     std::auto_ptr<A> ap = p;
     assert(ap.get() == p);
     assert(A::count == 1);
-    }
-    assert(A::count == 0);
-    {
+  }
+  assert(A::count == 0);
+  {
     std::auto_ptr<A> ap;
     assert(ap.get() == 0);
-    }
+  }
 }
 
-int main(int, char**)
-{
-    test();
+int main(int, char**) {
+  test();
 
   return 0;
 }

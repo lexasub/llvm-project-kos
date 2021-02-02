@@ -1,5 +1,5 @@
-template<typename T, typename>
-class ClassTmpl { };
+template <typename T, typename>
+class ClassTmpl {};
 
 typedef int Integer;
 
@@ -7,10 +7,10 @@ template class ClassTmpl<Integer, Integer>;
 
 void f(ClassTmpl<float, Integer> p);
 
-template<typename T>
+template <typename T>
 void g(ClassTmpl<T, T>);
 
-template<> void g<int>(ClassTmpl<int, int>);
+template <> void g<int>(ClassTmpl<int, int>);
 
 // RUN: c-index-test -test-load-source all-display %s | FileCheck %s --check-prefix=DISPLAY_NAME
 // DISPLAY_NAME: print-display-names.cpp:2:7: ClassTemplate=ClassTmpl<T, typename>:2:7

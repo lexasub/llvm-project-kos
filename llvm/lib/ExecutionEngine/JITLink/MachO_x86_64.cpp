@@ -312,8 +312,8 @@ private:
         case PCRel32Minus1Anon:
         case PCRel32Minus2Anon:
         case PCRel32Minus4Anon: {
-          JITTargetAddress Delta =
-              static_cast<JITTargetAddress>(1ULL << (*Kind - PCRel32Minus1Anon));
+          JITTargetAddress Delta = static_cast<JITTargetAddress>(
+              1ULL << (*Kind - PCRel32Minus1Anon));
           JITTargetAddress TargetAddress =
               FixupAddress + 4 + Delta + *(const little32_t *)FixupContent;
           if (auto TargetSymbolOrErr = findSymbolByAddress(TargetAddress))

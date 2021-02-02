@@ -8,32 +8,32 @@ struct YA {
   typedef int type;
 };
 
-template<typename T> struct C : X, T {
+template <typename T> struct C : X, T {
   using T::value;
   using typename T::type;
-  using X::v;
   using typename X::t;
+  using X::v;
 };
 
-template<typename T> struct D : X, T {
+template <typename T> struct D : X, T {
   using T::value;
   using typename T::type;
-  using X::v;
   using typename X::t;
+  using X::v;
 };
 
-template<typename T> struct E : X, T {
+template <typename T> struct E : X, T {
   using T::value;
   using typename T::type;
-  using X::v;
   using typename X::t;
+  using X::v;
 };
 
-template<typename T> struct F : X, T {
+template <typename T> struct F : X, T {
   using T::value;
   using typename T::type;
-  using X::v;
   using typename X::t;
+  using X::v;
 };
 
 // Force instantiation.

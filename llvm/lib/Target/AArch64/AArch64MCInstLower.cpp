@@ -44,7 +44,8 @@ AArch64MCInstLower::GetGlobalAddressSymbol(const MachineOperand &MO) const {
   assert(TheTriple.isOSWindows() &&
          "Windows is the only supported COFF target");
 
-  bool IsIndirect = (TargetFlags & (AArch64II::MO_DLLIMPORT | AArch64II::MO_COFFSTUB));
+  bool IsIndirect =
+      (TargetFlags & (AArch64II::MO_DLLIMPORT | AArch64II::MO_COFFSTUB));
   if (!IsIndirect)
     return Printer.getSymbol(GV);
 
@@ -61,8 +62,7 @@ AArch64MCInstLower::GetGlobalAddressSymbol(const MachineOperand &MO) const {
   if (TargetFlags & AArch64II::MO_COFFSTUB) {
     MachineModuleInfoCOFF &MMICOFF =
         Printer.MMI->getObjFileInfo<MachineModuleInfoCOFF>();
-    MachineModuleInfoImpl::StubValueTy &StubSym =
-        MMICOFF.getGVStubEntry(MCSym);
+    MachineModuleInfoImpl::StubValueTy &StubSym = MMICOFF.getGVStubEntry(MCSym);
 
     if (!StubSym.getPointer())
       StubSym = MachineModuleInfoImpl::StubValueTy(Printer.getSymbol(GV), true);

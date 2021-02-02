@@ -48,12 +48,13 @@ namespace {
 struct MakeGuardsExplicitLegacyPass : public FunctionPass {
   static char ID;
   MakeGuardsExplicitLegacyPass() : FunctionPass(ID) {
-    initializeMakeGuardsExplicitLegacyPassPass(*PassRegistry::getPassRegistry());
+    initializeMakeGuardsExplicitLegacyPassPass(
+        *PassRegistry::getPassRegistry());
   }
 
   bool runOnFunction(Function &F) override;
 };
-}
+} // namespace
 
 static void turnToExplicitForm(CallInst *Guard, Function *DeoptIntrinsic) {
   // Replace the guard with an explicit branch (just like in GuardWidening).
@@ -101,7 +102,7 @@ INITIALIZE_PASS(MakeGuardsExplicitLegacyPass, "make-guards-explicit",
                 false, false)
 
 PreservedAnalyses MakeGuardsExplicitPass::run(Function &F,
-                                           FunctionAnalysisManager &) {
+                                              FunctionAnalysisManager &) {
   if (explicifyGuards(F))
     return PreservedAnalyses::none();
   return PreservedAnalyses::all();

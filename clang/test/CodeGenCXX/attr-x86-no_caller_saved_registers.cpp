@@ -6,7 +6,7 @@ __attribute__((no_caller_saved_registers)) void foo() {}
 namespace S {
 // CHECK: bar{{[^#]*}}#[[ATTRS]]
 __attribute__((no_caller_saved_registers)) void bar(int *a) { foo(); }
-}
+} // namespace S
 
 struct St {
   static void baz(int *a) __attribute__((no_caller_saved_registers)) { S::bar(a); }

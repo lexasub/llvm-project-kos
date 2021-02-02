@@ -29,9 +29,8 @@ mlir::edsc::loopNestBuilder(ValueRange lbs, ValueRange ubs, ValueRange steps,
       });
 }
 
-mlir::scf::LoopNest
-mlir::edsc::loopNestBuilder(Value lb, Value ub, Value step,
-                            function_ref<void(Value)> fun) {
+mlir::scf::LoopNest mlir::edsc::loopNestBuilder(Value lb, Value ub, Value step,
+                                                function_ref<void(Value)> fun) {
   // Delegates to the ValueRange-based version by wrapping the lambda.
   auto wrapper = [&](ValueRange ivs) {
     assert(ivs.size() == 1);

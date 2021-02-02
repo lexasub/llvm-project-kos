@@ -18,23 +18,20 @@
 
 #include "test_macros.h"
 
-void
-test1()
-{
-    std::knuth_b e1;
-    std::knuth_b e2 = e1;
-    assert(e1 == e2);
-    e1.discard(3);
-    assert(e1 != e2);
-    (void)e2();
-    (void)e2();
-    (void)e2();
-    assert(e1 == e2);
+void test1() {
+  std::knuth_b e1;
+  std::knuth_b e2 = e1;
+  assert(e1 == e2);
+  e1.discard(3);
+  assert(e1 != e2);
+  (void)e2();
+  (void)e2();
+  (void)e2();
+  assert(e1 == e2);
 }
 
-int main(int, char**)
-{
-    test1();
+int main(int, char**) {
+  test1();
 
   return 0;
 }

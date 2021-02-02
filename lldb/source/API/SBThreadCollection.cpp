@@ -24,11 +24,11 @@ SBThreadCollection::SBThreadCollection(const SBThreadCollection &rhs)
                           (const lldb::SBThreadCollection &), rhs);
 }
 
-const SBThreadCollection &SBThreadCollection::
-operator=(const SBThreadCollection &rhs) {
-  LLDB_RECORD_METHOD(
-      const lldb::SBThreadCollection &,
-      SBThreadCollection, operator=,(const lldb::SBThreadCollection &), rhs);
+const SBThreadCollection &
+SBThreadCollection::operator=(const SBThreadCollection &rhs) {
+  LLDB_RECORD_METHOD(const lldb::SBThreadCollection &,
+                     SBThreadCollection, operator=,
+                     (const lldb::SBThreadCollection &), rhs);
 
   if (this != &rhs)
     m_opaque_sp = rhs.m_opaque_sp;
@@ -91,14 +91,13 @@ SBThread SBThreadCollection::GetThreadAtIndex(size_t idx) {
 namespace lldb_private {
 namespace repro {
 
-template <>
-void RegisterMethods<SBThreadCollection>(Registry &R) {
+template <> void RegisterMethods<SBThreadCollection>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBThreadCollection, ());
   LLDB_REGISTER_CONSTRUCTOR(SBThreadCollection,
                             (const lldb::SBThreadCollection &));
-  LLDB_REGISTER_METHOD(
-      const lldb::SBThreadCollection &,
-      SBThreadCollection, operator=,(const lldb::SBThreadCollection &));
+  LLDB_REGISTER_METHOD(const lldb::SBThreadCollection &,
+                       SBThreadCollection, operator=,
+                       (const lldb::SBThreadCollection &));
   LLDB_REGISTER_METHOD_CONST(bool, SBThreadCollection, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBThreadCollection, operator bool, ());
   LLDB_REGISTER_METHOD(size_t, SBThreadCollection, GetSize, ());
@@ -106,5 +105,5 @@ void RegisterMethods<SBThreadCollection>(Registry &R) {
                        (size_t));
 }
 
-}
-}
+} // namespace repro
+} // namespace lldb_private

@@ -20,6 +20,7 @@ class LargeMmapAllocatorPtrArrayStatic {
  public:
   inline void *Init() { return &p_[0]; }
   inline void EnsureSpace(uptr n) { CHECK_LT(n, kMaxNumChunks); }
+
  private:
   static const int kMaxNumChunks = 1 << 15;
   uptr p_[kMaxNumChunks];
@@ -35,17 +36,16 @@ class LargeMmapAllocatorPtrArrayDynamic {
     uptr p = address_range_.Init(kMaxNumChunks * sizeof(uptr),
                                  SecondaryAllocatorName);
     CHECK(p);
-    return reinterpret_cast<void*>(p);
+    return reinterpret_cast<void *>(p);
   }
 
   inline void EnsureSpace(uptr n) {
     CHECK_LT(n, kMaxNumChunks);
     DCHECK(n <= n_reserved_);
     if (UNLIKELY(n == n_reserved_)) {
-      address_range_.MapOrDie(
-          reinterpret_cast<uptr>(address_range_.base()) +
-              n_reserved_ * sizeof(uptr),
-          kChunksBlockCount * sizeof(uptr));
+      address_range_.MapOrDie(reinterpret_cast<uptr>(address_range_.base()) +
+                                  n_reserved_ * sizeof(uptr),
+                              kChunksBlockCount * sizeof(uptr));
       n_reserved_ += kChunksBlockCount;
     }
   }
@@ -74,7 +74,7 @@ class LargeMmapAllocator {
   using AddressSpaceView = AddressSpaceViewTy;
   void InitLinkerInitialized() {
     page_size_ = GetPageSizeCached();
-    chunks_ = reinterpret_cast<Header**>(ptr_array_.Init());
+    chunks_ = reinterpret_cast<Header **>(ptr_array_.Init());
   }
 
   void Init() {
@@ -89,9 +89,10 @@ class LargeMmapAllocator {
       map_size += alignment;
     // Overflow.
     if (map_size < size) {
-      Report("WARNING: %s: LargeMmapAllocator allocation overflow: "
-             "0x%zx bytes with 0x%zx alignment requested\n",
-             SanitizerToolName, map_size, alignment);
+      Report(
+          "WARNING: %s: LargeMmapAllocator allocation overflow: "
+          "0x%zx bytes with 0x%zx alignment requested\n",
+          SanitizerToolName, map_size, alignment);
       return nullptr;
     }
     uptr map_beg = reinterpret_cast<uptr>(
@@ -128,7 +129,7 @@ class LargeMmapAllocator {
       stat->Add(AllocatorStatAllocated, map_size);
       stat->Add(AllocatorStatMapped, map_size);
     }
-    return reinterpret_cast<void*>(res);
+    return reinterpret_cast<void *>(res);
   }
 
   void Deallocate(AllocatorStats *stat, void *p) {
@@ -147,7 +148,7 @@ class LargeMmapAllocator {
       stat->Sub(AllocatorStatMapped, h->map_size);
     }
     MapUnmapCallback().OnUnmap(h->map_beg, h->map_size);
-    UnmapOrDie(reinterpret_cast<void*>(h->map_beg), h->map_size);
+    UnmapOrDie(reinterpret_cast<void *>(h->map_beg), h->map_size);
   }
 
   uptr TotalMemoryUsed() {
@@ -161,9 +162,7 @@ class LargeMmapAllocator {
     return res;
   }
 
-  bool PointerIsMine(const void *p) {
-    return GetBlockBegin(p) != nullptr;
-  }
+  bool PointerIsMine(const void *p) { return GetBlockBegin(p) != nullptr; }
 
   uptr GetActuallyAllocatedSize(void *p) {
     return RoundUpTo(GetHeader(p)->size, page_size_);
@@ -187,7 +186,8 @@ class LargeMmapAllocator {
     // Cache-friendly linear search.
     for (uptr i = 0; i < n_chunks_; i++) {
       uptr ch = reinterpret_cast<uptr>(chunks[i]);
-      if (p < ch) continue;  // p is at left to this chunk, skip it.
+      if (p < ch)
+        continue;  // p is at left to this chunk, skip it.
       if (p - ch < p - nearest_chunk)
         nearest_chunk = ch;
     }
@@ -205,7 +205,8 @@ class LargeMmapAllocator {
   }
 
   void EnsureSortedChunks() {
-    if (chunks_sorted_) return;
+    if (chunks_sorted_)
+      return;
     Header **chunks = AddressSpaceView::LoadWritable(chunks_, n_chunks_);
     Sort(reinterpret_cast<uptr *>(chunks), n_chunks_);
     for (uptr i = 0; i < n_chunks_; i++)
@@ -219,7 +220,8 @@ class LargeMmapAllocator {
     mutex_.CheckLocked();
     uptr p = reinterpret_cast<uptr>(ptr);
     uptr n = n_chunks_;
-    if (!n) return nullptr;
+    if (!n)
+      return nullptr;
     EnsureSortedChunks();
     Header *const *chunks = AddressSpaceView::Load(chunks_, n_chunks_);
     auto min_mmap_ = reinterpret_cast<uptr>(chunks[0]);
@@ -253,13 +255,15 @@ class LargeMmapAllocator {
   }
 
   void PrintStats() {
-    Printf("Stats: LargeMmapAllocator: allocated %zd times, "
-           "remains %zd (%zd K) max %zd M; by size logs: ",
-           stats.n_allocs, stats.n_allocs - stats.n_frees,
-           stats.currently_allocated >> 10, stats.max_allocated >> 20);
+    Printf(
+        "Stats: LargeMmapAllocator: allocated %zd times, "
+        "remains %zd (%zd K) max %zd M; by size logs: ",
+        stats.n_allocs, stats.n_allocs - stats.n_frees,
+        stats.currently_allocated >> 10, stats.max_allocated >> 20);
     for (uptr i = 0; i < ARRAY_SIZE(stats.by_size_log); i++) {
       uptr c = stats.by_size_log[i];
-      if (!c) continue;
+      if (!c)
+        continue;
       Printf("%zd:%zd; ", i, c);
     }
     Printf("\n");
@@ -267,13 +271,9 @@ class LargeMmapAllocator {
 
   // ForceLock() and ForceUnlock() are needed to implement Darwin malloc zone
   // introspection API.
-  void ForceLock() {
-    mutex_.Lock();
-  }
+  void ForceLock() { mutex_.Lock(); }
 
-  void ForceUnlock() {
-    mutex_.Unlock();
-  }
+  void ForceUnlock() { mutex_.Unlock(); }
 
   // Iterate over all existing chunks.
   // The allocator must be locked when calling this function.
@@ -299,7 +299,7 @@ class LargeMmapAllocator {
 
   Header *GetHeader(uptr p) {
     CHECK(IsAligned(p, page_size_));
-    return reinterpret_cast<Header*>(p - page_size_);
+    return reinterpret_cast<Header *>(p - page_size_);
   }
   Header *GetHeader(const void *p) {
     return GetHeader(reinterpret_cast<uptr>(p));
@@ -307,7 +307,7 @@ class LargeMmapAllocator {
 
   void *GetUser(const Header *h) {
     CHECK(IsAligned((uptr)h, page_size_));
-    return reinterpret_cast<void*>(reinterpret_cast<uptr>(h) + page_size_);
+    return reinterpret_cast<void *>(reinterpret_cast<uptr>(h) + page_size_);
   }
 
   uptr RoundUpMapSize(uptr size) {

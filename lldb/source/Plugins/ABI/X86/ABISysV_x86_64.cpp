@@ -67,13 +67,14 @@ size_t ABISysV_x86_64::GetRedZoneSize() const { return 128; }
 // Static Functions
 
 ABISP
-ABISysV_x86_64::CreateInstance(lldb::ProcessSP process_sp, const ArchSpec &arch) {
+ABISysV_x86_64::CreateInstance(lldb::ProcessSP process_sp,
+                               const ArchSpec &arch) {
   const llvm::Triple::ArchType arch_type = arch.GetTriple().getArch();
   const llvm::Triple::OSType os_type = arch.GetTriple().getOS();
   const llvm::Triple::EnvironmentType os_env =
       arch.GetTriple().getEnvironment();
   if (arch_type == llvm::Triple::x86_64) {
-    switch(os_type) {
+    switch (os_type) {
     case llvm::Triple::OSType::IOS:
     case llvm::Triple::OSType::TvOS:
     case llvm::Triple::OSType::WatchOS:
@@ -569,12 +570,12 @@ ValueObjectSP ABISysV_x86_64::GetReturnValueObjectSimple(
 // This helper function will flatten an aggregate type
 // and return true if it can be returned in register(s) by value
 // return false if the aggregate is in memory
-static bool FlattenAggregateType(
-    Thread &thread, ExecutionContext &exe_ctx,
-    CompilerType &return_compiler_type,
-    uint32_t data_byte_offset,
-    std::vector<uint32_t> &aggregate_field_offsets,
-    std::vector<CompilerType> &aggregate_compiler_types) {
+static bool
+FlattenAggregateType(Thread &thread, ExecutionContext &exe_ctx,
+                     CompilerType &return_compiler_type,
+                     uint32_t data_byte_offset,
+                     std::vector<uint32_t> &aggregate_field_offsets,
+                     std::vector<CompilerType> &aggregate_compiler_types) {
 
   const uint32_t num_children = return_compiler_type.GetNumFields();
   for (uint32_t idx = 0; idx < num_children; ++idx) {
@@ -587,7 +588,7 @@ static bool FlattenAggregateType(
     CompilerType field_compiler_type = return_compiler_type.GetFieldAtIndex(
         idx, name, &field_bit_offset, nullptr, nullptr);
     llvm::Optional<uint64_t> field_bit_width =
-          field_compiler_type.GetBitSize(&thread);
+        field_compiler_type.GetBitSize(&thread);
 
     // if we don't know the size of the field (e.g. invalid type), exit
     if (!field_bit_width || *field_bit_width == 0) {
@@ -638,11 +639,11 @@ ValueObjectSP ABISysV_x86_64::GetReturnValueObjectImpl(
     std::vector<uint32_t> aggregate_field_offsets;
     std::vector<CompilerType> aggregate_compiler_types;
     if (return_compiler_type.GetTypeSystem()->CanPassInRegisters(
-          return_compiler_type) &&
-      *bit_width <= 128 &&
-      FlattenAggregateType(thread, exe_ctx, return_compiler_type,
-                          0, aggregate_field_offsets,
-                          aggregate_compiler_types)) {
+            return_compiler_type) &&
+        *bit_width <= 128 &&
+        FlattenAggregateType(thread, exe_ctx, return_compiler_type, 0,
+                             aggregate_field_offsets,
+                             aggregate_compiler_types)) {
       ByteOrder byte_order = target->GetArchitecture().GetByteOrder();
       DataBufferSP data_sp(new DataBufferHeap(16, 0));
       DataExtractor return_ext(data_sp, byte_order,
@@ -692,7 +693,8 @@ ValueObjectSP ABISysV_x86_64::GetReturnValueObjectImpl(
         bool is_complex;
 
         CompilerType field_compiler_type = aggregate_compiler_types[idx];
-        uint32_t field_byte_width = (uint32_t) (*field_compiler_type.GetByteSize(&thread));
+        uint32_t field_byte_width =
+            (uint32_t)(*field_compiler_type.GetByteSize(&thread));
         uint32_t field_byte_offset = aggregate_field_offsets[idx];
 
         uint32_t field_bit_width = field_byte_width * 8;

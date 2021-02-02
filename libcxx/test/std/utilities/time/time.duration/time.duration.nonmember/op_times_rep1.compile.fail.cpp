@@ -22,10 +22,9 @@
 
 #include "../../rep.h"
 
-int main(int, char**)
-{
-    std::chrono::duration<Rep> d;
-    d = d * 5;
+int main(int, char**) {
+  std::chrono::duration<Rep> d;
+  d = d * 5;
 
   return 0;
 }

@@ -172,7 +172,8 @@ void lld::kos::writeDefFile(StringRef name) {
        << "@" << e.ordinal;
     if (auto *def = dyn_cast_or_null<Defined>(e.sym)) {
       if (def && def->getChunk() &&
-          !(def->getChunk()->getOutputCharacteristics() & IMAGE_SCN_MEM_EXECUTE))
+          !(def->getChunk()->getOutputCharacteristics() &
+            IMAGE_SCN_MEM_EXECUTE))
         os << " DATA";
     }
     os << "\n";

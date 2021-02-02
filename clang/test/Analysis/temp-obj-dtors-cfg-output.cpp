@@ -42,7 +42,7 @@ public:
 
 void foo(int);
 void foo(bool);
-void foo(const A&);
+void foo(const A &);
 
 void test_binary() {
   int a = int(A()) + int(B());
@@ -64,12 +64,16 @@ void test_or() {
 
 void test_cond() {
   A a = B() ? A() : A(B());
-  if (B()) { foo(0); } else { foo(0); }
+  if (B()) {
+    foo(0);
+  } else {
+    foo(0);
+  }
   int b;
 }
 
 struct C {
-  C():b_(true) {}
+  C() : b_(true) {}
   ~C() {}
 
   operator bool() { return b_; }
@@ -77,30 +81,46 @@ struct C {
 };
 
 struct D {
-  D():b_(true) {}
+  D() : b_(true) {}
 
   operator bool() { return b_; }
   bool b_;
 };
 
 int test_cond_unnamed_custom_destructor() {
-  if (C()) { return 1; } else { return 0; }
+  if (C()) {
+    return 1;
+  } else {
+    return 0;
+  }
 }
 
 int test_cond_named_custom_destructor() {
-  if (C c = C()) { return 1; } else { return 0; }
+  if (C c = C()) {
+    return 1;
+  } else {
+    return 0;
+  }
 }
 
 int test_cond_unnamed_auto_destructor() {
-  if (D()) { return 1; } else { return 0; }
+  if (D()) {
+    return 1;
+  } else {
+    return 0;
+  }
 }
 
 int test_cond_named_auto_destructor() {
-  if (D d = D()) { return 1; } else { return 0; }
+  if (D d = D()) {
+    return 1;
+  } else {
+    return 0;
+  }
 }
 
 void test_cond_cref() {
-  const A& a = B() ? A() : A(B());
+  const A &a = B() ? A() : A(B());
   foo(B() ? A() : A(B()));
   int b;
 }
@@ -111,7 +131,7 @@ void test_cond_implicit() {
 }
 
 void test_cond_implicit_cref() {
-  const A& a = A() ?: A();
+  const A &a = A() ?: A();
   foo(A() ?: A());
   int b;
 }
@@ -122,7 +142,7 @@ void test_copy_init() {
 }
 
 void test_cref_init() {
-  const A& a = A();
+  const A &a = A();
   foo(A());
   int b;
 }
@@ -133,7 +153,7 @@ void test_call_copy_init() {
 }
 
 void test_call_cref_init() {
-  const A& a = A::make();
+  const A &a = A::make();
   foo(A::make());
   int b;
 }
@@ -147,13 +167,13 @@ void test_assign() {
 class TestCtorInits {
   int a;
   int b;
+
 public:
   TestCtorInits();
 };
 
 TestCtorInits::TestCtorInits()
-  : a(int(A()) + int(B()))
-  , b() {}
+    : a(int(A()) + int(B())), b() {}
 
 class NoReturn {
 public:
@@ -173,7 +193,7 @@ void test_noreturn2() {
   int b;
 }
 
-extern bool check(const NoReturn&);
+extern bool check(const NoReturn &);
 
 // PR16664 and PR18159
 int testConsistencyNestedSimple(bool value) {
@@ -217,7 +237,7 @@ C &&foo2();
 // In these examples the foo() expression has record type, not reference type.
 // Don't try to figure out how to perform construction of the record here.
 const C &bar1() { return foo1(); } // no-crash
-C &&bar2() { return foo2(); } // no-crash
+C &&bar2() { return foo2(); }      // no-crash
 const C &bar3(bool coin) {
   return coin ? foo1() : foo1(); // no-crash
 }

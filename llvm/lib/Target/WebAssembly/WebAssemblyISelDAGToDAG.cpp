@@ -39,8 +39,7 @@ class WebAssemblyDAGToDAGISel final : public SelectionDAGISel {
 public:
   WebAssemblyDAGToDAGISel(WebAssemblyTargetMachine &TM,
                           CodeGenOpt::Level OptLevel)
-      : SelectionDAGISel(TM, OptLevel), Subtarget(nullptr) {
-  }
+      : SelectionDAGISel(TM, OptLevel), Subtarget(nullptr) {}
 
   StringRef getPassName() const override {
     return "WebAssembly Instruction Selection";

@@ -27,7 +27,8 @@ public:
   void FlushDiagnosticsImpl(std::vector<const PathDiagnostic *> &Diags,
                             FilesMade *filesMade) override {
     for (const auto *PD : Diags)
-      Output << PD->getCheckerName() << ":" << PD->getShortDescription() << '\n';
+      Output << PD->getCheckerName() << ":" << PD->getShortDescription()
+             << '\n';
   }
 
   StringRef getName() const override { return "Test"; }
@@ -49,8 +50,7 @@ void addChecker(AnalysisASTConsumer &AnalysisConsumer,
   Fn1(AnalysisConsumer, AnOpts);
 }
 
-template <AddCheckerFn... Fns>
-class TestAction : public ASTFrontendAction {
+template <AddCheckerFn... Fns> class TestAction : public ASTFrontendAction {
   llvm::raw_ostream &DiagsOutput;
 
 public:
@@ -83,8 +83,7 @@ bool runCheckerOnCode(const std::string &Code, std::string &Diags) {
                                 FileName);
 }
 
-template <AddCheckerFn... Fns>
-bool runCheckerOnCode(const std::string &Code) {
+template <AddCheckerFn... Fns> bool runCheckerOnCode(const std::string &Code) {
   std::string Diags;
   return runCheckerOnCode<Fns...>(Code, Diags);
 }

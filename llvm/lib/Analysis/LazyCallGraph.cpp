@@ -182,10 +182,9 @@ LazyCallGraph::LazyCallGraph(
   for (auto &A : M.aliases()) {
     if (A.hasLocalLinkage())
       continue;
-    if (Function* F = dyn_cast<Function>(A.getAliasee())) {
-      LLVM_DEBUG(dbgs() << "  Adding '" << F->getName()
-                        << "' with alias '" << A.getName()
-                        << "' to entry set of the graph.\n");
+    if (Function *F = dyn_cast<Function>(A.getAliasee())) {
+      LLVM_DEBUG(dbgs() << "  Adding '" << F->getName() << "' with alias '"
+                        << A.getName() << "' to entry set of the graph.\n");
       addEdge(EntryEdges.Edges, EntryEdges.EdgeIndexMap, get(*F), Edge::Ref);
     }
   }
@@ -210,8 +209,7 @@ LazyCallGraph::LazyCallGraph(
 LazyCallGraph::LazyCallGraph(LazyCallGraph &&G)
     : BPA(std::move(G.BPA)), NodeMap(std::move(G.NodeMap)),
       EntryEdges(std::move(G.EntryEdges)), SCCBPA(std::move(G.SCCBPA)),
-      SCCMap(std::move(G.SCCMap)),
-      LibFunctions(std::move(G.LibFunctions)) {
+      SCCMap(std::move(G.SCCMap)), LibFunctions(std::move(G.LibFunctions)) {
   updateGraphPtrs();
 }
 
@@ -554,7 +552,6 @@ updatePostorderSequenceForEdgeInsertion(
   assert(SCCs[SourceIdx] == &SourceSCC &&
          "Bad updated index computation for the source SCC!");
 
-
   // See whether there are any remaining intervening SCCs between the source
   // and target. If so we need to make sure they all are reachable form the
   // target.
@@ -581,8 +578,7 @@ updatePostorderSequenceForEdgeInsertion(
   return make_range(SCCs.begin() + SourceIdx, SCCs.begin() + TargetIdx);
 }
 
-bool
-LazyCallGraph::RefSCC::switchInternalEdgeToCall(
+bool LazyCallGraph::RefSCC::switchInternalEdgeToCall(
     Node &SourceN, Node &TargetN,
     function_ref<void(ArrayRef<SCC *> MergeSCCs)> MergeCB) {
   assert(!(*SourceN)[TargetN].isCall() && "Must start with a ref edge!");
@@ -742,10 +738,8 @@ void LazyCallGraph::RefSCC::switchTrivialInternalEdgeToRef(Node &SourceN,
   auto VerifyOnExit = make_scope_exit([&]() { verify(); });
 #endif
 
-  assert(G->lookupRefSCC(SourceN) == this &&
-         "Source must be in this RefSCC.");
-  assert(G->lookupRefSCC(TargetN) == this &&
-         "Target must be in this RefSCC.");
+  assert(G->lookupRefSCC(SourceN) == this && "Source must be in this RefSCC.");
+  assert(G->lookupRefSCC(TargetN) == this && "Target must be in this RefSCC.");
   assert(G->lookupSCC(SourceN) != G->lookupSCC(TargetN) &&
          "Source and Target must be in separate SCCs for this to be trivial!");
 
@@ -764,10 +758,8 @@ LazyCallGraph::RefSCC::switchInternalEdgeToRef(Node &SourceN, Node &TargetN) {
   auto VerifyOnExit = make_scope_exit([&]() { verify(); });
 #endif
 
-  assert(G->lookupRefSCC(SourceN) == this &&
-         "Source must be in this RefSCC.");
-  assert(G->lookupRefSCC(TargetN) == this &&
-         "Target must be in this RefSCC.");
+  assert(G->lookupRefSCC(SourceN) == this && "Source must be in this RefSCC.");
+  assert(G->lookupRefSCC(TargetN) == this && "Target must be in this RefSCC.");
 
   SCC &TargetSCC = *G->lookupSCC(TargetN);
   assert(G->lookupSCC(SourceN) == &TargetSCC && "Source and Target must be in "

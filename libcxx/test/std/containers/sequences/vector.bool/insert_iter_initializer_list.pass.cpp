@@ -18,11 +18,11 @@
 #include "test_macros.h"
 #include "min_allocator.h"
 
-int main(int, char**)
-{
-    {
+int main(int, char**) {
+  {
     std::vector<bool> d(10, true);
-    std::vector<bool>::iterator i = d.insert(d.cbegin() + 2, {false, true, true, false});
+    std::vector<bool>::iterator i =
+        d.insert(d.cbegin() + 2, {false, true, true, false});
     assert(d.size() == 14);
     assert(i == d.begin() + 2);
     assert(d[0] == true);
@@ -39,10 +39,11 @@ int main(int, char**)
     assert(d[11] == true);
     assert(d[12] == true);
     assert(d[13] == true);
-    }
-    {
-    std::vector<bool, min_allocator<bool>> d(10, true);
-    std::vector<bool, min_allocator<bool>>::iterator i = d.insert(d.cbegin() + 2, {false, true, true, false});
+  }
+  {
+    std::vector<bool, min_allocator<bool> > d(10, true);
+    std::vector<bool, min_allocator<bool> >::iterator i =
+        d.insert(d.cbegin() + 2, {false, true, true, false});
     assert(d.size() == 14);
     assert(i == d.begin() + 2);
     assert(d[0] == true);
@@ -59,7 +60,7 @@ int main(int, char**)
     assert(d[11] == true);
     assert(d[12] == true);
     assert(d[13] == true);
-    }
+  }
 
   return 0;
 }

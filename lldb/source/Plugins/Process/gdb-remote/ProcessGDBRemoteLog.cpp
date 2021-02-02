@@ -37,7 +37,6 @@ Log::Channel ProcessGDBRemoteLog::g_channel(g_categories, GDBR_LOG_DEFAULT);
 
 void ProcessGDBRemoteLog::Initialize() {
   static llvm::once_flag g_once_flag;
-  llvm::call_once(g_once_flag, []() {
-    Log::Register("gdb-remote", g_channel);
-  });
+  llvm::call_once(g_once_flag,
+                  []() { Log::Register("gdb-remote", g_channel); });
 }

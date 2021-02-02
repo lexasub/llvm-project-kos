@@ -26,8 +26,7 @@
 #include <stdio.h>
 namespace llvm {
 
-bool SpecialCaseList::Matcher::insert(std::string Regexp,
-                                      unsigned LineNumber,
+bool SpecialCaseList::Matcher::insert(std::string Regexp, unsigned LineNumber,
                                       std::string &REError) {
   if (Regexp.empty()) {
     REError = "Supplied regexp was blank";
@@ -64,7 +63,7 @@ unsigned SpecialCaseList::Matcher::match(StringRef Query) const {
     return It->second;
   if (Trigrams.isDefinitelyOut(Query))
     return false;
-  for (auto& RegExKV : RegExes)
+  for (auto &RegExKV : RegExes)
     if (RegExKV.first->match(Query))
       return RegExKV.second;
   return 0;
@@ -143,7 +142,8 @@ bool SpecialCaseList::parse(const MemoryBuffer *MB,
     if (I->startswith("[")) {
       if (!I->endswith("]")) {
         Error = (Twine("malformed section header on line ") + Twine(LineNo) +
-                 ": " + *I).str();
+                 ": " + *I)
+                    .str();
         return false;
       }
 
@@ -167,7 +167,8 @@ bool SpecialCaseList::parse(const MemoryBuffer *MB,
     if (SplitLine.second.empty()) {
       // Missing ':' in the line.
       Error = (Twine("malformed line ") + Twine(LineNo) + ": '" +
-               SplitLine.first + "'").str();
+               SplitLine.first + "'")
+                  .str();
       return false;
     }
 
@@ -192,7 +193,8 @@ bool SpecialCaseList::parse(const MemoryBuffer *MB,
     std::string REError;
     if (!Entry.insert(std::move(Regexp), LineNo, REError)) {
       Error = (Twine("malformed regex in line ") + Twine(LineNo) + ": '" +
-               SplitLine.second + "': " + REError).str();
+               SplitLine.second + "': " + REError)
+                  .str();
       return false;
     }
   }
@@ -223,11 +225,13 @@ unsigned SpecialCaseList::inSectionBlame(const SectionEntries &Entries,
                                          StringRef Prefix, StringRef Query,
                                          StringRef Category) const {
   SectionEntries::const_iterator I = Entries.find(Prefix);
-  if (I == Entries.end()) return 0;
+  if (I == Entries.end())
+    return 0;
   StringMap<Matcher>::const_iterator II = I->second.find(Category);
-  if (II == I->second.end()) return 0;
+  if (II == I->second.end())
+    return 0;
 
   return II->getValue().match(Query);
 }
 
-}  // namespace llvm
+} // namespace llvm

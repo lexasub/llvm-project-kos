@@ -98,9 +98,7 @@ private:
     return HSAMetadataDoc->getRoot().getMap(/*Convert=*/true)[Key];
   }
 
-  msgpack::DocNode &getHSAMetadataRoot() {
-    return HSAMetadataDoc->getRoot();
-  }
+  msgpack::DocNode &getHSAMetadataRoot() { return HSAMetadataDoc->getRoot(); }
 
 public:
   MetadataStreamerV3() = default;
@@ -135,12 +133,12 @@ private:
 
   std::vector<uint32_t> getWorkGroupDimensions(MDNode *Node) const;
 
-  Kernel::CodeProps::Metadata getHSACodeProps(
-      const MachineFunction &MF,
-      const SIProgramInfo &ProgramInfo) const;
-  Kernel::DebugProps::Metadata getHSADebugProps(
-      const MachineFunction &MF,
-      const SIProgramInfo &ProgramInfo) const;
+  Kernel::CodeProps::Metadata
+  getHSACodeProps(const MachineFunction &MF,
+                  const SIProgramInfo &ProgramInfo) const;
+  Kernel::DebugProps::Metadata
+  getHSADebugProps(const MachineFunction &MF,
+                   const SIProgramInfo &ProgramInfo) const;
 
   void emitVersion();
 
@@ -162,9 +160,7 @@ private:
 
   void emitHiddenKernelArgs(const Function &Func);
 
-  const Metadata &getHSAMetadata() const {
-    return HSAMetadata;
-  }
+  const Metadata &getHSAMetadata() const { return HSAMetadata; }
 
 public:
   MetadataStreamerV2() = default;

@@ -10,10 +10,10 @@ namespace nb {
 void f() {
   std::STD x1;
   STD x2;
-// CHECK: {{^}}  std::STD x1;{{$}}
-// CHECK-NEXT: {{^}}  STD x2;{{$}}
+  // CHECK: {{^}}  std::STD x1;{{$}}
+  // CHECK-NEXT: {{^}}  STD x2;{{$}}
 }
 // CHECK: } // namespace y
 // CHECK-NEXT: } // namespace x
-}
-}
+} // namespace nb
+} // namespace na

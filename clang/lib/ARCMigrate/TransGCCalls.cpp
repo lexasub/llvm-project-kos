@@ -6,8 +6,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "Transforms.h"
 #include "Internals.h"
+#include "Transforms.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/Sema/SemaDiagnostic.h"
 
@@ -17,15 +17,14 @@ using namespace trans;
 
 namespace {
 
-class GCCollectableCallsChecker :
-                         public RecursiveASTVisitor<GCCollectableCallsChecker> {
+class GCCollectableCallsChecker
+    : public RecursiveASTVisitor<GCCollectableCallsChecker> {
   MigrationContext &MigrateCtx;
   IdentifierInfo *NSMakeCollectableII;
   IdentifierInfo *CFMakeCollectableII;
 
 public:
-  GCCollectableCallsChecker(MigrationContext &ctx)
-    : MigrateCtx(ctx) {
+  GCCollectableCallsChecker(MigrationContext &ctx) : MigrateCtx(ctx) {
     IdentifierTable &Ids = MigrateCtx.Pass.Ctx.Idents;
     NSMakeCollectableII = &Ids.get("NSMakeCollectable");
     CFMakeCollectableII = &Ids.get("CFMakeCollectable");
@@ -58,8 +57,8 @@ public:
 
         } else if (FD->getIdentifier() == CFMakeCollectableII) {
           TA.reportError("CFMakeCollectable will leak the object that it "
-                         "receives in ARC", DRE->getLocation(),
-                         DRE->getSourceRange());
+                         "receives in ARC",
+                         DRE->getLocation(), DRE->getSourceRange());
         }
       }
     }
@@ -72,5 +71,5 @@ public:
 
 void GCCollectableCallsTraverser::traverseBody(BodyContext &BodyCtx) {
   GCCollectableCallsChecker(BodyCtx.getMigrationContext())
-                                            .TraverseStmt(BodyCtx.getTopStmt());
+      .TraverseStmt(BodyCtx.getTopStmt());
 }

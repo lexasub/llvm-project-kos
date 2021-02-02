@@ -26,8 +26,6 @@ static constexpr Log::Category g_categories[] = {
 
 Log::Channel LogChannelDWARF::g_channel(g_categories, DWARF_LOG_DEFAULT);
 
-void LogChannelDWARF::Initialize() {
-  Log::Register("dwarf", g_channel);
-}
+void LogChannelDWARF::Initialize() { Log::Register("dwarf", g_channel); }
 
 void LogChannelDWARF::Terminate() { Log::Unregister("dwarf"); }

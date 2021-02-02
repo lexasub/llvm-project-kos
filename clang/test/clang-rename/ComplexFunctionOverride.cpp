@@ -1,34 +1,34 @@
 struct A {
-  virtual void foo() {} /* Test 1 */    // CHECK: virtual void bar() {}
+  virtual void foo() {} /* Test 1 */ // CHECK: virtual void bar() {}
 };
 
 struct B : A {
-  void foo() override {} /* Test 2 */   // CHECK: void bar() override {}
+  void foo() override {} /* Test 2 */ // CHECK: void bar() override {}
 };
 
 struct C : B {
-  void foo() override {} /* Test 3 */   // CHECK: void bar() override {}
+  void foo() override {} /* Test 3 */ // CHECK: void bar() override {}
 };
 
 struct D : B {
-  void foo() override {} /* Test 4 */   // CHECK: void bar() override {}
+  void foo() override {} /* Test 4 */ // CHECK: void bar() override {}
 };
 
 struct E : D {
-  void foo() override {} /* Test 5 */   // CHECK: void bar() override {}
+  void foo() override {} /* Test 5 */ // CHECK: void bar() override {}
 };
 
 int main() {
   A a;
-  a.foo();                              // CHECK: a.bar();
+  a.foo(); // CHECK: a.bar();
   B b;
-  b.foo();                              // CHECK: b.bar();
+  b.foo(); // CHECK: b.bar();
   C c;
-  c.foo();                              // CHECK: c.bar();
+  c.foo(); // CHECK: c.bar();
   D d;
-  d.foo();                              // CHECK: d.bar();
+  d.foo(); // CHECK: d.bar();
   E e;
-  e.foo();                              // CHECK: e.bar();
+  e.foo(); // CHECK: e.bar();
   return 0;
 }
 

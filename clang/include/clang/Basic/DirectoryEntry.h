@@ -257,20 +257,23 @@ public:
       const OptionalDirectoryEntryRefDegradesToDirectoryEntryPtr &) = default;
   OptionalDirectoryEntryRefDegradesToDirectoryEntryPtr &
   operator=(OptionalDirectoryEntryRefDegradesToDirectoryEntryPtr &&) = default;
-  OptionalDirectoryEntryRefDegradesToDirectoryEntryPtr &
-  operator=(const OptionalDirectoryEntryRefDegradesToDirectoryEntryPtr &) = default;
+  OptionalDirectoryEntryRefDegradesToDirectoryEntryPtr &operator=(
+      const OptionalDirectoryEntryRefDegradesToDirectoryEntryPtr &) = default;
 
   OptionalDirectoryEntryRefDegradesToDirectoryEntryPtr(llvm::NoneType) {}
   OptionalDirectoryEntryRefDegradesToDirectoryEntryPtr(DirectoryEntryRef Ref)
       : Optional<DirectoryEntryRef>(Ref) {}
-  OptionalDirectoryEntryRefDegradesToDirectoryEntryPtr(Optional<DirectoryEntryRef> MaybeRef)
+  OptionalDirectoryEntryRefDegradesToDirectoryEntryPtr(
+      Optional<DirectoryEntryRef> MaybeRef)
       : Optional<DirectoryEntryRef>(MaybeRef) {}
 
-  OptionalDirectoryEntryRefDegradesToDirectoryEntryPtr &operator=(llvm::NoneType) {
+  OptionalDirectoryEntryRefDegradesToDirectoryEntryPtr &
+  operator=(llvm::NoneType) {
     Optional<DirectoryEntryRef>::operator=(None);
     return *this;
   }
-  OptionalDirectoryEntryRefDegradesToDirectoryEntryPtr &operator=(DirectoryEntryRef Ref) {
+  OptionalDirectoryEntryRefDegradesToDirectoryEntryPtr &
+  operator=(DirectoryEntryRef Ref) {
     Optional<DirectoryEntryRef>::operator=(Ref);
     return *this;
   }

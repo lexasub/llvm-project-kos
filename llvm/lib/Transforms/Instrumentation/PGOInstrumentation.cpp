@@ -392,7 +392,6 @@ struct SelectInstVisitor : public InstVisitor<SelectInstVisitor> {
   unsigned getNumOfSelectInsts() const { return NSIs; }
 };
 
-
 class PGOInstrumentationGenLegacyPass : public ModulePass {
 public:
   static char ID;
@@ -531,7 +530,8 @@ struct PGOEdge {
   // Return the information string of an edge.
   const std::string infoString() const {
     return (Twine(Removed ? "-" : " ") + (InMST ? " " : "*") +
-            (IsCritical ? "c" : " ") + "  W=" + Twine(Weight)).str();
+            (IsCritical ? "c" : " ") + "  W=" + Twine(Weight))
+        .str();
   }
 };
 
@@ -599,8 +599,8 @@ public:
 
   // Dump edges and BB information.
   void dumpInfo(std::string Str = "") const {
-    MST.dumpEdges(dbgs(), Twine("Dump Function ") + FuncName + " Hash: " +
-                              Twine(FunctionHash) + "\t" + Str);
+    MST.dumpEdges(dbgs(), Twine("Dump Function ") + FuncName +
+                              " Hash: " + Twine(FunctionHash) + "\t" + Str);
   }
 
   FuncPGOInstrumentation(
@@ -1106,11 +1106,10 @@ public:
 
   Function &getFunc() const { return F; }
 
-  void dumpInfo(std::string Str = "") const {
-    FuncInfo.dumpInfo(Str);
-  }
+  void dumpInfo(std::string Str = "") const { FuncInfo.dumpInfo(Str); }
 
   uint64_t getProgramMaxCount() const { return ProgramMaxCount; }
+
 private:
   Function &F;
   Module *M;
@@ -1246,8 +1245,7 @@ void PGOUseFunc::setEdgeCount(DirectEdges &Edges, uint64_t Value) {
 }
 
 // Emit function metadata indicating PGO profile mismatch.
-static void annotateFunctionWithHashMismatch(Function &F,
-                                             LLVMContext &ctx) {
+static void annotateFunctionWithHashMismatch(Function &F, LLVMContext &ctx) {
   const char MetadataName[] = "instr_prof_hash_mismatch";
   SmallVector<Metadata *, 2> Names;
   // If this metadata already exists, ignore.
@@ -1255,7 +1253,7 @@ static void annotateFunctionWithHashMismatch(Function &F,
   if (Existing) {
     MDTuple *Tuple = cast<MDTuple>(Existing);
     for (auto &N : Tuple->operands()) {
-      if (cast<MDString>(N.get())->getString() ==  MetadataName)
+      if (cast<MDString>(N.get())->getString() == MetadataName)
         return;
       Names.push_back(N.get());
     }
@@ -1336,8 +1334,9 @@ bool PGOUseFunc::readCounters(IndexedInstrProfReader *PGOReader, bool &AllZeros,
         dbgs() << "Inconsistent number of counts, skipping this function");
     Ctx.diagnose(DiagnosticInfoPGOProfile(
         M->getName().data(),
-        Twine("Inconsistent number of counts in ") + F.getName().str()
-        + Twine(": the profile may be stale or there is a function name collision."),
+        Twine("Inconsistent number of counts in ") + F.getName().str() +
+            Twine(": the profile may be stale or there is a function name "
+                  "collision."),
         DS_Warning));
     return false;
   }
@@ -1564,8 +1563,8 @@ void PGOUseFunc::annotateValueSites(uint32_t Kind) {
     Ctx.diagnose(DiagnosticInfoPGOProfile(
         M->getName().data(),
         Twine("Inconsistent number of value sites for ") +
-            Twine(ValueProfKindDescr[Kind]) +
-            Twine(" profiling in \"") + F.getName().str() +
+            Twine(ValueProfKindDescr[Kind]) + Twine(" profiling in \"") +
+            F.getName().str() +
             Twine("\", possibly due to the use of a stale profile."),
         DS_Warning));
     return;
@@ -2026,8 +2025,7 @@ static std::string getSimpleNodeName(const BasicBlock *Node) {
 }
 
 void llvm::setProfMetadata(Module *M, Instruction *TI,
-                           ArrayRef<uint64_t> EdgeCounts,
-                           uint64_t MaxCount) {
+                           ArrayRef<uint64_t> EdgeCounts, uint64_t MaxCount) {
   MDBuilder MDB(M->getContext());
   assert(MaxCount > 0 && "Bad max count");
   uint64_t Scale = calculateCountScale(MaxCount);

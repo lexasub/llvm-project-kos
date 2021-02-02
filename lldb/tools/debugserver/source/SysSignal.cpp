@@ -31,10 +31,10 @@ const char *SysSignal::Name(int signal) {
 #if defined(_POSIX_C_SOURCE)
   case SIGPOLL:
     return "SIGPOLL"; // 7    pollable event ([XSR] generated, not supported)
-#else                 // !_POSIX_C_SOURCE
+#else // !_POSIX_C_SOURCE
   case SIGEMT:
     return "SIGEMT"; // 7    EMT instruction
-#endif                // !_POSIX_C_SOURCE
+#endif // !_POSIX_C_SOURCE
   case SIGFPE:
     return "SIGFPE"; // 8    floating point exception
   case SIGKILL:

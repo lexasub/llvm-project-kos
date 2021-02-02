@@ -5,26 +5,26 @@ namespace std {
 template <typename _Tp>
 struct remove_reference { typedef _Tp type; };
 template <typename _Tp>
-struct remove_reference<_Tp&> { typedef _Tp type; };
+struct remove_reference<_Tp &> { typedef _Tp type; };
 template <typename _Tp>
-struct remove_reference<_Tp&&> { typedef _Tp type; };
+struct remove_reference<_Tp &&> { typedef _Tp type; };
 
 template <typename _Tp>
 constexpr typename std::remove_reference<_Tp>::type &&move(_Tp &&__t) {
   return static_cast<typename std::remove_reference<_Tp>::type &&>(__t);
 }
 
-} // std
+} // namespace std
 
 template <typename T>
 struct Iterator {
   void operator++() {}
-  const T& operator*() {
-    static T* TT = new T();
+  const T &operator*() {
+    static T *TT = new T();
     return *TT;
   }
   bool operator!=(const Iterator &) { return false; }
-  typedef const T& const_reference;
+  typedef const T &const_reference;
 };
 template <typename T>
 struct View {
@@ -42,7 +42,7 @@ struct ConstructorConvertible {
 struct S {
   S();
   S(const S &);
-  S(const ConstructorConvertible&) {}
+  S(const ConstructorConvertible &) {}
   ~S();
   S &operator=(const S &);
 };
@@ -72,7 +72,8 @@ void negativeImplicitConstructorConversion() {
 
 template <typename T>
 void uninstantiated() {
-  for (const S S1 : View<Iterator<S>>()) {}
+  for (const S S1 : View<Iterator<S>>()) {
+  }
   // CHECK-MESSAGES: [[@LINE-1]]:16: warning: the loop variable's type is not a reference type; this creates a copy in each iteration; consider making this a reference [performance-for-range-copy]
   // CHECK-FIXES: {{^}}  for (const S& S1 : View<Iterator<S>>()) {}
 
@@ -83,11 +84,13 @@ void uninstantiated() {
 
 template <typename T>
 void instantiated() {
-  for (const S S2 : View<Iterator<S>>()) {}
+  for (const S S2 : View<Iterator<S>>()) {
+  }
   // CHECK-MESSAGES: [[@LINE-1]]:16: warning: the loop variable's type is {{.*}}
   // CHECK-FIXES: {{^}}  for (const S& S2 : View<Iterator<S>>()) {}
 
-  for (const T T2 : View<Iterator<T>>()) {}
+  for (const T T2 : View<Iterator<T>>()) {
+  }
   // CHECK-MESSAGES: [[@LINE-1]]:16: warning: the loop variable's type is {{.*}}
   // CHECK-FIXES: {{^}}  for (const T& T2 : View<Iterator<T>>()) {}
 }
@@ -108,13 +111,13 @@ void f() {
 struct Mutable {
   Mutable() {}
   Mutable(const Mutable &) = default;
-  Mutable(Mutable&&) = default;
+  Mutable(Mutable &&) = default;
   Mutable(const Mutable &, const Mutable &) {}
   void setBool(bool B) {}
   bool constMethod() const {
     return true;
   }
-  Mutable& operator[](int I) {
+  Mutable &operator[](int I) {
     return *this;
   }
   bool operator==(const Mutable &Other) const {
@@ -128,12 +131,12 @@ struct Point {
   int x, y;
 };
 
-Mutable& operator<<(Mutable &Out, bool B) {
+Mutable &operator<<(Mutable &Out, bool B) {
   Out.setBool(B);
   return Out;
 }
 
-bool operator!=(const Mutable& M1, const Mutable& M2) {
+bool operator!=(const Mutable &M1, const Mutable &M2) {
   return false;
 }
 
@@ -172,7 +175,7 @@ void negativeVarIsMoved() {
 
 void negativeNonConstOperatorIsInvoked() {
   for (auto NonConstOperatorInvokee : View<Iterator<Mutable>>()) {
-    auto& N = NonConstOperatorInvokee[0];
+    auto &N = NonConstOperatorInvokee[0];
   }
 }
 
@@ -189,7 +192,7 @@ void negativeConstCheapToCopy() {
 
 void negativeConstCheapToCopyTypedef() {
   typedef const int ConstInt;
-  for (ConstInt C  : View<Iterator<ConstInt>>()) {
+  for (ConstInt C : View<Iterator<ConstInt>>()) {
   }
 }
 

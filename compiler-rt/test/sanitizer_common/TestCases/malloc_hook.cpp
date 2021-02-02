@@ -4,9 +4,9 @@
 // XFAIL: windows-msvc
 // XFAIL: ubsan
 
+#include <sanitizer/allocator_interface.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <sanitizer/allocator_interface.h>
 
 extern "C" {
 const volatile void *global_ptr;
@@ -25,7 +25,7 @@ void __sanitizer_free_hook(const volatile void *ptr) {
   if (__sanitizer_get_ownership(ptr) && ptr == global_ptr)
     WRITE("FreeHook\n");
 }
-}  // extern "C"
+} // extern "C"
 
 volatile int *x;
 
@@ -49,7 +49,7 @@ int main() {
   // CHECK: MH1
   // CHECK: MH2
   // Check that malloc hook was called with correct argument.
-  if (global_ptr != (void*)x) {
+  if (global_ptr != (void *)x) {
     _exit(1);
   }
   *x = 0;

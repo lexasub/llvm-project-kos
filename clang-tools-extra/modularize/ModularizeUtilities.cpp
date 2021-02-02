@@ -12,17 +12,17 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "ModularizeUtilities.h"
+#include "CoverageChecker.h"
 #include "clang/Basic/SourceManager.h"
 #include "clang/Driver/Options.h"
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/FrontendActions.h"
-#include "CoverageChecker.h"
 #include "llvm/ADT/SmallString.h"
 #include "llvm/Support/FileUtilities.h"
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/Path.h"
 #include "llvm/Support/raw_ostream.h"
-#include "ModularizeUtilities.h"
 
 using namespace clang;
 using namespace llvm;
@@ -79,12 +79,12 @@ std::error_code ModularizeUtilities::loadAllHeaderListsAndDependencies() {
       // Load the module map.
       if (std::error_code EC = loadModuleMap(InputPath))
         return EC;
-    }
-    else {
+    } else {
       // Else we assume it's a header list and load it.
-      if (std::error_code EC = loadSingleHeaderListsAndDependencies(InputPath)) {
+      if (std::error_code EC =
+              loadSingleHeaderListsAndDependencies(InputPath)) {
         errs() << "modularize: error: Unable to get header list '" << InputPath
-          << "': " << EC.message() << '\n';
+               << "': " << EC.message() << '\n';
         return EC;
       }
     }
@@ -93,8 +93,8 @@ std::error_code ModularizeUtilities::loadAllHeaderListsAndDependencies() {
   if (ProblemFilesPath.size() != 0) {
     // Load problem files list.
     if (std::error_code EC = loadProblemHeaderList(ProblemFilesPath)) {
-      errs() << "modularize: error: Unable to get problem header list '" << ProblemFilesPath
-        << "': " << EC.message() << '\n';
+      errs() << "modularize: error: Unable to get problem header list '"
+             << ProblemFilesPath << "': " << EC.message() << '\n';
       return EC;
     }
   }
@@ -111,9 +111,9 @@ std::error_code ModularizeUtilities::loadAllHeaderListsAndDependencies() {
 // Returns 0 if there were no errors or warnings, 1 if there
 // were warnings, 2 if any other problem, such as a bad
 // module map path argument was specified.
-std::error_code ModularizeUtilities::doCoverageCheck(
-    std::vector<std::string> &IncludePaths,
-    llvm::ArrayRef<std::string> CommandLine) {
+std::error_code
+ModularizeUtilities::doCoverageCheck(std::vector<std::string> &IncludePaths,
+                                     llvm::ArrayRef<std::string> CommandLine) {
   int ModuleMapCount = ModuleMaps.size();
   int ModuleMapIndex;
   std::error_code EC;
@@ -145,7 +145,7 @@ std::error_code ModularizeUtilities::loadSingleHeaderListsAndDependencies(
 
   // Read the header list file into a buffer.
   ErrorOr<std::unique_ptr<MemoryBuffer>> listBuffer =
-    MemoryBuffer::getFile(InputPath);
+      MemoryBuffer::getFile(InputPath);
   if (std::error_code EC = listBuffer.getError())
     return EC;
 
@@ -155,8 +155,8 @@ std::error_code ModularizeUtilities::loadSingleHeaderListsAndDependencies(
 
   // Collect the header file names from the string list.
   for (SmallVectorImpl<StringRef>::iterator I = Strings.begin(),
-    E = Strings.end();
-    I != E; ++I) {
+                                            E = Strings.end();
+       I != E; ++I) {
     StringRef Line = I->trim();
     // Ignore comments and empty lines.
     if (Line.empty() || (Line[0] == '#'))
@@ -203,8 +203,8 @@ std::error_code ModularizeUtilities::loadSingleHeaderListsAndDependencies(
 }
 
 // Load problem header list.
-std::error_code ModularizeUtilities::loadProblemHeaderList(
-  llvm::StringRef InputPath) {
+std::error_code
+ModularizeUtilities::loadProblemHeaderList(llvm::StringRef InputPath) {
 
   // By default, use the path component of the list file name.
   SmallString<256> HeaderDirectory(InputPath);
@@ -218,7 +218,7 @@ std::error_code ModularizeUtilities::loadProblemHeaderList(
 
   // Read the header list file into a buffer.
   ErrorOr<std::unique_ptr<MemoryBuffer>> listBuffer =
-    MemoryBuffer::getFile(InputPath);
+      MemoryBuffer::getFile(InputPath);
   if (std::error_code EC = listBuffer.getError())
     return EC;
 
@@ -228,8 +228,8 @@ std::error_code ModularizeUtilities::loadProblemHeaderList(
 
   // Collect the header file names from the string list.
   for (SmallVectorImpl<StringRef>::iterator I = Strings.begin(),
-    E = Strings.end();
-    I != E; ++I) {
+                                            E = Strings.end();
+       I != E; ++I) {
     StringRef Line = I->trim();
     // Ignore comments and empty lines.
     if (Line.empty() || (Line[0] == '#'))
@@ -255,11 +255,9 @@ std::error_code ModularizeUtilities::loadProblemHeaderList(
 }
 
 // Load single module map and extract header file list.
-std::error_code ModularizeUtilities::loadModuleMap(
-    llvm::StringRef InputPath) {
+std::error_code ModularizeUtilities::loadModuleMap(llvm::StringRef InputPath) {
   // Get file entry for module.modulemap file.
-  auto ModuleMapEntryOrErr =
-    SourceMgr->getFileManager().getFile(InputPath);
+  auto ModuleMapEntryOrErr = SourceMgr->getFileManager().getFile(InputPath);
 
   // return error if not found.
   if (!ModuleMapEntryOrErr) {
@@ -289,8 +287,8 @@ std::error_code ModularizeUtilities::loadModuleMap(
   }
 
   std::unique_ptr<ModuleMap> ModMap;
-  ModMap.reset(new ModuleMap(*SourceMgr, *Diagnostics, *LangOpts,
-    Target.get(), *HeaderInfo));
+  ModMap.reset(new ModuleMap(*SourceMgr, *Diagnostics, *LangOpts, Target.get(),
+                             *HeaderInfo));
 
   // Parse module.modulemap file into module map.
   if (ModMap->parseModuleMapFile(ModuleMapEntry, false, Dir)) {
@@ -324,8 +322,8 @@ std::error_code ModularizeUtilities::loadModuleMap(
 // HeaderFileNames.
 bool ModularizeUtilities::collectModuleMapHeaders(clang::ModuleMap *ModMap) {
   for (ModuleMap::module_iterator I = ModMap->module_begin(),
-    E = ModMap->module_end();
-    I != E; ++I) {
+                                  E = ModMap->module_end();
+       I != E; ++I) {
     if (!collectModuleHeaders(*I->second))
       return false;
   }
@@ -356,8 +354,7 @@ bool ModularizeUtilities::collectModuleHeaders(const clang::Module &Mod) {
     HeaderFileNames.push_back(HeaderPath);
 
     // FUTURE: When needed, umbrella header header collection goes here.
-  }
-  else if (const DirectoryEntry *UmbrellaDir = Mod.getUmbrellaDir().Entry) {
+  } else if (const DirectoryEntry *UmbrellaDir = Mod.getUmbrellaDir().Entry) {
     // If there normal headers, assume these are umbrellas and skip collection.
     if (Mod.Headers->size() == 0) {
       // Collect headers in umbrella directory.
@@ -377,7 +374,7 @@ bool ModularizeUtilities::collectModuleHeaders(const clang::Module &Mod) {
     DependentsVector NormalDependents;
     // Collect normal header.
     const clang::Module::Header &Header(
-      Mod.Headers[clang::Module::HK_Normal][Index]);
+        Mod.Headers[clang::Module::HK_Normal][Index]);
     std::string HeaderPath = getCanonicalPath(Header.Entry->getName());
     HeaderFileNames.push_back(HeaderPath);
   }
@@ -388,7 +385,7 @@ bool ModularizeUtilities::collectModuleHeaders(const clang::Module &Mod) {
     std::string MissingFile = Mod.MissingHeaders[Index].FileName;
     SourceLocation Loc = Mod.MissingHeaders[Index].FileNameLoc;
     errs() << Loc.printToString(*SourceMgr)
-      << ": error : Header not found: " << MissingFile << "\n";
+           << ": error : Header not found: " << MissingFile << "\n";
   }
 
   MissingHeaderCount += MissingCountThisModule;
@@ -398,13 +395,13 @@ bool ModularizeUtilities::collectModuleHeaders(const clang::Module &Mod) {
 
 // Collect headers from an umbrella directory.
 bool ModularizeUtilities::collectUmbrellaHeaders(StringRef UmbrellaDirName,
-  DependentsVector &Dependents) {
+                                                 DependentsVector &Dependents) {
   // Initialize directory name.
   SmallString<256> Directory(UmbrellaDirName);
   // Walk the directory.
   std::error_code EC;
   for (llvm::sys::fs::directory_iterator I(Directory.str(), EC), E; I != E;
-    I.increment(EC)) {
+       I.increment(EC)) {
     if (EC)
       return false;
     std::string File(I->path());
@@ -433,11 +430,10 @@ bool ModularizeUtilities::collectUmbrellaHeaders(StringRef UmbrellaDirName,
 static std::string replaceDotDot(StringRef Path) {
   SmallString<128> Buffer;
   llvm::sys::path::const_iterator B = llvm::sys::path::begin(Path),
-    E = llvm::sys::path::end(Path);
+                                  E = llvm::sys::path::end(Path);
   while (B != E) {
     if (B->compare(".") == 0) {
-    }
-    else if (B->compare("..") == 0)
+    } else if (B->compare("..") == 0)
       llvm::sys::path::remove_filename(Buffer);
     else
       llvm::sys::path::append(Buffer, *B);
@@ -495,7 +491,7 @@ std::string ModularizeUtilities::getDirectoryFromPath(StringRef Path) {
 void ModularizeUtilities::addUniqueProblemFile(std::string FilePath) {
   FilePath = getCanonicalPath(FilePath);
   // Don't add if already present.
-  for(auto &TestFilePath : ProblemFileNames) {
+  for (auto &TestFilePath : ProblemFileNames) {
     if (TestFilePath == FilePath)
       return;
   }
@@ -535,8 +531,8 @@ void ModularizeUtilities::displayGoodFiles() {
 
 // List files with problem files commented out.
 void ModularizeUtilities::displayCombinedFiles() {
-  errs() <<
-    "\nThese are the combined files, with problem files preceded by #:\n\n";
+  errs() << "\nThese are the combined files, with problem files preceded by "
+            "#:\n\n";
   for (auto &File : HeaderFileNames) {
     bool Good = true;
     for (auto &ProblemFile : ProblemFileNames) {

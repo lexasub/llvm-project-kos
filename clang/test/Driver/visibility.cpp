@@ -31,4 +31,3 @@
 // RUN: FileCheck -check-prefix=CHECK-6 %s < %t.log
 // CHECK-6: "-fvisibility" "hidden"
 // CHECK-6: "-ftype-visibility" "default"
-

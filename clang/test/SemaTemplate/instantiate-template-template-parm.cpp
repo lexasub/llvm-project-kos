@@ -1,17 +1,17 @@
 // RUN: %clang_cc1 -fsyntax-only -verify %s
-template<template<typename T> class MetaFun, typename Value>
+template <template <typename T> class MetaFun, typename Value>
 struct apply {
   typedef typename MetaFun<Value>::type type;
 };
 
-template<class T>
+template <class T>
 struct add_pointer {
-  typedef T* type;
+  typedef T *type;
 };
 
-template<class T>
+template <class T>
 struct add_reference {
-  typedef T& type;
+  typedef T &type;
 };
 
 int i;
@@ -20,32 +20,32 @@ apply<add_reference, int>::type ir = i;
 apply<add_reference, float>::type fr = i; // expected-error{{non-const lvalue reference to type 'float' cannot bind to a value of unrelated type 'int'}}
 
 // Template template parameters
-template<int> struct B; // expected-note{{has a different type 'int'}}
+template <int> struct B; // expected-note{{has a different type 'int'}}
 
-template<typename T, 
-         template<T Value> class X> // expected-error{{cannot have type 'float'}} \
+template <typename T,
+          template <T Value> class X> // expected-error{{cannot have type 'float'}} \
                                     // expected-note{{with type 'long'}}
-struct X0 { };
+struct X0 {};
 
 X0<int, B> x0b1;
 X0<float, B> x0b2; // expected-note{{while substituting}}
-X0<long, B> x0b3; // expected-error{{template template argument has different template parameters}}
+X0<long, B> x0b3;  // expected-error{{template template argument has different template parameters}}
 
-template<template<int V> class TT> // expected-note{{parameter with type 'int'}}
-struct X1 { };
+template <template <int V> class TT> // expected-note{{parameter with type 'int'}}
+struct X1 {};
 
-template<typename T, template<T V> class TT>
+template <typename T, template <T V> class TT>
 struct X2 {
   X1<TT> x1; // expected-error{{has different template parameters}}
 };
 
-template<int V> struct X3i { };
-template<long V> struct X3l { }; // expected-note{{different type 'long'}}
+template <int V> struct X3i {};
+template <long V> struct X3l {}; // expected-note{{different type 'long'}}
 
 X2<int, X3i> x2okay;
 X2<long, X3l> x2bad; // expected-note{{instantiation}}
 
-template <typename T, template <T, T> class TT, class R = TT<1, 2> >
+template <typename T, template <T, T> class TT, class R = TT<1, 2>>
 struct Comp {
   typedef R r1;
   template <T x, T y> struct gt {
@@ -61,37 +61,30 @@ template <int x, int y> struct lt {
 Comp<int, lt> c0;
 
 namespace PR8629 {
-  template<template<int> class TT> struct X0
-  {
-    static void apply();
-  };
-  template<int> struct Type { };
+template <template <int> class TT> struct X0 {
+  static void apply();
+};
+template <int> struct Type {};
 
-  template<class T> struct X1
-  {
-    template<class U> struct Inner;
+template <class T> struct X1 {
+  template <class U> struct Inner;
 
-    template<class U> void g()
-    {
-      typedef Inner<U> Init;
-      X0<Init::template VeryInner>::apply();
-    }
-    template<int N> void f ()
-    {
-      g<Type<N> >();
-    }
+  template <class U> void g() {
+    typedef Inner<U> Init;
+    X0<Init::template VeryInner>::apply();
+  }
+  template <int N> void f() {
+    g<Type<N>>();
+  }
+};
+template <class T> template <class U> struct X1<T>::Inner {
+  template <int> struct VeryInner {
   };
-  template<class T> template<class U> struct X1<T>::Inner
-  {
-    template<int> struct VeryInner {
-    };
-  };
-  struct X1Container
-  {
-    X1Container()
-    {
-      simplex_.f<0>();
-    }
-    X1<double> simplex_;
-  };
-}
+};
+struct X1Container {
+  X1Container() {
+    simplex_.f<0>();
+  }
+  X1<double> simplex_;
+};
+} // namespace PR8629

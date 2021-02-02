@@ -17,21 +17,20 @@
 #include "test_macros.h"
 #include "debug_mode_helper.h"
 
-int main(int, char**)
-{
+int main(int, char**) {
   {
     typedef std::array<int, 0> C;
     C c = {};
     C const& cc = c;
-    EXPECT_DEATH( c.back() );
-    EXPECT_DEATH( cc.back() );
+    EXPECT_DEATH(c.back());
+    EXPECT_DEATH(cc.back());
   }
   {
     typedef std::array<const int, 0> C;
     C c = {{}};
     C const& cc = c;
-    EXPECT_DEATH( c.back() );
-    EXPECT_DEATH( cc.back() );
+    EXPECT_DEATH(c.back());
+    EXPECT_DEATH(cc.back());
   }
 
   return 0;

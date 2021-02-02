@@ -464,20 +464,23 @@ TEST_F(AArch64GISelMITest, TestNumSignBitsTrunc) {
 }
 
 TEST_F(AMDGPUGISelMITest, TestNumSignBitsTrunc) {
-  StringRef MIRString =
-    "  %3:_(<4 x s32>) = G_IMPLICIT_DEF\n"
-    "  %4:_(s32) = G_IMPLICIT_DEF\n"
-    "  %5:_(s32) = G_AMDGPU_BUFFER_LOAD_UBYTE %3, %4, %4, %4, 0, 0, 0 :: (load 1)\n"
-    "  %6:_(s32) = COPY %5\n"
+  StringRef MIRString = "  %3:_(<4 x s32>) = G_IMPLICIT_DEF\n"
+                        "  %4:_(s32) = G_IMPLICIT_DEF\n"
+                        "  %5:_(s32) = G_AMDGPU_BUFFER_LOAD_UBYTE %3, %4, %4, "
+                        "%4, 0, 0, 0 :: (load 1)\n"
+                        "  %6:_(s32) = COPY %5\n"
 
-    "  %7:_(s32) = G_AMDGPU_BUFFER_LOAD_SBYTE %3, %4, %4, %4, 0, 0, 0 :: (load 1)\n"
-    "  %8:_(s32) = COPY %7\n"
+                        "  %7:_(s32) = G_AMDGPU_BUFFER_LOAD_SBYTE %3, %4, %4, "
+                        "%4, 0, 0, 0 :: (load 1)\n"
+                        "  %8:_(s32) = COPY %7\n"
 
-    "  %9:_(s32) = G_AMDGPU_BUFFER_LOAD_USHORT %3, %4, %4, %4, 0, 0, 0 :: (load 2)\n"
-    "  %10:_(s32) = COPY %9\n"
+                        "  %9:_(s32) = G_AMDGPU_BUFFER_LOAD_USHORT %3, %4, %4, "
+                        "%4, 0, 0, 0 :: (load 2)\n"
+                        "  %10:_(s32) = COPY %9\n"
 
-    "  %11:_(s32) = G_AMDGPU_BUFFER_LOAD_SSHORT %3, %4, %4, %4, 0, 0, 0 :: (load 2)\n"
-    "  %12:_(s32) = COPY %11\n";
+                        "  %11:_(s32) = G_AMDGPU_BUFFER_LOAD_SSHORT %3, %4, "
+                        "%4, %4, 0, 0, 0 :: (load 2)\n"
+                        "  %12:_(s32) = COPY %11\n";
 
   setUp(MIRString);
   if (!TM)
@@ -498,16 +501,16 @@ TEST_F(AMDGPUGISelMITest, TestNumSignBitsTrunc) {
 
 TEST_F(AMDGPUGISelMITest, TestTargetKnownAlign) {
   StringRef MIRString =
-    "  %5:_(p4) = G_INTRINSIC intrinsic(@llvm.amdgcn.dispatch.ptr)\n"
-    "  %6:_(p4) = COPY %5\n"
-    "  %7:_(p4) = G_INTRINSIC intrinsic(@llvm.amdgcn.queue.ptr)\n"
-    "  %8:_(p4) = COPY %7\n"
-    "  %9:_(p4) = G_INTRINSIC intrinsic(@llvm.amdgcn.kernarg.segment.ptr)\n"
-    "  %10:_(p4) = COPY %9\n"
-    "  %11:_(p4) = G_INTRINSIC intrinsic(@llvm.amdgcn.implicitarg.ptr)\n"
-    "  %12:_(p4) = COPY %11\n"
-    "  %13:_(p4) = G_INTRINSIC intrinsic(@llvm.amdgcn.implicit.buffer.ptr)\n"
-    "  %14:_(p4) = COPY %13\n";
+      "  %5:_(p4) = G_INTRINSIC intrinsic(@llvm.amdgcn.dispatch.ptr)\n"
+      "  %6:_(p4) = COPY %5\n"
+      "  %7:_(p4) = G_INTRINSIC intrinsic(@llvm.amdgcn.queue.ptr)\n"
+      "  %8:_(p4) = COPY %7\n"
+      "  %9:_(p4) = G_INTRINSIC intrinsic(@llvm.amdgcn.kernarg.segment.ptr)\n"
+      "  %10:_(p4) = COPY %9\n"
+      "  %11:_(p4) = G_INTRINSIC intrinsic(@llvm.amdgcn.implicitarg.ptr)\n"
+      "  %12:_(p4) = COPY %11\n"
+      "  %13:_(p4) = G_INTRINSIC intrinsic(@llvm.amdgcn.implicit.buffer.ptr)\n"
+      "  %14:_(p4) = COPY %13\n";
 
   setUp(MIRString);
   if (!TM)
@@ -821,7 +824,8 @@ TEST_F(AArch64GISelMITest, TestKnownBitsUnmergeValues) {
 
     uint16_t PartTestVal = static_cast<uint16_t>(TestVal >> BitOffset);
     EXPECT_EQ(PartTestVal, PartKnown.One.getZExtValue());
-    EXPECT_EQ(static_cast<uint16_t>(~PartTestVal), PartKnown.Zero.getZExtValue());
+    EXPECT_EQ(static_cast<uint16_t>(~PartTestVal),
+              PartKnown.Zero.getZExtValue());
   }
 }
 
@@ -904,7 +908,6 @@ TEST_F(AArch64GISelMITest, TestInvalidQueries) {
   GISelKnownBits Info(*MF);
   KnownBits EqSizeRes = Info.getKnownBits(EqSizedShl);
   KnownBits BiggerSizeRes = Info.getKnownBits(BiggerSizedShl);
-
 
   // We don't know what the result of the shift is, but we should not crash
   EXPECT_TRUE(EqSizeRes.One.isNullValue());

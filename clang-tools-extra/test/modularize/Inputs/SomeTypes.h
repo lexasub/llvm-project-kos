@@ -11,6 +11,7 @@ struct TypeStruct {
 class TypeClass {
 public:
   TypeClass() : Member(0) {}
+
 private:
   int Member;
 };

@@ -91,7 +91,7 @@ static const ProcessKDPPropertiesSP &GetGlobalPluginProperties() {
   return g_settings_sp;
 }
 
-} // anonymous namespace end
+} // namespace
 
 static const lldb::tid_t g_kernel_tid = 1;
 
@@ -689,15 +689,13 @@ Status ProcessKDP::DisableBreakpointSite(BreakpointSite *bp_site) {
 
 Status ProcessKDP::EnableWatchpoint(Watchpoint *wp, bool notify) {
   Status error;
-  error.SetErrorString(
-      "watchpoints are not supported in kdp remote debugging");
+  error.SetErrorString("watchpoints are not supported in kdp remote debugging");
   return error;
 }
 
 Status ProcessKDP::DisableWatchpoint(Watchpoint *wp, bool notify) {
   Status error;
-  error.SetErrorString(
-      "watchpoints are not supported in kdp remote debugging");
+  error.SetErrorString("watchpoints are not supported in kdp remote debugging");
   return error;
 }
 

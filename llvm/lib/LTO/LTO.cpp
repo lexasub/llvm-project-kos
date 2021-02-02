@@ -202,7 +202,8 @@ void llvm::computeLTOCacheKey(
   };
 
   auto AddUsedThings = [&](GlobalValueSummary *GS) {
-    if (!GS) return;
+    if (!GS)
+      return;
     AddUnsigned(GS->getVisibility());
     AddUnsigned(GS->isLive());
     AddUnsigned(GS->canAutoHide());
@@ -494,9 +495,7 @@ Expected<std::unique_ptr<InputFile>> InputFile::create(MemoryBufferRef Object) {
   return std::move(File);
 }
 
-StringRef InputFile::getName() const {
-  return Mods[0].getModuleIdentifier();
-}
+StringRef InputFile::getName() const { return Mods[0].getModuleIdentifier(); }
 
 BitcodeModule &InputFile::getSingleBitcodeModule() {
   assert(Mods.size() == 1 && "Expect only one bitcode module");
@@ -795,8 +794,8 @@ LTO::addRegularLTO(BitcodeModule BM, ArrayRef<InputFile::Symbol> Syms,
       if (Res.FinalDefinitionInLinkageUnit) {
         GV->setDSOLocal(true);
         if (GV->hasDLLImportStorageClass())
-          GV->setDLLStorageClass(GlobalValue::DLLStorageClassTypes::
-                                 DefaultStorageClass);
+          GV->setDLLStorageClass(
+              GlobalValue::DLLStorageClassTypes::DefaultStorageClass);
       }
     }
     // Common resolution: collect the maximum size/alignment over all commons.
@@ -812,7 +811,6 @@ LTO::addRegularLTO(BitcodeModule BM, ArrayRef<InputFile::Symbol> Syms,
         CommonRes.Align = max(*SymAlign, CommonRes.Align);
       CommonRes.Prevailing |= Res.Prevailing;
     }
-
   }
   if (!M.getComdatSymbolTable().empty())
     for (GlobalValue &GV : M.global_values())
@@ -850,9 +848,9 @@ Error LTO::linkRegularLTO(RegularLTOState::AddedModule Mod,
     Keep.push_back(GV);
   }
 
-  return RegularLTO.Mover->move(std::move(Mod.M), Keep,
-                                [](GlobalValue &, IRMover::ValueAdder) {},
-                                /* IsPerformingImport */ false);
+  return RegularLTO.Mover->move(
+      std::move(Mod.M), Keep, [](GlobalValue &, IRMover::ValueAdder) {},
+      /* IsPerformingImport */ false);
 }
 
 // Add a ThinLTO module to the link.
@@ -1116,7 +1114,7 @@ static const char *libcallRoutineNames[] = {
 #undef HANDLE_LIBCALL
 };
 
-ArrayRef<const char*> LTO::getRuntimeLibcallSymbols() {
+ArrayRef<const char *> LTO::getRuntimeLibcallSymbols() {
   return makeArrayRef(libcallRoutineNames);
 }
 
@@ -1383,8 +1381,8 @@ Error LTO::runThinLTO(AddStreamFn AddStream, NativeObjectCache Cache,
 
   // Collect for each module the list of function it defines (GUID ->
   // Summary).
-  StringMap<GVSummaryMapTy>
-      ModuleToDefinedGVSummaries(ThinLTO.ModuleMap.size());
+  StringMap<GVSummaryMapTy> ModuleToDefinedGVSummaries(
+      ThinLTO.ModuleMap.size());
   ThinLTO.CombinedIndex.collectDefinedGVSummariesPerModule(
       ModuleToDefinedGVSummaries);
   // Create entries for any modules that didn't have any GV summaries
@@ -1463,8 +1461,7 @@ Error LTO::runThinLTO(AddStreamFn AddStream, NativeObjectCache Cache,
   updateIndexWPDForExports(ThinLTO.CombinedIndex, isExported,
                            LocalWPDTargetsMap);
 
-  auto isPrevailing = [&](GlobalValue::GUID GUID,
-                          const GlobalValueSummary *S) {
+  auto isPrevailing = [&](GlobalValue::GUID GUID, const GlobalValueSummary *S) {
     return ThinLTO.PrevailingModuleForGUID[GUID] == S->modulePath();
   };
   thinLTOInternalizeAndPromoteInIndex(ThinLTO.CombinedIndex, isExported,

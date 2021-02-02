@@ -20,6 +20,6 @@ typedef HostThreadMacOSX HostNativeThread;
 class HostThreadPosix;
 typedef HostThreadPosix HostNativeThread;
 #endif
-}
+} // namespace lldb_private
 
 #endif

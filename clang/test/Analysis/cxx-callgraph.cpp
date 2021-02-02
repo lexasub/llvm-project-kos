@@ -4,14 +4,14 @@ static int aaa() {
   return 0;
 }
 
-static int bbb(int param=aaa()) {
+static int bbb(int param = aaa()) {
   return 1;
 }
 
 int ddd();
 
 struct c {
-  c(int param=2) : val(bbb(param)) {}
+  c(int param = 2) : val(bbb(param)) {}
   int val;
   int val2 = ddd();
 };

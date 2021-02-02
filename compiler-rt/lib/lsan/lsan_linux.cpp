@@ -27,6 +27,6 @@ AllocatorCache *GetAllocatorCache() { return &allocator_cache; }
 
 void ReplaceSystemMalloc() {}
 
-} // namespace __lsan
+}  // namespace __lsan
 
 #endif  // SANITIZER_LINUX || SANITIZER_NETBSD || SANITIZER_FUCHSIA

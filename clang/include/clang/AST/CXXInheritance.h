@@ -181,12 +181,12 @@ public:
         DetectVirtual(DetectVirtual) {}
 
   paths_iterator begin() { return Paths.begin(); }
-  paths_iterator end()   { return Paths.end(); }
+  paths_iterator end() { return Paths.end(); }
   const_paths_iterator begin() const { return Paths.begin(); }
-  const_paths_iterator end()   const { return Paths.end(); }
+  const_paths_iterator end() const { return Paths.end(); }
 
-  CXXBasePath&       front()       { return Paths.front(); }
-  const CXXBasePath& front() const { return Paths.front(); }
+  CXXBasePath &front() { return Paths.front(); }
+  const CXXBasePath &front() const { return Paths.front(); }
 
   using decl_range = llvm::iterator_range<decl_iterator>;
 
@@ -209,9 +209,7 @@ public:
 
   /// The virtual base discovered on the path (if we are merely
   /// detecting virtuals).
-  const RecordType* getDetectedVirtual() const {
-    return DetectedVirtual;
-  }
+  const RecordType *getDetectedVirtual() const { return DetectedVirtual; }
 
   /// Retrieve the type from which this base-paths search
   /// began
@@ -251,7 +249,7 @@ struct UniqueVirtualMethod {
   friend bool operator==(const UniqueVirtualMethod &X,
                          const UniqueVirtualMethod &Y) {
     return X.Method == Y.Method && X.Subobject == Y.Subobject &&
-      X.InVirtualSubobject == Y.InVirtualSubobject;
+           X.InVirtualSubobject == Y.InVirtualSubobject;
   }
 
   friend bool operator!=(const UniqueVirtualMethod &X,
@@ -286,8 +284,7 @@ public:
 
   // Iterate over the set of overriding virtual methods in a given
   // subobject.
-  using overriding_iterator =
-      SmallVectorImpl<UniqueVirtualMethod>::iterator;
+  using overriding_iterator = SmallVectorImpl<UniqueVirtualMethod>::iterator;
   using overriding_const_iterator =
       SmallVectorImpl<UniqueVirtualMethod>::const_iterator;
 
@@ -356,11 +353,11 @@ public:
 /// subobject numbers greater than 0 refer to non-virtual base class
 /// subobjects of that type.
 class CXXFinalOverriderMap
-  : public llvm::MapVector<const CXXMethodDecl *, OverridingMethods> {};
+    : public llvm::MapVector<const CXXMethodDecl *, OverridingMethods> {};
 
 /// A set of all the primary bases for a class.
 class CXXIndirectPrimaryBaseSet
-  : public llvm::SmallSet<const CXXRecordDecl*, 32> {};
+    : public llvm::SmallSet<const CXXRecordDecl *, 32> {};
 
 inline bool
 inheritanceModelHasVBPtrOffsetField(MSInheritanceModel Inheritance) {

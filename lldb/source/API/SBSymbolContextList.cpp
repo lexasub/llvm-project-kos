@@ -30,11 +30,11 @@ SBSymbolContextList::SBSymbolContextList(const SBSymbolContextList &rhs)
 
 SBSymbolContextList::~SBSymbolContextList() = default;
 
-const SBSymbolContextList &SBSymbolContextList::
-operator=(const SBSymbolContextList &rhs) {
-  LLDB_RECORD_METHOD(
-      const lldb::SBSymbolContextList &,
-      SBSymbolContextList, operator=,(const lldb::SBSymbolContextList &), rhs);
+const SBSymbolContextList &
+SBSymbolContextList::operator=(const SBSymbolContextList &rhs) {
+  LLDB_RECORD_METHOD(const lldb::SBSymbolContextList &,
+                     SBSymbolContextList, operator=,
+                     (const lldb::SBSymbolContextList &), rhs);
 
   if (this != &rhs)
     m_opaque_up = clone(rhs.m_opaque_up);
@@ -118,14 +118,13 @@ bool SBSymbolContextList::GetDescription(lldb::SBStream &description) {
 namespace lldb_private {
 namespace repro {
 
-template <>
-void RegisterMethods<SBSymbolContextList>(Registry &R) {
+template <> void RegisterMethods<SBSymbolContextList>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBSymbolContextList, ());
   LLDB_REGISTER_CONSTRUCTOR(SBSymbolContextList,
                             (const lldb::SBSymbolContextList &));
-  LLDB_REGISTER_METHOD(
-      const lldb::SBSymbolContextList &,
-      SBSymbolContextList, operator=,(const lldb::SBSymbolContextList &));
+  LLDB_REGISTER_METHOD(const lldb::SBSymbolContextList &,
+                       SBSymbolContextList, operator=,
+                       (const lldb::SBSymbolContextList &));
   LLDB_REGISTER_METHOD_CONST(uint32_t, SBSymbolContextList, GetSize, ());
   LLDB_REGISTER_METHOD(lldb::SBSymbolContext, SBSymbolContextList,
                        GetContextAtIndex, (uint32_t));
@@ -140,5 +139,5 @@ void RegisterMethods<SBSymbolContextList>(Registry &R) {
                        (lldb::SBStream &));
 }
 
-}
-}
+} // namespace repro
+} // namespace lldb_private

@@ -1,4 +1,4 @@
 struct FrameworkSubStruct {
-  const char * name;
+  const char *name;
   unsigned version;
 };

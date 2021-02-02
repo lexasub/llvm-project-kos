@@ -17,9 +17,9 @@
 // The same applies to s390x register save areas.
 // UNSUPPORTED: x86,i686,powerpc64,arm,s390x
 
+#include "sanitizer_common/print_address.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "sanitizer_common/print_address.h"
 
 void **pp;
 
@@ -27,8 +27,7 @@ void **pp;
 // overwriting it.
 // Hopefully the argument p will be passed on a register, saving us from false
 // negatives.
-__attribute__((noinline))
-void *PutPointerOnStaleStack(void *p) {
+__attribute__((noinline)) void *PutPointerOnStaleStack(void *p) {
   void *locals[2048];
   locals[0] = p;
   pp = &locals[0];
@@ -45,8 +44,8 @@ int main() {
 // it had a chance to see it. If LSan is invoked with atexit(), this works.
 // Otherwise, we need a different method.
 __attribute__((destructor))
-__attribute__((no_sanitize_address))
-void ConfirmPointerHasSurvived() {
+__attribute__((no_sanitize_address)) void
+ConfirmPointerHasSurvived() {
   print_address("Value after LSan: ", 1, *pp);
 }
 // CHECK: Test alloc: [[ADDR:0x[0-9,a-f]+]]

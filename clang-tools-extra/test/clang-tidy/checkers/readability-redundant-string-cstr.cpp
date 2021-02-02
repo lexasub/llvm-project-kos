@@ -20,50 +20,50 @@ struct basic_string {
   const C *c_str() const;
   const C *data() const;
 
-  _Type& append(const C *s);
-  _Type& append(const C *s, size n);
-  _Type& assign(const C *s);
-  _Type& assign(const C *s, size n);
+  _Type &append(const C *s);
+  _Type &append(const C *s, size n);
+  _Type &assign(const C *s);
+  _Type &assign(const C *s, size n);
 
-  int compare(const _Type&) const;
-  int compare(const C* s) const;
-  int compare(size pos, size len, const _Type&) const;
-  int compare(size pos, size len, const C* s) const;
+  int compare(const _Type &) const;
+  int compare(const C *s) const;
+  int compare(size pos, size len, const _Type &) const;
+  int compare(size pos, size len, const C *s) const;
 
-  size find(const _Type& str, size pos = 0) const;
-  size find(const C* s, size pos = 0) const;
-  size find(const C* s, size pos, size n) const;
+  size find(const _Type &str, size pos = 0) const;
+  size find(const C *s, size pos = 0) const;
+  size find(const C *s, size pos, size n) const;
 
-  _Type& insert(size pos, const _Type& str);
-  _Type& insert(size pos, const C* s);
-  _Type& insert(size pos, const C* s, size n);
+  _Type &insert(size pos, const _Type &str);
+  _Type &insert(size pos, const C *s);
+  _Type &insert(size pos, const C *s, size n);
 
-  _Type& operator+=(const _Type& str);
-  _Type& operator+=(const C* s);
-  _Type& operator=(const _Type& str);
-  _Type& operator=(const C* s);
+  _Type &operator+=(const _Type &str);
+  _Type &operator+=(const C *s);
+  _Type &operator=(const _Type &str);
+  _Type &operator=(const C *s);
 };
 
 typedef basic_string<char, std::char_traits<char>, std::allocator<char>> string;
 typedef basic_string<wchar_t, std::char_traits<wchar_t>, std::allocator<wchar_t>> wstring;
 typedef basic_string<char16, std::char_traits<char16>, std::allocator<char16>> u16string;
 typedef basic_string<char32, std::char_traits<char32>, std::allocator<char32>> u32string;
-}
+} // namespace std
 
-std::string operator+(const std::string&, const std::string&);
-std::string operator+(const std::string&, const char*);
-std::string operator+(const char*, const std::string&);
+std::string operator+(const std::string &, const std::string &);
+std::string operator+(const std::string &, const char *);
+std::string operator+(const char *, const std::string &);
 
-bool operator==(const std::string&, const std::string&);
-bool operator==(const std::string&, const char*);
-bool operator==(const char*, const std::string&);
+bool operator==(const std::string &, const std::string &);
+bool operator==(const std::string &, const char *);
+bool operator==(const char *, const std::string &);
 
 namespace llvm {
 struct StringRef {
   StringRef(const char *p);
   StringRef(const std::string &);
 };
-}
+} // namespace llvm
 
 // Tests for std::string.
 
@@ -90,7 +90,7 @@ void f3(const llvm::StringRef &r) {
   // CHECK-FIXES-NEXT: {{^  }}f3(s);{{$}}
 }
 void f4(const std::string &s) {
-  const std::string* ptr = &s;
+  const std::string *ptr = &s;
   f1(ptr->c_str());
   // CHECK-MESSAGES: :[[@LINE-1]]:6: warning: redundant call to 'c_str' [readability-redundant-string-cstr]
   // CHECK-FIXES: {{^  }}f1(*ptr);{{$}}
@@ -104,23 +104,28 @@ void f5(const std::string &s) {
   // CHECK-MESSAGES: :[[@LINE-1]]:14: warning: redundant call {{.*}}
   // CHECK-FIXES: {{^  }}tmp.assign(s);{{$}}
 
-  if (tmp.compare(s.c_str()) == 0) return;
+  if (tmp.compare(s.c_str()) == 0)
+    return;
   // CHECK-MESSAGES: :[[@LINE-1]]:19: warning: redundant call {{.*}}
   // CHECK-FIXES: {{^  }}if (tmp.compare(s) == 0) return;{{$}}
 
-  if (tmp.compare(1, 2, s.c_str()) == 0) return;
+  if (tmp.compare(1, 2, s.c_str()) == 0)
+    return;
   // CHECK-MESSAGES: :[[@LINE-1]]:25: warning: redundant call {{.*}}
   // CHECK-FIXES: {{^  }}if (tmp.compare(1, 2, s) == 0) return;{{$}}
 
-  if (tmp.find(s.c_str()) == 0) return;
+  if (tmp.find(s.c_str()) == 0)
+    return;
   // CHECK-MESSAGES: :[[@LINE-1]]:16: warning: redundant call {{.*}}
   // CHECK-FIXES: {{^  }}if (tmp.find(s) == 0) return;{{$}}
 
-  if (tmp.find(s.c_str(), 2) == 0) return;
+  if (tmp.find(s.c_str(), 2) == 0)
+    return;
   // CHECK-MESSAGES: :[[@LINE-1]]:16: warning: redundant call {{.*}}
   // CHECK-FIXES: {{^  }}if (tmp.find(s, 2) == 0) return;{{$}}
 
-  if (tmp.find(s.c_str(), 2) == 0) return;
+  if (tmp.find(s.c_str(), 2) == 0)
+    return;
   // CHECK-MESSAGES: :[[@LINE-1]]:16: warning: redundant call {{.*}}
   // CHECK-FIXES: {{^  }}if (tmp.find(s, 2) == 0) return;{{$}}
 
@@ -136,7 +141,8 @@ void f5(const std::string &s) {
   // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: redundant call {{.*}}
   // CHECK-FIXES: {{^  }}tmp += s;{{$}}
 
-  if (tmp == s.c_str()) return;
+  if (tmp == s.c_str())
+    return;
   // CHECK-MESSAGES: :[[@LINE-1]]:14: warning: redundant call {{.*}}
   // CHECK-FIXES: {{^  }}if (tmp == s) return;{{$}}
 
@@ -153,8 +159,10 @@ void f6(const std::string &s) {
   tmp.append(s.c_str(), 2);
   tmp.assign(s.c_str(), 2);
 
-  if (tmp.compare(s) == 0) return;
-  if (tmp.compare(1, 2, s) == 0) return;
+  if (tmp.compare(s) == 0)
+    return;
+  if (tmp.compare(1, 2, s) == 0)
+    return;
 
   tmp = s;
   tmp += s;
@@ -164,7 +172,8 @@ void f6(const std::string &s) {
 
   tmp = s + s;
 
-  if (tmp.find(s.c_str(), 2, 4) == 0) return;
+  if (tmp.find(s.c_str(), 2, 4) == 0)
+    return;
 
   tmp.insert(1, s);
   tmp.insert(1, s.c_str(), 2);
@@ -198,29 +207,29 @@ void k1(const std::u32string &s) {
 
 struct NotAString {
   NotAString();
-  NotAString(const NotAString&);
+  NotAString(const NotAString &);
   const char *c_str() const;
 };
 
-void dummy(const char*) {}
+void dummy(const char *) {}
 
 void invalid(const NotAString &s) {
   dummy(s.c_str());
 }
 
 // Test for rvalue std::string.
-void m1(std::string&&) {
+void m1(std::string &&) {
   std::string s;
 
   m1(s.c_str());
 
-  void (*m1p1)(std::string&&);
+  void (*m1p1)(std::string &&);
   m1p1 = m1;
   m1p1(s.c_str());
 
   using m1tp = void (*)(std::string &&);
   m1tp m1p2 = m1;
-  m1p2(s.c_str());  
+  m1p2(s.c_str());
 }
 
 namespace PR45286 {

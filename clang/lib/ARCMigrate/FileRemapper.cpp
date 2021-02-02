@@ -23,13 +23,12 @@ FileRemapper::FileRemapper() {
   FileMgr.reset(new FileManager(FileSystemOptions()));
 }
 
-FileRemapper::~FileRemapper() {
-  clear();
-}
+FileRemapper::~FileRemapper() { clear(); }
 
 void FileRemapper::clear(StringRef outputDir) {
-  for (MappingsTy::iterator
-         I = FromToMappings.begin(), E = FromToMappings.end(); I != E; ++I)
+  for (MappingsTy::iterator I = FromToMappings.begin(),
+                            E = FromToMappings.end();
+       I != E; ++I)
     resetTarget(I->second);
   FromToMappings.clear();
   assert(ToFromMappings.empty());
@@ -60,7 +59,7 @@ bool FileRemapper::initFromFile(StringRef filePath, DiagnosticsEngine &Diag,
   if (!llvm::sys::fs::exists(infoFile))
     return false;
 
-  std::vector<std::pair<const FileEntry *, const FileEntry *> > pairs;
+  std::vector<std::pair<const FileEntry *, const FileEntry *>> pairs;
 
   llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> fileBuf =
       llvm::MemoryBuffer::getFile(infoFile);
@@ -70,13 +69,13 @@ bool FileRemapper::initFromFile(StringRef filePath, DiagnosticsEngine &Diag,
   SmallVector<StringRef, 64> lines;
   fileBuf.get()->getBuffer().split(lines, "\n");
 
-  for (unsigned idx = 0; idx+3 <= lines.size(); idx += 3) {
+  for (unsigned idx = 0; idx + 3 <= lines.size(); idx += 3) {
     StringRef fromFilename = lines[idx];
     unsigned long long timeModified;
-    if (lines[idx+1].getAsInteger(10, timeModified))
-      return report("Invalid file data: '" + lines[idx+1] + "' not a number",
+    if (lines[idx + 1].getAsInteger(10, timeModified))
+      return report("Invalid file data: '" + lines[idx + 1] + "' not a number",
                     Diag);
-    StringRef toFilename = lines[idx+2];
+    StringRef toFilename = lines[idx + 2];
 
     llvm::ErrorOr<const FileEntry *> origFE = FileMgr->getFile(fromFilename);
     if (!origFE) {
@@ -125,8 +124,9 @@ bool FileRemapper::flushToFile(StringRef outputPath, DiagnosticsEngine &Diag) {
   if (EC)
     return report(EC.message(), Diag);
 
-  for (MappingsTy::iterator
-         I = FromToMappings.begin(), E = FromToMappings.end(); I != E; ++I) {
+  for (MappingsTy::iterator I = FromToMappings.begin(),
+                            E = FromToMappings.end();
+       I != E; ++I) {
 
     const FileEntry *origFE = I->first;
     SmallString<200> origPath = StringRef(origFE->getName());
@@ -142,9 +142,9 @@ bool FileRemapper::flushToFile(StringRef outputPath, DiagnosticsEngine &Diag) {
 
       SmallString<64> tempPath;
       int fd;
-      if (fs::createTemporaryFile(path::filename(origFE->getName()),
-                                  path::extension(origFE->getName()).drop_front(), fd,
-                                  tempPath))
+      if (fs::createTemporaryFile(
+              path::filename(origFE->getName()),
+              path::extension(origFE->getName()).drop_front(), fd, tempPath))
         return report("Could not create file: " + tempPath.str(), Diag);
 
       llvm::raw_fd_ostream newOut(fd, /*shouldClose=*/true);
@@ -168,8 +168,9 @@ bool FileRemapper::overwriteOriginal(DiagnosticsEngine &Diag,
                                      StringRef outputDir) {
   using namespace llvm::sys;
 
-  for (MappingsTy::iterator
-         I = FromToMappings.begin(), E = FromToMappings.end(); I != E; ++I) {
+  for (MappingsTy::iterator I = FromToMappings.begin(),
+                            E = FromToMappings.end();
+       I != E; ++I) {
     const FileEntry *origFE = I->first;
     assert(I->second.is<llvm::MemoryBuffer *>());
     if (!fs::exists(origFE->getName()))
@@ -206,8 +207,9 @@ void FileRemapper::forEachMapping(
 }
 
 void FileRemapper::applyMappings(PreprocessorOptions &PPOpts) const {
-  for (MappingsTy::const_iterator
-         I = FromToMappings.begin(), E = FromToMappings.end(); I != E; ++I) {
+  for (MappingsTy::const_iterator I = FromToMappings.begin(),
+                                  E = FromToMappings.end();
+       I != E; ++I) {
     if (const FileEntry *FE = I->second.dyn_cast<const FileEntry *>()) {
       PPOpts.addRemappedFile(I->first->getName(), FE->getName());
     } else {
@@ -246,8 +248,8 @@ const FileEntry *FileRemapper::getOriginalFile(StringRef filePath) {
     file = *fileOrErr;
   // If we are updating a file that overridden an original file,
   // actually update the original file.
-  llvm::DenseMap<const FileEntry *, const FileEntry *>::iterator
-    I = ToFromMappings.find(file);
+  llvm::DenseMap<const FileEntry *, const FileEntry *>::iterator I =
+      ToFromMappings.find(file);
   if (I != ToFromMappings.end()) {
     file = I->second;
     assert(FromToMappings.find(file) != FromToMappings.end() &&

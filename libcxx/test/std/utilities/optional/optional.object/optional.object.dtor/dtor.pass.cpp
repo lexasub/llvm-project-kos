@@ -24,48 +24,46 @@ struct PODType {
   int value2;
 };
 
-class X
-{
+class X {
 public:
-    static bool dtor_called;
-    X() = default;
-    ~X() {dtor_called = true;}
+  static bool dtor_called;
+  X() = default;
+  ~X() { dtor_called = true; }
 };
 
 bool X::dtor_called = false;
 
-int main(int, char**)
-{
+int main(int, char**) {
+  {
+    typedef int T;
+    static_assert(std::is_trivially_destructible<T>::value, "");
+    static_assert(std::is_trivially_destructible<optional<T> >::value, "");
+    static_assert(std::is_literal_type<optional<T> >::value, "");
+  }
+  {
+    typedef double T;
+    static_assert(std::is_trivially_destructible<T>::value, "");
+    static_assert(std::is_trivially_destructible<optional<T> >::value, "");
+    static_assert(std::is_literal_type<optional<T> >::value, "");
+  }
+  {
+    typedef PODType T;
+    static_assert(std::is_trivially_destructible<T>::value, "");
+    static_assert(std::is_trivially_destructible<optional<T> >::value, "");
+    static_assert(std::is_literal_type<optional<T> >::value, "");
+  }
+  {
+    typedef X T;
+    static_assert(!std::is_trivially_destructible<T>::value, "");
+    static_assert(!std::is_trivially_destructible<optional<T> >::value, "");
+    static_assert(!std::is_literal_type<optional<T> >::value, "");
     {
-        typedef int T;
-        static_assert(std::is_trivially_destructible<T>::value, "");
-        static_assert(std::is_trivially_destructible<optional<T>>::value, "");
-        static_assert(std::is_literal_type<optional<T>>::value, "");
+      X x;
+      optional<X> opt{x};
+      assert(X::dtor_called == false);
     }
-    {
-        typedef double T;
-        static_assert(std::is_trivially_destructible<T>::value, "");
-        static_assert(std::is_trivially_destructible<optional<T>>::value, "");
-        static_assert(std::is_literal_type<optional<T>>::value, "");
-    }
-    {
-        typedef PODType T;
-        static_assert(std::is_trivially_destructible<T>::value, "");
-        static_assert(std::is_trivially_destructible<optional<T>>::value, "");
-        static_assert(std::is_literal_type<optional<T>>::value, "");
-    }
-    {
-        typedef X T;
-        static_assert(!std::is_trivially_destructible<T>::value, "");
-        static_assert(!std::is_trivially_destructible<optional<T>>::value, "");
-        static_assert(!std::is_literal_type<optional<T>>::value, "");
-        {
-            X x;
-            optional<X> opt{x};
-            assert(X::dtor_called == false);
-        }
-        assert(X::dtor_called == true);
-    }
+    assert(X::dtor_called == true);
+  }
 
   return 0;
 }

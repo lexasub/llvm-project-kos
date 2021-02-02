@@ -14,13 +14,13 @@ struct A {
 // CHECK-QUIET-NOT: warning:
 struct B : public A {
   void placeholder_for_f() {}
-// CHECK-SANITY: [[@LINE-1]]:8: warning: annotate this
-// CHECK: [[@LINE-2]]:8: warning: annotate this
-// CHECK-QUIET: [[@LINE-3]]:8: warning: annotate this
+  // CHECK-SANITY: [[@LINE-1]]:8: warning: annotate this
+  // CHECK: [[@LINE-2]]:8: warning: annotate this
+  // CHECK-QUIET: [[@LINE-3]]:8: warning: annotate this
   void g() {}
-// CHECK-SANITY: [[@LINE-1]]:8: warning: annotate this
-// CHECK-NOT: warning:
-// CHECK-QUIET-NOT: warning:
+  // CHECK-SANITY: [[@LINE-1]]:8: warning: annotate this
+  // CHECK-NOT: warning:
+  // CHECK-QUIET-NOT: warning:
 };
 // CHECK-SANITY-NOT: Suppressed
 // CHECK-QUIET-NOT: Suppressed

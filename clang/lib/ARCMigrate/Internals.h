@@ -9,17 +9,17 @@
 #ifndef LLVM_CLANG_LIB_ARCMIGRATE_INTERNALS_H
 #define LLVM_CLANG_LIB_ARCMIGRATE_INTERNALS_H
 
-#include "clang/Basic/LangOptions.h"
 #include "clang/Basic/Diagnostic.h"
+#include "clang/Basic/LangOptions.h"
 #include "clang/Frontend/MigratorOptions.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/Optional.h"
 #include <list>
 
 namespace clang {
-  class ASTContext;
-  class Sema;
-  class Stmt;
+class ASTContext;
+class Sema;
+class Stmt;
 
 namespace arcmt {
 
@@ -39,12 +39,12 @@ public:
 
   typedef ListTy::const_iterator iterator;
   iterator begin() const { return List.begin(); }
-  iterator end()   const { return List.end();   }
+  iterator end() const { return List.end(); }
 };
 
 void writeARCDiagsToPlist(const std::string &outPath,
-                          ArrayRef<StoredDiagnostic> diags,
-                          SourceManager &SM, const LangOptions &LangOpts);
+                          ArrayRef<StoredDiagnostic> diags, SourceManager &SM,
+                          const LangOptions &LangOpts);
 
 class TransformActions {
   DiagnosticsEngine &Diags;
@@ -69,20 +69,19 @@ public:
   void replaceStmt(Stmt *S, StringRef text);
   void replaceText(SourceLocation loc, StringRef text,
                    StringRef replacementText);
-  void increaseIndentation(SourceRange range,
-                           SourceLocation parentIndent);
+  void increaseIndentation(SourceRange range, SourceLocation parentIndent);
 
   bool clearDiagnostic(ArrayRef<unsigned> IDs, SourceRange range);
   bool clearAllDiagnostics(SourceRange range) {
     return clearDiagnostic(None, range);
   }
   bool clearDiagnostic(unsigned ID1, unsigned ID2, SourceRange range) {
-    unsigned IDs[] = { ID1, ID2 };
+    unsigned IDs[] = {ID1, ID2};
     return clearDiagnostic(IDs, range);
   }
   bool clearDiagnostic(unsigned ID1, unsigned ID2, unsigned ID3,
                        SourceRange range) {
-    unsigned IDs[] = { ID1, ID2, ID3 };
+    unsigned IDs[] = {ID1, ID2, ID3};
     return clearDiagnostic(IDs, range);
   }
 
@@ -91,7 +90,7 @@ public:
   }
 
   bool hasDiagnostic(unsigned ID1, unsigned ID2, SourceRange range) {
-    unsigned IDs[] = { ID1, ID2 };
+    unsigned IDs[] = {ID1, ID2};
     return CapturedDiags.hasDiagnostic(IDs, range);
   }
 
@@ -100,7 +99,7 @@ public:
   void reportError(StringRef error, SourceLocation loc,
                    SourceRange range = SourceRange());
   void reportWarning(StringRef warning, SourceLocation loc,
-                   SourceRange range = SourceRange());
+                     SourceRange range = SourceRange());
   void reportNote(StringRef note, SourceLocation loc,
                   SourceRange range = SourceRange());
 
@@ -154,19 +153,17 @@ public:
   std::vector<SourceLocation> &ARCMTMacroLocs;
   Optional<bool> EnableCFBridgeFns;
 
-  MigrationPass(ASTContext &Ctx, LangOptions::GCMode OrigGCMode,
-                Sema &sema, TransformActions &TA,
-                const CapturedDiagList &capturedDiags,
+  MigrationPass(ASTContext &Ctx, LangOptions::GCMode OrigGCMode, Sema &sema,
+                TransformActions &TA, const CapturedDiagList &capturedDiags,
                 std::vector<SourceLocation> &ARCMTMacroLocs)
-    : Ctx(Ctx), OrigGCMode(OrigGCMode), MigOptions(),
-      SemaRef(sema), TA(TA), CapturedDiags(capturedDiags),
-      ARCMTMacroLocs(ARCMTMacroLocs) { }
+      : Ctx(Ctx), OrigGCMode(OrigGCMode), MigOptions(), SemaRef(sema), TA(TA),
+        CapturedDiags(capturedDiags), ARCMTMacroLocs(ARCMTMacroLocs) {}
 
   const CapturedDiagList &getDiags() const { return CapturedDiags; }
 
   bool isGCMigration() const { return OrigGCMode != LangOptions::NonGC; }
   bool noFinalizeRemoval() const { return MigOptions.NoFinalizeRemoval; }
-  void setNoFinalizeRemoval(bool val) {MigOptions.NoFinalizeRemoval = val; }
+  void setNoFinalizeRemoval(bool val) { MigOptions.NoFinalizeRemoval = val; }
 
   bool CFBridgingFunctionsDefined();
 };

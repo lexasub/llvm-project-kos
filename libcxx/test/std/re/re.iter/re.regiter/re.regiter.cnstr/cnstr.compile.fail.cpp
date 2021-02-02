@@ -24,14 +24,12 @@
 #error
 #endif
 
-int main(int, char**)
-{
-    {
-        const char phone_book[] = "555-1234, 555-2345, 555-3456";
-        std::cregex_iterator i(
-            std::begin(phone_book), std::end(phone_book),
-            std::regex("\\d{3}-\\d{4}"));
-    }
+int main(int, char**) {
+  {
+    const char phone_book[] = "555-1234, 555-2345, 555-3456";
+    std::cregex_iterator i(std::begin(phone_book), std::end(phone_book),
+                           std::regex("\\d{3}-\\d{4}"));
+  }
 
   return 0;
 }

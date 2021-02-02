@@ -198,5 +198,5 @@ struct GlobalsForLambda { // no-warning
 } G;
 
 // expected-warning@+1{{Excessive padding in 'class (lambda}}
-auto lambda1 = [ c1 = G.c1, i = G.i, c2 = G.c2 ]{};
-auto lambda2 = [ i = G.i, c1 = G.c1, c2 = G.c2 ]{}; // no-warning
+auto lambda1 = [c1 = G.c1, i = G.i, c2 = G.c2] {};
+auto lambda2 = [i = G.i, c1 = G.c1, c2 = G.c2] {}; // no-warning

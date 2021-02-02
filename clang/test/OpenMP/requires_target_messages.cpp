@@ -2,7 +2,7 @@
 
 void foo2() {
   int a;
-  #pragma omp target // expected-note 4 {{'target' previously encountered here}}
+#pragma omp target // expected-note 4 {{'target' previously encountered here}}
   {
     a = a + 1;
   }

@@ -10,4 +10,5 @@
 // Do not add anything to the end of this file.  This requires the whitespace
 // plus EOF after the template keyword.
 
-class { template     
+class {
+  template

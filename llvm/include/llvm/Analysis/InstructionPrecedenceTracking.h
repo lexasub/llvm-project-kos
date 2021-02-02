@@ -94,16 +94,15 @@ public:
 class ImplicitControlFlowTracking : public InstructionPrecedenceTracking {
 public:
   /// Returns the topmost instruction with implicit control flow from the given
-  /// basic block. Returns nullptr if there is no such instructions in the block.
+  /// basic block. Returns nullptr if there is no such instructions in the
+  /// block.
   const Instruction *getFirstICFI(const BasicBlock *BB) {
     return getFirstSpecialInstruction(BB);
   }
 
   /// Returns true if at least one instruction from the given basic block has
   /// implicit control flow.
-  bool hasICF(const BasicBlock *BB) {
-    return hasSpecialInstructions(BB);
-  }
+  bool hasICF(const BasicBlock *BB) { return hasSpecialInstructions(BB); }
 
   /// Returns true if the first ICFI of Insn's block exists and dominates Insn.
   bool isDominatedByICFIFromSameBlock(const Instruction *Insn) {
@@ -116,7 +115,8 @@ public:
 class MemoryWriteTracking : public InstructionPrecedenceTracking {
 public:
   /// Returns the topmost instruction that may write memory from the given
-  /// basic block. Returns nullptr if there is no such instructions in the block.
+  /// basic block. Returns nullptr if there is no such instructions in the
+  /// block.
   const Instruction *getFirstMemoryWrite(const BasicBlock *BB) {
     return getFirstSpecialInstruction(BB);
   }
@@ -136,6 +136,6 @@ public:
   bool isSpecialInstruction(const Instruction *Insn) const override;
 };
 
-} // llvm
+} // namespace llvm
 
 #endif // LLVM_ANALYSIS_INSTRUCTIONPRECEDENCETRACKING_H

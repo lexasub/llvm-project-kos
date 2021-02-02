@@ -12,7 +12,7 @@ void test() {
 
 // rdar://8018252
 void f0() {
-  extern void f0_1(int*);
+  extern void f0_1(int *);
   register int x;
 #if __cplusplus >= 201103L // C++11 or later
   // expected-warning@-2 {{'register' storage class specifier is deprecated}}
@@ -21,29 +21,29 @@ void f0() {
 }
 
 namespace test1 {
-  template <class T> void bar(T &x) { T::fail(); }
-  template <class T> void bar(volatile T &x) {}
+template <class T> void bar(T &x) { T::fail(); }
+template <class T> void bar(volatile T &x) {}
 
-  void test_ints() {
-    volatile int x;
-    bar(x = 5);
-    bar(x += 5);
-  }
-
-  enum E { E_zero };
-  void test_enums() {
-    volatile E x;
-    bar(x = E_zero);
-    bar(x += E_zero); // expected-error {{incompatible type}}
-  }
+void test_ints() {
+  volatile int x;
+  bar(x = 5);
+  bar(x += 5);
 }
+
+enum E { E_zero };
+void test_enums() {
+  volatile E x;
+  bar(x = E_zero);
+  bar(x += E_zero); // expected-error {{incompatible type}}
+}
+} // namespace test1
 
 int test2(int x) {
   return x && 4; // expected-warning {{use of logical '&&' with constant operand}} \
                    // expected-note {{use '&' for a bitwise operation}} \
                    // expected-note {{remove constant to silence this warning}}
 
-  return x && sizeof(int) == 4;  // no warning, RHS is logical op.
+  return x && sizeof(int) == 4; // no warning, RHS is logical op.
   return x && true;
   return x && false;
   return x || true;
@@ -56,60 +56,59 @@ int test2(int x) {
   return x || (unsigned)1; // expected-warning {{use of logical '||' with constant operand}} \
                    // expected-note {{use '|' for a bitwise operation}}
 
-  return x || 0; // expected-warning {{use of logical '||' with constant operand}} \
+  return x || 0;    // expected-warning {{use of logical '||' with constant operand}} \
                    // expected-note {{use '|' for a bitwise operation}}
-  return x || 1; // expected-warning {{use of logical '||' with constant operand}} \
+  return x || 1;    // expected-warning {{use of logical '||' with constant operand}} \
                    // expected-note {{use '|' for a bitwise operation}}
-  return x || -1; // expected-warning {{use of logical '||' with constant operand}} \
+  return x || -1;   // expected-warning {{use of logical '||' with constant operand}} \
                    // expected-note {{use '|' for a bitwise operation}}
-  return x || 5; // expected-warning {{use of logical '||' with constant operand}} \
+  return x || 5;    // expected-warning {{use of logical '||' with constant operand}} \
                    // expected-note {{use '|' for a bitwise operation}}
-  return x && 0; // expected-warning {{use of logical '&&' with constant operand}} \
+  return x && 0;    // expected-warning {{use of logical '&&' with constant operand}} \
                    // expected-note {{use '&' for a bitwise operation}} \
                    // expected-note {{remove constant to silence this warning}}
-  return x && 1; // expected-warning {{use of logical '&&' with constant operand}} \
+  return x && 1;    // expected-warning {{use of logical '&&' with constant operand}} \
                    // expected-note {{use '&' for a bitwise operation}} \
                    // expected-note {{remove constant to silence this warning}}
-  return x && -1; // expected-warning {{use of logical '&&' with constant operand}} \
+  return x && -1;   // expected-warning {{use of logical '&&' with constant operand}} \
                    // expected-note {{use '&' for a bitwise operation}} \
                    // expected-note {{remove constant to silence this warning}}
-  return x && 5; // expected-warning {{use of logical '&&' with constant operand}} \
+  return x && 5;    // expected-warning {{use of logical '&&' with constant operand}} \
                    // expected-note {{use '&' for a bitwise operation}} \
                    // expected-note {{remove constant to silence this warning}}
-  return x || (0); // expected-warning {{use of logical '||' with constant operand}} \
+  return x || (0);  // expected-warning {{use of logical '||' with constant operand}} \
                    // expected-note {{use '|' for a bitwise operation}}
-  return x || (1); // expected-warning {{use of logical '||' with constant operand}} \
+  return x || (1);  // expected-warning {{use of logical '||' with constant operand}} \
                    // expected-note {{use '|' for a bitwise operation}}
   return x || (-1); // expected-warning {{use of logical '||' with constant operand}} \
                    // expected-note {{use '|' for a bitwise operation}}
-  return x || (5); // expected-warning {{use of logical '||' with constant operand}} \
+  return x || (5);  // expected-warning {{use of logical '||' with constant operand}} \
                    // expected-note {{use '|' for a bitwise operation}}
-  return x && (0); // expected-warning {{use of logical '&&' with constant operand}} \
+  return x && (0);  // expected-warning {{use of logical '&&' with constant operand}} \
                    // expected-note {{use '&' for a bitwise operation}} \
                    // expected-note {{remove constant to silence this warning}}
-  return x && (1); // expected-warning {{use of logical '&&' with constant operand}} \
+  return x && (1);  // expected-warning {{use of logical '&&' with constant operand}} \
                    // expected-note {{use '&' for a bitwise operation}} \
                    // expected-note {{remove constant to silence this warning}}
   return x && (-1); // expected-warning {{use of logical '&&' with constant operand}} \
                    // expected-note {{use '&' for a bitwise operation}} \
                    // expected-note {{remove constant to silence this warning}}
-  return x && (5); // expected-warning {{use of logical '&&' with constant operand}} \
+  return x && (5);  // expected-warning {{use of logical '&&' with constant operand}} \
                    // expected-note {{use '&' for a bitwise operation}} \
                    // expected-note {{remove constant to silence this warning}}
 }
 
-template<unsigned int A, unsigned int B> struct S
-{
+template <unsigned int A, unsigned int B> struct S {
   enum {
     e1 = A && B,
-    e2 = A && 7      // expected-warning {{use of logical '&&' with constant operand}} \
+    e2 = A && 7 // expected-warning {{use of logical '&&' with constant operand}} \
                      // expected-note {{use '&' for a bitwise operation}} \
                      // expected-note {{remove constant to silence this warning}}
   };
 
   int foo() {
     int x = A && B;
-    int y = B && 3;  // expected-warning {{use of logical '&&' with constant operand}} \
+    int y = B && 3; // expected-warning {{use of logical '&&' with constant operand}} \
                      // expected-note {{use '&' for a bitwise operation}} \
                      // expected-note {{remove constant to silence this warning}}
 
@@ -125,18 +124,18 @@ void test3() {
 }
 
 namespace pr16992 {
-  typedef int T;
-  unsigned getsz() {
-    return (sizeof T());
-  }
+typedef int T;
+unsigned getsz() {
+  return (sizeof T());
 }
+} // namespace pr16992
 
 void test4() {
-  #define X 0
-  #define Y 1
+#define X 0
+#define Y 1
   bool r1 = X || Y;
 
-  #define Y2 2
+#define Y2 2
   bool r2 = X || Y2; // expected-warning {{use of logical '||' with constant operand}} \
                      // expected-note {{use '|' for a bitwise operation}}
 }

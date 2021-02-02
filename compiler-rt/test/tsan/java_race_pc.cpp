@@ -25,7 +25,7 @@ int main() {
   const int kBlockSize = 16;
   __tsan_java_alloc(jheap, kBlockSize);
   pthread_t th;
-  pthread_create(&th, 0, Thread, (void*)jheap);
+  pthread_create(&th, 0, Thread, (void *)jheap);
   __tsan_write1_pc((jptr)jheap, (jptr)barbaz + kPCInc);
   barrier_wait(&barrier);
   pthread_join(th, 0);

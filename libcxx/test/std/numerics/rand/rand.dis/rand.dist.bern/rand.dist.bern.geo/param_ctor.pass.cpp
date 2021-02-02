@@ -19,20 +19,19 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        typedef std::geometric_distribution<> D;
-        typedef D::param_type param_type;
-        param_type p;
-        assert(p.p() == 0.5);
-    }
-    {
-        typedef std::geometric_distribution<> D;
-        typedef D::param_type param_type;
-        param_type p(0.25);
-        assert(p.p() == 0.25);
-    }
+int main(int, char**) {
+  {
+    typedef std::geometric_distribution<> D;
+    typedef D::param_type param_type;
+    param_type p;
+    assert(p.p() == 0.5);
+  }
+  {
+    typedef std::geometric_distribution<> D;
+    typedef D::param_type param_type;
+    param_type p(0.25);
+    assert(p.p() == 0.25);
+  }
 
   return 0;
 }

@@ -19,4 +19,3 @@ extern "C" void foo() {
 
   a = s3{1, 2, 3};
 }
-

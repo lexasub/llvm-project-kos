@@ -13,19 +13,18 @@
 #include "sanitizer_common/sanitizer_platform.h"
 #if SANITIZER_POSIX
 
-#include "sanitizer_common/sanitizer_common.h"
-#include "gtest/gtest.h"
-
 #include <pthread.h>
 #include <sys/mman.h>
+
+#include "gtest/gtest.h"
+#include "sanitizer_common/sanitizer_common.h"
 
 namespace __sanitizer {
 
 static pthread_key_t key;
 static bool destructor_executed;
 
-extern "C"
-void destructor(void *arg) {
+extern "C" void destructor(void *arg) {
   uptr iter = reinterpret_cast<uptr>(arg);
   if (iter > 1) {
     ASSERT_EQ(0, pthread_setspecific(key, reinterpret_cast<void *>(iter - 1)));
@@ -34,9 +33,8 @@ void destructor(void *arg) {
   destructor_executed = true;
 }
 
-extern "C"
-void *thread_func(void *arg) {
-  return reinterpret_cast<void*>(pthread_setspecific(key, arg));
+extern "C" void *thread_func(void *arg) {
+  return reinterpret_cast<void *>(pthread_setspecific(key, arg));
 }
 
 static void SpawnThread(uptr iteration) {

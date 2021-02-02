@@ -12,12 +12,11 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    std::complex<double> cd;
-    (void)cd;
-    double x = std::sin(0);
-    ((void)x); // Prevent unused warning
+int main(int, char**) {
+  std::complex<double> cd;
+  (void)cd;
+  double x = std::sin(0);
+  ((void)x); // Prevent unused warning
 
   return 0;
 }

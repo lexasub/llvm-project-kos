@@ -9,9 +9,16 @@ struct Agg {
   int x;
 };
 
-struct A { virtual void foo(Agg x); };
-struct B { virtual void foo(Agg x); };
-struct C : A, B { C(); virtual void foo(Agg x); };
+struct A {
+  virtual void foo(Agg x);
+};
+struct B {
+  virtual void foo(Agg x);
+};
+struct C : A, B {
+  C();
+  virtual void foo(Agg x);
+};
 C::C() {} // force emission
 
 // CHECK32-LABEL: define linkonce_odr dso_local x86_thiscallcc void @"?foo@C@byval_thunk@@W3AEXUAgg@2@@Z"
@@ -28,7 +35,7 @@ C::C() {} // force emission
 // CHECK64:       (%"struct.byval_thunk::C"* {{[^,]*}} %{{.*}}, %"struct.byval_thunk::Agg"* %x)
 // CHECK64-NOT: call
 // CHECK64:   ret void
-}
+} // namespace byval_thunk
 
 namespace stdcall_thunk {
 struct Agg {
@@ -38,9 +45,16 @@ struct Agg {
   int x;
 };
 
-struct A { virtual void __stdcall foo(Agg x); };
-struct B { virtual void __stdcall foo(Agg x); };
-struct C : A, B { C(); virtual void __stdcall foo(Agg x); };
+struct A {
+  virtual void __stdcall foo(Agg x);
+};
+struct B {
+  virtual void __stdcall foo(Agg x);
+};
+struct C : A, B {
+  C();
+  virtual void __stdcall foo(Agg x);
+};
 C::C() {} // force emission
 
 // CHECK32-LABEL: define linkonce_odr dso_local x86_stdcallcc void @"?foo@C@stdcall_thunk@@W3AGXUAgg@2@@Z"
@@ -60,7 +74,7 @@ C::C() {} // force emission
 // CHECK64:       (%"struct.stdcall_thunk::C"* {{[^,]*}} %{{.*}}, %"struct.stdcall_thunk::Agg"* %x)
 // CHECK64-NOT: call
 // CHECK64:   ret void
-}
+} // namespace stdcall_thunk
 
 namespace sret_thunk {
 struct Agg {
@@ -70,9 +84,16 @@ struct Agg {
   int x;
 };
 
-struct A { virtual Agg __cdecl foo(Agg x); };
-struct B { virtual Agg __cdecl foo(Agg x); };
-struct C : A, B { C(); virtual Agg __cdecl foo(Agg x); };
+struct A {
+  virtual Agg __cdecl foo(Agg x);
+};
+struct B {
+  virtual Agg __cdecl foo(Agg x);
+};
+struct C : A, B {
+  C();
+  virtual Agg __cdecl foo(Agg x);
+};
 C::C() {} // force emission
 
 // CHECK32-LABEL: define linkonce_odr dso_local %"struct.sret_thunk::Agg"* @"?foo@C@sret_thunk@@W3AA?AUAgg@2@U32@@Z"
@@ -92,7 +113,7 @@ C::C() {} // force emission
 // CHECK64:       (%"struct.sret_thunk::C"* {{[^,]*}} %{{.*}}, %"struct.sret_thunk::Agg"* sret(%"struct.sret_thunk::Agg") align 4 %agg.result, %"struct.sret_thunk::Agg"* %x)
 // CHECK64-NOT: call
 // CHECK64:   ret void
-}
+} // namespace sret_thunk
 
 #if 0
 // FIXME: When we extend LLVM IR to allow forwarding of varargs through musttail

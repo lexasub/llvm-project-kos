@@ -1,5 +1,5 @@
-template<typename ...Args>
-int f(Args ...args) {
+template <typename... Args>
+int f(Args... args) {
   return sizeof...(args) + sizeof...(Args);
 }
 
@@ -16,7 +16,7 @@ void test() {
 typedef int Int;
 
 class B {
- virtual void foo(Int);
+  virtual void foo(Int);
 };
 
 class S : public B {
@@ -25,36 +25,34 @@ class S : public B {
 
 // Need std::initializer_list
 namespace std {
-  typedef decltype(sizeof(int)) size_t;
+typedef decltype(sizeof(int)) size_t;
 
-  // libc++'s implementation
-  template <class _E>
-  class initializer_list
-  {
-    const _E* __begin_;
-    size_t    __size_;
+// libc++'s implementation
+template <class _E>
+class initializer_list {
+  const _E *__begin_;
+  size_t __size_;
 
-    initializer_list(const _E* __b, size_t __s)
+  initializer_list(const _E *__b, size_t __s)
       : __begin_(__b),
-        __size_(__s)
-    {}
+        __size_(__s) {}
 
-  public:
-    typedef _E        value_type;
-    typedef const _E& reference;
-    typedef const _E& const_reference;
-    typedef size_t    size_type;
+public:
+  typedef _E value_type;
+  typedef const _E &reference;
+  typedef const _E &const_reference;
+  typedef size_t size_type;
 
-    typedef const _E* iterator;
-    typedef const _E* const_iterator;
+  typedef const _E *iterator;
+  typedef const _E *const_iterator;
 
-    initializer_list() : __begin_(nullptr), __size_(0) {}
+  initializer_list() : __begin_(nullptr), __size_(0) {}
 
-    size_t    size()  const {return __size_;}
-    const _E* begin() const {return __begin_;}
-    const _E* end()   const {return __begin_ + __size_;}
-  };
-}
+  size_t size() const { return __size_; }
+  const _E *begin() const { return __begin_; }
+  const _E *end() const { return __begin_ + __size_; }
+};
+} // namespace std
 
 struct Foo {
   Foo(std::initializer_list<int> il);
@@ -63,7 +61,6 @@ struct Foo {
 void test2() {
   Foo{10};
 }
-
 
 // RUN: c-index-test -test-annotate-tokens=%s:1:1:5:1 -fno-delayed-template-parsing -std=c++11 %s | FileCheck %s
 // CHECK: Identifier: "args" [3:20 - 3:24] SizeOfPackExpr=args:2:15

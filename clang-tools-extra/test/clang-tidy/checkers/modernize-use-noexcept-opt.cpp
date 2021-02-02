@@ -21,12 +21,12 @@ void k() throw(int(int));
 // CHECK-FIXES: void k() ;
 
 // Shouldn't crash due to llvm_unreachable in canThrow() on EST_Uninstantiated
-template <int> class c { void *operator new(size_t) throw (int);};
+template <int>
+class c { void *operator new(size_t) throw(int); };
 void s() { c<1> doesnt_crash; }
 // CHECK-MESSAGES: :[[@LINE-2]]:53: warning: dynamic exception specification 'throw (int)' is deprecated; consider removing it instead [modernize-use-noexcept]
 
-void foobar() throw(A, B)
-{}
+void foobar() throw(A, B) {}
 // CHECK-MESSAGES: :[[@LINE-2]]:15: warning: dynamic exception specification 'throw(A, B)' is deprecated; consider removing it instead [modernize-use-noexcept]
 // CHECK-FIXES: void foobar()
 
@@ -54,7 +54,8 @@ void j() throw(int(int) throw(void(void) throw(int)));
 // CHECK-FIXES: void j() ;
 
 class Y {
-  Y() throw() = default;
+  Y()
+  throw() = default;
 };
 // CHECK-MESSAGES: :[[@LINE-2]]:7: warning: dynamic exception specification 'throw()' is deprecated; consider using 'noexcept' instead [modernize-use-noexcept]
 // CHECK-FIXES: Y() noexcept = default;
@@ -93,4 +94,4 @@ void bad()
 #if !__has_feature(cxx_noexcept)
     throw()
 #endif
-  ;
+        ;

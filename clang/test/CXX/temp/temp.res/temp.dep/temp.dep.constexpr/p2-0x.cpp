@@ -1,13 +1,13 @@
 // RUN: %clang_cc1 -std=c++11 -verify %s
 
-template<int n> struct S; // expected-note 3{{here}}
+template <int n> struct S; // expected-note 3{{here}}
 
 struct LiteralType {
   constexpr LiteralType(int n) : n(n) {}
   int n;
 };
 
-template<int n> struct T {
+template <int n> struct T {
   T() {
     // An identifier is value-dependent if it is:
     //  - a name declared with a dependent type

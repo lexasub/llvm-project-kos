@@ -96,7 +96,8 @@ static int GetModuleAndOffsetForPc(uptr pc, char *module_name,
   bool ok = Symbolizer::GetOrInit()->GetModuleNameAndOffsetForPC(
       pc, &found_module_name, pc_offset);
 
-  if (!ok) return false;
+  if (!ok)
+    return false;
 
   if (module_name && module_name_len) {
     internal_strncpy(module_name, found_module_name, module_name_len);
@@ -112,7 +113,8 @@ extern "C" {
 SANITIZER_INTERFACE_ATTRIBUTE
 void __sanitizer_symbolize_pc(uptr pc, const char *fmt, char *out_buf,
                               uptr out_buf_size) {
-  if (!out_buf_size) return;
+  if (!out_buf_size)
+    return;
   pc = StackTrace::GetPreviousInstructionPc(pc);
   SymbolizedStack *frame;
   bool symbolize = RenderNeedsSymbolization(fmt);
@@ -152,10 +154,12 @@ void __sanitizer_symbolize_pc(uptr pc, const char *fmt, char *out_buf,
 SANITIZER_INTERFACE_ATTRIBUTE
 void __sanitizer_symbolize_global(uptr data_addr, const char *fmt,
                                   char *out_buf, uptr out_buf_size) {
-  if (!out_buf_size) return;
+  if (!out_buf_size)
+    return;
   out_buf[0] = 0;
   DataInfo DI;
-  if (!Symbolizer::GetOrInit()->SymbolizeData(data_addr, &DI)) return;
+  if (!Symbolizer::GetOrInit()->SymbolizeData(data_addr, &DI))
+    return;
   InternalScopedString data_desc(GetPageSizeCached());
   RenderData(&data_desc, fmt, &DI, common_flags()->strip_path_prefix);
   internal_strncpy(out_buf, data_desc.data(), out_buf_size);

@@ -3,4 +3,3 @@ int *foo(void);
 #else
 float *foo(void);
 #endif
-

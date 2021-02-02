@@ -6,6 +6,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "TestUtils.h"
 #include "clang-c/Index.h"
 #include "clang-c/Rewrite.h"
 #include "llvm/ADT/StringRef.h"
@@ -14,7 +15,6 @@
 #include "llvm/Support/Path.h"
 #include "llvm/Support/raw_ostream.h"
 #include "gtest/gtest.h"
-#include "TestUtils.h"
 #include <fstream>
 #include <functional>
 #include <map>
@@ -52,12 +52,14 @@ struct TestVFO {
   }
 
   void map(const char *VPath, const char *RPath) {
-    CXErrorCode Err = clang_VirtualFileOverlay_addFileMapping(VFO, VPath, RPath);
+    CXErrorCode Err =
+        clang_VirtualFileOverlay_addFileMapping(VFO, VPath, RPath);
     EXPECT_EQ(Err, CXError_Success);
   }
 
   void mapError(const char *VPath, const char *RPath, CXErrorCode ExpErr) {
-    CXErrorCode Err = clang_VirtualFileOverlay_addFileMapping(VFO, VPath, RPath);
+    CXErrorCode Err =
+        clang_VirtualFileOverlay_addFileMapping(VFO, VPath, RPath);
     EXPECT_EQ(Err, ExpErr);
   }
 
@@ -73,48 +75,46 @@ struct TestVFO {
     clang_VirtualFileOverlay_dispose(VFO);
   }
 };
-}
+} // namespace
 
 TEST(libclang, VirtualFileOverlay_Basic) {
-  const char *contents =
-      "{\n"
-      "  'version': 0,\n"
-      "  'roots': [\n"
-      "    {\n"
-      "      'type': 'directory',\n"
-      "      'name': \"/path/virtual\",\n"
-      "      'contents': [\n"
-      "        {\n"
-      "          'type': 'file',\n"
-      "          'name': \"foo.h\",\n"
-      "          'external-contents': \"/real/foo.h\"\n"
-      "        }\n"
-      "      ]\n"
-      "    }\n"
-      "  ]\n"
-      "}\n";
+  const char *contents = "{\n"
+                         "  'version': 0,\n"
+                         "  'roots': [\n"
+                         "    {\n"
+                         "      'type': 'directory',\n"
+                         "      'name': \"/path/virtual\",\n"
+                         "      'contents': [\n"
+                         "        {\n"
+                         "          'type': 'file',\n"
+                         "          'name': \"foo.h\",\n"
+                         "          'external-contents': \"/real/foo.h\"\n"
+                         "        }\n"
+                         "      ]\n"
+                         "    }\n"
+                         "  ]\n"
+                         "}\n";
   TestVFO T(contents);
   T.map("/path/virtual/foo.h", "/real/foo.h");
 }
 
 TEST(libclang, VirtualFileOverlay_Unicode) {
-  const char *contents =
-      "{\n"
-      "  'version': 0,\n"
-      "  'roots': [\n"
-      "    {\n"
-      "      'type': 'directory',\n"
-      "      'name': \"/path/\\u266B\",\n"
-      "      'contents': [\n"
-      "        {\n"
-      "          'type': 'file',\n"
-      "          'name': \"\\u2602.h\",\n"
-      "          'external-contents': \"/real/\\u2602.h\"\n"
-      "        }\n"
-      "      ]\n"
-      "    }\n"
-      "  ]\n"
-      "}\n";
+  const char *contents = "{\n"
+                         "  'version': 0,\n"
+                         "  'roots': [\n"
+                         "    {\n"
+                         "      'type': 'directory',\n"
+                         "      'name': \"/path/\\u266B\",\n"
+                         "      'contents': [\n"
+                         "        {\n"
+                         "          'type': 'file',\n"
+                         "          'name': \"\\u2602.h\",\n"
+                         "          'external-contents': \"/real/\\u2602.h\"\n"
+                         "        }\n"
+                         "      ]\n"
+                         "    }\n"
+                         "  ]\n"
+                         "}\n";
   TestVFO T(contents);
   T.map("/path/♫/☂.h", "/real/☂.h");
 }
@@ -126,50 +126,49 @@ TEST(libclang, VirtualFileOverlay_InvalidArgs) {
 }
 
 TEST(libclang, VirtualFileOverlay_RemapDirectories) {
-  const char *contents =
-      "{\n"
-      "  'version': 0,\n"
-      "  'roots': [\n"
-      "    {\n"
-      "      'type': 'directory',\n"
-      "      'name': \"/another/dir\",\n"
-      "      'contents': [\n"
-      "        {\n"
-      "          'type': 'file',\n"
-      "          'name': \"foo2.h\",\n"
-      "          'external-contents': \"/real/foo2.h\"\n"
-      "        }\n"
-      "      ]\n"
-      "    },\n"
-      "    {\n"
-      "      'type': 'directory',\n"
-      "      'name': \"/path/virtual/dir\",\n"
-      "      'contents': [\n"
-      "        {\n"
-      "          'type': 'file',\n"
-      "          'name': \"foo1.h\",\n"
-      "          'external-contents': \"/real/foo1.h\"\n"
-      "        },\n"
-      "        {\n"
-      "          'type': 'file',\n"
-      "          'name': \"foo3.h\",\n"
-      "          'external-contents': \"/real/foo3.h\"\n"
-      "        },\n"
-      "        {\n"
-      "          'type': 'directory',\n"
-      "          'name': \"in/subdir\",\n"
-      "          'contents': [\n"
-      "            {\n"
-      "              'type': 'file',\n"
-      "              'name': \"foo4.h\",\n"
-      "              'external-contents': \"/real/foo4.h\"\n"
-      "            }\n"
-      "          ]\n"
-      "        }\n"
-      "      ]\n"
-      "    }\n"
-      "  ]\n"
-      "}\n";
+  const char *contents = "{\n"
+                         "  'version': 0,\n"
+                         "  'roots': [\n"
+                         "    {\n"
+                         "      'type': 'directory',\n"
+                         "      'name': \"/another/dir\",\n"
+                         "      'contents': [\n"
+                         "        {\n"
+                         "          'type': 'file',\n"
+                         "          'name': \"foo2.h\",\n"
+                         "          'external-contents': \"/real/foo2.h\"\n"
+                         "        }\n"
+                         "      ]\n"
+                         "    },\n"
+                         "    {\n"
+                         "      'type': 'directory',\n"
+                         "      'name': \"/path/virtual/dir\",\n"
+                         "      'contents': [\n"
+                         "        {\n"
+                         "          'type': 'file',\n"
+                         "          'name': \"foo1.h\",\n"
+                         "          'external-contents': \"/real/foo1.h\"\n"
+                         "        },\n"
+                         "        {\n"
+                         "          'type': 'file',\n"
+                         "          'name': \"foo3.h\",\n"
+                         "          'external-contents': \"/real/foo3.h\"\n"
+                         "        },\n"
+                         "        {\n"
+                         "          'type': 'directory',\n"
+                         "          'name': \"in/subdir\",\n"
+                         "          'contents': [\n"
+                         "            {\n"
+                         "              'type': 'file',\n"
+                         "              'name': \"foo4.h\",\n"
+                         "              'external-contents': \"/real/foo4.h\"\n"
+                         "            }\n"
+                         "          ]\n"
+                         "        }\n"
+                         "      ]\n"
+                         "    }\n"
+                         "  ]\n"
+                         "}\n";
   TestVFO T(contents);
   T.map("/path/virtual/dir/foo1.h", "/real/foo1.h");
   T.map("/another/dir/foo2.h", "/real/foo2.h");
@@ -178,24 +177,23 @@ TEST(libclang, VirtualFileOverlay_RemapDirectories) {
 }
 
 TEST(libclang, VirtualFileOverlay_CaseInsensitive) {
-  const char *contents =
-      "{\n"
-      "  'version': 0,\n"
-      "  'case-sensitive': 'false',\n"
-      "  'roots': [\n"
-      "    {\n"
-      "      'type': 'directory',\n"
-      "      'name': \"/path/virtual\",\n"
-      "      'contents': [\n"
-      "        {\n"
-      "          'type': 'file',\n"
-      "          'name': \"foo.h\",\n"
-      "          'external-contents': \"/real/foo.h\"\n"
-      "        }\n"
-      "      ]\n"
-      "    }\n"
-      "  ]\n"
-      "}\n";
+  const char *contents = "{\n"
+                         "  'version': 0,\n"
+                         "  'case-sensitive': 'false',\n"
+                         "  'roots': [\n"
+                         "    {\n"
+                         "      'type': 'directory',\n"
+                         "      'name': \"/path/virtual\",\n"
+                         "      'contents': [\n"
+                         "        {\n"
+                         "          'type': 'file',\n"
+                         "          'name': \"foo.h\",\n"
+                         "          'external-contents': \"/real/foo.h\"\n"
+                         "        }\n"
+                         "      ]\n"
+                         "    }\n"
+                         "  ]\n"
+                         "}\n";
   TestVFO T(contents);
   T.map("/path/virtual/foo.h", "/real/foo.h");
   clang_VirtualFileOverlay_setCaseSensitivity(T.VFO, false);
@@ -254,45 +252,44 @@ TEST(libclang, VirtualFileOverlay_SharedPrefix) {
 }
 
 TEST(libclang, VirtualFileOverlay_AdjacentDirectory) {
-  const char *contents =
-      "{\n"
-      "  'version': 0,\n"
-      "  'roots': [\n"
-      "    {\n"
-      "      'type': 'directory',\n"
-      "      'name': \"/path/dir1\",\n"
-      "      'contents': [\n"
-      "        {\n"
-      "          'type': 'file',\n"
-      "          'name': \"foo.h\",\n"
-      "          'external-contents': \"/real/foo.h\"\n"
-      "        },\n"
-      "        {\n"
-      "          'type': 'directory',\n"
-      "          'name': \"subdir\",\n"
-      "          'contents': [\n"
-      "            {\n"
-      "              'type': 'file',\n"
-      "              'name': \"bar.h\",\n"
-      "              'external-contents': \"/real/bar.h\"\n"
-      "            }\n"
-      "          ]\n"
-      "        }\n"
-      "      ]\n"
-      "    },\n"
-      "    {\n"
-      "      'type': 'directory',\n"
-      "      'name': \"/path/dir2\",\n"
-      "      'contents': [\n"
-      "        {\n"
-      "          'type': 'file',\n"
-      "          'name': \"baz.h\",\n"
-      "          'external-contents': \"/real/baz.h\"\n"
-      "        }\n"
-      "      ]\n"
-      "    }\n"
-      "  ]\n"
-      "}\n";
+  const char *contents = "{\n"
+                         "  'version': 0,\n"
+                         "  'roots': [\n"
+                         "    {\n"
+                         "      'type': 'directory',\n"
+                         "      'name': \"/path/dir1\",\n"
+                         "      'contents': [\n"
+                         "        {\n"
+                         "          'type': 'file',\n"
+                         "          'name': \"foo.h\",\n"
+                         "          'external-contents': \"/real/foo.h\"\n"
+                         "        },\n"
+                         "        {\n"
+                         "          'type': 'directory',\n"
+                         "          'name': \"subdir\",\n"
+                         "          'contents': [\n"
+                         "            {\n"
+                         "              'type': 'file',\n"
+                         "              'name': \"bar.h\",\n"
+                         "              'external-contents': \"/real/bar.h\"\n"
+                         "            }\n"
+                         "          ]\n"
+                         "        }\n"
+                         "      ]\n"
+                         "    },\n"
+                         "    {\n"
+                         "      'type': 'directory',\n"
+                         "      'name': \"/path/dir2\",\n"
+                         "      'contents': [\n"
+                         "        {\n"
+                         "          'type': 'file',\n"
+                         "          'name': \"baz.h\",\n"
+                         "          'external-contents': \"/real/baz.h\"\n"
+                         "        }\n"
+                         "      ]\n"
+                         "    }\n"
+                         "  ]\n"
+                         "}\n";
   TestVFO T(contents);
   T.map("/path/dir1/foo.h", "/real/foo.h");
   T.map("/path/dir1/subdir/bar.h", "/real/bar.h");
@@ -300,45 +297,42 @@ TEST(libclang, VirtualFileOverlay_AdjacentDirectory) {
 }
 
 TEST(libclang, VirtualFileOverlay_TopLevel) {
-  const char *contents =
-      "{\n"
-      "  'version': 0,\n"
-      "  'roots': [\n"
-      "    {\n"
-      "      'type': 'directory',\n"
-      "      'name': \"/\",\n"
-      "      'contents': [\n"
-      "        {\n"
-      "          'type': 'file',\n"
-      "          'name': \"foo.h\",\n"
-      "          'external-contents': \"/real/foo.h\"\n"
-      "        }\n"
-      "      ]\n"
-      "    }\n"
-      "  ]\n"
-      "}\n";
+  const char *contents = "{\n"
+                         "  'version': 0,\n"
+                         "  'roots': [\n"
+                         "    {\n"
+                         "      'type': 'directory',\n"
+                         "      'name': \"/\",\n"
+                         "      'contents': [\n"
+                         "        {\n"
+                         "          'type': 'file',\n"
+                         "          'name': \"foo.h\",\n"
+                         "          'external-contents': \"/real/foo.h\"\n"
+                         "        }\n"
+                         "      ]\n"
+                         "    }\n"
+                         "  ]\n"
+                         "}\n";
   TestVFO T(contents);
   T.map("/foo.h", "/real/foo.h");
 }
 
 TEST(libclang, VirtualFileOverlay_Empty) {
-  const char *contents =
-      "{\n"
-      "  'version': 0,\n"
-      "  'roots': [\n"
-      "  ]\n"
-      "}\n";
+  const char *contents = "{\n"
+                         "  'version': 0,\n"
+                         "  'roots': [\n"
+                         "  ]\n"
+                         "}\n";
   TestVFO T(contents);
 }
 
 TEST(libclang, ModuleMapDescriptor) {
-  const char *Contents =
-    "framework module TestFrame {\n"
-    "  umbrella header \"TestFrame.h\"\n"
-    "\n"
-    "  export *\n"
-    "  module * { export * }\n"
-    "}\n";
+  const char *Contents = "framework module TestFrame {\n"
+                         "  umbrella header \"TestFrame.h\"\n"
+                         "\n"
+                         "  export *\n"
+                         "  module * { export * }\n"
+                         "}\n";
 
   CXModuleMapDescriptor MMD = clang_ModuleMapDescriptor_create(0);
 
@@ -356,22 +350,20 @@ TEST(libclang, ModuleMapDescriptor) {
 
 TEST_F(LibclangParseTest, AllSkippedRanges) {
   std::string Header = "header.h", Main = "main.cpp";
-  WriteFile(Header,
-    "#ifdef MANGOS\n"
-    "printf(\"mmm\");\n"
-    "#endif");
-  WriteFile(Main,
-    "#include \"header.h\"\n"
-    "#ifdef KIWIS\n"
-    "printf(\"mmm!!\");\n"
-    "#endif");
+  WriteFile(Header, "#ifdef MANGOS\n"
+                    "printf(\"mmm\");\n"
+                    "#endif");
+  WriteFile(Main, "#include \"header.h\"\n"
+                  "#ifdef KIWIS\n"
+                  "printf(\"mmm!!\");\n"
+                  "#endif");
 
-  ClangTU = clang_parseTranslationUnit(Index, Main.c_str(), nullptr, 0,
-                                       nullptr, 0, TUFlags);
+  ClangTU = clang_parseTranslationUnit(Index, Main.c_str(), nullptr, 0, nullptr,
+                                       0, TUFlags);
 
   CXSourceRangeList *Ranges = clang_getAllSkippedRanges(ClangTU);
   EXPECT_EQ(2U, Ranges->count);
-  
+
   CXSourceLocation cxl;
   unsigned line;
   cxl = clang_getRangeStart(Ranges->ranges[0]);
@@ -446,7 +438,7 @@ public:
       clang_disposeDiagnostic(Diag);
     }
   }
-  bool ReparseTU(unsigned num_unsaved_files, CXUnsavedFile* unsaved_files) {
+  bool ReparseTU(unsigned num_unsaved_files, CXUnsavedFile *unsaved_files) {
     if (clang_reparseTranslationUnit(ClangTU, num_unsaved_files, unsaved_files,
                                      clang_defaultReparseOptions(ClangTU))) {
       LLVM_DEBUG(llvm::dbgs() << "Reparse failed\n");
@@ -477,7 +469,7 @@ TEST_F(LibclangReparseTest, Reparse) {
   const char *HeaderTop = "#ifndef H\n#define H\nstruct Foo { int bar;";
   const char *HeaderBottom = "\n};\n#endif\n";
   const char *CppFile = "#include \"HeaderFile.h\"\nint main() {"
-                         " Foo foo; foo.bar = 7; foo.baz = 8; }\n";
+                        " Foo foo; foo.bar = 7; foo.baz = 8; }\n";
   std::string HeaderName = "HeaderFile.h";
   std::string CppName = "CppFile.cpp";
   WriteFile(CppName, CppFile);
@@ -505,7 +497,7 @@ TEST_F(LibclangReparseTest, ReparseWithModule) {
   const char *HeaderTop = "#ifndef H\n#define H\nstruct Foo { int bar;";
   const char *HeaderBottom = "\n};\n#endif\n";
   const char *MFile = "#include \"HeaderFile.h\"\nint main() {"
-                         " struct Foo foo; foo.bar = 7; foo.baz = 8; }\n";
+                      " struct Foo foo; foo.bar = 7; foo.baz = 8; }\n";
   const char *ModFile = "module A { header \"HeaderFile.h\" }\n";
   std::string HeaderName = "HeaderFile.h";
   std::string MName = "MFile.m";
@@ -515,8 +507,8 @@ TEST_F(LibclangReparseTest, ReparseWithModule) {
   WriteFile(ModName, ModFile);
 
   std::string ModulesCache = std::string("-fmodules-cache-path=") + TestDir;
-  const char *Args[] = { "-fmodules", ModulesCache.c_str(),
-                         "-I", TestDir.c_str() };
+  const char *Args[] = {"-fmodules", ModulesCache.c_str(), "-I",
+                        TestDir.c_str()};
   int NumArgs = sizeof(Args) / sizeof(Args[0]);
   ClangTU = clang_parseTranslationUnit(Index, MName.c_str(), Args, NumArgs,
                                        nullptr, 0, TUFlags);
@@ -595,17 +587,15 @@ TEST_F(LibclangPrintingPolicyTest, SetAndGetProperties) {
 
 TEST_F(LibclangReparseTest, PreprocessorSkippedRanges) {
   std::string Header = "header.h", Main = "main.cpp";
-  WriteFile(Header,
-    "#ifdef MANGOS\n"
-    "printf(\"mmm\");\n"
-    "#endif");
-  WriteFile(Main,
-    "#include \"header.h\"\n"
-    "#ifdef GUAVA\n"
-    "#endif\n"
-    "#ifdef KIWIS\n"
-    "printf(\"mmm!!\");\n"
-    "#endif");
+  WriteFile(Header, "#ifdef MANGOS\n"
+                    "printf(\"mmm\");\n"
+                    "#endif");
+  WriteFile(Main, "#include \"header.h\"\n"
+                  "#ifdef GUAVA\n"
+                  "#endif\n"
+                  "#ifdef KIWIS\n"
+                  "printf(\"mmm!!\");\n"
+                  "#endif");
 
   for (int i = 0; i != 3; ++i) {
     unsigned flags = TUFlags | CXTranslationUnit_PrecompiledPreamble;
@@ -613,7 +603,7 @@ TEST_F(LibclangReparseTest, PreprocessorSkippedRanges) {
       flags |= CXTranslationUnit_CreatePreambleOnFirstParse;
 
     if (i != 0)
-       clang_disposeTranslationUnit(ClangTU);  // dispose from previous iter
+      clang_disposeTranslationUnit(ClangTU); // dispose from previous iter
 
     // parse once
     ClangTU = clang_parseTranslationUnit(Index, Main.c_str(), nullptr, 0,
@@ -750,10 +740,11 @@ TEST_F(LibclangParseTest, clang_getVarDeclInitializer) {
       [](CXCursor cursor, CXCursor parent,
          CXClientData client_data) -> CXChildVisitResult {
         if (clang_getCursorKind(cursor) == CXCursor_VarDecl) {
-          const CXCursor Initializer = clang_Cursor_getVarDeclInitializer(cursor);
+          const CXCursor Initializer =
+              clang_Cursor_getVarDeclInitializer(cursor);
           EXPECT_FALSE(clang_Cursor_isNull(Initializer));
           CXString Spelling = clang_getCursorSpelling(Initializer);
-          const char* const SpellingCSstr = clang_getCString(Spelling);
+          const char *const SpellingCSstr = clang_getCString(Spelling);
           EXPECT_TRUE(SpellingCSstr);
           EXPECT_EQ(std::string(SpellingCSstr), std::string("foo"));
           clang_disposeString(Spelling);
@@ -864,7 +855,7 @@ public:
   }
 };
 
-static std::string getFileContent(const std::string& Filename) {
+static std::string getFileContent(const std::string &Filename) {
   std::ifstream RewrittenFile(Filename);
   std::string RewrittenFileContent;
   std::string Line;
@@ -881,7 +872,7 @@ static std::string getFileContent(const std::string& Filename) {
 TEST_F(LibclangRewriteTest, RewriteReplace) {
   CXSourceLocation B = clang_getLocation(ClangTU, File, 1, 5);
   CXSourceLocation E = clang_getLocation(ClangTU, File, 1, 9);
-  CXSourceRange Rng	= clang_getRange(B, E);
+  CXSourceRange Rng = clang_getRange(B, E);
 
   clang_CXRewriter_replaceText(Rew, Rng, "MAIN");
 
@@ -892,7 +883,7 @@ TEST_F(LibclangRewriteTest, RewriteReplace) {
 TEST_F(LibclangRewriteTest, RewriteReplaceShorter) {
   CXSourceLocation B = clang_getLocation(ClangTU, File, 1, 5);
   CXSourceLocation E = clang_getLocation(ClangTU, File, 1, 9);
-  CXSourceRange Rng	= clang_getRange(B, E);
+  CXSourceRange Rng = clang_getRange(B, E);
 
   clang_CXRewriter_replaceText(Rew, Rng, "foo");
 
@@ -903,7 +894,7 @@ TEST_F(LibclangRewriteTest, RewriteReplaceShorter) {
 TEST_F(LibclangRewriteTest, RewriteReplaceLonger) {
   CXSourceLocation B = clang_getLocation(ClangTU, File, 1, 5);
   CXSourceLocation E = clang_getLocation(ClangTU, File, 1, 9);
-  CXSourceRange Rng	= clang_getRange(B, E);
+  CXSourceRange Rng = clang_getRange(B, E);
 
   clang_CXRewriter_replaceText(Rew, Rng, "patatino");
 
@@ -923,7 +914,7 @@ TEST_F(LibclangRewriteTest, RewriteInsert) {
 TEST_F(LibclangRewriteTest, RewriteRemove) {
   CXSourceLocation B = clang_getLocation(ClangTU, File, 1, 5);
   CXSourceLocation E = clang_getLocation(ClangTU, File, 1, 9);
-  CXSourceRange Rng	= clang_getRange(B, E);
+  CXSourceRange Rng = clang_getRange(B, E);
 
   clang_CXRewriter_removeText(Rew, Rng);
 

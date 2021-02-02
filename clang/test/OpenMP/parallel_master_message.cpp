@@ -10,63 +10,63 @@ void xxx(int argc) {
 
 #pragma omp parallel master // expected-error {{unexpected OpenMP directive '#pragma omp parallel master'}}
 
-int foo() { 
+int foo() {
   return 0;
 }
 
 int a;
 struct S;
-S& bar();
+S &bar();
 int main(int argc, char **argv) {
-  #pragma omp parallel master nowait // expected-error {{unexpected OpenMP clause 'nowait' in directive '#pragma omp parallel master'}}
-  #pragma omp parallel master unknown // expected-warning {{extra tokens at the end of '#pragma omp parallel master' are ignored}}
+#pragma omp parallel master nowait // expected-error {{unexpected OpenMP clause 'nowait' in directive '#pragma omp parallel master'}}
+#pragma omp parallel master unknown // expected-warning {{extra tokens at the end of '#pragma omp parallel master' are ignored}}
   foo();
   {
-    #pragma omp master
+#pragma omp master
   } // expected-error {{expected statement}}
   {
-    #pragma omp parallel master
+#pragma omp parallel master
   } // expected-error {{expected statement}}
 
   S &s = bar();
-  #pragma omp parallel master
+#pragma omp parallel master
   (void)&s;
-  #pragma omp parallel master { // expected-warning {{extra tokens at the end of '#pragma omp parallel master' are ignored}}
+#pragma omp parallel master { // expected-warning {{extra tokens at the end of '#pragma omp parallel master' are ignored}}
   foo();
-  #pragma omp parallel master ( // expected-warning {{extra tokens at the end of '#pragma omp parallel master' are ignored}}
+#pragma omp parallel master( // expected-warning {{extra tokens at the end of '#pragma omp parallel master' are ignored}}
   foo();
-  #pragma omp parallel master [ // expected-warning {{extra tokens at the end of '#pragma omp parallel master' are ignored}}
+#pragma omp parallel master[ // expected-warning {{extra tokens at the end of '#pragma omp parallel master' are ignored}}
   foo();
-  #pragma omp parallel master ] // expected-warning {{extra tokens at the end of '#pragma omp parallel master' are ignored}}
+#pragma omp parallel master] // expected-warning {{extra tokens at the end of '#pragma omp parallel master' are ignored}}
   foo();
-  #pragma omp parallel master ) // expected-warning {{extra tokens at the end of '#pragma omp parallel master' are ignored}}
+#pragma omp parallel master) // expected-warning {{extra tokens at the end of '#pragma omp parallel master' are ignored}}
   foo();
-  #pragma omp parallel master } // expected-warning {{extra tokens at the end of '#pragma omp parallel master' are ignored}}
+#pragma omp parallel master } // expected-warning {{extra tokens at the end of '#pragma omp parallel master' are ignored}}
   foo();
-  #pragma omp parallel master
-  // expected-warning@+1 {{extra tokens at the end of '#pragma omp parallel master' are ignored}}
-  #pragma omp parallel master unknown()
+#pragma omp parallel master
+// expected-warning@+1 {{extra tokens at the end of '#pragma omp parallel master' are ignored}}
+#pragma omp parallel master unknown()
   foo();
-  L1:
-    foo();
-  #pragma omp parallel master
+L1:
+  foo();
+#pragma omp parallel master
   ;
-  #pragma omp parallel master
+#pragma omp parallel master
   {
 
-  for (int i = 0; i < 10; ++i) {
-    switch(argc) {
-     case (0):
-      #pragma omp parallel master
+    for (int i = 0; i < 10; ++i) {
+      switch (argc) {
+      case (0):
+#pragma omp parallel master
       {
         foo();
-        break; // expected-error {{'break' statement not in loop or switch statement}}
+        break;    // expected-error {{'break' statement not in loop or switch statement}}
         continue; // expected-error {{'continue' statement not in loop statement}}
       }
       default:
-       break;
+        break;
+      }
     }
-  }
     goto L1; // expected-error {{use of undeclared label 'L1'}}
     argc++;
   }
@@ -77,10 +77,10 @@ int main(int argc, char **argv) {
   }
 
   goto L2; // expected-error {{use of undeclared label 'L2'}}
-  #pragma omp parallel master
-  L2:
+#pragma omp parallel master
+L2:
   foo();
-  #pragma omp parallel master
+#pragma omp parallel master
   {
     return 1; // expected-error {{cannot return from OpenMP region}}
   }

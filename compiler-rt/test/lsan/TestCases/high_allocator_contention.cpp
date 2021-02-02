@@ -5,8 +5,8 @@
 // RUN: %env_lsan_opts=$LSAN_BASE %run %t 5 1000000 2>&1
 #include <assert.h>
 #include <pthread.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 int num_threads;
 int total_num_alloc;
@@ -19,17 +19,21 @@ bool go = false;
 
 void *thread_fun(void *arg) {
   pthread_mutex_lock(&mutex);
-  while (!go) pthread_cond_wait(&cond, &mutex);
+  while (!go)
+    pthread_cond_wait(&cond, &mutex);
   pthread_mutex_unlock(&mutex);
   for (int i = 0; i < total_num_alloc / num_threads; i++) {
     void *p = malloc(10);
-    __asm__ __volatile__("" : : "r"(p) : "memory");
+    __asm__ __volatile__(""
+                         :
+                         : "r"(p)
+                         : "memory");
     free((void *)p);
   }
   return 0;
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   assert(argc == 3);
   num_threads = atoi(argv[1]);
   assert(num_threads > 0);
@@ -44,6 +48,7 @@ int main(int argc, char** argv) {
   go = true;
   pthread_cond_broadcast(&cond);
   pthread_mutex_unlock(&mutex);
-  for (int i = 0; i < num_threads; i++) pthread_join(tid[i], 0);
+  for (int i = 0; i < num_threads; i++)
+    pthread_join(tid[i], 0);
   return 0;
 }

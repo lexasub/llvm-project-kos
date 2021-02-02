@@ -75,7 +75,7 @@ public:
 
     /// apply - Apply this operator to Expr's arguments and insert the result
     /// in Elts.
-    virtual void apply(SetTheory&, DagInit *Expr, RecSet &Elts,
+    virtual void apply(SetTheory &, DagInit *Expr, RecSet &Elts,
                        ArrayRef<SMLoc> Loc) = 0;
   };
 
@@ -88,7 +88,7 @@ public:
   public:
     virtual ~Expander() = default;
 
-    virtual void expand(SetTheory&, Record*, RecSet &Elts) = 0;
+    virtual void expand(SetTheory &, Record *, RecSet &Elts) = 0;
   };
 
 private:
@@ -127,7 +127,7 @@ public:
   void evaluate(Init *Expr, RecSet &Elts, ArrayRef<SMLoc> Loc);
 
   /// evaluate - Evaluate a sequence of Inits and append to Elts.
-  template<typename Iter>
+  template <typename Iter>
   void evaluate(Iter begin, Iter end, RecSet &Elts, ArrayRef<SMLoc> Loc) {
     while (begin != end)
       evaluate(*begin++, Elts, Loc);

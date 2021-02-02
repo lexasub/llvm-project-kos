@@ -5,8 +5,10 @@
 // RUN: %clang -target aarch64-windows-gnu -fdwarf-exceptions -c %s -### 2>&1 | FileCheck -check-prefix=MINGW-DWARF %s
 // RUN: %clang -target aarch64-windows-gnu -c %s -### 2>&1 | FileCheck -check-prefix=MINGW-SEH %s
 
-MSVC-NOT: -exception-model=dwarf
-MSVC-NOT: -exception-model=seh
-MINGW-DWARF: -exception-model=dwarf
-MINGW-SEH: -munwind-tables
-MINGW-SEH: -exception-model=seh
+MSVC - NOT : -exception - model = dwarf
+                                      MSVC -
+                                  NOT : -exception - model = seh
+                                                                 MINGW -
+                                                             DWARF : -exception - model = dwarf
+                                                                                              MINGW -
+                                                                                          SEH : -munwind - tables MINGW - SEH : -exception - model = seh

@@ -88,9 +88,7 @@ public:
 
   ArrayRef<DeclAccessPair> pairs() const { return decls(); }
 
-  void addDecl(NamedDecl *D) {
-    addDecl(D, AS_none);
-  }
+  void addDecl(NamedDecl *D) { addDecl(D, AS_none); }
 
   void addDecl(NamedDecl *D, AccessSpecifier AS) {
     decls().push_back(DeclAccessPair::make(D, AS));
@@ -99,7 +97,7 @@ public:
   /// Replaces the given declaration with the new one, once.
   ///
   /// \return true if the set changed
-  bool replace(const NamedDecl* Old, NamedDecl *New) {
+  bool replace(const NamedDecl *Old, NamedDecl *New) {
     for (DeclsTy::iterator I = decls().begin(), E = decls().end(); I != E; ++I)
       if (I->getDecl() == Old)
         return (I->setDecl(New), true);
@@ -128,7 +126,7 @@ public:
 
   void append(iterator I, iterator E) { decls().append(I.I, E.I); }
 
-  template<typename Iter> void assign(Iter I, Iter E) { decls().assign(I, E); }
+  template <typename Iter> void assign(Iter I, Iter E) { decls().assign(I, E); }
 
   DeclAccessPair &operator[](unsigned I) { return decls()[I]; }
   const DeclAccessPair &operator[](unsigned I) const { return decls()[I]; }
@@ -136,20 +134,17 @@ public:
 private:
   // These work because the only permitted subclass is UnresolvedSetImpl
 
-  DeclsTy &decls() {
-    return *reinterpret_cast<DeclsTy*>(this);
-  }
+  DeclsTy &decls() { return *reinterpret_cast<DeclsTy *>(this); }
   const DeclsTy &decls() const {
-    return *reinterpret_cast<const DeclsTy*>(this);
+    return *reinterpret_cast<const DeclsTy *>(this);
   }
 };
 
 /// A set of unresolved declarations.
-template <unsigned InlineCapacity> class UnresolvedSet :
-    public UnresolvedSetImpl {
+template <unsigned InlineCapacity>
+class UnresolvedSet : public UnresolvedSetImpl {
   SmallVector<DeclAccessPair, InlineCapacity> Decls;
 };
-
 
 } // namespace clang
 

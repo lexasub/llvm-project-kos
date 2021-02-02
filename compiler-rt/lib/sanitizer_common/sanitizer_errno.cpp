@@ -13,10 +13,10 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include <errno.h>
+
 #include "sanitizer_errno_codes.h"
 #include "sanitizer_internal_defs.h"
-
-#include <errno.h>
 
 namespace __sanitizer {
 

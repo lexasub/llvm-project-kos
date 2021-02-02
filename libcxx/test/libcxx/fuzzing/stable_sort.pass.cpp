@@ -15,25 +15,29 @@
 
 #include "fuzz.h"
 
-extern "C" int LLVMFuzzerTestOneInput(const std::uint8_t *data, std::size_t size) {
-    std::vector<ByteWithPayload> input;
-    for (std::size_t i = 0; i < size; ++i)
-        input.push_back(ByteWithPayload(data[i], i));
+extern "C" int LLVMFuzzerTestOneInput(const std::uint8_t* data,
+                                      std::size_t size) {
+  std::vector<ByteWithPayload> input;
+  for (std::size_t i = 0; i < size; ++i)
+    input.push_back(ByteWithPayload(data[i], i));
 
-    std::vector<ByteWithPayload> working = input;
-    std::stable_sort(working.begin(), working.end(), ByteWithPayload::key_less());
+  std::vector<ByteWithPayload> working = input;
+  std::stable_sort(working.begin(), working.end(), ByteWithPayload::key_less());
 
-    if (!std::is_sorted(working.begin(), working.end(), ByteWithPayload::key_less()))
-        return 1;
+  if (!std::is_sorted(working.begin(), working.end(),
+                      ByteWithPayload::key_less()))
+    return 1;
 
-    auto iter = working.begin();
-    while (iter != working.end()) {
-        auto range = std::equal_range(iter, working.end(), *iter, ByteWithPayload::key_less());
-        if (!std::is_sorted(range.first, range.second, ByteWithPayload::total_less()))
-            return 2;
-        iter = range.second;
-    }
-    if (!fast_is_permutation(input.cbegin(), input.cend(), working.cbegin()))
-        return 99;
-    return 0;
+  auto iter = working.begin();
+  while (iter != working.end()) {
+    auto range = std::equal_range(iter, working.end(), *iter,
+                                  ByteWithPayload::key_less());
+    if (!std::is_sorted(range.first, range.second,
+                        ByteWithPayload::total_less()))
+      return 2;
+    iter = range.second;
+  }
+  if (!fast_is_permutation(input.cbegin(), input.cend(), working.cbegin()))
+    return 99;
+  return 0;
 }

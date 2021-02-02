@@ -26,7 +26,7 @@ static const EnumEntry<TypeLeafKind> LeafTypeNames[] = {
 };
 
 #define ENUM_ENTRY(enum_class, enum)                                           \
-  { #enum, std::underlying_type < enum_class > ::type(enum_class::enum) }
+  { #enum, std::underlying_type < enum_class> ::type(enum_class::enum) }
 
 static const EnumEntry<uint16_t> ClassOptionNames[] = {
     ENUM_ENTRY(ClassOptions, Packed),
@@ -44,8 +44,10 @@ static const EnumEntry<uint16_t> ClassOptionNames[] = {
 };
 
 static const EnumEntry<uint8_t> MemberAccessNames[] = {
-    ENUM_ENTRY(MemberAccess, None), ENUM_ENTRY(MemberAccess, Private),
-    ENUM_ENTRY(MemberAccess, Protected), ENUM_ENTRY(MemberAccess, Public),
+    ENUM_ENTRY(MemberAccess, None),
+    ENUM_ENTRY(MemberAccess, Private),
+    ENUM_ENTRY(MemberAccess, Protected),
+    ENUM_ENTRY(MemberAccess, Public),
 };
 
 static const EnumEntry<uint16_t> MethodOptionNames[] = {
@@ -103,7 +105,8 @@ static const EnumEntry<uint16_t> PtrMemberRepNames[] = {
 };
 
 static const EnumEntry<uint16_t> TypeModifierNames[] = {
-    ENUM_ENTRY(ModifierOptions, Const), ENUM_ENTRY(ModifierOptions, Volatile),
+    ENUM_ENTRY(ModifierOptions, Const),
+    ENUM_ENTRY(ModifierOptions, Volatile),
     ENUM_ENTRY(ModifierOptions, Unaligned),
 };
 
@@ -141,7 +144,8 @@ static const EnumEntry<uint8_t> FunctionOptionEnum[] = {
 };
 
 static const EnumEntry<uint16_t> LabelTypeEnum[] = {
-    ENUM_ENTRY(LabelType, Near), ENUM_ENTRY(LabelType, Far),
+    ENUM_ENTRY(LabelType, Near),
+    ENUM_ENTRY(LabelType, Far),
 };
 
 #undef ENUM_ENTRY
@@ -554,8 +558,7 @@ Error TypeDumpVisitor::visitKnownRecord(CVType &CVR, LabelRecord &LR) {
   return Error::success();
 }
 
-Error TypeDumpVisitor::visitKnownRecord(CVType &CVR,
-                                        PrecompRecord &Precomp) {
+Error TypeDumpVisitor::visitKnownRecord(CVType &CVR, PrecompRecord &Precomp) {
   W->printHex("StartIndex", Precomp.getStartTypeIndex());
   W->printHex("Count", Precomp.getTypesCount());
   W->printHex("Signature", Precomp.getSignature());

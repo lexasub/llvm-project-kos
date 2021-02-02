@@ -1,16 +1,16 @@
 template <typename T>
 class A {
 public:
-  void foo() /* Test 1 */ {}  // CHECK: void bar() /* Test 1 */ {}
+  void foo() /* Test 1 */ {} // CHECK: void bar() /* Test 1 */ {}
 };
 
 int main(int argc, char **argv) {
   A<int> a;
   A<double> b;
   A<float> c;
-  a.foo();   /* Test 2 */     // CHECK: a.bar();   /* Test 2 */
-  b.foo();   /* Test 3 */     // CHECK: b.bar();   /* Test 3 */
-  c.foo();   /* Test 4 */     // CHECK: c.bar();   /* Test 4 */
+  a.foo(); /* Test 2 */ // CHECK: a.bar();   /* Test 2 */
+  b.foo(); /* Test 3 */ // CHECK: b.bar();   /* Test 3 */
+  c.foo(); /* Test 4 */ // CHECK: c.bar();   /* Test 4 */
   return 0;
 }
 

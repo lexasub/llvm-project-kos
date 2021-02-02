@@ -49,7 +49,7 @@ T tmain() {
   T vec[] = {1, 2};
   S<T> s_arr[] = {1, 2};
   S<T> &var = test;
-  #pragma omp target teams distribute simd lastprivate(t_var, vec, s_arr, s_arr, var, var)
+#pragma omp target teams distribute simd lastprivate(t_var, vec, s_arr, s_arr, var, var)
   for (int i = 0; i < 2; ++i) {
     vec[i] = t_var;
     s_arr[i] = var;
@@ -62,18 +62,18 @@ int main() {
   volatile double g;
   volatile double &g1 = g;
 
-  #ifdef LAMBDA
+#ifdef LAMBDA
   // LAMBDA-LABEL: @main
   // LAMBDA: call{{.*}} void [[OUTER_LAMBDA:@.+]](
   [&]() {
     static float sfvar;
-    // LAMBDA: define{{.*}} internal{{.*}} void [[OUTER_LAMBDA]](
-    // LAMBDA: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
-    // LAMBDA: call void [[OFFLOADING_FUN:@.+]](
+// LAMBDA: define{{.*}} internal{{.*}} void [[OUTER_LAMBDA]](
+// LAMBDA: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
+// LAMBDA: call void [[OFFLOADING_FUN:@.+]](
 
-    // LAMBDA: define{{.+}} void [[OFFLOADING_FUN]](
-    // LAMBDA: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, i32 4, {{.+}}* [[OMP_OUTLINED:@.+]] to {{.+}})
-    #pragma omp target teams distribute simd lastprivate(g, g1, svar, sfvar)
+// LAMBDA: define{{.+}} void [[OFFLOADING_FUN]](
+// LAMBDA: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, i32 4, {{.+}}* [[OMP_OUTLINED:@.+]] to {{.+}})
+#pragma omp target teams distribute simd lastprivate(g, g1, svar, sfvar)
     for (int i = 0; i < 2; ++i) {
       // LAMBDA-64: define{{.*}} internal{{.*}} void [[OMP_OUTLINED]](i32* noalias %{{.+}}, i32* noalias %{{.+}}, i64 [[G_IN:%.+]], i64 [[G1_IN:%.+]], i64 [[SVAR_IN:%.+]], i64 [[SFVAR_IN:%.+]])
       // LAMBDA-32: define{{.*}} internal{{.*}} void [[OMP_OUTLINED]](i32* noalias %{{.+}}, i32* noalias %{{.+}}, double*{{.+}} [[G_IN:%.+]], double*{{.+}} [[G1_IN:%.+]], i32 [[SVAR_IN:%.+]], i32 [[SFVAR_IN:%.+]])
@@ -184,14 +184,14 @@ int main() {
     }
   }();
   return 0;
-  #else
+#else
   S<float> test;
   int t_var = 0;
   int vec[] = {1, 2};
   S<float> s_arr[] = {1, 2};
   S<float> &var = test;
 
-  #pragma omp target teams distribute simd lastprivate(t_var, vec, s_arr, s_arr, var, var, svar)
+#pragma omp target teams distribute simd lastprivate(t_var, vec, s_arr, s_arr, var, var, svar)
   for (int i = 0; i < 2; ++i) {
     vec[i] = t_var;
     s_arr[i] = var;
@@ -199,7 +199,7 @@ int main() {
   int i;
 
   return tmain<int>();
-  #endif
+#endif
 }
 
 // CHECK: define{{.*}} i{{[0-9]+}} @main()
@@ -309,7 +309,6 @@ int main() {
 // CHECK: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
 // CHECK: call void [[OFFLOAD_FUN_1:@.+]]([2 x i{{[0-9]+}}]* {{.+}}, i{{[0-9]+}} {{.+}}, [2 x [[S_INT_TY]]]* {{.+}}, [[S_INT_TY]]* {{.+}})
 // CHECK: ret
-
 
 // CHECK: define internal void [[OFFLOAD_FUN_1]](
 // CHECK: call void (%{{.+}}*, i{{[0-9]+}}, void (i{{[0-9]+}}*, i{{[0-9]+}}*, ...)*, ...) @__kmpc_fork_teams(%{{.+}}* @{{.+}}, i{{[0-9]+}} 4,

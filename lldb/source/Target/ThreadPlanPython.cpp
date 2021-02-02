@@ -48,8 +48,8 @@ bool ThreadPlanPython::ValidatePlan(Stream *error) {
   if (!m_implementation_sp) {
     if (error)
       error->Printf("Error constructing Python ThreadPlan: %s",
-          m_error_str.empty() ? "<unknown error>"
-                                : m_error_str.c_str());
+                    m_error_str.empty() ? "<unknown error>"
+                                        : m_error_str.c_str());
     return false;
   }
 
@@ -68,7 +68,7 @@ void ThreadPlanPython::DidPush() {
     ScriptInterpreter *script_interp = GetScriptInterpreter();
     if (script_interp) {
       m_implementation_sp = script_interp->CreateScriptedThreadPlan(
-          m_class_name.c_str(), m_args_data, m_error_str, 
+          m_class_name.c_str(), m_args_data, m_error_str,
           this->shared_from_this());
     }
   }

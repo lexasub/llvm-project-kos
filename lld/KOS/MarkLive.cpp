@@ -71,5 +71,5 @@ void markLive(ArrayRef<Chunk *> chunks) {
   }
 }
 
-}
-}
+} // namespace kos
+} // namespace lld

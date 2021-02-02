@@ -20,17 +20,16 @@
 
 struct testbuf : public std::streambuf {};
 
-int main(int, char**)
-{
-    {
-        const std::ios ios(0);
-        assert(ios.exceptions() == std::ios::goodbit);
-    }
-    {
-        testbuf sb;
-        const std::ios ios(&sb);
-        assert(ios.exceptions() == std::ios::goodbit);
-    }
+int main(int, char**) {
+  {
+    const std::ios ios(0);
+    assert(ios.exceptions() == std::ios::goodbit);
+  }
+  {
+    testbuf sb;
+    const std::ios ios(&sb);
+    assert(ios.exceptions() == std::ios::goodbit);
+  }
 
   return 0;
 }

@@ -55,7 +55,6 @@ public:
   /// All instructions reported as changing by changingAllUsesOfReg() have
   /// finished being changed.
   void finishedChangingAllUsesOfReg();
-
 };
 
 /// Simple wrapper observer that takes several observers, and calls

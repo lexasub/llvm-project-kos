@@ -30,8 +30,7 @@
 using namespace lldb;
 using namespace lldb_private;
 
-namespace lldb
-{
+namespace lldb {
 class SBBreakpointNameImpl {
 public:
   SBBreakpointNameImpl(TargetSP target_sp, const char *name) {
@@ -52,17 +51,11 @@ public:
   // For now we take a simple approach and only keep the name, and relook up
   // the location when we need it.
 
-  TargetSP GetTarget() const {
-    return m_target_wp.lock();
-  }
+  TargetSP GetTarget() const { return m_target_wp.lock(); }
 
-  const char *GetName() const {
-    return m_name.c_str();
-  }
+  const char *GetName() const { return m_name.c_str(); }
 
-  bool IsValid() const {
-    return !m_name.empty() && m_target_wp.lock();
-  }
+  bool IsValid() const { return !m_name.empty() && m_target_wp.lock(); }
 
   lldb_private::BreakpointName *GetBreakpointName() const;
 
@@ -161,11 +154,11 @@ SBBreakpointName::SBBreakpointName(const SBBreakpointName &rhs) {
 
 SBBreakpointName::~SBBreakpointName() = default;
 
-const SBBreakpointName &SBBreakpointName::
-operator=(const SBBreakpointName &rhs) {
-  LLDB_RECORD_METHOD(
-      const lldb::SBBreakpointName &,
-      SBBreakpointName, operator=,(const lldb::SBBreakpointName &), rhs);
+const SBBreakpointName &
+SBBreakpointName::operator=(const SBBreakpointName &rhs) {
+  LLDB_RECORD_METHOD(const lldb::SBBreakpointName &,
+                     SBBreakpointName, operator=,
+                     (const lldb::SBBreakpointName &), rhs);
 
   if (!rhs.m_impl_up) {
     m_impl_up.reset();
@@ -178,15 +171,15 @@ operator=(const SBBreakpointName &rhs) {
 }
 
 bool SBBreakpointName::operator==(const lldb::SBBreakpointName &rhs) {
-  LLDB_RECORD_METHOD(
-      bool, SBBreakpointName, operator==,(const lldb::SBBreakpointName &), rhs);
+  LLDB_RECORD_METHOD(bool, SBBreakpointName, operator==,
+                     (const lldb::SBBreakpointName &), rhs);
 
   return *m_impl_up == *rhs.m_impl_up;
 }
 
 bool SBBreakpointName::operator!=(const lldb::SBBreakpointName &rhs) {
-  LLDB_RECORD_METHOD(
-      bool, SBBreakpointName, operator!=,(const lldb::SBBreakpointName &), rhs);
+  LLDB_RECORD_METHOD(bool, SBBreakpointName, operator!=,
+                     (const lldb::SBBreakpointName &), rhs);
 
   return *m_impl_up != *rhs.m_impl_up;
 }
@@ -219,7 +212,7 @@ void SBBreakpointName::SetEnabled(bool enable) {
     return;
 
   std::lock_guard<std::recursive_mutex> guard(
-        m_impl_up->GetTarget()->GetAPIMutex());
+      m_impl_up->GetTarget()->GetAPIMutex());
 
   bp_name->GetOptions().SetEnabled(enable);
 }
@@ -232,7 +225,6 @@ void SBBreakpointName::UpdateName(BreakpointName &bp_name) {
   if (!target_sp)
     return;
   target_sp->ApplyNameToBreakpoints(bp_name);
-
 }
 
 bool SBBreakpointName::IsEnabled() {
@@ -243,7 +235,7 @@ bool SBBreakpointName::IsEnabled() {
     return false;
 
   std::lock_guard<std::recursive_mutex> guard(
-        m_impl_up->GetTarget()->GetAPIMutex());
+      m_impl_up->GetTarget()->GetAPIMutex());
 
   return bp_name->GetOptions().IsEnabled();
 }
@@ -256,7 +248,7 @@ void SBBreakpointName::SetOneShot(bool one_shot) {
     return;
 
   std::lock_guard<std::recursive_mutex> guard(
-        m_impl_up->GetTarget()->GetAPIMutex());
+      m_impl_up->GetTarget()->GetAPIMutex());
 
   bp_name->GetOptions().SetOneShot(one_shot);
   UpdateName(*bp_name);
@@ -270,7 +262,7 @@ bool SBBreakpointName::IsOneShot() const {
     return false;
 
   std::lock_guard<std::recursive_mutex> guard(
-        m_impl_up->GetTarget()->GetAPIMutex());
+      m_impl_up->GetTarget()->GetAPIMutex());
 
   return bp_name->GetOptions().IsOneShot();
 }
@@ -283,7 +275,7 @@ void SBBreakpointName::SetIgnoreCount(uint32_t count) {
     return;
 
   std::lock_guard<std::recursive_mutex> guard(
-        m_impl_up->GetTarget()->GetAPIMutex());
+      m_impl_up->GetTarget()->GetAPIMutex());
 
   bp_name->GetOptions().SetIgnoreCount(count);
   UpdateName(*bp_name);
@@ -297,7 +289,7 @@ uint32_t SBBreakpointName::GetIgnoreCount() const {
     return false;
 
   std::lock_guard<std::recursive_mutex> guard(
-        m_impl_up->GetTarget()->GetAPIMutex());
+      m_impl_up->GetTarget()->GetAPIMutex());
 
   return bp_name->GetOptions().GetIgnoreCount();
 }
@@ -311,7 +303,7 @@ void SBBreakpointName::SetCondition(const char *condition) {
     return;
 
   std::lock_guard<std::recursive_mutex> guard(
-        m_impl_up->GetTarget()->GetAPIMutex());
+      m_impl_up->GetTarget()->GetAPIMutex());
 
   bp_name->GetOptions().SetCondition(condition);
   UpdateName(*bp_name);
@@ -325,7 +317,7 @@ const char *SBBreakpointName::GetCondition() {
     return nullptr;
 
   std::lock_guard<std::recursive_mutex> guard(
-        m_impl_up->GetTarget()->GetAPIMutex());
+      m_impl_up->GetTarget()->GetAPIMutex());
 
   return bp_name->GetOptions().GetConditionText();
 }
@@ -339,7 +331,7 @@ void SBBreakpointName::SetAutoContinue(bool auto_continue) {
     return;
 
   std::lock_guard<std::recursive_mutex> guard(
-        m_impl_up->GetTarget()->GetAPIMutex());
+      m_impl_up->GetTarget()->GetAPIMutex());
 
   bp_name->GetOptions().SetAutoContinue(auto_continue);
   UpdateName(*bp_name);
@@ -353,7 +345,7 @@ bool SBBreakpointName::GetAutoContinue() {
     return false;
 
   std::lock_guard<std::recursive_mutex> guard(
-        m_impl_up->GetTarget()->GetAPIMutex());
+      m_impl_up->GetTarget()->GetAPIMutex());
 
   return bp_name->GetOptions().IsAutoContinue();
 }
@@ -366,7 +358,7 @@ void SBBreakpointName::SetThreadID(tid_t tid) {
     return;
 
   std::lock_guard<std::recursive_mutex> guard(
-        m_impl_up->GetTarget()->GetAPIMutex());
+      m_impl_up->GetTarget()->GetAPIMutex());
 
   bp_name->GetOptions().SetThreadID(tid);
   UpdateName(*bp_name);
@@ -380,7 +372,7 @@ tid_t SBBreakpointName::GetThreadID() {
     return LLDB_INVALID_THREAD_ID;
 
   std::lock_guard<std::recursive_mutex> guard(
-        m_impl_up->GetTarget()->GetAPIMutex());
+      m_impl_up->GetTarget()->GetAPIMutex());
 
   return bp_name->GetOptions().GetThreadSpec()->GetTID();
 }
@@ -393,7 +385,7 @@ void SBBreakpointName::SetThreadIndex(uint32_t index) {
     return;
 
   std::lock_guard<std::recursive_mutex> guard(
-        m_impl_up->GetTarget()->GetAPIMutex());
+      m_impl_up->GetTarget()->GetAPIMutex());
 
   bp_name->GetOptions().GetThreadSpec()->SetIndex(index);
   UpdateName(*bp_name);
@@ -407,7 +399,7 @@ uint32_t SBBreakpointName::GetThreadIndex() const {
     return LLDB_INVALID_THREAD_ID;
 
   std::lock_guard<std::recursive_mutex> guard(
-        m_impl_up->GetTarget()->GetAPIMutex());
+      m_impl_up->GetTarget()->GetAPIMutex());
 
   return bp_name->GetOptions().GetThreadSpec()->GetIndex();
 }
@@ -421,7 +413,7 @@ void SBBreakpointName::SetThreadName(const char *thread_name) {
     return;
 
   std::lock_guard<std::recursive_mutex> guard(
-        m_impl_up->GetTarget()->GetAPIMutex());
+      m_impl_up->GetTarget()->GetAPIMutex());
 
   bp_name->GetOptions().GetThreadSpec()->SetName(thread_name);
   UpdateName(*bp_name);
@@ -436,7 +428,7 @@ const char *SBBreakpointName::GetThreadName() const {
     return nullptr;
 
   std::lock_guard<std::recursive_mutex> guard(
-        m_impl_up->GetTarget()->GetAPIMutex());
+      m_impl_up->GetTarget()->GetAPIMutex());
 
   return bp_name->GetOptions().GetThreadSpec()->GetName();
 }
@@ -450,7 +442,7 @@ void SBBreakpointName::SetQueueName(const char *queue_name) {
     return;
 
   std::lock_guard<std::recursive_mutex> guard(
-        m_impl_up->GetTarget()->GetAPIMutex());
+      m_impl_up->GetTarget()->GetAPIMutex());
 
   bp_name->GetOptions().GetThreadSpec()->SetQueueName(queue_name);
   UpdateName(*bp_name);
@@ -465,7 +457,7 @@ const char *SBBreakpointName::GetQueueName() const {
     return nullptr;
 
   std::lock_guard<std::recursive_mutex> guard(
-        m_impl_up->GetTarget()->GetAPIMutex());
+      m_impl_up->GetTarget()->GetAPIMutex());
 
   return bp_name->GetOptions().GetThreadSpec()->GetQueueName();
 }
@@ -480,9 +472,8 @@ void SBBreakpointName::SetCommandLineCommands(SBStringList &commands) {
   if (commands.GetSize() == 0)
     return;
 
-
   std::lock_guard<std::recursive_mutex> guard(
-        m_impl_up->GetTarget()->GetAPIMutex());
+      m_impl_up->GetTarget()->GetAPIMutex());
   std::unique_ptr<BreakpointOptions::CommandData> cmd_data_up(
       new BreakpointOptions::CommandData(*commands, eScriptLanguageNone));
 
@@ -525,9 +516,8 @@ void SBBreakpointName::SetHelpString(const char *help_string) {
   if (!bp_name)
     return;
 
-
   std::lock_guard<std::recursive_mutex> guard(
-        m_impl_up->GetTarget()->GetAPIMutex());
+      m_impl_up->GetTarget()->GetAPIMutex());
   bp_name->SetHelp(help_string);
 }
 
@@ -536,14 +526,13 @@ bool SBBreakpointName::GetDescription(SBStream &s) {
                      s);
 
   BreakpointName *bp_name = GetBreakpointName();
-  if (!bp_name)
-  {
+  if (!bp_name) {
     s.Printf("No value");
     return false;
   }
 
   std::lock_guard<std::recursive_mutex> guard(
-        m_impl_up->GetTarget()->GetAPIMutex());
+      m_impl_up->GetTarget()->GetAPIMutex());
   bp_name->GetDescription(s.get(), eDescriptionLevelFull);
   return true;
 }
@@ -557,30 +546,29 @@ void SBBreakpointName::SetCallback(SBBreakpointHitCallback callback,
   if (!bp_name)
     return;
   std::lock_guard<std::recursive_mutex> guard(
-        m_impl_up->GetTarget()->GetAPIMutex());
+      m_impl_up->GetTarget()->GetAPIMutex());
 
   BatonSP baton_sp(new SBBreakpointCallbackBaton(callback, baton));
-  bp_name->GetOptions().SetCallback(SBBreakpointCallbackBaton
-                                       ::PrivateBreakpointHitCallback,
-                                    baton_sp,
-                                    false);
+  bp_name->GetOptions().SetCallback(
+      SBBreakpointCallbackBaton ::PrivateBreakpointHitCallback, baton_sp,
+      false);
   UpdateName(*bp_name);
 }
 
 void SBBreakpointName::SetScriptCallbackFunction(
-  const char *callback_function_name) {
-LLDB_RECORD_METHOD(void, SBBreakpointName, SetScriptCallbackFunction,
-                   (const char *), callback_function_name);
+    const char *callback_function_name) {
+  LLDB_RECORD_METHOD(void, SBBreakpointName, SetScriptCallbackFunction,
+                     (const char *), callback_function_name);
   SBStructuredData empty_args;
   SetScriptCallbackFunction(callback_function_name, empty_args);
 }
 
-SBError SBBreakpointName::SetScriptCallbackFunction(
-    const char *callback_function_name, 
-    SBStructuredData &extra_args) {
+SBError
+SBBreakpointName::SetScriptCallbackFunction(const char *callback_function_name,
+                                            SBStructuredData &extra_args) {
   LLDB_RECORD_METHOD(SBError, SBBreakpointName, SetScriptCallbackFunction,
-                     (const char *, SBStructuredData &), 
-                     callback_function_name, extra_args);
+                     (const char *, SBStructuredData &), callback_function_name,
+                     extra_args);
   SBError sb_error;
   BreakpointName *bp_name = GetBreakpointName();
   if (!bp_name) {
@@ -589,17 +577,16 @@ SBError SBBreakpointName::SetScriptCallbackFunction(
   }
 
   std::lock_guard<std::recursive_mutex> guard(
-        m_impl_up->GetTarget()->GetAPIMutex());
+      m_impl_up->GetTarget()->GetAPIMutex());
 
   BreakpointOptions &bp_options = bp_name->GetOptions();
   Status error;
   error = m_impl_up->GetTarget()
-      ->GetDebugger()
-      .GetScriptInterpreter()
-      ->SetBreakpointCommandCallbackFunction(&bp_options,
-                                             callback_function_name,
-                                             extra_args.m_impl_up
-                                                 ->GetObjectSP());
+              ->GetDebugger()
+              .GetScriptInterpreter()
+              ->SetBreakpointCommandCallbackFunction(
+                  &bp_options, callback_function_name,
+                  extra_args.m_impl_up->GetObjectSP());
   sb_error.SetError(error);
   UpdateName(*bp_name);
   return LLDB_RECORD_RESULT(sb_error);
@@ -616,7 +603,7 @@ SBBreakpointName::SetScriptCallbackBody(const char *callback_body_text) {
     return LLDB_RECORD_RESULT(sb_error);
 
   std::lock_guard<std::recursive_mutex> guard(
-        m_impl_up->GetTarget()->GetAPIMutex());
+      m_impl_up->GetTarget()->GetAPIMutex());
 
   BreakpointOptions &bp_options = bp_name->GetOptions();
   Status error =
@@ -643,7 +630,6 @@ bool SBBreakpointName::GetAllowList() const {
 void SBBreakpointName::SetAllowList(bool value) {
   LLDB_RECORD_METHOD(void, SBBreakpointName, SetAllowList, (bool), value);
 
-
   BreakpointName *bp_name = GetBreakpointName();
   if (!bp_name)
     return;
@@ -661,7 +647,6 @@ bool SBBreakpointName::GetAllowDelete() {
 
 void SBBreakpointName::SetAllowDelete(bool value) {
   LLDB_RECORD_METHOD(void, SBBreakpointName, SetAllowDelete, (bool), value);
-
 
   BreakpointName *bp_name = GetBreakpointName();
   if (!bp_name)
@@ -687,33 +672,28 @@ void SBBreakpointName::SetAllowDisable(bool value) {
   bp_name->GetPermissions().SetAllowDisable(value);
 }
 
-lldb_private::BreakpointName *SBBreakpointName::GetBreakpointName() const
-{
+lldb_private::BreakpointName *SBBreakpointName::GetBreakpointName() const {
   if (!IsValid())
     return nullptr;
   return m_impl_up->GetBreakpointName();
 }
 
-
 namespace lldb_private {
 namespace repro {
 
-template <>
-void RegisterMethods<SBBreakpointName>(Registry &R) {
+template <> void RegisterMethods<SBBreakpointName>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBBreakpointName, ());
-  LLDB_REGISTER_CONSTRUCTOR(SBBreakpointName,
-                            (lldb::SBTarget &, const char *));
+  LLDB_REGISTER_CONSTRUCTOR(SBBreakpointName, (lldb::SBTarget &, const char *));
   LLDB_REGISTER_CONSTRUCTOR(SBBreakpointName,
                             (lldb::SBBreakpoint &, const char *));
-  LLDB_REGISTER_CONSTRUCTOR(SBBreakpointName,
-                            (const lldb::SBBreakpointName &));
-  LLDB_REGISTER_METHOD(
-      const lldb::SBBreakpointName &,
-      SBBreakpointName, operator=,(const lldb::SBBreakpointName &));
-  LLDB_REGISTER_METHOD(
-      bool, SBBreakpointName, operator==,(const lldb::SBBreakpointName &));
-  LLDB_REGISTER_METHOD(
-      bool, SBBreakpointName, operator!=,(const lldb::SBBreakpointName &));
+  LLDB_REGISTER_CONSTRUCTOR(SBBreakpointName, (const lldb::SBBreakpointName &));
+  LLDB_REGISTER_METHOD(const lldb::SBBreakpointName &,
+                       SBBreakpointName, operator=,
+                       (const lldb::SBBreakpointName &));
+  LLDB_REGISTER_METHOD(bool, SBBreakpointName, operator==,
+                       (const lldb::SBBreakpointName &));
+  LLDB_REGISTER_METHOD(bool, SBBreakpointName, operator!=,
+                       (const lldb::SBBreakpointName &));
   LLDB_REGISTER_METHOD_CONST(bool, SBBreakpointName, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBBreakpointName, operator bool, ());
   LLDB_REGISTER_METHOD_CONST(const char *, SBBreakpointName, GetName, ());
@@ -732,17 +712,14 @@ void RegisterMethods<SBBreakpointName>(Registry &R) {
   LLDB_REGISTER_METHOD(void, SBBreakpointName, SetThreadIndex, (uint32_t));
   LLDB_REGISTER_METHOD_CONST(uint32_t, SBBreakpointName, GetThreadIndex, ());
   LLDB_REGISTER_METHOD(void, SBBreakpointName, SetThreadName, (const char *));
-  LLDB_REGISTER_METHOD_CONST(const char *, SBBreakpointName, GetThreadName,
-                             ());
+  LLDB_REGISTER_METHOD_CONST(const char *, SBBreakpointName, GetThreadName, ());
   LLDB_REGISTER_METHOD(void, SBBreakpointName, SetQueueName, (const char *));
-  LLDB_REGISTER_METHOD_CONST(const char *, SBBreakpointName, GetQueueName,
-                             ());
+  LLDB_REGISTER_METHOD_CONST(const char *, SBBreakpointName, GetQueueName, ());
   LLDB_REGISTER_METHOD(void, SBBreakpointName, SetCommandLineCommands,
                        (lldb::SBStringList &));
   LLDB_REGISTER_METHOD(bool, SBBreakpointName, GetCommandLineCommands,
                        (lldb::SBStringList &));
-  LLDB_REGISTER_METHOD_CONST(const char *, SBBreakpointName, GetHelpString,
-                             ());
+  LLDB_REGISTER_METHOD_CONST(const char *, SBBreakpointName, GetHelpString, ());
   LLDB_REGISTER_METHOD(void, SBBreakpointName, SetHelpString, (const char *));
   LLDB_REGISTER_METHOD(bool, SBBreakpointName, GetDescription,
                        (lldb::SBStream &));
@@ -760,5 +737,5 @@ void RegisterMethods<SBBreakpointName>(Registry &R) {
   LLDB_REGISTER_METHOD(void, SBBreakpointName, SetAllowDisable, (bool));
 }
 
-}
-}
+} // namespace repro
+} // namespace lldb_private

@@ -90,8 +90,7 @@ public:
   virtual std::unique_ptr<IPDBEnumSectionContribs>
   getSectionContribs() const = 0;
 
-  virtual std::unique_ptr<IPDBEnumFrameData>
-  getFrameData() const = 0;
+  virtual std::unique_ptr<IPDBEnumFrameData> getFrameData() const = 0;
 };
 } // namespace pdb
 } // namespace llvm

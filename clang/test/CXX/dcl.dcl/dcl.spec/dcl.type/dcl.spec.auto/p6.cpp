@@ -1,19 +1,18 @@
 // RUN: %clang_cc1 -fsyntax-only -verify %s -std=c++11
 // RUN: %clang_cc1 -fsyntax-only -verify %s -std=c++98 -Wno-c++11-extensions
 
-template<typename T>
+template <typename T>
 struct only {
   only(T);
-  template<typename U> only(U) = delete;
+  template <typename U> only(U) = delete;
 };
 
-namespace N
-{
-  auto a = "const char [16]", *p = &a;
+namespace N {
+auto a = "const char [16]", *p = &a;
 
-  only<const char [16]> testA = a;
-  only<const char **> testP = p;
-}
+only<const char[16]> testA = a;
+only<const char **> testP = p;
+} // namespace N
 
 void h() {
   auto b = 42ULL;
@@ -30,7 +29,7 @@ void p3example() {
   static auto y = 0.0;
 
   only<int> testX = x;
-  only<const int*> testV = v;
+  only<const int *> testV = v;
   only<const int> testU = u;
   only<double> testY = y;
 }
@@ -49,7 +48,7 @@ void f() {
     only<bool> testA = a;
   }
 
-  for (; auto a = "test"; ) {
+  for (; auto a = "test";) {
     only<const char[5]> testA = a;
   }
 
@@ -68,7 +67,7 @@ struct S {
     auto p1 = &S::f;
     auto S::*p2 = &S::f;
     auto (S::*p3)() = &S::f;
-    auto p4 = &S::g; // expected-error {{incompatible initializer of type '<overloaded function type>'}}
+    auto p4 = &S::g;     // expected-error {{incompatible initializer of type '<overloaded function type>'}}
     auto S::*p5 = &S::g; // expected-error {{incompatible initializer of type '<overloaded function type>'}}
     auto (S::*p6)(int) = &S::g;
     auto p7 = &S::m;
@@ -78,27 +77,28 @@ struct S {
     only<void (S::*)()> test2 = p2;
     only<void (S::*)()> test3 = p3;
     only<char (S::*)(int)> test6 = p6;
-    only<int (S::*)> test7 = p7;
-    only<int (S::*)> test8 = p8;
+    only<int(S::*)> test7 = p7;
+    only<int(S::*)> test8 = p8;
   }
 };
 
 namespace PR10939 {
-  struct X {
-    int method(int); // expected-note{{possible target for call}}
-    int method(float); // expected-note{{possible target for call}}
-  };
+struct X {
+  int method(int);   // expected-note{{possible target for call}}
+  int method(float); // expected-note{{possible target for call}}
+};
 
-  template<typename T> T g(T);
+template <typename T> T g(T);
 
-  void f(X *x) {
-    auto value = x->method; // expected-error {{reference to non-static member function must be called}}
-    if (value) { }
-
-    auto funcptr = &g<int>;
-    int (*funcptr2)(int) = funcptr;
+void f(X *x) {
+  auto value = x->method; // expected-error {{reference to non-static member function must be called}}
+  if (value) {
   }
+
+  auto funcptr = &g<int>;
+  int (*funcptr2)(int) = funcptr;
 }
+} // namespace PR10939
 
 // if the initializer is a braced-init-list, deduce auto as std::initializer_list<T>:
 // see SemaCXX/cxx0x-initializer-stdinitializerlist.cpp

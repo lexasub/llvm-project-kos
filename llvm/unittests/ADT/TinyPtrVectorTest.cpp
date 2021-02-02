@@ -31,8 +31,7 @@ struct RemovePointer<
   typedef typename RemovePointer<PointerTy>::type type;
 };
 
-template <typename VectorT>
-class TinyPtrVectorTest : public testing::Test {
+template <typename VectorT> class TinyPtrVectorTest : public testing::Test {
 protected:
   typedef typename VectorT::value_type PtrT;
   typedef typename RemovePointer<PtrT>::type ValueT;
@@ -53,9 +52,7 @@ protected:
 
   PtrT makePtr(ValueT *V) { return PtrT(V); }
 
-  ArrayRef<PtrT> testArray(size_t N) {
-    return makeArrayRef(&TestPtrs[0], N);
-  }
+  ArrayRef<PtrT> testArray(size_t N) { return makeArrayRef(&TestPtrs[0], N); }
 
   void appendValues(VectorT &V, ArrayRef<PtrT> Values) {
     for (size_t i = 0, e = Values.size(); i != e; ++i)
@@ -403,11 +400,9 @@ TYPED_TEST(TinyPtrVectorTest, InsertRange) {
                  std::next(this->TestPtrs.begin(), 42));
   this->expectValues(this->V, this->testArray(42));
   this->V.clear();
-  this->V.insert(this->V.end(),
-                 std::next(this->TestPtrs.begin(), 5),
+  this->V.insert(this->V.end(), std::next(this->TestPtrs.begin(), 5),
                  std::next(this->TestPtrs.begin(), 13));
-  this->V.insert(this->V.begin(),
-                 std::next(this->TestPtrs.begin(), 0),
+  this->V.insert(this->V.begin(), std::next(this->TestPtrs.begin(), 0),
                  std::next(this->TestPtrs.begin(), 3));
   this->V.insert(std::next(this->V.begin(), 2),
                  std::next(this->TestPtrs.begin(), 2),
@@ -419,7 +414,7 @@ TYPED_TEST(TinyPtrVectorTest, InsertRange) {
   this->expectValues(this->V, this->testArray(13));
 }
 
-}
+} // namespace
 
 TEST(TinyPtrVectorTest, SingleEltCtorTest) {
   int v = 55;

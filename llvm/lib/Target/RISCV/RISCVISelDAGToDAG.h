@@ -74,6 +74,6 @@ public:
 private:
   void doPeepholeLoadStoreADDI();
 };
-}
+} // namespace llvm
 
 #endif

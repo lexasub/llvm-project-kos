@@ -6,9 +6,9 @@
 // RUN: not %run %t 100 2>&1 | FileCheck %s
 // RUN: not %run %t 10000 2>&1 | FileCheck %s
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 int main(int argc, char *argv[]) {
   fprintf(stderr, "main\n");

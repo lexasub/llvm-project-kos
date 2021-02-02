@@ -38,11 +38,11 @@ template <typename LeafTy> struct LinearPolyBaseTypeTraits {};
 /// LinearPolyBase describes a linear polynomial:
 ///  c0 * scale0 + c1 * scale1 + ... + cK * scaleK
 /// where the scale is implicit, so only the coefficients are encoded.
-template <typename LeafTy>
-class LinearPolyBase {
+template <typename LeafTy> class LinearPolyBase {
 public:
   using ScalarTy = typename LinearPolyBaseTypeTraits<LeafTy>::ScalarTy;
-  static constexpr auto Dimensions = LinearPolyBaseTypeTraits<LeafTy>::Dimensions;
+  static constexpr auto Dimensions =
+      LinearPolyBaseTypeTraits<LeafTy>::Dimensions;
   static_assert(Dimensions != std::numeric_limits<unsigned>::max(),
                 "Dimensions out of range");
 
@@ -56,13 +56,13 @@ protected:
 
 public:
   friend LeafTy &operator+=(LeafTy &LHS, const LeafTy &RHS) {
-    for (unsigned I=0; I<Dimensions; ++I)
+    for (unsigned I = 0; I < Dimensions; ++I)
       LHS.Coefficients[I] += RHS.Coefficients[I];
     return LHS;
   }
 
   friend LeafTy &operator-=(LeafTy &LHS, const LeafTy &RHS) {
-    for (unsigned I=0; I<Dimensions; ++I)
+    for (unsigned I = 0; I < Dimensions; ++I)
       LHS.Coefficients[I] -= RHS.Coefficients[I];
     return LHS;
   }
@@ -100,9 +100,7 @@ public:
                       RHS.Coefficients.begin());
   }
 
-  bool operator!=(const LinearPolyBase &RHS) const {
-    return !(*this == RHS);
-  }
+  bool operator!=(const LinearPolyBase &RHS) const { return !(*this == RHS); }
 
   bool isZero() const {
     return all_of(Coefficients, [](const ScalarTy &C) { return C == 0; });
@@ -157,11 +155,11 @@ public:
 /// where only one dimension can be set at any time, e.g.
 ///   0 * scale0 + 0 * scale1 + ... + cJ * scaleJ + ... + 0 * scaleK
 /// The dimension that is set is the univariate dimension.
-template <typename LeafTy>
-class UnivariateLinearPolyBase {
+template <typename LeafTy> class UnivariateLinearPolyBase {
 public:
   using ScalarTy = typename LinearPolyBaseTypeTraits<LeafTy>::ScalarTy;
-  static constexpr auto Dimensions = LinearPolyBaseTypeTraits<LeafTy>::Dimensions;
+  static constexpr auto Dimensions =
+      LinearPolyBaseTypeTraits<LeafTy>::Dimensions;
   static_assert(Dimensions != std::numeric_limits<unsigned>::max(),
                 "Dimensions out of range");
 
@@ -243,10 +241,9 @@ public:
   }
 };
 
-
 //===----------------------------------------------------------------------===//
 // LinearPolySize - base class for fixed- or scalable sizes.
-//  ^  ^ 
+//  ^  ^
 //  |  |
 //  |  +----- ElementCount - Leaf class to represent an element count
 //  |                        (vscale x unsigned)
@@ -276,7 +273,6 @@ protected:
       : UnivariateLinearPolyBase<LeafTy>(V) {}
 
 public:
-
   static LeafTy getFixed(ScalarTy MinVal) {
     return static_cast<LeafTy>(LinearPolySize(MinVal, FixedDim));
   }
@@ -381,7 +377,6 @@ template <> struct LinearPolyBaseTypeTraits<ElementCount> {
 
 class ElementCount : public LinearPolySize<ElementCount> {
 public:
-
   ElementCount(const LinearPolySize<ElementCount> &V) : LinearPolySize(V) {}
 
   /// Counting predicates.

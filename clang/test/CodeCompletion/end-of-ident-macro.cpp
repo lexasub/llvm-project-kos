@@ -3,7 +3,8 @@
 using FUNCTION = int();
 // We should get all three completions when the cursor is at the beginning,
 // middle, or end.
-FUNC(int) a = 10;
+FUNC(int)
+a = 10;
 // ^FUNC(int)
 // RUN: %clang_cc1 -code-completion-at=%s:6:1 -code-completion-macros %s | FileCheck %s
 // FU^NC(int)

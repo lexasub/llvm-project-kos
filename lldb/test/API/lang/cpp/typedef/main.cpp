@@ -1,5 +1,4 @@
-template<typename T>
-struct S {
+template <typename T> struct S {
   typedef T V;
 
   V value;
@@ -14,8 +13,8 @@ struct ST {
   typedef S<float> SF;
 };
 
-int main (int argc, char const *argv[]) {
-  SF s{ .5 };
+int main(int argc, char const *argv[]) {
+  SF s{.5};
   ns::SF in_ns;
   ST::SF in_struct;
   return 0; // Set a breakpoint here

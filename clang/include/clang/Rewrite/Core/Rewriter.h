@@ -79,9 +79,7 @@ public:
 
   /// isRewritable - Return true if this location is a raw file location, which
   /// is rewritable.  Locations from macros, etc are not rewritable.
-  static bool isRewritable(SourceLocation Loc) {
-    return Loc.isFileID();
-  }
+  static bool isRewritable(SourceLocation Loc) { return Loc.isFileID(); }
 
   /// getRangeSize - Return the size in bytes of the specified range if they
   /// are in the same file.  If not, this returns -1.
@@ -112,8 +110,8 @@ public:
   ///
   /// \param indentNewLines if true new lines in the string are indented
   /// using the indentation of the source line in position \p Loc.
-  bool InsertText(SourceLocation Loc, StringRef Str,
-                  bool InsertAfter = true, bool indentNewLines = false);
+  bool InsertText(SourceLocation Loc, StringRef Str, bool InsertAfter = true,
+                  bool indentNewLines = false);
 
   /// InsertTextAfter - Insert the specified string at the specified location in
   ///  the original buffer.  This method returns true (and does nothing) if
@@ -155,8 +153,7 @@ public:
   /// ReplaceText - This method replaces a range of characters in the input
   /// buffer with a new string.  This is effectively a combined "remove/insert"
   /// operation.
-  bool ReplaceText(SourceLocation Start, unsigned OrigLength,
-                   StringRef NewStr);
+  bool ReplaceText(SourceLocation Start, unsigned OrigLength, StringRef NewStr);
 
   /// ReplaceText - This method replaces a range of characters in the input
   /// buffer with a new string.  This is effectively a combined "remove/insert"
@@ -197,7 +194,7 @@ public:
   /// If no modification has been made to it, return null.
   const RewriteBuffer *getRewriteBufferFor(FileID FID) const {
     std::map<FileID, RewriteBuffer>::const_iterator I =
-      RewriteBuffers.find(FID);
+        RewriteBuffers.find(FID);
     return I == RewriteBuffers.end() ? nullptr : &I->second;
   }
 

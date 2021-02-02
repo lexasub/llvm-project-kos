@@ -21,7 +21,9 @@ void testGetDescriptiveName2() {
 void testGetDescriptiveName3() {
   int rank = 0;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  typedef struct { MPI_Request req; } ReqStruct;
+  typedef struct {
+    MPI_Request req;
+  } ReqStruct;
   ReqStruct rs;
   MPI_Request *r = &rs.req;
   MPI_Wait(r, MPI_STATUS_IGNORE); // expected-warning{{Request 'rs.req' has no matching nonblocking call.}}
@@ -30,7 +32,9 @@ void testGetDescriptiveName3() {
 void testGetDescriptiveName4() {
   int rank = 0;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  typedef struct { MPI_Request req[2][2]; } ReqStruct;
+  typedef struct {
+    MPI_Request req[2][2];
+  } ReqStruct;
   ReqStruct rs;
   MPI_Request *r = &rs.req[0][1];
   MPI_Wait(r, MPI_STATUS_IGNORE); // expected-warning{{Request 'rs.req[0][1]' has no matching nonblocking call.}}
@@ -39,8 +43,12 @@ void testGetDescriptiveName4() {
 void testGetDescriptiveName5() {
   int rank = 0;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  typedef struct { MPI_Request req; } ReqStructInner;
-  typedef struct  { ReqStructInner req; } ReqStruct;
+  typedef struct {
+    MPI_Request req;
+  } ReqStructInner;
+  typedef struct {
+    ReqStructInner req;
+  } ReqStruct;
   ReqStruct rs;
   MPI_Request *r = &rs.req.req;
   MPI_Wait(r, MPI_STATUS_IGNORE); // expected-warning{{Request 'rs.req.req' has no matching nonblocking call.}}

@@ -3,18 +3,18 @@
 // Fun things you can do with inline namespaces:
 
 inline namespace X {
-  void f1(); // expected-note {{'f1' declared here}}
+void f1(); // expected-note {{'f1' declared here}}
 
-  inline namespace Y {
-    void f2();
+inline namespace Y {
+void f2();
 
-    template <typename T> class C {};
-  }
+template <typename T> class C {};
+} // namespace Y
 
-  // Specialize and partially specialize somewhere else.
-  template <> class C<int> {};
-  template <typename T> class C<T*> {};
-}
+// Specialize and partially specialize somewhere else.
+template <> class C<int> {};
+template <typename T> class C<T *> {};
+} // namespace X
 
 // Qualified and unqualified lookup as if member of enclosing NS.
 void foo1() {
@@ -30,28 +30,27 @@ void foo1() {
 }
 
 template <> class C<float> {};
-template <typename T> class C<T&> {};
+template <typename T> class C<T &> {};
 
 template class C<double>;
-
 
 // As well as all the fun with ADL.
 
 namespace ADL {
-  struct Outer {};
+struct Outer {};
 
-  inline namespace IL {
-    struct Inner {};
+inline namespace IL {
+struct Inner {};
 
-    void fo(Outer);
-  }
+void fo(Outer);
+} // namespace IL
 
-  void fi(Inner);
+void fi(Inner);
 
-  inline namespace IL2 {
-    void fi2(Inner);
-  }
+inline namespace IL2 {
+void fi2(Inner);
 }
+} // namespace ADL
 
 void foo2() {
   ADL::Outer o;
@@ -64,7 +63,7 @@ void foo2() {
 // Let's not forget overload sets.
 struct Distinct {};
 inline namespace Over {
-  void over(Distinct);
+void over(Distinct);
 }
 void over(int);
 
@@ -74,45 +73,45 @@ void foo3() {
 }
 
 // Don't forget to do correct lookup for redeclarations.
-namespace redecl { inline namespace n1 {
+namespace redecl {
+inline namespace n1 {
 
-  template <class Tp> class allocator;
+template <class Tp> class allocator;
 
-  template <>
-  class allocator<void>
-  {
-  public:
-      typedef const void* const_pointer;
-  };
+template <>
+class allocator<void> {
+public:
+  typedef const void *const_pointer;
+};
 
-  template <class Tp>
-  class allocator
-  {
-  public:
-      typedef Tp& reference;
-  
-      void allocate(allocator<void>::const_pointer = 0);
-  };
+template <class Tp>
+class allocator {
+public:
+  typedef Tp &reference;
 
-} }
+  void allocate(allocator<void>::const_pointer = 0);
+};
+
+} // namespace n1
+} // namespace redecl
 
 // Normal redeclarations (not for explicit instantiations or
 // specializations) are distinct in an inline namespace vs. not in an
 // inline namespace.
-namespace redecl2 { 
-  inline namespace n1 {
-    void f(int) { }
-    struct X1 { };
-    template<typename T> void f(T) { }
-    template<typename T> struct X2 { };
-    int i = 71;
-    enum E { e };
-  }
+namespace redecl2 {
+inline namespace n1 {
+void f(int) {}
+struct X1 {};
+template <typename T> void f(T) {}
+template <typename T> struct X2 {};
+int i = 71;
+enum E { e };
+} // namespace n1
 
-  void f(int) { }
-  struct X1 { };
-  template<typename T> void f(T) { }
-  template<typename T> struct X2 { };
-  int i = 71;
-  enum E { e };
-}
+void f(int) {}
+struct X1 {};
+template <typename T> void f(T) {}
+template <typename T> struct X2 {};
+int i = 71;
+enum E { e };
+} // namespace redecl2

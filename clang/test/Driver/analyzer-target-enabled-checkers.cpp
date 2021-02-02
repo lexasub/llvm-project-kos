@@ -18,7 +18,6 @@
 // CHECK-DARWIN-SAME: "-analyzer-checker=nullability.NullPassedToNonnull"
 // CHECK-DARWIN-SAME: "-analyzer-checker=nullability.NullReturnedFromNonnull"
 
-
 // RUN: %clang -### -target x86_64-unknown-linux --analyze %s 2>&1 | FileCheck --check-prefix=CHECK-LINUX %s
 
 // CHECK-LINUX: "-analyzer-checker=core"
@@ -35,7 +34,6 @@
 // CHECK-LINUX-SAME: "-analyzer-checker=security.insecureAPI.vfork"
 // CHECK-LINUX-SAME: "-analyzer-checker=nullability.NullPassedToNonnull"
 // CHECK-LINUX-SAME: "-analyzer-checker=nullability.NullReturnedFromNonnull"
-
 
 // RUN: %clang -### -target x86_64-windows --analyze %s 2>&1 | FileCheck --check-prefix=CHECK-WINDOWS %s
 

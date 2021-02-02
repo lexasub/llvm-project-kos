@@ -36,6 +36,6 @@ public:
 private:
   bool m_owns_handle;
 };
-}
+} // namespace lldb_private
 
 #endif

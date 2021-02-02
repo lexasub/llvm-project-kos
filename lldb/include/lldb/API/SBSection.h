@@ -64,8 +64,7 @@ public:
   ///
   /// \return
   ///     Returns an unsigned value for Permissions for the section.
-  uint32_t
-  GetPermissions() const;
+  uint32_t GetPermissions() const;
 
   /// Return the size of a target's byte represented by this section
   /// in numbers of host bytes. Note that certain architectures have

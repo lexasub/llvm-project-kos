@@ -34,8 +34,7 @@ template <typename T> class SmallVectorImpl;
 /// The output is added to Result, as pairs of <from,to> edge info.
 void FindFunctionBackedges(
     const Function &F,
-    SmallVectorImpl<std::pair<const BasicBlock *, const BasicBlock *> > &
-        Result);
+    SmallVectorImpl<std::pair<const BasicBlock *, const BasicBlock *>> &Result);
 
 /// Search for the specified successor of basic block BB and return its position
 /// in the terminator instruction's list of successors.  It is an error to call
@@ -173,6 +172,6 @@ bool containsIrreducibleCFG(RPOTraversalT &RPOTraversal, const LoopInfoT &LI) {
 
   return false;
 }
-} // End llvm namespace
+} // namespace llvm
 
 #endif

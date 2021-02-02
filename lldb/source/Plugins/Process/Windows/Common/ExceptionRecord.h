@@ -64,7 +64,9 @@ public:
 
   lldb::tid_t GetThreadID() const { return m_thread_id; }
 
-  const std::vector<ULONG_PTR>& GetExceptionArguments() const { return m_arguments; }
+  const std::vector<ULONG_PTR> &GetExceptionArguments() const {
+    return m_arguments;
+  }
 
 private:
   DWORD m_code;
@@ -74,6 +76,6 @@ private:
   lldb::tid_t m_thread_id;
   std::vector<ULONG_PTR> m_arguments;
 };
-}
+} // namespace lldb_private
 
 #endif

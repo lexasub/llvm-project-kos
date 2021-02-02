@@ -56,8 +56,8 @@ private:
   std::vector<Fix> fixesForSymbols(const SymbolSlab &Syms) const;
 
   struct UnresolvedName {
-    std::string Name;   // E.g. "X" in foo::X.
-    SourceLocation Loc; // Start location of the unresolved name.
+    std::string Name;                // E.g. "X" in foo::X.
+    SourceLocation Loc;              // Start location of the unresolved name.
     std::vector<std::string> Scopes; // Namespace scopes we should search in.
   };
 

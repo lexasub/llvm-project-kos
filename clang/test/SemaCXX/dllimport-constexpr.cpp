@@ -34,7 +34,7 @@ int instantiate2() {
 }
 
 // Member pointer instantiation.
-template <void (Foo::*MP)()> struct TemplateMemPtr { };
+template <void (Foo::*MP)()> struct TemplateMemPtr {};
 TemplateMemPtr<&Foo::imported_method> instantiate_mp;
 
 // constexpr initialization doesn't work for dllimport things.

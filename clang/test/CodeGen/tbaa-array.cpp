@@ -7,34 +7,41 @@
 // Check that we generate correct TBAA information for accesses to array
 // elements.
 
-struct A { int i; };
-struct B { A a[1]; };
-struct C { int i; int x[3]; };
+struct A {
+  int i;
+};
+struct B {
+  A a[1];
+};
+struct C {
+  int i;
+  int x[3];
+};
 
 int foo(B *b) {
-// CHECK-LABEL: _Z3fooP1B
-// CHECK: load i32, {{.*}}, !tbaa [[TAG_A_i:!.*]]
-// CHECK-NEW-LABEL: _Z3fooP1B
-// CHECK-NEW: load i32, {{.*}}, !tbaa [[TAG_A_i:!.*]]
+  // CHECK-LABEL: _Z3fooP1B
+  // CHECK: load i32, {{.*}}, !tbaa [[TAG_A_i:!.*]]
+  // CHECK-NEW-LABEL: _Z3fooP1B
+  // CHECK-NEW: load i32, {{.*}}, !tbaa [[TAG_A_i:!.*]]
   return b->a->i;
 }
 
 // Check that members of array types are represented correctly.
 int bar(C *c) {
-// CHECK-NEW-LABEL: _Z3barP1C
-// CHECK-NEW: load i32, {{.*}}, !tbaa [[TAG_C_i:!.*]]
+  // CHECK-NEW-LABEL: _Z3barP1C
+  // CHECK-NEW: load i32, {{.*}}, !tbaa [[TAG_C_i:!.*]]
   return c->i;
 }
 
 int bar2(C *c) {
-// CHECK-NEW-LABEL: _Z4bar2P1C
-// CHECK-NEW: load i32, {{.*}}, !tbaa [[TAG_int:!.*]]
+  // CHECK-NEW-LABEL: _Z4bar2P1C
+  // CHECK-NEW: load i32, {{.*}}, !tbaa [[TAG_int:!.*]]
   return c->x[2];
 }
 
 int bar3(C *c, int j) {
-// CHECK-NEW-LABEL: _Z4bar3P1Ci
-// CHECK-NEW: load i32, {{.*}}, !tbaa [[TAG_int:!.*]]
+  // CHECK-NEW-LABEL: _Z4bar3P1Ci
+  // CHECK-NEW: load i32, {{.*}}, !tbaa [[TAG_int:!.*]]
   return c->x[j];
 }
 

@@ -3,6 +3,6 @@
 
 struct bork {
   struct bork *next_local;
-  char * query;
+  char *query;
 };
-int offset =  (char *) &(((struct bork *) 0x10)->query) - (char *) 0x10;
+int offset = (char *)&(((struct bork *)0x10)->query) - (char *)0x10;

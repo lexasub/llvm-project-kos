@@ -27,17 +27,14 @@ struct OtherTagTwo : std::output_iterator_tag {};
 struct MyIter : std::iterator<std::random_access_iterator_tag, char> {
   using iterator_concept = int;
 };
-struct MyIter2 : std::iterator<OtherTag, char> {
-
-};
+struct MyIter2 : std::iterator<OtherTag, char> {};
 struct MyIter3 {};
 
 struct Empty {};
 struct EmptyWithSpecial {};
 namespace std {
 template <>
-struct iterator_traits<MyIter3>
-    : std::iterator<OtherTagTwo, char> {};
+struct iterator_traits<MyIter3> : std::iterator<OtherTagTwo, char> {};
 
 template <>
 struct iterator_traits<EmptyWithSpecial> {
@@ -63,10 +60,13 @@ int main(int, char**) {
   // FIXME - This requirement makes no sense to me. Why does an empty type with
   // an empty default iterator_traits get a category of random?
   {
-    ASSERT_SAME_TYPE(std::_ITER_CONCEPT<Empty>, std::random_access_iterator_tag);
+    ASSERT_SAME_TYPE(std::_ITER_CONCEPT<Empty>,
+                     std::random_access_iterator_tag);
   }
   {
-    static_assert(!std::_IsValidExpansion<std::_ITER_CONCEPT, EmptyWithSpecial>::value, "");
+    static_assert(
+        !std::_IsValidExpansion<std::_ITER_CONCEPT, EmptyWithSpecial>::value,
+        "");
   }
 
   return 0;

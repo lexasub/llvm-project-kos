@@ -2,7 +2,7 @@
 
 namespace default_arg_temporary {
 
-constexpr bool equals(const float& arg = 1.0f) {
+constexpr bool equals(const float &arg = 1.0f) {
   return arg == 1.0f;
 }
 
@@ -31,8 +31,12 @@ void test_default_arg2() {
 }
 
 // Check that multiple CXXDefaultInitExprs don't cause an assertion failure.
-struct A { int &&r = 0; }; // expected-note 2{{default member initializer}}
-struct B { A x, y; };
+struct A {
+  int &&r = 0;
+}; // expected-note 2{{default member initializer}}
+struct B {
+  A x, y;
+};
 B b = {}; // expected-warning 2{{not supported}}
 
-}
+} // namespace default_arg_temporary

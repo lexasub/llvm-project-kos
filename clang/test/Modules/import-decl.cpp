@@ -11,7 +11,7 @@ int main() {
 
 // <rdar://problem/15084587>
 @interface A
--method;
+- method;
 @end
 
 void testImport(A *import) {

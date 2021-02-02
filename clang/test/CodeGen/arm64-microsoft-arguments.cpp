@@ -154,13 +154,12 @@ S8 f8() {
   return func8(x);
 }
 
-
 // Pass and return an object with a non-trivial copy-assignment operator and
 // a trivial copy constructor (passed directly, returned indirectly)
 // CHECK: define {{.*}} void @"?f9@@YA?AUS9@@XZ"(%struct.S9* inreg noalias sret(%struct.S9) align 4 {{.*}})
 // CHECK: call void {{.*}}func9{{.*}}(%struct.S9* inreg sret(%struct.S9) align 4 {{.*}}, i64 {{.*}})
 struct S9 {
-  S9& operator=(const S9&);
+  S9 &operator=(const S9 &);
   int x;
 };
 
@@ -185,7 +184,6 @@ S10 f10() {
   S10 x;
   return func10(x);
 }
-
 
 // Pass and return a non aggregate object exceeding > 128 bits (passed
 // indirectly, returned indirectly)

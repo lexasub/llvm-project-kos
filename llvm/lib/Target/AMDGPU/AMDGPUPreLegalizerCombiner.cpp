@@ -43,7 +43,7 @@ public:
   AMDGPUGenPreLegalizerCombinerHelperRuleConfig GeneratedRuleCfg;
 
   AMDGPUPreLegalizerCombinerInfo(bool EnableOpt, bool OptSize, bool MinSize,
-                                  GISelKnownBits *KB, MachineDominatorTree *MDT)
+                                 GISelKnownBits *KB, MachineDominatorTree *MDT)
       : CombinerInfo(/*AllowIllegalOps*/ true, /*ShouldLegalizeIllegal*/ false,
                      /*LegalizerInfo*/ nullptr, EnableOpt, OptSize, MinSize),
         KB(KB), MDT(MDT) {
@@ -56,8 +56,8 @@ public:
 };
 
 bool AMDGPUPreLegalizerCombinerInfo::combine(GISelChangeObserver &Observer,
-                                              MachineInstr &MI,
-                                              MachineIRBuilder &B) const {
+                                             MachineInstr &MI,
+                                             MachineIRBuilder &B) const {
   CombinerHelper Helper(Observer, B, KB, MDT);
   AMDGPUGenPreLegalizerCombinerHelper Generated(GeneratedRuleCfg);
 
@@ -94,6 +94,7 @@ public:
   bool runOnMachineFunction(MachineFunction &MF) override;
 
   void getAnalysisUsage(AnalysisUsage &AU) const override;
+
 private:
   bool IsOptNone;
 };
@@ -113,7 +114,7 @@ void AMDGPUPreLegalizerCombiner::getAnalysisUsage(AnalysisUsage &AU) const {
 }
 
 AMDGPUPreLegalizerCombiner::AMDGPUPreLegalizerCombiner(bool IsOptNone)
-  : MachineFunctionPass(ID), IsOptNone(IsOptNone) {
+    : MachineFunctionPass(ID), IsOptNone(IsOptNone) {
   initializeAMDGPUPreLegalizerCombinerPass(*PassRegistry::getPassRegistry());
 }
 

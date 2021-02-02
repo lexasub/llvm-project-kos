@@ -33,13 +33,13 @@ DynamicLoader *DynamicLoaderStatic::CreateInstance(Process *process,
     if (os_type == llvm::Triple::UnknownOS) {
       // The WASM and Hexagon plugin check the ArchType rather than the OSType,
       // so explicitly reject those here.
-      switch(arch_type) {
-        case llvm::Triple::hexagon:
-        case llvm::Triple::wasm32:
-        case llvm::Triple::wasm64:
-          break;
-        default:
-          create = true;
+      switch (arch_type) {
+      case llvm::Triple::hexagon:
+      case llvm::Triple::wasm32:
+      case llvm::Triple::wasm64:
+        break;
+      default:
+        create = true;
       }
     }
   }

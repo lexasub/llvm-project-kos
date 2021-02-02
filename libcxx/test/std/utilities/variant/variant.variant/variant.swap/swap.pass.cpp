@@ -31,37 +31,39 @@
 #include "variant_test_helpers.h"
 
 struct NotSwappable {};
-void swap(NotSwappable &, NotSwappable &) = delete;
+void swap(NotSwappable&, NotSwappable&) = delete;
 
 struct NotCopyable {
   NotCopyable() = default;
-  NotCopyable(const NotCopyable &) = delete;
-  NotCopyable &operator=(const NotCopyable &) = delete;
+  NotCopyable(const NotCopyable&) = delete;
+  NotCopyable& operator=(const NotCopyable&) = delete;
 };
 
 struct NotCopyableWithSwap {
   NotCopyableWithSwap() = default;
-  NotCopyableWithSwap(const NotCopyableWithSwap &) = delete;
-  NotCopyableWithSwap &operator=(const NotCopyableWithSwap &) = delete;
+  NotCopyableWithSwap(const NotCopyableWithSwap&) = delete;
+  NotCopyableWithSwap& operator=(const NotCopyableWithSwap&) = delete;
 };
-void swap(NotCopyableWithSwap &, NotCopyableWithSwap) {}
+void swap(NotCopyableWithSwap&, NotCopyableWithSwap) {}
 
 struct NotMoveAssignable {
   NotMoveAssignable() = default;
-  NotMoveAssignable(NotMoveAssignable &&) = default;
-  NotMoveAssignable &operator=(NotMoveAssignable &&) = delete;
+  NotMoveAssignable(NotMoveAssignable&&) = default;
+  NotMoveAssignable& operator=(NotMoveAssignable&&) = delete;
 };
 
 struct NotMoveAssignableWithSwap {
   NotMoveAssignableWithSwap() = default;
-  NotMoveAssignableWithSwap(NotMoveAssignableWithSwap &&) = default;
-  NotMoveAssignableWithSwap &operator=(NotMoveAssignableWithSwap &&) = delete;
+  NotMoveAssignableWithSwap(NotMoveAssignableWithSwap&&) = default;
+  NotMoveAssignableWithSwap& operator=(NotMoveAssignableWithSwap&&) = delete;
 };
-void swap(NotMoveAssignableWithSwap &, NotMoveAssignableWithSwap &) noexcept {}
+void swap(NotMoveAssignableWithSwap&, NotMoveAssignableWithSwap&) noexcept {}
 
-template <bool Throws> void do_throw() {}
+template <bool Throws>
+void do_throw() {}
 
-template <> void do_throw<true>() {
+template <>
+void do_throw<true>() {
 #ifndef TEST_HAS_NO_EXCEPTIONS
   throw 42;
 #else
@@ -78,19 +80,19 @@ struct NothrowTypeImp {
   static void reset() { move_called = move_assign_called = swap_called = 0; }
   NothrowTypeImp() = default;
   explicit NothrowTypeImp(int v) : value(v) {}
-  NothrowTypeImp(const NothrowTypeImp &o) noexcept(NT_Copy) : value(o.value) {
+  NothrowTypeImp(const NothrowTypeImp& o) noexcept(NT_Copy) : value(o.value) {
     assert(false);
   } // never called by test
-  NothrowTypeImp(NothrowTypeImp &&o) noexcept(NT_Move) : value(o.value) {
+  NothrowTypeImp(NothrowTypeImp&& o) noexcept(NT_Move) : value(o.value) {
     ++move_called;
     do_throw<!NT_Move>();
     o.value = -1;
   }
-  NothrowTypeImp &operator=(const NothrowTypeImp &) noexcept(NT_CopyAssign) {
+  NothrowTypeImp& operator=(const NothrowTypeImp&) noexcept(NT_CopyAssign) {
     assert(false);
     return *this;
   } // never called by the tests
-  NothrowTypeImp &operator=(NothrowTypeImp &&o) noexcept(NT_MoveAssign) {
+  NothrowTypeImp& operator=(NothrowTypeImp&& o) noexcept(NT_MoveAssign) {
     ++move_assign_called;
     do_throw<!NT_MoveAssign>();
     value = o.value;
@@ -115,9 +117,9 @@ int NothrowTypeImp<NT_Copy, NT_Move, NT_CopyAssign, NT_MoveAssign, NT_Swap,
 template <bool NT_Copy, bool NT_Move, bool NT_CopyAssign, bool NT_MoveAssign,
           bool NT_Swap>
 void swap(NothrowTypeImp<NT_Copy, NT_Move, NT_CopyAssign, NT_MoveAssign,
-                         NT_Swap, true> &lhs,
+                         NT_Swap, true>& lhs,
           NothrowTypeImp<NT_Copy, NT_Move, NT_CopyAssign, NT_MoveAssign,
-                         NT_Swap, true> &rhs) noexcept(NT_Swap) {
+                         NT_Swap, true>& rhs) noexcept(NT_Swap) {
   lhs.swap_called++;
   do_throw<!NT_Swap>();
   int tmp = lhs.value;
@@ -152,13 +154,13 @@ struct NonThrowingNonNoexceptType {
   static void reset() { move_called = 0; }
   NonThrowingNonNoexceptType() = default;
   NonThrowingNonNoexceptType(int v) : value(v) {}
-  NonThrowingNonNoexceptType(NonThrowingNonNoexceptType &&o) noexcept(false)
+  NonThrowingNonNoexceptType(NonThrowingNonNoexceptType&& o) noexcept(false)
       : value(o.value) {
     ++move_called;
     o.value = -1;
   }
-  NonThrowingNonNoexceptType &
-  operator=(NonThrowingNonNoexceptType &&) noexcept(false) {
+  NonThrowingNonNoexceptType& operator=(NonThrowingNonNoexceptType&&)
+      noexcept(false) {
     assert(false); // never called by the tests.
     return *this;
   }
@@ -170,13 +172,13 @@ struct ThrowsOnSecondMove {
   int value;
   int move_count;
   ThrowsOnSecondMove(int v) : value(v), move_count(0) {}
-  ThrowsOnSecondMove(ThrowsOnSecondMove &&o) noexcept(false)
+  ThrowsOnSecondMove(ThrowsOnSecondMove&& o) noexcept(false)
       : value(o.value), move_count(o.move_count + 1) {
     if (move_count == 2)
       do_throw<true>();
     o.value = -1;
   }
-  ThrowsOnSecondMove &operator=(ThrowsOnSecondMove &&) {
+  ThrowsOnSecondMove& operator=(ThrowsOnSecondMove&&) {
     assert(false); // not called by test
     return *this;
   }
@@ -476,15 +478,17 @@ void test_swap_different_alternatives() {
 
 template <class Var>
 constexpr auto has_swap_member_imp(int)
-    -> decltype(std::declval<Var &>().swap(std::declval<Var &>()), true) {
+    -> decltype(std::declval<Var&>().swap(std::declval<Var&>()), true) {
   return true;
 }
 
-template <class Var> constexpr auto has_swap_member_imp(long) -> bool {
+template <class Var>
+constexpr auto has_swap_member_imp(long) -> bool {
   return false;
 }
 
-template <class Var> constexpr bool has_swap_member() {
+template <class Var>
+constexpr bool has_swap_member() {
   return has_swap_member_imp<Var>(0);
 }
 

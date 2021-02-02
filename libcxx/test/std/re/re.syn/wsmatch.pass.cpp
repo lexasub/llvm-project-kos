@@ -14,9 +14,10 @@
 #include <type_traits>
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    static_assert((std::is_same<std::match_results<std::wstring::const_iterator>, std::wsmatch>::value), "");
+int main(int, char**) {
+  static_assert((std::is_same<std::match_results<std::wstring::const_iterator>,
+                              std::wsmatch>::value),
+                "");
 
   return 0;
 }

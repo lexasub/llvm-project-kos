@@ -6,8 +6,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "clang/AST/RecursiveASTVisitor.h"
 #include "clang/Analysis/CloneDetection.h"
+#include "clang/AST/RecursiveASTVisitor.h"
 #include "clang/Tooling/Tooling.h"
 #include "gtest/gtest.h"
 

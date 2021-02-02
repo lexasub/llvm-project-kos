@@ -1,4 +1,6 @@
-//===- unittest/Tooling/RecursiveASTVisitorTests/CXXOperatorCallExprTraverser.cpp -===//
+//===-
+//unittest/Tooling/RecursiveASTVisitorTests/CXXOperatorCallExprTraverser.cpp
+//-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -13,25 +15,24 @@ using namespace clang;
 namespace {
 
 class CXXOperatorCallExprTraverser
-  : public ExpectedLocationVisitor<CXXOperatorCallExprTraverser> {
+    : public ExpectedLocationVisitor<CXXOperatorCallExprTraverser> {
 public:
   // Use Traverse, not Visit, to check that data recursion optimization isn't
   // bypassing the call of this function.
   bool TraverseCXXOperatorCallExpr(CXXOperatorCallExpr *CE) {
     Match(getOperatorSpelling(CE->getOperator()), CE->getExprLoc());
-    return ExpectedLocationVisitor<CXXOperatorCallExprTraverser>::
-        TraverseCXXOperatorCallExpr(CE);
+    return ExpectedLocationVisitor<
+        CXXOperatorCallExprTraverser>::TraverseCXXOperatorCallExpr(CE);
   }
 };
 
 TEST(RecursiveASTVisitor, TraversesOverloadedOperator) {
   CXXOperatorCallExprTraverser Visitor;
   Visitor.ExpectMatch("()", 4, 9);
-  EXPECT_TRUE(Visitor.runOver(
-    "struct A {\n"
-    "  int operator()();\n"
-    "} a;\n"
-    "int k = a();\n"));
+  EXPECT_TRUE(Visitor.runOver("struct A {\n"
+                              "  int operator()();\n"
+                              "} a;\n"
+                              "int k = a();\n"));
 }
 
 } // end anonymous namespace

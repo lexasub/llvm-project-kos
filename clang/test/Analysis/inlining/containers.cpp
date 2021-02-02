@@ -79,7 +79,6 @@ void testWrappers(BeginOnlySet &w1, IteratorStructOnlySet &w2,
 #endif
 }
 
-
 #else // HEADER
 
 #include "../Inputs/system-header-simulator-cxx.h"
@@ -87,6 +86,7 @@ void testWrappers(BeginOnlySet &w1, IteratorStructOnlySet &w2,
 class MySet {
   int *storage;
   unsigned size;
+
 public:
   MySet() : storage(0), size(0) {
     clang_analyzer_checkInlined(true);
@@ -106,9 +106,9 @@ public:
 
   bool isEmpty() {
     clang_analyzer_checkInlined(true);
-    #if INLINE
-        // expected-warning@-2 {{TRUE}}
-    #endif
+#if INLINE
+    // expected-warning@-2 {{TRUE}}
+#endif
     return size == 0;
   }
 
@@ -120,34 +120,34 @@ public:
 
   iterator begin() {
     clang_analyzer_checkInlined(true);
-    #if INLINE
-        // expected-warning@-2 {{TRUE}}
-    #endif
+#if INLINE
+    // expected-warning@-2 {{TRUE}}
+#endif
     return iterator(storage);
   }
 
   iterator end() {
     clang_analyzer_checkInlined(true);
-    #if INLINE
-        // expected-warning@-2 {{TRUE}}
-    #endif
-    return iterator(storage+size);
+#if INLINE
+    // expected-warning@-2 {{TRUE}}
+#endif
+    return iterator(storage + size);
   }
 
   typedef int *raw_iterator;
 
   raw_iterator raw_begin() {
     clang_analyzer_checkInlined(true);
-    #if INLINE
-        // expected-warning@-2 {{TRUE}}
-    #endif
+#if INLINE
+    // expected-warning@-2 {{TRUE}}
+#endif
     return storage;
   }
   raw_iterator raw_end() {
     clang_analyzer_checkInlined(true);
-    #if INLINE
-        // expected-warning@-2 {{TRUE}}
-    #endif
+#if INLINE
+    // expected-warning@-2 {{TRUE}}
+#endif
     return storage + size;
   }
 };
@@ -163,14 +163,15 @@ public:
 
   void useIterator(iterator i) {
     clang_analyzer_checkInlined(true);
-    #if INLINE
-        // expected-warning@-2 {{TRUE}}
-    #endif
+#if INLINE
+    // expected-warning@-2 {{TRUE}}
+#endif
   }
 };
 
 class BeginOnlySet {
   MySet impl;
+
 public:
   struct IterImpl {
     MySet::iterator impl;
@@ -195,17 +196,17 @@ public:
 
   wrapped_iterator begin() {
     clang_analyzer_checkInlined(true);
-    #if INLINE
-        // expected-warning@-2 {{TRUE}}
-    #endif
+#if INLINE
+    // expected-warning@-2 {{TRUE}}
+#endif
     return IterImpl(impl.begin());
   }
 };
 
 class IteratorTypedefOnlySet {
   MySet impl;
-public:
 
+public:
   IteratorTypedefOnlySet() {
     clang_analyzer_checkInlined(true);
 #if INLINE
@@ -226,8 +227,8 @@ public:
 
 class IteratorUsingOnlySet {
   MySet impl;
-public:
 
+public:
   IteratorUsingOnlySet() {
     clang_analyzer_checkInlined(true);
 #if INLINE
@@ -239,17 +240,17 @@ public:
 
   iterator start() {
     clang_analyzer_checkInlined(true);
-    #if INLINE
-        // expected-warning@-2 {{TRUE}}
-    #endif
+#if INLINE
+    // expected-warning@-2 {{TRUE}}
+#endif
     return impl.begin();
   }
 };
 
 class IteratorStructOnlySet {
   MySet impl;
-public:
 
+public:
   IteratorStructOnlySet() {
     clang_analyzer_checkInlined(true);
 #if INLINE
@@ -263,9 +264,9 @@ public:
 
   iterator start() {
     clang_analyzer_checkInlined(true);
-    #if INLINE
-        // expected-warning@-2 {{TRUE}}
-    #endif
+#if INLINE
+    // expected-warning@-2 {{TRUE}}
+#endif
     return iterator{impl.begin().impl};
   }
 };

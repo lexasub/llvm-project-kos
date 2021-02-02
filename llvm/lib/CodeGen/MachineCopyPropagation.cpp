@@ -171,9 +171,7 @@ public:
     }
   }
 
-  bool hasAnyCopies() {
-    return !Copies.empty();
-  }
+  bool hasAnyCopies() { return !Copies.empty(); }
 
   MachineInstr *findCopyForUnit(MCRegister RegUnit,
                                 const TargetRegisterInfo &TRI,
@@ -243,9 +241,7 @@ public:
     return AvailCopy;
   }
 
-  void clear() {
-    Copies.clear();
-  }
+  void clear() { Copies.clear(); }
 };
 
 class MachineCopyPropagation : public MachineFunctionPass {
@@ -294,7 +290,7 @@ private:
   SmallSetVector<MachineInstr *, 8> MaybeDeadCopies;
 
   /// Multimap tracking debug users in current BB
-  DenseMap<MachineInstr*, SmallVector<MachineInstr*, 2>> CopyDbgUsers;
+  DenseMap<MachineInstr *, SmallVector<MachineInstr *, 2>> CopyDbgUsers;
 
   CopyTracker Tracker;
 
@@ -446,7 +442,8 @@ bool MachineCopyPropagation::isForwardableRegClassCopy(const MachineInstr &Copy,
 /// operand (the register being replaced), since these can sometimes be
 /// implicitly tied to other operands.  For example, on AMDGPU:
 ///
-/// V_MOVRELS_B32_e32 %VGPR2, %M0<imp-use>, %EXEC<imp-use>, %VGPR2_VGPR3_VGPR4_VGPR5<imp-use>
+/// V_MOVRELS_B32_e32 %VGPR2, %M0<imp-use>, %EXEC<imp-use>,
+/// %VGPR2_VGPR3_VGPR4_VGPR5<imp-use>
 ///
 /// the %VGPR2 is implicitly tied to the larger reg operand, but we have no
 /// way of knowing we need to update the latter when updating the former.
@@ -571,7 +568,7 @@ void MachineCopyPropagation::ForwardCopyPropagateBlock(MachineBasicBlock &MBB) {
   LLVM_DEBUG(dbgs() << "MCP: ForwardCopyPropagateBlock " << MBB.getName()
                     << "\n");
 
-  for (MachineBasicBlock::iterator I = MBB.begin(), E = MBB.end(); I != E; ) {
+  for (MachineBasicBlock::iterator I = MBB.begin(), E = MBB.end(); I != E;) {
     MachineInstr *MI = &*I;
     ++I;
 

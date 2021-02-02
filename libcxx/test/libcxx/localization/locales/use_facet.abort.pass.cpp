@@ -21,19 +21,16 @@
 
 #include "test_macros.h"
 
-
 struct my_facet : public std::locale::facet {
-    static std::locale::id id;
+  static std::locale::id id;
 };
 
 std::locale::id my_facet::id;
 
-void exit_success(int) {
-    std::_Exit(EXIT_SUCCESS);
-}
+void exit_success(int) { std::_Exit(EXIT_SUCCESS); }
 
 int main(int, char**) {
-    std::signal(SIGABRT, exit_success);
-    std::use_facet<my_facet>(std::locale());
-    return EXIT_FAILURE;
+  std::signal(SIGABRT, exit_success);
+  std::use_facet<my_facet>(std::locale());
+  return EXIT_FAILURE;
 }

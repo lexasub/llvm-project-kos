@@ -129,10 +129,9 @@ void MipsMCExpr::printImpl(raw_ostream &OS, const MCAsmInfo *MAI) const {
   OS << ')';
 }
 
-bool
-MipsMCExpr::evaluateAsRelocatableImpl(MCValue &Res,
-                                      const MCAsmLayout *Layout,
-                                      const MCFixup *Fixup) const {
+bool MipsMCExpr::evaluateAsRelocatableImpl(MCValue &Res,
+                                           const MCAsmLayout *Layout,
+                                           const MCFixup *Fixup) const {
   // Look for the %hi(%neg(%gp_rel(X))) and %lo(%neg(%gp_rel(X))) special cases.
   if (isGpOff()) {
     const MCExpr *SubExpr =

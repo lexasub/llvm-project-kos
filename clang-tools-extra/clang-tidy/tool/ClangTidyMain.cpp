@@ -141,8 +141,8 @@ information about formatting styles and options.
 This option overrides the 'FormatStyle` option in
 .clang-tidy file, if any.
 )"),
-                                   cl::init("none"),
-                                   cl::cat(ClangTidyCategory));
+                                        cl::init("none"),
+                                        cl::cat(ClangTidyCategory));
 
 static cl::opt<bool> ListChecks("list-checks", cl::desc(R"(
 List all enabled checks and exit. Use with
@@ -228,8 +228,7 @@ printing statistics about ignored warnings and
 warnings treated as errors if the respective
 options are specified.
 )"),
-                           cl::init(false),
-                           cl::cat(ClangTidyCategory));
+                           cl::init(false), cl::cat(ClangTidyCategory));
 
 static cl::opt<std::string> VfsOverlay("vfsoverlay", cl::desc(R"(
 Overlay the virtual filesystem described by file
@@ -278,8 +277,8 @@ static void printStats(const ClangTidyStats &Stats) {
   }
 }
 
-static std::unique_ptr<ClangTidyOptionsProvider> createOptionsProvider(
-   llvm::IntrusiveRefCntPtr<vfs::FileSystem> FS) {
+static std::unique_ptr<ClangTidyOptionsProvider>
+createOptionsProvider(llvm::IntrusiveRefCntPtr<vfs::FileSystem> FS) {
   ClangTidyGlobalOptions GlobalOptions;
   if (std::error_code Err = parseLineFilter(LineFilter, GlobalOptions)) {
     llvm::errs() << "Invalid LineFilter: " << Err.message() << "\n\nUsage:\n";
@@ -493,8 +492,8 @@ int clangTidyMain(int argc, const char **argv) {
   unsigned WErrorCount = 0;
 
   // -fix-errors implies -fix.
-  handleErrors(Errors, Context, (FixErrors || Fix) && !DisableFixes, WErrorCount,
-               BaseFS);
+  handleErrors(Errors, Context, (FixErrors || Fix) && !DisableFixes,
+               WErrorCount, BaseFS);
 
   if (!ExportFixes.empty() && !Errors.empty()) {
     std::error_code EC;

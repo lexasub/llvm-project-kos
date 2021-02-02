@@ -3,12 +3,14 @@
 //CHECK: %[[B_LAMBDA:.*]] = type { %struct.B* }
 struct A {
   double a = 111;
-  auto foo() { return [*this] { return a; }; }
+  auto foo() {
+    return [*this] { return a; };
+  }
 };
 
 namespace ns1 {
 int X = A{}.foo()();
-} //end ns1
+} // namespace ns1
 
 //CHECK: @"?foo@A@@QAE?A?<auto>@@XZ"(%struct.A* {{[^,]*}} %this, %class.anon* noalias sret(%class.anon) align 8 %[[A_LAMBDA_RETVAL:.*]])
 // get the first object with the closure type, which is of type 'struct.A'
@@ -20,7 +22,9 @@ int X = A{}.foo()();
 
 struct B {
   double b = 222;
-  auto bar() { return [this] { return b; }; };
+  auto bar() {
+    return [this] { return b; };
+  };
 };
 
 namespace ns2 {

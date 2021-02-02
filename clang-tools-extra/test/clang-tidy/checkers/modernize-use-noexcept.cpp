@@ -11,7 +11,10 @@ void foo() throw();
 
 template <typename T>
 void foo() throw();
-void footest() { foo<int>(); foo<double>(); }
+void footest() {
+  foo<int>();
+  foo<double>();
+}
 // CHECK-MESSAGES: :[[@LINE-2]]:12: warning: dynamic exception specification 'throw()' is deprecated; consider using 'noexcept' instead [modernize-use-noexcept]
 // CHECK-FIXES: void foo() noexcept;
 
@@ -23,8 +26,7 @@ void k() throw(int(int));
 // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: dynamic exception specification 'throw(int(int))' is deprecated; consider using 'noexcept(false)' instead [modernize-use-noexcept]
 // CHECK-FIXES: void k() noexcept(false);
 
-void foobar() throw(A, B)
-{}
+void foobar() throw(A, B) {}
 // CHECK-MESSAGES: :[[@LINE-2]]:15: warning: dynamic exception specification 'throw(A, B)' is deprecated; consider using 'noexcept(false)' instead [modernize-use-noexcept]
 // CHECK-FIXES: void foobar() noexcept(false)
 
@@ -52,7 +54,8 @@ void j() throw(int(int) throw(void(void) throw(int)));
 // CHECK-FIXES: void j() noexcept(false);
 
 class Y {
-  Y() throw() = default;
+  Y()
+  throw() = default;
 };
 // CHECK-MESSAGES: :[[@LINE-2]]:7: warning: dynamic exception specification 'throw()' is deprecated; consider using 'noexcept' instead [modernize-use-noexcept]
 // CHECK-FIXES: Y() noexcept = default;
@@ -102,4 +105,4 @@ void bad()
 #if !__has_feature(cxx_noexcept)
     throw()
 #endif
-  ;
+        ;

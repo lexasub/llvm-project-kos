@@ -197,8 +197,7 @@ void SBStream::Clear() {
 namespace lldb_private {
 namespace repro {
 
-template <>
-void RegisterMethods<SBStream>(Registry &R) {
+template <> void RegisterMethods<SBStream>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBStream, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBStream, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBStream, operator bool, ());
@@ -213,5 +212,5 @@ void RegisterMethods<SBStream>(Registry &R) {
   LLDB_REGISTER_METHOD(void, SBStream, Print, (const char *));
 }
 
-}
-}
+} // namespace repro
+} // namespace lldb_private

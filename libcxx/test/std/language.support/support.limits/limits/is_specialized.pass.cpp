@@ -29,46 +29,44 @@
 #include "test_macros.h"
 
 template <class T>
-void test()
-{
-    static_assert(std::numeric_limits<T>::is_specialized,
-                 "std::numeric_limits<T>::is_specialized");
-    static_assert(std::numeric_limits<const T>::is_specialized,
-                 "std::numeric_limits<const T>::is_specialized");
-    static_assert(std::numeric_limits<volatile T>::is_specialized,
-                 "std::numeric_limits<volatile T>::is_specialized");
-    static_assert(std::numeric_limits<const volatile T>::is_specialized,
-                 "std::numeric_limits<const volatile T>::is_specialized");
+void test() {
+  static_assert(std::numeric_limits<T>::is_specialized,
+                "std::numeric_limits<T>::is_specialized");
+  static_assert(std::numeric_limits<const T>::is_specialized,
+                "std::numeric_limits<const T>::is_specialized");
+  static_assert(std::numeric_limits<volatile T>::is_specialized,
+                "std::numeric_limits<volatile T>::is_specialized");
+  static_assert(std::numeric_limits<const volatile T>::is_specialized,
+                "std::numeric_limits<const volatile T>::is_specialized");
 }
 
-int main(int, char**)
-{
-    test<bool>();
-    test<char>();
-    test<wchar_t>();
+int main(int, char**) {
+  test<bool>();
+  test<char>();
+  test<wchar_t>();
 #ifndef _LIBCPP_HAS_NO_UNICODE_CHARS
-    test<char16_t>();
-    test<char32_t>();
-#endif  // _LIBCPP_HAS_NO_UNICODE_CHARS
-    test<signed char>();
-    test<unsigned char>();
-    test<signed short>();
-    test<unsigned short>();
-    test<signed int>();
-    test<unsigned int>();
-    test<signed long>();
-    test<unsigned long>();
-    test<signed long long>();
-    test<unsigned long long>();
+  test<char16_t>();
+  test<char32_t>();
+#endif // _LIBCPP_HAS_NO_UNICODE_CHARS
+  test<signed char>();
+  test<unsigned char>();
+  test<signed short>();
+  test<unsigned short>();
+  test<signed int>();
+  test<unsigned int>();
+  test<signed long>();
+  test<unsigned long>();
+  test<signed long long>();
+  test<unsigned long long>();
 #ifndef _LIBCPP_HAS_NO_INT128
-    test<__int128_t>();
-    test<__uint128_t>();
+  test<__int128_t>();
+  test<__uint128_t>();
 #endif
-    test<float>();
-    test<double>();
-    test<long double>();
-    static_assert(!std::numeric_limits<std::complex<double> >::is_specialized,
-                 "!std::numeric_limits<std::complex<double> >::is_specialized");
+  test<float>();
+  test<double>();
+  test<long double>();
+  static_assert(!std::numeric_limits<std::complex<double> >::is_specialized,
+                "!std::numeric_limits<std::complex<double> >::is_specialized");
 
   return 0;
 }

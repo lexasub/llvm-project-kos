@@ -75,9 +75,10 @@ SDValue X86SelectionDAGInfo::EmitTargetCodeForMemset(
     // Check to see if there is a specialized entry-point for memory zeroing.
     ConstantSDNode *ValC = dyn_cast<ConstantSDNode>(Val);
 
-    if (const char *bzeroName = (ValC && ValC->isNullValue())
-        ? DAG.getTargetLoweringInfo().getLibcallName(RTLIB::BZERO)
-        : nullptr) {
+    if (const char *bzeroName =
+            (ValC && ValC->isNullValue())
+                ? DAG.getTargetLoweringInfo().getLibcallName(RTLIB::BZERO)
+                : nullptr) {
       const TargetLowering &TLI = DAG.getTargetLoweringInfo();
       EVT IntPtr = TLI.getPointerTy(DAG.getDataLayout());
       Type *IntPtrTy = DAG.getDataLayout().getIntPtrType(*DAG.getContext());
@@ -97,7 +98,7 @@ SDValue X86SelectionDAGInfo::EmitTargetCodeForMemset(
                         std::move(Args))
           .setDiscardResult();
 
-      std::pair<SDValue,SDValue> CallResult = TLI.LowerCallTo(CLI);
+      std::pair<SDValue, SDValue> CallResult = TLI.LowerCallTo(CLI);
       return CallResult.second;
     }
 
@@ -120,7 +121,7 @@ SDValue X86SelectionDAGInfo::EmitTargetCodeForMemset(
       // DWORD aligned
       AVT = MVT::i32;
       ValReg = X86::EAX;
-      Val = (Val << 8)  | Val;
+      Val = (Val << 8) | Val;
       Val = (Val << 16) | Val;
       if (Subtarget.is64Bit() && Alignment > Align(8)) { // QWORD aligned
         AVT = MVT::i64;
@@ -150,21 +151,21 @@ SDValue X86SelectionDAGInfo::EmitTargetCodeForMemset(
     InFlag = Chain.getValue(1);
   } else {
     AVT = MVT::i8;
-    Count  = DAG.getIntPtrConstant(SizeVal, dl);
-    Chain  = DAG.getCopyToReg(Chain, dl, X86::AL, Val, InFlag);
+    Count = DAG.getIntPtrConstant(SizeVal, dl);
+    Chain = DAG.getCopyToReg(Chain, dl, X86::AL, Val, InFlag);
     InFlag = Chain.getValue(1);
   }
 
   bool Use64BitRegs = Subtarget.isTarget64BitLP64();
-  Chain = DAG.getCopyToReg(Chain, dl, Use64BitRegs ? X86::RCX : X86::ECX,
-                           Count, InFlag);
+  Chain = DAG.getCopyToReg(Chain, dl, Use64BitRegs ? X86::RCX : X86::ECX, Count,
+                           InFlag);
   InFlag = Chain.getValue(1);
-  Chain = DAG.getCopyToReg(Chain, dl, Use64BitRegs ? X86::RDI : X86::EDI,
-                           Dst, InFlag);
+  Chain = DAG.getCopyToReg(Chain, dl, Use64BitRegs ? X86::RDI : X86::EDI, Dst,
+                           InFlag);
   InFlag = Chain.getValue(1);
 
   SDVTList Tys = DAG.getVTList(MVT::Other, MVT::Glue);
-  SDValue Ops[] = { Chain, DAG.getValueType(AVT), InFlag };
+  SDValue Ops[] = {Chain, DAG.getValueType(AVT), InFlag};
   Chain = DAG.getNode(X86ISD::REP_STOS, dl, Tys, Ops);
 
   if (BytesLeft) {

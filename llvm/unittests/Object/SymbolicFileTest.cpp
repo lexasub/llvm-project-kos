@@ -27,10 +27,9 @@ TEST(Object, DataRefImplOstream) {
 
   if (sizeof Data.p == sizeof(uint64_t)) {
     Expected = llvm::sys::IsLittleEndianHost
-                             ? "(0xffffeeee0000 (0xeeee0000, 0x0000ffff))"
-                             : "(0xeeee00000000ffff (0xeeee0000, 0x0000ffff))";
-  }
-  else {
+                   ? "(0xffffeeee0000 (0xeeee0000, 0x0000ffff))"
+                   : "(0xeeee00000000ffff (0xeeee0000, 0x0000ffff))";
+  } else {
     Expected = "(0xeeee0000 (0xeeee0000, 0x0000ffff))";
   }
 

@@ -104,8 +104,7 @@ UnwindPlanSP FuncUnwinders::GetCompactUnwindUnwindPlan(Target &target) {
 
 lldb::UnwindPlanSP FuncUnwinders::GetObjectFileUnwindPlan(Target &target) {
   std::lock_guard<std::recursive_mutex> guard(m_mutex);
-  if (m_unwind_plan_object_file_sp.get() ||
-      m_tried_unwind_plan_object_file)
+  if (m_unwind_plan_object_file_sp.get() || m_tried_unwind_plan_object_file)
     return m_unwind_plan_object_file_sp;
 
   m_tried_unwind_plan_object_file = true;
@@ -179,7 +178,7 @@ UnwindPlanSP FuncUnwinders::GetArmUnwindUnwindPlan(Target &target) {
 }
 
 namespace {
-class RegisterContextToInfo: public SymbolFile::RegisterInfoResolver {
+class RegisterContextToInfo : public SymbolFile::RegisterInfoResolver {
 public:
   RegisterContextToInfo(RegisterContext &ctx) : m_ctx(ctx) {}
 
@@ -210,9 +209,8 @@ UnwindPlanSP FuncUnwinders::GetSymbolFileUnwindPlan(Thread &thread) {
   return m_unwind_plan_symbol_file_sp;
 }
 
-UnwindPlanSP
-FuncUnwinders::GetObjectFileAugmentedUnwindPlan(Target &target,
-                                                     Thread &thread) {
+UnwindPlanSP FuncUnwinders::GetObjectFileAugmentedUnwindPlan(Target &target,
+                                                             Thread &thread) {
   std::lock_guard<std::recursive_mutex> guard(m_mutex);
   if (m_unwind_plan_object_file_augmented_sp.get() ||
       m_tried_unwind_plan_object_file_augmented)

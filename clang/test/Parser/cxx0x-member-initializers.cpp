@@ -5,12 +5,12 @@
 int a; // expected-note {{previous}}
 struct S {
   int n = 4 + ; // expected-error {{expected expression}}
-} a; // expected-error {{redefinition}}
+} a;            // expected-error {{redefinition}}
 
 // Make sure we use all of the tokens.
 struct T {
   int a = 1 // expected-error {{expected ';' at end of declaration list}}
-  int b = 2;
+      int b = 2;
   int c = b; // expected-error {{undeclared identifier}}
 };
 
@@ -28,11 +28,15 @@ struct V1 {
   V1() : a(), b{} {}
 };
 
-template <typename, typename> struct T1 { enum {V};};
-template <int, int> struct T2 { enum {V};};
+template <typename, typename> struct T1 {
+  enum { V };
+};
+template <int, int> struct T2 {
+  enum { V };
+};
 struct A {
-  T1<int, int> a1 = T1<int, int>(), *a2 = new T1<int,int>;
-  T2<0,0> b1 = T2<0,0>(), b2 = T2<0,0>(), b3;
+  T1<int, int> a1 = T1<int, int>(), *a2 = new T1<int, int>;
+  T2<0, 0> b1 = T2<0, 0>(), b2 = T2<0, 0>(), b3;
   bool c1 = 1 < 2, c2 = 2 < 1, c3 = false;
   bool d1 = T1<int, T1<int, int>>::V < 3, d2;
   T1<int, int()> e = T1<int, int()>();

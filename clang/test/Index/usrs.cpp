@@ -1,11 +1,11 @@
 namespace foo {
-  int x;
-  void bar(int z);
-}
+int x;
+void bar(int z);
+} // namespace foo
 namespace bar {
-  typedef int QType;
-  void bar(QType z);
-}
+typedef int QType;
+void bar(QType z);
+} // namespace bar
 
 class ClsA {
 public:
@@ -14,45 +14,57 @@ public:
 };
 
 namespace foo {
-  class ClsB : public ClsA {
-  public:
-    ClsB() : ClsA(1, 2) {}
-    int result() const;
-  };
-}
+class ClsB : public ClsA {
+public:
+  ClsB() : ClsA(1, 2) {}
+  int result() const;
+};
+} // namespace foo
 
 int foo::ClsB::result() const {
   return a + b;
 }
 
 namespace {
-  class ClsC : public foo::ClsB {};
-  int w;
-}
+class ClsC : public foo::ClsB {};
+int w;
+} // namespace
 
 int z;
 
-namespace foo { namespace taz {
-  int x;
-  static inline int add(int a, int b) { return a + b; }
-  void sub(int a, int b);
-}
-}
+namespace foo {
+namespace taz {
+int x;
+static inline int add(int a, int b) { return a + b; }
+void sub(int a, int b);
+} // namespace taz
+} // namespace foo
 
-namespace foo { namespace taz {
-  class ClsD : public foo::ClsB {
-  public:
-    ClsD& operator=(int x) { a = x; return *this; }
-    ClsD& operator=(double x) { a = (int) x; return *this; }
-    ClsD& operator=(const ClsD &x) { a = x.a; return *this; }
-    static int qux();
-    static int uz(int z, ...);
-    bool operator==(const ClsD &x) const { return a == x.a; }
-  };
-}}
+namespace foo {
+namespace taz {
+class ClsD : public foo::ClsB {
+public:
+  ClsD &operator=(int x) {
+    a = x;
+    return *this;
+  }
+  ClsD &operator=(double x) {
+    a = (int)x;
+    return *this;
+  }
+  ClsD &operator=(const ClsD &x) {
+    a = x.a;
+    return *this;
+  }
+  static int qux();
+  static int uz(int z, ...);
+  bool operator==(const ClsD &x) const { return a == x.a; }
+};
+} // namespace taz
+} // namespace foo
 
 extern "C" {
-  void rez(int a, int b);
+void rez(int a, int b);
 }
 
 namespace foo_alias = foo;
@@ -70,7 +82,7 @@ class RDar9371763_Foo {
 public:
   void bar();
 };
-}
+} // namespace
 
 void RDar9371763_Foo::bar() {}
 
@@ -87,8 +99,12 @@ void funWithChar(char c) {}
 void funWithChar(unsigned char c) {}
 void funWithChar(signed char c) {}
 
-struct { int x; } embedS1;
-struct { int x; } embedS2;
+struct {
+  int x;
+} embedS1;
+struct {
+  int x;
+} embedS2;
 
 template <typename T>
 class TC1 {

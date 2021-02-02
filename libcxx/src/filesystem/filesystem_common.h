@@ -18,11 +18,11 @@
 #include "ctime"
 
 #if !defined(_LIBCPP_WIN32API)
-# include <unistd.h>
-# include <sys/stat.h>
-# include <sys/statvfs.h>
-# include <sys/time.h> // for ::utimes as used in __last_write_time
-# include <fcntl.h>    /* values for fchmodat */
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/statvfs.h>
+#include <sys/time.h> // for ::utimes as used in __last_write_time
+#include <fcntl.h>    /* values for fchmodat */
 #endif
 
 #include "../include/apple_availability.h"
@@ -243,7 +243,7 @@ struct StatT {
   uint64_t st_dev; // FILE_ID_INFO::VolumeSerialNumber
   struct FileIdStruct {
     unsigned char id[16]; // FILE_ID_INFO::FileId
-    bool operator==(const FileIdStruct &other) const {
+    bool operator==(const FileIdStruct& other) const {
       for (int i = 0; i < 16; i++)
         if (id[i] != other.id[i])
           return false;
@@ -475,7 +475,7 @@ inline TimeVal make_timeval(TimeSpec const& ts) {
 }
 
 inline bool posix_utimes(const path& p, std::array<TimeSpec, 2> const& TS,
-                  error_code& ec) {
+                         error_code& ec) {
   TimeVal ConvertedTS[2] = {make_timeval(TS[0]), make_timeval(TS[1])};
   if (::utimes(p.c_str(), ConvertedTS) == -1) {
     ec = capture_errno();

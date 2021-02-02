@@ -51,9 +51,11 @@ void f() {
   const float e = __builtin_is_constant_evaluated();
   g(a, b
 #if __cplusplus >= 201103L
-      , c
+    ,
+    c
 #endif
-      , d, e);
+    ,
+    d, e);
 }
 
 #else

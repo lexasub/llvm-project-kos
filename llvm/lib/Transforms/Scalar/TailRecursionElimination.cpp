@@ -86,7 +86,7 @@ using namespace llvm;
 #define DEBUG_TYPE "tailcallelim"
 
 STATISTIC(NumEliminated, "Number of tail calls removed");
-STATISTIC(NumRetDuped,   "Number of return duplicated");
+STATISTIC(NumRetDuped, "Number of return duplicated");
 STATISTIC(NumAccumAdded, "Number of accumulators introduced");
 
 /// Scan the specified function for alloca instructions.
@@ -153,7 +153,7 @@ struct AllocaDerivedValueTracker {
       case Instruction::Store: {
         if (U->getOperandNo() == 0)
           EscapePoints.insert(I);
-        continue;  // Stores have no users to analyze.
+        continue; // Stores have no users to analyze.
       }
       case Instruction::BitCast:
       case Instruction::GetElementPtr:
@@ -186,7 +186,7 @@ struct AllocaDerivedValueTracker {
   SmallPtrSet<Instruction *, 32> AllocaUsers;
   SmallPtrSet<Instruction *, 32> EscapePoints;
 };
-}
+} // namespace
 
 static bool markTails(Function &F, bool &AllCallsAreTailCalls,
                       OptimizationRemarkEmitter *ORE) {
@@ -211,11 +211,7 @@ static bool markTails(Function &F, bool &AllCallsAreTailCalls,
   // Track whether a block is reachable after an alloca has escaped. Blocks that
   // contain the escaping instruction will be marked as being visited without an
   // escaped alloca, since that is how the block began.
-  enum VisitType {
-    UNVISITED,
-    UNESCAPED,
-    ESCAPED
-  };
+  enum VisitType { UNVISITED, UNESCAPED, ESCAPED };
   DenseMap<BasicBlock *, VisitType> Visited;
 
   // We propagate the fact that an alloca has escaped from block to successor.
@@ -335,7 +331,7 @@ static bool markTails(Function &F, bool &AllCallsAreTailCalls,
 static bool canMoveAboveCall(Instruction *I, CallInst *CI, AliasAnalysis *AA) {
   // FIXME: We can move load/store/call/free instructions above the call if the
   // call does not mod/ref the memory location being processed.
-  if (I->mayHaveSideEffects())  // This also handles volatile loads.
+  if (I->mayHaveSideEffects()) // This also handles volatile loads.
     return false;
 
   if (LoadInst *L = dyn_cast<LoadInst>(I)) {
@@ -463,7 +459,7 @@ CallInst *TailRecursionEliminator::findTRECandidate(
       break;
 
     if (BBI == BB->begin())
-      return nullptr;          // Didn't find a potential tail call.
+      return nullptr; // Didn't find a potential tail call.
     --BBI;
   }
 
@@ -485,7 +481,8 @@ CallInst *TailRecursionEliminator::findTRECandidate(
     auto I = CI->arg_begin(), E = CI->arg_end();
     Function::arg_iterator FI = F.arg_begin(), FE = F.arg_end();
     for (; I != E && FI != FE; ++I, ++FI)
-      if (*I != &*FI) break;
+      if (*I != &*FI)
+        break;
     if (I == E && FI == FE)
       return nullptr;
   }
@@ -668,8 +665,8 @@ bool TailRecursionEliminator::eliminateCall(CallInst *CI) {
   BranchInst *NewBI = BranchInst::Create(HeaderBB, Ret);
   NewBI->setDebugLoc(CI->getDebugLoc());
 
-  BB->getInstList().erase(Ret);  // Remove return.
-  BB->getInstList().erase(CI);   // Remove call.
+  BB->getInstList().erase(Ret); // Remove return.
+  BB->getInstList().erase(CI);  // Remove call.
   DTU.applyUpdates({{DominatorTree::Insert, BB, HeaderBB}});
   ++NumEliminated;
   return true;
@@ -861,7 +858,7 @@ struct TailCallElim : public FunctionPass {
         &getAnalysis<OptimizationRemarkEmitterWrapperPass>().getORE(), DTU);
   }
 };
-}
+} // namespace
 
 char TailCallElim::ID = 0;
 INITIALIZE_PASS_BEGIN(TailCallElim, "tailcallelim", "Tail Call Elimination",

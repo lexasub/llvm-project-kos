@@ -4,7 +4,7 @@ struct S0 {
   int x;
   static const int test0 = __builtin_omp_required_simd_align(x); // expected-error {{invalid application of '__builtin_omp_required_simd_align' to an expression, only type is allowed}}
   static const int test1 = __builtin_omp_required_simd_align(decltype(S0::x));
-  auto test2() -> char(&)[__builtin_omp_required_simd_align(decltype(x))];
+  auto test2() -> char (&)[__builtin_omp_required_simd_align(decltype(x))];
 };
 
 struct S1; // expected-note 6 {{forward declaration}}
@@ -33,26 +33,26 @@ struct S3 {
 
   static const int test8 = __builtin_omp_required_simd_align(decltype(s2.x));
   static const int test9 = __builtin_omp_required_simd_align(decltype(s2.s)); // expected-error {{invalid application of '__builtin_omp_required_simd_align' to an incomplete type 'S1'}}
-  auto test10() -> char(&)[__builtin_omp_required_simd_align(decltype(s2.x))];
+  auto test10() -> char (&)[__builtin_omp_required_simd_align(decltype(s2.x))];
   static const int test11 = __builtin_omp_required_simd_align(decltype(S3::s2.x));
   static const int test12 = __builtin_omp_required_simd_align(decltype(S3::s2.s)); // expected-error {{invalid application of '__builtin_omp_required_simd_align' to an incomplete type 'S1'}}
-  auto test13() -> char(&)[__builtin_omp_required_simd_align(decltype(s2.x))];
+  auto test13() -> char (&)[__builtin_omp_required_simd_align(decltype(s2.x))];
 };
 
 // Same reasoning as S3.
 struct S4 {
   union {
-      int x;
-    };
+    int x;
+  };
   static const int test0 = __builtin_omp_required_simd_align(decltype(x));
   static const int test1 = __builtin_omp_required_simd_align(decltype(S0::x));
-  auto test2() -> char(&)[__builtin_omp_required_simd_align(decltype(x))];
+  auto test2() -> char (&)[__builtin_omp_required_simd_align(decltype(x))];
 };
 
 // Regression test for asking for the alignment of a field within an invalid
 // record.
 struct S5 {
-  S1 s;  // expected-error {{incomplete type}}
+  S1 s; // expected-error {{incomplete type}}
   int x;
 };
 const int test8 = __builtin_omp_required_simd_align(decltype(S5::x));
@@ -64,16 +64,16 @@ static_assert(__builtin_omp_required_simd_align(decltype(test14)) == 16, "foo");
 static_assert(__builtin_omp_required_simd_align(int[2]) == __builtin_omp_required_simd_align(int), ""); // ok
 
 namespace __builtin_omp_required_simd_align_array_expr {
-  alignas(32) extern int n[2];
-  static_assert(__builtin_omp_required_simd_align(decltype(n)) == 16, "");
+alignas(32) extern int n[2];
+static_assert(__builtin_omp_required_simd_align(decltype(n)) == 16, "");
 
-  template<int> struct S {
-      static int a[];
-    };
-  template<int N> int S<N>::a[N];
-  static_assert(__builtin_omp_required_simd_align(decltype(S<1>::a)) == __builtin_omp_required_simd_align(int), "");
-  static_assert(__builtin_omp_required_simd_align(decltype(S<1128>::a)) == __builtin_omp_required_simd_align(int), "");
-}
+template <int> struct S {
+  static int a[];
+};
+template <int N> int S<N>::a[N];
+static_assert(__builtin_omp_required_simd_align(decltype(S<1>::a)) == __builtin_omp_required_simd_align(int), "");
+static_assert(__builtin_omp_required_simd_align(decltype(S<1128>::a)) == __builtin_omp_required_simd_align(int), "");
+} // namespace __builtin_omp_required_simd_align_array_expr
 
 template <typename T> void n(T) {
   alignas(T) int T1;

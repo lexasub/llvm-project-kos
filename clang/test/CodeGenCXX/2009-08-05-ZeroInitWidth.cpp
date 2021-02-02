@@ -7,5 +7,4 @@ struct B {
   A a;
 };
 struct B b = {
-  {}
-};
+    {}};

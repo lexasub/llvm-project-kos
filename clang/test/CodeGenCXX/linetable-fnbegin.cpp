@@ -11,7 +11,6 @@
 // We shouldn't need a lexical block for this function.
 // CHECK: [[DBG]] = !DILocation(line: 23, column: 3, scope: [[SP]])
 
-
 # 1 "./template.h" 1
 template <typename T>
 class Foo {
@@ -23,8 +22,7 @@ template <typename T>
 int Foo<T>::bar() {
   return 23;
 }
-int main (int argc, const char * argv[])
-{
+int main(int argc, const char *argv[]) {
   Foo<int> f;
   return f.bar();
 }

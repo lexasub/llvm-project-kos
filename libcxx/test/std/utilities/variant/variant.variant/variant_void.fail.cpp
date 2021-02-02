@@ -13,7 +13,6 @@
 
 // template <class ...Types> class variant;
 
-
 #include <variant>
 #include <type_traits>
 #include <string>
@@ -23,12 +22,11 @@
 #include "variant_test_helpers.h"
 #include "test_convertible.h"
 
-int main(int, char**)
-{
-    // expected-error@variant:* 3 {{static_assert failed}}
-    std::variant<int, void> v; // expected-note {{requested here}}
-    std::variant<int, const void> v2; // expected-note {{requested here}}
-    std::variant<const volatile void, int> v3; // expected-note {{requested here}}
+int main(int, char**) {
+  // expected-error@variant:* 3 {{static_assert failed}}
+  std::variant<int, void> v;                 // expected-note {{requested here}}
+  std::variant<int, const void> v2;          // expected-note {{requested here}}
+  std::variant<const volatile void, int> v3; // expected-note {{requested here}}
 
   return 0;
 }

@@ -9,23 +9,23 @@
 const char *getModuleVersion(void);
 
 #ifdef FOO
-#  error Module should have been built without -DFOO
+#error Module should have been built without -DFOO
 #endif
 
 @interface Module
-+(const char *)version; // retrieve module version
-+alloc;
++ (const char *)version; // retrieve module version
++ alloc;
 @end
 
 #define MODULE_H_MACRO 1
 #__private_macro MODULE_H_MACRO
 
-#include <Module/Sub.h>
 #include <Module/Buried/Treasure.h>
+#include <Module/Sub.h>
 
 __asm("foo");
 
-typedef	struct __sFILE {
+typedef struct __sFILE {
   int _offset;
 } FILE;
 

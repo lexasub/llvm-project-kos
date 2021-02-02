@@ -77,7 +77,7 @@ void for_template_test(A *List, int Length, A Value) {
 // Verify define is resolved correctly when template is used.
 template <typename A>
 void for_template_define_test(A *List, int Length, A Value) {
-// CHECK: define {{.*}} @_Z24for_template_define_test
+  // CHECK: define {{.*}} @_Z24for_template_define_test
 
 #pragma unroll(UNROLLCOUNT)
   for (int i = 0; i < Length; i++) {

@@ -16,9 +16,9 @@
 #include "llvm/ADT/StringSet.h"
 #include <string>
 
-namespace clang{
-namespace tooling{
-namespace dependencies{
+namespace clang {
+namespace tooling {
+namespace dependencies {
 
 /// The full dependencies and module graph for a specific input.
 struct FullDependencies {

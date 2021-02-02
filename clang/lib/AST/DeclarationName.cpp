@@ -469,7 +469,8 @@ raw_ostream &clang::operator<<(raw_ostream &OS, DeclarationNameInfo DNInfo) {
   return OS;
 }
 
-void DeclarationNameInfo::printName(raw_ostream &OS, PrintingPolicy Policy) const {
+void DeclarationNameInfo::printName(raw_ostream &OS,
+                                    PrintingPolicy Policy) const {
   switch (Name.getNameKind()) {
   case DeclarationName::Identifier:
   case DeclarationName::ObjCZeroArgSelector:

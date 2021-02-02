@@ -41,11 +41,16 @@ T tmain(T argc, T *argv) {
   {
     a = 2;
   }
-#pragma omp parallel sections default(none), private(argc, b) firstprivate(argv) shared(d) if (parallel: argc > 0) num_threads(C) copyin(S < T > ::TS) proc_bind(master) reduction(+ : c) reduction(max : e) allocate(e)
+#pragma omp parallel sections default(none), private(argc, b) firstprivate(argv) shared(d) if (parallel                                                                                    \
+                                                                                               : argc > 0) num_threads(C) copyin(S <T>::TS) proc_bind(master) reduction(+                  \
+                                                                                                                                                                        : c) reduction(max \
+                                                                                                                                                                                       : e) allocate(e)
   {
     foo();
   }
-#pragma omp parallel sections allocate(b) if (C) num_threads(s) proc_bind(close) reduction(^ : e, f) reduction(&& : g) lastprivate(b, c)
+#pragma omp parallel sections allocate(b) if (C) num_threads(s) proc_bind(close) reduction(^                    \
+                                                                                           : e, f) reduction(&& \
+                                                                                                             : g) lastprivate(b, c)
   {
     foo();
 #pragma omp section
@@ -118,7 +123,8 @@ int main(int argc, char **argv) {
 #pragma omp threadprivate(a)
   Enum ee;
 // CHECK: Enum ee;
-#pragma omp parallel sections reduction(task,*:f)
+#pragma omp parallel sections reduction(task, * \
+                                        : f)
   // CHECK-NEXT: #pragma omp parallel sections reduction(task, *: f)
   {
     a = 2;
@@ -126,7 +132,9 @@ int main(int argc, char **argv) {
 // CHECK-NEXT: {
 // CHECK-NEXT: a = 2;
 // CHECK-NEXT: }
-#pragma omp parallel sections default(none), private(argc, b) firstprivate(argv) if (argc > 0) num_threads(ee) copyin(a) proc_bind(spread) reduction(| : c, d) reduction(* : e) lastprivate(argv)
+#pragma omp parallel sections default(none), private(argc, b) firstprivate(argv) if (argc > 0) num_threads(ee) copyin(a) proc_bind(spread) reduction(|                   \
+                                                                                                                                                     : c, d) reduction(* \
+                                                                                                                                                                       : e) lastprivate(argv)
   // CHECK-NEXT: #pragma omp parallel sections default(none) private(argc,b) firstprivate(argv) if(argc > 0) num_threads(ee) copyin(a) proc_bind(spread) reduction(|: c,d) reduction(*: e) lastprivate(argv)
   {
     foo();
@@ -145,7 +153,7 @@ int main(int argc, char **argv) {
   return tmain<int, 5>(b, &b) + tmain<long, 1>(x, &x);
 }
 
-template<typename T>
+template <typename T>
 T S<T>::TS = 0;
 
 #endif

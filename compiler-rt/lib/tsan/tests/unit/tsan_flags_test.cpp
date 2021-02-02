@@ -10,9 +10,11 @@
 //
 //===----------------------------------------------------------------------===//
 #include "tsan_flags.h"
-#include "tsan_rtl.h"
-#include "gtest/gtest.h"
+
 #include <string>
+
+#include "gtest/gtest.h"
+#include "tsan_rtl.h"
 
 namespace __tsan {
 
@@ -32,54 +34,54 @@ TEST(Flags, DefaultValues) {
 }
 
 static const char *options1 =
-  " enable_annotations=0"
-  " suppress_equal_stacks=0"
-  " suppress_equal_addresses=0"
-  " report_bugs=0"
-  " report_thread_leaks=0"
-  " report_destroy_locked=0"
-  " report_mutex_bugs=0"
-  " report_signal_unsafe=0"
-  " report_atomic_races=0"
-  " force_seq_cst_atomics=0"
-  " print_benign=0"
-  " halt_on_error=0"
-  " atexit_sleep_ms=222"
-  " profile_memory=qqq"
-  " flush_memory_ms=444"
-  " flush_symbolizer_ms=555"
-  " memory_limit_mb=666"
-  " stop_on_start=0"
-  " running_on_valgrind=0"
-  " history_size=5"
-  " io_sync=1"
-  " die_after_fork=true"
-  "";
+    " enable_annotations=0"
+    " suppress_equal_stacks=0"
+    " suppress_equal_addresses=0"
+    " report_bugs=0"
+    " report_thread_leaks=0"
+    " report_destroy_locked=0"
+    " report_mutex_bugs=0"
+    " report_signal_unsafe=0"
+    " report_atomic_races=0"
+    " force_seq_cst_atomics=0"
+    " print_benign=0"
+    " halt_on_error=0"
+    " atexit_sleep_ms=222"
+    " profile_memory=qqq"
+    " flush_memory_ms=444"
+    " flush_symbolizer_ms=555"
+    " memory_limit_mb=666"
+    " stop_on_start=0"
+    " running_on_valgrind=0"
+    " history_size=5"
+    " io_sync=1"
+    " die_after_fork=true"
+    "";
 
 static const char *options2 =
-  " enable_annotations=true"
-  " suppress_equal_stacks=true"
-  " suppress_equal_addresses=true"
-  " report_bugs=true"
-  " report_thread_leaks=true"
-  " report_destroy_locked=true"
-  " report_mutex_bugs=true"
-  " report_signal_unsafe=true"
-  " report_atomic_races=true"
-  " force_seq_cst_atomics=true"
-  " print_benign=true"
-  " halt_on_error=true"
-  " atexit_sleep_ms=123"
-  " profile_memory=bbbbb"
-  " flush_memory_ms=234"
-  " flush_symbolizer_ms=345"
-  " memory_limit_mb=456"
-  " stop_on_start=true"
-  " running_on_valgrind=true"
-  " history_size=6"
-  " io_sync=2"
-  " die_after_fork=false"
-  "";
+    " enable_annotations=true"
+    " suppress_equal_stacks=true"
+    " suppress_equal_addresses=true"
+    " report_bugs=true"
+    " report_thread_leaks=true"
+    " report_destroy_locked=true"
+    " report_mutex_bugs=true"
+    " report_signal_unsafe=true"
+    " report_atomic_races=true"
+    " force_seq_cst_atomics=true"
+    " print_benign=true"
+    " halt_on_error=true"
+    " atexit_sleep_ms=123"
+    " profile_memory=bbbbb"
+    " flush_memory_ms=234"
+    " flush_symbolizer_ms=345"
+    " memory_limit_mb=456"
+    " stop_on_start=true"
+    " running_on_valgrind=true"
+    " history_size=6"
+    " io_sync=2"
+    " die_after_fork=false"
+    "";
 
 void VerifyOptions1(Flags *f) {
   EXPECT_EQ(f->enable_annotations, 0);
@@ -132,9 +134,7 @@ void VerifyOptions2(Flags *f) {
 }
 
 static const char *test_default_options;
-extern "C" const char *__tsan_default_options() {
-  return test_default_options;
-}
+extern "C" const char *__tsan_default_options() { return test_default_options; }
 
 TEST(Flags, ParseDefaultOptions) {
   Flags f;

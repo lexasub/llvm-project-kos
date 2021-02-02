@@ -63,9 +63,7 @@ struct ScarinessScoreBase {
 };
 
 struct ScarinessScore : ScarinessScoreBase {
-  ScarinessScore() {
-    Clear();
-  }
+  ScarinessScore() { Clear(); }
 };
 
 }  // namespace __asan

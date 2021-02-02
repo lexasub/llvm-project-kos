@@ -17,7 +17,7 @@
 using namespace llvm;
 
 namespace llvm {
-  void initializeTestPassPass(PassRegistry &);
+void initializeTestPassPass(PassRegistry &);
 }
 
 namespace {
@@ -44,14 +44,16 @@ std::unique_ptr<LLVMTargetMachine> createTargetMachine() {
     return nullptr;
 
   TargetOptions Options;
-  return std::unique_ptr<LLVMTargetMachine>(static_cast<LLVMTargetMachine*>(
+  return std::unique_ptr<LLVMTargetMachine>(static_cast<LLVMTargetMachine *>(
       T->createTargetMachine("AMDGPU", "gfx900", "", Options, None, None,
                              CodeGenOpt::Aggressive)));
 }
 
 std::unique_ptr<Module> parseMIR(LLVMContext &Context,
-    legacy::PassManagerBase &PM, std::unique_ptr<MIRParser> &MIR,
-    const LLVMTargetMachine &TM, StringRef MIRCode, const char *FuncName) {
+                                 legacy::PassManagerBase &PM,
+                                 std::unique_ptr<MIRParser> &MIR,
+                                 const LLVMTargetMachine &TM, StringRef MIRCode,
+                                 const char *FuncName) {
   SMDiagnostic Diagnostic;
   std::unique_ptr<MemoryBuffer> MBuffer = MemoryBuffer::getMemBuffer(MIRCode);
   MIR = createMIRParser(std::move(MBuffer), Context);
@@ -72,7 +74,8 @@ std::unique_ptr<Module> parseMIR(LLVMContext &Context,
   return M;
 }
 
-typedef std::function<void(MachineFunction&,LiveIntervals&)> LiveIntervalTest;
+typedef std::function<void(MachineFunction &, LiveIntervals &)>
+    LiveIntervalTest;
 
 struct TestPass : public MachineFunctionPass {
   static char ID;
@@ -97,6 +100,7 @@ struct TestPass : public MachineFunctionPass {
     AU.addPreserved<LiveIntervals>();
     MachineFunctionPass::getAnalysisUsage(AU);
   }
+
 private:
   LiveIntervalTest T;
 };
@@ -180,10 +184,11 @@ registers:
   - { id: 0, class: sreg_64 }
 body: |
   bb.0:
-)MIR") + Twine(MIRFunc) + Twine("...\n")).toNullTerminatedStringRef(S);
+)MIR") + Twine(MIRFunc) + Twine("...\n"))
+                            .toNullTerminatedStringRef(S);
   std::unique_ptr<MIRParser> MIR;
-  std::unique_ptr<Module> M = parseMIR(Context, PM, MIR, *TM, MIRString,
-                                       "func");
+  std::unique_ptr<Module> M =
+      parseMIR(Context, PM, MIR, *TM, MIRString, "func");
   ASSERT_TRUE(M);
 
   PM.add(new TestPass(T));
@@ -203,9 +208,10 @@ TEST(LiveIntervalTest, MoveUpDef) {
     S_NOP 0
     early-clobber %0 = IMPLICIT_DEF
     S_NOP 0, implicit %0
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testHandleMove(MF, LIS, 2, 1);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testHandleMove(MF, LIS, 2, 1);
+                   });
 }
 
 TEST(LiveIntervalTest, MoveUpRedef) {
@@ -214,9 +220,10 @@ TEST(LiveIntervalTest, MoveUpRedef) {
     S_NOP 0
     %0 = IMPLICIT_DEF implicit %0(tied-def 0)
     S_NOP 0, implicit %0
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testHandleMove(MF, LIS, 2, 1);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testHandleMove(MF, LIS, 2, 1);
+                   });
 }
 
 TEST(LiveIntervalTest, MoveUpEarlyDef) {
@@ -225,9 +232,10 @@ TEST(LiveIntervalTest, MoveUpEarlyDef) {
     S_NOP 0
     early-clobber %0 = IMPLICIT_DEF
     S_NOP 0, implicit %0
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testHandleMove(MF, LIS, 2, 1);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testHandleMove(MF, LIS, 2, 1);
+                   });
 }
 
 TEST(LiveIntervalTest, MoveUpEarlyRedef) {
@@ -236,9 +244,10 @@ TEST(LiveIntervalTest, MoveUpEarlyRedef) {
     S_NOP 0
     early-clobber %0 = IMPLICIT_DEF implicit %0(tied-def 0)
     S_NOP 0, implicit %0
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testHandleMove(MF, LIS, 2, 1);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testHandleMove(MF, LIS, 2, 1);
+                   });
 }
 
 TEST(LiveIntervalTest, MoveUpKill) {
@@ -246,9 +255,10 @@ TEST(LiveIntervalTest, MoveUpKill) {
     %0 = IMPLICIT_DEF
     S_NOP 0
     S_NOP 0, implicit %0
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testHandleMove(MF, LIS, 2, 1);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testHandleMove(MF, LIS, 2, 1);
+                   });
 }
 
 TEST(LiveIntervalTest, MoveUpKillFollowing) {
@@ -257,9 +267,10 @@ TEST(LiveIntervalTest, MoveUpKillFollowing) {
     S_NOP 0
     S_NOP 0, implicit %0
     S_NOP 0, implicit %0
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testHandleMove(MF, LIS, 2, 1);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testHandleMove(MF, LIS, 2, 1);
+                   });
 }
 
 // TODO: Construct a situation where we have intervals following a hole
@@ -272,9 +283,10 @@ TEST(LiveIntervalTest, MoveDownDef) {
     early-clobber %0 = IMPLICIT_DEF
     S_NOP 0
     S_NOP 0, implicit %0
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testHandleMove(MF, LIS, 1, 2);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testHandleMove(MF, LIS, 1, 2);
+                   });
 }
 
 TEST(LiveIntervalTest, MoveDownRedef) {
@@ -283,9 +295,10 @@ TEST(LiveIntervalTest, MoveDownRedef) {
     %0 = IMPLICIT_DEF implicit %0(tied-def 0)
     S_NOP 0
     S_NOP 0, implicit %0
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testHandleMove(MF, LIS, 1, 2);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testHandleMove(MF, LIS, 1, 2);
+                   });
 }
 
 TEST(LiveIntervalTest, MoveDownEarlyDef) {
@@ -294,9 +307,10 @@ TEST(LiveIntervalTest, MoveDownEarlyDef) {
     early-clobber %0 = IMPLICIT_DEF
     S_NOP 0
     S_NOP 0, implicit %0
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testHandleMove(MF, LIS, 1, 2);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testHandleMove(MF, LIS, 1, 2);
+                   });
 }
 
 TEST(LiveIntervalTest, MoveDownEarlyRedef) {
@@ -305,9 +319,10 @@ TEST(LiveIntervalTest, MoveDownEarlyRedef) {
     early-clobber %0 = IMPLICIT_DEF implicit %0(tied-def 0)
     S_NOP 0
     S_NOP 0, implicit %0
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testHandleMove(MF, LIS, 1, 2);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testHandleMove(MF, LIS, 1, 2);
+                   });
 }
 
 TEST(LiveIntervalTest, MoveDownKill) {
@@ -315,9 +330,10 @@ TEST(LiveIntervalTest, MoveDownKill) {
     %0 = IMPLICIT_DEF
     S_NOP 0, implicit %0
     S_NOP 0
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testHandleMove(MF, LIS, 1, 2);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testHandleMove(MF, LIS, 1, 2);
+                   });
 }
 
 TEST(LiveIntervalTest, MoveDownKillFollowing) {
@@ -326,9 +342,10 @@ TEST(LiveIntervalTest, MoveDownKillFollowing) {
     S_NOP 0
     S_NOP 0, implicit %0
     S_NOP 0, implicit %0
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testHandleMove(MF, LIS, 1, 2);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testHandleMove(MF, LIS, 1, 2);
+                   });
 }
 
 TEST(LiveIntervalTest, MoveUndefUse) {
@@ -337,9 +354,10 @@ TEST(LiveIntervalTest, MoveUndefUse) {
     S_NOP 0, implicit undef %0
     S_NOP 0, implicit %0
     S_NOP 0
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testHandleMove(MF, LIS, 1, 3);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testHandleMove(MF, LIS, 1, 3);
+                   });
 }
 
 TEST(LiveIntervalTest, MoveUpValNos) {
@@ -359,9 +377,10 @@ TEST(LiveIntervalTest, MoveUpValNos) {
     %0 = IMPLICIT_DEF implicit %0(tied-def 0)
     %0 = IMPLICIT_DEF implicit %0(tied-def 0)
     S_BRANCH %bb.2
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testHandleMove(MF, LIS, 2, 0, 2);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testHandleMove(MF, LIS, 2, 0, 2);
+                   });
 }
 
 TEST(LiveIntervalTest, MoveOverUndefUse0) {
@@ -371,9 +390,10 @@ TEST(LiveIntervalTest, MoveOverUndefUse0) {
     S_NOP 0
     S_NOP 0, implicit undef %0
     %0 = IMPLICIT_DEF implicit %0(tied-def 0)
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testHandleMove(MF, LIS, 3, 1);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testHandleMove(MF, LIS, 3, 1);
+                   });
 }
 
 TEST(LiveIntervalTest, MoveOverUndefUse1) {
@@ -383,9 +403,10 @@ TEST(LiveIntervalTest, MoveOverUndefUse1) {
     S_NOP 0
     S_NOP 0, implicit undef $sgpr0
     $sgpr0 = IMPLICIT_DEF implicit $sgpr0(tied-def 0)
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testHandleMove(MF, LIS, 3, 1);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testHandleMove(MF, LIS, 3, 1);
+                   });
 }
 
 TEST(LiveIntervalTest, SubRegMoveDown) {
@@ -405,12 +426,13 @@ TEST(LiveIntervalTest, SubRegMoveDown) {
     %0.sub1 = IMPLICIT_DEF
   bb.1:
     S_NOP 0, implicit %0
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    // Scheduler behaviour: Clear def,read-undef flag and move.
-    MachineInstr &MI = getMI(MF, 3, /*BlockNum=*/1);
-    MI.getOperand(0).setIsUndef(false);
-    testHandleMove(MF, LIS, 1, 4, /*BlockNum=*/1);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     // Scheduler behaviour: Clear def,read-undef flag and move.
+                     MachineInstr &MI = getMI(MF, 3, /*BlockNum=*/1);
+                     MI.getOperand(0).setIsUndef(false);
+                     testHandleMove(MF, LIS, 1, 4, /*BlockNum=*/1);
+                   });
 }
 
 TEST(LiveIntervalTest, SubRegMoveUp) {
@@ -426,9 +448,10 @@ TEST(LiveIntervalTest, SubRegMoveUp) {
     S_NOP 0, implicit %0.sub1
   bb.2:
     S_NOP 0, implicit %0.sub1
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testHandleMove(MF, LIS, 1, 0);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testHandleMove(MF, LIS, 1, 0);
+                   });
 }
 
 TEST(LiveIntervalTest, DeadSubRegMoveUp) {
@@ -451,9 +474,10 @@ TEST(LiveIntervalTest, DeadSubRegMoveUp) {
     undef %124.sub1:vreg_128 = nofpexcept V_MAD_F32_e64 0, %57, 0, undef %70:vgpr_32, 0, %125.sub1, 0, 0, implicit $mode, implicit $exec
     %124.sub0:vreg_128 = nofpexcept V_MAD_F32_e64 0, %54, 0, undef %73:vgpr_32, 0, %125.sub0, 0, 0, implicit $mode, implicit $exec
     dead undef %125.sub3:vreg_128 = nofpexcept V_MAC_F32_e32 %63, undef %76:vgpr_32, %125.sub3, implicit $mode, implicit $exec
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testHandleMove(MF, LIS, 15, 12);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testHandleMove(MF, LIS, 15, 12);
+                   });
 }
 
 TEST(LiveIntervalTest, EarlyClobberSubRegMoveUp) {
@@ -466,9 +490,10 @@ TEST(LiveIntervalTest, EarlyClobberSubRegMoveUp) {
     %5:sreg_32 = S_FLBIT_I32_B32 %9.sub0:sreg_64
     early-clobber %9.sub1:sreg_64 = WWM %6:sreg_32, implicit $exec
     %7:sreg_32 = S_FLBIT_I32_B32 %9.sub1:sreg_64
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testHandleMove(MF, LIS, 4, 3);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testHandleMove(MF, LIS, 4, 3);
+                   });
 }
 
 TEST(LiveIntervalTest, TestMoveSubRegDefAcrossUseDef) {
@@ -483,12 +508,14 @@ TEST(LiveIntervalTest, TestMoveSubRegDefAcrossUseDef) {
     S_NOP 0, implicit %1.sub1
     S_BRANCH %bb.1
 
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-     MachineInstr &UndefSubregDef = getMI(MF, 2, 1);
-     // The scheduler clears undef from subregister defs before moving
-     UndefSubregDef.getOperand(0).setIsUndef(false);
-     testHandleMove(MF, LIS, 3, 1, 1);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     MachineInstr &UndefSubregDef = getMI(MF, 2, 1);
+                     // The scheduler clears undef from subregister defs before
+                     // moving
+                     UndefSubregDef.getOperand(0).setIsUndef(false);
+                     testHandleMove(MF, LIS, 3, 1, 1);
+                   });
 }
 
 TEST(LiveIntervalTest, TestMoveSubRegDefAcrossUseDefMulti) {
@@ -504,12 +531,14 @@ TEST(LiveIntervalTest, TestMoveSubRegDefAcrossUseDefMulti) {
     S_NOP 0, implicit %1.sub1, implicit %1.sub2
     S_BRANCH %bb.1
 
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-     MachineInstr &UndefSubregDef = getMI(MF, 2, 1);
-     // The scheduler clears undef from subregister defs before moving
-     UndefSubregDef.getOperand(0).setIsUndef(false);
-     testHandleMove(MF, LIS, 4, 1, 1);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     MachineInstr &UndefSubregDef = getMI(MF, 2, 1);
+                     // The scheduler clears undef from subregister defs before
+                     // moving
+                     UndefSubregDef.getOperand(0).setIsUndef(false);
+                     testHandleMove(MF, LIS, 4, 1, 1);
+                   });
 }
 
 TEST(LiveIntervalTest, TestMoveSubRegUseAcrossMainRangeHole) {
@@ -524,12 +553,13 @@ TEST(LiveIntervalTest, TestMoveSubRegUseAcrossMainRangeHole) {
     S_CBRANCH_SCC1 %bb.1, implicit undef $scc
     S_BRANCH %bb.2
   bb.2:
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    MachineInstr &MI = getMI(MF, 3, /*BlockNum=*/1);
-    MI.getOperand(0).setIsUndef(false);
-    testHandleMove(MF, LIS, 4, 3, 1);
-    testHandleMove(MF, LIS, 1, 4, 1);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     MachineInstr &MI = getMI(MF, 3, /*BlockNum=*/1);
+                     MI.getOperand(0).setIsUndef(false);
+                     testHandleMove(MF, LIS, 4, 3, 1);
+                     testHandleMove(MF, LIS, 1, 4, 1);
+                   });
 }
 
 TEST(LiveIntervalTest, BundleUse) {
@@ -538,9 +568,10 @@ TEST(LiveIntervalTest, BundleUse) {
     S_NOP 0
     S_NOP 0, implicit %0
     S_NOP 0
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testHandleMoveIntoNewBundle(MF, LIS, 1, 2);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testHandleMoveIntoNewBundle(MF, LIS, 1, 2);
+                   });
 }
 
 TEST(LiveIntervalTest, BundleDef) {
@@ -549,9 +580,10 @@ TEST(LiveIntervalTest, BundleDef) {
     S_NOP 0
     S_NOP 0, implicit %0
     S_NOP 0
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testHandleMoveIntoNewBundle(MF, LIS, 0, 1);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testHandleMoveIntoNewBundle(MF, LIS, 0, 1);
+                   });
 }
 
 TEST(LiveIntervalTest, BundleRedef) {
@@ -560,9 +592,10 @@ TEST(LiveIntervalTest, BundleRedef) {
     S_NOP 0
     %0 = IMPLICIT_DEF implicit %0(tied-def 0)
     S_NOP 0, implicit %0
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testHandleMoveIntoNewBundle(MF, LIS, 1, 2);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testHandleMoveIntoNewBundle(MF, LIS, 1, 2);
+                   });
 }
 
 TEST(LiveIntervalTest, BundleInternalUse) {
@@ -571,9 +604,10 @@ TEST(LiveIntervalTest, BundleInternalUse) {
     S_NOP 0
     S_NOP 0, implicit %0
     S_NOP 0
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testHandleMoveIntoNewBundle(MF, LIS, 0, 2);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testHandleMoveIntoNewBundle(MF, LIS, 0, 2);
+                   });
 }
 
 TEST(LiveIntervalTest, BundleUndefUse) {
@@ -582,9 +616,10 @@ TEST(LiveIntervalTest, BundleUndefUse) {
     S_NOP 0
     S_NOP 0, implicit undef %0
     S_NOP 0
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testHandleMoveIntoNewBundle(MF, LIS, 1, 2);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testHandleMoveIntoNewBundle(MF, LIS, 1, 2);
+                   });
 }
 
 TEST(LiveIntervalTest, BundleSubRegUse) {
@@ -599,9 +634,10 @@ TEST(LiveIntervalTest, BundleSubRegUse) {
     S_NOP 0, implicit %0.sub1
   bb.2:
     S_NOP 0, implicit %0.sub1
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testHandleMoveIntoNewBundle(MF, LIS, 0, 1, 1);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testHandleMoveIntoNewBundle(MF, LIS, 0, 1, 1);
+                   });
 }
 
 TEST(LiveIntervalTest, BundleSubRegDef) {
@@ -616,9 +652,10 @@ TEST(LiveIntervalTest, BundleSubRegDef) {
     S_NOP 0, implicit %0.sub1
   bb.2:
     S_NOP 0, implicit %0.sub1
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testHandleMoveIntoNewBundle(MF, LIS, 0, 1, 0);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testHandleMoveIntoNewBundle(MF, LIS, 0, 1, 0);
+                   });
 }
 
 TEST(LiveIntervalTest, SplitAtOneInstruction) {
@@ -628,9 +665,10 @@ TEST(LiveIntervalTest, SplitAtOneInstruction) {
     S_BRANCH %bb.1
   bb.1:
     S_NOP 0
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testSplitAt(MF, LIS, 1, 0);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testSplitAt(MF, LIS, 1, 0);
+                   });
 }
 
 TEST(LiveIntervalTest, SplitAtMultiInstruction) {
@@ -644,9 +682,10 @@ TEST(LiveIntervalTest, SplitAtMultiInstruction) {
     S_BRANCH %bb.1
   bb.1:
     S_NOP 0
-)MIR", [](MachineFunction &MF, LiveIntervals &LIS) {
-    testSplitAt(MF, LIS, 0, 0);
-  });
+)MIR",
+                   [](MachineFunction &MF, LiveIntervals &LIS) {
+                     testSplitAt(MF, LIS, 0, 0);
+                   });
 }
 
 int main(int argc, char **argv) {

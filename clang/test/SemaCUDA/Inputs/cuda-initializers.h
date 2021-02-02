@@ -11,18 +11,18 @@ struct T {
 // empty constructor
 struct EC {
   int ec;
-  __device__ EC() {}     // -- allowed
-  __device__ EC(int) {}  // -- not allowed
+  __device__ EC() {}    // -- allowed
+  __device__ EC(int) {} // -- not allowed
 };
 
 // empty destructor
 struct ED {
-  __device__ ~ED() {}     // -- allowed
+  __device__ ~ED() {} // -- allowed
 };
 
 struct ECD {
-  __device__ ECD() {}     // -- allowed
-  __device__ ~ECD() {}    // -- allowed
+  __device__ ECD() {}  // -- allowed
+  __device__ ~ECD() {} // -- allowed
 };
 
 // empty templated constructor -- allowed with no arguments
@@ -109,7 +109,6 @@ struct T_FA_T {
   T t[2];
 };
 
-
 // Calling empty base class initializer is OK
 struct EC_I_EC : EC {
   __device__ EC_I_EC() : EC() {}
@@ -132,7 +131,6 @@ struct T_F_NEC {
 struct T_FA_NEC {
   NEC nec[2];
 };
-
 
 // Inherited from or incapsulated class with non-empty desstructor --
 // not allowed

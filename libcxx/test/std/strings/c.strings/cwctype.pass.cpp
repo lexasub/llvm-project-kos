@@ -13,7 +13,6 @@
 
 #include "test_macros.h"
 
-
 #ifndef WEOF
 #error WEOF not defined
 #endif
@@ -90,29 +89,28 @@
 #error wctrans defined
 #endif
 
-int main(int, char**)
-{
-    std::wint_t w = 0;
-    ASSERT_SAME_TYPE(int, decltype(std::iswalnum(w)));
-    ASSERT_SAME_TYPE(int, decltype(std::iswalpha(w)));
-    ASSERT_SAME_TYPE(int, decltype(std::iswblank(w)));
-    ASSERT_SAME_TYPE(int, decltype(std::iswcntrl(w)));
-    ASSERT_SAME_TYPE(int, decltype(std::iswdigit(w)));
-    ASSERT_SAME_TYPE(int, decltype(std::iswgraph(w)));
-    ASSERT_SAME_TYPE(int, decltype(std::iswlower(w)));
-    ASSERT_SAME_TYPE(int, decltype(std::iswprint(w)));
-    ASSERT_SAME_TYPE(int, decltype(std::iswpunct(w)));
-    ASSERT_SAME_TYPE(int, decltype(std::iswspace(w)));
-    ASSERT_SAME_TYPE(int, decltype(std::iswupper(w)));
-    ASSERT_SAME_TYPE(int, decltype(std::iswxdigit(w)));
+int main(int, char**) {
+  std::wint_t w = 0;
+  ASSERT_SAME_TYPE(int, decltype(std::iswalnum(w)));
+  ASSERT_SAME_TYPE(int, decltype(std::iswalpha(w)));
+  ASSERT_SAME_TYPE(int, decltype(std::iswblank(w)));
+  ASSERT_SAME_TYPE(int, decltype(std::iswcntrl(w)));
+  ASSERT_SAME_TYPE(int, decltype(std::iswdigit(w)));
+  ASSERT_SAME_TYPE(int, decltype(std::iswgraph(w)));
+  ASSERT_SAME_TYPE(int, decltype(std::iswlower(w)));
+  ASSERT_SAME_TYPE(int, decltype(std::iswprint(w)));
+  ASSERT_SAME_TYPE(int, decltype(std::iswpunct(w)));
+  ASSERT_SAME_TYPE(int, decltype(std::iswspace(w)));
+  ASSERT_SAME_TYPE(int, decltype(std::iswupper(w)));
+  ASSERT_SAME_TYPE(int, decltype(std::iswxdigit(w)));
 
-    ASSERT_SAME_TYPE(int, decltype(std::iswctype(w, std::wctype_t())));
+  ASSERT_SAME_TYPE(int, decltype(std::iswctype(w, std::wctype_t())));
 
-    ASSERT_SAME_TYPE(std::wctype_t,  decltype(std::wctype("")));
-    ASSERT_SAME_TYPE(std::wint_t,    decltype(std::towlower(w)));
-    ASSERT_SAME_TYPE(std::wint_t,    decltype(std::towupper(w)));
-    ASSERT_SAME_TYPE(std::wint_t,    decltype(std::towctrans(w, std::wctrans_t())));
-    ASSERT_SAME_TYPE(std::wctrans_t, decltype(std::wctrans("")));
+  ASSERT_SAME_TYPE(std::wctype_t, decltype(std::wctype("")));
+  ASSERT_SAME_TYPE(std::wint_t, decltype(std::towlower(w)));
+  ASSERT_SAME_TYPE(std::wint_t, decltype(std::towupper(w)));
+  ASSERT_SAME_TYPE(std::wint_t, decltype(std::towctrans(w, std::wctrans_t())));
+  ASSERT_SAME_TYPE(std::wctrans_t, decltype(std::wctrans("")));
 
   return 0;
 }

@@ -11,8 +11,8 @@
 #ifndef HEADER
 #define HEADER
 
-template<int N> struct T {
-    static_assert(N == 2, "N is not 2!");
+template <int N> struct T {
+  static_assert(N == 2, "N is not 2!");
 };
 
 #else

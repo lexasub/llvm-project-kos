@@ -221,10 +221,8 @@ class LLLazyJIT : public LLJIT {
   template <typename, typename, typename> friend class LLJITBuilderSetters;
 
 public:
-
   /// Sets the partition function.
-  void
-  setPartitionFunction(CompileOnDemandLayer::PartitionFunction Partition) {
+  void setPartitionFunction(CompileOnDemandLayer::PartitionFunction Partition) {
     CODLayer->setPartitionFunction(std::move(Partition));
   }
 
@@ -240,7 +238,6 @@ public:
   }
 
 private:
-
   // Create a single-threaded LLLazyJIT instance.
   LLLazyJIT(LLLazyJITBuilderState &S, Error &Err);
 
@@ -276,7 +273,6 @@ public:
 template <typename JITType, typename SetterImpl, typename State>
 class LLJITBuilderSetters {
 public:
-
   /// Set an ExecutionSession for this instance.
   SetterImpl &setExecutionSession(std::unique_ptr<ExecutionSession> ES) {
     impl().ES = std::move(ES);

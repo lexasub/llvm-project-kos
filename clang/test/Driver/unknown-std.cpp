@@ -23,4 +23,3 @@
 
 // Make sure that no other output is present.
 // CHECK-NOT: {{^.+$}}
-

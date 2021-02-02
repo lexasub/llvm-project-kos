@@ -21,14 +21,14 @@
 #include "test_macros.h"
 
 int main(int, char**) {
-    typedef int T;
-    typedef std::unordered_multiset<T> C;
-    C c(1);
-    C::iterator i = c.begin();
-    ++i;
-    assert(i == c.end());
-    ++i;
-    assert(false);
+  typedef int T;
+  typedef std::unordered_multiset<T> C;
+  C c(1);
+  C::iterator i = c.begin();
+  ++i;
+  assert(i == c.end());
+  ++i;
+  assert(false);
 
-    return 0;
+  return 0;
 }

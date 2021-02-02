@@ -40,7 +40,7 @@ public:
   virtual void emitInst(uint32_t Inst);
 
   /// Callback used to implement the .variant_pcs directive.
-  virtual void emitDirectiveVariantPCS(MCSymbol *Symbol) {};
+  virtual void emitDirectiveVariantPCS(MCSymbol *Symbol){};
 
   virtual void EmitARM64WinCFIAllocStack(unsigned Size) {}
   virtual void EmitARM64WinCFISaveR19R20X(int Offset) {}
@@ -89,9 +89,10 @@ private:
 
   // Symbol of the current epilog for which we are processing SEH directives.
   MCSymbol *CurrentEpilog = nullptr;
+
 public:
   AArch64TargetWinCOFFStreamer(llvm::MCStreamer &S)
-    : AArch64TargetStreamer(S) {}
+      : AArch64TargetStreamer(S) {}
 
   // The unwind codes on ARM64 Windows are documented at
   // https://docs.microsoft.com/en-us/cpp/build/arm64-exception-handling
@@ -124,8 +125,8 @@ private:
   void EmitARM64WinUnwindCode(unsigned UnwindCode, int Reg, int Offset);
 };
 
-MCTargetStreamer *
-createAArch64ObjectTargetStreamer(MCStreamer &S, const MCSubtargetInfo &STI);
+MCTargetStreamer *createAArch64ObjectTargetStreamer(MCStreamer &S,
+                                                    const MCSubtargetInfo &STI);
 
 } // end namespace llvm
 

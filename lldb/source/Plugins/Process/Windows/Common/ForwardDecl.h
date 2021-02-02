@@ -36,6 +36,6 @@ typedef std::shared_ptr<IDebugDelegate> DebugDelegateSP;
 typedef std::shared_ptr<DebuggerThread> DebuggerThreadSP;
 typedef std::shared_ptr<ExceptionRecord> ExceptionRecordSP;
 typedef std::unique_ptr<ExceptionRecord> ExceptionRecordUP;
-}
+} // namespace lldb_private
 
 #endif

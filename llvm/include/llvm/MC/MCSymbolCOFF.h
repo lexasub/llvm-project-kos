@@ -30,12 +30,8 @@ public:
   MCSymbolCOFF(const StringMapEntry<bool> *Name, bool isTemporary)
       : MCSymbol(SymbolKindCOFF, Name, isTemporary) {}
 
-  uint16_t getType() const {
-    return Type;
-  }
-  void setType(uint16_t Ty) const {
-    Type = Ty;
-  }
+  uint16_t getType() const { return Type; }
+  void setType(uint16_t Ty) const { Type = Ty; }
 
   uint16_t getClass() const {
     return (getFlags() & SF_ClassMask) >> SF_ClassShift;
@@ -44,19 +40,13 @@ public:
     modifyFlags(StorageClass << SF_ClassShift, SF_ClassMask);
   }
 
-  bool isWeakExternal() const {
-    return getFlags() & SF_WeakExternal;
-  }
+  bool isWeakExternal() const { return getFlags() & SF_WeakExternal; }
   void setIsWeakExternal() const {
     modifyFlags(SF_WeakExternal, SF_WeakExternal);
   }
 
-  bool isSafeSEH() const {
-    return getFlags() & SF_SafeSEH;
-  }
-  void setIsSafeSEH() const {
-    modifyFlags(SF_SafeSEH, SF_SafeSEH);
-  }
+  bool isSafeSEH() const { return getFlags() & SF_SafeSEH; }
+  void setIsSafeSEH() const { modifyFlags(SF_SafeSEH, SF_SafeSEH); }
 
   static bool classof(const MCSymbol *S) { return S->isCOFF(); }
 };

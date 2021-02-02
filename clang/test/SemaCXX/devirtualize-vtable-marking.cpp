@@ -16,7 +16,7 @@ struct A {
 };
 struct B : A {
   B();
-  virtual void m() { }
+  virtual void m() {}
   virtual void m2() { static_cast<A *>(this)->m(); }
   OwnPtr<Incomplete> m_sqlError;
 };
@@ -28,7 +28,7 @@ void f() {
   b->m();
   delete b;
 }
-}
+} // namespace use_vtable_for_vcall
 
 namespace dont_mark_qualified_vcall {
 struct Incomplete;
@@ -47,4 +47,4 @@ struct B : A {
 B *f() {
   return new B();
 }
-}
+} // namespace dont_mark_qualified_vcall

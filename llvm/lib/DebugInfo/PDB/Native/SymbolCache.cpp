@@ -629,5 +629,3 @@ SymbolCache::getOrCreateSourceFile(const FileChecksumEntry &Checksums) const {
   FileNameOffsetToId[Checksums.FileNameOffset] = Id;
   return Id;
 }
-
-

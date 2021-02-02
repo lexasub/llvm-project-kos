@@ -18,27 +18,27 @@
 
 template <std::size_t N>
 void test_test() {
-    std::vector<std::bitset<N> > const cases = get_test_cases<N>();
-    for (std::size_t c = 0; c != cases.size(); ++c) {
-        std::bitset<N> const v = cases[c];
-        if (v.size() > 0) {
-            std::size_t middle = v.size() / 2;
-            bool b = v.test(middle);
-            assert(b == v[middle]);
-        }
+  std::vector<std::bitset<N> > const cases = get_test_cases<N>();
+  for (std::size_t c = 0; c != cases.size(); ++c) {
+    std::bitset<N> const v = cases[c];
+    if (v.size() > 0) {
+      std::size_t middle = v.size() / 2;
+      bool b = v.test(middle);
+      assert(b == v[middle]);
     }
+  }
 }
 
 int main(int, char**) {
-    test_test<0>();
-    test_test<1>();
-    test_test<31>();
-    test_test<32>();
-    test_test<33>();
-    test_test<63>();
-    test_test<64>();
-    test_test<65>();
-    test_test<1000>();
+  test_test<0>();
+  test_test<1>();
+  test_test<31>();
+  test_test<32>();
+  test_test<33>();
+  test_test<63>();
+  test_test<64>();
+  test_test<65>();
+  test_test<1000>();
 
-    return 0;
+  return 0;
 }

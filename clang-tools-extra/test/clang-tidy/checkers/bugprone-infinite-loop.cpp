@@ -4,7 +4,7 @@ void simple_infinite_loop1() {
   int i = 0;
   int j = 0;
   while (i < 10) {
-  // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: this loop is infinite; none of its condition variables (i) are updated in the loop body [bugprone-infinite-loop]
+    // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: this loop is infinite; none of its condition variables (i) are updated in the loop body [bugprone-infinite-loop]
     j++;
   }
 
@@ -19,7 +19,7 @@ void simple_infinite_loop1() {
   }
 
   do {
-  // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: this loop is infinite; none of its condition variables (i) are updated in the loop body [bugprone-infinite-loop]
+    // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: this loop is infinite; none of its condition variables (i) are updated in the loop body [bugprone-infinite-loop]
     j++;
   } while (i < 10);
 
@@ -48,7 +48,7 @@ void simple_infinite_loop2() {
   }
 
   do {
-  // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: this loop is infinite; none of its condition variables (i, Limit) are updated in the loop body [bugprone-infinite-loop]
+    // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: this loop is infinite; none of its condition variables (i, Limit) are updated in the loop body [bugprone-infinite-loop]
     j++;
   } while (i < Limit);
 
@@ -297,13 +297,15 @@ void volatile_in_condition() {
 }
 
 namespace std {
-template<typename T> class atomic {
+template <typename T>
+class atomic {
   T val;
+
 public:
-  atomic(T v): val(v) {};
+  atomic(T v) : val(v){};
   operator T() { return val; };
 };
-}
+} // namespace std
 
 void atomic_in_condition() {
   std::atomic<int> cond = 0;
@@ -333,8 +335,7 @@ void loop_exit3() {
     if (unknown_function())
       goto end;
   }
- end:
-  ;
+end:;
 }
 
 void loop_exit4() {

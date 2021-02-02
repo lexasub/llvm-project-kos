@@ -7,7 +7,10 @@ void except() {
 }
 
 void attempt() {
-  try { except(); } catch (...) { }
+  try {
+    except();
+  } catch (...) {
+  }
 }
 
 // CHECK: @_ZTIi = external dso_local constant i8*
@@ -44,5 +47,3 @@ void attempt() {
 // CHECK: try.cont:
 // CHECK:    ret void
 // CHECK: }
-
-

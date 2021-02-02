@@ -98,7 +98,8 @@ static void PrintStack(raw_ostream &OS) {
 LLVM_ATTRIBUTE_NOINLINE
 static void PrintCurStackTrace(raw_ostream &OS) {
   // Don't print an empty trace.
-  if (!PrettyStackTraceHead) return;
+  if (!PrettyStackTraceHead)
+    return;
 
   // If there are pretty stack frames registered, walk and emit them.
   OS << "Stack dump:\n";
@@ -108,17 +109,17 @@ static void PrintCurStackTrace(raw_ostream &OS) {
 }
 
 // Integrate with crash reporter libraries.
-#if defined (__APPLE__) && defined(HAVE_CRASHREPORTERCLIENT_H)
+#if defined(__APPLE__) && defined(HAVE_CRASHREPORTERCLIENT_H)
 //  If any clients of llvm try to link to libCrashReporterClient.a themselves,
 //  only one crash info struct will be used.
 extern "C" {
 CRASH_REPORTER_CLIENT_HIDDEN
 struct crashreporter_annotations_t gCRAnnotations
-        __attribute__((section("__DATA," CRASHREPORTER_ANNOTATIONS_SECTION)))
+    __attribute__((section("__DATA," CRASHREPORTER_ANNOTATIONS_SECTION)))
 #if CRASHREPORTER_ANNOTATIONS_VERSION < 5
-        = { CRASHREPORTER_ANNOTATIONS_VERSION, 0, 0, 0, 0, 0, 0 };
+    = {CRASHREPORTER_ANNOTATIONS_VERSION, 0, 0, 0, 0, 0, 0};
 #else
-        = { CRASHREPORTER_ANNOTATIONS_VERSION, 0, 0, 0, 0, 0, 0, 0 };
+    = {CRASHREPORTER_ANNOTATIONS_VERSION, 0, 0, 0, 0, 0, 0, 0};
 #endif
 }
 #elif defined(__APPLE__) && HAVE_CRASHREPORTER_INFO
@@ -150,7 +151,7 @@ static CrashHandlerStringStorage crashHandlerStringStorage;
 /// This callback is run if a fatal signal is delivered to the process, it
 /// prints the pretty stack trace.
 static void CrashHandler(void *) {
-  errs() << BugReportMsg ;
+  errs() << BugReportMsg;
 
 #ifndef __APPLE__
   // On non-apple systems, just emit the crash stack trace to stderr.
@@ -203,13 +204,9 @@ static void printForSigInfoIfNeeded() {
 
 #endif // ENABLE_BACKTRACES
 
-void llvm::setBugReportMsg(const char *Msg) {
-  BugReportMsg = Msg;
-}
+void llvm::setBugReportMsg(const char *Msg) { BugReportMsg = Msg; }
 
-const char *llvm::getBugReportMsg() {
-  return BugReportMsg;
-}
+const char *llvm::getBugReportMsg() { return BugReportMsg; }
 
 PrettyStackTraceEntry::PrettyStackTraceEntry() {
 #if ENABLE_BACKTRACES
@@ -290,8 +287,8 @@ void llvm::EnablePrettyStackTraceOnSigInfoForThisThread(bool ShouldEnable) {
   }
 
   // The first time this is called, we register the SIGINFO handler.
-  static bool HandlerRegistered = []{
-    sys::SetInfoSignalFunction([]{
+  static bool HandlerRegistered = [] {
+    sys::SetInfoSignalFunction([] {
       GlobalSigInfoGenerationCounter.fetch_add(1, std::memory_order_relaxed);
     });
     return false;
@@ -319,6 +316,4 @@ void llvm::RestorePrettyStackState(const void *Top) {
 #endif
 }
 
-void LLVMEnablePrettyStackTrace() {
-  EnablePrettyStackTrace();
-}
+void LLVMEnablePrettyStackTrace() { EnablePrettyStackTrace(); }

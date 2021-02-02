@@ -3,5 +3,5 @@
 // RUN: %run %T/a-*/../a-*/../a-*/../a-*/../a-*/../a-*/../a-*/../a-*/../long-object-path
 
 int main(void) {
-    return 0;
+  return 0;
 }

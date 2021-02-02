@@ -14,10 +14,6 @@
 #include "sanitizer_platform.h"
 #if SANITIZER_MAC
 
-#include "sanitizer_allocator_internal.h"
-#include "sanitizer_mac.h"
-#include "sanitizer_symbolizer_mac.h"
-
 #include <dlfcn.h>
 #include <errno.h>
 #include <mach/mach.h>
@@ -26,12 +22,17 @@
 #include <unistd.h>
 #include <util.h>
 
+#include "sanitizer_allocator_internal.h"
+#include "sanitizer_mac.h"
+#include "sanitizer_symbolizer_mac.h"
+
 namespace __sanitizer {
 
 bool DlAddrSymbolizer::SymbolizePC(uptr addr, SymbolizedStack *stack) {
   Dl_info info;
   int result = dladdr((const void *)addr, &info);
-  if (!result) return false;
+  if (!result)
+    return false;
 
   // Compute offset if possible. `dladdr()` doesn't always ensure that `addr >=
   // sym_addr` so only compute the offset when this holds. Failure to find the
@@ -43,7 +44,8 @@ bool DlAddrSymbolizer::SymbolizePC(uptr addr, SymbolizedStack *stack) {
   }
 
   const char *demangled = DemangleSwiftAndCXX(info.dli_sname);
-  if (!demangled) return false;
+  if (!demangled)
+    return false;
   stack->info.function = internal_strdup(demangled);
   return true;
 }
@@ -51,7 +53,8 @@ bool DlAddrSymbolizer::SymbolizePC(uptr addr, SymbolizedStack *stack) {
 bool DlAddrSymbolizer::SymbolizeData(uptr addr, DataInfo *datainfo) {
   Dl_info info;
   int result = dladdr((const void *)addr, &info);
-  if (!result) return false;
+  if (!result)
+    return false;
   const char *demangled = DemangleSwiftAndCXX(info.dli_sname);
   datainfo->name = internal_strdup(demangled);
   datainfo->start = (uptr)info.dli_saddr;
@@ -185,13 +188,15 @@ static bool ParseCommandOutput(const char *str, uptr addr, char **out_name,
       rest = ExtractTokenUpToDelimiter(rest, ":", out_file);
       char *extracted_line_number;
       rest = ExtractTokenUpToDelimiter(rest, ")", &extracted_line_number);
-      if (line) *line = (uptr)internal_atoll(extracted_line_number);
+      if (line)
+        *line = (uptr)internal_atoll(extracted_line_number);
       InternalFree(extracted_line_number);
     }
   } else if (rest[0] == '+') {
     rest += 2;
     uptr offset = internal_atoll(rest);
-    if (start_address) *start_address = addr - offset;
+    if (start_address)
+      *start_address = addr - offset;
   }
 
   InternalFree(trim);
@@ -202,12 +207,15 @@ AtosSymbolizer::AtosSymbolizer(const char *path, LowLevelAllocator *allocator)
     : process_(new (*allocator) AtosSymbolizerProcess(path)) {}
 
 bool AtosSymbolizer::SymbolizePC(uptr addr, SymbolizedStack *stack) {
-  if (!process_) return false;
-  if (addr == 0) return false;
+  if (!process_)
+    return false;
+  if (addr == 0)
+    return false;
   char command[32];
   internal_snprintf(command, sizeof(command), "0x%zx\n", addr);
   const char *buf = process_->SendCommand(command);
-  if (!buf) return false;
+  if (!buf)
+    return false;
   uptr line;
   uptr start_address = AddressInfo::kUnknown;
   if (!ParseCommandOutput(buf, addr, &stack->info.function, &stack->info.module,
@@ -236,11 +244,13 @@ bool AtosSymbolizer::SymbolizePC(uptr addr, SymbolizedStack *stack) {
 }
 
 bool AtosSymbolizer::SymbolizeData(uptr addr, DataInfo *info) {
-  if (!process_) return false;
+  if (!process_)
+    return false;
   char command[32];
   internal_snprintf(command, sizeof(command), "0x%zx\n", addr);
   const char *buf = process_->SendCommand(command);
-  if (!buf) return false;
+  if (!buf)
+    return false;
   if (!ParseCommandOutput(buf, addr, &info->name, &info->module, nullptr,
                           nullptr, &info->start)) {
     process_ = nullptr;

@@ -41,10 +41,10 @@ class TargetMachine;
 namespace PICStyles {
 
 enum class Style {
-  StubPIC,          // Used on i386-darwin in pic mode.
-  GOT,              // Used on 32 bit elf on when in pic mode.
-  RIPRel,           // Used on X86-64 when in pic mode.
-  None              // Set when not in pic mode.
+  StubPIC, // Used on i386-darwin in pic mode.
+  GOT,     // Used on 32 bit elf on when in pic mode.
+  RIPRel,  // Used on X86-64 when in pic mode.
+  None     // Set when not in pic mode.
 };
 
 } // end namespace PICStyles
@@ -52,19 +52,22 @@ enum class Style {
 class X86Subtarget final : public X86GenSubtargetInfo {
   // NOTE: Do not add anything new to this list. Coarse, CPU name based flags
   // are not a good idea. We should be migrating away from these.
-  enum X86ProcFamilyEnum {
-    Others,
-    IntelAtom,
-    IntelSLM
-  };
+  enum X86ProcFamilyEnum { Others, IntelAtom, IntelSLM };
 
   enum X86SSEEnum {
-    NoSSE, SSE1, SSE2, SSE3, SSSE3, SSE41, SSE42, AVX, AVX2, AVX512F
+    NoSSE,
+    SSE1,
+    SSE2,
+    SSE3,
+    SSSE3,
+    SSE41,
+    SSE42,
+    AVX,
+    AVX2,
+    AVX512F
   };
 
-  enum X863DNowEnum {
-    NoThreeDNow, MMX, ThreeDNow, ThreeDNowA
-  };
+  enum X863DNowEnum { NoThreeDNow, MMX, ThreeDNow, ThreeDNowA };
 
   /// X86 processor family: Intel Atom, and others
   X86ProcFamilyEnum X86ProcFamily = Others;
@@ -241,10 +244,12 @@ class X86Subtarget final : public X86GenSubtargetInfo {
   /// the stack pointer. This is an optimization for Intel Atom processors.
   bool UseLeaForSP = false;
 
-  /// True if POPCNT instruction has a false dependency on the destination register.
+  /// True if POPCNT instruction has a false dependency on the destination
+  /// register.
   bool HasPOPCNTFalseDeps = false;
 
-  /// True if LZCNT/TZCNT instructions have a false dependency on the destination register.
+  /// True if LZCNT/TZCNT instructions have a false dependency on the
+  /// destination register.
   bool HasLZCNTFalseDeps = false;
 
   /// True if its preferable to combine to a single shuffle using a variable
@@ -589,17 +594,11 @@ private:
 
 public:
   /// Is this x86_64? (disregarding specific ABI / programming model)
-  bool is64Bit() const {
-    return In64BitMode;
-  }
+  bool is64Bit() const { return In64BitMode; }
 
-  bool is32Bit() const {
-    return In32BitMode;
-  }
+  bool is32Bit() const { return In32BitMode; }
 
-  bool is16Bit() const {
-    return In16BitMode;
-  }
+  bool is16Bit() const { return In16BitMode; }
 
   /// Is this x86_64 with the ILP32 programming model (x32 ABI)?
   bool isTarget64BitILP32() const {
@@ -614,7 +613,7 @@ public:
   }
 
   PICStyles::Style getPICStyle() const { return PICStyle; }
-  void setPICStyle(PICStyles::Style Style)  { PICStyle = Style; }
+  void setPICStyle(PICStyles::Style Style) { PICStyle = Style; }
 
   bool hasX87() const { return HasX87; }
   bool hasCmpxchg8b() const { return HasCmpxchg8b; }
@@ -701,9 +700,7 @@ public:
   bool useLeaForSP() const { return UseLeaForSP; }
   bool hasPOPCNTFalseDeps() const { return HasPOPCNTFalseDeps; }
   bool hasLZCNTFalseDeps() const { return HasLZCNTFalseDeps; }
-  bool hasFastVariableShuffle() const {
-    return HasFastVariableShuffle;
-  }
+  bool hasFastVariableShuffle() const { return HasFastVariableShuffle; }
   bool insertVZEROUPPER() const { return InsertVZEROUPPER; }
   bool hasFastGather() const { return HasFastGather; }
   bool hasFastScalarFSQRT() const { return HasFastScalarFSQRT; }
@@ -792,9 +789,7 @@ public:
   bool canExtendTo512DQ() const {
     return hasAVX512() && (!hasVLX() || getPreferVectorWidth() >= 512);
   }
-  bool canExtendTo512BW() const  {
-    return hasBWI() && canExtendTo512DQ();
-  }
+  bool canExtendTo512BW() const { return hasBWI() && canExtendTo512DQ(); }
 
   // If there are no 512-bit vectors and we prefer not to use 512-bit registers,
   // disable them in the legalizer.
@@ -802,9 +797,7 @@ public:
     return hasAVX512() && (canExtendTo512DQ() || RequiredVectorWidth > 256);
   }
 
-  bool useBWIRegs() const {
-    return hasBWI() && useAVX512Regs();
-  }
+  bool useBWIRegs() const { return hasBWI() && useAVX512Regs(); }
 
   bool isXRaySupported() const override { return is64Bit(); }
 

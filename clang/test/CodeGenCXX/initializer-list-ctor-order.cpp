@@ -10,7 +10,6 @@ struct A {
   A(int, int);
 };
 
-
 void foo() {
   A a{f(), g()};
 }

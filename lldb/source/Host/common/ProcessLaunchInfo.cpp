@@ -179,7 +179,8 @@ void ProcessLaunchInfo::SetMonitorProcessCallback(
   m_monitor_signals = monitor_signals;
 }
 
-bool ProcessLaunchInfo::NoOpMonitorCallback(lldb::pid_t pid, bool exited, int signal, int status) {
+bool ProcessLaunchInfo::NoOpMonitorCallback(lldb::pid_t pid, bool exited,
+                                            int signal, int status) {
   Log *log = lldb_private::GetLogIfAllCategoriesSet(LIBLLDB_LOG_PROCESS);
   LLDB_LOG(log, "pid = {0}, exited = {1}, signal = {2}, status = {3}", pid,
            exited, signal, status);
@@ -188,9 +189,8 @@ bool ProcessLaunchInfo::NoOpMonitorCallback(lldb::pid_t pid, bool exited, int si
 
 bool ProcessLaunchInfo::MonitorProcess() const {
   if (m_monitor_callback && ProcessIDIsValid()) {
-    llvm::Expected<HostThread> maybe_thread =
-    Host::StartMonitoringChildProcess(m_monitor_callback, GetProcessID(),
-                                      m_monitor_signals);
+    llvm::Expected<HostThread> maybe_thread = Host::StartMonitoringChildProcess(
+        m_monitor_callback, GetProcessID(), m_monitor_signals);
     if (!maybe_thread)
       LLDB_LOG(lldb_private::GetLogIfAllCategoriesSet(LIBLLDB_LOG_HOST),
                "failed to launch host thread: {}",
@@ -280,7 +280,7 @@ bool ProcessLaunchInfo::ConvertArgumentsForLaunchingInShell(
             new_path += working_dir.GetPath();
           } else {
             llvm::SmallString<64> cwd;
-            if (! llvm::sys::fs::current_path(cwd))
+            if (!llvm::sys::fs::current_path(cwd))
               new_path += cwd;
           }
           std::string curr_path;

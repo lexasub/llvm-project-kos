@@ -13,11 +13,11 @@
 #undef _FILE_OFFSET_BITS
 #include "sanitizer_platform.h"
 #if SANITIZER_SOLARIS
+#include <limits.h>
+#include <procfs.h>
+
 #include "sanitizer_common.h"
 #include "sanitizer_procmaps.h"
-
-#include <procfs.h>
-#include <limits.h>
 
 namespace __sanitizer {
 
@@ -31,9 +31,11 @@ void ReadProcMaps(ProcSelfMapsBuff *proc_maps) {
 }
 
 bool MemoryMappingLayout::Next(MemoryMappedSegment *segment) {
-  if (Error()) return false; // simulate empty maps
+  if (Error())
+    return false;  // simulate empty maps
   char *last = data_.proc_self_maps.data + data_.proc_self_maps.len;
-  if (data_.current >= last) return false;
+  if (data_.current >= last)
+    return false;
 
   prxmap_t *xmapentry =
       const_cast<prxmap_t *>(reinterpret_cast<const prxmap_t *>(data_.current));

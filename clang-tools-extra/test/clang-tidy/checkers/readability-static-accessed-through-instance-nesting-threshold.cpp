@@ -12,8 +12,8 @@ struct V {
     };
   };
 };
-}
-}
+} // namespace N
+} // namespace M
 
 void f(M::N::V::T::U u) {
   M::N::V v;

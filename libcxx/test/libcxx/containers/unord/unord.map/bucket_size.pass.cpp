@@ -26,10 +26,10 @@
 #include "test_macros.h"
 
 int main(int, char**) {
-    typedef std::unordered_map<int, std::string> C;
-    C c;
-    (void) c.bucket_size(3);
-    assert(false);
+  typedef std::unordered_map<int, std::string> C;
+  C c;
+  (void)c.bucket_size(3);
+  assert(false);
 
-    return 0;
+  return 0;
 }

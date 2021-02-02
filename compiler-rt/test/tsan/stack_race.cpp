@@ -3,7 +3,7 @@
 
 void *Thread(void *a) {
   barrier_wait(&barrier);
-  *(int*)a = 43;
+  *(int *)a = 43;
   return 0;
 }
 
@@ -19,4 +19,3 @@ int main() {
 
 // CHECK: WARNING: ThreadSanitizer: data race
 // CHECK:   Location is stack of main thread.
-

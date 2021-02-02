@@ -74,8 +74,9 @@ protected:
   uint32_t NumSupportedHardwareWatchpoints() override;
 
 private:
-  uint64_t 
-  m_gpr_mips64[lldb_private::k_num_gpr_registers_mips64]; // general purpose registers.
+  uint64_t
+      m_gpr_mips64[lldb_private::k_num_gpr_registers_mips64]; // general purpose
+                                                              // registers.
   ProcessMonitor &GetMonitor();
 };
 

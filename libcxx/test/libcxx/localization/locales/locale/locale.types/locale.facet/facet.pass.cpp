@@ -24,33 +24,28 @@
 
 #include "test_macros.h"
 
-struct my_facet
-    : public std::locale::facet
-{
-    static int count;
-    my_facet(unsigned refs = 0)
-        : std::locale::facet(refs)
-        {++count;}
+struct my_facet : public std::locale::facet {
+  static int count;
+  my_facet(unsigned refs = 0) : std::locale::facet(refs) { ++count; }
 
-    ~my_facet() {--count;}
+  ~my_facet() { --count; }
 };
 
 int my_facet::count = 0;
 
-int main(int, char**)
-{
-    my_facet* f = new my_facet;
-    f->__add_shared();
-    assert(my_facet::count == 1);
-    f->__release_shared();
-    assert(my_facet::count == 0);
-    f = new my_facet(1);
-    f->__add_shared();
-    assert(my_facet::count == 1);
-    f->__release_shared();
-    assert(my_facet::count == 1);
-    f->__release_shared();
-    assert(my_facet::count == 0);
+int main(int, char**) {
+  my_facet* f = new my_facet;
+  f->__add_shared();
+  assert(my_facet::count == 1);
+  f->__release_shared();
+  assert(my_facet::count == 0);
+  f = new my_facet(1);
+  f->__add_shared();
+  assert(my_facet::count == 1);
+  f->__release_shared();
+  assert(my_facet::count == 1);
+  f->__release_shared();
+  assert(my_facet::count == 0);
 
   return 0;
 }

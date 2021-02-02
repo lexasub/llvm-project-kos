@@ -8,7 +8,6 @@
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
   if (Size)
-    *const_cast<uint8_t*>(Data) = 1;
+    *const_cast<uint8_t *>(Data) = 1;
   return 0;
 }
-

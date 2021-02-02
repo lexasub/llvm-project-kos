@@ -32,17 +32,18 @@ struct POSType {
   POSType() {}
   POSType(ex::memory_resource* r, void* p, int s) : res(r), ptr(p), n(s) {}
   ~POSType() {
-      if (ptr) {
-          if (!res) res = ex::get_default_resource();
-          res->deallocate(ptr, n);
-      }
+    if (ptr) {
+      if (!res)
+        res = ex::get_default_resource();
+      res->deallocate(ptr, n);
+    }
   }
 };
 
-void swap(POSType & L, POSType & R) {
-    std::swap(L.res, R.res);
-    std::swap(L.ptr, R.ptr);
-    std::swap(L.n, R.n);
+void swap(POSType& L, POSType& R) {
+  std::swap(L.res, R.res);
+  std::swap(L.ptr, R.ptr);
+  std::swap(L.n, R.n);
 }
 
 POSType constructed_before_resources;
@@ -54,10 +55,9 @@ ex::memory_resource* resource = ex::get_default_resource();
 POSType constructed_after_resources(resource, resource->allocate(1024), 1024);
 POSType constructed_after_resources2(nullptr, resource->allocate(1024), 1024);
 
-int main(int, char**)
-{
-    swap(constructed_after_resources, constructed_before_resources);
-    swap(constructed_before_resources2, constructed_after_resources2);
+int main(int, char**) {
+  swap(constructed_after_resources, constructed_before_resources);
+  swap(constructed_before_resources2, constructed_after_resources2);
 
   return 0;
 }

@@ -1,5 +1,5 @@
 // RUN: %clang_cc1 -templight-dump %s 2>&1 | FileCheck %s
-template<class T>
+template <class T>
 class A {};
 
 template <template <class Inner> class Outer>

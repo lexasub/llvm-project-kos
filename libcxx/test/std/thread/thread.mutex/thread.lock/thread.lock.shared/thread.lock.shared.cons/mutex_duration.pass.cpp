@@ -45,8 +45,7 @@ static const unsigned Threads = 5;
 
 std::atomic<unsigned> CountDown(Threads);
 
-void f1()
-{
+void f1() {
   // Preemptive scheduling means that one cannot make assumptions about when
   // code executes and therefore we cannot assume anthing about when the mutex
   // starts waiting relative to code in the main thread. We can however prove
@@ -61,8 +60,7 @@ void f1()
   assert(lk.owns_lock() == true);
 }
 
-void f2()
-{
+void f2() {
   time_point t0 = Clock::now();
   std::shared_lock<std::shared_timed_mutex> lk(m, ShortTime);
   time_point t1 = Clock::now();
@@ -70,8 +68,7 @@ void f2()
   assert(t1 - t0 >= ShortTime);
 }
 
-int main(int, char**)
-{
+int main(int, char**) {
   {
     m.lock();
     std::vector<std::thread> v;

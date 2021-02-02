@@ -26,6 +26,6 @@ class Module;
 bool optimizeGlobalCtorsList(Module &M,
                              function_ref<bool(Function *)> ShouldRemove);
 
-} // End llvm namespace
+} // namespace llvm
 
 #endif

@@ -42,6 +42,6 @@ private:
 
   FDToFileMap m_cache;
 };
-}
+} // namespace lldb_private
 
 #endif

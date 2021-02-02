@@ -21,8 +21,8 @@
 
 #ifdef LLVM_LIBC_PUBLIC_PACKAGING
 #define LLVM_LIBC_FUNCTION(type, name, arglist)                                \
-  LLVM_LIBC_FUNCTION_ATTR decltype(__llvm_libc::name)                          \
-      __##name##_impl__ __asm__(#name);                                        \
+  LLVM_LIBC_FUNCTION_ATTR decltype(                                            \
+      __llvm_libc::name) __##name##_impl__ __asm__(#name);                     \
   decltype(__llvm_libc::name) name [[gnu::alias(#name)]];                      \
   type __##name##_impl__ arglist
 #else

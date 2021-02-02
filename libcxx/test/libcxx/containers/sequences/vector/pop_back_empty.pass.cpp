@@ -20,13 +20,12 @@
 
 #include "test_macros.h"
 
-
 int main(int, char**) {
-    std::vector<int> v;
-    v.push_back(0);
-    v.pop_back();
-    v.pop_back();
-    std::exit(1);
+  std::vector<int> v;
+  v.push_back(0);
+  v.pop_back();
+  v.pop_back();
+  std::exit(1);
 
-    return 0;
+  return 0;
 }

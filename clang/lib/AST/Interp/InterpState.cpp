@@ -7,7 +7,6 @@
 //===----------------------------------------------------------------------===//
 
 #include "InterpState.h"
-#include <limits>
 #include "Function.h"
 #include "InterpFrame.h"
 #include "InterpStack.h"
@@ -15,6 +14,7 @@
 #include "PrimType.h"
 #include "Program.h"
 #include "State.h"
+#include <limits>
 
 using namespace clang;
 using namespace clang::interp;

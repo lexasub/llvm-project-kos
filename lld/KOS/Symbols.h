@@ -32,9 +32,9 @@ std::string toCOFFString(const kos::Archive::Symbol &b);
 namespace kos {
 
 using llvm::object::Archive;
-using llvm::object::COFFSymbolRef;
 using llvm::object::coff_import_header;
 using llvm::object::coff_symbol_generic;
+using llvm::object::COFFSymbolRef;
 
 class ArchiveFile;
 class InputFile;
@@ -337,8 +337,7 @@ public:
 class DefinedImportData : public Defined {
 public:
   DefinedImportData(StringRef n, ImportFile *f)
-      : Defined(DefinedImportDataKind, n), file(f) {
-  }
+      : Defined(DefinedImportDataKind, n), file(f) {}
 
   static bool classof(const Symbol *s) {
     return s->kind() == DefinedImportDataKind;
@@ -470,7 +469,7 @@ union SymbolUnion {
 };
 
 template <typename T, typename... ArgT>
-void replaceSymbol(Symbol *s, ArgT &&... arg) {
+void replaceSymbol(Symbol *s, ArgT &&...arg) {
   static_assert(std::is_trivially_destructible<T>(),
                 "Symbol types must be trivially destructible");
   static_assert(sizeof(T) <= sizeof(SymbolUnion), "Symbol too small");

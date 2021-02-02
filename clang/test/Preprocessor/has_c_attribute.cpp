@@ -5,4 +5,3 @@
 
 #if __has_c_attribute(gnu::transparent_union) // expected-error {{function-like macro '__has_c_attribute' is not defined}}
 #endif
-

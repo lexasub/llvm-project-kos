@@ -91,7 +91,7 @@ bool isTemplateParam(const SelectionTree::Node *Node) {
   return false;
 }
 
-bool ExpandAutoType::prepare(const Selection& Inputs) {
+bool ExpandAutoType::prepare(const Selection &Inputs) {
   CachedLocation = llvm::None;
   if (auto *Node = Inputs.ASTSelection.commonAncestor()) {
     if (auto *TypeNode = Node->ASTNode.get<TypeLoc>()) {
@@ -106,10 +106,10 @@ bool ExpandAutoType::prepare(const Selection& Inputs) {
     }
   }
 
-  return (bool) CachedLocation;
+  return (bool)CachedLocation;
 }
 
-Expected<Tweak::Effect> ExpandAutoType::apply(const Selection& Inputs) {
+Expected<Tweak::Effect> ExpandAutoType::apply(const Selection &Inputs) {
   auto &SrcMgr = Inputs.AST->getSourceManager();
 
   llvm::Optional<clang::QualType> DeducedType = getDeducedType(
@@ -132,12 +132,12 @@ Expected<Tweak::Effect> ExpandAutoType::apply(const Selection& Inputs) {
     return error("Could not expand type of function pointer");
   }
 
-  std::string PrettyTypeName = printType(*DeducedType,
-      Inputs.ASTSelection.commonAncestor()->getDeclContext());
+  std::string PrettyTypeName = printType(
+      *DeducedType, Inputs.ASTSelection.commonAncestor()->getDeclContext());
 
-  tooling::Replacement
-      Expansion(SrcMgr, CharSourceRange(CachedLocation->getSourceRange(), true),
-                PrettyTypeName);
+  tooling::Replacement Expansion(
+      SrcMgr, CharSourceRange(CachedLocation->getSourceRange(), true),
+      PrettyTypeName);
 
   return Effect::mainFileEdit(SrcMgr, tooling::Replacements(Expansion));
 }

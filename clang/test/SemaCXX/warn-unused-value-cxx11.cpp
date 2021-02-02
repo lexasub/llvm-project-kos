@@ -15,8 +15,8 @@ void g() {
 
 void h() {
   int i = 0;
-  (void)noexcept(++i); // expected-warning {{expression with side effects has no effect in an unevaluated context}}
-  decltype(i++) j = 0; // expected-warning {{expression with side effects has no effect in an unevaluated context}}
+  (void) noexcept(++i); // expected-warning {{expression with side effects has no effect in an unevaluated context}}
+  decltype(i++) j = 0;  // expected-warning {{expression with side effects has no effect in an unevaluated context}}
 }
 
 struct S {
@@ -24,24 +24,24 @@ struct S {
   S(int i);
   S();
 
-  int& f();
+  int &f();
   S g();
 };
 
 void j() {
   S s;
   int i = 0;
-  (void)noexcept(s++); // Ok
-  (void)noexcept(i++); // expected-warning {{expression with side effects has no effect in an unevaluated context}}
-  (void)noexcept(i = 5); // expected-warning {{expression with side effects has no effect in an unevaluated context}}
-  (void)noexcept(s = 5); // Ok
+  (void) noexcept(s++);   // Ok
+  (void) noexcept(i++);   // expected-warning {{expression with side effects has no effect in an unevaluated context}}
+  (void) noexcept(i = 5); // expected-warning {{expression with side effects has no effect in an unevaluated context}}
+  (void) noexcept(s = 5); // Ok
 
-  (void)sizeof(s.f()); // Ok
-  (void)sizeof(s.f() = 5); // expected-warning {{expression with side effects has no effect in an unevaluated context}}
-  (void)noexcept(s.g() = 5); // Ok
+  (void)sizeof(s.f());        // Ok
+  (void)sizeof(s.f() = 5);    // expected-warning {{expression with side effects has no effect in an unevaluated context}}
+  (void) noexcept(s.g() = 5); // Ok
 }
 
-}
+} // namespace PR18571
 
 namespace volatile_array {
 void test() {
@@ -50,4 +50,4 @@ void test() {
   a; // expected-warning-re {{expression result unused{{$}}}}
   b; // expected-warning-re {{expression result unused{{$}}}}
 }
-}
+} // namespace volatile_array

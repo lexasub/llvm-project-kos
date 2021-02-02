@@ -22,6 +22,6 @@ public:
   static bool GetOSKernelDescription(std::string &s);
   static FileSpec GetProgramFileSpec();
 };
-}
+} // namespace lldb_private
 
 #endif

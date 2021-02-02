@@ -32,6 +32,6 @@ public:
 
   llvm::DWARFDataExtractor GetAsLLVM() const;
 };
-}
+} // namespace lldb_private
 
 #endif // LLDB_SOURCE_PLUGINS_SYMBOLFILE_DWARF_DWARFDATAEXTRACTOR_H

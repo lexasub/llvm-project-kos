@@ -10,5 +10,5 @@ const int &decfail = --i; // expected-error {{drops 'volatile' qualifier}}
 
 // PR7794
 void f0(int e) {
-  ++(int&)e;
+  ++(int &)e;
 }

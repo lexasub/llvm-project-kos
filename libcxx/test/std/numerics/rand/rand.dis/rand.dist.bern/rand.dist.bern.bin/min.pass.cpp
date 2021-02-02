@@ -18,13 +18,12 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        typedef std::binomial_distribution<> D;
-        D d(4, .5);
-        assert(d.min() == 0);
-    }
+int main(int, char**) {
+  {
+    typedef std::binomial_distribution<> D;
+    D d(4, .5);
+    assert(d.min() == 0);
+  }
 
   return 0;
 }

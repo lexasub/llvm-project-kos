@@ -11,7 +11,7 @@ struct A {
 
 struct B {};
 
-no_suspend operator co_await(B const&) { return {}; }
+no_suspend operator co_await(B const &) { return {}; }
 
 // CHECK-LABEL: f(
 extern "C" void f() {
@@ -22,4 +22,3 @@ extern "C" void f() {
   // CHECK-NEXT: call i8 @"??__L@YA?AUno_suspend@@AEBUB@@@Z"(
   operator co_await(b);
 }
-

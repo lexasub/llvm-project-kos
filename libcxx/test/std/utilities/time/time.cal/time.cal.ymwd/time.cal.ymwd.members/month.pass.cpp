@@ -19,23 +19,22 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    using year               = std::chrono::year;
-    using month              = std::chrono::month;
-    using weekday_indexed    = std::chrono::weekday_indexed;
-    using year_month_weekday = std::chrono::year_month_weekday;
+int main(int, char**) {
+  using year = std::chrono::year;
+  using month = std::chrono::month;
+  using weekday_indexed = std::chrono::weekday_indexed;
+  using year_month_weekday = std::chrono::year_month_weekday;
 
-    ASSERT_NOEXCEPT(                 std::declval<const year_month_weekday>().month());
-    ASSERT_SAME_TYPE(month, decltype(std::declval<const year_month_weekday>().month()));
+  ASSERT_NOEXCEPT(std::declval<const year_month_weekday>().month());
+  ASSERT_SAME_TYPE(month,
+                   decltype(std::declval<const year_month_weekday>().month()));
 
-    static_assert( year_month_weekday{}.month() == month{}, "");
+  static_assert(year_month_weekday{}.month() == month{}, "");
 
-    for (unsigned i = 1; i <= 50; ++i)
-    {
-        year_month_weekday ymd(year{1234}, month{i}, weekday_indexed{});
-        assert( static_cast<unsigned>(ymd.month()) == i);
-    }
+  for (unsigned i = 1; i <= 50; ++i) {
+    year_month_weekday ymd(year{1234}, month{i}, weekday_indexed{});
+    assert(static_cast<unsigned>(ymd.month()) == i);
+  }
 
   return 0;
 }

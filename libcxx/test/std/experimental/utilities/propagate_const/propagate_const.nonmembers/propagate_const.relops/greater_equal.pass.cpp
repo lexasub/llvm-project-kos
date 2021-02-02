@@ -21,7 +21,7 @@
 
 using std::experimental::propagate_const;
 
-constexpr bool operator>=(const X &lhs, const X &rhs) {
+constexpr bool operator>=(const X& lhs, const X& rhs) {
   return lhs.i_ >= rhs.i_;
 }
 

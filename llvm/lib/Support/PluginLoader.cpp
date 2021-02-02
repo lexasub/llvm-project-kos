@@ -19,8 +19,8 @@
 #include <vector>
 using namespace llvm;
 
-static ManagedStatic<std::vector<std::string> > Plugins;
-static ManagedStatic<sys::SmartMutex<true> > PluginsLock;
+static ManagedStatic<std::vector<std::string>> Plugins;
+static ManagedStatic<sys::SmartMutex<true>> PluginsLock;
 
 void PluginLoader::operator=(const std::string &Filename) {
   sys::SmartScopedLock<true> Lock(*PluginsLock);

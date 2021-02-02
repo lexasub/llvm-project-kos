@@ -80,27 +80,27 @@ int main() {
 // LAMBDA: call i32 @__kmpc_omp_task(%{{.+}}* @{{.+}}, i32 %{{.+}}, i8* [[RES]])
 // LAMBDA: ret
 #pragma omp task firstprivate(g, sivar, local)
-  {
-    // LAMBDA: define {{.+}} void [[INNER_LAMBDA:@.+]]({{.+}} [[ARG_PTR:%.+]])
-    // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
-    // LAMBDA: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
-    // LAMBDA: [[G_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
-    // LAMBDA: [[G_REF:%.+]] = load double*, double** [[G_PTR_REF]]
-    // LAMBDA: store volatile double 2.0{{.+}}, double* [[G_REF]]
+    {
+      // LAMBDA: define {{.+}} void [[INNER_LAMBDA:@.+]]({{.+}} [[ARG_PTR:%.+]])
+      // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
+      // LAMBDA: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
+      // LAMBDA: [[G_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
+      // LAMBDA: [[G_REF:%.+]] = load double*, double** [[G_PTR_REF]]
+      // LAMBDA: store volatile double 2.0{{.+}}, double* [[G_REF]]
 
-    // LAMBDA: store double* %{{.+}}, double** %{{.+}},
-    // LAMBDA: define internal i32 [[TASK_ENTRY]](i32 %0, %{{.+}}* noalias %1)
-    g = 1;
-    sivar = 11;
-    // LAMBDA: store double 1.0{{.+}}, double* %{{.+}},
-    // LAMBDA: store i{{[0-9]+}} 11, i{{[0-9]+}}* %{{.+}},
-    // LAMBDA: call void [[INNER_LAMBDA]]({{.+}}
-    // LAMBDA: ret
-    [&]() {
-      g = 2;
-      sivar = 22;
-    }();
-  }
+      // LAMBDA: store double* %{{.+}}, double** %{{.+}},
+      // LAMBDA: define internal i32 [[TASK_ENTRY]](i32 %0, %{{.+}}* noalias %1)
+      g = 1;
+      sivar = 11;
+      // LAMBDA: store double 1.0{{.+}}, double* %{{.+}},
+      // LAMBDA: store i{{[0-9]+}} 11, i{{[0-9]+}}* %{{.+}},
+      // LAMBDA: call void [[INNER_LAMBDA]]({{.+}}
+      // LAMBDA: ret
+      [&]() {
+        g = 2;
+        sivar = 22;
+      }();
+    }
   }();
   return 0;
 #elif defined(BLOCKS)
@@ -126,31 +126,31 @@ int main() {
   // BLOCKS: call i32 @__kmpc_omp_task(%{{.+}}* @{{.+}}, i32 %{{.+}}, i8* [[RES]])
   // BLOCKS: ret
 #pragma omp task firstprivate(g, sivar, local)
-  {
-    // BLOCKS: define {{.+}} void {{@.+}}(i8*
-    // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-    // BLOCKS: store volatile double 2.0{{.+}}, double*
-    // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-    // BLOCKS-NOT: [[ISVAR]]{{[[^:word:]]}}
-    // BLOCKS: store i{{[0-9]+}} 22, i{{[0-9]+}}*
-    // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
-    // BLOCKS: ret
+    {
+      // BLOCKS: define {{.+}} void {{@.+}}(i8*
+      // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
+      // BLOCKS: store volatile double 2.0{{.+}}, double*
+      // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
+      // BLOCKS-NOT: [[ISVAR]]{{[[^:word:]]}}
+      // BLOCKS: store i{{[0-9]+}} 22, i{{[0-9]+}}*
+      // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
+      // BLOCKS: ret
 
-    // BLOCKS: store double* %{{.+}}, double** %{{.+}},
-    // BLOCKS: store i{{[0-9]+}}* %{{.+}}, i{{[0-9]+}}** %{{.+}},
-    // BLOCKS: define internal i32 [[TASK_ENTRY]](i32 %0, %{{.+}}* noalias %1)
-    g = 1;
-    sivar = 11;
-    // BLOCKS: store double 1.0{{.+}}, double* %{{.+}},
-    // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-    // BLOCKS: store i{{[0-9]+}} 11, i{{[0-9]+}}* %{{.+}},
-    // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
-    // BLOCKS: call void {{%.+}}(i8
-    ^{
-      g = 2;
-      sivar = 22;
-    }();
-  }
+      // BLOCKS: store double* %{{.+}}, double** %{{.+}},
+      // BLOCKS: store i{{[0-9]+}}* %{{.+}}, i{{[0-9]+}}** %{{.+}},
+      // BLOCKS: define internal i32 [[TASK_ENTRY]](i32 %0, %{{.+}}* noalias %1)
+      g = 1;
+      sivar = 11;
+      // BLOCKS: store double 1.0{{.+}}, double* %{{.+}},
+      // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
+      // BLOCKS: store i{{[0-9]+}} 11, i{{[0-9]+}}* %{{.+}},
+      // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
+      // BLOCKS: call void {{%.+}}(i8
+      ^{
+        g = 2;
+        sivar = 22;
+      }();
+    }
   }();
   return 0;
 #else
@@ -432,7 +432,7 @@ struct St {
   ~St() {}
 };
 
-void array_func(int n, float a[n], St s[2], int(& p)[1]) {
+void array_func(int n, float a[n], St s[2], int (&p)[1]) {
 // ARRAY: call i8* @__kmpc_omp_task_alloc(
 // ARRAY: call i32 @__kmpc_omp_task(
 // ARRAY: store float** %{{.+}}, float*** %{{.+}},
@@ -442,4 +442,3 @@ void array_func(int n, float a[n], St s[2], int(& p)[1]) {
   ;
 }
 #endif
-

@@ -9,8 +9,8 @@
 #ifndef LLDB_HOST_MONITORINGPROCESSLAUNCHER_H
 #define LLDB_HOST_MONITORINGPROCESSLAUNCHER_H
 
-#include <memory>
 #include "lldb/Host/ProcessLauncher.h"
+#include <memory>
 
 namespace lldb_private {
 

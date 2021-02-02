@@ -201,8 +201,9 @@ uint64_t ObjFile::calcExpectedValue(const WasmRelocation &reloc) const {
 }
 
 // Translate from the relocation's index into the final linked output value.
-uint64_t ObjFile::calcNewValue(const WasmRelocation &reloc, uint64_t tombstone) const {
-  const Symbol* sym = nullptr;
+uint64_t ObjFile::calcNewValue(const WasmRelocation &reloc,
+                               uint64_t tombstone) const {
+  const Symbol *sym = nullptr;
   if (reloc.Type != R_WASM_TYPE_INDEX_LEB) {
     sym = symbols[reloc.Index];
 
@@ -227,7 +228,6 @@ uint64_t ObjFile::calcNewValue(const WasmRelocation &reloc, uint64_t tombstone) 
     if (reloc.Type == R_WASM_TABLE_INDEX_REL_SLEB)
       index -= config->tableBase;
     return index;
-
   }
   case R_WASM_MEMORY_ADDR_LEB:
   case R_WASM_MEMORY_ADDR_LEB64:
@@ -453,10 +453,9 @@ void ObjFile::parse(bool ignoreComdats) {
   typeMap.resize(getWasmObj()->types().size());
   typeIsUsed.resize(getWasmObj()->types().size(), false);
 
-
   // Populate `Segments`.
   for (const WasmSegment &s : wasmObj->dataSegments()) {
-    auto* seg = make<InputSegment>(s, this);
+    auto *seg = make<InputSegment>(s, this);
     seg->discarded = isExcludedByComdat(seg);
     segments.emplace_back(seg);
   }
@@ -469,7 +468,7 @@ void ObjFile::parse(bool ignoreComdats) {
   functions.reserve(funcs.size());
 
   for (size_t i = 0, e = funcs.size(); i != e; ++i) {
-    auto* func = make<InputFunction>(types[funcTypes[i]], &funcs[i], this);
+    auto *func = make<InputFunction>(types[funcTypes[i]], &funcs[i], this);
     func->discarded = isExcludedByComdat(func);
     functions.emplace_back(func);
   }

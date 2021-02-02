@@ -27,12 +27,12 @@ struct T : S {
 };
 
 int main(int, char **argv) {
-  char c[] __attribute__((aligned(8))) = { 0, 0, 0, 0, 1, 2, 3, 4, 5 };
+  char c[] __attribute__((aligned(8))) = {0, 0, 0, 0, 1, 2, 3, 4, 5};
 
   // Pointer value may be unspecified here, but behavior is not undefined.
-  int *p = (int*)&c[4 + argv[1][1] - '0'];
-  S *s = (S*)p;
-  T *t = (T*)p;
+  int *p = (int *)&c[4 + argv[1][1] - '0'];
+  S *s = (S *)p;
+  T *t = (T *)p;
 
   void *wild = reinterpret_cast<void *>(0x123L);
 
@@ -60,7 +60,7 @@ int main(int, char **argv) {
     // CHECK-REFERENCE-NEXT: [[PTR]]: note: pointer points here
     // CHECK-REFERENCE-NEXT: {{^ 00 00 00 01 02 03 04  05}}
     // CHECK-REFERENCE-NEXT: {{^             \^}}
-    {int &r = *p;}
+    { int &r = *p; }
     break;
 
   case 'm':
@@ -89,7 +89,7 @@ int main(int, char **argv) {
     // CHECK-UPCAST-NEXT: [[PTR]]: note: pointer points here
     // CHECK-UPCAST-NEXT: {{^ 00 00 00 01 02 03 04  05}}
     // CHECK-UPCAST-NEXT: {{^             \^}}
-    S *s2 = (S*)t;
+    S *s2 = (S *)t;
     return s2->f();
   }
 
@@ -97,6 +97,6 @@ int main(int, char **argv) {
     // CHECK-WILD: misaligned.cpp:[[@LINE+3]]{{(:35)?}}: runtime error: member access within misaligned address 0x{{0+}}123 for type 'S', which requires 4 byte alignment
     // CHECK-WILD-NEXT: 0x{{0+}}123: note: pointer points here
     // CHECK-WILD-NEXT: <memory cannot be printed>
-    return static_cast<S*>(wild)->k;
+    return static_cast<S *>(wild)->k;
   }
 }

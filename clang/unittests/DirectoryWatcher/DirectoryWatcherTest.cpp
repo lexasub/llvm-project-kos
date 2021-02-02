@@ -43,7 +43,7 @@ struct DirectoryWatcherTestFixture {
 #ifndef NDEBUG
     std::error_code UniqDirRes =
 #endif
-    createUniqueDirectory("dirwatcher", pathBuf);
+        createUniqueDirectory("dirwatcher", pathBuf);
     assert(!UniqDirRes);
     TestRootDir = std::string(pathBuf.str());
     path::append(pathBuf, "watch");
@@ -51,7 +51,7 @@ struct DirectoryWatcherTestFixture {
 #ifndef NDEBUG
     std::error_code CreateDirRes =
 #endif
-    create_directory(TestWatchedDir, false);
+        create_directory(TestWatchedDir, false);
     assert(!CreateDirRes);
   }
 
@@ -113,7 +113,8 @@ struct VerifyingConsumer {
       const std::vector<DirectoryWatcher::Event> &ExpectedNonInitial,
       const std::vector<DirectoryWatcher::Event> &OptionalNonInitial = {})
       : ExpectedInitial(ExpectedInitial), ExpectedInitialCopy(ExpectedInitial),
-        ExpectedNonInitial(ExpectedNonInitial), ExpectedNonInitialCopy(ExpectedNonInitial),
+        ExpectedNonInitial(ExpectedNonInitial),
+        ExpectedNonInitialCopy(ExpectedNonInitial),
         OptionalNonInitial(OptionalNonInitial) {}
 
   // This method is used by DirectoryWatcher.
@@ -190,15 +191,8 @@ struct VerifyingConsumer {
 
   void printUnmetExpectations(llvm::raw_ostream &OS) {
     // If there was any issue, print the expected state
-    if (
-      !ExpectedInitial.empty()
-      ||
-      !ExpectedNonInitial.empty()
-      ||
-      !UnexpectedInitial.empty()
-      ||
-      !UnexpectedNonInitial.empty()
-    ) {
+    if (!ExpectedInitial.empty() || !ExpectedNonInitial.empty() ||
+        !UnexpectedInitial.empty() || !UnexpectedNonInitial.empty()) {
       OS << "Expected initial events: \n";
       for (const auto &E : ExpectedInitialCopy) {
         OS << eventKindToString(E.Kind) << " " << E.Filename << "\n";
@@ -274,8 +268,7 @@ TEST(DirectoryWatcherTest, InitialScanSync) {
       // notification.
       {{EventKind::Modified, "a"},
        {EventKind::Modified, "b"},
-       {EventKind::Modified, "c"}}
-      };
+       {EventKind::Modified, "c"}}};
 
   llvm::Expected<std::unique_ptr<DirectoryWatcher>> DW =
       DirectoryWatcher::create(
@@ -307,8 +300,7 @@ TEST(DirectoryWatcherTest, InitialScanAsync) {
       // notification.
       {{EventKind::Modified, "a"},
        {EventKind::Modified, "b"},
-       {EventKind::Modified, "c"}}
-       };
+       {EventKind::Modified, "c"}}};
 
   llvm::Expected<std::unique_ptr<DirectoryWatcher>> DW =
       DirectoryWatcher::create(
@@ -326,11 +318,10 @@ TEST(DirectoryWatcherTest, InitialScanAsync) {
 TEST(DirectoryWatcherTest, AddFiles) {
   DirectoryWatcherTestFixture fixture;
 
-  VerifyingConsumer TestConsumer{
-      {},
-      {{EventKind::Modified, "a"},
-       {EventKind::Modified, "b"},
-       {EventKind::Modified, "c"}}};
+  VerifyingConsumer TestConsumer{{},
+                                 {{EventKind::Modified, "a"},
+                                  {EventKind::Modified, "b"},
+                                  {EventKind::Modified, "c"}}};
 
   llvm::Expected<std::unique_ptr<DirectoryWatcher>> DW =
       DirectoryWatcher::create(
@@ -354,10 +345,9 @@ TEST(DirectoryWatcherTest, ModifyFile) {
 
   fixture.addFile("a");
 
-  VerifyingConsumer TestConsumer{
-      {{EventKind::Modified, "a"}},
-      {{EventKind::Modified, "a"}},
-      {{EventKind::Modified, "a"}}};
+  VerifyingConsumer TestConsumer{{{EventKind::Modified, "a"}},
+                                 {{EventKind::Modified, "a"}},
+                                 {{EventKind::Modified, "a"}}};
 
   llvm::Expected<std::unique_ptr<DirectoryWatcher>> DW =
       DirectoryWatcher::create(
@@ -409,10 +399,9 @@ TEST(DirectoryWatcherTest, DeleteFile) {
 TEST(DirectoryWatcherTest, DeleteWatchedDir) {
   DirectoryWatcherTestFixture fixture;
 
-  VerifyingConsumer TestConsumer{
-      {},
-      {{EventKind::WatchedDirRemoved, ""},
-       {EventKind::WatcherGotInvalidated, ""}}};
+  VerifyingConsumer TestConsumer{{},
+                                 {{EventKind::WatchedDirRemoved, ""},
+                                  {EventKind::WatcherGotInvalidated, ""}}};
 
   llvm::Expected<std::unique_ptr<DirectoryWatcher>> DW =
       DirectoryWatcher::create(
@@ -432,8 +421,7 @@ TEST(DirectoryWatcherTest, DeleteWatchedDir) {
 TEST(DirectoryWatcherTest, InvalidatedWatcher) {
   DirectoryWatcherTestFixture fixture;
 
-  VerifyingConsumer TestConsumer{
-      {}, {{EventKind::WatcherGotInvalidated, ""}}};
+  VerifyingConsumer TestConsumer{{}, {{EventKind::WatcherGotInvalidated, ""}}};
 
   {
     llvm::Expected<std::unique_ptr<DirectoryWatcher>> DW =

@@ -3,12 +3,12 @@
 class A {
 public:
   int x;
-  A():x(0) {}
+  A() : x(0) {}
   ~A() {}
 };
 
 class B {
-int x[100];
+  int x[100];
 };
 
 A g_a;

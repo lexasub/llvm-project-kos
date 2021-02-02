@@ -18,9 +18,12 @@
 // XFAIL: with_system_cxx_lib=macosx10.10
 // XFAIL: with_system_cxx_lib=macosx10.9
 
-struct S { virtual void f() = delete; virtual ~S() {} };
+struct S {
+  virtual void f() = delete;
+  virtual ~S() {}
+};
 int main(int, char**) {
-  S *s = new S;
+  S* s = new S;
   delete s;
 
   return 0;

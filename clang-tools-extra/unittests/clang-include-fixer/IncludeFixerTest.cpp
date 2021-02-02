@@ -6,8 +6,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "InMemorySymbolIndex.h"
 #include "IncludeFixer.h"
+#include "InMemorySymbolIndex.h"
 #include "SymbolIndexManager.h"
 #include "unittests/Tooling/RewriterTestContext.h"
 #include "clang/Tooling/Tooling.h"
@@ -17,8 +17,8 @@ namespace clang {
 namespace include_fixer {
 namespace {
 
-using find_all_symbols::SymbolInfo;
 using find_all_symbols::SymbolAndSignals;
+using find_all_symbols::SymbolInfo;
 
 static bool runOnCode(tooling::ToolAction *ToolAction, StringRef Code,
                       StringRef FileName,
@@ -253,8 +253,7 @@ TEST(IncludeFixer, FixNamespaceQualifiers) {
             runIncludeFixer("b::bar b;\n"));
   EXPECT_EQ("#include \"bar.h\"\na::b::bar b;\n",
             runIncludeFixer("a::b::bar b;\n"));
-  EXPECT_EQ("#include \"bar.h\"\na::b::bar b;\n",
-            runIncludeFixer("bar b;\n"));
+  EXPECT_EQ("#include \"bar.h\"\na::b::bar b;\n", runIncludeFixer("bar b;\n"));
   EXPECT_EQ("#include \"bar.h\"\nnamespace a {\nb::bar b;\n}\n",
             runIncludeFixer("namespace a {\nb::bar b;\n}\n"));
   EXPECT_EQ("#include \"bar.h\"\nnamespace a {\nb::bar b;\n}\n",
@@ -262,8 +261,7 @@ TEST(IncludeFixer, FixNamespaceQualifiers) {
   EXPECT_EQ("#include \"bar.h\"\nnamespace a {\nnamespace b{\nbar b;\n}\n} "
             "// namespace a\n",
             runIncludeFixer("namespace a {\nnamespace b{\nbar b;\n}\n}\n"));
-  EXPECT_EQ("c::b::bar b;\n",
-            runIncludeFixer("c::b::bar b;\n"));
+  EXPECT_EQ("c::b::bar b;\n", runIncludeFixer("c::b::bar b;\n"));
   EXPECT_EQ("#include \"bar.h\"\nnamespace d {\na::b::bar b;\n}\n",
             runIncludeFixer("namespace d {\nbar b;\n}\n"));
   EXPECT_EQ("#include \"bar2.h\"\nnamespace c {\na::c::bar b;\n}\n",

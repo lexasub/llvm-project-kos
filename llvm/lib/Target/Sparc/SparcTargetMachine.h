@@ -24,6 +24,7 @@ class SparcTargetMachine : public LLVMTargetMachine {
   SparcSubtarget Subtarget;
   bool is64Bit;
   mutable StringMap<std::unique_ptr<SparcSubtarget>> SubtargetMap;
+
 public:
   SparcTargetMachine(const Target &T, const Triple &TT, StringRef CPU,
                      StringRef FS, const TargetOptions &Options,
@@ -45,6 +46,7 @@ public:
 ///
 class SparcV8TargetMachine : public SparcTargetMachine {
   virtual void anchor();
+
 public:
   SparcV8TargetMachine(const Target &T, const Triple &TT, StringRef CPU,
                        StringRef FS, const TargetOptions &Options,
@@ -56,6 +58,7 @@ public:
 ///
 class SparcV9TargetMachine : public SparcTargetMachine {
   virtual void anchor();
+
 public:
   SparcV9TargetMachine(const Target &T, const Triple &TT, StringRef CPU,
                        StringRef FS, const TargetOptions &Options,

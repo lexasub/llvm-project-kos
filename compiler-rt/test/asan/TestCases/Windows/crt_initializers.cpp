@@ -15,13 +15,13 @@ int main() {
   unsigned count = 0;
 
   // Iterate through CRT initializers.
-  for (FPTR* it = &__xi_a; it < &__xi_z; ++it) {
+  for (FPTR *it = &__xi_a; it < &__xi_z; ++it) {
     if (*it)
       count++;
   }
 
   printf("Number of nonzero CRT initializers: %u\n", count);
-// CHECK: Number of nonzero CRT initializers
+  // CHECK: Number of nonzero CRT initializers
 }
 
 void call_me_maybe() {}

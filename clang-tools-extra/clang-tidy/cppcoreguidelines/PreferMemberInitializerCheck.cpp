@@ -123,9 +123,8 @@ void PreferMemberInitializerCheck::check(
 
   for (const Stmt *S : Body->body()) {
     if (S->getBeginLoc().isMacroID()) {
-      StringRef MacroName =
-        Lexer::getImmediateMacroName(S->getBeginLoc(), *Result.SourceManager,
-                                     getLangOpts());
+      StringRef MacroName = Lexer::getImmediateMacroName(
+          S->getBeginLoc(), *Result.SourceManager, getLangOpts());
       if (MacroName.contains_lower("assert"))
         return;
     }

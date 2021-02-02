@@ -33,11 +33,11 @@
 
 #ifndef DEMANGLE_GNUC_PREREQ
 #if defined(__GNUC__) && defined(__GNUC_MINOR__) && defined(__GNUC_PATCHLEVEL__)
-#define DEMANGLE_GNUC_PREREQ(maj, min, patch)                           \
+#define DEMANGLE_GNUC_PREREQ(maj, min, patch)                                  \
   ((__GNUC__ << 20) + (__GNUC_MINOR__ << 10) + __GNUC_PATCHLEVEL__ >=          \
    ((maj) << 20) + ((min) << 10) + (patch))
 #elif defined(__GNUC__) && defined(__GNUC_MINOR__)
-#define DEMANGLE_GNUC_PREREQ(maj, min, patch)                           \
+#define DEMANGLE_GNUC_PREREQ(maj, min, patch)                                  \
   ((__GNUC__ << 20) + (__GNUC_MINOR__ << 10) >= ((maj) << 20) + ((min) << 10))
 #else
 #define DEMANGLE_GNUC_PREREQ(maj, min, patch) 0
@@ -86,7 +86,11 @@
 #define DEMANGLE_FALLTHROUGH
 #endif
 
-#define DEMANGLE_NAMESPACE_BEGIN namespace llvm { namespace itanium_demangle {
-#define DEMANGLE_NAMESPACE_END } }
+#define DEMANGLE_NAMESPACE_BEGIN                                               \
+  namespace llvm {                                                             \
+  namespace itanium_demangle {
+#define DEMANGLE_NAMESPACE_END                                                 \
+  }                                                                            \
+  }
 
 #endif

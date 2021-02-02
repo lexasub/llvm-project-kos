@@ -154,12 +154,10 @@ static bool splitMBB(BlockSplitInfo &BSI) {
 
   const PPCInstrInfo *TII = MF->getSubtarget<PPCSubtarget>().getInstrInfo();
   unsigned OrigBROpcode = BSI.OrigBranch->getOpcode();
-  unsigned InvertedOpcode =
-      OrigBROpcode == PPC::BC
-          ? PPC::BCn
-          : OrigBROpcode == PPC::BCn
-                ? PPC::BC
-                : OrigBROpcode == PPC::BCLR ? PPC::BCLRn : PPC::BCLR;
+  unsigned InvertedOpcode = OrigBROpcode == PPC::BC     ? PPC::BCn
+                            : OrigBROpcode == PPC::BCn  ? PPC::BC
+                            : OrigBROpcode == PPC::BCLR ? PPC::BCLRn
+                                                        : PPC::BCLR;
   unsigned NewBROpcode = BSI.InvertNewBranch ? InvertedOpcode : OrigBROpcode;
   MachineBasicBlock *OrigTarget = BSI.OrigBranch->getOperand(1).getMBB();
   MachineBasicBlock *OrigFallThrough = OrigTarget == *ThisMBB->succ_begin()
@@ -177,13 +175,14 @@ static bool splitMBB(BlockSplitInfo &BSI) {
   // same, then
   //      F * P1 = F * P0 / 2            ==>  P1 = P0 / 2
   //      F * (1 - P1) * P2 = F * P1     ==>  P2 = P1 / (1 - P1)
-  BranchProbability ProbToNewTarget, ProbFallThrough;     // Prob for new Br.
-  BranchProbability ProbOrigTarget, ProbOrigFallThrough;  // Prob for orig Br.
+  BranchProbability ProbToNewTarget, ProbFallThrough;    // Prob for new Br.
+  BranchProbability ProbOrigTarget, ProbOrigFallThrough; // Prob for orig Br.
   ProbToNewTarget = ProbFallThrough = BranchProbability::getUnknown();
   ProbOrigTarget = ProbOrigFallThrough = BranchProbability::getUnknown();
   if (BSI.MBPI) {
     if (BSI.BranchToFallThrough) {
-      ProbToNewTarget = BSI.MBPI->getEdgeProbability(ThisMBB, OrigFallThrough) / 2;
+      ProbToNewTarget =
+          BSI.MBPI->getEdgeProbability(ThisMBB, OrigFallThrough) / 2;
       ProbFallThrough = ProbToNewTarget.getCompl();
       ProbOrigFallThrough = ProbToNewTarget / ProbToNewTarget.getCompl();
       ProbOrigTarget = ProbOrigFallThrough.getCompl();
@@ -250,23 +249,20 @@ static bool splitMBB(BlockSplitInfo &BSI) {
   return true;
 }
 
-static bool isBinary(MachineInstr &MI) {
-  return MI.getNumOperands() == 3;
-}
+static bool isBinary(MachineInstr &MI) { return MI.getNumOperands() == 3; }
 
-static bool isNullary(MachineInstr &MI) {
-  return MI.getNumOperands() == 1;
-}
+static bool isNullary(MachineInstr &MI) { return MI.getNumOperands() == 1; }
 
 /// Given a CR logical operation \p CROp, branch opcode \p BROp as well as
 /// a flag to indicate if the first operand of \p CROp is used as the
 /// SplitBefore operand, determines whether either of the branches are to be
 /// inverted as well as whether the new target should be the original
 /// fall-through block.
-static void
-computeBranchTargetAndInversion(unsigned CROp, unsigned BROp, bool UsingDef1,
-                                bool &InvertNewBranch, bool &InvertOrigBranch,
-                                bool &TargetIsFallThrough) {
+static void computeBranchTargetAndInversion(unsigned CROp, unsigned BROp,
+                                            bool UsingDef1,
+                                            bool &InvertNewBranch,
+                                            bool &InvertOrigBranch,
+                                            bool &TargetIsFallThrough) {
   // The conditions under which each of the output operands should be [un]set
   // can certainly be written much more concisely with just 3 if statements or
   // ternary expressions. However, this provides a much clearer overview to the
@@ -356,8 +352,8 @@ public:
   struct CRLogicalOpInfo {
     MachineInstr *MI;
     // FIXME: If chains of copies are to be handled, this should be a vector.
-    std::pair<MachineInstr*, MachineInstr*> CopyDefs;
-    std::pair<MachineInstr*, MachineInstr*> TrueDefs;
+    std::pair<MachineInstr *, MachineInstr *> CopyDefs;
+    std::pair<MachineInstr *, MachineInstr *> TrueDefs;
     unsigned IsBinary : 1;
     unsigned IsNullary : 1;
     unsigned ContainedInBlock : 1;
@@ -368,10 +364,10 @@ public:
     unsigned DefsSingleUse : 1;
     unsigned SubregDef1;
     unsigned SubregDef2;
-    CRLogicalOpInfo() : MI(nullptr), IsBinary(0), IsNullary(0),
-                        ContainedInBlock(0), FeedsISEL(0), FeedsBR(0),
-                        FeedsLogical(0), SingleUse(0), DefsSingleUse(1),
-                        SubregDef1(0), SubregDef2(0) { }
+    CRLogicalOpInfo()
+        : MI(nullptr), IsBinary(0), IsNullary(0), ContainedInBlock(0),
+          FeedsISEL(0), FeedsBR(0), FeedsLogical(0), SingleUse(0),
+          DefsSingleUse(1), SubregDef1(0), SubregDef2(0) {}
     void dump();
   };
 
@@ -390,9 +386,9 @@ private:
   static bool isCRLogical(MachineInstr &MI) {
     unsigned Opc = MI.getOpcode();
     return Opc == PPC::CRAND || Opc == PPC::CRNAND || Opc == PPC::CROR ||
-      Opc == PPC::CRXOR || Opc == PPC::CRNOR || Opc == PPC::CREQV ||
-      Opc == PPC::CRANDC || Opc == PPC::CRORC || Opc == PPC::CRSET ||
-      Opc == PPC::CRUNSET || Opc == PPC::CR6SET || Opc == PPC::CR6UNSET;
+           Opc == PPC::CRXOR || Opc == PPC::CRNOR || Opc == PPC::CREQV ||
+           Opc == PPC::CRANDC || Opc == PPC::CRORC || Opc == PPC::CRSET ||
+           Opc == PPC::CRUNSET || Opc == PPC::CR6SET || Opc == PPC::CR6UNSET;
   }
   bool simplifyCode() {
     bool Changed = false;
@@ -472,20 +468,17 @@ PPCReduceCRLogicals::createCRLogicalOpInfo(MachineInstr &MIParam) {
     MachineInstr *Def1 = lookThroughCRCopy(MIParam.getOperand(1).getReg(),
                                            Ret.SubregDef1, Ret.CopyDefs.first);
     assert(Def1 && "Must be able to find a definition of operand 1.");
+    Ret.DefsSingleUse &= MRI->hasOneNonDBGUse(Def1->getOperand(0).getReg());
     Ret.DefsSingleUse &=
-      MRI->hasOneNonDBGUse(Def1->getOperand(0).getReg());
-    Ret.DefsSingleUse &=
-      MRI->hasOneNonDBGUse(Ret.CopyDefs.first->getOperand(0).getReg());
+        MRI->hasOneNonDBGUse(Ret.CopyDefs.first->getOperand(0).getReg());
     if (isBinary(MIParam)) {
       Ret.IsBinary = 1;
-      MachineInstr *Def2 = lookThroughCRCopy(MIParam.getOperand(2).getReg(),
-                                             Ret.SubregDef2,
-                                             Ret.CopyDefs.second);
+      MachineInstr *Def2 = lookThroughCRCopy(
+          MIParam.getOperand(2).getReg(), Ret.SubregDef2, Ret.CopyDefs.second);
       assert(Def2 && "Must be able to find a definition of operand 2.");
+      Ret.DefsSingleUse &= MRI->hasOneNonDBGUse(Def2->getOperand(0).getReg());
       Ret.DefsSingleUse &=
-        MRI->hasOneNonDBGUse(Def2->getOperand(0).getReg());
-      Ret.DefsSingleUse &=
-        MRI->hasOneNonDBGUse(Ret.CopyDefs.second->getOperand(0).getReg());
+          MRI->hasOneNonDBGUse(Ret.CopyDefs.second->getOperand(0).getReg());
       Ret.TrueDefs = std::make_pair(Def1, Def2);
     } else {
       Ret.TrueDefs = std::make_pair(Def1, nullptr);
@@ -512,10 +505,10 @@ PPCReduceCRLogicals::createCRLogicalOpInfo(MachineInstr &MIParam) {
   // We now know whether all the uses of the CR logical are in the same block.
   if (!Ret.IsNullary) {
     Ret.ContainedInBlock &=
-      (MIParam.getParent() == Ret.TrueDefs.first->getParent());
+        (MIParam.getParent() == Ret.TrueDefs.first->getParent());
     if (Ret.IsBinary)
       Ret.ContainedInBlock &=
-        (MIParam.getParent() == Ret.TrueDefs.second->getParent());
+          (MIParam.getParent() == Ret.TrueDefs.second->getParent());
   }
   LLVM_DEBUG(Ret.dump());
   if (Ret.IsBinary && Ret.ContainedInBlock && Ret.SingleUse) {
@@ -625,12 +618,9 @@ bool PPCReduceCRLogicals::splitBlockOnBinaryCROp(CRLogicalOpInfo &CRI) {
     return false;
   }
   // Note: keep in sync with computeBranchTargetAndInversion().
-  if (CRI.MI->getOpcode() != PPC::CROR &&
-      CRI.MI->getOpcode() != PPC::CRAND &&
-      CRI.MI->getOpcode() != PPC::CRNOR &&
-      CRI.MI->getOpcode() != PPC::CRNAND &&
-      CRI.MI->getOpcode() != PPC::CRORC &&
-      CRI.MI->getOpcode() != PPC::CRANDC) {
+  if (CRI.MI->getOpcode() != PPC::CROR && CRI.MI->getOpcode() != PPC::CRAND &&
+      CRI.MI->getOpcode() != PPC::CRNOR && CRI.MI->getOpcode() != PPC::CRNAND &&
+      CRI.MI->getOpcode() != PPC::CRORC && CRI.MI->getOpcode() != PPC::CRANDC) {
     LLVM_DEBUG(dbgs() << "Unable to split blocks on this opcode.\n");
     NumNotSplitWrongOpcode++;
     return false;
@@ -655,7 +645,7 @@ bool PPCReduceCRLogicals::splitBlockOnBinaryCROp(CRLogicalOpInfo &CRI) {
 
   // Get the branch instruction.
   MachineInstr *Branch =
-    MRI->use_nodbg_begin(CRI.MI->getOperand(0).getReg())->getParent();
+      MRI->use_nodbg_begin(CRI.MI->getOperand(0).getReg())->getParent();
 
   // We want the new block to have no code in it other than the definition
   // of the input to the CR logical and the CR logical itself. So we move
@@ -664,9 +654,9 @@ bool PPCReduceCRLogicals::splitBlockOnBinaryCROp(CRLogicalOpInfo &CRI) {
   MachineBasicBlock *MBB = SplitBefore->getParent();
   auto FirstTerminator = MBB->getFirstTerminator();
   MachineBasicBlock::iterator FirstInstrToMove =
-    UsingDef1 ? CRI.TrueDefs.first : CRI.TrueDefs.second;
+      UsingDef1 ? CRI.TrueDefs.first : CRI.TrueDefs.second;
   MachineBasicBlock::iterator SecondInstrToMove =
-    UsingDef1 ? CRI.CopyDefs.first : CRI.CopyDefs.second;
+      UsingDef1 ? CRI.CopyDefs.first : CRI.CopyDefs.second;
 
   // The instructions that need to be moved are not guaranteed to be
   // contiguous. Move them individually.
@@ -683,23 +673,29 @@ bool PPCReduceCRLogicals::splitBlockOnBinaryCROp(CRLogicalOpInfo &CRI) {
                                   InvertNewBranch, InvertOrigBranch,
                                   TargetIsFallThrough);
   MachineInstr *SplitCond =
-    UsingDef1 ? CRI.CopyDefs.second : CRI.CopyDefs.first;
+      UsingDef1 ? CRI.CopyDefs.second : CRI.CopyDefs.first;
   LLVM_DEBUG(dbgs() << "We will " << (InvertNewBranch ? "invert" : "copy"));
   LLVM_DEBUG(dbgs() << " the original branch and the target is the "
                     << (TargetIsFallThrough ? "fallthrough block\n"
                                             : "orig. target block\n"));
   LLVM_DEBUG(dbgs() << "Original branch instruction: "; Branch->dump());
-  BlockSplitInfo BSI { Branch, SplitBefore, SplitCond, InvertNewBranch,
-    InvertOrigBranch, TargetIsFallThrough, MBPI, CRI.MI,
-    UsingDef1 ? CRI.CopyDefs.first : CRI.CopyDefs.second };
+  BlockSplitInfo BSI{Branch,
+                     SplitBefore,
+                     SplitCond,
+                     InvertNewBranch,
+                     InvertOrigBranch,
+                     TargetIsFallThrough,
+                     MBPI,
+                     CRI.MI,
+                     UsingDef1 ? CRI.CopyDefs.first : CRI.CopyDefs.second};
   bool Changed = splitMBB(BSI);
   // If we've split on a CR logical that is fed by a CR logical,
   // recompute the source CR logical as it may be usable for splitting.
   if (Changed) {
     bool Input1CRlogical =
-      CRI.TrueDefs.first && isCRLogical(*CRI.TrueDefs.first);
+        CRI.TrueDefs.first && isCRLogical(*CRI.TrueDefs.first);
     bool Input2CRlogical =
-      CRI.TrueDefs.second && isCRLogical(*CRI.TrueDefs.second);
+        CRI.TrueDefs.second && isCRLogical(*CRI.TrueDefs.second);
     if (Input1CRlogical)
       AllCRLogicalOps.push_back(createCRLogicalOpInfo(*CRI.TrueDefs.first));
     if (Input2CRlogical)
@@ -734,5 +730,6 @@ INITIALIZE_PASS_END(PPCReduceCRLogicals, DEBUG_TYPE,
                     "PowerPC Reduce CR logical Operation", false, false)
 
 char PPCReduceCRLogicals::ID = 0;
-FunctionPass*
-llvm::createPPCReduceCRLogicalsPass() { return new PPCReduceCRLogicals(); }
+FunctionPass *llvm::createPPCReduceCRLogicalsPass() {
+  return new PPCReduceCRLogicals();
+}

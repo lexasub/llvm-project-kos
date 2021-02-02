@@ -322,7 +322,9 @@ static constexpr bool truthy() {
 
 #define HAS_XYZ_FEATURE true
 #define M1(what) M2(true, what)
-#define M2(condition, what) if (condition) what
+#define M2(condition, what) \
+  if (condition)            \
+  what
 
 void macros_and_constexprs(int i = 0) {
   bool b = (i == 1);
@@ -347,29 +349,44 @@ void macros_and_constexprs(int i = 0) {
 #undef HAS_XYZ_FEATURE
 
 bool conditional_return_statements(int i) {
-  if (i == 0) return true; else return false;
+  if (i == 0)
+    return true;
+  else
+    return false;
 }
 // CHECK-MESSAGES: :[[@LINE-2]]:22: warning: {{.*}} in conditional return statement
 // CHECK-FIXES:      {{^}}  return i == 0;{{$}}
 // CHECK-FIXES-NEXT: {{^}$}}
 
 bool conditional_return_statements_then_expr(int i, int j) {
-  if (i == j) return (i == 0); else return false;
+  if (i == j)
+    return (i == 0);
+  else
+    return false;
 }
 
 bool conditional_return_statements_else_expr(int i, int j) {
-  if (i == j) return true; else return (i == 0);
+  if (i == j)
+    return true;
+  else
+    return (i == 0);
 }
 
 bool negated_conditional_return_statements(int i) {
-  if (i == 0) return false; else return true;
+  if (i == 0)
+    return false;
+  else
+    return true;
 }
 // CHECK-MESSAGES: :[[@LINE-2]]:22: warning: {{.*}} in conditional return statement
 // CHECK-FIXES:      {{^}}  return i != 0;{{$}}
 // CHECK-FIXES-NEXT: {{^}$}}
 
 bool negative_condition_conditional_return_statement(int i) {
-  if (!(i == 0)) return false; else return true;
+  if (!(i == 0))
+    return false;
+  else
+    return true;
 }
 // CHECK-MESSAGES: :[[@LINE-2]]:25: warning: {{.*}} in conditional return statement
 // CHECK-FIXES:      {{^}}  return i == 0;{{$}}
@@ -440,9 +457,9 @@ void lambda_conditional_return_statements() {
 
   auto lambda2 = [](int n) -> bool {
     if (n > 0) {
-        return true;
+      return true;
     } else {
-        return false;
+      return false;
     }
   };
   // CHECK-MESSAGES: :[[@LINE-5]]:16: warning: {{.*}} in conditional return statement
@@ -454,10 +471,10 @@ void lambda_conditional_return_statements() {
 
   auto lambda4 = [](int n) -> bool {
     if (n > 0)
-        return true;
+      return true;
     else {
-        macros_and_constexprs();
-        return false;
+      macros_and_constexprs();
+      return false;
     }
   };
 
@@ -467,9 +484,9 @@ void lambda_conditional_return_statements() {
 
   auto lambda6 = [](int n) -> bool {
     if (n > 0) {
-        return false;
+      return false;
     } else {
-        return true;
+      return true;
     }
   };
   // CHECK-MESSAGES: :[[@LINE-5]]:16: warning: {{.*}} in conditional return statement
@@ -827,8 +844,7 @@ bool logical_and(bool a, bool b) {
 // CHECK-MESSAGES: :[[@LINE-5]]:12: warning: {{.*}} in conditional return
 // CHECK-FIXES: {{^}}  return a && b;{{$}}
 
-class Comparable
-{
+class Comparable {
 public:
   bool operator==(Comparable const &rhs) { return true; }
   bool operator!=(Comparable const &rhs) { return false; }
@@ -956,7 +972,7 @@ bool integer_not_zero(int i) {
 
 class A {
 public:
-    int m;
+  int m;
 };
 
 bool member_pointer_nullptr(int A::*p) {
@@ -979,7 +995,7 @@ bool integer_member_implicit_cast(A *p) {
 // CHECK-MESSAGES: :[[@LINE-5]]:12: warning: {{.*}} in conditional return
 // CHECK-FIXES: return p->m != 0;{{$}}
 
-bool operator!=(const A&, const A&) { return false; }
+bool operator!=(const A &, const A &) { return false; }
 bool expr_with_cleanups(A &S) {
   if (S != (A)S)
     return false;

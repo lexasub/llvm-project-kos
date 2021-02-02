@@ -20,7 +20,8 @@ using DominanceInfoNode = llvm::DomTreeNodeBase<Block>;
 class Operation;
 
 namespace detail {
-template <bool IsPostDom> class DominanceInfoBase {
+template <bool IsPostDom>
+class DominanceInfoBase {
   using base = llvm::DominatorTreeBase<Block, IsPostDom>;
 
 public:
@@ -164,7 +165,8 @@ namespace llvm {
 
 /// DominatorTree GraphTraits specialization so the DominatorTree can be
 /// iterated by generic graph iterators.
-template <> struct GraphTraits<mlir::DominanceInfoNode *> {
+template <>
+struct GraphTraits<mlir::DominanceInfoNode *> {
   using ChildIteratorType = mlir::DominanceInfoNode::const_iterator;
   using NodeRef = mlir::DominanceInfoNode *;
 
@@ -173,7 +175,8 @@ template <> struct GraphTraits<mlir::DominanceInfoNode *> {
   static inline ChildIteratorType child_end(NodeRef N) { return N->end(); }
 };
 
-template <> struct GraphTraits<const mlir::DominanceInfoNode *> {
+template <>
+struct GraphTraits<const mlir::DominanceInfoNode *> {
   using ChildIteratorType = mlir::DominanceInfoNode::const_iterator;
   using NodeRef = const mlir::DominanceInfoNode *;
 

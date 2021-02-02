@@ -2,7 +2,7 @@
 // expected-no-diagnostics
 
 namespace std {
-  typedef __typeof__(sizeof(int)) size_t;
+typedef __typeof__(sizeof(int)) size_t;
 }
 
 struct X {};

@@ -21,34 +21,34 @@ struct Foo {
 
 #ifdef VMB
 enum {
-  kSingleDataAlign             = 1 * sizeof(int),
-  kSingleFunctionAlign         = 1 * sizeof(void *),
-  kMultipleDataAlign           = 1 * sizeof(int),
+  kSingleDataAlign = 1 * sizeof(int),
+  kSingleFunctionAlign = 1 * sizeof(void *),
+  kMultipleDataAlign = 1 * sizeof(int),
   // Everything with more than 1 field is 8 byte aligned, except virtual data
   // member pointers on x64 (ugh).
-  kMultipleFunctionAlign       = 8,
+  kMultipleFunctionAlign = 8,
 #ifdef _M_X64
-  kVirtualDataAlign            = 4,
+  kVirtualDataAlign = 4,
 #else
-  kVirtualDataAlign            = 8,
+  kVirtualDataAlign = 8,
 #endif
-  kVirtualFunctionAlign        = 8,
-  kUnspecifiedDataAlign        = 8,
-  kUnspecifiedFunctionAlign    = 8,
+  kVirtualFunctionAlign = 8,
+  kUnspecifiedDataAlign = 8,
+  kUnspecifiedFunctionAlign = 8,
 
-  kSingleDataSize             = 1 * sizeof(int),
-  kSingleFunctionSize         = 1 * sizeof(void *),
-  kMultipleDataSize           = 1 * sizeof(int),
-  kMultipleFunctionSize       = 2 * sizeof(void *),
-  kVirtualDataSize            = 2 * sizeof(int),
-  kVirtualFunctionSize        = 2 * sizeof(int) + 1 * sizeof(void *),
-  kUnspecifiedDataSize        = 3 * sizeof(int),
-  kUnspecifiedFunctionSize    = 2 * sizeof(int) + 2 * sizeof(void *),
+  kSingleDataSize = 1 * sizeof(int),
+  kSingleFunctionSize = 1 * sizeof(void *),
+  kMultipleDataSize = 1 * sizeof(int),
+  kMultipleFunctionSize = 2 * sizeof(void *),
+  kVirtualDataSize = 2 * sizeof(int),
+  kVirtualFunctionSize = 2 * sizeof(int) + 1 * sizeof(void *),
+  kUnspecifiedDataSize = 3 * sizeof(int),
+  kUnspecifiedFunctionSize = 2 * sizeof(int) + 2 * sizeof(void *),
 };
 #elif VMV
 enum {
-  // Everything with more than 1 field is 8 byte aligned, except virtual data
-  // member pointers on x64 (ugh).
+// Everything with more than 1 field is 8 byte aligned, except virtual data
+// member pointers on x64 (ugh).
 #ifdef _M_X64
   kVirtualDataAlign = 4,
 #else
@@ -86,19 +86,19 @@ class IncSingle;
 class IncMultiple;
 class IncVirtual;
 #endif
-static_assert(sizeof(int IncSingle::*)        == kSingleDataSize, "");
-static_assert(sizeof(int IncMultiple::*)      == kMultipleDataSize, "");
-static_assert(sizeof(int IncVirtual::*)       == kVirtualDataSize, "");
-static_assert(sizeof(void (IncSingle::*)())   == kSingleFunctionSize, "");
+static_assert(sizeof(int IncSingle::*) == kSingleDataSize, "");
+static_assert(sizeof(int IncMultiple::*) == kMultipleDataSize, "");
+static_assert(sizeof(int IncVirtual::*) == kVirtualDataSize, "");
+static_assert(sizeof(void (IncSingle::*)()) == kSingleFunctionSize, "");
 static_assert(sizeof(void (IncMultiple::*)()) == kMultipleFunctionSize, "");
-static_assert(sizeof(void (IncVirtual::*)())  == kVirtualFunctionSize, "");
+static_assert(sizeof(void (IncVirtual::*)()) == kVirtualFunctionSize, "");
 
-static_assert(__alignof(int IncSingle::*)        == __alignof(void *), "");
-static_assert(__alignof(int IncMultiple::*)      == __alignof(void *), "");
-static_assert(__alignof(int IncVirtual::*)       == __alignof(void *), "");
-static_assert(__alignof(void (IncSingle::*)())   == __alignof(void *), "");
+static_assert(__alignof(int IncSingle::*) == __alignof(void *), "");
+static_assert(__alignof(int IncMultiple::*) == __alignof(void *), "");
+static_assert(__alignof(int IncVirtual::*) == __alignof(void *), "");
+static_assert(__alignof(void (IncSingle::*)()) == __alignof(void *), "");
 static_assert(__alignof(void (IncMultiple::*)()) == __alignof(void *), "");
-static_assert(__alignof(void (IncVirtual::*)())  == __alignof(void *), "");
+static_assert(__alignof(void (IncVirtual::*)()) == __alignof(void *), "");
 
 // An incomplete type with an unspecified inheritance model seems to take one
 // more slot than virtual.
@@ -107,58 +107,70 @@ static_assert(sizeof(int IncUnspecified::*) == kUnspecifiedDataSize, "");
 static_assert(sizeof(void (IncUnspecified::*)()) == kUnspecifiedFunctionSize, "");
 
 // complete types
-struct B1 { };
-struct B2 { };
-struct Single { };
-struct Multiple : B1, B2 { };
-struct Virtual : virtual B1 { };
-static_assert(sizeof(int Single::*)        == kSingleDataSize, "");
-static_assert(sizeof(int Multiple::*)      == kMultipleDataSize, "");
-static_assert(sizeof(int Virtual::*)       == kVirtualDataSize, "");
-static_assert(sizeof(void (Single::*)())   == kSingleFunctionSize, "");
+struct B1 {};
+struct B2 {};
+struct Single {};
+struct Multiple : B1, B2 {};
+struct Virtual : virtual B1 {};
+static_assert(sizeof(int Single::*) == kSingleDataSize, "");
+static_assert(sizeof(int Multiple::*) == kMultipleDataSize, "");
+static_assert(sizeof(int Virtual::*) == kVirtualDataSize, "");
+static_assert(sizeof(void (Single::*)()) == kSingleFunctionSize, "");
 static_assert(sizeof(void (Multiple::*)()) == kMultipleFunctionSize, "");
-static_assert(sizeof(void (Virtual::*)())  == kVirtualFunctionSize, "");
+static_assert(sizeof(void (Virtual::*)()) == kVirtualFunctionSize, "");
 
 // Test both declared and defined templates.
 template <typename T> class X;
 #ifdef VMB
-template <> class __single_inheritance   X<IncSingle>;
+template <> class __single_inheritance X<IncSingle>;
 template <> class __multiple_inheritance X<IncMultiple>;
-template <> class __virtual_inheritance  X<IncVirtual>;
+template <> class __virtual_inheritance X<IncVirtual>;
 #else
 template <> class X<IncSingle>;
 template <> class X<IncMultiple>;
 template <> class X<IncVirtual>;
 #endif
 // Don't declare X<IncUnspecified>.
-static_assert(sizeof(int X<IncSingle>::*)           == kSingleDataSize, "");
-static_assert(sizeof(int X<IncMultiple>::*)         == kMultipleDataSize, "");
-static_assert(sizeof(int X<IncVirtual>::*)          == kVirtualDataSize, "");
-static_assert(sizeof(int X<IncUnspecified>::*)      == kUnspecifiedDataSize, "");
-static_assert(sizeof(void (X<IncSingle>::*)())      == kSingleFunctionSize, "");
-static_assert(sizeof(void (X<IncMultiple>::*)())    == kMultipleFunctionSize, "");
-static_assert(sizeof(void (X<IncVirtual>::*)())     == kVirtualFunctionSize, "");
+static_assert(sizeof(int X<IncSingle>::*) == kSingleDataSize, "");
+static_assert(sizeof(int X<IncMultiple>::*) == kMultipleDataSize, "");
+static_assert(sizeof(int X<IncVirtual>::*) == kVirtualDataSize, "");
+static_assert(sizeof(int X<IncUnspecified>::*) == kUnspecifiedDataSize, "");
+static_assert(sizeof(void (X<IncSingle>::*)()) == kSingleFunctionSize, "");
+static_assert(sizeof(void (X<IncMultiple>::*)()) == kMultipleFunctionSize, "");
+static_assert(sizeof(void (X<IncVirtual>::*)()) == kVirtualFunctionSize, "");
 static_assert(sizeof(void (X<IncUnspecified>::*)()) == kUnspecifiedFunctionSize, "");
 
 template <typename T>
-struct Y : T { };
-static_assert(sizeof(int Y<Single>::*)        == kSingleDataSize, "");
-static_assert(sizeof(int Y<Multiple>::*)      == kMultipleDataSize, "");
-static_assert(sizeof(int Y<Virtual>::*)       == kVirtualDataSize, "");
-static_assert(sizeof(void (Y<Single>::*)())   == kSingleFunctionSize, "");
+struct Y : T {};
+static_assert(sizeof(int Y<Single>::*) == kSingleDataSize, "");
+static_assert(sizeof(int Y<Multiple>::*) == kMultipleDataSize, "");
+static_assert(sizeof(int Y<Virtual>::*) == kVirtualDataSize, "");
+static_assert(sizeof(void (Y<Single>::*)()) == kSingleFunctionSize, "");
 static_assert(sizeof(void (Y<Multiple>::*)()) == kMultipleFunctionSize, "");
-static_assert(sizeof(void (Y<Virtual>::*)())  == kVirtualFunctionSize, "");
+static_assert(sizeof(void (Y<Virtual>::*)()) == kVirtualFunctionSize, "");
 
-struct A { int x; void bar(); };
-struct B : A { virtual void foo(); };
+struct A {
+  int x;
+  void bar();
+};
+struct B : A {
+  virtual void foo();
+};
 static_assert(sizeof(int B::*) == kSingleDataSize, "");
 // A non-primary base class uses the multiple inheritance model for member
 // pointers.
 static_assert(sizeof(void (B::*)()) == kMultipleFunctionSize, "");
 
-struct AA { int x; virtual void foo(); };
-struct BB : AA { void bar(); };
-struct CC : BB { virtual void baz(); };
+struct AA {
+  int x;
+  virtual void foo();
+};
+struct BB : AA {
+  void bar();
+};
+struct CC : BB {
+  virtual void baz();
+};
 static_assert(sizeof(void (CC::*)()) == kSingleFunctionSize, "");
 
 // We start out unspecified.
@@ -195,17 +207,17 @@ struct MemPtrInBody {
 static_assert(sizeof(MemPtrInBody::MemPtr) == kSingleDataSize, "");
 
 // Passing a member pointer through a template should get the right size.
-template<typename T>
+template <typename T>
 struct SingleTemplate;
-template<typename T>
+template <typename T>
 struct SingleTemplate<void (T::*)(void)> {
   static_assert(sizeof(int T::*) == kSingleDataSize, "");
   static_assert(sizeof(void (T::*)()) == kSingleFunctionSize, "");
 };
 
-template<typename T>
+template <typename T>
 struct UnspecTemplate;
-template<typename T>
+template <typename T>
 struct UnspecTemplate<void (T::*)(void)> {
   static_assert(sizeof(int T::*) == kUnspecifiedDataSize, "");
   static_assert(sizeof(void (T::*)()) == kUnspecifiedFunctionSize, "");
@@ -215,7 +227,7 @@ struct NewUnspecified;
 SingleTemplate<void (IncSingle::*)()> tmpl_single;
 UnspecTemplate<void (NewUnspecified::*)()> tmpl_unspec;
 
-struct NewUnspecified { };
+struct NewUnspecified {};
 
 static_assert(sizeof(void (NewUnspecified::*)()) == kUnspecifiedFunctionSize, "");
 
@@ -229,25 +241,25 @@ struct MemPtrInTemplate {
 
 #ifdef VMB
 int Virtual::*CastTest = reinterpret_cast<int Virtual::*>(&AA::x);
-  // expected-error@-1 {{cannot reinterpret_cast from member pointer type}}
+// expected-error@-1 {{cannot reinterpret_cast from member pointer type}}
 #endif
 
 namespace ErrorTest {
 template <typename T, typename U> struct __single_inheritance A;
-  // expected-warning@-1 {{inheritance model ignored on primary template}}
+// expected-warning@-1 {{inheritance model ignored on primary template}}
 template <typename T> struct __multiple_inheritance A<T, T>;
-  // expected-warning@-1 {{inheritance model ignored on partial specialization}}
+// expected-warning@-1 {{inheritance model ignored on partial specialization}}
 template <> struct __single_inheritance A<int, float>;
 
-struct B {}; // expected-note {{'B' defined here}}
+struct B {};                     // expected-note {{'B' defined here}}
 struct __multiple_inheritance B; // expected-error{{inheritance model does not match definition}}
 
-struct __multiple_inheritance C {}; // expected-error{{inheritance model does not match definition}}
- // expected-note@-1 {{'C' defined here}}
+struct __multiple_inheritance C{}; // expected-error{{inheritance model does not match definition}}
+                                   // expected-note@-1 {{'C' defined here}}
 
 struct __virtual_inheritance D;
 struct D : virtual B {};
-}
+} // namespace ErrorTest
 #ifdef VMB
 
 namespace PR20017 {
@@ -266,7 +278,7 @@ void q() {
   A<B> b;
   (b.*a)();
 }
-}
+} // namespace PR20017
 
 #pragma pointers_to_members(full_generality, multiple_inheritance)
 struct TrulySingleInheritance;
@@ -296,6 +308,6 @@ namespace merging {
 struct __single_inheritance S;
 struct __single_inheritance S;
 
-struct __single_inheritance M; // expected-note{{previous inheritance model specified here}}
+struct __single_inheritance M;   // expected-note{{previous inheritance model specified here}}
 struct __multiple_inheritance M; // expected-error{{inheritance model does not match previous declaration}}
-}
+} // namespace merging

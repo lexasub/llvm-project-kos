@@ -20,26 +20,25 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
+int main(int, char**) {
+  {
     using namespace std::chrono;
     ASSERT_NOEXCEPT(4y);
 
-    static_assert( 2017y == year(2017), "");
+    static_assert(2017y == year(2017), "");
     year y1 = 2018y;
-    assert (y1 == year(2018));
-    }
+    assert(y1 == year(2018));
+  }
 
-    {
+  {
     using namespace std::literals;
     ASSERT_NOEXCEPT(4d);
 
-    static_assert( 2017y == std::chrono::year(2017), "");
+    static_assert(2017y == std::chrono::year(2017), "");
 
     std::chrono::year y1 = 2020y;
-    assert (y1 == std::chrono::year(2020));
-    }
+    assert(y1 == std::chrono::year(2020));
+  }
 
   return 0;
 }

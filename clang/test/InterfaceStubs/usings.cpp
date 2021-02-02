@@ -7,11 +7,12 @@
 // CHECK-NEXT: Symbols:
 // CHECK-NEXT: ...
 
-template<typename T> struct S2 { static unsigned f(); };
-template<typename T> struct S3  { using S2<T>::f; };
+template <typename T> struct S2 { static unsigned f(); };
+template <typename T> struct S3 { using S2<T>::f; };
 
-typedef struct {} S4;
+typedef struct {
+} S4;
 using ::S4;
 
-template<typename T, T t> struct C3{};
-template<bool b> using U1 = C3<bool, b>;
+template <typename T, T t> struct C3 {};
+template <bool b> using U1 = C3<bool, b>;

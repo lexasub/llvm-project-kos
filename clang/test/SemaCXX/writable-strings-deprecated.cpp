@@ -11,25 +11,23 @@
 // RUN: %clang_cc1 -fsyntax-only -std=c++11 -verify %s -pedantic-errors -DERROR
 // rdar://8827606
 
-char *fun(void)
-{
-   return "foo";
+char *fun(void) {
+  return "foo";
 #if defined(ERROR)
 #if __cplusplus >= 201103L
-   // expected-error@-3 {{ISO C++11 does not allow conversion from string literal to 'char *'}}
+  // expected-error@-3 {{ISO C++11 does not allow conversion from string literal to 'char *'}}
 #else
-   // expected-error@-5 {{conversion from string literal to 'char *' is deprecated}}
+  // expected-error@-5 {{conversion from string literal to 'char *' is deprecated}}
 #endif
 #elif defined(WARNING)
 #if __cplusplus >= 201103L
-   // expected-warning@-9 {{ISO C++11 does not allow conversion from string literal to 'char *'}}
+  // expected-warning@-9 {{ISO C++11 does not allow conversion from string literal to 'char *'}}
 #else
-   // expected-warning@-11 {{conversion from string literal to 'char *' is deprecated}}
+  // expected-warning@-11 {{conversion from string literal to 'char *' is deprecated}}
 #endif
 #endif
 }
 
-void test(bool b)
-{
+void test(bool b) {
   ++b; // expected-warning {{incrementing expression of type bool is deprecated}}
 }

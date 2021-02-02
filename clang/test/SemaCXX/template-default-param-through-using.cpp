@@ -1,33 +1,33 @@
 // RUN: %clang_cc1 -fsyntax-only -verify %s
 // expected-no-diagnostics
 namespace llvm {
-  template<typename T > struct StringSet;
-  template<int I > struct Int;
-  template <typename Inner, template <typename> class Outer>
-    struct TemplTempl;
-}
+template <typename T> struct StringSet;
+template <int I> struct Int;
+template <typename Inner, template <typename> class Outer>
+struct TemplTempl;
+} // namespace llvm
 
 namespace lld {
-  using llvm::StringSet;
-  using llvm::Int;
-  using llvm::TemplTempl;
-};
+using llvm::Int;
+using llvm::StringSet;
+using llvm::TemplTempl;
+}; // namespace lld
 
 namespace llvm {
-  template<typename T > struct StringSet;
+template <typename T> struct StringSet;
 }
 
-template<typename T> struct Temp{};
+template <typename T> struct Temp {};
 
 namespace llvm {
-  template<typename T = int> struct StringSet{};
-  template<int I = 5> struct Int{};
-  template <typename Inner, template <typename> class Outer = Temp>
-    struct TemplTempl{};
-};
+template <typename T = int> struct StringSet {};
+template <int I = 5> struct Int {};
+template <typename Inner, template <typename> class Outer = Temp>
+struct TemplTempl {};
+}; // namespace llvm
 
 namespace lld {
-  StringSet<> s;
-  Int<> i;
-  TemplTempl<int> tt;
-}
+StringSet<> s;
+Int<> i;
+TemplTempl<int> tt;
+} // namespace lld

@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
 #if GOOD_SHIFT
   shift = 3;
 #endif
-  if ((argc << shift) == 16)  // False.
+  if ((argc << shift) == 16) // False.
     return 1;
   return 0;
 }

@@ -34,7 +34,7 @@ protected:
   void TryGetAndPut(const FileSpec &cache_dir, const char *hostname,
                     bool expect_download);
 };
-}
+} // namespace
 
 static const char dummy_hostname[] = "dummy_hostname";
 static const char dummy_remote_dir[] = "bin";

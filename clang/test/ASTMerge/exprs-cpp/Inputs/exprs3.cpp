@@ -19,14 +19,14 @@ const unsigned long C6 = 23;
 const long long C7 = 66;
 const unsigned long long C8 = 67;
 
-
 // String literals
 const char str1[] = "ABCD";
-const char str2[] = "ABCD" "0123";
+const char str2[] = "ABCD"
+                    "0123";
 
 const wchar_t wstr1[] = L"DEF";
-const wchar_t wstr2[] = L"DEF" L"123";
-
+const wchar_t wstr2[] = L"DEF"
+                        L"123";
 
 // Boolean literals
 const bool bval1 = true;
@@ -37,12 +37,10 @@ const float F1 = 12.2F;
 const double F2 = 1E4;
 const long double F3 = 1.2E-3L;
 
-
 // nullptr literal
 const void *vptr = nullptr;
 
-
-int glb_1[4] = { 10, 20, 30, 40 };
+int glb_1[4] = {10, 20, 30, 40};
 
 struct S1 {
   int a;
@@ -54,7 +52,7 @@ struct S2 {
   S1 d;
 };
 
-S2 glb_2 = { 22, .d.a = 44, .d.b[0] = 55, .d.b[1] = 66 };
+S2 glb_2 = {22, .d.a = 44, .d.b[0] = 55, .d.b[1] = 66};
 
 void testNewThrowDelete() {
   throw;
@@ -71,19 +69,19 @@ int testTernaryOp(int c, int x, int y) {
 }
 
 S1 &testConstCast(const S1 &x) {
-  return const_cast<S1&>(x);
+  return const_cast<S1 &>(x);
 }
 
 S1 &testStaticCast(S1 &x) {
-  return static_cast<S1&>(x);
+  return static_cast<S1 &>(x);
 }
 
 S1 &testReinterpretCast(S1 &x) {
-  return reinterpret_cast<S1&>(x);
+  return reinterpret_cast<S1 &>(x);
 }
 
 S1 &testDynamicCast(S1 &x) {
-  return dynamic_cast<S1&>(x);
+  return dynamic_cast<S1 &>(x);
 }
 
 int testScalarInit(int x) {
@@ -103,8 +101,7 @@ void testOffsetOf() {
   __builtin_offsetof(struct T, s[2].d);
 }
 
-
-int testDefaultArg(int a = 2*2) {
+int testDefaultArg(int a = 2 * 2) {
   return a;
 }
 
@@ -131,7 +128,7 @@ constexpr int testLambdaAdd(int toAdd) {
   return LambdaAdd(toAdd);
 }
 
-template<typename T>
+template <typename T>
 struct TestLambdaTemplate {
   T i, j;
   TestLambdaTemplate(T i, const T &j) : i(i), j(j) {}

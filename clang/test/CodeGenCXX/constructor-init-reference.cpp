@@ -2,7 +2,7 @@
 
 int x;
 struct A {
-  int& y;
+  int &y;
   A() : y(x) {}
 };
 A z;

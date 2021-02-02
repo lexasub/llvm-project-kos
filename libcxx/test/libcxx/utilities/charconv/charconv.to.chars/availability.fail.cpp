@@ -18,15 +18,18 @@
 
 #include <charconv>
 
-int main(int, char**)
-{
-    char buf[100];
-    int int_value = 33;
-    long long_value = 33;
-    int base = 2;
-    std::to_chars(buf, buf + 100, int_value); // expected-error{{is unavailable: introduced in}}
-    std::to_chars(buf, buf + 100, int_value, base); // expected-error{{is unavailable: introduced in}}
+int main(int, char**) {
+  char buf[100];
+  int int_value = 33;
+  long long_value = 33;
+  int base = 2;
+  std::to_chars(buf, buf + 100,
+                int_value); // expected-error{{is unavailable: introduced in}}
+  std::to_chars(buf, buf + 100, int_value,
+                base); // expected-error{{is unavailable: introduced in}}
 
-    std::to_chars(buf, buf + 100, long_value); // expected-error{{is unavailable: introduced in}}
-    std::to_chars(buf, buf + 100, long_value, base); // expected-error{{is unavailable: introduced in}}
+  std::to_chars(buf, buf + 100,
+                long_value); // expected-error{{is unavailable: introduced in}}
+  std::to_chars(buf, buf + 100, long_value,
+                base); // expected-error{{is unavailable: introduced in}}
 }

@@ -4,13 +4,13 @@
 wchar_t x; // expected-error {{unknown type name 'wchar_t'}}
 
 typedef unsigned short wchar_t;
-void foo(const wchar_t* x);
+void foo(const wchar_t *x);
 
 void bar() {
   foo(L"wide string literal");
 }
 
-void foo1(wchar_t * t = L"");
+void foo1(wchar_t *t = L"");
 #if __cplusplus <= 199711L
 // expected-warning@-2 {{conversion from string literal to 'wchar_t *' (aka 'unsigned short *') is deprecated}}
 #else
@@ -32,5 +32,5 @@ const wchar_t *d2 = 0;
 wchar_t *d = true ? d1 : d2;
 // expected-error@-1 {{cannot initialize a variable of type 'wchar_t *' (aka 'unsigned short *') with}}
 
-wchar_t* e = (const wchar_t*)L"";
+wchar_t *e = (const wchar_t *)L"";
 // expected-error@-1 {{cannot initialize a variable of type 'wchar_t *' (aka 'unsigned short *') with an rvalue of type 'const wchar_t *' (aka 'const unsigned short *')}}

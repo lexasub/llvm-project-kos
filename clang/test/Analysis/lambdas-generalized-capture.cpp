@@ -4,7 +4,7 @@ int clang_analyzer_eval(int);
 
 void generalizedCapture() {
   int v = 7;
-  auto lambda = [x=v]() {
+  auto lambda = [x = v]() {
     return x;
   };
 
@@ -14,7 +14,7 @@ void generalizedCapture() {
 
 void sideEffectsInGeneralizedCapture() {
   int v = 7;
-  auto lambda = [x=v++]() {
+  auto lambda = [x = v++]() {
     return x;
   };
   clang_analyzer_eval(v == 8); // expected-warning {{TRUE}}
@@ -23,16 +23,16 @@ void sideEffectsInGeneralizedCapture() {
   int r2 = lambda();
   clang_analyzer_eval(r1 == 7); // expected-warning {{TRUE}}
   clang_analyzer_eval(r2 == 7); // expected-warning {{TRUE}}
-  clang_analyzer_eval(v == 8); // expected-warning {{TRUE}}
+  clang_analyzer_eval(v == 8);  // expected-warning {{TRUE}}
 }
 
 int addOne(int p) {
- return p + 1;
+  return p + 1;
 }
 
 void inliningInGeneralizedCapture() {
   int v = 7;
-  auto lambda = [x=addOne(v)]() {
+  auto lambda = [x = addOne(v)]() {
     return x;
   };
 
@@ -41,7 +41,7 @@ void inliningInGeneralizedCapture() {
 }
 
 void caseSplitInGeneralizedCapture(bool p) {
-  auto lambda = [x=(p ? 1 : 2)]() {
+  auto lambda = [x = (p ? 1 : 2)]() {
     return x;
   };
 

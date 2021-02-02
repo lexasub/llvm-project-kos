@@ -227,8 +227,8 @@ Optional<std::string> elf::findFromSearchPaths(StringRef path) {
   return None;
 }
 
-// This is for -l<basename>. We'll look for lib<basename>.so or lib<basename>.a from
-// search paths.
+// This is for -l<basename>. We'll look for lib<basename>.so or lib<basename>.a
+// from search paths.
 Optional<std::string> elf::searchLibraryBaseName(StringRef name) {
   for (StringRef dir : config->searchPaths) {
     if (!config->isStatic)

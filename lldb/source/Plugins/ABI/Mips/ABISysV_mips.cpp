@@ -660,7 +660,7 @@ bool ABISysV_mips::PrepareTrivialCall(Thread &thread, addr_t sp,
   /* Write r0 with 0, in case we are stopped in syscall,
    * such setting prevents automatic decrement of the PC.
    * This clears the bug 23659 for MIPS.
-  */
+   */
   if (!reg_ctx->WriteRegisterFromUnsigned(r0_info, (uint64_t)0))
     return false;
 

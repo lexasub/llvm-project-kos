@@ -41,16 +41,16 @@
 // CHECK: [[CA:%.+]] = type { i32* }
 
 // CHECK: define {{.*}}i32 @[[NNAME:.+]](i32 {{.*}}%{{.+}})
-int nested(int a){
-  // CHECK: call void @__omp_offloading_[[FILEID:[0-9a-f]+_[0-9a-f]+]]_[[NNAME]]_l[[T1L:[0-9]+]](
-  #pragma omp target
-    ++a;
+int nested(int a) {
+// CHECK: call void @__omp_offloading_[[FILEID:[0-9a-f]+_[0-9a-f]+]]_[[NNAME]]_l[[T1L:[0-9]+]](
+#pragma omp target
+  ++a;
 
   // CHECK: call void @"[[LNAME:.+]]"([[CA]]*
-  auto F = [&](){
-    #pragma omp parallel
+  auto F = [&]() {
+#pragma omp parallel
     {
-      #pragma omp target
+#pragma omp target
       ++a;
     }
   };
@@ -71,7 +71,6 @@ int nested(int a){
 
 // CHECK: define {{.*}}void @__omp_offloading_[[FILEID]]_[[NNAME]]_l[[T2L]](
 // TCHECK: define {{.*}}void @__omp_offloading_[[FILEID]]_[[NNAME:.+]]_l[[T2L:[0-9]+]](
-
 
 // Check metadata is properly generated:
 // CHECK:     !omp_offload.info = !{!{{[0-9]+}}, !{{[0-9]+}}}

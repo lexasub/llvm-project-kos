@@ -23,8 +23,8 @@ struct A {
   int x;
 };
 
-struct Base { };
-struct Derived : public Base { };
+struct Base {};
+struct Derived : public Base {};
 
 int main(int, char**) {
   {
@@ -50,14 +50,17 @@ int main(int, char**) {
   {
     const std::shared_ptr<Derived> pDerived(new Derived);
     std::shared_ptr<Base> pBase = std::reinterpret_pointer_cast<Base>(pDerived);
-    std::shared_ptr<Derived> pDerived2 = std::reinterpret_pointer_cast<Derived>(pBase);
+    std::shared_ptr<Derived> pDerived2 =
+        std::reinterpret_pointer_cast<Derived>(pBase);
     assert(pDerived2.get() == pDerived2.get());
     assert(!pBase.owner_before(pDerived) && !pDerived.owner_before(pBase));
   }
   {
     const std::shared_ptr<Base> pBase(new Base);
-    std::shared_ptr<Derived> pDerived = std::reinterpret_pointer_cast<Derived>(pBase);
-    std::shared_ptr<Base> pBase2 = std::reinterpret_pointer_cast<Base>(pDerived);
+    std::shared_ptr<Derived> pDerived =
+        std::reinterpret_pointer_cast<Derived>(pBase);
+    std::shared_ptr<Base> pBase2 =
+        std::reinterpret_pointer_cast<Base>(pDerived);
     assert(pBase2.get() == pBase.get());
     assert(!pDerived.owner_before(pBase) && !pBase.owner_before(pDerived));
   }

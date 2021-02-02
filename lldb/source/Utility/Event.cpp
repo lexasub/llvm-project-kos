@@ -129,8 +129,9 @@ void EventDataBytes::Dump(Stream *s) const {
   if (num_printable_chars == m_bytes.size())
     s->Format("\"{0}\"", m_bytes);
   else
-    s->Format("{0:$[ ]@[x-2]}", llvm::make_range(
-                         reinterpret_cast<const uint8_t *>(m_bytes.data()),
+    s->Format(
+        "{0:$[ ]@[x-2]}",
+        llvm::make_range(reinterpret_cast<const uint8_t *>(m_bytes.data()),
                          reinterpret_cast<const uint8_t *>(m_bytes.data() +
                                                            m_bytes.size())));
 }

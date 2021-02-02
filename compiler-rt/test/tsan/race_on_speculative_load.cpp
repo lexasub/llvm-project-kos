@@ -4,8 +4,7 @@
 #include "test.h"
 
 int g;
-__attribute__((noinline))
-int foo(int cond) {
+__attribute__((noinline)) int foo(int cond) {
   if (cond)
     return g;
   return 0;
@@ -14,7 +13,7 @@ int foo(int cond) {
 void *Thread1(void *p) {
   barrier_wait(&barrier);
   long res = foo((long)p);
-  return (void*) res;
+  return (void *)res;
 }
 
 int main() {

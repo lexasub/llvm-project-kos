@@ -26,7 +26,7 @@ enum e { E };
 void foo() {
   int v = E;
 }
-}
+} // namespace test1
 
 namespace test2 {
 // rdar://8195980
@@ -43,7 +43,7 @@ enum e { E };
 bool func(int i) {
   return i == E;
 }
-}
+} // namespace test2
 
 namespace test3 {
 // CHECK: [[E3]] = !DICompositeType(tag: DW_TAG_enumeration_type, name: "e"
@@ -57,7 +57,7 @@ enum e { E = -1 };
 void func() {
   e x;
 }
-}
+} // namespace test3
 
 namespace test4 {
 // Don't try to build debug info for a dependent enum.
@@ -66,4 +66,4 @@ template <typename T>
 struct S {
   enum e { E = T::v };
 };
-}
+} // namespace test4

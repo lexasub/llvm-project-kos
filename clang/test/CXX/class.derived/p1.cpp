@@ -20,21 +20,23 @@
 //         public
 
 namespace PR11216 {
-  struct Base { };
-  struct Derived : decltype(Base()) { };
+struct Base {};
+struct Derived : decltype(Base()) {};
 
-  int func();
-  struct Derived2 : decltype(func()) { }; // expected-error {{base specifier must name a class}}
+int func();
+struct Derived2 : decltype(func()) {}; // expected-error {{base specifier must name a class}}
 
-  template<typename T>
-  struct Derived3 : decltype(T().foo()) { };
-  struct Foo { Base foo(); };
-  Derived3<Foo> d;
+template <typename T>
+struct Derived3 : decltype(T().foo()) {};
+struct Foo {
+  Base foo();
+};
+Derived3<Foo> d;
 
-  struct Derived4 : :: decltype(Base()) { }; // expected-error {{unexpected namespace scope prior to decltype}}
+struct Derived4 : ::decltype(Base()) {}; // expected-error {{unexpected namespace scope prior to decltype}}
 
-  struct Derived5 : PR11216:: decltype(Base()) { }; // expected-error {{unexpected namespace scope prior to decltype}}
+struct Derived5 : PR11216::decltype(Base()) {}; // expected-error {{unexpected namespace scope prior to decltype}}
 
-  template<typename T>
-  struct Derived6 : typename T::foo { }; // expected-error {{'typename' is redundant; base classes are implicitly types}}
-}
+template <typename T>
+struct Derived6 : typename T::foo {}; // expected-error {{'typename' is redundant; base classes are implicitly types}}
+} // namespace PR11216

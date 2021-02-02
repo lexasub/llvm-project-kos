@@ -11,7 +11,7 @@ public:
 };
 typedef basic_string<char> string;
 typedef basic_string<wchar_t> wstring;
-}
+} // namespace std
 
 void f(std::string) {}
 std::string g(std::string) {}

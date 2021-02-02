@@ -15,7 +15,6 @@
 #include "filesystem_include.h"
 #include <iterator>
 
-
 int main(int, char**) {
   using namespace fs;
   using RIt = std::reverse_iterator<path::iterator>;

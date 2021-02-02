@@ -20,11 +20,10 @@
 #include <strstream>
 #include <cassert>
 
-int main(int, char**)
-{
+int main(int, char**) {
 #if TEST_STD_VER <= 14
-    std::strstream::open_mode b = std::strstream::app;
-    assert(b == std::ios::app);
+  std::strstream::open_mode b = std::strstream::app;
+  assert(b == std::ios::app);
 #endif
 
   return 0;

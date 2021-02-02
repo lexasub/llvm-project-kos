@@ -24,9 +24,8 @@ namespace mca {
 
 SummaryView::SummaryView(const MCSchedModel &Model, ArrayRef<MCInst> S,
                          unsigned Width)
-    : SM(Model), Source(S), DispatchWidth(Width?Width: Model.IssueWidth),
-      LastInstructionIdx(0),
-      TotalCycles(0), NumMicroOps(0),
+    : SM(Model), Source(S), DispatchWidth(Width ? Width : Model.IssueWidth),
+      LastInstructionIdx(0), TotalCycles(0), NumMicroOps(0),
       ProcResourceUsage(Model.getNumProcResourceKinds(), 0),
       ProcResourceMasks(Model.getNumProcResourceKinds()),
       ResIdx2ProcResID(Model.getNumProcResourceKinds(), 0) {

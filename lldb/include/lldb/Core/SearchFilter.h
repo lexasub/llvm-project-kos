@@ -28,7 +28,7 @@ class SearchFilter;
 class Stream;
 class SymbolContext;
 class Target;
-}
+} // namespace lldb_private
 
 namespace lldb_private {
 
@@ -197,10 +197,10 @@ public:
   /// Standard "Dump" method.  At present it does nothing.
   virtual void Dump(Stream *s) const;
 
-  lldb::SearchFilterSP CreateCopy(lldb::TargetSP& target_sp);
+  lldb::SearchFilterSP CreateCopy(lldb::TargetSP &target_sp);
 
   static lldb::SearchFilterSP
-  CreateFromStructuredData(const lldb::TargetSP& target_sp,
+  CreateFromStructuredData(const lldb::TargetSP &target_sp,
                            const StructuredData::Dictionary &data_dict,
                            Status &error);
 
@@ -298,7 +298,7 @@ public:
   bool ModulePasses(const lldb::ModuleSP &module_sp) override;
 
   static lldb::SearchFilterSP
-  CreateFromStructuredData(const lldb::TargetSP& target_sp,
+  CreateFromStructuredData(const lldb::TargetSP &target_sp,
                            const StructuredData::Dictionary &data_dict,
                            Status &error);
 
@@ -340,7 +340,7 @@ public:
   void Search(Searcher &searcher) override;
 
   static lldb::SearchFilterSP
-  CreateFromStructuredData(const lldb::TargetSP& target_sp,
+  CreateFromStructuredData(const lldb::TargetSP &target_sp,
                            const StructuredData::Dictionary &data_dict,
                            Status &error);
 
@@ -387,7 +387,7 @@ public:
   void Search(Searcher &searcher) override;
 
   static lldb::SearchFilterSP
-  CreateFromStructuredData(const lldb::TargetSP& target_sp,
+  CreateFromStructuredData(const lldb::TargetSP &target_sp,
                            const StructuredData::Dictionary &data_dict,
                            Status &error);
 
@@ -426,7 +426,7 @@ public:
   void Search(Searcher &searcher) override;
 
   static lldb::SearchFilterSP
-  CreateFromStructuredData(const lldb::TargetSP& target_sp,
+  CreateFromStructuredData(const lldb::TargetSP &target_sp,
                            const StructuredData::Dictionary &data_dict,
                            Status &error);
 

@@ -14,16 +14,16 @@
 // successfully round-trip.
 #ifndef HEADER
 #define HEADER
-template<unsigned T=123, unsigned... U>
+template <unsigned T = 123, unsigned... U>
 class dummy;
 
-template<unsigned T, unsigned... U>
+template <unsigned T, unsigned... U>
 class dummy {
-    int field[T];
+  int field[T];
 };
 #else
 void f() {
-    dummy<> x;
-    (void)x;
+  dummy<> x;
+  (void)x;
 }
 #endif

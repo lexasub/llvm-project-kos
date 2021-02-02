@@ -18,27 +18,27 @@
 
 template <std::size_t N>
 void test_op_or() {
-    std::vector<std::bitset<N> > const cases = get_test_cases<N>();
-    for (std::size_t c1 = 0; c1 != cases.size(); ++c1) {
-        for (std::size_t c2 = 0; c2 != cases.size(); ++c2) {
-            std::bitset<N> v1 = cases[c1];
-            std::bitset<N> v2 = cases[c2];
-            std::bitset<N> v3 = v1;
-            assert((v1 | v2) == (v3 |= v2));
-        }
+  std::vector<std::bitset<N> > const cases = get_test_cases<N>();
+  for (std::size_t c1 = 0; c1 != cases.size(); ++c1) {
+    for (std::size_t c2 = 0; c2 != cases.size(); ++c2) {
+      std::bitset<N> v1 = cases[c1];
+      std::bitset<N> v2 = cases[c2];
+      std::bitset<N> v3 = v1;
+      assert((v1 | v2) == (v3 |= v2));
     }
+  }
 }
 
 int main(int, char**) {
-    test_op_or<0>();
-    test_op_or<1>();
-    test_op_or<31>();
-    test_op_or<32>();
-    test_op_or<33>();
-    test_op_or<63>();
-    test_op_or<64>();
-    test_op_or<65>();
-    test_op_or<1000>();
+  test_op_or<0>();
+  test_op_or<1>();
+  test_op_or<31>();
+  test_op_or<32>();
+  test_op_or<33>();
+  test_op_or<63>();
+  test_op_or<64>();
+  test_op_or<65>();
+  test_op_or<1000>();
 
-    return 0;
+  return 0;
 }

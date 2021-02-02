@@ -27,8 +27,8 @@ TEST(WholeProgramDevirt, findLowestOffset) {
   TypeMemberInfo TM1{&VT1, 0};
   TypeMemberInfo TM2{&VT2, 0};
   VirtualCallTarget Targets[] = {
-    {&TM1, /*IsBigEndian=*/false},
-    {&TM2, /*IsBigEndian=*/false},
+      {&TM1, /*IsBigEndian=*/false},
+      {&TM2, /*IsBigEndian=*/false},
   };
 
   EXPECT_EQ(2ull, findLowestOffset(Targets, /*IsAfter=*/false, 1));
@@ -68,8 +68,8 @@ TEST(WholeProgramDevirt, setReturnValues) {
   TypeMemberInfo TM1{&VT1, 0};
   TypeMemberInfo TM2{&VT2, 0};
   VirtualCallTarget Targets[] = {
-    {&TM1, /*IsBigEndian=*/false},
-    {&TM2, /*IsBigEndian=*/false},
+      {&TM1, /*IsBigEndian=*/false},
+      {&TM2, /*IsBigEndian=*/false},
   };
 
   TM1.Offset = 4;

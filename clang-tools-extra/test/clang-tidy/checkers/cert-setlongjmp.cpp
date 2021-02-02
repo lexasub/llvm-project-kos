@@ -8,7 +8,7 @@ extern int __setjmpimpl(jmp_buf);
 namespace std {
 using ::jmp_buf;
 using ::longjmp;
-}
+} // namespace std
 
 static jmp_buf env;
 void g() {

@@ -76,7 +76,7 @@ private:
   uint32_t m_sdk_version;
 };
 
-} // namespace platofor_android
+} // namespace platform_android
 } // namespace lldb_private
 
 #endif // LLDB_SOURCE_PLUGINS_PLATFORM_ANDROID_PLATFORMANDROID_H

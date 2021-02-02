@@ -43,8 +43,9 @@ void DiffLogBuilder::addRight(Instruction *R) {
 unsigned DiffLogBuilder::getNumLines() const { return Diff.size(); }
 
 DiffChange DiffLogBuilder::getLineKind(unsigned I) const {
-  return (Diff[I].first ? (Diff[I].second ? DC_match : DC_left)
-                        : DC_right);
+  return (Diff[I].first ? (Diff[I].second ? DC_match : DC_left) : DC_right);
 }
 Instruction *DiffLogBuilder::getLeft(unsigned I) const { return Diff[I].first; }
-Instruction *DiffLogBuilder::getRight(unsigned I) const { return Diff[I].second; }
+Instruction *DiffLogBuilder::getRight(unsigned I) const {
+  return Diff[I].second;
+}

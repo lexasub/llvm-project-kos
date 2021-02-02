@@ -7,20 +7,21 @@ class A {
 public:
   static int y __attribute__((internal_linkage));
   static int y2 [[clang::internal_linkage]];
-// CHECK-DAG: @_ZN1A1yE = internal global
-// CHECK-DAG: @_ZN1A2y2E = internal global
+  // CHECK-DAG: @_ZN1A1yE = internal global
+  // CHECK-DAG: @_ZN1A2y2E = internal global
   void f1() __attribute__((internal_linkage));
-// CHECK-DAG: define internal void @_ZN1A2f1Ev
+  // CHECK-DAG: define internal void @_ZN1A2f1Ev
   void f2() __attribute__((internal_linkage)) {}
-// CHECK-DAG: define internal void @_ZN1A2f2Ev
+  // CHECK-DAG: define internal void @_ZN1A2f2Ev
   static void f4() __attribute__((internal_linkage)) {}
-// CHECK-DAG: define internal void @_ZN1A2f4Ev
-  A() __attribute__((internal_linkage)) {}
-// CHECK-DAG: define internal void @_ZN1AC1Ev
-// CHECK-DAG: define internal void @_ZN1AC2Ev
+  // CHECK-DAG: define internal void @_ZN1A2f4Ev
+  A()
+  __attribute__((internal_linkage)) {}
+  // CHECK-DAG: define internal void @_ZN1AC1Ev
+  // CHECK-DAG: define internal void @_ZN1AC2Ev
   ~A() __attribute__((internal_linkage)) {}
-// CHECK-DAG: define internal void @_ZN1AD1Ev
-// CHECK-DAG: define internal void @_ZN1AD2Ev
+  // CHECK-DAG: define internal void @_ZN1AD1Ev
+  // CHECK-DAG: define internal void @_ZN1AD2Ev
 };
 
 int A::y;
@@ -41,7 +42,7 @@ public:
   ~B() {}
   // CHECK-DAG: define internal void @_ZNL1BD1Ev
   // CHECK-DAG: define internal void @_ZNL1BD2Ev
-  void f() {};
+  void f(){};
   // CHECK-DAG: define internal void @_ZNL1B1fEv
   static int x;
   // CHECK-DAG: @_ZNL1B1xE = internal global

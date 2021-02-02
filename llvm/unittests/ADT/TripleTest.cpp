@@ -1380,14 +1380,10 @@ TEST(TripleTest, FileFormat) {
             Triple("wasm32-unknown-unknown-wasm").getObjectFormat());
   EXPECT_EQ(Triple::Wasm,
             Triple("wasm64-unknown-unknown-wasm").getObjectFormat());
-  EXPECT_EQ(Triple::Wasm,
-            Triple("wasm32-wasi-wasm").getObjectFormat());
-  EXPECT_EQ(Triple::Wasm,
-            Triple("wasm64-wasi-wasm").getObjectFormat());
-  EXPECT_EQ(Triple::Wasm,
-            Triple("wasm32-unknown-wasi-wasm").getObjectFormat());
-  EXPECT_EQ(Triple::Wasm,
-            Triple("wasm64-unknown-wasi-wasm").getObjectFormat());
+  EXPECT_EQ(Triple::Wasm, Triple("wasm32-wasi-wasm").getObjectFormat());
+  EXPECT_EQ(Triple::Wasm, Triple("wasm64-wasi-wasm").getObjectFormat());
+  EXPECT_EQ(Triple::Wasm, Triple("wasm32-unknown-wasi-wasm").getObjectFormat());
+  EXPECT_EQ(Triple::Wasm, Triple("wasm64-unknown-wasi-wasm").getObjectFormat());
 
   EXPECT_EQ(Triple::XCOFF, Triple("powerpc-ibm-aix").getObjectFormat());
   EXPECT_EQ(Triple::XCOFF, Triple("powerpc64-ibm-aix").getObjectFormat());

@@ -25,10 +25,10 @@
 #include "test_macros.h"
 
 int main(int, char**) {
-    typedef std::unordered_set<int> C;
-    C c;
-    (void) c.bucket(3);
-    assert(false);
+  typedef std::unordered_set<int> C;
+  C c;
+  (void)c.bucket(3);
+  assert(false);
 
-    return 0;
+  return 0;
 }

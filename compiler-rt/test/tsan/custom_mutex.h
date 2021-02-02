@@ -1,16 +1,13 @@
 #include "test.h"
 #include <atomic>
-#include <vector>
 #include <sanitizer/tsan_interface.h>
+#include <vector>
 
 // A very primitive mutex annotated with tsan annotations.
 class Mutex {
- public:
-  Mutex(bool prof, unsigned create_flags, unsigned destroy_flags=0)
-      : prof_(prof)
-      , locked_(false)
-      , seq_(0)
-      , destroy_flags_(destroy_flags) {
+public:
+  Mutex(bool prof, unsigned create_flags, unsigned destroy_flags = 0)
+      : prof_(prof), locked_(false), seq_(0), destroy_flags_(destroy_flags) {
     __tsan_mutex_create(this, create_flags);
   }
 
@@ -27,8 +24,7 @@ class Mutex {
   bool TryLock() {
     __tsan_mutex_pre_lock(this, __tsan_mutex_try_lock);
     bool ok = TryLockImpl();
-    __tsan_mutex_post_lock(this, __tsan_mutex_try_lock |
-        (ok ? 0 : __tsan_mutex_try_lock_failed), 0);
+    __tsan_mutex_post_lock(this, __tsan_mutex_try_lock | (ok ? 0 : __tsan_mutex_try_lock_failed), 0);
     return ok;
   }
 
@@ -54,7 +50,7 @@ class Mutex {
     __tsan_mutex_post_signal(this, 0);
   }
 
- private:
+private:
   const bool prof_;
   std::atomic<bool> locked_;
   int seq_;
@@ -80,12 +76,12 @@ class Mutex {
   }
 
   void Prof() {
-      // This happens inside of mutex lock annotations.
-      __tsan_mutex_pre_divert(this, 0);
-      prof_mu_.Lock();
-      prof_data_++;
-      prof_mu_.Unlock();
-      __tsan_mutex_post_divert(this, 0);
+    // This happens inside of mutex lock annotations.
+    __tsan_mutex_pre_divert(this, 0);
+    prof_mu_.Lock();
+    prof_data_++;
+    prof_mu_.Unlock();
+    __tsan_mutex_post_divert(this, 0);
   }
 };
 

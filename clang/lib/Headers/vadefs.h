@@ -24,11 +24,11 @@
 #endif
 #ifdef _crt_va_end
 #undef _crt_va_end
-#define _crt_va_end(ap)          __builtin_va_end(ap)
+#define _crt_va_end(ap) __builtin_va_end(ap)
 #endif
 #ifdef _crt_va_arg
 #undef _crt_va_arg
-#define _crt_va_arg(ap, type)    __builtin_va_arg(ap, type)
+#define _crt_va_arg(ap, type) __builtin_va_arg(ap, type)
 #endif
 
 /* VS 2015 switched to double underscore names, which is an improvement, but now
@@ -40,11 +40,11 @@
 #endif
 #ifdef __crt_va_end
 #undef __crt_va_end
-#define __crt_va_end(ap)          __builtin_va_end(ap)
+#define __crt_va_end(ap) __builtin_va_end(ap)
 #endif
 #ifdef __crt_va_arg
 #undef __crt_va_arg
-#define __crt_va_arg(ap, type)    __builtin_va_arg(ap, type)
+#define __crt_va_arg(ap, type) __builtin_va_arg(ap, type)
 #endif
 
 #endif

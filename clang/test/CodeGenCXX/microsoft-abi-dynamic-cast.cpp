@@ -1,23 +1,27 @@
 // RUN: %clang_cc1 -emit-llvm -O1 -o - -fexceptions -triple=i386-pc-win32 %s | FileCheck %s
 
-struct S { char a; };
-struct V { virtual void f(); };
+struct S {
+  char a;
+};
+struct V {
+  virtual void f();
+};
 struct A : virtual V {};
 struct B : S, virtual V {};
 struct T {};
 
-T* test0() { return dynamic_cast<T*>((B*)0); }
+T *test0() { return dynamic_cast<T *>((B *)0); }
 // CHECK-LABEL: define dso_local noalias %struct.T* @"?test0@@YAPAUT@@XZ"()
 // CHECK:   ret %struct.T* null
 
-T* test1(V* x) { return &dynamic_cast<T&>(*x); }
+T *test1(V *x) { return &dynamic_cast<T &>(*x); }
 // CHECK-LABEL: define dso_local %struct.T* @"?test1@@YAPAUT@@PAUV@@@Z"(%struct.V* %x)
 // CHECK:        [[CAST:%.*]] = bitcast %struct.V* %x to i8*
 // CHECK-NEXT:   [[CALL:%.*]] = call i8* @__RTDynamicCast(i8* [[CAST]], i32 0, i8* bitcast (%rtti.TypeDescriptor7* @"??_R0?AUV@@@8" to i8*), i8* bitcast (%rtti.TypeDescriptor7* @"??_R0?AUT@@@8" to i8*), i32 1)
 // CHECK-NEXT:   [[RET:%.*]] = bitcast i8* [[CALL]] to %struct.T*
 // CHECK-NEXT:   ret %struct.T* [[RET]]
 
-T* test2(A* x) { return &dynamic_cast<T&>(*x); }
+T *test2(A *x) { return &dynamic_cast<T &>(*x); }
 // CHECK-LABEL: define dso_local %struct.T* @"?test2@@YAPAUT@@PAUA@@@Z"(%struct.A* %x)
 // CHECK:        [[CAST:%.*]] = bitcast %struct.A* %x to i8*
 // CHECK-NEXT:   [[VBPTRPTR:%.*]] = getelementptr %struct.A, %struct.A* %x, i32 0, i32 0
@@ -29,7 +33,7 @@ T* test2(A* x) { return &dynamic_cast<T&>(*x); }
 // CHECK-NEXT:   [[RET:%.*]] = bitcast i8* [[CALL]] to %struct.T*
 // CHECK-NEXT:   ret %struct.T* [[RET]]
 
-T* test3(B* x) { return &dynamic_cast<T&>(*x); }
+T *test3(B *x) { return &dynamic_cast<T &>(*x); }
 // CHECK-LABEL: define dso_local %struct.T* @"?test3@@YAPAUT@@PAUB@@@Z"(%struct.B* %x)
 // CHECK:        [[VOIDP:%.*]] = getelementptr %struct.B, %struct.B* %x, i32 0, i32 0, i32 0
 // CHECK-NEXT:   [[VBPTR:%.*]] = getelementptr inbounds i8, i8* [[VOIDP]], i32 4
@@ -43,14 +47,14 @@ T* test3(B* x) { return &dynamic_cast<T&>(*x); }
 // CHECK-NEXT:   [[RET:%.*]] = bitcast i8* [[CALL]] to %struct.T*
 // CHECK-NEXT:   ret %struct.T* [[RET]]
 
-T* test4(V* x) { return dynamic_cast<T*>(x); }
+T *test4(V *x) { return dynamic_cast<T *>(x); }
 // CHECK-LABEL: define dso_local %struct.T* @"?test4@@YAPAUT@@PAUV@@@Z"(%struct.V* %x)
 // CHECK:        [[CAST:%.*]] = bitcast %struct.V* %x to i8*
 // CHECK-NEXT:   [[CALL:%.*]] = call i8* @__RTDynamicCast(i8* [[CAST]], i32 0, i8* bitcast (%rtti.TypeDescriptor7* @"??_R0?AUV@@@8" to i8*), i8* bitcast (%rtti.TypeDescriptor7* @"??_R0?AUT@@@8" to i8*), i32 0)
 // CHECK-NEXT:   [[RET:%.*]] = bitcast i8* [[CALL]] to %struct.T*
 // CHECK-NEXT:   ret %struct.T* [[RET]]
 
-T* test5(A* x) { return dynamic_cast<T*>(x); }
+T *test5(A *x) { return dynamic_cast<T *>(x); }
 // CHECK-LABEL: define dso_local %struct.T* @"?test5@@YAPAUT@@PAUA@@@Z"(%struct.A* %x)
 // CHECK:        [[CHECK:%.*]] = icmp eq %struct.A* %x, null
 // CHECK-NEXT:   br i1 [[CHECK]]
@@ -66,7 +70,7 @@ T* test5(A* x) { return dynamic_cast<T*>(x); }
 // CHECK:        [[RET:%.*]] = phi %struct.T*
 // CHECK-NEXT:   ret %struct.T* [[RET]]
 
-T* test6(B* x) { return dynamic_cast<T*>(x); }
+T *test6(B *x) { return dynamic_cast<T *>(x); }
 // CHECK-LABEL: define dso_local %struct.T* @"?test6@@YAPAUT@@PAUB@@@Z"(%struct.B* %x)
 // CHECK:        [[CHECK:%.*]] = icmp eq %struct.B* %x, null
 // CHECK-NEXT:   br i1 [[CHECK]]
@@ -84,13 +88,13 @@ T* test6(B* x) { return dynamic_cast<T*>(x); }
 // CHECK:        [[RET:%.*]] = phi %struct.T*
 // CHECK-NEXT:   ret %struct.T* [[RET]]
 
-void* test7(V* x) { return dynamic_cast<void*>(x); }
+void *test7(V *x) { return dynamic_cast<void *>(x); }
 // CHECK-LABEL: define dso_local i8* @"?test7@@YAPAXPAUV@@@Z"(%struct.V* %x)
 // CHECK:        [[CAST:%.*]] = bitcast %struct.V* %x to i8*
 // CHECK-NEXT:   [[RET:%.*]] = call i8* @__RTCastToVoid(i8* [[CAST]])
 // CHECK-NEXT:   ret i8* [[RET]]
 
-void* test8(A* x) { return dynamic_cast<void*>(x); }
+void *test8(A *x) { return dynamic_cast<void *>(x); }
 // CHECK-LABEL: define dso_local i8* @"?test8@@YAPAXPAUA@@@Z"(%struct.A* %x)
 // CHECK:        [[CHECK:%.*]] = icmp eq %struct.A* %x, null
 // CHECK-NEXT:   br i1 [[CHECK]]
@@ -105,7 +109,7 @@ void* test8(A* x) { return dynamic_cast<void*>(x); }
 // CHECK:        [[RET:%.*]] = phi i8*
 // CHECK-NEXT:   ret i8* [[RET]]
 
-void* test9(B* x) { return dynamic_cast<void*>(x); }
+void *test9(B *x) { return dynamic_cast<void *>(x); }
 // CHECK-LABEL: define dso_local i8* @"?test9@@YAPAXPAUB@@@Z"(%struct.B* %x)
 // CHECK:        [[CHECK:%.*]] = icmp eq %struct.B* %x, null
 // CHECK-NEXT:   br i1 [[CHECK]]
@@ -126,7 +130,9 @@ namespace PR25606 {
 struct Cleanup {
   ~Cleanup();
 };
-struct S1 { virtual ~S1(); };
+struct S1 {
+  virtual ~S1();
+};
 struct S2 : virtual S1 {};
 struct S3 : S2 {};
 
@@ -140,4 +146,4 @@ S3 *f(S2 &s) {
 // CHECK:    [[BC:%.*]] = bitcast i8* [[CALL]] to %"struct.PR25606::S3"*
 // CHECK:    call x86_thiscallcc void @"??1Cleanup@PR25606@@QAE@XZ"(
 // CHECK:    ret %"struct.PR25606::S3"* [[BC]]
-}
+} // namespace PR25606

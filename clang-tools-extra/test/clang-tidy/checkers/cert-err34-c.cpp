@@ -1,11 +1,11 @@
 // RUN: %check_clang_tidy %s cert-err34-c %t
 
-typedef void *             FILE;
+typedef void *FILE;
 
 extern FILE *stdin;
 
-extern int fscanf(FILE * stream, const char * format, ...);
-extern int sscanf(const char * s, const char * format, ...);
+extern int fscanf(FILE *stream, const char *format, ...);
+extern int sscanf(const char *s, const char *format, ...);
 
 extern double atof(const char *nptr);
 extern int atoi(const char *nptr);
@@ -13,10 +13,15 @@ extern long int atol(const char *nptr);
 extern long long int atoll(const char *nptr);
 
 namespace std {
-using ::FILE; using ::stdin;
-using ::fscanf; using ::sscanf;
-using ::atof; using ::atoi; using ::atol; using ::atoll;
-}
+using ::atof;
+using ::atoi;
+using ::atol;
+using ::atoll;
+using ::FILE;
+using ::fscanf;
+using ::sscanf;
+using ::stdin;
+} // namespace std
 
 void f1(const char *in) {
   int i;

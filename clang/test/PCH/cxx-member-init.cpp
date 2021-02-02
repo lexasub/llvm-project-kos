@@ -3,7 +3,7 @@
 
 // Test with pch.
 // RUN: %clang_cc1 -x c++ -std=c++11 -DHEADER -emit-pch -o %t %s
-// RUN: %clang_cc1 -x c++ -std=c++11 -DHEADER -include-pch %t -fsyntax-only -emit-llvm -o - %s 
+// RUN: %clang_cc1 -x c++ -std=c++11 -DHEADER -include-pch %t -fsyntax-only -emit-llvm -o - %s
 
 // RUN: %clang_cc1 -x c++ -std=c++11 -DHEADER -emit-pch -fpch-instantiate-templates -o %t %s
 // RUN: %clang_cc1 -x c++ -std=c++11 -DHEADER -include-pch %t -fsyntax-only -emit-llvm -o - %s
@@ -15,14 +15,15 @@ struct S {
   int &m = n;
   S *that = this;
 };
-template<typename T> struct X { T t {0}; };
+template <typename T> struct X { T t{0}; };
 
-struct v_t { };
+struct v_t {};
 
-struct m_t
-{
-    struct { v_t v; };
-    m_t() { }
+struct m_t {
+  struct {
+    v_t v;
+  };
+  m_t() {}
 };
 
 #endif
@@ -30,7 +31,9 @@ struct m_t
 #ifdef SOURCE
 S s;
 
-struct E { explicit E(int); };
+struct E {
+  explicit E(int);
+};
 X<E> x;
 
 m_t *test() {

@@ -178,7 +178,7 @@ TEST(CFGDominatorTree, ControlDependencyWithLoops) {
 
   ControlDependencyCalculator Control(cfg);
 
-  auto GetBlock = [cfg] (unsigned Index) -> CFGBlock * {
+  auto GetBlock = [cfg](unsigned Index) -> CFGBlock * {
     assert(Index < cfg->size());
     return *(cfg->begin() + Index);
   };
@@ -187,7 +187,6 @@ TEST(CFGDominatorTree, ControlDependencyWithLoops) {
   // fifth, hence B5 is not a control dependency of 2.
   EXPECT_FALSE(Control.isControlDependent(GetBlock(5), GetBlock(2)));
 }
-
 
 } // namespace
 } // namespace analysis

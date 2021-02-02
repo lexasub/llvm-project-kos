@@ -14,28 +14,6 @@
 
 #if SANITIZER_NETBSD
 
-#include "sanitizer_common.h"
-#include "sanitizer_flags.h"
-#include "sanitizer_getauxval.h"
-#include "sanitizer_internal_defs.h"
-#include "sanitizer_libc.h"
-#include "sanitizer_linux.h"
-#include "sanitizer_mutex.h"
-#include "sanitizer_placement_new.h"
-#include "sanitizer_procmaps.h"
-
-#include <sys/param.h>
-#include <sys/types.h>
-
-#include <sys/exec.h>
-#include <sys/mman.h>
-#include <sys/ptrace.h>
-#include <sys/resource.h>
-#include <sys/stat.h>
-#include <sys/syscall.h>
-#include <sys/sysctl.h>
-#include <sys/time.h>
-
 #include <dlfcn.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -45,8 +23,28 @@
 #include <pthread.h>
 #include <sched.h>
 #include <signal.h>
+#include <sys/exec.h>
+#include <sys/mman.h>
+#include <sys/param.h>
+#include <sys/ptrace.h>
+#include <sys/resource.h>
+#include <sys/stat.h>
+#include <sys/syscall.h>
+#include <sys/sysctl.h>
+#include <sys/time.h>
+#include <sys/types.h>
 #include <ucontext.h>
 #include <unistd.h>
+
+#include "sanitizer_common.h"
+#include "sanitizer_flags.h"
+#include "sanitizer_getauxval.h"
+#include "sanitizer_internal_defs.h"
+#include "sanitizer_libc.h"
+#include "sanitizer_linux.h"
+#include "sanitizer_mutex.h"
+#include "sanitizer_placement_new.h"
+#include "sanitizer_procmaps.h"
 
 extern "C" void *__mmap(void *, size_t, int, int, int, int,
                         off_t) SANITIZER_WEAK_ATTRIBUTE;

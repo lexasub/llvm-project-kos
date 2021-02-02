@@ -15,9 +15,9 @@
 #include "FuzzerPlatform.h"
 
 #if LIBFUZZER_MSVC
-#include <intrin.h>
 #include <cstdint>
 #include <cstdlib>
+#include <intrin.h>
 
 // __builtin_return_address() cannot be compiled with MSVC. Use the equivalent
 // from <intrin.h>
@@ -25,7 +25,7 @@
 
 namespace fuzzer {
 
-inline uint8_t  Bswap(uint8_t x)  { return x; }
+inline uint8_t Bswap(uint8_t x) { return x; }
 // Use alternatives to __builtin functions from <stdlib.h> and <intrin.h> on
 // Windows since the builtins are not supported by MSVC.
 inline uint16_t Bswap(uint16_t x) { return _byteswap_ushort(x); }
@@ -41,20 +41,23 @@ inline uint32_t Clzll(uint64_t X) {
 #if !defined(_M_ARM) && !defined(_M_X64)
   // Scan the high 32 bits.
   if (_BitScanReverse(&LeadZeroIdx, static_cast<unsigned long>(X >> 32)))
-    return static_cast<int>(63 - (LeadZeroIdx + 32)); // Create a bit offset from the MSB.
+    return static_cast<int>(
+        63 - (LeadZeroIdx + 32)); // Create a bit offset from the MSB.
   // Scan the low 32 bits.
   if (_BitScanReverse(&LeadZeroIdx, static_cast<unsigned long>(X)))
     return static_cast<int>(63 - LeadZeroIdx);
 
 #else
-  if (_BitScanReverse64(&LeadZeroIdx, X)) return 63 - LeadZeroIdx;
+  if (_BitScanReverse64(&LeadZeroIdx, X))
+    return 63 - LeadZeroIdx;
 #endif
   return 64;
 }
 
 inline uint32_t Clz(uint32_t X) {
   unsigned long LeadZeroIdx = 0;
-  if (_BitScanReverse(&LeadZeroIdx, X)) return 31 - LeadZeroIdx;
+  if (_BitScanReverse(&LeadZeroIdx, X))
+    return 31 - LeadZeroIdx;
   return 32;
 }
 
@@ -66,7 +69,7 @@ inline int Popcountll(unsigned long long X) {
 #endif
 }
 
-}  // namespace fuzzer
+} // namespace fuzzer
 
-#endif  // LIBFUZER_MSVC
-#endif  // LLVM_FUZZER_BUILTINS_MSVC_H
+#endif // LIBFUZER_MSVC
+#endif // LLVM_FUZZER_BUILTINS_MSVC_H

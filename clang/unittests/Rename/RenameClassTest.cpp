@@ -792,8 +792,7 @@ TEST_F(ClangRenameTest, DISABLED_NestedTemplates) {
   CompareSnippets(Expected, After);
 }
 
-
 } // anonymous namespace
 } // namespace test
 } // namespace clang_rename
-} // namesdpace clang
+} // namespace clang

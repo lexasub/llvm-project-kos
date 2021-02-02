@@ -10,19 +10,19 @@ namespace {
 
 static int ctorcalls;
 static int dtorcalls;
-  
+
 struct A {
   A() : i(0) { ctorcalls++; }
   ~A() { dtorcalls++; }
   int i;
-  
-  friend const A& operator<<(const A& a, int n) {
+
+  friend const A &operator<<(const A &a, int n) {
     return a;
   }
 };
 
-void g(int) { }
-void g(const A&) { }
+void g(int) {}
+void g(const A &) {}
 
 void f1(bool b) {
   g(b ? A().i : 0);
@@ -40,7 +40,7 @@ struct Checker {
 
 Checker c;
 
-}
+} // namespace
 
 // CHECK-OPT-LABEL: define{{.*}} i32 @_Z12getCtorCallsv()
 int getCtorCalls() {
@@ -60,7 +60,10 @@ bool success() {
   return ctorcalls == dtorcalls;
 }
 
-struct X { ~X(); int f(); };
+struct X {
+  ~X();
+  int f();
+};
 int g(int, int, int);
 // CHECK-LABEL: @_Z16lifetime_nontriv
 int lifetime_nontriv(bool cond) {
@@ -141,7 +144,9 @@ int lifetime_nontriv(bool cond) {
   return cond ? g(X().f(), X().f(), X().f()) : g(1, 2, 3);
 }
 
-struct Y { int f(); };
+struct Y {
+  int f();
+};
 int g(int, int, int);
 // CHECK-LABEL: @_Z13lifetime_triv
 int lifetime_triv(bool cond) {
@@ -187,7 +192,10 @@ int lifetime_triv(bool cond) {
   return cond ? g(Y().f(), Y().f(), Y().f()) : g(1, 2, 3);
 }
 
-struct Z { ~Z() {} int f(); };
+struct Z {
+  ~Z() {}
+  int f();
+};
 int g(int, int, int);
 // CHECK-LABEL: @_Z22lifetime_nontriv_empty
 int lifetime_nontriv_empty(bool cond) {

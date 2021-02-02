@@ -18,43 +18,42 @@
 #include "test_macros.h"
 #include "platform_support.h"
 
-int main(int, char**)
-{
-    std::string temp = get_temp_file_name();
-    {
-        std::ofstream fs(temp);
-        fs << 3.25;
-    }
-    {
-        std::ifstream fs(temp);
-        double x = 0;
-        fs >> x;
-        assert(x == 3.25);
-    }
-    {
-        std::ifstream fs(temp, std::ios_base::out);
-        double x = 0;
-        fs >> x;
-        assert(x == 3.25);
-    }
-    std::remove(temp.c_str());
-    {
-        std::wofstream fs(temp);
-        fs << 3.25;
-    }
-    {
-        std::wifstream fs(temp);
-        double x = 0;
-        fs >> x;
-        assert(x == 3.25);
-    }
-    {
-        std::wifstream fs(temp, std::ios_base::out);
-        double x = 0;
-        fs >> x;
-        assert(x == 3.25);
-    }
-    std::remove(temp.c_str());
+int main(int, char**) {
+  std::string temp = get_temp_file_name();
+  {
+    std::ofstream fs(temp);
+    fs << 3.25;
+  }
+  {
+    std::ifstream fs(temp);
+    double x = 0;
+    fs >> x;
+    assert(x == 3.25);
+  }
+  {
+    std::ifstream fs(temp, std::ios_base::out);
+    double x = 0;
+    fs >> x;
+    assert(x == 3.25);
+  }
+  std::remove(temp.c_str());
+  {
+    std::wofstream fs(temp);
+    fs << 3.25;
+  }
+  {
+    std::wifstream fs(temp);
+    double x = 0;
+    fs >> x;
+    assert(x == 3.25);
+  }
+  {
+    std::wifstream fs(temp, std::ios_base::out);
+    double x = 0;
+    fs >> x;
+    assert(x == 3.25);
+  }
+  std::remove(temp.c_str());
 
   return 0;
 }

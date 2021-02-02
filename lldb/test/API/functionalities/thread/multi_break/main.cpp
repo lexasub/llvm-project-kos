@@ -10,31 +10,28 @@ pseudo_barrier_t g_barrier;
 
 volatile int g_test = 0;
 
-void *
-thread_func ()
-{
-    // Wait until both threads are running
-    pseudo_barrier_wait(g_barrier);
+void *thread_func() {
+  // Wait until both threads are running
+  pseudo_barrier_wait(g_barrier);
 
-    // Do something
-    g_test++;       // Set breakpoint here
+  // Do something
+  g_test++; // Set breakpoint here
 
-    // Return
-    return NULL;
+  // Return
+  return NULL;
 }
 
-int main ()
-{
-    // Don't let either thread do anything until they're both ready.
-    pseudo_barrier_init(g_barrier, 2);
+int main() {
+  // Don't let either thread do anything until they're both ready.
+  pseudo_barrier_init(g_barrier, 2);
 
-    // Create two threads
-    std::thread thread_1(thread_func);
-    std::thread thread_2(thread_func);
+  // Create two threads
+  std::thread thread_1(thread_func);
+  std::thread thread_2(thread_func);
 
-    // Wait for the threads to finish
-    thread_1.join();
-    thread_2.join();
+  // Wait for the threads to finish
+  thread_1.join();
+  thread_2.join();
 
-    return 0;
+  return 0;
 }

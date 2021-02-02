@@ -5,5 +5,5 @@
 
 int main() {
   printf("Hello, world!\n");
-// CHECK: Hello, world!
+  // CHECK: Hello, world!
 }

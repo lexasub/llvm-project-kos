@@ -36,7 +36,7 @@ typedef foo *foop;
 void bar() {
   foop f;
 }
-}
+} // namespace rdar14101097_1
 
 namespace rdar14101097_2 {
 // As above, except trickier because we first encounter only a declaration of
@@ -51,4 +51,4 @@ void bar() {
 }
 struct foo {
 };
-}
+} // namespace rdar14101097_2

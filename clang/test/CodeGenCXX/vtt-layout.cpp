@@ -2,81 +2,133 @@
 
 // Test1::B should just have a single entry in its VTT, which points to the vtable.
 namespace Test1 {
-struct A { };
+struct A {};
 
-struct B : virtual A { 
+struct B : virtual A {
   virtual void f();
 };
 
-void B::f() { } 
-}
+void B::f() {}
+} // namespace Test1
 
 // Check that we don't add a secondary virtual pointer for Test2::A, since Test2::A doesn't have any virtual member functions or bases.
 namespace Test2 {
-  struct A { };
+struct A {};
 
-  struct B : A { virtual void f(); };
-  struct C : virtual B { };
+struct B : A {
+  virtual void f();
+};
+struct C : virtual B {};
 
-  C c;
-}
+C c;
+} // namespace Test2
 
 // This is the sample from the C++ Itanium ABI, p2.6.2.
 namespace Test3 {
-  class A1 { int i; };
-  class A2 { int i; virtual void f(); };
-  class V1 : public A1, public A2 { int i; };
-  class B1 { int i; };
-  class B2 { int i; };
-  class V2 : public B1, public B2, public virtual V1 { int i; };
-  class V3 {virtual void g(); };
-  class C1 : public virtual V1 { int i; };
-  class C2 : public virtual V3, virtual V2 { int i; };
-  class X1 { int i; };
-  class C3 : public X1 { int i; };
-  class D : public C1, public C2, public C3 { int i;  };
-  
-  D d;
-}
+class A1 {
+  int i;
+};
+class A2 {
+  int i;
+  virtual void f();
+};
+class V1 : public A1, public A2 {
+  int i;
+};
+class B1 {
+  int i;
+};
+class B2 {
+  int i;
+};
+class V2 : public B1, public B2, public virtual V1 {
+  int i;
+};
+class V3 {
+  virtual void g();
+};
+class C1 : public virtual V1 {
+  int i;
+};
+class C2 : public virtual V3, virtual V2 {
+  int i;
+};
+class X1 {
+  int i;
+};
+class C3 : public X1 {
+  int i;
+};
+class D : public C1, public C2, public C3 {
+  int i;
+};
+
+D d;
+} // namespace Test3
 
 // This is the sample from the C++ Itanium ABI, p2.6.2, with the change suggested
 // (making A2 a virtual base of V1)
 namespace Test4 {
-  class A1 { int i; };
-  class A2 { int i; virtual void f(); };
-  class V1 : public A1, public virtual A2 { int i; };
-  class B1 { int i; };
-  class B2 { int i; };
-  class V2 : public B1, public B2, public virtual V1 { int i; };
-  class V3 {virtual void g(); };
-  class C1 : public virtual V1 { int i; };
-  class C2 : public virtual V3, virtual V2 { int i; };
-  class X1 { int i; };
-  class C3 : public X1 { int i; };
-  class D : public C1, public C2, public C3 { int i;  };
-  
-  D d;
-}
+class A1 {
+  int i;
+};
+class A2 {
+  int i;
+  virtual void f();
+};
+class V1 : public A1, public virtual A2 {
+  int i;
+};
+class B1 {
+  int i;
+};
+class B2 {
+  int i;
+};
+class V2 : public B1, public B2, public virtual V1 {
+  int i;
+};
+class V3 {
+  virtual void g();
+};
+class C1 : public virtual V1 {
+  int i;
+};
+class C2 : public virtual V3, virtual V2 {
+  int i;
+};
+class X1 {
+  int i;
+};
+class C3 : public X1 {
+  int i;
+};
+class D : public C1, public C2, public C3 {
+  int i;
+};
+
+D d;
+} // namespace Test4
 
 namespace Test5 {
-  struct A {
-    virtual void f() = 0;
-    virtual void anchor();
-  };
+struct A {
+  virtual void f() = 0;
+  virtual void anchor();
+};
 
-  void A::anchor() {
-  }
+void A::anchor() {
 }
+} // namespace Test5
 
 namespace Test6 {
-  struct A {
-    virtual void f() = delete;
-    virtual void anchor();
-  };
+struct A {
+  virtual void f() = delete;
+  virtual void anchor();
+};
 
-  void A::anchor() {
-  }
+void A::anchor() {
 }
+} // namespace Test6
 
 // CHECK: @_ZTTN5Test11BE ={{.*}} unnamed_addr constant [1 x i8*] [i8* bitcast (i8** getelementptr inbounds ({ [4 x i8*] }, { [4 x i8*] }* @_ZTVN5Test11BE, i32 0, inrange i32 0, i32 3) to i8*)]
 // CHECK: @_ZTVN5Test51AE ={{.*}} unnamed_addr constant { [4 x i8*] } { [4 x i8*] [i8* null, i8* bitcast ({ i8*, i8* }* @_ZTIN5Test51AE to i8*), i8* bitcast (void ()* @__cxa_pure_virtual to i8*), i8* bitcast (void (%"struct.Test5::A"*)* @_ZN5Test51A6anchorEv to i8*)] }

@@ -12,10 +12,8 @@
 #include "gtest/gtest.h"
 
 namespace __sanitizer {
-bool ReexecDisabled() {
-  return true;
-}
-}
+bool ReexecDisabled() { return true; }
+}  // namespace __sanitizer
 
 int main(int argc, char **argv) {
   testing::GTEST_FLAG(death_test_style) = "threadsafe";

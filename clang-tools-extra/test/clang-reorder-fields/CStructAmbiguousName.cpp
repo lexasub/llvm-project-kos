@@ -13,6 +13,6 @@ struct Foo {
 } // end namespace bar
 
 int main() {
-  bar::Foo foo = { 1, 1.7 }; // CHECK: {{^  bar::Foo foo = { 1, 1.7 };}}
+  bar::Foo foo = {1, 1.7}; // CHECK: {{^  bar::Foo foo = { 1, 1.7 };}}
   return 0;
 }

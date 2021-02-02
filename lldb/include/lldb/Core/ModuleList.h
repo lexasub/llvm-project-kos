@@ -83,7 +83,8 @@ public:
                                      const lldb::ModuleSP &new_module_sp) = 0;
     virtual void NotifyWillClearList(const ModuleList &module_list) = 0;
 
-    virtual void NotifyModulesRemoved(lldb_private::ModuleList &module_list) = 0;
+    virtual void
+    NotifyModulesRemoved(lldb_private::ModuleList &module_list) = 0;
   };
 
   /// Default constructor.

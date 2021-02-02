@@ -6,22 +6,22 @@ class A {
 };
 
 namespace PR12585 {
-  struct future_base {
-    template<typename> class setter;
-  };
-  template<typename> class promise {
-    // We used to inject this into future_base with no access specifier,
-    // then crash during AST writing.
-    template<typename> friend class future_base::setter;
-    int k;
-  };
-}
+struct future_base {
+  template <typename> class setter;
+};
+template <typename> class promise {
+  // We used to inject this into future_base with no access specifier,
+  // then crash during AST writing.
+  template <typename> friend class future_base::setter;
+  int k;
+};
+} // namespace PR12585
 
 namespace Lazy {
-  struct S {
-    friend void doNotDeserialize();
-  };
-}
+struct S {
+  friend void doNotDeserialize();
+};
+} // namespace Lazy
 
 // Reduced testcase from libc++'s <valarray>. Used to crash with modules
 // enabled.
@@ -40,4 +40,4 @@ struct gslice {
   gslice() {}
 };
 
-}
+} // namespace std

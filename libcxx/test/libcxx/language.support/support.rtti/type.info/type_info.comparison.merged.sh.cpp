@@ -24,22 +24,30 @@ void register1();
 void register2();
 
 #if defined(TU1)
-  namespace { struct A { bool x; }; }
-  void register1() { registry.push_back(std::type_index(typeid(A))); }
+namespace {
+struct A {
+  bool x;
+};
+} // namespace
+void register1() { registry.push_back(std::type_index(typeid(A))); }
 #elif defined(TU2)
-  namespace { struct A { int x, y; }; }
-  void register2() { registry.push_back(std::type_index(typeid(A))); }
+namespace {
+struct A {
+  int x, y;
+};
+} // namespace
+void register2() { registry.push_back(std::type_index(typeid(A))); }
 #elif defined(MAIN)
-  std::vector<std::type_index> registry;
+std::vector<std::type_index> registry;
 
-  int main(int, char**) {
-    register1();
-    register2();
+int main(int, char**) {
+  register1();
+  register2();
 
-    assert(registry.size() == 2);
-    assert(registry[0] != registry[1]);
-    return 0;
-  }
+  assert(registry.size() == 2);
+  assert(registry[0] != registry[1]);
+  return 0;
+}
 #else
-# error
+#error
 #endif

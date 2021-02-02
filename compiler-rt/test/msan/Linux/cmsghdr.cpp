@@ -11,16 +11,16 @@
 // UNSUPPORTED: android
 
 #include <assert.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
 #include <errno.h>
 #include <netdb.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/un.h>
 #include <sanitizer/msan_interface.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <sys/un.h>
+#include <unistd.h>
 
 const int kBufSize = 10;
 
@@ -92,7 +92,8 @@ int main() {
 
   ret = sendmsg(sockfd, &msg, 0);
   // SENDMSG: MemorySanitizer: use-of-uninitialized-value
-  if (ret == -1) printf("%d: %s\n", errno, strerror(errno));
+  if (ret == -1)
+    printf("%d: %s\n", errno, strerror(errno));
   assert(ret > 0);
 
   fprintf(stderr, "== done\n");

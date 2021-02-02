@@ -2,8 +2,8 @@
 // RUN: %clang_cc1 -x c++ -std=c++11 %s -triple x86_64-unknown-linux-gnu -main-file-name def-assignop.cpp -o - -emit-llvm -fprofile-instrument=clang -fcoverage-mapping | FileCheck --check-prefix=COVMAP %s
 
 struct B {
-  B& operator=(const B &b);
-  B& operator=(const B &&b);
+  B &operator=(const B &b);
+  B &operator=(const B &&b);
 };
 
 struct A {

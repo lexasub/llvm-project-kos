@@ -140,9 +140,10 @@ void ThrowByValueCatchByReferenceCheck::diagnoseCatchLocations(
     return;
   auto *varDecl = catchStmt->getExceptionDecl();
   if (const auto *PT = caughtType.getCanonicalType()->getAs<PointerType>()) {
-    const char *diagMsgCatchReference = "catch handler catches a pointer value; "
-                                        "should throw a non-pointer value and "
-                                        "catch by reference instead";
+    const char *diagMsgCatchReference =
+        "catch handler catches a pointer value; "
+        "should throw a non-pointer value and "
+        "catch by reference instead";
     // We do not diagnose when catching pointer to strings since we also allow
     // throwing string literals.
     if (!PT->getPointeeType()->isAnyCharacterType())

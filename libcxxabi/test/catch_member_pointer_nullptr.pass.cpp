@@ -12,65 +12,47 @@
 
 #if __has_feature(cxx_nullptr)
 
-struct A
-{
-    const int i;
-    int j;
+struct A {
+  const int i;
+  int j;
 };
 
 typedef const int A::*md1;
-typedef       int A::*md2;
+typedef int A::*md2;
 
-void test1()
-{
-    try
-    {
-        throw nullptr;
-        assert(false);
-    }
-    catch (md2 p)
-    {
-        assert(!p);
-    }
-    catch (md1)
-    {
-        assert(false);
-    }
+void test1() {
+  try {
+    throw nullptr;
+    assert(false);
+  } catch (md2 p) {
+    assert(!p);
+  } catch (md1) {
+    assert(false);
+  }
 }
 
-void test2()
-{
-    try
-    {
-        throw nullptr;
-        assert(false);
-    }
-    catch (md1 p)
-    {
-        assert(!p);
-    }
-    catch (md2)
-    {
-        assert(false);
-    }
+void test2() {
+  try {
+    throw nullptr;
+    assert(false);
+  } catch (md1 p) {
+    assert(!p);
+  } catch (md2) {
+    assert(false);
+  }
 }
 
 #else
 
-void test1()
-{
-}
+void test1() {}
 
-void test2()
-{
-}
+void test2() {}
 
 #endif
 
-int main(int, char**)
-{
-    test1();
-    test2();
+int main(int, char**) {
+  test1();
+  test2();
 
-    return 0;
+  return 0;
 }

@@ -12,6 +12,7 @@ template <typename T> class unique_ptr {
     S second;
   };
   pair<T *, int> data;
+
 public:
   constexpr unique_ptr() noexcept : data() {}
   explicit unique_ptr(T *p) noexcept : data() {}
@@ -19,4 +20,3 @@ public:
 
 thread_local unique_ptr<int> x;
 int main() { x = unique_ptr<int>(new int(5)); }
-

@@ -13,15 +13,12 @@ bool pr15703(int x) {
 void testCasting(int i) {
   Foo f = static_cast<Foo>(i);
   int j = static_cast<int>(f);
-  if (i == 0)
-  {
+  if (i == 0) {
     clang_analyzer_eval(f == Foo::Zero); // expected-warning{{TRUE}}
-    clang_analyzer_eval(j == 0); // expected-warning{{TRUE}}
-  }
-  else
-  {
+    clang_analyzer_eval(j == 0);         // expected-warning{{TRUE}}
+  } else {
     clang_analyzer_eval(f == Foo::Zero); // expected-warning{{FALSE}}
-    clang_analyzer_eval(j == 0); // expected-warning{{FALSE}}
+    clang_analyzer_eval(j == 0);         // expected-warning{{FALSE}}
   }
 }
 
@@ -41,15 +38,15 @@ bool testNoCrashOnSwitchEnumBool(EnumBool E) {
 bool testNoCrashOnSwitchEnumBoolConstant() {
   EnumBool E = EnumBool::F;
   switch (E) {
-    case EnumBool::F:
-      return false; 
+  case EnumBool::F:
+    return false;
   }
-  return true; 
+  return true;
 }
 
 typedef __INTPTR_TYPE__ intptr_t;
 bool testNoCrashOnSwitchEnumBoolConstantCastedFromNullptr() {
-  EnumBool E = static_cast<EnumBool>((intptr_t)nullptr);
+  EnumBool E = static_cast<EnumBool>((intptr_t) nullptr);
   switch (E) {
   case EnumBool::F:
     return false;

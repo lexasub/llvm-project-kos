@@ -1,7 +1,6 @@
 void (*crash)() = nullptr;
 
-int main()
-{
-    crash(); // Set breakpoint here
-    return 0;
+int main() {
+  crash(); // Set breakpoint here
+  return 0;
 }

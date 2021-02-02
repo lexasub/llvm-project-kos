@@ -3,14 +3,13 @@
 extern "C" int printf(...);
 
 struct M {
-  M(int i){ iM = i; }
+  M(int i) { iM = i; }
   int iM;
   void MPR() { printf("iM = %d\n", iM); }
-
 };
 
 struct Q {
-  Q(int i){ iQ = i; }
+  Q(int i) { iQ = i; }
   int iQ;
   void QPR() { printf("iQ = %d\n", iQ); }
 };
@@ -22,23 +21,24 @@ struct IQ {
 };
 
 struct L : IQ {
-  L(int i) : IQ(i+100) { iL = i; }
+  L(int i) : IQ(i + 100) { iL = i; }
   int iL;
 };
 
-struct P : Q, L  {
-  P(int i) : Q(i+100), L(i+200) { iP = i; }
+struct P : Q, L {
+  P(int i) : Q(i + 100), L(i + 200) { iP = i; }
   int iP;
   void PPR() { printf("iP = %d\n", iP); }
 };
 
-
-struct N : M,P {
+struct N : M, P {
   N() : M(100), P(200) {}
   void PR() {
-    this->MPR(); this->PPR(); this->QPR(); 
+    this->MPR();
+    this->PPR();
+    this->QPR();
     IQPR();
-    printf("iM = %d\n", iM); 
+    printf("iM = %d\n", iM);
     printf("iP = %d\n", iP);
     printf("iQ = %d\n", iQ);
     printf("iL = %d\n", iL);

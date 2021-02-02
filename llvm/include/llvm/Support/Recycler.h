@@ -64,8 +64,7 @@ public:
   /// clear - Release all the tracked allocations to the allocator. The
   /// recycler must be free of any tracked allocations before being
   /// deleted; calling clear is one way to ensure this.
-  template<class AllocatorType>
-  void clear(AllocatorType &Allocator) {
+  template <class AllocatorType> void clear(AllocatorType &Allocator) {
     while (FreeList) {
       T *t = reinterpret_cast<T *>(pop_val());
       Allocator.Deallocate(t);
@@ -79,7 +78,7 @@ public:
   /// cache.
   void clear(BumpPtrAllocator &) { FreeList = nullptr; }
 
-  template<class SubClass, class AllocatorType>
+  template <class SubClass, class AllocatorType>
   SubClass *Allocate(AllocatorType &Allocator) {
     static_assert(alignof(SubClass) <= Align,
                   "Recycler allocation alignment is less than object align!");
@@ -89,13 +88,12 @@ public:
                     : static_cast<SubClass *>(Allocator.Allocate(Size, Align));
   }
 
-  template<class AllocatorType>
-  T *Allocate(AllocatorType &Allocator) {
+  template <class AllocatorType> T *Allocate(AllocatorType &Allocator) {
     return Allocate<T>(Allocator);
   }
 
-  template<class SubClass, class AllocatorType>
-  void Deallocate(AllocatorType & /*Allocator*/, SubClass* Element) {
+  template <class SubClass, class AllocatorType>
+  void Deallocate(AllocatorType & /*Allocator*/, SubClass *Element) {
     push(reinterpret_cast<FreeNode *>(Element));
   }
 
@@ -110,6 +108,6 @@ void Recycler<T, Size, Align>::PrintStats() {
   PrintRecyclerStats(Size, Align, S);
 }
 
-}
+} // namespace llvm
 
 #endif

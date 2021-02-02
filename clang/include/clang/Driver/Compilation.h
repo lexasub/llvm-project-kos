@@ -198,7 +198,7 @@ public:
   /// Creates a new Action owned by this Compilation.
   ///
   /// The new Action is *not* added to the list returned by getActions().
-  template <typename T, typename... Args> T *MakeAction(Args &&... Arg) {
+  template <typename T, typename... Args> T *MakeAction(Args &&...Arg) {
     T *RawPtr = new T(std::forward<Args>(Arg)...);
     AllActions.push_back(std::unique_ptr<Action>(RawPtr));
     return RawPtr;
@@ -280,8 +280,7 @@ public:
   /// JobAction.  Otherwise, delete all files in the map.
   /// \param IssueErrors - Report failures as errors.
   /// \return Whether all files were removed successfully.
-  bool CleanupFileMap(const ArgStringMap &Files,
-                      const JobAction *JA,
+  bool CleanupFileMap(const ArgStringMap &Files, const JobAction *JA,
                       bool IssueErrors = false) const;
 
   /// ExecuteCommand - Execute an actual command.

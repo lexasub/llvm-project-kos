@@ -169,8 +169,9 @@ Status TCPSocket::Connect(llvm::StringRef name) {
 
     address.SetPort(port);
 
-    if (-1 == llvm::sys::RetryAfterSignal(-1, ::connect,
-          GetNativeSocket(), &address.sockaddr(), address.GetLength())) {
+    if (-1 == llvm::sys::RetryAfterSignal(-1, ::connect, GetNativeSocket(),
+                                          &address.sockaddr(),
+                                          address.GetLength())) {
       CLOSE_SOCKET(GetNativeSocket());
       continue;
     }
@@ -214,7 +215,7 @@ Status TCPSocket::Listen(llvm::StringRef name, int backlog) {
                  sizeof(option_value));
 
     SocketAddress listen_address = address;
-    if(!listen_address.IsLocalhost())
+    if (!listen_address.IsLocalhost())
       listen_address.SetToAnyAddress(address.GetFamily(), port);
     else
       listen_address.SetPort(port);
@@ -268,14 +269,16 @@ Status TCPSocket::Accept(Socket *&conn_socket) {
     auto inherit = this->m_child_processes_inherit;
     auto io_sp = IOObjectSP(new TCPSocket(socket.first, false, inherit));
     handles.emplace_back(accept_loop.RegisterReadObject(
-        io_sp, [fd, inherit, &sock, &AcceptAddr, &error,
-                        &listen_sock](MainLoopBase &loop) {
+        io_sp,
+        [fd, inherit, &sock, &AcceptAddr, &error,
+         &listen_sock](MainLoopBase &loop) {
           socklen_t sa_len = AcceptAddr.GetMaxLength();
-          sock = AcceptSocket(fd, &AcceptAddr.sockaddr(), &sa_len, inherit,
-                              error);
+          sock =
+              AcceptSocket(fd, &AcceptAddr.sockaddr(), &sa_len, inherit, error);
           listen_sock = fd;
           loop.RequestTermination();
-        }, error));
+        },
+        error));
     if (error.Fail())
       return error;
   }
@@ -287,7 +290,7 @@ Status TCPSocket::Accept(Socket *&conn_socket) {
     accept_loop.Run();
 
     if (error.Fail())
-        return error;
+      return error;
 
     lldb_private::SocketAddress &AddrIn = m_listen_sockets[listen_sock];
     if (!AddrIn.IsAnyAddr() && AcceptAddr != AddrIn) {

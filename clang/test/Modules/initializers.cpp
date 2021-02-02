@@ -69,34 +69,35 @@ inline int b = non_trivial();
 thread_local int c = non_trivial();
 inline thread_local int d = non_trivial();
 
-template<typename U> int e = non_trivial();
-template<typename U> inline int f = non_trivial();
-template<typename U> thread_local int g = non_trivial();
-template<typename U> inline thread_local int h = non_trivial();
+template <typename U> int e = non_trivial();
+template <typename U> inline int f = non_trivial();
+template <typename U> thread_local int g = non_trivial();
+template <typename U> inline thread_local int h = non_trivial();
 
 inline int unused = 123; // should not be emitted
 
-template<typename T> struct X {
+template <typename T> struct X {
   static int a;
   static inline int b = non_trivial();
   static thread_local int c;
   static inline thread_local int d = non_trivial();
 
-  template<typename U> static int e;
-  template<typename U> static inline int f = non_trivial();
-  template<typename U> static thread_local int g;
-  template<typename U> static inline thread_local int h = non_trivial();
+  template <typename U> static int e;
+  template <typename U> static inline int f = non_trivial();
+  template <typename U> static thread_local int g;
+  template <typename U> static inline thread_local int h = non_trivial();
 
   static inline int unused = 123; // should not be emitted
 };
 
-template<typename T> int X<T>::a = non_trivial();
-template<typename T> thread_local int X<T>::c = non_trivial();
-template<typename T> template<typename U> int X<T>::e = non_trivial();
-template<typename T> template<typename U> thread_local int X<T>::g = non_trivial();
+template <typename T> int X<T>::a = non_trivial();
+template <typename T> thread_local int X<T>::c = non_trivial();
+template <typename T> template <typename U> int X<T>::e = non_trivial();
+template <typename T> template <typename U> thread_local int X<T>::g = non_trivial();
 
 inline void use(bool b, ...) {
-  if (b) return;
+  if (b)
+    return;
   use(true, e<int>, f<int>, g<int>, h<int>,
       X<int>::a, X<int>::b, X<int>::c, X<int>::d,
       X<int>::e<int>, X<int>::f<int>, X<int>::g<int>, X<int>::h<int>);
@@ -231,7 +232,6 @@ inline void use(bool b, ...) {
 // CHECK-IMPORT: define {{.*}} @[[D_INIT:__cxx_global.*]]()
 // CHECK-IMPORT: load {{.*}} (i64* @_ZGV
 // CHECK-IMPORT: store {{.*}}, i32* @[[D]],
-
 
 // CHECK-IMPORT: define {{.*}} @[[TU_INIT]]()
 // CHECK-IMPORT: call void @[[A_INIT]]()

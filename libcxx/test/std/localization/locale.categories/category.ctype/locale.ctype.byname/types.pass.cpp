@@ -29,34 +29,33 @@
 #include "test_macros.h"
 #include "platform_support.h" // locale name macros
 
-int main(int, char**)
-{
+int main(int, char**) {
+  {
+    std::locale l(LOCALE_en_US_UTF_8);
     {
-        std::locale l(LOCALE_en_US_UTF_8);
-        {
-            assert(std::has_facet<std::ctype_byname<char> >(l));
-            assert(&std::use_facet<std::ctype<char> >(l)
-                == &std::use_facet<std::ctype_byname<char> >(l));
-        }
-        {
-            assert(std::has_facet<std::ctype_byname<wchar_t> >(l));
-            assert(&std::use_facet<std::ctype<wchar_t> >(l)
-                == &std::use_facet<std::ctype_byname<wchar_t> >(l));
-        }
+      assert(std::has_facet<std::ctype_byname<char> >(l));
+      assert(&std::use_facet<std::ctype<char> >(l) ==
+             &std::use_facet<std::ctype_byname<char> >(l));
     }
     {
-        std::locale l("C");
-        {
-            assert(std::has_facet<std::ctype_byname<char> >(l));
-            assert(&std::use_facet<std::ctype<char> >(l)
-                == &std::use_facet<std::ctype_byname<char> >(l));
-        }
-        {
-            assert(std::has_facet<std::ctype_byname<wchar_t> >(l));
-            assert(&std::use_facet<std::ctype<wchar_t> >(l)
-                == &std::use_facet<std::ctype_byname<wchar_t> >(l));
-        }
+      assert(std::has_facet<std::ctype_byname<wchar_t> >(l));
+      assert(&std::use_facet<std::ctype<wchar_t> >(l) ==
+             &std::use_facet<std::ctype_byname<wchar_t> >(l));
     }
+  }
+  {
+    std::locale l("C");
+    {
+      assert(std::has_facet<std::ctype_byname<char> >(l));
+      assert(&std::use_facet<std::ctype<char> >(l) ==
+             &std::use_facet<std::ctype_byname<char> >(l));
+    }
+    {
+      assert(std::has_facet<std::ctype_byname<wchar_t> >(l));
+      assert(&std::use_facet<std::ctype<wchar_t> >(l) ==
+             &std::use_facet<std::ctype_byname<wchar_t> >(l));
+    }
+  }
 
   return 0;
 }

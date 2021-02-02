@@ -19,21 +19,20 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    using weekday         = std::chrono::weekday;
-    using weekday_indexed = std::chrono::weekday_indexed;
+int main(int, char**) {
+  using weekday = std::chrono::weekday;
+  using weekday_indexed = std::chrono::weekday_indexed;
 
-    ASSERT_NOEXCEPT(                    std::declval<const weekday_indexed>().index());
-    ASSERT_SAME_TYPE(unsigned, decltype(std::declval<const weekday_indexed>().index()));
+  ASSERT_NOEXCEPT(std::declval<const weekday_indexed>().index());
+  ASSERT_SAME_TYPE(unsigned,
+                   decltype(std::declval<const weekday_indexed>().index()));
 
-    static_assert( weekday_indexed{}.index() == 0, "");
+  static_assert(weekday_indexed{}.index() == 0, "");
 
-    for (unsigned i = 1; i <= 5; ++i)
-    {
-        weekday_indexed wdi(weekday{2}, i);
-        assert( static_cast<unsigned>(wdi.index()) == i);
-    }
+  for (unsigned i = 1; i <= 5; ++i) {
+    weekday_indexed wdi(weekday{2}, i);
+    assert(static_cast<unsigned>(wdi.index()) == i);
+  }
 
   return 0;
 }

@@ -32,36 +32,35 @@
 */
 
 enum options {
-    Do64   = (1 << 0),
-    DoCPP  = (1 << 1),
-    DoOBJC = (1 << 3),
-    DoGC   = (1 << 4),
-    DoRR   = (1 << 5),
-    DoRRGC = (1 << 6),  // -fobjc-gc but main w/o so it runs in RR mode
-    DoGCRR = (1 << 7),  // -fobjc-gc & run GC mode
+  Do64 = (1 << 0),
+  DoCPP = (1 << 1),
+  DoOBJC = (1 << 3),
+  DoGC = (1 << 4),
+  DoRR = (1 << 5),
+  DoRRGC = (1 << 6), // -fobjc-gc but main w/o so it runs in RR mode
+  DoGCRR = (1 << 7), // -fobjc-gc & run GC mode
 
-    //DoDashG = (1 << 8),
-    DoDashO = (1 << 9),
-    DoDashOs = (1 << 10),
-    DoDashO2 = (1 << 11),
-    
-    DoC99 = (1 << 12), // -std=c99
+  //DoDashG = (1 << 8),
+  DoDashO = (1 << 9),
+  DoDashOs = (1 << 10),
+  DoDashO2 = (1 << 11),
+
+  DoC99 = (1 << 12), // -std=c99
 };
-
 
 @class TestFileExeGenerator;
 
 // this class will actually compile and/or run a target binary
 // XXX we don't track which dynamic libraries requested/used nor set them up
 @interface TestFileExe : NSObject {
-    NSPointerArray *compileLine;
-    int options;
-    bool shouldFail;
-    TestFileExeGenerator *generator;
-    __strong char *binaryName;
-    __strong char *sourceName;
-    __strong char *libraryPath;
-    __strong char *frameworkPath;
+  NSPointerArray *compileLine;
+  int options;
+  bool shouldFail;
+  TestFileExeGenerator *generator;
+  __strong char *binaryName;
+  __strong char *sourceName;
+  __strong char *libraryPath;
+  __strong char *frameworkPath;
 }
 @property int options;
 @property(assign) NSPointerArray *compileLine;
@@ -71,29 +70,29 @@ enum options {
 @property __strong char *sourceName;
 @property __strong char *libraryPath;
 @property __strong char *frameworkPath;
-- (bool) compileUnlessExists:(bool)skip;
-- (bool) run;
+- (bool)compileUnlessExists:(bool)skip;
+- (bool)run;
 @property(readonly) __strong char *radar;
 @end
 
 // this class generates an appropriate set of configurations to compile
 // we don't track which gcc we use but we should XXX
 @interface TestFileExeGenerator : NSObject {
-    bool hasObjC;
-    bool hasRR;
-    bool hasGC;
-    bool hasCPlusPlus;
-    bool wantsC99;
-    bool wants64;
-    bool wants32;
-    bool supposedToNotCompile;
-    bool open;              // this problem is still open - e.g. unresolved
-    __strong char *radar; // for things already known to go wrong
-    __strong char *filename;
-    __strong char *compilerPath;
-    __strong char *errorString;
-    __strong char *warningString;
-    NSPointerArray *extraLibraries;
+  bool hasObjC;
+  bool hasRR;
+  bool hasGC;
+  bool hasCPlusPlus;
+  bool wantsC99;
+  bool wants64;
+  bool wants32;
+  bool supposedToNotCompile;
+  bool open;            // this problem is still open - e.g. unresolved
+  __strong char *radar; // for things already known to go wrong
+  __strong char *filename;
+  __strong char *compilerPath;
+  __strong char *errorString;
+  __strong char *warningString;
+  NSPointerArray *extraLibraries;
 }
 @property bool hasObjC, hasRR, hasGC, hasCPlusPlus, wantsC99, supposedToNotCompile, open, wants32, wants64;
 @property(assign) __strong char *radar;
@@ -105,5 +104,3 @@ enum options {
 + (NSArray *)generatorsFromFILE:(FILE *)fd;
 + (NSArray *)generatorsFromPath:(NSString *)path;
 @end
-
-

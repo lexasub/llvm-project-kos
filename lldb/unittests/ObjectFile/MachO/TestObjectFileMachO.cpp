@@ -6,12 +6,12 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "lldb/Host/HostInfo.h"
 #include "Plugins/ObjectFile/Mach-O/ObjectFileMachO.h"
 #include "TestingSupport/SubsystemRAII.h"
 #include "TestingSupport/TestUtilities.h"
 #include "lldb/Core/Module.h"
 #include "lldb/Host/FileSystem.h"
+#include "lldb/Host/HostInfo.h"
 #include "lldb/lldb-defines.h"
 #include "gtest/gtest.h"
 

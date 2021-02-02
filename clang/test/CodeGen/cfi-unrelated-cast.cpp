@@ -3,25 +3,25 @@
 
 #include <stddef.h>
 
-template<class T>
+template <class T>
 class myalloc {
- public:
+public:
   // CHECK: define{{.*}}allocateE{{.}}
   // CHECK-NOT: llvm.type.test
   T *allocate(size_t sz) {
-    return (T*)::operator new(sz);
+    return (T *)::operator new(sz);
   }
 
   // CHECK: define{{.*}}allocateE{{.}}PKv
   // CHECK-NOT: llvm.type.test
   T *allocate(size_t sz, const void *ptr) {
-    return (T*)::operator new(sz);
+    return (T *)::operator new(sz);
   }
 
   // CHECK: define{{.*}}differentName
   // CHECK: llvm.type.test
   T *differentName(size_t sz, const void *ptr) {
-    return (T*)::operator new(sz);
+    return (T *)::operator new(sz);
   }
 };
 

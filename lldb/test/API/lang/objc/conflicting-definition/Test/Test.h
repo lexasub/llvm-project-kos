@@ -3,8 +3,7 @@
 
 @interface Test : NSObject {
 @public
-    CMTimeRange _range;
+  CMTimeRange _range;
 }
-- (void) doTest;
+- (void)doTest;
 @end
-

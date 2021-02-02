@@ -2,36 +2,38 @@
 
 // PR5741
 namespace test0 {
-  struct A {
-    struct B { };
-    struct C;
-  };
+struct A {
+  struct B {};
+  struct C;
+};
 
-  struct A::C : B { };
-}
+struct A::C : B {};
+} // namespace test0
 
 // Test that successive base specifiers don't screw with each other.
 namespace test1 {
-  struct Opaque1 {};
-  struct Opaque2 {};
+struct Opaque1 {};
+struct Opaque2 {};
 
-  struct A {
-    struct B { B(Opaque1); };
-  };
+struct A {
   struct B {
-    B(Opaque2);
+    B(Opaque1);
   };
+};
+struct B {
+  B(Opaque2);
+};
 
-  struct C : A, B {
-    // Apparently the base-or-member lookup is actually ambiguous
-    // without this qualification.
-    C() : A(), test1::B(Opaque2()) {}
-  };
-}
+struct C : A, B {
+  // Apparently the base-or-member lookup is actually ambiguous
+  // without this qualification.
+  C() : A(), test1::B(Opaque2()) {}
+};
+} // namespace test1
 
 // Test that we don't find the injected class name when parsing base
 // specifiers.
 namespace test2 {
-  template <class T> struct bar {};
-  template <class T> struct foo : bar<foo> {}; // expected-error {{use of class template 'foo' requires template arguments}} expected-note {{template is declared here}}
-}
+template <class T> struct bar {};
+template <class T> struct foo : bar<foo> {}; // expected-error {{use of class template 'foo' requires template arguments}} expected-note {{template is declared here}}
+} // namespace test2

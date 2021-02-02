@@ -6,5 +6,5 @@ enum F {};
 struct A {
   // OK, this is an enumeration bit-field.
   enum E : int(0);
-  enum F : int{0}; // expected-error {{expected '(' for function-style cast}}
+  enum F : int { 0 }; // expected-error {{expected '(' for function-style cast}}
 };

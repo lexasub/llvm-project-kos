@@ -134,13 +134,16 @@ int
 main()
 {
 #if !_PSTL_ICC_18_TEST_EARLY_EXIT_MONOTONIC_RELEASE_BROKEN
-    test<int32_t>(666, 42, [](int32_t) { return true; }, [](size_t j) { return j; });
+    test<int32_t>(
+        666, 42, [](int32_t) { return true; }, [](size_t j) { return j; });
 #endif
 
-    test<int32_t>(666, 2001, [](const int32_t& val) { return val != 2001; },
-                  [](size_t j) { return ((j + 1) % 5 & 2) != 0 ? 2001 : -1 - int32_t(j); });
-    test<float64_t>(-666.0, 8.5, [](const float64_t& val) { return val != 8.5; },
-                    [](size_t j) { return ((j + 1) % 7 & 2) != 0 ? 8.5 : float64_t(j % 32 + j); });
+    test<int32_t>(
+        666, 2001, [](const int32_t& val) { return val != 2001; },
+        [](size_t j) { return ((j + 1) % 5 & 2) != 0 ? 2001 : -1 - int32_t(j); });
+    test<float64_t>(
+        -666.0, 8.5, [](const float64_t& val) { return val != 8.5; },
+        [](size_t j) { return ((j + 1) % 7 & 2) != 0 ? 8.5 : float64_t(j % 32 + j); });
 
 #if !_PSTL_ICC_17_TEST_MAC_RELEASE_32_BROKEN
     test<Number>(Number(-666, OddTag()), Number(42, OddTag()), IsMultiple(3, OddTag()),
@@ -149,12 +152,13 @@ main()
 
     test_algo_basic_single<int32_t>(run_for_rnd_fw<test_non_const>());
 
-    test<MemoryChecker>(MemoryChecker{0}, MemoryChecker{1},
-        [](const MemoryChecker& val){ return val.value() == 1; },
-        [](std::size_t idx){ return MemoryChecker{std::int32_t(idx % 3 == 0)}; }
-    );
-    EXPECT_FALSE(MemoryChecker::alive_objects() < 0, "wrong effect from remove,remove_if: number of ctors calls < num of dtors calls");
-    EXPECT_FALSE(MemoryChecker::alive_objects() > 0, "wrong effect from remove,remove_if: number of ctors calls > num of dtors calls");
+    test<MemoryChecker>(
+        MemoryChecker{0}, MemoryChecker{1}, [](const MemoryChecker& val) { return val.value() == 1; },
+        [](std::size_t idx) { return MemoryChecker{std::int32_t(idx % 3 == 0)}; });
+    EXPECT_FALSE(MemoryChecker::alive_objects() < 0,
+                 "wrong effect from remove,remove_if: number of ctors calls < num of dtors calls");
+    EXPECT_FALSE(MemoryChecker::alive_objects() > 0,
+                 "wrong effect from remove,remove_if: number of ctors calls > num of dtors calls");
 
     std::cout << done() << std::endl;
     return 0;

@@ -77,7 +77,7 @@ static inline bool isLoopStart(MachineInstr &MI) {
 // WhileLoopStart holds the exit block, so produce a cmp lr, 0 and then a
 // beq that branches to the exit branch.
 inline void RevertWhileLoopStart(MachineInstr *MI, const TargetInstrInfo *TII,
-                        unsigned BrOpc = ARM::t2Bcc) {
+                                 unsigned BrOpc = ARM::t2Bcc) {
   MachineBasicBlock *MBB = MI->getParent();
 
   // Cmp

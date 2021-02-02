@@ -98,8 +98,10 @@ protected:
 
     unsigned CommandID : CommandInfo::NumCommandIDBits;
   };
-  enum { NumInlineCommandCommentBits = NumInlineContentCommentBits + 3 +
-                                       CommandInfo::NumCommandIDBits };
+  enum {
+    NumInlineCommandCommentBits =
+        NumInlineContentCommentBits + 3 + CommandInfo::NumCommandIDBits
+  };
 
   class HTMLTagCommentBitfields {
     friend class HTMLTagComment;
@@ -146,8 +148,10 @@ protected:
     /// Contains values from CommandMarkerKind enum.
     unsigned CommandMarker : 1;
   };
-  enum { NumBlockCommandCommentBits = NumCommentBits +
-                                      CommandInfo::NumCommandIDBits + 1 };
+  enum {
+    NumBlockCommandCommentBits =
+        NumCommentBits + CommandInfo::NumCommandIDBits + 1
+  };
 
   class ParamCommandCommentBitfields {
     friend class ParamCommandComment;
@@ -174,30 +178,24 @@ protected:
     ParamCommandCommentBitfields ParamCommandCommentBits;
   };
 
-  void setSourceRange(SourceRange SR) {
-    Range = SR;
-  }
+  void setSourceRange(SourceRange SR) { Range = SR; }
 
-  void setLocation(SourceLocation L) {
-    Loc = L;
-  }
+  void setLocation(SourceLocation L) { Loc = L; }
 
 public:
   enum CommentKind {
     NoCommentKind = 0,
 #define COMMENT(CLASS, PARENT) CLASS##Kind,
-#define COMMENT_RANGE(BASE, FIRST, LAST) \
-    First##BASE##Constant=FIRST##Kind, Last##BASE##Constant=LAST##Kind,
-#define LAST_COMMENT_RANGE(BASE, FIRST, LAST) \
-    First##BASE##Constant=FIRST##Kind, Last##BASE##Constant=LAST##Kind
+#define COMMENT_RANGE(BASE, FIRST, LAST)                                       \
+  First##BASE##Constant = FIRST##Kind, Last##BASE##Constant = LAST##Kind,
+#define LAST_COMMENT_RANGE(BASE, FIRST, LAST)                                  \
+  First##BASE##Constant = FIRST##Kind, Last##BASE##Constant = LAST##Kind
 #define ABSTRACT_COMMENT(COMMENT)
 #include "clang/AST/CommentNodes.inc"
   };
 
-  Comment(CommentKind K,
-          SourceLocation LocBegin,
-          SourceLocation LocEnd) :
-      Loc(LocBegin), Range(SourceRange(LocBegin, LocEnd)) {
+  Comment(CommentKind K, SourceLocation LocBegin, SourceLocation LocEnd)
+      : Loc(LocBegin), Range(SourceRange(LocBegin, LocEnd)) {
     CommentBits.Kind = K;
   }
 
@@ -219,26 +217,23 @@ public:
 
   SourceLocation getLocation() const LLVM_READONLY { return Loc; }
 
-  typedef Comment * const *child_iterator;
+  typedef Comment *const *child_iterator;
 
   child_iterator child_begin() const;
   child_iterator child_end() const;
 
   // TODO: const child iterator
 
-  unsigned child_count() const {
-    return child_end() - child_begin();
-  }
+  unsigned child_count() const { return child_end() - child_begin(); }
 };
 
 /// Inline content (contained within a block).
 /// Abstract class.
 class InlineContentComment : public Comment {
 protected:
-  InlineContentComment(CommentKind K,
-                       SourceLocation LocBegin,
-                       SourceLocation LocEnd) :
-      Comment(K, LocBegin, LocEnd) {
+  InlineContentComment(CommentKind K, SourceLocation LocBegin,
+                       SourceLocation LocEnd)
+      : Comment(K, LocBegin, LocEnd) {
     InlineContentCommentBits.HasTrailingNewline = 0;
   }
 
@@ -248,9 +243,7 @@ public:
            C->getCommentKind() <= LastInlineContentCommentConstant;
   }
 
-  void addTrailingNewline() {
-    InlineContentCommentBits.HasTrailingNewline = 1;
-  }
+  void addTrailingNewline() { InlineContentCommentBits.HasTrailingNewline = 1; }
 
   bool hasTrailingNewline() const {
     return InlineContentCommentBits.HasTrailingNewline;
@@ -262,11 +255,8 @@ class TextComment : public InlineContentComment {
   StringRef Text;
 
 public:
-  TextComment(SourceLocation LocBegin,
-              SourceLocation LocEnd,
-              StringRef Text) :
-      InlineContentComment(TextCommentKind, LocBegin, LocEnd),
-      Text(Text) {
+  TextComment(SourceLocation LocBegin, SourceLocation LocEnd, StringRef Text)
+      : InlineContentComment(TextCommentKind, LocBegin, LocEnd), Text(Text) {
     TextCommentBits.IsWhitespaceValid = false;
   }
 
@@ -300,7 +290,7 @@ public:
     SourceRange Range;
     StringRef Text;
 
-    Argument(SourceRange Range, StringRef Text) : Range(Range), Text(Text) { }
+    Argument(SourceRange Range, StringRef Text) : Range(Range), Text(Text) {}
   };
 
   /// The most appropriate rendering mode for this command, chosen on command
@@ -318,13 +308,11 @@ protected:
   ArrayRef<Argument> Args;
 
 public:
-  InlineCommandComment(SourceLocation LocBegin,
-                       SourceLocation LocEnd,
-                       unsigned CommandID,
-                       RenderKind RK,
-                       ArrayRef<Argument> Args) :
-      InlineContentComment(InlineCommandCommentKind, LocBegin, LocEnd),
-      Args(Args) {
+  InlineCommandComment(SourceLocation LocBegin, SourceLocation LocEnd,
+                       unsigned CommandID, RenderKind RK,
+                       ArrayRef<Argument> Args)
+      : InlineContentComment(InlineCommandCommentKind, LocBegin, LocEnd),
+        Args(Args) {
     InlineCommandCommentBits.RenderKind = RK;
     InlineCommandCommentBits.CommandID = CommandID;
   }
@@ -337,9 +325,7 @@ public:
 
   child_iterator child_end() const { return nullptr; }
 
-  unsigned getCommandID() const {
-    return InlineCommandCommentBits.CommandID;
-  }
+  unsigned getCommandID() const { return InlineCommandCommentBits.CommandID; }
 
   StringRef getCommandName(const CommandTraits &Traits) const {
     return Traits.getCommandInfo(getCommandID())->Name;
@@ -353,17 +339,11 @@ public:
     return static_cast<RenderKind>(InlineCommandCommentBits.RenderKind);
   }
 
-  unsigned getNumArgs() const {
-    return Args.size();
-  }
+  unsigned getNumArgs() const { return Args.size(); }
 
-  StringRef getArgText(unsigned Idx) const {
-    return Args[Idx].Text;
-  }
+  StringRef getArgText(unsigned Idx) const { return Args[Idx].Text; }
 
-  SourceRange getArgRange(unsigned Idx) const {
-    return Args[Idx].Range;
-  }
+  SourceRange getArgRange(unsigned Idx) const { return Args[Idx].Range; }
 };
 
 /// Abstract class for opening and closing HTML tags.  HTML tags are always
@@ -373,15 +353,11 @@ protected:
   StringRef TagName;
   SourceRange TagNameRange;
 
-  HTMLTagComment(CommentKind K,
-                 SourceLocation LocBegin,
-                 SourceLocation LocEnd,
-                 StringRef TagName,
-                 SourceLocation TagNameBegin,
-                 SourceLocation TagNameEnd) :
-      InlineContentComment(K, LocBegin, LocEnd),
-      TagName(TagName),
-      TagNameRange(TagNameBegin, TagNameEnd) {
+  HTMLTagComment(CommentKind K, SourceLocation LocBegin, SourceLocation LocEnd,
+                 StringRef TagName, SourceLocation TagNameBegin,
+                 SourceLocation TagNameEnd)
+      : InlineContentComment(K, LocBegin, LocEnd), TagName(TagName),
+        TagNameRange(TagNameBegin, TagNameEnd) {
     setLocation(TagNameBegin);
     HTMLTagCommentBits.IsMalformed = 0;
   }
@@ -400,13 +376,9 @@ public:
                        L.getLocWithOffset(1 + TagName.size()));
   }
 
-  bool isMalformed() const {
-    return HTMLTagCommentBits.IsMalformed;
-  }
+  bool isMalformed() const { return HTMLTagCommentBits.IsMalformed; }
 
-  void setIsMalformed() {
-    HTMLTagCommentBits.IsMalformed = 1;
-  }
+  void setIsMalformed() { HTMLTagCommentBits.IsMalformed = 1; }
 };
 
 /// An opening HTML tag with attributes.
@@ -422,21 +394,16 @@ public:
     SourceRange ValueRange;
     StringRef Value;
 
-    Attribute() { }
+    Attribute() {}
 
-    Attribute(SourceLocation NameLocBegin, StringRef Name) :
-        NameLocBegin(NameLocBegin), Name(Name),
-        EqualsLoc(SourceLocation()),
-        ValueRange(SourceRange()), Value(StringRef())
-    { }
+    Attribute(SourceLocation NameLocBegin, StringRef Name)
+        : NameLocBegin(NameLocBegin), Name(Name), EqualsLoc(SourceLocation()),
+          ValueRange(SourceRange()), Value(StringRef()) {}
 
     Attribute(SourceLocation NameLocBegin, StringRef Name,
-              SourceLocation EqualsLoc,
-              SourceRange ValueRange, StringRef Value) :
-        NameLocBegin(NameLocBegin), Name(Name),
-        EqualsLoc(EqualsLoc),
-        ValueRange(ValueRange), Value(Value)
-    { }
+              SourceLocation EqualsLoc, SourceRange ValueRange, StringRef Value)
+        : NameLocBegin(NameLocBegin), Name(Name), EqualsLoc(EqualsLoc),
+          ValueRange(ValueRange), Value(Value) {}
 
     SourceLocation getNameLocEnd() const {
       return NameLocBegin.getLocWithOffset(Name.size());
@@ -451,13 +418,11 @@ private:
   ArrayRef<Attribute> Attributes;
 
 public:
-  HTMLStartTagComment(SourceLocation LocBegin,
-                      StringRef TagName) :
-      HTMLTagComment(HTMLStartTagCommentKind,
-                     LocBegin, LocBegin.getLocWithOffset(1 + TagName.size()),
-                     TagName,
-                     LocBegin.getLocWithOffset(1),
-                     LocBegin.getLocWithOffset(1 + TagName.size())) {
+  HTMLStartTagComment(SourceLocation LocBegin, StringRef TagName)
+      : HTMLTagComment(HTMLStartTagCommentKind, LocBegin,
+                       LocBegin.getLocWithOffset(1 + TagName.size()), TagName,
+                       LocBegin.getLocWithOffset(1),
+                       LocBegin.getLocWithOffset(1 + TagName.size())) {
     HTMLStartTagCommentBits.IsSelfClosing = false;
   }
 
@@ -469,13 +434,9 @@ public:
 
   child_iterator child_end() const { return nullptr; }
 
-  unsigned getNumAttrs() const {
-    return Attributes.size();
-  }
+  unsigned getNumAttrs() const { return Attributes.size(); }
 
-  const Attribute &getAttr(unsigned Idx) const {
-    return Attributes[Idx];
-  }
+  const Attribute &getAttr(unsigned Idx) const { return Attributes[Idx]; }
 
   void setAttrs(ArrayRef<Attribute> Attrs) {
     Attributes = Attrs;
@@ -490,31 +451,21 @@ public:
     }
   }
 
-  void setGreaterLoc(SourceLocation GreaterLoc) {
-    Range.setEnd(GreaterLoc);
-  }
+  void setGreaterLoc(SourceLocation GreaterLoc) { Range.setEnd(GreaterLoc); }
 
-  bool isSelfClosing() const {
-    return HTMLStartTagCommentBits.IsSelfClosing;
-  }
+  bool isSelfClosing() const { return HTMLStartTagCommentBits.IsSelfClosing; }
 
-  void setSelfClosing() {
-    HTMLStartTagCommentBits.IsSelfClosing = true;
-  }
+  void setSelfClosing() { HTMLStartTagCommentBits.IsSelfClosing = true; }
 };
 
 /// A closing HTML tag.
 class HTMLEndTagComment : public HTMLTagComment {
 public:
-  HTMLEndTagComment(SourceLocation LocBegin,
-                    SourceLocation LocEnd,
-                    StringRef TagName) :
-      HTMLTagComment(HTMLEndTagCommentKind,
-                     LocBegin, LocEnd,
-                     TagName,
-                     LocBegin.getLocWithOffset(2),
-                     LocBegin.getLocWithOffset(2 + TagName.size()))
-  { }
+  HTMLEndTagComment(SourceLocation LocBegin, SourceLocation LocEnd,
+                    StringRef TagName)
+      : HTMLTagComment(HTMLEndTagCommentKind, LocBegin, LocEnd, TagName,
+                       LocBegin.getLocWithOffset(2),
+                       LocBegin.getLocWithOffset(2 + TagName.size())) {}
 
   static bool classof(const Comment *C) {
     return C->getCommentKind() == HTMLEndTagCommentKind;
@@ -529,11 +480,9 @@ public:
 /// Abstract class.
 class BlockContentComment : public Comment {
 protected:
-  BlockContentComment(CommentKind K,
-                      SourceLocation LocBegin,
-                      SourceLocation LocEnd) :
-      Comment(K, LocBegin, LocEnd)
-  { }
+  BlockContentComment(CommentKind K, SourceLocation LocBegin,
+                      SourceLocation LocEnd)
+      : Comment(K, LocBegin, LocEnd) {}
 
 public:
   static bool classof(const Comment *C) {
@@ -547,11 +496,10 @@ class ParagraphComment : public BlockContentComment {
   ArrayRef<InlineContentComment *> Content;
 
 public:
-  ParagraphComment(ArrayRef<InlineContentComment *> Content) :
-      BlockContentComment(ParagraphCommentKind,
-                          SourceLocation(),
-                          SourceLocation()),
-      Content(Content) {
+  ParagraphComment(ArrayRef<InlineContentComment *> Content)
+      : BlockContentComment(ParagraphCommentKind, SourceLocation(),
+                            SourceLocation()),
+        Content(Content) {
     if (Content.empty()) {
       ParagraphCommentBits.IsWhitespace = true;
       ParagraphCommentBits.IsWhitespaceValid = true;
@@ -599,8 +547,8 @@ public:
     SourceRange Range;
     StringRef Text;
 
-    Argument() { }
-    Argument(SourceRange Range, StringRef Text) : Range(Range), Text(Text) { }
+    Argument() {}
+    Argument(SourceRange Range, StringRef Text) : Range(Range), Text(Text) {}
   };
 
 protected:
@@ -610,25 +558,20 @@ protected:
   /// Paragraph argument.
   ParagraphComment *Paragraph;
 
-  BlockCommandComment(CommentKind K,
-                      SourceLocation LocBegin,
-                      SourceLocation LocEnd,
-                      unsigned CommandID,
-                      CommandMarkerKind CommandMarker) :
-      BlockContentComment(K, LocBegin, LocEnd),
-      Paragraph(nullptr) {
+  BlockCommandComment(CommentKind K, SourceLocation LocBegin,
+                      SourceLocation LocEnd, unsigned CommandID,
+                      CommandMarkerKind CommandMarker)
+      : BlockContentComment(K, LocBegin, LocEnd), Paragraph(nullptr) {
     setLocation(getCommandNameBeginLoc());
     BlockCommandCommentBits.CommandID = CommandID;
     BlockCommandCommentBits.CommandMarker = CommandMarker;
   }
 
 public:
-  BlockCommandComment(SourceLocation LocBegin,
-                      SourceLocation LocEnd,
-                      unsigned CommandID,
-                      CommandMarkerKind CommandMarker) :
-      BlockContentComment(BlockCommandCommentKind, LocBegin, LocEnd),
-      Paragraph(nullptr) {
+  BlockCommandComment(SourceLocation LocBegin, SourceLocation LocEnd,
+                      unsigned CommandID, CommandMarkerKind CommandMarker)
+      : BlockContentComment(BlockCommandCommentKind, LocBegin, LocEnd),
+        Paragraph(nullptr) {
     setLocation(getCommandNameBeginLoc());
     BlockCommandCommentBits.CommandID = CommandID;
     BlockCommandCommentBits.CommandMarker = CommandMarker;
@@ -647,9 +590,7 @@ public:
     return reinterpret_cast<child_iterator>(&Paragraph + 1);
   }
 
-  unsigned getCommandID() const {
-    return BlockCommandCommentBits.CommandID;
-  }
+  unsigned getCommandID() const { return BlockCommandCommentBits.CommandID; }
 
   StringRef getCommandName(const CommandTraits &Traits) const {
     return Traits.getCommandInfo(getCommandID())->Name;
@@ -665,17 +606,11 @@ public:
                        getBeginLoc().getLocWithOffset(1 + Name.size()));
   }
 
-  unsigned getNumArgs() const {
-    return Args.size();
-  }
+  unsigned getNumArgs() const { return Args.size(); }
 
-  StringRef getArgText(unsigned Idx) const {
-    return Args[Idx].Text;
-  }
+  StringRef getArgText(unsigned Idx) const { return Args[Idx].Text; }
 
-  SourceRange getArgRange(unsigned Idx) const {
-    return Args[Idx].Range;
-  }
+  SourceRange getArgRange(unsigned Idx) const { return Args[Idx].Range; }
 
   void setArgs(ArrayRef<Argument> A) {
     Args = A;
@@ -686,9 +621,7 @@ public:
     }
   }
 
-  ParagraphComment *getParagraph() const LLVM_READONLY {
-    return Paragraph;
-  }
+  ParagraphComment *getParagraph() const LLVM_READONLY { return Paragraph; }
 
   bool hasNonWhitespaceParagraph() const {
     return Paragraph && !Paragraph->isWhitespace();
@@ -716,16 +649,14 @@ private:
 public:
   enum : unsigned {
     InvalidParamIndex = ~0U,
-    VarArgParamIndex = ~0U/*InvalidParamIndex*/ - 1U
+    VarArgParamIndex = ~0U /*InvalidParamIndex*/ - 1U
   };
 
-  ParamCommandComment(SourceLocation LocBegin,
-                      SourceLocation LocEnd,
-                      unsigned CommandID,
-                      CommandMarkerKind CommandMarker) :
-      BlockCommandComment(ParamCommandCommentKind, LocBegin, LocEnd,
-                          CommandID, CommandMarker),
-      ParamIndex(InvalidParamIndex) {
+  ParamCommandComment(SourceLocation LocBegin, SourceLocation LocEnd,
+                      unsigned CommandID, CommandMarkerKind CommandMarker)
+      : BlockCommandComment(ParamCommandCommentKind, LocBegin, LocEnd,
+                            CommandID, CommandMarker),
+        ParamIndex(InvalidParamIndex) {
     ParamCommandCommentBits.Direction = In;
     ParamCommandCommentBits.IsDirectionExplicit = false;
   }
@@ -734,11 +665,7 @@ public:
     return C->getCommentKind() == ParamCommandCommentKind;
   }
 
-  enum PassDirection {
-    In,
-    Out,
-    InOut
-  };
+  enum PassDirection { In, Out, InOut };
 
   static const char *getDirectionAsString(PassDirection D);
 
@@ -755,19 +682,13 @@ public:
     ParamCommandCommentBits.IsDirectionExplicit = Explicit;
   }
 
-  bool hasParamName() const {
-    return getNumArgs() > 0;
-  }
+  bool hasParamName() const { return getNumArgs() > 0; }
 
   StringRef getParamName(const FullComment *FC) const;
 
-  StringRef getParamNameAsWritten() const {
-    return Args[0].Text;
-  }
+  StringRef getParamNameAsWritten() const { return Args[0].Text; }
 
-  SourceRange getParamNameRange() const {
-    return Args[0].Range;
-  }
+  SourceRange getParamNameRange() const { return Args[0].Range; }
 
   bool isParamIndexValid() const LLVM_READONLY {
     return ParamIndex != InvalidParamIndex;
@@ -813,35 +734,24 @@ private:
   ArrayRef<unsigned> Position;
 
 public:
-  TParamCommandComment(SourceLocation LocBegin,
-                       SourceLocation LocEnd,
-                       unsigned CommandID,
-                       CommandMarkerKind CommandMarker) :
-      BlockCommandComment(TParamCommandCommentKind, LocBegin, LocEnd, CommandID,
-                          CommandMarker)
-  { }
+  TParamCommandComment(SourceLocation LocBegin, SourceLocation LocEnd,
+                       unsigned CommandID, CommandMarkerKind CommandMarker)
+      : BlockCommandComment(TParamCommandCommentKind, LocBegin, LocEnd,
+                            CommandID, CommandMarker) {}
 
   static bool classof(const Comment *C) {
     return C->getCommentKind() == TParamCommandCommentKind;
   }
 
-  bool hasParamName() const {
-    return getNumArgs() > 0;
-  }
+  bool hasParamName() const { return getNumArgs() > 0; }
 
   StringRef getParamName(const FullComment *FC) const;
 
-  StringRef getParamNameAsWritten() const {
-    return Args[0].Text;
-  }
+  StringRef getParamNameAsWritten() const { return Args[0].Text; }
 
-  SourceRange getParamNameRange() const {
-    return Args[0].Range;
-  }
+  SourceRange getParamNameRange() const { return Args[0].Range; }
 
-  bool isPositionValid() const LLVM_READONLY {
-    return !Position.empty();
-  }
+  bool isPositionValid() const LLVM_READONLY { return !Position.empty(); }
 
   unsigned getDepth() const {
     assert(isPositionValid());
@@ -864,13 +774,10 @@ class VerbatimBlockLineComment : public Comment {
   StringRef Text;
 
 public:
-  VerbatimBlockLineComment(SourceLocation LocBegin,
-                           StringRef Text) :
-      Comment(VerbatimBlockLineCommentKind,
-              LocBegin,
-              LocBegin.getLocWithOffset(Text.size())),
-      Text(Text)
-  { }
+  VerbatimBlockLineComment(SourceLocation LocBegin, StringRef Text)
+      : Comment(VerbatimBlockLineCommentKind, LocBegin,
+                LocBegin.getLocWithOffset(Text.size())),
+        Text(Text) {}
 
   static bool classof(const Comment *C) {
     return C->getCommentKind() == VerbatimBlockLineCommentKind;
@@ -880,9 +787,7 @@ public:
 
   child_iterator child_end() const { return nullptr; }
 
-  StringRef getText() const LLVM_READONLY {
-    return Text;
-  }
+  StringRef getText() const LLVM_READONLY { return Text; }
 };
 
 /// A verbatim block command (e. g., preformatted code).  Verbatim block has an
@@ -895,13 +800,12 @@ protected:
   ArrayRef<VerbatimBlockLineComment *> Lines;
 
 public:
-  VerbatimBlockComment(SourceLocation LocBegin,
-                       SourceLocation LocEnd,
-                       unsigned CommandID) :
-      BlockCommandComment(VerbatimBlockCommentKind,
-                          LocBegin, LocEnd, CommandID,
-                          CMK_At) // FIXME: improve source fidelity.
-  { }
+  VerbatimBlockComment(SourceLocation LocBegin, SourceLocation LocEnd,
+                       unsigned CommandID)
+      : BlockCommandComment(VerbatimBlockCommentKind, LocBegin, LocEnd,
+                            CommandID,
+                            CMK_At) // FIXME: improve source fidelity.
+  {}
 
   static bool classof(const Comment *C) {
     return C->getCommentKind() == VerbatimBlockCommentKind;
@@ -920,17 +824,11 @@ public:
     CloseNameLocBegin = LocBegin;
   }
 
-  void setLines(ArrayRef<VerbatimBlockLineComment *> L) {
-    Lines = L;
-  }
+  void setLines(ArrayRef<VerbatimBlockLineComment *> L) { Lines = L; }
 
-  StringRef getCloseName() const {
-    return CloseName;
-  }
+  StringRef getCloseName() const { return CloseName; }
 
-  unsigned getNumLines() const {
-    return Lines.size();
-  }
+  unsigned getNumLines() const { return Lines.size(); }
 
   StringRef getText(unsigned LineIdx) const {
     return Lines[LineIdx]->getText();
@@ -946,18 +844,13 @@ protected:
   SourceLocation TextBegin;
 
 public:
-  VerbatimLineComment(SourceLocation LocBegin,
-                      SourceLocation LocEnd,
-                      unsigned CommandID,
-                      SourceLocation TextBegin,
-                      StringRef Text) :
-      BlockCommandComment(VerbatimLineCommentKind,
-                          LocBegin, LocEnd,
-                          CommandID,
-                          CMK_At), // FIXME: improve source fidelity.
-      Text(Text),
-      TextBegin(TextBegin)
-  { }
+  VerbatimLineComment(SourceLocation LocBegin, SourceLocation LocEnd,
+                      unsigned CommandID, SourceLocation TextBegin,
+                      StringRef Text)
+      : BlockCommandComment(VerbatimLineCommentKind, LocBegin, LocEnd,
+                            CommandID,
+                            CMK_At), // FIXME: improve source fidelity.
+        Text(Text), TextBegin(TextBegin) {}
 
   static bool classof(const Comment *C) {
     return C->getCommentKind() == VerbatimLineCommentKind;
@@ -967,9 +860,7 @@ public:
 
   child_iterator child_end() const { return nullptr; }
 
-  StringRef getText() const {
-    return Text;
-  }
+  StringRef getText() const { return Text; }
 
   SourceRange getTextRange() const {
     return SourceRange(TextBegin, getEndLoc());
@@ -992,16 +883,16 @@ struct DeclInfo {
   /// The information in the DeclInfo corresponds to CurrentDecl.
   const Decl *CurrentDecl;
 
-  /// Parameters that can be referenced by \\param if \c CommentDecl is something
-  /// that we consider a "function".
+  /// Parameters that can be referenced by \\param if \c CommentDecl is
+  /// something that we consider a "function".
   ArrayRef<const ParmVarDecl *> ParamVars;
 
   /// Function return type if \c CommentDecl is something that we consider
   /// a "function".
   QualType ReturnType;
 
-  /// Template parameters that can be referenced by \\tparam if \c CommentDecl is
-  /// a template (\c IsTemplateDecl or \c IsTemplatePartialSpecialization is
+  /// Template parameters that can be referenced by \\tparam if \c CommentDecl
+  /// is a template (\c IsTemplateDecl or \c IsTemplatePartialSpecialization is
   /// true).
   const TemplateParameterList *TemplateParameters;
 
@@ -1078,9 +969,7 @@ struct DeclInfo {
 
   void fill();
 
-  DeclKind getKind() const LLVM_READONLY {
-    return static_cast<DeclKind>(Kind);
-  }
+  DeclKind getKind() const LLVM_READONLY { return static_cast<DeclKind>(Kind); }
 
   TemplateDeclKind getTemplateKind() const LLVM_READONLY {
     return static_cast<TemplateDeclKind>(TemplateKind);
@@ -1093,9 +982,9 @@ class FullComment : public Comment {
   DeclInfo *ThisDeclInfo;
 
 public:
-  FullComment(ArrayRef<BlockContentComment *> Blocks, DeclInfo *D) :
-      Comment(FullCommentKind, SourceLocation(), SourceLocation()),
-      Blocks(Blocks), ThisDeclInfo(D) {
+  FullComment(ArrayRef<BlockContentComment *> Blocks, DeclInfo *D)
+      : Comment(FullCommentKind, SourceLocation(), SourceLocation()),
+        Blocks(Blocks), ThisDeclInfo(D) {
     if (Blocks.empty())
       return;
 
@@ -1127,10 +1016,8 @@ public:
   }
 
   ArrayRef<BlockContentComment *> getBlocks() const { return Blocks; }
-
 };
 } // end namespace comments
 } // end namespace clang
 
 #endif
-

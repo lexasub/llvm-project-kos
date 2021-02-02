@@ -17,51 +17,47 @@
 
 #include "test_macros.h"
 
-struct B
-{
-    static int count;
+struct B {
+  static int count;
 
-    B() {++count;}
-    B(const B&) {++count;}
-    virtual ~B() {--count;}
+  B() { ++count; }
+  B(const B&) { ++count; }
+  virtual ~B() { --count; }
 };
 
 int B::count = 0;
 
-struct A
-    : public B
-{
-    static int count;
+struct A : public B {
+  static int count;
 
-    A() {++count;}
-    A(const A& other) : B(other) {++count;}
-    ~A() {--count;}
+  A() { ++count; }
+  A(const A& other) : B(other) { ++count; }
+  ~A() { --count; }
 };
 
 int A::count = 0;
 
-int main(int, char**)
-{
-    {
-        std::shared_ptr<B> p(new B);
-        A* ptr = new A;
-        p.reset(ptr);
-        assert(A::count == 1);
-        assert(B::count == 1);
-        assert(p.use_count() == 1);
-        assert(p.get() == ptr);
-    }
-    assert(A::count == 0);
-    {
-        std::shared_ptr<B> p;
-        A* ptr = new A;
-        p.reset(ptr);
-        assert(A::count == 1);
-        assert(B::count == 1);
-        assert(p.use_count() == 1);
-        assert(p.get() == ptr);
-    }
-    assert(A::count == 0);
+int main(int, char**) {
+  {
+    std::shared_ptr<B> p(new B);
+    A* ptr = new A;
+    p.reset(ptr);
+    assert(A::count == 1);
+    assert(B::count == 1);
+    assert(p.use_count() == 1);
+    assert(p.get() == ptr);
+  }
+  assert(A::count == 0);
+  {
+    std::shared_ptr<B> p;
+    A* ptr = new A;
+    p.reset(ptr);
+    assert(A::count == 1);
+    assert(B::count == 1);
+    assert(p.use_count() == 1);
+    assert(p.get() == ptr);
+  }
+  assert(A::count == 0);
 
   return 0;
 }

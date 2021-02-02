@@ -458,19 +458,18 @@ void nested_loops2() {
 
 // CHECK:       [B0 (EXIT)]
 // CHECK-NEXT:   Preds (1): B1
-void check_break()
-{
-  for(int i = 2; i < 6; i++) {
-    if(i == 4)
+void check_break() {
+  for (int i = 2; i < 6; i++) {
+    if (i == 4)
       break;
   }
 
   int i = 1;
-  while(i<5){
+  while (i < 5) {
     i++;
-    if(i%2)
+    if (i % 2)
       break;
   }
-  
+
   return;
 }

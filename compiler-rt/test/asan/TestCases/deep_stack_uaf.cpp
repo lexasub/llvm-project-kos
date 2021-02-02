@@ -3,8 +3,8 @@
 // RUN: %clangxx_asan -O0 %s -o %t 2>&1
 // RUN: %env_asan_opts=malloc_context_size=120:redzone=512 not %run %t 2>&1 | FileCheck %s
 // REQUIRES: stable-runtime
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 template <int depth>
 struct DeepFree {
@@ -13,7 +13,7 @@ struct DeepFree {
   }
 };
 
-template<>
+template <>
 struct DeepFree<0> {
   static void free(char *x) {
     ::free(x);
@@ -21,7 +21,7 @@ struct DeepFree<0> {
 };
 
 int main() {
-  char *x = (char*)malloc(10);
+  char *x = (char *)malloc(10);
   // deep_free(x);
   DeepFree<200>::free(x);
   return x[5];

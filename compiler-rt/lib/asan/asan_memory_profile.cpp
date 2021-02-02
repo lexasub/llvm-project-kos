@@ -11,12 +11,12 @@
 // This file implements __sanitizer_print_memory_profile.
 //===----------------------------------------------------------------------===//
 
+#include "asan/asan_allocator.h"
+#include "lsan/lsan_common.h"
 #include "sanitizer_common/sanitizer_common.h"
 #include "sanitizer_common/sanitizer_stackdepot.h"
 #include "sanitizer_common/sanitizer_stacktrace.h"
 #include "sanitizer_common/sanitizer_stoptheworld.h"
-#include "lsan/lsan_common.h"
-#include "asan/asan_allocator.h"
 
 #if CAN_SANITIZE_LEAKS
 
@@ -54,14 +54,15 @@ class HeapProfile {
          });
     CHECK(total_allocated_user_size_);
     uptr total_shown = 0;
-    Printf("Live Heap Allocations: %zd bytes in %zd chunks; quarantined: "
-           "%zd bytes in %zd chunks; %zd other chunks; total chunks: %zd; "
-           "showing top %zd%% (at most %zd unique contexts)\n",
-           total_allocated_user_size_, total_allocated_count_,
-           total_quarantined_user_size_, total_quarantined_count_,
-           total_other_count_, total_allocated_count_ +
-           total_quarantined_count_ + total_other_count_, top_percent,
-           max_number_of_contexts);
+    Printf(
+        "Live Heap Allocations: %zd bytes in %zd chunks; quarantined: "
+        "%zd bytes in %zd chunks; %zd other chunks; total chunks: %zd; "
+        "showing top %zd%% (at most %zd unique contexts)\n",
+        total_allocated_user_size_, total_allocated_count_,
+        total_quarantined_user_size_, total_quarantined_count_,
+        total_other_count_,
+        total_allocated_count_ + total_quarantined_count_ + total_other_count_,
+        top_percent, max_number_of_contexts);
     for (uptr i = 0; i < Min(allocations_.size(), max_number_of_contexts);
          i++) {
       auto &a = allocations_[i];
@@ -96,7 +97,7 @@ class HeapProfile {
 };
 
 static void ChunkCallback(uptr chunk, void *arg) {
-  reinterpret_cast<HeapProfile*>(arg)->ProcessChunk(
+  reinterpret_cast<HeapProfile *>(arg)->ProcessChunk(
       FindHeapChunkByAllocBeg(chunk));
 }
 
@@ -104,7 +105,7 @@ static void MemoryProfileCB(const SuspendedThreadsList &suspended_threads_list,
                             void *argument) {
   HeapProfile hp;
   __lsan::ForEachChunk(ChunkCallback, &hp);
-  uptr *Arg = reinterpret_cast<uptr*>(argument);
+  uptr *Arg = reinterpret_cast<uptr *>(argument);
   hp.Print(Arg[0], Arg[1]);
 
   if (Verbosity())

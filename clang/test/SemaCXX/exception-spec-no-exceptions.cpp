@@ -7,28 +7,27 @@
 
 // PR7243: redeclarations
 namespace test0 {
-  void foo() throw(int);
-  void foo() throw();
-}
+void foo() throw(int);
+void foo() throw();
+} // namespace test0
 
 // Overrides.
 namespace test1 {
-  struct A {
-    virtual void foo() throw();
-  };
+struct A {
+  virtual void foo() throw();
+};
 
-  struct B : A {
-    virtual void foo() throw(int);
-  };
-}
+struct B : A {
+  virtual void foo() throw(int);
+};
+} // namespace test1
 
 // Calls from less permissive contexts.  We don't actually do this
 // check, but if we did it should also be disabled under
 // -fno-exceptions.
 namespace test2 {
-  void foo() throw(int);
-  void bar() throw() {
-    foo();
-  }
+void foo() throw(int);
+void bar() throw() {
+  foo();
 }
-
+} // namespace test2

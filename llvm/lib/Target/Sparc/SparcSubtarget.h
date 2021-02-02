@@ -108,9 +108,7 @@ public:
 
   /// The 64-bit ABI uses biased stack and frame pointers, so the stack frame
   /// of the current function is the area from [%sp+BIAS] to [%fp+BIAS].
-  int64_t getStackPointerBias() const {
-    return is64Bit() ? 2047 : 0;
-  }
+  int64_t getStackPointerBias() const { return is64Bit() ? 2047 : 0; }
 
   /// Given a actual stack size as determined by FrameInfo, this function
   /// returns adjusted framesize which includes space for register window

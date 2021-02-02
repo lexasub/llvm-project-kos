@@ -12,7 +12,6 @@
 #include <list>
 #include <mutex>
 
-
 #include "lldb/Breakpoint/BreakpointLocationCollection.h"
 #include "lldb/Breakpoint/StoppointSite.h"
 #include "lldb/Utility/LLDBAssert.h"
@@ -209,16 +208,16 @@ private:
 
   BreakpointSite::Type m_type; ///< The type of this breakpoint site.
   uint8_t m_saved_opcode[8]; ///< The saved opcode bytes if this breakpoint site
-                             ///uses trap opcodes.
+                             /// uses trap opcodes.
   uint8_t m_trap_opcode[8];  ///< The opcode that was used to create the
-                             ///breakpoint if it is a software breakpoint site.
+                             /// breakpoint if it is a software breakpoint site.
   bool
       m_enabled; ///< Boolean indicating if this breakpoint site enabled or not.
 
   // Consider adding an optimization where if there is only one owner, we don't
   // store a list.  The usual case will be only one owner...
   BreakpointLocationCollection m_owners; ///< This has the BreakpointLocations
-                                         ///that share this breakpoint site.
+                                         /// that share this breakpoint site.
   std::recursive_mutex
       m_owners_mutex; ///< This mutex protects the owners collection.
 

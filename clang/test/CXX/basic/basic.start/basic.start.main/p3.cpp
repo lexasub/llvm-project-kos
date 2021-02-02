@@ -14,14 +14,14 @@ int main; // expected-error{{main cannot be declared as global variable}}
 
 #elif TEST2
 // expected-no-diagnostics
-int f () {
+int f() {
   int main;
   return main;
 }
 
 #elif TEST3
 // expected-no-diagnostics
-void x(int main) {};
+void x(int main){};
 int y(int main);
 
 #elif TEST4
@@ -32,27 +32,25 @@ class A {
 
 #elif TEST5
 // expected-no-diagnostics
-template<class T> constexpr T main;
+template <class T> constexpr T main;
 
 #elif TEST6
-extern template<class T> constexpr T main; //expected-error{{expected unqualified-id}}
+extern template <class T> constexpr T main; //expected-error{{expected unqualified-id}}
 
 #elif TEST7
 // expected-no-diagnostics
 namespace foo {
-  int main;
+int main;
 }
 
 #elif TEST8
-void z(void)
-{
-  extern int main;  // expected-error{{main cannot be declared as global variable}}
+void z(void) {
+  extern int main; // expected-error{{main cannot be declared as global variable}}
 }
 
 #elif TEST9
 // expected-no-diagnostics
-int q(void)
-{
+int q(void) {
   static int main;
   return main;
 }

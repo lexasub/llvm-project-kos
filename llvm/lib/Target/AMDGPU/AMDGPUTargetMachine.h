@@ -43,7 +43,8 @@ public:
   ~AMDGPUTargetMachine() override;
 
   const TargetSubtargetInfo *getSubtargetImpl() const;
-  const TargetSubtargetInfo *getSubtargetImpl(const Function &) const override = 0;
+  const TargetSubtargetInfo *
+  getSubtargetImpl(const Function &) const override = 0;
 
   TargetLoweringObjectFile *getObjFileLowering() const override {
     return TLOF.get();
@@ -83,9 +84,7 @@ public:
 
   TargetTransformInfo getTargetTransformInfo(const Function &F) override;
 
-  bool isMachineVerifierClean() const override {
-    return false;
-  }
+  bool isMachineVerifierClean() const override { return false; }
 };
 
 //===----------------------------------------------------------------------===//
@@ -108,9 +107,7 @@ public:
 
   TargetTransformInfo getTargetTransformInfo(const Function &F) override;
 
-  bool useIPRA() const override {
-    return true;
-  }
+  bool useIPRA() const override { return true; }
 
   yaml::MachineFunctionInfo *createDefaultFuncInfoYAML() const override;
   yaml::MachineFunctionInfo *

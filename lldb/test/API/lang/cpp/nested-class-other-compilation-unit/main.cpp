@@ -9,7 +9,7 @@ int main() {
   WrapperA a;
   // WrapperB refers to the Inner and Outer DIEs from the other.cpp CU.
   // It is important that WrapperB is only forward-declared in shared.h.
-  WrapperB* b = foo();
+  WrapperB *b = foo();
 
   // Evaluating 'b' here will parse other.cpp's DIEs for all
   // the Inner and Outer classes from shared.h.
@@ -18,5 +18,5 @@ int main() {
   // versions of the Inner and Outer classes. In the associated test
   // we make sure that we can still resolve all the types properly
   // by evaluating 'a.y.oY_inner.oX_inner'.
-  return 0;  // break here
+  return 0; // break here
 }

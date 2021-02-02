@@ -19,7 +19,7 @@ struct C : virtual B {
 };
 void delete1(C *p) { delete p; } // expected-note {{in implicit destructor for 't1::C' first required here}}
 void delete2(C *p) { delete p; }
-}
+} // namespace t1
 
 namespace t2 {
 struct A {
@@ -34,13 +34,15 @@ struct C : virtual B {
   ~C(); // expected-error {{attempt to use a deleted function}}
 };
 void useCompleteDtor(C *p) { delete p; } // expected-note {{in implicit destructor for 't2::C' first required here}}
-}
+} // namespace t2
 
 namespace t3 {
 template <unsigned N>
 class Base { ~Base(); }; // expected-note 1{{declared private here}}
 // No diagnostic.
-class Derived0 : virtual Base<0> { ~Derived0(); };
+class Derived0 : virtual Base<0> {
+  ~Derived0();
+};
 class Derived1 : virtual Base<1> {};
 // Emitting complete dtor causes a diagnostic.
 struct Derived2 : // expected-error {{inherited virtual base class 'Base<2>' has private destructor}}
@@ -48,4 +50,4 @@ struct Derived2 : // expected-error {{inherited virtual base class 'Base<2>' has
   ~Derived2();
 };
 void useCompleteDtor(Derived2 *p) { delete p; } // expected-note {{in implicit destructor for 't3::Derived2' first required here}}
-}
+} // namespace t3

@@ -23,11 +23,11 @@
 using namespace llvm;
 using namespace gsym;
 
-GsymReader::GsymReader(std::unique_ptr<MemoryBuffer> Buffer) :
-    MemBuffer(std::move(Buffer)),
-    Endian(support::endian::system_endianness()) {}
+GsymReader::GsymReader(std::unique_ptr<MemoryBuffer> Buffer)
+    : MemBuffer(std::move(Buffer)),
+      Endian(support::endian::system_endianness()) {}
 
-  GsymReader::GsymReader(GsymReader &&RHS) = default;
+GsymReader::GsymReader(GsymReader &&RHS) = default;
 
 GsymReader::~GsymReader() = default;
 
@@ -58,8 +58,7 @@ GsymReader::create(std::unique_ptr<MemoryBuffer> &MemBuffer) {
   return std::move(GR);
 }
 
-llvm::Error
-GsymReader::parse() {
+llvm::Error GsymReader::parse() {
   BinaryStreamReader FileData(MemBuffer->getBuffer(),
                               support::endian::system_endianness());
   // Check for the magic bytes. This file format is designed to be mmap'ed
@@ -71,17 +70,16 @@ GsymReader::parse() {
 
   const auto HostByteOrder = support::endian::system_endianness();
   switch (Hdr->Magic) {
-    case GSYM_MAGIC:
-      Endian = HostByteOrder;
-      break;
-    case GSYM_CIGAM:
-      // This is a GSYM file, but not native endianness.
-      Endian = sys::IsBigEndianHost ? support::little : support::big;
-      Swap.reset(new SwappedData);
-      break;
-    default:
-      return createStringError(std::errc::invalid_argument,
-                               "not a GSYM file");
+  case GSYM_MAGIC:
+    Endian = HostByteOrder;
+    break;
+  case GSYM_CIGAM:
+    // This is a GSYM file, but not native endianness.
+    Endian = sys::IsBigEndianHost ? support::little : support::big;
+    Swap.reset(new SwappedData);
+    break;
+  default:
+    return createStringError(std::errc::invalid_argument, "not a GSYM file");
   }
 
   bool DataIsLittleEndian = HostByteOrder != support::little;
@@ -108,64 +106,63 @@ GsymReader::parse() {
 
     // Read the address offsets.
     if (FileData.padToAlignment(Hdr->AddrOffSize) ||
-        FileData.readArray(AddrOffsets,
-                           Hdr->NumAddresses * Hdr->AddrOffSize))
+        FileData.readArray(AddrOffsets, Hdr->NumAddresses * Hdr->AddrOffSize))
       return createStringError(std::errc::invalid_argument,
-                              "failed to read address table");
+                               "failed to read address table");
 
     // Read the address info offsets.
     if (FileData.padToAlignment(4) ||
         FileData.readArray(AddrInfoOffsets, Hdr->NumAddresses))
       return createStringError(std::errc::invalid_argument,
-                              "failed to read address info offsets table");
+                               "failed to read address info offsets table");
 
     // Read the file table.
     uint32_t NumFiles = 0;
     if (FileData.readInteger(NumFiles) || FileData.readArray(Files, NumFiles))
       return createStringError(std::errc::invalid_argument,
-                              "failed to read file table");
+                               "failed to read file table");
 
     // Get the string table.
     FileData.setOffset(Hdr->StrtabOffset);
     if (FileData.readFixedString(StrTab.Data, Hdr->StrtabSize))
       return createStringError(std::errc::invalid_argument,
-                              "failed to read string table");
-} else {
-  // This is the non native endianness case that is not common and not
-  // optimized for lookups. Here we decode the important tables into local
-  // storage and then set the ArrayRef objects to point to these swapped
-  // copies of the read only data so lookups can be as efficient as possible.
-  DataExtractor Data(MemBuffer->getBuffer(), DataIsLittleEndian, 4);
+                               "failed to read string table");
+  } else {
+    // This is the non native endianness case that is not common and not
+    // optimized for lookups. Here we decode the important tables into local
+    // storage and then set the ArrayRef objects to point to these swapped
+    // copies of the read only data so lookups can be as efficient as possible.
+    DataExtractor Data(MemBuffer->getBuffer(), DataIsLittleEndian, 4);
 
-  // Read the address offsets.
-  uint64_t Offset = alignTo(sizeof(Header), Hdr->AddrOffSize);
-  Swap->AddrOffsets.resize(Hdr->NumAddresses * Hdr->AddrOffSize);
-  switch (Hdr->AddrOffSize) {
+    // Read the address offsets.
+    uint64_t Offset = alignTo(sizeof(Header), Hdr->AddrOffSize);
+    Swap->AddrOffsets.resize(Hdr->NumAddresses * Hdr->AddrOffSize);
+    switch (Hdr->AddrOffSize) {
     case 1:
       if (!Data.getU8(&Offset, Swap->AddrOffsets.data(), Hdr->NumAddresses))
         return createStringError(std::errc::invalid_argument,
-                                  "failed to read address table");
+                                 "failed to read address table");
       break;
     case 2:
       if (!Data.getU16(&Offset,
-                        reinterpret_cast<uint16_t *>(Swap->AddrOffsets.data()),
-                        Hdr->NumAddresses))
+                       reinterpret_cast<uint16_t *>(Swap->AddrOffsets.data()),
+                       Hdr->NumAddresses))
         return createStringError(std::errc::invalid_argument,
-                                  "failed to read address table");
+                                 "failed to read address table");
       break;
     case 4:
       if (!Data.getU32(&Offset,
-                        reinterpret_cast<uint32_t *>(Swap->AddrOffsets.data()),
-                        Hdr->NumAddresses))
+                       reinterpret_cast<uint32_t *>(Swap->AddrOffsets.data()),
+                       Hdr->NumAddresses))
         return createStringError(std::errc::invalid_argument,
-                                  "failed to read address table");
+                                 "failed to read address table");
       break;
     case 8:
       if (!Data.getU64(&Offset,
-                        reinterpret_cast<uint64_t *>(Swap->AddrOffsets.data()),
-                        Hdr->NumAddresses))
+                       reinterpret_cast<uint64_t *>(Swap->AddrOffsets.data()),
+                       Hdr->NumAddresses))
         return createStringError(std::errc::invalid_argument,
-                                  "failed to read address table");
+                                 "failed to read address table");
     }
     AddrOffsets = ArrayRef<uint8_t>(Swap->AddrOffsets);
 
@@ -181,21 +178,20 @@ GsymReader::parse() {
     const uint32_t NumFiles = Data.getU32(&Offset);
     if (NumFiles > 0) {
       Swap->Files.resize(NumFiles);
-      if (Data.getU32(&Offset, &Swap->Files[0].Dir, NumFiles*2))
+      if (Data.getU32(&Offset, &Swap->Files[0].Dir, NumFiles * 2))
         Files = ArrayRef<FileEntry>(Swap->Files);
       else
         return createStringError(std::errc::invalid_argument,
                                  "failed to read file table");
     }
     // Get the string table.
-    StrTab.Data = MemBuffer->getBuffer().substr(Hdr->StrtabOffset,
-                                                Hdr->StrtabSize);
+    StrTab.Data =
+        MemBuffer->getBuffer().substr(Hdr->StrtabOffset, Hdr->StrtabSize);
     if (StrTab.Data.empty())
       return createStringError(std::errc::invalid_argument,
                                "failed to read string table");
   }
   return Error::success();
-
 }
 
 const Header &GsymReader::getHeader() const {
@@ -208,10 +204,14 @@ const Header &GsymReader::getHeader() const {
 
 Optional<uint64_t> GsymReader::getAddress(size_t Index) const {
   switch (Hdr->AddrOffSize) {
-  case 1: return addressForIndex<uint8_t>(Index);
-  case 2: return addressForIndex<uint16_t>(Index);
-  case 4: return addressForIndex<uint32_t>(Index);
-  case 8: return addressForIndex<uint64_t>(Index);
+  case 1:
+    return addressForIndex<uint8_t>(Index);
+  case 2:
+    return addressForIndex<uint16_t>(Index);
+  case 4:
+    return addressForIndex<uint32_t>(Index);
+  case 8:
+    return addressForIndex<uint64_t>(Index);
   }
   return llvm::None;
 }
@@ -223,8 +223,7 @@ Optional<uint64_t> GsymReader::getAddressInfoOffset(size_t Index) const {
   return llvm::None;
 }
 
-Expected<uint64_t>
-GsymReader::getAddressIndex(const uint64_t Addr) const {
+Expected<uint64_t> GsymReader::getAddressIndex(const uint64_t Addr) const {
   if (Addr >= Hdr->BaseAddress) {
     const uint64_t AddrOffset = Addr - Hdr->BaseAddress;
     Optional<uint64_t> AddrOffsetIndex;
@@ -251,7 +250,6 @@ GsymReader::getAddressIndex(const uint64_t Addr) const {
   }
   return createStringError(std::errc::invalid_argument,
                            "address 0x%" PRIx64 " is not in GSYM", Addr);
-
 }
 
 llvm::Expected<FunctionInfo> GsymReader::getFunctionInfo(uint64_t Addr) const {
@@ -268,7 +266,7 @@ llvm::Expected<FunctionInfo> GsymReader::getFunctionInfo(uint64_t Addr) const {
       if (ExpectedFI->Range.contains(Addr) || ExpectedFI->Range.size() == 0)
         return ExpectedFI;
       return createStringError(std::errc::invalid_argument,
-                                "address 0x%" PRIx64 " is not in GSYM", Addr);
+                               "address 0x%" PRIx64 " is not in GSYM", Addr);
     }
   }
   return createStringError(std::errc::invalid_argument,
@@ -300,22 +298,41 @@ void GsymReader::dump(raw_ostream &OS) {
   OS << "INDEX  OFFSET";
 
   switch (Hdr->AddrOffSize) {
-  case 1: OS << "8 "; break;
-  case 2: OS << "16"; break;
-  case 4: OS << "32"; break;
-  case 8: OS << "64"; break;
-  default: OS << "??"; break;
+  case 1:
+    OS << "8 ";
+    break;
+  case 2:
+    OS << "16";
+    break;
+  case 4:
+    OS << "32";
+    break;
+  case 8:
+    OS << "64";
+    break;
+  default:
+    OS << "??";
+    break;
   }
   OS << " (ADDRESS)\n";
   OS << "====== =============================== \n";
   for (uint32_t I = 0; I < Header.NumAddresses; ++I) {
     OS << format("[%4u] ", I);
     switch (Hdr->AddrOffSize) {
-    case 1: OS << HEX8(getAddrOffsets<uint8_t>()[I]); break;
-    case 2: OS << HEX16(getAddrOffsets<uint16_t>()[I]); break;
-    case 4: OS << HEX32(getAddrOffsets<uint32_t>()[I]); break;
-    case 8: OS << HEX32(getAddrOffsets<uint64_t>()[I]); break;
-    default: break;
+    case 1:
+      OS << HEX8(getAddrOffsets<uint8_t>()[I]);
+      break;
+    case 2:
+      OS << HEX16(getAddrOffsets<uint16_t>()[I]);
+      break;
+    case 4:
+      OS << HEX32(getAddrOffsets<uint32_t>()[I]);
+      break;
+    case 8:
+      OS << HEX32(getAddrOffsets<uint64_t>()[I]);
+      break;
+    default:
+      break;
     }
     OS << " (" << HEX64(*getAddress(I)) << ")\n";
   }
@@ -356,7 +373,7 @@ void GsymReader::dump(raw_ostream &OS, const FunctionInfo &FI) {
 
 void GsymReader::dump(raw_ostream &OS, const LineTable &LT) {
   OS << "LineTable:\n";
-  for (auto &LE: LT) {
+  for (auto &LE : LT) {
     OS << "  " << HEX64(LE.Addr) << ' ';
     if (LE.File)
       dump(OS, getFile(LE.File));
@@ -378,7 +395,7 @@ void GsymReader::dump(raw_ostream &OS, const InlineInfo &II, uint32_t Indent) {
     }
   }
   OS << '\n';
-  for (const auto &ChildII: II.Children)
+  for (const auto &ChildII : II.Children)
     dump(OS, ChildII, Indent + 2);
 }
 

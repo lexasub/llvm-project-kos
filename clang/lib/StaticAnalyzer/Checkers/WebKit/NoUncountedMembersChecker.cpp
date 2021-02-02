@@ -152,7 +152,6 @@ void ento::registerNoUncountedMemberChecker(CheckerManager &Mgr) {
   Mgr.registerChecker<NoUncountedMemberChecker>();
 }
 
-bool ento::shouldRegisterNoUncountedMemberChecker(
-    const CheckerManager &Mgr) {
+bool ento::shouldRegisterNoUncountedMemberChecker(const CheckerManager &Mgr) {
   return true;
 }

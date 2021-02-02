@@ -17,6 +17,6 @@ namespace lldb_renderscript {
 bool fixupX86FunctionCalls(llvm::Module &module);
 
 bool fixupX86_64FunctionCalls(llvm::Module &module);
-}
-}
+} // namespace lldb_renderscript
+} // namespace lldb_private
 #endif

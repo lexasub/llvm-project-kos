@@ -27,8 +27,8 @@
 
 // bullet 3
 struct ConvertibleToCVQuals {
-  template<typename T>
-  operator T* const() const;
+  template <typename T>
+  operator T * const() const;
 };
 
 void test_cvqual_conv(ConvertibleToCVQuals ctcv) {

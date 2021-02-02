@@ -14,9 +14,8 @@
 
 #include <string>
 
-int main(int, char**)
-{
-    std::string s;
-    s.reserve(); // expected-warning {{'reserve' is deprecated}}
-    return 0;
+int main(int, char**) {
+  std::string s;
+  s.reserve(); // expected-warning {{'reserve' is deprecated}}
+  return 0;
 }

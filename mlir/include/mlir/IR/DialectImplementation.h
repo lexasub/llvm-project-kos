@@ -135,7 +135,8 @@ public:
   virtual ParseResult parseFloat(double &result) = 0;
 
   /// Parse an integer value from the stream.
-  template <typename IntT> ParseResult parseInteger(IntT &result) {
+  template <typename IntT>
+  ParseResult parseInteger(IntT &result) {
     auto loc = getCurrentLocation();
     OptionalParseResult parseResult = parseOptionalInteger(result);
     if (!parseResult.hasValue())
@@ -311,7 +312,8 @@ public:
   virtual ParseResult parseType(Type &result) = 0;
 
   /// Parse a type of a specific kind, e.g. a FunctionType.
-  template <typename TypeType> ParseResult parseType(TypeType &result) {
+  template <typename TypeType>
+  ParseResult parseType(TypeType &result) {
     llvm::SMLoc loc = getCurrentLocation();
 
     // Parse any kind of type.

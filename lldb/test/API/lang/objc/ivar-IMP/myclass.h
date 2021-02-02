@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 
-@interface MyClass : NSObject
-{}
+@interface MyClass : NSObject {
+}
 - (id)init;
 @end

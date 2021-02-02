@@ -7,12 +7,14 @@ int ar1[10];
 // - (cv) void
 volatile void ar2[10]; // expected-error {{incomplete element type 'volatile void'}}
 // - a reference
-int& ar3[10]; // expected-error {{array of references}}
+int &ar3[10]; // expected-error {{array of references}}
 // - a function type
 typedef void Fn();
 Fn ar4[10]; // expected-error {{array of functions}}
 // - an abstract class
-struct Abstract { virtual void fn() = 0; }; // expected-note {{pure virtual}}
+struct Abstract {
+  virtual void fn() = 0;
+};                // expected-note {{pure virtual}}
 Abstract ar5[10]; // expected-error {{abstract class}}
 
 // If we have a size, it must be greater than zero.
@@ -22,7 +24,7 @@ int ar7[0u]; // expected-warning {{zero size arrays are an extension}}
 // An array with unknown bound is incomplete.
 int ar8[]; // expected-error {{needs an explicit size or an initializer}}
 // So is an array with an incomplete element type.
-struct Incomplete; // expected-note {{forward declaration}}
+struct Incomplete;  // expected-note {{forward declaration}}
 Incomplete ar9[10]; // expected-error {{incomplete type}}
 // Neither of which should be a problem in situations where no complete type
 // is required. (PR5048)
@@ -47,8 +49,8 @@ S<int> ar10[10]; // expected-note {{requested here}}
 // array as this is often used to simulate static_assert with template
 // instantiations, placing the 'error message' in the declarator name.
 int
-user_error_message
-[-1]; // expected-error {{user_error_message}}
+    user_error_message
+        [-1]; // expected-error {{user_error_message}}
 typedef int
-another_user_error_message
-[-1]; // expected-error {{another_user_error_message}}
+    another_user_error_message
+        [-1]; // expected-error {{another_user_error_message}}

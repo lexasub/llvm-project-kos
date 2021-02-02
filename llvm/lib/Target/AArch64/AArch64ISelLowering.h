@@ -528,7 +528,7 @@ public:
                                   MachineBasicBlock *BB) const;
 
   MachineBasicBlock *EmitLoweredCatchRet(MachineInstr &MI,
-                                           MachineBasicBlock *BB) const;
+                                         MachineBasicBlock *BB) const;
 
   MachineBasicBlock *
   EmitInstrWithCustomInserter(MachineInstr &MI,
@@ -621,8 +621,8 @@ public:
 
   Value *emitLoadLinked(IRBuilder<> &Builder, Value *Addr,
                         AtomicOrdering Ord) const override;
-  Value *emitStoreConditional(IRBuilder<> &Builder, Value *Val,
-                              Value *Addr, AtomicOrdering Ord) const override;
+  Value *emitStoreConditional(IRBuilder<> &Builder, Value *Val, Value *Addr,
+                              AtomicOrdering Ord) const override;
 
   void emitAtomicCmpXchgNoStoreLLBalance(IRBuilder<> &Builder) const override;
 
@@ -682,13 +682,9 @@ public:
     return true;
   }
 
-  bool isCheapToSpeculateCttz() const override {
-    return true;
-  }
+  bool isCheapToSpeculateCttz() const override { return true; }
 
-  bool isCheapToSpeculateCtlz() const override {
-    return true;
-  }
+  bool isCheapToSpeculateCtlz() const override { return true; }
 
   bool isMaskAndCmp0FoldingBeneficial(const Instruction &AndI) const override;
 
@@ -746,9 +742,7 @@ public:
       MachineBasicBlock *Entry,
       const SmallVectorImpl<MachineBasicBlock *> &Exits) const override;
 
-  bool supportSwiftError() const override {
-    return true;
-  }
+  bool supportSwiftError() const override { return true; }
 
   /// Enable aggressive FMA fusion on targets that want it.
   bool enableAggressiveFMAFusion(EVT VT) const override;
@@ -767,8 +761,8 @@ public:
   unsigned getNumInterleavedAccesses(VectorType *VecTy,
                                      const DataLayout &DL) const;
 
-  MachineMemOperand::Flags getTargetMMOFlags(
-    const Instruction &I) const override;
+  MachineMemOperand::Flags
+  getTargetMMOFlags(const Instruction &I) const override;
 
   bool functionArgumentNeedsConsecutiveRegisters(Type *Ty,
                                                  CallingConv::ID CallConv,
@@ -948,7 +942,8 @@ private:
   SDValue LowerPredReductionToSVE(SDValue ScalarOp, SelectionDAG &DAG) const;
   SDValue LowerReductionToSVE(unsigned Opcode, SDValue ScalarOp,
                               SelectionDAG &DAG) const;
-  SDValue LowerFixedLengthVectorSelectToSVE(SDValue Op, SelectionDAG &DAG) const;
+  SDValue LowerFixedLengthVectorSelectToSVE(SDValue Op,
+                                            SelectionDAG &DAG) const;
   SDValue LowerFixedLengthVectorSetccToSVE(SDValue Op, SelectionDAG &DAG) const;
   SDValue LowerFixedLengthVectorStoreToSVE(SDValue Op, SelectionDAG &DAG) const;
   SDValue LowerFixedLengthVectorTruncateToSVE(SDValue Op,
@@ -968,7 +963,7 @@ private:
   unsigned combineRepeatedFPDivisors() const override;
 
   ConstraintType getConstraintType(StringRef Constraint) const override;
-  Register getRegisterByName(const char* RegName, LLT VT,
+  Register getRegisterByName(const char *RegName, LLT VT,
                              const MachineFunction &MF) const override;
 
   /// Examine constraint string and operand type and determine a weight value.

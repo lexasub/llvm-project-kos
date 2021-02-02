@@ -9,7 +9,7 @@
 class SVal {
 public:
   ~SVal() {}
-  const void* Data;
+  const void *Data;
   unsigned Kind;
 };
 
@@ -41,4 +41,3 @@ DexExpectProgramState({
   ]
 })
 */
-

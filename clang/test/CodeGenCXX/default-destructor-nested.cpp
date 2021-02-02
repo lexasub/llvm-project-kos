@@ -2,7 +2,8 @@
 // PR6294
 
 class A {
-public: virtual ~A();
+public:
+  virtual ~A();
 };
 class B {
   class C;

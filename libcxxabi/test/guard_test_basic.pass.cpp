@@ -14,7 +14,7 @@
 
 // Disable GCC warning about tautological comparison of a function's address
 #if defined(__GNUC__) && !defined(__clang__)
-# pragma GCC diagnostic ignored "-Waddress"
+#pragma GCC diagnostic ignored "-Waddress"
 #endif
 
 using namespace __cxxabiv1;
@@ -132,7 +132,8 @@ int main(int, char**) {
 #endif
   }
   {
-#if (defined(__APPLE__) || defined(__linux__))  && !defined(_LIBCXXABI_HAS_NO_THREADS)
+#if (defined(__APPLE__) || defined(__linux__)) &&                              \
+    !defined(_LIBCXXABI_HAS_NO_THREADS)
     assert(PlatformThreadID);
 #endif
     if (PlatformSupportsThreadID()) {

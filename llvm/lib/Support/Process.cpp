@@ -67,24 +67,18 @@ Optional<std::string> Process::FindInEnvPath(StringRef EnvName,
   return FoundPath;
 }
 
-
 #define COLOR(FGBG, CODE, BOLD) "\033[0;" BOLD FGBG CODE "m"
 
-#define ALLCOLORS(FGBG,BOLD) {\
-    COLOR(FGBG, "0", BOLD),\
-    COLOR(FGBG, "1", BOLD),\
-    COLOR(FGBG, "2", BOLD),\
-    COLOR(FGBG, "3", BOLD),\
-    COLOR(FGBG, "4", BOLD),\
-    COLOR(FGBG, "5", BOLD),\
-    COLOR(FGBG, "6", BOLD),\
-    COLOR(FGBG, "7", BOLD)\
+#define ALLCOLORS(FGBG, BOLD)                                                  \
+  {                                                                            \
+    COLOR(FGBG, "0", BOLD), COLOR(FGBG, "1", BOLD), COLOR(FGBG, "2", BOLD),    \
+        COLOR(FGBG, "3", BOLD), COLOR(FGBG, "4", BOLD),                        \
+        COLOR(FGBG, "5", BOLD), COLOR(FGBG, "6", BOLD), COLOR(FGBG, "7", BOLD) \
   }
 
 static const char colorcodes[2][2][8][10] = {
- { ALLCOLORS("3",""), ALLCOLORS("3","1;") },
- { ALLCOLORS("4",""), ALLCOLORS("4","1;") }
-};
+    {ALLCOLORS("3", ""), ALLCOLORS("3", "1;")},
+    {ALLCOLORS("4", ""), ALLCOLORS("4", "1;")}};
 
 // A CMake option controls wheter we emit core dumps by default. An application
 // may disable core dumps by calling Process::PreventCoreFiles().

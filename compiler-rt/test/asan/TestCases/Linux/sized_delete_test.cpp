@@ -11,7 +11,10 @@
 #include <string>
 
 inline void break_optimization(void *arg) {
-  __asm__ __volatile__("" : : "r" (arg) : "memory");
+  __asm__ __volatile__(""
+                       :
+                       : "r"(arg)
+                       : "memory");
 }
 
 struct S12 {
@@ -42,7 +45,7 @@ void Del12NoThrow(S12 *x) {
 }
 void Del12Ar(S12 *x) {
   break_optimization(x);
-  delete [] x;
+  delete[] x;
 }
 void Del12ArNoThrow(S12 *x) {
   break_optimization(x);
@@ -50,7 +53,8 @@ void Del12ArNoThrow(S12 *x) {
 }
 
 int main(int argc, char **argv) {
-  if (argc != 2) return 1;
+  if (argc != 2)
+    return 1;
   std::string flag = argv[1];
   // These are correct.
   Del12(new S12);
@@ -60,16 +64,16 @@ int main(int argc, char **argv) {
 
   // Here we pass wrong type of pointer to delete,
   // but [] and nothrow variants of delete are not sized.
-  Del12Ar(reinterpret_cast<S12*>(new S20[100]));
-  Del12NoThrow(reinterpret_cast<S12*>(new S20));
-  Del12ArNoThrow(reinterpret_cast<S12*>(new S20[100]));
+  Del12Ar(reinterpret_cast<S12 *>(new S20[100]));
+  Del12NoThrow(reinterpret_cast<S12 *>(new S20));
+  Del12ArNoThrow(reinterpret_cast<S12 *>(new S20[100]));
   fprintf(stderr, "OK SO FAR\n");
   // SCALAR: OK SO FAR
   // ARRAY: OK SO FAR
   if (flag == "scalar") {
     // Here asan should bark as we are passing a wrong type of pointer
     // to sized delete.
-    Del12(reinterpret_cast<S12*>(new S20));
+    Del12(reinterpret_cast<S12 *>(new S20));
     // SCALAR: AddressSanitizer: new-delete-type-mismatch
     // SCALAR:  object passed to delete has wrong type:
     // SCALAR:  size of the allocated type:   20 bytes;
@@ -77,9 +81,9 @@ int main(int argc, char **argv) {
     // SCALAR: is located 0 bytes inside of 20-byte region
     // SCALAR: SUMMARY: AddressSanitizer: new-delete-type-mismatch
   } else if (flag == "array") {
-    D1 *d1 = reinterpret_cast<D1*>(new D2[10]);
+    D1 *d1 = reinterpret_cast<D1 *>(new D2[10]);
     break_optimization(d1);
-    delete [] d1;
+    delete[] d1;
     // ARRAY-NOT: D2::~D2
     // ARRAY: D1::~D1
     // ARRAY: AddressSanitizer: new-delete-type-mismatch

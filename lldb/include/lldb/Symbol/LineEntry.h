@@ -138,25 +138,25 @@ struct LineEntry {
   // Member variables.
   AddressRange range; ///< The section offset address range for this line entry.
   FileSpec file; ///< The source file, possibly mapped by the target.source-map
-                 ///setting
+                 /// setting
   FileSpec original_file; ///< The original source file, from debug info.
   uint32_t line; ///< The source line number, or zero if there is no line number
-                 ///information.
+                 /// information.
   uint16_t column; ///< The column number of the source line, or zero if there
-                   ///is no column information.
+                   /// is no column information.
   uint16_t is_start_of_statement : 1, ///< Indicates this entry is the beginning
-                                      ///of a statement.
+                                      /// of a statement.
       is_start_of_basic_block : 1, ///< Indicates this entry is the beginning of
-                                   ///a basic block.
-      is_prologue_end : 1,   ///< Indicates this entry is one (of possibly many)
-                             ///where execution should be suspended for an entry
-                             ///breakpoint of a function.
+                                   /// a basic block.
+      is_prologue_end : 1, ///< Indicates this entry is one (of possibly many)
+                           /// where execution should be suspended for an entry
+                           /// breakpoint of a function.
       is_epilogue_begin : 1, ///< Indicates this entry is one (of possibly many)
-                             ///where execution should be suspended for an exit
-                             ///breakpoint of a function.
+                             /// where execution should be suspended for an exit
+                             /// breakpoint of a function.
       is_terminal_entry : 1; ///< Indicates this entry is that of the first byte
-                             ///after the end of a sequence of target machine
-                             ///instructions.
+                             /// after the end of a sequence of target machine
+                             /// instructions.
 };
 
 /// Less than operator.

@@ -11,18 +11,17 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "sanitizer_common/sanitizer_platform.h"
-#include "sanitizer_common/sanitizer_libc.h"
 #include "lsan_common.h"
+#include "sanitizer_common/sanitizer_libc.h"
+#include "sanitizer_common/sanitizer_platform.h"
 
 #if CAN_SANITIZE_LEAKS && SANITIZER_MAC
 
-#include "sanitizer_common/sanitizer_allocator_internal.h"
-#include "lsan_allocator.h"
-
+#include <mach/mach.h>
 #include <pthread.h>
 
-#include <mach/mach.h>
+#include "lsan_allocator.h"
+#include "sanitizer_common/sanitizer_allocator_internal.h"
 
 // Only introduced in Mac OS X 10.9.
 #ifdef VM_MEMORY_OS_ALLOC_ONCE
@@ -126,15 +125,18 @@ void ProcessGlobalRegions(Frontier *frontier) {
   for (uptr i = 0; i < modules.size(); ++i) {
     // Even when global scanning is disabled, we still need to scan
     // system libraries for stashed pointers
-    if (!flags()->use_globals && modules[i].instrumented()) continue;
+    if (!flags()->use_globals && modules[i].instrumented())
+      continue;
 
     for (const __sanitizer::LoadedModule::AddressRange &range :
          modules[i].ranges()) {
       // Sections storing global variables are writable and non-executable
-      if (range.executable || !range.writable) continue;
+      if (range.executable || !range.writable)
+        continue;
 
       for (auto name : kSkippedSecNames) {
-        if (!internal_strcmp(range.name, name)) continue;
+        if (!internal_strcmp(range.name, name))
+          continue;
       }
 
       ScanGlobalRange(range.beg, range.end, frontier);
@@ -202,6 +204,6 @@ void LockStuffAndStopTheWorld(StopTheWorldCallback callback,
   UnlockThreadRegistry();
 }
 
-} // namespace __lsan
+}  // namespace __lsan
 
-#endif // CAN_SANITIZE_LEAKS && SANITIZER_MAC
+#endif  // CAN_SANITIZE_LEAKS && SANITIZER_MAC

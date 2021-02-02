@@ -8,9 +8,6 @@
 
 #include "lldb/DataFormatters/TypeSummary.h"
 
-
-
-
 #include "lldb/lldb-enumerations.h"
 #include "lldb/lldb-public.h"
 

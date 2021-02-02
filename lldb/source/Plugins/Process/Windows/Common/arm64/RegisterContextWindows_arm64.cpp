@@ -32,12 +32,10 @@ using namespace lldb_private;
 #define DBG_OFFSET_NAME(reg) 0
 
 #define DEFINE_DBG(reg, i)                                                     \
-  #reg, NULL,                                                                  \
-      0, DBG_OFFSET_NAME(reg[i]), eEncodingUint, eFormatHex,                   \
-                              {LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,       \
-                               LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,       \
-                               LLDB_INVALID_REGNUM },                          \
-                               NULL, NULL, NULL, 0
+#reg, NULL, 0, DBG_OFFSET_NAME(reg[i]), eEncodingUint, eFormatHex,           \
+      {LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,          \
+       LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM },                             \
+       NULL, NULL, NULL, 0
 
 // Include RegisterInfos_arm64 to declare our g_register_infos_arm64 structure.
 #define DECLARE_REGISTER_INFOS_ARM64_STRUCT

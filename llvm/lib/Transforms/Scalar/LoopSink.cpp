@@ -466,7 +466,7 @@ struct LegacyLoopSinkPass : public LoopPass {
     }
   }
 };
-}
+} // namespace
 
 char LegacyLoopSinkPass::ID = 0;
 INITIALIZE_PASS_BEGIN(LegacyLoopSinkPass, "loop-sink", "Loop Sink", false,

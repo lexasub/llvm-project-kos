@@ -36,8 +36,7 @@ void do_test(coro::coroutine_handle<Promise> const& H) {
   }
 }
 
-int main(int, char**)
-{
+int main(int, char**) {
   do_test(coro::coroutine_handle<>{});
   do_test(coro::coroutine_handle<int>{});
 

@@ -15,19 +15,20 @@
 
 #include "fuzz.h"
 
-extern "C" int LLVMFuzzerTestOneInput(const std::uint8_t *data, std::size_t size) {
-    if (size < 2)
-        return 0;
-    std::vector<std::uint8_t> working(data, data + size);
-    std::make_heap(working.begin(), working.end());
-
-    // Pop things off, one at a time
-    auto iter = --working.end();
-    while (iter != working.begin()) {
-        std::pop_heap(working.begin(), iter);
-        if (!std::is_heap(working.begin(), --iter))
-            return 2;
-    }
-
+extern "C" int LLVMFuzzerTestOneInput(const std::uint8_t* data,
+                                      std::size_t size) {
+  if (size < 2)
     return 0;
+  std::vector<std::uint8_t> working(data, data + size);
+  std::make_heap(working.begin(), working.end());
+
+  // Pop things off, one at a time
+  auto iter = --working.end();
+  while (iter != working.begin()) {
+    std::pop_heap(working.begin(), iter);
+    if (!std::is_heap(working.begin(), --iter))
+      return 2;
+  }
+
+  return 0;
 }

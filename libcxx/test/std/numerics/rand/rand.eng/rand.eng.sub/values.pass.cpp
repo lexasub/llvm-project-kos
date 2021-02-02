@@ -30,54 +30,49 @@
 #include "test_macros.h"
 
 template <class T>
-void where(const T &) {}
+void where(const T&) {}
 
-void
-test1()
-{
-    typedef std::ranlux24_base E;
-    static_assert((E::word_size == 24), "");
-    static_assert((E::short_lag == 10), "");
-    static_assert((E::long_lag == 24), "");
+void test1() {
+  typedef std::ranlux24_base E;
+  static_assert((E::word_size == 24), "");
+  static_assert((E::short_lag == 10), "");
+  static_assert((E::long_lag == 24), "");
 #if TEST_STD_VER >= 11
-    static_assert((E::min() == 0), "");
-    static_assert((E::max() == 0xFFFFFF), "");
+  static_assert((E::min() == 0), "");
+  static_assert((E::max() == 0xFFFFFF), "");
 #else
-    assert((E::min() == 0));
-    assert((E::max() == 0xFFFFFF));
+  assert((E::min() == 0));
+  assert((E::max() == 0xFFFFFF));
 #endif
-    static_assert((E::default_seed == 19780503u), "");
-    where(E::word_size);
-    where(E::short_lag);
-    where(E::long_lag);
-    where(E::default_seed);
+  static_assert((E::default_seed == 19780503u), "");
+  where(E::word_size);
+  where(E::short_lag);
+  where(E::long_lag);
+  where(E::default_seed);
 }
 
-void
-test2()
-{
-    typedef std::ranlux48_base E;
-    static_assert((E::word_size == 48), "");
-    static_assert((E::short_lag == 5), "");
-    static_assert((E::long_lag == 12), "");
+void test2() {
+  typedef std::ranlux48_base E;
+  static_assert((E::word_size == 48), "");
+  static_assert((E::short_lag == 5), "");
+  static_assert((E::long_lag == 12), "");
 #if TEST_STD_VER >= 11
-    static_assert((E::min() == 0), "");
-    static_assert((E::max() == 0xFFFFFFFFFFFFull), "");
+  static_assert((E::min() == 0), "");
+  static_assert((E::max() == 0xFFFFFFFFFFFFull), "");
 #else
-    assert((E::min() == 0));
-    assert((E::max() == 0xFFFFFFFFFFFFull));
+  assert((E::min() == 0));
+  assert((E::max() == 0xFFFFFFFFFFFFull));
 #endif
-    static_assert((E::default_seed == 19780503u), "");
-    where(E::word_size);
-    where(E::short_lag);
-    where(E::long_lag);
-    where(E::default_seed);
+  static_assert((E::default_seed == 19780503u), "");
+  where(E::word_size);
+  where(E::short_lag);
+  where(E::long_lag);
+  where(E::default_seed);
 }
 
-int main(int, char**)
-{
-    test1();
-    test2();
+int main(int, char**) {
+  test1();
+  test2();
 
   return 0;
 }

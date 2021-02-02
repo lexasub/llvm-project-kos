@@ -23,7 +23,6 @@
 // template <class InputIterator>
 //      path& assign(InputIterator first, InputIterator last);
 
-
 #include "filesystem_include.h"
 #include <type_traits>
 #include <string_view>
@@ -33,7 +32,6 @@
 #include "test_iterators.h"
 #include "count_new.h"
 #include "filesystem_test_helper.h"
-
 
 template <class CharT>
 void RunTestCase(MultiStringType const& MS) {
@@ -48,7 +46,8 @@ void RunTestCase(MultiStringType const& MS) {
   // basic_string<Char, Traits, Alloc>
   {
     const std::basic_string<CharT> S(TestPath);
-    path p; PathReserve(p, S.length() + 1);
+    path p;
+    PathReserve(p, S.length() + 1);
     {
       // string provides a contiguous iterator. No allocation needed.
       DisableAllocationGuard g;
@@ -61,7 +60,8 @@ void RunTestCase(MultiStringType const& MS) {
   }
   {
     const std::basic_string<CharT> S(TestPath);
-    path p; PathReserve(p, S.length() + 1);
+    path p;
+    PathReserve(p, S.length() + 1);
     {
       DisableAllocationGuard g;
       path& pref = p.assign(S);
@@ -74,7 +74,8 @@ void RunTestCase(MultiStringType const& MS) {
   // basic_string<Char, Traits, Alloc>
   {
     const std::basic_string_view<CharT> S(TestPath);
-    path p; PathReserve(p, S.length() + 1);
+    path p;
+    PathReserve(p, S.length() + 1);
     {
       // string provides a contiguous iterator. No allocation needed.
       DisableAllocationGuard g;
@@ -87,7 +88,8 @@ void RunTestCase(MultiStringType const& MS) {
   }
   {
     const std::basic_string_view<CharT> S(TestPath);
-    path p; PathReserve(p, S.length() + 1);
+    path p;
+    PathReserve(p, S.length() + 1);
     {
       DisableAllocationGuard g;
       path& pref = p.assign(S);
@@ -100,7 +102,8 @@ void RunTestCase(MultiStringType const& MS) {
   //////////////////////////////////////////////////////////////////////////////
   // Char* pointers
   {
-    path p; PathReserve(p, Size + 1);
+    path p;
+    PathReserve(p, Size + 1);
     {
       // char* pointers are contiguous and can be used with code_cvt directly.
       // no allocations needed.
@@ -112,7 +115,8 @@ void RunTestCase(MultiStringType const& MS) {
     assert(p.string<CharT>() == TestPath);
   }
   {
-    path p; PathReserve(p, Size + 1);
+    path p;
+    PathReserve(p, Size + 1);
     {
       DisableAllocationGuard g;
       path& pref = p.assign(TestPath);
@@ -122,7 +126,8 @@ void RunTestCase(MultiStringType const& MS) {
     assert(p.string<CharT>() == TestPath);
   }
   {
-    path p; PathReserve(p, Size + 1);
+    path p;
+    PathReserve(p, Size + 1);
     {
       DisableAllocationGuard g;
       path& pref = p.assign(TestPath, TestPathEnd);
@@ -135,7 +140,8 @@ void RunTestCase(MultiStringType const& MS) {
   // Iterators
   {
     using It = input_iterator<const CharT*>;
-    path p; PathReserve(p, Size + 1);
+    path p;
+    PathReserve(p, Size + 1);
     It it(TestPath);
     {
       // Iterators cannot be used with code_cvt directly. This assignment
@@ -148,7 +154,8 @@ void RunTestCase(MultiStringType const& MS) {
   }
   {
     using It = input_iterator<const CharT*>;
-    path p; PathReserve(p, Size + 1);
+    path p;
+    PathReserve(p, Size + 1);
     It it(TestPath);
     {
       path& pref = p.assign(it);
@@ -159,7 +166,8 @@ void RunTestCase(MultiStringType const& MS) {
   }
   {
     using It = input_iterator<const CharT*>;
-    path p; PathReserve(p, Size + 1);
+    path p;
+    PathReserve(p, Size + 1);
     It it(TestPath);
     It e(TestPathEnd);
     {
@@ -172,11 +180,17 @@ void RunTestCase(MultiStringType const& MS) {
 }
 
 template <class It, class = decltype(fs::path{}.assign(std::declval<It>()))>
-constexpr bool has_assign(int) { return true; }
+constexpr bool has_assign(int) {
+  return true;
+}
 template <class It>
-constexpr bool has_assign(long) { return false; }
+constexpr bool has_assign(long) {
+  return false;
+}
 template <class It>
-constexpr bool has_assign() { return has_assign<It>(0); }
+constexpr bool has_assign() {
+  return has_assign<It>(0);
+}
 
 void test_sfinae() {
   using namespace fs;
@@ -206,7 +220,6 @@ void test_sfinae() {
     using It = output_iterator<const char*>;
     static_assert(!std::is_assignable<path, It>::value, "");
     static_assert(!has_assign<It>(), "");
-
   }
   {
     static_assert(!std::is_assignable<path, int*>::value, "");
@@ -219,7 +232,8 @@ void RunStringMoveTest(const fs::path::value_type* Expect) {
   fs::path::string_type ss(Expect);
   path p;
   {
-    DisableAllocationGuard g; ((void)g);
+    DisableAllocationGuard g;
+    ((void)g);
     path& pr = (p = std::move(ss));
     assert(&pr == &p);
   }

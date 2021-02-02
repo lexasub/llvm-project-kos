@@ -65,6 +65,7 @@ class StatisticInfo {
 
   /// Sort statistics by debugtype,name,description.
   void sort();
+
 public:
   using const_iterator = std::vector<TrackingStatistic *>::const_iterator;
 
@@ -75,16 +76,14 @@ public:
 
   const_iterator begin() const { return Stats.begin(); }
   const_iterator end() const { return Stats.end(); }
-  iterator_range<const_iterator> statistics() const {
-    return {begin(), end()};
-  }
+  iterator_range<const_iterator> statistics() const { return {begin(), end()}; }
 
   void reset();
 };
 } // end anonymous namespace
 
 static ManagedStatic<StatisticInfo> StatInfo;
-static ManagedStatic<sys::SmartMutex<true> > StatLock;
+static ManagedStatic<sys::SmartMutex<true>> StatLock;
 
 /// RegisterStatistic - The first time a statistic is bumped, this method is
 /// called.
@@ -128,9 +127,7 @@ void llvm::EnableStatistics(bool DoPrintOnExit) {
   PrintOnExit = DoPrintOnExit;
 }
 
-bool llvm::AreStatisticsEnabled() {
-  return Enabled || EnableStats;
-}
+bool llvm::AreStatisticsEnabled() { return Enabled || EnableStats; }
 
 void StatisticInfo::sort() {
   llvm::stable_sort(
@@ -175,8 +172,8 @@ void llvm::PrintStatistics(raw_ostream &OS) {
   for (size_t i = 0, e = Stats.Stats.size(); i != e; ++i) {
     MaxValLen = std::max(MaxValLen,
                          (unsigned)utostr(Stats.Stats[i]->getValue()).size());
-    MaxDebugTypeLen = std::max(MaxDebugTypeLen,
-                         (unsigned)std::strlen(Stats.Stats[i]->getDebugType()));
+    MaxDebugTypeLen = std::max(
+        MaxDebugTypeLen, (unsigned)std::strlen(Stats.Stats[i]->getDebugType()));
   }
 
   Stats.sort();
@@ -188,12 +185,11 @@ void llvm::PrintStatistics(raw_ostream &OS) {
 
   // Print all of the statistics.
   for (size_t i = 0, e = Stats.Stats.size(); i != e; ++i)
-    OS << format("%*u %-*s - %s\n",
-                 MaxValLen, Stats.Stats[i]->getValue(),
+    OS << format("%*u %-*s - %s\n", MaxValLen, Stats.Stats[i]->getValue(),
                  MaxDebugTypeLen, Stats.Stats[i]->getDebugType(),
                  Stats.Stats[i]->getDesc());
 
-  OS << '\n';  // Flush the output stream.
+  OS << '\n'; // Flush the output stream.
   OS.flush();
 }
 
@@ -212,8 +208,8 @@ void llvm::PrintStatisticsJSON(raw_ostream &OS) {
            "Statistic group/type name is simple.");
     assert(yaml::needsQuotes(Stat->getName()) == yaml::QuotingType::None &&
            "Statistic name is simple");
-    OS << "\t\"" << Stat->getDebugType() << '.' << Stat->getName() << "\": "
-       << Stat->getValue();
+    OS << "\t\"" << Stat->getDebugType() << '.' << Stat->getName()
+       << "\": " << Stat->getValue();
     delim = ",\n";
   }
   // Print timers.
@@ -229,7 +225,8 @@ void llvm::PrintStatistics() {
   StatisticInfo &Stats = *StatInfo;
 
   // Statistics not enabled?
-  if (Stats.Stats.empty()) return;
+  if (Stats.Stats.empty())
+    return;
 
   // Get the stream to write to.
   std::unique_ptr<raw_ostream> OutStream = CreateInfoOutputFile();
@@ -260,6 +257,4 @@ const std::vector<std::pair<StringRef, unsigned>> llvm::GetStatistics() {
   return ReturnStats;
 }
 
-void llvm::ResetStatistics() {
-  StatInfo->reset();
-}
+void llvm::ResetStatistics() { StatInfo->reset(); }

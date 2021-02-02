@@ -1,24 +1,24 @@
 // RUN: %clang_cc1 -fsyntax-only -verify %s
 namespace N {
-  template<typename T> class A { };
+template <typename T> class A {};
 
-  template<> class A<int> { };
+template <> class A<int> {};
 
-  template<> class A<float>; // expected-note{{forward declaration of 'N::A<float>'}}
+template <> class A<float>; // expected-note{{forward declaration of 'N::A<float>'}}
 
-  class B : public A<int> { };
-}
+class B : public A<int> {};
+} // namespace N
 
-class C1 : public N::A<int> { };
+class C1 : public N::A<int> {};
 
-class C2 : public N::A<float> { }; // expected-error{{base class has incomplete type}}
+class C2 : public N::A<float> {}; // expected-error{{base class has incomplete type}}
 
 struct D1 {
   operator N::A<int>();
 };
 
 namespace N {
-  struct D2 {
-    operator A<int>();
-  };
-}
+struct D2 {
+  operator A<int>();
+};
+} // namespace N

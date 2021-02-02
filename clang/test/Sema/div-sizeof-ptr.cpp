@@ -18,9 +18,9 @@ void test(int *p, int **q) {          // expected-note 6 {{pointer 'p' declared 
 
   int32 *d;                           // expected-note 2 {{pointer 'd' declared here}}
   int a7 = sizeof(d) / sizeof(int32); // expected-warning {{'sizeof (d)' will return the size of the pointer, not the array itself}}
-  int a8 = sizeof(d) / sizeof(int);  // expected-warning {{'sizeof (d)' will return the size of the pointer, not the array itself}}
+  int a8 = sizeof(d) / sizeof(int);   // expected-warning {{'sizeof (d)' will return the size of the pointer, not the array itself}}
 
-  int a9 = sizeof(*q) / sizeof(**q); // expected-warning {{'sizeof (*q)' will return the size of the pointer, not the array itself}}
+  int a9 = sizeof(*q) / sizeof(**q);          // expected-warning {{'sizeof (*q)' will return the size of the pointer, not the array itself}}
   int a10 = sizeof(p) / sizeof(decltype(*p)); // expected-warning {{'sizeof (p)' will return the size of the pointer, not the array itself}}
 
   // Should not warn

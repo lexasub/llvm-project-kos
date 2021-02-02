@@ -2,9 +2,10 @@
 // RUN: %clang_cc1 -fsyntax-only -Wunused-private-field -Wused-but-marked-unused -Wno-uninitialized -verify -std=c++17 %s
 
 class NotFullyDefined {
- public:
+public:
   NotFullyDefined();
- private:
+
+private:
   int y;
 };
 
@@ -69,17 +70,17 @@ void friendFunction(HasFriend my_friend) {
 }
 
 class NonTrivialConstructor {
- public:
+public:
   NonTrivialConstructor() {}
 };
 
 class NonTrivialDestructor {
- public:
+public:
   ~NonTrivialDestructor() {}
 };
 
 class Trivial {
- public:
+public:
   Trivial() = default;
   Trivial(int a) {}
 };
@@ -89,7 +90,7 @@ int side_effect() {
 }
 
 class A {
- public:
+public:
   A() : primitive_type_(42), default_initializer_(), other_initializer_(42),
         trivial_(), user_constructor_(42),
         initialized_with_side_effect_(side_effect()) {
@@ -97,15 +98,15 @@ class A {
     attr_used_ = 42; // expected-warning{{'attr_used_' was marked unused but was used}}
   }
 
-  A(int x, A* a) : pointer_(a) {}
+  A(int x, A *a) : pointer_(a) {}
 
- private:
-  int primitive_type_; // expected-warning{{private field 'primitive_type_' is not used}}
-  A* pointer_; // expected-warning{{private field 'pointer_' is not used}}
-  int no_initializer_; // expected-warning{{private field 'no_initializer_' is not used}}
-  int default_initializer_; // expected-warning{{private field 'default_initializer_' is not used}}
-  int other_initializer_; // expected-warning{{private field 'other_initializer_' is not used}}
-  int used_, unused_; // expected-warning{{private field 'unused_' is not used}}
+private:
+  int primitive_type_;            // expected-warning{{private field 'primitive_type_' is not used}}
+  A *pointer_;                    // expected-warning{{private field 'pointer_' is not used}}
+  int no_initializer_;            // expected-warning{{private field 'no_initializer_' is not used}}
+  int default_initializer_;       // expected-warning{{private field 'default_initializer_' is not used}}
+  int other_initializer_;         // expected-warning{{private field 'other_initializer_' is not used}}
+  int used_, unused_;             // expected-warning{{private field 'unused_' is not used}}
   int in_class_initializer_ = 42; // expected-warning{{private field 'in_class_initializer_' is not used}}
   int in_class_initializer_with_side_effect_ = side_effect();
   Trivial trivial_initializer_ = Trivial(); // expected-warning{{private field 'trivial_initializer_' is not used}}
@@ -123,7 +124,7 @@ class A {
 };
 
 class EverythingUsed {
- public:
+public:
   EverythingUsed() : as_array_index_(0), var_(by_initializer_) {
     var_ = sizeof(sizeof_);
     int *use = &by_reference_;
@@ -132,12 +133,12 @@ class EverythingUsed {
     int EverythingUsed::*ptr = &EverythingUsed::by_pointer_to_member_;
   }
 
-  template<class T>
+  template <class T>
   void useStuff(T t) {
     by_template_function_ = 42;
   }
 
- private:
+private:
   int var_;
   int sizeof_;
   int by_reference_;
@@ -149,7 +150,7 @@ class EverythingUsed {
 
 class HasFeatureTest {
 #if __has_feature(attribute_unused_on_fields)
-  int unused_; // expected-warning{{private field 'unused_' is not used}}
+  int unused_;                          // expected-warning{{private field 'unused_' is not used}}
   int unused2_ __attribute__((unused)); // no-warning
 #endif
 };
@@ -159,7 +160,7 @@ class B {
   template <typename T> void f(T t);
   int a;
 };
-}  // namespace templates
+} // namespace templates
 
 namespace mutual_friends {
 // Undefined methods make mutual friends undefined.
@@ -195,11 +196,11 @@ class H {
   int h;
   friend class F;
 };
-}  // namespace mutual_friends
+} // namespace mutual_friends
 
 namespace anonymous_structs_unions {
 class A {
- private:
+private:
   // FIXME: Look at the DeclContext for anonymous structs/unions.
   union {
     int *Aligner;
@@ -207,46 +208,52 @@ class A {
   };
 };
 union S {
- private:
+private:
   int *Aligner;
   unsigned char Data[8];
 };
-}  // namespace anonymous_structs_unions
+} // namespace anonymous_structs_unions
 
 namespace pr13413 {
 class A {
   A() : p_(__null), b_(false), a_(this), p2_(nullptr) {}
-  void* p_;  // expected-warning{{private field 'p_' is not used}}
-  bool b_;  // expected-warning{{private field 'b_' is not used}}
-  A* a_;  // expected-warning{{private field 'a_' is not used}}
-  void* p2_;  // expected-warning{{private field 'p2_' is not used}}
+  void *p_;  // expected-warning{{private field 'p_' is not used}}
+  bool b_;   // expected-warning{{private field 'b_' is not used}}
+  A *a_;     // expected-warning{{private field 'a_' is not used}}
+  void *p2_; // expected-warning{{private field 'p2_' is not used}}
 };
-}
+} // namespace pr13413
 
 namespace pr13543 {
-  void f(int);
-  void f(char);
-  struct S {
-    S() : p(&f) {}
-  private:
-    void (*p)(int); // expected-warning{{private field 'p' is not used}}
-  };
+void f(int);
+void f(char);
+struct S {
+  S() : p(&f) {}
 
-  struct A { int n; };
-  struct B {
-    B() : a(A()) {}
-    B(char) {}
-    B(int n) : a{n}, b{(f(n), 0)} {}
-  private:
-    A a = A(); // expected-warning{{private field 'a' is not used}}
-    A b;
-  };
+private:
+  void (*p)(int); // expected-warning{{private field 'p' is not used}}
+};
 
-  struct X { ~X(); };
-  class C {
-    X x[4]; // no-warning
-  };
-}
+struct A {
+  int n;
+};
+struct B {
+  B() : a(A()) {}
+  B(char) {}
+  B(int n) : a{n}, b{(f(n), 0)} {}
+
+private:
+  A a = A(); // expected-warning{{private field 'a' is not used}}
+  A b;
+};
+
+struct X {
+  ~X();
+};
+class C {
+  X x[4]; // no-warning
+};
+} // namespace pr13543
 
 class implicit_special_member {
 public:
@@ -258,7 +265,7 @@ private:
 
 class defaulted_special_member {
 public:
-  defaulted_special_member(const defaulted_special_member&) = default;
+  defaulted_special_member(const defaulted_special_member &) = default;
 
 private:
   int n; // expected-warning{{private field 'n' is not used}}

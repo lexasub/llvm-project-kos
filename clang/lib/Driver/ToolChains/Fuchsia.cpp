@@ -155,8 +155,7 @@ void fuchsia::Linker::ConstructJob(Compilation &C, const JobAction &JA,
 
     AddRunTimeLibs(ToolChain, D, CmdArgs, Args);
 
-    if (Args.hasArg(options::OPT_pthread) ||
-        Args.hasArg(options::OPT_pthreads))
+    if (Args.hasArg(options::OPT_pthread) || Args.hasArg(options::OPT_pthreads))
       CmdArgs.push_back("-lpthread");
 
     if (Args.hasArg(options::OPT_fsplit_stack))
@@ -203,8 +202,7 @@ Fuchsia::Fuchsia(const Driver &D, const llvm::Triple &Triple,
                           .flag("-fexceptions")
                           .flag("+fno-exceptions"));
   // ASan has higher priority because we always want the instrumentated version.
-  Multilibs.push_back(Multilib("asan", {}, {}, 2)
-                          .flag("+fsanitize=address"));
+  Multilibs.push_back(Multilib("asan", {}, {}, 2).flag("+fsanitize=address"));
   // Use the asan+noexcept variant with ASan and -fno-exceptions.
   Multilibs.push_back(Multilib("asan+noexcept", {}, {}, 3)
                           .flag("+fsanitize=address")
@@ -229,9 +227,8 @@ Fuchsia::Fuchsia(const Driver &D, const llvm::Triple &Triple,
                           .flag("+fno-exceptions"));
   Multilibs.FilterOut([&](const Multilib &M) {
     std::vector<std::string> RD = FilePaths(M);
-    return std::all_of(RD.begin(), RD.end(), [&](std::string P) {
-      return !getVFS().exists(P);
-    });
+    return std::all_of(RD.begin(), RD.end(),
+                       [&](std::string P) { return !getVFS().exists(P); });
   });
 
   Multilib::flags_list Flags;
@@ -262,12 +259,10 @@ std::string Fuchsia::ComputeEffectiveClangTriple(const ArgList &Args,
   return Triple.str();
 }
 
-Tool *Fuchsia::buildLinker() const {
-  return new tools::fuchsia::Linker(*this);
-}
+Tool *Fuchsia::buildLinker() const { return new tools::fuchsia::Linker(*this); }
 
-ToolChain::RuntimeLibType Fuchsia::GetRuntimeLibType(
-    const ArgList &Args) const {
+ToolChain::RuntimeLibType
+Fuchsia::GetRuntimeLibType(const ArgList &Args) const {
   if (Arg *A = Args.getLastArg(clang::driver::options::OPT_rtlib_EQ)) {
     StringRef Value = A->getValue();
     if (Value != "compiler-rt")
@@ -278,13 +273,12 @@ ToolChain::RuntimeLibType Fuchsia::GetRuntimeLibType(
   return ToolChain::RLT_CompilerRT;
 }
 
-ToolChain::CXXStdlibType
-Fuchsia::GetCXXStdlibType(const ArgList &Args) const {
+ToolChain::CXXStdlibType Fuchsia::GetCXXStdlibType(const ArgList &Args) const {
   if (Arg *A = Args.getLastArg(options::OPT_stdlib_EQ)) {
     StringRef Value = A->getValue();
     if (Value != "libc++")
       getDriver().Diag(diag::err_drv_invalid_stdlib_name)
-        << A->getAsString(Args);
+          << A->getAsString(Args);
   }
 
   return ToolChain::CST_Libcxx;

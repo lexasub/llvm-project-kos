@@ -13,9 +13,9 @@
 #include "sanitizer_flag_parser.h"
 
 #include "sanitizer_common.h"
-#include "sanitizer_libc.h"
-#include "sanitizer_flags.h"
 #include "sanitizer_flag_parser.h"
+#include "sanitizer_flags.h"
+#include "sanitizer_libc.h"
 
 namespace __sanitizer {
 
@@ -33,7 +33,8 @@ class UnknownFlags {
   }
 
   void Report() {
-    if (!n_unknown_flags_) return;
+    if (!n_unknown_flags_)
+      return;
     Printf("WARNING: found %d unrecognized flag(s):\n", n_unknown_flags_);
     for (int i = 0; i < n_unknown_flags_; ++i)
       Printf("    %s\n", unknown_flags_[i]);
@@ -43,13 +44,11 @@ class UnknownFlags {
 
 UnknownFlags unknown_flags;
 
-void ReportUnrecognizedFlags() {
-  unknown_flags.Report();
-}
+void ReportUnrecognizedFlags() { unknown_flags.Report(); }
 
 char *FlagParser::ll_strndup(const char *s, uptr n) {
   uptr len = internal_strnlen(s, n);
-  char *s2 = (char*)Alloc.Allocate(len + 1);
+  char *s2 = (char *)Alloc.Allocate(len + 1);
   internal_memcpy(s2, s, len);
   s2[len] = 0;
   return s2;
@@ -101,9 +100,10 @@ void FlagParser::parse_flag(const char *env_option_name) {
   if (buf_[pos_] == '\'' || buf_[pos_] == '"') {
     char quote = buf_[pos_++];
     while (buf_[pos_] != 0 && buf_[pos_] != quote) ++pos_;
-    if (buf_[pos_] == 0) fatal_error("unterminated string");
+    if (buf_[pos_] == 0)
+      fatal_error("unterminated string");
     value = ll_strndup(buf_ + value_start + 1, pos_ - value_start - 1);
-    ++pos_; // consume the closing quote
+    ++pos_;  // consume the closing quote
   } else {
     while (buf_[pos_] != 0 && !is_space(buf_[pos_])) ++pos_;
     if (buf_[pos_] != 0 && !is_space(buf_[pos_]))
@@ -112,13 +112,15 @@ void FlagParser::parse_flag(const char *env_option_name) {
   }
 
   bool res = run_handler(name, value);
-  if (!res) fatal_error("Flag parsing failed.");
+  if (!res)
+    fatal_error("Flag parsing failed.");
 }
 
 void FlagParser::parse_flags(const char *env_option_name) {
   while (true) {
     skip_whitespace();
-    if (buf_[pos_] == 0) break;
+    if (buf_[pos_] == 0)
+      break;
     parse_flag(env_option_name);
   }
 
@@ -134,7 +136,8 @@ void FlagParser::ParseStringFromEnv(const char *env_name) {
 }
 
 void FlagParser::ParseString(const char *s, const char *env_option_name) {
-  if (!s) return;
+  if (!s)
+    return;
   // Backup current parser state to allow nested ParseString() calls.
   const char *old_buf_ = buf_;
   uptr old_pos_ = pos_;

@@ -33,7 +33,6 @@ struct Local {
   ~Local() { Str = "Local::~Local"; }
 };
 
-
 extern "C" PIPSQUEAK_EXPORT void SetStrings(std::string &GStr,
                                             std::string &LStr) {
   Glb.Str = &GStr;

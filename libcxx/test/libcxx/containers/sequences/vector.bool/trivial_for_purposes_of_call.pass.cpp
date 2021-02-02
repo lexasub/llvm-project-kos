@@ -32,12 +32,12 @@
 #include "test_macros.h"
 
 template <class T>
-using IsTrivialForCall = std::integral_constant<bool,
-  std::is_trivially_copy_constructible<T>::value &&
-  std::is_trivially_move_constructible<T>::value &&
-  std::is_trivially_destructible<T>::value
-  // Ignore the all-deleted case, it shouldn't occur here.
-  >;
+using IsTrivialForCall = std::integral_constant<
+    bool, std::is_trivially_copy_constructible<T>::value &&
+              std::is_trivially_move_constructible<T>::value &&
+              std::is_trivially_destructible<T>::value
+    // Ignore the all-deleted case, it shouldn't occur here.
+    >;
 
 void test_const_iterator() {
   using It = std::vector<bool>::const_iterator;

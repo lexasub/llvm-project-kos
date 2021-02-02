@@ -104,8 +104,7 @@ public:
   lldb::user_id_t StartTrace(const TraceOptions &config,
                              Status &error) override;
 
-  Status StopTrace(lldb::user_id_t traceid,
-                   lldb::tid_t thread) override;
+  Status StopTrace(lldb::user_id_t traceid, lldb::tid_t thread) override;
 
   Status GetData(lldb::user_id_t traceid, lldb::tid_t thread,
                  llvm::MutableArrayRef<uint8_t> &buffer,
@@ -216,8 +215,7 @@ private:
 
   Status PopulateMemoryRegionCache();
 
-  lldb::user_id_t StartTraceGroup(const TraceOptions &config,
-                                         Status &error);
+  lldb::user_id_t StartTraceGroup(const TraceOptions &config, Status &error);
 
   // This function is intended to be used to stop tracing
   // on a thread that exited.

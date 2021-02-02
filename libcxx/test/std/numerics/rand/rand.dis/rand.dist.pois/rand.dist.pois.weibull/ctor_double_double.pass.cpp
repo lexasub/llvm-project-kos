@@ -35,29 +35,28 @@ void test_implicit() {
 #endif
 }
 
-int main(int, char**)
-{
-    {
-        typedef std::weibull_distribution<> D;
-        D d;
-        assert(d.a() == 1);
-        assert(d.b() == 1);
-    }
-    {
-        typedef std::weibull_distribution<> D;
-        D d(14.5);
-        assert(d.a() == 14.5);
-        assert(d.b() == 1);
-    }
-    {
-        typedef std::weibull_distribution<> D;
-        D d(14.5, 5.25);
-        assert(d.a() == 14.5);
-        assert(d.b() == 5.25);
-    }
+int main(int, char**) {
+  {
+    typedef std::weibull_distribution<> D;
+    D d;
+    assert(d.a() == 1);
+    assert(d.b() == 1);
+  }
+  {
+    typedef std::weibull_distribution<> D;
+    D d(14.5);
+    assert(d.a() == 14.5);
+    assert(d.b() == 1);
+  }
+  {
+    typedef std::weibull_distribution<> D;
+    D d(14.5, 5.25);
+    assert(d.a() == 14.5);
+    assert(d.b() == 5.25);
+  }
 
-    test_implicit<float>();
-    test_implicit<double>();
+  test_implicit<float>();
+  test_implicit<double>();
 
-    return 0;
+  return 0;
 }

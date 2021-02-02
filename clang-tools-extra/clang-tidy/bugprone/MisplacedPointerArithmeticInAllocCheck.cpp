@@ -78,8 +78,8 @@ void MisplacedPointerArithmeticInAllocCheck::check(
     } else {
       const auto *CtrE = New->getConstructExpr();
       if (!CtrE || !CtrE->getArg(CtrE->getNumArgs() - 1)
-                                     ->getType()
-                                     ->isIntegralOrEnumerationType())
+                        ->getType()
+                        ->isIntegralOrEnumerationType())
         return;
       CallName = "operator new";
     }

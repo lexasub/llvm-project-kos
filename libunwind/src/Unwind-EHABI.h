@@ -32,14 +32,17 @@ static inline uint32_t readPrel31(const uint32_t *data) {
 extern "C" {
 #endif
 
-extern _Unwind_Reason_Code __aeabi_unwind_cpp_pr0(
-    _Unwind_State state, _Unwind_Control_Block *ucbp, _Unwind_Context *context);
+extern _Unwind_Reason_Code __aeabi_unwind_cpp_pr0(_Unwind_State state,
+                                                  _Unwind_Control_Block *ucbp,
+                                                  _Unwind_Context *context);
 
-extern _Unwind_Reason_Code __aeabi_unwind_cpp_pr1(
-    _Unwind_State state, _Unwind_Control_Block *ucbp, _Unwind_Context *context);
+extern _Unwind_Reason_Code __aeabi_unwind_cpp_pr1(_Unwind_State state,
+                                                  _Unwind_Control_Block *ucbp,
+                                                  _Unwind_Context *context);
 
-extern _Unwind_Reason_Code __aeabi_unwind_cpp_pr2(
-    _Unwind_State state, _Unwind_Control_Block *ucbp, _Unwind_Context *context);
+extern _Unwind_Reason_Code __aeabi_unwind_cpp_pr2(_Unwind_State state,
+                                                  _Unwind_Control_Block *ucbp,
+                                                  _Unwind_Context *context);
 
 #if defined(__cplusplus)
 } // extern "C"
@@ -47,4 +50,4 @@ extern _Unwind_Reason_Code __aeabi_unwind_cpp_pr2(
 
 #endif // defined(_LIBUNWIND_ARM_EHABI)
 
-#endif  // __UNWIND_EHABI_H__
+#endif // __UNWIND_EHABI_H__

@@ -13,13 +13,13 @@
 using namespace lldb_private;
 
 static dw_addr_t GetBaseAddressMarker(uint32_t addr_size) {
-  switch(addr_size) {
-    case 2:
-      return 0xffff;
-    case 4:
-      return 0xffffffff;
-    case 8:
-      return 0xffffffffffffffff;
+  switch (addr_size) {
+  case 2:
+    return 0xffff;
+  case 4:
+    return 0xffffffff;
+  case 8:
+    return 0xffffffffffffffff;
   }
   llvm_unreachable("GetBaseAddressMarker unsupported address size.");
 }

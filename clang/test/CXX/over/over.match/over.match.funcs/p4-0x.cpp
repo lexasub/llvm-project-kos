@@ -1,15 +1,15 @@
 // RUN: %clang_cc1 -std=c++11 -fsyntax-only -verify %s
 
-template<typename T> T &lvalue();
-template<typename T> T &&xvalue();
-template<typename T> T prvalue();
+template <typename T> T &lvalue();
+template <typename T> T &&xvalue();
+template <typename T> T prvalue();
 
 struct X0 {
   int &f() &;
   float &f() &&;
 
-  template<typename T> int &ft(T) &;
-  template<typename T> float &ft(T) &&;
+  template <typename T> int &ft(T) &;
+  template <typename T> float &ft(T) &&;
 
   typedef int &(*func_int_ref)();
   typedef float &(*func_float_ref)();
@@ -19,28 +19,28 @@ struct X0 {
 
   void g();
 
-  void c() const; // expected-note {{'c' declared here}}
-  void v() volatile; // expected-note {{'v' declared here}}
-  void r() __restrict__; // expected-note {{'r' declared here}}
+  void c() const;               // expected-note {{'c' declared here}}
+  void v() volatile;            // expected-note {{'v' declared here}}
+  void r() __restrict__;        // expected-note {{'r' declared here}}
   void cr() const __restrict__; // expected-note {{'cr' declared here}}
   void cv() const volatile;
   void vr() volatile __restrict__; // expected-note {{'vr' declared here}}
   void cvr() const volatile __restrict__;
 
   void lvalue() &; // expected-note 2 {{'lvalue' declared here}}
-  void const_lvalue() const&;
+  void const_lvalue() const &;
   void rvalue() &&; // expected-note {{'rvalue' declared here}}
 
-  int &operator+(const X0&) &;
-  float &operator+(const X0&) &&;
+  int &operator+(const X0 &) &;
+  float &operator+(const X0 &) &&;
 
-  template<typename T> int &operator+(const T&) &;
-  template<typename T> float &operator+(const T&) &&;
+  template <typename T> int &operator+(const T &) &;
+  template <typename T> float &operator+(const T &) &&;
 
-  int &h() const&;
+  int &h() const &;
   float &h() &&;
-  int &h2() const&;
-  float &h2() const&&;
+  int &h2() const &;
+  float &h2() const &&;
 };
 
 void X0::g() { // expected-note {{'g' declared here}}
@@ -82,10 +82,10 @@ void test_ref_qualifier_overloading() {
 }
 
 void test_diagnostics(const volatile X0 &__restrict__ cvr) {
-  cvr.g(); // expected-error {{'this' argument to member function 'g' has type 'const volatile X0', but function is not marked const or volatile}}
-  cvr.c(); // expected-error {{not marked volatile}}
-  cvr.v(); // expected-error {{not marked const}}
-  cvr.r(); // expected-error {{not marked const or volatile}}
+  cvr.g();  // expected-error {{'this' argument to member function 'g' has type 'const volatile X0', but function is not marked const or volatile}}
+  cvr.c();  // expected-error {{not marked volatile}}
+  cvr.v();  // expected-error {{not marked const}}
+  cvr.r();  // expected-error {{not marked const or volatile}}
   cvr.cr(); // expected-error {{not marked volatile}}
   cvr.cv();
   cvr.vr(); // expected-error {{not marked const}}

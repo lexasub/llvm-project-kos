@@ -115,17 +115,18 @@ static bool printSymbolizedStackTrace(StringRef Argv0, void **StackTrace,
   if (Argv0.find("llvm-symbolizer") != std::string::npos)
     return false;
 
-  // FIXME: Subtract necessary number from StackTrace entries to turn return addresses
-  // into actual instruction addresses.
-  // Use llvm-symbolizer tool to symbolize the stack traces. First look for it
-  // alongside our binary, then in $PATH.
+  // FIXME: Subtract necessary number from StackTrace entries to turn return
+  // addresses into actual instruction addresses. Use llvm-symbolizer tool to
+  // symbolize the stack traces. First look for it alongside our binary, then in
+  // $PATH.
   ErrorOr<std::string> LLVMSymbolizerPathOrErr = std::error_code();
   if (const char *Path = getenv(LLVMSymbolizerPathEnv)) {
     LLVMSymbolizerPathOrErr = sys::findProgramByName(Path);
   } else if (!Argv0.empty()) {
     StringRef Parent = llvm::sys::path::parent_path(Argv0);
     if (!Parent.empty())
-      LLVMSymbolizerPathOrErr = sys::findProgramByName("llvm-symbolizer", Parent);
+      LLVMSymbolizerPathOrErr =
+          sys::findProgramByName("llvm-symbolizer", Parent);
   }
   if (!LLVMSymbolizerPathOrErr)
     LLVMSymbolizerPathOrErr = sys::findProgramByName("llvm-symbolizer");
@@ -156,7 +157,7 @@ static bool printSymbolizedStackTrace(StringRef Argv0, void **StackTrace,
     raw_fd_ostream Input(InputFD, true);
     for (int i = 0; i < Depth; i++) {
       if (Modules[i])
-        Input << Modules[i] << " " << (void*)Offsets[i] << "\n";
+        Input << Modules[i] << " " << (void *)Offsets[i] << "\n";
     }
   }
 

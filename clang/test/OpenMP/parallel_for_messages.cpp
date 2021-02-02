@@ -7,8 +7,8 @@
 void xxx(int argc) {
   int x; // expected-note {{initialize the variable 'x' to silence this warning}}
 #pragma omp parallel for
-  for(int i = 0; i < 10; ++i)
-  argc = x; // expected-warning {{variable 'x' is uninitialized when used here}}
+  for (int i = 0; i < 10; ++i)
+    argc = x; // expected-warning {{variable 'x' is uninitialized when used here}}
 }
 
 void foo() {
@@ -75,7 +75,7 @@ L1:
 #pragma omp parallel for
   for (int i = 0; i < argc; ++i)
   L2:
-  foo();
+    foo();
 #pragma omp parallel for
   for (int i = 0; i < argc; ++i) {
     return 1; // expected-error {{cannot return from OpenMP region}}
@@ -109,4 +109,3 @@ void test_ordered() {
   for (int i = 0; i < 10; ++i)
     ;
 }
-

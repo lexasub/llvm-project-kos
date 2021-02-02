@@ -30,7 +30,7 @@ SanitizerMask clang::parseSanitizerValue(StringRef Value, bool AllowGroups) {
 #define SANITIZER_GROUP(NAME, ID, ALIAS)                                       \
   .Case(NAME, AllowGroups ? SanitizerKind::ID##Group : SanitizerMask())
 #include "clang/Basic/Sanitizers.def"
-    .Default(SanitizerMask());
+                                 .Default(SanitizerMask());
   return ParsedKind;
 }
 

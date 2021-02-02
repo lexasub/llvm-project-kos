@@ -147,7 +147,7 @@ public:
 private:
   Token NextToken;
 };
-}
+} // namespace
 
 StmtResult Parser::ParseStatementOrDeclarationAfterAttributes(
     StmtVector &Stmts, ParsedStmtContext StmtCtx,
@@ -160,15 +160,15 @@ StmtResult Parser::ParseStatementOrDeclarationAfterAttributes(
   // the token to end in a semicolon (in which case SemiError should be set),
   // or they directly 'return;' if not.
 Retry:
-  tok::TokenKind Kind  = Tok.getKind();
+  tok::TokenKind Kind = Tok.getKind();
   SourceLocation AtLoc;
   switch (Kind) {
   case tok::at: // May be a @try or @throw statement
-    {
-      ProhibitAttributes(Attrs); // TODO: is it correct?
-      AtLoc = ConsumeToken();  // consume @
-      return ParseObjCAtStatement(AtLoc, StmtCtx);
-    }
+  {
+    ProhibitAttributes(Attrs); // TODO: is it correct?
+    AtLoc = ConsumeToken();    // consume @
+    return ParseObjCAtStatement(AtLoc, StmtCtx);
+  }
 
   case tok::code_completion:
     Actions.CodeCompleteOrdinaryName(getCurScope(), Sema::PCC_Statement);
@@ -239,49 +239,49 @@ Retry:
     goto Retry;
   }
 
-  case tok::kw_case:                // C99 6.8.1: labeled-statement
+  case tok::kw_case: // C99 6.8.1: labeled-statement
     return ParseCaseStatement(StmtCtx);
-  case tok::kw_default:             // C99 6.8.1: labeled-statement
+  case tok::kw_default: // C99 6.8.1: labeled-statement
     return ParseDefaultStatement(StmtCtx);
 
-  case tok::l_brace:                // C99 6.8.2: compound-statement
+  case tok::l_brace: // C99 6.8.2: compound-statement
     return ParseCompoundStatement();
-  case tok::semi: {                 // C99 6.8.3p3: expression[opt] ';'
+  case tok::semi: { // C99 6.8.3p3: expression[opt] ';'
     bool HasLeadingEmptyMacro = Tok.hasLeadingEmptyMacro();
     return Actions.ActOnNullStmt(ConsumeToken(), HasLeadingEmptyMacro);
   }
 
-  case tok::kw_if:                  // C99 6.8.4.1: if-statement
+  case tok::kw_if: // C99 6.8.4.1: if-statement
     return ParseIfStatement(TrailingElseLoc);
-  case tok::kw_switch:              // C99 6.8.4.2: switch-statement
+  case tok::kw_switch: // C99 6.8.4.2: switch-statement
     return ParseSwitchStatement(TrailingElseLoc);
 
-  case tok::kw_while:               // C99 6.8.5.1: while-statement
+  case tok::kw_while: // C99 6.8.5.1: while-statement
     return ParseWhileStatement(TrailingElseLoc);
-  case tok::kw_do:                  // C99 6.8.5.2: do-statement
+  case tok::kw_do: // C99 6.8.5.2: do-statement
     Res = ParseDoStatement();
     SemiError = "do/while";
     break;
-  case tok::kw_for:                 // C99 6.8.5.3: for-statement
+  case tok::kw_for: // C99 6.8.5.3: for-statement
     return ParseForStatement(TrailingElseLoc);
 
-  case tok::kw_goto:                // C99 6.8.6.1: goto-statement
+  case tok::kw_goto: // C99 6.8.6.1: goto-statement
     Res = ParseGotoStatement();
     SemiError = "goto";
     break;
-  case tok::kw_continue:            // C99 6.8.6.2: continue-statement
+  case tok::kw_continue: // C99 6.8.6.2: continue-statement
     Res = ParseContinueStatement();
     SemiError = "continue";
     break;
-  case tok::kw_break:               // C99 6.8.6.3: break-statement
+  case tok::kw_break: // C99 6.8.6.3: break-statement
     Res = ParseBreakStatement();
     SemiError = "break";
     break;
-  case tok::kw_return:              // C99 6.8.6.4: return-statement
+  case tok::kw_return: // C99 6.8.6.4: return-statement
     Res = ParseReturnStatement();
     SemiError = "return";
     break;
-  case tok::kw_co_return:            // C++ Coroutines: co_return statement
+  case tok::kw_co_return: // C++ Coroutines: co_return statement
     Res = ParseReturnStatement();
     SemiError = "co_return";
     break;
@@ -291,7 +291,8 @@ Retry:
     bool msAsm = false;
     Res = ParseAsmStatement(msAsm);
     Res = Actions.ActOnFinishFullStmt(Res.get());
-    if (msAsm) return Res;
+    if (msAsm)
+      return Res;
     SemiError = "asm";
     break;
   }
@@ -304,7 +305,7 @@ Retry:
     // a new scope.
     return StmtEmpty();
 
-  case tok::kw_try:                 // C++ 15: try-block
+  case tok::kw_try: // C++ 15: try-block
     return ParseCXXTryBlock();
 
   case tok::kw___try:
@@ -459,7 +460,7 @@ StmtResult Parser::ParseExprStatement(ParsedStmtContext StmtCtx) {
     // If a constant expression is followed by a colon inside a switch block,
     // suggest a missing case keyword.
     Diag(OldToken, diag::err_expected_case_before_expression)
-      << FixItHint::CreateInsertion(OldToken.getLocation(), "case ");
+        << FixItHint::CreateInsertion(OldToken.getLocation(), "case ");
 
     // Recover parsing as a case statement.
     return ParseCaseStatement(StmtCtx, /*MissingCase=*/true, Expr);
@@ -504,12 +505,10 @@ StmtResult Parser::ParseSEHTryBlock() {
     return StmtError(Diag(Tok, diag::err_seh_expected_handler));
   }
 
-  if(Handler.isInvalid())
+  if (Handler.isInvalid())
     return Handler;
 
-  return Actions.ActOnSEHTryBlock(false /* IsCXXTry */,
-                                  TryLoc,
-                                  TryBlock.get(),
+  return Actions.ActOnSEHTryBlock(false /* IsCXXTry */, TryLoc, TryBlock.get(),
                                   Handler.get());
 }
 
@@ -520,8 +519,8 @@ StmtResult Parser::ParseSEHTryBlock() {
 ///
 StmtResult Parser::ParseSEHExceptBlock(SourceLocation ExceptLoc) {
   PoisonIdentifierRAIIObject raii(Ident__exception_code, false),
-    raii2(Ident___exception_code, false),
-    raii3(Ident_GetExceptionCode, false);
+      raii2(Ident___exception_code, false),
+      raii3(Ident_GetExceptionCode, false);
 
   if (ExpectAndConsume(tok::l_paren))
     return StmtError();
@@ -548,7 +547,7 @@ StmtResult Parser::ParseSEHExceptBlock(SourceLocation ExceptLoc) {
     Ident_GetExceptionInfo->setIsPoisoned(true);
   }
 
-  if(FilterExpr.isInvalid())
+  if (FilterExpr.isInvalid())
     return StmtError();
 
   if (ExpectAndConsume(tok::r_paren))
@@ -559,7 +558,7 @@ StmtResult Parser::ParseSEHExceptBlock(SourceLocation ExceptLoc) {
 
   StmtResult Block(ParseCompoundStatement());
 
-  if(Block.isInvalid())
+  if (Block.isInvalid())
     return Block;
 
   return Actions.ActOnSEHExceptBlock(ExceptLoc, FilterExpr.get(), Block.get());
@@ -572,8 +571,8 @@ StmtResult Parser::ParseSEHExceptBlock(SourceLocation ExceptLoc) {
 ///
 StmtResult Parser::ParseSEHFinallyBlock(SourceLocation FinallyLoc) {
   PoisonIdentifierRAIIObject raii(Ident__abnormal_termination, false),
-    raii2(Ident___abnormal_termination, false),
-    raii3(Ident_AbnormalTermination, false);
+      raii2(Ident___abnormal_termination, false),
+      raii3(Ident_AbnormalTermination, false);
 
   if (Tok.isNot(tok::l_brace))
     return StmtError(Diag(Tok, diag::err_expected) << tok::l_brace);
@@ -582,7 +581,7 @@ StmtResult Parser::ParseSEHFinallyBlock(SourceLocation FinallyLoc) {
   Actions.ActOnStartSEHFinallyBlock();
 
   StmtResult Block(ParseCompoundStatement());
-  if(Block.isInvalid()) {
+  if (Block.isInvalid()) {
     Actions.ActOnAbortSEHFinallyBlock();
     return Block;
   }
@@ -596,7 +595,7 @@ StmtResult Parser::ParseSEHFinallyBlock(SourceLocation FinallyLoc) {
 ///   '__leave' ';'
 ///
 StmtResult Parser::ParseSEHLeaveStatement() {
-  SourceLocation LeaveLoc = ConsumeToken();  // eat the '__leave'.
+  SourceLocation LeaveLoc = ConsumeToken(); // eat the '__leave'.
   return Actions.ActOnSEHLeaveStmt(LeaveLoc, getCurScope());
 }
 
@@ -615,8 +614,8 @@ StmtResult Parser::ParseLabeledStatement(ParsedAttributesWithRange &attrs,
   // otherwise in the same context as the labeled-statement.
   StmtCtx &= ~ParsedStmtContext::AllowDeclarationsInC;
 
-  Token IdentTok = Tok;  // Save the whole token.
-  ConsumeToken();  // eat the identifier.
+  Token IdentTok = Tok; // Save the whole token.
+  ConsumeToken();       // eat the identifier.
 
   assert(Tok.is(tok::colon) && "Not a label!");
 
@@ -710,8 +709,8 @@ StmtResult Parser::ParseCaseStatement(ParsedStmtContext StmtCtx,
   // While we have case statements, eat and stack them.
   SourceLocation ColonLoc;
   do {
-    SourceLocation CaseLoc = MissingCase ? Expr.get()->getExprLoc() :
-                                           ConsumeToken();  // eat the 'case'.
+    SourceLocation CaseLoc = MissingCase ? Expr.get()->getExprLoc()
+                                         : ConsumeToken(); // eat the 'case'.
     ColonLoc = SourceLocation();
 
     if (Tok.is(tok::code_completion)) {
@@ -774,7 +773,7 @@ StmtResult Parser::ParseCaseStatement(ParsedStmtContext StmtCtx,
     // If we had a sema error parsing this case, then just ignore it and
     // continue parsing the sub-stmt.
     if (Case.isInvalid()) {
-      if (TopLevelCase.isInvalid())  // No parsed case stmts.
+      if (TopLevelCase.isInvalid()) // No parsed case stmts.
         return ParseStatement(/*TrailingElseLoc=*/nullptr, StmtCtx);
       // Otherwise, just don't add it as a nested case.
     } else {
@@ -803,7 +802,7 @@ StmtResult Parser::ParseCaseStatement(ParsedStmtContext StmtCtx,
     if (ColonLoc.isValid()) {
       SourceLocation AfterColonLoc = PP.getLocForEndOfToken(ColonLoc);
       Diag(AfterColonLoc, diag::err_label_end_of_compound_statement)
-        << FixItHint::CreateInsertion(AfterColonLoc, " ;");
+          << FixItHint::CreateInsertion(AfterColonLoc, " ;");
     }
     SubStmt = StmtError();
   }
@@ -832,7 +831,7 @@ StmtResult Parser::ParseDefaultStatement(ParsedStmtContext StmtCtx) {
   // otherwise in the same context as the labeled-statement.
   StmtCtx &= ~ParsedStmtContext::AllowDeclarationsInC;
 
-  SourceLocation DefaultLoc = ConsumeToken();  // eat the 'default'.
+  SourceLocation DefaultLoc = ConsumeToken(); // eat the 'default'.
 
   SourceLocation ColonLoc;
   if (TryConsumeToken(tok::colon, ColonLoc)) {
@@ -858,7 +857,7 @@ StmtResult Parser::ParseDefaultStatement(ParsedStmtContext StmtCtx) {
     // not valid.
     SourceLocation AfterColonLoc = PP.getLocForEndOfToken(ColonLoc);
     Diag(AfterColonLoc, diag::err_label_end_of_compound_statement)
-      << FixItHint::CreateInsertion(AfterColonLoc, " ;");
+        << FixItHint::CreateInsertion(AfterColonLoc, " ;");
     SubStmt = true;
   }
 
@@ -866,8 +865,8 @@ StmtResult Parser::ParseDefaultStatement(ParsedStmtContext StmtCtx) {
   if (SubStmt.isInvalid())
     SubStmt = Actions.ActOnNullStmt(ColonLoc);
 
-  return Actions.ActOnDefaultStmt(DefaultLoc, ColonLoc,
-                                  SubStmt.get(), getCurScope());
+  return Actions.ActOnDefaultStmt(DefaultLoc, ColonLoc, SubStmt.get(),
+                                  getCurScope());
 }
 
 StmtResult Parser::ParseCompoundStatement(bool isStmtExpr) {
@@ -972,7 +971,6 @@ void Parser::ParseCompoundStatementLeadingPragmas() {
       break;
     }
   }
-
 }
 
 /// Consume any extra semi-colons resulting in null statements,
@@ -1029,8 +1027,7 @@ StmtResult Parser::handleExprStmt(ExprResult E, ParsedStmtContext StmtCtx) {
 /// consume the '}' at the end of the block.  It does not manipulate the scope
 /// stack.
 StmtResult Parser::ParseCompoundStatementBody(bool isStmtExpr) {
-  PrettyStackTraceLoc CrashInfo(PP.getSourceManager(),
-                                Tok.getLocation(),
+  PrettyStackTraceLoc CrashInfo(PP.getSourceManager(), Tok.getLocation(),
                                 "in compound statement ('{}')");
 
   // Record the current FPFeatures, restore on leaving the
@@ -1158,8 +1155,8 @@ StmtResult Parser::ParseCompoundStatementBody(bool isStmtExpr) {
   if (T.getCloseLocation().isValid())
     CloseLoc = T.getCloseLocation();
 
-  return Actions.ActOnCompoundStmt(T.getOpenLocation(), CloseLoc,
-                                   Stmts, isStmtExpr);
+  return Actions.ActOnCompoundStmt(T.getOpenLocation(), CloseLoc, Stmts,
+                                   isStmtExpr);
 }
 
 /// ParseParenExprOrCondition:
@@ -1223,7 +1220,7 @@ bool Parser::ParseParenExprOrCondition(StmtResult *InitStmt,
   // isn't valid.
   while (Tok.is(tok::r_paren)) {
     Diag(Tok, diag::err_extraneous_rparen_in_condition)
-      << FixItHint::CreateRemoval(Tok.getLocation());
+        << FixItHint::CreateRemoval(Tok.getLocation());
     ConsumeParen();
   }
 
@@ -1322,7 +1319,7 @@ struct MisleadingIndentationChecker {
   }
 };
 
-}
+} // namespace
 
 /// ParseIfStatement
 ///       if-statement: [C99 6.8.4.1]
@@ -1333,7 +1330,7 @@ struct MisleadingIndentationChecker {
 ///
 StmtResult Parser::ParseIfStatement(SourceLocation *TrailingElseLoc) {
   assert(Tok.is(tok::kw_if) && "Not an if stmt!");
-  SourceLocation IfLoc = ConsumeToken();  // eat the 'if'.
+  SourceLocation IfLoc = ConsumeToken(); // eat the 'if'.
 
   bool IsConstexpr = false;
   if (Tok.is(tok::kw_constexpr)) {
@@ -1496,7 +1493,7 @@ StmtResult Parser::ParseIfStatement(SourceLocation *TrailingElseLoc) {
 /// [C++]   'switch' '(' condition ')' statement
 StmtResult Parser::ParseSwitchStatement(SourceLocation *TrailingElseLoc) {
   assert(Tok.is(tok::kw_switch) && "Not a switch stmt!");
-  SourceLocation SwitchLoc = ConsumeToken();  // eat the 'switch'.
+  SourceLocation SwitchLoc = ConsumeToken(); // eat the 'switch'.
 
   if (Tok.isNot(tok::l_paren)) {
     Diag(Tok, diag::err_expected_lparen_after) << "switch";
@@ -1584,7 +1581,7 @@ StmtResult Parser::ParseSwitchStatement(SourceLocation *TrailingElseLoc) {
 StmtResult Parser::ParseWhileStatement(SourceLocation *TrailingElseLoc) {
   assert(Tok.is(tok::kw_while) && "Not a while stmt!");
   SourceLocation WhileLoc = Tok.getLocation();
-  ConsumeToken();  // eat the 'while'.
+  ConsumeToken(); // eat the 'while'.
 
   if (Tok.isNot(tok::l_paren)) {
     Diag(Tok, diag::err_expected_lparen_after) << "while";
@@ -1608,8 +1605,8 @@ StmtResult Parser::ParseWhileStatement(SourceLocation *TrailingElseLoc) {
   //
   unsigned ScopeFlags;
   if (C99orCXX)
-    ScopeFlags = Scope::BreakScope | Scope::ContinueScope |
-                 Scope::DeclScope  | Scope::ControlScope;
+    ScopeFlags = Scope::BreakScope | Scope::ContinueScope | Scope::DeclScope |
+                 Scope::ControlScope;
   else
     ScopeFlags = Scope::BreakScope | Scope::ContinueScope;
   ParseScope WhileScope(this, ScopeFlags);
@@ -1658,7 +1655,7 @@ StmtResult Parser::ParseWhileStatement(SourceLocation *TrailingElseLoc) {
 /// Note: this lets the caller parse the end ';'.
 StmtResult Parser::ParseDoStatement() {
   assert(Tok.is(tok::kw_do) && "Not a do stmt!");
-  SourceLocation DoLoc = ConsumeToken();  // eat the 'do'.
+  SourceLocation DoLoc = ConsumeToken(); // eat the 'do'.
 
   // C99 6.8.5p5 - In C99, the do statement is a block.  This is not
   // the case for C90.  Start the loop scope.
@@ -1767,7 +1764,7 @@ bool Parser::isForRangeIdentifier() {
 /// [C++0x]   braced-init-list            [TODO]
 StmtResult Parser::ParseForStatement(SourceLocation *TrailingElseLoc) {
   assert(Tok.is(tok::kw_for) && "Not a for stmt!");
-  SourceLocation ForLoc = ConsumeToken();  // eat the 'for'.
+  SourceLocation ForLoc = ConsumeToken(); // eat the 'for'.
 
   SourceLocation CoawaitLoc;
   if (Tok.is(tok::kw_co_await))
@@ -1779,8 +1776,8 @@ StmtResult Parser::ParseForStatement(SourceLocation *TrailingElseLoc) {
     return StmtError();
   }
 
-  bool C99orCXXorObjC = getLangOpts().C99 || getLangOpts().CPlusPlus ||
-    getLangOpts().ObjC;
+  bool C99orCXXorObjC =
+      getLangOpts().C99 || getLangOpts().CPlusPlus || getLangOpts().ObjC;
 
   // C99 6.8.5p5 - In C99, the for statement is a block.  This is not
   // the case for C90.  Start the loop scope.
@@ -1816,9 +1813,9 @@ StmtResult Parser::ParseForStatement(SourceLocation *TrailingElseLoc) {
   FullExprArg ThirdPart(Actions);
 
   if (Tok.is(tok::code_completion)) {
-    Actions.CodeCompleteOrdinaryName(getCurScope(),
-                                     C99orCXXorObjC? Sema::PCC_ForInit
-                                                   : Sema::PCC_Expression);
+    Actions.CodeCompleteOrdinaryName(getCurScope(), C99orCXXorObjC
+                                                        ? Sema::PCC_ForInit
+                                                        : Sema::PCC_Expression);
     cutOffParsing();
     return StmtError();
   }
@@ -1829,7 +1826,7 @@ StmtResult Parser::ParseForStatement(SourceLocation *TrailingElseLoc) {
   SourceLocation EmptyInitStmtSemiLoc;
 
   // Parse the first part of the for specifier.
-  if (Tok.is(tok::semi)) {  // for (;
+  if (Tok.is(tok::semi)) { // for (;
     ProhibitAttributes(attrs);
     // no first part, eat the ';'.
     SourceLocation SemiLoc = Tok.getLocation();
@@ -1850,17 +1847,17 @@ StmtResult Parser::ParseForStatement(SourceLocation *TrailingElseLoc) {
       ForRangeInfo.RangeExpr = ParseExpression();
 
     Diag(Loc, diag::err_for_range_identifier)
-      << ((getLangOpts().CPlusPlus11 && !getLangOpts().CPlusPlus17)
-              ? FixItHint::CreateInsertion(Loc, "auto &&")
-              : FixItHint());
+        << ((getLangOpts().CPlusPlus11 && !getLangOpts().CPlusPlus17)
+                ? FixItHint::CreateInsertion(Loc, "auto &&")
+                : FixItHint());
 
     ForRangeInfo.LoopVar = Actions.ActOnCXXForRangeIdentifier(
         getCurScope(), Loc, Name, attrs, attrs.Range.getEnd());
-  } else if (isForInitDeclaration()) {  // for (int X = 4;
+  } else if (isForInitDeclaration()) { // for (int X = 4;
     ParenBraceBracketBalancer BalancerRAIIObj(*this);
 
     // Parse declaration, which eats the ';'.
-    if (!C99orCXXorObjC) {   // Use of C99-style for loops in C90 mode?
+    if (!C99orCXXorObjC) { // Use of C99-style for loops in C90 mode?
       Diag(Tok, diag::ext_c99_variable_decl_in_for_loop);
       Diag(Tok, diag::warn_gcc_variable_decl_in_for_loop);
     }
@@ -1875,11 +1872,12 @@ StmtResult Parser::ParseForStatement(SourceLocation *TrailingElseLoc) {
         MightBeForRangeStmt ? &ForRangeInfo : nullptr);
     FirstPart = Actions.ActOnDeclStmt(DG, DeclStart, Tok.getLocation());
     if (ForRangeInfo.ParsedForRangeDecl()) {
-      Diag(ForRangeInfo.ColonLoc, getLangOpts().CPlusPlus11 ?
-           diag::warn_cxx98_compat_for_range : diag::ext_for_range);
+      Diag(ForRangeInfo.ColonLoc, getLangOpts().CPlusPlus11
+                                      ? diag::warn_cxx98_compat_for_range
+                                      : diag::ext_for_range);
       ForRangeInfo.LoopVar = FirstPart;
       FirstPart = StmtResult();
-    } else if (Tok.is(tok::semi)) {  // for (int x = 4;
+    } else if (Tok.is(tok::semi)) { // for (int x = 4;
       ConsumeToken();
     } else if ((ForEach = isTokIdentifier_in())) {
       Actions.ActOnForEachDeclStmt(DG);
@@ -1928,11 +1926,12 @@ StmtResult Parser::ParseForStatement(SourceLocation *TrailingElseLoc) {
         return StmtError();
       }
       Collection = ParseExpression();
-    } else if (getLangOpts().CPlusPlus11 && Tok.is(tok::colon) && FirstPart.get()) {
+    } else if (getLangOpts().CPlusPlus11 && Tok.is(tok::colon) &&
+               FirstPart.get()) {
       // User tried to write the reasonable, but ill-formed, for-range-statement
       //   for (expr : expr) { ... }
       Diag(Tok, diag::err_for_range_expected_decl)
-        << FirstPart.get()->getSourceRange();
+          << FirstPart.get()->getSourceRange();
       SkipUntil(tok::r_paren, StopBeforeMatch);
       SecondPart = Sema::ConditionError();
     } else {
@@ -1952,7 +1951,7 @@ StmtResult Parser::ParseForStatement(SourceLocation *TrailingElseLoc) {
   if (!ForEach && !ForRangeInfo.ParsedForRangeDecl() &&
       !SecondPart.isInvalid()) {
     // Parse the second part of the for specifier.
-    if (Tok.is(tok::semi)) {  // for (...;;
+    if (Tok.is(tok::semi)) { // for (...;;
       // no second part.
     } else if (Tok.is(tok::r_paren)) {
       // missing both semicolons.
@@ -2006,7 +2005,7 @@ StmtResult Parser::ParseForStatement(SourceLocation *TrailingElseLoc) {
       ConsumeToken();
     }
 
-    if (Tok.isNot(tok::r_paren)) {   // for (...;...;)
+    if (Tok.isNot(tok::r_paren)) { // for (...;...;)
       ExprResult Third = ParseExpression();
       // FIXME: The C++11 standard doesn't actually say that this is a
       // discarded-value expression, but it clearly should be.
@@ -2037,13 +2036,11 @@ StmtResult Parser::ParseForStatement(SourceLocation *TrailingElseLoc) {
         ForRangeInfo.LoopVar.get(), ForRangeInfo.ColonLoc, CorrectedRange.get(),
         T.getCloseLocation(), Sema::BFRK_Build);
 
-  // Similarly, we need to do the semantic analysis for a for-range
-  // statement immediately in order to close over temporaries correctly.
+    // Similarly, we need to do the semantic analysis for a for-range
+    // statement immediately in order to close over temporaries correctly.
   } else if (ForEach) {
-    ForEachStmt = Actions.ActOnObjCForCollectionStmt(ForLoc,
-                                                     FirstPart.get(),
-                                                     Collection.get(),
-                                                     T.getCloseLocation());
+    ForEachStmt = Actions.ActOnObjCForCollectionStmt(
+        ForLoc, FirstPart.get(), Collection.get(), T.getCloseLocation());
   } else {
     // In OpenMP loop region loop control variable must be captured and be
     // private. Perform analysis of first part (if any).
@@ -2091,8 +2088,7 @@ StmtResult Parser::ParseForStatement(SourceLocation *TrailingElseLoc) {
     return StmtError();
 
   if (ForEach)
-   return Actions.FinishObjCForCollectionStmt(ForEachStmt.get(),
-                                              Body.get());
+    return Actions.FinishObjCForCollectionStmt(ForEachStmt.get(), Body.get());
 
   if (ForRangeInfo.ParsedForRangeDecl())
     return Actions.FinishCXXForRangeStmt(ForRangeStmt.get(), Body.get());
@@ -2111,12 +2107,12 @@ StmtResult Parser::ParseForStatement(SourceLocation *TrailingElseLoc) {
 ///
 StmtResult Parser::ParseGotoStatement() {
   assert(Tok.is(tok::kw_goto) && "Not a goto stmt!");
-  SourceLocation GotoLoc = ConsumeToken();  // eat the 'goto'.
+  SourceLocation GotoLoc = ConsumeToken(); // eat the 'goto'.
 
   StmtResult Res;
   if (Tok.is(tok::identifier)) {
-    LabelDecl *LD = Actions.LookupOrCreateLabel(Tok.getIdentifierInfo(),
-                                                Tok.getLocation());
+    LabelDecl *LD =
+        Actions.LookupOrCreateLabel(Tok.getIdentifierInfo(), Tok.getLocation());
     Res = Actions.ActOnGotoStmt(GotoLoc, Tok.getLocation(), LD);
     ConsumeToken();
   } else if (Tok.is(tok::star)) {
@@ -2124,7 +2120,7 @@ StmtResult Parser::ParseGotoStatement() {
     Diag(Tok, diag::ext_gnu_indirect_goto);
     SourceLocation StarLoc = ConsumeToken();
     ExprResult R(ParseExpression());
-    if (R.isInvalid()) {  // Skip to the semicolon, but don't consume it.
+    if (R.isInvalid()) { // Skip to the semicolon, but don't consume it.
       SkipUntil(tok::semi, StopBeforeMatch);
       return StmtError();
     }
@@ -2144,7 +2140,7 @@ StmtResult Parser::ParseGotoStatement() {
 /// Note: this lets the caller parse the end ';'.
 ///
 StmtResult Parser::ParseContinueStatement() {
-  SourceLocation ContinueLoc = ConsumeToken();  // eat the 'continue'.
+  SourceLocation ContinueLoc = ConsumeToken(); // eat the 'continue'.
   return Actions.ActOnContinueStmt(ContinueLoc, getCurScope());
 }
 
@@ -2155,7 +2151,7 @@ StmtResult Parser::ParseContinueStatement() {
 /// Note: this lets the caller parse the end ';'.
 ///
 StmtResult Parser::ParseBreakStatement() {
-  SourceLocation BreakLoc = ConsumeToken();  // eat the 'break'.
+  SourceLocation BreakLoc = ConsumeToken(); // eat the 'break'.
   return Actions.ActOnBreakStmt(BreakLoc, getCurScope());
 }
 
@@ -2169,7 +2165,7 @@ StmtResult Parser::ParseReturnStatement() {
   assert((Tok.is(tok::kw_return) || Tok.is(tok::kw_co_return)) &&
          "Not a return stmt!");
   bool IsCoreturn = Tok.is(tok::kw_co_return);
-  SourceLocation ReturnLoc = ConsumeToken();  // eat the 'return'.
+  SourceLocation ReturnLoc = ConsumeToken(); // eat the 'return'.
 
   ExprResult R;
   if (Tok.isNot(tok::semi)) {
@@ -2251,8 +2247,8 @@ Decl *Parser::ParseFunctionStatementBody(Decl *Decl, ParseScope &BodyScope) {
   // Save and reset current vtordisp stack if we have entered a C++ method body.
   bool IsCXXMethod =
       getLangOpts().CPlusPlus && Decl && isa<CXXMethodDecl>(Decl);
-  Sema::PragmaStackSentinelRAII
-    PragmaStackSentinel(Actions, "InternalPragmaState", IsCXXMethod);
+  Sema::PragmaStackSentinelRAII PragmaStackSentinel(
+      Actions, "InternalPragmaState", IsCXXMethod);
 
   // Do not enter a scope for the brace, as the arguments are in the same scope
   // (the function body) as the body itself.  Instead, just read the statement
@@ -2290,11 +2286,11 @@ Decl *Parser::ParseFunctionTryBlock(Decl *Decl, ParseScope &BodyScope) {
   // Save and reset current vtordisp stack if we have entered a C++ method body.
   bool IsCXXMethod =
       getLangOpts().CPlusPlus && Decl && isa<CXXMethodDecl>(Decl);
-  Sema::PragmaStackSentinelRAII
-    PragmaStackSentinel(Actions, "InternalPragmaState", IsCXXMethod);
+  Sema::PragmaStackSentinelRAII PragmaStackSentinel(
+      Actions, "InternalPragmaState", IsCXXMethod);
 
   SourceLocation LBraceLoc = Tok.getLocation();
-  StmtResult FnBody(ParseCXXTryBlockCommon(TryLoc, /*FnTry*/true));
+  StmtResult FnBody(ParseCXXTryBlockCommon(TryLoc, /*FnTry*/ true));
   // If we failed to parse the try-catch, we just give the function an empty
   // compound statement as the body.
   if (FnBody.isInvalid()) {
@@ -2392,23 +2388,19 @@ StmtResult Parser::ParseCXXTryBlockCommon(SourceLocation TryLoc, bool FnTry) {
       Tok.is(tok::kw___finally)) {
     // TODO: Factor into common return ParseSEHHandlerCommon(...)
     StmtResult Handler;
-    if(Tok.getIdentifierInfo() == getSEHExceptKeyword()) {
+    if (Tok.getIdentifierInfo() == getSEHExceptKeyword()) {
       SourceLocation Loc = ConsumeToken();
       Handler = ParseSEHExceptBlock(Loc);
-    }
-    else {
+    } else {
       SourceLocation Loc = ConsumeToken();
       Handler = ParseSEHFinallyBlock(Loc);
     }
-    if(Handler.isInvalid())
+    if (Handler.isInvalid())
       return Handler;
 
-    return Actions.ActOnSEHTryBlock(true /* IsCXXTry */,
-                                    TryLoc,
-                                    TryBlock.get(),
+    return Actions.ActOnSEHTryBlock(true /* IsCXXTry */, TryLoc, TryBlock.get(),
                                     Handler.get());
-  }
-  else {
+  } else {
     StmtVector Handlers;
 
     // C++11 attributes can't appear here, despite this context seeming
@@ -2510,11 +2502,9 @@ void Parser::ParseMicrosoftIfExistsStatement(StmtVector &Stmts) {
     if (Compound.isInvalid())
       return;
 
-    StmtResult DepResult = Actions.ActOnMSDependentExistsStmt(Result.KeywordLoc,
-                                                              Result.IsIfExists,
-                                                              Result.SS,
-                                                              Result.Name,
-                                                              Compound.get());
+    StmtResult DepResult = Actions.ActOnMSDependentExistsStmt(
+        Result.KeywordLoc, Result.IsIfExists, Result.SS, Result.Name,
+        Compound.get());
     if (DepResult.isUsable())
       Stmts.push_back(DepResult.get());
     return;

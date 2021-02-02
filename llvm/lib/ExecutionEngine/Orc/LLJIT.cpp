@@ -105,10 +105,9 @@ private:
 /// llvm.global_ctors.
 class GlobalCtorDtorScraper {
 public:
-
   GlobalCtorDtorScraper(GenericLLVMIRPlatformSupport &PS,
                         StringRef InitFunctionPrefix)
-    : PS(PS), InitFunctionPrefix(InitFunctionPrefix) {}
+      : PS(PS), InitFunctionPrefix(InitFunctionPrefix) {}
   Expected<ThreadSafeModule> operator()(ThreadSafeModule TSM,
                                         MaterializationResponsibility &R);
 
@@ -252,13 +251,11 @@ public:
   }
 
   void registerInitFunc(JITDylib &JD, SymbolStringPtr InitName) {
-    getExecutionSession().runSessionLocked([&]() {
-        InitFunctions[&JD].add(InitName);
-      });
+    getExecutionSession().runSessionLocked(
+        [&]() { InitFunctions[&JD].add(InitName); });
   }
 
 private:
-
   Expected<std::vector<JITTargetAddress>> getInitializers(JITDylib &JD) {
     if (auto Err = issueInitLookups(JD))
       return std::move(Err);

@@ -5,14 +5,14 @@
 int y[4], z[4];
 
 void *MemMoveThread(void *a) {
-  memmove((int*)a, z, 16);
+  memmove((int *)a, z, 16);
   barrier_wait(&barrier);
   return NULL;
 }
 
 void *MemSetThread(void *a) {
   barrier_wait(&barrier);
-  memset((int*)a, 0, 16);
+  memset((int *)a, 0, 16);
   return NULL;
 }
 

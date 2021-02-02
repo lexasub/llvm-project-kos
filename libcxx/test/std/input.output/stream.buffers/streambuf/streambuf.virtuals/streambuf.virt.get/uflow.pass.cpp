@@ -20,17 +20,13 @@
 
 int underflow_called = 0;
 
-struct test
-    : public std::basic_streambuf<char>
-{
-    test() {}
-
+struct test : public std::basic_streambuf<char> {
+  test() {}
 };
 
-int main(int, char**)
-{
-    test t;
-    assert(t.sgetc() == -1);
+int main(int, char**) {
+  test t;
+  assert(t.sgetc() == -1);
 
   return 0;
 }

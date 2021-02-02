@@ -233,7 +233,7 @@ void Sema::EraseUnwantedCUDAMatches(
   if (Matches.size() <= 1)
     return;
 
-  using Pair = std::pair<DeclAccessPair, FunctionDecl*>;
+  using Pair = std::pair<DeclAccessPair, FunctionDecl *>;
 
   // Gets the CUDA function preference for a call from Caller to Match.
   auto GetCFP = [&](const Pair &Match) {
@@ -379,8 +379,7 @@ bool Sema::inferCUDATargetForImplicitSpecialMember(CXXRecordDecl *ClassDecl,
     if (!SMOR.getMethod())
       continue;
 
-    CUDAFunctionTarget FieldMethodTarget =
-        IdentifyCUDATarget(SMOR.getMethod());
+    CUDAFunctionTarget FieldMethodTarget = IdentifyCUDATarget(SMOR.getMethod());
     if (!InferredTarget.hasValue()) {
       InferredTarget = FieldMethodTarget;
     } else {
@@ -399,7 +398,6 @@ bool Sema::inferCUDATargetForImplicitSpecialMember(CXXRecordDecl *ClassDecl,
       }
     }
   }
-
 
   // If no target was inferred, mark this member as __host__ __device__;
   // it's the least restrictive option that can be invoked from any target.
@@ -655,7 +653,8 @@ Sema::SemaDiagnosticBuilder Sema::CUDADiagIfDeviceCode(SourceLocation Loc,
       // mode until the function is known-emitted.
       if (!getLangOpts().CUDAIsDevice)
         return SemaDiagnosticBuilder::K_Nop;
-      if (IsLastErrorImmediate && Diags.getDiagnosticIDs()->isBuiltinNote(DiagID))
+      if (IsLastErrorImmediate &&
+          Diags.getDiagnosticIDs()->isBuiltinNote(DiagID))
         return SemaDiagnosticBuilder::K_Immediate;
       return (getEmissionStatus(cast<FunctionDecl>(CurContext)) ==
               FunctionEmissionStatus::Emitted)
@@ -684,7 +683,8 @@ Sema::SemaDiagnosticBuilder Sema::CUDADiagIfHostCode(SourceLocation Loc,
       // mode until the function is known-emitted.
       if (getLangOpts().CUDAIsDevice)
         return SemaDiagnosticBuilder::K_Nop;
-      if (IsLastErrorImmediate && Diags.getDiagnosticIDs()->isBuiltinNote(DiagID))
+      if (IsLastErrorImmediate &&
+          Diags.getDiagnosticIDs()->isBuiltinNote(DiagID))
         return SemaDiagnosticBuilder::K_Immediate;
       return (getEmissionStatus(cast<FunctionDecl>(CurContext)) ==
               FunctionEmissionStatus::Emitted)

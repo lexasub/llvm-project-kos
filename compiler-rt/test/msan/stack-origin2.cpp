@@ -20,9 +20,9 @@
 
 #include <stdlib.h>
 
-extern "C"
-int f(int depth) {
-  if (depth) return f(depth - 1);
+extern "C" int f(int depth) {
+  if (depth)
+    return f(depth - 1);
 
   int x;
   int *volatile p = &x;

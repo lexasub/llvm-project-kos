@@ -15,23 +15,23 @@ using namespace clang;
 // Check that the CharInfo table has been constructed reasonably.
 TEST(CharInfoTest, validateInfoTable) {
   using namespace charinfo;
-  EXPECT_EQ((unsigned)CHAR_SPACE,   InfoTable[(unsigned)' ']);
+  EXPECT_EQ((unsigned)CHAR_SPACE, InfoTable[(unsigned)' ']);
   EXPECT_EQ((unsigned)CHAR_HORZ_WS, InfoTable[(unsigned)'\t']);
   EXPECT_EQ((unsigned)CHAR_HORZ_WS, InfoTable[(unsigned)'\f']); // ??
   EXPECT_EQ((unsigned)CHAR_HORZ_WS, InfoTable[(unsigned)'\v']); // ??
   EXPECT_EQ((unsigned)CHAR_VERT_WS, InfoTable[(unsigned)'\n']);
   EXPECT_EQ((unsigned)CHAR_VERT_WS, InfoTable[(unsigned)'\r']);
-  EXPECT_EQ((unsigned)CHAR_UNDER,   InfoTable[(unsigned)'_']);
-  EXPECT_EQ((unsigned)CHAR_PERIOD,  InfoTable[(unsigned)'.']);
+  EXPECT_EQ((unsigned)CHAR_UNDER, InfoTable[(unsigned)'_']);
+  EXPECT_EQ((unsigned)CHAR_PERIOD, InfoTable[(unsigned)'.']);
 
   for (unsigned i = 'a'; i <= 'f'; ++i) {
     EXPECT_EQ((unsigned)CHAR_XLOWER, InfoTable[i]);
-    EXPECT_EQ((unsigned)CHAR_XUPPER, InfoTable[i+'A'-'a']);
+    EXPECT_EQ((unsigned)CHAR_XUPPER, InfoTable[i + 'A' - 'a']);
   }
 
   for (unsigned i = 'g'; i <= 'z'; ++i) {
     EXPECT_EQ((unsigned)CHAR_LOWER, InfoTable[i]);
-    EXPECT_EQ((unsigned)CHAR_UPPER, InfoTable[i+'A'-'a']);
+    EXPECT_EQ((unsigned)CHAR_UPPER, InfoTable[i + 'A' - 'a']);
   }
 
   for (unsigned i = '0'; i <= '9'; ++i)
@@ -165,7 +165,7 @@ TEST(CharInfoTest, isDigit) {
 
   EXPECT_FALSE(isDigit('z'));
   EXPECT_FALSE(isDigit('Z'));
-  
+
   EXPECT_FALSE(isDigit('.'));
   EXPECT_FALSE(isDigit('_'));
 
@@ -186,7 +186,7 @@ TEST(CharInfoTest, isHexDigit) {
 
   EXPECT_FALSE(isHexDigit('z'));
   EXPECT_FALSE(isHexDigit('Z'));
-  
+
   EXPECT_FALSE(isHexDigit('.'));
   EXPECT_FALSE(isHexDigit('_'));
 
@@ -207,7 +207,7 @@ TEST(CharInfoTest, isLetter) {
 
   EXPECT_TRUE(isLetter('z'));
   EXPECT_TRUE(isLetter('Z'));
-  
+
   EXPECT_FALSE(isLetter('.'));
   EXPECT_FALSE(isLetter('_'));
 
@@ -229,7 +229,7 @@ TEST(CharInfoTest, isLowercase) {
 
   EXPECT_TRUE(isLowercase('z'));
   EXPECT_FALSE(isLowercase('Z'));
-  
+
   EXPECT_FALSE(isLowercase('.'));
   EXPECT_FALSE(isLowercase('_'));
 

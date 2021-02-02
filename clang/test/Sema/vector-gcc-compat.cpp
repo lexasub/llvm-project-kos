@@ -28,7 +28,7 @@ void floatTestUnsignedType(unsigned char a, unsigned short b, unsigned int c,
 void floatTestConstant(void);
 void intTestType(char a, short b, int c, long long d); // expected-warning {{'long long' is incompatible with C++98}}
 void intTestTypeUnsigned(unsigned char a, unsigned short b, unsigned int c,
-                         unsigned long long d); // expected-warning {{'long long' is incompatible with C++98}}
+                         unsigned long long d);         // expected-warning {{'long long' is incompatible with C++98}}
 void uintTestType(char a, short b, int c, long long d); // expected-warning {{'long long' is incompatible with C++98}}
 void uintTestTypeUnsigned(unsigned char a, unsigned short b, unsigned int c,
                           unsigned long long d); // expected-warning {{'long long' is incompatible with C++98}}

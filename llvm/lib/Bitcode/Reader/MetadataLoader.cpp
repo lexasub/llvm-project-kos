@@ -21,8 +21,8 @@
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/Twine.h"
 #include "llvm/Bitcode/BitcodeReader.h"
-#include "llvm/Bitstream/BitstreamReader.h"
 #include "llvm/Bitcode/LLVMBitCodes.h"
+#include "llvm/Bitstream/BitstreamReader.h"
 #include "llvm/IR/Argument.h"
 #include "llvm/IR/Attributes.h"
 #include "llvm/IR/AutoUpgrade.h"
@@ -363,7 +363,8 @@ class PlaceholderQueue {
 
 public:
   ~PlaceholderQueue() {
-    assert(empty() && "PlaceholderQueue hasn't been flushed before being destroyed");
+    assert(empty() &&
+           "PlaceholderQueue hasn't been flushed before being destroyed");
   }
   bool empty() const { return PHs.empty(); }
   DistinctMDOperandPlaceholder &getPlaceholderOp(unsigned ID);
@@ -605,7 +606,7 @@ class MetadataLoader::MetadataLoaderImpl {
         // If the expression is malformed, make sure we don't
         // copy more elements than we should.
         HistoricSize = std::min(SubExpr.size(), HistoricSize);
-        ArrayRef<uint64_t> Args = SubExpr.slice(1, HistoricSize-1);
+        ArrayRef<uint64_t> Args = SubExpr.slice(1, HistoricSize - 1);
 
         switch (SubExpr.front()) {
         case dwarf::DW_OP_plus:
@@ -1412,8 +1413,9 @@ Error MetadataLoader::MetadataLoaderImpl::parseOneMetadata(
       return error("Invalid record");
 
     IsDistinct = Record[0];
-    DINode::DIFlags Flags = (Record.size() > 6) ?
-                    static_cast<DINode::DIFlags>(Record[6]) : DINode::FlagZero;
+    DINode::DIFlags Flags = (Record.size() > 6)
+                                ? static_cast<DINode::DIFlags>(Record[6])
+                                : DINode::FlagZero;
 
     MetadataList.assignValue(
         GET_OR_DISTINCT(DIBasicType,
@@ -1450,13 +1452,12 @@ Error MetadataLoader::MetadataLoaderImpl::parseOneMetadata(
     IsDistinct = Record[0];
     DINode::DIFlags Flags = static_cast<DINode::DIFlags>(Record[10]);
     MetadataList.assignValue(
-        GET_OR_DISTINCT(DIDerivedType,
-                        (Context, Record[1], getMDString(Record[2]),
-                         getMDOrNull(Record[3]), Record[4],
-                         getDITypeRefOrNull(Record[5]),
-                         getDITypeRefOrNull(Record[6]), Record[7], Record[8],
-                         Record[9], DWARFAddressSpace, Flags,
-                         getDITypeRefOrNull(Record[11]))),
+        GET_OR_DISTINCT(
+            DIDerivedType,
+            (Context, Record[1], getMDString(Record[2]), getMDOrNull(Record[3]),
+             Record[4], getDITypeRefOrNull(Record[5]),
+             getDITypeRefOrNull(Record[6]), Record[7], Record[8], Record[9],
+             DWARFAddressSpace, Flags, getDITypeRefOrNull(Record[11]))),
         NextMetadataNo);
     NextMetadataNo++;
     break;
@@ -1666,9 +1667,9 @@ Error MetadataLoader::MetadataLoaderImpl::parseOneMetadata(
       SPFlags |= DISubprogram::SPFlagMainSubprogram;
     else if (!HasSPFlags)
       SPFlags = DISubprogram::toSPFlags(
-                    /*IsLocalToUnit=*/Record[7], /*IsDefinition=*/Record[8],
-                    /*IsOptimized=*/Record[14], /*Virtuality=*/Record[11],
-                    /*DIFlagMainSubprogram*/HasOldMainSubprogramFlag);
+          /*IsLocalToUnit=*/Record[7], /*IsDefinition=*/Record[8],
+          /*IsOptimized=*/Record[14], /*Virtuality=*/Record[11],
+          /*DIFlagMainSubprogram*/ HasOldMainSubprogramFlag);
 
     // All definitions should be distinct.
     IsDistinct = (Record[0] & 1) || (SPFlags & DISubprogram::SPFlagDefinition);
@@ -1702,24 +1703,24 @@ Error MetadataLoader::MetadataLoaderImpl::parseOneMetadata(
     DISubprogram *SP = GET_OR_DISTINCT(
         DISubprogram,
         (Context,
-         getDITypeRefOrNull(Record[1]),                     // scope
-         getMDString(Record[2]),                            // name
-         getMDString(Record[3]),                            // linkageName
-         getMDOrNull(Record[4]),                            // file
-         Record[5],                                         // line
-         getMDOrNull(Record[6]),                            // type
-         Record[7 + OffsetA],                               // scopeLine
-         getDITypeRefOrNull(Record[8 + OffsetA]),           // containingType
-         Record[10 + OffsetA],                              // virtualIndex
-         HasThisAdj ? Record[16 + OffsetB] : 0,             // thisAdjustment
-         Flags,                                             // flags
-         SPFlags,                                           // SPFlags
-         HasUnit ? CUorFn : nullptr,                        // unit
-         getMDOrNull(Record[13 + OffsetB]),                 // templateParams
-         getMDOrNull(Record[14 + OffsetB]),                 // declaration
-         getMDOrNull(Record[15 + OffsetB]),                 // retainedNodes
+         getDITypeRefOrNull(Record[1]),           // scope
+         getMDString(Record[2]),                  // name
+         getMDString(Record[3]),                  // linkageName
+         getMDOrNull(Record[4]),                  // file
+         Record[5],                               // line
+         getMDOrNull(Record[6]),                  // type
+         Record[7 + OffsetA],                     // scopeLine
+         getDITypeRefOrNull(Record[8 + OffsetA]), // containingType
+         Record[10 + OffsetA],                    // virtualIndex
+         HasThisAdj ? Record[16 + OffsetB] : 0,   // thisAdjustment
+         Flags,                                   // flags
+         SPFlags,                                 // SPFlags
+         HasUnit ? CUorFn : nullptr,              // unit
+         getMDOrNull(Record[13 + OffsetB]),       // templateParams
+         getMDOrNull(Record[14 + OffsetB]),       // declaration
+         getMDOrNull(Record[15 + OffsetB]),       // retainedNodes
          HasThrownTypes ? getMDOrNull(Record[17 + OffsetB])
-                        : nullptr                           // thrownTypes
+                        : nullptr // thrownTypes
          ));
     MetadataList.assignValue(SP, NextMetadataNo);
     NextMetadataNo++;
@@ -1965,10 +1966,9 @@ Error MetadataLoader::MetadataLoaderImpl::parseOneMetadata(
 
     IsDistinct = Record[0] & 1;
     MetadataList.assignValue(
-        GET_OR_DISTINCT(DILabel,
-                        (Context, getMDOrNull(Record[1]),
-                         getMDString(Record[2]),
-                         getMDOrNull(Record[3]), Record[4])),
+        GET_OR_DISTINCT(DILabel, (Context, getMDOrNull(Record[1]),
+                                  getMDString(Record[2]),
+                                  getMDOrNull(Record[3]), Record[4])),
         NextMetadataNo);
     NextMetadataNo++;
     break;
@@ -1985,8 +1985,8 @@ Error MetadataLoader::MetadataLoaderImpl::parseOneMetadata(
     if (Error Err = upgradeDIExpression(Version, Elts, Buffer))
       return Err;
 
-    MetadataList.assignValue(
-        GET_OR_DISTINCT(DIExpression, (Context, Elts)), NextMetadataNo);
+    MetadataList.assignValue(GET_OR_DISTINCT(DIExpression, (Context, Elts)),
+                             NextMetadataNo);
     NextMetadataNo++;
     break;
   }

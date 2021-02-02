@@ -35,9 +35,8 @@ static inline bool cstring_is_mangled(llvm::StringRef s) {
   return Mangled::GetManglingScheme(s) != Mangled::eManglingSchemeNone;
 }
 
-static ConstString 
-get_demangled_name_without_arguments(ConstString mangled,
-                                     ConstString demangled) {
+static ConstString get_demangled_name_without_arguments(ConstString mangled,
+                                                        ConstString demangled) {
   // This pair is <mangled name, demangled name without function arguments>
   static std::pair<ConstString, ConstString>
       g_most_recent_mangled_to_name_sans_args;
@@ -293,7 +292,8 @@ ConstString Mangled::GetDemangledName() const {
   if (m_mangled && m_demangled.IsNull()) {
     // Don't bother running anything that isn't mangled
     const char *mangled_name = m_mangled.GetCString();
-    ManglingScheme mangling_scheme = GetManglingScheme(m_mangled.GetStringRef());
+    ManglingScheme mangling_scheme =
+        GetManglingScheme(m_mangled.GetStringRef());
     if (mangling_scheme != eManglingSchemeNone &&
         !m_mangled.GetMangledCounterpart(m_demangled)) {
       // We didn't already mangle this name, demangle it and if all goes well
@@ -326,8 +326,7 @@ ConstString Mangled::GetDemangledName() const {
   return m_demangled;
 }
 
-ConstString
-Mangled::GetDisplayDemangledName() const {
+ConstString Mangled::GetDisplayDemangledName() const {
   return GetDemangledName();
 }
 
@@ -405,10 +404,9 @@ lldb::LanguageType Mangled::GuessLanguage() const {
     // ObjC names aren't really mangled, so they won't necessarily be in the
     // mangled name slot.
     ConstString demangled_name = GetDemangledName();
-    if (demangled_name 
-        && ObjCLanguage::IsPossibleObjCMethodName(demangled_name.GetCString()))
+    if (demangled_name &&
+        ObjCLanguage::IsPossibleObjCMethodName(demangled_name.GetCString()))
       return lldb::eLanguageTypeObjC;
-  
   }
   return lldb::eLanguageTypeUnknown;
 }

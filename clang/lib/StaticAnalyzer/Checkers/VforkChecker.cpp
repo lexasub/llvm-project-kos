@@ -24,17 +24,17 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "clang/AST/ParentMap.h"
 #include "clang/StaticAnalyzer/Checkers/BuiltinCheckerRegistration.h"
+#include "clang/StaticAnalyzer/Core/BugReporter/BugType.h"
+#include "clang/StaticAnalyzer/Core/Checker.h"
+#include "clang/StaticAnalyzer/Core/CheckerManager.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/CallEvent.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/CheckerContext.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/CheckerHelpers.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/ProgramState.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/ProgramStateTrait.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/SymbolManager.h"
-#include "clang/StaticAnalyzer/Core/BugReporter/BugType.h"
-#include "clang/StaticAnalyzer/Core/Checker.h"
-#include "clang/StaticAnalyzer/Core/CheckerManager.h"
-#include "clang/AST/ParentMap.h"
 
 using namespace clang;
 using namespace ento;
@@ -94,21 +94,11 @@ bool VforkChecker::isVforkCall(const Decl *D, CheckerContext &C) const {
 
 // Returns true iff ok to call function after successful vfork.
 bool VforkChecker::isCallWhitelisted(const IdentifierInfo *II,
-                                 CheckerContext &C) const {
+                                     CheckerContext &C) const {
   if (VforkWhitelist.empty()) {
     // According to manpage.
-    const char *ids[] = {
-      "_Exit",
-      "_exit",
-      "execl",
-      "execle",
-      "execlp",
-      "execv",
-      "execve",
-      "execvp",
-      "execvpe",
-      nullptr
-    };
+    const char *ids[] = {"_Exit", "_exit",  "execl",  "execle",  "execlp",
+                         "execv", "execve", "execvp", "execvpe", nullptr};
 
     ASTContext &AC = C.getASTContext();
     for (const char **id = ids; *id; ++id)
@@ -122,8 +112,8 @@ void VforkChecker::reportBug(const char *What, CheckerContext &C,
                              const char *Details) const {
   if (ExplodedNode *N = C.generateErrorNode(C.getState())) {
     if (!BT)
-      BT.reset(new BuiltinBug(this,
-                              "Dangerous construct in a vforked process"));
+      BT.reset(
+          new BuiltinBug(this, "Dangerous construct in a vforked process"));
 
     SmallString<256> buf;
     llvm::raw_svector_ostream os(buf);
@@ -154,7 +144,7 @@ void VforkChecker::checkPostCall(const CallEvent &Call,
   // Get return value of vfork.
   SVal VforkRetVal = Call.getReturnValue();
   Optional<DefinedOrUnknownSVal> DVal =
-    VforkRetVal.getAs<DefinedOrUnknownSVal>();
+      VforkRetVal.getAs<DefinedOrUnknownSVal>();
   if (!DVal)
     return;
 
@@ -167,9 +157,8 @@ void VforkChecker::checkPostCall(const CallEvent &Call,
   // Get assigned memory region.
   MemRegionManager &M = C.getStoreManager().getRegionManager();
   const MemRegion *LhsDeclReg =
-    LhsDecl
-      ? M.getVarRegion(LhsDecl, C.getLocationContext())
-      : (const MemRegion *)VFORK_RESULT_NONE;
+      LhsDecl ? M.getVarRegion(LhsDecl, C.getLocationContext())
+              : (const MemRegion *)VFORK_RESULT_NONE;
 
   // Parent branch gets nonzero return value (according to manpage).
   ProgramStateRef ParentState, ChildState;
@@ -183,8 +172,8 @@ void VforkChecker::checkPostCall(const CallEvent &Call,
 void VforkChecker::checkPreCall(const CallEvent &Call,
                                 CheckerContext &C) const {
   ProgramStateRef State = C.getState();
-  if (isChildProcess(State)
-      && !isCallWhitelisted(Call.getCalleeIdentifier(), C))
+  if (isChildProcess(State) &&
+      !isCallWhitelisted(Call.getCalleeIdentifier(), C))
     reportBug("This function call", C);
 }
 
@@ -196,7 +185,7 @@ void VforkChecker::checkBind(SVal L, SVal V, const Stmt *S,
     return;
 
   const MemRegion *VforkLhs =
-    static_cast<const MemRegion *>(State->get<VforkResultRegion>());
+      static_cast<const MemRegion *>(State->get<VforkResultRegion>());
   const MemRegion *MR = L.getAsRegion();
 
   // Child is allowed to modify only vfork's lhs.

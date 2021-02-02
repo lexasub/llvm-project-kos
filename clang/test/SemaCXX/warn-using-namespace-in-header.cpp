@@ -30,13 +30,12 @@ namespace dont_warn_here {
 extern "C++" {
 using namespace warn_in_header_in_global_context;
 }
-}
+} // namespace dont_warn_here
 
 // We also shouldn't warn in case of functions.
 inline void foo() {
   using namespace warn_in_header_in_global_context;
 }
-
 
 namespace macronamespace {}
 #define USING_MACRO using namespace macronamespace;
@@ -58,7 +57,7 @@ using namespace dont_warn;
 USING_MACRO
 
 // Check behavior of line markers.
-namespace warn_header_with_line_marker {} 
+namespace warn_header_with_line_marker {}
 # 1 "XXX.h" 1
 using namespace warn_header_with_line_marker; // expected-warning {{using namespace directive in global context in header}}
 # 70 "warn-using-namespace-in-header.cpp" 2

@@ -7,7 +7,7 @@ struct integral_constant {
 
 template <class _Tp>
 struct is_nothrow_default_constructible
-	: integral_constant<bool, __is_constructible(_Tp)> {};
+    : integral_constant<bool, __is_constructible(_Tp)> {};
 
 template <class _Tp>
 struct is_nothrow_move_constructible

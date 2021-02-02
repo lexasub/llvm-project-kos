@@ -18,15 +18,14 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        typedef std::mt19937 Engine;
-        typedef std::independent_bits_engine<Engine, 24, unsigned> Adaptor;
-        Engine e;
-        Adaptor a(e);
-        assert(a.base() == e);
-    }
+int main(int, char**) {
+  {
+    typedef std::mt19937 Engine;
+    typedef std::independent_bits_engine<Engine, 24, unsigned> Adaptor;
+    Engine e;
+    Adaptor a(e);
+    assert(a.base() == e);
+  }
 
   return 0;
 }

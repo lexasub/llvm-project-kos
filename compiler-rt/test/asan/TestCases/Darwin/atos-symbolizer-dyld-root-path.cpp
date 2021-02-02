@@ -12,11 +12,11 @@
 #include <stdlib.h>
 #include <string.h>
 int main(int argc, char **argv) {
-  char *x = (char*)malloc(10 * sizeof(char));
+  char *x = (char *)malloc(10 * sizeof(char));
   memset(x, 0, 10);
   int res = x[argc];
   free(x);
-  free(x + argc - 1);  // BOOM
+  free(x + argc - 1); // BOOM
   // CHECK: Using atos at user-specified path:
   // CHECK: AddressSanitizer: attempting double-free{{.*}}in thread T0
   // CHECK: #0 0x{{.*}} in {{.*}}free

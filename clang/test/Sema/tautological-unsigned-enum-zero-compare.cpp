@@ -14,13 +14,19 @@ int main() {
   // if not otherwise specified, so A is identical to C on Windows. Otherwise,
   // we follow the C++ rules, which say that the only valid values of A are 0
   // and 1.
-  enum A { A_foo = 0, A_bar, };
+  enum A { A_foo = 0,
+           A_bar,
+  };
   enum A a;
 
-  enum B : unsigned { B_foo = 0, B_bar, };
+  enum B : unsigned { B_foo = 0,
+                      B_bar,
+  };
   enum B b;
 
-  enum C : signed { C_foo = 0, C_bar, };
+  enum C : signed { C_foo = 0,
+                    C_bar,
+  };
   enum C c;
 
   if (a < 0) // unsigned-warning {{comparison of unsigned enum expression < 0 is always false}}

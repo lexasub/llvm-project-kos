@@ -7,8 +7,8 @@
 // FIXME: Support this in non-x86_64 as well
 // REQUIRES: x86_64-linux
 // REQUIRES: built-in-llvm-tree
-#include <cstdio>
 #include "xray/xray_interface.h"
+#include <cstdio>
 
 [[clang::xray_always_instrument]] void foo() {
   static constexpr char CustomLogged[] = "hello custom logging!";
@@ -17,8 +17,8 @@
   printf("after calling the custom logging...\n");
 }
 
-void myprinter(void* ptr, size_t size) {
-  printf("%.*s\n", static_cast<int>(size), static_cast<const char*>(ptr));
+void myprinter(void *ptr, size_t size) {
+  printf("%.*s\n", static_cast<int>(size), static_cast<const char *>(ptr));
 }
 
 int main() {

@@ -65,42 +65,33 @@ static cl::list<std::string>
                cl::PositionalEatsArgs);
 static std::vector<char *> ModifiedArgv;
 
-enum OutputFileType {
-  OFT_Null,
-  OFT_AssemblyFile,
-  OFT_ObjectFile
-};
+enum OutputFileType { OFT_Null, OFT_AssemblyFile, OFT_ObjectFile };
 static cl::opt<OutputFileType>
-FileType("filetype", cl::init(OFT_AssemblyFile),
-  cl::desc("Choose an output file type:"),
-  cl::values(
-       clEnumValN(OFT_AssemblyFile, "asm",
-                  "Emit an assembly ('.s') file"),
-       clEnumValN(OFT_Null, "null",
-                  "Don't emit anything (for timing purposes)"),
-       clEnumValN(OFT_ObjectFile, "obj",
-                  "Emit a native object ('.o') file")));
+    FileType("filetype", cl::init(OFT_AssemblyFile),
+             cl::desc("Choose an output file type:"),
+             cl::values(clEnumValN(OFT_AssemblyFile, "asm",
+                                   "Emit an assembly ('.s') file"),
+                        clEnumValN(OFT_Null, "null",
+                                   "Don't emit anything (for timing purposes)"),
+                        clEnumValN(OFT_ObjectFile, "obj",
+                                   "Emit a native object ('.o') file")));
 
+class LLVMFuzzerInputBuffer : public MemoryBuffer {
+public:
+  LLVMFuzzerInputBuffer(const uint8_t *data_, size_t size_)
+      : Data(reinterpret_cast<const char *>(data_)), Size(size_) {
+    init(Data, Data + Size, false);
+  }
 
-class LLVMFuzzerInputBuffer : public MemoryBuffer
-{
-  public:
-    LLVMFuzzerInputBuffer(const uint8_t *data_, size_t size_)
-      : Data(reinterpret_cast<const char *>(data_)),
-        Size(size_) {
-        init(Data, Data+Size, false);
-      }
+  virtual BufferKind getBufferKind() const {
+    return MemoryBuffer_Malloc; // it's not disk-backed so I think that's
+                                // the intent ... though AFAIK it
+                                // probably came from an mmap or sbrk
+  }
 
-
-    virtual BufferKind getBufferKind() const {
-      return MemoryBuffer_Malloc; // it's not disk-backed so I think that's
-                                  // the intent ... though AFAIK it
-                                  // probably came from an mmap or sbrk
-    }
-
-  private:
-    const char *Data;
-    size_t Size;
+private:
+  const char *Data;
+  size_t Size;
 };
 
 static int AssembleInput(const char *ProgName, const Target *TheTarget,
@@ -109,15 +100,13 @@ static int AssembleInput(const char *ProgName, const Target *TheTarget,
                          MCInstrInfo &MCII, MCTargetOptions &MCOptions) {
   static const bool NoInitialTextSection = false;
 
-  std::unique_ptr<MCAsmParser> Parser(
-    createMCAsmParser(SrcMgr, Ctx, Str, MAI));
+  std::unique_ptr<MCAsmParser> Parser(createMCAsmParser(SrcMgr, Ctx, Str, MAI));
 
   std::unique_ptr<MCTargetAsmParser> TAP(
-    TheTarget->createMCAsmParser(STI, *Parser, MCII, MCOptions));
+      TheTarget->createMCAsmParser(STI, *Parser, MCII, MCOptions));
 
   if (!TAP) {
-    errs() << ProgName
-           << ": error: this target '" << TripleName
+    errs() << ProgName << ": error: this target '" << TripleName
            << "', does not support assembly parsing.\n";
     abort();
   }
@@ -126,7 +115,6 @@ static int AssembleInput(const char *ProgName, const Target *TheTarget,
 
   return Parser->Run(NoInitialTextSection);
 }
-
 
 int AssembleOneInput(const uint8_t *Data, size_t Size) {
   const bool ShowInst = false;
@@ -137,7 +125,8 @@ int AssembleOneInput(const uint8_t *Data, size_t Size) {
 
   SourceMgr SrcMgr;
 
-  std::unique_ptr<MemoryBuffer> BufferPtr(new LLVMFuzzerInputBuffer(Data, Size));
+  std::unique_ptr<MemoryBuffer> BufferPtr(
+      new LLVMFuzzerInputBuffer(Data, Size));
 
   // Tell SrcMgr about this buffer, which is what the parser will pick up.
   SrcMgr.AddNewSourceBuffer(std::move(BufferPtr), SMLoc());
@@ -147,11 +136,11 @@ int AssembleOneInput(const uint8_t *Data, size_t Size) {
 
   static std::string ArchName;
   std::string Error;
-  const Target *TheTarget = TargetRegistry::lookupTarget(ArchName, TheTriple,
-      Error);
+  const Target *TheTarget =
+      TargetRegistry::lookupTarget(ArchName, TheTriple, Error);
   if (!TheTarget) {
-    errs() << "error: this target '" << TheTriple.normalize()
-      << "/" << ArchName << "', was not found: '" << Error << "'\n";
+    errs() << "error: this target '" << TheTriple.normalize() << "/" << ArchName
+           << "', was not found: '" << Error << "'\n";
 
     abort();
   }
@@ -170,7 +159,6 @@ int AssembleOneInput(const uint8_t *Data, size_t Size) {
     abort();
   }
 
-
   MCObjectFileInfo MOFI;
   MCContext Ctx(MAI.get(), MRI.get(), &MOFI, &SrcMgr);
 
@@ -179,13 +167,12 @@ int AssembleOneInput(const uint8_t *Data, size_t Size) {
 
   const unsigned OutputAsmVariant = 0;
   std::unique_ptr<MCInstrInfo> MCII(TheTarget->createMCInstrInfo());
-  MCInstPrinter *IP = TheTarget->createMCInstPrinter(Triple(TripleName), OutputAsmVariant,
-      *MAI, *MCII, *MRI);
+  MCInstPrinter *IP = TheTarget->createMCInstPrinter(
+      Triple(TripleName), OutputAsmVariant, *MAI, *MCII, *MRI);
   if (!IP) {
-    errs()
-      << "error: unable to create instruction printer for target triple '"
-      << TheTriple.normalize() << "' with assembly variant "
-      << OutputAsmVariant << ".\n";
+    errs() << "error: unable to create instruction printer for target triple '"
+           << TheTriple.normalize() << "' with assembly variant "
+           << OutputAsmVariant << ".\n";
 
     abort();
   }
@@ -236,10 +223,10 @@ int AssembleOneInput(const uint8_t *Data, size_t Size) {
         MCOptions.MCRelaxAll, MCOptions.MCIncrementalLinkerCompatible,
         /*DWARFMustBeAtTheEnd*/ false));
   }
-  const int Res = AssembleInput(ProgName, TheTarget, SrcMgr, Ctx, *Str, *MAI, *STI,
-      *MCII, MCOptions);
+  const int Res = AssembleInput(ProgName, TheTarget, SrcMgr, Ctx, *Str, *MAI,
+                                *STI, *MCII, MCOptions);
 
-  (void) Res;
+  (void)Res;
 
   return 0;
 }

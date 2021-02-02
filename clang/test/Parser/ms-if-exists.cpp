@@ -25,7 +25,7 @@ void test_if_exists_stmts() {
 
 int if_exists_creates_no_scope() {
   __if_exists(MayExist::Type) {
-    int x;  // 'x' is declared in the parent scope.
+    int x; // 'x' is declared in the parent scope.
   }
   __if_not_exists(MayExist::Type_not) {
     x++;
@@ -52,31 +52,25 @@ __if_not_exists(MayExist::Type_not) {
 void test_if_exists_init_list() {
 
   int array1[] = {
-    0,
-    __if_exists(MayExist::Type) {2, }
-    3
-  };
+      0,
+      __if_exists(MayExist::Type){
+          2,
+      } 3};
 
   int array2[] = {
-    0,
-    __if_exists(MayExist::Type_not) { this will not compile }
-    3
-  };
+      0,
+      __if_exists(MayExist::Type_not){this will not compile} 3};
 
   int array3[] = {
-    0,
-    __if_not_exists(MayExist::Type_not) {2, }
-    3
-  };
+      0,
+      __if_not_exists(MayExist::Type_not){
+          2,
+      } 3};
 
   int array4[] = {
-    0,
-    __if_not_exists(MayExist::Type) { this will not compile }
-    3
-  };
-
+      0,
+      __if_not_exists(MayExist::Type){this will not compile} 3};
 }
-
 
 class IfExistsClassScope {
   __if_exists(MayExist::Type) {
@@ -88,11 +82,11 @@ class IfExistsClassScope {
   }
 
   __if_exists(MayExist::Type_not) {
-   this will not compile.
+    this will not compile.
   }
 
   __if_not_exists(MayExist::Type) {
-   this will not compile.
+    this will not compile.
   }
 
   __if_not_exists(MayExist::Type_not) {

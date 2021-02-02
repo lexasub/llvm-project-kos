@@ -7,95 +7,104 @@
 #if __cplusplus >= 201103L
 namespace dr2338 { // dr2338: 12
 namespace B {
-enum E : bool { Zero, One };
+enum E : bool { Zero,
+                One };
 static_assert((int)(E)2 == 1, "");
 } // namespace B
 namespace D {
-enum class E : bool { Zero, One };
+enum class E : bool { Zero,
+                      One };
 static_assert((int)(E)2 == 1, "");
 } // namespace D
 } // namespace dr2338
 #endif
 
 namespace dr2346 { // dr2346: 11
-  void test() {
-    const int i2 = 0;
-    extern void h2b(int x = i2 + 0); // ok, not odr-use
-  }
+void test() {
+  const int i2 = 0;
+  extern void h2b(int x = i2 + 0); // ok, not odr-use
 }
+} // namespace dr2346
 
 namespace dr2352 { // dr2352: 10
-  int **p;
-  const int *const *const &f1() { return p; }
-  int *const *const &f2() { return p; }
-  int **const &f3() { return p; }
+int **p;
+const int *const *const &f1() { return p; }
+int *const *const &f2() { return p; }
+int **const &f3() { return p; }
 
-  const int **const &f4() { return p; } // expected-error {{reference to type 'const int **const' could not bind to an lvalue of type 'int **'}}
-  const int *const *&f5() { return p; } // expected-error {{binding reference of type 'const int *const *' to value of type 'int **' not permitted due to incompatible qualifiers}}
+const int **const &f4() { return p; } // expected-error {{reference to type 'const int **const' could not bind to an lvalue of type 'int **'}}
+const int *const *&f5() { return p; } // expected-error {{binding reference of type 'const int *const *' to value of type 'int **' not permitted due to incompatible qualifiers}}
 
-  // FIXME: We permit this as a speculative defect resolution, allowing
-  // qualification conversions when forming a glvalue conditional expression.
-  const int * const * const q = 0;
-  __typeof(&(true ? p : q)) x = &(true ? p : q);
+// FIXME: We permit this as a speculative defect resolution, allowing
+// qualification conversions when forming a glvalue conditional expression.
+const int *const *const q = 0;
+__typeof(&(true ? p : q)) x = &(true ? p : q);
 
-  // FIXME: Should we compute the composite pointer type here and produce an
-  // lvalue of type 'const int *const * const'?
-  const int * const * r;
-  void *y = &(true ? p : r); // expected-error {{rvalue of type 'const int *const *'}}
+// FIXME: Should we compute the composite pointer type here and produce an
+// lvalue of type 'const int *const * const'?
+const int *const *r;
+void *y = &(true ? p : r); // expected-error {{rvalue of type 'const int *const *'}}
 
-  // FIXME: We order these as a speculative defect resolution.
-  void f(const int * const * const &r);
+// FIXME: We order these as a speculative defect resolution.
+void f(const int *const *const &r);
 #if __cplusplus >= 201103L
-  constexpr
+constexpr
 #endif
-  int *const *const &f(int * const * const &r) { return r; }
-
-  // No temporary is created here.
-  int *const *const &check_f = f(p);
-#if __cplusplus >= 201103L
-  static_assert(&p == &check_f, "");
-#endif
+    int *const *const &
+    f(int *const *const &r) {
+  return r;
 }
+
+// No temporary is created here.
+int *const *const &check_f = f(p);
+#if __cplusplus >= 201103L
+static_assert(&p == &check_f, "");
+#endif
+} // namespace dr2352
 
 namespace dr2353 { // dr2353: 9
-  struct X {
-    static const int n = 0;
-  };
+struct X {
+  static const int n = 0;
+};
 
-  // CHECK: FunctionDecl {{.*}} use
-  int use(X x) {
-    // CHECK: MemberExpr {{.*}} .n
-    // CHECK-NOT: non_odr_use
-    // CHECK: DeclRefExpr {{.*}} 'x'
-    // CHECK-NOT: non_odr_use
-    return *&x.n;
-  }
+// CHECK: FunctionDecl {{.*}} use
+int use(X x) {
+  // CHECK: MemberExpr {{.*}} .n
+  // CHECK-NOT: non_odr_use
+  // CHECK: DeclRefExpr {{.*}} 'x'
+  // CHECK-NOT: non_odr_use
+  return *&x.n;
+}
 #pragma clang __debug dump use
 
-  // CHECK: FunctionDecl {{.*}} not_use
-  int not_use(X x) {
-    // CHECK: MemberExpr {{.*}} .n {{.*}} non_odr_use_constant
-    // CHECK: DeclRefExpr {{.*}} 'x'
-    return x.n;
-  }
+// CHECK: FunctionDecl {{.*}} not_use
+int not_use(X x) {
+  // CHECK: MemberExpr {{.*}} .n {{.*}} non_odr_use_constant
+  // CHECK: DeclRefExpr {{.*}} 'x'
+  return x.n;
+}
 #pragma clang __debug dump not_use
 
-  // CHECK: FunctionDecl {{.*}} not_use_2
-  int not_use_2(X *x) {
-    // CHECK: MemberExpr {{.*}} ->n {{.*}} non_odr_use_constant
-    // CHECK: DeclRefExpr {{.*}} 'x'
-    return x->n;
-  }
-#pragma clang __debug dump not_use_2
+// CHECK: FunctionDecl {{.*}} not_use_2
+int not_use_2(X *x) {
+  // CHECK: MemberExpr {{.*}} ->n {{.*}} non_odr_use_constant
+  // CHECK: DeclRefExpr {{.*}} 'x'
+  return x->n;
 }
+#pragma clang __debug dump not_use_2
+} // namespace dr2353
 
 #if __cplusplus >= 201707L
 // Otherwise, if the qualified-id std::tuple_size<E> names a complete class
 // type **with a member value**, the expression std::tuple_size<E>::value shall
 // be a well-formed integral constant expression
 namespace dr2386 { // dr2386: 9
-struct Bad1 { int a, b; };
-struct Bad2 { int a, b; };
+struct Bad1 {
+  int a, b;
+};
+struct Bad2 {
+  int a, b;
+};
 } // namespace dr2386
 namespace std {
 template <typename T> struct tuple_size;
@@ -112,20 +121,20 @@ void wrong_value() { auto [x, y] = Bad2(); } // expected-error {{decomposes into
 
 namespace dr2387 { // dr2387: 9
 #if __cplusplus >= 201402L
-  template<int> int a = 0;
-  extern template int a<0>; // ok
+template <int> int a = 0;
+extern template int a<0>; // ok
 
-  template<int> static int b = 0;
-  extern template int b<0>; // expected-error {{internal linkage}}
+template <int> static int b = 0;
+extern template int b<0>; // expected-error {{internal linkage}}
 
-  template<int> const int c = 0;
-  extern template const int c<0>; // ok, has external linkage despite 'const'
+template <int> const int c = 0;
+extern template const int c<0>; // ok, has external linkage despite 'const'
 
-  template<typename T> T d = 0;
-  extern template int d<int>;
-  extern template const int d<const int>;
+template <typename T> T d = 0;
+extern template int d<int>;
+extern template const int d<const int>;
 #endif
-}
+} // namespace dr2387
 
 #if __cplusplus >= 201103L
 namespace dr2303 { // dr2303: 12

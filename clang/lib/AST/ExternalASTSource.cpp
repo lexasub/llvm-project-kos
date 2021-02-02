@@ -68,17 +68,13 @@ bool ExternalASTSource::layoutRecordType(
   return false;
 }
 
-Decl *ExternalASTSource::GetExternalDecl(uint32_t ID) {
-  return nullptr;
-}
+Decl *ExternalASTSource::GetExternalDecl(uint32_t ID) { return nullptr; }
 
 Selector ExternalASTSource::GetExternalSelector(uint32_t ID) {
   return Selector();
 }
 
-uint32_t ExternalASTSource::GetNumExternalSelectors() {
-   return 0;
-}
+uint32_t ExternalASTSource::GetNumExternalSelectors() { return 0; }
 
 Stmt *ExternalASTSource::GetExternalDeclStmt(uint64_t Offset) {
   return nullptr;
@@ -94,9 +90,8 @@ ExternalASTSource::GetExternalCXXBaseSpecifiers(uint64_t Offset) {
   return nullptr;
 }
 
-bool
-ExternalASTSource::FindExternalVisibleDeclsByName(const DeclContext *DC,
-                                                  DeclarationName Name) {
+bool ExternalASTSource::FindExternalVisibleDeclsByName(const DeclContext *DC,
+                                                       DeclarationName Name) {
   return false;
 }
 

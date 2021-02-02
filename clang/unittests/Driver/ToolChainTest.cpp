@@ -139,12 +139,12 @@ TEST(ToolChainTest, DefaultDriverMode) {
                   "clang LLVM compiler", InMemoryFileSystem);
   CLDriver.setCheckInputsExist(false);
 
-  std::unique_ptr<Compilation> CC(CCDriver.BuildCompilation(
-      { "/home/test/bin/clang", "foo.cpp"}));
-  std::unique_ptr<Compilation> CXX(CXXDriver.BuildCompilation(
-      { "/home/test/bin/clang++", "foo.cpp"}));
-  std::unique_ptr<Compilation> CL(CLDriver.BuildCompilation(
-      { "/home/test/bin/clang-cl", "foo.cpp"}));
+  std::unique_ptr<Compilation> CC(
+      CCDriver.BuildCompilation({"/home/test/bin/clang", "foo.cpp"}));
+  std::unique_ptr<Compilation> CXX(
+      CXXDriver.BuildCompilation({"/home/test/bin/clang++", "foo.cpp"}));
+  std::unique_ptr<Compilation> CL(
+      CLDriver.BuildCompilation({"/home/test/bin/clang-cl", "foo.cpp"}));
 
   EXPECT_TRUE(CC);
   EXPECT_TRUE(CXX);
@@ -227,8 +227,8 @@ TEST(ToolChainTest, GetTargetAndMode) {
   EXPECT_STREQ(Res.DriverMode, "--driver-mode=g++");
   EXPECT_TRUE(Res.TargetIsValid);
 
-  Res = ToolChain::getTargetAndModeFromProgramName(
-      "x86_64-linux-gnu-clang-c++");
+  Res =
+      ToolChain::getTargetAndModeFromProgramName("x86_64-linux-gnu-clang-c++");
   EXPECT_TRUE(Res.TargetPrefix == "x86_64-linux-gnu");
   EXPECT_TRUE(Res.ModeSuffix == "clang-c++");
   EXPECT_STREQ(Res.DriverMode, "--driver-mode=g++");

@@ -7,23 +7,20 @@ struct X {};
 
 void exx(X) {}
 
-int test_ptr10034(int argc, char **argv)
-{
- if (argc > 3)
-   goto end;
+int test_ptr10034(int argc, char **argv) {
+  if (argc > 3)
+    goto end;
 
- X x;
- X xs[16];
- exx(x);
+  X x;
+  X xs[16];
+  exx(x);
 
- end:
-   if (argc > 1) {
-   for (int i = 0; i < argc; ++i)
-   {
-
-   }
-   }
-   return 0;
+end:
+  if (argc > 1) {
+    for (int i = 0; i < argc; ++i) {
+    }
+  }
+  return 0;
 }
 
 struct Y {
@@ -32,13 +29,13 @@ struct Y {
 
 void test_Y() {
   goto end; // expected-error{{cannot jump from this goto statement to its label}}
-  Y y; // expected-note{{jump bypasses variable with a non-trivial destructor}}
- end:
+  Y y;      // expected-note{{jump bypasses variable with a non-trivial destructor}}
+end:
   return;
 }
 
 struct Z {
-  Z operator=(const Z&);
+  Z operator=(const Z &);
 };
 
 void test_Z() {
@@ -52,6 +49,6 @@ void test_Z() {
   // expected-note@-2 {{jump bypasses initialization of non-POD variable}}
 #endif
 
- end:
+end:
   return;
 }

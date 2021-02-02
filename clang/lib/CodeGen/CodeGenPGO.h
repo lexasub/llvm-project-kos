@@ -30,7 +30,7 @@ private:
   std::string FuncName;
   llvm::GlobalVariable *FuncNameVar;
 
-  std::array <unsigned, llvm::IPVK_Last + 1> NumValueSites;
+  std::array<unsigned, llvm::IPVK_Last + 1> NumValueSites;
   unsigned NumRegionCounters;
   uint64_t FunctionHash;
   std::unique_ptr<llvm::DenseMap<const Stmt *, unsigned>> RegionCounterMap;
@@ -87,6 +87,7 @@ public:
   // Insert instrumentation or attach profile metadata at value sites
   void valueProfile(CGBuilderTy &Builder, uint32_t ValueKind,
                     llvm::Instruction *ValueSite, llvm::Value *ValuePtr);
+
 private:
   void setFuncName(llvm::Function *Fn);
   void setFuncName(StringRef Name, llvm::GlobalValue::LinkageTypes Linkage);
@@ -113,7 +114,7 @@ public:
   }
 };
 
-}  // end namespace CodeGen
-}  // end namespace clang
+} // end namespace CodeGen
+} // end namespace clang
 
 #endif

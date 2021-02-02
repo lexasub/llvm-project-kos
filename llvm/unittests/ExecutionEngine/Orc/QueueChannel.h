@@ -31,9 +31,7 @@ public:
     return inconvertibleErrorCode();
   }
 
-  void log(raw_ostream &OS) const override {
-    OS << "Queue closed";
-  }
+  void log(raw_ostream &OS) const override { OS << "Queue closed"; }
 };
 
 class Queue : public std::queue<char> {
@@ -41,13 +39,13 @@ public:
   using ErrorInjector = std::function<Error()>;
 
   Queue()
-    : ReadError([]() { return Error::success(); }),
-      WriteError([]() { return Error::success(); }) {}
+      : ReadError([]() { return Error::success(); }),
+        WriteError([]() { return Error::success(); }) {}
 
-  Queue(const Queue&) = delete;
-  Queue& operator=(const Queue&) = delete;
-  Queue(Queue&&) = delete;
-  Queue& operator=(Queue&&) = delete;
+  Queue(const Queue &) = delete;
+  Queue &operator=(const Queue &) = delete;
+  Queue(Queue &&) = delete;
+  Queue &operator=(Queue &&) = delete;
 
   std::mutex &getMutex() { return M; }
   std::condition_variable &getCondVar() { return CV; }
@@ -64,6 +62,7 @@ public:
     std::lock_guard<std::mutex> Lock(M);
     WriteError = std::move(NewWriteError);
   }
+
 private:
   std::mutex M;
   std::condition_variable CV;
@@ -72,14 +71,13 @@ private:
 
 class QueueChannel : public orc::shared::RawByteChannel {
 public:
-  QueueChannel(std::shared_ptr<Queue> InQueue,
-               std::shared_ptr<Queue> OutQueue)
+  QueueChannel(std::shared_ptr<Queue> InQueue, std::shared_ptr<Queue> OutQueue)
       : InQueue(InQueue), OutQueue(OutQueue) {}
 
-  QueueChannel(const QueueChannel&) = delete;
-  QueueChannel& operator=(const QueueChannel&) = delete;
-  QueueChannel(QueueChannel&&) = delete;
-  QueueChannel& operator=(QueueChannel&&) = delete;
+  QueueChannel(const QueueChannel &) = delete;
+  QueueChannel &operator=(const QueueChannel &) = delete;
+  QueueChannel(QueueChannel &&) = delete;
+  QueueChannel &operator=(QueueChannel &&) = delete;
 
   template <typename FunctionIdT, typename SequenceIdT>
   Error startSendMessage(const FunctionIdT &FnId, const SequenceIdT &SeqNo) {
@@ -159,7 +157,6 @@ public:
   std::atomic<size_t> SendCalls{0};
 
 private:
-
   std::shared_ptr<Queue> InQueue;
   std::shared_ptr<Queue> OutQueue;
 };
@@ -173,6 +170,6 @@ createPairedQueueChannels() {
   return std::make_pair(std::move(C1), std::move(C2));
 }
 
-}
+} // namespace llvm
 
 #endif

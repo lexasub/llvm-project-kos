@@ -23,7 +23,7 @@ namespace llvm {
 namespace itanium_demangle {
 class OutputStream;
 }
-}
+} // namespace llvm
 
 using llvm::itanium_demangle::OutputStream;
 using llvm::itanium_demangle::StringView;

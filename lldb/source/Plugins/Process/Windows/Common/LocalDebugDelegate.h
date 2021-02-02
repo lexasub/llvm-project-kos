@@ -59,6 +59,6 @@ private:
 
   lldb::ProcessWP m_process;
 };
-}
+} // namespace lldb_private
 
 #endif

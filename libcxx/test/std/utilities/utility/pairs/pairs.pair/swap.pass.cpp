@@ -18,10 +18,10 @@
 #include "test_macros.h"
 
 struct S {
-    int i;
-    TEST_CONSTEXPR_CXX20 S() : i(0) {}
-    TEST_CONSTEXPR_CXX20 S(int j) : i(j) {}
-    TEST_CONSTEXPR_CXX20 bool operator==(int x) const { return i == x; }
+  int i;
+  TEST_CONSTEXPR_CXX20 S() : i(0) {}
+  TEST_CONSTEXPR_CXX20 S(int j) : i(j) {}
+  TEST_CONSTEXPR_CXX20 bool operator==(int x) const { return i == x; }
 };
 
 TEST_CONSTEXPR_CXX20 bool test() {

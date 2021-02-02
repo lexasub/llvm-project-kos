@@ -2,8 +2,8 @@
 
 void foo2() {
   int a;
-  #pragma omp atomic update // expected-note 3 {{'atomic' previously encountered here}}
-    a = a + 1;
+#pragma omp atomic update // expected-note 3 {{'atomic' previously encountered here}}
+  a = a + 1;
 }
 
 #pragma omp requires atomic_default_mem_order(seq_cst) // expected-error {{'atomic' region encountered before requires directive with 'atomic_default_mem_order' clause}} expected-note 2 {{atomic_default_mem_order clause previously used here}}

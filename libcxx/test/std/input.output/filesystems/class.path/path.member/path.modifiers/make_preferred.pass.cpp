@@ -23,30 +23,26 @@
 #include "count_new.h"
 #include "filesystem_test_helper.h"
 
-
 struct MakePreferredTestcase {
   const char* value;
   const char* expected_posix;
   const char* expected_windows;
 };
 
-const MakePreferredTestcase TestCases[] =
-  {
-      {"", "", ""}
-    , {"hello_world", "hello_world", "hello_world"}
-    , {"/", "/", "\\"}
-    , {"/foo/bar/baz/", "/foo/bar/baz/", "\\foo\\bar\\baz\\"}
-    , {"\\", "\\", "\\"}
-    , {"\\foo\\bar\\baz\\", "\\foo\\bar\\baz\\", "\\foo\\bar\\baz\\"}
-    , {"\\foo\\/bar\\/baz\\", "\\foo\\/bar\\/baz\\", "\\foo\\\\bar\\\\baz\\"}
-  };
+const MakePreferredTestcase TestCases[] = {
+    {"", "", ""},
+    {"hello_world", "hello_world", "hello_world"},
+    {"/", "/", "\\"},
+    {"/foo/bar/baz/", "/foo/bar/baz/", "\\foo\\bar\\baz\\"},
+    {"\\", "\\", "\\"},
+    {"\\foo\\bar\\baz\\", "\\foo\\bar\\baz\\", "\\foo\\bar\\baz\\"},
+    {"\\foo\\/bar\\/baz\\", "\\foo\\/bar\\/baz\\", "\\foo\\\\bar\\\\baz\\"}};
 
-int main(int, char**)
-{
+int main(int, char**) {
   // This operation is an identity operation on linux.
   // On windows, compare with preferred_win, if set.
   using namespace fs;
-  for (auto const & TC : TestCases) {
+  for (auto const& TC : TestCases) {
     path p(TC.value);
     assert(p == TC.value);
     path& Ref = (p.make_preferred());

@@ -32,7 +32,8 @@ T tmain() {
 #pragma omp target
 #pragma omp teams
 #pragma omp distribute parallel for proc_bind(master)
-  for(int i = 0; i < 1000; i++) {}
+  for (int i = 0; i < 1000; i++) {
+  }
   return T();
 }
 
@@ -41,11 +42,13 @@ int main() {
 #pragma omp target
 #pragma omp teams
 #pragma omp distribute parallel for proc_bind(spread)
-  for(int i = 0; i < 1000; i++) {}
+  for (int i = 0; i < 1000; i++) {
+  }
 #pragma omp target
 #pragma omp teams
 #pragma omp distribute parallel for proc_bind(close)
-  for(int i = 0; i < 1000; i++) {}
+  for (int i = 0; i < 1000; i++) {
+  }
   return tmain<int>();
 }
 

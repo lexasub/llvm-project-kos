@@ -57,23 +57,23 @@ unsigned Program::createGlobalString(const StringLiteral *S) {
     Pointer Field = Ptr.atIndex(I).narrow();
     const uint32_t CodePoint = I == N ? 0 : S->getCodeUnit(I);
     switch (CharType) {
-      case PT_Sint8: {
-        using T = PrimConv<PT_Sint8>::T;
-        Field.deref<T>() = T::from(CodePoint, BitWidth);
-        break;
-      }
-      case PT_Uint16: {
-        using T = PrimConv<PT_Uint16>::T;
-        Field.deref<T>() = T::from(CodePoint, BitWidth);
-        break;
-      }
-      case PT_Uint32: {
-        using T = PrimConv<PT_Uint32>::T;
-        Field.deref<T>() = T::from(CodePoint, BitWidth);
-        break;
-      }
-      default:
-        llvm_unreachable("unsupported character type");
+    case PT_Sint8: {
+      using T = PrimConv<PT_Sint8>::T;
+      Field.deref<T>() = T::from(CodePoint, BitWidth);
+      break;
+    }
+    case PT_Uint16: {
+      using T = PrimConv<PT_Uint16>::T;
+      Field.deref<T>() = T::from(CodePoint, BitWidth);
+      break;
+    }
+    case PT_Uint32: {
+      using T = PrimConv<PT_Uint32>::T;
+      Field.deref<T>() = T::from(CodePoint, BitWidth);
+      break;
+    }
+    default:
+      llvm_unreachable("unsupported character type");
     }
   }
   return I;
@@ -275,8 +275,8 @@ Record *Program::getOrCreateRecord(const RecordDecl *RD) {
     const bool IsMutable = FD->isMutable();
     Descriptor *Desc;
     if (llvm::Optional<PrimType> T = Ctx.classify(FT)) {
-      Desc = createDescriptor(FD, *T, IsConst, /*isTemporary=*/false,
-                              IsMutable);
+      Desc =
+          createDescriptor(FD, *T, IsConst, /*isTemporary=*/false, IsMutable);
     } else {
       Desc = createDescriptor(FD, FT.getTypePtr(), IsConst,
                               /*isTemporary=*/false, IsMutable);

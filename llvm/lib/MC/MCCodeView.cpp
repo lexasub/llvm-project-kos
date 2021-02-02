@@ -131,8 +131,8 @@ void CodeViewContext::recordCVLoc(MCContext &Ctx, const MCSymbol *Label,
                                   unsigned FunctionId, unsigned FileNo,
                                   unsigned Line, unsigned Column,
                                   bool PrologueEnd, bool IsStmt) {
-  addLineEntry(MCCVLoc{
-      Label, FunctionId, FileNo, Line, Column, PrologueEnd, IsStmt});
+  addLineEntry(
+      MCCVLoc{Label, FunctionId, FileNo, Line, Column, PrologueEnd, IsStmt});
 }
 
 MCDataFragment *CodeViewContext::getStringTableFragment() {
@@ -271,8 +271,7 @@ void CodeViewContext::addLineEntry(const MCCVLoc &LineEntry) {
   MCCVLines.push_back(LineEntry);
 }
 
-std::vector<MCCVLoc>
-CodeViewContext::getFunctionLineEntries(unsigned FuncId) {
+std::vector<MCCVLoc> CodeViewContext::getFunctionLineEntries(unsigned FuncId) {
   std::vector<MCCVLoc> FilteredLines;
   auto I = MCCVLineStartStop.find(FuncId);
   if (I != MCCVLineStartStop.end()) {
@@ -296,9 +295,9 @@ CodeViewContext::getFunctionLineEntries(unsigned FuncId) {
               FilteredLines.back().getFileNum() != IA.File ||
               FilteredLines.back().getLine() != IA.Line ||
               FilteredLines.back().getColumn() != IA.Col) {
-            FilteredLines.push_back(MCCVLoc(
-                MCCVLines[Idx].getLabel(),
-                FuncId, IA.File, IA.Line, IA.Col, false, false));
+            FilteredLines.push_back(MCCVLoc(MCCVLines[Idx].getLabel(), FuncId,
+                                            IA.File, IA.Line, IA.Col, false,
+                                            false));
           }
         }
       }
@@ -348,10 +347,9 @@ void CodeViewContext::emitLineTableForFunction(MCObjectStreamer &OS,
   for (auto I = Locs.begin(), E = Locs.end(); I != E;) {
     // Emit a file segment for the run of locations that share a file id.
     unsigned CurFileNum = I->getFileNum();
-    auto FileSegEnd =
-        std::find_if(I, E, [CurFileNum](const MCCVLoc &Loc) {
-          return Loc.getFileNum() != CurFileNum;
-        });
+    auto FileSegEnd = std::find_if(I, E, [CurFileNum](const MCCVLoc &Loc) {
+      return Loc.getFileNum() != CurFileNum;
+    });
     unsigned EntryCount = FileSegEnd - I;
     OS.AddComment(
         "Segment for file '" +
@@ -438,7 +436,7 @@ MCFragment *CodeViewContext::emitDefRange(
   // Create and insert a fragment into the current section that will be encoded
   // later.
   return new MCCVDefRangeFragment(Ranges, FixedSizePortion,
-                           OS.getCurrentSectionOnly());
+                                  OS.getCurrentSectionOnly());
 }
 
 static unsigned computeLabelDiff(MCAsmLayout &Layout, const MCSymbol *Begin,
@@ -479,7 +477,7 @@ void CodeViewContext::encodeInlineLineTable(MCAsmLayout &Layout,
   if (Locs.empty())
     return;
 
-  // Check that the locations are all in the same section.
+    // Check that the locations are all in the same section.
 #ifndef NDEBUG
   const MCSection *FirstSec = &Locs.front().getLabel()->getSection();
   for (const MCCVLoc &Loc : Locs) {
@@ -630,7 +628,8 @@ void CodeViewContext::encodeDefRange(MCAsmLayout &Layout,
     unsigned RangeSize = GapAndRangeSizes[I].second;
     size_t J = I + 1;
     for (; J != E; ++J) {
-      unsigned GapAndRangeSize = GapAndRangeSizes[J].first + GapAndRangeSizes[J].second;
+      unsigned GapAndRangeSize =
+          GapAndRangeSizes[J].first + GapAndRangeSizes[J].second;
       if (RangeSize + GapAndRangeSize > MaxDefRange)
         break;
       RangeSize += GapAndRangeSize;

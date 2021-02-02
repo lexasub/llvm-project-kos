@@ -20,7 +20,8 @@
 namespace mlir {
 class Block;
 class ModuleOp;
-template <typename T> class OperationPass;
+template <typename T>
+class OperationPass;
 
 /// Displays the graph in a window. This is for use from the debugger and
 /// depends on Graphviz to generate the graph.

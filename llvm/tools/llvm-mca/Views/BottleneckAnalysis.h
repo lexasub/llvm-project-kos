@@ -15,7 +15,7 @@
 /// Example of bottleneck analysis report for a dot-product on X86 btver2:
 ///
 /// Cycles with backend pressure increase [ 40.76% ]
-/// Throughput Bottlenecks: 
+/// Throughput Bottlenecks:
 ///   Resource Pressure       [ 39.34% ]
 ///   - JFPA  [ 39.34% ]
 ///   - JFPU0  [ 39.34% ]
@@ -33,9 +33,9 @@
 /// In particular, this occurs when there is a delta between the number of uOps
 /// dispatched and the number of uOps issued to the underlying pipelines.
 ///
-/// The bottleneck analysis view is also responsible for identifying and printing
-/// the most "critical" sequence of dependent instructions according to the
-/// simulated run.
+/// The bottleneck analysis view is also responsible for identifying and
+/// printing the most "critical" sequence of dependent instructions according to
+/// the simulated run.
 ///
 /// Below is the critical sequence computed for the dot-product example on
 /// btver2:
@@ -43,32 +43,35 @@
 ///              Instruction                     Dependency Information
 /// +----< 2.    vhaddps %xmm3, %xmm3, %xmm4
 /// |
-/// |    < loop carried > 
+/// |    < loop carried >
 /// |
 /// |      0.    vmulps	 %xmm0, %xmm0, %xmm2
-/// +----> 1.    vhaddps %xmm2, %xmm2, %xmm3     ## RESOURCE interference:  JFPA [ probability: 73% ]
+/// +----> 1.    vhaddps %xmm2, %xmm2, %xmm3     ## RESOURCE interference:  JFPA
+/// [ probability: 73% ]
 /// +----> 2.    vhaddps %xmm3, %xmm3, %xmm4     ## REGISTER dependency:  %xmm3
 /// |
-/// |    < loop carried > 
+/// |    < loop carried >
 /// |
-/// +----> 1.    vhaddps %xmm2, %xmm2, %xmm3     ## RESOURCE interference:  JFPA [ probability: 73% ]
+/// +----> 1.    vhaddps %xmm2, %xmm2, %xmm3     ## RESOURCE interference:  JFPA
+/// [ probability: 73% ]
 ///
 ///
 /// The algorithm that computes the critical sequence is very similar to a
 /// critical path analysis.
-/// 
+///
 /// A dependency graph is used internally to track dependencies between nodes.
 /// Nodes of the graph represent instructions from the input assembly sequence,
 /// and edges of the graph represent data dependencies or processor resource
 /// interferences.
 ///
-/// Edges are dynamically 'discovered' by observing instruction state transitions
-/// and backend pressure increase events. Edges are internally ranked based on
-/// their "criticality". A dependency is considered to be critical if it takes a
-/// long time to execute, and if it contributes to backend pressure increases.
-/// Criticality is internally measured in terms of cycles; it is computed for
-/// every edge in the graph as a function of the edge latency and the number of
-/// backend pressure increase cycles contributed by that edge.
+/// Edges are dynamically 'discovered' by observing instruction state
+/// transitions and backend pressure increase events. Edges are internally
+/// ranked based on their "criticality". A dependency is considered to be
+/// critical if it takes a long time to execute, and if it contributes to
+/// backend pressure increases. Criticality is internally measured in terms of
+/// cycles; it is computed for every edge in the graph as a function of the edge
+/// latency and the number of backend pressure increase cycles contributed by
+/// that edge.
 ///
 /// At the end of simulation, costs are propagated to nodes through the edges of
 /// the graph, and the most expensive path connecting the root-set (a
@@ -217,8 +220,8 @@ struct DependencyEdge {
 // Loop carried dependencies are carefully expanded by the bottleneck analysis
 // to guarantee that the graph stays acyclic. To this end, extra nodes are
 // pre-allocated at construction time to describe instructions from "past and
-// future" iterations. The graph is kept acyclic mainly because it simplifies the
-// complexity of the algorithm that computes the critical sequence.
+// future" iterations. The graph is kept acyclic mainly because it simplifies
+// the complexity of the algorithm that computes the critical sequence.
 class DependencyGraph {
   struct DGNode {
     unsigned NumPredecessors;
@@ -239,7 +242,8 @@ class DependencyGraph {
 
   void pruneEdges(unsigned Iterations);
   void initializeRootSet(SmallVectorImpl<unsigned> &RootSet) const;
-  void propagateThroughEdges(SmallVectorImpl<unsigned> &RootSet, unsigned Iterations);
+  void propagateThroughEdges(SmallVectorImpl<unsigned> &RootSet,
+                             unsigned Iterations);
 
 #ifndef NDEBUG
   void dumpDependencyEdge(raw_ostream &OS, const DependencyEdge &DE,

@@ -13,12 +13,12 @@ struct NSSize {
 typedef struct NSSize NSSize;
 
 static inline NSSize NSMakeSize(double w, double h) {
-    NSSize s = { w, h };
-    return s;
+  NSSize s = {w, h};
+  return s;
 }
 #else
 float test(float v1, float v2) {
-	NSSize s = NSMakeSize(v1, v2);
-	return s.width;
+  NSSize s = NSMakeSize(v1, v2);
+  return s.width;
 }
 #endif

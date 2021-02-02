@@ -49,10 +49,10 @@ void shouldPassNonTemplate() {
 }
 
 void run() {
-    shouldFail<0>();
-    shouldFail<1>();
-    shouldFail<2>();
-    shouldPass<0>();
-    shouldPass<1>();
-    shouldPass<2>();
+  shouldFail<0>();
+  shouldFail<1>();
+  shouldFail<2>();
+  shouldPass<0>();
+  shouldPass<1>();
+  shouldPass<2>();
 }

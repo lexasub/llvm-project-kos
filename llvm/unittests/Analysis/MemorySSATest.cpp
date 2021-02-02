@@ -281,10 +281,8 @@ TEST_F(MemorySSATest, SinkLoad) {
 
   LoadInst *LoadInstClone = cast<LoadInst>(LoadInst1->clone());
   Merge->getInstList().insert(Merge->begin(), LoadInstClone);
-  MemoryAccess * NewLoadAccess =
-      Updater.createMemoryAccessInBB(LoadInstClone, nullptr,
-                                     LoadInstClone->getParent(),
-                                     MemorySSA::Beginning);
+  MemoryAccess *NewLoadAccess = Updater.createMemoryAccessInBB(
+      LoadInstClone, nullptr, LoadInstClone->getParent(), MemorySSA::Beginning);
   Updater.insertUse(cast<MemoryUse>(NewLoadAccess));
   MSSA.verifyMemorySSA();
   Updater.removeMemoryAccess(MSSA.getMemoryAccess(LoadInst1));

@@ -166,11 +166,10 @@ class MockSession : public IPDBSession {
 
 class MockRawSymbol : public IPDBRawSymbol {
 public:
-  MockRawSymbol(PDB_SymType SymType)
-      : Type(SymType) {}
+  MockRawSymbol(PDB_SymType SymType) : Type(SymType) {}
 
   void dump(raw_ostream &OS, int Indent, PdbSymbolIdField ShowIdFields,
-    PdbSymbolIdField RecurseIdFields) const override {}
+            PdbSymbolIdField RecurseIdFields) const override {}
 
   std::unique_ptr<IPDBEnumSymbols>
   findChildren(PDB_SymType Type) const override {
@@ -182,8 +181,9 @@ public:
     return nullptr;
   }
   std::unique_ptr<IPDBEnumSymbols>
-  findChildrenByAddr(PDB_SymType Type, StringRef Name, PDB_NameSearchFlags Flags,
-                     uint32_t Section, uint32_t Offset) const override {
+  findChildrenByAddr(PDB_SymType Type, StringRef Name,
+                     PDB_NameSearchFlags Flags, uint32_t Section,
+                     uint32_t Offset) const override {
     return nullptr;
   }
   std::unique_ptr<IPDBEnumSymbols>

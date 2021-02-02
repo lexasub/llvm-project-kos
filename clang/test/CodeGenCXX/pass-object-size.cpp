@@ -24,7 +24,7 @@ void Lambdas(char *ptr) {
 // CHECK-NOT: call i64 @llvm.objectsize
 // CHECK-DAG: define internal i64 @"_ZZN7lambdas7LambdasEPcENK3$_1clEPvU17pass_object_size0"
 // CHECK-NOT: call i64 @llvm.objectsize
-}
+} // namespace lambdas
 
 // This is here instead of in Sema/ because we need to check to make sure the
 // proper function is called. If it's not, we'll end up with assertion errors.
@@ -42,17 +42,17 @@ void Test() {
   // CHECK: call void @_ZN6addrof6OvlFooEPi
   (&OvlFoo)(nullptr);
 }
-}
+} // namespace addrof
 
 namespace delegate {
-  struct A {
-    A(void *const p __attribute__((pass_object_size(0))));
-  };
-  A::A(void *const p __attribute__((pass_object_size(0)))) {}
-  // Ensure that we forward the size through a delegating constructor call.
-  // CHECK: define{{.*}} void @_ZN8delegate1AC1EPvU17pass_object_size0({{[^,]*}}, i8*{{[^,]*}}, i64{{[^,]*}})
-  // CHECK: call void @_ZN8delegate1AC2EPvU17pass_object_size0({{[^,]*}}, i8*{{[^,]*}}, i64{{[^,]*}})
-}
+struct A {
+  A(void *const p __attribute__((pass_object_size(0))));
+};
+A::A(void *const p __attribute__((pass_object_size(0)))) {}
+// Ensure that we forward the size through a delegating constructor call.
+// CHECK: define{{.*}} void @_ZN8delegate1AC1EPvU17pass_object_size0({{[^,]*}}, i8*{{[^,]*}}, i64{{[^,]*}})
+// CHECK: call void @_ZN8delegate1AC2EPvU17pass_object_size0({{[^,]*}}, i8*{{[^,]*}}, i64{{[^,]*}})
+} // namespace delegate
 
 namespace variadic {
 // We had an issue where variadic member/operator calls with pass_object_size
@@ -79,4 +79,4 @@ void test() {
   // CHECK-RE: call{{[^@]+}}@_ZN8variadic8AsMemberclEPKcU17pass_object_size0dz
   AsMember{}("a", 1.0);
 }
-}
+} // namespace variadic

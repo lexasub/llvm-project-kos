@@ -4,9 +4,9 @@ void clang_analyzer_eval(int);
 
 // test to see if nullptr is detected as a null pointer
 void foo1(void) {
-  char  *np = nullptr; // expected-note{{'np' initialized to a null pointer value}}
-  *np = 0;  // expected-warning{{Dereference of null pointer}}
-            // expected-note@-1{{Dereference of null pointer}}
+  char *np = nullptr; // expected-note{{'np' initialized to a null pointer value}}
+  *np = 0;            // expected-warning{{Dereference of null pointer}}
+                      // expected-note@-1{{Dereference of null pointer}}
 }
 
 // check if comparing nullptr to nullptr is detected properly
@@ -16,7 +16,7 @@ void foo2(void) {
   char c;
   if (np1 == np2)
     np1 = &c;
-  *np1 = 0;  // no-warning
+  *np1 = 0; // no-warning
 }
 
 // invoving a nullptr in a more complex operation should be cause a warning
@@ -27,23 +27,23 @@ void foo3(void) {
   char *np = nullptr; // expected-note{{'np' initialized to a null pointer value}}
   // casting a nullptr to anything should be caught eventually
   int *ip = &(((struct foo *)np)->f); // expected-note{{'ip' initialized to a null pointer value}}
-  *ip = 0;  // expected-warning{{Dereference of null pointer}}
-            // expected-note@-1{{Dereference of null pointer}}
+  *ip = 0;                            // expected-warning{{Dereference of null pointer}}
+                                      // expected-note@-1{{Dereference of null pointer}}
   // should be error here too, but analysis gets stopped
-//  *np = 0;
+  //  *np = 0;
 }
 
 // nullptr is implemented as a zero integer value, so should be able to compare
 void foo4(void) {
   char *np = nullptr;
   if (np != 0)
-    *np = 0;  // no-warning
-  char  *cp = 0;
+    *np = 0; // no-warning
+  char *cp = 0;
   if (np != cp)
-    *np = 0;  // no-warning
+    *np = 0; // no-warning
 }
 
-int pr10372(void *& x) {
+int pr10372(void *&x) {
   // GNU null is a pointer-sized integer, not a pointer.
   x = __null;
   // This used to crash.
@@ -51,43 +51,43 @@ int pr10372(void *& x) {
 }
 
 void zoo1() {
-  char **p = 0; // expected-note{{'p' initialized to a null pointer value}}
+  char **p = 0;    // expected-note{{'p' initialized to a null pointer value}}
   delete *(p + 0); // expected-warning{{Dereference of null pointer}}
                    // expected-note@-1{{Dereference of null pointer}}
 }
 
 void zoo1backwards() {
-  char **p = 0; // expected-note{{'p' initialized to a null pointer value}}
+  char **p = 0;    // expected-note{{'p' initialized to a null pointer value}}
   delete *(0 + p); // expected-warning{{Dereference of null pointer}}
                    // expected-note@-1{{Dereference of null pointer}}
 }
 
 typedef __INTPTR_TYPE__ intptr_t;
 void zoo1multiply() {
-  char **p = 0; // FIXME-should-be-note:{{'p' initialized to a null pointer value}}
+  char **p = 0;                         // FIXME-should-be-note:{{'p' initialized to a null pointer value}}
   delete *((char **)((intptr_t)p * 2)); // expected-warning{{Dereference of null pointer}}
-                   // expected-note@-1{{Dereference of null pointer}}
+                                        // expected-note@-1{{Dereference of null pointer}}
 }
 
 void zoo2() {
   int **a = 0;
   int **b = 0; // expected-note{{'b' initialized to a null pointer value}}
-  asm ("nop"
-      :"=r"(*a)
-      :"0"(*b) // expected-warning{{Dereference of null pointer}}
-               // expected-note@-1{{Dereference of null pointer}}
-      );
+  asm("nop"
+      : "=r"(*a)
+      : "0"(*b) // expected-warning{{Dereference of null pointer}}
+                // expected-note@-1{{Dereference of null pointer}}
+  );
 }
 
 int exprWithCleanups() {
   struct S {
-    S(int a):a(a){}
+    S(int a) : a(a) {}
     ~S() {}
 
     int a;
   };
 
-  int *x = 0; // expected-note{{'x' initialized to a null pointer value}}
+  int *x = 0;     // expected-note{{'x' initialized to a null pointer value}}
   return S(*x).a; // expected-warning{{Dereference of null pointer}}
                   // expected-note@-1{{Dereference of null pointer}}
 }
@@ -96,7 +96,7 @@ int materializeTempExpr() {
   int *n = 0; // expected-note{{'n' initialized to a null pointer value}}
   struct S {
     int a;
-    S(int i): a(i) {}
+    S(int i) : a(i) {}
   };
   const S &s = S(*n); // expected-warning{{Dereference of null pointer}}
                       // expected-note@-1{{Dereference of null pointer}}
@@ -115,7 +115,7 @@ struct X {
   virtual void f() {}
 };
 
-void invokeF(X* x) {
+void invokeF(X *x) {
   x->f(); // expected-warning{{Called C++ object pointer is null}}
           // expected-note@-1{{Called C++ object pointer is null}}
 }
@@ -126,18 +126,18 @@ struct Type {
 
 void shouldNotCrash() {
   decltype(nullptr) p; // expected-note{{'p' declared without an initial value}}
-  if (getSymbol()) // expected-note   {{Assuming the condition is false}}
-                   // expected-note@-1{{Taking false branch}}
-                   // expected-note@-2{{Assuming the condition is true}}
-                   // expected-note@-3{{Taking true branch}}
-    invokeF(p);    // expected-note   {{Calling 'invokeF'}}
-                   // expected-note@-1{{Passing null pointer value via 1st parameter 'x'}}
-  if (getSymbol()) {  // expected-note  {{Assuming the condition is true}}
-                      // expected-note@-1{{Taking true branch}}
-    X *xx = Type().x; // expected-note   {{Null pointer value stored to field 'x'}}
-                      // expected-note@-1{{'xx' initialized to a null pointer value}}
-    xx->f(); // expected-warning{{Called C++ object pointer is null}}
-            // expected-note@-1{{Called C++ object pointer is null}}
+  if (getSymbol())     // expected-note   {{Assuming the condition is false}}
+                       // expected-note@-1{{Taking false branch}}
+                       // expected-note@-2{{Assuming the condition is true}}
+                       // expected-note@-3{{Taking true branch}}
+    invokeF(p);        // expected-note   {{Calling 'invokeF'}}
+                       // expected-note@-1{{Passing null pointer value via 1st parameter 'x'}}
+  if (getSymbol()) {   // expected-note  {{Assuming the condition is true}}
+                       // expected-note@-1{{Taking true branch}}
+    X *xx = Type().x;  // expected-note   {{Null pointer value stored to field 'x'}}
+                       // expected-note@-1{{'xx' initialized to a null pointer value}}
+    xx->f();           // expected-warning{{Called C++ object pointer is null}}
+                       // expected-note@-1{{Called C++ object pointer is null}}
   }
 }
 

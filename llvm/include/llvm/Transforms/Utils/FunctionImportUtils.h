@@ -131,6 +131,6 @@ bool renameModuleForThinLTO(
 /// Compute synthetic function entry counts.
 void computeSyntheticCounts(ModuleSummaryIndex &Index);
 
-} // End llvm namespace
+} // namespace llvm
 
 #endif

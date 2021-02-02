@@ -84,19 +84,19 @@ public:
   }
 
 private:
-  unsigned Width          : 16;
-  unsigned Scale          : 13;
-  unsigned IsSigned       : 1;
-  unsigned IsSaturated    : 1;
+  unsigned Width : 16;
+  unsigned Scale : 13;
+  unsigned IsSigned : 1;
+  unsigned IsSaturated : 1;
   unsigned HasUnsignedPadding : 1;
 };
 
 /// The APFixedPoint class works similarly to APInt/APSInt in that it is a
 /// functional replacement for a scaled integer. It is meant to replicate the
-/// fixed point types proposed in ISO/IEC JTC1 SC22 WG14 N1169. The class carries
-/// info about the fixed point type's width, sign, scale, and saturation, and
-/// provides different operations that would normally be performed on fixed point
-/// types.
+/// fixed point types proposed in ISO/IEC JTC1 SC22 WG14 N1169. The class
+/// carries info about the fixed point type's width, sign, scale, and
+/// saturation, and provides different operations that would normally be
+/// performed on fixed point types.
 class APFixedPoint {
 public:
   APFixedPoint(const APInt &Val, const FixedPointSemantics &Sema)

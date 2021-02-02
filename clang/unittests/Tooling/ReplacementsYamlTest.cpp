@@ -50,7 +50,8 @@ TEST(ReplacementsYamlTest, serializesNewLines) {
   TranslationUnitReplacements Doc;
 
   Doc.MainSourceFile = "/path/to/source.cpp";
-  Doc.Replacements.emplace_back("/path/to/file1.h", 0, 0, "#include <utility>\n");
+  Doc.Replacements.emplace_back("/path/to/file1.h", 0, 0,
+                                "#include <utility>\n");
 
   std::string YamlContent;
   llvm::raw_string_ostream YamlContentStream(YamlContent);

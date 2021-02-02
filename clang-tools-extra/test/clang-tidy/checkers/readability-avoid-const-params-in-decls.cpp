@@ -3,7 +3,6 @@
 using alias_type = bool;
 using alias_const_type = const bool;
 
-
 void F1(const int i);
 // CHECK-MESSAGES: :[[@LINE-1]]:9: warning: parameter 'i' is const-qualified in the function declaration; const-qualification of parameters only has an effect in function definitions [readability-avoid-const-params-in-decls]
 // CHECK-FIXES: void F1(int i);
@@ -53,7 +52,7 @@ void F12(const bool b = true);
 // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: parameter 'b'
 // CHECK-FIXES: void F12(bool b = true);
 
-template<class T>
+template <class T>
 int F13(const bool b = true);
 // CHECK-MESSAGES: :[[@LINE-1]]:9: warning: parameter 'b'
 // CHECK-FIXES: int F13(bool b = true);
@@ -141,14 +140,14 @@ struct BatT {
 BatT<int> b2(1);
 
 // Do not match on other stuff
-void NF(const alias_type& i);
+void NF(const alias_type &i);
 void NF(const int &i);
 void NF(const int *i);
 void NF(alias_const_type i);
-void NF(const alias_type&);
-void NF(const int&);
-void NF(const int*);
-void NF(const int* const*);
+void NF(const alias_type &);
+void NF(const int &);
+void NF(const int *);
+void NF(const int *const *);
 void NF(alias_const_type);
 
 // Regression test for when the 'const' token is not in the code.

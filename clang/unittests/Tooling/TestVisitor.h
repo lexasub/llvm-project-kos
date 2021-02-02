@@ -31,12 +31,11 @@ namespace clang {
 /// additional capability of running it over a snippet of code.
 ///
 /// Visits template instantiations and implicit code by default.
-template <typename T>
-class TestVisitor : public RecursiveASTVisitor<T> {
+template <typename T> class TestVisitor : public RecursiveASTVisitor<T> {
 public:
-  TestVisitor() { }
+  TestVisitor() {}
 
-  virtual ~TestVisitor() { }
+  virtual ~TestVisitor() {}
 
   enum Language {
     Lang_C,
@@ -54,35 +53,41 @@ public:
   bool runOver(StringRef Code, Language L = Lang_CXX) {
     std::vector<std::string> Args;
     switch (L) {
-      case Lang_C:
-        Args.push_back("-x");
-        Args.push_back("c");
-        break;
-      case Lang_CXX98: Args.push_back("-std=c++98"); break;
-      case Lang_CXX11: Args.push_back("-std=c++11"); break;
-      case Lang_CXX14: Args.push_back("-std=c++14"); break;
-      case Lang_CXX17: Args.push_back("-std=c++17"); break;
-      case Lang_CXX2a: Args.push_back("-std=c++2a"); break;
-      case Lang_OBJC:
-        Args.push_back("-ObjC");
-        Args.push_back("-fobjc-runtime=macosx-10.12.0");
-        break;
-      case Lang_OBJCXX11:
-        Args.push_back("-ObjC++");
-        Args.push_back("-std=c++11");
-        Args.push_back("-fblocks");
-        break;
+    case Lang_C:
+      Args.push_back("-x");
+      Args.push_back("c");
+      break;
+    case Lang_CXX98:
+      Args.push_back("-std=c++98");
+      break;
+    case Lang_CXX11:
+      Args.push_back("-std=c++11");
+      break;
+    case Lang_CXX14:
+      Args.push_back("-std=c++14");
+      break;
+    case Lang_CXX17:
+      Args.push_back("-std=c++17");
+      break;
+    case Lang_CXX2a:
+      Args.push_back("-std=c++2a");
+      break;
+    case Lang_OBJC:
+      Args.push_back("-ObjC");
+      Args.push_back("-fobjc-runtime=macosx-10.12.0");
+      break;
+    case Lang_OBJCXX11:
+      Args.push_back("-ObjC++");
+      Args.push_back("-std=c++11");
+      Args.push_back("-fblocks");
+      break;
     }
     return tooling::runToolOnCodeWithArgs(CreateTestAction(), Code, Args);
   }
 
-  bool shouldVisitTemplateInstantiations() const {
-    return true;
-  }
+  bool shouldVisitTemplateInstantiations() const { return true; }
 
-  bool shouldVisitImplicitCode() const {
-    return true;
-  }
+  bool shouldVisitImplicitCode() const { return true; }
 
 protected:
   virtual std::unique_ptr<ASTFrontendAction> CreateTestAction() {
@@ -149,7 +154,8 @@ public:
   /// \brief Checks that all expected matches have been found.
   ~ExpectedLocationVisitor() override {
     for (typename std::vector<ExpectedMatch>::const_iterator
-             It = ExpectedMatches.begin(), End = ExpectedMatches.end();
+             It = ExpectedMatches.begin(),
+             End = ExpectedMatches.end();
          It != End; ++It) {
       It->ExpectFound();
     }
@@ -164,29 +170,30 @@ protected:
     const FullSourceLoc FullLocation = this->Context->getFullLoc(Location);
 
     for (typename std::vector<MatchCandidate>::const_iterator
-             It = DisallowedMatches.begin(), End = DisallowedMatches.end();
+             It = DisallowedMatches.begin(),
+             End = DisallowedMatches.end();
          It != End; ++It) {
       EXPECT_FALSE(It->Matches(Name, FullLocation))
           << "Matched disallowed " << *It;
     }
 
     for (typename std::vector<ExpectedMatch>::iterator
-             It = ExpectedMatches.begin(), End = ExpectedMatches.end();
+             It = ExpectedMatches.begin(),
+             End = ExpectedMatches.end();
          It != End; ++It) {
       It->UpdateFor(Name, FullLocation, this->Context->getSourceManager());
     }
   }
 
- private:
+private:
   struct MatchCandidate {
     std::string ExpectedName;
     unsigned LineNumber;
     unsigned ColumnNumber;
 
     MatchCandidate(Twine Name, unsigned LineNumber, unsigned ColumnNumber)
-      : ExpectedName(Name.str()), LineNumber(LineNumber),
-        ColumnNumber(ColumnNumber) {
-    }
+        : ExpectedName(Name.str()), LineNumber(LineNumber),
+          ColumnNumber(ColumnNumber) {}
 
     bool Matches(StringRef Name, FullSourceLoc const &Location) const {
       return MatchesName(Name) && MatchesLocation(Location);
@@ -196,20 +203,18 @@ protected:
       return MatchesName(Name) || MatchesLocation(Location);
     }
 
-    bool MatchesName(StringRef Name) const {
-      return Name == ExpectedName;
-    }
+    bool MatchesName(StringRef Name) const { return Name == ExpectedName; }
 
     bool MatchesLocation(FullSourceLoc const &Location) const {
       return Location.isValid() &&
-          Location.getSpellingLineNumber() == LineNumber &&
-          Location.getSpellingColumnNumber() == ColumnNumber;
+             Location.getSpellingLineNumber() == LineNumber &&
+             Location.getSpellingColumnNumber() == ColumnNumber;
     }
 
     friend std::ostream &operator<<(std::ostream &Stream,
                                     MatchCandidate const &Match) {
-      return Stream << Match.ExpectedName
-                    << " at " << Match.LineNumber << ":" << Match.ColumnNumber;
+      return Stream << Match.ExpectedName << " at " << Match.LineNumber << ":"
+                    << Match.ColumnNumber;
     }
   };
 
@@ -233,9 +238,9 @@ protected:
 
     void ExpectFound() const {
       EXPECT_EQ(TimesExpected, TimesSeen)
-          << "Expected \"" << Candidate.ExpectedName
-          << "\" at " << Candidate.LineNumber
-          << ":" << Candidate.ColumnNumber << PartialMatches;
+          << "Expected \"" << Candidate.ExpectedName << "\" at "
+          << Candidate.LineNumber << ":" << Candidate.ColumnNumber
+          << PartialMatches;
     }
 
     MatchCandidate Candidate;
@@ -247,6 +252,6 @@ protected:
   std::vector<MatchCandidate> DisallowedMatches;
   std::vector<ExpectedMatch> ExpectedMatches;
 };
-}
+} // namespace clang
 
 #endif

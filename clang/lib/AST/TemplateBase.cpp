@@ -50,13 +50,13 @@ using namespace clang;
 /// \param Out the raw_ostream instance to use for printing.
 ///
 /// \param Policy the printing policy for EnumConstantDecl printing.
-static void printIntegral(const TemplateArgument &TemplArg,
-                          raw_ostream &Out, const PrintingPolicy& Policy) {
+static void printIntegral(const TemplateArgument &TemplArg, raw_ostream &Out,
+                          const PrintingPolicy &Policy) {
   const Type *T = TemplArg.getIntegralType().getTypePtr();
   const llvm::APSInt &Val = TemplArg.getAsIntegral();
 
   if (const EnumType *ET = T->getAs<EnumType>()) {
-    for (const EnumConstantDecl* ECD : ET->getDecl()->enumerators()) {
+    for (const EnumConstantDecl *ECD : ET->getDecl()->enumerators()) {
       // In Sema::CheckTemplateArugment, enum template arguments value are
       // extended to the size of the integer underlying the enum type.  This
       // may create a size difference between the enum value and template
@@ -73,7 +73,7 @@ static void printIntegral(const TemplateArgument &TemplArg,
   } else if (T->isCharType()) {
     const char Ch = Val.getZExtValue();
     Out << ((Ch == '\'') ? "'\\" : "'");
-    Out.write_escaped(StringRef(&Ch, 1), /*UseHexEscapes=*/ true);
+    Out.write_escaped(StringRef(&Ch, 1), /*UseHexEscapes=*/true);
     Out << "'";
   } else {
     Out << Val;
@@ -245,23 +245,23 @@ void TemplateArgument::Profile(llvm::FoldingSetNodeID &ID,
 
   case Declaration:
     getParamTypeForDecl().Profile(ID);
-    ID.AddPointer(getAsDecl()? getAsDecl()->getCanonicalDecl() : nullptr);
+    ID.AddPointer(getAsDecl() ? getAsDecl()->getCanonicalDecl() : nullptr);
     break;
 
   case Template:
   case TemplateExpansion: {
     TemplateName Template = getAsTemplateOrTemplatePattern();
-    if (TemplateTemplateParmDecl *TTP
-          = dyn_cast_or_null<TemplateTemplateParmDecl>(
-                                                Template.getAsTemplateDecl())) {
+    if (TemplateTemplateParmDecl *TTP =
+            dyn_cast_or_null<TemplateTemplateParmDecl>(
+                Template.getAsTemplateDecl())) {
       ID.AddBoolean(true);
       ID.AddInteger(TTP->getDepth());
       ID.AddInteger(TTP->getPosition());
       ID.AddBoolean(TTP->isParameterPack());
     } else {
       ID.AddBoolean(false);
-      ID.AddPointer(Context.getCanonicalTemplateName(Template)
-                                                          .getAsVoidPointer());
+      ID.AddPointer(
+          Context.getCanonicalTemplateName(Template).getAsVoidPointer());
     }
     break;
   }
@@ -283,7 +283,8 @@ void TemplateArgument::Profile(llvm::FoldingSetNodeID &ID,
 }
 
 bool TemplateArgument::structurallyEquals(const TemplateArgument &Other) const {
-  if (getKind() != Other.getKind()) return false;
+  if (getKind() != Other.getKind())
+    return false;
 
   switch (getKind()) {
   case Null:
@@ -305,7 +306,8 @@ bool TemplateArgument::structurallyEquals(const TemplateArgument &Other) const {
            getAsIntegral() == Other.getAsIntegral();
 
   case Pack:
-    if (Args.NumArgs != Other.Args.NumArgs) return false;
+    if (Args.NumArgs != Other.Args.NumArgs)
+      return false;
     for (unsigned I = 0, E = Args.NumArgs; I != E; ++I)
       if (!Args.Args[I].structurallyEquals(Other.Args.Args[I]))
         return false;

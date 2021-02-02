@@ -5,15 +5,14 @@
 // RUN: %env_lsan_opts=$LSAN_BASE:"use_stacks=1" %run %t 2>&1
 // RUN: %env_lsan_opts="" %run %t 2>&1
 
+#include "sanitizer_common/print_address.h"
 #include <assert.h>
 #include <pthread.h>
 #include <sched.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "sanitizer_common/print_address.h"
 
-extern "C"
-void *stacks_thread_func(void *arg) {
+extern "C" void *stacks_thread_func(void *arg) {
   int *sync = reinterpret_cast<int *>(arg);
   void *p = malloc(1337);
   print_address("Test alloc: ", 1, p);

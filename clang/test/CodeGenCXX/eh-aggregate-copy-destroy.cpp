@@ -20,7 +20,7 @@ struct Container {
   ThrowCopy c;
 };
 
-int main () {
+int main() {
   try {
     Container c1;
     // CHECK_LABEL: main
@@ -29,11 +29,9 @@ int main () {
     // CHECK98: invoke void @_ZN12ImplicitCopyD1Ev
     // CHECK11: call void @_ZN12ImplicitCopyD1Ev
     Container c2(c1);
-  }
-  catch (...) {
+  } catch (...) {
     return 1;
   }
 
   return 0;
 }
-

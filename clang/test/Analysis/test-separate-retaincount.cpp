@@ -8,7 +8,7 @@
 
 #include "os_object_base.h"
 
-typedef const void * CFTypeRef;
+typedef const void *CFTypeRef;
 extern CFTypeRef CFRetain(CFTypeRef cf);
 extern void CFRelease(CFTypeRef cf);
 

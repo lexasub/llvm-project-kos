@@ -127,8 +127,7 @@ void SBHostOS::ThreadCreated(const char *name) {
 
 bool SBHostOS::ThreadCancel(lldb::thread_t thread, SBError *error_ptr) {
   LLDB_RECORD_DUMMY(bool, SBHostOS, ThreadCancel,
-                            (lldb::thread_t, lldb::SBError *), thread,
-                            error_ptr);
+                    (lldb::thread_t, lldb::SBError *), thread, error_ptr);
 
   Status error;
   HostThread host_thread(thread);
@@ -141,8 +140,7 @@ bool SBHostOS::ThreadCancel(lldb::thread_t thread, SBError *error_ptr) {
 
 bool SBHostOS::ThreadDetach(lldb::thread_t thread, SBError *error_ptr) {
   LLDB_RECORD_DUMMY(bool, SBHostOS, ThreadDetach,
-                            (lldb::thread_t, lldb::SBError *), thread,
-                            error_ptr);
+                    (lldb::thread_t, lldb::SBError *), thread, error_ptr);
 
   Status error;
 #if defined(_WIN32)
@@ -160,10 +158,9 @@ bool SBHostOS::ThreadDetach(lldb::thread_t thread, SBError *error_ptr) {
 
 bool SBHostOS::ThreadJoin(lldb::thread_t thread, lldb::thread_result_t *result,
                           SBError *error_ptr) {
-  LLDB_RECORD_DUMMY(
-      bool, SBHostOS, ThreadJoin,
-      (lldb::thread_t, lldb::thread_result_t *, lldb::SBError *), thread,
-      result, error_ptr);
+  LLDB_RECORD_DUMMY(bool, SBHostOS, ThreadJoin,
+                    (lldb::thread_t, lldb::thread_result_t *, lldb::SBError *),
+                    thread, result, error_ptr);
 
   Status error;
   HostThread host_thread(thread);
@@ -177,18 +174,17 @@ bool SBHostOS::ThreadJoin(lldb::thread_t thread, lldb::thread_result_t *result,
 namespace lldb_private {
 namespace repro {
 
-template <>
-void RegisterMethods<SBHostOS>(Registry &R) {
+template <> void RegisterMethods<SBHostOS>(Registry &R) {
   LLDB_REGISTER_STATIC_METHOD(lldb::SBFileSpec, SBHostOS, GetProgramFileSpec,
                               ());
   LLDB_REGISTER_STATIC_METHOD(lldb::SBFileSpec, SBHostOS, GetLLDBPythonPath,
                               ());
   LLDB_REGISTER_STATIC_METHOD(lldb::SBFileSpec, SBHostOS, GetLLDBPath,
                               (lldb::PathType));
-  LLDB_REGISTER_STATIC_METHOD(lldb::SBFileSpec, SBHostOS,
-                              GetUserHomeDirectory, ());
+  LLDB_REGISTER_STATIC_METHOD(lldb::SBFileSpec, SBHostOS, GetUserHomeDirectory,
+                              ());
   LLDB_REGISTER_STATIC_METHOD(void, SBHostOS, ThreadCreated, (const char *));
 }
 
-}
-}
+} // namespace repro
+} // namespace lldb_private

@@ -55,7 +55,7 @@ S5 m(4);
 namespace A {
 double x;
 #pragma omp threadprivate(x)
-}
+} // namespace A
 namespace B {
 using A::x;
 }
@@ -106,7 +106,7 @@ int main(int argc, char **argv) {
   {
     foo();
   }
-#pragma omp parallel master copyin(ST < int > ::s, B::x) // expected-error {{copyin variable must be threadprivate}}
+#pragma omp parallel master copyin(ST <int>::s, B::x) // expected-error {{copyin variable must be threadprivate}}
   {
     foo();
   }

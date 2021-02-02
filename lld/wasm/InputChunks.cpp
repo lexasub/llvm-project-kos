@@ -302,7 +302,8 @@ void InputFunction::calculateSize() {
   for (const WasmRelocation &rel : relocations) {
     LLVM_DEBUG(dbgs() << "  region: " << (rel.Offset - lastRelocEnd) << "\n");
     compressedFuncSize += rel.Offset - lastRelocEnd;
-    compressedFuncSize += getRelocWidth(rel, file->calcNewValue(rel, tombstone));
+    compressedFuncSize +=
+        getRelocWidth(rel, file->calcNewValue(rel, tombstone));
     lastRelocEnd = rel.Offset + getRelocWidthPadded(rel);
   }
   LLVM_DEBUG(dbgs() << "  final region: " << (end - lastRelocEnd) << "\n");
@@ -407,7 +408,7 @@ void InputSegment::generateRelocationCode(raw_ostream &os) const {
         writeU8(os, opcode_reloc_add, "ADD");
       }
     } else {
-      const GlobalSymbol* baseSymbol = WasmSym::memoryBase;
+      const GlobalSymbol *baseSymbol = WasmSym::memoryBase;
       if (rel.Type == R_WASM_TABLE_INDEX_I32 ||
           rel.Type == R_WASM_TABLE_INDEX_I64)
         baseSymbol = WasmSym::tableBase;
@@ -431,8 +432,8 @@ uint64_t InputSection::getTombstoneForSection(StringRef name) {
   // function to -1 to avoid overlapping with a valid range. However for the
   // debug_ranges and debug_loc sections that would conflict with the existing
   // meaning of -1 so we use -2.
-  // Returning 0 means there is no tombstone value for this section, and relocation
-  // will just use the addend.
+  // Returning 0 means there is no tombstone value for this section, and
+  // relocation will just use the addend.
   if (!name.startswith(".debug_"))
     return 0;
   if (name.equals(".debug_ranges") || name.equals(".debug_loc"))

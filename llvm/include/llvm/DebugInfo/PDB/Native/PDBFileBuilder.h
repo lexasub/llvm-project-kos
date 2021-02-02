@@ -101,7 +101,7 @@ private:
   NamedStreamMap NamedStreams;
   DenseMap<uint32_t, std::string> NamedStreamData;
 };
-}
-}
+} // namespace pdb
+} // namespace llvm
 
 #endif

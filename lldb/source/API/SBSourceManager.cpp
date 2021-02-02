@@ -66,7 +66,7 @@ private:
   lldb::DebuggerWP m_debugger_wp;
   lldb::TargetWP m_target_wp;
 };
-}
+} // namespace lldb_private
 
 using namespace lldb;
 using namespace lldb_private;
@@ -94,11 +94,10 @@ SBSourceManager::SBSourceManager(const SBSourceManager &rhs) {
   m_opaque_up = std::make_unique<SourceManagerImpl>(*(rhs.m_opaque_up.get()));
 }
 
-const lldb::SBSourceManager &SBSourceManager::
-operator=(const lldb::SBSourceManager &rhs) {
-  LLDB_RECORD_METHOD(const lldb::SBSourceManager &,
-                     SBSourceManager, operator=,(const lldb::SBSourceManager &),
-                     rhs);
+const lldb::SBSourceManager &
+SBSourceManager::operator=(const lldb::SBSourceManager &rhs) {
+  LLDB_RECORD_METHOD(const lldb::SBSourceManager &, SBSourceManager, operator=,
+                     (const lldb::SBSourceManager &), rhs);
 
   m_opaque_up = std::make_unique<SourceManagerImpl>(*(rhs.m_opaque_up.get()));
   return LLDB_RECORD_RESULT(*this);
@@ -142,23 +141,22 @@ size_t SBSourceManager::DisplaySourceLinesWithLineNumbersAndColumn(
 namespace lldb_private {
 namespace repro {
 
-template <>
-void RegisterMethods<SBSourceManager>(Registry &R) {
+template <> void RegisterMethods<SBSourceManager>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBSourceManager, (const lldb::SBDebugger &));
   LLDB_REGISTER_CONSTRUCTOR(SBSourceManager, (const lldb::SBTarget &));
   LLDB_REGISTER_CONSTRUCTOR(SBSourceManager, (const lldb::SBSourceManager &));
-  LLDB_REGISTER_METHOD(
-      const lldb::SBSourceManager &,
-      SBSourceManager, operator=,(const lldb::SBSourceManager &));
+  LLDB_REGISTER_METHOD(const lldb::SBSourceManager &,
+                       SBSourceManager, operator=,
+                       (const lldb::SBSourceManager &));
   LLDB_REGISTER_METHOD(size_t, SBSourceManager,
                        DisplaySourceLinesWithLineNumbers,
-                       (const lldb::SBFileSpec &, uint32_t, uint32_t,
-                        uint32_t, const char *, lldb::SBStream &));
+                       (const lldb::SBFileSpec &, uint32_t, uint32_t, uint32_t,
+                        const char *, lldb::SBStream &));
   LLDB_REGISTER_METHOD(size_t, SBSourceManager,
                        DisplaySourceLinesWithLineNumbersAndColumn,
-                       (const lldb::SBFileSpec &, uint32_t, uint32_t,
-                        uint32_t, uint32_t, const char *, lldb::SBStream &));
+                       (const lldb::SBFileSpec &, uint32_t, uint32_t, uint32_t,
+                        uint32_t, const char *, lldb::SBStream &));
 }
 
-}
-}
+} // namespace repro
+} // namespace lldb_private

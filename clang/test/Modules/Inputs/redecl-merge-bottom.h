@@ -16,7 +16,7 @@
 struct S1;
 struct S3;
 
-void refers_to_C4(C4*);
+void refers_to_C4(C4 *);
 
 @interface UnrelatedToDeclaredThenLoaded
 - declaredThenLoadedMethod;

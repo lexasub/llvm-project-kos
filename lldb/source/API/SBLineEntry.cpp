@@ -36,8 +36,8 @@ SBLineEntry::SBLineEntry(const lldb_private::LineEntry *lldb_object_ptr)
 }
 
 const SBLineEntry &SBLineEntry::operator=(const SBLineEntry &rhs) {
-  LLDB_RECORD_METHOD(const lldb::SBLineEntry &,
-                     SBLineEntry, operator=,(const lldb::SBLineEntry &), rhs);
+  LLDB_RECORD_METHOD(const lldb::SBLineEntry &, SBLineEntry, operator=,
+                     (const lldb::SBLineEntry &), rhs);
 
   if (this != &rhs)
     m_opaque_up = clone(rhs.m_opaque_up);
@@ -132,8 +132,8 @@ void SBLineEntry::SetColumn(uint32_t column) {
 }
 
 bool SBLineEntry::operator==(const SBLineEntry &rhs) const {
-  LLDB_RECORD_METHOD_CONST(
-      bool, SBLineEntry, operator==,(const lldb::SBLineEntry &), rhs);
+  LLDB_RECORD_METHOD_CONST(bool, SBLineEntry, operator==,
+                           (const lldb::SBLineEntry &), rhs);
 
   lldb_private::LineEntry *lhs_ptr = m_opaque_up.get();
   lldb_private::LineEntry *rhs_ptr = rhs.m_opaque_up.get();
@@ -145,8 +145,8 @@ bool SBLineEntry::operator==(const SBLineEntry &rhs) const {
 }
 
 bool SBLineEntry::operator!=(const SBLineEntry &rhs) const {
-  LLDB_RECORD_METHOD_CONST(
-      bool, SBLineEntry, operator!=,(const lldb::SBLineEntry &), rhs);
+  LLDB_RECORD_METHOD_CONST(bool, SBLineEntry, operator!=,
+                           (const lldb::SBLineEntry &), rhs);
 
   lldb_private::LineEntry *lhs_ptr = m_opaque_up.get();
   lldb_private::LineEntry *rhs_ptr = rhs.m_opaque_up.get();
@@ -192,14 +192,12 @@ lldb_private::LineEntry *SBLineEntry::get() { return m_opaque_up.get(); }
 namespace lldb_private {
 namespace repro {
 
-template <>
-void RegisterMethods<SBLineEntry>(Registry &R) {
+template <> void RegisterMethods<SBLineEntry>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBLineEntry, ());
   LLDB_REGISTER_CONSTRUCTOR(SBLineEntry, (const lldb::SBLineEntry &));
-  LLDB_REGISTER_METHOD(const lldb::SBLineEntry &,
-                       SBLineEntry, operator=,(const lldb::SBLineEntry &));
-  LLDB_REGISTER_METHOD_CONST(lldb::SBAddress, SBLineEntry, GetStartAddress,
-                             ());
+  LLDB_REGISTER_METHOD(const lldb::SBLineEntry &, SBLineEntry, operator=,
+                       (const lldb::SBLineEntry &));
+  LLDB_REGISTER_METHOD_CONST(lldb::SBAddress, SBLineEntry, GetStartAddress, ());
   LLDB_REGISTER_METHOD_CONST(lldb::SBAddress, SBLineEntry, GetEndAddress, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBLineEntry, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBLineEntry, operator bool, ());
@@ -209,12 +207,12 @@ void RegisterMethods<SBLineEntry>(Registry &R) {
   LLDB_REGISTER_METHOD(void, SBLineEntry, SetFileSpec, (lldb::SBFileSpec));
   LLDB_REGISTER_METHOD(void, SBLineEntry, SetLine, (uint32_t));
   LLDB_REGISTER_METHOD(void, SBLineEntry, SetColumn, (uint32_t));
-  LLDB_REGISTER_METHOD_CONST(
-      bool, SBLineEntry, operator==,(const lldb::SBLineEntry &));
-  LLDB_REGISTER_METHOD_CONST(
-      bool, SBLineEntry, operator!=,(const lldb::SBLineEntry &));
+  LLDB_REGISTER_METHOD_CONST(bool, SBLineEntry, operator==,
+                             (const lldb::SBLineEntry &));
+  LLDB_REGISTER_METHOD_CONST(bool, SBLineEntry, operator!=,
+                             (const lldb::SBLineEntry &));
   LLDB_REGISTER_METHOD(bool, SBLineEntry, GetDescription, (lldb::SBStream &));
 }
 
-}
-}
+} // namespace repro
+} // namespace lldb_private

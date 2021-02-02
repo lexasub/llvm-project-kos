@@ -20,10 +20,10 @@
 // CHECK-NOT: @__profc__ZN4BaseaSERKS_
 
 struct BaseBase {
- BaseBase();
- BaseBase(const BaseBase &);
- BaseBase &operator=(const BaseBase &);
- BaseBase &operator=(BaseBase &&);
+  BaseBase();
+  BaseBase(const BaseBase &);
+  BaseBase &operator=(const BaseBase &);
+  BaseBase &operator=(BaseBase &&);
 };
 
 struct Base : public BaseBase {
@@ -40,12 +40,12 @@ struct Derived : public Base {
 
 Derived::Derived() {}
 Derived::Derived(const Derived &d) : Base(d) {}
-Derived::Derived(Derived &&d) : Base(static_cast<Base&&>(d)) {}
-Derived& Derived::operator=(const Derived &d) {
+Derived::Derived(Derived &&d) : Base(static_cast<Base &&>(d)) {}
+Derived &Derived::operator=(const Derived &d) {
   Base::operator=(d);
   return *this;
 }
-Derived& Derived::operator=(Derived &&d) {
+Derived &Derived::operator=(Derived &&d) {
   Base::operator=(static_cast<Base &&>(d));
   return *this;
 }

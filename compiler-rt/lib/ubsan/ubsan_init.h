@@ -28,6 +28,6 @@ void InitAsStandaloneIfNecessary();
 // from "parent tool" (e.g. ASan) initialization.
 void InitAsPlugin();
 
-}  // namespace __ubsan
+} // namespace __ubsan
 
-#endif  // UBSAN_INIT_H
+#endif // UBSAN_INIT_H

@@ -37,7 +37,8 @@ void PrintOpStatsPass::runOnOperation() {
   opCount.clear();
 
   // Compute the operation statistics for the currently visited operation.
-  getOperation()->walk([&](Operation *op) { ++opCount[op->getName().getStringRef()]; });
+  getOperation()->walk(
+      [&](Operation *op) { ++opCount[op->getName().getStringRef()]; });
   printSummary();
 }
 

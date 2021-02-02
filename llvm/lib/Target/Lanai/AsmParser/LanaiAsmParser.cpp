@@ -1021,8 +1021,8 @@ LanaiAsmParser::parseMemoryOperand(OperandVector &Operands) {
 // Looks at a token type and creates the relevant operand from this
 // information, adding to operands.
 // If operand was parsed, returns false, else true.
-OperandMatchResultTy
-LanaiAsmParser::parseOperand(OperandVector *Operands, StringRef Mnemonic) {
+OperandMatchResultTy LanaiAsmParser::parseOperand(OperandVector *Operands,
+                                                  StringRef Mnemonic) {
   // Check if the current operand has a custom associated parser, if so, try to
   // custom parse the operand, or fallback to the general approach.
   OperandMatchResultTy Result = MatchOperandParserImpl(*Operands, Mnemonic);

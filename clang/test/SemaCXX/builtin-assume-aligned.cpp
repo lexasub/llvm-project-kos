@@ -3,13 +3,13 @@
 int n;
 constexpr int *p = 0;
 // expected-error@+1 {{must be initialized by a constant expression}}
-constexpr int *k = (int *) __builtin_assume_aligned(p, 16, n = 5);
+constexpr int *k = (int *)__builtin_assume_aligned(p, 16, n = 5);
 
 constexpr void *l = __builtin_assume_aligned(p, 16);
 
 // expected-error@+2 {{must be initialized by a constant expression}}
 // expected-note@+1 {{cast from 'void *' is not allowed in a constant expression}}
-constexpr int *c = (int *) __builtin_assume_aligned(p, 16);
+constexpr int *c = (int *)__builtin_assume_aligned(p, 16);
 
 // expected-error@+2 {{must be initialized by a constant expression}}
 // expected-note@+1 {{alignment of the base pointee object (4 bytes) is less than the asserted 16 bytes}}
@@ -38,7 +38,7 @@ constexpr void *r3 = __builtin_assume_aligned(&ar2[2], 16, 2);
 // expected-note@+1 {{offset of the aligned pointer from the base pointee object (1 byte) is not a multiple of the asserted 16 bytes}}
 constexpr void *r4 = __builtin_assume_aligned(&ar2[2], 16, 1);
 
-constexpr int* x = __builtin_constant_p((int*)0xFF) ? (int*)0xFF : (int*)0xFF;
+constexpr int *x = __builtin_constant_p((int *)0xFF) ? (int *)0xFF : (int *)0xFF;
 // expected-error@+2 {{must be initialized by a constant expression}}
 // expected-note@+1 {{value of the aligned pointer (255) is not a multiple of the asserted 32 bytes}}
 constexpr void *s1 = __builtin_assume_aligned(x, 32);
@@ -46,4 +46,3 @@ constexpr void *s1 = __builtin_assume_aligned(x, 32);
 // expected-note@+1 {{value of the aligned pointer (250) is not a multiple of the asserted 32 bytes}}
 constexpr void *s2 = __builtin_assume_aligned(x, 32, 5);
 constexpr void *s3 = __builtin_assume_aligned(x, 32, -1);
-

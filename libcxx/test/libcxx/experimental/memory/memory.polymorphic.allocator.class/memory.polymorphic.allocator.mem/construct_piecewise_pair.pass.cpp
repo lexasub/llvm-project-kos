@@ -53,24 +53,25 @@ namespace ex = std::experimental::pmr;
 
 template <class T>
 struct TestHarness {
-    TestResource R;
-    ex::memory_resource * M = &R;
-    ex::polymorphic_allocator<T> A = M;
-    bool constructed = false;
-    T * ptr;
+  TestResource R;
+  ex::memory_resource* M = &R;
+  ex::polymorphic_allocator<T> A = M;
+  bool constructed = false;
+  T* ptr;
 
-    TestHarness() : ptr(A.allocate(1)) {}
+  TestHarness() : ptr(A.allocate(1)) {}
 
-    template <class ...Args>
-    void construct(Args&&... args) {
-        A.construct(ptr, std::forward<Args>(args)...);
-        constructed = true;
-    }
+  template <class... Args>
+  void construct(Args&&... args) {
+    A.construct(ptr, std::forward<Args>(args)...);
+    constructed = true;
+  }
 
-    ~TestHarness() {
-        if (constructed) A.destroy(ptr);
-        A.deallocate(ptr, 1);
-    }
+  ~TestHarness() {
+    if (constructed)
+      A.destroy(ptr);
+    A.deallocate(ptr, 1);
+  }
 };
 
 struct CountCopies {
@@ -81,94 +82,90 @@ struct CountCopies {
 
 struct CountCopiesAllocV1 {
   typedef ex::polymorphic_allocator<char> allocator_type;
-  ex::memory_resource *alloc;
+  ex::memory_resource* alloc;
   int count;
   CountCopiesAllocV1() : alloc(nullptr), count(0) {}
   CountCopiesAllocV1(std::allocator_arg_t, allocator_type const& a,
-                     CountCopiesAllocV1 const& o) : alloc(a.resource()), count(o.count + 1)
-  {}
+                     CountCopiesAllocV1 const& o)
+      : alloc(a.resource()), count(o.count + 1) {}
 
   CountCopiesAllocV1(CountCopiesAllocV1 const& o) : count(o.count + 1) {}
 };
 
-
 struct CountCopiesAllocV2 {
   typedef ex::polymorphic_allocator<char> allocator_type;
-  ex::memory_resource *alloc;
+  ex::memory_resource* alloc;
   int count;
   CountCopiesAllocV2() : alloc(nullptr), count(0) {}
   CountCopiesAllocV2(CountCopiesAllocV2 const& o, allocator_type const& a)
-    : alloc(a.resource()), count(o.count + 1)
-  { }
+      : alloc(a.resource()), count(o.count + 1) {}
 
   CountCopiesAllocV2(CountCopiesAllocV2 const& o) : count(o.count + 1) {}
 };
 
+int main(int, char**) {
+  {
+    using T = CountCopies;
+    using U = CountCopiesAllocV1;
+    using P = std::pair<T, U>;
 
-int main(int, char**)
-{
-    {
-        using T = CountCopies;
-        using U = CountCopiesAllocV1;
-        using P = std::pair<T, U>;
+    std::tuple<T> t1;
+    std::tuple<U> t2;
 
-        std::tuple<T> t1;
-        std::tuple<U> t2;
+    TestHarness<P> h;
+    h.construct(std::piecewise_construct, t1, t2);
+    P const& p = *h.ptr;
+    assert(p.first.count == 2);
+    assert(p.second.count == 2);
+    assert(p.second.alloc == h.M);
+  }
+  {
+    using T = CountCopiesAllocV1;
+    using U = CountCopiesAllocV2;
+    using P = std::pair<T, U>;
 
-        TestHarness<P> h;
-        h.construct(std::piecewise_construct, t1, t2);
-        P const& p = *h.ptr;
-        assert(p.first.count == 2);
-        assert(p.second.count == 2);
-        assert(p.second.alloc == h.M);
-    }
-    {
-        using T = CountCopiesAllocV1;
-        using U = CountCopiesAllocV2;
-        using P = std::pair<T, U>;
+    std::tuple<T> t1;
+    std::tuple<U> t2;
 
-        std::tuple<T> t1;
-        std::tuple<U> t2;
+    TestHarness<P> h;
+    h.construct(std::piecewise_construct, std::move(t1), std::move(t2));
+    P const& p = *h.ptr;
+    assert(p.first.count == 2);
+    assert(p.first.alloc == h.M);
+    assert(p.second.count == 2);
+    assert(p.second.alloc == h.M);
+  }
+  {
+    using T = CountCopiesAllocV2;
+    using U = CountCopiesAllocV1;
+    using P = std::pair<T, U>;
 
-        TestHarness<P> h;
-        h.construct(std::piecewise_construct, std::move(t1), std::move(t2));
-        P const& p = *h.ptr;
-        assert(p.first.count == 2);
-        assert(p.first.alloc == h.M);
-        assert(p.second.count == 2);
-        assert(p.second.alloc == h.M);
-    }
-    {
-        using T = CountCopiesAllocV2;
-        using U = CountCopiesAllocV1;
-        using P = std::pair<T, U>;
+    std::tuple<T> t1;
+    std::tuple<U> t2;
 
-        std::tuple<T> t1;
-        std::tuple<U> t2;
+    TestHarness<P> h;
+    h.construct(std::piecewise_construct, std::move(t1), std::move(t2));
+    P const& p = *h.ptr;
+    assert(p.first.count == 2);
+    assert(p.first.alloc == h.M);
+    assert(p.second.count == 2);
+    assert(p.second.alloc == h.M);
+  }
+  {
+    using T = CountCopiesAllocV2;
+    using U = CountCopies;
+    using P = std::pair<T, U>;
 
-        TestHarness<P> h;
-        h.construct(std::piecewise_construct, std::move(t1), std::move(t2));
-        P const& p = *h.ptr;
-        assert(p.first.count == 2);
-        assert(p.first.alloc == h.M);
-        assert(p.second.count == 2);
-        assert(p.second.alloc == h.M);
-    }
-    {
-        using T = CountCopiesAllocV2;
-        using U = CountCopies;
-        using P = std::pair<T, U>;
+    std::tuple<T> t1;
+    std::tuple<U> t2;
 
-        std::tuple<T> t1;
-        std::tuple<U> t2;
-
-        TestHarness<P> h;
-        h.construct(std::piecewise_construct, t1, t2);
-        P const& p = *h.ptr;
-        assert(p.first.count == 2);
-        assert(p.first.alloc == h.M);
-        assert(p.second.count == 2);
-    }
+    TestHarness<P> h;
+    h.construct(std::piecewise_construct, t1, t2);
+    P const& p = *h.ptr;
+    assert(p.first.count == 2);
+    assert(p.first.alloc == h.M);
+    assert(p.second.count == 2);
+  }
 
   return 0;
 }

@@ -1,4 +1,5 @@
-//===--- TransGCAttrs.cpp - Transformations to ARC mode --------------------===//
+//===--- TransGCAttrs.cpp - Transformations to ARC mode
+//--------------------===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -6,8 +7,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "Transforms.h"
 #include "Internals.h"
+#include "Transforms.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/Basic/SourceManager.h"
 #include "clang/Lex/Lexer.h"
@@ -29,11 +30,11 @@ class GCAttrsCollector : public RecursiveASTVisitor<GCAttrsCollector> {
   std::vector<ObjCPropertyDecl *> &AllProps;
 
   typedef RecursiveASTVisitor<GCAttrsCollector> base;
+
 public:
   GCAttrsCollector(MigrationContext &ctx,
                    std::vector<ObjCPropertyDecl *> &AllProps)
-    : MigrateCtx(ctx), FullyMigratable(false),
-      AllProps(AllProps) { }
+      : MigrateCtx(ctx), FullyMigratable(false), AllProps(AllProps) {}
 
   bool shouldWalkTypesOfTypeLocs() const { return false; }
 
@@ -207,8 +208,7 @@ static void checkWeakGCAttrs(MigrationContext &MigrateCtx) {
         if (!MigrateCtx.RemovedAttrSet.count(Attr.Loc))
           TA.replaceText(Attr.Loc, "__weak", "__unsafe_unretained");
         TA.clearDiagnostic(diag::err_arc_weak_no_runtime,
-                           diag::err_arc_unsupported_weak_class,
-                           Attr.Loc);
+                           diag::err_arc_unsupported_weak_class, Attr.Loc);
       }
     }
   }
@@ -216,14 +216,13 @@ static void checkWeakGCAttrs(MigrationContext &MigrateCtx) {
 
 typedef llvm::TinyPtrVector<ObjCPropertyDecl *> IndivPropsTy;
 
-static void checkAllAtProps(MigrationContext &MigrateCtx,
-                            SourceLocation AtLoc,
+static void checkAllAtProps(MigrationContext &MigrateCtx, SourceLocation AtLoc,
                             IndivPropsTy &IndProps) {
   if (IndProps.empty())
     return;
 
-  for (IndivPropsTy::iterator
-         PI = IndProps.begin(), PE = IndProps.end(); PI != PE; ++PI) {
+  for (IndivPropsTy::iterator PI = IndProps.begin(), PE = IndProps.end();
+       PI != PE; ++PI) {
     QualType T = (*PI)->getType();
     if (T.isNull() || !T->isObjCRetainableType())
       return;
@@ -232,16 +231,15 @@ static void checkAllAtProps(MigrationContext &MigrateCtx,
   SmallVector<std::pair<AttributedTypeLoc, ObjCPropertyDecl *>, 4> ATLs;
   bool hasWeak = false, hasStrong = false;
   ObjCPropertyAttribute::Kind Attrs = ObjCPropertyAttribute::kind_noattr;
-  for (IndivPropsTy::iterator
-         PI = IndProps.begin(), PE = IndProps.end(); PI != PE; ++PI) {
+  for (IndivPropsTy::iterator PI = IndProps.begin(), PE = IndProps.end();
+       PI != PE; ++PI) {
     ObjCPropertyDecl *PD = *PI;
     Attrs = PD->getPropertyAttributesAsWritten();
     TypeSourceInfo *TInfo = PD->getTypeSourceInfo();
     if (!TInfo)
       return;
     TypeLoc TL = TInfo->getTypeLoc();
-    if (AttributedTypeLoc ATL =
-            TL.getAs<AttributedTypeLoc>()) {
+    if (AttributedTypeLoc ATL = TL.getAs<AttributedTypeLoc>()) {
       ATLs.push_back(std::make_pair(ATL, PD));
       if (TInfo->getType().getObjCLifetime() == Qualifiers::OCL_Weak) {
         hasWeak = true;
@@ -260,7 +258,7 @@ static void checkAllAtProps(MigrationContext &MigrateCtx,
   Transaction Trans(TA);
 
   if (GCAttrsCollector::hasObjCImpl(
-                              cast<Decl>(IndProps.front()->getDeclContext()))) {
+          cast<Decl>(IndProps.front()->getDeclContext()))) {
     if (hasWeak)
       MigrateCtx.AtPropsWeak.insert(AtLoc);
 
@@ -319,8 +317,8 @@ static void checkAllProps(MigrationContext &MigrateCtx,
 
 void GCAttrsTraverser::traverseTU(MigrationContext &MigrateCtx) {
   std::vector<ObjCPropertyDecl *> AllProps;
-  GCAttrsCollector(MigrateCtx, AllProps).TraverseDecl(
-                                  MigrateCtx.Pass.Ctx.getTranslationUnitDecl());
+  GCAttrsCollector(MigrateCtx, AllProps)
+      .TraverseDecl(MigrateCtx.Pass.Ctx.getTranslationUnitDecl());
 
   errorForGCAttrsOnNonObjC(MigrateCtx);
   checkAllProps(MigrateCtx, AllProps);
@@ -332,7 +330,7 @@ void MigrationContext::dumpGCAttrs() {
   for (unsigned i = 0, e = GCAttrs.size(); i != e; ++i) {
     GCAttrOccurrence &Attr = GCAttrs[i];
     llvm::errs() << "KIND: "
-        << (Attr.Kind == GCAttrOccurrence::Strong ? "strong" : "weak");
+                 << (Attr.Kind == GCAttrOccurrence::Strong ? "strong" : "weak");
     llvm::errs() << "\nLOC: ";
     Attr.Loc.print(llvm::errs(), Pass.Ctx.getSourceManager());
     llvm::errs() << "\nTYPE: ";

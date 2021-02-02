@@ -9,10 +9,11 @@
 // This file is a part of ThreadSanitizer (TSan), a race detector.
 //
 //===----------------------------------------------------------------------===//
-#include "tsan_sync.h"
-#include "tsan_rtl.h"
-#include "gtest/gtest.h"
 #include <string.h>
+
+#include "gtest/gtest.h"
+#include "tsan_rtl.h"
+#include "tsan_sync.h"
 
 namespace __tsan {
 
@@ -45,7 +46,7 @@ static void TestStackTrace(StackTraceTy *trace) {
   EXPECT_EQ(42U, trace->trace[2]);
 }
 
-template<typename StackTraceTy>
+template <typename StackTraceTy>
 static void TestTrim(StackTraceTy *trace) {
   ThreadState thr(0, 0, 0, 0, 0, 0, 0, 0, 0);
   const uptr kShadowStackSize = 2 * kStackTraceMax;
@@ -54,8 +55,7 @@ static void TestTrim(StackTraceTy *trace) {
   thr.shadow_stack_pos = &stack[0];
   thr.shadow_stack_end = &stack[kShadowStackSize];
 
-  for (uptr i = 0; i < kShadowStackSize; ++i)
-    *thr.shadow_stack_pos++ = 100 + i;
+  for (uptr i = 0; i < kShadowStackSize; ++i) *thr.shadow_stack_pos++ = 100 + i;
 
   ObtainCurrentStack(&thr, 0, trace);
   EXPECT_EQ(kStackTraceMax, trace->size);

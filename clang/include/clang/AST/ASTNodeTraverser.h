@@ -713,7 +713,8 @@ public:
         Visit(A);
   }
 
-  void VisitSubstNonTypeTemplateParmExpr(const SubstNonTypeTemplateParmExpr *E) {
+  void
+  VisitSubstNonTypeTemplateParmExpr(const SubstNonTypeTemplateParmExpr *E) {
     Visit(E->getParameter());
   }
   void VisitSubstNonTypeTemplateParmPackExpr(

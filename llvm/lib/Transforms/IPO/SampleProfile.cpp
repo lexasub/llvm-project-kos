@@ -248,16 +248,15 @@ private:
 class GUIDToFuncNameMapper {
 public:
   GUIDToFuncNameMapper(Module &M, SampleProfileReader &Reader,
-                        DenseMap<uint64_t, StringRef> &GUIDToFuncNameMap)
+                       DenseMap<uint64_t, StringRef> &GUIDToFuncNameMap)
       : CurrentReader(Reader), CurrentModule(M),
-      CurrentGUIDToFuncNameMap(GUIDToFuncNameMap) {
+        CurrentGUIDToFuncNameMap(GUIDToFuncNameMap) {
     if (!CurrentReader.useMD5())
       return;
 
     for (const auto &F : CurrentModule) {
       StringRef OrigName = F.getName();
-      CurrentGUIDToFuncNameMap.insert(
-          {Function::getGUID(OrigName), OrigName});
+      CurrentGUIDToFuncNameMap.insert({Function::getGUID(OrigName), OrigName});
 
       // Local to global var promotion used by optimization like thinlto
       // will rename the var and add suffix like ".llvm.xxx" to the
@@ -348,7 +347,8 @@ protected:
   const FunctionSamples *findCalleeFunctionSamples(const CallBase &I) const;
   std::vector<const FunctionSamples *>
   findIndirectCallFunctionSamples(const Instruction &I, uint64_t &Sum) const;
-  mutable DenseMap<const DILocation *, const FunctionSamples *> DILocation2SampleMap;
+  mutable DenseMap<const DILocation *, const FunctionSamples *>
+      DILocation2SampleMap;
   const FunctionSamples *findFunctionSamples(const Instruction &I) const;
   bool inlineCallInstruction(CallBase &CB);
   bool inlineHotFunctions(Function &F,
@@ -743,8 +743,8 @@ ErrorOr<uint64_t> SampleProfileLoader::getInstWeight(const Instruction &Inst) {
     return std::error_code();
 
   // Ignore all intrinsics, phinodes and branch instructions.
-  // Branch and phinodes instruction usually contains debug info from sources outside of
-  // the residing basic block, thus we ignore them during annotation.
+  // Branch and phinodes instruction usually contains debug info from sources
+  // outside of the residing basic block, thus we ignore them during annotation.
   if (isa<BranchInst>(Inst) || isa<IntrinsicInst>(Inst) || isa<PHINode>(Inst))
     return std::error_code();
 
@@ -909,8 +909,8 @@ SampleProfileLoader::findCalleeFunctionSamples(const CallBase &Inst) const {
 /// of \p Inst. The vector is sorted by the total number of samples. Stores
 /// the total call count of the indirect call in \p Sum.
 std::vector<const FunctionSamples *>
-SampleProfileLoader::findIndirectCallFunctionSamples(
-    const Instruction &Inst, uint64_t &Sum) const {
+SampleProfileLoader::findIndirectCallFunctionSamples(const Instruction &Inst,
+                                                     uint64_t &Sum) const {
   const DILocation *DIL = Inst.getDebugLoc();
   std::vector<const FunctionSamples *> R;
 
@@ -966,7 +966,7 @@ SampleProfileLoader::findFunctionSamples(const Instruction &Inst) const {
   if (!DIL)
     return Samples;
 
-  auto it = DILocation2SampleMap.try_emplace(DIL,nullptr);
+  auto it = DILocation2SampleMap.try_emplace(DIL, nullptr);
   if (it.second) {
     if (ProfileIsCS)
       it.first->second = ContextTracker->getContextSamplesFor(DIL);
@@ -1558,11 +1558,12 @@ void SampleProfileLoader::buildEdges(Function &F) {
 }
 
 /// Returns the sorted CallTargetMap \p M by count in descending order.
-static SmallVector<InstrProfValueData, 2> GetSortedValueDataFromCallTargets(
-    const SampleRecord::CallTargetMap & M) {
+static SmallVector<InstrProfValueData, 2>
+GetSortedValueDataFromCallTargets(const SampleRecord::CallTargetMap &M) {
   SmallVector<InstrProfValueData, 2> R;
   for (const auto &I : SampleRecord::SortCallTargets(M)) {
-    R.emplace_back(InstrProfValueData{FunctionSamples::getGUID(I.first), I.second});
+    R.emplace_back(
+        InstrProfValueData{FunctionSamples::getGUID(I.first), I.second});
   }
   return R;
 }
@@ -1713,8 +1714,7 @@ void SampleProfileLoader::propagateWeights(Function &F) {
     // weights, the second pass does not need to set it.
     if (MaxWeight > 0 && !TI->extractProfTotalWeight(TempWeight)) {
       LLVM_DEBUG(dbgs() << "SUCCESS. Found non-zero weights.\n");
-      TI->setMetadata(LLVMContext::MD_prof,
-                      MDB.createBranchWeights(Weights));
+      TI->setMetadata(LLVMContext::MD_prof, MDB.createBranchWeights(Weights));
       ORE->emit([&]() {
         return OptimizationRemark(DEBUG_TYPE, "PopularDest", MaxDestInst)
                << "most popular destination for conditional branches at "
@@ -1898,8 +1898,8 @@ INITIALIZE_PASS_DEPENDENCY(ProfileSummaryInfoWrapperPass)
 INITIALIZE_PASS_END(SampleProfileLoaderLegacyPass, "sample-profile",
                     "Sample Profile loader", false, false)
 
-std::vector<Function *>
-SampleProfileLoader::buildFunctionOrder(Module &M, CallGraph *CG) {
+std::vector<Function *> SampleProfileLoader::buildFunctionOrder(Module &M,
+                                                                CallGraph *CG) {
   std::vector<Function *> FunctionOrderList;
   FunctionOrderList.reserve(M.size());
 
@@ -2074,7 +2074,8 @@ bool SampleProfileLoaderLegacyPass::runOnModule(Module &M) {
   return SampleLoader.runOnModule(M, nullptr, PSI, nullptr);
 }
 
-bool SampleProfileLoader::runOnFunction(Function &F, ModuleAnalysisManager *AM) {
+bool SampleProfileLoader::runOnFunction(Function &F,
+                                        ModuleAnalysisManager *AM) {
   DILocation2SampleMap.clear();
   // By default the entry count is initialized to -1, which will be treated
   // conservatively by getEntryCount as the same as unknown (None). This is

@@ -350,7 +350,7 @@ public:
   uint64_t size() const XRAY_NEVER_INSTRUMENT { return Size; }
 
   template <class... Args>
-  T *AppendEmplace(Args &&... args) XRAY_NEVER_INSTRUMENT {
+  T *AppendEmplace(Args &&...args) XRAY_NEVER_INSTRUMENT {
     DCHECK((Size == 0 && Head == &SentinelSegment && Head == Tail) ||
            (Size != 0 && Head != &SentinelSegment && Tail != &SentinelSegment));
     if (UNLIKELY(Head == &SentinelSegment)) {

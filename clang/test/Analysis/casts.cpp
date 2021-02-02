@@ -19,8 +19,8 @@ void intAsBoolAsSwitchCondition(int c) {
   }
 
   switch ((int)(bool)c) { // no-warning
-    case 0:
-      break;
+  case 0:
+    break;
   }
 }
 
@@ -46,14 +46,14 @@ bool retrievePointerFromBoolean(int *p) {
 
 namespace base_to_derived {
 struct A {};
-struct B : public A{};
+struct B : public A {};
 
-void foo(A* a) {
-  B* b = (B* ) a;
-  A* a2 = (A *) b;
+void foo(A *a) {
+  B *b = (B *)a;
+  A *a2 = (A *)b;
   clang_analyzer_eval(a2 == a); // expected-warning{{TRUE}}
 }
-}
+} // namespace base_to_derived
 
 namespace base_to_derived_double_inheritance {
 struct A {

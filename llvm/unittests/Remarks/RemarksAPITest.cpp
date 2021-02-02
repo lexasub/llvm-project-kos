@@ -108,7 +108,8 @@ TEST(RemarksAPI, StringTableInternalize) {
   EXPECT_NE(R.Args.back().Loc->SourceFilePath.data(),
             R2.Args.back().Loc->SourceFilePath.data());
 
-  // Check that the internalized remark is using the pointers from the string table.
+  // Check that the internalized remark is using the pointers from the string
+  // table.
   EXPECT_EQ(StrTab.add(R.PassName).second.data(), R2.PassName.data());
   EXPECT_EQ(StrTab.add(R.RemarkName).second.data(), R2.RemarkName.data());
   EXPECT_EQ(StrTab.add(R.FunctionName).second.data(), R2.FunctionName.data());

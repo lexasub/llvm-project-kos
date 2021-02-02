@@ -18,11 +18,11 @@ namespace T5 {
 }
 
 struct T6 {
- /// \brief Fff.
- void T7();
+  /// \brief Fff.
+  void T7();
 
- /// \brief Ggg.
- void T8();
+  /// \brief Ggg.
+  void T8();
 };
 
 void T6::T7() {

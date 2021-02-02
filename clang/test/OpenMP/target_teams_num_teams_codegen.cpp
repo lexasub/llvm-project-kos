@@ -102,17 +102,16 @@
 // Check target registration is registered as a Ctor.
 // CHECK: appending global [1 x { i32, void ()*, i8* }] [{ i32, void ()*, i8* } { i32 0, void ()* @.omp_offloading.requires_reg, i8* null }]
 
-
-template<typename tx>
+template <typename tx>
 tx ftemplate(int n) {
   tx a = 0;
 
-  #pragma omp target teams num_teams(tx(20))
+#pragma omp target teams num_teams(tx(20))
   {
   }
 
   short b = 1;
-  #pragma omp target teams num_teams(b)
+#pragma omp target teams num_teams(b)
   {
     a += b;
   }
@@ -120,32 +119,31 @@ tx ftemplate(int n) {
   return a;
 }
 
-static
-int fstatic(int n) {
+static int fstatic(int n) {
 
-  #pragma omp target teams num_teams(n)
+#pragma omp target teams num_teams(n)
   {
   }
 
-  #pragma omp target teams num_teams(32+n)
+#pragma omp target teams num_teams(32 + n)
   {
   }
 
-  return n+1;
+  return n + 1;
 }
 
 struct S1 {
   double a;
 
-  int r1(int n){
+  int r1(int n) {
     int b = 1;
 
-    #pragma omp target teams num_teams(n-b)
+#pragma omp target teams num_teams(n - b)
     {
       this->a = (double)b + 1.5;
     }
 
-    #pragma omp target teams num_teams(1024)
+#pragma omp target teams num_teams(1024)
     {
       this->a = 2.5;
     }
@@ -155,7 +153,7 @@ struct S1 {
 };
 
 // CHECK: define {{.*}}@{{.*}}bar{{.*}}
-int bar(int n){
+int bar(int n) {
   int a = 0;
 
   S1 S;
@@ -170,8 +168,6 @@ int bar(int n){
 
   return a;
 }
-
-
 
 //
 // CHECK: define {{.*}}[[FS1]]([[S1]]* {{[^,]*}} {{%.+}}, i32 {{[^%]*}}[[PARM:%.+]])
@@ -209,11 +205,6 @@ int bar(int n){
 // CHECK:       br label {{%?}}[[END]]
 // CHECK:       [[END]]
 //
-
-
-
-
-
 
 //
 // CHECK: define {{.*}}[[FSTATIC]](i32 {{[^%]*}}[[PARM:%.+]])
@@ -259,11 +250,6 @@ int bar(int n){
 // CHECK:       [[END]]
 //
 
-
-
-
-
-
 //
 // CHECK: define {{.*}}[[FTEMPLATE]]
 //
@@ -298,11 +284,6 @@ int bar(int n){
 // CHECK:       br label {{%?}}[[END]]
 // CHECK:       [[END]]
 //
-
-
-
-
-
 
 // Check that the offloading functions are emitted and that the parallel function
 // is appropriately guarded.

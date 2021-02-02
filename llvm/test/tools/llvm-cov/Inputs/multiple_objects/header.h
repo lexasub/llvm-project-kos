@@ -11,7 +11,7 @@ static inline void f1() {
 #endif
 }
 
-template<typename T>
+template <typename T>
 void f2(T **x) {
 #ifdef DEF
   if (false && false)

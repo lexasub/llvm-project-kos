@@ -46,9 +46,10 @@ nub_size_t MachVMMemory::PageSize(task_t task) {
         m_page_size = vm_info.page_size;
         return m_page_size;
       } else {
-        DNBLogThreadedIf(LOG_TASK, "MachVMMemory::PageSize task_info call "
-                                   "failed to get page size, TASK_VM_INFO %d, "
-                                   "TASK_VM_INFO_COUNT %d, kern return %d",
+        DNBLogThreadedIf(LOG_TASK,
+                         "MachVMMemory::PageSize task_info call "
+                         "failed to get page size, TASK_VM_INFO %d, "
+                         "TASK_VM_INFO_COUNT %d, kern return %d",
                          TASK_VM_INFO, TASK_VM_INFO_COUNT, kr);
       }
     }
@@ -121,9 +122,8 @@ static uint64_t GetPhysicalMemory() {
 nub_bool_t MachVMMemory::GetMemoryProfile(
     DNBProfileDataScanType scanType, task_t task, struct task_basic_info ti,
     cpu_type_t cputype, nub_process_t pid, vm_statistics64_data_t &vminfo,
-    uint64_t &physical_memory, uint64_t &anonymous,
-    uint64_t &phys_footprint, uint64_t &memory_cap)
-{
+    uint64_t &physical_memory, uint64_t &anonymous, uint64_t &phys_footprint,
+    uint64_t &memory_cap) {
   if (scanType & eProfileHostMemory)
     physical_memory = GetPhysicalMemory();
 
@@ -132,16 +132,18 @@ nub_bool_t MachVMMemory::GetMemoryProfile(
     mach_msg_type_number_t count = HOST_VM_INFO64_COUNT;
     host_statistics64(localHost, HOST_VM_INFO64, (host_info64_t)&vminfo,
                       &count);
-    
+
     kern_return_t kr;
     mach_msg_type_number_t info_count;
     task_vm_info_data_t vm_info;
 
     info_count = TASK_VM_INFO_COUNT;
-    kr = task_info(task, TASK_VM_INFO_PURGEABLE, (task_info_t)&vm_info, &info_count);
+    kr = task_info(task, TASK_VM_INFO_PURGEABLE, (task_info_t)&vm_info,
+                   &info_count);
     if (kr == KERN_SUCCESS) {
       if (scanType & eProfileMemoryAnonymous) {
-        anonymous = vm_info.internal + vm_info.compressed - vm_info.purgeable_volatile_pmap;
+        anonymous = vm_info.internal + vm_info.compressed -
+                    vm_info.purgeable_volatile_pmap;
       }
 
       phys_footprint = vm_info.phys_footprint;
@@ -152,8 +154,10 @@ nub_bool_t MachVMMemory::GetMemoryProfile(
   if (scanType & eProfileMemoryCap) {
     memorystatus_memlimit_properties_t memlimit_properties;
     memset(&memlimit_properties, 0, sizeof(memlimit_properties));
-    if (memorystatus_control(MEMORYSTATUS_CMD_GET_MEMLIMIT_PROPERTIES, pid, 0, &memlimit_properties, sizeof(memlimit_properties)) == 0) {
-        memory_cap = memlimit_properties.memlimit_active;
+    if (memorystatus_control(MEMORYSTATUS_CMD_GET_MEMLIMIT_PROPERTIES, pid, 0,
+                             &memlimit_properties,
+                             sizeof(memlimit_properties)) == 0) {
+      memory_cap = memlimit_properties.memlimit_active;
     }
   }
 #endif
@@ -235,10 +239,11 @@ nub_size_t MachVMMemory::Write(task_t task, nub_addr_t address,
           curr_data += bytes_written;
         }
       } else {
-        DNBLogThreadedIf(
-            LOG_MEMORY_PROTECTIONS, "Failed to set read/write protections on "
-                                    "region for address: [0x%8.8llx-0x%8.8llx)",
-            (uint64_t)curr_addr, (uint64_t)(curr_addr + curr_data_count));
+        DNBLogThreadedIf(LOG_MEMORY_PROTECTIONS,
+                         "Failed to set read/write protections on "
+                         "region for address: [0x%8.8llx-0x%8.8llx)",
+                         (uint64_t)curr_addr,
+                         (uint64_t)(curr_addr + curr_data_count));
         break;
       }
     } else {

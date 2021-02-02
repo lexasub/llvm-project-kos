@@ -28,7 +28,7 @@ void structToStruct(struct AB *P) {
   struct AB Ab;
   struct ABC *Abc;
   Abc = (struct ABC *)&Ab; // expected-warning {{Casting data to a larger structure type and accessing a field can lead to memory access errors or data corruption}}
-  Abc = (struct ABC *)P; // No warning; It is not known what data P points at.
+  Abc = (struct ABC *)P;   // No warning; It is not known what data P points at.
   Abc = (struct ABC *)&*P;
 
   // Don't warn when the cast is not widening.
@@ -45,9 +45,9 @@ void structToStruct(struct AB *P) {
 
   // True positives when casting from Base to Derived.
   Base B2;
-  D2 = (Derived *)&B2;// expected-warning {{Casting data to a larger structure type and accessing a field can lead to memory access errors or data corruption}}
-  D2 = dynamic_cast<Derived *>(&B2);// expected-warning {{Casting data to a larger structure type and accessing a field can lead to memory access errors or data corruption}}
-  D2 = static_cast<Derived *>(&B2);// expected-warning {{Casting data to a larger structure type and accessing a field can lead to memory access errors or data corruption}}
+  D2 = (Derived *)&B2;               // expected-warning {{Casting data to a larger structure type and accessing a field can lead to memory access errors or data corruption}}
+  D2 = dynamic_cast<Derived *>(&B2); // expected-warning {{Casting data to a larger structure type and accessing a field can lead to memory access errors or data corruption}}
+  D2 = static_cast<Derived *>(&B2);  // expected-warning {{Casting data to a larger structure type and accessing a field can lead to memory access errors or data corruption}}
 
   // False negatives, cast from Base to Derived. With path sensitive analysis
   // these false negatives could be fixed.
@@ -77,5 +77,5 @@ struct T {
 };
 extern struct S Var1, Var2;
 void dontCrash2() {
-  ((struct T *) &Var1)->P = &Var2;
+  ((struct T *)&Var1)->P = &Var2;
 }

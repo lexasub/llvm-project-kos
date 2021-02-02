@@ -56,8 +56,8 @@
 using namespace llvm;
 using namespace llvm::vfs;
 
-using llvm::sys::fs::file_t;
 using llvm::sys::fs::file_status;
+using llvm::sys::fs::file_t;
 using llvm::sys::fs::file_type;
 using llvm::sys::fs::kInvalidFile;
 using llvm::sys::fs::perms;
@@ -1030,7 +1030,6 @@ static llvm::SmallString<256> canonicalize(llvm::StringRef Path) {
 
 } // anonymous namespace
 
-
 RedirectingFileSystem::RedirectingFileSystem(IntrusiveRefCntPtr<FileSystem> FS)
     : ExternalFS(std::move(FS)) {
   if (ExternalFS)
@@ -1113,7 +1112,8 @@ std::error_code RedirectingFileSystem::isLocal(const Twine &Path_,
   return ExternalFS->isLocal(Path, Result);
 }
 
-std::error_code RedirectingFileSystem::makeAbsolute(SmallVectorImpl<char> &Path) const {
+std::error_code
+RedirectingFileSystem::makeAbsolute(SmallVectorImpl<char> &Path) const {
   if (llvm::sys::path::is_absolute(Path, llvm::sys::path::Style::posix) ||
       llvm::sys::path::is_absolute(Path, llvm::sys::path::Style::windows))
     return {};
@@ -2103,8 +2103,7 @@ void JSONWriter::writeEntry(StringRef VPath, StringRef RPath) {
 void JSONWriter::write(ArrayRef<YAMLVFSEntry> Entries,
                        Optional<bool> UseExternalNames,
                        Optional<bool> IsCaseSensitive,
-                       Optional<bool> IsOverlayRelative,
-                       StringRef OverlayDir) {
+                       Optional<bool> IsOverlayRelative, StringRef OverlayDir) {
   using namespace llvm::sys;
 
   OS << "{\n"
@@ -2126,9 +2125,8 @@ void JSONWriter::write(ArrayRef<YAMLVFSEntry> Entries,
   if (!Entries.empty()) {
     const YAMLVFSEntry &Entry = Entries.front();
 
-    startDirectory(
-      Entry.IsDirectory ? Entry.VPath : path::parent_path(Entry.VPath)
-    );
+    startDirectory(Entry.IsDirectory ? Entry.VPath
+                                     : path::parent_path(Entry.VPath));
 
     StringRef RPath = Entry.RPath;
     if (UseOverlayRelative) {

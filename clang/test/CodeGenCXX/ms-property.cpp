@@ -20,20 +20,20 @@ public:
 
 class S {
 public:
-  __declspec(property(get=GetX,put=PutX)) int x[];
-  int GetX(int i, int j) { return i+j; }
+  __declspec(property(get = GetX, put = PutX)) int x[];
+  int GetX(int i, int j) { return i + j; }
   void PutX(int i, int j, int k) { j = i = k; }
 };
 
 template <typename T>
 class St {
 public:
-  __declspec(property(get=GetX,put=PutX)) T x[];
-  T GetX(T i, T j) { return i+j; }
+  __declspec(property(get = GetX, put = PutX)) T x[];
+  T GetX(T i, T j) { return i + j; }
   T GetX() { return 0; }
   T PutX(T i, T j, T k) { return j = i = k; }
-  __declspec(property(get=GetY,put=PutY)) T y[];
-  char GetY(char i,  Test1 j) { return i+j.get_x(); }
+  __declspec(property(get = GetY, put = PutY)) T y[];
+  char GetY(char i, Test1 j) { return i + j.get_x(); }
   void PutY(char i, int j, double k) { j = i = k; }
 };
 
@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
   // CHECK: [[T_X:%.+]] = call i32 @"?get_x@Test1@@QEBAHXZ"(%class.Test1* {{[^,]*}} %{{.+}})
   // CHECK: [[CAST2:%.+]] = trunc i32 [[T_X]] to i8
   // CHECK: call void @"?PutY@?$St@M@@QEAAXDHN@Z"(%class.St* {{[^,]*}} [[P2]], i8 [[CAST2]], i32 [[ARGC]], double [[CAST]])
-  p2->y[t.X][argc] =  p1->x[22][33];
+  p2->y[t.X][argc] = p1->x[22][33];
   // CHECK: [[P2_1:%.+]] = load %class.St*, %class.St**
   // CHECK: [[P2_2:%.+]] = load %class.St*, %class.St**
   // CHECK: [[P1:%.+]] = load %class.S*, %class.S**

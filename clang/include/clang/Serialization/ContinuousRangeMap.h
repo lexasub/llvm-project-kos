@@ -48,16 +48,10 @@ private:
   Representation Rep;
 
   struct Compare {
-    bool operator ()(const_reference L, Int R) const {
-      return L.first < R;
-    }
-    bool operator ()(Int L, const_reference R) const {
-      return L < R.first;
-    }
-    bool operator ()(Int L, Int R) const {
-      return L < R;
-    }
-    bool operator ()(const_reference L, const_reference R) const {
+    bool operator()(const_reference L, Int R) const { return L.first < R; }
+    bool operator()(Int L, const_reference R) const { return L < R.first; }
+    bool operator()(Int L, Int R) const { return L < R; }
+    bool operator()(const_reference L, const_reference R) const {
       return L.first < R.first;
     }
   };
@@ -100,7 +94,7 @@ public:
     return I;
   }
   const_iterator find(Int K) const {
-    return const_cast<ContinuousRangeMap*>(this)->find(K);
+    return const_cast<ContinuousRangeMap *>(this)->find(K);
   }
 
   reference back() { return Rep.back(); }
@@ -113,8 +107,8 @@ public:
 
   public:
     explicit Builder(ContinuousRangeMap &Self) : Self(Self) {}
-    Builder(const Builder&) = delete;
-    Builder &operator=(const Builder&) = delete;
+    Builder(const Builder &) = delete;
+    Builder &operator=(const Builder &) = delete;
 
     ~Builder() {
       llvm::sort(Self.Rep, Compare());
@@ -131,9 +125,7 @@ public:
           Self.Rep.end());
     }
 
-    void insert(const value_type &Val) {
-      Self.Rep.push_back(Val);
-    }
+    void insert(const value_type &Val) { Self.Rep.push_back(Val); }
   };
 
   friend class Builder;

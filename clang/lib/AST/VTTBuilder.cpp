@@ -28,8 +28,7 @@ using namespace clang;
 
 #define DUMP_OVERRIDERS 0
 
-VTTBuilder::VTTBuilder(ASTContext &Ctx,
-                       const CXXRecordDecl *MostDerivedClass,
+VTTBuilder::VTTBuilder(ASTContext &Ctx, const CXXRecordDecl *MostDerivedClass,
                        bool GenerateDefinition)
     : Ctx(Ctx), MostDerivedClass(MostDerivedClass),
       MostDerivedClassLayout(Ctx.getASTRecordLayout(MostDerivedClass)),
@@ -62,26 +61,23 @@ void VTTBuilder::LayoutSecondaryVTTs(BaseSubobject Base) {
   for (const auto &I : RD->bases()) {
     // Don't layout virtual bases.
     if (I.isVirtual())
-        continue;
+      continue;
 
     const auto *BaseDecl =
         cast<CXXRecordDecl>(I.getType()->castAs<RecordType>()->getDecl());
 
     const ASTRecordLayout &Layout = Ctx.getASTRecordLayout(RD);
-    CharUnits BaseOffset = Base.getBaseOffset() +
-      Layout.getBaseClassOffset(BaseDecl);
+    CharUnits BaseOffset =
+        Base.getBaseOffset() + Layout.getBaseClassOffset(BaseDecl);
 
     // Layout the VTT for this base.
     LayoutVTT(BaseSubobject(BaseDecl, BaseOffset), /*BaseIsVirtual=*/false);
   }
 }
 
-void
-VTTBuilder::LayoutSecondaryVirtualPointers(BaseSubobject Base,
-                                           bool BaseIsMorallyVirtual,
-                                           uint64_t VTableIndex,
-                                           const CXXRecordDecl *VTableClass,
-                                           VisitedVirtualBasesSetTy &VBases) {
+void VTTBuilder::LayoutSecondaryVirtualPointers(
+    BaseSubobject Base, bool BaseIsMorallyVirtual, uint64_t VTableIndex,
+    const CXXRecordDecl *VTableClass, VisitedVirtualBasesSetTy &VBases) {
   const CXXRecordDecl *RD = Base.getBase();
 
   // We're not interested in bases that don't have virtual bases, and not
@@ -116,11 +112,9 @@ VTTBuilder::LayoutSecondaryVirtualPointers(BaseSubobject Base,
     } else {
       const ASTRecordLayout &Layout = Ctx.getASTRecordLayout(RD);
 
-      BaseOffset = Base.getBaseOffset() +
-        Layout.getBaseClassOffset(BaseDecl);
+      BaseOffset = Base.getBaseOffset() + Layout.getBaseClassOffset(BaseDecl);
 
-      if (!Layout.isPrimaryBaseVirtual() &&
-          Layout.getPrimaryBase() == BaseDecl)
+      if (!Layout.isPrimaryBaseVirtual() && Layout.getPrimaryBase() == BaseDecl)
         BaseDeclIsNonVirtualPrimaryBase = true;
     }
 
@@ -143,9 +137,8 @@ VTTBuilder::LayoutSecondaryVirtualPointers(BaseSubobject Base,
   }
 }
 
-void
-VTTBuilder::LayoutSecondaryVirtualPointers(BaseSubobject Base,
-                                           uint64_t VTableIndex) {
+void VTTBuilder::LayoutSecondaryVirtualPointers(BaseSubobject Base,
+                                                uint64_t VTableIndex) {
   VisitedVirtualBasesSetTy VBases;
   LayoutSecondaryVirtualPointers(Base, /*BaseIsMorallyVirtual=*/false,
                                  VTableIndex, Base.getBase(), VBases);
@@ -164,7 +157,7 @@ void VTTBuilder::LayoutVirtualVTTs(const CXXRecordDecl *RD,
         continue;
 
       CharUnits BaseOffset =
-        MostDerivedClassLayout.getVBaseClassOffset(BaseDecl);
+          MostDerivedClassLayout.getVBaseClassOffset(BaseDecl);
 
       LayoutVTT(BaseSubobject(BaseDecl, BaseOffset), /*BaseIsVirtual=*/true);
     }

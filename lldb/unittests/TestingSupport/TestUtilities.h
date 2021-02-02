@@ -51,6 +51,6 @@ private:
 
   std::string Buffer;
 };
-}
+} // namespace lldb_private
 
 #endif

@@ -24,7 +24,7 @@ __declspec(dllimport) void __cxa_guard_acquire(unsigned long long *);
 __declspec(dllimport) unsigned char *__cxa_allocate_exception(unsigned long);
 }
 extern "C" __declspec(dllimport) void __cxa_guard_release(unsigned long long *);
-}
+} // namespace __cxxabiv1
 namespace std {
 __declspec(dllimport) __declspec(noreturn) void terminate();
 }
@@ -35,7 +35,7 @@ __declspec(dllexport) void __cxa_guard_acquire(unsigned long long *);
 __declspec(dllexport) unsigned char *__cxa_allocate_exception(unsigned long);
 }
 extern "C" void __declspec(dllexport) __cxa_guard_release(unsigned long long *);
-}
+} // namespace __cxxabiv1
 namespace std {
 __declspec(dllexport) __declspec(noreturn) void terminate();
 }

@@ -17,22 +17,21 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        typedef double T;
-        T a1[] = {1.5, 2.5, -3, 4, -5.5};
-        const unsigned N1 = sizeof(a1)/sizeof(a1[0]);
-        std::valarray<T> v1(a1, N1);
-        assert(v1.max() == 4.0);
-    }
-    {
-        typedef double T;
-        T a1[] = {1.5, 2.5, -3, 4, -5.5};
-        const unsigned N1 = sizeof(a1)/sizeof(a1[0]);
-        std::valarray<T> v1(a1, N1);
-        assert((2*v1).max() == 8.0);
-    }
+int main(int, char**) {
+  {
+    typedef double T;
+    T a1[] = {1.5, 2.5, -3, 4, -5.5};
+    const unsigned N1 = sizeof(a1) / sizeof(a1[0]);
+    std::valarray<T> v1(a1, N1);
+    assert(v1.max() == 4.0);
+  }
+  {
+    typedef double T;
+    T a1[] = {1.5, 2.5, -3, 4, -5.5};
+    const unsigned N1 = sizeof(a1) / sizeof(a1[0]);
+    std::valarray<T> v1(a1, N1);
+    assert((2 * v1).max() == 8.0);
+  }
 
   return 0;
 }

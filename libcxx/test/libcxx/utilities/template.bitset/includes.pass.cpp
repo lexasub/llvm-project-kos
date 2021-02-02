@@ -28,8 +28,4 @@
 #error <iosfwd> has not been included
 #endif
 
-int main(int, char**)
-{
-
-  return 0;
-}
+int main(int, char**) { return 0; }

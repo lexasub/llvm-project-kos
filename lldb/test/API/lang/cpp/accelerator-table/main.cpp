@@ -1,10 +1,10 @@
-#define CLASS(NAME)                             \
-  class NAME {                                  \
-  public:                                       \
-    struct Inner;                               \
-    Inner *i = nullptr;                         \
-  };                                            \
-NAME::Inner &getInner##NAME();
+#define CLASS(NAME)                                                            \
+  class NAME {                                                                 \
+  public:                                                                      \
+    struct Inner;                                                              \
+    Inner *i = nullptr;                                                        \
+  };                                                                           \
+  NAME::Inner &getInner##NAME();
 
 CLASS(A)
 CLASS(B)
@@ -14,8 +14,7 @@ CLASS(E)
 CLASS(F)
 CLASS(G)
 
-int main()
-{
+int main() {
   A::Inner &inner_a = getInnerA();
   B::Inner &inner_b = getInnerB();
   C::Inner &inner_c = getInnerC();

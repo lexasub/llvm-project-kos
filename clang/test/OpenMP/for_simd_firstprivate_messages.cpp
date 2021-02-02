@@ -94,7 +94,10 @@ int foomain(int argc, char **argv) {
   for (int k = 0; k < argc; ++k)
     ++k;
 #pragma omp parallel
-#pragma omp for simd firstprivate(argc) allocate , allocate(, allocate(omp_default , allocate(omp_default_mem_alloc, allocate(omp_default_mem_alloc:, allocate(omp_default_mem_alloc: argc, allocate(omp_default_mem_alloc: argv), allocate(argv) // expected-error {{expected '(' after 'allocate'}} expected-error 2 {{expected expression}} expected-error 2 {{expected ')'}} expected-error {{use of undeclared identifier 'omp_default'}} expected-note 2 {{to match this '('}}
+#pragma omp for simd firstprivate(argc) allocate, allocate(, allocate(omp_default, allocate(omp_default_mem_alloc, allocate(omp_default_mem_alloc:, allocate(omp_default_mem_alloc                  \
+                                                                                                                                                             : argc, allocate(omp_default_mem_alloc \
+                                                                                                                                                                              : argv),              \
+                                                                                                                                                               allocate(argv) // expected-error {{expected '(' after 'allocate'}} expected-error 2 {{expected expression}} expected-error 2 {{expected ')'}} expected-error {{use of undeclared identifier 'omp_default'}} expected-note 2 {{to match this '('}}
   for (int k = 0; k < argc; ++k)
     ++k;
 #pragma omp parallel
@@ -124,7 +127,7 @@ int foomain(int argc, char **argv) {
 #pragma omp parallel
   {
     int v = 0;
-    int i;                      // expected-note {{variable with automatic storage duration is predetermined as private; perhaps you forget to enclose 'omp for simd' directive into a parallel or another task region?}}
+    int i;                           // expected-note {{variable with automatic storage duration is predetermined as private; perhaps you forget to enclose 'omp for simd' directive into a parallel or another task region?}}
 #pragma omp for simd firstprivate(i) // expected-error {{firstprivate variable must be shared}}
     for (int k = 0; k < argc; ++k) {
       i = k;
@@ -148,8 +151,9 @@ int foomain(int argc, char **argv) {
 #pragma omp for simd firstprivate(i) // expected-error {{firstprivate variable must be shared}}
   for (i = 0; i < argc; ++i)
     foo();
-#pragma omp parallel reduction(+ : i) // expected-note {{defined as reduction}}
-#pragma omp for simd firstprivate(i)       // expected-error {{firstprivate variable must be shared}}
+#pragma omp parallel reduction(+ \
+                               : i) // expected-note {{defined as reduction}}
+#pragma omp for simd firstprivate(i) // expected-error {{firstprivate variable must be shared}}
   for (int k = 0; k < argc; ++k)
     foo();
   return 0;
@@ -158,7 +162,7 @@ int foomain(int argc, char **argv) {
 namespace A {
 double x;
 #pragma omp threadprivate(x) // expected-note {{defined as threadprivate or thread local}}
-}
+} // namespace A
 namespace B {
 using A::x;
 }
@@ -267,7 +271,7 @@ int main(int argc, char **argv) {
     foo();
 #pragma omp parallel
 #pragma omp for simd firstprivate(i) // expected-note {{defined as firstprivate}}
-  for (i = 0; i < argc; ++i)    // expected-error {{loop iteration variable in the associated loop of 'omp for simd' directive may not be firstprivate, predetermined as linear}}
+  for (i = 0; i < argc; ++i) // expected-error {{loop iteration variable in the associated loop of 'omp for simd' directive may not be firstprivate, predetermined as linear}}
     foo();
 #pragma omp parallel shared(xa)
 #pragma omp for simd firstprivate(xa) // OK: may be firstprivate
@@ -288,7 +292,7 @@ int main(int argc, char **argv) {
 #pragma omp parallel
   {
     int v = 0;
-    int i;                      // expected-note {{variable with automatic storage duration is predetermined as private; perhaps you forget to enclose 'omp for simd' directive into a parallel or another task region?}}
+    int i;                           // expected-note {{variable with automatic storage duration is predetermined as private; perhaps you forget to enclose 'omp for simd' directive into a parallel or another task region?}}
 #pragma omp for simd firstprivate(i) // expected-error {{firstprivate variable must be shared}}
     for (int k = 0; k < argc; ++k) {
       i = k;
@@ -299,8 +303,9 @@ int main(int argc, char **argv) {
 #pragma omp for simd firstprivate(i) // expected-error {{firstprivate variable must be shared}}
   for (i = 0; i < argc; ++i)
     foo();
-#pragma omp parallel reduction(+ : i) // expected-note {{defined as reduction}}
-#pragma omp for simd firstprivate(i)       // expected-error {{firstprivate variable must be shared}}
+#pragma omp parallel reduction(+ \
+                               : i) // expected-note {{defined as reduction}}
+#pragma omp for simd firstprivate(i) // expected-error {{firstprivate variable must be shared}}
   for (i = 0; i < argc; ++i)
     foo();
   static int si;

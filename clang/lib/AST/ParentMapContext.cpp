@@ -12,9 +12,9 @@
 //===----------------------------------------------------------------------===//
 
 #include "clang/AST/ParentMapContext.h"
-#include "clang/AST/RecursiveASTVisitor.h"
 #include "clang/AST/Decl.h"
 #include "clang/AST/Expr.h"
+#include "clang/AST/RecursiveASTVisitor.h"
 #include "clang/AST/TemplateBase.h"
 
 using namespace clang;
@@ -83,7 +83,7 @@ class ParentMapContext::ParentMap {
 
   template <typename NodeTy, typename MapTy>
   static DynTypedNodeList getDynNodeFromMap(const NodeTy &Node,
-                                                        const MapTy &Map) {
+                                            const MapTy &Map) {
     auto I = Map.find(Node);
     if (I == Map.end()) {
       return llvm::ArrayRef<DynTypedNode>();

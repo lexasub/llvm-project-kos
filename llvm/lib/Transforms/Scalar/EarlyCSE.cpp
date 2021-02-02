@@ -69,24 +69,26 @@ using namespace llvm::PatternMatch;
 #define DEBUG_TYPE "early-cse"
 
 STATISTIC(NumSimplify, "Number of instructions simplified or DCE'd");
-STATISTIC(NumCSE,      "Number of instructions CSE'd");
-STATISTIC(NumCSECVP,   "Number of compare instructions CVP'd");
-STATISTIC(NumCSELoad,  "Number of load instructions CSE'd");
-STATISTIC(NumCSECall,  "Number of call instructions CSE'd");
-STATISTIC(NumDSE,      "Number of trivial dead stores removed");
+STATISTIC(NumCSE, "Number of instructions CSE'd");
+STATISTIC(NumCSECVP, "Number of compare instructions CVP'd");
+STATISTIC(NumCSELoad, "Number of load instructions CSE'd");
+STATISTIC(NumCSECall, "Number of call instructions CSE'd");
+STATISTIC(NumDSE, "Number of trivial dead stores removed");
 
 DEBUG_COUNTER(CSECounter, "early-cse",
               "Controls which instructions are removed");
 
 static cl::opt<unsigned> EarlyCSEMssaOptCap(
     "earlycse-mssa-optimization-cap", cl::init(500), cl::Hidden,
-    cl::desc("Enable imprecision in EarlyCSE in pathological cases, in exchange "
-             "for faster compile. Caps the MemorySSA clobbering calls."));
+    cl::desc(
+        "Enable imprecision in EarlyCSE in pathological cases, in exchange "
+        "for faster compile. Caps the MemorySSA clobbering calls."));
 
 static cl::opt<bool> EarlyCSEDebugHash(
     "earlycse-debug-hash", cl::init(false), cl::Hidden,
-    cl::desc("Perform extra assertion checking to verify that SimpleValue's hash "
-             "function is well-behaved w.r.t. its isEqual predicate"));
+    cl::desc(
+        "Perform extra assertion checking to verify that SimpleValue's hash "
+        "function is well-behaved w.r.t. its isEqual predicate"));
 
 //===----------------------------------------------------------------------===//
 // SimpleValue
@@ -172,16 +174,33 @@ static bool matchSelectWithOptionalNotCond(Value *V, Value *&Cond, Value *&A,
   }
 
   switch (Pred) {
-  case CmpInst::ICMP_UGT: Flavor = SPF_UMAX; break;
-  case CmpInst::ICMP_ULT: Flavor = SPF_UMIN; break;
-  case CmpInst::ICMP_SGT: Flavor = SPF_SMAX; break;
-  case CmpInst::ICMP_SLT: Flavor = SPF_SMIN; break;
+  case CmpInst::ICMP_UGT:
+    Flavor = SPF_UMAX;
+    break;
+  case CmpInst::ICMP_ULT:
+    Flavor = SPF_UMIN;
+    break;
+  case CmpInst::ICMP_SGT:
+    Flavor = SPF_SMAX;
+    break;
+  case CmpInst::ICMP_SLT:
+    Flavor = SPF_SMIN;
+    break;
   // Non-strict inequalities.
-  case CmpInst::ICMP_ULE: Flavor = SPF_UMIN; break;
-  case CmpInst::ICMP_UGE: Flavor = SPF_UMAX; break;
-  case CmpInst::ICMP_SLE: Flavor = SPF_SMIN; break;
-  case CmpInst::ICMP_SGE: Flavor = SPF_SMAX; break;
-  default: break;
+  case CmpInst::ICMP_ULE:
+    Flavor = SPF_UMIN;
+    break;
+  case CmpInst::ICMP_UGE:
+    Flavor = SPF_UMAX;
+    break;
+  case CmpInst::ICMP_SLE:
+    Flavor = SPF_SMIN;
+    break;
+  case CmpInst::ICMP_SGE:
+    Flavor = SPF_SMAX;
+    break;
+  default:
+    break;
   }
 
   return true;
@@ -220,12 +239,12 @@ static unsigned getHashValueImpl(SimpleValue Val) {
   Value *Cond, *A, *B;
   if (matchSelectWithOptionalNotCond(Inst, Cond, A, B, SPF)) {
     // Hash min/max (cmp + select) to allow for commuted operands.
-    // Min/max may also have non-canonical compare predicate (eg, the compare for
-    // smin may use 'sgt' rather than 'slt'), and non-canonical operands in the
-    // compare.
+    // Min/max may also have non-canonical compare predicate (eg, the compare
+    // for smin may use 'sgt' rather than 'slt'), and non-canonical operands in
+    // the compare.
     // TODO: We should also detect FP min/max.
-    if (SPF == SPF_SMIN || SPF == SPF_SMAX ||
-        SPF == SPF_UMIN || SPF == SPF_UMAX) {
+    if (SPF == SPF_SMIN || SPF == SPF_SMAX || SPF == SPF_UMIN ||
+        SPF == SPF_UMAX) {
       if (A > B)
         std::swap(A, B);
       return hash_combine(Inst->getOpcode(), SPF, A, B);
@@ -350,8 +369,8 @@ static bool isEqualImpl(SimpleValue LHS, SimpleValue RHS) {
       matchSelectWithOptionalNotCond(RHSI, CondR, RHSA, RHSB, RSPF)) {
     if (LSPF == RSPF) {
       // TODO: We should also detect FP min/max.
-      if (LSPF == SPF_SMIN || LSPF == SPF_SMAX ||
-          LSPF == SPF_UMIN || LSPF == SPF_UMAX)
+      if (LSPF == SPF_SMIN || LSPF == SPF_SMAX || LSPF == SPF_UMIN ||
+          LSPF == SPF_UMAX)
         return ((LHSA == RHSA && LHSB == RHSB) ||
                 (LHSA == RHSB && LHSB == RHSA));
 
@@ -373,7 +392,8 @@ static bool isEqualImpl(SimpleValue LHS, SimpleValue RHS) {
     // the sense of not + not, because doing so could result in values
     // comparing
     // as equal that hash differently in the min/max cases like:
-    // select (cmp slt, X, Y), X, Y <--> select (not (not (cmp slt, X, Y))), X, Y
+    // select (cmp slt, X, Y), X, Y <--> select (not (not (cmp slt, X, Y))), X,
+    // Y
     //   ^ hashes as min                  ^ would not hash as min
     // In the context of the EarlyCSE pass, however, such cases never reach
     // this code, as we simplify the double-negation before hashing the second
@@ -458,8 +478,8 @@ unsigned DenseMapInfo<CallValue>::getHashValue(CallValue Val) {
   // not real values, but indices into statepoint's argument list.
   // Get values they point to.
   if (const GCRelocateInst *GCR = dyn_cast<GCRelocateInst>(Inst))
-    return hash_combine(GCR->getOpcode(), GCR->getOperand(0),
-                        GCR->getBasePtr(), GCR->getDerivedPtr());
+    return hash_combine(GCR->getOpcode(), GCR->getOperand(0), GCR->getBasePtr(),
+                        GCR->getDerivedPtr());
 
   // Hash all of the operands as pointers and mix in the opcode.
   return hash_combine(
@@ -508,9 +528,8 @@ public:
   using AllocatorTy =
       RecyclingAllocator<BumpPtrAllocator,
                          ScopedHashTableVal<SimpleValue, Value *>>;
-  using ScopedHTType =
-      ScopedHashTable<SimpleValue, Value *, DenseMapInfo<SimpleValue>,
-                      AllocatorTy>;
+  using ScopedHTType = ScopedHashTable<SimpleValue, Value *,
+                                       DenseMapInfo<SimpleValue>, AllocatorTy>;
 
   /// A scoped hash table of the current values of all of our simple
   /// scalar expressions.
@@ -550,9 +569,8 @@ public:
   using LoadMapAllocator =
       RecyclingAllocator<BumpPtrAllocator,
                          ScopedHashTableVal<Value *, LoadValue>>;
-  using LoadHTType =
-      ScopedHashTable<Value *, LoadValue, DenseMapInfo<Value *>,
-                      LoadMapAllocator>;
+  using LoadHTType = ScopedHashTable<Value *, LoadValue, DenseMapInfo<Value *>,
+                                     LoadMapAllocator>;
 
   LoadHTType AvailableLoads;
 
@@ -596,8 +614,8 @@ private:
   public:
     NodeScope(ScopedHTType &AvailableValues, LoadHTType &AvailableLoads,
               InvariantHTType &AvailableInvariants, CallHTType &AvailableCalls)
-      : Scope(AvailableValues), LoadScope(AvailableLoads),
-        InvariantScope(AvailableInvariants), CallScope(AvailableCalls) {}
+        : Scope(AvailableValues), LoadScope(AvailableLoads),
+          InvariantScope(AvailableInvariants), CallScope(AvailableCalls) {}
     NodeScope(const NodeScope &) = delete;
     NodeScope &operator=(const NodeScope &) = delete;
 
@@ -619,10 +637,8 @@ private:
               unsigned cg, DomTreeNode *n, DomTreeNode::const_iterator child,
               DomTreeNode::const_iterator end)
         : CurrentGeneration(cg), ChildGeneration(cg), Node(n), ChildIter(child),
-          EndIter(end),
-          Scopes(AvailableValues, AvailableLoads, AvailableInvariants,
-                 AvailableCalls)
-          {}
+          EndIter(end), Scopes(AvailableValues, AvailableLoads,
+                               AvailableInvariants, AvailableCalls) {}
     StackNode(const StackNode &) = delete;
     StackNode &operator=(const StackNode &) = delete;
 
@@ -658,7 +674,7 @@ private:
   class ParseMemoryInst {
   public:
     ParseMemoryInst(Instruction *Inst, const TargetTransformInfo &TTI)
-      : Inst(Inst) {
+        : Inst(Inst) {
       if (IntrinsicInst *II = dyn_cast<IntrinsicInst>(Inst)) {
         IntrID = II->getIntrinsicID();
         if (TTI.getTgtMemIntrinsic(II, Info))
@@ -1073,7 +1089,7 @@ bool EarlyCSE::handleBranchCondition(Instruction *CondInst,
 
     Value *LHS, *RHS;
     if (MatchBinOp(Curr, PropagateOpcode, LHS, RHS))
-      for (auto &Op : { LHS, RHS })
+      for (auto &Op : {LHS, RHS})
         if (Instruction *OPI = dyn_cast<Instruction>(Op))
           if (SimpleValue::canHandle(OPI) && Visited.insert(OPI).second)
             WorkList.push_back(OPI);
@@ -1280,8 +1296,7 @@ bool EarlyCSE::processNode(DomTreeNode *Node) {
             // Is the condition known to be true?
             if (isa<ConstantInt>(KnownCond) &&
                 cast<ConstantInt>(KnownCond)->isOne()) {
-              LLVM_DEBUG(dbgs()
-                         << "EarlyCSE removing guard: " << Inst << '\n');
+              LLVM_DEBUG(dbgs() << "EarlyCSE removing guard: " << Inst << '\n');
               salvageKnowledge(&Inst, &AC);
               removeMSSA(Inst);
               Inst.eraseFromParent();
@@ -1470,11 +1485,12 @@ bool EarlyCSE::processNode(DomTreeNode *Node) {
     if (MemInst.isValid() && MemInst.isStore()) {
       LoadValue InVal = AvailableLoads.lookup(MemInst.getPointerOperand());
       if (InVal.DefInst &&
-          InVal.DefInst == getMatchingValue(InVal, MemInst, CurrentGeneration)) {
-        // It is okay to have a LastStore to a different pointer here if MemorySSA
-        // tells us that the load and store are from the same memory generation.
-        // In that case, LastStore should keep its present value since we're
-        // removing the current store.
+          InVal.DefInst ==
+              getMatchingValue(InVal, MemInst, CurrentGeneration)) {
+        // It is okay to have a LastStore to a different pointer here if
+        // MemorySSA tells us that the load and store are from the same memory
+        // generation. In that case, LastStore should keep its present value
+        // since we're removing the current store.
         assert((!LastStore ||
                 ParseMemoryInst(LastStore, TTI).getPointerOperand() ==
                     MemInst.getPointerOperand() ||
@@ -1562,10 +1578,10 @@ bool EarlyCSE::run() {
   bool Changed = false;
 
   // Process the root node.
-  nodesToProcess.push_back(new StackNode(
-      AvailableValues, AvailableLoads, AvailableInvariants, AvailableCalls,
-      CurrentGeneration, DT.getRootNode(),
-      DT.getRootNode()->begin(), DT.getRootNode()->end()));
+  nodesToProcess.push_back(
+      new StackNode(AvailableValues, AvailableLoads, AvailableInvariants,
+                    AvailableCalls, CurrentGeneration, DT.getRootNode(),
+                    DT.getRootNode()->begin(), DT.getRootNode()->end()));
 
   assert(!CurrentGeneration && "Create a new EarlyCSE instance to rerun it.");
 
@@ -1589,8 +1605,8 @@ bool EarlyCSE::run() {
       DomTreeNode *child = NodeToProcess->nextChild();
       nodesToProcess.push_back(
           new StackNode(AvailableValues, AvailableLoads, AvailableInvariants,
-                        AvailableCalls, NodeToProcess->childGeneration(),
-                        child, child->begin(), child->end()));
+                        AvailableCalls, NodeToProcess->childGeneration(), child,
+                        child->begin(), child->end()));
     } else {
       // It has been processed, and there are no more children to process,
       // so delete it and pop it off the stack.
@@ -1602,8 +1618,7 @@ bool EarlyCSE::run() {
   return Changed;
 }
 
-PreservedAnalyses EarlyCSEPass::run(Function &F,
-                                    FunctionAnalysisManager &AM) {
+PreservedAnalyses EarlyCSEPass::run(Function &F, FunctionAnalysisManager &AM) {
   auto &TLI = AM.getResult<TargetLibraryAnalysis>(F);
   auto &TTI = AM.getResult<TargetIRAnalysis>(F);
   auto &DT = AM.getResult<DominatorTreeAnalysis>(F);
@@ -1633,7 +1648,7 @@ namespace {
 /// canonicalize things as it goes. It is intended to be fast and catch obvious
 /// cases so that instcombine and other passes are more effective. It is
 /// expected that a later pass of GVN will catch the interesting/hard cases.
-template<bool UseMemorySSA>
+template <bool UseMemorySSA>
 class EarlyCSELegacyCommonPass : public FunctionPass {
 public:
   static char ID;
@@ -1681,8 +1696,7 @@ public:
 
 using EarlyCSELegacyPass = EarlyCSELegacyCommonPass</*UseMemorySSA=*/false>;
 
-template<>
-char EarlyCSELegacyPass::ID = 0;
+template <> char EarlyCSELegacyPass::ID = 0;
 
 INITIALIZE_PASS_BEGIN(EarlyCSELegacyPass, "early-cse", "Early CSE", false,
                       false)
@@ -1695,8 +1709,7 @@ INITIALIZE_PASS_END(EarlyCSELegacyPass, "early-cse", "Early CSE", false, false)
 using EarlyCSEMemSSALegacyPass =
     EarlyCSELegacyCommonPass</*UseMemorySSA=*/true>;
 
-template<>
-char EarlyCSEMemSSALegacyPass::ID = 0;
+template <> char EarlyCSEMemSSALegacyPass::ID = 0;
 
 FunctionPass *llvm::createEarlyCSEPass(bool UseMemorySSA) {
   if (UseMemorySSA)

@@ -14,12 +14,11 @@ int main() {
   //__atomic_fetch_add(&x, 1, __ATOMIC_ACQUIRE | __ATOMIC_HLE_ACQUIRE);
   //__atomic_store_n(&x, 0, __ATOMIC_RELEASE | __ATOMIC_HLE_RELEASE);
   __tsan_atomic32_fetch_add(&x, 1,
-      (__tsan_memory_order)(__ATOMIC_ACQUIRE | __ATOMIC_HLE_ACQUIRE));
+                            (__tsan_memory_order)(__ATOMIC_ACQUIRE | __ATOMIC_HLE_ACQUIRE));
   __tsan_atomic32_store(&x, 0,
-      (__tsan_memory_order)(__ATOMIC_RELEASE | __ATOMIC_HLE_RELEASE));
+                        (__tsan_memory_order)(__ATOMIC_RELEASE | __ATOMIC_HLE_RELEASE));
   fprintf(stderr, "DONE\n");
   return 0;
 }
 
 // CHECK: DONE
-

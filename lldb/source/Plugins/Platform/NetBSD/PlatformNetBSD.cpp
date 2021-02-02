@@ -38,7 +38,6 @@ LLDB_PLUGIN_DEFINE(PlatformNetBSD)
 
 static uint32_t g_initialize_count = 0;
 
-
 PlatformSP PlatformNetBSD::CreateInstance(bool force, const ArchSpec *arch) {
   Log *log(GetLogIfAllCategoriesSet(LIBLLDB_LOG_PLATFORM));
   LLDB_LOG(log, "force = {0}, arch=({1}, {2})", force,

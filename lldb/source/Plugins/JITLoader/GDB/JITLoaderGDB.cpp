@@ -143,7 +143,7 @@ bool ReadJITEntry(const addr_t from_addr, Process *process,
   return true;
 }
 
-} // anonymous namespace end
+} // namespace
 
 JITLoaderGDB::JITLoaderGDB(lldb_private::Process *process)
     : JITLoader(process), m_jit_objects(),
@@ -413,16 +413,16 @@ JITLoaderSP JITLoaderGDB::CreateInstance(Process *process, bool force) {
   JITLoaderSP jit_loader_sp;
   bool enable;
   switch (GetGlobalPluginProperties()->GetEnable()) {
-    case EnableJITLoaderGDB::eEnableJITLoaderGDBOn:
-      enable = true;
-      break;
-    case EnableJITLoaderGDB::eEnableJITLoaderGDBOff:
-      enable = false;
-      break;
-    case EnableJITLoaderGDB::eEnableJITLoaderGDBDefault:
-      ArchSpec arch(process->GetTarget().GetArchitecture());
-      enable = arch.GetTriple().getVendor() != llvm::Triple::Apple;
-      break;
+  case EnableJITLoaderGDB::eEnableJITLoaderGDBOn:
+    enable = true;
+    break;
+  case EnableJITLoaderGDB::eEnableJITLoaderGDBOff:
+    enable = false;
+    break;
+  case EnableJITLoaderGDB::eEnableJITLoaderGDBDefault:
+    ArchSpec arch(process->GetTarget().GetArchitecture());
+    enable = arch.GetTriple().getVendor() != llvm::Triple::Apple;
+    break;
   }
   if (enable)
     jit_loader_sp = std::make_shared<JITLoaderGDB>(process);
@@ -454,8 +454,7 @@ bool JITLoaderGDB::DidSetJITBreakpoint() const {
   return LLDB_BREAK_ID_IS_VALID(m_jit_break_id);
 }
 
-addr_t JITLoaderGDB::GetSymbolAddress(ModuleList &module_list,
-                                      ConstString name,
+addr_t JITLoaderGDB::GetSymbolAddress(ModuleList &module_list, ConstString name,
                                       SymbolType symbol_type) const {
   SymbolContextList target_symbols;
   Target &target = m_process->GetTarget();

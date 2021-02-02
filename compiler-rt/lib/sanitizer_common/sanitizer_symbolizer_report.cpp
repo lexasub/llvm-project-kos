@@ -21,8 +21,9 @@
 #include "sanitizer_symbolizer.h"
 
 #if SANITIZER_POSIX
-# include "sanitizer_posix.h"
-# include <sys/mman.h>
+#include <sys/mman.h>
+
+#include "sanitizer_posix.h"
 #endif
 
 namespace __sanitizer {
@@ -30,7 +31,8 @@ namespace __sanitizer {
 #if !SANITIZER_GO
 void ReportErrorSummary(const char *error_type, const AddressInfo &info,
                         const char *alt_tool_name) {
-  if (!common_flags()->print_summary) return;
+  if (!common_flags()->print_summary)
+    return;
   InternalScopedString buff(kMaxSummaryLength);
   buff.append("%s ", error_type);
   RenderFrame(&buff, "%L %F", 0, info.address, &info,
@@ -164,7 +166,8 @@ static void MaybeDumpInstructionBytes(uptr pc) {
 }
 
 static void MaybeDumpRegisters(void *context) {
-  if (!common_flags()->dump_registers) return;
+  if (!common_flags()->dump_registers)
+    return;
   SignalContext::DumpAllRegisters(context);
 }
 
@@ -210,9 +213,10 @@ static void ReportDeadlySignalImpl(const SignalContext &sig, u32 tid,
             : (sig.write_flag == SignalContext::READ ? "READ" : "UNKNOWN");
     Report("The signal is caused by a %s memory access.\n", access_type);
     if (!sig.is_true_faulting_addr)
-      Report("Hint: this fault was caused by a dereference of a high value "
-             "address (see register values below).  Disassemble the provided "
-             "pc to learn which register was used.\n");
+      Report(
+          "Hint: this fault was caused by a dereference of a high value "
+          "address (see register values below).  Disassemble the provided "
+          "pc to learn which register was used.\n");
     else if (sig.addr < GetPageSizeCached())
       Report("Hint: address points to the zero page.\n");
   }

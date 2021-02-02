@@ -15,13 +15,13 @@ void d(int() noexcept(false)) {}
 // CHECK-CXX17: define {{.*}} @_Z1ePDoFivE(
 void e(int() noexcept(true)) {}
 
-template<bool B> void f(int() noexcept(B)) {}
+template <bool B> void f(int() noexcept(B)) {}
 // CHECK: define {{.*}} @_Z1fILb0EEvPDOT_EFivE(
 template void f<false>(int());
 // CHECK: define {{.*}} @_Z1fILb1EEvPDOT_EFivE(
 template void f<true>(int() noexcept);
 
-template<typename...T> void g(int() throw(T...)) {}
+template <typename... T> void g(int() throw(T...)) {}
 // CHECK: define {{.*}} @_Z1gIJEEvPDwDpT_EFivE(
 template void g<>(int() noexcept);
 // CHECK: define {{.*}} @_Z1gIJfEEvPDwDpT_EFivE(
@@ -29,7 +29,7 @@ template void g<float>(int());
 
 // We consider the exception specifications in parameter and return type here
 // to be different.
-template<typename...T> auto h(int() throw(int, T...)) -> int (*)() throw(T..., int) { return nullptr; }
+template <typename... T> auto h(int() throw(int, T...)) -> int (*)() throw(T..., int) { return nullptr; }
 // CHECK: define {{.*}} @_Z1hIJEEPDwDpT_iEFivEPDwiS1_EFivE(
 template auto h<>(int()) -> int (*)();
 // CHECK: define {{.*}} @_Z1hIJfEEPDwDpT_iEFivEPDwiS1_EFivE(
@@ -40,7 +40,7 @@ template auto h<float>(int()) -> int (*)();
 // The mangler mishandles substitutions for instantiation-dependent types that
 // differ only in type sugar that is not relevant for mangling. (In this case,
 // the types differ in presence/absence of ParenType nodes under the pointer.)
-template<typename...T> auto i(int() throw(int, T...)) -> int (*)() throw(int, T...) { return nullptr; }
+template <typename... T> auto i(int() throw(int, T...)) -> int (*)() throw(int, T...) { return nullptr; }
 // CHECK-CXX11: define {{.*}} @_Z1iIJEEPDwiDpT_EFivEPS2_(
 // CHECK-CXX17: define {{.*}} @_Z1iIJEEPDwiDpT_EFivES3_(
 template auto i<>(int()) -> int (*)();

@@ -16,7 +16,8 @@ class LLVMTypeConverter;
 class OwningRewritePatternList;
 class ConversionTarget;
 
-template <typename OpT> class OperationPass;
+template <typename OpT>
+class OperationPass;
 
 namespace gpu {
 class GPUModuleOp;

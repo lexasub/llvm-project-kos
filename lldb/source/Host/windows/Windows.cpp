@@ -8,8 +8,8 @@
 
 // This file provides Windows support functions
 
-#include "lldb/Host/PosixApi.h"
 #include "lldb/Host/windows/windows.h"
+#include "lldb/Host/PosixApi.h"
 
 #include "llvm/Support/ConvertUTF.h"
 

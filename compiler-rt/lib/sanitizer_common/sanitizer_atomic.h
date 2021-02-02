@@ -60,23 +60,23 @@ struct atomic_uintptr_t {
 }  // namespace __sanitizer
 
 #if defined(__clang__) || defined(__GNUC__)
-# include "sanitizer_atomic_clang.h"
+#include "sanitizer_atomic_clang.h"
 #elif defined(_MSC_VER)
-# include "sanitizer_atomic_msvc.h"
+#include "sanitizer_atomic_msvc.h"
 #else
-# error "Unsupported compiler"
+#error "Unsupported compiler"
 #endif
 
 namespace __sanitizer {
 
 // Clutter-reducing helpers.
 
-template<typename T>
+template <typename T>
 inline typename T::Type atomic_load_relaxed(const volatile T *a) {
   return atomic_load(a, memory_order_relaxed);
 }
 
-template<typename T>
+template <typename T>
 inline void atomic_store_relaxed(volatile T *a, typename T::Type v) {
   atomic_store(a, v, memory_order_relaxed);
 }

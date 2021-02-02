@@ -249,20 +249,18 @@ APFixedPoint APFixedPoint::mul(const APFixedPoint &Other,
   // arise.
   APSInt Result;
   if (CommonFXSema.isSigned())
-    Result = ThisVal.smul_ov(OtherVal, Overflowed)
-                    .ashr(CommonFXSema.getScale());
+    Result =
+        ThisVal.smul_ov(OtherVal, Overflowed).ashr(CommonFXSema.getScale());
   else
-    Result = ThisVal.umul_ov(OtherVal, Overflowed)
-                    .lshr(CommonFXSema.getScale());
+    Result =
+        ThisVal.umul_ov(OtherVal, Overflowed).lshr(CommonFXSema.getScale());
   assert(!Overflowed && "Full multiplication cannot overflow!");
   Result.setIsSigned(CommonFXSema.isSigned());
 
   // If our result lies outside of the representative range of the common
   // semantic, we either have overflow or saturation.
-  APSInt Max = APFixedPoint::getMax(CommonFXSema).getValue()
-                                                 .extOrTrunc(Wide);
-  APSInt Min = APFixedPoint::getMin(CommonFXSema).getValue()
-                                                 .extOrTrunc(Wide);
+  APSInt Max = APFixedPoint::getMax(CommonFXSema).getValue().extOrTrunc(Wide);
+  APSInt Min = APFixedPoint::getMin(CommonFXSema).getValue().extOrTrunc(Wide);
   if (CommonFXSema.isSaturated()) {
     if (Result < Min)
       Result = Min;
@@ -314,10 +312,8 @@ APFixedPoint APFixedPoint::div(const APFixedPoint &Other,
 
   // If our result lies outside of the representative range of the common
   // semantic, we either have overflow or saturation.
-  APSInt Max = APFixedPoint::getMax(CommonFXSema).getValue()
-                                                 .extOrTrunc(Wide);
-  APSInt Min = APFixedPoint::getMin(CommonFXSema).getValue()
-                                                 .extOrTrunc(Wide);
+  APSInt Max = APFixedPoint::getMax(CommonFXSema).getValue().extOrTrunc(Wide);
+  APSInt Min = APFixedPoint::getMin(CommonFXSema).getValue().extOrTrunc(Wide);
   if (CommonFXSema.isSaturated()) {
     if (Result < Min)
       Result = Min;

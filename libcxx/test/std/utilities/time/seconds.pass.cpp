@@ -16,15 +16,14 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    typedef std::chrono::seconds D;
-    typedef D::rep Rep;
-    typedef D::period Period;
-    static_assert(std::is_signed<Rep>::value, "");
-    static_assert(std::is_integral<Rep>::value, "");
-    static_assert(std::numeric_limits<Rep>::digits >= 34, "");
-    static_assert((std::is_same<Period, std::ratio<1> >::value), "");
+int main(int, char**) {
+  typedef std::chrono::seconds D;
+  typedef D::rep Rep;
+  typedef D::period Period;
+  static_assert(std::is_signed<Rep>::value, "");
+  static_assert(std::is_integral<Rep>::value, "");
+  static_assert(std::numeric_limits<Rep>::digits >= 34, "");
+  static_assert((std::is_same<Period, std::ratio<1> >::value), "");
 
   return 0;
 }

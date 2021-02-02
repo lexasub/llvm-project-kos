@@ -18,20 +18,18 @@ namespace __sanitizer {
 // RingBuffer<T>: fixed-size ring buffer optimized for speed of push().
 // T should be a POD type and sizeof(T) should be divisible by sizeof(void*).
 // At creation, all elements are zero.
-template<class T>
+template <class T>
 class RingBuffer {
  public:
   COMPILER_CHECK(sizeof(T) % sizeof(void *) == 0);
   static RingBuffer *New(uptr Size) {
     void *Ptr = MmapOrDie(SizeInBytes(Size), "RingBuffer");
-    RingBuffer *RB = reinterpret_cast<RingBuffer*>(Ptr);
+    RingBuffer *RB = reinterpret_cast<RingBuffer *>(Ptr);
     uptr End = reinterpret_cast<uptr>(Ptr) + SizeInBytes(Size);
-    RB->last_ = RB->next_ = reinterpret_cast<T*>(End - sizeof(T));
+    RB->last_ = RB->next_ = reinterpret_cast<T *>(End - sizeof(T));
     return RB;
   }
-  void Delete() {
-    UnmapOrDie(this, SizeInBytes(size()));
-  }
+  void Delete() { UnmapOrDie(this, SizeInBytes(size())); }
   uptr size() const {
     return last_ + 1 -
            reinterpret_cast<T *>(reinterpret_cast<uptr>(this) +
@@ -39,7 +37,7 @@ class RingBuffer {
   }
 
   static uptr SizeInBytes(uptr Size) {
-    return Size * sizeof(T) + 2 * sizeof(T*);
+    return Size * sizeof(T) + 2 * sizeof(T *);
   }
 
   uptr SizeInBytes() { return SizeInBytes(size()); }
@@ -48,7 +46,7 @@ class RingBuffer {
     *next_ = t;
     next_--;
     // The condition below works only if sizeof(T) is divisible by sizeof(T*).
-    if (next_ <= reinterpret_cast<T*>(&next_))
+    if (next_ <= reinterpret_cast<T *>(&next_))
       next_ = last_;
   }
 
@@ -63,7 +61,7 @@ class RingBuffer {
  private:
   RingBuffer() {}
   ~RingBuffer() {}
-  RingBuffer(const RingBuffer&) = delete;
+  RingBuffer(const RingBuffer &) = delete;
 
   // Data layout:
   // LNDDDDDDDD
@@ -101,14 +99,10 @@ class CompactRingBuffer {
     long_ = (uptr)storage | ((size >> kPageSizeBits) << kSizeShift);
   }
 
-  void SetNext(const T *next) {
-    long_ = (long_ & ~kNextMask) | (uptr)next;
-  }
+  void SetNext(const T *next) { long_ = (long_ & ~kNextMask) | (uptr)next; }
 
  public:
-  CompactRingBuffer(void *storage, uptr size) {
-    Init(storage, size);
-  }
+  CompactRingBuffer(void *storage, uptr size) { Init(storage, size); }
 
   // A copy constructor of sorts.
   CompactRingBuffer(const CompactRingBuffer &other, void *storage) {

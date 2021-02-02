@@ -28,11 +28,11 @@ SBExpressionOptions::SBExpressionOptions(const SBExpressionOptions &rhs)
   m_opaque_up = clone(rhs.m_opaque_up);
 }
 
-const SBExpressionOptions &SBExpressionOptions::
-operator=(const SBExpressionOptions &rhs) {
-  LLDB_RECORD_METHOD(
-      const lldb::SBExpressionOptions &,
-      SBExpressionOptions, operator=,(const lldb::SBExpressionOptions &), rhs);
+const SBExpressionOptions &
+SBExpressionOptions::operator=(const SBExpressionOptions &rhs) {
+  LLDB_RECORD_METHOD(const lldb::SBExpressionOptions &,
+                     SBExpressionOptions, operator=,
+                     (const lldb::SBExpressionOptions &), rhs);
 
   if (this != &rhs)
     m_opaque_up = clone(rhs.m_opaque_up);
@@ -288,24 +288,21 @@ EvaluateExpressionOptions &SBExpressionOptions::ref() const {
 namespace lldb_private {
 namespace repro {
 
-template <>
-void RegisterMethods<SBExpressionOptions>(Registry &R) {
+template <> void RegisterMethods<SBExpressionOptions>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBExpressionOptions, ());
   LLDB_REGISTER_CONSTRUCTOR(SBExpressionOptions,
                             (const lldb::SBExpressionOptions &));
-  LLDB_REGISTER_METHOD(
-      const lldb::SBExpressionOptions &,
-      SBExpressionOptions, operator=,(const lldb::SBExpressionOptions &));
+  LLDB_REGISTER_METHOD(const lldb::SBExpressionOptions &,
+                       SBExpressionOptions, operator=,
+                       (const lldb::SBExpressionOptions &));
   LLDB_REGISTER_METHOD_CONST(bool, SBExpressionOptions, GetCoerceResultToId,
                              ());
-  LLDB_REGISTER_METHOD(void, SBExpressionOptions, SetCoerceResultToId,
-                       (bool));
+  LLDB_REGISTER_METHOD(void, SBExpressionOptions, SetCoerceResultToId, (bool));
   LLDB_REGISTER_METHOD_CONST(bool, SBExpressionOptions, GetUnwindOnError, ());
   LLDB_REGISTER_METHOD(void, SBExpressionOptions, SetUnwindOnError, (bool));
   LLDB_REGISTER_METHOD_CONST(bool, SBExpressionOptions, GetIgnoreBreakpoints,
                              ());
-  LLDB_REGISTER_METHOD(void, SBExpressionOptions, SetIgnoreBreakpoints,
-                       (bool));
+  LLDB_REGISTER_METHOD(void, SBExpressionOptions, SetIgnoreBreakpoints, (bool));
   LLDB_REGISTER_METHOD_CONST(lldb::DynamicValueType, SBExpressionOptions,
                              GetFetchDynamicValue, ());
   LLDB_REGISTER_METHOD(void, SBExpressionOptions, SetFetchDynamicValue,
@@ -322,20 +319,17 @@ void RegisterMethods<SBExpressionOptions>(Registry &R) {
   LLDB_REGISTER_METHOD(void, SBExpressionOptions, SetTryAllThreads, (bool));
   LLDB_REGISTER_METHOD_CONST(bool, SBExpressionOptions, GetStopOthers, ());
   LLDB_REGISTER_METHOD(void, SBExpressionOptions, SetStopOthers, (bool));
-  LLDB_REGISTER_METHOD_CONST(bool, SBExpressionOptions, GetTrapExceptions,
-                             ());
+  LLDB_REGISTER_METHOD_CONST(bool, SBExpressionOptions, GetTrapExceptions, ());
   LLDB_REGISTER_METHOD(void, SBExpressionOptions, SetTrapExceptions, (bool));
   LLDB_REGISTER_METHOD(void, SBExpressionOptions, SetLanguage,
                        (lldb::LanguageType));
   LLDB_REGISTER_METHOD(bool, SBExpressionOptions, GetGenerateDebugInfo, ());
-  LLDB_REGISTER_METHOD(void, SBExpressionOptions, SetGenerateDebugInfo,
-                       (bool));
+  LLDB_REGISTER_METHOD(void, SBExpressionOptions, SetGenerateDebugInfo, (bool));
   LLDB_REGISTER_METHOD(bool, SBExpressionOptions, GetSuppressPersistentResult,
                        ());
   LLDB_REGISTER_METHOD(void, SBExpressionOptions, SetSuppressPersistentResult,
                        (bool));
-  LLDB_REGISTER_METHOD_CONST(const char *, SBExpressionOptions, GetPrefix,
-                             ());
+  LLDB_REGISTER_METHOD_CONST(const char *, SBExpressionOptions, GetPrefix, ());
   LLDB_REGISTER_METHOD(void, SBExpressionOptions, SetPrefix, (const char *));
   LLDB_REGISTER_METHOD(bool, SBExpressionOptions, GetAutoApplyFixIts, ());
   LLDB_REGISTER_METHOD(void, SBExpressionOptions, SetAutoApplyFixIts, (bool));
@@ -348,5 +342,5 @@ void RegisterMethods<SBExpressionOptions>(Registry &R) {
                        (uint64_t));
 }
 
-}
-}
+} // namespace repro
+} // namespace lldb_private

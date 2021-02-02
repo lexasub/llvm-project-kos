@@ -291,7 +291,7 @@ OpDescriptor llvm::fuzzerop::insertElementDescriptor(unsigned Weight) {
   auto buildInsert = [](ArrayRef<Value *> Srcs, Instruction *Inst) {
     return InsertElementInst::Create(Srcs[0], Srcs[1], Srcs[2], "I", Inst);
   };
-    // TODO: Try to avoid undefined accesses.
+  // TODO: Try to avoid undefined accesses.
   return {Weight,
           {anyVectorType(), matchScalarOfFirstType(), anyIntType()},
           buildInsert};

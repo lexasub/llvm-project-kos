@@ -45,7 +45,7 @@ CudaVersionInfo parseCudaVersionFile(llvm::StringRef V) {
   if (!V.startswith("CUDA Version "))
     return {V.str(), CudaVersion::UNKNOWN};
   V = V.substr(strlen("CUDA Version "));
-  SmallVector<StringRef,4> VersionParts;
+  SmallVector<StringRef, 4> VersionParts;
   V.split(VersionParts, '.');
   return {"version.txt: " + V.str() + ".",
           VersionParts.size() < 2
@@ -466,10 +466,10 @@ void NVPTX::Assembler::ConstructJob(Compilation &C, const JobAction &JA,
   CmdArgs.push_back(Args.MakeArgString(CudaArchToString(gpu_arch)));
   CmdArgs.push_back("--output-file");
   CmdArgs.push_back(Args.MakeArgString(TC.getInputFilename(Output)));
-  for (const auto& II : Inputs)
+  for (const auto &II : Inputs)
     CmdArgs.push_back(Args.MakeArgString(II.getFilename()));
 
-  for (const auto& A : Args.getAllArgValues(options::OPT_Xcuda_ptxas))
+  for (const auto &A : Args.getAllArgValues(options::OPT_Xcuda_ptxas))
     CmdArgs.push_back(Args.MakeArgString(A));
 
   bool Relocatable = false;
@@ -479,8 +479,8 @@ void NVPTX::Assembler::ConstructJob(Compilation &C, const JobAction &JA,
                                options::OPT_fnoopenmp_relocatable_target,
                                /*Default=*/true);
   else if (JA.isOffloading(Action::OFK_Cuda))
-    Relocatable = Args.hasFlag(options::OPT_fgpu_rdc,
-                               options::OPT_fno_gpu_rdc, /*Default=*/false);
+    Relocatable = Args.hasFlag(options::OPT_fgpu_rdc, options::OPT_fno_gpu_rdc,
+                               /*Default=*/false);
 
   if (Relocatable)
     CmdArgs.push_back("-c");
@@ -534,7 +534,7 @@ void NVPTX::Linker::ConstructJob(Compilation &C, const JobAction &JA,
   if (mustEmitDebugInfo(Args) == EmitSameDebugInfoAsHost)
     CmdArgs.push_back("-g");
 
-  for (const auto& II : Inputs) {
+  for (const auto &II : Inputs) {
     auto *A = II.getAction();
     assert(A->getInputs().size() == 1 &&
            "Device offload action is expected to have a single input");
@@ -555,7 +555,7 @@ void NVPTX::Linker::ConstructJob(Compilation &C, const JobAction &JA,
                                          Arch + ",file=" + II.getFilename()));
   }
 
-  for (const auto& A : Args.getAllArgValues(options::OPT_Xcuda_fatbinary))
+  for (const auto &A : Args.getAllArgValues(options::OPT_Xcuda_fatbinary))
     CmdArgs.push_back(Args.MakeArgString(A));
 
   const char *Exec = Args.MakeArgString(TC.GetProgramPath("fatbinary"));
@@ -593,8 +593,7 @@ void NVPTX::OpenMPLinker::ConstructJob(Compilation &C, const JobAction &JA,
   if (Args.hasArg(options::OPT_v))
     CmdArgs.push_back("-v");
 
-  StringRef GPUArch =
-      Args.getLastArgValue(options::OPT_march_EQ);
+  StringRef GPUArch = Args.getLastArgValue(options::OPT_march_EQ);
   assert(!GPUArch.empty() && "At least one GPU Arch required for ptxas.");
 
   CmdArgs.push_back("-arch");
@@ -610,10 +609,8 @@ void NVPTX::OpenMPLinker::ConstructJob(Compilation &C, const JobAction &JA,
   CmdArgs.push_back(Args.MakeArgString(Twine("-L") + DefaultLibPath));
 
   for (const auto &II : Inputs) {
-    if (II.getType() == types::TY_LLVM_IR ||
-        II.getType() == types::TY_LTO_IR ||
-        II.getType() == types::TY_LTO_BC ||
-        II.getType() == types::TY_LLVM_BC) {
+    if (II.getType() == types::TY_LLVM_IR || II.getType() == types::TY_LTO_IR ||
+        II.getType() == types::TY_LTO_BC || II.getType() == types::TY_LLVM_BC) {
       C.getDriver().Diag(diag::err_drv_no_linker_llvm_support)
           << getToolChain().getTripleString();
       continue;
@@ -672,8 +669,7 @@ std::string CudaToolChain::getInputFilename(const InputInfo &Input) const {
 }
 
 void CudaToolChain::addClangTargetOptions(
-    const llvm::opt::ArgList &DriverArgs,
-    llvm::opt::ArgStringList &CC1Args,
+    const llvm::opt::ArgList &DriverArgs, llvm::opt::ArgStringList &CC1Args,
     Action::OffloadKind DeviceOffloadingKind) const {
   HostTC.addClangTargetOptions(DriverArgs, CC1Args, DeviceOffloadingKind);
 
@@ -897,7 +893,8 @@ CudaToolChain::TranslateArgs(const llvm::opt::DerivedArgList &Args,
 
   if (!BoundArch.empty()) {
     DAL->eraseArg(options::OPT_march_EQ);
-    DAL->AddJoinedArg(nullptr, Opts.getOption(options::OPT_march_EQ), BoundArch);
+    DAL->AddJoinedArg(nullptr, Opts.getOption(options::OPT_march_EQ),
+                      BoundArch);
   }
   return DAL;
 }

@@ -33,10 +33,9 @@
 #include "count_new.h"
 #include "filesystem_test_helper.h"
 
-MultiStringType InStr =  MKSTR("abcdefg/\"hijklmnop\"/qrstuvwxyz/123456789");
-MultiStringType OutStr = MKSTR("\"abcdefg/\\\"hijklmnop\\\"/qrstuvwxyz/123456789\"");
-
-
+MultiStringType InStr = MKSTR("abcdefg/\"hijklmnop\"/qrstuvwxyz/123456789");
+MultiStringType OutStr =
+    MKSTR("\"abcdefg/\\\"hijklmnop\\\"/qrstuvwxyz/123456789\"");
 
 template <class CharT>
 void doIOTest() {
@@ -62,18 +61,19 @@ void doIOTest() {
 namespace impl {
 using namespace fs;
 
-template <class Stream, class Tp, class = decltype(std::declval<Stream&>() << std::declval<Tp&>())>
+template <class Stream, class Tp,
+          class = decltype(std::declval<Stream&>() << std::declval<Tp&>())>
 std::true_type is_ostreamable_imp(int);
 
 template <class Stream, class Tp>
 std::false_type is_ostreamable_imp(long);
 
-template <class Stream, class Tp, class = decltype(std::declval<Stream&>() >> std::declval<Tp&>())>
+template <class Stream, class Tp,
+          class = decltype(std::declval<Stream&>() >> std::declval<Tp&>())>
 std::true_type is_istreamable_imp(int);
 
 template <class Stream, class Tp>
 std::false_type is_istreamable_imp(long);
-
 
 } // namespace impl
 

@@ -155,15 +155,16 @@ template <typename IRUnitT, typename ResultT> class ResultHasInvalidateMethod {
   // member in an adjacent base class of a derived class. This would be
   // ambiguous if there were an invalidate member in the result type.
   template <typename T, typename U> static DisabledType NonceFunction(T U::*);
-  struct CheckerBase { int invalidate; };
+  struct CheckerBase {
+    int invalidate;
+  };
   template <typename T> struct Checker : CheckerBase, T {};
   template <typename T>
   static decltype(NonceFunction(&Checker<T>::invalidate)) check(rank<1>);
 
   // Now we have the fallback that will only be reached when there is an
   // invalidate member, and enables the trait.
-  template <typename T>
-  static EnabledType check(rank<0>);
+  template <typename T> static EnabledType check(rank<0>);
 
 public:
   enum { Value = sizeof(check<ResultT>(rank<2>())) == sizeof(EnabledType) };

@@ -1,8 +1,7 @@
 
-class Test{};
+class Test {};
 
-int main()
-{
+int main() {
   auto a = Test();
   auto b = a;
 }
@@ -16,4 +15,3 @@ enum class ScopedEnum {};
 // CHECK: VarDecl=b:7:8 (Definition) [typedeclaration=Test] [typekind=Record]
 // CHECK: EnumDecl=RegularEnum:10:6 (Definition) [typedeclaration=RegularEnum] [typekind=Enum]
 // CHECK: EnumDecl=ScopedEnum:12:12 (Definition) (scoped) [typedeclaration=ScopedEnum] [typekind=Enum]
-

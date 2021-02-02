@@ -6,8 +6,7 @@
 // some embedded targets use AAPCS with the iOS header files, which define
 // size_t as unsigned long.  Make sure that works.
 typedef unsigned long size_t;
-void* malloc(size_t);
-void* operator new(size_t size)
-{
+void *malloc(size_t);
+void *operator new(size_t size) {
   return (malloc(size));
 }

@@ -65,12 +65,14 @@ void InitializeShadowMemory() {
   bool full_shadow_is_available = false;
   if (shadow_start == kDefaultShadowSentinel) {
     shadow_start = FindDynamicShadowStart();
-    if (SANITIZER_LINUX) full_shadow_is_available = true;
+    if (SANITIZER_LINUX)
+      full_shadow_is_available = true;
   }
   // Update the shadow memory address (potentially) used by instrumentation.
   __asan_shadow_memory_dynamic_address = shadow_start;
 
-  if (kLowShadowBeg) shadow_start -= GetMmapGranularity();
+  if (kLowShadowBeg)
+    shadow_start -= GetMmapGranularity();
 
   if (!full_shadow_is_available)
     full_shadow_is_available =
@@ -84,7 +86,8 @@ void InitializeShadowMemory() {
   }
 #endif
 
-  if (Verbosity()) PrintAddressSpaceLayout();
+  if (Verbosity())
+    PrintAddressSpaceLayout();
 
   if (full_shadow_is_available) {
     // mmap the low shadow plus at least one page at the left.

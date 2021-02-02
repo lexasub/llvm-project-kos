@@ -2,16 +2,16 @@
 
 // expected-no-diagnostics
 namespace pr41427 {
-  template <typename T> class A {
-  public:
-    A(void (*)(T)) {}
-  };
-  
-  void D(int) {}
-  
-  void f() {
-    A a(&D);
-    using T = decltype(a);
-    using T = A<int>;
-  }
+template <typename T> class A {
+public:
+  A(void (*)(T)) {}
+};
+
+void D(int) {}
+
+void f() {
+  A a(&D);
+  using T = decltype(a);
+  using T = A<int>;
 }
+} // namespace pr41427

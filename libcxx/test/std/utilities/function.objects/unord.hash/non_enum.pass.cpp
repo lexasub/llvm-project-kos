@@ -22,17 +22,16 @@
 
 struct X {};
 
-int main(int, char**)
-{
-    using H = std::hash<X>;
-    static_assert(!std::is_default_constructible<H>::value, "");
-    static_assert(!std::is_copy_constructible<H>::value, "");
-    static_assert(!std::is_move_constructible<H>::value, "");
-    static_assert(!std::is_copy_assignable<H>::value, "");
-    static_assert(!std::is_move_assignable<H>::value, "");
+int main(int, char**) {
+  using H = std::hash<X>;
+  static_assert(!std::is_default_constructible<H>::value, "");
+  static_assert(!std::is_copy_constructible<H>::value, "");
+  static_assert(!std::is_move_constructible<H>::value, "");
+  static_assert(!std::is_copy_assignable<H>::value, "");
+  static_assert(!std::is_move_assignable<H>::value, "");
 #if TEST_STD_VER > 14
-    static_assert(!std::is_invocable<H, X&>::value, "");
-    static_assert(!std::is_invocable<H, X const&>::value, "");
+  static_assert(!std::is_invocable<H, X&>::value, "");
+  static_assert(!std::is_invocable<H, X const&>::value, "");
 #endif
 
   return 0;

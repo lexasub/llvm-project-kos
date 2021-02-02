@@ -7,27 +7,24 @@
 template <class T> class TClass;
 
 namespace NS {
-    template <class X, class Y> TClass<X> problematic(X * ptr, const TClass<Y> &src);
-
-    template <class T>
-    class TBaseClass
-    {
-    protected:
-        template <class X, class Y> friend TClass<X> problematic(X * ptr, const TClass<Y> &src);
-    };
-}
+template <class X, class Y> TClass<X> problematic(X *ptr, const TClass<Y> &src);
 
 template <class T>
-class TClass: public NS::TBaseClass<T>
-{
+class TBaseClass {
+protected:
+  template <class X, class Y> friend TClass<X> problematic(X *ptr, const TClass<Y> &src);
+};
+} // namespace NS
+
+template <class T>
+class TClass : public NS::TBaseClass<T> {
 public:
-    inline TClass() { }
+  inline TClass() {}
 };
 
-
 namespace NS {
-    template <class X, class T>
-    TClass<X> problematic(X *ptr, const TClass<T> &src);
+template <class X, class T>
+TClass<X> problematic(X *ptr, const TClass<T> &src);
 }
 
 template <class X, class T>
@@ -38,16 +35,14 @@ TClass<X> unconst(const TClass<T> &src);
 
 namespace std {
 class s {};
-}
-
+} // namespace std
 
 typedef TClass<std::s> TStr;
 
 struct crash {
   TStr str;
 
-  crash(const TClass<std::s> p)
-  {
+  crash(const TClass<std::s> p) {
     unconst<TStr>(p);
   }
 };
@@ -55,8 +50,8 @@ struct crash {
 #else
 
 void f() {
-    const TStr p;
-    crash c(p);
+  const TStr p;
+  crash c(p);
 }
 
 #endif

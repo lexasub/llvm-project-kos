@@ -3,19 +3,18 @@
 [[gsl::suppress("globally")]];
 
 namespace N {
-  [[gsl::suppress("in-a-namespace")]];
+[[gsl::suppress("in-a-namespace")]];
 }
 
-[[gsl::suppress("readability-identifier-naming")]]
-void f_() {
+[[gsl::suppress("readability-identifier-naming")]] void f_() {
   int *p;
   [[gsl::suppress("type", "bounds")]] {
     p = reinterpret_cast<int *>(7);
   }
 
-  [[gsl::suppress]] int x; // expected-error {{'suppress' attribute takes at least 1 argument}}
-  [[gsl::suppress()]] int y; // expected-error {{'suppress' attribute takes at least 1 argument}}
-  int [[gsl::suppress("r")]] z; // expected-error {{'suppress' attribute cannot be applied to types}}
+  [[gsl::suppress]] int x;       // expected-error {{'suppress' attribute takes at least 1 argument}}
+  [[gsl::suppress()]] int y;     // expected-error {{'suppress' attribute takes at least 1 argument}}
+  int [[gsl::suppress("r")]] z;  // expected-error {{'suppress' attribute cannot be applied to types}}
   [[gsl::suppress(f_)]] float f; // expected-error {{'suppress' attribute requires a string}}
 }
 

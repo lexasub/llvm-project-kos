@@ -7,15 +7,17 @@
 //===----------------------------------------------------------------------===//
 // Tests for sanitizer_libc.h.
 //===----------------------------------------------------------------------===//
-#include <algorithm>
-#include <vector>
+#include "sanitizer_common/sanitizer_libc.h"
+
 #include <stdio.h>
 
+#include <algorithm>
+#include <vector>
+
+#include "gtest/gtest.h"
 #include "sanitizer_common/sanitizer_common.h"
 #include "sanitizer_common/sanitizer_file.h"
-#include "sanitizer_common/sanitizer_libc.h"
 #include "sanitizer_common/sanitizer_platform.h"
-#include "gtest/gtest.h"
 
 #if SANITIZER_WINDOWS
 #define NOMINMAX
@@ -23,8 +25,9 @@
 #undef NOMINMAX
 #endif
 #if SANITIZER_POSIX
-# include <sys/stat.h>
-# include "sanitizer_common/sanitizer_posix.h"
+#include <sys/stat.h>
+
+#include "sanitizer_common/sanitizer_posix.h"
 #endif
 
 using namespace __sanitizer;
@@ -55,7 +58,7 @@ TEST(SanitizerCommon, mem_is_zero) {
     }
     x[pos] = 0;
   }
-  delete [] x;
+  delete[] x;
 }
 
 struct stat_and_more {

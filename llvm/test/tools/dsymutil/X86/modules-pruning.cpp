@@ -38,22 +38,24 @@ struct true_type {
   static const bool value = true;
 };
 
-template <class T> struct is_reference      : false_type {};
-template <class T> struct is_reference<T&>  : true_type {};
+template <class T>
+struct is_reference : false_type {};
+template <class T>
+struct is_reference<T &> : true_type {};
 
-template<class T>
+template <class T>
 class Template {
 public:
   static const bool isRef = is_reference<T>::value;
   Template() {}
 };
-}
+} // namespace M
 #else
 
 #include "template.h"
 
 void foo() {
-  M::Template<bool&> TB1;
+  M::Template<bool &> TB1;
   TB1.isRef;
 }
 

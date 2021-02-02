@@ -7,7 +7,8 @@
 #ifdef __cplusplus
 extern "C"
 #endif
-int printf(const char *, ...);
+    int
+    printf(const char *, ...);
 
 void funcNoProto() {
   printf("__FUNCSIG__ %s\n\n", __FUNCSIG__);
@@ -47,5 +48,5 @@ void NamespacedClass::namespacedMethod(int *, char) {
   printf("__FUNCSIG__ %s\n\n", __FUNCSIG__);
 }
 // CHECK-CXX: @"??_C@_0ED@PFDKIEBA@void?5__thiscall?5NS?3?3NamespacedCl@" = linkonce_odr dso_local unnamed_addr constant [{{.*}} x i8] c"void __thiscall NS::NamespacedClass::namespacedMethod(int *, char)\00"
-}
+} // namespace NS
 #endif

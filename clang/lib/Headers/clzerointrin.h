@@ -14,8 +14,8 @@
 #define __CLZEROINTRIN_H
 
 /* Define the default attributes for the functions in this file. */
-#define __DEFAULT_FN_ATTRS \
-  __attribute__((__always_inline__, __nodebug__,  __target__("clzero")))
+#define __DEFAULT_FN_ATTRS                                                     \
+  __attribute__((__always_inline__, __nodebug__, __target__("clzero")))
 
 /// Loads the cache line address and zero's out the cacheline
 ///
@@ -25,10 +25,8 @@
 ///
 /// \param __line
 ///    A pointer to a cacheline which needs to be zeroed out.
-static __inline__ void __DEFAULT_FN_ATTRS
-_mm_clzero (void * __line)
-{
-  __builtin_ia32_clzero ((void *)__line);
+static __inline__ void __DEFAULT_FN_ATTRS _mm_clzero(void *__line) {
+  __builtin_ia32_clzero((void *)__line);
 }
 
 #undef __DEFAULT_FN_ATTRS

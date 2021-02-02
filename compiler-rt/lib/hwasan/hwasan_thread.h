@@ -23,7 +23,8 @@ typedef __sanitizer::CompactRingBuffer<uptr> StackAllocationsRingBuffer;
 
 class Thread {
  public:
-  void Init(uptr stack_buffer_start, uptr stack_buffer_size);  // Must be called from the thread itself.
+  void Init(uptr stack_buffer_start,
+            uptr stack_buffer_size);  // Must be called from the thread itself.
   void InitRandomState();
   void Destroy();
 
@@ -49,7 +50,8 @@ class Thread {
 
   u64 unique_id() const { return unique_id_; }
   void Announce() {
-    if (announced_) return;
+    if (announced_)
+      return;
     announced_ = true;
     Print("Thread: ");
   }
@@ -91,6 +93,6 @@ struct ScopedTaggingDisabler {
   ~ScopedTaggingDisabler() { GetCurrentThread()->EnableTagging(); }
 };
 
-} // namespace __hwasan
+}  // namespace __hwasan
 
-#endif // HWASAN_THREAD_H
+#endif  // HWASAN_THREAD_H

@@ -25,7 +25,7 @@ struct Instruction {
   unsigned Operation;
 
   Instruction(unsigned Op, MCSymbol *L, unsigned Reg, unsigned Off)
-    : Label(L), Offset(Off), Register(Reg), Operation(Op) {}
+      : Label(L), Offset(Off), Register(Reg), Operation(Op) {}
 
   bool operator==(const Instruction &I) const {
     // Check whether two instructions refer to the same operation
@@ -54,7 +54,7 @@ struct FrameInfo {
   int LastFrameInst = -1;
   const FrameInfo *ChainedParent = nullptr;
   std::vector<Instruction> Instructions;
-  MapVector<MCSymbol*, std::vector<Instruction>> EpilogMap;
+  MapVector<MCSymbol *, std::vector<Instruction>> EpilogMap;
 
   FrameInfo() = default;
   FrameInfo(const MCSymbol *Function, const MCSymbol *BeginFuncEHLabel)
@@ -83,7 +83,7 @@ public:
   virtual void EmitUnwindInfo(MCStreamer &Streamer, FrameInfo *FI,
                               bool HandlerData) const = 0;
 };
-}
-}
+} // namespace WinEH
+} // namespace llvm
 
 #endif

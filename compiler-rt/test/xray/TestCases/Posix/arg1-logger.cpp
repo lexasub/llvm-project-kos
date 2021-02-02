@@ -34,12 +34,12 @@ int main() {
   // CHECK: Arg1: 0, XRayEntryType 3
 
   __xray_remove_handler_arg1();
-  foo((void *) 0xBADC0DE);
+  foo((void *)0xBADC0DE);
   // nothing expected to see here
 
   __xray_set_handler_arg1(arg1logger);
-  foo((void *) 0xDEADBEEFCAFE);
+  foo((void *)0xDEADBEEFCAFE);
   // CHECK-NEXT: Arg1: deadbeefcafe, XRayEntryType 3
-  foo((void *) -1);
+  foo((void *)-1);
   // CHECK-NEXT: Arg1: ffffffffffffffff, XRayEntryType 3
 }

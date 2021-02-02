@@ -59,8 +59,8 @@ MemoryLocation MemoryLocation::get(const VAArgInst *VI) {
   AAMDNodes AATags;
   VI->getAAMetadata(AATags);
 
-  return MemoryLocation(VI->getPointerOperand(),
-                        LocationSize::afterPointer(), AATags);
+  return MemoryLocation(VI->getPointerOperand(), LocationSize::afterPointer(),
+                        AATags);
 }
 
 MemoryLocation MemoryLocation::get(const AtomicCmpXchgInst *CXI) {
@@ -182,17 +182,15 @@ MemoryLocation MemoryLocation::getForArgument(const CallBase *Call,
     case Intrinsic::masked_load:
       assert(ArgIdx == 0 && "Invalid argument index");
       return MemoryLocation(
-          Arg,
-          LocationSize::upperBound(DL.getTypeStoreSize(II->getType())),
+          Arg, LocationSize::upperBound(DL.getTypeStoreSize(II->getType())),
           AATags);
 
     case Intrinsic::masked_store:
       assert(ArgIdx == 1 && "Invalid argument index");
-      return MemoryLocation(
-          Arg,
-          LocationSize::upperBound(
-              DL.getTypeStoreSize(II->getArgOperand(0)->getType())),
-          AATags);
+      return MemoryLocation(Arg,
+                            LocationSize::upperBound(DL.getTypeStoreSize(
+                                II->getArgOperand(0)->getType())),
+                            AATags);
 
     case Intrinsic::invariant_end:
       // The first argument to an invariant.end is a "descriptor" type (e.g. a

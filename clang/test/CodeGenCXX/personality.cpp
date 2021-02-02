@@ -44,4 +44,3 @@ void h(void) {
   }
 }
 #endif
-

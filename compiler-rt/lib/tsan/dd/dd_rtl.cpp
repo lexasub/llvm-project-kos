@@ -7,12 +7,13 @@
 //===----------------------------------------------------------------------===//
 
 #include "dd_rtl.h"
+
 #include "sanitizer_common/sanitizer_common.h"
-#include "sanitizer_common/sanitizer_placement_new.h"
-#include "sanitizer_common/sanitizer_flags.h"
 #include "sanitizer_common/sanitizer_flag_parser.h"
-#include "sanitizer_common/sanitizer_stacktrace.h"
+#include "sanitizer_common/sanitizer_flags.h"
+#include "sanitizer_common/sanitizer_placement_new.h"
 #include "sanitizer_common/sanitizer_stackdepot.h"
+#include "sanitizer_common/sanitizer_stacktrace.h"
 
 namespace __dsan {
 
@@ -43,26 +44,22 @@ static void ReportDeadlock(Thread *thr, DDReport *rep) {
   Printf("WARNING: lock-order-inversion (potential deadlock)\n");
   for (int i = 0; i < rep->n; i++) {
     Printf("Thread %d locks mutex %llu while holding mutex %llu:\n",
-      rep->loop[i].thr_ctx, rep->loop[i].mtx_ctx1, rep->loop[i].mtx_ctx0);
+           rep->loop[i].thr_ctx, rep->loop[i].mtx_ctx1, rep->loop[i].mtx_ctx0);
     PrintStackTrace(thr, rep->loop[i].stk[1]);
     if (rep->loop[i].stk[0]) {
-      Printf("Mutex %llu was acquired here:\n",
-        rep->loop[i].mtx_ctx0);
+      Printf("Mutex %llu was acquired here:\n", rep->loop[i].mtx_ctx0);
       PrintStackTrace(thr, rep->loop[i].stk[0]);
     }
   }
   Printf("==============================\n");
 }
 
-Callback::Callback(Thread *thr)
-    : thr(thr) {
+Callback::Callback(Thread *thr) : thr(thr) {
   lt = thr->dd_lt;
   pt = thr->dd_pt;
 }
 
-u32 Callback::Unwind() {
-  return CurrentStackTrace(thr, 3);
-}
+u32 Callback::Unwind() { return CurrentStackTrace(thr, 3); }
 
 static void InitializeFlags() {
   Flags *f = flags();
@@ -89,7 +86,7 @@ static void InitializeFlags() {
 
 void Initialize() {
   static u64 ctx_mem[sizeof(Context) / sizeof(u64) + 1];
-  ctx = new(ctx_mem) Context();
+  ctx = new (ctx_mem) Context();
 
   InitializeInterceptors();
   InitializeFlags();

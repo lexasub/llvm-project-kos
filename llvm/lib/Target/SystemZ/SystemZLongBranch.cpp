@@ -135,8 +135,7 @@ class SystemZLongBranch : public MachineFunctionPass {
 public:
   static char ID;
 
-  SystemZLongBranch(const SystemZTargetMachine &tm)
-    : MachineFunctionPass(ID) {}
+  SystemZLongBranch(const SystemZTargetMachine &tm) : MachineFunctionPass(ID) {}
 
   StringRef getPassName() const override { return "SystemZ Long Branch"; }
 
@@ -256,8 +255,7 @@ TerminatorInfo SystemZLongBranch::describeTerminator(MachineInstr &MI) {
       llvm_unreachable("Unrecognized branch instruction");
     }
     Terminator.Branch = &MI;
-    Terminator.TargetBlock =
-      TII->getBranchInfo(MI).getMBBTarget()->getNumber();
+    Terminator.TargetBlock = TII->getBranchInfo(MI).getMBBTarget()->getNumber();
   }
   return Terminator;
 }

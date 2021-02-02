@@ -29,33 +29,37 @@
 
 constexpr auto OverAligned = __STDCPP_DEFAULT_NEW_ALIGNMENT__ * 2;
 
-struct alignas(OverAligned) A { };
+struct alignas(OverAligned) A{};
 
-int main(int, char**)
-{
-    // Normal versions
-    {
-        A *a1 = new A; // expected-error-re {{aligned allocation function of type {{.+}} is only available on}}
-        // `delete` is also required by the line above if construction fails
-        // expected-error-re@-2 {{aligned deallocation function of type {{.+}} is only available on}}
+int main(int, char**) {
+  // Normal versions
+  {
+    A* a1 =
+        new A; // expected-error-re {{aligned allocation function of type {{.+}} is only available on}}
+    // `delete` is also required by the line above if construction fails
+    // expected-error-re@-2 {{aligned deallocation function of type {{.+}} is only available on}}
 
-        delete a1; // expected-error-re {{aligned deallocation function of type {{.+}} is only available on}}
+    delete a1; // expected-error-re {{aligned deallocation function of type {{.+}} is only available on}}
 
-        A* a2 = new(std::nothrow) A; // expected-error-re {{aligned allocation function of type {{.+}} is only available on}}
-        // `delete` is also required above for the same reason
-        // expected-error-re@-2 {{aligned deallocation function of type {{.+}} is only available on}}
-    }
+    A* a2 = new (std::nothrow)
+        A; // expected-error-re {{aligned allocation function of type {{.+}} is only available on}}
+           // `delete` is also required above for the same reason
+    // expected-error-re@-2 {{aligned deallocation function of type {{.+}} is only available on}}
+  }
 
-    // Array versions
-    {
-        A *a1 = new A[2]; // expected-error-re {{aligned allocation function of type {{.+}} is only available on}}
-        // `delete` is also required by the line above if construction fails
-        // expected-error-re@-2 {{aligned deallocation function of type {{.+}} is only available on}}
+  // Array versions
+  {
+    A* a1 = new A
+        [2]; // expected-error-re {{aligned allocation function of type {{.+}} is only available on}}
+    // `delete` is also required by the line above if construction fails
+    // expected-error-re@-2 {{aligned deallocation function of type {{.+}} is only available on}}
 
-        delete[] a1; // expected-error-re {{aligned deallocation function of type {{.+}} is only available on}}
+    delete
+        [] a1; // expected-error-re {{aligned deallocation function of type {{.+}} is only available on}}
 
-        A* a2 = new(std::nothrow) A[2]; // expected-error-re {{aligned allocation function of type {{.+}} is only available on}}
-        // `delete` is also required above for the same reason
-        // expected-error-re@-2 {{aligned deallocation function of type {{.+}} is only available on}}
-    }
+    A* a2 = new (std::nothrow) A
+        [2]; // expected-error-re {{aligned allocation function of type {{.+}} is only available on}}
+             // `delete` is also required above for the same reason
+    // expected-error-re@-2 {{aligned deallocation function of type {{.+}} is only available on}}
+  }
 }

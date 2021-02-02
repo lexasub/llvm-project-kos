@@ -74,8 +74,7 @@ static cl::list<std::string> ClInputAddresses(cl::Positional,
                                               cl::desc("<input addresses>..."),
                                               cl::ZeroOrMore);
 
-template<typename T>
-static bool error(Expected<T> &ResOrErr) {
+template <typename T> static bool error(Expected<T> &ResOrErr) {
   if (ResOrErr)
     return false;
   logAllUnhandledErrors(ResOrErr.takeError(), errs(),

@@ -1,3 +1,3 @@
 @interface E
--(void)method3;
+- (void)method3;
 @end

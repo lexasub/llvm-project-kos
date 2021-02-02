@@ -25,7 +25,7 @@ int no_analyze_test_var NO_SANITIZE_THREAD; // \
   // expected-error {{'no_sanitize_thread' attribute only applies to functions}}
 
 class NoAnalyzeFoo {
- private:
+private:
   int test_field NO_SANITIZE_THREAD; // \
     // expected-error {{'no_sanitize_thread' attribute only applies to functions}}
   void test_method() NO_SANITIZE_THREAD;

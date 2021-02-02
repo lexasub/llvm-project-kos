@@ -128,7 +128,6 @@ TEST(LineIteratorTest, CommentSkippingKeepBlanks) {
   EXPECT_EQ(E, I);
 }
 
-
 TEST(LineIteratorTest, BlankSkipping) {
   std::unique_ptr<MemoryBuffer> Buffer = MemoryBuffer::getMemBuffer("\n\n\n"
                                                                     "line 1\n"

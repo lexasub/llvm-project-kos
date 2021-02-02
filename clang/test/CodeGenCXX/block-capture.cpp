@@ -10,6 +10,8 @@
 
 int main() {
   __block int baz = [&]() { return 0; }();
-  ^{ (void)baz; };
+  ^{
+    (void)baz;
+  };
   return 0;
 }

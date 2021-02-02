@@ -12,7 +12,7 @@ public:
 PR22753 test(PR22753 x) {
   return x;
 }
-}
+} // namespace test1
 
 namespace test2 {
 typedef double __m128d __attribute__((__vector_size__(16)));
@@ -21,7 +21,7 @@ typedef double __m256d __attribute__((__vector_size__(32)));
 typedef float __m256 __attribute__((__vector_size__(32)));
 
 union U1 {
-  __m128  v1;
+  __m128 v1;
   __m128d v2;
 };
 
@@ -36,7 +36,7 @@ UU1 PR23082(UU1 x) {
 }
 
 union U2 {
-  __m256  v1;
+  __m256 v1;
   __m256d v2;
 };
 
@@ -49,7 +49,7 @@ union UU2 {
 UU2 PR23082(UU2 x) {
   return x;
 }
-}
+} // namespace test2
 
 namespace test3 {
 union U {
@@ -58,4 +58,4 @@ union U {
 };
 // CHECK: define{{.*}} i32 @_ZN5test31fENS_1UE({{.*}}* byval({{.*}}) align 32
 int f(U u) { return u.f2; }
-}
+} // namespace test3

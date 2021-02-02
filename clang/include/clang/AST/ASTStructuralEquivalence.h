@@ -72,9 +72,8 @@ struct StructuralEquivalenceContext {
   StructuralEquivalenceContext(
       ASTContext &FromCtx, ASTContext &ToCtx,
       llvm::DenseSet<std::pair<Decl *, Decl *>> &NonEquivalentDecls,
-      StructuralEquivalenceKind EqKind,
-      bool StrictTypeSpelling = false, bool Complain = true,
-      bool ErrorOnTagTypeMismatch = false)
+      StructuralEquivalenceKind EqKind, bool StrictTypeSpelling = false,
+      bool Complain = true, bool ErrorOnTagTypeMismatch = false)
       : FromCtx(FromCtx), ToCtx(ToCtx), NonEquivalentDecls(NonEquivalentDecls),
         EqKind(EqKind), StrictTypeSpelling(StrictTypeSpelling),
         ErrorOnTagTypeMismatch(ErrorOnTagTypeMismatch), Complain(Complain) {}

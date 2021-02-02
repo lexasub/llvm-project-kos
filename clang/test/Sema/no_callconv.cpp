@@ -4,19 +4,19 @@
 #ifdef PS4
 
 // PS4 does not support these.
-void __vectorcall func_vc() {} // expected-error {{'__vectorcall' calling convention is not supported for this target}}
-void __regcall func_rc() {} // expected-error {{'__regcall' calling convention is not supported for this target}}
-void __attribute__((vectorcall)) funcA() {} // expected-error {{'vectorcall' calling convention is not supported for this target}}
-void __attribute__((regcall)) funcB() {} // expected-error {{'regcall' calling convention is not supported for this target}}
-void __attribute__((ms_abi)) funcH() {} // expected-error {{'ms_abi' calling convention is not supported for this target}}
+void __vectorcall func_vc() {}                  // expected-error {{'__vectorcall' calling convention is not supported for this target}}
+void __regcall func_rc() {}                     // expected-error {{'__regcall' calling convention is not supported for this target}}
+void __attribute__((vectorcall)) funcA() {}     // expected-error {{'vectorcall' calling convention is not supported for this target}}
+void __attribute__((regcall)) funcB() {}        // expected-error {{'regcall' calling convention is not supported for this target}}
+void __attribute__((ms_abi)) funcH() {}         // expected-error {{'ms_abi' calling convention is not supported for this target}}
 void __attribute__((intel_ocl_bicc)) funcJ() {} // expected-error {{'intel_ocl_bicc' calling convention is not supported for this target}}
-void __attribute__((swiftcall)) funcK() {} // expected-error {{'swiftcall' calling convention is not supported for this target}}
-void __attribute__((pascal)) funcG() {} // expected-error {{'pascal' calling convention is not supported for this target}}
-void __attribute__((preserve_most)) funcL() {} // expected-error {{'preserve_most' calling convention is not supported for this target}}
-void __attribute__((preserve_all)) funcM() {} // expected-error {{'preserve_all' calling convention is not supported for this target}}
-void __attribute__((stdcall)) funcD() {} // expected-error {{'stdcall' calling convention is not supported for this target}}
-void __attribute__((fastcall)) funcE() {} // expected-error {{'fastcall' calling convention is not supported for this target}}
-void __attribute__((thiscall)) funcF() {} // expected-error {{'thiscall' calling convention is not supported for this target}}
+void __attribute__((swiftcall)) funcK() {}      // expected-error {{'swiftcall' calling convention is not supported for this target}}
+void __attribute__((pascal)) funcG() {}         // expected-error {{'pascal' calling convention is not supported for this target}}
+void __attribute__((preserve_most)) funcL() {}  // expected-error {{'preserve_most' calling convention is not supported for this target}}
+void __attribute__((preserve_all)) funcM() {}   // expected-error {{'preserve_all' calling convention is not supported for this target}}
+void __attribute__((stdcall)) funcD() {}        // expected-error {{'stdcall' calling convention is not supported for this target}}
+void __attribute__((fastcall)) funcE() {}       // expected-error {{'fastcall' calling convention is not supported for this target}}
+void __attribute__((thiscall)) funcF() {}       // expected-error {{'thiscall' calling convention is not supported for this target}}
 #else
 
 void __vectorcall func_vc() {}
@@ -30,12 +30,12 @@ void __attribute__((preserve_most)) funcL() {}
 void __attribute__((preserve_all)) funcM() {}
 
 // Same function with different calling conventions. Error with a note pointing to the last decl.
-void __attribute__((preserve_all)) funcR(); // expected-note {{previous declaration is here}}
+void __attribute__((preserve_all)) funcR();  // expected-note {{previous declaration is here}}
 void __attribute__((preserve_most)) funcR(); // expected-error {{function declared 'preserve_most' here was previously declared 'preserve_all'}}
 
 void __attribute__((pascal)) funcG() {} // expected-warning {{'pascal' calling convention is not supported for this target}}
 
-void __attribute__((stdcall)) funcD() {} // expected-warning {{'stdcall' calling convention is not supported for this target}}
+void __attribute__((stdcall)) funcD() {}  // expected-warning {{'stdcall' calling convention is not supported for this target}}
 void __attribute__((fastcall)) funcE() {} // expected-warning {{'fastcall' calling convention is not supported for this target}}
 void __attribute__((thiscall)) funcF() {} // expected-warning {{'thiscall' calling convention is not supported for this target}}
 #endif

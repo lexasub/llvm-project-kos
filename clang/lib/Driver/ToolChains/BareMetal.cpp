@@ -9,8 +9,8 @@
 #include "BareMetal.h"
 
 #include "CommonArgs.h"
-#include "InputInfo.h"
 #include "Gnu.h"
+#include "InputInfo.h"
 
 #include "Arch/RISCV.h"
 #include "clang/Driver/Compilation.h"
@@ -92,7 +92,7 @@ static bool findRISCVMultilibs(const Driver &D,
 }
 
 BareMetal::BareMetal(const Driver &D, const llvm::Triple &Triple,
-                           const ArgList &Args)
+                     const ArgList &Args)
     : ToolChain(D, Triple, Args) {
   getProgramPaths().push_back(getDriver().getInstalledDir());
   if (getDriver().getInstalledDir() != getDriver().Dir)
@@ -210,8 +210,8 @@ void BareMetal::addClangTargetOptions(const ArgList &DriverArgs,
   CC1Args.push_back("-nostdsysteminc");
 }
 
-void BareMetal::AddClangCXXStdlibIncludeArgs(
-    const ArgList &DriverArgs, ArgStringList &CC1Args) const {
+void BareMetal::AddClangCXXStdlibIncludeArgs(const ArgList &DriverArgs,
+                                             ArgStringList &CC1Args) const {
   if (DriverArgs.hasArg(options::OPT_nostdinc) ||
       DriverArgs.hasArg(options::OPT_nostdlibinc) ||
       DriverArgs.hasArg(options::OPT_nostdincxx))
@@ -292,7 +292,7 @@ void baremetal::Linker::ConstructJob(Compilation &C, const JobAction &JA,
                                      const char *LinkingOutput) const {
   ArgStringList CmdArgs;
 
-  auto &TC = static_cast<const toolchains::BareMetal&>(getToolChain());
+  auto &TC = static_cast<const toolchains::BareMetal &>(getToolChain());
 
   AddLinkerInputs(TC, Inputs, Args, CmdArgs, JA);
 

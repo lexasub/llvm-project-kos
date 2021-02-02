@@ -42,7 +42,7 @@ public:
   explicit StringMapEntryStorage(size_t keyLength)
       : StringMapEntryBase(keyLength), second() {}
   template <typename... InitTy>
-  StringMapEntryStorage(size_t keyLength, InitTy &&... initVals)
+  StringMapEntryStorage(size_t keyLength, InitTy &&...initVals)
       : StringMapEntryBase(keyLength),
         second(std::forward<InitTy>(initVals)...) {}
   StringMapEntryStorage(StringMapEntryStorage &e) = delete;
@@ -89,7 +89,7 @@ public:
   /// \p InitiVals.
   template <typename AllocatorTy, typename... InitTy>
   static StringMapEntry *Create(StringRef key, AllocatorTy &allocator,
-                                InitTy &&... initVals) {
+                                InitTy &&...initVals) {
     size_t keyLength = key.size();
 
     // Allocate a new item with space for the string at the end and a null

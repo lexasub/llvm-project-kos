@@ -74,11 +74,9 @@ public:
   StructuredData::GenericSP
   CreateScriptCommandObject(const char *class_name) override;
 
-  StructuredData::ObjectSP
-  CreateScriptedThreadPlan(const char *class_name,
-                           StructuredDataImpl *args_data,
-                           std::string &error_str,
-                           lldb::ThreadPlanSP thread_plan) override;
+  StructuredData::ObjectSP CreateScriptedThreadPlan(
+      const char *class_name, StructuredDataImpl *args_data,
+      std::string &error_str, lldb::ThreadPlanSP thread_plan) override;
 
   bool ScriptedThreadPlanExplainsStop(StructuredData::ObjectSP implementor_sp,
                                       Event *event,
@@ -185,10 +183,9 @@ public:
   Status GenerateFunction(const char *signature,
                           const StringList &input) override;
 
-  Status GenerateBreakpointCommandCallbackData(
-      StringList &input,
-      std::string &output,
-      bool has_extra_args) override;
+  Status GenerateBreakpointCommandCallbackData(StringList &input,
+                                               std::string &output,
+                                               bool has_extra_args) override;
 
   bool GenerateWatchpointCommandCallbackData(StringList &input,
                                              std::string &output) override;
@@ -253,8 +250,7 @@ public:
                                       const char *callback_body) override;
 
   Status SetBreakpointCommandCallbackFunction(
-      BreakpointOptions *bp_options,
-      const char *function_name,
+      BreakpointOptions *bp_options, const char *function_name,
       StructuredData::ObjectSP extra_args_sp) override;
 
   /// This one is for deserialization:

@@ -13,26 +13,35 @@
 template <typename T>
 void bar(T &x, T &y) { x.a += y.a; }
 
-namespace N1
-{
-  struct A { int a; A() : a(0) {} };
-  #pragma omp declare reduction(+: A : bar(omp_out, omp_in))
-  #pragma omp declare reduction(-: struct A : bar(omp_out, omp_in))
-}
+namespace N1 {
+struct A {
+  int a;
+  A() : a(0) {}
+};
+#pragma omp declare reduction(+   \
+                              : A \
+                              : bar(omp_out, omp_in))
+#pragma omp declare reduction(-          \
+                              : struct A \
+                              : bar(omp_out, omp_in))
+} // namespace N1
 // CHECK: namespace N1 {
 // CHECK: #pragma omp declare reduction (+ : N1::A : bar(omp_out, omp_in))
 // CHECK: #pragma omp declare reduction (- : struct A : bar(omp_out, omp_in))
 
-#pragma omp declare reduction(+ : int, char : omp_out *= omp_in)
+#pragma omp declare reduction(+           \
+                              : int, char \
+                              : omp_out *= omp_in)
 // CHECK: #pragma omp declare reduction (+ : int : omp_out *= omp_in){{$}}
 // CHECK-NEXT: #pragma omp declare reduction (+ : char : omp_out *= omp_in)
-
 
 template <class T>
 class SSS {
 public:
-#pragma omp declare reduction(fun : T : omp_out += omp_in) initializer(omp_priv = omp_orig + 15)
-#pragma omp declare reduction(fun1 : T : omp_out=1, omp_out=foo(omp_in)) initializer(omp_priv = omp_orig + 14)
+#pragma omp declare reduction(fun:T \
+                              : omp_out += omp_in) initializer(omp_priv = omp_orig + 15)
+#pragma omp declare reduction(fun1:T \
+                              : omp_out = 1, omp_out = foo(omp_in)) initializer(omp_priv = omp_orig + 14)
   static T foo(T &);
 };
 
@@ -49,7 +58,9 @@ SSS<int> d;
 
 void init(SSS<int> &lhs, SSS<int> rhs);
 
-#pragma omp declare reduction(fun : SSS < int > : omp_out = omp_in) initializer(init(omp_priv, omp_orig))
+#pragma omp declare reduction(fun         \
+                              : SSS <int> \
+                              : omp_out = omp_in) initializer(init(omp_priv, omp_orig))
 // CHECK: #pragma omp declare reduction (fun : SSS<int> : omp_out = omp_in) initializer(init(omp_priv, omp_orig))
 
 // CHECK: template <typename T> T foo(T a) {
@@ -69,9 +80,11 @@ void init(SSS<int> &lhs, SSS<int> rhs);
 // CHECK: }
 template <typename T>
 T foo(T a) {
-#pragma omp declare reduction(fun : T : omp_out += omp_in) initializer(omp_priv = omp_orig + 15)
+#pragma omp declare reduction(fun:T \
+                              : omp_out += omp_in) initializer(omp_priv = omp_orig + 15)
   {
-#pragma omp declare reduction(fun : T : omp_out += omp_in) initializer(omp_priv = omp_orig + 15)
+#pragma omp declare reduction(fun:T \
+                              : omp_out += omp_in) initializer(omp_priv = omp_orig + 15)
   }
   return a;
 }
@@ -90,8 +103,9 @@ int main() {
   {
   }
   N1::A a;
-  // CHECK: #pragma omp parallel reduction(+: a)
-  #pragma omp parallel reduction(+: a)
+// CHECK: #pragma omp parallel reduction(+: a)
+#pragma omp parallel reduction(+ \
+                               : a)
   {
   }
   return foo(15);

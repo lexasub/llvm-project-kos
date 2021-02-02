@@ -18,21 +18,20 @@
 #include "test_macros.h"
 #include "platform_support.h"
 
-int main(int, char**)
-{
-    std::string temp = get_temp_file_name();
-    {
-        std::ofstream fs(temp.c_str());
-        std::filebuf* fb = fs.rdbuf();
-        assert(fb->sputc('r') == 'r');
-    }
-    std::remove(temp.c_str());
-    {
-        std::wofstream fs(temp.c_str());
-        std::wfilebuf* fb = fs.rdbuf();
-        assert(fb->sputc(L'r') == L'r');
-    }
-    std::remove(temp.c_str());
+int main(int, char**) {
+  std::string temp = get_temp_file_name();
+  {
+    std::ofstream fs(temp.c_str());
+    std::filebuf* fb = fs.rdbuf();
+    assert(fb->sputc('r') == 'r');
+  }
+  std::remove(temp.c_str());
+  {
+    std::wofstream fs(temp.c_str());
+    std::wfilebuf* fb = fs.rdbuf();
+    assert(fb->sputc(L'r') == L'r');
+  }
+  std::remove(temp.c_str());
 
   return 0;
 }

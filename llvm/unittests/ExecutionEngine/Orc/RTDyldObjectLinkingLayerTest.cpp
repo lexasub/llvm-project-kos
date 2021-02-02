@@ -6,11 +6,11 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "llvm/ExecutionEngine/Orc/RTDyldObjectLinkingLayer.h"
 #include "OrcTestCommon.h"
 #include "llvm/ExecutionEngine/ExecutionEngine.h"
 #include "llvm/ExecutionEngine/Orc/CompileUtils.h"
 #include "llvm/ExecutionEngine/Orc/IRCompileLayer.h"
-#include "llvm/ExecutionEngine/Orc/RTDyldObjectLinkingLayer.h"
 #include "llvm/ExecutionEngine/SectionMemoryManager.h"
 #include "llvm/IR/Constants.h"
 #include "llvm/IR/LLVMContext.h"
@@ -22,7 +22,7 @@ using namespace llvm::orc;
 namespace {
 
 class RTDyldObjectLinkingLayerExecutionTest : public testing::Test,
-                                               public OrcExecutionTest {};
+                                              public OrcExecutionTest {};
 
 // Adds an object with a debug section to RuntimeDyld and then returns whether
 // the debug section was passed to the memory manager.

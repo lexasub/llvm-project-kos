@@ -88,8 +88,8 @@ public:
   using VersionInfoType = struct {
     bool EmitBuildVersion;
     union {
-      MCVersionMinType Type;          ///< Used when EmitBuildVersion==false.
-      MachO::PlatformType Platform;   ///< Used when EmitBuildVersion==true.
+      MCVersionMinType Type;        ///< Used when EmitBuildVersion==false.
+      MachO::PlatformType Platform; ///< Used when EmitBuildVersion==true.
     } TypeOrPlatform;
     unsigned Major;
     unsigned Minor;
@@ -170,8 +170,8 @@ private:
   /// \p Value result is fixed, otherwise the value may change due to
   /// relocation.
   bool evaluateFixup(const MCAsmLayout &Layout, const MCFixup &Fixup,
-                     const MCFragment *DF, MCValue &Target,
-                     uint64_t &Value, bool &WasForced) const;
+                     const MCFragment *DF, MCValue &Target, uint64_t &Value,
+                     bool &WasForced) const;
 
   /// Check whether a fixup can be satisfied, or whether it needs to be relaxed
   /// (increased in size, in order to hold its value correctly).

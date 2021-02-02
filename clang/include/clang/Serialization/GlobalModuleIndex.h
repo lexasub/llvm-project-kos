@@ -27,7 +27,7 @@
 namespace llvm {
 class BitstreamCursor;
 class MemoryBuffer;
-}
+} // namespace llvm
 
 namespace clang {
 
@@ -39,7 +39,7 @@ class PCHContainerOperations;
 class PCHContainerReader;
 
 namespace serialization {
-  class ModuleFile;
+class ModuleFile;
 }
 
 /// A global index for a set of module files, providing information about
@@ -49,9 +49,9 @@ namespace serialization {
 /// place where one can look for identifiers determine which
 /// module files contain any information about that identifier. This
 /// allows the client to restrict the search to only those module files known
-/// to have a information about that identifier, improving performance. Moreover,
-/// the global module index may know about module files that have not been
-/// imported, and can be queried to determine which modules the current
+/// to have a information about that identifier, improving performance.
+/// Moreover, the global module index may know about module files that have not
+/// been imported, and can be queried to determine which modules the current
 /// translation could or should load to fix a problem.
 class GlobalModuleIndex {
   using ModuleFile = serialization::ModuleFile;
@@ -69,7 +69,7 @@ class GlobalModuleIndex {
 
   /// Information about a given module file.
   struct ModuleInfo {
-    ModuleInfo() : File(), Size(), ModTime() { }
+    ModuleInfo() : File(), Size(), ModTime() {}
 
     /// The module file, once it has been resolved.
     ModuleFile *File;
@@ -186,6 +186,6 @@ public:
                                 const PCHContainerReader &PCHContainerRdr,
                                 llvm::StringRef Path);
 };
-}
+} // namespace clang
 
 #endif

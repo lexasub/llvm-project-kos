@@ -8,5 +8,9 @@
 // CHECK-NEXT: ...
 
 // ConstructorUsingShadowDecl
-struct Base { Base(int); };
-struct Derived : public Base { using Base::Base; };
+struct Base {
+  Base(int);
+};
+struct Derived : public Base {
+  using Base::Base;
+};

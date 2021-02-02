@@ -2,7 +2,7 @@ int f(int i, int j = 2, int k = 5);
 int f(float x, float y...);
 
 class A {
- public:
+public:
   A(int, int, int);
 };
 
@@ -10,13 +10,14 @@ void test() {
   A a(f(1, 2, 3, 4), 2, 3);
 }
 
-
 namespace NS {
-  struct X { };
-  struct Y { Y(X); };
-  template <class T = int>
-  void g(X, Y);
-}
+struct X {};
+struct Y {
+  Y(X);
+};
+template <class T = int>
+void g(X, Y);
+} // namespace NS
 
 void test_adl() {
   NS::X x;

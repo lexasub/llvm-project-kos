@@ -165,8 +165,7 @@ TEST(StmtDataCollector, TestCharacterLiteral) {
   ASSERT_TRUE(isStmtHashEqual(characterLiteral().bind("id"), "char x = '0';",
                               "char x = '0';"));
   ASSERT_TRUE(isStmtHashEqual(characterLiteral().bind("id"),
-                              R"(char x = '\0';)",
-                              R"(char x = '\x00';)"));
+                              R"(char x = '\0';)", R"(char x = '\x00';)"));
   ASSERT_FALSE(isStmtHashEqual(characterLiteral().bind("id"), "char x = '0';",
                                "char x = '1';"));
 }

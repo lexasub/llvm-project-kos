@@ -24,8 +24,7 @@ public:
   BreakpointResolverAddress(const lldb::BreakpointSP &bkpt,
                             const Address &addr);
 
-  BreakpointResolverAddress(const lldb::BreakpointSP &bkpt,
-                            const Address &addr,
+  BreakpointResolverAddress(const lldb::BreakpointSP &bkpt, const Address &addr,
                             const FileSpec &module_spec);
 
   ~BreakpointResolverAddress() override = default;

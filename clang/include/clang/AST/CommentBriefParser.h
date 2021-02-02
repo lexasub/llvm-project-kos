@@ -10,7 +10,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-
 #ifndef LLVM_CLANG_AST_COMMENTBRIEFPARSER_H
 #define LLVM_CLANG_AST_COMMENTBRIEFPARSER_H
 
@@ -51,4 +50,3 @@ public:
 } // end namespace clang
 
 #endif
-

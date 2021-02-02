@@ -1,20 +1,18 @@
 // RUN: %clang_cc1 -triple=x86_64-linux-gnu -emit-llvm -o - %s | FileCheck %s
 
 // CHECK: @defn ={{.*}} global i32 undef
-int defn  [[clang::loader_uninitialized]];
+int defn [[clang::loader_uninitialized]];
 
 // CHECK: @_ZL11defn_static = internal global i32 undef
 static int defn_static [[clang::loader_uninitialized]] __attribute__((used));
 
 // CHECK: @_ZZ4funcvE4data = internal global i32 undef
-int* func(void)
-{
+int *func(void) {
   static int data [[clang::loader_uninitialized]];
   return &data;
 }
 
-class trivial
-{
+class trivial {
   float x;
 };
 
@@ -26,9 +24,9 @@ double arr[32] __attribute__((loader_uninitialized));
 
 // Defining as arr2[] [[clang..]] raises the error: attribute cannot be applied to types
 // CHECK: @arr2 ={{.*}} global [4 x double] undef
-double arr2 [[clang::loader_uninitialized]] [4];
+double arr2 [[clang::loader_uninitialized]][4];
 
-template<typename T> struct templ{T * t;};
+template <typename T> struct templ { T *t; };
 
 // CHECK: @templ_int ={{.*}} global %struct.templ undef
 templ<int> templ_int [[clang::loader_uninitialized]];

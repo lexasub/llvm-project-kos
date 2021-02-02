@@ -26,7 +26,7 @@ public:
   std::string getValue() const;
 };
 
+} // namespace pdb
 } // namespace llvm
-}
 
 #endif // LLVM_DEBUGINFO_PDB_PDBSYMBOLCOMPILANDENV_H

@@ -16,7 +16,7 @@
 #endif
 namespace {
 class C {};
-}
+} // namespace
 
 void foo() {
   C c;

@@ -5,13 +5,12 @@ struct [[maybe_unused]] S {
   static int SI [[maybe_unused]];
 };
 
-enum [[maybe_unused]] E1 {
-  EnumVal [[maybe_unused]]
-};
+enum [[maybe_unused]] E1{
+    EnumVal [[maybe_unused]]};
 
 [[maybe_unused]] void unused_func([[maybe_unused]] int parm) {
   typedef int maybe_unused_int [[maybe_unused]];
   [[maybe_unused]] int I;
 }
 
-namespace [[maybe_unused]] N {} // expected-warning {{'maybe_unused' attribute only applies to}}
+namespace [[maybe_unused]] N {} // namespace N

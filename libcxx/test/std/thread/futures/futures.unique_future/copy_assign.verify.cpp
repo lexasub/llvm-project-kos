@@ -18,20 +18,19 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        std::future<int> f0, f;
-        f = f0; // expected-error {{overload resolution selected deleted operator '='}}
-    }
-    {
-        std::future<int &> f0, f;
-        f = f0; // expected-error {{overload resolution selected deleted operator '='}}
-    }
-    {
-        std::future<void> f0, f;
-        f = f0; // expected-error {{overload resolution selected deleted operator '='}}
-    }
+int main(int, char**) {
+  {
+    std::future<int> f0, f;
+    f = f0; // expected-error {{overload resolution selected deleted operator '='}}
+  }
+  {
+    std::future<int&> f0, f;
+    f = f0; // expected-error {{overload resolution selected deleted operator '='}}
+  }
+  {
+    std::future<void> f0, f;
+    f = f0; // expected-error {{overload resolution selected deleted operator '='}}
+  }
 
-    return 0;
+  return 0;
 }

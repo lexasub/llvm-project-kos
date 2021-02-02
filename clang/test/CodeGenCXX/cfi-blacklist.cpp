@@ -24,7 +24,7 @@ struct S2 {
   virtual void f();
 };
 
-}
+} // namespace std
 
 // CHECK: define{{.*}}s1f
 // NOBL: llvm.type.test

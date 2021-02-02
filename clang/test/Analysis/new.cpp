@@ -34,7 +34,7 @@ void *testPlacementNew() {
   clang_analyzer_eval(*x == 1); // expected-warning{{TRUE}};
 
   void *y = new (x) int;
-  clang_analyzer_eval(x == y); // expected-warning{{TRUE}};
+  clang_analyzer_eval(x == y);  // expected-warning{{TRUE}};
   clang_analyzer_eval(*x == 1); // expected-warning{{TRUE}};
 
   return y;
@@ -98,14 +98,14 @@ int **testNewInvalidationScalar() {
 
 void testNewInvalidationScalarPlacement(int **p) {
   // Ensure that we don't consider this a leak.
-  new (p) (int *)(static_cast<int *>(malloc(4))); // no-warning
+  new (p)(int *)(static_cast<int *>(malloc(4))); // no-warning
 }
 
 void testCacheOut(PtrWrapper w) {
   extern bool coin();
   if (coin())
     w.x = 0;
-  new (&w.x) (int*)(0); // we cache out here; don't crash
+  new (&w.x)(int *)(0); // we cache out here; don't crash
 }
 
 void testUseAfter(int *p) {
@@ -151,13 +151,13 @@ void testDeleteAfterFree() {
 void testStandardPlacementNewAfterFree() {
   int *p = (int *)malloc(sizeof(int));
   free(p);
-  p = new(p) int; // expected-warning{{Use of memory after it is freed}}
+  p = new (p) int; // expected-warning{{Use of memory after it is freed}}
 }
 
 void testCustomPlacementNewAfterFree() {
   int *p = (int *)malloc(sizeof(int));
   free(p);
-  p = new(0, p) int; // expected-warning{{Use of memory after it is freed}}
+  p = new (0, p) int; // expected-warning{{Use of memory after it is freed}}
 }
 
 void testUsingThisAfterDelete() {
@@ -167,11 +167,13 @@ void testUsingThisAfterDelete() {
 }
 
 void testAggregateNew() {
-  struct Point { int x, y; };
+  struct Point {
+    int x, y;
+  };
   new Point{1, 2}; // no crash
 
   Point p;
-  new (&p) Point{1, 2}; // no crash
+  new (&p) Point{1, 2};          // no crash
   clang_analyzer_eval(p.x == 1); // expected-warning{{TRUE}}
   clang_analyzer_eval(p.y == 2); // expected-warning{{TRUE}}
 }
@@ -203,12 +205,12 @@ int testNoInitializationPlacement() {
 }
 
 // Test modelling destructor call on call to delete
-class IntPair{
+class IntPair {
 public:
   int x;
   int y;
-  IntPair() {};
-  ~IntPair() {x = x/y;}; //expected-warning {{Division by zero}}
+  IntPair(){};
+  ~IntPair() { x = x / y; }; //expected-warning {{Division by zero}}
 };
 
 void testCallToDestructor() {
@@ -219,11 +221,11 @@ void testCallToDestructor() {
 }
 
 // Test Deleting a value that's passed as an argument.
-class DerefClass{
+class DerefClass {
 public:
   int *x;
-  DerefClass() {};
-  ~DerefClass() {*x = 1;}; //expected-warning {{Dereference of null pointer (loaded from field 'x')}}
+  DerefClass(){};
+  ~DerefClass() { *x = 1; }; //expected-warning {{Dereference of null pointer (loaded from field 'x')}}
 };
 
 void testDestCall(DerefClass *arg) {
@@ -242,7 +244,7 @@ void abort(void) __attribute__((noreturn));
 class NoReturnDtor {
 public:
   NoReturnDtor() {}
-  ~NoReturnDtor() {abort();}
+  ~NoReturnDtor() { abort(); }
 };
 
 void test_delete_dtor_LocalVar() {
@@ -250,22 +252,22 @@ void test_delete_dtor_LocalVar() {
   delete &test; // no warn or crash
 }
 
-class DerivedNoReturn:public NoReturnDtor {
+class DerivedNoReturn : public NoReturnDtor {
 public:
-  DerivedNoReturn() {};
-  ~DerivedNoReturn() {};
+  DerivedNoReturn(){};
+  ~DerivedNoReturn(){};
 };
 
 void testNullDtorDerived() {
   DerivedNoReturn *p = new DerivedNoReturn();
-  delete p; // Calls the base destructor which aborts, checked below
+  delete p;                  // Calls the base destructor which aborts, checked below
   clang_analyzer_eval(true); // no warn
 }
 
 //Deleting a non-class pointer should not crash/warn
 void test_var_delete() {
   int *v = new int;
-  delete v;  // no crash/warn
+  delete v;                  // no crash/warn
   clang_analyzer_eval(true); // expected-warning{{TRUE}}
 }
 
@@ -280,23 +282,23 @@ void test_array_delete() {
 
   C c2[4];
   // FIXME: Should warn.
-  delete[] &c2; // no-crash
+  delete[] & c2; // no-crash
 
   C c3[7][6];
   // FIXME: Should warn.
-  delete[] &c3; // no-crash
+  delete[] & c3; // no-crash
 }
 
 void testDeleteNull() {
   NoReturnDtor *foo = 0;
-  delete foo; // should not call destructor, checked below
+  delete foo;                // should not call destructor, checked below
   clang_analyzer_eval(true); // expected-warning{{TRUE}}
 }
 
 void testNullAssigneddtor() {
   NoReturnDtor *p = 0;
   NoReturnDtor *s = p;
-  delete s; // should not call destructor, checked below
+  delete s;                  // should not call destructor, checked below
   clang_analyzer_eval(true); // expected-warning{{TRUE}}
 }
 
@@ -311,20 +313,20 @@ void testNulldtorArg() {
 }
 
 void testDeleteUnknown(NoReturnDtor *foo) {
-  delete foo; // should assume non-null and call noreturn destructor
+  delete foo;                // should assume non-null and call noreturn destructor
   clang_analyzer_eval(true); // no-warning
 }
 
 void testArrayNull() {
   NoReturnDtor *fooArray = 0;
-  delete[] fooArray; // should not call destructor, checked below
+  delete[] fooArray;         // should not call destructor, checked below
   clang_analyzer_eval(true); // expected-warning{{TRUE}}
 }
 
 void testArrayDestr() {
   NoReturnDtor *p = new NoReturnDtor[2];
-  delete[] p; // Calls the base destructor which aborts, checked below
-   //TODO: clang_analyzer_eval should not be called
+  delete[] p;                // Calls the base destructor which aborts, checked below
+                             //TODO: clang_analyzer_eval should not be called
   clang_analyzer_eval(true); // expected-warning{{TRUE}}
 }
 

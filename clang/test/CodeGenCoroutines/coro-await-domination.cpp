@@ -28,7 +28,6 @@ extern "C" void consume(int);
 //  %tmp.exprcleanup = alloca i32*, align 8
 //  store i32* %x, i32** %tmp.exprcleanup, align 8
 
-
 // CHECK-LABEL: f(
 extern "C" coro f(int) {
   int x = 42;

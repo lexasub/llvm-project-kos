@@ -20,8 +20,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#include <sstream>
 #include <csignal>
+#include <sstream>
 
 #ifdef __ANDROID__
 #include <android/api-level.h>
@@ -55,7 +55,8 @@ static void LLVM_ATTRIBUTE_NORETURN ExitWithError(int error_fd,
   _exit(1);
 }
 
-static void DisableASLRIfRequested(int error_fd, const ProcessLaunchInfo &info) {
+static void DisableASLRIfRequested(int error_fd,
+                                   const ProcessLaunchInfo &info) {
 #if defined(__linux__)
   if (info.GetFlags().Test(lldb::eLaunchFlagDisableASLR)) {
     const unsigned long personality_get_current = 0xffffffff;
@@ -72,8 +73,8 @@ static void DisableASLRIfRequested(int error_fd, const ProcessLaunchInfo &info) 
 
 static void DupDescriptor(int error_fd, const FileSpec &file_spec, int fd,
                           int flags) {
-  int target_fd = llvm::sys::RetryAfterSignal(-1, ::open,
-      file_spec.GetCString(), flags, 0666);
+  int target_fd = llvm::sys::RetryAfterSignal(
+      -1, ::open, file_spec.GetCString(), flags, 0666);
 
   if (target_fd == -1)
     ExitWithError(error_fd, "DupDescriptor-open");

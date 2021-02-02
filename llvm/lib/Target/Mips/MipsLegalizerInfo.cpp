@@ -91,9 +91,7 @@ MipsLegalizerInfo::MipsLegalizerInfo(const MipsSubtarget &ST) {
   getActionDefinitionsBuilder({G_UADDO, G_UADDE, G_USUBO, G_USUBE, G_UMULO})
       .lowerFor({{s32, s1}});
 
-  getActionDefinitionsBuilder(G_UMULH)
-      .legalFor({s32})
-      .maxScalar(0, s32);
+  getActionDefinitionsBuilder(G_UMULH).legalFor({s32}).maxScalar(0, s32);
 
   // MIPS32r6 does not have alignment restrictions for memory access.
   // For MIPS32r5 and older memory access must be naturally-aligned i.e. aligned
@@ -148,18 +146,14 @@ MipsLegalizerInfo::MipsLegalizerInfo(const MipsSubtarget &ST) {
       })
       .minScalar(0, s32);
 
-  getActionDefinitionsBuilder(G_IMPLICIT_DEF)
-      .legalFor({s32, s64});
+  getActionDefinitionsBuilder(G_IMPLICIT_DEF).legalFor({s32, s64});
 
-  getActionDefinitionsBuilder(G_UNMERGE_VALUES)
-     .legalFor({{s32, s64}});
+  getActionDefinitionsBuilder(G_UNMERGE_VALUES).legalFor({{s32, s64}});
 
-  getActionDefinitionsBuilder(G_MERGE_VALUES)
-     .legalFor({{s64, s32}});
+  getActionDefinitionsBuilder(G_MERGE_VALUES).legalFor({{s64, s32}});
 
   getActionDefinitionsBuilder({G_ZEXTLOAD, G_SEXTLOAD})
-      .legalForTypesWithMemDesc({{s32, p0, 8, 8},
-                                 {s32, p0, 16, 8}})
+      .legalForTypesWithMemDesc({{s32, p0, 8, 8}, {s32, p0, 16, 8}})
       .clampScalar(0, s32, s32);
 
   getActionDefinitionsBuilder({G_ZEXT, G_SEXT, G_ANYEXT})
@@ -175,19 +169,13 @@ MipsLegalizerInfo::MipsLegalizerInfo(const MipsSubtarget &ST) {
       .minScalar(0, s32)
       .minScalar(1, s32);
 
-  getActionDefinitionsBuilder(G_BRCOND)
-      .legalFor({s32})
-      .minScalar(0, s32);
+  getActionDefinitionsBuilder(G_BRCOND).legalFor({s32}).minScalar(0, s32);
 
-  getActionDefinitionsBuilder(G_BRJT)
-      .legalFor({{p0, s32}});
+  getActionDefinitionsBuilder(G_BRJT).legalFor({{p0, s32}});
 
-  getActionDefinitionsBuilder(G_BRINDIRECT)
-      .legalFor({p0});
+  getActionDefinitionsBuilder(G_BRINDIRECT).legalFor({p0});
 
-  getActionDefinitionsBuilder(G_PHI)
-      .legalFor({p0, s32, s64})
-      .minScalar(0, s32);
+  getActionDefinitionsBuilder(G_PHI).legalFor({p0, s32, s64}).minScalar(0, s32);
 
   getActionDefinitionsBuilder({G_AND, G_OR, G_XOR})
       .legalFor({s32})
@@ -218,23 +206,17 @@ MipsLegalizerInfo::MipsLegalizerInfo(const MipsSubtarget &ST) {
       .legalFor({s32})
       .clampScalar(0, s32, s32);
 
-  getActionDefinitionsBuilder({G_PTR_ADD, G_INTTOPTR})
-      .legalFor({{p0, s32}});
+  getActionDefinitionsBuilder({G_PTR_ADD, G_INTTOPTR}).legalFor({{p0, s32}});
 
-  getActionDefinitionsBuilder(G_PTRTOINT)
-      .legalFor({{s32, p0}});
+  getActionDefinitionsBuilder(G_PTRTOINT).legalFor({{s32, p0}});
 
-  getActionDefinitionsBuilder(G_FRAME_INDEX)
-      .legalFor({p0});
+  getActionDefinitionsBuilder(G_FRAME_INDEX).legalFor({p0});
 
-  getActionDefinitionsBuilder({G_GLOBAL_VALUE, G_JUMP_TABLE})
-      .legalFor({p0});
+  getActionDefinitionsBuilder({G_GLOBAL_VALUE, G_JUMP_TABLE}).legalFor({p0});
 
-  getActionDefinitionsBuilder(G_DYN_STACKALLOC)
-      .lowerFor({{p0, s32}});
+  getActionDefinitionsBuilder(G_DYN_STACKALLOC).lowerFor({{p0, s32}});
 
-  getActionDefinitionsBuilder(G_VASTART)
-     .legalFor({p0});
+  getActionDefinitionsBuilder(G_VASTART).legalFor({p0});
 
   getActionDefinitionsBuilder(G_BSWAP)
       .legalIf([=, &ST](const LegalityQuery &Query) {
@@ -249,16 +231,13 @@ MipsLegalizerInfo::MipsLegalizerInfo(const MipsSubtarget &ST) {
       })
       .maxScalar(0, s32);
 
-  getActionDefinitionsBuilder(G_BITREVERSE)
-      .lowerFor({s32})
-      .maxScalar(0, s32);
+  getActionDefinitionsBuilder(G_BITREVERSE).lowerFor({s32}).maxScalar(0, s32);
 
   getActionDefinitionsBuilder(G_CTLZ)
       .legalFor({{s32, s32}})
       .maxScalar(0, s32)
       .maxScalar(1, s32);
-  getActionDefinitionsBuilder(G_CTLZ_ZERO_UNDEF)
-      .lowerFor({{s32, s32}});
+  getActionDefinitionsBuilder(G_CTLZ_ZERO_UNDEF).lowerFor({{s32, s32}});
 
   getActionDefinitionsBuilder(G_CTTZ)
       .lowerFor({{s32, s32}})
@@ -273,8 +252,7 @@ MipsLegalizerInfo::MipsLegalizerInfo(const MipsSubtarget &ST) {
       .clampScalar(1, s32, s32);
 
   // FP instructions
-  getActionDefinitionsBuilder(G_FCONSTANT)
-      .legalFor({s32, s64});
+  getActionDefinitionsBuilder(G_FCONSTANT).legalFor({s32, s64});
 
   getActionDefinitionsBuilder({G_FADD, G_FSUB, G_FMUL, G_FDIV, G_FABS, G_FSQRT})
       .legalIf([=, &ST](const LegalityQuery &Query) {
@@ -289,14 +267,11 @@ MipsLegalizerInfo::MipsLegalizerInfo(const MipsSubtarget &ST) {
       .legalFor({{s32, s32}, {s32, s64}})
       .minScalar(0, s32);
 
-  getActionDefinitionsBuilder({G_FCEIL, G_FFLOOR})
-      .libcallFor({s32, s64});
+  getActionDefinitionsBuilder({G_FCEIL, G_FFLOOR}).libcallFor({s32, s64});
 
-  getActionDefinitionsBuilder(G_FPEXT)
-      .legalFor({{s64, s32}});
+  getActionDefinitionsBuilder(G_FPEXT).legalFor({{s64, s32}});
 
-  getActionDefinitionsBuilder(G_FPTRUNC)
-      .legalFor({{s32, s64}});
+  getActionDefinitionsBuilder(G_FPTRUNC).legalFor({{s32, s64}});
 
   // FP to int conversion instructions
   getActionDefinitionsBuilder(G_FPTOSI)
@@ -492,9 +467,7 @@ static bool MSA2OpIntrinsicToGeneric(MachineInstr &MI, unsigned Opcode,
                                      MachineIRBuilder &MIRBuilder,
                                      const MipsSubtarget &ST) {
   assert(ST.hasMSA() && "MSA intrinsic not supported on target without MSA.");
-  MIRBuilder.buildInstr(Opcode)
-      .add(MI.getOperand(0))
-      .add(MI.getOperand(2));
+  MIRBuilder.buildInstr(Opcode).add(MI.getOperand(0)).add(MI.getOperand(2));
   MI.eraseFromParent();
   return true;
 }

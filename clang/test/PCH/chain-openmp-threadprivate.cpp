@@ -12,7 +12,7 @@
 #if !defined(PASS1)
 #define PASS1
 
-extern "C" int* malloc (int size);
+extern "C" int *malloc(int size);
 int *a = malloc(20);
 
 #elif !defined(PASS2)

@@ -22,47 +22,44 @@
 #include "../cases.h"
 
 template <class T>
-void
-test(T x, typename std::enable_if<std::is_integral<T>::value>::type* = 0)
-{
-    static_assert((std::is_same<decltype(std::proj(x)), std::complex<double> >::value), "");
-    assert(std::proj(x) == proj(std::complex<double>(x, 0)));
+void test(T x, typename std::enable_if<std::is_integral<T>::value>::type* = 0) {
+  static_assert(
+      (std::is_same<decltype(std::proj(x)), std::complex<double> >::value), "");
+  assert(std::proj(x) == proj(std::complex<double>(x, 0)));
 }
 
 template <class T>
-void
-test(T x, typename std::enable_if<std::is_floating_point<T>::value>::type* = 0)
-{
-    static_assert((std::is_same<decltype(std::proj(x)), std::complex<T> >::value), "");
-    assert(std::proj(x) == proj(std::complex<T>(x, 0)));
+void test(
+    T x, typename std::enable_if<std::is_floating_point<T>::value>::type* = 0) {
+  static_assert((std::is_same<decltype(std::proj(x)), std::complex<T> >::value),
+                "");
+  assert(std::proj(x) == proj(std::complex<T>(x, 0)));
 }
 
 template <class T>
-void
-test(T x, typename std::enable_if<!std::is_integral<T>::value &&
-                                  !std::is_floating_point<T>::value>::type* = 0)
-{
-    static_assert((std::is_same<decltype(std::proj(x)), std::complex<T> >::value), "");
-    assert(std::proj(x) == proj(std::complex<T>(x, 0)));
+void test(
+    T x,
+    typename std::enable_if<!std::is_integral<T>::value &&
+                            !std::is_floating_point<T>::value>::type* = 0) {
+  static_assert((std::is_same<decltype(std::proj(x)), std::complex<T> >::value),
+                "");
+  assert(std::proj(x) == proj(std::complex<T>(x, 0)));
 }
 
 template <class T>
-void
-test()
-{
-    test<T>(0);
-    test<T>(1);
-    test<T>(10);
+void test() {
+  test<T>(0);
+  test<T>(1);
+  test<T>(10);
 }
 
-int main(int, char**)
-{
-    test<float>();
-    test<double>();
-    test<long double>();
-    test<int>();
-    test<unsigned>();
-    test<long long>();
+int main(int, char**) {
+  test<float>();
+  test<double>();
+  test<long double>();
+  test<int>();
+  test<unsigned>();
+  test<long long>();
 
   return 0;
 }

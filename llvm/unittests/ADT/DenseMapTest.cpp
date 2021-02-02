@@ -46,9 +46,7 @@ public:
     EXPECT_TRUE(Constructed.insert(this).second);
   }
   CtorTester &operator=(const CtorTester &) = default;
-  ~CtorTester() {
-    EXPECT_EQ(1u, Constructed.erase(this));
-  }
+  ~CtorTester() { EXPECT_EQ(1u, Constructed.erase(this)); }
   operator uint32_t() const { return Value; }
 
   int getValue() const { return Value; }
@@ -75,8 +73,7 @@ CtorTester getTestValue(int i, CtorTester *) { return CtorTester(42 + i); }
 // function overloads selected by component types of the type parameter. This
 // allows all of the map implementations to be tested with shared
 // implementations of helper routines.
-template <typename T>
-class DenseMapTest : public ::testing::Test {
+template <typename T> class DenseMapTest : public ::testing::Test {
 protected:
   T Map;
 
@@ -97,14 +94,12 @@ template <typename T>
 typename T::mapped_type *const DenseMapTest<T>::dummy_value_ptr = nullptr;
 
 // Register these types for testing.
-typedef ::testing::Types<DenseMap<uint32_t, uint32_t>,
-                         DenseMap<uint32_t *, uint32_t *>,
-                         DenseMap<CtorTester, CtorTester, CtorTesterMapInfo>,
-                         SmallDenseMap<uint32_t, uint32_t>,
-                         SmallDenseMap<uint32_t *, uint32_t *>,
-                         SmallDenseMap<CtorTester, CtorTester, 4,
-                                       CtorTesterMapInfo>
-                         > DenseMapTestTypes;
+typedef ::testing::Types<
+    DenseMap<uint32_t, uint32_t>, DenseMap<uint32_t *, uint32_t *>,
+    DenseMap<CtorTester, CtorTester, CtorTesterMapInfo>,
+    SmallDenseMap<uint32_t, uint32_t>, SmallDenseMap<uint32_t *, uint32_t *>,
+    SmallDenseMap<CtorTester, CtorTester, 4, CtorTesterMapInfo>>
+    DenseMapTestTypes;
 TYPED_TEST_CASE(DenseMapTest, DenseMapTestTypes);
 
 // Empty map tests
@@ -511,14 +506,14 @@ TEST(DenseMapCustomTest, StringRefTest) {
 struct TestDenseMapInfo {
   static inline unsigned getEmptyKey() { return ~0; }
   static inline unsigned getTombstoneKey() { return ~0U - 1; }
-  static unsigned getHashValue(const unsigned& Val) { return Val * 37U; }
-  static unsigned getHashValue(const char* Val) {
+  static unsigned getHashValue(const unsigned &Val) { return Val * 37U; }
+  static unsigned getHashValue(const char *Val) {
     return (unsigned)(Val[0] - 'a') * 37U;
   }
-  static bool isEqual(const unsigned& LHS, const unsigned& RHS) {
+  static bool isEqual(const unsigned &LHS, const unsigned &RHS) {
     return LHS == RHS;
   }
-  static bool isEqual(const char* LHS, const unsigned& RHS) {
+  static bool isEqual(const char *LHS, const unsigned &RHS) {
     return (unsigned)(LHS[0] - 'a') == RHS;
   }
 };
@@ -550,8 +545,8 @@ TEST(DenseMapCustomTest, FindAsTest) {
 struct ContiguousDenseMapInfo {
   static inline unsigned getEmptyKey() { return ~0; }
   static inline unsigned getTombstoneKey() { return ~0U - 1; }
-  static unsigned getHashValue(const unsigned& Val) { return Val; }
-  static bool isEqual(const unsigned& LHS, const unsigned& RHS) {
+  static unsigned getHashValue(const unsigned &Val) { return Val; }
+  static bool isEqual(const unsigned &LHS, const unsigned &RHS) {
     return LHS == RHS;
   }
 };
@@ -646,4 +641,4 @@ TEST(DenseMapCustomTest, OpaquePointerKey) {
   EXPECT_EQ(Map.find(K2), Map.end());
   EXPECT_EQ(Map.find(K3), Map.end());
 }
-}
+} // namespace

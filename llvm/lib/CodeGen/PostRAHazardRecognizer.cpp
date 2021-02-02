@@ -43,28 +43,27 @@ using namespace llvm;
 STATISTIC(NumNoops, "Number of noops inserted");
 
 namespace {
-  class PostRAHazardRecognizer : public MachineFunctionPass {
+class PostRAHazardRecognizer : public MachineFunctionPass {
 
-  public:
-    static char ID;
-    PostRAHazardRecognizer() : MachineFunctionPass(ID) {}
+public:
+  static char ID;
+  PostRAHazardRecognizer() : MachineFunctionPass(ID) {}
 
-    void getAnalysisUsage(AnalysisUsage &AU) const override {
-      AU.setPreservesCFG();
-      MachineFunctionPass::getAnalysisUsage(AU);
-    }
+  void getAnalysisUsage(AnalysisUsage &AU) const override {
+    AU.setPreservesCFG();
+    MachineFunctionPass::getAnalysisUsage(AU);
+  }
 
-    bool runOnMachineFunction(MachineFunction &Fn) override;
+  bool runOnMachineFunction(MachineFunction &Fn) override;
+};
+char PostRAHazardRecognizer::ID = 0;
 
-  };
-  char PostRAHazardRecognizer::ID = 0;
-
-}
+} // namespace
 
 char &llvm::PostRAHazardRecognizerID = PostRAHazardRecognizer::ID;
 
-INITIALIZE_PASS(PostRAHazardRecognizer, DEBUG_TYPE,
-                "Post RA hazard recognizer", false, false)
+INITIALIZE_PASS(PostRAHazardRecognizer, DEBUG_TYPE, "Post RA hazard recognizer",
+                false, false)
 
 bool PostRAHazardRecognizer::runOnMachineFunction(MachineFunction &Fn) {
   const TargetInstrInfo *TII = Fn.getSubtarget().getInstrInfo();

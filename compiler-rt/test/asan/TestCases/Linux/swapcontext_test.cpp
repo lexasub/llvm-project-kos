@@ -18,24 +18,22 @@ ucontext_t child_context;
 
 const int kStackSize = 1 << 20;
 
-__attribute__((noinline))
-void Throw() {
+__attribute__((noinline)) void Throw() {
   throw 1;
 }
 
-__attribute__((noinline))
-void ThrowAndCatch() {
+__attribute__((noinline)) void ThrowAndCatch() {
   try {
     Throw();
-  } catch(int a) {
+  } catch (int a) {
     printf("ThrowAndCatch: %d\n", a);
   }
 }
 
 void Child(int mode) {
-  char x[32] = {0};  // Stack gets poisoned.
+  char x[32] = {0}; // Stack gets poisoned.
   printf("Child: %p\n", x);
-  ThrowAndCatch();  // Simulate __asan_handle_no_return().
+  ThrowAndCatch(); // Simulate __asan_handle_no_return().
   // (a) Do nothing, just return to parent function.
   // (b) Jump into the original function. Stack remains poisoned unless we do
   //     something.
@@ -86,6 +84,6 @@ int main(int argc, char **argv) {
   printf("Test4 passed\n");
   // CHECK: Test4 passed
 
-  delete [] heap;
+  delete[] heap;
   return ret;
 }

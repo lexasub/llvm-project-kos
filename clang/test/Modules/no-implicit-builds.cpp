@@ -39,4 +39,4 @@
 // RUN:     -fmodule-map-file=%S/Inputs/no-implicit-builds/b.modulemap \
 // RUN:     -fno-implicit-modules %s
 
-#include "Inputs/no-implicit-builds/b.h"  // expected-error {{is needed but has not been provided}}
+#include "Inputs/no-implicit-builds/b.h" // expected-error {{is needed but has not been provided}}

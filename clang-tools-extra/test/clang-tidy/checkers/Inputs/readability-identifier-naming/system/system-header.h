@@ -12,6 +12,6 @@ float global;
 
 void function() {
 }
-}
+} // namespace SYSTEM_NS
 
 #endif // SYSTEM_HEADER_H

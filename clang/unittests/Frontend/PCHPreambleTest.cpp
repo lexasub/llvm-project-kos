@@ -6,14 +6,14 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "clang/Basic/Diagnostic.h"
+#include "clang/Basic/FileManager.h"
 #include "clang/Frontend/ASTUnit.h"
-#include "clang/Frontend/CompilerInvocation.h"
 #include "clang/Frontend/CompilerInstance.h"
+#include "clang/Frontend/CompilerInvocation.h"
 #include "clang/Frontend/FrontendActions.h"
 #include "clang/Frontend/FrontendOptions.h"
 #include "clang/Lex/PreprocessorOptions.h"
-#include "clang/Basic/Diagnostic.h"
-#include "clang/Basic/FileManager.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/MemoryBuffer.h"
 #include "llvm/Support/Path.h"
@@ -24,13 +24,12 @@ using namespace clang;
 
 namespace {
 
-class ReadCountingInMemoryFileSystem : public vfs::InMemoryFileSystem
-{
+class ReadCountingInMemoryFileSystem : public vfs::InMemoryFileSystem {
   std::map<std::string, unsigned> ReadCounts;
 
 public:
-  ErrorOr<std::unique_ptr<vfs::File>> openFileForRead(const Twine &Path) override
-  {
+  ErrorOr<std::unique_ptr<vfs::File>>
+  openFileForRead(const Twine &Path) override {
     SmallVector<char, 128> PathVec;
     Path.toVector(PathVec);
     llvm::sys::path::remove_dots(PathVec, true);
@@ -38,8 +37,7 @@ public:
     return InMemoryFileSystem::openFileForRead(Path);
   }
 
-  unsigned GetReadCount(const Twine &Path) const
-  {
+  unsigned GetReadCount(const Twine &Path) const {
     auto it = ReadCounts.find(Path.str());
     return it == ReadCounts.end() ? 0 : it->second;
   }
@@ -69,7 +67,8 @@ public:
   void AddFile(const std::string &Filename, const std::string &Contents) {
     ::time_t now;
     ::time(&now);
-    VFS->addFile(Filename, now, MemoryBuffer::getMemBufferCopy(Contents, Filename));
+    VFS->addFile(Filename, now,
+                 MemoryBuffer::getMemBufferCopy(Contents, Filename));
   }
 
   void RemapFile(const std::string &Filename, const std::string &Contents) {
@@ -79,9 +78,9 @@ public:
   std::unique_ptr<ASTUnit> ParseAST(const std::string &EntryFile) {
     PCHContainerOpts = std::make_shared<PCHContainerOperations>();
     std::shared_ptr<CompilerInvocation> CI(new CompilerInvocation);
-    CI->getFrontendOpts().Inputs.push_back(
-      FrontendInputFile(EntryFile, FrontendOptions::getInputKindForExtension(
-        llvm::sys::path::extension(EntryFile).substr(1))));
+    CI->getFrontendOpts().Inputs.push_back(FrontendInputFile(
+        EntryFile, FrontendOptions::getInputKindForExtension(
+                       llvm::sys::path::extension(EntryFile).substr(1))));
 
     CI->getTargetOpts().Triple = "i386-unknown-linux-gnu";
 
@@ -90,8 +89,9 @@ public:
     PreprocessorOptions &PPOpts = CI->getPreprocessorOpts();
     PPOpts.RemappedFilesKeepOriginalName = true;
 
-    IntrusiveRefCntPtr<DiagnosticsEngine>
-      Diags(CompilerInstance::createDiagnostics(new DiagnosticOptions, new DiagnosticConsumer));
+    IntrusiveRefCntPtr<DiagnosticsEngine> Diags(
+        CompilerInstance::createDiagnostics(new DiagnosticOptions,
+                                            new DiagnosticConsumer));
 
     FileManager *FileMgr = new FileManager(FSOpts, VFS);
 
@@ -102,7 +102,8 @@ public:
   }
 
   bool ReparseAST(const std::unique_ptr<ASTUnit> &AST) {
-    bool reparseFailed = AST->Reparse(PCHContainerOpts, GetRemappedFiles(), VFS);
+    bool reparseFailed =
+        AST->Reparse(PCHContainerOpts, GetRemappedFiles(), VFS);
     return !reparseFailed;
   }
 
@@ -116,7 +117,7 @@ private:
     std::vector<std::pair<std::string, llvm::MemoryBuffer *>> Remapped;
     for (const auto &RemappedFile : RemappedFiles) {
       std::unique_ptr<MemoryBuffer> buf = MemoryBuffer::getMemBufferCopy(
-        RemappedFile.second, RemappedFile.first());
+          RemappedFile.second, RemappedFile.first());
       Remapped.emplace_back(std::string(RemappedFile.first()), buf.release());
     }
     return Remapped;
@@ -195,21 +196,18 @@ TEST_F(PCHPreambleTest, ReparseWithOverriddenFileDoesNotInvalidatePreamble) {
   std::string MainName = "//./main.cpp";
   AddFile(Header1, "");
   AddFile(Header2, "#pragma once");
-  AddFile(MainName,
-    "#include \"//./foo/../header1.h\"\n"
-    "#include \"//./foo/../header2.h\"\n"
-    "int main() { return ZERO; }");
+  AddFile(MainName, "#include \"//./foo/../header1.h\"\n"
+                    "#include \"//./foo/../header2.h\"\n"
+                    "int main() { return ZERO; }");
   RemapFile(Header1, "static const int ZERO = 0;\n");
 
   std::unique_ptr<ASTUnit> AST(ParseAST(MainName));
   ASSERT_TRUE(AST.get());
   ASSERT_FALSE(AST->getDiagnostics().hasErrorOccurred());
 
-  unsigned initialCounts[] = {
-    GetFileReadCount(MainName),
-    GetFileReadCount(Header1),
-    GetFileReadCount(Header2)
-  };
+  unsigned initialCounts[] = {GetFileReadCount(MainName),
+                              GetFileReadCount(Header1),
+                              GetFileReadCount(Header2)};
 
   ASSERT_TRUE(ReparseAST(AST));
 
@@ -222,10 +220,9 @@ TEST_F(PCHPreambleTest, ParseWithBom) {
   std::string Header = "//./header.h";
   std::string Main = "//./main.cpp";
   AddFile(Header, "int random() { return 4; }");
-  AddFile(Main,
-    "\xef\xbb\xbf"
-    "#include \"//./header.h\"\n"
-    "int main() { return random() -2; }");
+  AddFile(Main, "\xef\xbb\xbf"
+                "#include \"//./header.h\"\n"
+                "int main() { return random() -2; }");
 
   std::unique_ptr<ASTUnit> AST(ParseAST(Main));
   ASSERT_TRUE(AST.get());
@@ -235,14 +232,13 @@ TEST_F(PCHPreambleTest, ParseWithBom) {
 
   ASSERT_TRUE(ReparseAST(AST));
   ASSERT_FALSE(AST->getDiagnostics().hasErrorOccurred());
-  
+
   // Check preamble PCH was really reused
   ASSERT_EQ(HeaderReadCount, GetFileReadCount(Header));
 
   // Remove BOM
-  RemapFile(Main,
-    "#include \"//./header.h\"\n"
-    "int main() { return random() -2; }");
+  RemapFile(Main, "#include \"//./header.h\"\n"
+                  "int main() { return random() -2; }");
 
   ASSERT_TRUE(ReparseAST(AST));
   ASSERT_FALSE(AST->getDiagnostics().hasErrorOccurred());
@@ -251,10 +247,9 @@ TEST_F(PCHPreambleTest, ParseWithBom) {
   HeaderReadCount = GetFileReadCount(Header);
 
   // Add BOM back
-  RemapFile(Main,
-    "\xef\xbb\xbf"
-    "#include \"//./header.h\"\n"
-    "int main() { return random() -2; }");
+  RemapFile(Main, "\xef\xbb\xbf"
+                  "#include \"//./header.h\"\n"
+                  "int main() { return random() -2; }");
 
   ASSERT_TRUE(ReparseAST(AST));
   ASSERT_FALSE(AST->getDiagnostics().hasErrorOccurred());

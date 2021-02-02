@@ -25,44 +25,47 @@ template <class T>
 struct Ptr {};
 
 template <class T>
-struct A
-{
-    typedef T value_type;
-    typedef Ptr<T> pointer;
+struct A {
+  typedef T value_type;
+  typedef Ptr<T> pointer;
 };
 
 template <class T>
-struct B
-{
-    typedef T value_type;
+struct B {
+  typedef T value_type;
 };
 
 template <class T>
 struct CPtr {};
 
 template <class T>
-struct C
-{
-    typedef T value_type;
-    typedef CPtr<void> void_pointer;
+struct C {
+  typedef T value_type;
+  typedef CPtr<void> void_pointer;
 };
-
 
 template <class T>
-struct D
-{
-    typedef T value_type;
+struct D {
+  typedef T value_type;
+
 private:
-    typedef void void_pointer;
+  typedef void void_pointer;
 };
 
-int main(int, char**)
-{
-    static_assert((std::is_same<std::allocator_traits<A<char> >::void_pointer, Ptr<void> >::value), "");
-    static_assert((std::is_same<std::allocator_traits<B<char> >::void_pointer, void*>::value), "");
-    static_assert((std::is_same<std::allocator_traits<C<char> >::void_pointer, CPtr<void> >::value), "");
+int main(int, char**) {
+  static_assert((std::is_same<std::allocator_traits<A<char> >::void_pointer,
+                              Ptr<void> >::value),
+                "");
+  static_assert((std::is_same<std::allocator_traits<B<char> >::void_pointer,
+                              void*>::value),
+                "");
+  static_assert((std::is_same<std::allocator_traits<C<char> >::void_pointer,
+                              CPtr<void> >::value),
+                "");
 #if TEST_STD_VER >= 11
-    static_assert((std::is_same<std::allocator_traits<D<char> >::void_pointer, void*>::value), "");
+  static_assert((std::is_same<std::allocator_traits<D<char> >::void_pointer,
+                              void*>::value),
+                "");
 #endif
 
   return 0;

@@ -48,8 +48,7 @@ public:
   bool doFinalization(Module &M) override;
 
   /// To store RegMask for given Function *.
-  void storeUpdateRegUsageInfo(const Function &FP,
-                               ArrayRef<uint32_t> RegMask);
+  void storeUpdateRegUsageInfo(const Function &FP, ArrayRef<uint32_t> RegMask);
 
   /// To query stored RegMask for given Function *, it will returns ane empty
   /// array if function is not known.

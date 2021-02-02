@@ -16,16 +16,16 @@
 #ifndef HEADER
 #define HEADER
 
-struct St{
- int a;
+struct St {
+  int a;
 };
 
-struct St1{
- int a;
- static int b;
+struct St1 {
+  int a;
+  static int b;
 // CHECK: static int b;
 #pragma omp allocate(b)
-// CHECK-NEXT: #pragma omp allocate(St1::b){{$}}
+  // CHECK-NEXT: #pragma omp allocate(St1::b){{$}}
 } d;
 
 int a, b;
@@ -41,12 +41,12 @@ int a, b;
 template <class T>
 struct ST {
   static T m;
-  #pragma omp allocate(m)
+#pragma omp allocate(m)
 };
 
 template <class T> T foo() {
   T v;
-  #pragma omp allocate(v)
+#pragma omp allocate(v)
   v = ST<T>::m;
   return v;
 }
@@ -57,8 +57,8 @@ template <class T> T foo() {
 //CHECK-NEXT: int v;
 //CHECK-NEXT: #pragma omp allocate(v)
 
-namespace ns{
-  int a;
+namespace ns {
+int a;
 }
 // CHECK: namespace ns {
 // CHECK-NEXT: int a;
@@ -66,12 +66,12 @@ namespace ns{
 #pragma omp allocate(ns::a)
 // CHECK-NEXT: #pragma omp allocate(ns::a)
 
-int main () {
+int main() {
   static int a;
 // CHECK: static int a;
 #pragma omp allocate(a)
-// CHECK-NEXT: #pragma omp allocate(a)
-  a=2;
+  // CHECK-NEXT: #pragma omp allocate(a)
+  a = 2;
   return (foo<int>());
 }
 

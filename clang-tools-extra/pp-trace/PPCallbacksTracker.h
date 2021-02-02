@@ -21,9 +21,9 @@
 #ifndef PPTRACE_PPCALLBACKSTRACKER_H
 #define PPTRACE_PPCALLBACKSTRACKER_H
 
+#include "clang/Basic/SourceManager.h"
 #include "clang/Lex/PPCallbacks.h"
 #include "clang/Lex/Preprocessor.h"
-#include "clang/Basic/SourceManager.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/StringMap.h"

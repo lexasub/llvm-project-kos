@@ -1,4 +1,5 @@
-//===- llvm/Analysis/LegacyDivergenceAnalysis.h - KernelDivergence Analysis -*- C++ -*-===//
+//===- llvm/Analysis/LegacyDivergenceAnalysis.h - KernelDivergence Analysis -*-
+//C++ -*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -7,8 +8,8 @@
 //===----------------------------------------------------------------------===//
 //
 // The kernel divergence analysis is an LLVM pass which can be used to find out
-// if a branch instruction in a GPU program (kernel) is divergent or not. It can help
-// branch optimizations such as jump threading and loop unswitching to make
+// if a branch instruction in a GPU program (kernel) is divergent or not. It can
+// help branch optimizations such as jump threading and loop unswitching to make
 // better decisions.
 //
 //===----------------------------------------------------------------------===//
@@ -71,6 +72,6 @@ private:
   // Stores divergent uses of possibly uniform values.
   DenseSet<const Use *> DivergentUses;
 };
-} // End llvm namespace
+} // namespace llvm
 
-#endif //LLVM_ANALYSIS_LEGACY_DIVERGENCE_ANALYSIS_H
+#endif // LLVM_ANALYSIS_LEGACY_DIVERGENCE_ANALYSIS_H

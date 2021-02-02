@@ -157,8 +157,8 @@ ExitOnError ExitOnErr;
 
 namespace llvm {
 
-static raw_ostream &
-operator<<(raw_ostream &OS, const Session::MemoryRegionInfo &MRI) {
+static raw_ostream &operator<<(raw_ostream &OS,
+                               const Session::MemoryRegionInfo &MRI) {
   return OS << "target addr = "
             << format("0x%016" PRIx64, MRI.getTargetAddress())
             << ", content: " << (const void *)MRI.getContent().data() << " -- "
@@ -166,16 +166,15 @@ operator<<(raw_ostream &OS, const Session::MemoryRegionInfo &MRI) {
             << " (" << MRI.getContent().size() << " bytes)";
 }
 
-static raw_ostream &
-operator<<(raw_ostream &OS, const Session::SymbolInfoMap &SIM) {
+static raw_ostream &operator<<(raw_ostream &OS,
+                               const Session::SymbolInfoMap &SIM) {
   OS << "Symbols:\n";
   for (auto &SKV : SIM)
     OS << "  \"" << SKV.first() << "\" " << SKV.second << "\n";
   return OS;
 }
 
-static raw_ostream &
-operator<<(raw_ostream &OS, const Session::FileInfo &FI) {
+static raw_ostream &operator<<(raw_ostream &OS, const Session::FileInfo &FI) {
   for (auto &SIKV : FI.SectionInfos)
     OS << "  Section \"" << SIKV.first() << "\": " << SIKV.second << "\n";
   for (auto &GOTKV : FI.GOTEntryInfos)
@@ -185,8 +184,8 @@ operator<<(raw_ostream &OS, const Session::FileInfo &FI) {
   return OS;
 }
 
-static raw_ostream &
-operator<<(raw_ostream &OS, const Session::FileInfoMap &FIM) {
+static raw_ostream &operator<<(raw_ostream &OS,
+                               const Session::FileInfoMap &FIM) {
   for (auto &FIKV : FIM)
     OS << "File \"" << FIKV.first() << "\":\n" << FIKV.second;
   return OS;
@@ -1150,14 +1149,14 @@ static Error loadObjects(Session &S) {
   for (auto AbsDefItr = AbsoluteDefs.begin(), AbsDefEnd = AbsoluteDefs.end();
        AbsDefItr != AbsDefEnd; ++AbsDefItr) {
     unsigned AbsDefArgIdx =
-      AbsoluteDefs.getPosition(AbsDefItr - AbsoluteDefs.begin());
+        AbsoluteDefs.getPosition(AbsDefItr - AbsoluteDefs.begin());
     auto &JD = *std::prev(IdxToJLD.lower_bound(AbsDefArgIdx))->second;
 
     StringRef AbsDefStmt = *AbsDefItr;
     size_t EqIdx = AbsDefStmt.find_first_of('=');
     if (EqIdx == StringRef::npos)
       return make_error<StringError>("Invalid absolute define \"" + AbsDefStmt +
-                                     "\". Syntax: <name>=<addr>",
+                                         "\". Syntax: <name>=<addr>",
                                      inconvertibleErrorCode());
     StringRef Name = AbsDefStmt.substr(0, EqIdx).trim();
     StringRef AddrStr = AbsDefStmt.substr(EqIdx + 1).trim();
@@ -1165,15 +1164,15 @@ static Error loadObjects(Session &S) {
     uint64_t Addr;
     if (AddrStr.getAsInteger(0, Addr))
       return make_error<StringError>("Invalid address expression \"" + AddrStr +
-                                     "\" in absolute define \"" + AbsDefStmt +
-                                     "\"",
+                                         "\" in absolute define \"" +
+                                         AbsDefStmt + "\"",
                                      inconvertibleErrorCode());
     JITEvaluatedSymbol AbsDef(Addr, JITSymbolFlags::Exported);
     if (auto Err = JD.define(absoluteSymbols({{S.ES.intern(Name), AbsDef}})))
       return Err;
 
     // Register the absolute symbol with the session symbol infos.
-    S.SymbolInfos[Name] = { StringRef(), Addr };
+    S.SymbolInfos[Name] = {StringRef(), Addr};
   }
 
   LLVM_DEBUG({
@@ -1319,7 +1318,6 @@ int main(int argc, char *argv[]) {
 
   if (PhonyExternals)
     addPhonyExternalsGenerator(*S);
-
 
   if (ShowInitialExecutionSessionState)
     S->ES.dump(outs());

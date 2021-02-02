@@ -31,7 +31,7 @@ struct MachineFunctionPrinterPass : public MachineFunctionPass {
   raw_ostream &OS;
   const std::string Banner;
 
-  MachineFunctionPrinterPass() : MachineFunctionPass(ID), OS(dbgs()) { }
+  MachineFunctionPrinterPass() : MachineFunctionPass(ID), OS(dbgs()) {}
   MachineFunctionPrinterPass(raw_ostream &os, const std::string &banner)
       : MachineFunctionPass(ID), OS(os), Banner(banner) {}
 
@@ -53,7 +53,7 @@ struct MachineFunctionPrinterPass : public MachineFunctionPass {
 };
 
 char MachineFunctionPrinterPass::ID = 0;
-}
+} // namespace
 
 char &llvm::MachineFunctionPrinterPassID = MachineFunctionPrinterPass::ID;
 INITIALIZE_PASS(MachineFunctionPrinterPass, "machineinstr-printer",
@@ -63,9 +63,9 @@ namespace llvm {
 /// Returns a newly-created MachineFunction Printer pass. The
 /// default banner is empty.
 ///
-MachineFunctionPass *createMachineFunctionPrinterPass(raw_ostream &OS,
-                                                      const std::string &Banner){
+MachineFunctionPass *
+createMachineFunctionPrinterPass(raw_ostream &OS, const std::string &Banner) {
   return new MachineFunctionPrinterPass(OS, Banner);
 }
 
-}
+} // namespace llvm

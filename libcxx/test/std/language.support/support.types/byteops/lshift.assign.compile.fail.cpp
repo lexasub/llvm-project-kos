@@ -16,14 +16,10 @@
 // This function shall not participate in overload resolution unless
 //   is_integral_v<IntegerType> is true.
 
-
-constexpr std::byte test(std::byte b) {
-    return b <<= 2.0;
-    }
-
+constexpr std::byte test(std::byte b) { return b <<= 2.0; }
 
 int main(int, char**) {
-    constexpr std::byte b1 = test(std::byte{1});
+  constexpr std::byte b1 = test(std::byte{1});
 
   return 0;
 }

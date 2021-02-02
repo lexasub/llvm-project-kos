@@ -20,54 +20,45 @@
 
 #include "test_macros.h"
 
-struct A
-{
-    A() {}
-    A(const A&) {
-        TEST_THROW(10);
-    }
+struct A {
+  A() {}
+  A(const A&) { TEST_THROW(10); }
 };
 
-int main(int, char**)
-{
-    {
-        typedef int T;
-        T i = 3;
-        std::promise<T> p;
-        std::future<T> f = p.get_future();
-        p.set_value(i);
-        ++i;
-        assert(f.get() == 3);
+int main(int, char**) {
+  {
+    typedef int T;
+    T i = 3;
+    std::promise<T> p;
+    std::future<T> f = p.get_future();
+    p.set_value(i);
+    ++i;
+    assert(f.get() == 3);
 #ifndef TEST_HAS_NO_EXCEPTIONS
-        --i;
-        try
-        {
-            p.set_value(i);
-            assert(false);
-        }
-        catch (const std::future_error& e)
-        {
-            assert(e.code() == make_error_code(std::future_errc::promise_already_satisfied));
-        }
-#endif
+    --i;
+    try {
+      p.set_value(i);
+      assert(false);
+    } catch (const std::future_error& e) {
+      assert(e.code() ==
+             make_error_code(std::future_errc::promise_already_satisfied));
     }
-    {
-        typedef A T;
-        T i;
-        std::promise<T> p;
-        std::future<T> f = p.get_future();
+#endif
+  }
+  {
+    typedef A T;
+    T i;
+    std::promise<T> p;
+    std::future<T> f = p.get_future();
 #ifndef TEST_HAS_NO_EXCEPTIONS
-        try
-        {
-            p.set_value(i);
-            assert(false);
-        }
-        catch (int j)
-        {
-            assert(j == 10);
-        }
-#endif
+    try {
+      p.set_value(i);
+      assert(false);
+    } catch (int j) {
+      assert(j == 10);
     }
+#endif
+  }
 
   return 0;
 }

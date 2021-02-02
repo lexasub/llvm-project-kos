@@ -9,8 +9,8 @@
 #define CF_RETURNS_RETAINED __attribute__((cf_returns_retained))
 
 #define NS_INLINE static __inline__ __attribute__((always_inline))
-#define nil ((void*) 0)
-#define NULL ((void*)0)
+#define nil ((void *)0)
+#define NULL ((void *)0)
 
 typedef int BOOL;
 typedef unsigned NSUInteger;
@@ -21,7 +21,7 @@ typedef unsigned char UChar;
 
 typedef struct _NSZone NSZone;
 
-typedef const void * CFTypeRef;
+typedef const void *CFTypeRef;
 CFTypeRef CFRetain(CFTypeRef cf);
 CFTypeRef CFMakeCollectable(CFTypeRef cf) NS_AUTOMATED_REFCOUNT_UNAVAILABLE;
 
@@ -36,7 +36,8 @@ NS_INLINE NS_RETURNS_RETAINED id NSMakeCollectable(CFTypeRef CF_CONSUMED cf) NS_
 - (id)autorelease NS_AUTOMATED_REFCOUNT_UNAVAILABLE;
 @end
 
-@interface NSObject <NSObject> {}
+@interface NSObject <NSObject> {
+}
 - (id)init;
 
 + (id)new;
@@ -52,10 +53,10 @@ NS_INLINE NS_RETURNS_RETAINED id NSMakeCollectable(CFTypeRef CF_CONSUMED cf) NS_
 NS_AUTOMATED_REFCOUNT_UNAVAILABLE
 @interface NSAutoreleasePool : NSObject {
 @private
-    void    *_token;
-    void    *_reserved3;
-    void    *_reserved2;
-    void    *_reserved;
+  void *_token;
+  void *_reserved3;
+  void *_reserved2;
+  void *_reserved;
 }
 
 + (void)addObject:(id)anObject;
@@ -66,7 +67,7 @@ NS_AUTOMATED_REFCOUNT_UNAVAILABLE
 
 @end
 
-typedef const void* objc_objectptr_t; 
+typedef const void *objc_objectptr_t;
 extern __attribute__((ns_returns_retained)) id objc_retainedObject(objc_objectptr_t __attribute__((cf_consumed)) pointer);
 extern __attribute__((ns_returns_not_retained)) id objc_unretainedObject(objc_objectptr_t pointer);
 extern objc_objectptr_t objc_unretainedPointer(id object);
@@ -85,21 +86,21 @@ void _xpc_object_validate(xpc_object_t object);
 #if __has_feature(objc_arc)
 
 NS_INLINE CF_RETURNS_RETAINED CFTypeRef CFBridgingRetain(id X) {
-    return (__bridge_retained CFTypeRef)X;
+  return (__bridge_retained CFTypeRef)X;
 }
 
 NS_INLINE id CFBridgingRelease(CFTypeRef CF_CONSUMED X) {
-    return (__bridge_transfer id)X;
+  return (__bridge_transfer id)X;
 }
 
 #else
 
 NS_INLINE CF_RETURNS_RETAINED CFTypeRef CFBridgingRetain(id X) {
-    return X ? CFRetain((CFTypeRef)X) : NULL;
+  return X ? CFRetain((CFTypeRef)X) : NULL;
 }
 
 NS_INLINE id CFBridgingRelease(CFTypeRef CF_CONSUMED X) {
-    return [(id)CFMakeCollectable(X) autorelease];
+  return [(id)CFMakeCollectable(X) autorelease];
 }
 
 #endif

@@ -84,6 +84,7 @@ class LLVM_LIBRARY_VISIBILITY WinException : public EHStreamer {
   int getFrameIndexOffset(int FrameIndex, const WinEHFuncInfo &FuncInfo);
 
   void endFuncletImpl();
+
 public:
   //===--------------------------------------------------------------------===//
   // Main entry points.
@@ -107,7 +108,6 @@ public:
   void beginFunclet(const MachineBasicBlock &MBB, MCSymbol *Sym) override;
   void endFunclet() override;
 };
-}
+} // namespace llvm
 
 #endif
-

@@ -49,23 +49,21 @@ ms Tolerance = ms(50);
 ms Tolerance = ms(50 * 5);
 #endif
 
-void f()
-{
-    time_point t0 = Clock::now();
-    m.lock();
-    time_point t1 = Clock::now();
-    m.unlock();
-    ns d = t1 - t0 - WaitTime;
-    assert(d < Tolerance);  // within tolerance
+void f() {
+  time_point t0 = Clock::now();
+  m.lock();
+  time_point t1 = Clock::now();
+  m.unlock();
+  ns d = t1 - t0 - WaitTime;
+  assert(d < Tolerance); // within tolerance
 }
 
-int main(int, char**)
-{
-    m.lock();
-    std::thread t = support::make_test_thread(f);
-    std::this_thread::sleep_for(WaitTime);
-    m.unlock();
-    t.join();
+int main(int, char**) {
+  m.lock();
+  std::thread t = support::make_test_thread(f);
+  std::this_thread::sleep_for(WaitTime);
+  m.unlock();
+  t.join();
 
   return 0;
 }

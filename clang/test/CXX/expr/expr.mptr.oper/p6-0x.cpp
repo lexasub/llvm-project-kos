@@ -1,10 +1,10 @@
 // RUN: %clang_cc1 -std=c++11 -fsyntax-only -verify %s
 
-struct X { };
+struct X {};
 
-template<typename T> T& lvalue();
-template<typename T> T&& xvalue();
-template<typename T> T prvalue();
+template <typename T> T &lvalue();
+template <typename T> T &&xvalue();
+template <typename T> T prvalue();
 
 // In a .* expression whose object expression is an rvalue, the
 // program is ill-formed if the second operand is a pointer to member
@@ -12,7 +12,7 @@ template<typename T> T prvalue();
 // expression whose object expression is an lvalue, the program is
 // ill-formed if the second operand is a pointer to member function
 // with ref-qualifier &&.
-void test(X *xp, int (X::*pmf)(int), int (X::*l_pmf)(int) &, 
+void test(X *xp, int (X::*pmf)(int), int (X::*l_pmf)(int) &,
           int (X::*r_pmf)(int) &&) {
   // No ref-qualifier.
   (lvalue<X>().*pmf)(17);
@@ -22,7 +22,7 @@ void test(X *xp, int (X::*pmf)(int), int (X::*l_pmf)(int) &,
 
   // Lvalue ref-qualifier.
   (lvalue<X>().*l_pmf)(17);
-  (xvalue<X>().*l_pmf)(17); // expected-error-re{{pointer-to-member function type 'int (X::*)(int){{( __attribute__\(\(thiscall\)\))?}} &' can only be called on an lvalue}}
+  (xvalue<X>().*l_pmf)(17);  // expected-error-re{{pointer-to-member function type 'int (X::*)(int){{( __attribute__\(\(thiscall\)\))?}} &' can only be called on an lvalue}}
   (prvalue<X>().*l_pmf)(17); // expected-error-re{{pointer-to-member function type 'int (X::*)(int){{( __attribute__\(\(thiscall\)\))?}} &' can only be called on an lvalue}}
   (xp->*l_pmf)(17);
 
@@ -30,5 +30,5 @@ void test(X *xp, int (X::*pmf)(int), int (X::*l_pmf)(int) &,
   (lvalue<X>().*r_pmf)(17); // expected-error-re{{pointer-to-member function type 'int (X::*)(int){{( __attribute__\(\(thiscall\)\))?}} &&' can only be called on an rvalue}}
   (xvalue<X>().*r_pmf)(17);
   (prvalue<X>().*r_pmf)(17);
-  (xp->*r_pmf)(17);  // expected-error-re{{pointer-to-member function type 'int (X::*)(int){{( __attribute__\(\(thiscall\)\))?}} &&' can only be called on an rvalue}}
+  (xp->*r_pmf)(17); // expected-error-re{{pointer-to-member function type 'int (X::*)(int){{( __attribute__\(\(thiscall\)\))?}} &&' can only be called on an rvalue}}
 }

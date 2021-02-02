@@ -14,8 +14,8 @@
 #ifndef ASAN_MALLOC_LOCAL_H
 #define ASAN_MALLOC_LOCAL_H
 
-#include "sanitizer_common/sanitizer_platform.h"
 #include "asan_internal.h"
+#include "sanitizer_common/sanitizer_platform.h"
 
 static inline bool EarlyMalloc() {
   return SANITIZER_RTEMS &&

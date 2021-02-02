@@ -5,11 +5,13 @@
 struct Incomplete;
 
 struct A {
-  virtual A * clone(Incomplete p) = 0;
+  virtual A *clone(Incomplete p) = 0;
 };
 struct B : virtual A {
   // expected-error@+1 2 {{cannot compile this return-adjusting thunk with incomplete parameter type yet}}
-  B * clone(Incomplete p) override;
+  B *clone(Incomplete p) override;
 };
-struct C : B { int c; };
+struct C : B {
+  int c;
+};
 C c;

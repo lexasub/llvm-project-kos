@@ -43,7 +43,8 @@ TEST(writeFileAtomicallyTest, Test) {
       std::string(FinalTestfilePath) + "-%%%%%%%%";
   const std::string TestfileContent = "fooFOOfoo";
 
-  llvm::Error Err = llvm::writeFileAtomically(TempUniqTestFileModel, FinalTestfilePath, TestfileContent);
+  llvm::Error Err = llvm::writeFileAtomically(
+      TempUniqTestFileModel, FinalTestfilePath, TestfileContent);
   ASSERT_FALSE(static_cast<bool>(Err));
 
   std::ifstream FinalFileStream(std::string(FinalTestfilePath.str()));

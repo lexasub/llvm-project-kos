@@ -20,10 +20,10 @@
 #include <memory>
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    std::allocator<int> a;
-    TEST_IGNORE_NODISCARD a.allocate(3, nullptr); // expected-warning {{'allocate' is deprecated}}
+int main(int, char**) {
+  std::allocator<int> a;
+  TEST_IGNORE_NODISCARD a.allocate(
+      3, nullptr); // expected-warning {{'allocate' is deprecated}}
 
-    return 0;
+  return 0;
 }

@@ -20,7 +20,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-
 int main() {
   // Ensure the readdir_r interceptor doesn't erroneously mark the entire dirent
   // as written when the end of the directory pointer is reached.

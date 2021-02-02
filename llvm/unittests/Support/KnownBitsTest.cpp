@@ -41,8 +41,8 @@ TEST(KnownBitsTest, AddCarryExhaustive) {
           });
         });
 
-        KnownBits KnownComputed = KnownBits::computeForAddCarry(
-            Known1, Known2, KnownCarry);
+        KnownBits KnownComputed =
+            KnownBits::computeForAddCarry(Known1, Known2, KnownCarry);
         EXPECT_EQ(Known.Zero, KnownComputed.Zero);
         EXPECT_EQ(Known.One, KnownComputed.One);
       });
@@ -79,15 +79,15 @@ static void TestAddSubExhaustive(bool IsAdd) {
         });
       });
 
-      KnownBits KnownComputed = KnownBits::computeForAddSub(
-          IsAdd, /*NSW*/false, Known1, Known2);
+      KnownBits KnownComputed =
+          KnownBits::computeForAddSub(IsAdd, /*NSW*/ false, Known1, Known2);
       EXPECT_EQ(Known.Zero, KnownComputed.Zero);
       EXPECT_EQ(Known.One, KnownComputed.One);
 
       // The NSW calculation is not precise, only check that it's
       // conservatively correct.
-      KnownBits KnownNSWComputed = KnownBits::computeForAddSub(
-          IsAdd, /*NSW*/true, Known1, Known2);
+      KnownBits KnownNSWComputed =
+          KnownBits::computeForAddSub(IsAdd, /*NSW*/ true, Known1, Known2);
       EXPECT_TRUE(KnownNSWComputed.Zero.isSubsetOf(KnownNSW.Zero));
       EXPECT_TRUE(KnownNSWComputed.One.isSubsetOf(KnownNSW.One));
     });

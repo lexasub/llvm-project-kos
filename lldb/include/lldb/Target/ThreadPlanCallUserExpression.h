@@ -46,6 +46,7 @@ public:
 
 protected:
   void DoTakedown(bool success) override;
+
 private:
   lldb::UserExpressionSP
       m_user_expression_sp; // This is currently just used to ensure the

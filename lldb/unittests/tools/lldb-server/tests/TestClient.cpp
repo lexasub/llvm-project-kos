@@ -57,11 +57,14 @@ Expected<std::unique_ptr<TestClient>> TestClient::launch(StringRef Log) {
   return launch(Log, {});
 }
 
-Expected<std::unique_ptr<TestClient>> TestClient::launch(StringRef Log, ArrayRef<StringRef> InferiorArgs) {
+Expected<std::unique_ptr<TestClient>>
+TestClient::launch(StringRef Log, ArrayRef<StringRef> InferiorArgs) {
   return launchCustom(Log, {}, InferiorArgs);
 }
 
-Expected<std::unique_ptr<TestClient>> TestClient::launchCustom(StringRef Log, ArrayRef<StringRef> ServerArgs, ArrayRef<StringRef> InferiorArgs) {
+Expected<std::unique_ptr<TestClient>>
+TestClient::launchCustom(StringRef Log, ArrayRef<StringRef> ServerArgs,
+                         ArrayRef<StringRef> InferiorArgs) {
   const ArchSpec &arch_spec = HostInfo::GetArchitecture();
   Args args;
   args.AppendArgument(LLDB_SERVER);

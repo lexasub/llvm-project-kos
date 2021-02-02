@@ -12,8 +12,8 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include "AMDGPU.h"
 #include "AMDGPUPerfHintAnalysis.h"
+#include "AMDGPU.h"
 #include "Utils/AMDGPUBaseInfo.h"
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/Statistic.h"
@@ -263,8 +263,7 @@ bool AMDGPUPerfHint::runOnFunction(Function &F) {
 
   const AMDGPUPerfHintAnalysis::FuncInfo *Info = visit(F);
 
-  LLVM_DEBUG(dbgs() << F.getName() << " MemInst: " << Info->MemInstCount
-                    << '\n'
+  LLVM_DEBUG(dbgs() << F.getName() << " MemInst: " << Info->MemInstCount << '\n'
                     << " IAMInst: " << Info->IAMInstCount << '\n'
                     << " LSMInst: " << Info->LSMInstCount << '\n'
                     << " TotalInst: " << Info->InstCount << '\n');
@@ -354,8 +353,8 @@ bool AMDGPUPerfHint::MemAccessInfo::isLargeStride(
                                             : Reference.Offset - Offset;
   bool Result = Diff > LargeStrideThresh;
   LLVM_DEBUG(dbgs() << "[isLargeStride compare]\n"
-               << print() << "<=>\n"
-               << Reference.print() << "Result:" << Result << '\n');
+                    << print() << "<=>\n"
+                    << Reference.print() << "Result:" << Result << '\n');
   return Result;
 }
 } // namespace

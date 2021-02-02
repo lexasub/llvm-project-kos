@@ -27,6 +27,6 @@ int main() {
   Derived dd4(static_cast<Derived &&>(dd3));
 
   if (dd.B != 0 || dd2.B != 5 || dd3.B != 10 || dd4.B != 20)
-    return 1;                         // CHECK: [[@LINE]]| 0|     return 1;
+    return 1; // CHECK: [[@LINE]]| 0|     return 1;
   return 0;
 }

@@ -9,16 +9,17 @@
 // This file is a part of ThreadSanitizer (TSan), a race detector.
 //
 //===----------------------------------------------------------------------===//
-#include "tsan_test_util.h"
-#include "gtest/gtest.h"
 #include <string.h>
+
+#include "gtest/gtest.h"
+#include "tsan_test_util.h"
 
 namespace __tsan {
 
 TEST(ThreadSanitizer, Memcpy) {
   char data0[7] = {1, 2, 3, 4, 5, 6, 7};
   char data[7] = {42, 42, 42, 42, 42, 42, 42};
-  MainThread().Memcpy(data+1, data0+1, 5);
+  MainThread().Memcpy(data + 1, data0 + 1, 5);
   EXPECT_EQ(data[0], 42);
   EXPECT_EQ(data[1], 2);
   EXPECT_EQ(data[2], 3);
@@ -26,7 +27,7 @@ TEST(ThreadSanitizer, Memcpy) {
   EXPECT_EQ(data[4], 5);
   EXPECT_EQ(data[5], 6);
   EXPECT_EQ(data[6], 42);
-  MainThread().Memset(data+1, 13, 5);
+  MainThread().Memset(data + 1, 13, 5);
   EXPECT_EQ(data[0], 42);
   EXPECT_EQ(data[1], 13);
   EXPECT_EQ(data[2], 13);
@@ -50,8 +51,8 @@ TEST(ThreadSanitizer, MemcpyRace2) {
   char *data1 = new char[10];
   char *data2 = new char[10];
   ScopedThread t1, t2;
-  t1.Memcpy(data+5, data1, 1);
-  t2.Memcpy(data+3, data2, 4, true);
+  t1.Memcpy(data + 5, data1, 1);
+  t2.Memcpy(data + 3, data2, 4, true);
 }
 
 TEST(ThreadSanitizer, MemcpyRace3) {

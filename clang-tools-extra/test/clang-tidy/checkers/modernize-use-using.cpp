@@ -78,7 +78,7 @@ typedef Test<my_class *> another;
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use 'using' instead of 'typedef'
 // CHECK-FIXES: using another = Test<my_class *>;
 
-typedef int* PInt;
+typedef int *PInt;
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use 'using' instead of 'typedef'
 // CHECK-FIXES: using PInt = int *;
 
@@ -138,25 +138,33 @@ int typedef Bax;
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use 'using' instead of 'typedef'
 // CHECK-FIXES: using Bax = int;
 
-typedef struct Q1 { int a; } S1;
+typedef struct Q1 {
+  int a;
+} S1;
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use 'using' instead of 'typedef'
 // CHECK-FIXES: using S1 = struct Q1 { int a; };
-typedef struct { int b; } S2;
+typedef struct {
+  int b;
+} S2;
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use 'using' instead of 'typedef'
 // CHECK-FIXES: using S2 = struct { int b; };
-struct Q2 { int c; } typedef S3;
+struct Q2 {
+  int c;
+} typedef S3;
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use 'using' instead of 'typedef'
 // CHECK-FIXES: using S3 = struct Q2 { int c; };
-struct { int d; } typedef S4;
+struct {
+  int d;
+} typedef S4;
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use 'using' instead of 'typedef'
 // CHECK-FIXES: using S4 = struct { int d; };
 
 namespace my_space {
-  class my_cclass {};
-  typedef my_cclass FuncType;
+class my_cclass {};
+typedef my_cclass FuncType;
 // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: use 'using' instead of 'typedef'
 // CHECK-FIXES: using FuncType = my_cclass;
-}
+} // namespace my_space
 
 #define lol 4
 typedef unsigned Map[lol];
@@ -170,7 +178,7 @@ typedef void (*fun_type)();
 namespace template_instantiations {
 template <typename T>
 class C {
- protected:
+protected:
   typedef C<T> super;
   // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: use 'using' instead of 'typedef'
   // CHECK-FIXES: using super = C<T>;
@@ -186,7 +194,7 @@ class D : public C<D> {
 class E : public C<E> {
   void f() override { super::f(); }
 };
-}
+} // namespace template_instantiations
 
 template <typename T1, typename T2>
 class TwoArgTemplate {
@@ -245,7 +253,7 @@ typedef Q<T{0 < 0}.b> Q3_t;
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use 'using' instead of 'typedef'
 // CHECK-FIXES: using Q3_t = Q<T{0 < 0}.b>;
 
-typedef TwoArgTemplate<TwoArgTemplate<int, Q<T{0 < 0}.b> >, S<(0 < 0), Q<b[0 < 0]> > > Nested_t;
+typedef TwoArgTemplate<TwoArgTemplate<int, Q<T{0 < 0}.b>>, S<(0 < 0), Q<b[0 < 0]>>> Nested_t;
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use 'using' instead of 'typedef'
 // CHECK-FIXES: using Nested_t = TwoArgTemplate<TwoArgTemplate<int, Q<T{0 < 0}.b>>, S<(0 < 0), Q<b[0 < 0]>>>;
 
@@ -263,29 +271,33 @@ class TemplateKeyword {
 template <typename... Args>
 class Variadic {};
 
-typedef Variadic<Variadic<int, bool, Q<T{0 < 0}.b> >, S<(0 < 0), Variadic<Q<b[0 < 0]> > > > Variadic_t;
+typedef Variadic<Variadic<int, bool, Q<T{0 < 0}.b>>, S<(0 < 0), Variadic<Q<b[0 < 0]>>>> Variadic_t;
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use 'using' instead of 'typedef'
 // CHECK-FIXES: using Variadic_t = Variadic<Variadic<int, bool, Q<T{0 < 0}.b>>, S<(0 < 0), Variadic<Q<b[0 < 0]>>>>
 
-typedef Variadic<Variadic<int, bool, Q<T{0 < 0}.b> >, S<(0 < 0), Variadic<Q<b[0 < 0]> > > > Variadic_t, *Variadic_p;
+typedef Variadic<Variadic<int, bool, Q<T{0 < 0}.b>>, S<(0 < 0), Variadic<Q<b[0 < 0]>>>> Variadic_t, *Variadic_p;
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use 'using' instead of 'typedef'
 // CHECK-MESSAGES: :[[@LINE-2]]:103: warning: use 'using' instead of 'typedef'
 // CHECK-FIXES: using Variadic_t = Variadic<Variadic<int, bool, Q<T{0 < 0}.b>>, S<(0 < 0), Variadic<Q<b[0 < 0]>>>>;
 // CHECK-FIXES-NEXT: using Variadic_p = Variadic_t*;
 
-typedef struct { int a; } R_t, *R_p;
+typedef struct {
+  int a;
+} R_t, *R_p;
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use 'using' instead of 'typedef'
 // CHECK-MESSAGES: :[[@LINE-2]]:30: warning: use 'using' instead of 'typedef'
 // CHECK-FIXES: using R_t = struct { int a; };
 // CHECK-FIXES-NEXT: using R_p = R_t*;
 
-typedef enum { ea1, eb1 } EnumT1;
+typedef enum { ea1,
+               eb1 } EnumT1;
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use 'using' instead of 'typedef'
 // CHECK-FIXES: using EnumT1 = enum { ea1, eb1 };
 
 #include "modernize-use-using.h"
 
-typedef enum { ea2, eb2 } EnumT2_CheckTypedefImpactFromAnotherFile;
+typedef enum { ea2,
+               eb2 } EnumT2_CheckTypedefImpactFromAnotherFile;
 // CHECK-MESSAGES: :[[@LINE-1]]:1: warning: use 'using' instead of 'typedef'
 // CHECK-FIXES: using EnumT2_CheckTypedefImpactFromAnotherFile = enum { ea2, eb2 };
 

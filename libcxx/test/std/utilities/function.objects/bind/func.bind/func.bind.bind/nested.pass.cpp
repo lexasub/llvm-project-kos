@@ -23,33 +23,26 @@
 
 #include "test_macros.h"
 
-struct power
-{
+struct power {
   template <typename T>
-  T
-  operator()(T a, T b)
-  {
+  T operator()(T a, T b) {
     return static_cast<T>(std::pow(a, b));
   }
 };
 
-struct plus_one
-{
+struct plus_one {
   template <typename T>
-  T
-  operator()(T a)
-  {
+  T operator()(T a) {
     return a + 1;
   }
 };
 
-int main(int, char**)
-{
-    using std::placeholders::_1;
+int main(int, char**) {
+  using std::placeholders::_1;
 
-    auto g = std::bind(power(), 2, _1);
-    assert(g(5) == 32);
-    assert(std::bind(plus_one(), g)(5) == 33);
+  auto g = std::bind(power(), 2, _1);
+  assert(g(5) == 32);
+  assert(std::bind(plus_one(), g)(5) == 33);
 
   return 0;
 }

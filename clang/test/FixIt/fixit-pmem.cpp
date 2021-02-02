@@ -8,19 +8,16 @@
    warnings will be fixed by -fixit, and the resulting file should
    compile cleanly with -Werror -pedantic. */
 
-struct  S {
-	int i;
+struct S {
+  int i;
 };
 
-int foo(int S::* ps, S s, S* p)
-{
+int foo(int S::*ps, S s, S *p) {
   p.*ps = 1;
   return s->*ps;
 }
 
-void foo1(int (S::*ps)(), S s, S* p)
-{
+void foo1(int (S::*ps)(), S s, S *p) {
   (p.*ps)();
   (s->*ps)();
 }
-

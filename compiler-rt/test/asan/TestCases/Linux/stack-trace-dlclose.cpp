@@ -10,8 +10,8 @@
 
 #include <assert.h>
 #include <dlfcn.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 #include <sanitizer/common_interface_defs.h>
@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
   dlclose(handle);
 
   free(p);
-  free(p);  // double-free
+  free(p); // double-free
 
   return 0;
 }

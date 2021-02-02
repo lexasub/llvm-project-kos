@@ -18,7 +18,7 @@ static void foo_head() {
 #else
 
 void test() {
-  int x1; // expected-note {{initialize}}
+  int x1;      // expected-note {{initialize}}
   int x2 = x1; // expected-warning {{uninitialized}}
   (void)x2;
   foo_head();

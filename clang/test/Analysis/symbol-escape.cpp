@@ -24,10 +24,9 @@ C **indirect_escape_in_bitwise_op() {
   C **Baz = &Qux;
   Baz = reinterpret_cast<C **>(reinterpret_cast<uintptr_t>(Baz) | 0x1);
   Baz = reinterpret_cast<C **>(reinterpret_cast<uintptr_t>(Baz) &
-		               ~static_cast<uintptr_t>(0x1));
+                               ~static_cast<uintptr_t>(0x1));
   // no-warning: "Potential leak of memory pointed to by 'Qux'" was here.
 
   delete *Baz;
   return Baz;
 }
-

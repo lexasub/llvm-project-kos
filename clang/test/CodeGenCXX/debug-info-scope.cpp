@@ -30,15 +30,16 @@ void func() {
   // CHECK-SAME:               line: [[@LINE+2]]
   // CHECK: [[FOR]] = distinct !DILexicalBlock({{.*}}line: [[@LINE+1]])
   for (int i = 0;
-  // CHECK: = !DILocalVariable(name: "b"
-  // CHECK-SAME:               scope: [[FOR_BODY:![0-9]*]]
-  // CHECK-SAME:               line: [[@LINE+6]]
-  // CHECK: [[FOR_BODY]] = distinct !DILexicalBlock({{.*}}line: [[@LINE-4]])
-  // The scope could be located at 'bool b', but LLVM drops line information for
-  // scopes anyway, so it's not terribly important.
-  // FIXME: change the debug info schema to not include locations of scopes,
-  // since they're not used.
-       bool b = i != 10; ++i)
+       // CHECK: = !DILocalVariable(name: "b"
+       // CHECK-SAME:               scope: [[FOR_BODY:![0-9]*]]
+       // CHECK-SAME:               line: [[@LINE+6]]
+       // CHECK: [[FOR_BODY]] = distinct !DILexicalBlock({{.*}}line: [[@LINE-4]])
+       // The scope could be located at 'bool b', but LLVM drops line information for
+       // scopes anyway, so it's not terribly important.
+       // FIXME: change the debug info schema to not include locations of scopes,
+       // since they're not used.
+       bool b = i != 10;
+       ++i)
     f();
 
   // CHECK: = !DILocalVariable(name: "i"

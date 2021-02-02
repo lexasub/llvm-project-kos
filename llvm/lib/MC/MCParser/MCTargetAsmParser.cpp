@@ -24,6 +24,4 @@ MCSubtargetInfo &MCTargetAsmParser::copySTI() {
   return STICopy;
 }
 
-const MCSubtargetInfo &MCTargetAsmParser::getSTI() const {
-  return *STI;
-}
+const MCSubtargetInfo &MCTargetAsmParser::getSTI() const { return *STI; }

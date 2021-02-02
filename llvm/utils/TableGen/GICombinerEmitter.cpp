@@ -11,6 +11,11 @@
 ///
 //===----------------------------------------------------------------------===//
 
+#include "CodeGenTarget.h"
+#include "GlobalISel/CodeExpander.h"
+#include "GlobalISel/CodeExpansions.h"
+#include "GlobalISel/GIMatchDag.h"
+#include "GlobalISel/GIMatchTree.h"
 #include "llvm/ADT/SmallSet.h"
 #include "llvm/ADT/Statistic.h"
 #include "llvm/ADT/StringSet.h"
@@ -20,11 +25,6 @@
 #include "llvm/TableGen/Error.h"
 #include "llvm/TableGen/StringMatcher.h"
 #include "llvm/TableGen/TableGenBackend.h"
-#include "CodeGenTarget.h"
-#include "GlobalISel/CodeExpander.h"
-#include "GlobalISel/CodeExpansions.h"
-#include "GlobalISel/GIMatchDag.h"
-#include "GlobalISel/GIMatchTree.h"
 #include <cstdint>
 
 using namespace llvm;
@@ -48,10 +48,10 @@ static cl::opt<bool> StopAfterParse(
     "gicombiner-stop-after-parse",
     cl::desc("Stop processing after parsing rules and dump state"),
     cl::cat(GICombinerEmitterCat));
-static cl::opt<bool> StopAfterBuild(
-    "gicombiner-stop-after-build",
-    cl::desc("Stop processing after building the match tree"),
-    cl::cat(GICombinerEmitterCat));
+static cl::opt<bool>
+    StopAfterBuild("gicombiner-stop-after-build",
+                   cl::desc("Stop processing after building the match tree"),
+                   cl::cat(GICombinerEmitterCat));
 
 namespace {
 typedef uint64_t RuleID;
@@ -112,7 +112,6 @@ public:
 
 class CombineRule {
 public:
-
   using const_matchdata_iterator = std::vector<MatchDataInfo>::const_iterator;
 
   struct VarInfo {
@@ -327,12 +326,13 @@ static const DagInit *getDagWithOperatorOfSubClass(const Init &N,
 }
 
 StringRef makeNameForAnonInstr(CombineRule &Rule) {
-  return insertStrTab(to_string(
-      format("__anon%" PRIu64 "_%u", Rule.getID(), Rule.allocUID())));
+  return insertStrTab(
+      to_string(format("__anon%" PRIu64 "_%u", Rule.getID(), Rule.allocUID())));
 }
 
 StringRef makeDebugName(CombineRule &Rule, StringRef Name) {
-  return insertStrTab(Name.empty() ? makeNameForAnonInstr(Rule) : StringRef(Name));
+  return insertStrTab(Name.empty() ? makeNameForAnonInstr(Rule)
+                                   : StringRef(Name));
 }
 
 StringRef makeNameForAnonPredicate(CombineRule &Rule) {
@@ -373,8 +373,7 @@ bool CombineRule::parseDefs() {
 
     // Otherwise emit an appropriate error message.
     if (getDefOfSubClass(*Defs->getArg(I), "GIDefKind"))
-      PrintError(TheDef.getLoc(),
-                 "This GIDefKind not implemented in tablegen");
+      PrintError(TheDef.getLoc(), "This GIDefKind not implemented in tablegen");
     else if (getDefOfSubClass(*Defs->getArg(I), "GIDefKindWithArgs"))
       PrintError(TheDef.getLoc(),
                  "This GIDefKindWithArgs not implemented in tablegen");
@@ -512,7 +511,6 @@ bool CombineRule::parseMatcher(const CodeGenTarget &Target) {
                                    *Matchers->getArg(I)))
       continue;
 
-
     // Parse arbitrary C++ code we have in lieu of supporting MIR matching
     if (const StringInit *StringI = dyn_cast<StringInit>(Matchers->getArg(I))) {
       assert(!MatchingFixupCode &&
@@ -543,8 +541,8 @@ bool CombineRule::parseMatcher(const CodeGenTarget &Target) {
     const auto &Uses = NamedEdgeUses[NameAndDefs.getKey()];
     for (const VarInfo &DefVar : NameAndDefs.getValue()) {
       for (const VarInfo &UseVar : Uses) {
-        MatchDag.addEdge(insertStrTab(NameAndDefs.getKey()), UseVar.N, UseVar.Op,
-                         DefVar.N, DefVar.Op);
+        MatchDag.addEdge(insertStrTab(NameAndDefs.getKey()), UseVar.N,
+                         UseVar.Op, DefVar.N, DefVar.Op);
       }
     }
   }
@@ -653,8 +651,8 @@ void GICombinerEmitter::emitNameMatcher(raw_ostream &OS) const {
 
 std::unique_ptr<CombineRule>
 GICombinerEmitter::makeCombineRule(const Record &TheDef) {
-  std::unique_ptr<CombineRule> Rule =
-      std::make_unique<CombineRule>(Target, MatchDagCtx, NumPatternTotal, TheDef);
+  std::unique_ptr<CombineRule> Rule = std::make_unique<CombineRule>(
+      Target, MatchDagCtx, NumPatternTotal, TheDef);
 
   if (!Rule->parseDefs())
     return nullptr;
@@ -756,8 +754,7 @@ void GICombinerEmitter::generateCodeForTree(raw_ostream &OS,
     Rule->declareExpansions(Expansions);
 
     DagInit *Applyer = RuleDef.getValueAsDag("Apply");
-    if (Applyer->getOperatorAsDef(RuleDef.getLoc())->getName() !=
-        "apply") {
+    if (Applyer->getOperatorAsDef(RuleDef.getLoc())->getName() != "apply") {
       PrintError(RuleDef.getLoc(), "Expected 'apply' operator in Apply DAG");
       return;
     }
@@ -775,8 +772,7 @@ void GICombinerEmitter::generateCodeForTree(raw_ostream &OS,
       if (Predicate->generateCheckCode(OS, (Indent + "      ").str(),
                                        Expansions))
         continue;
-      PrintError(RuleDef.getLoc(),
-                 "Unable to test predicate used in rule");
+      PrintError(RuleDef.getLoc(), "Unable to test predicate used in rule");
       PrintNote(SMLoc(),
                 "This indicates an incomplete implementation in tablegen");
       Predicate->print(errs());

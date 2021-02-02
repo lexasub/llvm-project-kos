@@ -20,30 +20,26 @@
 
 #include "test_macros.h"
 
-struct A
-{
-    typedef short element_type;
-    typedef char difference_type;
+struct A {
+  typedef short element_type;
+  typedef char difference_type;
 };
 
-struct B
-{
-    typedef short element_type;
+struct B {
+  typedef short element_type;
 };
 
 template <class T>
 struct C {};
 
 template <class T>
-struct D
-{
-    typedef char difference_type;
+struct D {
+  typedef char difference_type;
 };
 
 template <class T>
-struct E
-{
-    static int difference_type;
+struct E {
+  static int difference_type;
 };
 
 template <class T>
@@ -52,15 +48,25 @@ private:
   typedef int difference_type;
 };
 
-int main(int, char**)
-{
-    static_assert((std::is_same<std::pointer_traits<A>::difference_type, char>::value), "");
-    static_assert((std::is_same<std::pointer_traits<B>::difference_type, std::ptrdiff_t>::value), "");
-    static_assert((std::is_same<std::pointer_traits<C<double> >::difference_type, std::ptrdiff_t>::value), "");
-    static_assert((std::is_same<std::pointer_traits<D<int> >::difference_type, char>::value), "");
-    static_assert((std::is_same<std::pointer_traits<E<int> >::difference_type, std::ptrdiff_t>::value), "");
+int main(int, char**) {
+  static_assert(
+      (std::is_same<std::pointer_traits<A>::difference_type, char>::value), "");
+  static_assert((std::is_same<std::pointer_traits<B>::difference_type,
+                              std::ptrdiff_t>::value),
+                "");
+  static_assert((std::is_same<std::pointer_traits<C<double> >::difference_type,
+                              std::ptrdiff_t>::value),
+                "");
+  static_assert((std::is_same<std::pointer_traits<D<int> >::difference_type,
+                              char>::value),
+                "");
+  static_assert((std::is_same<std::pointer_traits<E<int> >::difference_type,
+                              std::ptrdiff_t>::value),
+                "");
 #if TEST_STD_VER >= 11
-    static_assert((std::is_same<std::pointer_traits<F<int>>::difference_type, std::ptrdiff_t>::value), "");
+  static_assert((std::is_same<std::pointer_traits<F<int> >::difference_type,
+                              std::ptrdiff_t>::value),
+                "");
 #endif
 
   return 0;

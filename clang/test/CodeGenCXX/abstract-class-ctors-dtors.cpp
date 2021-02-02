@@ -11,6 +11,6 @@ struct A {
 // CHECK-LABEL: define{{.*}} void @_ZN1AC2Ev
 // CHECK-LABEL: define{{.*}} void @_ZN1AD2Ev
 // CHECK-LABEL: define{{.*}} void @_ZN1AD1Ev
-A::A() { }
+A::A() {}
 
-A::~A() { }
+A::~A() {}

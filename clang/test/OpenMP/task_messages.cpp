@@ -99,37 +99,43 @@ int foo() {
 #pragma omp parallel shared(a, b)
   ++a, ++b;
 // expected-note@+1 2 {{defined as reduction}}
-#pragma omp parallel reduction(+ : r)
+#pragma omp parallel reduction(+ \
+                               : r)
 // expected-error@+1 2 {{argument of a reduction clause of a parallel construct must not appear in a firstprivate clause on a task construct}}
 #pragma omp task firstprivate(r)
   ++r;
 // expected-note@+1 2 {{defined as reduction}}
-#pragma omp parallel reduction(+ : r)
+#pragma omp parallel reduction(+ \
+                               : r)
 #pragma omp task default(shared)
   // expected-error@+1 2 {{reduction variables may not be accessed in an explicit task}}
   ++r;
 // expected-note@+1 2 {{defined as reduction}}
-#pragma omp parallel reduction(+ : r)
+#pragma omp parallel reduction(+ \
+                               : r)
 #pragma omp task
   // expected-error@+1 2 {{reduction variables may not be accessed in an explicit task}}
   ++r;
 #pragma omp parallel
 // expected-note@+1 2 {{defined as reduction}}
-#pragma omp for reduction(+ : r)
+#pragma omp for reduction(+ \
+                          : r)
   for (int i = 0; i < 10; ++i)
 // expected-error@+1 2 {{argument of a reduction clause of a for construct must not appear in a firstprivate clause on a task construct}}
 #pragma omp task firstprivate(r)
     ++r;
 #pragma omp parallel
 // expected-note@+1 2 {{defined as reduction}}
-#pragma omp for reduction(+ : r)
+#pragma omp for reduction(+ \
+                          : r)
   for (int i = 0; i < 10; ++i)
 #pragma omp task default(shared)
     // expected-error@+1 2 {{reduction variables may not be accessed in an explicit task}}
     ++r;
 #pragma omp parallel
 // expected-note@+1 2 {{defined as reduction}}
-#pragma omp for reduction(+ : r)
+#pragma omp for reduction(+ \
+                          : r)
   for (int i = 0; i < 10; ++i)
 #pragma omp task
     // expected-error@+1 2 {{reduction variables may not be accessed in an explicit task}}
@@ -138,7 +144,8 @@ int foo() {
 #pragma omp task
 // expected-error@+2 {{reduction variable must be shared}}
 // expected-error@+1 {{region cannot be closely nested inside 'task' region; perhaps you forget to enclose 'omp for' directive into a parallel region?}}
-#pragma omp for reduction(+ : r)
+#pragma omp for reduction(+ \
+                          : r)
   ++r;
 // expected-error@+1 {{directive '#pragma omp task' cannot contain more than one 'untied' clause}}
 #pragma omp task untied untied
@@ -232,7 +239,7 @@ L2:
 
 #pragma omp task default(none) // expected-note {{explicit data sharing attribute requested here}}
 #pragma omp task default(shared)
-  ++a; // expected-error {{variable 'a' must have explicitly specified data sharing attributes}}
+  ++a;                         // expected-error {{variable 'a' must have explicitly specified data sharing attributes}}
 #pragma omp task default(none) // expected-note {{explicit data sharing attribute requested here}}
 #pragma omp task
   ++a; // expected-error {{variable 'a' must have explicitly specified data sharing attributes}}
@@ -249,7 +256,7 @@ L2:
   ++a, ++b;
 #pragma omp task default(none) // expected-note {{explicit data sharing attribute requested here}}
 #pragma omp task default(shared)
-  ++sa; // expected-error {{variable 'sa' must have explicitly specified data sharing attributes}}
+  ++sa;                        // expected-error {{variable 'sa' must have explicitly specified data sharing attributes}}
 #pragma omp task default(none) // expected-note {{explicit data sharing attribute requested here}}
 #pragma omp task
   // expected-error@+1 {{calling a private constructor of class 'S'}}
@@ -281,24 +288,28 @@ L2:
 #pragma omp parallel shared(sa, sb)
   ++sa, ++sb;
 // expected-note@+1 2 {{defined as reduction}}
-#pragma omp parallel reduction(+ : r)
+#pragma omp parallel reduction(+ \
+                               : r)
 // expected-error@+1 {{argument of a reduction clause of a parallel construct must not appear in a firstprivate clause on a task construct}}
 #pragma omp task firstprivate(r)
   // expected-error@+1 {{reduction variables may not be accessed in an explicit task}}
   ++r;
 // expected-note@+1 {{defined as reduction}}
-#pragma omp parallel reduction(+ : r)
+#pragma omp parallel reduction(+ \
+                               : r)
 #pragma omp task default(shared)
   // expected-error@+1 {{reduction variables may not be accessed in an explicit task}}
   ++r;
 // expected-note@+1 {{defined as reduction}}
-#pragma omp parallel reduction(+ : r)
+#pragma omp parallel reduction(+ \
+                               : r)
 #pragma omp task
   // expected-error@+1 {{reduction variables may not be accessed in an explicit task}}
   ++r;
 #pragma omp parallel
 // expected-note@+1 2 {{defined as reduction}}
-#pragma omp for reduction(+ : r)
+#pragma omp for reduction(+ \
+                          : r)
   for (int i = 0; i < 10; ++i)
 // expected-error@+1 {{argument of a reduction clause of a for construct must not appear in a firstprivate clause on a task construct}}
 #pragma omp task firstprivate(r)
@@ -306,14 +317,16 @@ L2:
     ++r;
 #pragma omp parallel
 // expected-note@+1 {{defined as reduction}}
-#pragma omp for reduction(+ : r)
+#pragma omp for reduction(+ \
+                          : r)
   for (int i = 0; i < 10; ++i)
 #pragma omp task default(shared)
     // expected-error@+1 {{reduction variables may not be accessed in an explicit task}}
     ++r;
 #pragma omp parallel
 // expected-note@+1 {{defined as reduction}}
-#pragma omp for reduction(+ : r)
+#pragma omp for reduction(+ \
+                          : r)
   for (int i = 0; i < 10; ++i)
 #pragma omp task
     // expected-error@+1 {{reduction variables may not be accessed in an explicit task}}
@@ -322,7 +335,8 @@ L2:
 #pragma omp task
 // expected-error@+2 {{reduction variable must be shared}}
 // expected-error@+1 {{region cannot be closely nested inside 'task' region; perhaps you forget to enclose 'omp for' directive into a parallel region?}}
-#pragma omp for reduction(+ : r)
+#pragma omp for reduction(+ \
+                          : r)
   ++r;
 // expected-error@+1 {{directive '#pragma omp task' cannot contain more than one 'untied' clause}}
 #pragma omp task untied untied
@@ -352,4 +366,3 @@ L2:
   // expected-note@+1 {{in instantiation of function template specialization 'foo<S>' requested here}}
   return foo<int>() + foo<S>();
 }
-

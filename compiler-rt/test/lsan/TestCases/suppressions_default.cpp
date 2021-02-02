@@ -7,8 +7,7 @@
 
 #include "sanitizer/lsan_interface.h"
 
-extern "C"
-const char *__lsan_default_suppressions() {
+extern "C" const char *__lsan_default_suppressions() {
   return "leak:*LSanTestLeakingFunc*";
 }
 

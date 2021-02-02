@@ -4,7 +4,7 @@
 
 struct A {
   template <typename T>
-  static void bar(int) { } // expected-note {{candidate template ignored: couldn't infer template argument 'T'}}
+  static void bar(int) {} // expected-note {{candidate template ignored: couldn't infer template argument 'T'}}
 };
 
 struct B {

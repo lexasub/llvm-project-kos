@@ -8,9 +8,7 @@ struct pile_box : public box {
   pile_box(box *);
 };
 
-pile_box::pile_box(box *pp)
-{
+pile_box::pile_box(box *pp) {
 }
 
 // CHECK: call {{.*}}void @_ZdlPv
-

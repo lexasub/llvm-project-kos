@@ -40,9 +40,7 @@ namespace __hwasan {
 
 static Flags hwasan_flags;
 
-Flags *flags() {
-  return &hwasan_flags;
-}
+Flags *flags() { return &hwasan_flags; }
 
 int hwasan_inited = 0;
 int hwasan_instrumentation_inited = 0;
@@ -123,9 +121,11 @@ static void InitializeFlags() {
 
   InitializeCommonFlags();
 
-  if (Verbosity()) ReportUnrecognizedFlags();
+  if (Verbosity())
+    ReportUnrecognizedFlags();
 
-  if (common_flags()->help) parser.PrintFlagDescriptions();
+  if (common_flags()->help)
+    parser.PrintFlagDescriptions();
 }
 
 static void HWAsanCheckFailed(const char *file, int line, const char *cond,
@@ -180,12 +180,14 @@ void UpdateMemoryUsage() {
 void UpdateMemoryUsage() {}
 #endif
 
-} // namespace __hwasan
+}  // namespace __hwasan
 
 using namespace __hwasan;
 
-void __sanitizer::BufferedStackTrace::UnwindImpl(
-    uptr pc, uptr bp, void *context, bool request_fast, u32 max_depth) {
+void __sanitizer::BufferedStackTrace::UnwindImpl(uptr pc, uptr bp,
+                                                 void *context,
+                                                 bool request_fast,
+                                                 u32 max_depth) {
   Thread *t = GetCurrentThread();
   if (!t) {
     // The thread is still being created, or has already been destroyed.
@@ -217,7 +219,8 @@ static void InitLoadedGlobals() {
 
 // Prepare to run instrumented code on the main thread.
 static void InitInstrumentation() {
-  if (hwasan_instrumentation_inited) return;
+  if (hwasan_instrumentation_inited)
+    return;
 
   InitPrctl();
 
@@ -261,7 +264,8 @@ void __hwasan_init_static() {
 
 void __hwasan_init() {
   CHECK(!hwasan_init_is_running);
-  if (hwasan_inited) return;
+  if (hwasan_inited)
+    return;
   hwasan_init_is_running = 1;
   SanitizerToolName = "HWAddressSanitizer";
 
@@ -292,7 +296,7 @@ void __hwasan_init() {
 
   InitializeInterceptors();
   InstallDeadlySignalHandlers(HwasanOnDeadlySignal);
-  InstallAtExitHandler(); // Needs __cxa_atexit interceptor.
+  InstallAtExitHandler();  // Needs __cxa_atexit interceptor.
 
   InitializeCoverage(common_flags()->coverage, common_flags()->coverage_dir);
 
@@ -349,24 +353,12 @@ sptr __hwasan_test_shadow(const void *p, uptr sz) {
   return -1;
 }
 
-u16 __sanitizer_unaligned_load16(const uu16 *p) {
-  return *p;
-}
-u32 __sanitizer_unaligned_load32(const uu32 *p) {
-  return *p;
-}
-u64 __sanitizer_unaligned_load64(const uu64 *p) {
-  return *p;
-}
-void __sanitizer_unaligned_store16(uu16 *p, u16 x) {
-  *p = x;
-}
-void __sanitizer_unaligned_store32(uu32 *p, u32 x) {
-  *p = x;
-}
-void __sanitizer_unaligned_store64(uu64 *p, u64 x) {
-  *p = x;
-}
+u16 __sanitizer_unaligned_load16(const uu16 *p) { return *p; }
+u32 __sanitizer_unaligned_load32(const uu32 *p) { return *p; }
+u64 __sanitizer_unaligned_load64(const uu64 *p) { return *p; }
+void __sanitizer_unaligned_store16(uu16 *p, u16 x) { *p = x; }
+void __sanitizer_unaligned_store32(uu32 *p, u32 x) { *p = x; }
+void __sanitizer_unaligned_store64(uu64 *p, u64 x) { *p = x; }
 
 void __hwasan_loadN(uptr p, uptr sz) {
   CheckAddressSized<ErrorAction::Abort, AccessType::Load>(p, sz);
@@ -448,9 +440,7 @@ void __hwasan_tag_memory(uptr p, u8 tag, uptr sz) {
   TagMemoryAligned(p, sz, tag);
 }
 
-uptr __hwasan_tag_pointer(uptr p, u8 tag) {
-  return AddTagToPointer(p, tag);
-}
+uptr __hwasan_tag_pointer(uptr p, u8 tag) { return AddTagToPointer(p, tag); }
 
 void __hwasan_handle_longjmp(const void *sp_dst) {
   uptr dst = (uptr)sp_dst;
@@ -502,14 +492,17 @@ static const u8 kFallbackTag = 0xBB;
 
 u8 __hwasan_generate_tag() {
   Thread *t = GetCurrentThread();
-  if (!t) return kFallbackTag;
+  if (!t)
+    return kFallbackTag;
   return t->GenerateRandomTag();
 }
 
 #if !SANITIZER_SUPPORTS_WEAK_HOOKS
 extern "C" {
-SANITIZER_INTERFACE_ATTRIBUTE SANITIZER_WEAK_ATTRIBUTE
-const char* __hwasan_default_options() { return ""; }
+SANITIZER_INTERFACE_ATTRIBUTE SANITIZER_WEAK_ATTRIBUTE const char *
+__hwasan_default_options() {
+  return "";
+}
 }  // extern "C"
 #endif
 
@@ -519,4 +512,4 @@ void __sanitizer_print_stack_trace() {
   GET_FATAL_STACK_TRACE_PC_BP(StackTrace::GetCurrentPc(), GET_CURRENT_FRAME());
   stack.Print();
 }
-} // extern "C"
+}  // extern "C"

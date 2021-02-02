@@ -4,11 +4,10 @@
 
 // CHECK: target triple = "xcore-unknown-unknown"
 
-
 // C++ constants are not placed into the ".cp.rodata" section.
 // CHECK: @cgx = external constant i32
 extern const int cgx;
-int fcgx() { return cgx;}
+int fcgx() { return cgx; }
 // CHECK: @g1 ={{.*}} global i32 0, align 4
 int g1;
 // CHECK: @cg1 ={{.*}} constant i32 0, align 4

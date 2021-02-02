@@ -77,7 +77,8 @@ void netbsd::Assembler::ConstructJob(Compilation &C, const JobAction &JA,
   case llvm::Triple::sparcel: {
     CmdArgs.push_back("-32");
     std::string CPU = getCPUName(Args, getToolChain().getTriple());
-    CmdArgs.push_back(sparc::getSparcAsmModeForCPU(CPU, getToolChain().getTriple()));
+    CmdArgs.push_back(
+        sparc::getSparcAsmModeForCPU(CPU, getToolChain().getTriple()));
     AddAssemblerKPIC(getToolChain(), Args, CmdArgs);
     break;
   }
@@ -85,7 +86,8 @@ void netbsd::Assembler::ConstructJob(Compilation &C, const JobAction &JA,
   case llvm::Triple::sparcv9: {
     CmdArgs.push_back("-64");
     std::string CPU = getCPUName(Args, getToolChain().getTriple());
-    CmdArgs.push_back(sparc::getSparcAsmModeForCPU(CPU, getToolChain().getTriple()));
+    CmdArgs.push_back(
+        sparc::getSparcAsmModeForCPU(CPU, getToolChain().getTriple()));
     AddAssemblerKPIC(getToolChain(), Args, CmdArgs);
     break;
   }
@@ -114,7 +116,7 @@ void netbsd::Linker::ConstructJob(Compilation &C, const JobAction &JA,
                                   const ArgList &Args,
                                   const char *LinkingOutput) const {
   const toolchains::NetBSD &ToolChain =
-    static_cast<const toolchains::NetBSD &>(getToolChain());
+      static_cast<const toolchains::NetBSD &>(getToolChain());
   const Driver &D = ToolChain.getDriver();
   ArgStringList CmdArgs;
 
@@ -232,11 +234,9 @@ void netbsd::Linker::ConstructJob(Compilation &C, const JobAction &JA,
 
   if (!Args.hasArg(options::OPT_nostdlib, options::OPT_nostartfiles)) {
     if (!Args.hasArg(options::OPT_shared)) {
-      CmdArgs.push_back(
-          Args.MakeArgString(ToolChain.GetFilePath("crt0.o")));
+      CmdArgs.push_back(Args.MakeArgString(ToolChain.GetFilePath("crt0.o")));
     }
-    CmdArgs.push_back(
-        Args.MakeArgString(ToolChain.GetFilePath("crti.o")));
+    CmdArgs.push_back(Args.MakeArgString(ToolChain.GetFilePath("crti.o")));
     if (Args.hasArg(options::OPT_shared) || Args.hasArg(options::OPT_pie)) {
       CmdArgs.push_back(
           Args.MakeArgString(ToolChain.GetFilePath("crtbeginS.o")));
@@ -261,8 +261,8 @@ void netbsd::Linker::ConstructJob(Compilation &C, const JobAction &JA,
   const SanitizerArgs &SanArgs = ToolChain.getSanitizerArgs();
   if (SanArgs.needsSharedRt()) {
     CmdArgs.push_back("-rpath");
-    CmdArgs.push_back(Args.MakeArgString(
-        ToolChain.getCompilerRTPath().c_str()));
+    CmdArgs.push_back(
+        Args.MakeArgString(ToolChain.getCompilerRTPath().c_str()));
   }
 
   unsigned Major, Minor, Micro;
@@ -328,11 +328,9 @@ void netbsd::Linker::ConstructJob(Compilation &C, const JobAction &JA,
 
   if (!Args.hasArg(options::OPT_nostdlib, options::OPT_nostartfiles)) {
     if (Args.hasArg(options::OPT_shared) || Args.hasArg(options::OPT_pie))
-      CmdArgs.push_back(
-          Args.MakeArgString(ToolChain.GetFilePath("crtendS.o")));
+      CmdArgs.push_back(Args.MakeArgString(ToolChain.GetFilePath("crtendS.o")));
     else
-      CmdArgs.push_back(
-          Args.MakeArgString(ToolChain.GetFilePath("crtend.o")));
+      CmdArgs.push_back(Args.MakeArgString(ToolChain.GetFilePath("crtend.o")));
     CmdArgs.push_back(Args.MakeArgString(ToolChain.GetFilePath("crtn.o")));
   }
 
@@ -432,12 +430,12 @@ ToolChain::CXXStdlibType NetBSD::GetDefaultCXXStdlibType() const {
 void NetBSD::addLibCxxIncludePaths(const llvm::opt::ArgList &DriverArgs,
                                    llvm::opt::ArgStringList &CC1Args) const {
   const std::string Candidates[] = {
-    // directory relative to build tree
-    getDriver().Dir + "/../include/c++/v1",
-    // system install with full upstream path
-    getDriver().SysRoot + "/usr/include/c++/v1",
-    // system install from src
-    getDriver().SysRoot + "/usr/include/c++",
+      // directory relative to build tree
+      getDriver().Dir + "/../include/c++/v1",
+      // system install with full upstream path
+      getDriver().SysRoot + "/usr/include/c++/v1",
+      // system install from src
+      getDriver().SysRoot + "/usr/include/c++",
   };
 
   for (const auto &IncludePath : Candidates) {
@@ -503,11 +501,11 @@ void NetBSD::addClangTargetOptions(const ArgList &DriverArgs,
   unsigned Major, Minor, Micro;
   getTriple().getOSVersion(Major, Minor, Micro);
   bool UseInitArrayDefault =
-    Major >= 9 || Major == 0 ||
-    getTriple().getArch() == llvm::Triple::aarch64 ||
-    getTriple().getArch() == llvm::Triple::aarch64_be ||
-    getTriple().getArch() == llvm::Triple::arm ||
-    getTriple().getArch() == llvm::Triple::armeb;
+      Major >= 9 || Major == 0 ||
+      getTriple().getArch() == llvm::Triple::aarch64 ||
+      getTriple().getArch() == llvm::Triple::aarch64_be ||
+      getTriple().getArch() == llvm::Triple::arm ||
+      getTriple().getArch() == llvm::Triple::armeb;
 
   if (!DriverArgs.hasFlag(options::OPT_fuse_init_array,
                           options::OPT_fno_use_init_array, UseInitArrayDefault))

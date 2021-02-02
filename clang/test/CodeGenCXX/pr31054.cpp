@@ -1,6 +1,8 @@
 // RUN: %clang_cc1 -triple x86_64-unknown-unknown -emit-llvm -o - %s | FileCheck %s
 
-struct A { ~A(); };
+struct A {
+  ~A();
+};
 void func() {
   return;
   static A k;

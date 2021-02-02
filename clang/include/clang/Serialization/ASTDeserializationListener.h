@@ -32,19 +32,18 @@ public:
   virtual ~ASTDeserializationListener();
 
   /// The ASTReader was initialized.
-  virtual void ReaderInitialized(ASTReader *Reader) { }
+  virtual void ReaderInitialized(ASTReader *Reader) {}
 
   /// An identifier was deserialized from the AST file.
-  virtual void IdentifierRead(serialization::IdentID ID,
-                              IdentifierInfo *II) { }
+  virtual void IdentifierRead(serialization::IdentID ID, IdentifierInfo *II) {}
   /// A macro was read from the AST file.
-  virtual void MacroRead(serialization::MacroID ID, MacroInfo *MI) { }
+  virtual void MacroRead(serialization::MacroID ID, MacroInfo *MI) {}
   /// A type was deserialized from the AST file. The ID here has the
   ///        qualifier bits already removed, and T is guaranteed to be locally
   ///        unqualified.
-  virtual void TypeRead(serialization::TypeIdx Idx, QualType T) { }
+  virtual void TypeRead(serialization::TypeIdx Idx, QualType T) {}
   /// A decl was deserialized from the AST file.
-  virtual void DeclRead(serialization::DeclID ID, const Decl *D) { }
+  virtual void DeclRead(serialization::DeclID ID, const Decl *D) {}
   /// A selector was read from the AST file.
   virtual void SelectorRead(serialization::SelectorID iD, Selector Sel) {}
   /// A macro definition was read from the AST file.
@@ -56,6 +55,6 @@ public:
   virtual void ModuleImportRead(serialization::SubmoduleID ID,
                                 SourceLocation ImportLoc) {}
 };
-}
+} // namespace clang
 
 #endif

@@ -198,7 +198,7 @@ static Pool &StringPool() {
   static Pool *g_string_pool = nullptr;
 
   llvm::call_once(g_pool_initialization_flag,
-                 []() { g_string_pool = new Pool(); });
+                  []() { g_string_pool = new Pool(); });
 
   return *g_string_pool;
 }

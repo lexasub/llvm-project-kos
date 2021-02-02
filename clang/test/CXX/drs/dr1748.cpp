@@ -11,7 +11,9 @@ __extension__ typedef __SIZE_TYPE__ size_t;
 void *operator new(size_t, void *);
 void *operator new[](size_t, void *);
 
-struct X { X(); };
+struct X {
+  X();
+};
 
 // The reserved placement allocation functions get inlined
 // even if we can't see their definitions. They do not

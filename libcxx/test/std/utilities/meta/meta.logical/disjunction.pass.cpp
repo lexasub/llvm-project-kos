@@ -18,52 +18,80 @@
 
 #include "test_macros.h"
 
-struct True  { static constexpr bool value = true; };
-struct False { static constexpr bool value = false; };
+struct True {
+  static constexpr bool value = true;
+};
+struct False {
+  static constexpr bool value = false;
+};
 
-int main(int, char**)
-{
-    static_assert (!std::disjunction<>::value, "" );
-    static_assert ( std::disjunction<std::true_type >::value, "" );
-    static_assert (!std::disjunction<std::false_type>::value, "" );
+int main(int, char**) {
+  static_assert(!std::disjunction<>::value, "");
+  static_assert(std::disjunction<std::true_type>::value, "");
+  static_assert(!std::disjunction<std::false_type>::value, "");
 
-    static_assert (!std::disjunction_v<>, "" );
-    static_assert ( std::disjunction_v<std::true_type >, "" );
-    static_assert (!std::disjunction_v<std::false_type>, "" );
+  static_assert(!std::disjunction_v<>, "");
+  static_assert(std::disjunction_v<std::true_type>, "");
+  static_assert(!std::disjunction_v<std::false_type>, "");
 
-    static_assert ( std::disjunction<std::true_type,  std::true_type >::value, "" );
-    static_assert ( std::disjunction<std::true_type,  std::false_type>::value, "" );
-    static_assert ( std::disjunction<std::false_type, std::true_type >::value, "" );
-    static_assert (!std::disjunction<std::false_type, std::false_type>::value, "" );
+  static_assert(std::disjunction<std::true_type, std::true_type>::value, "");
+  static_assert(std::disjunction<std::true_type, std::false_type>::value, "");
+  static_assert(std::disjunction<std::false_type, std::true_type>::value, "");
+  static_assert(!std::disjunction<std::false_type, std::false_type>::value, "");
 
-    static_assert ( std::disjunction_v<std::true_type,  std::true_type >, "" );
-    static_assert ( std::disjunction_v<std::true_type,  std::false_type>, "" );
-    static_assert ( std::disjunction_v<std::false_type, std::true_type >, "" );
-    static_assert (!std::disjunction_v<std::false_type, std::false_type>, "" );
+  static_assert(std::disjunction_v<std::true_type, std::true_type>, "");
+  static_assert(std::disjunction_v<std::true_type, std::false_type>, "");
+  static_assert(std::disjunction_v<std::false_type, std::true_type>, "");
+  static_assert(!std::disjunction_v<std::false_type, std::false_type>, "");
 
-    static_assert ( std::disjunction<std::true_type,  std::true_type,  std::true_type >::value, "" );
-    static_assert ( std::disjunction<std::true_type,  std::false_type, std::true_type >::value, "" );
-    static_assert ( std::disjunction<std::false_type, std::true_type,  std::true_type >::value, "" );
-    static_assert ( std::disjunction<std::false_type, std::false_type, std::true_type >::value, "" );
-    static_assert ( std::disjunction<std::true_type,  std::true_type,  std::false_type>::value, "" );
-    static_assert ( std::disjunction<std::true_type,  std::false_type, std::false_type>::value, "" );
-    static_assert ( std::disjunction<std::false_type, std::true_type,  std::false_type>::value, "" );
-    static_assert (!std::disjunction<std::false_type, std::false_type, std::false_type>::value, "" );
+  static_assert(
+      std::disjunction<std::true_type, std::true_type, std::true_type>::value,
+      "");
+  static_assert(
+      std::disjunction<std::true_type, std::false_type, std::true_type>::value,
+      "");
+  static_assert(
+      std::disjunction<std::false_type, std::true_type, std::true_type>::value,
+      "");
+  static_assert(
+      std::disjunction<std::false_type, std::false_type, std::true_type>::value,
+      "");
+  static_assert(
+      std::disjunction<std::true_type, std::true_type, std::false_type>::value,
+      "");
+  static_assert(
+      std::disjunction<std::true_type, std::false_type, std::false_type>::value,
+      "");
+  static_assert(
+      std::disjunction<std::false_type, std::true_type, std::false_type>::value,
+      "");
+  static_assert(!std::disjunction<std::false_type, std::false_type,
+                                  std::false_type>::value,
+                "");
 
-    static_assert ( std::disjunction_v<std::true_type,  std::true_type,  std::true_type >, "" );
-    static_assert ( std::disjunction_v<std::true_type,  std::false_type, std::true_type >, "" );
-    static_assert ( std::disjunction_v<std::false_type, std::true_type,  std::true_type >, "" );
-    static_assert ( std::disjunction_v<std::false_type, std::false_type, std::true_type >, "" );
-    static_assert ( std::disjunction_v<std::true_type,  std::true_type,  std::false_type>, "" );
-    static_assert ( std::disjunction_v<std::true_type,  std::false_type, std::false_type>, "" );
-    static_assert ( std::disjunction_v<std::false_type, std::true_type,  std::false_type>, "" );
-    static_assert (!std::disjunction_v<std::false_type, std::false_type, std::false_type>, "" );
+  static_assert(
+      std::disjunction_v<std::true_type, std::true_type, std::true_type>, "");
+  static_assert(
+      std::disjunction_v<std::true_type, std::false_type, std::true_type>, "");
+  static_assert(
+      std::disjunction_v<std::false_type, std::true_type, std::true_type>, "");
+  static_assert(
+      std::disjunction_v<std::false_type, std::false_type, std::true_type>, "");
+  static_assert(
+      std::disjunction_v<std::true_type, std::true_type, std::false_type>, "");
+  static_assert(
+      std::disjunction_v<std::true_type, std::false_type, std::false_type>, "");
+  static_assert(
+      std::disjunction_v<std::false_type, std::true_type, std::false_type>, "");
+  static_assert(
+      !std::disjunction_v<std::false_type, std::false_type, std::false_type>,
+      "");
 
-    static_assert ( std::disjunction<True >::value, "" );
-    static_assert (!std::disjunction<False>::value, "" );
+  static_assert(std::disjunction<True>::value, "");
+  static_assert(!std::disjunction<False>::value, "");
 
-    static_assert ( std::disjunction_v<True >, "" );
-    static_assert (!std::disjunction_v<False>, "" );
+  static_assert(std::disjunction_v<True>, "");
+  static_assert(!std::disjunction_v<False>, "");
 
   return 0;
 }

@@ -26,6 +26,7 @@ class SymbolStringPtr;
 /// String pool for symbol names used by the JIT.
 class SymbolStringPool {
   friend class SymbolStringPtr;
+
 public:
   /// Destroy a SymbolStringPool.
   ~SymbolStringPool();
@@ -38,6 +39,7 @@ public:
 
   /// Returns true if the pool is empty.
   bool empty() const;
+
 private:
   using RefCountType = std::atomic<size_t>;
   using PoolMap = StringMap<RefCountType>;
@@ -55,13 +57,12 @@ class SymbolStringPtr {
 public:
   SymbolStringPtr() = default;
   SymbolStringPtr(std::nullptr_t) {}
-  SymbolStringPtr(const SymbolStringPtr &Other)
-    : S(Other.S) {
+  SymbolStringPtr(const SymbolStringPtr &Other) : S(Other.S) {
     if (isRealPoolEntry(S))
       ++S->getValue();
   }
 
-  SymbolStringPtr& operator=(const SymbolStringPtr &Other) {
+  SymbolStringPtr &operator=(const SymbolStringPtr &Other) {
     if (isRealPoolEntry(S))
       --S->getValue();
     S = Other.S;
@@ -74,7 +75,7 @@ public:
     std::swap(S, Other.S);
   }
 
-  SymbolStringPtr& operator=(SymbolStringPtr &&Other) {
+  SymbolStringPtr &operator=(SymbolStringPtr &&Other) {
     if (isRealPoolEntry(S))
       --S->getValue();
     S = nullptr;
@@ -110,8 +111,7 @@ private:
   using PoolEntry = SymbolStringPool::PoolMapEntry;
   using PoolEntryPtr = PoolEntry *;
 
-  SymbolStringPtr(SymbolStringPool::PoolMapEntry *S)
-      : S(S) {
+  SymbolStringPtr(SymbolStringPool::PoolMapEntry *S) : S(S) {
     if (isRealPoolEntry(S))
       ++S->getValue();
   }
@@ -176,8 +176,7 @@ inline bool SymbolStringPool::empty() const {
 
 } // end namespace orc
 
-template <>
-struct DenseMapInfo<orc::SymbolStringPtr> {
+template <> struct DenseMapInfo<orc::SymbolStringPtr> {
 
   static orc::SymbolStringPtr getEmptyKey() {
     return orc::SymbolStringPtr::getEmptyVal();

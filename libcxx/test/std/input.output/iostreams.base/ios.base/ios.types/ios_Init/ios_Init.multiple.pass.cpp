@@ -23,19 +23,18 @@
 // XFAIL: with_system_cxx_lib=macosx10.10
 // XFAIL: with_system_cxx_lib=macosx10.9
 
-int main(int, char**)
-{
+int main(int, char**) {
 
-    std::cout << "Hello!";
-    std::ios_base::fmtflags stock_flags = std::cout.flags();
+  std::cout << "Hello!";
+  std::ios_base::fmtflags stock_flags = std::cout.flags();
 
-    std::cout << std::boolalpha << true;
-    std::ios_base::fmtflags ba_flags = std::cout.flags();
-    assert(stock_flags != ba_flags);
+  std::cout << std::boolalpha << true;
+  std::ios_base::fmtflags ba_flags = std::cout.flags();
+  assert(stock_flags != ba_flags);
 
-    std::ios_base::Init init_streams;
-    std::ios_base::fmtflags after_init = std::cout.flags();
-    assert(after_init == ba_flags);
+  std::ios_base::Init init_streams;
+  std::ios_base::fmtflags after_init = std::cout.flags();
+  assert(after_init == ba_flags);
 
-    return 0;
+  return 0;
 }

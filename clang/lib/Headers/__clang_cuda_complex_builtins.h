@@ -41,7 +41,8 @@
 #define _ABSf std::abs
 #define _LOGBd std::logb
 #define _LOGBf std::logb
-// Rather than pulling in std::max from algorithm everytime, use available ::max.
+// Rather than pulling in std::max from algorithm everytime, use available
+// ::max.
 #define _fmaxd max
 #define _fmaxf max
 #else

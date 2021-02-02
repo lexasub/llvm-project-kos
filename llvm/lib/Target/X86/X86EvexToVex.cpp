@@ -12,9 +12,10 @@
 /// are encoded using the EVEX prefix and if possible replaces them by their
 /// corresponding VEX encoding which is usually shorter by 2 bytes.
 /// EVEX instructions may be encoded via the VEX prefix when the AVX-512
-/// instruction has a corresponding AVX/AVX2 opcode, when vector length 
-/// accessed by instruction is less than 512 bits and when it does not use 
-//  the xmm or the mask registers or xmm/ymm registers with indexes higher than 15.
+/// instruction has a corresponding AVX/AVX2 opcode, when vector length
+/// accessed by instruction is less than 512 bits and when it does not use
+//  the xmm or the mask registers or xmm/ymm registers with indexes higher
+//  than 15.
 /// The pass applies code reduction on the generated code for AVX-512 instrs.
 //
 //===----------------------------------------------------------------------===//
@@ -68,7 +69,7 @@ class EvexToVexInstPass : public MachineFunctionPass {
 public:
   static char ID;
 
-  EvexToVexInstPass() : MachineFunctionPass(ID) { }
+  EvexToVexInstPass() : MachineFunctionPass(ID) {}
 
   StringRef getPassName() const override { return EVEX2VEX_DESC; }
 
@@ -175,9 +176,9 @@ static bool performCustomAdjustments(MachineInstr &MI, unsigned NewOpc,
   case X86::VALIGNQZ128rmi: {
     assert((NewOpc == X86::VPALIGNRrri || NewOpc == X86::VPALIGNRrmi) &&
            "Unexpected new opcode!");
-    unsigned Scale = (Opc == X86::VALIGNQZ128rri ||
-                      Opc == X86::VALIGNQZ128rmi) ? 8 : 4;
-    MachineOperand &Imm = MI.getOperand(MI.getNumExplicitOperands()-1);
+    unsigned Scale =
+        (Opc == X86::VALIGNQZ128rri || Opc == X86::VALIGNQZ128rmi) ? 8 : 4;
+    MachineOperand &Imm = MI.getOperand(MI.getNumExplicitOperands() - 1);
     Imm.setImm(Imm.getImm() * Scale);
     break;
   }
@@ -192,7 +193,7 @@ static bool performCustomAdjustments(MachineInstr &MI, unsigned NewOpc,
     assert((NewOpc == X86::VPERM2F128rr || NewOpc == X86::VPERM2I128rr ||
             NewOpc == X86::VPERM2F128rm || NewOpc == X86::VPERM2I128rm) &&
            "Unexpected new opcode!");
-    MachineOperand &Imm = MI.getOperand(MI.getNumExplicitOperands()-1);
+    MachineOperand &Imm = MI.getOperand(MI.getNumExplicitOperands() - 1);
     int64_t ImmVal = Imm.getImm();
     // Set bit 5, move bit 1 to bit 4, copy bit 0.
     Imm.setImm(0x20 | ((ImmVal & 2) << 3) | (ImmVal & 1));
@@ -214,7 +215,7 @@ static bool performCustomAdjustments(MachineInstr &MI, unsigned NewOpc,
   case X86::VRNDSCALESDZm_Int:
   case X86::VRNDSCALESSZr_Int:
   case X86::VRNDSCALESSZm_Int:
-    const MachineOperand &Imm = MI.getOperand(MI.getNumExplicitOperands()-1);
+    const MachineOperand &Imm = MI.getOperand(MI.getNumExplicitOperands() - 1);
     int64_t ImmVal = Imm.getImm();
     // Ensure that only bits 3:0 of the immediate are used.
     if ((ImmVal & 0xf) != ImmVal)
@@ -224,7 +225,6 @@ static bool performCustomAdjustments(MachineInstr &MI, unsigned NewOpc,
 
   return true;
 }
-
 
 // For EVEX instructions that can be encoded using VEX encoding
 // replace them by the VEX encoding in order to reduce size.
@@ -268,8 +268,9 @@ bool EvexToVexInstPass::CompressEvexToVexImpl(MachineInstr &MI) const {
 
   // Use the VEX.L bit to select the 128 or 256-bit table.
   ArrayRef<X86EvexToVexCompressTableEntry> Table =
-    (Desc.TSFlags & X86II::VEX_L) ? makeArrayRef(X86EvexToVex256CompressTable)
-                                  : makeArrayRef(X86EvexToVex128CompressTable);
+      (Desc.TSFlags & X86II::VEX_L)
+          ? makeArrayRef(X86EvexToVex256CompressTable)
+          : makeArrayRef(X86EvexToVex128CompressTable);
 
   const auto *I = llvm::lower_bound(Table, MI.getOpcode());
   if (I == Table.end() || I->EvexOpcode != MI.getOpcode())

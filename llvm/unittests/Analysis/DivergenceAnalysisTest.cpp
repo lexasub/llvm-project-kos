@@ -6,9 +6,9 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "llvm/Analysis/DivergenceAnalysis.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/Analysis/AssumptionCache.h"
-#include "llvm/Analysis/DivergenceAnalysis.h"
 #include "llvm/Analysis/LoopInfo.h"
 #include "llvm/Analysis/PostDominators.h"
 #include "llvm/Analysis/SyncDependenceAnalysis.h"

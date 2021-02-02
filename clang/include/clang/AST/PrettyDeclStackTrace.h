@@ -36,11 +36,11 @@ class PrettyDeclStackTraceEntry : public llvm::PrettyStackTraceEntry {
 public:
   PrettyDeclStackTraceEntry(ASTContext &Ctx, Decl *D, SourceLocation Loc,
                             const char *Msg)
-    : Context(Ctx), TheDecl(D), Loc(Loc), Message(Msg) {}
+      : Context(Ctx), TheDecl(D), Loc(Loc), Message(Msg) {}
 
   void print(raw_ostream &OS) const override;
 };
 
-}
+} // namespace clang
 
 #endif

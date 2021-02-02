@@ -43,7 +43,7 @@ public:
                                const Request &Req,
                                const MemRegion *const RequestRegion,
                                const ExplodedNode *const ExplNode,
-                              BugReporter &BReporter) const;
+                               BugReporter &BReporter) const;
 
   /// Report a missing wait for a nonblocking call.
   ///
@@ -100,8 +100,8 @@ private:
   };
 };
 
-} // end of namespace: mpi
-} // end of namespace: ento
-} // end of namespace: clang
+} // namespace mpi
+} // namespace ento
+} // namespace clang
 
 #endif

@@ -63,7 +63,7 @@ protected:
 public:
   /// Initializes the compiler and the backend emitter.
   template <typename... Tys>
-  ByteCodeExprGen(Context &Ctx, Program &P, Tys &&... Args)
+  ByteCodeExprGen(Context &Ctx, Program &P, Tys &&...Args)
       : Emitter(Ctx, P, Args...), Ctx(Ctx), P(P) {}
 
   // Expression visitors - result returned on stack.
@@ -108,9 +108,7 @@ protected:
   }
 
   /// Checks if a pointer needs adjustment.
-  bool needsAdjust(QualType Ty) const {
-    return true;
-  }
+  bool needsAdjust(QualType Ty) const { return true; }
 
   /// Classifies a known primitive type
   PrimType classifyPrim(QualType Ty) const {
@@ -132,16 +130,14 @@ protected:
 
   /// Visits an initializer for a local.
   bool visitLocalInitializer(const Expr *Init, unsigned I) {
-    return visitInitializer(Init, [this, I, Init] {
-      return this->emitGetPtrLocal(I, Init);
-    });
+    return visitInitializer(
+        Init, [this, I, Init] { return this->emitGetPtrLocal(I, Init); });
   }
 
   /// Visits an initializer for a global.
   bool visitGlobalInitializer(const Expr *Init, unsigned I) {
-    return visitInitializer(Init, [this, I, Init] {
-      return this->emitGetPtrGlobal(I, Init);
-    });
+    return visitInitializer(
+        Init, [this, I, Init] { return this->emitGetPtrGlobal(I, Init); });
   }
 
   /// Visits a delegated initializer.
@@ -183,8 +179,7 @@ private:
                    llvm::function_ref<bool(PrimType)> Direct,
                    llvm::function_ref<bool(PrimType)> Indirect);
   bool dereferenceParam(const Expr *LV, PrimType T, const ParmVarDecl *PD,
-                        DerefKind AK,
-                        llvm::function_ref<bool(PrimType)> Direct,
+                        DerefKind AK, llvm::function_ref<bool(PrimType)> Direct,
                         llvm::function_ref<bool(PrimType)> Indirect);
   bool dereferenceVar(const Expr *LV, PrimType T, const VarDecl *PD,
                       DerefKind AK, llvm::function_ref<bool(PrimType)> Direct,

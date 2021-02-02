@@ -94,8 +94,8 @@ private:
 
   mutable std::unique_ptr<llvm::raw_fd_ostream> CompilationDatabase = nullptr;
   void DumpCompilationDatabase(Compilation &C, StringRef Filename,
-                               StringRef Target,
-                               const InputInfo &Output, const InputInfo &Input,
+                               StringRef Target, const InputInfo &Output,
+                               const InputInfo &Input,
                                const llvm::opt::ArgList &Args) const;
 
   void DumpCompilationDatabaseFragmentToDir(

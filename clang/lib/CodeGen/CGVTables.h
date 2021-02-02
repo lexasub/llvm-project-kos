@@ -22,12 +22,12 @@
 #include "llvm/IR/GlobalVariable.h"
 
 namespace clang {
-  class CXXRecordDecl;
+class CXXRecordDecl;
 
 namespace CodeGen {
-  class CodeGenModule;
-  class ConstantArrayBuilder;
-  class ConstantStructBuilder;
+class CodeGenModule;
+class ConstantArrayBuilder;
+class ConstantStructBuilder;
 
 class CodeGenVTables {
   CodeGenModule &CGM;
@@ -44,7 +44,7 @@ class CodeGenVTables {
   SubVTTIndiciesMapTy SubVTTIndicies;
 
   typedef llvm::DenseMap<BaseSubobjectPairTy, uint64_t>
-    SecondaryVirtualPointerIndicesMapTy;
+      SecondaryVirtualPointerIndicesMapTy;
 
   /// SecondaryVirtualPointerIndices - Contains the secondary virtual pointer
   /// indices.
@@ -121,8 +121,7 @@ public:
   GenerateConstructionVTable(const CXXRecordDecl *RD, const BaseSubobject &Base,
                              bool BaseIsVirtual,
                              llvm::GlobalVariable::LinkageTypes Linkage,
-                             VTableAddressPointsMapTy& AddressPoints);
-
+                             VTableAddressPointsMapTy &AddressPoints);
 
   /// GetAddrOfVTT - Get the address of the VTT for the given record decl.
   llvm::GlobalVariable *GetAddrOfVTT(const CXXRecordDecl *RD);

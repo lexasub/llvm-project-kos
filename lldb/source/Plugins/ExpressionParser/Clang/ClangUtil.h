@@ -45,6 +45,6 @@ struct ClangUtil {
   /// its underlying type is a Clang type).
   static std::string ToString(const CompilerType &c);
 };
-}
+} // namespace lldb_private
 
 #endif

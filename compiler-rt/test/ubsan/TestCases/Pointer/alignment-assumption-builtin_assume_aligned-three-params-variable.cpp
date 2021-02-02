@@ -12,7 +12,7 @@
 
 volatile long offset;
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
   char *ptr = (char *)malloc(3);
 
   offset = 1;

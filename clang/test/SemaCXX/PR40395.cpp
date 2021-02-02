@@ -6,7 +6,7 @@
 struct _GUID {};
 struct __declspec(uuid("{AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA}")) B {};
 
-template <const _GUID* piid>
+template <const _GUID *piid>
 struct A {
   virtual void baz() { A<piid>(); }
 };

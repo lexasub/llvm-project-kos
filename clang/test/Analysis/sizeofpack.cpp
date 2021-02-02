@@ -10,6 +10,6 @@ template <int... N> size_t foo() {
 }
 
 void bar() {
-  clang_analyzer_eval(foo<>() == 0); // expected-warning{{TRUE}}
+  clang_analyzer_eval(foo<>() == 0);        // expected-warning{{TRUE}}
   clang_analyzer_eval(foo<1, 2, 3>() == 3); // expected-warning{{TRUE}}
 }

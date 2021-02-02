@@ -434,10 +434,9 @@ bool widenShuffleMaskElts(int Scale, ArrayRef<int> Mask,
 ///
 /// If the optional TargetTransformInfo is provided, this function tries harder
 /// to do less work by only looking at illegal types.
-MapVector<Instruction*, uint64_t>
-computeMinimumValueSizes(ArrayRef<BasicBlock*> Blocks,
-                         DemandedBits &DB,
-                         const TargetTransformInfo *TTI=nullptr);
+MapVector<Instruction *, uint64_t>
+computeMinimumValueSizes(ArrayRef<BasicBlock *> Blocks, DemandedBits &DB,
+                         const TargetTransformInfo *TTI = nullptr);
 
 /// Compute the union of two access-group lists.
 ///
@@ -948,6 +947,6 @@ private:
   }
 };
 
-} // llvm namespace
+} // namespace llvm
 
 #endif

@@ -30,67 +30,63 @@
 
 using std::experimental::pmr::memory_resource;
 
-int main(int, char**)
-{
-    {
-        memory_resource const* r1 = nullptr;
-        memory_resource const* r2 = nullptr;
-        static_assert(
-            noexcept(r1->is_equal(*r2))
-          , "is_equal must be noexcept"
-          );
-    }
-    {
-        TestResource1 R1(1);
-        auto& P1 = R1.getController();
-        memory_resource const& M1 = R1;
+int main(int, char**) {
+  {
+    memory_resource const* r1 = nullptr;
+    memory_resource const* r2 = nullptr;
+    static_assert(noexcept(r1->is_equal(*r2)), "is_equal must be noexcept");
+  }
+  {
+    TestResource1 R1(1);
+    auto& P1 = R1.getController();
+    memory_resource const& M1 = R1;
 
-        TestResource2 R2(1);
-        auto& P2 = R2.getController();
-        memory_resource const& M2 = R2;
+    TestResource2 R2(1);
+    auto& P2 = R2.getController();
+    memory_resource const& M2 = R2;
 
-        assert(M1.is_equal(M2) == false);
-        assert(P1.checkIsEqualCalledEq(1));
-        assert(P2.checkIsEqualCalledEq(0));
+    assert(M1.is_equal(M2) == false);
+    assert(P1.checkIsEqualCalledEq(1));
+    assert(P2.checkIsEqualCalledEq(0));
 
-        assert(M2.is_equal(M1) == false);
-        assert(P2.checkIsEqualCalledEq(1));
-        assert(P1.checkIsEqualCalledEq(1));
-    }
-    {
-        TestResource1 R1(1);
-        auto& P1 = R1.getController();
-        memory_resource const& M1 = R1;
+    assert(M2.is_equal(M1) == false);
+    assert(P2.checkIsEqualCalledEq(1));
+    assert(P1.checkIsEqualCalledEq(1));
+  }
+  {
+    TestResource1 R1(1);
+    auto& P1 = R1.getController();
+    memory_resource const& M1 = R1;
 
-        TestResource1 R2(2);
-        auto& P2 = R2.getController();
-        memory_resource const& M2 = R2;
+    TestResource1 R2(2);
+    auto& P2 = R2.getController();
+    memory_resource const& M2 = R2;
 
-        assert(M1.is_equal(M2) == false);
-        assert(P1.checkIsEqualCalledEq(1));
-        assert(P2.checkIsEqualCalledEq(0));
+    assert(M1.is_equal(M2) == false);
+    assert(P1.checkIsEqualCalledEq(1));
+    assert(P2.checkIsEqualCalledEq(0));
 
-        assert(M2.is_equal(M1) == false);
-        assert(P2.checkIsEqualCalledEq(1));
-        assert(P1.checkIsEqualCalledEq(1));
-    }
-    {
-        TestResource1 R1(1);
-        auto& P1 = R1.getController();
-        memory_resource const& M1 = R1;
+    assert(M2.is_equal(M1) == false);
+    assert(P2.checkIsEqualCalledEq(1));
+    assert(P1.checkIsEqualCalledEq(1));
+  }
+  {
+    TestResource1 R1(1);
+    auto& P1 = R1.getController();
+    memory_resource const& M1 = R1;
 
-        TestResource1 R2(1);
-        auto& P2 = R2.getController();
-        memory_resource const& M2 = R2;
+    TestResource1 R2(1);
+    auto& P2 = R2.getController();
+    memory_resource const& M2 = R2;
 
-        assert(M1.is_equal(M2) == true);
-        assert(P1.checkIsEqualCalledEq(1));
-        assert(P2.checkIsEqualCalledEq(0));
+    assert(M1.is_equal(M2) == true);
+    assert(P1.checkIsEqualCalledEq(1));
+    assert(P2.checkIsEqualCalledEq(0));
 
-        assert(M2.is_equal(M1) == true);
-        assert(P2.checkIsEqualCalledEq(1));
-        assert(P1.checkIsEqualCalledEq(1));
-    }
+    assert(M2.is_equal(M1) == true);
+    assert(P2.checkIsEqualCalledEq(1));
+    assert(P1.checkIsEqualCalledEq(1));
+  }
 
   return 0;
 }

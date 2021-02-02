@@ -6,11 +6,11 @@
 // Copy elision always occurs in C++17, otherwise it's under
 // an on-by-default flag.
 #if __cplusplus >= 201703L
-  #define ELIDE 1
+#define ELIDE 1
 #else
-  #ifndef NO_ELIDE_FLAG
-    #define ELIDE 1
-  #endif
+#ifndef NO_ELIDE_FLAG
+#define ELIDE 1
+#endif
 #endif
 
 void clang_analyzer_eval(bool);
@@ -27,11 +27,10 @@ void foo() {
 
 struct B {
   A a;
-  B(): a(A(0)) {}
+  B() : a(A(0)) {}
 };
 
 } // namespace variable_functional_cast_crash
-
 
 namespace ctor_initializer {
 
@@ -42,11 +41,12 @@ struct S {
 struct T {
   S s;
   int w;
-  T(int w): s(), w(w) {}
+  T(int w) : s(), w(w) {}
 };
 
 class C {
   T t;
+
 public:
   C() : t(T(4)) {
     S s = {1, 2, 3};
@@ -61,10 +61,9 @@ public:
   }
 };
 
-
 struct A {
   int x;
-  A(): x(0) {}
+  A() : x(0) {}
   ~A() {}
 };
 
@@ -80,12 +79,12 @@ void foo() {
 
 } // namespace ctor_initializer
 
-
 namespace elision_on_ternary_op_branches {
 class C1 {
   int x;
+
 public:
-  C1(int x): x(x) {}
+  C1(int x) : x(x) {}
   int getX() const { return x; }
   ~C1();
 };
@@ -93,8 +92,9 @@ public:
 class C2 {
   int x;
   int y;
+
 public:
-  C2(int x, int y): x(x), y(y) {}
+  C2(int x, int y) : x(x), y(y) {}
   int getX() const { return x; }
   int getY() const { return y; }
   ~C2();
@@ -117,7 +117,6 @@ void foo(int coin) {
   }
 }
 } // namespace elision_on_ternary_op_branches
-
 
 namespace address_vector_tests {
 
@@ -162,15 +161,15 @@ void testMultipleReturns() {
   ClassWithoutDestructor c = make3(v);
 
 #if ELIDE
-  clang_analyzer_eval(v.len == 1); // expected-warning{{TRUE}}
+  clang_analyzer_eval(v.len == 1);     // expected-warning{{TRUE}}
   clang_analyzer_eval(v.buf[0] == &c); // expected-warning{{TRUE}}
 #else
-  clang_analyzer_eval(v.len == 5); // expected-warning{{TRUE}}
+  clang_analyzer_eval(v.len == 5);           // expected-warning{{TRUE}}
   clang_analyzer_eval(v.buf[0] != v.buf[1]); // expected-warning{{TRUE}}
   clang_analyzer_eval(v.buf[1] != v.buf[2]); // expected-warning{{TRUE}}
   clang_analyzer_eval(v.buf[2] != v.buf[3]); // expected-warning{{TRUE}}
   clang_analyzer_eval(v.buf[3] != v.buf[4]); // expected-warning{{TRUE}}
-  clang_analyzer_eval(v.buf[4] == &c); // expected-warning{{TRUE}}
+  clang_analyzer_eval(v.buf[4] == &c);       // expected-warning{{TRUE}}
 #endif
 }
 
@@ -184,10 +183,10 @@ void testArgumentConstructorWithoutDestructor() {
   consume(make3(v));
 
 #if ELIDE
-  clang_analyzer_eval(v.len == 2); // expected-warning{{TRUE}}
+  clang_analyzer_eval(v.len == 2);           // expected-warning{{TRUE}}
   clang_analyzer_eval(v.buf[0] == v.buf[1]); // expected-warning{{TRUE}}
 #else
-  clang_analyzer_eval(v.len == 6); // expected-warning{{TRUE}}
+  clang_analyzer_eval(v.len == 6);           // expected-warning{{TRUE}}
   clang_analyzer_eval(v.buf[0] != v.buf[1]); // expected-warning{{TRUE}}
   clang_analyzer_eval(v.buf[1] != v.buf[2]); // expected-warning{{TRUE}}
   clang_analyzer_eval(v.buf[2] != v.buf[3]); // expected-warning{{TRUE}}
@@ -229,14 +228,14 @@ void testVariable() {
 #if ELIDE
   // 0. Construct the variable.
   // 1. Destroy the variable.
-  clang_analyzer_eval(v.len == 2); // expected-warning{{TRUE}}
+  clang_analyzer_eval(v.len == 2);           // expected-warning{{TRUE}}
   clang_analyzer_eval(v.buf[0] == v.buf[1]); // expected-warning{{TRUE}}
 #else
   // 0. Construct the temporary.
   // 1. Construct the variable.
   // 2. Destroy the temporary.
   // 3. Destroy the variable.
-  clang_analyzer_eval(v.len == 4); // expected-warning{{TRUE}}
+  clang_analyzer_eval(v.len == 4);           // expected-warning{{TRUE}}
   clang_analyzer_eval(v.buf[0] == v.buf[2]); // expected-warning{{TRUE}}
   clang_analyzer_eval(v.buf[1] == v.buf[3]); // expected-warning{{TRUE}}
 #endif
@@ -245,7 +244,7 @@ void testVariable() {
 struct TestCtorInitializer {
   ClassWithDestructor c;
   TestCtorInitializer(AddressVector<ClassWithDestructor> &v)
-    : c(ClassWithDestructor(v)) {}
+      : c(ClassWithDestructor(v)) {}
 };
 
 void testCtorInitializer() {
@@ -263,19 +262,18 @@ void testCtorInitializer() {
 #if ELIDE
   // 0. Construct the member variable.
   // 1. Destroy the member variable.
-  clang_analyzer_eval(v.len == 2); // expected-warning{{TRUE}}
+  clang_analyzer_eval(v.len == 2);           // expected-warning{{TRUE}}
   clang_analyzer_eval(v.buf[0] == v.buf[1]); // expected-warning{{TRUE}}
 #else
   // 0. Construct the temporary.
   // 1. Construct the member variable.
   // 2. Destroy the temporary.
   // 3. Destroy the member variable.
-  clang_analyzer_eval(v.len == 4); // expected-warning{{TRUE}}
+  clang_analyzer_eval(v.len == 4);           // expected-warning{{TRUE}}
   clang_analyzer_eval(v.buf[0] == v.buf[2]); // expected-warning{{TRUE}}
   clang_analyzer_eval(v.buf[1] == v.buf[3]); // expected-warning{{TRUE}}
 #endif
 }
-
 
 ClassWithDestructor make1(AddressVector<ClassWithDestructor> &v) {
   return ClassWithDestructor(v);
@@ -304,7 +302,7 @@ void testMultipleReturnsWithDestructors() {
   // 0. Construct the variable. Yes, constructor in make1() constructs
   //    the variable 'c'.
   // 1. Destroy the variable.
-  clang_analyzer_eval(v.len == 2); // expected-warning{{TRUE}}
+  clang_analyzer_eval(v.len == 2);           // expected-warning{{TRUE}}
   clang_analyzer_eval(v.buf[0] == v.buf[1]); // expected-warning{{TRUE}}
 #else
   // 0. Construct the temporary in make1().
@@ -317,7 +315,7 @@ void testMultipleReturnsWithDestructors() {
   // 7. Construct the variable.
   // 8. Destroy the temporary here.
   // 9. Destroy the variable.
-  clang_analyzer_eval(v.len == 10); // expected-warning{{TRUE}}
+  clang_analyzer_eval(v.len == 10);          // expected-warning{{TRUE}}
   clang_analyzer_eval(v.buf[0] == v.buf[2]); // expected-warning{{TRUE}}
   clang_analyzer_eval(v.buf[1] == v.buf[4]); // expected-warning{{TRUE}}
   clang_analyzer_eval(v.buf[3] == v.buf[6]); // expected-warning{{TRUE}}
@@ -339,7 +337,7 @@ void testArgumentConstructorWithDestructor() {
   // 0. Construct the argument.
   // 1. Forced push() in consume().
   // 2. Destroy the argument.
-  clang_analyzer_eval(v.len == 3); // expected-warning{{TRUE}}
+  clang_analyzer_eval(v.len == 3);           // expected-warning{{TRUE}}
   clang_analyzer_eval(v.buf[0] == v.buf[1]); // expected-warning{{TRUE}}
   clang_analyzer_eval(v.buf[1] == v.buf[2]); // expected-warning{{TRUE}}
 #else
@@ -354,13 +352,13 @@ void testArgumentConstructorWithDestructor() {
   // 8. Forced push() in consume().
   // 9. Destroy the argument. Notice the reverse order!
   // 10. Destroy the temporary here.
-  clang_analyzer_eval(v.len == 11); // expected-warning{{TRUE}}
-  clang_analyzer_eval(v.buf[0] == v.buf[2]); // expected-warning{{TRUE}}
-  clang_analyzer_eval(v.buf[1] == v.buf[4]); // expected-warning{{TRUE}}
-  clang_analyzer_eval(v.buf[3] == v.buf[6]); // expected-warning{{TRUE}}
+  clang_analyzer_eval(v.len == 11);           // expected-warning{{TRUE}}
+  clang_analyzer_eval(v.buf[0] == v.buf[2]);  // expected-warning{{TRUE}}
+  clang_analyzer_eval(v.buf[1] == v.buf[4]);  // expected-warning{{TRUE}}
+  clang_analyzer_eval(v.buf[3] == v.buf[6]);  // expected-warning{{TRUE}}
   clang_analyzer_eval(v.buf[5] == v.buf[10]); // expected-warning{{TRUE}}
-  clang_analyzer_eval(v.buf[7] == v.buf[8]); // expected-warning{{TRUE}}
-  clang_analyzer_eval(v.buf[8] == v.buf[9]); // expected-warning{{TRUE}}
+  clang_analyzer_eval(v.buf[7] == v.buf[8]);  // expected-warning{{TRUE}}
+  clang_analyzer_eval(v.buf[8] == v.buf[9]);  // expected-warning{{TRUE}}
 #endif
 }
 

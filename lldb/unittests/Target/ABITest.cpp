@@ -23,4 +23,3 @@ TEST(MCBasedABI, MapRegisterName) {
   EXPECT_EQ("fooo47", map("fooo47"));
   EXPECT_EQ("bar47", map("bar47"));
 }
-

@@ -39,9 +39,7 @@ class WinSymbolizerTool final : public SymbolizerTool {
   WinSymbolizerTool() {}
 
   bool SymbolizePC(uptr addr, SymbolizedStack *stack) override;
-  bool SymbolizeData(uptr addr, DataInfo *info) override {
-    return false;
-  }
+  bool SymbolizeData(uptr addr, DataInfo *info) override { return false; }
   const char *Demangle(const char *name) override;
 };
 
@@ -140,14 +138,15 @@ void InitializeDbgHelpIfNeeded() {
 bool WinSymbolizerTool::SymbolizePC(uptr addr, SymbolizedStack *frame) {
   InitializeDbgHelpIfNeeded();
 
-  // See https://docs.microsoft.com/en-us/windows/win32/debug/retrieving-symbol-information-by-address
+  // See
+  // https://docs.microsoft.com/en-us/windows/win32/debug/retrieving-symbol-information-by-address
   char buffer[sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(CHAR)];
   PSYMBOL_INFO symbol = (PSYMBOL_INFO)buffer;
   symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
   symbol->MaxNameLen = MAX_SYM_NAME;
   DWORD64 offset = 0;
-  BOOL got_objname = SymFromAddr(GetCurrentProcess(),
-                                 (DWORD64)addr, &offset, symbol);
+  BOOL got_objname =
+      SymFromAddr(GetCurrentProcess(), (DWORD64)addr, &offset, symbol);
   if (!got_objname)
     return false;
 
@@ -181,9 +180,7 @@ const char *WinSymbolizerTool::Demangle(const char *name) {
     return name;
 }
 
-const char *Symbolizer::PlatformDemangle(const char *name) {
-  return name;
-}
+const char *Symbolizer::PlatformDemangle(const char *name) { return name; }
 
 namespace {
 struct ScopedHandle {
@@ -202,7 +199,7 @@ struct ScopedHandle {
   }
   HANDLE h_;
 };
-} // namespace
+}  // namespace
 
 bool SymbolizerProcess::StartSymbolizerSubprocess() {
   // Create inherited pipes for stdin and stdout.
@@ -254,14 +251,14 @@ bool SymbolizerProcess::StartSymbolizerSubprocess() {
   si.hStdOutput = stdout_write.get();
   PROCESS_INFORMATION pi;
   memset(&pi, 0, sizeof(pi));
-  if (!CreateProcessA(path_,               // Executable
-                      command_line.data(), // Command line
-                      nullptr,             // Process handle not inheritable
-                      nullptr,             // Thread handle not inheritable
-                      TRUE,                // Set handle inheritance to TRUE
-                      0,                   // Creation flags
-                      nullptr,             // Use parent's environment block
-                      nullptr,             // Use parent's starting directory
+  if (!CreateProcessA(path_,                // Executable
+                      command_line.data(),  // Command line
+                      nullptr,              // Process handle not inheritable
+                      nullptr,              // Thread handle not inheritable
+                      TRUE,                 // Set handle inheritance to TRUE
+                      0,                    // Creation flags
+                      nullptr,              // Use parent's environment block
+                      nullptr,              // Use parent's starting directory
                       &si, &pi)) {
     VReport(2, "WARNING: %s failed to create process for %s (error code: %d)\n",
             SanitizerToolName, path_, GetLastError());
@@ -295,7 +292,7 @@ static void ChooseSymbolizerTools(IntrusiveList<SymbolizerTool> *list,
   if (path) {
     VReport(2, "Using llvm-symbolizer at %spath: %s\n",
             user_path ? "user-specified " : "", path);
-    list->push_back(new(*allocator) LLVMSymbolizer(path, allocator));
+    list->push_back(new (*allocator) LLVMSymbolizer(path, allocator));
   } else {
     if (user_path && user_path[0] == '\0') {
       VReport(2, "External symbolizer is explicitly disabled.\n");
@@ -305,7 +302,7 @@ static void ChooseSymbolizerTools(IntrusiveList<SymbolizerTool> *list,
   }
 
   // Add the dbghelp based symbolizer.
-  list->push_back(new(*allocator) WinSymbolizerTool());
+  list->push_back(new (*allocator) WinSymbolizerTool());
 }
 
 Symbolizer *Symbolizer::PlatformInit() {
@@ -313,7 +310,7 @@ Symbolizer *Symbolizer::PlatformInit() {
   list.clear();
   ChooseSymbolizerTools(&list, &symbolizer_allocator_);
 
-  return new(symbolizer_allocator_) Symbolizer(list);
+  return new (symbolizer_allocator_) Symbolizer(list);
 }
 
 void Symbolizer::LateInitialize() {

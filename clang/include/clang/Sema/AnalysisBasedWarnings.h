@@ -24,7 +24,7 @@ class ObjCMethodDecl;
 class QualType;
 class Sema;
 namespace sema {
-  class FunctionScopeInfo;
+class FunctionScopeInfo;
 }
 
 namespace sema {
@@ -38,6 +38,7 @@ public:
     unsigned enableCheckUnreachable : 1;
     unsigned enableThreadSafetyAnalysis : 1;
     unsigned enableConsumedAnalysis : 1;
+
   public:
     Policy();
     void disableCheckFallThrough() { enableCheckFallThrough = 0; }
@@ -48,7 +49,7 @@ private:
   Policy DefaultPolicy;
 
   enum VisitFlag { NotVisited = 0, Visited = 1, Pending = 2 };
-  llvm::DenseMap<const FunctionDecl*, VisitFlag> VisitedFD;
+  llvm::DenseMap<const FunctionDecl *, VisitFlag> VisitedFD;
 
   /// \name Statistics
   /// @{
@@ -89,14 +90,15 @@ private:
 public:
   AnalysisBasedWarnings(Sema &s);
 
-  void IssueWarnings(Policy P, FunctionScopeInfo *fscope,
-                     const Decl *D, QualType BlockType);
+  void IssueWarnings(Policy P, FunctionScopeInfo *fscope, const Decl *D,
+                     QualType BlockType);
 
   Policy getDefaultPolicy() { return DefaultPolicy; }
 
   void PrintStats() const;
 };
 
-}} // end namespace clang::sema
+} // namespace sema
+} // namespace clang
 
 #endif

@@ -30,22 +30,22 @@ void f(A a, B b, C c, D d, E e, F f, bool k) {
 }
 
 namespace dynamic_exception_spec {
-  // Prior to P0012, we had:
-  //   "[...] the target entity shall allow at least the exceptions allowed
-  //   by the source value in the assignment or initialization"
-  //
-  // There's really only one way we can coherently apply this to conditional
-  // expressions: this must hold no matter which branch was taken.
-  using X = void (*)() throw(int);
-  using Y = void (*)() throw(float);
-  using Z = void (*)() throw(int, float);
-  void g(X x, Y y, Z z, bool k) {
-    x = k ? X() : Y(); // expected-warning {{not superset}}
-    y = k ? X() : Y(); // expected-warning {{not superset}}
-    z = k ? X() : Y();
+// Prior to P0012, we had:
+//   "[...] the target entity shall allow at least the exceptions allowed
+//   by the source value in the assignment or initialization"
+//
+// There's really only one way we can coherently apply this to conditional
+// expressions: this must hold no matter which branch was taken.
+using X = void (*)() throw(int);
+using Y = void (*)() throw(float);
+using Z = void (*)() throw(int, float);
+void g(X x, Y y, Z z, bool k) {
+  x = k ? X() : Y(); // expected-warning {{not superset}}
+  y = k ? X() : Y(); // expected-warning {{not superset}}
+  z = k ? X() : Y();
 
-    x = k ? x : y; // expected-warning {{not superset}}
-    y = k ? x : y; // expected-warning {{not superset}}
-    z = k ? x : y;
-  }
+  x = k ? x : y; // expected-warning {{not superset}}
+  y = k ? x : y; // expected-warning {{not superset}}
+  z = k ? x : y;
 }
+} // namespace dynamic_exception_spec

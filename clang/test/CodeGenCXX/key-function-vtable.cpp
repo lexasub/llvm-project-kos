@@ -2,44 +2,60 @@
 // RUN: %clang_cc1 -triple arm-apple-darwin %s -emit-llvm -o - | FileCheck %s
 
 // Simple key function test
-struct testa { virtual void a(); };
+struct testa {
+  virtual void a();
+};
 void testa::a() {}
 
 // Simple key function test
-struct testb { virtual void a() {} };
+struct testb {
+  virtual void a() {}
+};
 testb *testbvar = new testb;
 
 // Key function with out-of-line inline definition
-struct testc { virtual void a(); };
+struct testc {
+  virtual void a();
+};
 inline void testc::a() {}
 
 // Functions with inline specifier are not key functions (PR5705)
-struct testd { inline virtual void a(); };
+struct testd {
+  inline virtual void a();
+};
 void testd::a() {}
 
 // Functions with inline specifier are not key functions (PR5705)
-struct teste { inline virtual void a(); };
+struct teste {
+  inline virtual void a();
+};
 teste *testevar = new teste;
 
 // Key functions with namespace (PR5711)
 namespace {
-  struct testf { virtual void a(); };
-}
+struct testf {
+  virtual void a();
+};
+} // namespace
 void testf::a() {}
 
 // Key functions with namespace (PR5711)
 namespace {
-  struct testg { virtual void a(); };
-}
+struct testg {
+  virtual void a();
+};
+} // namespace
 void testg::a() {}
 testg *testgvar = new testg;
 
-struct X0 { virtual ~X0(); };
+struct X0 {
+  virtual ~X0();
+};
 struct X1 : X0 {
   virtual void f();
 };
 
-inline void X1::f() { }
+inline void X1::f() {}
 
 void use_X1() { X1 x1; }
 

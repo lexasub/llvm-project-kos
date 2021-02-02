@@ -34,7 +34,7 @@ struct B : A {
   // CHECK-NEXT: 3 | void B::i()
   // CHECK-NEXT: 4 | void B::j()
 
-  virtual void f();  // overrides A::f()
+  virtual void f(); // overrides A::f()
   virtual void i();
   virtual void j();
 };
@@ -123,7 +123,7 @@ struct G : E {
   // CHECK-NEXT: 3 | G::~G() [scalar deleting]
   // CHECK-NEXT: 5 | void G::j()
 
-  virtual void f();  // overrides A::f()
+  virtual void f(); // overrides A::f()
   virtual ~G();
   virtual void j();
 };
@@ -138,7 +138,7 @@ struct H {
 void H::f() {}
 // NO-VFTABLE-NOT: @"??_7H@@6B@"
 
-struct Empty { };
+struct Empty {};
 
 struct I : Empty {
   // CHECK-LABEL: VFTable for 'I' (2 entries)
@@ -252,8 +252,12 @@ struct N {
 N n;
 void use(N *obj) { obj->operator+(42); }
 
-struct O { virtual A *f(); };
-struct P : O { virtual B *f(); };
+struct O {
+  virtual A *f();
+};
+struct P : O {
+  virtual B *f();
+};
 P p;
 void use(O *obj) { obj->f(); }
 void use(P *obj) { obj->f(); }

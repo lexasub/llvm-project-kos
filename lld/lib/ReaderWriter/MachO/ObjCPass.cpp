@@ -64,13 +64,9 @@ public:
     return DefinedAtom::typeObjCImageInfo;
   }
 
-  Alignment alignment() const override {
-    return 4;
-  }
+  Alignment alignment() const override { return 4; }
 
-  uint64_t size() const override {
-    return 8;
-  }
+  uint64_t size() const override { return 8; }
 
   ContentPermissions permissions() const override {
     return DefinedAtom::permR__;
@@ -81,10 +77,9 @@ public:
   }
 
 private:
-
-  struct objc_image_info  {
-    uint32_t	version;
-    uint32_t	flags;
+  struct objc_image_info {
+    uint32_t version;
+    uint32_t flags;
   };
 
   union {
@@ -96,8 +91,7 @@ private:
 class ObjCPass : public Pass {
 public:
   ObjCPass(const MachOLinkingContext &context)
-      : _ctx(context),
-        _file(*_ctx.make_file<MachOFile>("<mach-o objc pass>")) {
+      : _ctx(context), _file(*_ctx.make_file<MachOFile>("<mach-o objc pass>")) {
     _file.setOrdinal(_ctx.getNextOrdinalAndIncrement());
   }
 
@@ -109,19 +103,15 @@ public:
   }
 
 private:
-
-  const DefinedAtom* getImageInfo() {
+  const DefinedAtom *getImageInfo() {
     bool IsBig = MachOLinkingContext::isBigEndian(_ctx.arch());
-    return new (_file.allocator()) ObjCImageInfoAtom(_file, IsBig,
-                                                     _ctx.objcConstraint(),
-                                                     _ctx.swiftVersion());
+    return new (_file.allocator()) ObjCImageInfoAtom(
+        _file, IsBig, _ctx.objcConstraint(), _ctx.swiftVersion());
   }
 
-  const MachOLinkingContext   &_ctx;
-  MachOFile                   &_file;
+  const MachOLinkingContext &_ctx;
+  MachOFile &_file;
 };
-
-
 
 void addObjCPass(PassManager &pm, const MachOLinkingContext &ctx) {
   pm.add(std::make_unique<ObjCPass>(ctx));

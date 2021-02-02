@@ -13,32 +13,32 @@
 #define LLVM_CLANG_AST_ASTMUTATIONLISTENER_H
 
 namespace clang {
-  class Attr;
-  class ClassTemplateDecl;
-  class ClassTemplateSpecializationDecl;
-  class ConstructorUsingShadowDecl;
-  class CXXDestructorDecl;
-  class CXXRecordDecl;
-  class Decl;
-  class DeclContext;
-  class Expr;
-  class FieldDecl;
-  class FunctionDecl;
-  class FunctionTemplateDecl;
-  class Module;
-  class NamedDecl;
-  class ObjCCategoryDecl;
-  class ObjCContainerDecl;
-  class ObjCInterfaceDecl;
-  class ObjCPropertyDecl;
-  class ParmVarDecl;
-  class QualType;
-  class RecordDecl;
-  class TagDecl;
-  class ValueDecl;
-  class VarDecl;
-  class VarTemplateDecl;
-  class VarTemplateSpecializationDecl;
+class Attr;
+class ClassTemplateDecl;
+class ClassTemplateSpecializationDecl;
+class ConstructorUsingShadowDecl;
+class CXXDestructorDecl;
+class CXXRecordDecl;
+class Decl;
+class DeclContext;
+class Expr;
+class FieldDecl;
+class FunctionDecl;
+class FunctionTemplateDecl;
+class Module;
+class NamedDecl;
+class ObjCCategoryDecl;
+class ObjCContainerDecl;
+class ObjCInterfaceDecl;
+class ObjCPropertyDecl;
+class ParmVarDecl;
+class QualType;
+class RecordDecl;
+class TagDecl;
+class ValueDecl;
+class VarDecl;
+class VarTemplateDecl;
+class VarTemplateSpecializationDecl;
 
 /// An abstract interface that should be implemented by listeners
 /// that want to be notified when an AST entity gets modified after its
@@ -48,7 +48,7 @@ public:
   virtual ~ASTMutationListener();
 
   /// A new TagDecl definition was completed.
-  virtual void CompletedTagDefinition(const TagDecl *D) { }
+  virtual void CompletedTagDefinition(const TagDecl *D) {}
 
   /// A new declaration with name has been added to a DeclContext.
   virtual void AddedVisibleDecl(const DeclContext *DC, const Decl *D) {}
@@ -58,8 +58,9 @@ public:
 
   /// A template specialization (or partial one) was added to the
   /// template declaration.
-  virtual void AddedCXXTemplateSpecialization(const ClassTemplateDecl *TD,
-                                    const ClassTemplateSpecializationDecl *D) {}
+  virtual void
+  AddedCXXTemplateSpecialization(const ClassTemplateDecl *TD,
+                                 const ClassTemplateSpecializationDecl *D) {}
 
   /// A template specialization (or partial one) was added to the
   /// template declaration.

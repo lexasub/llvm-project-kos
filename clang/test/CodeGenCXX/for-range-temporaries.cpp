@@ -71,16 +71,16 @@ void body(const I &);
 
 #ifdef TEMPLATE
 #ifdef DEPENDENT
-template<typename D>
+template <typename D>
 #else
-template<typename>
+template <typename>
 #endif
 #endif
 void for_temps() {
   A a;
 #ifdef DESUGAR
   {
-    auto && __range = D(B());
+    auto &&__range = D(B());
     for (auto __begin = begin(__range), __end = end(__range);
          __begin != __end; ++__begin) {
       I i = *__begin;

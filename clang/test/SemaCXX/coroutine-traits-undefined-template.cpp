@@ -6,13 +6,14 @@
 namespace std {
 namespace experimental {
 
-template<typename ...T>
+template <typename... T>
 struct coroutine_traits {
   struct promise_type {};
 };
 
-template<> struct coroutine_traits<void>; // expected-note {{forward declaration of 'std::experimental::coroutine_traits<void>'}}
-}} // namespace std::experimental
+template <> struct coroutine_traits<void>; // expected-note {{forward declaration of 'std::experimental::coroutine_traits<void>'}}
+} // namespace experimental
+} // namespace std
 
 void uses_forward_declaration() {
   co_return; // expected-error {{this function cannot be a coroutine: missing definition of specialization 'coroutine_traits<void>'}}

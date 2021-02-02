@@ -239,8 +239,10 @@ public:
   bool SkipsReferences() const { return m_flags.GetSkipReferences(); }
 
   bool NonCacheable() const { return m_flags.GetNonCacheable(); }
-  
-  bool WantsDereference() const { return m_flags.GetFrontEndWantsDereference();} 
+
+  bool WantsDereference() const {
+    return m_flags.GetFrontEndWantsDereference();
+  }
 
   void SetCascades(bool value) { m_flags.SetCascades(value); }
 

@@ -19,17 +19,35 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    static_assert(std::is_same<std::make_integer_sequence<int, 0>, std::integer_sequence<int>>::value, "");
-    static_assert(std::is_same<std::make_integer_sequence<int, 1>, std::integer_sequence<int, 0>>::value, "");
-    static_assert(std::is_same<std::make_integer_sequence<int, 2>, std::integer_sequence<int, 0, 1>>::value, "");
-    static_assert(std::is_same<std::make_integer_sequence<int, 3>, std::integer_sequence<int, 0, 1, 2>>::value, "");
+int main(int, char**) {
+  static_assert(std::is_same<std::make_integer_sequence<int, 0>,
+                             std::integer_sequence<int> >::value,
+                "");
+  static_assert(std::is_same<std::make_integer_sequence<int, 1>,
+                             std::integer_sequence<int, 0> >::value,
+                "");
+  static_assert(std::is_same<std::make_integer_sequence<int, 2>,
+                             std::integer_sequence<int, 0, 1> >::value,
+                "");
+  static_assert(std::is_same<std::make_integer_sequence<int, 3>,
+                             std::integer_sequence<int, 0, 1, 2> >::value,
+                "");
 
-    static_assert(std::is_same<std::make_integer_sequence<unsigned long long, 0>, std::integer_sequence<unsigned long long>>::value, "");
-    static_assert(std::is_same<std::make_integer_sequence<unsigned long long, 1>, std::integer_sequence<unsigned long long, 0>>::value, "");
-    static_assert(std::is_same<std::make_integer_sequence<unsigned long long, 2>, std::integer_sequence<unsigned long long, 0, 1>>::value, "");
-    static_assert(std::is_same<std::make_integer_sequence<unsigned long long, 3>, std::integer_sequence<unsigned long long, 0, 1, 2>>::value, "");
+  static_assert(std::is_same<std::make_integer_sequence<unsigned long long, 0>,
+                             std::integer_sequence<unsigned long long> >::value,
+                "");
+  static_assert(
+      std::is_same<std::make_integer_sequence<unsigned long long, 1>,
+                   std::integer_sequence<unsigned long long, 0> >::value,
+      "");
+  static_assert(
+      std::is_same<std::make_integer_sequence<unsigned long long, 2>,
+                   std::integer_sequence<unsigned long long, 0, 1> >::value,
+      "");
+  static_assert(
+      std::is_same<std::make_integer_sequence<unsigned long long, 3>,
+                   std::integer_sequence<unsigned long long, 0, 1, 2> >::value,
+      "");
 
   return 0;
 }

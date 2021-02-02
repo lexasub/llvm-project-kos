@@ -6,7 +6,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-
 #ifndef LLVM_TRANSFORMS_INSTRUMENTATION_POISON_CHECKING_H
 #define LLVM_TRANSFORMS_INSTRUMENTATION_POISON_CHECKING_H
 
@@ -19,7 +18,6 @@ struct PoisonCheckingPass : public PassInfoMixin<PoisonCheckingPass> {
   PreservedAnalyses run(Function &F, FunctionAnalysisManager &AM);
 };
 
-}
+} // namespace llvm
 
-
-#endif  // LLVM_TRANSFORMS_INSTRUMENTATION_POISON_CHECKING_H
+#endif // LLVM_TRANSFORMS_INSTRUMENTATION_POISON_CHECKING_H

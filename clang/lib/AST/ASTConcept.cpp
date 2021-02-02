@@ -20,17 +20,17 @@
 #include "llvm/ADT/FoldingSet.h"
 using namespace clang;
 
-ASTConstraintSatisfaction::ASTConstraintSatisfaction(const ASTContext &C,
-    const ConstraintSatisfaction &Satisfaction):
-    NumRecords{Satisfaction.Details.size()},
-    IsSatisfied{Satisfaction.IsSatisfied} {
+ASTConstraintSatisfaction::ASTConstraintSatisfaction(
+    const ASTContext &C, const ConstraintSatisfaction &Satisfaction)
+    : NumRecords{Satisfaction.Details.size()}, IsSatisfied{
+                                                   Satisfaction.IsSatisfied} {
   for (unsigned I = 0; I < NumRecords; ++I) {
     auto &Detail = Satisfaction.Details[I];
     if (Detail.second.is<Expr *>())
       new (getTrailingObjects<UnsatisfiedConstraintRecord>() + I)
-         UnsatisfiedConstraintRecord{Detail.first,
-                                     UnsatisfiedConstraintRecord::second_type(
-                                         Detail.second.get<Expr *>())};
+          UnsatisfiedConstraintRecord{Detail.first,
+                                      UnsatisfiedConstraintRecord::second_type(
+                                          Detail.second.get<Expr *>())};
     else {
       auto &SubstitutionDiagnostic =
           *Detail.second.get<std::pair<SourceLocation, StringRef> *>();
@@ -39,28 +39,26 @@ ASTConstraintSatisfaction::ASTConstraintSatisfaction(const ASTContext &C,
       memcpy(Mem, SubstitutionDiagnostic.second.data(), MessageSize);
       auto *NewSubstDiag = new (C) std::pair<SourceLocation, StringRef>(
           SubstitutionDiagnostic.first, StringRef(Mem, MessageSize));
-      new (getTrailingObjects<UnsatisfiedConstraintRecord>() + I)
-         UnsatisfiedConstraintRecord{Detail.first,
-                                     UnsatisfiedConstraintRecord::second_type(
-                                         NewSubstDiag)};
+      new (getTrailingObjects<UnsatisfiedConstraintRecord>() +
+           I) UnsatisfiedConstraintRecord{
+          Detail.first, UnsatisfiedConstraintRecord::second_type(NewSubstDiag)};
     }
   }
 }
 
-
 ASTConstraintSatisfaction *
 ASTConstraintSatisfaction::Create(const ASTContext &C,
                                   const ConstraintSatisfaction &Satisfaction) {
-  std::size_t size =
-      totalSizeToAlloc<UnsatisfiedConstraintRecord>(
-          Satisfaction.Details.size());
+  std::size_t size = totalSizeToAlloc<UnsatisfiedConstraintRecord>(
+      Satisfaction.Details.size());
   void *Mem = C.Allocate(size, alignof(ASTConstraintSatisfaction));
   return new (Mem) ASTConstraintSatisfaction(C, Satisfaction);
 }
 
-void ConstraintSatisfaction::Profile(
-    llvm::FoldingSetNodeID &ID, const ASTContext &C,
-    const NamedDecl *ConstraintOwner, ArrayRef<TemplateArgument> TemplateArgs) {
+void ConstraintSatisfaction::Profile(llvm::FoldingSetNodeID &ID,
+                                     const ASTContext &C,
+                                     const NamedDecl *ConstraintOwner,
+                                     ArrayRef<TemplateArgument> TemplateArgs) {
   ID.AddPointer(ConstraintOwner);
   ID.AddInteger(TemplateArgs.size());
   for (auto &Arg : TemplateArgs)

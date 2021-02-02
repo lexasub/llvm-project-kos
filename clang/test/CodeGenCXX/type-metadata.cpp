@@ -110,7 +110,7 @@ struct D : B, C {
   virtual void h();
 };
 
-}
+} // namespace
 
 A::A() {}
 B::B() {}
@@ -194,8 +194,7 @@ void dh1(D *d) {
 
 // ITANIUM: define internal void @_Z3df2PN12_GLOBAL__N_11DE
 // MS: define internal void @"?df2@@YAXPEAUD@?A0x{{[^@]*}}@@@Z"
-__attribute__((no_sanitize("cfi")))
-void df2(D *d) {
+__attribute__((no_sanitize("cfi"))) void df2(D *d) {
   // CFI-NVT-NOT: call i1 @llvm.type.test
   // CFI-VT: [[P:%[^ ]*]] = call i1 @llvm.type.test
   // CFI-VT: call void @llvm.assume(i1 [[P]])
@@ -204,8 +203,7 @@ void df2(D *d) {
 
 // ITANIUM: define internal void @_Z3df3PN12_GLOBAL__N_11DE
 // MS: define internal void @"?df3@@YAXPEAUD@?A0x{{[^@]*}}@@@Z"
-__attribute__((no_sanitize("address"))) __attribute__((no_sanitize("cfi-vcall")))
-void df3(D *d) {
+__attribute__((no_sanitize("address"))) __attribute__((no_sanitize("cfi-vcall"))) void df3(D *d) {
   // CFI-NVT-NOT: call i1 @llvm.type.test
   // CFI-VT: [[P:%[^ ]*]] = call i1 @llvm.type.test
   // CFI-VT: call void @llvm.assume(i1 [[P]])
@@ -251,7 +249,7 @@ void f(D *d) {
   d->m_fn1();
 }
 
-}
+} // namespace test2
 
 // ITANIUM: [[A16]] = !{i64 16, !"_ZTS1A"}
 // ITANIUM-DIAG: [[ALL16]] = !{i64 16, !"all-vtables"}

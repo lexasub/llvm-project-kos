@@ -2,7 +2,7 @@
 #pragma clang diagnostic ignored "-Weverything"
 
 namespace std {
-  void wibble();
+void wibble();
 }
 
 #pragma clang diagnostic pop

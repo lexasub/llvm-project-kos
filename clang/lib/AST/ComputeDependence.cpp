@@ -408,7 +408,7 @@ ExprDependence clang::computeDependence(OMPArraySectionExpr *E) {
 ExprDependence clang::computeDependence(OMPArrayShapingExpr *E) {
   auto D = E->getBase()->getDependence() |
            toExprDependence(E->getType()->getDependence());
-  for (Expr *Dim: E->getDimensions())
+  for (Expr *Dim : E->getDimensions())
     if (Dim)
       D |= Dim->getDependence();
   return D;

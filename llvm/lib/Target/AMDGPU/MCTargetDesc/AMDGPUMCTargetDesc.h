@@ -41,8 +41,7 @@ MCCodeEmitter *createR600MCCodeEmitter(const MCInstrInfo &MCII,
 MCInstrInfo *createR600MCInstrInfo();
 
 MCCodeEmitter *createSIMCCodeEmitter(const MCInstrInfo &MCII,
-                                     const MCRegisterInfo &MRI,
-                                     MCContext &Ctx);
+                                     const MCRegisterInfo &MRI, MCContext &Ctx);
 
 MCAsmBackend *createAMDGPUAsmBackend(const Target &T,
                                      const MCSubtargetInfo &STI,
@@ -52,7 +51,7 @@ MCAsmBackend *createAMDGPUAsmBackend(const Target &T,
 std::unique_ptr<MCObjectTargetWriter>
 createAMDGPUELFObjectWriter(bool Is64Bit, uint8_t OSABI,
                             bool HasRelocationAddend, uint8_t ABIVersion);
-} // End llvm namespace
+} // namespace llvm
 
 #define GET_REGINFO_ENUM
 #include "AMDGPUGenRegisterInfo.inc"

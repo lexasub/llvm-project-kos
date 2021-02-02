@@ -35,20 +35,20 @@ class DominatorTree;
 
 /// These are the kinds of recurrences that we support.
 enum class RecurKind {
-  None,   ///< Not a recurrence.
-  Add,    ///< Sum of integers.
-  Mul,    ///< Product of integers.
-  Or,     ///< Bitwise or logical OR of integers.
-  And,    ///< Bitwise or logical AND of integers.
-  Xor,    ///< Bitwise or logical XOR of integers.
-  SMin,   ///< Signed integer min implemented in terms of select(cmp()).
-  SMax,   ///< Signed integer max implemented in terms of select(cmp()).
-  UMin,   ///< Unisgned integer min implemented in terms of select(cmp()).
-  UMax,   ///< Unsigned integer max implemented in terms of select(cmp()).
-  FAdd,   ///< Sum of floats.
-  FMul,   ///< Product of floats.
-  FMin,   ///< FP min implemented in terms of select(cmp()).
-  FMax    ///< FP max implemented in terms of select(cmp()).
+  None, ///< Not a recurrence.
+  Add,  ///< Sum of integers.
+  Mul,  ///< Product of integers.
+  Or,   ///< Bitwise or logical OR of integers.
+  And,  ///< Bitwise or logical AND of integers.
+  Xor,  ///< Bitwise or logical XOR of integers.
+  SMin, ///< Signed integer min implemented in terms of select(cmp()).
+  SMax, ///< Signed integer max implemented in terms of select(cmp()).
+  UMin, ///< Unisgned integer min implemented in terms of select(cmp()).
+  UMax, ///< Unsigned integer max implemented in terms of select(cmp()).
+  FAdd, ///< Sum of floats.
+  FMul, ///< Product of floats.
+  FMin, ///< FP min implemented in terms of select(cmp()).
+  FMax  ///< FP max implemented in terms of select(cmp()).
 };
 
 /// The RecurrenceDescriptor is used to identify recurrences variables in a
@@ -79,8 +79,8 @@ public:
   class InstDesc {
   public:
     InstDesc(bool IsRecur, Instruction *I, Instruction *UAI = nullptr)
-        : IsRecurrence(IsRecur), PatternLastInst(I),
-          RecKind(RecurKind::None), UnsafeAlgebraInst(UAI) {}
+        : IsRecurrence(IsRecur), PatternLastInst(I), RecKind(RecurKind::None),
+          UnsafeAlgebraInst(UAI) {}
 
     InstDesc(Instruction *I, RecurKind K, Instruction *UAI = nullptr)
         : IsRecurrence(true), PatternLastInst(I), RecKind(K),
@@ -222,7 +222,9 @@ public:
 
   /// Returns a reference to the instructions used for type-promoting the
   /// recurrence.
-  const SmallPtrSet<Instruction *, 8> &getCastInsts() const { return CastInsts; }
+  const SmallPtrSet<Instruction *, 8> &getCastInsts() const {
+    return CastInsts;
+  }
 
   /// Returns true if all source operands of the recurrence are SExtInsts.
   bool isSigned() const { return IsSigned; }

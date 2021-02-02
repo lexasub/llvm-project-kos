@@ -10,7 +10,7 @@
 
 int main() {
   int result = 0;
-  for(int ix = 0; ix != 10; ++ix) {
+  for (int ix = 0; ix != 10; ++ix) {
     int index = ix;
     result += index; // DexLabel('check')
   }

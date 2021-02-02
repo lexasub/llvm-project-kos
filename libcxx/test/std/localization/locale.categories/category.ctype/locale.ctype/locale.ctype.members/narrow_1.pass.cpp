@@ -17,20 +17,19 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    std::locale l = std::locale::classic();
-    {
-        typedef std::ctype<wchar_t> F;
-        const F& f = std::use_facet<F>(l);
+int main(int, char**) {
+  std::locale l = std::locale::classic();
+  {
+    typedef std::ctype<wchar_t> F;
+    const F& f = std::use_facet<F>(l);
 
-        assert(f.narrow(L' ', '*') == ' ');
-        assert(f.narrow(L'A', '*') == 'A');
-        assert(f.narrow(L'\x07', '*') == '\x07');
-        assert(f.narrow(L'.', '*') == '.');
-        assert(f.narrow(L'a', '*') == 'a');
-        assert(f.narrow(L'1', '*') == '1');
-    }
+    assert(f.narrow(L' ', '*') == ' ');
+    assert(f.narrow(L'A', '*') == 'A');
+    assert(f.narrow(L'\x07', '*') == '\x07');
+    assert(f.narrow(L'.', '*') == '.');
+    assert(f.narrow(L'a', '*') == 'a');
+    assert(f.narrow(L'1', '*') == '1');
+  }
 
   return 0;
 }

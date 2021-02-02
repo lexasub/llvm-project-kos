@@ -222,8 +222,8 @@ VectorIteratorSyntheticFrontEnd::GetChildAtIndex(size_t idx) {
 
 bool VectorIteratorSyntheticFrontEnd::MightHaveChildren() { return true; }
 
-size_t VectorIteratorSyntheticFrontEnd::GetIndexOfChildWithName(
-    ConstString name) {
+size_t
+VectorIteratorSyntheticFrontEnd::GetIndexOfChildWithName(ConstString name) {
   if (name == "item")
     return 0;
   return UINT32_MAX;
@@ -374,8 +374,8 @@ bool LibStdcppSharedPtrSyntheticFrontEnd::Update() { return false; }
 
 bool LibStdcppSharedPtrSyntheticFrontEnd::MightHaveChildren() { return true; }
 
-size_t LibStdcppSharedPtrSyntheticFrontEnd::GetIndexOfChildWithName(
-    ConstString name) {
+size_t
+LibStdcppSharedPtrSyntheticFrontEnd::GetIndexOfChildWithName(ConstString name) {
   if (name == "_M_ptr")
     return 0;
   return UINT32_MAX;

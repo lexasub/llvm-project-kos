@@ -63,8 +63,10 @@ TEST(CPlusPlusLanguage, MethodNameParsing) {
        "XX::(anonymous namespace)::anon_class::anon_func"},
 
       // Lambda
-      {"main::{lambda()#1}::operator()() const::{lambda()#1}::operator()() const",
-       "main::{lambda()#1}::operator()() const::{lambda()#1}", "operator()", "()", "const",
+      {"main::{lambda()#1}::operator()() const::{lambda()#1}::operator()() "
+       "const",
+       "main::{lambda()#1}::operator()() const::{lambda()#1}", "operator()",
+       "()", "const",
        "main::{lambda()#1}::operator()() const::{lambda()#1}::operator()"},
 
       // Function pointers
@@ -173,8 +175,8 @@ TEST(CPlusPlusLanguage, ExtractContextAndIdentifier) {
       "selector:", context, basename));
   EXPECT_FALSE(CPlusPlusLanguage::ExtractContextAndIdentifier(
       "selector:otherField:", context, basename));
-  EXPECT_FALSE(CPlusPlusLanguage::ExtractContextAndIdentifier(
-      "abc::", context, basename));
+  EXPECT_FALSE(CPlusPlusLanguage::ExtractContextAndIdentifier("abc::", context,
+                                                              basename));
   EXPECT_FALSE(CPlusPlusLanguage::ExtractContextAndIdentifier(
       "f<A<B><C>>", context, basename));
 

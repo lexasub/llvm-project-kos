@@ -137,7 +137,8 @@ private:
     Error setProtections(void *block, unsigned Flags) {
       auto I = Allocs.find(block);
       if (I == Allocs.end())
-        return errorCodeToError(orcError(OrcErrorCode::RemoteMProtectAddrUnrecognized));
+        return errorCodeToError(
+            orcError(OrcErrorCode::RemoteMProtectAddrUnrecognized));
       return errorCodeToError(
           sys::Memory::protectMappedMemory(I->second, Flags));
     }
@@ -223,7 +224,7 @@ private:
     auto I = Allocators.find(Id);
     if (I != Allocators.end())
       return errorCodeToError(
-               orcError(OrcErrorCode::RemoteAllocatorIdAlreadyInUse));
+          orcError(OrcErrorCode::RemoteAllocatorIdAlreadyInUse));
     LLVM_DEBUG(dbgs() << "  Created allocator " << Id << "\n");
     Allocators[Id] = Allocator();
     return Error::success();
@@ -233,7 +234,7 @@ private:
     auto I = IndirectStubsOwners.find(Id);
     if (I != IndirectStubsOwners.end())
       return errorCodeToError(
-               orcError(OrcErrorCode::RemoteIndirectStubsOwnerIdAlreadyInUse));
+          orcError(OrcErrorCode::RemoteIndirectStubsOwnerIdAlreadyInUse));
     LLVM_DEBUG(dbgs() << "  Create indirect stubs owner " << Id << "\n");
     IndirectStubsOwners[Id] = ISBlockOwnerList();
     return Error::success();
@@ -252,7 +253,7 @@ private:
     auto I = Allocators.find(Id);
     if (I == Allocators.end())
       return errorCodeToError(
-               orcError(OrcErrorCode::RemoteAllocatorDoesNotExist));
+          orcError(OrcErrorCode::RemoteAllocatorDoesNotExist));
     Allocators.erase(I);
     LLVM_DEBUG(dbgs() << "  Destroyed allocator " << Id << "\n");
     return Error::success();
@@ -262,7 +263,7 @@ private:
     auto I = IndirectStubsOwners.find(Id);
     if (I == IndirectStubsOwners.end())
       return errorCodeToError(
-               orcError(OrcErrorCode::RemoteIndirectStubsOwnerDoesNotExist));
+          orcError(OrcErrorCode::RemoteIndirectStubsOwnerDoesNotExist));
     IndirectStubsOwners.erase(I);
     return Error::success();
   }
@@ -276,7 +277,7 @@ private:
     auto StubOwnerItr = IndirectStubsOwners.find(Id);
     if (StubOwnerItr == IndirectStubsOwners.end())
       return errorCodeToError(
-               orcError(OrcErrorCode::RemoteIndirectStubsOwnerDoesNotExist));
+          orcError(OrcErrorCode::RemoteIndirectStubsOwnerDoesNotExist));
 
     auto IS = LocalIndirectStubsInfo<TargetT>::create(
         NumStubsRequired, sys::Process::getPageSizeEstimate());
@@ -393,7 +394,7 @@ private:
     auto I = Allocators.find(Id);
     if (I == Allocators.end())
       return errorCodeToError(
-               orcError(OrcErrorCode::RemoteAllocatorDoesNotExist));
+          orcError(OrcErrorCode::RemoteAllocatorDoesNotExist));
     auto &Allocator = I->second;
     void *LocalAllocAddr = nullptr;
     if (auto Err = Allocator.allocate(LocalAllocAddr, Size, Align))
@@ -414,7 +415,7 @@ private:
     auto I = Allocators.find(Id);
     if (I == Allocators.end())
       return errorCodeToError(
-               orcError(OrcErrorCode::RemoteAllocatorDoesNotExist));
+          orcError(OrcErrorCode::RemoteAllocatorDoesNotExist));
     auto &Allocator = I->second;
     void *LocalAddr = reinterpret_cast<void *>(static_cast<uintptr_t>(Addr));
     LLVM_DEBUG(dbgs() << "  Allocator " << Id << " set permissions on "

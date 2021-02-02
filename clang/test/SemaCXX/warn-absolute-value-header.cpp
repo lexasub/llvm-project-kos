@@ -2,14 +2,14 @@
 // RUN: %clang_cc1 -triple i686-pc-linux-gnu -fsyntax-only %s -Wabsolute-value -fdiagnostics-parseable-fixits 2>&1 | FileCheck %s
 
 extern "C" {
-  int abs(int);
-  float fabsf(float);
+int abs(int);
+float fabsf(float);
 }
 
 namespace std {
-  int abs(int);
-  float abs(float);
-}
+int abs(int);
+float abs(float);
+} // namespace std
 
 void test(long long ll, double d, int i, float f) {
   // Suggest including cmath

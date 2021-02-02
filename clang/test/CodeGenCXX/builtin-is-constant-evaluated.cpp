@@ -33,8 +33,8 @@ constexpr int f() {
   // CHECK-FN-CG: %add = add nsw i32 %1, 13
   // CHECK-FN-CG: ret i32 %add
   const int n = __builtin_is_constant_evaluated() && std::is_constant_evaluated() ? 13 : 17; // n == 13
-  int m = __builtin_is_constant_evaluated() ? 13 : 17;       // m might be 13 or 17 (see below)
-  char arr[n] = {};                                          // char[13]
+  int m = __builtin_is_constant_evaluated() ? 13 : 17;                                       // m might be 13 or 17 (see below)
+  char arr[n] = {};                                                                          // char[13]
   return m + int(sizeof(arr));
 }
 

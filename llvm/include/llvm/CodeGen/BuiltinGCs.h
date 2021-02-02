@@ -27,6 +27,6 @@ void linkOcamlGCPrinter();
 
 /// Creates an erlang-compatible metadata printer.
 void linkErlangGCPrinter();
-}
+} // namespace llvm
 
 #endif

@@ -13,7 +13,6 @@
 
 #include "lldb/Target/Thread.h"
 
-
 namespace lldb_private {
 
 namespace minidump {

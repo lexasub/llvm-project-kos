@@ -11,9 +11,8 @@
 
 #include <set>
 
-int main(int, char**)
-{
-    std::multiset<int, std::less<int>, std::allocator<long> > ms;
+int main(int, char**) {
+  std::multiset<int, std::less<int>, std::allocator<long> > ms;
 
   return 0;
 }

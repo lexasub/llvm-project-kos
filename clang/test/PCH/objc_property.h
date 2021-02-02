@@ -1,6 +1,5 @@
 /* For use with the objc_property.m PCH test */
-@interface TestProperties
-{
+@interface TestProperties {
   int value;
   float percentage;
 }

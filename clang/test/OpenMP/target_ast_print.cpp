@@ -20,37 +20,52 @@ T tmain(T argc, T *argv) {
   T i, j, a[20], always, close;
 #pragma omp target
   foo();
-#pragma omp target if (target:argc > 0)
+#pragma omp target if (target \
+                       : argc > 0)
   foo();
 #pragma omp target if (C)
   foo();
 #pragma omp target map(i)
   foo();
-#pragma omp target map(a[0:10], i)
+#pragma omp target map(a [0:10], i)
   foo();
-#pragma omp target map(to: i) map(from: j)
+#pragma omp target map(to            \
+                       : i) map(from \
+                                : j)
   foo();
-#pragma omp target map(always,alloc: i)
+#pragma omp target map(always, alloc \
+                       : i)
   foo();
-#pragma omp target map(always from: i)
+#pragma omp target map(always from \
+                       : i)
   foo();
 #pragma omp target map(always)
-  {always++;}
-#pragma omp target map(always,i)
-  {always++;i++;}
-#pragma omp target map(close,alloc: i)
+  { always++; }
+#pragma omp target map(always, i)
+  {
+    always++;
+    i++;
+  }
+#pragma omp target map(close, alloc \
+                       : i)
   foo();
-#pragma omp target map(close from: i)
+#pragma omp target map(close from \
+                       : i)
   foo();
 #pragma omp target map(close)
-  {close++;}
-#pragma omp target map(close,i)
-  {close++;i++;}
+  { close++; }
+#pragma omp target map(close, i)
+  {
+    close++;
+    i++;
+  }
 #pragma omp target nowait
   foo();
-#pragma omp target depend(in : argc, argv[i:argc], a[:])
+#pragma omp target depend(in \
+                          : argc, argv [i:argc], a[:])
   foo();
-#pragma omp target defaultmap(tofrom: scalar)
+#pragma omp target defaultmap(tofrom \
+                              : scalar)
   foo();
   return 0;
 }
@@ -197,135 +212,149 @@ T tmain(T argc, T *argv) {
 // OMP45-LABEL: class S {
 class S {
   void foo() {
-// OMP45-NEXT: void foo() {
+    // OMP45-NEXT: void foo() {
     int a = 0;
-// OMP45-NEXT: int a = 0;
-    #pragma omp target map(this[0])
-// OMP45-NEXT: #pragma omp target map(tofrom: this[0])
-      a++;
-// OMP45-NEXT: a++;
-    #pragma omp target map(this[:1])
-// OMP45-NEXT: #pragma omp target map(tofrom: this[:1])
-      a++;
-// OMP45-NEXT: a++;
-    #pragma omp target map((this)[0])
-// OMP45-NEXT: #pragma omp target map(tofrom: (this)[0])
-      a++;
-// OMP45-NEXT: a++;
-    #pragma omp target map(this[:a])
-// OMP45-NEXT: #pragma omp target map(tofrom: this[:a])
-      a++;
-// OMP45-NEXT: a++;
-    #pragma omp target map(this[a:1])
-// OMP45-NEXT: #pragma omp target map(tofrom: this[a:1])
-      a++;
-// OMP45-NEXT: a++;
-    #pragma omp target map(this[a])
-// OMP45-NEXT: #pragma omp target map(tofrom: this[a])
-      a++;
-// OMP45-NEXT: a++;
+    // OMP45-NEXT: int a = 0;
+#pragma omp target map(this[0])
+    // OMP45-NEXT: #pragma omp target map(tofrom: this[0])
+    a++;
+    // OMP45-NEXT: a++;
+#pragma omp target map(this[:1])
+    // OMP45-NEXT: #pragma omp target map(tofrom: this[:1])
+    a++;
+    // OMP45-NEXT: a++;
+#pragma omp target map((this)[0])
+    // OMP45-NEXT: #pragma omp target map(tofrom: (this)[0])
+    a++;
+    // OMP45-NEXT: a++;
+#pragma omp target map(this[:a])
+    // OMP45-NEXT: #pragma omp target map(tofrom: this[:a])
+    a++;
+    // OMP45-NEXT: a++;
+#pragma omp target map(this [a:1])
+    // OMP45-NEXT: #pragma omp target map(tofrom: this[a:1])
+    a++;
+    // OMP45-NEXT: a++;
+#pragma omp target map(this[a])
+    // OMP45-NEXT: #pragma omp target map(tofrom: this[a])
+    a++;
+    // OMP45-NEXT: a++;
   }
-// OMP45-NEXT: }
+  // OMP45-NEXT: }
 };
 // OMP45-NEXT: };
 
 // OMP45-LABEL: int main(int argc, char **argv) {
-int main (int argc, char **argv) {
+int main(int argc, char **argv) {
   int i, j, a[20], always, close;
 // OMP45-NEXT: int i, j, a[20]
 #pragma omp target
-// OMP45-NEXT: #pragma omp target
+  // OMP45-NEXT: #pragma omp target
   foo();
 // OMP45-NEXT: foo();
 #pragma omp target if (argc > 0)
-// OMP45-NEXT: #pragma omp target if(argc > 0)
+  // OMP45-NEXT: #pragma omp target if(argc > 0)
   foo();
-// OMP45-NEXT: foo();
+  // OMP45-NEXT: foo();
 
-#pragma omp target map(i) if(argc>0)
-// OMP45-NEXT: #pragma omp target map(tofrom: i) if(argc > 0)
+#pragma omp target map(i) if (argc > 0)
+  // OMP45-NEXT: #pragma omp target map(tofrom: i) if(argc > 0)
   foo();
-// OMP45-NEXT: foo();
+  // OMP45-NEXT: foo();
 
 #pragma omp target map(i)
-// OMP45-NEXT: #pragma omp target map(tofrom: i)
+  // OMP45-NEXT: #pragma omp target map(tofrom: i)
   foo();
-// OMP45-NEXT: foo();
+  // OMP45-NEXT: foo();
 
-#pragma omp target map(a[0:10], i)
-// OMP45-NEXT: #pragma omp target map(tofrom: a[0:10],i)
+#pragma omp target map(a [0:10], i)
+  // OMP45-NEXT: #pragma omp target map(tofrom: a[0:10],i)
   foo();
-// OMP45-NEXT: foo();
+  // OMP45-NEXT: foo();
 
-#pragma omp target map(to: i) map(from: j)
-// OMP45-NEXT: #pragma omp target map(to: i) map(from: j)
+#pragma omp target map(to            \
+                       : i) map(from \
+                                : j)
+  // OMP45-NEXT: #pragma omp target map(to: i) map(from: j)
   foo();
-// OMP45-NEXT: foo();
+  // OMP45-NEXT: foo();
 
-#pragma omp target map(always,alloc: i)
-// OMP45-NEXT: #pragma omp target map(always,alloc: i)
+#pragma omp target map(always, alloc \
+                       : i)
+  // OMP45-NEXT: #pragma omp target map(always,alloc: i)
   foo();
-// OMP45-NEXT: foo();
+  // OMP45-NEXT: foo();
 
-#pragma omp target map(always from: i)
-// OMP45-NEXT: #pragma omp target map(always,from: i)
+#pragma omp target map(always from \
+                       : i)
+  // OMP45-NEXT: #pragma omp target map(always,from: i)
   foo();
-// OMP45-NEXT: foo();
+  // OMP45-NEXT: foo();
 
 #pragma omp target map(always)
-// OMP45-NEXT: #pragma omp target map(tofrom: always)
-  {always++;}
-// OMP45-NEXT: {
-// OMP45-NEXT: always++;
-// OMP45-NEXT: }
+  // OMP45-NEXT: #pragma omp target map(tofrom: always)
+  { always++; }
+  // OMP45-NEXT: {
+  // OMP45-NEXT: always++;
+  // OMP45-NEXT: }
 
-#pragma omp target map(always,i)
-// OMP45-NEXT: #pragma omp target map(tofrom: always,i)
-  {always++;i++;}
-// OMP45-NEXT: {
-// OMP45-NEXT: always++;
-// OMP45-NEXT: i++;
-// OMP45-NEXT: }
+#pragma omp target map(always, i)
+  // OMP45-NEXT: #pragma omp target map(tofrom: always,i)
+  {
+    always++;
+    i++;
+  }
+  // OMP45-NEXT: {
+  // OMP45-NEXT: always++;
+  // OMP45-NEXT: i++;
+  // OMP45-NEXT: }
 
-#pragma omp target map(close,alloc: i)
-// OMP45-NEXT: #pragma omp target map(close,alloc: i)
+#pragma omp target map(close, alloc \
+                       : i)
+  // OMP45-NEXT: #pragma omp target map(close,alloc: i)
   foo();
-// OMP45-NEXT: foo();
+  // OMP45-NEXT: foo();
 
-#pragma omp target map(close from: i)
-// OMP45-NEXT: #pragma omp target map(close,from: i)
+#pragma omp target map(close from \
+                       : i)
+  // OMP45-NEXT: #pragma omp target map(close,from: i)
   foo();
-// OMP45-NEXT: foo();
+  // OMP45-NEXT: foo();
 
 #pragma omp target map(close)
-// OMP45-NEXT: #pragma omp target map(tofrom: close)
-  {close++;}
-// OMP45-NEXT: {
-// OMP45-NEXT: close++;
-// OMP45-NEXT: }
+  // OMP45-NEXT: #pragma omp target map(tofrom: close)
+  { close++; }
+  // OMP45-NEXT: {
+  // OMP45-NEXT: close++;
+  // OMP45-NEXT: }
 
-#pragma omp target map(close,i)
-// OMP45-NEXT: #pragma omp target map(tofrom: close,i)
-  {close++;i++;}
-// OMP45-NEXT: {
-// OMP45-NEXT: close++;
-// OMP45-NEXT: i++;
-// OMP45-NEXT: }
+#pragma omp target map(close, i)
+  // OMP45-NEXT: #pragma omp target map(tofrom: close,i)
+  {
+    close++;
+    i++;
+  }
+  // OMP45-NEXT: {
+  // OMP45-NEXT: close++;
+  // OMP45-NEXT: i++;
+  // OMP45-NEXT: }
 
 #pragma omp target nowait
-// OMP45-NEXT: #pragma omp target nowait
+  // OMP45-NEXT: #pragma omp target nowait
   foo();
-// OMP45-NEXT: foo();
+  // OMP45-NEXT: foo();
 
-#pragma omp target depend(in : argc, argv[i:argc], a[:])
-// OMP45-NEXT: #pragma omp target depend(in : argc,argv[i:argc],a[:])
+#pragma omp target depend(in \
+                          : argc, argv [i:argc], a[:])
+  // OMP45-NEXT: #pragma omp target depend(in : argc,argv[i:argc],a[:])
   foo();
-// OMP45-NEXT: foo();
+  // OMP45-NEXT: foo();
 
-#pragma omp target defaultmap(tofrom: scalar)
-// OMP45-NEXT: #pragma omp target defaultmap(tofrom: scalar)
+#pragma omp target defaultmap(tofrom \
+                              : scalar)
+  // OMP45-NEXT: #pragma omp target defaultmap(tofrom: scalar)
   foo();
-// OMP45-NEXT: foo();
+  // OMP45-NEXT: foo();
 
   return tmain<int, 5>(argc, &argc) + tmain<char, 1>(argv[0][0], argv[0]);
 }
@@ -368,102 +397,159 @@ T tmain(T argc, T *argv) {
   T i, j, a[20], always, close;
 #pragma omp target device(argc)
   foo();
-#pragma omp target if (target:argc > 0) device(device_num: C)
+#pragma omp target if (target                        \
+                       : argc > 0) device(device_num \
+                                          : C)
   foo();
-#pragma omp target if (C) device(ancestor: argc)
+#pragma omp target if (C) device(ancestor \
+                                 : argc)
   foo();
 #pragma omp target map(i)
   foo();
-#pragma omp target map(a[0:10], i)
+#pragma omp target map(a [0:10], i)
   foo();
-#pragma omp target map(to: i) map(from: j)
+#pragma omp target map(to            \
+                       : i) map(from \
+                                : j)
   foo();
-#pragma omp target map(always,alloc: i)
+#pragma omp target map(always, alloc \
+                       : i)
   foo();
-#pragma omp target map(always from: i)
+#pragma omp target map(always from \
+                       : i)
   foo();
 #pragma omp target map(always)
-  {always++;}
-#pragma omp target map(always,i)
-  {always++;i++;}
-#pragma omp target map(close,alloc: i)
+  { always++; }
+#pragma omp target map(always, i)
+  {
+    always++;
+    i++;
+  }
+#pragma omp target map(close, alloc \
+                       : i)
   foo();
-#pragma omp target map(close from: i)
+#pragma omp target map(close from \
+                       : i)
   foo();
 #pragma omp target map(close)
-  {close++;}
-#pragma omp target map(close,i)
-  {close++;i++;}
+  { close++; }
+#pragma omp target map(close, i)
+  {
+    close++;
+    i++;
+  }
 #pragma omp target nowait
   foo();
-#pragma omp target depend(in : argc, argv[i:argc], a[:])
+#pragma omp target depend(in \
+                          : argc, argv [i:argc], a[:])
   foo();
-#pragma omp target defaultmap(alloc: scalar)
+#pragma omp target defaultmap(alloc \
+                              : scalar)
   foo();
-#pragma omp target defaultmap(to: scalar)
+#pragma omp target defaultmap(to \
+                              : scalar)
   foo();
-#pragma omp target defaultmap(from: scalar)
+#pragma omp target defaultmap(from \
+                              : scalar)
   foo();
-#pragma omp target defaultmap(tofrom: scalar)
+#pragma omp target defaultmap(tofrom \
+                              : scalar)
   foo();
-#pragma omp target defaultmap(firstprivate: scalar)
+#pragma omp target defaultmap(firstprivate \
+                              : scalar)
   foo();
-#pragma omp target defaultmap(none: scalar)
+#pragma omp target defaultmap(none \
+                              : scalar)
   foo();
-#pragma omp target defaultmap(default: scalar)
+#pragma omp target defaultmap(default \
+                              : scalar)
   foo();
-#pragma omp target defaultmap(alloc: aggregate)
+#pragma omp target defaultmap(alloc \
+                              : aggregate)
   foo();
-#pragma omp target defaultmap(to: aggregate)
+#pragma omp target defaultmap(to \
+                              : aggregate)
   foo();
-#pragma omp target defaultmap(from: aggregate)
+#pragma omp target defaultmap(from \
+                              : aggregate)
   foo();
-#pragma omp target defaultmap(tofrom: aggregate)
+#pragma omp target defaultmap(tofrom \
+                              : aggregate)
   foo();
-#pragma omp target defaultmap(firstprivate: aggregate)
+#pragma omp target defaultmap(firstprivate \
+                              : aggregate)
   foo();
-#pragma omp target defaultmap(none: aggregate)
+#pragma omp target defaultmap(none \
+                              : aggregate)
   foo();
-#pragma omp target defaultmap(default: aggregate)
+#pragma omp target defaultmap(default \
+                              : aggregate)
   foo();
-#pragma omp target defaultmap(alloc: pointer)
+#pragma omp target defaultmap(alloc \
+                              : pointer)
   foo();
-#pragma omp target defaultmap(to: pointer)
+#pragma omp target defaultmap(to \
+                              : pointer)
   foo();
-#pragma omp target defaultmap(from: pointer)
+#pragma omp target defaultmap(from \
+                              : pointer)
   foo();
-#pragma omp target defaultmap(tofrom: pointer)
+#pragma omp target defaultmap(tofrom \
+                              : pointer)
   foo();
-#pragma omp target defaultmap(firstprivate: pointer)
+#pragma omp target defaultmap(firstprivate \
+                              : pointer)
   foo();
-#pragma omp target defaultmap(none: pointer)
+#pragma omp target defaultmap(none \
+                              : pointer)
   foo();
-#pragma omp target defaultmap(default: pointer)
+#pragma omp target defaultmap(default \
+                              : pointer)
   foo();
-#pragma omp target defaultmap(to: scalar) defaultmap(tofrom: pointer)
+#pragma omp target defaultmap(to                          \
+                              : scalar) defaultmap(tofrom \
+                                                   : pointer)
   foo();
-#pragma omp target defaultmap(from: pointer) defaultmap(none: aggregate)
+#pragma omp target defaultmap(from                       \
+                              : pointer) defaultmap(none \
+                                                    : aggregate)
   foo();
-#pragma omp target defaultmap(default: aggregate) defaultmap(alloc: scalar)
+#pragma omp target defaultmap(default                       \
+                              : aggregate) defaultmap(alloc \
+                                                      : scalar)
   foo();
-#pragma omp target defaultmap(alloc: aggregate) defaultmap(firstprivate: scalar) defaultmap(tofrom: pointer)
+#pragma omp target defaultmap(alloc                                               \
+                              : aggregate) defaultmap(firstprivate                \
+                                                      : scalar) defaultmap(tofrom \
+                                                                           : pointer)
   foo();
-#pragma omp target defaultmap(tofrom: aggregate) defaultmap(to: pointer) defaultmap(alloc: scalar)
+#pragma omp target defaultmap(tofrom                                              \
+                              : aggregate) defaultmap(to                          \
+                                                      : pointer) defaultmap(alloc \
+                                                                            : scalar)
   foo();
 
   int *g;
 
-#pragma omp target is_device_ptr(g) defaultmap(none: pointer)
+#pragma omp target is_device_ptr(g) defaultmap(none \
+                                               : pointer)
   g++;
-#pragma omp target private(g) defaultmap(none: pointer)
+#pragma omp target private(g) defaultmap(none \
+                                         : pointer)
   g++;
-#pragma omp target firstprivate(g) defaultmap(none: pointer)
+#pragma omp target firstprivate(g) defaultmap(none \
+                                              : pointer)
   g++;
-#pragma omp target defaultmap(none: scalar) map(to: i)
+#pragma omp target defaultmap(none             \
+                              : scalar) map(to \
+                                            : i)
   i++;
-#pragma omp target defaultmap(none: aggregate) map(to: a)
+#pragma omp target defaultmap(none                \
+                              : aggregate) map(to \
+                                               : a)
   a[3]++;
-#pragma omp target defaultmap(none: scalar)
+#pragma omp target defaultmap(none \
+                              : scalar)
   bar();
 
   return 0;
@@ -774,298 +860,354 @@ T tmain(T argc, T *argv) {
 // OMP5-LABEL: class S {
 class S {
   void foo() {
-// OMP5-NEXT: void foo() {
+    // OMP5-NEXT: void foo() {
     int a = 0;
-// OMP5-NEXT: int a = 0;
-    #pragma omp target map(this[0])
-// OMP5-NEXT: #pragma omp target map(tofrom: this[0])
-      a++;
-// OMP5-NEXT: a++;
-    #pragma omp target map(this[:1])
-// OMP5-NEXT: #pragma omp target map(tofrom: this[:1])
-      a++;
-// OMP5-NEXT: a++;
-    #pragma omp target map((this)[0])
-// OMP5-NEXT: #pragma omp target map(tofrom: (this)[0])
-      a++;
-// OMP5-NEXT: a++;
-    #pragma omp target map(this[:a])
-// OMP5-NEXT: #pragma omp target map(tofrom: this[:a])
-      a++;
-// OMP5-NEXT: a++;
-    #pragma omp target map(this[a:1])
-// OMP5-NEXT: #pragma omp target map(tofrom: this[a:1])
-      a++;
-// OMP5-NEXT: a++;
-    #pragma omp target map(this[a])
-// OMP5-NEXT: #pragma omp target map(tofrom: this[a])
-      a++;
-// OMP5-NEXT: a++;
+    // OMP5-NEXT: int a = 0;
+#pragma omp target map(this[0])
+    // OMP5-NEXT: #pragma omp target map(tofrom: this[0])
+    a++;
+    // OMP5-NEXT: a++;
+#pragma omp target map(this[:1])
+    // OMP5-NEXT: #pragma omp target map(tofrom: this[:1])
+    a++;
+    // OMP5-NEXT: a++;
+#pragma omp target map((this)[0])
+    // OMP5-NEXT: #pragma omp target map(tofrom: (this)[0])
+    a++;
+    // OMP5-NEXT: a++;
+#pragma omp target map(this[:a])
+    // OMP5-NEXT: #pragma omp target map(tofrom: this[:a])
+    a++;
+    // OMP5-NEXT: a++;
+#pragma omp target map(this [a:1])
+    // OMP5-NEXT: #pragma omp target map(tofrom: this[a:1])
+    a++;
+    // OMP5-NEXT: a++;
+#pragma omp target map(this[a])
+    // OMP5-NEXT: #pragma omp target map(tofrom: this[a])
+    a++;
+    // OMP5-NEXT: a++;
   }
-// OMP5-NEXT: }
+  // OMP5-NEXT: }
 };
 // OMP5-NEXT: };
 
 // OMP5-LABEL: int main(int argc, char **argv) {
-int main (int argc, char **argv) {
+int main(int argc, char **argv) {
   int i, j, a[20], always, close;
 // OMP5-NEXT: int i, j, a[20]
 #pragma omp target
-// OMP5-NEXT: #pragma omp target
+  // OMP5-NEXT: #pragma omp target
   foo();
 // OMP5-NEXT: foo();
 #pragma omp target if (argc > 0)
-// OMP5-NEXT: #pragma omp target if(argc > 0)
+  // OMP5-NEXT: #pragma omp target if(argc > 0)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target map(i) if(argc>0)
-// OMP5-NEXT: #pragma omp target map(tofrom: i) if(argc > 0)
+#pragma omp target map(i) if (argc > 0)
+  // OMP5-NEXT: #pragma omp target map(tofrom: i) if(argc > 0)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
 #pragma omp target map(i)
-// OMP5-NEXT: #pragma omp target map(tofrom: i)
+  // OMP5-NEXT: #pragma omp target map(tofrom: i)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target map(a[0:10], i)
-// OMP5-NEXT: #pragma omp target map(tofrom: a[0:10],i)
+#pragma omp target map(a [0:10], i)
+  // OMP5-NEXT: #pragma omp target map(tofrom: a[0:10],i)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target map(to: i) map(from: j)
-// OMP5-NEXT: #pragma omp target map(to: i) map(from: j)
+#pragma omp target map(to            \
+                       : i) map(from \
+                                : j)
+  // OMP5-NEXT: #pragma omp target map(to: i) map(from: j)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target map(always,alloc: i)
-// OMP5-NEXT: #pragma omp target map(always,alloc: i)
+#pragma omp target map(always, alloc \
+                       : i)
+  // OMP5-NEXT: #pragma omp target map(always,alloc: i)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target map(always from: i)
-// OMP5-NEXT: #pragma omp target map(always,from: i)
+#pragma omp target map(always from \
+                       : i)
+  // OMP5-NEXT: #pragma omp target map(always,from: i)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
 #pragma omp target map(always)
-// OMP5-NEXT: #pragma omp target map(tofrom: always)
-  {always++;}
-// OMP5-NEXT: {
-// OMP5-NEXT: always++;
-// OMP5-NEXT: }
+  // OMP5-NEXT: #pragma omp target map(tofrom: always)
+  { always++; }
+  // OMP5-NEXT: {
+  // OMP5-NEXT: always++;
+  // OMP5-NEXT: }
 
-#pragma omp target map(always,i)
-// OMP5-NEXT: #pragma omp target map(tofrom: always,i)
-  {always++;i++;}
-// OMP5-NEXT: {
-// OMP5-NEXT: always++;
-// OMP5-NEXT: i++;
-// OMP5-NEXT: }
+#pragma omp target map(always, i)
+  // OMP5-NEXT: #pragma omp target map(tofrom: always,i)
+  {
+    always++;
+    i++;
+  }
+  // OMP5-NEXT: {
+  // OMP5-NEXT: always++;
+  // OMP5-NEXT: i++;
+  // OMP5-NEXT: }
 
-#pragma omp target map(close,alloc: i)
-// OMP5-NEXT: #pragma omp target map(close,alloc: i)
+#pragma omp target map(close, alloc \
+                       : i)
+  // OMP5-NEXT: #pragma omp target map(close,alloc: i)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target map(close from: i)
-// OMP5-NEXT: #pragma omp target map(close,from: i)
+#pragma omp target map(close from \
+                       : i)
+  // OMP5-NEXT: #pragma omp target map(close,from: i)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
 #pragma omp target map(close)
-// OMP5-NEXT: #pragma omp target map(tofrom: close)
-  {close++;}
-// OMP5-NEXT: {
-// OMP5-NEXT: close++;
-// OMP5-NEXT: }
+  // OMP5-NEXT: #pragma omp target map(tofrom: close)
+  { close++; }
+  // OMP5-NEXT: {
+  // OMP5-NEXT: close++;
+  // OMP5-NEXT: }
 
-#pragma omp target map(close,i)
-// OMP5-NEXT: #pragma omp target map(tofrom: close,i)
-  {close++;i++;}
-// OMP5-NEXT: {
-// OMP5-NEXT: close++;
-// OMP5-NEXT: i++;
-// OMP5-NEXT: }
+#pragma omp target map(close, i)
+  // OMP5-NEXT: #pragma omp target map(tofrom: close,i)
+  {
+    close++;
+    i++;
+  }
+  // OMP5-NEXT: {
+  // OMP5-NEXT: close++;
+  // OMP5-NEXT: i++;
+  // OMP5-NEXT: }
 
 #pragma omp target nowait
-// OMP5-NEXT: #pragma omp target nowait
+  // OMP5-NEXT: #pragma omp target nowait
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target depend(in : argc, argv[i:argc], a[:])
-// OMP5-NEXT: #pragma omp target depend(in : argc,argv[i:argc],a[:])
+#pragma omp target depend(in \
+                          : argc, argv [i:argc], a[:])
+  // OMP5-NEXT: #pragma omp target depend(in : argc,argv[i:argc],a[:])
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target defaultmap(alloc: scalar)
-// OMP5-NEXT: #pragma omp target defaultmap(alloc: scalar)
+#pragma omp target defaultmap(alloc \
+                              : scalar)
+  // OMP5-NEXT: #pragma omp target defaultmap(alloc: scalar)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target defaultmap(to: scalar)
-// OMP5-NEXT: #pragma omp target defaultmap(to: scalar)
+#pragma omp target defaultmap(to \
+                              : scalar)
+  // OMP5-NEXT: #pragma omp target defaultmap(to: scalar)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target defaultmap(from: scalar)
-// OMP5-NEXT: #pragma omp target defaultmap(from: scalar)
+#pragma omp target defaultmap(from \
+                              : scalar)
+  // OMP5-NEXT: #pragma omp target defaultmap(from: scalar)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target defaultmap(tofrom: scalar)
-// OMP5-NEXT: #pragma omp target defaultmap(tofrom: scalar)
+#pragma omp target defaultmap(tofrom \
+                              : scalar)
+  // OMP5-NEXT: #pragma omp target defaultmap(tofrom: scalar)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target defaultmap(firstprivate: scalar)
-// OMP5-NEXT: #pragma omp target defaultmap(firstprivate: scalar)
+#pragma omp target defaultmap(firstprivate \
+                              : scalar)
+  // OMP5-NEXT: #pragma omp target defaultmap(firstprivate: scalar)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target defaultmap(none: scalar)
-// OMP5-NEXT: #pragma omp target defaultmap(none: scalar)
+#pragma omp target defaultmap(none \
+                              : scalar)
+  // OMP5-NEXT: #pragma omp target defaultmap(none: scalar)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target defaultmap(default: scalar)
-// OMP5-NEXT: #pragma omp target defaultmap(default: scalar)
+#pragma omp target defaultmap(default \
+                              : scalar)
+  // OMP5-NEXT: #pragma omp target defaultmap(default: scalar)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target defaultmap(alloc: aggregate)
-// OMP5-NEXT: #pragma omp target defaultmap(alloc: aggregate)
+#pragma omp target defaultmap(alloc \
+                              : aggregate)
+  // OMP5-NEXT: #pragma omp target defaultmap(alloc: aggregate)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target defaultmap(to: aggregate)
-// OMP5-NEXT: #pragma omp target defaultmap(to: aggregate)
+#pragma omp target defaultmap(to \
+                              : aggregate)
+  // OMP5-NEXT: #pragma omp target defaultmap(to: aggregate)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target defaultmap(from: aggregate)
-// OMP5-NEXT: #pragma omp target defaultmap(from: aggregate)
+#pragma omp target defaultmap(from \
+                              : aggregate)
+  // OMP5-NEXT: #pragma omp target defaultmap(from: aggregate)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target defaultmap(tofrom: aggregate)
-// OMP5-NEXT: #pragma omp target defaultmap(tofrom: aggregate)
+#pragma omp target defaultmap(tofrom \
+                              : aggregate)
+  // OMP5-NEXT: #pragma omp target defaultmap(tofrom: aggregate)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target defaultmap(firstprivate: aggregate)
-// OMP5-NEXT: #pragma omp target defaultmap(firstprivate: aggregate)
+#pragma omp target defaultmap(firstprivate \
+                              : aggregate)
+  // OMP5-NEXT: #pragma omp target defaultmap(firstprivate: aggregate)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target defaultmap(none: aggregate)
-// OMP5-NEXT: #pragma omp target defaultmap(none: aggregate)
+#pragma omp target defaultmap(none \
+                              : aggregate)
+  // OMP5-NEXT: #pragma omp target defaultmap(none: aggregate)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target defaultmap(default: aggregate)
-// OMP5-NEXT: #pragma omp target defaultmap(default: aggregate)
+#pragma omp target defaultmap(default \
+                              : aggregate)
+  // OMP5-NEXT: #pragma omp target defaultmap(default: aggregate)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target defaultmap(alloc: pointer)
-// OMP5-NEXT: #pragma omp target defaultmap(alloc: pointer)
+#pragma omp target defaultmap(alloc \
+                              : pointer)
+  // OMP5-NEXT: #pragma omp target defaultmap(alloc: pointer)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target defaultmap(to: pointer)
-// OMP5-NEXT: #pragma omp target defaultmap(to: pointer)
+#pragma omp target defaultmap(to \
+                              : pointer)
+  // OMP5-NEXT: #pragma omp target defaultmap(to: pointer)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target defaultmap(from: pointer)
-// OMP5-NEXT: #pragma omp target defaultmap(from: pointer)
+#pragma omp target defaultmap(from \
+                              : pointer)
+  // OMP5-NEXT: #pragma omp target defaultmap(from: pointer)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target defaultmap(tofrom: pointer)
-// OMP5-NEXT: #pragma omp target defaultmap(tofrom: pointer)
+#pragma omp target defaultmap(tofrom \
+                              : pointer)
+  // OMP5-NEXT: #pragma omp target defaultmap(tofrom: pointer)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target defaultmap(firstprivate: pointer)
-// OMP5-NEXT: #pragma omp target defaultmap(firstprivate: pointer)
+#pragma omp target defaultmap(firstprivate \
+                              : pointer)
+  // OMP5-NEXT: #pragma omp target defaultmap(firstprivate: pointer)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target defaultmap(none: pointer)
-// OMP5-NEXT: #pragma omp target defaultmap(none: pointer)
+#pragma omp target defaultmap(none \
+                              : pointer)
+  // OMP5-NEXT: #pragma omp target defaultmap(none: pointer)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target defaultmap(default: pointer)
-// OMP5-NEXT: #pragma omp target defaultmap(default: pointer)
+#pragma omp target defaultmap(default \
+                              : pointer)
+  // OMP5-NEXT: #pragma omp target defaultmap(default: pointer)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target defaultmap(to: scalar) defaultmap(tofrom: pointer)
-// OMP5-NEXT: #pragma omp target defaultmap(to: scalar) defaultmap(tofrom: pointer)
+#pragma omp target defaultmap(to                          \
+                              : scalar) defaultmap(tofrom \
+                                                   : pointer)
+  // OMP5-NEXT: #pragma omp target defaultmap(to: scalar) defaultmap(tofrom: pointer)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target defaultmap(from: pointer) defaultmap(none: aggregate)
-// OMP5-NEXT: #pragma omp target defaultmap(from: pointer) defaultmap(none: aggregate)
+#pragma omp target defaultmap(from                       \
+                              : pointer) defaultmap(none \
+                                                    : aggregate)
+  // OMP5-NEXT: #pragma omp target defaultmap(from: pointer) defaultmap(none: aggregate)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target defaultmap(default: aggregate) defaultmap(alloc: scalar)
-// OMP5-NEXT: #pragma omp target defaultmap(default: aggregate) defaultmap(alloc: scalar)
+#pragma omp target defaultmap(default                       \
+                              : aggregate) defaultmap(alloc \
+                                                      : scalar)
+  // OMP5-NEXT: #pragma omp target defaultmap(default: aggregate) defaultmap(alloc: scalar)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target defaultmap(alloc: aggregate) defaultmap(firstprivate: scalar) defaultmap(tofrom: pointer)
-// OMP5-NEXT: #pragma omp target defaultmap(alloc: aggregate) defaultmap(firstprivate: scalar) defaultmap(tofrom: pointer)
+#pragma omp target defaultmap(alloc                                               \
+                              : aggregate) defaultmap(firstprivate                \
+                                                      : scalar) defaultmap(tofrom \
+                                                                           : pointer)
+  // OMP5-NEXT: #pragma omp target defaultmap(alloc: aggregate) defaultmap(firstprivate: scalar) defaultmap(tofrom: pointer)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
-#pragma omp target defaultmap(tofrom: aggregate) defaultmap(to: pointer) defaultmap(alloc: scalar)
-// OMP5-NEXT: #pragma omp target defaultmap(tofrom: aggregate) defaultmap(to: pointer) defaultmap(alloc: scalar)
+#pragma omp target defaultmap(tofrom                                              \
+                              : aggregate) defaultmap(to                          \
+                                                      : pointer) defaultmap(alloc \
+                                                                            : scalar)
+  // OMP5-NEXT: #pragma omp target defaultmap(tofrom: aggregate) defaultmap(to: pointer) defaultmap(alloc: scalar)
   foo();
-// OMP5-NEXT: foo();
+  // OMP5-NEXT: foo();
 
   int *g;
-// OMP5-NEXT: int *g;
+  // OMP5-NEXT: int *g;
 
-#pragma omp target is_device_ptr(g) defaultmap(none: pointer)
-// OMP5-NEXT: #pragma omp target is_device_ptr(g) defaultmap(none: pointer)
+#pragma omp target is_device_ptr(g) defaultmap(none \
+                                               : pointer)
+  // OMP5-NEXT: #pragma omp target is_device_ptr(g) defaultmap(none: pointer)
   g++;
-// OMP5-NEXT: g++;
+  // OMP5-NEXT: g++;
 
-#pragma omp target private(g) defaultmap(none: pointer)
-// OMP5-NEXT: #pragma omp target private(g) defaultmap(none: pointer)
+#pragma omp target private(g) defaultmap(none \
+                                         : pointer)
+  // OMP5-NEXT: #pragma omp target private(g) defaultmap(none: pointer)
   g++;
-// OMP5-NEXT: g++;
+  // OMP5-NEXT: g++;
 
-#pragma omp target firstprivate(g) defaultmap(none: pointer)
-// OMP5-NEXT: #pragma omp target firstprivate(g) defaultmap(none: pointer)
+#pragma omp target firstprivate(g) defaultmap(none \
+                                              : pointer)
+  // OMP5-NEXT: #pragma omp target firstprivate(g) defaultmap(none: pointer)
   g++;
-// OMP5-NEXT: g++;
+  // OMP5-NEXT: g++;
 
-#pragma omp target defaultmap(none: scalar) map(to: i)
-// OMP5-NEXT: #pragma omp target defaultmap(none: scalar) map(to: i)
+#pragma omp target defaultmap(none             \
+                              : scalar) map(to \
+                                            : i)
+  // OMP5-NEXT: #pragma omp target defaultmap(none: scalar) map(to: i)
   i++;
-// OMP5-NEXT: i++;
+  // OMP5-NEXT: i++;
 
-#pragma omp target defaultmap(none: aggregate) map(to: a)
-// OMP5-NEXT: #pragma omp target defaultmap(none: aggregate) map(to: a)
+#pragma omp target defaultmap(none                \
+                              : aggregate) map(to \
+                                               : a)
+  // OMP5-NEXT: #pragma omp target defaultmap(none: aggregate) map(to: a)
   a[3]++;
-// OMP5-NEXT: a[3]++;
+  // OMP5-NEXT: a[3]++;
 
-#pragma omp target defaultmap(none: scalar)
-// OMP5-NEXT: #pragma omp target defaultmap(none: scalar)
+#pragma omp target defaultmap(none \
+                              : scalar)
+  // OMP5-NEXT: #pragma omp target defaultmap(none: scalar)
   bar();
 // OMP5-NEXT: bar();
 #pragma omp target defaultmap(none)
   // OMP5-NEXT: #pragma omp target defaultmap(none)
   // OMP5-NEXT: bar();
   bar();
-#pragma omp target allocate(omp_default_mem_alloc:argv) uses_allocators(omp_default_mem_alloc,omp_large_cap_mem_alloc) allocate(omp_large_cap_mem_alloc:argc) private(argc, argv)
+#pragma omp target allocate(omp_default_mem_alloc                                                                                    \
+                            : argv) uses_allocators(omp_default_mem_alloc, omp_large_cap_mem_alloc) allocate(omp_large_cap_mem_alloc \
+                                                                                                             : argc) private(argc, argv)
   // OMP5-NEXT: #pragma omp target allocate(omp_default_mem_alloc: argv) uses_allocators(omp_default_mem_alloc,omp_large_cap_mem_alloc) allocate(omp_large_cap_mem_alloc: argc) private(argc,argv)
   // OMP5-NEXT: bar();
   bar();
@@ -1089,11 +1231,14 @@ void foo() {}
 
 template <typename T, int C>
 T tmain(T argc, T *argv) {
-  #pragma omp target defaultmap(present: scalar)
+#pragma omp target defaultmap(present \
+                              : scalar)
   foo();
-  #pragma omp target defaultmap(present: aggregate)
+#pragma omp target defaultmap(present \
+                              : aggregate)
   foo();
-  #pragma omp target defaultmap(present: pointer)
+#pragma omp target defaultmap(present \
+                              : pointer)
   foo();
 
   return 0;
@@ -1108,19 +1253,22 @@ T tmain(T argc, T *argv) {
 // OMP51-NEXT: foo()
 
 // OMP51-LABEL: int main(int argc, char **argv) {
-int main (int argc, char **argv) {
-#pragma omp target defaultmap(present: scalar)
-// OMP51-NEXT: #pragma omp target defaultmap(present: scalar)
+int main(int argc, char **argv) {
+#pragma omp target defaultmap(present \
+                              : scalar)
+  // OMP51-NEXT: #pragma omp target defaultmap(present: scalar)
   foo();
 // OMP51-NEXT: foo();
-#pragma omp target defaultmap(present: aggregate)
-// OMP51-NEXT: #pragma omp target defaultmap(present: aggregate)
+#pragma omp target defaultmap(present \
+                              : aggregate)
+  // OMP51-NEXT: #pragma omp target defaultmap(present: aggregate)
   foo();
 // OMP51-NEXT: foo();
-#pragma omp target defaultmap(present: pointer)
-// OMP51-NEXT: #pragma omp target defaultmap(present: pointer)
+#pragma omp target defaultmap(present \
+                              : pointer)
+  // OMP51-NEXT: #pragma omp target defaultmap(present: pointer)
   foo();
-// OMP51-NEXT: foo();
+  // OMP51-NEXT: foo();
 
   return tmain<int, 5>(argc, &argc) + tmain<char, 1>(argv[0][0], argv[0]);
 }

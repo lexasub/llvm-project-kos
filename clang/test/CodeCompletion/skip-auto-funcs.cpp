@@ -5,7 +5,8 @@
 template <class T>
 auto not_skipped() {
   int x;
-  if (x = 10) {}
+  if (x = 10) {
+  }
   // Check that this function is not skipped.
   // CHECK: 8:9: warning: using the result of an assignment as a condition without parentheses
   return 1;
@@ -14,16 +15,18 @@ auto not_skipped() {
 template <class T>
 auto lambda_not_skipped = []() {
   int x;
-  if (x = 10) {}
+  if (x = 10) {
+  }
   // Check that this function is not skipped.
   // CHECK: 17:9: warning: using the result of an assignment as a condition without parentheses
   return 1;
 }
 
-template <class T>
-auto skipped() -> T {
+                          template <class T>
+                          auto skipped() -> T {
   int x;
-  if (x = 10) {}
+  if (x = 10) {
+  }
   // Check that this function is skipped.
   // CHECK-NOT: 26:9: warning: using the result of an assignment as a condition without parentheses
   return 1;
@@ -31,16 +34,18 @@ auto skipped() -> T {
 
 auto lambda_skipped = []() -> int {
   int x;
-  if (x = 10) {}
+  if (x = 10) {
+  }
   // This could potentially be skipped, but it isn't at the moment.
   // CHECK: 34:9: warning: using the result of an assignment as a condition without parentheses
   return 1;
 };
 
 template <class T>
-decltype(auto)** not_skipped_ptr() {
+decltype(auto) **not_skipped_ptr() {
   int x;
-  if (x = 10) {}
+  if (x = 10) {
+  }
   // Check that this function is not skipped.
   // CHECK: 43:9: warning: using the result of an assignment as a condition without parentheses
   return T();
@@ -49,7 +54,8 @@ decltype(auto)** not_skipped_ptr() {
 template <class T>
 decltype(auto) not_skipped_decltypeauto() {
   int x;
-  if (x = 10) {}
+  if (x = 10) {
+  }
   // Check that this function is not skipped.
   // CHECK: 52:9: warning: using the result of an assignment as a condition without parentheses
   return 1;

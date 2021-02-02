@@ -8,8 +8,7 @@
 
 #include <stdio.h>
 
-extern "C" __declspec(dllexport)
-int test_function() {
+extern "C" __declspec(dllexport) int test_function() {
   printf("hello world\n");
   // CHECK: hello world
   return 0;

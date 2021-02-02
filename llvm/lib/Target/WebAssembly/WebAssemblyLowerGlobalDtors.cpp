@@ -79,10 +79,9 @@ bool LowerGlobalDtors::runOnModule(Module &M) {
   // Collect the contents of @llvm.global_dtors, ordered by priority. Within a
   // priority, sequences of destructors with the same associated object are
   // recorded so that we can register them as a group.
-  std::map<
-      uint16_t,
-      std::vector<std::pair<Constant *, std::vector<Constant *>>>
-  > DtorFuncs;
+  std::map<uint16_t,
+           std::vector<std::pair<Constant *, std::vector<Constant *>>>>
+      DtorFuncs;
   for (Value *O : InitList->operands()) {
     auto *CS = dyn_cast<ConstantStruct>(O);
     if (!CS)
@@ -102,11 +101,11 @@ bool LowerGlobalDtors::runOnModule(Module &M) {
 
     auto &AtThisPriority = DtorFuncs[PriorityValue];
     if (AtThisPriority.empty() || AtThisPriority.back().first != Associated) {
-        std::vector<Constant *> NewList;
-        NewList.push_back(DtorFunc);
-        AtThisPriority.push_back(std::make_pair(Associated, NewList));
+      std::vector<Constant *> NewList;
+      NewList.push_back(DtorFunc);
+      AtThisPriority.push_back(std::make_pair(Associated, NewList));
     } else {
-        AtThisPriority.back().second.push_back(DtorFunc);
+      AtThisPriority.back().second.push_back(DtorFunc);
     }
   }
   if (DtorFuncs.empty())

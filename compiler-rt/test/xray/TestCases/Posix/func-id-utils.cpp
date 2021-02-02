@@ -15,7 +15,7 @@
 #include <iterator>
 #include <set>
 
-[[clang::xray_always_instrument]] void bar(){}
+[[clang::xray_always_instrument]] void bar() {}
 
 [[clang::xray_always_instrument]] void foo() {
   bar();

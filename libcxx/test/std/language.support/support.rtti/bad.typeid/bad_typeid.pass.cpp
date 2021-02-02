@@ -14,17 +14,16 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    static_assert((std::is_base_of<std::exception, std::bad_typeid>::value),
-                 "std::is_base_of<std::exception, std::bad_typeid>::value");
-    static_assert(std::is_polymorphic<std::bad_typeid>::value,
-                 "std::is_polymorphic<std::bad_typeid>::value");
-    std::bad_typeid b;
-    std::bad_typeid b2 = b;
-    b2 = b;
-    const char* w = b2.what();
-    assert(w);
+int main(int, char**) {
+  static_assert((std::is_base_of<std::exception, std::bad_typeid>::value),
+                "std::is_base_of<std::exception, std::bad_typeid>::value");
+  static_assert(std::is_polymorphic<std::bad_typeid>::value,
+                "std::is_polymorphic<std::bad_typeid>::value");
+  std::bad_typeid b;
+  std::bad_typeid b2 = b;
+  b2 = b;
+  const char* w = b2.what();
+  assert(w);
 
   return 0;
 }

@@ -48,7 +48,7 @@ using namespace llvm::objcarc;
 
 #define DEBUG_TYPE "objc-arc-contract"
 
-STATISTIC(NumPeeps,       "Number of calls peephole-optimized");
+STATISTIC(NumPeeps, "Number of calls peephole-optimized");
 STATISTIC(NumStoreStrongs, "Number objc_storeStrong calls formed");
 
 //===----------------------------------------------------------------------===//
@@ -113,7 +113,7 @@ public:
     initializeObjCARCContractLegacyPassPass(*PassRegistry::getPassRegistry());
   }
 };
-}
+} // namespace
 
 //===----------------------------------------------------------------------===//
 //                               Implementation
@@ -323,8 +323,8 @@ createCallInst(FunctionType *FTy, Value *Func, ArrayRef<Value *> Args,
 }
 
 static CallInst *
-createCallInst(FunctionCallee Func, ArrayRef<Value *> Args, const Twine &NameStr,
-               Instruction *InsertBefore,
+createCallInst(FunctionCallee Func, ArrayRef<Value *> Args,
+               const Twine &NameStr, Instruction *InsertBefore,
                const DenseMap<BasicBlock *, ColorVector> &BlockColors) {
   return createCallInst(Func.getFunctionType(), Func.getCallee(), Args, NameStr,
                         InsertBefore, BlockColors);
@@ -405,7 +405,7 @@ void ObjCARCContract::tryToContractReleaseIntoStoreStrong(
   Type *I8X = PointerType::getUnqual(Type::getInt8Ty(C));
   Type *I8XX = PointerType::getUnqual(I8X);
 
-  Value *Args[] = { Load->getPointerOperand(), New };
+  Value *Args[] = {Load->getPointerOperand(), New};
   if (Args[0]->getType() != I8XX)
     Args[0] = new BitCastInst(Args[0], I8XX, "", Store);
   if (Args[1]->getType() != I8X)
@@ -423,8 +423,10 @@ void ObjCARCContract::tryToContractReleaseIntoStoreStrong(
   LLVM_DEBUG(llvm::dbgs() << "        New Store Strong: " << *StoreStrong
                           << "\n");
 
-  if (&*Iter == Retain) ++Iter;
-  if (&*Iter == Store) ++Iter;
+  if (&*Iter == Retain)
+    ++Iter;
+  if (&*Iter == Store)
+    ++Iter;
   Store->eraseFromParent();
   Release->eraseFromParent();
   EraseInstruction(Retain);
@@ -592,8 +594,9 @@ bool ObjCARCContract::run(Function &F, AAResults *A, DominatorTree *D) {
 
     // Otherwise, try to undo objc-arc-expand.
 
-    // Don't use GetArgRCIdentityRoot because we don't want to look through bitcasts
-    // and such; to do the replacement, the argument must have type i8*.
+    // Don't use GetArgRCIdentityRoot because we don't want to look through
+    // bitcasts and such; to do the replacement, the argument must have type
+    // i8*.
 
     // Function for replacing uses of Arg dominated by Inst.
     auto ReplaceArgUses = [Inst, this](Value *Arg) {
@@ -603,7 +606,7 @@ bool ObjCARCContract::run(Function &F, AAResults *A, DominatorTree *D) {
 
       // Look through the uses of the pointer.
       for (Value::use_iterator UI = Arg->use_begin(), UE = Arg->use_end();
-           UI != UE; ) {
+           UI != UE;) {
         // Increment UI now, because we may unlink its element.
         Use &U = *UI++;
         unsigned OperandNo = U.getOperandNo();

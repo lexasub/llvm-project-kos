@@ -13,8 +13,8 @@
 // FIXME: Test regressed while android bot was disabled. Needs investigation.
 // UNSUPPORTED: android
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #ifdef DYN
 __attribute__((constructor)) void foo() {
@@ -23,7 +23,7 @@ __attribute__((constructor)) void foo() {
   p = malloc(1 << 20);
 #endif
 #ifdef REALLOC
-  p = realloc (0, 1 << 20);
+  p = realloc(0, 1 << 20);
 #endif
   free(p);
 }

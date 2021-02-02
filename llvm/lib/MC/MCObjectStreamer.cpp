@@ -46,12 +46,12 @@ MCAssembler *MCObjectStreamer::getAssemblerPtr() {
   return nullptr;
 }
 
-void MCObjectStreamer::addPendingLabel(MCSymbol* S) {
+void MCObjectStreamer::addPendingLabel(MCSymbol *S) {
   MCSection *CurSection = getCurrentSectionOnly();
   if (CurSection) {
     // Register labels that have not yet been assigned to a Section.
     if (!PendingLabels.empty()) {
-      for (MCSymbol* Sym : PendingLabels)
+      for (MCSymbol *Sym : PendingLabels)
         CurSection->addPendingLabel(Sym);
       PendingLabels.clear();
     }
@@ -74,7 +74,7 @@ void MCObjectStreamer::flushPendingLabels(MCFragment *F, uint64_t FOffset) {
   }
   // Register labels that have not yet been assigned to a Section.
   if (!PendingLabels.empty()) {
-    for (MCSymbol* Sym : PendingLabels)
+    for (MCSymbol *Sym : PendingLabels)
       CurSection->addPendingLabel(Sym, CurSubsectionIdx);
     PendingLabels.clear();
   }
@@ -92,13 +92,13 @@ void MCObjectStreamer::flushPendingLabels() {
   if (!PendingLabels.empty()) {
     MCSection *CurSection = getCurrentSectionOnly();
     assert(CurSection);
-    for (MCSymbol* Sym : PendingLabels)
+    for (MCSymbol *Sym : PendingLabels)
       CurSection->addPendingLabel(Sym, CurSubsectionIdx);
     PendingLabels.clear();
   }
 
   // Assign an empty data fragment to all remaining pending labels.
-  for (MCSection* Section : PendingLabelSections)
+  for (MCSection *Section : PendingLabelSections)
     Section->flushPendingLabels();
 }
 
@@ -111,7 +111,7 @@ void MCObjectStreamer::flushPendingLabels() {
 // is known.
 void MCObjectStreamer::resolvePendingFixups() {
   for (PendingMCFixup &PendingFixup : PendingFixups) {
-    if (!PendingFixup.Sym || PendingFixup.Sym->isUndefined ()) {
+    if (!PendingFixup.Sym || PendingFixup.Sym->isUndefined()) {
       getContext().reportError(PendingFixup.Fixup.getLoc(),
                                "unresolved relocation offset");
       continue;
@@ -234,8 +234,8 @@ void MCObjectStreamer::emitValueImpl(const MCExpr *Value, unsigned Size,
   int64_t AbsValue;
   if (Value->evaluateAsAbsolute(AbsValue, getAssemblerPtr())) {
     if (!isUIntN(8 * Size, AbsValue) && !isIntN(8 * Size, AbsValue)) {
-      getContext().reportError(
-          Loc, "value evaluated as " + Twine(AbsValue) + " is out of range.");
+      getContext().reportError(Loc, "value evaluated as " + Twine(AbsValue) +
+                                        " is out of range.");
       return;
     }
     emitIntValue(AbsValue, Size);
@@ -273,8 +273,8 @@ void MCObjectStreamer::emitLabel(MCSymbol *Symbol, SMLoc Loc) {
   // Otherwise queue the label and set its fragment pointer when we emit the
   // next fragment.
   auto *F = dyn_cast_or_null<MCDataFragment>(getCurrentFragment());
-  if (F && !(getAssembler().isBundlingEnabled() &&
-             getAssembler().getRelaxAll())) {
+  if (F &&
+      !(getAssembler().isBundlingEnabled() && getAssembler().getRelaxAll())) {
     Symbol->setFragment(F);
     Symbol->setOffset(F->getContents().size());
   } else {
@@ -348,8 +348,7 @@ bool MCObjectStreamer::changeSectionImpl(MCSection *Section,
   if (IntSubsection < 0 || IntSubsection > 8192)
     report_fatal_error("Subsection number out of range");
   CurSubsectionIdx = unsigned(IntSubsection);
-  CurInsertionPoint =
-      Section->getSubsectionInsertionPoint(CurSubsectionIdx);
+  CurInsertionPoint = Section->getSubsectionInsertionPoint(CurSubsectionIdx);
   return Created;
 }
 
@@ -433,7 +432,7 @@ void MCObjectStreamer::emitInstToFragment(const MCInst &Inst,
 
 #ifndef NDEBUG
 static const char *const BundlingNotImplementedMsg =
-  "Aligned bundling is not implemented for this object format";
+    "Aligned bundling is not implemented for this object format";
 #endif
 
 void MCObjectStreamer::emitBundleAlignMode(unsigned AlignPow2) {
@@ -580,8 +579,7 @@ void MCObjectStreamer::emitBytes(StringRef Data) {
 }
 
 void MCObjectStreamer::emitValueToAlignment(unsigned ByteAlignment,
-                                            int64_t Value,
-                                            unsigned ValueSize,
+                                            int64_t Value, unsigned ValueSize,
                                             unsigned MaxBytesToEmit) {
   if (MaxBytesToEmit == 0)
     MaxBytesToEmit = ByteAlignment;
@@ -600,8 +598,7 @@ void MCObjectStreamer::emitCodeAlignment(unsigned ByteAlignment,
 }
 
 void MCObjectStreamer::emitValueToOffset(const MCExpr *Offset,
-                                         unsigned char Value,
-                                         SMLoc Loc) {
+                                         unsigned char Value, SMLoc Loc) {
   insert(new MCOrgFragment(*Offset, Value, Loc));
 }
 
@@ -610,8 +607,8 @@ void MCObjectStreamer::emitDTPRel32Value(const MCExpr *Value) {
   MCDataFragment *DF = getOrCreateDataFragment();
   flushPendingLabels(DF, DF->getContents().size());
 
-  DF->getFixups().push_back(MCFixup::create(DF->getContents().size(),
-                                            Value, FK_DTPRel_4));
+  DF->getFixups().push_back(
+      MCFixup::create(DF->getContents().size(), Value, FK_DTPRel_4));
   DF->getContents().resize(DF->getContents().size() + 4, 0);
 }
 
@@ -620,8 +617,8 @@ void MCObjectStreamer::emitDTPRel64Value(const MCExpr *Value) {
   MCDataFragment *DF = getOrCreateDataFragment();
   flushPendingLabels(DF, DF->getContents().size());
 
-  DF->getFixups().push_back(MCFixup::create(DF->getContents().size(),
-                                            Value, FK_DTPRel_8));
+  DF->getFixups().push_back(
+      MCFixup::create(DF->getContents().size(), Value, FK_DTPRel_8));
   DF->getContents().resize(DF->getContents().size() + 8, 0);
 }
 
@@ -630,8 +627,8 @@ void MCObjectStreamer::emitTPRel32Value(const MCExpr *Value) {
   MCDataFragment *DF = getOrCreateDataFragment();
   flushPendingLabels(DF, DF->getContents().size());
 
-  DF->getFixups().push_back(MCFixup::create(DF->getContents().size(),
-                                            Value, FK_TPRel_4));
+  DF->getFixups().push_back(
+      MCFixup::create(DF->getContents().size(), Value, FK_TPRel_4));
   DF->getContents().resize(DF->getContents().size() + 4, 0);
 }
 
@@ -640,8 +637,8 @@ void MCObjectStreamer::emitTPRel64Value(const MCExpr *Value) {
   MCDataFragment *DF = getOrCreateDataFragment();
   flushPendingLabels(DF, DF->getContents().size());
 
-  DF->getFixups().push_back(MCFixup::create(DF->getContents().size(),
-                                            Value, FK_TPRel_8));
+  DF->getFixups().push_back(
+      MCFixup::create(DF->getContents().size(), Value, FK_TPRel_8));
   DF->getContents().resize(DF->getContents().size() + 8, 0);
 }
 
@@ -671,27 +668,24 @@ getOffsetAndDataFragment(const MCSymbol &Symbol, uint32_t &RelocOffset,
   if (Symbol.isVariable()) {
     const MCExpr *SymbolExpr = Symbol.getVariableValue();
     MCValue OffsetVal;
-    if(!SymbolExpr->evaluateAsRelocatable(OffsetVal, nullptr, nullptr))
-      return std::make_pair(false,
-                            std::string("symbol in .reloc offset is not "
-                                        "relocatable"));
+    if (!SymbolExpr->evaluateAsRelocatable(OffsetVal, nullptr, nullptr))
+      return std::make_pair(false, std::string("symbol in .reloc offset is not "
+                                               "relocatable"));
     if (OffsetVal.isAbsolute()) {
       RelocOffset = OffsetVal.getConstant();
       MCFragment *Fragment = Symbol.getFragment();
       // FIXME Support symbols with no DF. For example:
       // .reloc .data, ENUM_VALUE, <some expr>
       if (!Fragment || Fragment->getKind() != MCFragment::FT_Data)
-        return std::make_pair(false,
-                              std::string("symbol in offset has no data "
-                                          "fragment"));
+        return std::make_pair(false, std::string("symbol in offset has no data "
+                                                 "fragment"));
       DF = cast<MCDataFragment>(Fragment);
       return None;
     }
 
     if (OffsetVal.getSymB())
-      return std::make_pair(false,
-                            std::string(".reloc symbol offset is not "
-                                        "representable"));
+      return std::make_pair(false, std::string(".reloc symbol offset is not "
+                                               "representable"));
 
     const MCSymbolRefExpr &SRE = cast<MCSymbolRefExpr>(*OffsetVal.getSymA());
     if (!SRE.getSymbol().isDefined())
@@ -708,9 +702,8 @@ getOffsetAndDataFragment(const MCSymbol &Symbol, uint32_t &RelocOffset,
     // FIXME Support symbols with no DF. For example:
     // .reloc .data, ENUM_VALUE, <some expr>
     if (!Fragment || Fragment->getKind() != MCFragment::FT_Data)
-      return std::make_pair(false,
-                            std::string("symbol in offset has no data "
-                                        "fragment"));
+      return std::make_pair(false, std::string("symbol in offset has no data "
+                                               "fragment"));
     RelocOffset = SRE.getSymbol().getOffset() + OffsetVal.getConstant();
     DF = cast<MCDataFragment>(Fragment);
   } else {
@@ -719,9 +712,8 @@ getOffsetAndDataFragment(const MCSymbol &Symbol, uint32_t &RelocOffset,
     // FIXME Support symbols with no DF. For example:
     // .reloc .data, ENUM_VALUE, <some expr>
     if (!Fragment || Fragment->getKind() != MCFragment::FT_Data)
-      return std::make_pair(false,
-                            std::string("symbol in offset has no data "
-                                        "fragment"));
+      return std::make_pair(false, std::string("symbol in offset has no data "
+                                               "fragment"));
     DF = cast<MCDataFragment>(Fragment);
   }
   return None;
@@ -769,9 +761,8 @@ MCObjectStreamer::emitRelocDirective(const MCExpr &Offset, StringRef Name,
     if (Error != None)
       return Error;
 
-    DF->getFixups().push_back(
-        MCFixup::create(SymbolOffset + OffsetVal.getConstant(),
-                        Expr, Kind, Loc));
+    DF->getFixups().push_back(MCFixup::create(
+        SymbolOffset + OffsetVal.getConstant(), Expr, Kind, Loc));
     return None;
   }
 

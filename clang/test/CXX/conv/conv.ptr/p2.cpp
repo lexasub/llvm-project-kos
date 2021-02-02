@@ -2,6 +2,6 @@
 // expected-no-diagnostics
 
 namespace pr7801 {
-  extern void* x[];
-  void* dummy[] = { &x };
-}
+extern void *x[];
+void *dummy[] = {&x};
+} // namespace pr7801

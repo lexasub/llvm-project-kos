@@ -87,7 +87,7 @@ struct Create : Base {
     sortKeysBy(Keys, Access());
 
     while (State.KeepRunningBatch(TableSize * NumTables)) {
-      std::vector<std::set<uint64_t>> Sets(NumTables);
+      std::vector<std::set<uint64_t> > Sets(NumTables);
       for (auto K : Keys) {
         for (auto& Set : Sets) {
           benchmark::DoNotOptimize(Set.insert(K));
@@ -96,9 +96,7 @@ struct Create : Base {
     }
   }
 
-  std::string name() const {
-    return "BM_Create" + Access::name() + baseName();
-  }
+  std::string name() const { return "BM_Create" + Access::name() + baseName(); }
 };
 
 template <class Hit, class Access>
@@ -223,7 +221,7 @@ struct IterateBeginEnd : Base {
   std::string name() const { return "BM_IterateBeginEnd" + baseName(); }
 };
 
-}  // namespace
+} // namespace
 
 int main(int argc, char** argv) {
   benchmark::Initialize(&argc, argv);
@@ -234,12 +232,12 @@ int main(int argc, char** argv) {
   const std::vector<size_t> NumTables{1, 10, 100, 1000, 10000, 100000, 1000000};
 
   makeCartesianProductBenchmark<Create, AllAccessPattern>(TableSize, NumTables);
-  makeCartesianProductBenchmark<Find, AllHitTypes, AllAccessPattern>(
-      TableSize, NumTables);
+  makeCartesianProductBenchmark<Find, AllHitTypes, AllAccessPattern>(TableSize,
+                                                                     NumTables);
   makeCartesianProductBenchmark<FindNeEnd, AllHitTypes, AllAccessPattern>(
       TableSize, NumTables);
-  makeCartesianProductBenchmark<InsertHit, AllAccessPattern>(
-      TableSize, NumTables);
+  makeCartesianProductBenchmark<InsertHit, AllAccessPattern>(TableSize,
+                                                             NumTables);
   makeCartesianProductBenchmark<InsertMissAndErase, AllAccessPattern>(
       TableSize, NumTables);
   makeCartesianProductBenchmark<IterateRangeFor>(TableSize, NumTables);

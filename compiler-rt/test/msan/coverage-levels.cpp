@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
 #endif
   if (argc == 0)
     sink = 0;
-  return *(volatile int*)&var;
+  return *(volatile int *)&var;
 }
 
 // CHECK_WARN: WARNING: MemorySanitizer: use-of-uninitialized-value

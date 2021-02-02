@@ -13,7 +13,7 @@ void *Thread(void *p) {
     fprintf(stderr, "FAILED 0 rec=%d\n", rec);
     exit(1);
   }
-  *(int*)varaddr = 42;
+  *(int *)varaddr = 42;
   barrier_wait(&barrier);
   barrier_wait(&barrier);
   __tsan_java_mutex_lock_rec(lockaddr, rec);
@@ -31,13 +31,13 @@ int main() {
   const int kBlockSize = 16;
   __tsan_java_alloc(jheap, kBlockSize);
   varaddr = jheap;
-  *(int*)varaddr = 0;
+  *(int *)varaddr = 0;
   lockaddr = jheap + 8;
   pthread_t th;
   pthread_create(&th, 0, Thread, 0);
   barrier_wait(&barrier);
   __tsan_java_mutex_lock(lockaddr);
-  *(int*)varaddr = 43;
+  *(int *)varaddr = 43;
   __tsan_java_mutex_unlock(lockaddr);
   barrier_wait(&barrier);
   pthread_join(th, 0);

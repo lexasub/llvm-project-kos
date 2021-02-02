@@ -9,7 +9,6 @@
 // RUN: clang-format -style="{BasedOnStyle: LLVM, ForEachMacros: ['M1', 'M2', 'M3', 'M4']}" -dump-config %s | \
 // RUN:   FileCheck %s --check-prefixes=CHECK,MORE-ENTRIES-THAN-DEFAULT
 
-
 // CHECK-LABEL:   ForEachMacros:
 // DEFAULT-NEXT:  {{^  }}- foreach
 // DEFAULT-NEXT:  {{^  }}- Q_FOREACH

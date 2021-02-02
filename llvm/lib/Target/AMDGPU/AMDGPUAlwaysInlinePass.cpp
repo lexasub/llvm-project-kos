@@ -23,11 +23,9 @@ using namespace llvm;
 
 namespace {
 
-static cl::opt<bool> StressCalls(
-  "amdgpu-stress-function-calls",
-  cl::Hidden,
-  cl::desc("Force all functions to be noinline"),
-  cl::init(false));
+static cl::opt<bool> StressCalls("amdgpu-stress-function-calls", cl::Hidden,
+                                 cl::desc("Force all functions to be noinline"),
+                                 cl::init(false));
 
 class AMDGPUAlwaysInline : public ModulePass {
   bool GlobalOpt;
@@ -35,13 +33,13 @@ class AMDGPUAlwaysInline : public ModulePass {
 public:
   static char ID;
 
-  AMDGPUAlwaysInline(bool GlobalOpt = false) :
-    ModulePass(ID), GlobalOpt(GlobalOpt) { }
+  AMDGPUAlwaysInline(bool GlobalOpt = false)
+      : ModulePass(ID), GlobalOpt(GlobalOpt) {}
   bool runOnModule(Module &M) override;
 
   void getAnalysisUsage(AnalysisUsage &AU) const override {
     AU.setPreservesAll();
- }
+  }
 };
 
 } // End anonymous namespace
@@ -86,13 +84,13 @@ recursivelyVisitUsers(GlobalValue &GV,
 }
 
 static bool alwaysInlineImpl(Module &M, bool GlobalOpt) {
-  std::vector<GlobalAlias*> AliasesToRemove;
+  std::vector<GlobalAlias *> AliasesToRemove;
 
   SmallPtrSet<Function *, 8> FuncsToAlwaysInline;
   SmallPtrSet<Function *, 8> FuncsToNoInline;
 
   for (GlobalAlias &A : M.aliases()) {
-    if (Function* F = dyn_cast<Function>(A.getAliasee())) {
+    if (Function *F = dyn_cast<Function>(A.getAliasee())) {
       A.replaceAllUsesWith(F);
       AliasesToRemove.push_back(&A);
     }
@@ -102,7 +100,7 @@ static bool alwaysInlineImpl(Module &M, bool GlobalOpt) {
   }
 
   if (GlobalOpt) {
-    for (GlobalAlias* A : AliasesToRemove) {
+    for (GlobalAlias *A : AliasesToRemove) {
       A->eraseFromParent();
     }
   }
@@ -127,8 +125,8 @@ static bool alwaysInlineImpl(Module &M, bool GlobalOpt) {
   }
 
   if (!AMDGPUTargetMachine::EnableFunctionCalls || StressCalls) {
-    auto IncompatAttr
-      = StressCalls ? Attribute::AlwaysInline : Attribute::NoInline;
+    auto IncompatAttr =
+        StressCalls ? Attribute::AlwaysInline : Attribute::NoInline;
 
     for (Function &F : M) {
       if (!F.isDeclaration() && !F.use_empty() &&

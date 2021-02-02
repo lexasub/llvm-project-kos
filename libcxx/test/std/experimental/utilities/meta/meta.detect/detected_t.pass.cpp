@@ -17,33 +17,32 @@
 namespace ex = std::experimental;
 
 template <typename T>
-  using callFoo = decltype(std::declval<T&>().Foo());
+using callFoo = decltype(std::declval<T&>().Foo());
 
 struct yesFoo {
-    int Foo() { return 0; }
+  int Foo() { return 0; }
 };
 
-struct noFoo {
-};
+struct noFoo {};
 
 struct wrongFoo {
-    std::string Foo() { return ""; }
+  std::string Foo() { return ""; }
 };
 
 struct convertibleFoo {
-    long Foo() { return 0; }
+  long Foo() { return 0; }
 };
-
 
 template <typename T, typename Res>
 void test() {
-    static_assert( std::is_same<Res, typename ex::detected_t<callFoo, T>>::value, "" );
+  static_assert(std::is_same<Res, typename ex::detected_t<callFoo, T> >::value,
+                "");
 }
 
 int main(int, char**) {
-    test<yesFoo, int>();
-    test<noFoo, ex::nonesuch>();  // lookup failure returns nonesuch
-    test<wrongFoo, std::string>();
+  test<yesFoo, int>();
+  test<noFoo, ex::nonesuch>(); // lookup failure returns nonesuch
+  test<wrongFoo, std::string>();
 
   return 0;
 }

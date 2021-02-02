@@ -10,11 +10,11 @@
 // so for now it got that wrong.
 
 poly16_t test_poly8(poly8_t pIn) {
-// CHECK-UNSIGNED-POLY: @_Z10test_poly8h
-// CHECK-UNSIGNED-POLY: zext i8 {{.*}} to i16
+  // CHECK-UNSIGNED-POLY: @_Z10test_poly8h
+  // CHECK-UNSIGNED-POLY: zext i8 {{.*}} to i16
 
-// CHECK-SIGNED-POLY: @_Z10test_poly8a
-// CHECK-SIGNED-POLY: sext i8 {{.*}} to i16
+  // CHECK-SIGNED-POLY: @_Z10test_poly8a
+  // CHECK-SIGNED-POLY: sext i8 {{.*}} to i16
 
   return pIn;
 }

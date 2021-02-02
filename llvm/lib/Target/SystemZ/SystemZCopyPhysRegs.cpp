@@ -28,7 +28,7 @@ using namespace llvm;
 #define SYSTEMZ_COPYPHYSREGS_NAME "SystemZ Copy Physregs"
 
 namespace llvm {
-  void initializeSystemZCopyPhysRegsPass(PassRegistry&);
+void initializeSystemZCopyPhysRegsPass(PassRegistry &);
 }
 
 namespace {
@@ -36,8 +36,7 @@ namespace {
 class SystemZCopyPhysRegs : public MachineFunctionPass {
 public:
   static char ID;
-  SystemZCopyPhysRegs()
-    : MachineFunctionPass(ID), TII(nullptr), MRI(nullptr) {
+  SystemZCopyPhysRegs() : MachineFunctionPass(ID), TII(nullptr), MRI(nullptr) {
     initializeSystemZCopyPhysRegsPass(*PassRegistry::getPassRegistry());
   }
 
@@ -47,7 +46,6 @@ public:
   void getAnalysisUsage(AnalysisUsage &AU) const override;
 
 private:
-
   bool visitMBB(MachineBasicBlock &MBB);
 
   const SystemZInstrInfo *TII;
@@ -77,7 +75,7 @@ bool SystemZCopyPhysRegs::visitMBB(MachineBasicBlock &MBB) {
   // default register class of the type. It is therefore necessary to create
   // the target copy instructions before regalloc instead of in copyPhysReg().
   for (MachineBasicBlock::iterator MBBI = MBB.begin(), E = MBB.end();
-       MBBI != E; ) {
+       MBBI != E;) {
     MachineInstr *MI = &*MBBI++;
     if (!MI->isCopy())
       continue;
@@ -94,9 +92,8 @@ bool SystemZCopyPhysRegs::visitMBB(MachineBasicBlock &MBB) {
         BuildMI(MBB, MI, DL, TII->get(SystemZ::EAR), Tmp).addReg(SrcReg);
       MI->getOperand(1).setReg(Tmp);
       Modified = true;
-    }
-    else if (SrcReg.isVirtual() &&
-             SystemZ::AR32BitRegClass.contains(DstReg)) {
+    } else if (SrcReg.isVirtual() &&
+               SystemZ::AR32BitRegClass.contains(DstReg)) {
       Register Tmp = MRI->createVirtualRegister(&SystemZ::GR32BitRegClass);
       MI->getOperand(0).setReg(Tmp);
       BuildMI(MBB, MBBI, DL, TII->get(SystemZ::SAR), DstReg).addReg(Tmp);
@@ -117,4 +114,3 @@ bool SystemZCopyPhysRegs::runOnMachineFunction(MachineFunction &F) {
 
   return Modified;
 }
-

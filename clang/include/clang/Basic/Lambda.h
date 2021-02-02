@@ -12,18 +12,13 @@
 ///
 //===----------------------------------------------------------------------===//
 
-
 #ifndef LLVM_CLANG_BASIC_LAMBDA_H
 #define LLVM_CLANG_BASIC_LAMBDA_H
 
 namespace clang {
 
 /// The default, if any, capture method for a lambda expression.
-enum LambdaCaptureDefault {
-  LCD_None,
-  LCD_ByCopy,
-  LCD_ByRef
-};
+enum LambdaCaptureDefault { LCD_None, LCD_ByCopy, LCD_ByRef };
 
 /// The different capture forms in a lambda introducer
 ///
@@ -31,11 +26,11 @@ enum LambdaCaptureDefault {
 /// by reference.  C++1y also allows "init-capture", where the initializer
 /// is an expression.
 enum LambdaCaptureKind {
-  LCK_This,   ///< Capturing the \c *this object by reference
+  LCK_This,     ///< Capturing the \c *this object by reference
   LCK_StarThis, /// < Capturing the \c *this object by copy
-  LCK_ByCopy, ///< Capturing by copy (a.k.a., by value)
-  LCK_ByRef,  ///< Capturing by reference
-  LCK_VLAType ///< Capturing variable-length array type
+  LCK_ByCopy,   ///< Capturing by copy (a.k.a., by value)
+  LCK_ByRef,    ///< Capturing by reference
+  LCK_VLAType   ///< Capturing variable-length array type
 };
 
 } // end namespace clang

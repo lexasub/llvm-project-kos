@@ -11,8 +11,6 @@
 
 #include <stdint.h>
 
-
-
 namespace lldb_private {
 
 namespace StringConvert {

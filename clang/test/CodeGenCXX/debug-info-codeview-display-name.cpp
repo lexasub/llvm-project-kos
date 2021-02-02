@@ -15,15 +15,17 @@
 // RUN:    grep -E 'DISubprogram|DICompositeType' | sed -e 's/.*name: "\([^"]*\)".*/"\1"/' | \
 // RUN:    FileCheck %s --check-prefixes=CHECK,UNQUAL
 
-void freefunc() { }
+void freefunc() {}
 // CHECK-DAG: "freefunc"
 
 namespace N {
-  int b() { return 0; }
+int b() { return 0; }
 // CHECK-DAG: "b"
-  namespace { void func() { } }
+namespace {
+void func() {}
+} // namespace
 // CHECK-DAG: "func"
-}
+} // namespace N
 
 void _c(void) {
   N::func();
@@ -32,25 +34,24 @@ void _c(void) {
 
 struct foo {
   int operator+(int);
-  foo(){}
-// CHECK-DAG: "foo"
+  foo() {}
+  // CHECK-DAG: "foo"
 
-  ~foo(){}
-// CHECK-DAG: "~foo"
+  ~foo() {}
+  // CHECK-DAG: "~foo"
 
-  foo(int i){}
-// CHECK-DAG: "foo"
+  foo(int i) {}
+  // CHECK-DAG: "foo"
 
-  foo(char *q){}
-// CHECK-DAG: "foo"
+  foo(char *q) {}
+  // CHECK-DAG: "foo"
 
-  static foo* static_method() { return 0; }
-// CHECK-DAG: "static_method"
-
+  static foo *static_method() { return 0; }
+  // CHECK-DAG: "static_method"
 };
 
 void use_foo() {
-  foo f1, f2(1), f3((char*)0);
+  foo f1, f2(1), f3((char *)0);
   foo::static_method();
 }
 
@@ -70,8 +71,8 @@ struct OverloadedNewDelete {
 
 void *OverloadedNewDelete::operator new(__SIZE_TYPE__ s) { return 0; }
 void *OverloadedNewDelete::operator new[](__SIZE_TYPE__ s) { return 0; }
-void OverloadedNewDelete::operator delete(void *) { }
-void OverloadedNewDelete::operator delete[](void *) { }
+void OverloadedNewDelete::operator delete(void *) {}
+void OverloadedNewDelete::operator delete[](void *) {}
 int OverloadedNewDelete::operator+(int x) { return x; };
 
 // CHECK-DAG: "operator new"
@@ -86,8 +87,12 @@ void fn_tmpl() {}
 template void fn_tmpl<int, freefunc>();
 // CHECK-DAG: "fn_tmpl<int,&freefunc>"
 
-template <typename A, typename B, typename C> struct ClassTemplate { A a; B b; C c; };
-ClassTemplate<char, short, ClassTemplate<int, int, int> > f;
+template <typename A, typename B, typename C> struct ClassTemplate {
+  A a;
+  B b;
+  C c;
+};
+ClassTemplate<char, short, ClassTemplate<int, int, int>> f;
 // This will only show up in normal debug builds.  The space in `> >` is
 // important for compatibility with Windows debuggers, so it should always be
 // there when generating CodeView.

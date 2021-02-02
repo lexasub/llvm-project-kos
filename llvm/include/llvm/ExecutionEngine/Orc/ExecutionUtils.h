@@ -54,7 +54,7 @@ public:
   /// the function stripped away.
   struct Element {
     Element(unsigned Priority, Function *Func, Value *Data)
-      : Priority(Priority), Func(Func), Data(Data) {}
+        : Priority(Priority), Func(Func), Data(Data) {}
 
     unsigned Priority;
     Function *Func;
@@ -72,7 +72,7 @@ public:
   bool operator!=(const CtorDtorIterator &Other) const;
 
   /// Pre-increment iterator.
-  CtorDtorIterator& operator++();
+  CtorDtorIterator &operator++();
 
   /// Post-increment iterator.
   CtorDtorIterator operator++(int);

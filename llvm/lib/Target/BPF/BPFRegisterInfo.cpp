@@ -26,8 +26,7 @@
 #include "BPFGenRegisterInfo.inc"
 using namespace llvm;
 
-BPFRegisterInfo::BPFRegisterInfo()
-    : BPFGenRegisterInfo(BPF::R0) {}
+BPFRegisterInfo::BPFRegisterInfo() : BPFGenRegisterInfo(BPF::R0) {}
 
 const MCPhysReg *
 BPFRegisterInfo::getCalleeSavedRegs(const MachineFunction *MF) const {
@@ -41,15 +40,15 @@ BitVector BPFRegisterInfo::getReservedRegs(const MachineFunction &MF) const {
   return Reserved;
 }
 
-static void WarnSize(int Offset, MachineFunction &MF, DebugLoc& DL)
-{
+static void WarnSize(int Offset, MachineFunction &MF, DebugLoc &DL) {
   if (Offset <= -512) {
-      const Function &F = MF.getFunction();
-      DiagnosticInfoUnsupported DiagStackSize(F,
-          "Looks like the BPF stack limit of 512 bytes is exceeded. "
-          "Please move large on stack variables into BPF per-cpu array map.\n",
-          DL);
-      F.getContext().diagnose(DiagStackSize);
+    const Function &F = MF.getFunction();
+    DiagnosticInfoUnsupported DiagStackSize(
+        F,
+        "Looks like the BPF stack limit of 512 bytes is exceeded. "
+        "Please move large on stack variables into BPF per-cpu array map.\n",
+        DL);
+    F.getContext().diagnose(DiagStackSize);
   }
 }
 
@@ -107,11 +106,8 @@ void BPFRegisterInfo::eliminateFrameIndex(MachineBasicBlock::iterator II,
     //    ADD_ri <target_reg>, imm
     Register reg = MI.getOperand(i - 1).getReg();
 
-    BuildMI(MBB, ++II, DL, TII.get(BPF::MOV_rr), reg)
-        .addReg(FrameReg);
-    BuildMI(MBB, II, DL, TII.get(BPF::ADD_ri), reg)
-        .addReg(reg)
-        .addImm(Offset);
+    BuildMI(MBB, ++II, DL, TII.get(BPF::MOV_rr), reg).addReg(FrameReg);
+    BuildMI(MBB, II, DL, TII.get(BPF::ADD_ri), reg).addReg(reg).addImm(Offset);
 
     // Remove FI_ri instruction
     MI.eraseFromParent();

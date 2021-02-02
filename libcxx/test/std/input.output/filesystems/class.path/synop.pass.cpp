@@ -22,7 +22,6 @@
 
 #include "test_macros.h"
 
-
 int main(int, char**) {
   using namespace fs;
 #ifdef _WIN32
@@ -32,7 +31,8 @@ int main(int, char**) {
 #endif
   ASSERT_SAME_TYPE(path::string_type, std::basic_string<path::value_type>);
   {
-    ASSERT_SAME_TYPE(const path::value_type, decltype(path::preferred_separator));
+    ASSERT_SAME_TYPE(const path::value_type,
+                     decltype(path::preferred_separator));
 #ifdef _WIN32
     static_assert(path::preferred_separator == '\\', "");
 #else

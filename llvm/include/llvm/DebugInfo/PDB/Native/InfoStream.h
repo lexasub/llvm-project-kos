@@ -68,7 +68,7 @@ private:
 
   NamedStreamMap NamedStreams;
 };
-}
-}
+} // namespace pdb
+} // namespace llvm
 
 #endif

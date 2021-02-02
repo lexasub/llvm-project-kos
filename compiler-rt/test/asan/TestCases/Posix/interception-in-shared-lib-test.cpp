@@ -9,8 +9,7 @@
 #include <string.h>
 
 #if defined(SHARED_LIB)
-extern "C"
-void my_memset(void *p, size_t sz) {
+extern "C" void my_memset(void *p, size_t sz) {
   memset(p, 0, sz);
 }
 #else

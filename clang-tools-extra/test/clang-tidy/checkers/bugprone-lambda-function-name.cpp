@@ -1,6 +1,6 @@
 // RUN: %check_clang_tidy %s bugprone-lambda-function-name %t
 
-void Foo(const char* a, const char* b, int c) {}
+void Foo(const char *a, const char *b, int c) {}
 
 #define FUNC_MACRO Foo(__func__, "", 0)
 #define FUNCTION_MACRO Foo(__FUNCTION__, "", 0)

@@ -29,6 +29,6 @@ void NORETURN reportAllocationSizeTooBig(uptr UserSize, uptr TotalSize,
 void NORETURN reportRssLimitExceeded();
 void NORETURN reportOutOfMemory(uptr RequestedSize);
 
-}  // namespace __scudo
+} // namespace __scudo
 
-#endif  // SCUDO_ERRORS_H_
+#endif // SCUDO_ERRORS_H_

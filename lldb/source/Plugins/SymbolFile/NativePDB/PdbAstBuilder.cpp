@@ -202,7 +202,8 @@ static bool IsAnonymousNamespaceName(llvm::StringRef name) {
   return name == "`anonymous namespace'" || name == "`anonymous-namespace'";
 }
 
-PdbAstBuilder::PdbAstBuilder(ObjectFile &obj, PdbIndex &index, TypeSystemClang &clang)
+PdbAstBuilder::PdbAstBuilder(ObjectFile &obj, PdbIndex &index,
+                             TypeSystemClang &clang)
     : m_index(index), m_clang(clang) {
   BuildParentMap();
 }
@@ -458,7 +459,8 @@ clang::Decl *PdbAstBuilder::GetOrCreateSymbolForId(PdbCompilandSymId id) {
   }
 }
 
-llvm::Optional<CompilerDecl> PdbAstBuilder::GetOrCreateDeclForUid(PdbSymUid uid) {
+llvm::Optional<CompilerDecl>
+PdbAstBuilder::GetOrCreateDeclForUid(PdbSymUid uid) {
   if (clang::Decl *result = TryGetDecl(uid))
     return ToCompilerDecl(*result);
 
@@ -1349,7 +1351,7 @@ PdbAstBuilder::ToCompilerDeclContext(clang::DeclContext &context) {
   return m_clang.CreateDeclContext(&context);
 }
 
-clang::Decl * PdbAstBuilder::FromCompilerDecl(CompilerDecl decl) {
+clang::Decl *PdbAstBuilder::FromCompilerDecl(CompilerDecl decl) {
   return ClangUtil::GetDecl(decl);
 }
 

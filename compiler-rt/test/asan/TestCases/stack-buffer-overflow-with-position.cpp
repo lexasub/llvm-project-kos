@@ -13,10 +13,10 @@
 // RUN: not %run %t 63 2>&1 | FileCheck --check-prefix=CHECK-63 %s
 // RUN: not %run %t 73 2>&1 | FileCheck --check-prefix=CHECK-73 %s
 // RUN: not %run %t 74 2>&1 | FileCheck --check-prefix=CHECK-74 %s
-#include <string.h>
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
+#include <string.h>
 int main(int argc, char **argv) {
   assert(argc >= 2);
   int idx = atoi(argv[1]);
@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
   char *p = AAA + idx;
   printf("AAA: %p\ny: %p\nz: %p\np: %p\n", AAA, BBB, CCC, p);
   // make sure BBB and CCC are not removed;
-  return *(short*)(p) + BBB[argc % 2] + CCC[argc % 2];
+  return *(short *)(p) + BBB[argc % 2] + CCC[argc % 2];
 }
 // CHECK-m2: 'AAA'{{.*}} <== {{.*}}underflows this variable
 // CHECK-m1: 'AAA'{{.*}} <== {{.*}}partially underflows this variable

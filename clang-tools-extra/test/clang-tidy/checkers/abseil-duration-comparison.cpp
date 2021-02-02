@@ -114,10 +114,9 @@ void f() {
   bool some_condition;
   int very_very_very_very_long_variable_name;
   absl::Duration SomeDuration;
-  if (some_condition && very_very_very_very_long_variable_name
-     < absl::ToDoubleSeconds(SomeDuration)) {
-  // CHECK-MESSAGES: [[@LINE-2]]:25: warning: perform comparison in the duration domain [abseil-duration-comparison]
-  // CHECK-FIXES: if (some_condition && absl::Seconds(very_very_very_very_long_variable_name) < SomeDuration) {
+  if (some_condition && very_very_very_very_long_variable_name < absl::ToDoubleSeconds(SomeDuration)) {
+    // CHECK-MESSAGES: [[@LINE-2]]:25: warning: perform comparison in the duration domain [abseil-duration-comparison]
+    // CHECK-FIXES: if (some_condition && absl::Seconds(very_very_very_very_long_variable_name) < SomeDuration) {
     return;
   }
 

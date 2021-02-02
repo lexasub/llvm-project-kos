@@ -7,9 +7,9 @@
 // internal data structures (e.g. Glibc global data).
 // UNSUPPORTED: x86,i686,arm
 
+#include "sanitizer_common/print_address.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "sanitizer_common/print_address.h"
 
 int main() {
   // maxsize in primary allocator is always less than this (1 << 25).

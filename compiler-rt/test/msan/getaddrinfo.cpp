@@ -1,9 +1,9 @@
 // RUN: %clangxx_msan -O0 %s -o %t && %run %t
 
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <netdb.h>
 #include <stdlib.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 
 void poison_stack_ahead() {
   char buf[100000];

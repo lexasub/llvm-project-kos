@@ -20,7 +20,6 @@
 #include "test_macros.h"
 #include "check_bitmask_types.h"
 
-
 constexpr fs::perm_options ME(int val) {
   return static_cast<fs::perm_options>(val);
 }
@@ -33,17 +32,15 @@ int main(int, char**) {
   typedef std::underlying_type<E>::type UT;
   static_assert(!std::is_convertible<E, UT>::value, "");
 
-  LIBCPP_ONLY(static_assert(std::is_same<UT, unsigned char >::value, "")); // Implementation detail
+  LIBCPP_ONLY(static_assert(std::is_same<UT, unsigned char>::value,
+                            "")); // Implementation detail
 
   typedef check_bitmask_type<E, E::replace, E::nofollow> BitmaskTester;
   assert(BitmaskTester::check());
 
-  static_assert(
-        E::replace  == ME(1) &&
-        E::add      == ME(2) &&
-        E::remove   == ME(4) &&
-        E::nofollow == ME(8),
-        "Expected enumeration values do not match");
+  static_assert(E::replace == ME(1) && E::add == ME(2) && E::remove == ME(4) &&
+                    E::nofollow == ME(8),
+                "Expected enumeration values do not match");
 
   return 0;
 }

@@ -10,7 +10,7 @@ struct AttributeSection {
   unsigned Tag;
   unsigned Value;
 
-  AttributeSection(unsigned tag, unsigned value) : Tag(tag), Value(value) { }
+  AttributeSection(unsigned tag, unsigned value) : Tag(tag), Value(value) {}
 
   void write(raw_ostream &OS) {
     OS.flush();
@@ -21,18 +21,17 @@ struct AttributeSection {
     OS << "aeabi" << '\0';
     OS << (uint8_t)1 << (uint8_t)7 << (uint8_t)0 << (uint8_t)0 << (uint8_t)0;
     OS << (uint8_t)Tag << (uint8_t)Value;
-
   }
 };
 
-bool testBuildAttr(unsigned Tag, unsigned Value,
-                   unsigned ExpectedTag, unsigned ExpectedValue) {
+bool testBuildAttr(unsigned Tag, unsigned Value, unsigned ExpectedTag,
+                   unsigned ExpectedValue) {
   std::string buffer;
   raw_string_ostream OS(buffer);
   AttributeSection Section(Tag, Value);
   Section.write(OS);
-  ArrayRef<uint8_t> Bytes(
-    reinterpret_cast<const uint8_t*>(OS.str().c_str()), OS.str().size());
+  ArrayRef<uint8_t> Bytes(reinterpret_cast<const uint8_t *>(OS.str().c_str()),
+                          OS.str().size());
 
   ARMAttributeParser Parser;
   cantFail(Parser.parse(Bytes, support::little));
@@ -61,98 +60,92 @@ TEST(ARMAttributeParser, UnknownCPU_arch) {
 TEST(CPUArchBuildAttr, testBuildAttr) {
   EXPECT_TRUE(testTagString(6, "Tag_CPU_arch"));
 
-  EXPECT_TRUE(testBuildAttr(6, 0, ARMBuildAttrs::CPU_arch,
-                            ARMBuildAttrs::Pre_v4));
-  EXPECT_TRUE(testBuildAttr(6, 1, ARMBuildAttrs::CPU_arch,
-                            ARMBuildAttrs::v4));
-  EXPECT_TRUE(testBuildAttr(6, 2, ARMBuildAttrs::CPU_arch,
-                               ARMBuildAttrs::v4T));
-  EXPECT_TRUE(testBuildAttr(6, 3, ARMBuildAttrs::CPU_arch,
-                               ARMBuildAttrs::v5T));
-  EXPECT_TRUE(testBuildAttr(6, 4, ARMBuildAttrs::CPU_arch,
-                               ARMBuildAttrs::v5TE));
-  EXPECT_TRUE(testBuildAttr(6, 5, ARMBuildAttrs::CPU_arch,
-                               ARMBuildAttrs::v5TEJ));
-  EXPECT_TRUE(testBuildAttr(6, 6, ARMBuildAttrs::CPU_arch,
-                               ARMBuildAttrs::v6));
-  EXPECT_TRUE(testBuildAttr(6, 7, ARMBuildAttrs::CPU_arch,
-                               ARMBuildAttrs::v6KZ));
-  EXPECT_TRUE(testBuildAttr(6, 8, ARMBuildAttrs::CPU_arch,
-                               ARMBuildAttrs::v6T2));
-  EXPECT_TRUE(testBuildAttr(6, 9, ARMBuildAttrs::CPU_arch,
-                               ARMBuildAttrs::v6K));
-  EXPECT_TRUE(testBuildAttr(6, 10, ARMBuildAttrs::CPU_arch,
-                               ARMBuildAttrs::v7));
-  EXPECT_TRUE(testBuildAttr(6, 11, ARMBuildAttrs::CPU_arch,
-                               ARMBuildAttrs::v6_M));
-  EXPECT_TRUE(testBuildAttr(6, 12, ARMBuildAttrs::CPU_arch,
-                               ARMBuildAttrs::v6S_M));
-  EXPECT_TRUE(testBuildAttr(6, 13, ARMBuildAttrs::CPU_arch,
-                               ARMBuildAttrs::v7E_M));
-  EXPECT_TRUE(testBuildAttr(6, 14, ARMBuildAttrs::CPU_arch,
-                               ARMBuildAttrs::v8_A));
-  EXPECT_TRUE(testBuildAttr(6, 15, ARMBuildAttrs::CPU_arch,
-                               ARMBuildAttrs::v8_R));
-  EXPECT_TRUE(testBuildAttr(6, 16, ARMBuildAttrs::CPU_arch,
-                               ARMBuildAttrs::v8_M_Base));
-  EXPECT_TRUE(testBuildAttr(6, 17, ARMBuildAttrs::CPU_arch,
-                               ARMBuildAttrs::v8_M_Main));
+  EXPECT_TRUE(
+      testBuildAttr(6, 0, ARMBuildAttrs::CPU_arch, ARMBuildAttrs::Pre_v4));
+  EXPECT_TRUE(testBuildAttr(6, 1, ARMBuildAttrs::CPU_arch, ARMBuildAttrs::v4));
+  EXPECT_TRUE(testBuildAttr(6, 2, ARMBuildAttrs::CPU_arch, ARMBuildAttrs::v4T));
+  EXPECT_TRUE(testBuildAttr(6, 3, ARMBuildAttrs::CPU_arch, ARMBuildAttrs::v5T));
+  EXPECT_TRUE(
+      testBuildAttr(6, 4, ARMBuildAttrs::CPU_arch, ARMBuildAttrs::v5TE));
+  EXPECT_TRUE(
+      testBuildAttr(6, 5, ARMBuildAttrs::CPU_arch, ARMBuildAttrs::v5TEJ));
+  EXPECT_TRUE(testBuildAttr(6, 6, ARMBuildAttrs::CPU_arch, ARMBuildAttrs::v6));
+  EXPECT_TRUE(
+      testBuildAttr(6, 7, ARMBuildAttrs::CPU_arch, ARMBuildAttrs::v6KZ));
+  EXPECT_TRUE(
+      testBuildAttr(6, 8, ARMBuildAttrs::CPU_arch, ARMBuildAttrs::v6T2));
+  EXPECT_TRUE(testBuildAttr(6, 9, ARMBuildAttrs::CPU_arch, ARMBuildAttrs::v6K));
+  EXPECT_TRUE(testBuildAttr(6, 10, ARMBuildAttrs::CPU_arch, ARMBuildAttrs::v7));
+  EXPECT_TRUE(
+      testBuildAttr(6, 11, ARMBuildAttrs::CPU_arch, ARMBuildAttrs::v6_M));
+  EXPECT_TRUE(
+      testBuildAttr(6, 12, ARMBuildAttrs::CPU_arch, ARMBuildAttrs::v6S_M));
+  EXPECT_TRUE(
+      testBuildAttr(6, 13, ARMBuildAttrs::CPU_arch, ARMBuildAttrs::v7E_M));
+  EXPECT_TRUE(
+      testBuildAttr(6, 14, ARMBuildAttrs::CPU_arch, ARMBuildAttrs::v8_A));
+  EXPECT_TRUE(
+      testBuildAttr(6, 15, ARMBuildAttrs::CPU_arch, ARMBuildAttrs::v8_R));
+  EXPECT_TRUE(
+      testBuildAttr(6, 16, ARMBuildAttrs::CPU_arch, ARMBuildAttrs::v8_M_Base));
+  EXPECT_TRUE(
+      testBuildAttr(6, 17, ARMBuildAttrs::CPU_arch, ARMBuildAttrs::v8_M_Main));
   EXPECT_TRUE(testBuildAttr(6, 21, ARMBuildAttrs::CPU_arch,
-                               ARMBuildAttrs::v8_1_M_Main));
+                            ARMBuildAttrs::v8_1_M_Main));
 }
 
 TEST(CPUArchProfileBuildAttr, testBuildAttr) {
   EXPECT_TRUE(testTagString(7, "Tag_CPU_arch_profile"));
   EXPECT_TRUE(testBuildAttr(7, 'A', ARMBuildAttrs::CPU_arch_profile,
-                               ARMBuildAttrs::ApplicationProfile));
+                            ARMBuildAttrs::ApplicationProfile));
   EXPECT_TRUE(testBuildAttr(7, 'R', ARMBuildAttrs::CPU_arch_profile,
-                               ARMBuildAttrs::RealTimeProfile));
+                            ARMBuildAttrs::RealTimeProfile));
   EXPECT_TRUE(testBuildAttr(7, 'M', ARMBuildAttrs::CPU_arch_profile,
-                               ARMBuildAttrs::MicroControllerProfile));
+                            ARMBuildAttrs::MicroControllerProfile));
   EXPECT_TRUE(testBuildAttr(7, 'S', ARMBuildAttrs::CPU_arch_profile,
-                               ARMBuildAttrs::SystemProfile));
+                            ARMBuildAttrs::SystemProfile));
 }
 
 TEST(ARMISABuildAttr, testBuildAttr) {
   EXPECT_TRUE(testTagString(8, "Tag_ARM_ISA_use"));
   EXPECT_TRUE(testBuildAttr(8, 0, ARMBuildAttrs::ARM_ISA_use,
-                               ARMBuildAttrs::Not_Allowed));
-  EXPECT_TRUE(testBuildAttr(8, 1, ARMBuildAttrs::ARM_ISA_use,
-                               ARMBuildAttrs::Allowed));
+                            ARMBuildAttrs::Not_Allowed));
+  EXPECT_TRUE(
+      testBuildAttr(8, 1, ARMBuildAttrs::ARM_ISA_use, ARMBuildAttrs::Allowed));
 }
 
 TEST(ThumbISABuildAttr, testBuildAttr) {
   EXPECT_TRUE(testTagString(9, "Tag_THUMB_ISA_use"));
   EXPECT_TRUE(testBuildAttr(9, 0, ARMBuildAttrs::THUMB_ISA_use,
-                               ARMBuildAttrs::Not_Allowed));
+                            ARMBuildAttrs::Not_Allowed));
   EXPECT_TRUE(testBuildAttr(9, 1, ARMBuildAttrs::THUMB_ISA_use,
-                               ARMBuildAttrs::Allowed));
+                            ARMBuildAttrs::Allowed));
   EXPECT_TRUE(testBuildAttr(9, 2, ARMBuildAttrs::THUMB_ISA_use,
-                               ARMBuildAttrs::AllowThumb32));
+                            ARMBuildAttrs::AllowThumb32));
   EXPECT_TRUE(testBuildAttr(9, 3, ARMBuildAttrs::THUMB_ISA_use,
-                               ARMBuildAttrs::AllowThumbDerived));
+                            ARMBuildAttrs::AllowThumbDerived));
 }
 
 TEST(FPArchBuildAttr, testBuildAttr) {
   EXPECT_TRUE(testTagString(10, "Tag_FP_arch"));
-  EXPECT_TRUE(testBuildAttr(10, 0, ARMBuildAttrs::FP_arch,
-                               ARMBuildAttrs::Not_Allowed));
-  EXPECT_TRUE(testBuildAttr(10, 1, ARMBuildAttrs::FP_arch,
-                               ARMBuildAttrs::Allowed));
-  EXPECT_TRUE(testBuildAttr(10, 2, ARMBuildAttrs::FP_arch,
-                               ARMBuildAttrs::AllowFPv2));
-  EXPECT_TRUE(testBuildAttr(10, 3, ARMBuildAttrs::FP_arch,
-                               ARMBuildAttrs::AllowFPv3A));
-  EXPECT_TRUE(testBuildAttr(10, 4, ARMBuildAttrs::FP_arch,
-                               ARMBuildAttrs::AllowFPv3B));
-  EXPECT_TRUE(testBuildAttr(10, 5, ARMBuildAttrs::FP_arch,
-                               ARMBuildAttrs::AllowFPv4A));
-  EXPECT_TRUE(testBuildAttr(10, 6, ARMBuildAttrs::FP_arch,
-                               ARMBuildAttrs::AllowFPv4B));
+  EXPECT_TRUE(
+      testBuildAttr(10, 0, ARMBuildAttrs::FP_arch, ARMBuildAttrs::Not_Allowed));
+  EXPECT_TRUE(
+      testBuildAttr(10, 1, ARMBuildAttrs::FP_arch, ARMBuildAttrs::Allowed));
+  EXPECT_TRUE(
+      testBuildAttr(10, 2, ARMBuildAttrs::FP_arch, ARMBuildAttrs::AllowFPv2));
+  EXPECT_TRUE(
+      testBuildAttr(10, 3, ARMBuildAttrs::FP_arch, ARMBuildAttrs::AllowFPv3A));
+  EXPECT_TRUE(
+      testBuildAttr(10, 4, ARMBuildAttrs::FP_arch, ARMBuildAttrs::AllowFPv3B));
+  EXPECT_TRUE(
+      testBuildAttr(10, 5, ARMBuildAttrs::FP_arch, ARMBuildAttrs::AllowFPv4A));
+  EXPECT_TRUE(
+      testBuildAttr(10, 6, ARMBuildAttrs::FP_arch, ARMBuildAttrs::AllowFPv4B));
   EXPECT_TRUE(testBuildAttr(10, 7, ARMBuildAttrs::FP_arch,
-                               ARMBuildAttrs::AllowFPARMv8A));
+                            ARMBuildAttrs::AllowFPARMv8A));
   EXPECT_TRUE(testBuildAttr(10, 8, ARMBuildAttrs::FP_arch,
-                               ARMBuildAttrs::AllowFPARMv8B));
+                            ARMBuildAttrs::AllowFPARMv8B));
 }
 
 TEST(WMMXBuildAttr, testBuildAttr) {
@@ -209,8 +202,8 @@ TEST(T2EEBuildAttr, testBuildAttr) {
   EXPECT_TRUE(testTagString(66, "Tag_T2EE_use"));
   EXPECT_TRUE(testBuildAttr(66, 0, ARMBuildAttrs::T2EE_use,
                             ARMBuildAttrs::Not_Allowed));
-  EXPECT_TRUE(testBuildAttr(66, 1, ARMBuildAttrs::T2EE_use,
-                            ARMBuildAttrs::Allowed));
+  EXPECT_TRUE(
+      testBuildAttr(66, 1, ARMBuildAttrs::T2EE_use, ARMBuildAttrs::Allowed));
 }
 
 TEST(VirtualizationBuildAttr, testBuildAttr) {
@@ -237,10 +230,10 @@ TEST(DivBuildAttr, testBuildAttr) {
   EXPECT_TRUE(testTagString(44, "Tag_DIV_use"));
   EXPECT_TRUE(testBuildAttr(44, 0, ARMBuildAttrs::DIV_use,
                             ARMBuildAttrs::AllowDIVIfExists));
-  EXPECT_TRUE(testBuildAttr(44, 1, ARMBuildAttrs::DIV_use,
-                            ARMBuildAttrs::DisallowDIV));
-  EXPECT_TRUE(testBuildAttr(44, 2, ARMBuildAttrs::DIV_use,
-                            ARMBuildAttrs::AllowDIVExt));
+  EXPECT_TRUE(
+      testBuildAttr(44, 1, ARMBuildAttrs::DIV_use, ARMBuildAttrs::DisallowDIV));
+  EXPECT_TRUE(
+      testBuildAttr(44, 2, ARMBuildAttrs::DIV_use, ARMBuildAttrs::AllowDIVExt));
 }
 
 TEST(PCS_ConfigBuildAttr, testBuildAttr) {

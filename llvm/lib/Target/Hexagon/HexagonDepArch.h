@@ -8,7 +8,6 @@
 // Automatically generated file, do not edit!
 //===----------------------------------------------------------------------===//
 
-
 #ifndef LLVM_LIB_TARGET_HEXAGON_HEXAGONDEPARCH_H
 #define LLVM_LIB_TARGET_HEXAGON_HEXAGONDEPARCH_H
 
@@ -23,13 +22,17 @@ enum class ArchEnum { NoArch, Generic, V5, V55, V60, V62, V65, V66, V67 };
 static constexpr unsigned ArchValsNumArray[] = {5, 55, 60, 62, 65, 66, 67};
 static constexpr ArrayRef<unsigned> ArchValsNum(ArchValsNumArray);
 
-static constexpr StringLiteral ArchValsTextArray[] = { "v5", "v55", "v60", "v62", "v65", "v66", "v67" };
+static constexpr StringLiteral ArchValsTextArray[] = {
+    "v5", "v55", "v60", "v62", "v65", "v66", "v67"};
 static constexpr ArrayRef<StringLiteral> ArchValsText(ArchValsTextArray);
 
-static constexpr StringLiteral CpuValsTextArray[] = { "hexagonv5", "hexagonv55", "hexagonv60", "hexagonv62", "hexagonv65", "hexagonv66", "hexagonv67", "hexagonv67t" };
+static constexpr StringLiteral CpuValsTextArray[] = {
+    "hexagonv5",  "hexagonv55", "hexagonv60", "hexagonv62",
+    "hexagonv65", "hexagonv66", "hexagonv67", "hexagonv67t"};
 static constexpr ArrayRef<StringLiteral> CpuValsText(CpuValsTextArray);
 
-static constexpr StringLiteral CpuNickTextArray[] = { "v5", "v55", "v60", "v62", "v65", "v66", "v67", "v67t" };
+static constexpr StringLiteral CpuNickTextArray[] = {
+    "v5", "v55", "v60", "v62", "v65", "v66", "v67", "v67t"};
 static constexpr ArrayRef<StringLiteral> CpuNickText(CpuNickTextArray);
 
 static const std::map<std::string, ArchEnum> CpuTable{
@@ -44,5 +47,5 @@ static const std::map<std::string, ArchEnum> CpuTable{
     {"hexagonv67t", Hexagon::ArchEnum::V67},
 };
 } // namespace Hexagon
-} // namespace llvm;
-#endif  // LLVM_LIB_TARGET_HEXAGON_HEXAGONDEPARCH_H
+} // namespace llvm
+#endif // LLVM_LIB_TARGET_HEXAGON_HEXAGONDEPARCH_H

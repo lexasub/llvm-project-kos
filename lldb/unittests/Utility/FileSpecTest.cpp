@@ -292,45 +292,34 @@ TEST(FileSpecTest, FormatFileSpec) {
 
 TEST(FileSpecTest, IsRelative) {
   llvm::StringRef not_relative[] = {
-    "/",
-    "/a",
-    "/a/",
-    "/a/b",
-    "/a/b/",
-    "//",
-    "//a/",
-    "//a/b",
-    "//a/b/",
-    "~",
-    "~/",
-    "~/a",
-    "~/a/",
-    "~/a/b"
-    "~/a/b/",
-    "/foo/.",
-    "/foo/..",
-    "/foo/../",
-    "/foo/../.",
+      "/",
+      "/a",
+      "/a/",
+      "/a/b",
+      "/a/b/",
+      "//",
+      "//a/",
+      "//a/b",
+      "//a/b/",
+      "~",
+      "~/",
+      "~/a",
+      "~/a/",
+      "~/a/b"
+      "~/a/b/",
+      "/foo/.",
+      "/foo/..",
+      "/foo/../",
+      "/foo/../.",
   };
-  for (const auto &path: not_relative) {
+  for (const auto &path : not_relative) {
     SCOPED_TRACE(path);
     EXPECT_FALSE(PosixSpec(path).IsRelative());
   }
   llvm::StringRef is_relative[] = {
-    ".",
-    "./",
-    ".///",
-    "a",
-    "./a",
-    "./a/",
-    "./a/",
-    "./a/b",
-    "./a/b/",
-    "../foo",
-    "foo/bar.c",
-    "./foo/bar.c"
-  };
-  for (const auto &path: is_relative) {
+      ".",    "./",    ".///",   "a",      "./a",       "./a/",
+      "./a/", "./a/b", "./a/b/", "../foo", "foo/bar.c", "./foo/bar.c"};
+  for (const auto &path : is_relative) {
     SCOPED_TRACE(path);
     EXPECT_TRUE(PosixSpec(path).IsRelative());
   }
@@ -416,7 +405,6 @@ TEST(FileSpecTest, Match) {
 
   EXPECT_TRUE(Match("", "/foo/bar"));
   EXPECT_TRUE(Match("", ""));
-
 }
 
 TEST(FileSpecTest, Yaml) {

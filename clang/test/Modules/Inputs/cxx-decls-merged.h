@@ -23,8 +23,14 @@ typedef struct {
 auto name_for_linkage2_inner_b = NameForLinkage2::Inner();
 typedef decltype(name_for_linkage2_inner_b) NameForLinkage2Inner;
 
-namespace Aliased { extern int b; }
+namespace Aliased {
+extern int b;
+}
 namespace Alias = Aliased;
 
-struct InhCtorA { InhCtorA(int); };
-struct InhCtorB : InhCtorA { using InhCtorA::InhCtorA; };
+struct InhCtorA {
+  InhCtorA(int);
+};
+struct InhCtorB : InhCtorA {
+  using InhCtorA::InhCtorA;
+};

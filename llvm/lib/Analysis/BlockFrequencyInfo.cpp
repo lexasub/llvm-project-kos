@@ -44,8 +44,9 @@ static cl::opt<GVDAGType> ViewBlockFreqPropagationDAG(
                clEnumValN(GVDT_Integer, "integer",
                           "display a graph using the raw "
                           "integer fractional block frequency representation."),
-               clEnumValN(GVDT_Count, "count", "display a graph using the real "
-                                               "profile count if available.")));
+               clEnumValN(GVDT_Count, "count",
+                          "display a graph using the real "
+                          "profile count if available.")));
 
 cl::opt<std::string>
     ViewBlockFreqFuncName("view-bfi-func-name", cl::Hidden,
@@ -62,25 +63,25 @@ cl::opt<unsigned>
                                 "function multiplied by this percent."));
 
 // Command line option to turn on CFG dot or text dump after profile annotation.
-cl::opt<PGOViewCountsType> PGOViewCounts(
-    "pgo-view-counts", cl::Hidden,
-    cl::desc("A boolean option to show CFG dag or text with "
-             "block profile counts and branch probabilities "
-             "right after PGO profile annotation step. The "
-             "profile counts are computed using branch "
-             "probabilities from the runtime profile data and "
-             "block frequency propagation algorithm. To view "
-             "the raw counts from the profile, use option "
-             "-pgo-view-raw-counts instead. To limit graph "
-             "display to only one function, use filtering option "
-             "-view-bfi-func-name."),
-    cl::values(clEnumValN(PGOVCT_None, "none", "do not show."),
-               clEnumValN(PGOVCT_Graph, "graph", "show a graph."),
-               clEnumValN(PGOVCT_Text, "text", "show in text.")));
+cl::opt<PGOViewCountsType>
+    PGOViewCounts("pgo-view-counts", cl::Hidden,
+                  cl::desc("A boolean option to show CFG dag or text with "
+                           "block profile counts and branch probabilities "
+                           "right after PGO profile annotation step. The "
+                           "profile counts are computed using branch "
+                           "probabilities from the runtime profile data and "
+                           "block frequency propagation algorithm. To view "
+                           "the raw counts from the profile, use option "
+                           "-pgo-view-raw-counts instead. To limit graph "
+                           "display to only one function, use filtering option "
+                           "-view-bfi-func-name."),
+                  cl::values(clEnumValN(PGOVCT_None, "none", "do not show."),
+                             clEnumValN(PGOVCT_Graph, "graph", "show a graph."),
+                             clEnumValN(PGOVCT_Text, "text", "show in text.")));
 
-static cl::opt<bool> PrintBlockFreq(
-    "print-bfi", cl::init(false), cl::Hidden,
-    cl::desc("Print the block frequency info."));
+static cl::opt<bool>
+    PrintBlockFreq("print-bfi", cl::init(false), cl::Hidden,
+                   cl::desc("Print the block frequency info."));
 
 cl::opt<std::string> PrintBlockFreqFuncName(
     "print-bfi-func-name", cl::Hidden,
@@ -95,8 +96,7 @@ static GVDAGType getGVDT() {
   return ViewBlockFreqPropagationDAG;
 }
 
-template <>
-struct GraphTraits<BlockFrequencyInfo *> {
+template <> struct GraphTraits<BlockFrequencyInfo *> {
   using NodeRef = const BasicBlock *;
   using ChildIteratorType = const_succ_iterator;
   using nodes_iterator = pointer_iterator<Function::const_iterator>;
@@ -192,9 +192,8 @@ void BlockFrequencyInfo::calculate(const Function &F,
        F.getName().equals(ViewBlockFreqFuncName))) {
     view();
   }
-  if (PrintBlockFreq &&
-      (PrintBlockFreqFuncName.empty() ||
-       F.getName().equals(PrintBlockFreqFuncName))) {
+  if (PrintBlockFreq && (PrintBlockFreqFuncName.empty() ||
+                         F.getName().equals(PrintBlockFreqFuncName))) {
     print(dbgs());
   }
 }
@@ -265,14 +264,14 @@ const BranchProbabilityInfo *BlockFrequencyInfo::getBPI() const {
   return BFI ? &BFI->getBPI() : nullptr;
 }
 
-raw_ostream &BlockFrequencyInfo::
-printBlockFreq(raw_ostream &OS, const BlockFrequency Freq) const {
+raw_ostream &
+BlockFrequencyInfo::printBlockFreq(raw_ostream &OS,
+                                   const BlockFrequency Freq) const {
   return BFI ? BFI->printBlockFreq(OS, Freq) : OS;
 }
 
-raw_ostream &
-BlockFrequencyInfo::printBlockFreq(raw_ostream &OS,
-                                   const BasicBlock *BB) const {
+raw_ostream &BlockFrequencyInfo::printBlockFreq(raw_ostream &OS,
+                                                const BasicBlock *BB) const {
   return BFI ? BFI->printBlockFreq(OS, BB) : OS;
 }
 
@@ -338,8 +337,8 @@ BlockFrequencyInfo BlockFrequencyAnalysis::run(Function &F,
   return BFI;
 }
 
-PreservedAnalyses
-BlockFrequencyPrinterPass::run(Function &F, FunctionAnalysisManager &AM) {
+PreservedAnalyses BlockFrequencyPrinterPass::run(Function &F,
+                                                 FunctionAnalysisManager &AM) {
   OS << "Printing analysis results of BFI for function "
      << "'" << F.getName() << "':"
      << "\n";

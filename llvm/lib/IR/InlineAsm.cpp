@@ -53,15 +53,13 @@ void InlineAsm::destroyConstant() {
   delete this;
 }
 
-FunctionType *InlineAsm::getFunctionType() const {
-  return FTy;
-}
+FunctionType *InlineAsm::getFunctionType() const { return FTy; }
 
 /// Parse - Analyze the specified string (e.g. "==&{eax}") and fill in the
 /// fields in this structure.  If the constraint string is not understood,
 /// return true, otherwise return false.
-bool InlineAsm::ConstraintInfo::Parse(StringRef Str,
-                     InlineAsm::ConstraintInfoVector &ConstraintsSoFar) {
+bool InlineAsm::ConstraintInfo::Parse(
+    StringRef Str, InlineAsm::ConstraintInfoVector &ConstraintsSoFar) {
   StringRef::iterator I = Str.begin(), E = Str.end();
   unsigned multipleAlternativeCount = Str.count('|') + 1;
   unsigned multipleAlternativeIndex = 0;
@@ -98,7 +96,8 @@ bool InlineAsm::ConstraintInfo::Parse(StringRef Str,
     ++I;
   }
 
-  if (I == E) return true;  // Just a prefix, like "==" or "~".
+  if (I == E)
+    return true; // Just a prefix, like "==" or "~".
 
   // Parse the modifiers.
   bool DoneWithModifiers = false;
@@ -107,37 +106,39 @@ bool InlineAsm::ConstraintInfo::Parse(StringRef Str,
     default:
       DoneWithModifiers = true;
       break;
-    case '&':     // Early clobber.
-      if (Type != isOutput ||      // Cannot early clobber anything but output.
-          isEarlyClobber)          // Reject &&&&&&
+    case '&':                 // Early clobber.
+      if (Type != isOutput || // Cannot early clobber anything but output.
+          isEarlyClobber)     // Reject &&&&&&
         return true;
       isEarlyClobber = true;
       break;
-    case '%':     // Commutative.
-      if (Type == isClobber ||     // Cannot commute clobbers.
-          isCommutative)           // Reject %%%%%
+    case '%':                  // Commutative.
+      if (Type == isClobber || // Cannot commute clobbers.
+          isCommutative)       // Reject %%%%%
         return true;
       isCommutative = true;
       break;
-    case '#':     // Comment.
-    case '*':     // Register preferencing.
-      return true;     // Not supported.
+    case '#':      // Comment.
+    case '*':      // Register preferencing.
+      return true; // Not supported.
     }
 
     if (!DoneWithModifiers) {
       ++I;
-      if (I == E) return true;   // Just prefixes and modifiers!
+      if (I == E)
+        return true; // Just prefixes and modifiers!
     }
   }
 
   // Parse the various constraints.
   while (I != E) {
-    if (*I == '{') {   // Physical register reference.
+    if (*I == '{') { // Physical register reference.
       // Find the end of the register name.
-      StringRef::iterator ConstraintEnd = std::find(I+1, E, '}');
-      if (ConstraintEnd == E) return true;  // "{foo"
+      StringRef::iterator ConstraintEnd = std::find(I + 1, E, '}');
+      if (ConstraintEnd == E)
+        return true; // "{foo"
       pCodes->push_back(std::string(StringRef(I, ConstraintEnd + 1 - I)));
-      I = ConstraintEnd+1;
+      I = ConstraintEnd + 1;
     } else if (isdigit(static_cast<unsigned char>(*I))) { // Matching Constraint
       // Maximal munch numbers.
       StringRef::iterator NumStart = I;
@@ -146,9 +147,9 @@ bool InlineAsm::ConstraintInfo::Parse(StringRef Str,
       pCodes->push_back(std::string(StringRef(NumStart, I - NumStart)));
       unsigned N = atoi(pCodes->back().c_str());
       // Check that this is a valid matching constraint!
-      if (N >= ConstraintsSoFar.size() || ConstraintsSoFar[N].Type != isOutput||
-          Type != isInput)
-        return true;  // Invalid constraint number.
+      if (N >= ConstraintsSoFar.size() ||
+          ConstraintsSoFar[N].Type != isOutput || Type != isInput)
+        return true; // Invalid constraint number.
 
       // If Operand N already has a matching input, reject this.  An output
       // can't be constrained to the same value as multiple inputs.
@@ -157,7 +158,7 @@ bool InlineAsm::ConstraintInfo::Parse(StringRef Str,
             ConstraintsSoFar[N].multipleAlternatives.size())
           return true;
         InlineAsm::SubConstraintInfo &scInfo =
-          ConstraintsSoFar[N].multipleAlternatives[multipleAlternativeIndex];
+            ConstraintsSoFar[N].multipleAlternatives[multipleAlternativeIndex];
         if (scInfo.MatchingInput != -1)
           return true;
         // Note that operand #n has a matching input.
@@ -171,7 +172,7 @@ bool InlineAsm::ConstraintInfo::Parse(StringRef Str,
         // Note that operand #n has a matching input.
         ConstraintsSoFar[N].MatchingInput = ConstraintsSoFar.size();
         assert(ConstraintsSoFar[N].MatchingInput >= 0);
-        }
+      }
     } else if (*I == '|') {
       multipleAlternativeIndex++;
       pCodes = &multipleAlternatives[multipleAlternativeIndex].Codes;
@@ -207,7 +208,7 @@ void InlineAsm::ConstraintInfo::selectAlternative(unsigned index) {
   if (index < multipleAlternatives.size()) {
     currentAlternativeIndex = index;
     InlineAsm::SubConstraintInfo &scInfo =
-      multipleAlternatives[currentAlternativeIndex];
+        multipleAlternatives[currentAlternativeIndex];
     MatchingInput = scInfo.MatchingInput;
     Codes = scInfo.Codes;
   }
@@ -218,16 +219,16 @@ InlineAsm::ParseConstraints(StringRef Constraints) {
   ConstraintInfoVector Result;
 
   // Scan the constraints string.
-  for (StringRef::iterator I = Constraints.begin(),
-         E = Constraints.end(); I != E; ) {
+  for (StringRef::iterator I = Constraints.begin(), E = Constraints.end();
+       I != E;) {
     ConstraintInfo Info;
 
     // Find the end of this constraint.
     StringRef::iterator ConstraintEnd = std::find(I, E, ',');
 
-    if (ConstraintEnd == I ||  // Empty constraint like ",,"
-        Info.Parse(StringRef(I, ConstraintEnd-I), Result)) {
-      Result.clear();          // Erroneous constraint?
+    if (ConstraintEnd == I || // Empty constraint like ",,"
+        Info.Parse(StringRef(I, ConstraintEnd - I), Result)) {
+      Result.clear(); // Erroneous constraint?
       break;
     }
 
@@ -251,12 +252,14 @@ InlineAsm::ParseConstraints(StringRef Constraints) {
 /// Verify - Verify that the specified constraint string is reasonable for the
 /// specified function type, and otherwise validate the constraint string.
 bool InlineAsm::Verify(FunctionType *Ty, StringRef ConstStr) {
-  if (Ty->isVarArg()) return false;
+  if (Ty->isVarArg())
+    return false;
 
   ConstraintInfoVector Constraints = ParseConstraints(ConstStr);
 
   // Error parsing constraints.
-  if (Constraints.empty() && !ConstStr.empty()) return false;
+  if (Constraints.empty() && !ConstStr.empty())
+    return false;
 
   unsigned NumOutputs = 0, NumInputs = 0, NumClobbers = 0;
   unsigned NumIndirect = 0;
@@ -264,8 +267,8 @@ bool InlineAsm::Verify(FunctionType *Ty, StringRef ConstStr) {
   for (unsigned i = 0, e = Constraints.size(); i != e; ++i) {
     switch (Constraints[i].Type) {
     case InlineAsm::isOutput:
-      if ((NumInputs-NumIndirect) != 0 || NumClobbers != 0)
-        return false;  // outputs before inputs and clobbers.
+      if ((NumInputs - NumIndirect) != 0 || NumClobbers != 0)
+        return false; // outputs before inputs and clobbers.
       if (!Constraints[i].isIndirect) {
         ++NumOutputs;
         break;
@@ -273,7 +276,8 @@ bool InlineAsm::Verify(FunctionType *Ty, StringRef ConstStr) {
       ++NumIndirect;
       LLVM_FALLTHROUGH; // We fall through for Indirect Outputs.
     case InlineAsm::isInput:
-      if (NumClobbers) return false;               // inputs before clobbers.
+      if (NumClobbers)
+        return false; // inputs before clobbers.
       ++NumInputs;
       break;
     case InlineAsm::isClobber:
@@ -284,10 +288,12 @@ bool InlineAsm::Verify(FunctionType *Ty, StringRef ConstStr) {
 
   switch (NumOutputs) {
   case 0:
-    if (!Ty->getReturnType()->isVoidTy()) return false;
+    if (!Ty->getReturnType()->isVoidTy())
+      return false;
     break;
   case 1:
-    if (Ty->getReturnType()->isStructTy()) return false;
+    if (Ty->getReturnType()->isStructTy())
+      return false;
     break;
   default:
     StructType *STy = dyn_cast<StructType>(Ty->getReturnType());
@@ -296,6 +302,7 @@ bool InlineAsm::Verify(FunctionType *Ty, StringRef ConstStr) {
     break;
   }
 
-  if (Ty->getNumParams() != NumInputs) return false;
+  if (Ty->getNumParams() != NumInputs)
+    return false;
   return true;
 }

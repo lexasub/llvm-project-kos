@@ -3,12 +3,12 @@
 @class NSString;
 
 @interface B1
--(id)init;
+- (id)init;
 @end
 
 @interface S1 : B1
--(int)prop;
--(void)setProp:(int)p;
-+(id)s1;
--(id)initWithFoo:(NSString*)foo;
+- (int)prop;
+- (void)setProp:(int)p;
++ (id)s1;
+- (id)initWithFoo:(NSString *)foo;
 @end

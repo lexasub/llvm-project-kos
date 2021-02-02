@@ -18,17 +18,16 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        const std::ios ios(0);
-        assert(ios.rdbuf() == 0);
-    }
-    {
-        std::streambuf* sb = (std::streambuf*)1;
-        const std::ios ios(sb);
-        assert(ios.rdbuf() == sb);
-    }
+int main(int, char**) {
+  {
+    const std::ios ios(0);
+    assert(ios.rdbuf() == 0);
+  }
+  {
+    std::streambuf* sb = (std::streambuf*)1;
+    const std::ios ios(sb);
+    assert(ios.rdbuf() == sb);
+  }
 
   return 0;
 }

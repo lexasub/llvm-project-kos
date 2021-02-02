@@ -22,7 +22,6 @@
 #include "count_new.h"
 #include "filesystem_test_helper.h"
 
-
 int main(int, char**) {
 
   static_test_env static_env;
@@ -65,12 +64,13 @@ int main(int, char**) {
     const fs::path output = fs::weakly_canonical(p);
     if (!PathEq(output, TC.expect)) {
       Failed = true;
-      std::fprintf(stderr, "TEST CASE #%d FAILED:\n"
-                  "  Input: '%s'\n"
-                  "  Expected: '%s'\n"
-                  "  Output: '%s'\n",
-        ID, TC.input.string().c_str(), TC.expect.string().c_str(),
-        output.string().c_str());
+      std::fprintf(stderr,
+                   "TEST CASE #%d FAILED:\n"
+                   "  Input: '%s'\n"
+                   "  Expected: '%s'\n"
+                   "  Output: '%s'\n",
+                   ID, TC.input.string().c_str(), TC.expect.string().c_str(),
+                   output.string().c_str());
     }
   }
   return Failed;

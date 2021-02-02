@@ -13,9 +13,6 @@
 #ifndef SAFESTACK_PLATFORM_H
 #define SAFESTACK_PLATFORM_H
 
-#include "safestack_util.h"
-#include "sanitizer_common/sanitizer_platform.h"
-
 #include <dlfcn.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -24,6 +21,9 @@
 #include <sys/syscall.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+#include "safestack_util.h"
+#include "sanitizer_common/sanitizer_platform.h"
 
 #if !(SANITIZER_NETBSD || SANITIZER_FREEBSD || SANITIZER_LINUX)
 #error "Support for your platform has not been implemented"

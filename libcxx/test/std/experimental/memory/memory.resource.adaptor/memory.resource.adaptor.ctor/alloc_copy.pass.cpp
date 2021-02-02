@@ -23,34 +23,33 @@
 
 namespace ex = std::experimental::pmr;
 
-int main(int, char**)
-{
-    typedef CountingAllocator<char> AllocT;
-    typedef ex::resource_adaptor<AllocT> R;
-    {
-        AllocController P;
-        AllocT const a(P);
-        R const r(a);
-        assert(P.copy_constructed == 1);
-        assert(P.move_constructed == 0);
-        assert(r.get_allocator() == a);
-    }
-    {
-        AllocController P;
-        AllocT a(P);
-        R const r(a);
-        assert(P.copy_constructed == 1);
-        assert(P.move_constructed == 0);
-        assert(r.get_allocator() == a);
-    }
-    {
-        AllocController P;
-        AllocT const a(P);
-        R const r(std::move(a));
-        assert(P.copy_constructed == 1);
-        assert(P.move_constructed == 0);
-        assert(r.get_allocator() == a);
-    }
+int main(int, char**) {
+  typedef CountingAllocator<char> AllocT;
+  typedef ex::resource_adaptor<AllocT> R;
+  {
+    AllocController P;
+    AllocT const a(P);
+    R const r(a);
+    assert(P.copy_constructed == 1);
+    assert(P.move_constructed == 0);
+    assert(r.get_allocator() == a);
+  }
+  {
+    AllocController P;
+    AllocT a(P);
+    R const r(a);
+    assert(P.copy_constructed == 1);
+    assert(P.move_constructed == 0);
+    assert(r.get_allocator() == a);
+  }
+  {
+    AllocController P;
+    AllocT const a(P);
+    R const r(std::move(a));
+    assert(P.copy_constructed == 1);
+    assert(P.move_constructed == 0);
+    assert(r.get_allocator() == a);
+  }
 
   return 0;
 }

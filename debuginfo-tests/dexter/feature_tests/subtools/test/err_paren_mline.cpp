@@ -11,13 +11,10 @@
 // RUN:     --cflags "-O0 -g" -v -- %s \
 // RUN:     | FileCheck %s --match-full-lines --strict-whitespace
 //
-// CHECK:parser error:{{.*}}err_paren_mline.cpp(23): Unbalanced parenthesis starting here
-// CHECK:{{Dex}}ExpectWatchValue(
-// CHECK:                   ^
+// CHECK:parser error:{{.*}}err_paren_mline.cpp(23): Unbalanced parenthesis
+// starting here CHECK:{{Dex}}ExpectWatchValue( CHECK:                   ^
 
-int main(){
-    return 0;
-}
+int main() { return 0; }
 
 /*
 DexExpectWatchValue(

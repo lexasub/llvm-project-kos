@@ -5,7 +5,6 @@
 
 #import "../test.h"
 
-
 extern "C" {
 int __tsan_get_report_data(void *report, const char **description, int *count,
                            int *stack_count, int *mop_count, int *loc_count,
@@ -15,8 +14,7 @@ int __tsan_get_report_data(void *report, const char **description, int *count,
 int __tsan_get_report_tag(void *report, unsigned long *tag);
 }
 
-__attribute__((no_sanitize("thread"), noinline))
-void ExternalWrite(void *addr) {
+__attribute__((no_sanitize("thread"), noinline)) void ExternalWrite(void *addr) {
   void *kSwiftAccessRaceTag = (void *)0x1;
   __tsan_external_write(addr, nullptr, kSwiftAccessRaceTag);
 }
@@ -25,7 +23,7 @@ int main(int argc, char *argv[]) {
   barrier_init(&barrier, 2);
   fprintf(stderr, "Start.\n");
   // CHECK: Start.
-  
+
   void *opaque_object = malloc(16);
   std::thread t1([opaque_object] {
     ExternalWrite(opaque_object);
@@ -45,8 +43,7 @@ int main(int argc, char *argv[]) {
   fprintf(stderr, "Done.\n");
 }
 
-extern "C"
-void __tsan_on_report(void *report) {
+extern "C" void __tsan_on_report(void *report) {
   const char *description;
   int count;
   int stack_count, mop_count, loc_count, mutex_count, thread_count,

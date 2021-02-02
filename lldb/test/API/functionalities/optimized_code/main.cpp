@@ -25,7 +25,7 @@ int main() {
   v1.f2 = nullptr;
   sink++; //% self.expect("frame variable v1", substrs=["S1"])
   S2 v2(v1.f1);
-  sink += use(v2.a); //% self.expect("frame variable v2", substrs=["S2"])
+  sink += use(v2.a);   //% self.expect("frame variable v2", substrs=["S2"])
   sink += use(v2.pad); //% self.expect("frame variable v2", substrs=["S2"])
   return 0;
 }

@@ -213,8 +213,8 @@ void test_access() {
 }
 
 int main(int, char**) {
-  test_access<ex::native_simd<int>>();
-  test_access<ex::fixed_size_simd<int, 4>>();
+  test_access<ex::native_simd<int> >();
+  test_access<ex::fixed_size_simd<int, 4> >();
 
   return 0;
 }

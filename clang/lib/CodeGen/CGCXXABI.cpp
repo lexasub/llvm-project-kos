@@ -18,7 +18,7 @@
 using namespace clang;
 using namespace CodeGen;
 
-CGCXXABI::~CGCXXABI() { }
+CGCXXABI::~CGCXXABI() {}
 
 void CGCXXABI::ErrorUnsupportedABI(CodeGenFunction &CGF, StringRef S) {
   DiagnosticsEngine &Diags = CGF.CGM.getDiags();
@@ -26,27 +26,26 @@ void CGCXXABI::ErrorUnsupportedABI(CodeGenFunction &CGF, StringRef S) {
                                           "cannot yet compile %0 in this ABI");
   Diags.Report(CGF.getContext().getFullLoc(CGF.CurCodeDecl->getLocation()),
                DiagID)
-    << S;
+      << S;
 }
 
 llvm::Constant *CGCXXABI::GetBogusMemberPointer(QualType T) {
   return llvm::Constant::getNullValue(CGM.getTypes().ConvertType(T));
 }
 
-llvm::Type *
-CGCXXABI::ConvertMemberPointerType(const MemberPointerType *MPT) {
+llvm::Type *CGCXXABI::ConvertMemberPointerType(const MemberPointerType *MPT) {
   return CGM.getTypes().ConvertType(CGM.getContext().getPointerDiffType());
 }
 
 CGCallee CGCXXABI::EmitLoadOfMemberFunctionPointer(
     CodeGenFunction &CGF, const Expr *E, Address This,
-    llvm::Value *&ThisPtrForCall,
-    llvm::Value *MemPtr, const MemberPointerType *MPT) {
+    llvm::Value *&ThisPtrForCall, llvm::Value *MemPtr,
+    const MemberPointerType *MPT) {
   ErrorUnsupportedABI(CGF, "calls through member pointers");
 
   ThisPtrForCall = This.getPointer();
   const FunctionProtoType *FPT =
-    MPT->getPointeeType()->getAs<FunctionProtoType>();
+      MPT->getPointeeType()->getAs<FunctionProtoType>();
   const auto *RD =
       cast<CXXRecordDecl>(MPT->getClass()->castAs<RecordType>()->getDecl());
   llvm::FunctionType *FTy = CGM.getTypes().GetFunctionType(
@@ -61,7 +60,7 @@ CGCXXABI::EmitMemberDataPointerAddress(CodeGenFunction &CGF, const Expr *E,
                                        const MemberPointerType *MPT) {
   ErrorUnsupportedABI(CGF, "loads of member pointers");
   llvm::Type *Ty = CGF.ConvertType(MPT->getPointeeType())
-                         ->getPointerTo(Base.getAddressSpace());
+                       ->getPointerTo(Base.getAddressSpace());
   return llvm::Constant::getNullValue(Ty);
 }
 
@@ -77,26 +76,23 @@ llvm::Constant *CGCXXABI::EmitMemberPointerConversion(const CastExpr *E,
   return GetBogusMemberPointer(E->getType());
 }
 
-llvm::Value *
-CGCXXABI::EmitMemberPointerComparison(CodeGenFunction &CGF,
-                                      llvm::Value *L,
-                                      llvm::Value *R,
-                                      const MemberPointerType *MPT,
-                                      bool Inequality) {
+llvm::Value *CGCXXABI::EmitMemberPointerComparison(CodeGenFunction &CGF,
+                                                   llvm::Value *L,
+                                                   llvm::Value *R,
+                                                   const MemberPointerType *MPT,
+                                                   bool Inequality) {
   ErrorUnsupportedABI(CGF, "member function pointer comparison");
   return CGF.Builder.getFalse();
 }
 
 llvm::Value *
-CGCXXABI::EmitMemberPointerIsNotNull(CodeGenFunction &CGF,
-                                     llvm::Value *MemPtr,
+CGCXXABI::EmitMemberPointerIsNotNull(CodeGenFunction &CGF, llvm::Value *MemPtr,
                                      const MemberPointerType *MPT) {
   ErrorUnsupportedABI(CGF, "member function pointer null testing");
   return CGF.Builder.getFalse();
 }
 
-llvm::Constant *
-CGCXXABI::EmitNullMemberPointer(const MemberPointerType *MPT) {
+llvm::Constant *CGCXXABI::EmitNullMemberPointer(const MemberPointerType *MPT) {
   return GetBogusMemberPointer(QualType(MPT, 0));
 }
 
@@ -124,10 +120,10 @@ void CGCXXABI::buildThisParam(CodeGenFunction &CGF, FunctionArgList &params) {
 
   // FIXME: I'm not entirely sure I like using a fake decl just for code
   // generation. Maybe we can come up with a better way?
-  auto *ThisDecl = ImplicitParamDecl::Create(
-      CGM.getContext(), nullptr, MD->getLocation(),
-      &CGM.getContext().Idents.get("this"), MD->getThisType(),
-      ImplicitParamDecl::CXXThis);
+  auto *ThisDecl =
+      ImplicitParamDecl::Create(CGM.getContext(), nullptr, MD->getLocation(),
+                                &CGM.getContext().Idents.get("this"),
+                                MD->getThisType(), ImplicitParamDecl::CXXThis);
   params.push_back(ThisDecl);
   CGF.CXXABIThisDecl = ThisDecl;
 
@@ -154,8 +150,8 @@ void CGCXXABI::setCXXABIThisValue(CodeGenFunction &CGF, llvm::Value *ThisPtr) {
   CGF.CXXABIThisValue = ThisPtr;
 }
 
-void CGCXXABI::EmitReturnFromThunk(CodeGenFunction &CGF,
-                                   RValue RV, QualType ResultType) {
+void CGCXXABI::EmitReturnFromThunk(CodeGenFunction &CGF, RValue RV,
+                                   QualType ResultType) {
   assert(!CGF.hasAggregateEvaluationKind(ResultType) &&
          "cannot handle aggregates");
   CGF.EmitReturnOfRValue(RV, ResultType);
@@ -172,8 +168,7 @@ CharUnits CGCXXABI::getArrayCookieSizeImpl(QualType elementType) {
   return CharUnits::Zero();
 }
 
-Address CGCXXABI::InitializeArrayCookie(CodeGenFunction &CGF,
-                                        Address NewPtr,
+Address CGCXXABI::InitializeArrayCookie(CodeGenFunction &CGF, Address NewPtr,
                                         llvm::Value *NumElements,
                                         const CXXNewExpr *expr,
                                         QualType ElementType) {
@@ -217,14 +212,12 @@ void CGCXXABI::ReadArrayCookie(CodeGenFunction &CGF, Address ptr,
   }
 
   cookieSize = getArrayCookieSizeImpl(eltTy);
-  Address allocAddr =
-    CGF.Builder.CreateConstInBoundsByteGEP(ptr, -cookieSize);
+  Address allocAddr = CGF.Builder.CreateConstInBoundsByteGEP(ptr, -cookieSize);
   allocPtr = allocAddr.getPointer();
   numElements = readArrayCookieImpl(CGF, allocAddr, cookieSize);
 }
 
-llvm::Value *CGCXXABI::readArrayCookieImpl(CodeGenFunction &CGF,
-                                           Address ptr,
+llvm::Value *CGCXXABI::readArrayCookieImpl(CodeGenFunction &CGF, Address ptr,
                                            CharUnits cookieSize) {
   ErrorUnsupportedABI(CGF, "reading a new[] cookie");
   return llvm::ConstantInt::get(CGF.SizeTy, 0);
@@ -243,11 +236,11 @@ llvm::Constant *CGCXXABI::getMemberPointerAdjustment(const CastExpr *E) {
   else
     derivedType = E->getType();
 
-  const CXXRecordDecl *derivedClass =
-    derivedType->castAs<MemberPointerType>()->getClass()->getAsCXXRecordDecl();
+  const CXXRecordDecl *derivedClass = derivedType->castAs<MemberPointerType>()
+                                          ->getClass()
+                                          ->getAsCXXRecordDecl();
 
-  return CGM.GetNonVirtualBaseClassOffset(derivedClass,
-                                          E->path_begin(),
+  return CGM.GetNonVirtualBaseClassOffset(derivedClass, E->path_begin(),
                                           E->path_end());
 }
 
@@ -275,9 +268,7 @@ llvm::GlobalValue::LinkageTypes CGCXXABI::getCXXDestructorLinkage(
                                          /*IsConstantVariable=*/false);
 }
 
-bool CGCXXABI::NeedsVTTParameter(GlobalDecl GD) {
-  return false;
-}
+bool CGCXXABI::NeedsVTTParameter(GlobalDecl GD) { return false; }
 
 llvm::CallInst *
 CGCXXABI::emitTerminateForUnexpectedException(CodeGenFunction &CGF,

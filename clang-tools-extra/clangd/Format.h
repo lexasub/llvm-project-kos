@@ -53,4 +53,3 @@ transformCursorPosition(unsigned Offset,
 } // namespace clang
 
 #endif
-

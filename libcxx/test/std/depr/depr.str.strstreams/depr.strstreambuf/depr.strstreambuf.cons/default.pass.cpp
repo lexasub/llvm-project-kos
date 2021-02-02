@@ -22,26 +22,25 @@
 #include "test_convertible.h"
 #endif
 
-int main(int, char**)
-{
-    {
-        std::strstreambuf s;
-        assert(s.str() == nullptr);
-        assert(s.pcount() == 0);
-    }
-    {
-        std::strstreambuf s(1024);
-        LIBCPP_ASSERT(s.str() == nullptr);
-        assert(s.pcount() == 0);
-    }
+int main(int, char**) {
+  {
+    std::strstreambuf s;
+    assert(s.str() == nullptr);
+    assert(s.pcount() == 0);
+  }
+  {
+    std::strstreambuf s(1024);
+    LIBCPP_ASSERT(s.str() == nullptr);
+    assert(s.pcount() == 0);
+  }
 
 #if TEST_STD_VER >= 11
-    {
-      typedef std::strstreambuf B;
-      static_assert(test_convertible<B>(), "");
-      static_assert(!test_convertible<B, std::streamsize>(), "");
-    }
+  {
+    typedef std::strstreambuf B;
+    static_assert(test_convertible<B>(), "");
+    static_assert(!test_convertible<B, std::streamsize>(), "");
+  }
 #endif
 
-    return 0;
+  return 0;
 }

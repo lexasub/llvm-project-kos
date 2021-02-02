@@ -17,34 +17,33 @@
 namespace ex = std::experimental;
 
 template <typename T>
-  using callFoo = decltype(std::declval<T&>().Foo());
+using callFoo = decltype(std::declval<T&>().Foo());
 
 struct yesFoo {
-    int Foo() { return 0; }
+  int Foo() { return 0; }
 };
 
-struct noFoo {
-};
+struct noFoo {};
 
 struct wrongFoo {
-    std::string Foo() { return ""; }
+  std::string Foo() { return ""; }
 };
 
 struct convertibleFoo {
-    long Foo() { return 0; }
+  long Foo() { return 0; }
 };
 
 template <typename T, bool b>
 void test() {
-    static_assert( b == ex::is_detected_exact  <int, callFoo, T>::value, "" );
-    static_assert( b == ex::is_detected_exact_v<int, callFoo, T>, "" );
+  static_assert(b == ex::is_detected_exact<int, callFoo, T>::value, "");
+  static_assert(b == ex::is_detected_exact_v<int, callFoo, T>, "");
 }
 
 int main(int, char**) {
-    test<yesFoo, true>();
-    test<noFoo, false>();
-    test<wrongFoo, false>();
-    test<convertibleFoo, false>();
+  test<yesFoo, true>();
+  test<noFoo, false>();
+  test<wrongFoo, false>();
+  test<convertibleFoo, false>();
 
   return 0;
 }

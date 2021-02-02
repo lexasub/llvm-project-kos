@@ -34,7 +34,6 @@ using namespace mlir::edsc::intrinsics;
 using namespace mlir::linalg;
 using namespace mlir::scf;
 
-
 #define DEBUG_TYPE "linalg-tiling"
 
 static bool isZero(Value v) {

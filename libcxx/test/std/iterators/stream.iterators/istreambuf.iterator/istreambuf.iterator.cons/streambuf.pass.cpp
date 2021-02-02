@@ -18,36 +18,35 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        std::istreambuf_iterator<char> i(nullptr);
-        assert(i == std::istreambuf_iterator<char>());
-    }
-    {
-        std::istringstream inf;
-        std::istreambuf_iterator<char> i(inf.rdbuf());
-        assert(i == std::istreambuf_iterator<char>());
-    }
-    {
-        std::istringstream inf("a");
-        std::istreambuf_iterator<char> i(inf.rdbuf());
-        assert(i != std::istreambuf_iterator<char>());
-    }
-    {
-        std::istreambuf_iterator<wchar_t> i(nullptr);
-        assert(i == std::istreambuf_iterator<wchar_t>());
-    }
-    {
-        std::wistringstream inf;
-        std::istreambuf_iterator<wchar_t> i(inf.rdbuf());
-        assert(i == std::istreambuf_iterator<wchar_t>());
-    }
-    {
-        std::wistringstream inf(L"a");
-        std::istreambuf_iterator<wchar_t> i(inf.rdbuf());
-        assert(i != std::istreambuf_iterator<wchar_t>());
-    }
+int main(int, char**) {
+  {
+    std::istreambuf_iterator<char> i(nullptr);
+    assert(i == std::istreambuf_iterator<char>());
+  }
+  {
+    std::istringstream inf;
+    std::istreambuf_iterator<char> i(inf.rdbuf());
+    assert(i == std::istreambuf_iterator<char>());
+  }
+  {
+    std::istringstream inf("a");
+    std::istreambuf_iterator<char> i(inf.rdbuf());
+    assert(i != std::istreambuf_iterator<char>());
+  }
+  {
+    std::istreambuf_iterator<wchar_t> i(nullptr);
+    assert(i == std::istreambuf_iterator<wchar_t>());
+  }
+  {
+    std::wistringstream inf;
+    std::istreambuf_iterator<wchar_t> i(inf.rdbuf());
+    assert(i == std::istreambuf_iterator<wchar_t>());
+  }
+  {
+    std::wistringstream inf(L"a");
+    std::istreambuf_iterator<wchar_t> i(inf.rdbuf());
+    assert(i != std::istreambuf_iterator<wchar_t>());
+  }
 
   return 0;
 }

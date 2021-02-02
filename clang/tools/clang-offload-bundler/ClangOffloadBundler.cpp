@@ -1111,9 +1111,9 @@ int main(int argc, const char **argv) {
     }
   } else {
     if (OutputFileNames.size() != 1) {
-      reportError(createStringError(
-          errc::invalid_argument,
-          "only one output file supported in bundling mode"));
+      reportError(
+          createStringError(errc::invalid_argument,
+                            "only one output file supported in bundling mode"));
     }
     if (InputFileNames.size() != TargetNames.size()) {
       reportError(createStringError(

@@ -2,8 +2,8 @@
 // RUN: not %run %t       2>&1 | FileCheck %s --check-prefix=READ
 // RUN: not %run %t write 2>&1 | FileCheck %s --check-prefix=WRITE
 
-#include <windows.h>
 #include <stdio.h>
+#include <windows.h>
 
 static volatile int sink;
 __attribute__((noinline)) void Read(int *ptr) { sink = *ptr; }

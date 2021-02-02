@@ -20,75 +20,74 @@
 #include "test_macros.h"
 #include "platform_support.h" // locale name macros
 
-int main(int, char**)
-{
+int main(int, char**) {
+  {
+    std::locale l;
     {
-        std::locale l;
-        {
-            typedef std::ctype_byname<char> F;
-            std::locale ll(l, new F(LOCALE_en_US_UTF_8));
-            const F& f = std::use_facet<F>(ll);
+      typedef std::ctype_byname<char> F;
+      std::locale ll(l, new F(LOCALE_en_US_UTF_8));
+      const F& f = std::use_facet<F>(ll);
 
-            assert(f.tolower(' ') == ' ');
-            assert(f.tolower('A') == 'a');
-            assert(f.tolower('\x07') == '\x07');
-            assert(f.tolower('.') == '.');
-            assert(f.tolower('a') == 'a');
-            assert(f.tolower('1') == '1');
-            assert(f.tolower('\xFA') == '\xFA');
-        }
+      assert(f.tolower(' ') == ' ');
+      assert(f.tolower('A') == 'a');
+      assert(f.tolower('\x07') == '\x07');
+      assert(f.tolower('.') == '.');
+      assert(f.tolower('a') == 'a');
+      assert(f.tolower('1') == '1');
+      assert(f.tolower('\xFA') == '\xFA');
     }
+  }
+  {
+    std::locale l;
     {
-        std::locale l;
-        {
-            typedef std::ctype_byname<char> F;
-            std::locale ll(l, new F("C"));
-            const F& f = std::use_facet<F>(ll);
+      typedef std::ctype_byname<char> F;
+      std::locale ll(l, new F("C"));
+      const F& f = std::use_facet<F>(ll);
 
-            assert(f.tolower(' ') == ' ');
-            assert(f.tolower('A') == 'a');
-            assert(f.tolower('\x07') == '\x07');
-            assert(f.tolower('.') == '.');
-            assert(f.tolower('a') == 'a');
-            assert(f.tolower('1') == '1');
-            assert(f.tolower('\xDA') == '\xDA');
-            assert(f.tolower('\xFA') == '\xFA');
-        }
+      assert(f.tolower(' ') == ' ');
+      assert(f.tolower('A') == 'a');
+      assert(f.tolower('\x07') == '\x07');
+      assert(f.tolower('.') == '.');
+      assert(f.tolower('a') == 'a');
+      assert(f.tolower('1') == '1');
+      assert(f.tolower('\xDA') == '\xDA');
+      assert(f.tolower('\xFA') == '\xFA');
     }
+  }
+  {
+    std::locale l;
     {
-        std::locale l;
-        {
-            typedef std::ctype_byname<wchar_t> F;
-            std::locale ll(l, new F(LOCALE_en_US_UTF_8));
-            const F& f = std::use_facet<F>(ll);
+      typedef std::ctype_byname<wchar_t> F;
+      std::locale ll(l, new F(LOCALE_en_US_UTF_8));
+      const F& f = std::use_facet<F>(ll);
 
-            assert(f.tolower(L' ') == L' ');
-            assert(f.tolower(L'A') == L'a');
-            assert(f.tolower(L'\x07') == L'\x07');
-            assert(f.tolower(L'.') == L'.');
-            assert(f.tolower(L'a') == L'a');
-            assert(f.tolower(L'1') == L'1');
-            assert(f.tolower(L'\xDA') == L'\xFA');
-            assert(f.tolower(L'\xFA') == L'\xFA');
-        }
+      assert(f.tolower(L' ') == L' ');
+      assert(f.tolower(L'A') == L'a');
+      assert(f.tolower(L'\x07') == L'\x07');
+      assert(f.tolower(L'.') == L'.');
+      assert(f.tolower(L'a') == L'a');
+      assert(f.tolower(L'1') == L'1');
+      assert(f.tolower(L'\xDA') == L'\xFA');
+      assert(f.tolower(L'\xFA') == L'\xFA');
     }
+  }
+  {
+    std::locale l;
     {
-        std::locale l;
-        {
-            typedef std::ctype_byname<wchar_t> F;
-            std::locale ll(l, new F("C"));
-            const F& f = std::use_facet<F>(ll);
+      typedef std::ctype_byname<wchar_t> F;
+      std::locale ll(l, new F("C"));
+      const F& f = std::use_facet<F>(ll);
 
-            assert(f.tolower(L' ') == L' ');
-            assert(f.tolower(L'A') == L'a');
-            assert(f.tolower(L'\x07') == L'\x07');
-            assert(f.tolower(L'.') == L'.');
-            assert(f.tolower(L'a') == L'a');
-            assert(f.tolower(L'1') == L'1');
-            assert(f.tolower(L'\xDA') == L'\xDA');
-            assert(f.tolower(L'\xFA') == L'\xFA');
-        }
+      assert(f.tolower(L' ') == L' ');
+      assert(f.tolower(L'A') == L'a');
+      assert(f.tolower(L'\x07') == L'\x07');
+      assert(f.tolower(L'.') == L'.');
+      assert(f.tolower(L'a') == L'a');
+      assert(f.tolower(L'1') == L'1');
+      assert(f.tolower(L'\xDA') == L'\xDA');
+      assert(f.tolower(L'\xFA') == L'\xFA');
     }
+  }
 
   return 0;
 }

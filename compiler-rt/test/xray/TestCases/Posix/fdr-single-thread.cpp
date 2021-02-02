@@ -13,7 +13,7 @@
 #include "xray/xray_log_interface.h"
 #include <cassert>
 
-[[clang::xray_always_instrument]] void __attribute__((noinline)) fn() { }
+[[clang::xray_always_instrument]] void __attribute__((noinline)) fn() {}
 
 int main(int argc, char *argv[]) {
   auto status = __xray_log_init_mode("xray-fdr", "");

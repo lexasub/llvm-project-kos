@@ -17,9 +17,8 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    std::vector<const int> v = {1, 2, 3};
+int main(int, char**) {
+  std::vector<const int> v = {1, 2, 3};
 
   return 0;
 }

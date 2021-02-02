@@ -59,13 +59,16 @@ constexpr bool tests() {
   [[maybe_unused]] const long double* ld2{&std::numbers::log10e_v<long double>};
   [[maybe_unused]] const long double* ld3{&std::numbers::pi_v<long double>};
   [[maybe_unused]] const long double* ld4{&std::numbers::inv_pi_v<long double>};
-  [[maybe_unused]] const long double* ld5{&std::numbers::inv_sqrtpi_v<long double>};
+  [[maybe_unused]] const long double* ld5{
+      &std::numbers::inv_sqrtpi_v<long double>};
   [[maybe_unused]] const long double* ld6{&std::numbers::ln2_v<long double>};
   [[maybe_unused]] const long double* ld7{&std::numbers::ln10_v<long double>};
   [[maybe_unused]] const long double* ld8{&std::numbers::sqrt2_v<long double>};
   [[maybe_unused]] const long double* ld9{&std::numbers::sqrt3_v<long double>};
-  [[maybe_unused]] const long double* ld10{&std::numbers::inv_sqrt3_v<long double>};
-  [[maybe_unused]] const long double* ld11{&std::numbers::egamma_v<long double>};
+  [[maybe_unused]] const long double* ld10{
+      &std::numbers::inv_sqrt3_v<long double>};
+  [[maybe_unused]] const long double* ld11{
+      &std::numbers::egamma_v<long double>};
   [[maybe_unused]] const long double* ld12{&std::numbers::phi_v<long double>};
 
   return true;

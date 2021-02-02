@@ -1,6 +1,8 @@
 #pragma once
 
-namespace std { namespace experimental { inline namespace coroutines_v1 {
+namespace std {
+namespace experimental {
+inline namespace coroutines_v1 {
 
 template <typename R, typename...> struct coroutine_traits {
   using promise_type = typename R::promise_type;
@@ -25,7 +27,7 @@ template <> struct coroutine_handle<void> {
   }
   coroutine_handle(decltype(nullptr)) : ptr(nullptr) {}
   coroutine_handle() : ptr(nullptr) {}
-//  void reset() { ptr = nullptr; } // add to P0057?
+  //  void reset() { ptr = nullptr; } // add to P0057?
   explicit operator bool() const { return ptr; }
 
 protected:
@@ -52,19 +54,17 @@ template <typename Promise> struct coroutine_handle : coroutine_handle<> {
   }
 };
 
-  template <typename _PromiseT>
-  bool operator==(coroutine_handle<_PromiseT> const& _Left,
-    coroutine_handle<_PromiseT> const& _Right) noexcept
-  {
-    return _Left.address() == _Right.address();
-  }
+template <typename _PromiseT>
+bool operator==(coroutine_handle<_PromiseT> const &_Left,
+                coroutine_handle<_PromiseT> const &_Right) noexcept {
+  return _Left.address() == _Right.address();
+}
 
-  template <typename _PromiseT>
-  bool operator!=(coroutine_handle<_PromiseT> const& _Left,
-    coroutine_handle<_PromiseT> const& _Right) noexcept
-  {
-    return !(_Left == _Right);
-  }
+template <typename _PromiseT>
+bool operator!=(coroutine_handle<_PromiseT> const &_Left,
+                coroutine_handle<_PromiseT> const &_Right) noexcept {
+  return !(_Left == _Right);
+}
 
 struct suspend_always {
   bool await_ready() { return false; }
@@ -77,4 +77,6 @@ struct suspend_never {
   void await_resume() noexcept {}
 };
 
-}}}
+} // namespace coroutines_v1
+} // namespace experimental
+} // namespace std

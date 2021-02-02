@@ -35,8 +35,9 @@ struct ALIGNED(SANITIZER_CACHE_LINE_SIZE) ScudoTSD {
       return true;
     }
     if (atomic_load_relaxed(&Precedence) == 0)
-      atomic_store_relaxed(&Precedence, static_cast<uptr>(
-          MonotonicNanoTime() >> FIRST_32_SECOND_64(16, 0)));
+      atomic_store_relaxed(
+          &Precedence,
+          static_cast<uptr>(MonotonicNanoTime() >> FIRST_32_SECOND_64(16, 0)));
     return false;
   }
 
@@ -49,7 +50,7 @@ struct ALIGNED(SANITIZER_CACHE_LINE_SIZE) ScudoTSD {
 
   inline uptr getPrecedence() { return atomic_load_relaxed(&Precedence); }
 
- private:
+private:
   StaticSpinMutex Mutex;
   atomic_uintptr_t Precedence;
 };
@@ -60,6 +61,6 @@ void initThread(bool MinimalInit);
 #include "scudo_tsd_exclusive.inc"
 #include "scudo_tsd_shared.inc"
 
-}  // namespace __scudo
+} // namespace __scudo
 
-#endif  // SCUDO_TSD_H_
+#endif // SCUDO_TSD_H_

@@ -19,8 +19,7 @@
 #include "a.h"
 char t; // expected-error {{different type}}
 // expected-note@t.h:1 {{here}}
-#include "t.h"
 #include "b.h"
+#include "t.h"
 char t; // expected-error {{different type}}
 // expected-note@t.h:1 {{here}}
-

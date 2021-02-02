@@ -334,7 +334,8 @@ private:
   /// Mapping from macro definitions (as they occur in the preprocessing
   /// record) to the macro IDs.
   llvm::DenseMap<const MacroDefinitionRecord *,
-                 serialization::PreprocessedEntityID> MacroDefinitions;
+                 serialization::PreprocessedEntityID>
+      MacroDefinitions;
 
   /// Cache of indices of anonymous declarations within their lexical
   /// contexts.
@@ -363,7 +364,7 @@ private:
     DeclUpdate(unsigned Kind, unsigned Val) : Kind(Kind), Val(Val) {}
     DeclUpdate(unsigned Kind, Module *M) : Kind(Kind), Mod(M) {}
     DeclUpdate(unsigned Kind, const Attr *Attribute)
-          : Kind(Kind), Attribute(Attribute) {}
+        : Kind(Kind), Attribute(Attribute) {}
 
     unsigned getKind() const { return Kind; }
     const Decl *getDecl() const { return Dcl; }
@@ -397,11 +398,10 @@ private:
   /// We keep track of external definitions and other 'interesting' declarations
   /// as we are emitting declarations to the AST file. The AST file contains a
   /// separate record for these declarations, which are provided to the AST
-  /// consumer by the AST reader. This is behavior is required to properly cope with,
-  /// e.g., tentative variable definitions that occur within
-  /// headers. The declarations themselves are stored as declaration
-  /// IDs, since they will be written out to an EAGERLY_DESERIALIZED_DECLS
-  /// record.
+  /// consumer by the AST reader. This is behavior is required to properly cope
+  /// with, e.g., tentative variable definitions that occur within headers. The
+  /// declarations themselves are stored as declaration IDs, since they will be
+  /// written out to an EAGERLY_DESERIALIZED_DECLS record.
   SmallVector<uint64_t, 16> EagerlyDeserializedDecls;
   SmallVector<uint64_t, 16> ModularCodegenDecls;
 
@@ -671,8 +671,8 @@ public:
   void AddVersionTuple(const VersionTuple &Version, RecordDataImpl &Record);
 
   /// Retrieve or create a submodule ID for this module, or return 0 if
-  /// the submodule is neither local (a submodle of the currently-written module)
-  /// nor from an imported module.
+  /// the submodule is neither local (a submodle of the currently-written
+  /// module) nor from an imported module.
   unsigned getLocalOrImportedSubmoduleID(Module *Mod);
 
   /// Note that the identifier II occurs at the given offset
@@ -691,9 +691,7 @@ public:
 
   void ClearSwitchCaseIDs();
 
-  unsigned getTypeExtQualAbbrev() const {
-    return TypeExtQualAbbrev;
-  }
+  unsigned getTypeExtQualAbbrev() const { return TypeExtQualAbbrev; }
 
   unsigned getTypeFunctionProtoAbbrev() const {
     return TypeFunctionProtoAbbrev;

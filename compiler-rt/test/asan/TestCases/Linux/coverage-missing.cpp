@@ -76,17 +76,17 @@ void bar3() { fprintf(stderr, "bar3\n"); }
 #if defined(MAIN)
 int main(int argc, char **argv) {
   switch (argc) {
-    case 1:
-      break;
-    case 2:
-      foo1();
-      foo2();
-      break;
-    case 3:
-      bar1();
-      bar2();
-      bar3();
-      break;
+  case 1:
+    break;
+  case 2:
+    foo1();
+    foo2();
+    break;
+  case 3:
+    bar1();
+    bar2();
+    bar3();
+    break;
   }
 }
 #endif

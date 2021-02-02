@@ -21,15 +21,15 @@
 #include "llvm/ADT/Statistic.h"
 #include "llvm/Analysis/ProfileSummaryInfo.h"
 #include "llvm/CodeGen/MachineBasicBlock.h"
-#include "llvm/CodeGen/MachineBranchProbabilityInfo.h"
 #include "llvm/CodeGen/MachineBlockFrequencyInfo.h"
+#include "llvm/CodeGen/MachineBranchProbabilityInfo.h"
 #include "llvm/CodeGen/MachineFunction.h"
 #include "llvm/CodeGen/MachineInstr.h"
 #include "llvm/CodeGen/MachineInstrBuilder.h"
 #include "llvm/CodeGen/MachineOperand.h"
 #include "llvm/CodeGen/MachineRegisterInfo.h"
-#include "llvm/CodeGen/MachineSizeOpts.h"
 #include "llvm/CodeGen/MachineSSAUpdater.h"
+#include "llvm/CodeGen/MachineSizeOpts.h"
 #include "llvm/CodeGen/TargetInstrInfo.h"
 #include "llvm/CodeGen/TargetRegisterInfo.h"
 #include "llvm/CodeGen/TargetSubtargetInfo.h"
@@ -67,8 +67,8 @@ static cl::opt<unsigned> TailDuplicateSize(
 static cl::opt<unsigned> TailDupIndirectBranchSize(
     "tail-dup-indirect-size",
     cl::desc("Maximum instructions to consider tail duplicating blocks that "
-             "end with indirect branches."), cl::init(20),
-    cl::Hidden);
+             "end with indirect branches."),
+    cl::init(20), cl::Hidden);
 
 static cl::opt<bool>
     TailDupVerify("tail-dup-verify",
@@ -80,8 +80,7 @@ static cl::opt<unsigned> TailDupLimit("tail-dup-limit", cl::init(~0U),
 
 void TailDuplicator::initMF(MachineFunction &MFin, bool PreRegAlloc,
                             const MachineBranchProbabilityInfo *MBPIin,
-                            MBFIWrapper *MBFIin,
-                            ProfileSummaryInfo *PSIin,
+                            MBFIWrapper *MBFIin, ProfileSummaryInfo *PSIin,
                             bool LayoutModeIn, unsigned TailDupSizeIn) {
   MF = &MFin;
   TII = MF->getSubtarget().getInstrInfo();
@@ -156,9 +155,8 @@ static void VerifyPHIs(MachineFunction &MF, bool CheckExtra) {
 ///     all Preds that received a copy of \p MBB.
 /// \p RemovalCallback - if non-null, called just before MBB is deleted.
 bool TailDuplicator::tailDuplicateAndUpdate(
-    bool IsSimple, MachineBasicBlock *MBB,
-    MachineBasicBlock *ForcedLayoutPred,
-    SmallVectorImpl<MachineBasicBlock*> *DuplicatedPreds,
+    bool IsSimple, MachineBasicBlock *MBB, MachineBasicBlock *ForcedLayoutPred,
+    SmallVectorImpl<MachineBasicBlock *> *DuplicatedPreds,
     function_ref<void(MachineBasicBlock *)> *RemovalCallback,
     SmallVectorImpl<MachineBasicBlock *> *CandidatePtr) {
   // Save the successors list.
@@ -167,8 +165,8 @@ bool TailDuplicator::tailDuplicateAndUpdate(
 
   SmallVector<MachineBasicBlock *, 8> TDBBs;
   SmallVector<MachineInstr *, 16> Copies;
-  if (!tailDuplicate(IsSimple, MBB, ForcedLayoutPred,
-                     TDBBs, Copies, CandidatePtr))
+  if (!tailDuplicate(IsSimple, MBB, ForcedLayoutPred, TDBBs, Copies,
+                     CandidatePtr))
     return false;
 
   ++NumTails;
@@ -383,8 +381,8 @@ void TailDuplicator::duplicateInstruction(
   // Allow duplication of CFI instructions.
   if (MI->isCFIInstruction()) {
     BuildMI(*PredBB, PredBB->end(), PredBB->findDebugLoc(PredBB->begin()),
-      TII->get(TargetOpcode::CFI_INSTRUCTION)).addCFIIndex(
-      MI->getOperand(0).getCFIIndex());
+            TII->get(TargetOpcode::CFI_INSTRUCTION))
+        .addCFIIndex(MI->getOperand(0).getCFIIndex());
     return;
   }
   MachineInstr &NewMI = TII->duplicate(*PredBB, PredBB->end(), *MI);
@@ -433,8 +431,8 @@ void TailDuplicator::duplicateInstruction(
             MO.setReg(VI->second.Reg);
             // We have Reg -> VI.Reg:VI.SubReg, so if Reg is used with a
             // sub-register, we need to compose the sub-register indices.
-            MO.setSubReg(TRI->composeSubRegIndices(MO.getSubReg(),
-                                                   VI->second.SubReg));
+            MO.setSubReg(
+                TRI->composeSubRegIndices(MO.getSubReg(), VI->second.SubReg));
           } else {
             // The direct replacement is not possible, due to failing register
             // class constraints. An explicit COPY is necessary. Create one
@@ -604,10 +602,11 @@ bool TailDuplicator::shouldTailDuplicate(bool IsSimple,
     // CFI instructions are marked as non-duplicable, because Darwin compact
     // unwind info emission can't handle multiple prologue setups. In case of
     // DWARF, allow them be duplicated, so that their existence doesn't prevent
-    // tail duplication of some basic blocks, that would be duplicated otherwise.
+    // tail duplication of some basic blocks, that would be duplicated
+    // otherwise.
     if (MI.isNotDuplicable() &&
         (TailBB.getParent()->getTarget().getTargetTriple().isOSDarwin() ||
-        !MI.isCFIInstruction()))
+         !MI.isCFIInstruction()))
       return false;
 
     // Convergent instructions can be duplicated only if doing so doesn't add
@@ -812,11 +811,12 @@ bool TailDuplicator::canTailDuplicate(MachineBasicBlock *TailBB,
 ///                      into.
 /// \p Copies            A vector of copy instructions inserted. Used later to
 ///                      walk all the inserted copies and remove redundant ones.
-bool TailDuplicator::tailDuplicate(bool IsSimple, MachineBasicBlock *TailBB,
-                          MachineBasicBlock *ForcedLayoutPred,
-                          SmallVectorImpl<MachineBasicBlock *> &TDBBs,
-                          SmallVectorImpl<MachineInstr *> &Copies,
-                          SmallVectorImpl<MachineBasicBlock *> *CandidatePtr) {
+bool TailDuplicator::tailDuplicate(
+    bool IsSimple, MachineBasicBlock *TailBB,
+    MachineBasicBlock *ForcedLayoutPred,
+    SmallVectorImpl<MachineBasicBlock *> &TDBBs,
+    SmallVectorImpl<MachineInstr *> &Copies,
+    SmallVectorImpl<MachineBasicBlock *> *CandidatePtr) {
   LLVM_DEBUG(dbgs() << "\n*** Tail-duplicating " << printMBBReference(*TailBB)
                     << '\n');
 
@@ -870,7 +870,8 @@ bool TailDuplicator::tailDuplicate(bool IsSimple, MachineBasicBlock *TailBB,
     DenseMap<Register, RegSubRegPair> LocalVRMap;
     SmallVector<std::pair<Register, RegSubRegPair>, 4> CopyInfos;
     for (MachineBasicBlock::iterator I = TailBB->begin(), E = TailBB->end();
-         I != E; /* empty */) {
+         I != E;
+         /* empty */) {
       MachineInstr *MI = &*I;
       ++I;
       if (MI->isPHI()) {
@@ -916,10 +917,8 @@ bool TailDuplicator::tailDuplicate(bool IsSimple, MachineBasicBlock *TailBB,
       // Layout preds are not always CFG preds. Check.
       *PrevBB->succ_begin() == TailBB &&
       !TII->analyzeBranch(*PrevBB, PriorTBB, PriorFBB, PriorCond) &&
-      PriorCond.empty() &&
-      (!PriorTBB || PriorTBB == TailBB) &&
-      TailBB->pred_size() == 1 &&
-      !TailBB->hasAddressTaken()) {
+      PriorCond.empty() && (!PriorTBB || PriorTBB == TailBB) &&
+      TailBB->pred_size() == 1 && !TailBB->hasAddressTaken()) {
     LLVM_DEBUG(dbgs() << "\nMerging into block: " << *PrevBB
                       << "From MBB: " << *TailBB);
     // There may be a branch to the layout successor. This is unlikely but it
@@ -1013,14 +1012,15 @@ bool TailDuplicator::tailDuplicate(bool IsSimple, MachineBasicBlock *TailBB,
 
 /// At the end of the block \p MBB generate COPY instructions between registers
 /// described by \p CopyInfos. Append resulting instructions to \p Copies.
-void TailDuplicator::appendCopies(MachineBasicBlock *MBB,
-      SmallVectorImpl<std::pair<Register, RegSubRegPair>> &CopyInfos,
-      SmallVectorImpl<MachineInstr*> &Copies) {
+void TailDuplicator::appendCopies(
+    MachineBasicBlock *MBB,
+    SmallVectorImpl<std::pair<Register, RegSubRegPair>> &CopyInfos,
+    SmallVectorImpl<MachineInstr *> &Copies) {
   MachineBasicBlock::iterator Loc = MBB->getFirstTerminator();
   const MCInstrDesc &CopyD = TII->get(TargetOpcode::COPY);
   for (auto &CI : CopyInfos) {
     auto C = BuildMI(*MBB, Loc, DebugLoc(), CopyD, CI.first)
-                .addReg(CI.second.Reg, 0, CI.second.SubReg);
+                 .addReg(CI.second.Reg, 0, CI.second.SubReg);
     Copies.push_back(C);
   }
 }

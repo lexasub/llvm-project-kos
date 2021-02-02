@@ -4,15 +4,19 @@ struct X {
   X();
   X(int);
   X(int, int);
-  X(const X&);
+  X(const X &);
 };
 
-X getX(int value) { 
+X getX(int value) {
   switch (value) {
-  case 1: return X(value);
-  case 2: return X(value, value);
-  case 3: return (X)value;
-  default: break;
+  case 1:
+    return X(value);
+  case 2:
+    return X(value, value);
+  case 3:
+    return (X)value;
+  default:
+    break;
   }
   return X();
 }
@@ -47,12 +51,12 @@ void test() {
   };
 }
 
-template <bool (*tfn)(X*)>
+template <bool (*tfn)(X *)>
 struct TS {
   void foo();
 };
 
-template <bool (*tfn)(X*)>
+template <bool (*tfn)(X *)>
 void TS<tfn>::foo() {}
 
 template <typename T>
@@ -60,7 +64,7 @@ class TC {
   void init();
 };
 
-template<> void TC<char>::init();
+template <> void TC<char>::init();
 
 #define EXTERN_TEMPLATE(...) extern template __VA_ARGS__;
 EXTERN_TEMPLATE(class TC<char>)
@@ -70,71 +74,71 @@ class A {
   virtual ~A();
 
   // Assignment operators
-  A& operator=(const A&);
-  A& operator=(A&&) noexcept;
+  A &operator=(const A &);
+  A &operator=(A &&) noexcept;
 
   // Unary operators
-  A    operator+() const;
-  A    operator-() const;
-  A    operator~() const;
-  A    operator*() const;
-  A    operator&() const;
+  A operator+() const;
+  A operator-() const;
+  A operator~() const;
+  A operator*() const;
+  A operator&() const;
   bool operator!() const;
 
   // (pre-|post-) increment and decrement
-  A& operator++();
-  A& operator--();
-  A  operator++(int);
-  A  operator--(int);
+  A &operator++();
+  A &operator--();
+  A operator++(int);
+  A operator--(int);
 
   // Arithmetic operators
-  A operator+(const A&) const;
-  A operator-(const A&) const;
-  A operator*(const A&) const;
-  A operator/(const A&) const;
-  A operator%(const A&) const;
-  A operator&(const A&) const;
-  A operator|(const A&) const;
-  A operator^(const A&) const;
+  A operator+(const A &) const;
+  A operator-(const A &) const;
+  A operator*(const A &) const;
+  A operator/(const A &) const;
+  A operator%(const A &) const;
+  A operator&(const A &) const;
+  A operator|(const A &) const;
+  A operator^(const A &) const;
 
-  A operator<<(const A&) const;
-  A operator>>(const A&) const;
+  A operator<<(const A &) const;
+  A operator>>(const A &) const;
 
   // Arithmetic-assignment operators
-  A& operator+=(const A&);
-  A& operator-=(const A&);
-  A& operator*=(const A&);
-  A& operator/=(const A&);
-  A& operator%=(const A&);
-  A& operator&=(const A&);
-  A& operator|=(const A&);
-  A& operator^=(const A&);
+  A &operator+=(const A &);
+  A &operator-=(const A &);
+  A &operator*=(const A &);
+  A &operator/=(const A &);
+  A &operator%=(const A &);
+  A &operator&=(const A &);
+  A &operator|=(const A &);
+  A &operator^=(const A &);
 
-  A& operator<<=(const A&);
-  A& operator>>=(const A&);
+  A &operator<<=(const A &);
+  A &operator>>=(const A &);
 
   // Logical operators
-  bool operator<(const A&) const;
-  bool operator>(const A&) const;
+  bool operator<(const A &) const;
+  bool operator>(const A &) const;
 
-  bool operator&&(const A&) const;
-  bool operator||(const A&) const;
-  bool operator<=(const A&) const;
-  bool operator>=(const A&) const;
-  bool operator!=(const A&) const;
-  bool operator==(const A&) const;
+  bool operator&&(const A &) const;
+  bool operator||(const A &) const;
+  bool operator<=(const A &) const;
+  bool operator>=(const A &) const;
+  bool operator!=(const A &) const;
+  bool operator==(const A &) const;
 
   // Special operators
-  A& operator[](unsigned long long);
-  A* operator->();
-  A  operator()(unsigned, int) const;
+  A &operator[](unsigned long long);
+  A *operator->();
+  A operator()(unsigned, int) const;
 
   explicit operator bool() const;
 };
 
 struct TestColl {
-  int* begin();
-  int* end();
+  int *begin();
+  int *end();
 };
 
 void test(TestColl coll) {
@@ -147,7 +151,7 @@ const int operator""_toint(unsigned long long val) { return int(val); }
 
 // noexcept specifications
 void f_noexcept() noexcept;
-template <class T> void f_computed_noexcept(T t) noexcept(noexcept(t+t));
+template <class T> void f_computed_noexcept(T t) noexcept(noexcept(t + t));
 void f_dynamic_noexcept_none() throw();
 void f_dynamic_noexcept() throw(int);
 void f_dynamic_noexcept_any() throw(...);
@@ -156,7 +160,7 @@ void f_computed_noexcept_false() noexcept(false);
 
 enum EnumType { Enumerator };
 struct Z {
-    EnumType e = Enumerator;
+  EnumType e = Enumerator;
 };
 
 // RUN: c-index-test -cursor-at=%s:6:4 %s | FileCheck -check-prefix=CHECK-COMPLETION-1 %s
@@ -286,4 +290,3 @@ struct Z {
 
 // RUN: c-index-test -cursor-at=%s:159:18 -std=c++11 %s | FileCheck -check-prefix=CHECK-INCLASSINITIALIZER %s
 // CHECK-INCLASSINITIALIZER: 159:18 DeclRefExpr=Enumerator:157:17 Extent=[159:18 - 159:28] Spelling=Enumerator ([159:18 - 159:28])
-

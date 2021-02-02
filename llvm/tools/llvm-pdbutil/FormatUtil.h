@@ -136,6 +136,6 @@ fmtle(support::detail::packed_endian_specific_integral<T, support::little,
           Value) {
   return detail::EndianAdapter<T>(std::move(Value));
 }
-}
+} // namespace pdb
 } // namespace llvm
 #endif

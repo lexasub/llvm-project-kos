@@ -95,8 +95,8 @@ private:
 
   /// Resize the hash table, moving the old entries into the new buckets.
   void resize(size_t NewSize) {
-    Bucket *NewBuckets = static_cast<Bucket *>(
-        safe_calloc(NewSize, sizeof(Bucket)));
+    Bucket *NewBuckets =
+        static_cast<Bucket *>(safe_calloc(NewSize, sizeof(Bucket)));
     // Populate NewBuckets with the old entries.
     for (size_t I = 0; I < NumBuckets; ++I)
       for (Item *E = Buckets[I].Head; E;) {
@@ -432,12 +432,12 @@ class OnDiskIterableChainedHashTable : public OnDiskChainedHashTable<Info> {
   const unsigned char *Payload;
 
 public:
-  typedef OnDiskChainedHashTable<Info>          base_type;
+  typedef OnDiskChainedHashTable<Info> base_type;
   typedef typename base_type::internal_key_type internal_key_type;
   typedef typename base_type::external_key_type external_key_type;
-  typedef typename base_type::data_type         data_type;
-  typedef typename base_type::hash_value_type   hash_value_type;
-  typedef typename base_type::offset_type       offset_type;
+  typedef typename base_type::data_type data_type;
+  typedef typename base_type::hash_value_type hash_value_type;
+  typedef typename base_type::offset_type offset_type;
 
 private:
   /// Iterates over all of the keys in the table.
@@ -606,8 +606,8 @@ public:
     auto NumBucketsAndEntries =
         OnDiskIterableChainedHashTable<Info>::readNumBucketsAndEntries(Buckets);
     return new OnDiskIterableChainedHashTable<Info>(
-        NumBucketsAndEntries.first, NumBucketsAndEntries.second,
-        Buckets, Payload, Base, InfoObj);
+        NumBucketsAndEntries.first, NumBucketsAndEntries.second, Buckets,
+        Payload, Base, InfoObj);
   }
 };
 

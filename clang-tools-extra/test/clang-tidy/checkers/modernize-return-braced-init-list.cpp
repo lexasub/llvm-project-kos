@@ -36,7 +36,7 @@ public:
   vector(T) {}
   vector(std::initializer_list<T>) {}
 };
-}
+} // namespace std
 
 class Bar {};
 

@@ -5,8 +5,8 @@
 typedef void (*FuncPointer)(void);
 
 // Dont allow function declaration and definition mismatch.
-[[gnu::nocf_check]] void testNoCfCheck();   // expected-note {{previous declaration is here}}
-void testNoCfCheck(){}; //  expected-error {{conflicting types for 'testNoCfCheck'}}
+[[gnu::nocf_check]] void testNoCfCheck(); // expected-note {{previous declaration is here}}
+void testNoCfCheck(){};                   //  expected-error {{conflicting types for 'testNoCfCheck'}}
 
 // No variable or parameter declaration
 int [[gnu::nocf_check]] i;                              // expected-error {{'nocf_check' attribute cannot be applied to types}}

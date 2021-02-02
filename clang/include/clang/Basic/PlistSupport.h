@@ -24,8 +24,7 @@ namespace markup {
 
 using FIDMap = llvm::DenseMap<FileID, unsigned>;
 
-inline unsigned AddFID(FIDMap &FIDs, SmallVectorImpl<FileID> &V,
-                   FileID FID) {
+inline unsigned AddFID(FIDMap &FIDs, SmallVectorImpl<FileID> &V, FileID FID) {
   FIDMap::iterator I = FIDs.find(FID);
   if (I != FIDs.end())
     return I->second;
@@ -36,7 +35,7 @@ inline unsigned AddFID(FIDMap &FIDs, SmallVectorImpl<FileID> &V,
 }
 
 inline unsigned AddFID(FIDMap &FIDs, SmallVectorImpl<FileID> &V,
-                   const SourceManager &SM, SourceLocation L) {
+                       const SourceManager &SM, SourceLocation L) {
   FileID FID = SM.getFileID(SM.getExpansionLoc(L));
   return AddFID(FIDs, V, FID);
 }
@@ -106,7 +105,8 @@ inline raw_ostream &EmitString(raw_ostream &o, StringRef s) {
 
 inline void EmitLocation(raw_ostream &o, const SourceManager &SM,
                          SourceLocation L, const FIDMap &FM, unsigned indent) {
-  if (L.isInvalid()) return;
+  if (L.isInvalid())
+    return;
 
   FullSourceLoc Loc(SM.getExpansionLoc(L), const_cast<SourceManager &>(SM));
 
@@ -122,7 +122,8 @@ inline void EmitLocation(raw_ostream &o, const SourceManager &SM,
 
 inline void EmitRange(raw_ostream &o, const SourceManager &SM,
                       CharSourceRange R, const FIDMap &FM, unsigned indent) {
-  if (R.isInvalid()) return;
+  if (R.isInvalid())
+    return;
 
   assert(R.isCharRange() && "cannot handle a token range");
   Indent(o, indent) << "<array>\n";

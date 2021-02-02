@@ -16,21 +16,17 @@
 // This function shall not participate in overload resolution unless
 //   is_integral_v<IntegerType> is true.
 
-
-constexpr std::byte test(std::byte b) {
-    return b >>= 2;
-    }
-
+constexpr std::byte test(std::byte b) { return b >>= 2; }
 
 int main(int, char**) {
-    std::byte b;  // not constexpr, just used in noexcept check
-    constexpr std::byte b16{static_cast<std::byte>(16)};
-    constexpr std::byte b192{static_cast<std::byte>(192)};
+  std::byte b; // not constexpr, just used in noexcept check
+  constexpr std::byte b16{static_cast<std::byte>(16)};
+  constexpr std::byte b192{static_cast<std::byte>(192)};
 
-    static_assert(noexcept(b >>= 2), "" );
+  static_assert(noexcept(b >>= 2), "");
 
-    static_assert(std::to_integer<int>(test(b16))  ==  4, "" );
-    static_assert(std::to_integer<int>(test(b192)) == 48, "" );
+  static_assert(std::to_integer<int>(test(b16)) == 4, "");
+  static_assert(std::to_integer<int>(test(b192)) == 48, "");
 
   return 0;
 }

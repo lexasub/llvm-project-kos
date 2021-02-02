@@ -81,62 +81,102 @@ class Good_Child3 : public Base_A_child, Interface_C, Interface_B {
   virtual int blat() override { return 0; }
 };
 
-struct B1 { int x; };
-struct B2 { int x;};
+struct B1 {
+  int x;
+};
+struct B2 {
+  int x;
+};
 // CHECK-MESSAGES: [[@LINE+2]]:1: warning: inheriting multiple classes that aren't pure virtual is discouraged [fuchsia-multiple-inheritance]
 // CHECK-NEXT: struct D : B1, B2 {};
 struct D1 : B1, B2 {};
 
-struct Base1 { virtual void foo() = 0; };
+struct Base1 {
+  virtual void foo() = 0;
+};
 struct V1 : virtual Base1 {};
 struct V2 : virtual Base1 {};
 struct D2 : V1, V2 {};
 
-struct Base2 { virtual void foo(); };
+struct Base2 {
+  virtual void foo();
+};
 struct V3 : virtual Base2 {};
 struct V4 : virtual Base2 {};
 struct D3 : V3, V4 {};
 
 struct Base3 {};
-struct V5 : virtual Base3 { virtual void f(); };
-struct V6 : virtual Base3 { virtual void g(); };
+struct V5 : virtual Base3 {
+  virtual void f();
+};
+struct V6 : virtual Base3 {
+  virtual void g();
+};
 // CHECK-MESSAGES: [[@LINE+2]]:1: warning: inheriting multiple classes that aren't pure virtual is discouraged [fuchsia-multiple-inheritance]
 // CHECK-NEXT: struct D4 : V5, V6 {};
 struct D4 : V5, V6 {};
 
 struct Base4 {};
-struct V7 : virtual Base4 { virtual void f() = 0; };
-struct V8 : virtual Base4 { virtual void g() = 0; };
+struct V7 : virtual Base4 {
+  virtual void f() = 0;
+};
+struct V8 : virtual Base4 {
+  virtual void g() = 0;
+};
 struct D5 : V7, V8 {};
 
-struct Base5 { virtual void f() = 0; };
-struct V9 : virtual Base5 { virtual void f(); };
-struct V10 : virtual Base5 { virtual void g() = 0; };
+struct Base5 {
+  virtual void f() = 0;
+};
+struct V9 : virtual Base5 {
+  virtual void f();
+};
+struct V10 : virtual Base5 {
+  virtual void g() = 0;
+};
 struct D6 : V9, V10 {};
 
-struct Base6 { virtual void f(); };
-struct Base7 { virtual void g(); };
-struct V15 : virtual Base6 { virtual void f() = 0; };
-struct V16 : virtual Base7 { virtual void g() = 0; };
+struct Base6 {
+  virtual void f();
+};
+struct Base7 {
+  virtual void g();
+};
+struct V15 : virtual Base6 {
+  virtual void f() = 0;
+};
+struct V16 : virtual Base7 {
+  virtual void g() = 0;
+};
 // CHECK-MESSAGES: [[@LINE+2]]:1: warning: inheriting multiple classes that aren't pure virtual is discouraged [fuchsia-multiple-inheritance]
 // CHECK-NEXT: struct D9 : V15, V16 {};
 struct D9 : V15, V16 {};
 
-struct Static_Base { static void foo(); };
+struct Static_Base {
+  static void foo();
+};
 struct V11 : virtual Static_Base {};
 struct V12 : virtual Static_Base {};
 struct D7 : V11, V12 {};
 
 struct Static_Base_2 {};
-struct V13 : virtual Static_Base_2 { static void f(); };
-struct V14 : virtual Static_Base_2 { static void g(); };
+struct V13 : virtual Static_Base_2 {
+  static void f();
+};
+struct V14 : virtual Static_Base_2 {
+  static void g();
+};
 struct D8 : V13, V14 {};
 
-template<typename T> struct A : T {};
-template<typename T> struct B : virtual T {};
+template <typename T>
+struct A : T {};
+template <typename T>
+struct B : virtual T {};
 
-template<typename> struct C {};
-template<typename T> struct D : C<T> {};
+template <typename>
+struct C {};
+template <typename T>
+struct D : C<T> {};
 
 // Check clang_tidy does not crash on this code.
 template <class T>

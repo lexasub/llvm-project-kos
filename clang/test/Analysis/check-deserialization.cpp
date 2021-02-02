@@ -8,13 +8,12 @@
 
 void S1_method(); // This should not be deserialized.
 
-
 #else
 // Using the header.
 
 int test() {
   int x = 0;
-  return 5/x; //expected-warning {{Division by zero}}
+  return 5 / x; //expected-warning {{Division by zero}}
 }
 
 #endif

@@ -44,7 +44,7 @@ void k() {
 // CHECK-FIXES-NEXT: {{^ *}$}}
 
 void k2() {
-  int v[10] = { 0 };
+  int v[10] = {0};
   for (auto i : v) {
     continue;
   }
@@ -131,8 +131,8 @@ void nested_continue_unmolested() {
   }
 }
 
-#define MACRO_RETURN_UNMOLESTED(fn_)  \
-  (fn_)();                            \
+#define MACRO_RETURN_UNMOLESTED(fn_) \
+  (fn_)();                           \
   return
 
 #define MACRO_CONTINUE_UNMOLESTED(x_) \
@@ -153,15 +153,15 @@ void macro_continue() {
 #define MACRO_RETURN_ARG(stmt_) \
   stmt_
 
-#define MACRO_CONTINUE_ARG(stmt_)   \
-  do {                              \
-    for (int i = 0; i < 10; ++i) {  \
-      stmt_;                        \
-    }                               \
+#define MACRO_CONTINUE_ARG(stmt_)  \
+  do {                             \
+    for (int i = 0; i < 10; ++i) { \
+      stmt_;                       \
+    }                              \
   } while (false)
 
 void macro_arg_return() {
-  MACRO_RETURN_ARG(return);
+  MACRO_RETURN_ARG(return );
 }
 
 void macro_arg_continue() {

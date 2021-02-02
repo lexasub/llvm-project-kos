@@ -252,8 +252,7 @@ size_t MemoryCache::Read(addr_t addr, void *dst, size_t dst_len,
 AllocatedBlock::AllocatedBlock(lldb::addr_t addr, uint32_t byte_size,
                                uint32_t permissions, uint32_t chunk_size)
     : m_range(addr, byte_size), m_permissions(permissions),
-      m_chunk_size(chunk_size)
-{
+      m_chunk_size(chunk_size) {
   // The entire address range is free to start with.
   m_free_blocks.Append(m_range);
   assert(byte_size > chunk_size);
@@ -266,14 +265,12 @@ lldb::addr_t AllocatedBlock::ReserveBlock(uint32_t size) {
   if (size == 0)
     size = 1;
   Log *log(GetLogIfAllCategoriesSet(LIBLLDB_LOG_PROCESS));
-  
+
   const size_t free_count = m_free_blocks.GetSize();
-  for (size_t i=0; i<free_count; ++i)
-  {
+  for (size_t i = 0; i < free_count; ++i) {
     auto &free_block = m_free_blocks.GetEntryRef(i);
     const lldb::addr_t range_size = free_block.GetByteSize();
-    if (range_size >= size)
-    {
+    if (range_size >= size) {
       // We found a free block that is big enough for our data. Figure out how
       // many chunks we will need and calculate the resulting block size we
       // will reserve.
@@ -281,16 +278,13 @@ lldb::addr_t AllocatedBlock::ReserveBlock(uint32_t size) {
       size_t num_chunks = CalculateChunksNeededForSize(size);
       lldb::addr_t block_size = num_chunks * m_chunk_size;
       lldb::addr_t bytes_left = range_size - block_size;
-      if (bytes_left == 0)
-      {
+      if (bytes_left == 0) {
         // The newly allocated block will take all of the bytes in this
         // available block, so we can just add it to the allocated ranges and
         // remove the range from the free ranges.
         m_reserved_blocks.Insert(free_block, false);
         m_free_blocks.RemoveEntryAtIndex(i);
-      }
-      else
-      {
+      } else {
         // Make the new allocated range and add it to the allocated ranges.
         Range<lldb::addr_t, uint32_t> reserved_block(free_block);
         reserved_block.SetByteSize(block_size);
@@ -315,8 +309,7 @@ lldb::addr_t AllocatedBlock::ReserveBlock(uint32_t size) {
 bool AllocatedBlock::FreeBlock(addr_t addr) {
   bool success = false;
   auto entry_idx = m_reserved_blocks.FindEntryIndexThatContains(addr);
-  if (entry_idx != UINT32_MAX)
-  {
+  if (entry_idx != UINT32_MAX) {
     m_free_blocks.Insert(m_reserved_blocks.GetEntryRef(entry_idx), true);
     m_reserved_blocks.RemoveEntryAtIndex(entry_idx);
     success = true;

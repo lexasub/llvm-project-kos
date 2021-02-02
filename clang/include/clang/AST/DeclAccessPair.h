@@ -39,25 +39,19 @@ public:
   }
 
   NamedDecl *getDecl() const {
-    return reinterpret_cast<NamedDecl*>(~Mask & Ptr);
+    return reinterpret_cast<NamedDecl *>(~Mask & Ptr);
   }
-  AccessSpecifier getAccess() const {
-    return AccessSpecifier(Mask & Ptr);
-  }
+  AccessSpecifier getAccess() const { return AccessSpecifier(Mask & Ptr); }
 
-  void setDecl(NamedDecl *D) {
-    set(D, getAccess());
-  }
-  void setAccess(AccessSpecifier AS) {
-    set(getDecl(), AS);
-  }
+  void setDecl(NamedDecl *D) { set(D, getAccess()); }
+  void setAccess(AccessSpecifier AS) { set(getDecl(), AS); }
   void set(NamedDecl *D, AccessSpecifier AS) {
     Ptr = uintptr_t(AS) | reinterpret_cast<uintptr_t>(D);
   }
 
-  operator NamedDecl*() const { return getDecl(); }
+  operator NamedDecl *() const { return getDecl(); }
   NamedDecl *operator->() const { return getDecl(); }
 };
-}
+} // namespace clang
 
 #endif

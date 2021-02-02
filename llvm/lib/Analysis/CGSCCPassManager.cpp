@@ -718,7 +718,8 @@ bool FunctionAnalysisManagerCGSCCProxy::Result::invalidate(
   // forcibly cleared. When preserved, this proxy will only invalidate results
   // cached on functions *still in the module* at the end of the module pass.
   auto PAC = PA.getChecker<FunctionAnalysisManagerCGSCCProxy>();
-  if (!PAC.preserved() && !PAC.preservedSet<AllAnalysesOn<LazyCallGraph::SCC>>()) {
+  if (!PAC.preserved() &&
+      !PAC.preservedSet<AllAnalysesOn<LazyCallGraph::SCC>>()) {
     for (LazyCallGraph::Node &N : C)
       FAM->clear(N.getFunction(), N.getFunction().getName());
 
@@ -872,8 +873,8 @@ incorporateNewSCCRange(const SCCRangeT &NewSCCRange, LazyCallGraph &G,
   if (FAM)
     updateNewSCCFunctionAnalyses(*C, G, AM, *FAM);
 
-  for (SCC &NewC : llvm::reverse(make_range(std::next(NewSCCRange.begin()),
-                                            NewSCCRange.end()))) {
+  for (SCC &NewC : llvm::reverse(
+           make_range(std::next(NewSCCRange.begin()), NewSCCRange.end()))) {
     assert(C != &NewC && "No need to re-visit the current SCC!");
     assert(OldC != &NewC && "Already handled the original SCC!");
     UR.CWorklist.insert(&NewC);
@@ -981,8 +982,8 @@ static LazyCallGraph::SCC &updateCGAndAnalysisManagerForPass(
     RefSCC &TargetRC = TargetC.getOuterRefSCC();
     (void)TargetRC;
     // TODO: This only allows trivial edges to be added for now.
-    assert((RC == &TargetRC ||
-           RC->isAncestorOf(TargetRC)) && "New ref edge is not trivial!");
+    assert((RC == &TargetRC || RC->isAncestorOf(TargetRC)) &&
+           "New ref edge is not trivial!");
     RC->insertTrivialRefEdge(N, *RefTarget);
   }
 
@@ -992,8 +993,8 @@ static LazyCallGraph::SCC &updateCGAndAnalysisManagerForPass(
     RefSCC &TargetRC = TargetC.getOuterRefSCC();
     (void)TargetRC;
     // TODO: This only allows trivial edges to be added for now.
-    assert((RC == &TargetRC ||
-           RC->isAncestorOf(TargetRC)) && "New call edge is not trivial!");
+    assert((RC == &TargetRC || RC->isAncestorOf(TargetRC)) &&
+           "New call edge is not trivial!");
     // Add a trivial ref edge to be promoted later on alongside
     // PromotedRefTargets.
     RC->insertTrivialRefEdge(N, *CallTarget);
@@ -1067,8 +1068,8 @@ static LazyCallGraph::SCC &updateCGAndAnalysisManagerForPass(
     // "bottom" we will continue processing in the bottom-up walk.
     assert(NewRefSCCs.front() == RC &&
            "New current RefSCC not first in the returned list!");
-    for (RefSCC *NewRC : llvm::reverse(make_range(std::next(NewRefSCCs.begin()),
-                                                  NewRefSCCs.end()))) {
+    for (RefSCC *NewRC : llvm::reverse(
+             make_range(std::next(NewRefSCCs.begin()), NewRefSCCs.end()))) {
       assert(NewRC != RC && "Should not encounter the current RefSCC further "
                             "in the postorder list of new RefSCCs.");
       UR.RCWorklist.insert(NewRC);

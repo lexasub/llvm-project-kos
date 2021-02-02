@@ -24,52 +24,51 @@
 #include "test_macros.h"
 #include "platform_support.h" // locale name macros
 
-int main(int, char**)
-{
+int main(int, char**) {
+  {
+    std::locale l("C");
     {
-        std::locale l("C");
-        {
-            typedef char C;
-            const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
-            assert(np.grouping() == "");
-        }
-        {
-            typedef wchar_t C;
-            const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
-            assert(np.grouping() == "");
-        }
+      typedef char C;
+      const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
+      assert(np.grouping() == "");
     }
     {
-        std::locale l(LOCALE_en_US_UTF_8);
-        {
-            typedef char C;
-            const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
-            assert(np.grouping() == "\3\3");
-        }
-        {
-            typedef wchar_t C;
-            const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
-            assert(np.grouping() == "\3\3");
-        }
+      typedef wchar_t C;
+      const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
+      assert(np.grouping() == "");
+    }
+  }
+  {
+    std::locale l(LOCALE_en_US_UTF_8);
+    {
+      typedef char C;
+      const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
+      assert(np.grouping() == "\3\3");
     }
     {
-        std::locale l(LOCALE_fr_FR_UTF_8);
+      typedef wchar_t C;
+      const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
+      assert(np.grouping() == "\3\3");
+    }
+  }
+  {
+    std::locale l(LOCALE_fr_FR_UTF_8);
 #if defined(TEST_HAS_GLIBC)
-        const char* const group = "\3";
+    const char* const group = "\3";
 #else
-        const char* const group = "\x7f";
+    const char* const group = "\x7f";
 #endif
-        {
-            typedef char C;
-            const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
-            assert(np.grouping() ==  group);
-        }
-        {
-            typedef wchar_t C;
-            const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
-            assert(np.grouping() == group);
-        }
+    {
+      typedef char C;
+      const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
+      assert(np.grouping() == group);
     }
+    {
+      typedef wchar_t C;
+      const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
+      assert(np.grouping() == group);
+    }
+  }
 
   return 0;
 }

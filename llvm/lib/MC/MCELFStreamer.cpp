@@ -49,8 +49,7 @@ bool MCELFStreamer::isBundleLocked() const {
   return getCurrentSectionOnly()->isBundleLocked();
 }
 
-void MCELFStreamer::mergeFragment(MCDataFragment *DF,
-                                  MCDataFragment *EF) {
+void MCELFStreamer::mergeFragment(MCDataFragment *DF, MCDataFragment *EF) {
   MCAssembler &Assembler = getAssembler();
 
   if (Assembler.isBundlingEnabled() && Assembler.getRelaxAll()) {
@@ -59,8 +58,8 @@ void MCELFStreamer::mergeFragment(MCDataFragment *DF,
     if (FSize > Assembler.getBundleAlignSize())
       report_fatal_error("Fragment can't be larger than a bundle size");
 
-    uint64_t RequiredBundlePadding = computeBundlePadding(
-        Assembler, EF, DF->getContents().size(), FSize);
+    uint64_t RequiredBundlePadding =
+        computeBundlePadding(Assembler, EF, DF->getContents().size(), FSize);
 
     if (RequiredBundlePadding > UINT8_MAX)
       report_fatal_error("Padding cannot exceed 255 bytes");
@@ -122,10 +121,14 @@ void MCELFStreamer::emitAssemblerFlag(MCAssemblerFlag Flag) {
   getAssembler().getBackend().handleAssemblerFlag(Flag);
   // Do any generic stuff we need to do.
   switch (Flag) {
-  case MCAF_SyntaxUnified: return; // no-op here.
-  case MCAF_Code16: return; // Change parsing mode; no-op here.
-  case MCAF_Code32: return; // Change parsing mode; no-op here.
-  case MCAF_Code64: return; // Change parsing mode; no-op here.
+  case MCAF_SyntaxUnified:
+    return; // no-op here.
+  case MCAF_Code16:
+    return; // Change parsing mode; no-op here.
+  case MCAF_Code32:
+    return; // Change parsing mode; no-op here.
+  case MCAF_Code64:
+    return; // Change parsing mode; no-op here.
   case MCAF_SubsectionsViaSymbols:
     getAssembler().setSubsectionsViaSymbols(true);
     return;
@@ -321,13 +324,13 @@ void MCELFStreamer::emitCommonSymbol(MCSymbol *S, uint64_t Size,
 
     SwitchSection(P.first, P.second);
   } else {
-    if(Symbol->declareCommon(Size, ByteAlignment))
+    if (Symbol->declareCommon(Size, ByteAlignment))
       report_fatal_error("Symbol: " + Symbol->getName() +
                          " redeclared as different type");
   }
 
-  cast<MCSymbolELF>(Symbol)
-      ->setSize(MCConstantExpr::create(Size, getContext()));
+  cast<MCSymbolELF>(Symbol)->setSize(
+      MCConstantExpr::create(Size, getContext()));
 }
 
 void MCELFStreamer::emitELFSize(MCSymbol *Symbol, const MCExpr *Value) {
@@ -357,14 +360,13 @@ void MCELFStreamer::emitValueImpl(const MCExpr *Value, unsigned Size,
   MCObjectStreamer::emitValueImpl(Value, Size, Loc);
 }
 
-void MCELFStreamer::emitValueToAlignment(unsigned ByteAlignment,
-                                         int64_t Value,
+void MCELFStreamer::emitValueToAlignment(unsigned ByteAlignment, int64_t Value,
                                          unsigned ValueSize,
                                          unsigned MaxBytesToEmit) {
   if (isBundleLocked())
     report_fatal_error("Emitting values inside a locked bundle is forbidden");
-  MCObjectStreamer::emitValueToAlignment(ByteAlignment, Value,
-                                         ValueSize, MaxBytesToEmit);
+  MCObjectStreamer::emitValueToAlignment(ByteAlignment, Value, ValueSize,
+                                         MaxBytesToEmit);
 }
 
 void MCELFStreamer::emitCGProfileEntry(const MCSymbolRefExpr *From,
@@ -556,8 +558,7 @@ void MCELFStreamer::emitInstToData(const MCInst &Inst,
       // the current bundle group.
       DF = BundleGroups.back();
       CheckBundleSubtargets(DF->getSubtargetInfo(), &STI);
-    }
-    else if (Assembler.getRelaxAll() && !isBundleLocked())
+    } else if (Assembler.getRelaxAll() && !isBundleLocked())
       // When not in a bundle-locked group and the -mc-relax-all flag is used,
       // we create a new temporary fragment which will be later merged into
       // the current fragment.
@@ -567,8 +568,7 @@ void MCELFStreamer::emitInstToData(const MCInst &Inst,
       // The bundle-locking directive ensures this is a new data fragment.
       DF = cast<MCDataFragment>(getCurrentFragment());
       CheckBundleSubtargets(DF->getSubtargetInfo(), &STI);
-    }
-    else if (!isBundleLocked() && Fixups.size() == 0) {
+    } else if (!isBundleLocked() && Fixups.size() == 0) {
       // Optimize memory usage by emitting the instruction to a
       // MCCompactEncodedInstFragment when not in a bundle-locked group and
       // there are no fixups registered.

@@ -21,8 +21,7 @@ using std::experimental::propagate_const;
 
 typedef propagate_const<X> P;
 
-constexpr P f()
-{
+constexpr P f() {
   P p(1);
   *(p.operator->()) = 2;
   return p;
@@ -30,7 +29,7 @@ constexpr P f()
 
 int main(int, char**) {
   constexpr P p = f();
-  static_assert(*(p.operator->())==2,"");
+  static_assert(*(p.operator->()) == 2, "");
 
   return 0;
 }

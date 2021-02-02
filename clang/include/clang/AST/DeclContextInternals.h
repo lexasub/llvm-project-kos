@@ -67,9 +67,7 @@ public:
 
   bool isNull() const { return Data.isNull(); }
 
-  NamedDecl *getAsDecl() const {
-    return Data.dyn_cast<NamedDecl *>();
-  }
+  NamedDecl *getAsDecl() const { return Data.dyn_cast<NamedDecl *>(); }
 
   DeclsAndHasExternalTy getAsVectorAndHasExternal() const {
     return Data.dyn_cast<DeclsAndHasExternalTy>();
@@ -79,9 +77,7 @@ public:
     return getAsVectorAndHasExternal().getPointer();
   }
 
-  bool hasExternalDecls() const {
-    return getAsVectorAndHasExternal().getInt();
-  }
+  bool hasExternalDecls() const { return getAsVectorAndHasExternal().getInt(); }
 
   void setHasExternalDecls() {
     if (DeclsTy *Vec = getAsVector())
@@ -172,8 +168,8 @@ public:
 
     // Determine if this declaration is actually a redeclaration.
     DeclsTy &Vec = *getAsVector();
-    for (DeclsTy::iterator OD = Vec.begin(), ODEnd = Vec.end();
-         OD != ODEnd; ++OD) {
+    for (DeclsTy::iterator OD = Vec.begin(), ODEnd = Vec.end(); OD != ODEnd;
+         ++OD) {
       NamedDecl *OldD = *OD;
       if (D->declarationReplaces(OldD, IsKnownNewer)) {
         *OD = D;
@@ -223,9 +219,9 @@ public:
       }
       Vec.insert(I, D);
 
-    // All other declarations go at the end of the list, but before any
-    // tag declarations.  But we can be clever about tag declarations
-    // because there can only ever be one in a scope.
+      // All other declarations go at the end of the list, but before any
+      // tag declarations.  But we can be clever about tag declarations
+      // because there can only ever be one in a scope.
     } else if (!Vec.empty() && Vec.back()->hasTagIdentifierNamespace()) {
       NamedDecl *TagD = Vec.back();
       Vec.back() = D;
@@ -244,7 +240,7 @@ private:
   friend class ASTContext; // walks the chain deleting these
   friend class DeclContext;
 
-  llvm::PointerIntPair<StoredDeclsMap*, 1> Previous;
+  llvm::PointerIntPair<StoredDeclsMap *, 1> Previous;
 };
 
 class DependentStoredDeclsMap : public StoredDeclsMap {

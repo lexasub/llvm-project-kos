@@ -1,5 +1,4 @@
-struct X { };
-struct Y { };
+struct X {};
+struct Y {};
 
-struct Xa { };
-
+struct Xa {};

@@ -8,11 +8,11 @@
 template <typename> class Ident {}; // expected-note {{previous use is here}}
 
 namespace A {
-  template <typename> void Ident();
+template <typename> void Ident();
 
-  class Ident<int> AIdent; // expected-error {{refers to a function template}}
-  class ::Ident<int> AnotherIdent;
-}
+class Ident<int> AIdent; // expected-error {{refers to a function template}}
+class ::Ident<int> AnotherIdent;
+} // namespace A
 
 class Ident<int> GlobalIdent;
 union Ident<int> GlobalIdent2; // expected-error {{ tag type that does not match }}

@@ -20,14 +20,13 @@
 
 struct testbuf : public std::streambuf {};
 
-int main(int, char**)
-{
-    testbuf sb;
-    std::ios ios(&sb);
-    std::boolalpha(ios);
-    std::ios_base& r = std::noboolalpha(ios);
-    assert(&r == &ios);
-    assert(!(ios.flags() & std::ios::boolalpha));
+int main(int, char**) {
+  testbuf sb;
+  std::ios ios(&sb);
+  std::boolalpha(ios);
+  std::ios_base& r = std::noboolalpha(ios);
+  assert(&r == &ios);
+  assert(!(ios.flags() & std::ios::boolalpha));
 
   return 0;
 }

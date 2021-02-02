@@ -9,16 +9,23 @@
 #define HEADER
 
 int g;
-struct A { union { int n, m; }; int *p; int A::*q; char buffer[32]; };
+struct A {
+  union {
+    int n, m;
+  };
+  int *p;
+  int A::*q;
+  char buffer[32];
+};
 
-template<A a> constexpr const A &get = a;
+template <A a> constexpr const A &get = a;
 
 constexpr const A &v = get<A{}>;
 constexpr const A &w = get<A{1, &g, &A::n, "hello"}>;
 
 #else /*included pch*/
 
-template<A a> constexpr const A &get2 = a;
+template <A a> constexpr const A &get2 = a;
 
 constexpr const A &v2 = get2<A{}>;
 constexpr const A &w2 = get2<A{1, &g, &A::n, "hello\0\0\0\0\0"}>;

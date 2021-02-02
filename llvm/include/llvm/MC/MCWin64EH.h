@@ -64,7 +64,7 @@ public:
                       bool HandlerData) const override;
 };
 
-}
+} // namespace Win64EH
 } // end namespace llvm
 
 #endif

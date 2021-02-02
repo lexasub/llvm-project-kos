@@ -6,23 +6,23 @@
 
 #ifndef HEADER
 #define HEADER
-template<typename T>
+template <typename T>
 void f(T t) {
   __if_exists(T::foo) {
-    { }
+    {}
     t.foo();
   }
 
   __if_not_exists(T::bar) {
     int *i = t;
-    { }
+    {}
   }
 }
 #else
-struct HasFoo { 
+struct HasFoo {
   void foo();
 };
-struct HasBar { 
+struct HasBar {
   void bar(int);
   void bar(float);
 };

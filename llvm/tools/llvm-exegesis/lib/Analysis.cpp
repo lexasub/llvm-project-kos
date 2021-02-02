@@ -247,8 +247,8 @@ Analysis::makePointsPerSchedClass() const {
 // Parallel benchmarks repeat the same opcode multiple times. Just show this
 // opcode and show the whole snippet only on hover.
 static void writeParallelSnippetHtml(raw_ostream &OS,
-                                 const std::vector<MCInst> &Instructions,
-                                 const MCInstrInfo &InstrInfo) {
+                                     const std::vector<MCInst> &Instructions,
+                                     const MCInstrInfo &InstrInfo) {
   if (Instructions.empty())
     return;
   writeEscaped<kEscapeHtml>(OS, InstrInfo.getName(Instructions[0].getOpcode()));

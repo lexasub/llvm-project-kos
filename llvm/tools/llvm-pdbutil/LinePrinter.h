@@ -41,10 +41,10 @@ public:
 
   void printLine(const Twine &T);
   void print(const Twine &T);
-  template <typename... Ts> void formatLine(const char *Fmt, Ts &&... Items) {
+  template <typename... Ts> void formatLine(const char *Fmt, Ts &&...Items) {
     printLine(formatv(Fmt, std::forward<Ts>(Items)...));
   }
-  template <typename... Ts> void format(const char *Fmt, Ts &&... Items) {
+  template <typename... Ts> void format(const char *Fmt, Ts &&...Items) {
     print(formatv(Fmt, std::forward<Ts>(Items)...));
   }
 
@@ -162,7 +162,7 @@ private:
   raw_ostream &OS;
   bool UseColor;
 };
-}
-}
+} // namespace pdb
+} // namespace llvm
 
 #endif

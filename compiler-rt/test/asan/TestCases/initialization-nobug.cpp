@@ -39,7 +39,7 @@ int countCalls() {
 
 // Trivial constructor, non-trivial destructor.
 struct StructWithDtor {
-  ~StructWithDtor() { }
+  ~StructWithDtor() {}
   int value;
 };
 StructWithDtor struct_with_dtor;

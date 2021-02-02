@@ -18,7 +18,6 @@
 #include "llvm/DebugInfo/PDB/PDBSymbolFunc.h"
 #include "llvm/DebugInfo/PDB/PDBSymbolTypeArray.h"
 #include "llvm/DebugInfo/PDB/PDBSymbolTypeEnum.h"
-#include "llvm/DebugInfo/PDB/PDBSymbolTypeEnum.h"
 #include "llvm/DebugInfo/PDB/PDBSymbolTypeFunctionSig.h"
 #include "llvm/DebugInfo/PDB/PDBSymbolTypePointer.h"
 #include "llvm/DebugInfo/PDB/PDBSymbolTypeTypedef.h"
@@ -147,7 +146,7 @@ void VariableDumper::dump(const PDBSymbolTypeFunctionSig &Symbol) {
 
   if (ClassParent) {
     WithColor(Printer, PDB_ColorItem::Identifier).get()
-      << ClassParent->getName();
+        << ClassParent->getName();
     Printer << "::";
   }
 }

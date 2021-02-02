@@ -3,11 +3,10 @@
 #include <assert.h>
 #include <execinfo.h>
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
-__attribute__((noinline))
-void f() {
+__attribute__((noinline)) void f() {
   void *buf[10];
   int sz = backtrace(buf, sizeof(buf) / sizeof(*buf));
   assert(sz > 0);

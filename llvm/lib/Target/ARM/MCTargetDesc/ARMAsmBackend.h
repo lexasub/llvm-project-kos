@@ -22,7 +22,7 @@ class ARMAsmBackend : public MCAsmBackend {
   // note that MCFragments may have a different local STI that should be
   // used in preference.
   const MCSubtargetInfo &STI;
-  bool isThumbMode;    // Currently emitting Thumb code.
+  bool isThumbMode; // Currently emitting Thumb code.
 public:
   ARMAsmBackend(const Target &T, const MCSubtargetInfo &STI,
                 support::endianness Endian)

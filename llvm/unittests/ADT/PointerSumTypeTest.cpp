@@ -108,5 +108,4 @@ TEST_F(PointerSumTypeTest, Assignment) {
   EXPECT_EQ(nullptr, n.get<Int2>());
 }
 
-
 } // end anonymous namespace

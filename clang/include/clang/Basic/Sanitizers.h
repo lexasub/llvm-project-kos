@@ -71,9 +71,7 @@ public:
       Val = ~Val;
   }
 
-  bool isPowerOf2() const {
-    return countPopulation() == 1;
-  }
+  bool isPowerOf2() const { return countPopulation() == 1; }
 
   llvm::hash_code hash_value() const;
 

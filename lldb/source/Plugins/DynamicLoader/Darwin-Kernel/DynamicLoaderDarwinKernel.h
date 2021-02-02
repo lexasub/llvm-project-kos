@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-
 #include "lldb/Host/SafeMachO.h"
 
 #include "lldb/Target/DynamicLoader.h"
@@ -276,9 +275,9 @@ protected:
   static lldb::addr_t
   SearchForKernelViaExhaustiveSearch(lldb_private::Process *process);
 
-  static bool
-  ReadMachHeader(lldb::addr_t addr, lldb_private::Process *process, llvm::MachO::mach_header &mh,
-                 bool *read_error = nullptr);
+  static bool ReadMachHeader(lldb::addr_t addr, lldb_private::Process *process,
+                             llvm::MachO::mach_header &mh,
+                             bool *read_error = nullptr);
 
   static lldb_private::UUID
   CheckForKernelImageAtAddress(lldb::addr_t addr,

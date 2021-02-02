@@ -2,7 +2,7 @@ void clang_analyzer_warnIfReached();
 
 class PlistCheckMacro {
 public:
-  PlistCheckMacro () { }
+  PlistCheckMacro() {}
   void run() {
     clang_analyzer_warnIfReached();
   }

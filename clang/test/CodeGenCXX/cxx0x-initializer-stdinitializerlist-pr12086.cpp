@@ -4,56 +4,55 @@
 // RUN: %clang_cc1 -triple x86_64-linux-gnu -std=c++11 -emit-llvm -o - %s -DUSE_END -Dconstexpr= | FileCheck %s --check-prefix=CHECK-DYNAMIC-BE
 
 namespace std {
-  typedef decltype(sizeof(int)) size_t;
+typedef decltype(sizeof(int)) size_t;
 
-  template <class _E>
-  class initializer_list
-  {
-    const _E* __begin_;
+template <class _E>
+class initializer_list {
+  const _E *__begin_;
 #ifdef USE_END
-    const _E* __end_;
+  const _E *__end_;
 #else
-    size_t    __size_;
+  size_t __size_;
 #endif
 
-    constexpr initializer_list(const _E* __b, size_t __s)
+  constexpr initializer_list(const _E *__b, size_t __s)
       : __begin_(__b),
 #ifdef USE_END
         __end_(__b + __s)
 #else
         __size_(__s)
 #endif
-    {}
+  {
+  }
 
-  public:
-    typedef _E        value_type;
-    typedef const _E& reference;
-    typedef const _E& const_reference;
-    typedef size_t    size_type;
+public:
+  typedef _E value_type;
+  typedef const _E &reference;
+  typedef const _E &const_reference;
+  typedef size_t size_type;
 
-    typedef const _E* iterator;
-    typedef const _E* const_iterator;
+  typedef const _E *iterator;
+  typedef const _E *const_iterator;
 
 #ifdef USE_END
-    constexpr initializer_list() : __begin_(nullptr), __end_(nullptr) {}
+  constexpr initializer_list() : __begin_(nullptr), __end_(nullptr) {}
 
-    size_t    size()  const {return __end_ - __begin_;}
-    const _E* begin() const {return __begin_;}
-    const _E* end()   const {return __end_;}
+  size_t size() const { return __end_ - __begin_; }
+  const _E *begin() const { return __begin_; }
+  const _E *end() const { return __end_; }
 #else
-    constexpr initializer_list() : __begin_(nullptr), __size_(0) {}
+  constexpr initializer_list() : __begin_(nullptr), __size_(0) {}
 
-    size_t    size()  const {return __size_;}
-    const _E* begin() const {return __begin_;}
-    const _E* end()   const {return __begin_ + __size_;}
+  size_t size() const { return __size_; }
+  const _E *begin() const { return __begin_; }
+  const _E *end() const { return __begin_ + __size_; }
 #endif
-  };
-}
+};
+} // namespace std
 
 constexpr int a = 2, b = 4, c = 6;
 std::initializer_list<std::initializer_list<int>> nested = {
-  {1, a}, {3, b}, {5, c}
-};
+    {1, a}, {3, b}, {5, c}};
 
 // CHECK-STATIC-BL: @_ZGR6nested0_ = internal constant [2 x i32] [i32 1, i32 2], align 4
 // CHECK-STATIC-BL: @_ZGR6nested1_ = internal constant [2 x i32] [i32 3, i32 4], align 4

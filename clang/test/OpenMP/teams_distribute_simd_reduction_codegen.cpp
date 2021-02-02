@@ -31,9 +31,10 @@ T tmain() {
   T t_var = T();
   T vec[] = {1, 2};
 #pragma omp target
-#pragma omp teams distribute simd reduction(+: t_var)
+#pragma omp teams distribute simd reduction(+ \
+                                            : t_var)
   for (int i = 0; i < 2; ++i) {
-    t_var += (T) i;
+    t_var += (T)i;
   }
   return T();
 }
@@ -46,78 +47,80 @@ int main() {
   // LAMBDA-LABEL: @main
   // LAMBDA: call void [[OUTER_LAMBDA:@.+]](
   [&]() {
-    // LAMBDA: define{{.*}} internal{{.*}} void [[OUTER_LAMBDA]](
-    // LAMBDA: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}}, i64 -1, i8* @{{[^,]+}}, i32 1, i8** %{{[^,]+}}, i8** %{{[^,]+}}, i{{64|32}}* {{.+}}@{{[^,]+}}, i32 0, i32 0), i64* {{.+}}@{{[^,]+}}, i32 0, i32 0), i8** null, i8** null, i32 0, i32 1)
-    // LAMBDA: call void @[[LOFFL1:.+]](
-    // LAMBDA:  ret
+  // LAMBDA: define{{.*}} internal{{.*}} void [[OUTER_LAMBDA]](
+  // LAMBDA: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}}, i64 -1, i8* @{{[^,]+}}, i32 1, i8** %{{[^,]+}}, i8** %{{[^,]+}}, i{{64|32}}* {{.+}}@{{[^,]+}}, i32 0, i32 0), i64* {{.+}}@{{[^,]+}}, i32 0, i32 0), i8** null, i8** null, i32 0, i32 1)
+  // LAMBDA: call void @[[LOFFL1:.+]](
+  // LAMBDA:  ret
 #pragma omp target
-#pragma omp teams distribute simd reduction(+: sivar)
-  for (int i = 0; i < 2; ++i) {
-    // LAMBDA: define{{.*}} internal{{.*}} void @[[LOFFL1]](i{{64|32}} [[SIVAR_ARG:%.+]])
-    // LAMBDA: [[SIVAR_ADDR:%.+]] = alloca i{{.+}},
-    // LAMBDA: store{{.+}} [[SIVAR_ARG]], {{.+}} [[SIVAR_ADDR]],
-    // LAMBDA: [[SIVAR_CONV:%.+]] = bitcast{{.+}} [[SIVAR_ADDR]] to
-    // LAMBDA: call void {{.+}} @__kmpc_fork_teams({{.+}}, i32 1, {{.+}} @[[LOUTL1:.+]] to {{.+}}, {{.+}} [[SIVAR_CONV]])
-    // LAMBDA: ret void
+#pragma omp teams distribute simd reduction(+ \
+                                            : sivar)
+    for (int i = 0; i < 2; ++i) {
+      // LAMBDA: define{{.*}} internal{{.*}} void @[[LOFFL1]](i{{64|32}} [[SIVAR_ARG:%.+]])
+      // LAMBDA: [[SIVAR_ADDR:%.+]] = alloca i{{.+}},
+      // LAMBDA: store{{.+}} [[SIVAR_ARG]], {{.+}} [[SIVAR_ADDR]],
+      // LAMBDA: [[SIVAR_CONV:%.+]] = bitcast{{.+}} [[SIVAR_ADDR]] to
+      // LAMBDA: call void {{.+}} @__kmpc_fork_teams({{.+}}, i32 1, {{.+}} @[[LOUTL1:.+]] to {{.+}}, {{.+}} [[SIVAR_CONV]])
+      // LAMBDA: ret void
 
-    // LAMBDA: define internal void @[[LOUTL1]]({{.+}}, {{.+}}, {{.+}} [[SIVAR_ARG:%.+]])
-    // Skip global and bound tid vars
-    // LAMBDA: {{.+}} = alloca i32*,
-    // LAMBDA: {{.+}} = alloca i32*,
-    // LAMBDA: [[SIVAR_ADDR:%.+]] = alloca i{{.+}}*,
-    // LAMBDA: [[SIVAR_PRIV:%.+]] = alloca i{{.+}},
-    // LAMBDA: [[RED_LIST:%.+]] = alloca [1 x {{.+}}],
-    // LAMBDA: store{{.+}} [[SIVAR_ARG]], {{.+}} [[SIVAR_ADDR]],
-    // LAMBDA: [[SIVAR_REF:%.+]] = load{{.+}}, {{.+}} [[SIVAR_ADDR]]
-    // LAMBDA: store{{.+}} 0, {{.+}} [[SIVAR_PRIV]],
-    
-    // LAMBDA: call void @__kmpc_for_static_init_4(
-    // LAMBDA: store{{.+}}, {{.+}} [[SIVAR_PRIV]],
-    // LAMBDA: call void [[INNER_LAMBDA:@.+]](
-    // LAMBDA: call void @__kmpc_for_static_fini(
-    // LAMBDA: [[RED_LIST_GEP:%.+]] = getelementptr{{.+}} [[RED_LIST]],
-    // LAMBDA: [[SIVAR_PRIV_CAST:%.+]] = bitcast{{.+}} [[SIVAR_PRIV]] to
-    // LAMBDA: store{{.+}} [[SIVAR_PRIV_CAST]], {{.+}} [[RED_LIST_GEP]],
-    // LAMBDA: [[RED_LIST_BCAST:%.+]] = bitcast{{.+}} [[RED_LIST]] to
-    // LAMBDA: [[K_RED_RET:%.+]] = call{{.+}} @__kmpc_reduce({{.+}}, {{.+}}, {{.+}}, {{.+}}, {{.+}} [[RED_LIST_BCAST]], {{.+}} [[RED_FUN:@.+]], {{.+}} [[RED_VAR]])
-    // LAMBDA: switch{{.+}} [[K_RED_RET]], label{{.+}} [
-    // LAMBDA: {{.+}}, label %[[CASE1:.+]]
-    // LAMBDA: {{.+}}, label %[[CASE2:.+]]
-    // LAMBDA: ]
-    // LAMBDA: [[CASE1]]:
-    // LAMBDA-DAG: [[SIVAR_VAL:%.+]] = load{{.+}}, {{.+}} [[SIVAR_REF]],
-    // LAMBDA-DAG: [[SIVAR_PRIV_VAL:%.+]] = load{{.+}}, {{.+}} [[SIVAR_PRIV]],
-    // LAMBDA-DAG: [[SIVAR_INC:%.+]] = add{{.+}} [[SIVAR_VAL]], [[SIVAR_PRIV_VAL]]
-    // LAMBDA: store{{.+}} [[SIVAR_INC]], {{.+}} [[SIVAR_REF]],
-    // LAMBDA: call void @__kmpc_end_reduce({{.+}}, {{.+}}, {{.+}} [[RED_VAR]])
-    // LAMBDA: br
-    // LAMBDA: [[CASE2]]:
-    // LAMBDA-DAG: [[SIVAR_PRIV_VAL:%.+]] = load{{.+}}, {{.+}} [[SIVAR_PRIV]],
-    // LAMBDA-DAG: [[ATOMIC_RES:%.+]] = atomicrmw add{{.+}} [[SIVAR_REF]], {{.+}} [[SIVAR_PRIV_VAL]]
-    // LAMBDA: call void @__kmpc_end_reduce({{.+}}, {{.+}}, {{.+}} [[RED_VAR]])
-    // LAMBDA: br
-    
-    sivar += i;
+      // LAMBDA: define internal void @[[LOUTL1]]({{.+}}, {{.+}}, {{.+}} [[SIVAR_ARG:%.+]])
+      // Skip global and bound tid vars
+      // LAMBDA: {{.+}} = alloca i32*,
+      // LAMBDA: {{.+}} = alloca i32*,
+      // LAMBDA: [[SIVAR_ADDR:%.+]] = alloca i{{.+}}*,
+      // LAMBDA: [[SIVAR_PRIV:%.+]] = alloca i{{.+}},
+      // LAMBDA: [[RED_LIST:%.+]] = alloca [1 x {{.+}}],
+      // LAMBDA: store{{.+}} [[SIVAR_ARG]], {{.+}} [[SIVAR_ADDR]],
+      // LAMBDA: [[SIVAR_REF:%.+]] = load{{.+}}, {{.+}} [[SIVAR_ADDR]]
+      // LAMBDA: store{{.+}} 0, {{.+}} [[SIVAR_PRIV]],
 
-    [&]() {
-      // LAMBDA: define {{.+}} void [[INNER_LAMBDA]]({{.+}} [[ARG_PTR:%.+]])
-      // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
+      // LAMBDA: call void @__kmpc_for_static_init_4(
+      // LAMBDA: store{{.+}}, {{.+}} [[SIVAR_PRIV]],
+      // LAMBDA: call void [[INNER_LAMBDA:@.+]](
+      // LAMBDA: call void @__kmpc_for_static_fini(
+      // LAMBDA: [[RED_LIST_GEP:%.+]] = getelementptr{{.+}} [[RED_LIST]],
+      // LAMBDA: [[SIVAR_PRIV_CAST:%.+]] = bitcast{{.+}} [[SIVAR_PRIV]] to
+      // LAMBDA: store{{.+}} [[SIVAR_PRIV_CAST]], {{.+}} [[RED_LIST_GEP]],
+      // LAMBDA: [[RED_LIST_BCAST:%.+]] = bitcast{{.+}} [[RED_LIST]] to
+      // LAMBDA: [[K_RED_RET:%.+]] = call{{.+}} @__kmpc_reduce({{.+}}, {{.+}}, {{.+}}, {{.+}}, {{.+}} [[RED_LIST_BCAST]], {{.+}} [[RED_FUN:@.+]], {{.+}} [[RED_VAR]])
+      // LAMBDA: switch{{.+}} [[K_RED_RET]], label{{.+}} [
+      // LAMBDA: {{.+}}, label %[[CASE1:.+]]
+      // LAMBDA: {{.+}}, label %[[CASE2:.+]]
+      // LAMBDA: ]
+      // LAMBDA: [[CASE1]]:
+      // LAMBDA-DAG: [[SIVAR_VAL:%.+]] = load{{.+}}, {{.+}} [[SIVAR_REF]],
+      // LAMBDA-DAG: [[SIVAR_PRIV_VAL:%.+]] = load{{.+}}, {{.+}} [[SIVAR_PRIV]],
+      // LAMBDA-DAG: [[SIVAR_INC:%.+]] = add{{.+}} [[SIVAR_VAL]], [[SIVAR_PRIV_VAL]]
+      // LAMBDA: store{{.+}} [[SIVAR_INC]], {{.+}} [[SIVAR_REF]],
+      // LAMBDA: call void @__kmpc_end_reduce({{.+}}, {{.+}}, {{.+}} [[RED_VAR]])
+      // LAMBDA: br
+      // LAMBDA: [[CASE2]]:
+      // LAMBDA-DAG: [[SIVAR_PRIV_VAL:%.+]] = load{{.+}}, {{.+}} [[SIVAR_PRIV]],
+      // LAMBDA-DAG: [[ATOMIC_RES:%.+]] = atomicrmw add{{.+}} [[SIVAR_REF]], {{.+}} [[SIVAR_PRIV_VAL]]
+      // LAMBDA: call void @__kmpc_end_reduce({{.+}}, {{.+}}, {{.+}} [[RED_VAR]])
+      // LAMBDA: br
 
-      sivar += 4;
-      // LAMBDA: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
+      sivar += i;
 
-      // LAMBDA: [[SIVAR_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
-      // LAMBDA: [[SIVAR_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[SIVAR_PTR_REF]]
-      // LAMBDA: [[SIVAR_VAL:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[SIVAR_REF]]
-      // LAMBDA: [[SIVAR_INC:%.+]] = add{{.+}} [[SIVAR_VAL]], 4
-      // LAMBDA: store i{{[0-9]+}} [[SIVAR_INC]], i{{[0-9]+}}* [[SIVAR_REF]]
-    }();
-  }
+      [&]() {
+        // LAMBDA: define {{.+}} void [[INNER_LAMBDA]]({{.+}} [[ARG_PTR:%.+]])
+        // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
+
+        sivar += 4;
+        // LAMBDA: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
+
+        // LAMBDA: [[SIVAR_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
+        // LAMBDA: [[SIVAR_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[SIVAR_PTR_REF]]
+        // LAMBDA: [[SIVAR_VAL:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[SIVAR_REF]]
+        // LAMBDA: [[SIVAR_INC:%.+]] = add{{.+}} [[SIVAR_VAL]], 4
+        // LAMBDA: store i{{[0-9]+}} [[SIVAR_INC]], i{{[0-9]+}}* [[SIVAR_REF]]
+      }();
+    }
   }();
   return 0;
 #else
 #pragma omp target
-#pragma omp teams distribute simd reduction(+: sivar)
+#pragma omp teams distribute simd reduction(+ \
+                                            : sivar)
   for (int i = 0; i < 2; ++i) {
     sivar += i;
   }
@@ -176,7 +179,6 @@ int main() {
 // CHECK-DAG: [[ATOMIC_RES:%.+]] = atomicrmw add{{.+}} [[SIVAR_REF]], {{.+}} [[SIVAR_PRIV_VAL]]
 // CHECK: call void @__kmpc_end_reduce({{.+}}, {{.+}}, {{.+}} [[RED_VAR]])
 // CHECK: br
-
 
 // CHECK: define{{.*}} i{{[0-9]+}} @[[TMAIN_INT]]()
 // CHECK: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}}, i64 -1, i8* @{{[^,]+}}, i32 1,

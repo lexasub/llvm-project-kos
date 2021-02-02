@@ -1,1 +1,3 @@
-typedef struct { int x; } TypedefStructHidden_t;
+typedef struct {
+  int x;
+} TypedefStructHidden_t;

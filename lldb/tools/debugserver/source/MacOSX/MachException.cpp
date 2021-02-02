@@ -130,16 +130,18 @@ catch_mach_exception_raise(mach_port_t exc_port, mach_port_t thread_port,
 }
 
 void MachException::Message::Dump() const {
-  DNBLogThreadedIf(LOG_EXCEPTIONS, "  exc_msg { bits = 0x%8.8x size = 0x%8.8x "
-                                   "remote-port = 0x%8.8x local-port = 0x%8.8x "
-                                   "reserved = 0x%8.8x id = 0x%8.8x } ",
+  DNBLogThreadedIf(LOG_EXCEPTIONS,
+                   "  exc_msg { bits = 0x%8.8x size = 0x%8.8x "
+                   "remote-port = 0x%8.8x local-port = 0x%8.8x "
+                   "reserved = 0x%8.8x id = 0x%8.8x } ",
                    exc_msg.hdr.msgh_bits, exc_msg.hdr.msgh_size,
                    exc_msg.hdr.msgh_remote_port, exc_msg.hdr.msgh_local_port,
                    exc_msg.hdr.msgh_reserved, exc_msg.hdr.msgh_id);
 
-  DNBLogThreadedIf(LOG_EXCEPTIONS, "reply_msg { bits = 0x%8.8x size = 0x%8.8x "
-                                   "remote-port = 0x%8.8x local-port = 0x%8.8x "
-                                   "reserved = 0x%8.8x id = 0x%8.8x }",
+  DNBLogThreadedIf(LOG_EXCEPTIONS,
+                   "reply_msg { bits = 0x%8.8x size = 0x%8.8x "
+                   "remote-port = 0x%8.8x local-port = 0x%8.8x "
+                   "reserved = 0x%8.8x id = 0x%8.8x }",
                    reply_msg.hdr.msgh_bits, reply_msg.hdr.msgh_size,
                    reply_msg.hdr.msgh_remote_port,
                    reply_msg.hdr.msgh_local_port, reply_msg.hdr.msgh_reserved,
@@ -325,16 +327,17 @@ kern_return_t MachException::Message::Reply(MachProcess *process, int signal) {
     }
   }
 
-  DNBLogThreadedIf(
-      LOG_EXCEPTIONS, "::mach_msg ( msg->{bits = %#x, size = %u, remote_port = "
-                      "%#x, local_port = %#x, reserved = 0x%x, id = 0x%x}, "
-                      "option = %#x, send_size = %u, rcv_size = %u, rcv_name = "
-                      "%#x, timeout = %u, notify = %#x)",
-      reply_msg.hdr.msgh_bits, reply_msg.hdr.msgh_size,
-      reply_msg.hdr.msgh_remote_port, reply_msg.hdr.msgh_local_port,
-      reply_msg.hdr.msgh_reserved, reply_msg.hdr.msgh_id,
-      MACH_SEND_MSG | MACH_SEND_INTERRUPT, reply_msg.hdr.msgh_size, 0,
-      MACH_PORT_NULL, MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL);
+  DNBLogThreadedIf(LOG_EXCEPTIONS,
+                   "::mach_msg ( msg->{bits = %#x, size = %u, remote_port = "
+                   "%#x, local_port = %#x, reserved = 0x%x, id = 0x%x}, "
+                   "option = %#x, send_size = %u, rcv_size = %u, rcv_name = "
+                   "%#x, timeout = %u, notify = %#x)",
+                   reply_msg.hdr.msgh_bits, reply_msg.hdr.msgh_size,
+                   reply_msg.hdr.msgh_remote_port,
+                   reply_msg.hdr.msgh_local_port, reply_msg.hdr.msgh_reserved,
+                   reply_msg.hdr.msgh_id, MACH_SEND_MSG | MACH_SEND_INTERRUPT,
+                   reply_msg.hdr.msgh_size, 0, MACH_PORT_NULL,
+                   MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL);
 
   err = ::mach_msg(&reply_msg.hdr, MACH_SEND_MSG | MACH_SEND_INTERRUPT,
                    reply_msg.hdr.msgh_size, 0, MACH_PORT_NULL,
@@ -362,10 +365,11 @@ kern_return_t MachException::Message::Reply(MachProcess *process, int signal) {
 
 void MachException::Data::Dump() const {
   const char *exc_type_name = MachException::Name(exc_type);
-  DNBLogThreadedIf(
-      LOG_EXCEPTIONS, "    state { task_port = 0x%4.4x, thread_port =  "
-                      "0x%4.4x, exc_type = %i (%s) ...",
-      task_port, thread_port, exc_type, exc_type_name ? exc_type_name : "???");
+  DNBLogThreadedIf(LOG_EXCEPTIONS,
+                   "    state { task_port = 0x%4.4x, thread_port =  "
+                   "0x%4.4x, exc_type = %i (%s) ...",
+                   task_port, thread_port, exc_type,
+                   exc_type_name ? exc_type_name : "???");
 
   const size_t exc_data_count = exc_data.size();
   // Dump any special exception data contents
@@ -394,18 +398,11 @@ void MachException::Data::Dump() const {
 // PREV_EXC_MASK_ALL if the EXC_MASK_ALL value lldb was compiled with is
 // not recognized.
 
-#define PREV_EXC_MASK_ALL (EXC_MASK_BAD_ACCESS |                \
-                         EXC_MASK_BAD_INSTRUCTION |             \
-                         EXC_MASK_ARITHMETIC |                  \
-                         EXC_MASK_EMULATION |                   \
-                         EXC_MASK_SOFTWARE |                    \
-                         EXC_MASK_BREAKPOINT |                  \
-                         EXC_MASK_SYSCALL |                     \
-                         EXC_MASK_MACH_SYSCALL |                \
-                         EXC_MASK_RPC_ALERT |                   \
-                         EXC_MASK_RESOURCE |                    \
-                         EXC_MASK_GUARD |                       \
-                         EXC_MASK_MACHINE)
+#define PREV_EXC_MASK_ALL                                                      \
+  (EXC_MASK_BAD_ACCESS | EXC_MASK_BAD_INSTRUCTION | EXC_MASK_ARITHMETIC |      \
+   EXC_MASK_EMULATION | EXC_MASK_SOFTWARE | EXC_MASK_BREAKPOINT |              \
+   EXC_MASK_SYSCALL | EXC_MASK_MACH_SYSCALL | EXC_MASK_RPC_ALERT |             \
+   EXC_MASK_RESOURCE | EXC_MASK_GUARD | EXC_MASK_MACHINE)
 
 #define LLDB_EXC_MASK EXC_MASK_ALL
 

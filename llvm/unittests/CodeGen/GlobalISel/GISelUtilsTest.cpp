@@ -81,7 +81,6 @@ TEST(GISelUtilsTest, getGCDType) {
   EXPECT_EQ(P0, getGCDType(P0, V2P0));
   EXPECT_EQ(P0, getGCDType(V2P0, P0));
 
-
   EXPECT_EQ(V2P0, getGCDType(V2P0, V2P0));
   EXPECT_EQ(P0, getGCDType(V3P0, V2P0));
   EXPECT_EQ(P0, getGCDType(V2P0, V3P0));
@@ -122,10 +121,10 @@ TEST(GISelUtilsTest, getGCDType) {
   EXPECT_EQ(LLT::scalar(3), getGCDType(LLT::vector(2, 6), LLT::vector(3, 5)));
 
   // Have to go smaller than a pointer element.
-  EXPECT_EQ(LLT::scalar(3), getGCDType(LLT::vector(2, LLT::pointer(3, 6)),
-                                       LLT::vector(3, 5)));
-  EXPECT_EQ(LLT::scalar(3), getGCDType(LLT::vector(3, 5),
-                                       LLT::vector(2, LLT::pointer(3, 6))));
+  EXPECT_EQ(LLT::scalar(3),
+            getGCDType(LLT::vector(2, LLT::pointer(3, 6)), LLT::vector(3, 5)));
+  EXPECT_EQ(LLT::scalar(3),
+            getGCDType(LLT::vector(3, 5), LLT::vector(2, LLT::pointer(3, 6))));
 
   EXPECT_EQ(V4S8, getGCDType(V4S8, S32));
   EXPECT_EQ(S32, getGCDType(S32, V4S8));
@@ -138,12 +137,11 @@ TEST(GISelUtilsTest, getGCDType) {
   EXPECT_EQ(S8, getGCDType(V2S8, LLT::vector(4, 2)));
   EXPECT_EQ(LLT::vector(4, 2), getGCDType(LLT::vector(4, 2), S8));
 
+  EXPECT_EQ(LLT::pointer(4, 8),
+            getGCDType(LLT::vector(2, LLT::pointer(4, 8)), LLT::vector(4, 2)));
 
-  EXPECT_EQ(LLT::pointer(4, 8), getGCDType(LLT::vector(2, LLT::pointer(4, 8)),
-                                           LLT::vector(4, 2)));
-
-  EXPECT_EQ(LLT::vector(4, 2), getGCDType(LLT::vector(4, 2),
-                                          LLT::vector(2, LLT::pointer(4, 8))));
+  EXPECT_EQ(LLT::vector(4, 2),
+            getGCDType(LLT::vector(4, 2), LLT::vector(2, LLT::pointer(4, 8))));
 
   EXPECT_EQ(LLT::scalar(4), getGCDType(LLT::vector(3, 4), S8));
   EXPECT_EQ(LLT::scalar(4), getGCDType(S8, LLT::vector(3, 4)));
@@ -201,13 +199,11 @@ TEST(GISelUtilsTest, getLCMType) {
   EXPECT_EQ(V2P0, getLCMType(V2P0, S64));
   EXPECT_EQ(V2S64, getLCMType(S64, V2P0));
 
-
   EXPECT_EQ(V2P0, getLCMType(V2P0, V2P1));
   EXPECT_EQ(V4P1, getLCMType(V2P1, V2P0));
 
   EXPECT_EQ(V2P0, getLCMType(V2P0, V4P1));
   EXPECT_EQ(V4P1, getLCMType(V4P1, V2P0));
-
 
   EXPECT_EQ(V2S32, getLCMType(V2S32, S64));
   EXPECT_EQ(S64, getLCMType(S64, V2S32));
@@ -241,4 +237,4 @@ TEST(GISelUtilsTest, getLCMType) {
   EXPECT_EQ(V4P1, getLCMType(P1, V2S64));
 }
 
-}
+} // namespace

@@ -15,22 +15,23 @@
  * a leaf of this schedule tree.
  */
 struct isl_schedule {
-	int ref;
+  int ref;
 
-	isl_schedule_tree *root;
+  isl_schedule_tree *root;
 
-	struct isl_schedule_tree *leaf;
+  struct isl_schedule_tree *leaf;
 };
 
-__isl_give isl_schedule *isl_schedule_from_schedule_tree(isl_ctx *ctx,
-	__isl_take isl_schedule_tree *tree);
-__isl_give isl_schedule *isl_schedule_set_root(
-	__isl_take isl_schedule *schedule, __isl_take isl_schedule_tree *tree);
-__isl_give isl_space *isl_schedule_get_space(
-	__isl_keep isl_schedule *schedule);
-__isl_give isl_union_set *isl_schedule_get_domain(
-	__isl_keep isl_schedule *schedule);
-__isl_keep isl_schedule_tree *isl_schedule_peek_leaf(
-	__isl_keep isl_schedule *schedule);
+__isl_give isl_schedule *
+isl_schedule_from_schedule_tree(isl_ctx *ctx,
+                                __isl_take isl_schedule_tree *tree);
+__isl_give isl_schedule *
+isl_schedule_set_root(__isl_take isl_schedule *schedule,
+                      __isl_take isl_schedule_tree *tree);
+__isl_give isl_space *isl_schedule_get_space(__isl_keep isl_schedule *schedule);
+__isl_give isl_union_set *
+isl_schedule_get_domain(__isl_keep isl_schedule *schedule);
+__isl_keep isl_schedule_tree *
+isl_schedule_peek_leaf(__isl_keep isl_schedule *schedule);
 
 #endif

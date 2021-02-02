@@ -122,8 +122,7 @@ void hexagon::getHexagonTargetFeatures(const Driver &D, const ArgList &Args,
 
 // Hexagon tools start.
 void hexagon::Assembler::RenderExtraToolArgs(const JobAction &JA,
-                                             ArgStringList &CmdArgs) const {
-}
+                                             ArgStringList &CmdArgs) const {}
 
 void hexagon::Assembler::ConstructJob(Compilation &C, const JobAction &JA,
                                       const InputInfo &Output,
@@ -132,7 +131,7 @@ void hexagon::Assembler::ConstructJob(Compilation &C, const JobAction &JA,
                                       const char *LinkingOutput) const {
   claimNoWarnArgs(Args);
 
-  auto &HTC = static_cast<const toolchains::HexagonToolChain&>(getToolChain());
+  auto &HTC = static_cast<const toolchains::HexagonToolChain &>(getToolChain());
   const Driver &D = HTC.getDriver();
   ArgStringList CmdArgs;
 
@@ -174,11 +173,9 @@ void hexagon::Assembler::ConstructJob(Compilation &C, const JobAction &JA,
       D.Diag(clang::diag::err_drv_no_linker_llvm_support)
           << HTC.getTripleString();
     else if (II.getType() == types::TY_AST)
-      D.Diag(clang::diag::err_drv_no_ast_support)
-          << HTC.getTripleString();
+      D.Diag(clang::diag::err_drv_no_ast_support) << HTC.getTripleString();
     else if (II.getType() == types::TY_ModuleFile)
-      D.Diag(diag::err_drv_no_module_support)
-          << HTC.getTripleString();
+      D.Diag(diag::err_drv_no_module_support) << HTC.getTripleString();
 
     if (II.isFilename())
       CmdArgs.push_back(II.getFilename());
@@ -195,15 +192,15 @@ void hexagon::Assembler::ConstructJob(Compilation &C, const JobAction &JA,
 }
 
 void hexagon::Linker::RenderExtraToolArgs(const JobAction &JA,
-                                          ArgStringList &CmdArgs) const {
-}
+                                          ArgStringList &CmdArgs) const {}
 
-static void
-constructHexagonLinkArgs(Compilation &C, const JobAction &JA,
-                         const toolchains::HexagonToolChain &HTC,
-                         const InputInfo &Output, const InputInfoList &Inputs,
-                         const ArgList &Args, ArgStringList &CmdArgs,
-                         const char *LinkingOutput) {
+static void constructHexagonLinkArgs(Compilation &C, const JobAction &JA,
+                                     const toolchains::HexagonToolChain &HTC,
+                                     const InputInfo &Output,
+                                     const InputInfoList &Inputs,
+                                     const ArgList &Args,
+                                     ArgStringList &CmdArgs,
+                                     const char *LinkingOutput) {
 
   const Driver &D = HTC.getDriver();
 
@@ -323,8 +320,8 @@ constructHexagonLinkArgs(Compilation &C, const JobAction &JA,
   const std::string StartSubDir =
       "hexagon/lib" + (UseG0 ? MCpuG0Suffix : MCpuSuffix);
 
-  auto Find = [&HTC] (const std::string &RootDir, const std::string &SubDir,
-                      const char *Name) -> std::string {
+  auto Find = [&HTC](const std::string &RootDir, const std::string &SubDir,
+                     const char *Name) -> std::string {
     std::string RelName = SubDir + Name;
     std::string P = HTC.GetFilePath(RelName.c_str());
     if (llvm::sys::fs::exists(P))
@@ -342,8 +339,8 @@ constructHexagonLinkArgs(Compilation &C, const JobAction &JA,
       CmdArgs.push_back(Args.MakeArgString(Crt0));
     }
     std::string Init = UseShared
-          ? Find(RootDir, StartSubDir + "/pic", "/initS.o")
-          : Find(RootDir, StartSubDir, "/init.o");
+                           ? Find(RootDir, StartSubDir + "/pic", "/initS.o")
+                           : Find(RootDir, StartSubDir, "/init.o");
     CmdArgs.push_back(Args.MakeArgString(Init));
   }
 
@@ -390,8 +387,8 @@ constructHexagonLinkArgs(Compilation &C, const JobAction &JA,
   //----------------------------------------------------------------------------
   if (IncStdLib && IncStartFiles) {
     std::string Fini = UseShared
-          ? Find(RootDir, StartSubDir + "/pic", "/finiS.o")
-          : Find(RootDir, StartSubDir, "/fini.o");
+                           ? Find(RootDir, StartSubDir + "/pic", "/finiS.o")
+                           : Find(RootDir, StartSubDir, "/fini.o");
     CmdArgs.push_back(Args.MakeArgString(Fini));
   }
 }
@@ -401,7 +398,7 @@ void hexagon::Linker::ConstructJob(Compilation &C, const JobAction &JA,
                                    const InputInfoList &Inputs,
                                    const ArgList &Args,
                                    const char *LinkingOutput) const {
-  auto &HTC = static_cast<const toolchains::HexagonToolChain&>(getToolChain());
+  auto &HTC = static_cast<const toolchains::HexagonToolChain &>(getToolChain());
 
   ArgStringList CmdArgs;
   constructHexagonLinkArgs(C, JA, HTC, Output, Inputs, Args, CmdArgs,
@@ -417,8 +414,8 @@ void hexagon::Linker::ConstructJob(Compilation &C, const JobAction &JA,
 /// Hexagon Toolchain
 
 std::string HexagonToolChain::getHexagonTargetDir(
-      const std::string &InstalledDir,
-      const SmallVectorImpl<std::string> &PrefixDirs) const {
+    const std::string &InstalledDir,
+    const SmallVectorImpl<std::string> &PrefixDirs) const {
   std::string InstallRelDir;
   const Driver &D = getDriver();
 
@@ -433,8 +430,8 @@ std::string HexagonToolChain::getHexagonTargetDir(
   return InstalledDir;
 }
 
-Optional<unsigned> HexagonToolChain::getSmallDataThreshold(
-      const ArgList &Args) {
+Optional<unsigned>
+HexagonToolChain::getSmallDataThreshold(const ArgList &Args) {
   StringRef Gn = "";
   if (Arg *A = Args.getLastArg(options::OPT_G)) {
     Gn = A->getValue();
@@ -450,8 +447,8 @@ Optional<unsigned> HexagonToolChain::getSmallDataThreshold(
   return None;
 }
 
-void HexagonToolChain::getHexagonLibraryPaths(const ArgList &Args,
-      ToolChain::path_list &LibPaths) const {
+void HexagonToolChain::getHexagonLibraryPaths(
+    const ArgList &Args, ToolChain::path_list &LibPaths) const {
   const Driver &D = getDriver();
 
   //----------------------------------------------------------------------------
@@ -468,8 +465,8 @@ void HexagonToolChain::getHexagonLibraryPaths(const ArgList &Args,
   std::copy(D.PrefixDirs.begin(), D.PrefixDirs.end(),
             std::back_inserter(RootDirs));
 
-  std::string TargetDir = getHexagonTargetDir(D.getInstalledDir(),
-                                              D.PrefixDirs);
+  std::string TargetDir =
+      getHexagonTargetDir(D.getInstalledDir(), D.PrefixDirs);
   if (llvm::find(RootDirs, TargetDir) == RootDirs.end())
     RootDirs.push_back(TargetDir);
 
@@ -496,8 +493,8 @@ void HexagonToolChain::getHexagonLibraryPaths(const ArgList &Args,
 HexagonToolChain::HexagonToolChain(const Driver &D, const llvm::Triple &Triple,
                                    const llvm::opt::ArgList &Args)
     : Linux(D, Triple, Args) {
-  const std::string TargetDir = getHexagonTargetDir(D.getInstalledDir(),
-                                                    D.PrefixDirs);
+  const std::string TargetDir =
+      getHexagonTargetDir(D.getInstalledDir(), D.PrefixDirs);
 
   // Note: Generic_GCC::Generic_GCC adds InstalledDir and getDriver().Dir to
   // program paths
@@ -572,8 +569,7 @@ void HexagonToolChain::addClangTargetOptions(const ArgList &DriverArgs,
   bool UseInitArrayDefault = getTriple().isMusl();
 
   if (!DriverArgs.hasFlag(options::OPT_fuse_init_array,
-                          options::OPT_fno_use_init_array,
-                          UseInitArrayDefault))
+                          options::OPT_fno_use_init_array, UseInitArrayDefault))
     CC1Args.push_back("-fno-use-init-array");
 
   if (DriverArgs.hasArg(options::OPT_ffixed_r19)) {
@@ -603,8 +599,8 @@ void HexagonToolChain::AddClangSystemIncludeArgs(const ArgList &DriverArgs,
     return;
   }
 
-  std::string TargetDir = getHexagonTargetDir(D.getInstalledDir(),
-                                              D.PrefixDirs);
+  std::string TargetDir =
+      getHexagonTargetDir(D.getInstalledDir(), D.PrefixDirs);
   addExternCSystemInclude(DriverArgs, CC1Args, TargetDir + "/hexagon/include");
 }
 
@@ -655,8 +651,8 @@ HexagonToolChain::GetCXXStdlibType(const ArgList &Args) const {
 }
 
 bool HexagonToolChain::isAutoHVXEnabled(const llvm::opt::ArgList &Args) {
-  if (Arg *A = Args.getLastArg(options::OPT_fvectorize,
-                               options::OPT_fno_vectorize))
+  if (Arg *A =
+          Args.getLastArg(options::OPT_fvectorize, options::OPT_fno_vectorize))
     return A->getOption().matches(options::OPT_fvectorize);
   return false;
 }
@@ -665,9 +661,7 @@ bool HexagonToolChain::isAutoHVXEnabled(const llvm::opt::ArgList &Args) {
 // Returns the default CPU for Hexagon. This is the default compilation target
 // if no Hexagon processor is selected at the command-line.
 //
-const StringRef HexagonToolChain::GetDefaultCPU() {
-  return "hexagonv60";
-}
+const StringRef HexagonToolChain::GetDefaultCPU() { return "hexagonv60"; }
 
 const StringRef HexagonToolChain::GetTargetCPUVersion(const ArgList &Args) {
   Arg *CpuArg = nullptr;

@@ -244,9 +244,10 @@ parseSetSectionAlignment(StringRef FlagValue) {
         "bad format for --set-section-alignment: missing section name");
   uint64_t NewAlign;
   if (Split.second.getAsInteger(0, NewAlign))
-    return createStringError(errc::invalid_argument,
-                             "invalid alignment for --set-section-alignment: '%s'",
-                             Split.second.str().c_str());
+    return createStringError(
+        errc::invalid_argument,
+        "invalid alignment for --set-section-alignment: '%s'",
+        Split.second.str().c_str());
   return std::make_pair(Split.first, NewAlign);
 }
 
@@ -526,11 +527,10 @@ parseObjcopyOptions(ArrayRef<const char *> ArgsArr,
   MatchStyle SectionMatchStyle = InputArgs.hasArg(OBJCOPY_regex)
                                      ? MatchStyle::Regex
                                      : MatchStyle::Wildcard;
-  MatchStyle SymbolMatchStyle = InputArgs.hasArg(OBJCOPY_regex)
-                                    ? MatchStyle::Regex
-                                    : InputArgs.hasArg(OBJCOPY_wildcard)
-                                          ? MatchStyle::Wildcard
-                                          : MatchStyle::Literal;
+  MatchStyle SymbolMatchStyle =
+      InputArgs.hasArg(OBJCOPY_regex)      ? MatchStyle::Regex
+      : InputArgs.hasArg(OBJCOPY_wildcard) ? MatchStyle::Wildcard
+                                           : MatchStyle::Literal;
   StringRef InputFormat, OutputFormat;
   if (InputArgs.hasArg(OBJCOPY_target)) {
     InputFormat = InputArgs.getLastArgValue(OBJCOPY_target);
@@ -1083,11 +1083,10 @@ parseStripOptions(ArrayRef<const char *> ArgsArr,
                              "--regex and --wildcard are incompatible");
   MatchStyle SectionMatchStyle =
       InputArgs.hasArg(STRIP_regex) ? MatchStyle::Regex : MatchStyle::Wildcard;
-  MatchStyle SymbolMatchStyle = InputArgs.hasArg(STRIP_regex)
-                                    ? MatchStyle::Regex
-                                    : InputArgs.hasArg(STRIP_wildcard)
-                                          ? MatchStyle::Wildcard
-                                          : MatchStyle::Literal;
+  MatchStyle SymbolMatchStyle =
+      InputArgs.hasArg(STRIP_regex)      ? MatchStyle::Regex
+      : InputArgs.hasArg(STRIP_wildcard) ? MatchStyle::Wildcard
+                                         : MatchStyle::Literal;
   Config.AllowBrokenLinks = InputArgs.hasArg(STRIP_allow_broken_links);
   Config.StripDebug = InputArgs.hasArg(STRIP_strip_debug);
 

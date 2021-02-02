@@ -33,7 +33,7 @@ struct StripNonLineTableDebugLegacyPass : public ModulePass {
     return llvm::stripNonLineTableDebugInfo(M);
   }
 };
-}
+} // namespace
 
 char StripNonLineTableDebugLegacyPass::ID = 0;
 INITIALIZE_PASS(StripNonLineTableDebugLegacyPass,

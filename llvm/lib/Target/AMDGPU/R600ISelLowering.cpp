@@ -95,10 +95,10 @@ R600TargetLowering::R600TargetLowering(const TargetMachine &TM,
   setTruncStoreAction(MVT::v4i32, MVT::v4i1, Expand);
 
   // Set condition code actions
-  setCondCodeAction(ISD::SETO,   MVT::f32, Expand);
-  setCondCodeAction(ISD::SETUO,  MVT::f32, Expand);
-  setCondCodeAction(ISD::SETLT,  MVT::f32, Expand);
-  setCondCodeAction(ISD::SETLE,  MVT::f32, Expand);
+  setCondCodeAction(ISD::SETO, MVT::f32, Expand);
+  setCondCodeAction(ISD::SETUO, MVT::f32, Expand);
+  setCondCodeAction(ISD::SETLT, MVT::f32, Expand);
+  setCondCodeAction(ISD::SETLE, MVT::f32, Expand);
   setCondCodeAction(ISD::SETOLT, MVT::f32, Expand);
   setCondCodeAction(ISD::SETOLE, MVT::f32, Expand);
   setCondCodeAction(ISD::SETONE, MVT::f32, Expand);
@@ -227,7 +227,7 @@ R600TargetLowering::R600TargetLowering(const TargetMachine &TM,
 
   setOperationAction(ISD::GlobalAddress, MVT::i32, Custom);
 
-  const MVT ScalarIntVTs[] = { MVT::i32, MVT::i64 };
+  const MVT ScalarIntVTs[] = {MVT::i32, MVT::i64};
   for (MVT VT : ScalarIntVTs) {
     setOperationAction(ISD::ADDC, VT, Expand);
     setOperationAction(ISD::SUBC, VT, Expand);
@@ -311,17 +311,18 @@ R600TargetLowering::EmitInstrWithCustomInserter(MachineInstr &MI,
   case R600::MASK_WRITE: {
     Register maskedRegister = MI.getOperand(0).getReg();
     assert(maskedRegister.isVirtual());
-    MachineInstr * defInstr = MRI.getVRegDef(maskedRegister);
+    MachineInstr *defInstr = MRI.getVRegDef(maskedRegister);
     TII->addFlag(*defInstr, 0, MO_FLAG_MASK);
     break;
   }
 
   case R600::MOV_IMM_F32:
-    TII->buildMovImm(*BB, I, MI.getOperand(0).getReg(), MI.getOperand(1)
-                                                            .getFPImm()
-                                                            ->getValueAPF()
-                                                            .bitcastToAPInt()
-                                                            .getZExtValue());
+    TII->buildMovImm(*BB, I, MI.getOperand(0).getReg(),
+                     MI.getOperand(1)
+                         .getFPImm()
+                         ->getValueAPF()
+                         .bitcastToAPInt()
+                         .getZExtValue());
     break;
 
   case R600::MOV_IMM_I32:
@@ -330,11 +331,11 @@ R600TargetLowering::EmitInstrWithCustomInserter(MachineInstr &MI,
     break;
 
   case R600::MOV_IMM_GLOBAL_ADDR: {
-    //TODO: Perhaps combine this instruction with the next if possible
+    // TODO: Perhaps combine this instruction with the next if possible
     auto MIB = TII->buildDefaultInstruction(
         *BB, MI, R600::MOV, MI.getOperand(0).getReg(), R600::ALU_LITERAL_X);
     int Idx = TII->getOperandIdx(*MIB, R600::OpName::literal);
-    //TODO: Ugh this is rather ugly
+    // TODO: Ugh this is rather ugly
     MIB->getOperand(Idx) = MI.getOperand(1);
     break;
   }
@@ -403,12 +404,12 @@ R600TargetLowering::EmitInstrWithCustomInserter(MachineInstr &MI,
     bool isLastInstructionOfItsType = true;
     unsigned InstExportType = MI.getOperand(1).getImm();
     for (MachineBasicBlock::iterator NextExportInst = std::next(I),
-         EndBlock = BB->end(); NextExportInst != EndBlock;
+                                     EndBlock = BB->end();
+         NextExportInst != EndBlock;
          NextExportInst = std::next(NextExportInst)) {
       if (NextExportInst->getOpcode() == R600::EG_ExportSwz ||
           NextExportInst->getOpcode() == R600::R600_ExportSwz) {
-        unsigned CurrentInstExportType = NextExportInst->getOperand(1)
-            .getImm();
+        unsigned CurrentInstExportType = NextExportInst->getOperand(1).getImm();
         if (CurrentInstExportType == InstExportType) {
           isLastInstructionOfItsType = false;
           break;
@@ -444,62 +445,76 @@ R600TargetLowering::EmitInstrWithCustomInserter(MachineInstr &MI,
 // Custom DAG Lowering Operations
 //===----------------------------------------------------------------------===//
 
-SDValue R600TargetLowering::LowerOperation(SDValue Op, SelectionDAG &DAG) const {
+SDValue R600TargetLowering::LowerOperation(SDValue Op,
+                                           SelectionDAG &DAG) const {
   MachineFunction &MF = DAG.getMachineFunction();
   R600MachineFunctionInfo *MFI = MF.getInfo<R600MachineFunctionInfo>();
   switch (Op.getOpcode()) {
-  default: return AMDGPUTargetLowering::LowerOperation(Op, DAG);
-  case ISD::EXTRACT_VECTOR_ELT: return LowerEXTRACT_VECTOR_ELT(Op, DAG);
-  case ISD::INSERT_VECTOR_ELT: return LowerINSERT_VECTOR_ELT(Op, DAG);
-  case ISD::SHL_PARTS: return LowerSHLParts(Op, DAG);
+  default:
+    return AMDGPUTargetLowering::LowerOperation(Op, DAG);
+  case ISD::EXTRACT_VECTOR_ELT:
+    return LowerEXTRACT_VECTOR_ELT(Op, DAG);
+  case ISD::INSERT_VECTOR_ELT:
+    return LowerINSERT_VECTOR_ELT(Op, DAG);
+  case ISD::SHL_PARTS:
+    return LowerSHLParts(Op, DAG);
   case ISD::SRA_PARTS:
-  case ISD::SRL_PARTS: return LowerSRXParts(Op, DAG);
-  case ISD::UADDO: return LowerUADDSUBO(Op, DAG, ISD::ADD, AMDGPUISD::CARRY);
-  case ISD::USUBO: return LowerUADDSUBO(Op, DAG, ISD::SUB, AMDGPUISD::BORROW);
+  case ISD::SRL_PARTS:
+    return LowerSRXParts(Op, DAG);
+  case ISD::UADDO:
+    return LowerUADDSUBO(Op, DAG, ISD::ADD, AMDGPUISD::CARRY);
+  case ISD::USUBO:
+    return LowerUADDSUBO(Op, DAG, ISD::SUB, AMDGPUISD::BORROW);
   case ISD::FCOS:
-  case ISD::FSIN: return LowerTrig(Op, DAG);
-  case ISD::SELECT_CC: return LowerSELECT_CC(Op, DAG);
-  case ISD::STORE: return LowerSTORE(Op, DAG);
+  case ISD::FSIN:
+    return LowerTrig(Op, DAG);
+  case ISD::SELECT_CC:
+    return LowerSELECT_CC(Op, DAG);
+  case ISD::STORE:
+    return LowerSTORE(Op, DAG);
   case ISD::LOAD: {
     SDValue Result = LowerLOAD(Op, DAG);
-    assert((!Result.getNode() ||
-            Result.getNode()->getNumValues() == 2) &&
+    assert((!Result.getNode() || Result.getNode()->getNumValues() == 2) &&
            "Load should return a value and a chain");
     return Result;
   }
 
-  case ISD::BRCOND: return LowerBRCOND(Op, DAG);
-  case ISD::GlobalAddress: return LowerGlobalAddress(MFI, Op, DAG);
-  case ISD::FrameIndex: return lowerFrameIndex(Op, DAG);
+  case ISD::BRCOND:
+    return LowerBRCOND(Op, DAG);
+  case ISD::GlobalAddress:
+    return LowerGlobalAddress(MFI, Op, DAG);
+  case ISD::FrameIndex:
+    return lowerFrameIndex(Op, DAG);
   case ISD::INTRINSIC_VOID: {
     SDValue Chain = Op.getOperand(0);
     unsigned IntrinsicID =
-                         cast<ConstantSDNode>(Op.getOperand(1))->getZExtValue();
+        cast<ConstantSDNode>(Op.getOperand(1))->getZExtValue();
     switch (IntrinsicID) {
     case Intrinsic::r600_store_swizzle: {
       SDLoc DL(Op);
       const SDValue Args[8] = {
-        Chain,
-        Op.getOperand(2), // Export Value
-        Op.getOperand(3), // ArrayBase
-        Op.getOperand(4), // Type
-        DAG.getConstant(0, DL, MVT::i32), // SWZ_X
-        DAG.getConstant(1, DL, MVT::i32), // SWZ_Y
-        DAG.getConstant(2, DL, MVT::i32), // SWZ_Z
-        DAG.getConstant(3, DL, MVT::i32) // SWZ_W
+          Chain,
+          Op.getOperand(2),                 // Export Value
+          Op.getOperand(3),                 // ArrayBase
+          Op.getOperand(4),                 // Type
+          DAG.getConstant(0, DL, MVT::i32), // SWZ_X
+          DAG.getConstant(1, DL, MVT::i32), // SWZ_Y
+          DAG.getConstant(2, DL, MVT::i32), // SWZ_Z
+          DAG.getConstant(3, DL, MVT::i32)  // SWZ_W
       };
       return DAG.getNode(AMDGPUISD::R600_EXPORT, DL, Op.getValueType(), Args);
     }
 
     // default for switch(IntrinsicID)
-    default: break;
+    default:
+      break;
     }
     // break out of case ISD::INTRINSIC_VOID in switch(Op.getOpcode())
     break;
   }
   case ISD::INTRINSIC_WO_CHAIN: {
     unsigned IntrinsicID =
-                         cast<ConstantSDNode>(Op.getOperand(0))->getZExtValue();
+        cast<ConstantSDNode>(Op.getOperand(0))->getZExtValue();
     EVT VT = Op.getValueType();
     SDLoc DL(Op);
     switch (IntrinsicID) {
@@ -517,48 +532,45 @@ SDValue R600TargetLowering::LowerOperation(SDValue Op, SelectionDAG &DAG) const 
         llvm_unreachable("unhandled texture operation");
       }
 
-      SDValue TexArgs[19] = {
-        DAG.getConstant(TextureOp, DL, MVT::i32),
-        Op.getOperand(1),
-        DAG.getConstant(0, DL, MVT::i32),
-        DAG.getConstant(1, DL, MVT::i32),
-        DAG.getConstant(2, DL, MVT::i32),
-        DAG.getConstant(3, DL, MVT::i32),
-        Op.getOperand(2),
-        Op.getOperand(3),
-        Op.getOperand(4),
-        DAG.getConstant(0, DL, MVT::i32),
-        DAG.getConstant(1, DL, MVT::i32),
-        DAG.getConstant(2, DL, MVT::i32),
-        DAG.getConstant(3, DL, MVT::i32),
-        Op.getOperand(5),
-        Op.getOperand(6),
-        Op.getOperand(7),
-        Op.getOperand(8),
-        Op.getOperand(9),
-        Op.getOperand(10)
-      };
+      SDValue TexArgs[19] = {DAG.getConstant(TextureOp, DL, MVT::i32),
+                             Op.getOperand(1),
+                             DAG.getConstant(0, DL, MVT::i32),
+                             DAG.getConstant(1, DL, MVT::i32),
+                             DAG.getConstant(2, DL, MVT::i32),
+                             DAG.getConstant(3, DL, MVT::i32),
+                             Op.getOperand(2),
+                             Op.getOperand(3),
+                             Op.getOperand(4),
+                             DAG.getConstant(0, DL, MVT::i32),
+                             DAG.getConstant(1, DL, MVT::i32),
+                             DAG.getConstant(2, DL, MVT::i32),
+                             DAG.getConstant(3, DL, MVT::i32),
+                             Op.getOperand(5),
+                             Op.getOperand(6),
+                             Op.getOperand(7),
+                             Op.getOperand(8),
+                             Op.getOperand(9),
+                             Op.getOperand(10)};
       return DAG.getNode(AMDGPUISD::TEXTURE_FETCH, DL, MVT::v4f32, TexArgs);
     }
     case Intrinsic::r600_dot4: {
       SDValue Args[8] = {
-      DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, MVT::f32, Op.getOperand(1),
-          DAG.getConstant(0, DL, MVT::i32)),
-      DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, MVT::f32, Op.getOperand(2),
-          DAG.getConstant(0, DL, MVT::i32)),
-      DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, MVT::f32, Op.getOperand(1),
-          DAG.getConstant(1, DL, MVT::i32)),
-      DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, MVT::f32, Op.getOperand(2),
-          DAG.getConstant(1, DL, MVT::i32)),
-      DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, MVT::f32, Op.getOperand(1),
-          DAG.getConstant(2, DL, MVT::i32)),
-      DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, MVT::f32, Op.getOperand(2),
-          DAG.getConstant(2, DL, MVT::i32)),
-      DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, MVT::f32, Op.getOperand(1),
-          DAG.getConstant(3, DL, MVT::i32)),
-      DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, MVT::f32, Op.getOperand(2),
-          DAG.getConstant(3, DL, MVT::i32))
-      };
+          DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, MVT::f32, Op.getOperand(1),
+                      DAG.getConstant(0, DL, MVT::i32)),
+          DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, MVT::f32, Op.getOperand(2),
+                      DAG.getConstant(0, DL, MVT::i32)),
+          DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, MVT::f32, Op.getOperand(1),
+                      DAG.getConstant(1, DL, MVT::i32)),
+          DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, MVT::f32, Op.getOperand(2),
+                      DAG.getConstant(1, DL, MVT::i32)),
+          DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, MVT::f32, Op.getOperand(1),
+                      DAG.getConstant(2, DL, MVT::i32)),
+          DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, MVT::f32, Op.getOperand(2),
+                      DAG.getConstant(2, DL, MVT::i32)),
+          DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, MVT::f32, Op.getOperand(1),
+                      DAG.getConstant(3, DL, MVT::i32)),
+          DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, MVT::f32, Op.getOperand(2),
+                      DAG.getConstant(3, DL, MVT::i32))};
       return DAG.getNode(AMDGPUISD::DOT4, DL, MVT::f32, Args);
     }
 
@@ -695,8 +707,8 @@ SDValue R600TargetLowering::LowerEXTRACT_VECTOR_ELT(SDValue Op,
     return Op;
 
   Vector = vectorToVerticalVector(DAG, Vector);
-  return DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, Op.getValueType(),
-                     Vector, Index);
+  return DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, Op.getValueType(), Vector,
+                     Index);
 }
 
 SDValue R600TargetLowering::LowerINSERT_VECTOR_ELT(SDValue Op,
@@ -739,11 +751,12 @@ SDValue R600TargetLowering::LowerTrig(SDValue Op, SelectionDAG &DAG) const {
   SDLoc DL(Op);
 
   // TODO: Should this propagate fast-math-flags?
-  SDValue FractPart = DAG.getNode(AMDGPUISD::FRACT, DL, VT,
+  SDValue FractPart = DAG.getNode(
+      AMDGPUISD::FRACT, DL, VT,
       DAG.getNode(ISD::FADD, DL, VT,
-        DAG.getNode(ISD::FMUL, DL, VT, Arg,
-          DAG.getConstantFP(0.15915494309, DL, MVT::f32)),
-        DAG.getConstantFP(0.5, DL, MVT::f32)));
+                  DAG.getNode(ISD::FMUL, DL, VT, Arg,
+                              DAG.getConstantFP(0.15915494309, DL, MVT::f32)),
+                  DAG.getConstantFP(0.5, DL, MVT::f32)));
   unsigned TrigNode;
   switch (Op.getOpcode()) {
   case ISD::FCOS:
@@ -755,14 +768,15 @@ SDValue R600TargetLowering::LowerTrig(SDValue Op, SelectionDAG &DAG) const {
   default:
     llvm_unreachable("Wrong trig opcode");
   }
-  SDValue TrigVal = DAG.getNode(TrigNode, DL, VT,
-      DAG.getNode(ISD::FADD, DL, VT, FractPart,
-        DAG.getConstantFP(-0.5, DL, MVT::f32)));
+  SDValue TrigVal =
+      DAG.getNode(TrigNode, DL, VT,
+                  DAG.getNode(ISD::FADD, DL, VT, FractPart,
+                              DAG.getConstantFP(-0.5, DL, MVT::f32)));
   if (Gen >= AMDGPUSubtarget::R700)
     return TrigVal;
   // On R600 hw, COS/SIN input must be between -Pi and Pi.
   return DAG.getNode(ISD::FMUL, DL, VT, TrigVal,
-      DAG.getConstantFP(numbers::pif, DL, MVT::f32));
+                     DAG.getConstantFP(numbers::pif, DL, MVT::f32));
 }
 
 SDValue R600TargetLowering::LowerSHLParts(SDValue Op, SelectionDAG &DAG) const {
@@ -773,11 +787,11 @@ SDValue R600TargetLowering::LowerSHLParts(SDValue Op, SelectionDAG &DAG) const {
   SDValue Hi = Op.getOperand(1);
   SDValue Shift = Op.getOperand(2);
   SDValue Zero = DAG.getConstant(0, DL, VT);
-  SDValue One  = DAG.getConstant(1, DL, VT);
+  SDValue One = DAG.getConstant(1, DL, VT);
 
-  SDValue Width  = DAG.getConstant(VT.getSizeInBits(), DL, VT);
+  SDValue Width = DAG.getConstant(VT.getSizeInBits(), DL, VT);
   SDValue Width1 = DAG.getConstant(VT.getSizeInBits() - 1, DL, VT);
-  SDValue BigShift  = DAG.getNode(ISD::SUB, DL, VT, Shift, Width);
+  SDValue BigShift = DAG.getNode(ISD::SUB, DL, VT, Shift, Width);
   SDValue CompShift = DAG.getNode(ISD::SUB, DL, VT, Width1, Shift);
 
   // The dance around Width1 is necessary for 0 special case.
@@ -798,7 +812,7 @@ SDValue R600TargetLowering::LowerSHLParts(SDValue Op, SelectionDAG &DAG) const {
   Hi = DAG.getSelectCC(DL, Shift, Width, HiSmall, HiBig, ISD::SETULT);
   Lo = DAG.getSelectCC(DL, Shift, Width, LoSmall, LoBig, ISD::SETULT);
 
-  return DAG.getNode(ISD::MERGE_VALUES, DL, DAG.getVTList(VT,VT), Lo, Hi);
+  return DAG.getNode(ISD::MERGE_VALUES, DL, DAG.getVTList(VT, VT), Lo, Hi);
 }
 
 SDValue R600TargetLowering::LowerSRXParts(SDValue Op, SelectionDAG &DAG) const {
@@ -809,13 +823,13 @@ SDValue R600TargetLowering::LowerSRXParts(SDValue Op, SelectionDAG &DAG) const {
   SDValue Hi = Op.getOperand(1);
   SDValue Shift = Op.getOperand(2);
   SDValue Zero = DAG.getConstant(0, DL, VT);
-  SDValue One  = DAG.getConstant(1, DL, VT);
+  SDValue One = DAG.getConstant(1, DL, VT);
 
   const bool SRA = Op.getOpcode() == ISD::SRA_PARTS;
 
-  SDValue Width  = DAG.getConstant(VT.getSizeInBits(), DL, VT);
+  SDValue Width = DAG.getConstant(VT.getSizeInBits(), DL, VT);
   SDValue Width1 = DAG.getConstant(VT.getSizeInBits() - 1, DL, VT);
-  SDValue BigShift  = DAG.getNode(ISD::SUB, DL, VT, Shift, Width);
+  SDValue BigShift = DAG.getNode(ISD::SUB, DL, VT, Shift, Width);
   SDValue CompShift = DAG.getNode(ISD::SUB, DL, VT, Width1, Shift);
 
   // The dance around Width1 is necessary for 0 special case.
@@ -836,7 +850,7 @@ SDValue R600TargetLowering::LowerSRXParts(SDValue Op, SelectionDAG &DAG) const {
   Hi = DAG.getSelectCC(DL, Shift, Width, HiSmall, HiBig, ISD::SETULT);
   Lo = DAG.getSelectCC(DL, Shift, Width, LoSmall, LoBig, ISD::SETULT);
 
-  return DAG.getNode(ISD::MERGE_VALUES, DL, DAG.getVTList(VT,VT), Lo, Hi);
+  return DAG.getNode(ISD::MERGE_VALUES, DL, DAG.getVTList(VT, VT), Lo, Hi);
 }
 
 SDValue R600TargetLowering::LowerUADDSUBO(SDValue Op, SelectionDAG &DAG,
@@ -857,32 +871,28 @@ SDValue R600TargetLowering::LowerUADDSUBO(SDValue Op, SelectionDAG &DAG,
   return DAG.getNode(ISD::MERGE_VALUES, DL, DAG.getVTList(VT, VT), Res, OVF);
 }
 
-SDValue R600TargetLowering::lowerFP_TO_UINT(SDValue Op, SelectionDAG &DAG) const {
+SDValue R600TargetLowering::lowerFP_TO_UINT(SDValue Op,
+                                            SelectionDAG &DAG) const {
   SDLoc DL(Op);
-  return DAG.getNode(
-      ISD::SETCC,
-      DL,
-      MVT::i1,
-      Op, DAG.getConstantFP(1.0f, DL, MVT::f32),
-      DAG.getCondCode(ISD::SETEQ));
+  return DAG.getNode(ISD::SETCC, DL, MVT::i1, Op,
+                     DAG.getConstantFP(1.0f, DL, MVT::f32),
+                     DAG.getCondCode(ISD::SETEQ));
 }
 
-SDValue R600TargetLowering::lowerFP_TO_SINT(SDValue Op, SelectionDAG &DAG) const {
+SDValue R600TargetLowering::lowerFP_TO_SINT(SDValue Op,
+                                            SelectionDAG &DAG) const {
   SDLoc DL(Op);
-  return DAG.getNode(
-      ISD::SETCC,
-      DL,
-      MVT::i1,
-      Op, DAG.getConstantFP(-1.0f, DL, MVT::f32),
-      DAG.getCondCode(ISD::SETEQ));
+  return DAG.getNode(ISD::SETCC, DL, MVT::i1, Op,
+                     DAG.getConstantFP(-1.0f, DL, MVT::f32),
+                     DAG.getCondCode(ISD::SETEQ));
 }
 
 SDValue R600TargetLowering::LowerImplicitParameter(SelectionDAG &DAG, EVT VT,
                                                    const SDLoc &DL,
                                                    unsigned DwordOffset) const {
   unsigned ByteOffset = DwordOffset * 4;
-  PointerType * PtrType = PointerType::get(VT.getTypeForEVT(*DAG.getContext()),
-                                      AMDGPUAS::PARAM_I_ADDRESS);
+  PointerType *PtrType = PointerType::get(VT.getTypeForEVT(*DAG.getContext()),
+                                          AMDGPUAS::PARAM_I_ADDRESS);
 
   // We shouldn't be using an offset wider than 16-bits for implicit parameters.
   assert(isInt<16>(ByteOffset));
@@ -893,9 +903,9 @@ SDValue R600TargetLowering::LowerImplicitParameter(SelectionDAG &DAG, EVT VT,
 }
 
 bool R600TargetLowering::isZero(SDValue Op) const {
-  if(ConstantSDNode *Cst = dyn_cast<ConstantSDNode>(Op)) {
+  if (ConstantSDNode *Cst = dyn_cast<ConstantSDNode>(Op)) {
     return Cst->isNullValue();
-  } else if(ConstantFPSDNode *CstFP = dyn_cast<ConstantFPSDNode>(Op)){
+  } else if (ConstantFPSDNode *CstFP = dyn_cast<ConstantFPSDNode>(Op)) {
     return CstFP->isZero();
   } else {
     return false;
@@ -903,20 +913,21 @@ bool R600TargetLowering::isZero(SDValue Op) const {
 }
 
 bool R600TargetLowering::isHWTrueValue(SDValue Op) const {
-  if (ConstantFPSDNode * CFP = dyn_cast<ConstantFPSDNode>(Op)) {
+  if (ConstantFPSDNode *CFP = dyn_cast<ConstantFPSDNode>(Op)) {
     return CFP->isExactlyValue(1.0);
   }
   return isAllOnesConstant(Op);
 }
 
 bool R600TargetLowering::isHWFalseValue(SDValue Op) const {
-  if (ConstantFPSDNode * CFP = dyn_cast<ConstantFPSDNode>(Op)) {
+  if (ConstantFPSDNode *CFP = dyn_cast<ConstantFPSDNode>(Op)) {
     return CFP->getValueAPF().isZero();
   }
   return isNullConstant(Op);
 }
 
-SDValue R600TargetLowering::LowerSELECT_CC(SDValue Op, SelectionDAG &DAG) const {
+SDValue R600TargetLowering::LowerSELECT_CC(SDValue Op,
+                                           SelectionDAG &DAG) const {
   SDLoc DL(Op);
   EVT VT = Op.getValueType();
 
@@ -929,7 +940,8 @@ SDValue R600TargetLowering::LowerSELECT_CC(SDValue Op, SelectionDAG &DAG) const 
 
   if (VT == MVT::f32) {
     DAGCombinerInfo DCI(DAG, AfterLegalizeVectorOps, true, nullptr);
-    SDValue MinMax = combineFMinMaxLegacy(DL, VT, LHS, RHS, True, False, CC, DCI);
+    SDValue MinMax =
+        combineFMinMaxLegacy(DL, VT, LHS, RHS, True, False, CC, DCI);
     if (MinMax)
       return MinMax;
   }
@@ -1025,10 +1037,8 @@ SDValue R600TargetLowering::LowerSELECT_CC(SDValue Op, SelectionDAG &DAG) const 
     default:
       break;
     }
-    SDValue SelectNode = DAG.getNode(ISD::SELECT_CC, DL, CompareVT,
-        Cond, Zero,
-        True, False,
-        DAG.getCondCode(CCOpcode));
+    SDValue SelectNode = DAG.getNode(ISD::SELECT_CC, DL, CompareVT, Cond, Zero,
+                                     True, False, DAG.getCondCode(CCOpcode));
     return DAG.getNode(ISD::BITCAST, DL, VT, SelectNode);
   }
 
@@ -1042,19 +1052,17 @@ SDValue R600TargetLowering::LowerSELECT_CC(SDValue Op, SelectionDAG &DAG) const 
   } else if (CompareVT == MVT::i32) {
     HWTrue = DAG.getConstant(-1, DL, CompareVT);
     HWFalse = DAG.getConstant(0, DL, CompareVT);
-  }
-  else {
+  } else {
     llvm_unreachable("Unhandled value type in LowerSELECT_CC");
   }
 
   // Lower this unsupported SELECT_CC into a combination of two supported
   // SELECT_CC operations.
-  SDValue Cond = DAG.getNode(ISD::SELECT_CC, DL, CompareVT, LHS, RHS, HWTrue, HWFalse, CC);
+  SDValue Cond =
+      DAG.getNode(ISD::SELECT_CC, DL, CompareVT, LHS, RHS, HWTrue, HWFalse, CC);
 
-  return DAG.getNode(ISD::SELECT_CC, DL, VT,
-      Cond, HWFalse,
-      True, False,
-      DAG.getCondCode(ISD::SETNE));
+  return DAG.getNode(ISD::SELECT_CC, DL, VT, Cond, HWFalse, True, False,
+                     DAG.getCondCode(ISD::SETNE));
 }
 
 /// LLVM generates byte-addressed pointers.  For indirect addressing, we need to
@@ -1062,11 +1070,10 @@ SDValue R600TargetLowering::LowerSELECT_CC(SDValue Op, SelectionDAG &DAG) const 
 /// 16 bytes, (4 x 32bit sub-register), but we need to take into account the
 /// \p StackWidth, which tells us how many of the 4 sub-registrers will be used
 /// for indirect addressing.
-SDValue R600TargetLowering::stackPtrToRegIndex(SDValue Ptr,
-                                               unsigned StackWidth,
+SDValue R600TargetLowering::stackPtrToRegIndex(SDValue Ptr, unsigned StackWidth,
                                                SelectionDAG &DAG) const {
   unsigned SRLPad;
-  switch(StackWidth) {
+  switch (StackWidth) {
   case 1:
     SRLPad = 2;
     break;
@@ -1076,7 +1083,8 @@ SDValue R600TargetLowering::stackPtrToRegIndex(SDValue Ptr,
   case 4:
     SRLPad = 4;
     break;
-  default: llvm_unreachable("Invalid stack width");
+  default:
+    llvm_unreachable("Invalid stack width");
   }
 
   SDLoc DL(Ptr);
@@ -1084,8 +1092,7 @@ SDValue R600TargetLowering::stackPtrToRegIndex(SDValue Ptr,
                      DAG.getConstant(SRLPad, DL, MVT::i32));
 }
 
-void R600TargetLowering::getStackAddress(unsigned StackWidth,
-                                         unsigned ElemIdx,
+void R600TargetLowering::getStackAddress(unsigned StackWidth, unsigned ElemIdx,
                                          unsigned &Channel,
                                          unsigned &PtrIncr) const {
   switch (StackWidth) {
@@ -1116,9 +1123,9 @@ void R600TargetLowering::getStackAddress(unsigned StackWidth,
 SDValue R600TargetLowering::lowerPrivateTruncStore(StoreSDNode *Store,
                                                    SelectionDAG &DAG) const {
   SDLoc DL(Store);
-  //TODO: Who creates the i8 stores?
-  assert(Store->isTruncatingStore()
-         || Store->getValue().getValueType() == MVT::i8);
+  // TODO: Who creates the i8 stores?
+  assert(Store->isTruncatingStore() ||
+         Store->getValue().getValueType() == MVT::i8);
   assert(Store->getAddressSpace() == AMDGPUAS::PRIVATE_ADDRESS);
 
   SDValue Mask;
@@ -1167,15 +1174,15 @@ SDValue R600TargetLowering::lowerPrivateTruncStore(StoreSDNode *Store,
 
   // TODO: Contrary to the name of the functiom,
   // it also handles sub i32 non-truncating stores (like i1)
-  SDValue SExtValue = DAG.getNode(ISD::SIGN_EXTEND, DL, MVT::i32,
-                                  Store->getValue());
+  SDValue SExtValue =
+      DAG.getNode(ISD::SIGN_EXTEND, DL, MVT::i32, Store->getValue());
 
   // Mask the value to the right type
   SDValue MaskedValue = DAG.getZeroExtendInReg(SExtValue, DL, MemVT);
 
   // Shift the value in place
-  SDValue ShiftedValue = DAG.getNode(ISD::SHL, DL, MVT::i32,
-                                     MaskedValue, ShiftAmt);
+  SDValue ShiftedValue =
+      DAG.getNode(ISD::SHL, DL, MVT::i32, MaskedValue, ShiftAmt);
 
   // Shift the mask in place
   SDValue DstMask = DAG.getNode(ISD::SHL, DL, MVT::i32, Mask, ShiftAmt);
@@ -1225,12 +1232,13 @@ SDValue R600TargetLowering::LowerSTORE(SDValue Op, SelectionDAG &DAG) const {
       VT.isVector()) {
     if ((AS == AMDGPUAS::PRIVATE_ADDRESS) && TruncatingStore) {
       // Add an extra level of chain to isolate this vector
-      SDValue NewChain = DAG.getNode(AMDGPUISD::DUMMY_CHAIN, DL, MVT::Other, Chain);
+      SDValue NewChain =
+          DAG.getNode(AMDGPUISD::DUMMY_CHAIN, DL, MVT::Other, Chain);
       // TODO: can the chain be replaced without creating a new store?
       SDValue NewStore = DAG.getTruncStore(
-          NewChain, DL, Value, Ptr, StoreNode->getPointerInfo(),
-          MemVT, StoreNode->getAlignment(),
-          StoreNode->getMemOperand()->getFlags(), StoreNode->getAAInfo());
+          NewChain, DL, Value, Ptr, StoreNode->getPointerInfo(), MemVT,
+          StoreNode->getAlignment(), StoreNode->getMemOperand()->getFlags(),
+          StoreNode->getAAInfo());
       StoreNode = cast<StoreSDNode>(NewStore);
     }
 
@@ -1245,8 +1253,8 @@ SDValue R600TargetLowering::LowerSTORE(SDValue Op, SelectionDAG &DAG) const {
     return expandUnalignedStore(StoreNode, DAG);
   }
 
-  SDValue DWordAddr = DAG.getNode(ISD::SRL, DL, PtrVT, Ptr,
-                                  DAG.getConstant(2, DL, PtrVT));
+  SDValue DWordAddr =
+      DAG.getNode(ISD::SRL, DL, PtrVT, Ptr, DAG.getConstant(2, DL, PtrVT));
 
   if (AS == AMDGPUAS::GLOBAL_ADDRESS) {
     // It is beneficial to create MSKOR here instead of combiner to avoid
@@ -1264,30 +1272,28 @@ SDValue R600TargetLowering::LowerSTORE(SDValue Op, SelectionDAG &DAG) const {
 
       SDValue ByteIndex = DAG.getNode(ISD::AND, DL, PtrVT, Ptr,
                                       DAG.getConstant(0x00000003, DL, PtrVT));
-      SDValue BitShift = DAG.getNode(ISD::SHL, DL, VT, ByteIndex,
-                                     DAG.getConstant(3, DL, VT));
+      SDValue BitShift =
+          DAG.getNode(ISD::SHL, DL, VT, ByteIndex, DAG.getConstant(3, DL, VT));
 
       // Put the mask in correct place
       SDValue Mask = DAG.getNode(ISD::SHL, DL, VT, MaskConstant, BitShift);
 
       // Put the value bits in correct place
       SDValue TruncValue = DAG.getNode(ISD::AND, DL, VT, Value, MaskConstant);
-      SDValue ShiftedValue = DAG.getNode(ISD::SHL, DL, VT, TruncValue, BitShift);
+      SDValue ShiftedValue =
+          DAG.getNode(ISD::SHL, DL, VT, TruncValue, BitShift);
 
       // XXX: If we add a 64-bit ZW register class, then we could use a 2 x i32
       // vector instead.
-      SDValue Src[4] = {
-        ShiftedValue,
-        DAG.getConstant(0, DL, MVT::i32),
-        DAG.getConstant(0, DL, MVT::i32),
-        Mask
-      };
+      SDValue Src[4] = {ShiftedValue, DAG.getConstant(0, DL, MVT::i32),
+                        DAG.getConstant(0, DL, MVT::i32), Mask};
       SDValue Input = DAG.getBuildVector(MVT::v4i32, DL, Src);
-      SDValue Args[3] = { Chain, Input, DWordAddr };
+      SDValue Args[3] = {Chain, Input, DWordAddr};
       return DAG.getMemIntrinsicNode(AMDGPUISD::STORE_MSKOR, DL,
                                      Op->getVTList(), Args, MemVT,
                                      StoreNode->getMemOperand());
-    } else if (Ptr->getOpcode() != AMDGPUISD::DWORDADDR && VT.bitsGE(MVT::i32)) {
+    } else if (Ptr->getOpcode() != AMDGPUISD::DWORDADDR &&
+               VT.bitsGE(MVT::i32)) {
       // Convert pointer from byte address to dword address.
       Ptr = DAG.getNode(AMDGPUISD::DWORDADDR, DL, PtrVT, DWordAddr);
 
@@ -1319,8 +1325,7 @@ SDValue R600TargetLowering::LowerSTORE(SDValue Op, SelectionDAG &DAG) const {
 }
 
 // return (512 + (kc_bank << 12)
-static int
-ConstantAddressBlock(unsigned AddressSpace) {
+static int ConstantAddressBlock(unsigned AddressSpace) {
   switch (AddressSpace) {
   case AMDGPUAS::CONSTANT_BUFFER_0:
     return 512;
@@ -1387,8 +1392,8 @@ SDValue R600TargetLowering::lowerPrivateExtLoad(SDValue Op,
   SDValue Read = DAG.getLoad(MVT::i32, DL, Chain, Ptr, PtrInfo);
 
   // Get offset within the register.
-  SDValue ByteIdx = DAG.getNode(ISD::AND, DL, MVT::i32,
-                                LoadPtr, DAG.getConstant(0x3, DL, MVT::i32));
+  SDValue ByteIdx = DAG.getNode(ISD::AND, DL, MVT::i32, LoadPtr,
+                                DAG.getConstant(0x3, DL, MVT::i32));
 
   // Bit offset of target byte (byteIdx * 8).
   SDValue ShiftAmt = DAG.getNode(ISD::SHL, DL, MVT::i32, ByteIdx,
@@ -1408,8 +1413,8 @@ SDValue R600TargetLowering::lowerPrivateExtLoad(SDValue Op,
   }
 
   SDValue Ops[] = {
-    Ret,
-    Read.getValue(1) // This should be our output chain
+      Ret,
+      Read.getValue(1) // This should be our output chain
   };
 
   return DAG.getMergeValues(Ops, DL);
@@ -1421,8 +1426,8 @@ SDValue R600TargetLowering::LowerLOAD(SDValue Op, SelectionDAG &DAG) const {
   EVT MemVT = LoadNode->getMemoryVT();
   ISD::LoadExtType ExtType = LoadNode->getExtensionType();
 
-  if (AS == AMDGPUAS::PRIVATE_ADDRESS &&
-      ExtType != ISD::NON_EXTLOAD && MemVT.bitsLT(MVT::i32)) {
+  if (AS == AMDGPUAS::PRIVATE_ADDRESS && ExtType != ISD::NON_EXTLOAD &&
+      MemVT.bitsLT(MVT::i32)) {
     return lowerPrivateExtLoad(Op, DAG);
   }
 
@@ -1432,7 +1437,7 @@ SDValue R600TargetLowering::LowerLOAD(SDValue Op, SelectionDAG &DAG) const {
   SDValue Ptr = LoadNode->getBasePtr();
 
   if ((LoadNode->getAddressSpace() == AMDGPUAS::LOCAL_ADDRESS ||
-      LoadNode->getAddressSpace() == AMDGPUAS::PRIVATE_ADDRESS) &&
+       LoadNode->getAddressSpace() == AMDGPUAS::PRIVATE_ADDRESS) &&
       VT.isVector()) {
     SDValue Ops[2];
     std::tie(Ops[0], Ops[1]) = scalarizeVectorLoad(LoadNode, DAG);
@@ -1449,14 +1454,14 @@ SDValue R600TargetLowering::LowerLOAD(SDValue Op, SelectionDAG &DAG) const {
         isa<ConstantSDNode>(Ptr)) {
       return constBufferLoad(LoadNode, LoadNode->getAddressSpace(), DAG);
     } else {
-      //TODO: Does this even work?
+      // TODO: Does this even work?
       // non-constant ptr can't be folded, keeps it as a v4f32 load
       Result = DAG.getNode(AMDGPUISD::CONST_ADDRESS, DL, MVT::v4i32,
-          DAG.getNode(ISD::SRL, DL, MVT::i32, Ptr,
-                      DAG.getConstant(4, DL, MVT::i32)),
-                      DAG.getConstant(LoadNode->getAddressSpace() -
-                                      AMDGPUAS::CONSTANT_BUFFER_0, DL, MVT::i32)
-          );
+                           DAG.getNode(ISD::SRL, DL, MVT::i32, Ptr,
+                                       DAG.getConstant(4, DL, MVT::i32)),
+                           DAG.getConstant(LoadNode->getAddressSpace() -
+                                               AMDGPUAS::CONSTANT_BUFFER_0,
+                                           DL, MVT::i32));
     }
 
     if (!VT.isVector()) {
@@ -1464,10 +1469,7 @@ SDValue R600TargetLowering::LowerLOAD(SDValue Op, SelectionDAG &DAG) const {
                            DAG.getConstant(0, DL, MVT::i32));
     }
 
-    SDValue MergedValues[2] = {
-      Result,
-      Chain
-    };
+    SDValue MergedValues[2] = {Result, Chain};
     return DAG.getMergeValues(MergedValues, DL);
   }
 
@@ -1486,7 +1488,7 @@ SDValue R600TargetLowering::LowerLOAD(SDValue Op, SelectionDAG &DAG) const {
     SDValue Res = DAG.getNode(ISD::SIGN_EXTEND_INREG, DL, VT, NewLoad,
                               DAG.getValueType(MemVT));
 
-    SDValue MergedValues[2] = { Res, Chain };
+    SDValue MergedValues[2] = {Res, Chain};
     return DAG.getMergeValues(MergedValues, DL);
   }
 
@@ -1497,7 +1499,8 @@ SDValue R600TargetLowering::LowerLOAD(SDValue Op, SelectionDAG &DAG) const {
   // DWORDADDR ISD marks already shifted address
   if (Ptr.getOpcode() != AMDGPUISD::DWORDADDR) {
     assert(VT == MVT::i32);
-    Ptr = DAG.getNode(ISD::SRL, DL, MVT::i32, Ptr, DAG.getConstant(2, DL, MVT::i32));
+    Ptr = DAG.getNode(ISD::SRL, DL, MVT::i32, Ptr,
+                      DAG.getConstant(2, DL, MVT::i32));
     Ptr = DAG.getNode(AMDGPUISD::DWORDADDR, DL, MVT::i32, Ptr);
     return DAG.getLoad(MVT::i32, DL, Chain, Ptr, LoadNode->getMemOperand());
   }
@@ -1506,8 +1509,8 @@ SDValue R600TargetLowering::LowerLOAD(SDValue Op, SelectionDAG &DAG) const {
 
 SDValue R600TargetLowering::LowerBRCOND(SDValue Op, SelectionDAG &DAG) const {
   SDValue Chain = Op.getOperand(0);
-  SDValue Cond  = Op.getOperand(1);
-  SDValue Jump  = Op.getOperand(2);
+  SDValue Cond = Op.getOperand(1);
+  SDValue Jump = Op.getOperand(2);
 
   return DAG.getNode(AMDGPUISD::BRANCH_COND, SDLoc(Op), Op.getValueType(),
                      Chain, Jump, Cond);
@@ -1610,13 +1613,12 @@ SDValue R600TargetLowering::LowerFormalArguments(
     unsigned Alignment = MinAlign(VT.getStoreSize(), PartOffset);
 
     MachinePointerInfo PtrInfo(AMDGPUAS::PARAM_I_ADDRESS);
-    SDValue Arg = DAG.getLoad(
-        ISD::UNINDEXED, Ext, VT, DL, Chain,
-        DAG.getConstant(PartOffset, DL, MVT::i32), DAG.getUNDEF(MVT::i32),
-        PtrInfo,
-        MemVT, Alignment, MachineMemOperand::MONonTemporal |
-                                        MachineMemOperand::MODereferenceable |
-                                        MachineMemOperand::MOInvariant);
+    SDValue Arg = DAG.getLoad(ISD::UNINDEXED, Ext, VT, DL, Chain,
+                              DAG.getConstant(PartOffset, DL, MVT::i32),
+                              DAG.getUNDEF(MVT::i32), PtrInfo, MemVT, Alignment,
+                              MachineMemOperand::MONonTemporal |
+                                  MachineMemOperand::MODereferenceable |
+                                  MachineMemOperand::MOInvariant);
 
     InVals.push_back(Arg);
   }
@@ -1625,9 +1627,9 @@ SDValue R600TargetLowering::LowerFormalArguments(
 
 EVT R600TargetLowering::getSetCCResultType(const DataLayout &DL, LLVMContext &,
                                            EVT VT) const {
-   if (!VT.isVector())
-     return MVT::i32;
-   return VT.changeVectorElementTypeToInteger();
+  if (!VT.isVector())
+    return MVT::i32;
+  return VT.changeVectorElementTypeToInteger();
 }
 
 bool R600TargetLowering::canMergeStoresTo(unsigned AS, EVT MemVT,
@@ -1658,9 +1660,9 @@ bool R600TargetLowering::allowsMisalignedMemoryAccesses(
   return VT.bitsGT(MVT::i32) && Align % 4 == 0;
 }
 
-static SDValue CompactSwizzlableVector(
-  SelectionDAG &DAG, SDValue VectorEntry,
-  DenseMap<unsigned, unsigned> &RemapSwizzle) {
+static SDValue
+CompactSwizzlableVector(SelectionDAG &DAG, SDValue VectorEntry,
+                        DenseMap<unsigned, unsigned> &RemapSwizzle) {
   assert(RemapSwizzle.empty());
 
   SDLoc DL(VectorEntry);
@@ -1719,8 +1721,8 @@ static SDValue ReorganizeVector(SelectionDAG &DAG, SDValue VectorEntry,
   for (unsigned i = 0; i < 4; i++) {
     RemapSwizzle[i] = i;
     if (NewBldVec[i].getOpcode() == ISD::EXTRACT_VECTOR_ELT) {
-      unsigned Idx = cast<ConstantSDNode>(NewBldVec[i].getOperand(1))
-          ->getZExtValue();
+      unsigned Idx =
+          cast<ConstantSDNode>(NewBldVec[i].getOperand(1))->getZExtValue();
       if (i == Idx)
         isUnmovable[Idx] = true;
     }
@@ -1728,8 +1730,8 @@ static SDValue ReorganizeVector(SelectionDAG &DAG, SDValue VectorEntry,
 
   for (unsigned i = 0; i < 4; i++) {
     if (NewBldVec[i].getOpcode() == ISD::EXTRACT_VECTOR_ELT) {
-      unsigned Idx = cast<ConstantSDNode>(NewBldVec[i].getOperand(1))
-          ->getZExtValue();
+      unsigned Idx =
+          cast<ConstantSDNode>(NewBldVec[i].getOperand(1))->getZExtValue();
       if (isUnmovable[Idx])
         continue;
       // Swap i and Idx
@@ -1773,10 +1775,11 @@ SDValue R600TargetLowering::constBufferLoad(LoadSDNode *LoadNode, int Block,
   EVT VT = LoadNode->getValueType(0);
   SDValue Chain = LoadNode->getChain();
   SDValue Ptr = LoadNode->getBasePtr();
-  assert (isa<ConstantSDNode>(Ptr));
+  assert(isa<ConstantSDNode>(Ptr));
 
-  //TODO: Support smaller loads
-  if (LoadNode->getMemoryVT().getScalarType() != MVT::i32 || !ISD::isNON_EXTLoad(LoadNode))
+  // TODO: Support smaller loads
+  if (LoadNode->getMemoryVT().getScalarType() != MVT::i32 ||
+      !ISD::isNON_EXTLoad(LoadNode))
     return SDValue();
 
   if (LoadNode->getAlignment() < 4)
@@ -1791,8 +1794,9 @@ SDValue R600TargetLowering::constBufferLoad(LoadSDNode *LoadNode, int Block,
     // const_index is Ptr computed by llvm using an alignment of 16.
     // Thus we add (((512 + (kc_bank << 12)) + chan ) * 4 here and
     // then div by 4 at the ISel step
-    SDValue NewPtr = DAG.getNode(ISD::ADD, DL, Ptr.getValueType(), Ptr,
-        DAG.getConstant(4 * i + ConstantBlock * 16, DL, MVT::i32));
+    SDValue NewPtr =
+        DAG.getNode(ISD::ADD, DL, Ptr.getValueType(), Ptr,
+                    DAG.getConstant(4 * i + ConstantBlock * 16, DL, MVT::i32));
     Slots[i] = DAG.getNode(AMDGPUISD::CONST_ADDRESS, DL, MVT::i32, NewPtr);
   }
   EVT NewVT = MVT::v4i32;
@@ -1801,15 +1805,13 @@ SDValue R600TargetLowering::constBufferLoad(LoadSDNode *LoadNode, int Block,
     NewVT = VT;
     NumElements = VT.getVectorNumElements();
   }
-  SDValue Result = DAG.getBuildVector(NewVT, DL, makeArrayRef(Slots, NumElements));
+  SDValue Result =
+      DAG.getBuildVector(NewVT, DL, makeArrayRef(Slots, NumElements));
   if (!VT.isVector()) {
     Result = DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, MVT::i32, Result,
                          DAG.getConstant(0, DL, MVT::i32));
   }
-  SDValue MergedValues[2] = {
-    Result,
-    Chain
-  };
+  SDValue MergedValues[2] = {Result, Chain};
   return DAG.getMergeValues(MergedValues, DL);
 }
 
@@ -1825,13 +1827,13 @@ SDValue R600TargetLowering::PerformDAGCombine(SDNode *N,
   switch (N->getOpcode()) {
   // (f32 fp_round (f64 uint_to_fp a)) -> (f32 uint_to_fp a)
   case ISD::FP_ROUND: {
-      SDValue Arg = N->getOperand(0);
-      if (Arg.getOpcode() == ISD::UINT_TO_FP && Arg.getValueType() == MVT::f64) {
-        return DAG.getNode(ISD::UINT_TO_FP, DL, N->getValueType(0),
-                           Arg.getOperand(0));
-      }
-      break;
+    SDValue Arg = N->getOperand(0);
+    if (Arg.getOpcode() == ISD::UINT_TO_FP && Arg.getValueType() == MVT::f64) {
+      return DAG.getNode(ISD::UINT_TO_FP, DL, N->getValueType(0),
+                         Arg.getOperand(0));
     }
+    break;
+  }
 
   // (i32 fp_to_sint (fneg (select_cc f32, f32, 1.0, 0.0 cc))) ->
   // (i32 select_cc f32, f32, -1, 0 cc)
@@ -1853,11 +1855,11 @@ SDValue R600TargetLowering::PerformDAGCombine(SDNode *N,
     }
 
     return DAG.getNode(ISD::SELECT_CC, DL, N->getValueType(0),
-                           SelectCC.getOperand(0), // LHS
-                           SelectCC.getOperand(1), // RHS
-                           DAG.getConstant(-1, DL, MVT::i32), // True
-                           DAG.getConstant(0, DL, MVT::i32),  // False
-                           SelectCC.getOperand(4)); // CC
+                       SelectCC.getOperand(0),            // LHS
+                       SelectCC.getOperand(1),            // RHS
+                       DAG.getConstant(-1, DL, MVT::i32), // True
+                       DAG.getConstant(0, DL, MVT::i32),  // False
+                       SelectCC.getOperand(4));           // CC
   }
 
   // insert_vector_elt (build_vector elt0, ... , eltN), NewEltIdx, idx
@@ -1887,8 +1889,7 @@ SDValue R600TargetLowering::PerformDAGCombine(SDNode *N,
     // vector elements.
     SmallVector<SDValue, 8> Ops;
     if (InVec.getOpcode() == ISD::BUILD_VECTOR) {
-      Ops.append(InVec.getNode()->op_begin(),
-                 InVec.getNode()->op_end());
+      Ops.append(InVec.getNode()->op_begin(), InVec.getNode()->op_end());
     } else if (InVec.isUndef()) {
       unsigned NElts = VT.getVectorNumElements();
       Ops.append(NElts, DAG.getUNDEF(InVal.getValueType()));
@@ -1902,9 +1903,9 @@ SDValue R600TargetLowering::PerformDAGCombine(SDNode *N,
       // we enforce that here.
       EVT OpVT = Ops[0].getValueType();
       if (InVal.getValueType() != OpVT)
-        InVal = OpVT.bitsGT(InVal.getValueType()) ?
-          DAG.getNode(ISD::ANY_EXTEND, DL, OpVT, InVal) :
-          DAG.getNode(ISD::TRUNCATE, DL, OpVT, InVal);
+        InVal = OpVT.bitsGT(InVal.getValueType())
+                    ? DAG.getNode(ISD::ANY_EXTEND, DL, OpVT, InVal)
+                    : DAG.getNode(ISD::TRUNCATE, DL, OpVT, InVal);
       Ops[Elt] = InVal;
     }
 
@@ -1962,19 +1963,17 @@ SDValue R600TargetLowering::PerformDAGCombine(SDNode *N,
     }
 
     switch (NCC) {
-    default: return SDValue();
-    case ISD::SETNE: return LHS;
+    default:
+      return SDValue();
+    case ISD::SETNE:
+      return LHS;
     case ISD::SETEQ: {
       ISD::CondCode LHSCC = cast<CondCodeSDNode>(LHS.getOperand(4))->get();
       LHSCC = ISD::getSetCCInverse(LHSCC, LHS.getOperand(0).getValueType());
       if (DCI.isBeforeLegalizeOps() ||
           isCondCodeLegal(LHSCC, LHS.getOperand(0).getSimpleValueType()))
-        return DAG.getSelectCC(DL,
-                               LHS.getOperand(0),
-                               LHS.getOperand(1),
-                               LHS.getOperand(2),
-                               LHS.getOperand(3),
-                               LHSCC);
+        return DAG.getSelectCC(DL, LHS.getOperand(0), LHS.getOperand(1),
+                               LHS.getOperand(2), LHS.getOperand(3), LHSCC);
       break;
     }
     }
@@ -1987,14 +1986,14 @@ SDValue R600TargetLowering::PerformDAGCombine(SDNode *N,
       break;
 
     SDValue NewArgs[8] = {
-      N->getOperand(0), // Chain
-      SDValue(),
-      N->getOperand(2), // ArrayBase
-      N->getOperand(3), // Type
-      N->getOperand(4), // SWZ_X
-      N->getOperand(5), // SWZ_Y
-      N->getOperand(6), // SWZ_Z
-      N->getOperand(7) // SWZ_W
+        N->getOperand(0), // Chain
+        SDValue(),
+        N->getOperand(2), // ArrayBase
+        N->getOperand(3), // Type
+        N->getOperand(4), // SWZ_X
+        N->getOperand(5), // SWZ_Y
+        N->getOperand(6), // SWZ_Z
+        N->getOperand(7)  // SWZ_W
     };
     NewArgs[1] = OptimizeSwizzle(N->getOperand(1), &NewArgs[4], DAG, DL);
     return DAG.getNode(AMDGPUISD::R600_EXPORT, DL, N->getVTList(), NewArgs);
@@ -2005,25 +2004,13 @@ SDValue R600TargetLowering::PerformDAGCombine(SDNode *N,
       break;
 
     SDValue NewArgs[19] = {
-      N->getOperand(0),
-      N->getOperand(1),
-      N->getOperand(2),
-      N->getOperand(3),
-      N->getOperand(4),
-      N->getOperand(5),
-      N->getOperand(6),
-      N->getOperand(7),
-      N->getOperand(8),
-      N->getOperand(9),
-      N->getOperand(10),
-      N->getOperand(11),
-      N->getOperand(12),
-      N->getOperand(13),
-      N->getOperand(14),
-      N->getOperand(15),
-      N->getOperand(16),
-      N->getOperand(17),
-      N->getOperand(18),
+        N->getOperand(0),  N->getOperand(1),  N->getOperand(2),
+        N->getOperand(3),  N->getOperand(4),  N->getOperand(5),
+        N->getOperand(6),  N->getOperand(7),  N->getOperand(8),
+        N->getOperand(9),  N->getOperand(10), N->getOperand(11),
+        N->getOperand(12), N->getOperand(13), N->getOperand(14),
+        N->getOperand(15), N->getOperand(16), N->getOperand(17),
+        N->getOperand(18),
     };
     NewArgs[1] = OptimizeSwizzle(N->getOperand(1), &NewArgs[2], DAG, DL);
     return DAG.getNode(AMDGPUISD::TEXTURE_FETCH, DL, N->getVTList(), NewArgs);
@@ -2033,12 +2020,13 @@ SDValue R600TargetLowering::PerformDAGCombine(SDNode *N,
     LoadSDNode *LoadNode = cast<LoadSDNode>(N);
     SDValue Ptr = LoadNode->getBasePtr();
     if (LoadNode->getAddressSpace() == AMDGPUAS::PARAM_I_ADDRESS &&
-         isa<ConstantSDNode>(Ptr))
+        isa<ConstantSDNode>(Ptr))
       return constBufferLoad(LoadNode, AMDGPUAS::CONSTANT_BUFFER_0, DAG);
     break;
   }
 
-  default: break;
+  default:
+    break;
   }
 
   return AMDGPUTargetLowering::PerformDAGCombine(N, DCI);
@@ -2077,19 +2065,17 @@ bool R600TargetLowering::FoldOperand(SDNode *ParentNode, unsigned SrcIdx,
       return false;
 
     // Gather constants values
-    int SrcIndices[] = {
-      TII->getOperandIdx(Opcode, R600::OpName::src0),
-      TII->getOperandIdx(Opcode, R600::OpName::src1),
-      TII->getOperandIdx(Opcode, R600::OpName::src2),
-      TII->getOperandIdx(Opcode, R600::OpName::src0_X),
-      TII->getOperandIdx(Opcode, R600::OpName::src0_Y),
-      TII->getOperandIdx(Opcode, R600::OpName::src0_Z),
-      TII->getOperandIdx(Opcode, R600::OpName::src0_W),
-      TII->getOperandIdx(Opcode, R600::OpName::src1_X),
-      TII->getOperandIdx(Opcode, R600::OpName::src1_Y),
-      TII->getOperandIdx(Opcode, R600::OpName::src1_Z),
-      TII->getOperandIdx(Opcode, R600::OpName::src1_W)
-    };
+    int SrcIndices[] = {TII->getOperandIdx(Opcode, R600::OpName::src0),
+                        TII->getOperandIdx(Opcode, R600::OpName::src1),
+                        TII->getOperandIdx(Opcode, R600::OpName::src2),
+                        TII->getOperandIdx(Opcode, R600::OpName::src0_X),
+                        TII->getOperandIdx(Opcode, R600::OpName::src0_Y),
+                        TII->getOperandIdx(Opcode, R600::OpName::src0_Z),
+                        TII->getOperandIdx(Opcode, R600::OpName::src0_W),
+                        TII->getOperandIdx(Opcode, R600::OpName::src1_X),
+                        TII->getOperandIdx(Opcode, R600::OpName::src1_Y),
+                        TII->getOperandIdx(Opcode, R600::OpName::src1_Z),
+                        TII->getOperandIdx(Opcode, R600::OpName::src1_W)};
     std::vector<unsigned> Consts;
     for (int OtherSrcIdx : SrcIndices) {
       int OtherSelIdx = TII->getSelIdx(Opcode, OtherSrcIdx);
@@ -2100,10 +2086,10 @@ bool R600TargetLowering::FoldOperand(SDNode *ParentNode, unsigned SrcIdx,
         OtherSelIdx--;
       }
       if (RegisterSDNode *Reg =
-          dyn_cast<RegisterSDNode>(ParentNode->getOperand(OtherSrcIdx))) {
+              dyn_cast<RegisterSDNode>(ParentNode->getOperand(OtherSrcIdx))) {
         if (Reg->getReg() == R600::ALU_CONST) {
-          ConstantSDNode *Cst
-            = cast<ConstantSDNode>(ParentNode->getOperand(OtherSelIdx));
+          ConstantSDNode *Cst =
+              cast<ConstantSDNode>(ParentNode->getOperand(OtherSelIdx));
           Consts.push_back(Cst->getZExtValue());
         }
       }
@@ -2187,36 +2173,30 @@ SDNode *R600TargetLowering::PostISelFolding(MachineSDNode *Node,
   std::vector<SDValue> Ops(Node->op_begin(), Node->op_end());
 
   if (Opcode == R600::DOT_4) {
-    int OperandIdx[] = {
-      TII->getOperandIdx(Opcode, R600::OpName::src0_X),
-      TII->getOperandIdx(Opcode, R600::OpName::src0_Y),
-      TII->getOperandIdx(Opcode, R600::OpName::src0_Z),
-      TII->getOperandIdx(Opcode, R600::OpName::src0_W),
-      TII->getOperandIdx(Opcode, R600::OpName::src1_X),
-      TII->getOperandIdx(Opcode, R600::OpName::src1_Y),
-      TII->getOperandIdx(Opcode, R600::OpName::src1_Z),
-      TII->getOperandIdx(Opcode, R600::OpName::src1_W)
-        };
-    int NegIdx[] = {
-      TII->getOperandIdx(Opcode, R600::OpName::src0_neg_X),
-      TII->getOperandIdx(Opcode, R600::OpName::src0_neg_Y),
-      TII->getOperandIdx(Opcode, R600::OpName::src0_neg_Z),
-      TII->getOperandIdx(Opcode, R600::OpName::src0_neg_W),
-      TII->getOperandIdx(Opcode, R600::OpName::src1_neg_X),
-      TII->getOperandIdx(Opcode, R600::OpName::src1_neg_Y),
-      TII->getOperandIdx(Opcode, R600::OpName::src1_neg_Z),
-      TII->getOperandIdx(Opcode, R600::OpName::src1_neg_W)
-    };
-    int AbsIdx[] = {
-      TII->getOperandIdx(Opcode, R600::OpName::src0_abs_X),
-      TII->getOperandIdx(Opcode, R600::OpName::src0_abs_Y),
-      TII->getOperandIdx(Opcode, R600::OpName::src0_abs_Z),
-      TII->getOperandIdx(Opcode, R600::OpName::src0_abs_W),
-      TII->getOperandIdx(Opcode, R600::OpName::src1_abs_X),
-      TII->getOperandIdx(Opcode, R600::OpName::src1_abs_Y),
-      TII->getOperandIdx(Opcode, R600::OpName::src1_abs_Z),
-      TII->getOperandIdx(Opcode, R600::OpName::src1_abs_W)
-    };
+    int OperandIdx[] = {TII->getOperandIdx(Opcode, R600::OpName::src0_X),
+                        TII->getOperandIdx(Opcode, R600::OpName::src0_Y),
+                        TII->getOperandIdx(Opcode, R600::OpName::src0_Z),
+                        TII->getOperandIdx(Opcode, R600::OpName::src0_W),
+                        TII->getOperandIdx(Opcode, R600::OpName::src1_X),
+                        TII->getOperandIdx(Opcode, R600::OpName::src1_Y),
+                        TII->getOperandIdx(Opcode, R600::OpName::src1_Z),
+                        TII->getOperandIdx(Opcode, R600::OpName::src1_W)};
+    int NegIdx[] = {TII->getOperandIdx(Opcode, R600::OpName::src0_neg_X),
+                    TII->getOperandIdx(Opcode, R600::OpName::src0_neg_Y),
+                    TII->getOperandIdx(Opcode, R600::OpName::src0_neg_Z),
+                    TII->getOperandIdx(Opcode, R600::OpName::src0_neg_W),
+                    TII->getOperandIdx(Opcode, R600::OpName::src1_neg_X),
+                    TII->getOperandIdx(Opcode, R600::OpName::src1_neg_Y),
+                    TII->getOperandIdx(Opcode, R600::OpName::src1_neg_Z),
+                    TII->getOperandIdx(Opcode, R600::OpName::src1_neg_W)};
+    int AbsIdx[] = {TII->getOperandIdx(Opcode, R600::OpName::src0_abs_X),
+                    TII->getOperandIdx(Opcode, R600::OpName::src0_abs_Y),
+                    TII->getOperandIdx(Opcode, R600::OpName::src0_abs_Z),
+                    TII->getOperandIdx(Opcode, R600::OpName::src0_abs_W),
+                    TII->getOperandIdx(Opcode, R600::OpName::src1_abs_X),
+                    TII->getOperandIdx(Opcode, R600::OpName::src1_abs_Y),
+                    TII->getOperandIdx(Opcode, R600::OpName::src1_abs_Z),
+                    TII->getOperandIdx(Opcode, R600::OpName::src1_abs_W)};
     for (unsigned i = 0; i < 8; i++) {
       if (OperandIdx[i] < 0)
         return Node;
@@ -2240,21 +2220,14 @@ SDNode *R600TargetLowering::PostISelFolding(MachineSDNode *Node,
   } else {
     if (!TII->hasInstrModifiers(Opcode))
       return Node;
-    int OperandIdx[] = {
-      TII->getOperandIdx(Opcode, R600::OpName::src0),
-      TII->getOperandIdx(Opcode, R600::OpName::src1),
-      TII->getOperandIdx(Opcode, R600::OpName::src2)
-    };
-    int NegIdx[] = {
-      TII->getOperandIdx(Opcode, R600::OpName::src0_neg),
-      TII->getOperandIdx(Opcode, R600::OpName::src1_neg),
-      TII->getOperandIdx(Opcode, R600::OpName::src2_neg)
-    };
-    int AbsIdx[] = {
-      TII->getOperandIdx(Opcode, R600::OpName::src0_abs),
-      TII->getOperandIdx(Opcode, R600::OpName::src1_abs),
-      -1
-    };
+    int OperandIdx[] = {TII->getOperandIdx(Opcode, R600::OpName::src0),
+                        TII->getOperandIdx(Opcode, R600::OpName::src1),
+                        TII->getOperandIdx(Opcode, R600::OpName::src2)};
+    int NegIdx[] = {TII->getOperandIdx(Opcode, R600::OpName::src0_neg),
+                    TII->getOperandIdx(Opcode, R600::OpName::src1_neg),
+                    TII->getOperandIdx(Opcode, R600::OpName::src2_neg)};
+    int AbsIdx[] = {TII->getOperandIdx(Opcode, R600::OpName::src0_abs),
+                    TII->getOperandIdx(Opcode, R600::OpName::src1_abs), -1};
     for (unsigned i = 0; i < 3; i++) {
       if (OperandIdx[i] < 0)
         return Node;

@@ -1,42 +1,43 @@
 // RUN: %clang_cc1 -fsyntax-only -verify %s
 
 namespace A {
-    int VA;
-    void FA() {}
-    struct SA { int V; };
-}
+int VA;
+void FA() {}
+struct SA {
+  int V;
+};
+} // namespace A
 
-using A::VA;
 using A::FA;
+using A::VA;
 using typename A::SA;
 
-int main()
-{
-    VA = 1;
-    FA();
-    SA x;   //Still needs handling.
+int main() {
+  VA = 1;
+  FA();
+  SA x; //Still needs handling.
 }
 
 struct B {
-    void f(char){};
-    void g(char){};
+  void f(char){};
+  void g(char){};
 };
 struct D : B {
-    using B::f;
-    void f(int);
-    void g(int);
+  using B::f;
+  void f(int);
+  void g(int);
 };
 void D::f(int) { f('c'); } // calls B::f(char)
 void D::g(int) { g('c'); } // recursively calls D::g(int)
 
 namespace E {
-    template <typename TYPE> int funcE(TYPE arg) { return(arg); }
-}
+template <typename TYPE> int funcE(TYPE arg) { return (arg); }
+} // namespace E
 
 using E::funcE<int>; // expected-error{{using declaration cannot refer to a template specialization}}
 
 namespace F {
-    struct X;
+struct X;
 }
 
 using F::X;
@@ -44,18 +45,17 @@ using F::X;
 void X(int);
 struct X *x;
 
-
 namespace ShadowedTagNotes {
 
 namespace foo {
-  class Bar {};
-}
+class Bar {};
+} // namespace foo
 
 void Bar(int); // expected-note{{class 'Bar' is hidden by a non-type declaration of 'Bar' here}}
 using foo::Bar;
 
 void ambiguity() {
-   const Bar *x; // expected-error{{must use 'class' tag to refer to type 'Bar' in this scope}}
+  const Bar *x; // expected-error{{must use 'class' tag to refer to type 'Bar' in this scope}}
 }
 
 } // namespace ShadowedTagNotes

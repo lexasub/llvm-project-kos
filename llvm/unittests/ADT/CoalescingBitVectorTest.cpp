@@ -188,8 +188,7 @@ TEST(CoalescingBitVectorTest, Comparison) {
 
 // A simple implementation of set union, used to double-check the human
 // "expected" answer.
-void simpleUnion(UBitVec &Union, const UBitVec &LHS,
-                    const UBitVec &RHS) {
+void simpleUnion(UBitVec &Union, const UBitVec &LHS, const UBitVec &RHS) {
   for (unsigned Bit : LHS)
     Union.test_and_set(Bit);
   for (unsigned Bit : RHS)
@@ -216,8 +215,8 @@ TEST(CoalescingBitVectorTest, Union) {
 
   // Check that "LHS |= RHS" and "RHS |= LHS" both produce the expected result.
   auto testUnionSymmetrically = [&](std::initializer_list<unsigned> LHS,
-                     std::initializer_list<unsigned> RHS,
-                     std::initializer_list<unsigned> Expected) {
+                                    std::initializer_list<unsigned> RHS,
+                                    std::initializer_list<unsigned> Expected) {
     unionIs(LHS, RHS, Expected);
     unionIs(RHS, LHS, Expected);
   };
@@ -307,12 +306,13 @@ TEST(CoalescingBitVectorTest, Intersection) {
   };
 
   // Check that "LHS &= RHS" and "RHS &= LHS" both produce the expected result.
-  auto testIntersectionSymmetrically = [&](std::initializer_list<unsigned> LHS,
-                     std::initializer_list<unsigned> RHS,
-                     std::initializer_list<unsigned> Expected) {
-    intersectionIs(LHS, RHS, Expected);
-    intersectionIs(RHS, LHS, Expected);
-  };
+  auto testIntersectionSymmetrically =
+      [&](std::initializer_list<unsigned> LHS,
+          std::initializer_list<unsigned> RHS,
+          std::initializer_list<unsigned> Expected) {
+        intersectionIs(LHS, RHS, Expected);
+        intersectionIs(RHS, LHS, Expected);
+      };
 
   // Empty case, one-element case.
   testIntersectionSymmetrically({}, {}, {});

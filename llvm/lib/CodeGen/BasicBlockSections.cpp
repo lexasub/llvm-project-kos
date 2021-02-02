@@ -351,8 +351,7 @@ bool BasicBlockSections::runOnMachineFunction(MachineFunction &MF) {
   // clusters of basic blocks using basic block ids. Source drift can
   // invalidate these groupings leading to sub-optimal code generation with
   // regards to performance.
-  if (BBSectionsType == BasicBlockSection::List &&
-      hasInstrProfHashMismatch(MF))
+  if (BBSectionsType == BasicBlockSection::List && hasInstrProfHashMismatch(MF))
     return true;
 
   // Renumber blocks before sorting them for basic block sections.  This is

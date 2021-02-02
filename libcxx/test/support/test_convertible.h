@@ -23,19 +23,24 @@
 #endif
 
 namespace detail {
-    template <class Tp> void eat_type(Tp);
+template <class Tp>
+void eat_type(Tp);
 
-    template <class Tp, class ...Args>
-    constexpr auto test_convertible_imp(int)
-        -> decltype(eat_type<Tp>({std::declval<Args>()...}), true)
-    { return true; }
-
-    template <class Tp, class ...Args>
-    constexpr auto test_convertible_imp(long) -> bool { return false; }
+template <class Tp, class... Args>
+constexpr auto test_convertible_imp(int)
+    -> decltype(eat_type<Tp>({std::declval<Args>()...}), true) {
+  return true;
 }
 
-template <class Tp, class ...Args>
-constexpr bool test_convertible()
-{ return detail::test_convertible_imp<Tp, Args...>(0); }
+template <class Tp, class... Args>
+constexpr auto test_convertible_imp(long) -> bool {
+  return false;
+}
+} // namespace detail
+
+template <class Tp, class... Args>
+constexpr bool test_convertible() {
+  return detail::test_convertible_imp<Tp, Args...>(0);
+}
 
 #endif // SUPPORT_TEST_CONVERTIBLE_H

@@ -126,7 +126,7 @@ private:
 struct SymbolAndSignals {
   SymbolInfo Symbol;
   SymbolInfo::Signals Signals;
-  bool operator==(const SymbolAndSignals& RHS) const;
+  bool operator==(const SymbolAndSignals &RHS) const;
 };
 
 /// Write SymbolInfos to a stream (YAML format).

@@ -2,15 +2,15 @@
 // RUN: %clangxx_msan -O0 -g -DPOSITIVE %s -o %t && not %run %t 2>&1 | FileCheck %s
 
 #include <assert.h>
+#include <errno.h>
 #include <iconv.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
-#include <errno.h>
 
 #if defined(__NetBSD__)
 #include <sys/param.h>
-#if __NetBSD_Prereq__(9,99,17)
+#if __NetBSD_Prereq__(9, 99, 17)
 #define NETBSD_POSIX_ICONV 1
 #else
 #define NETBSD_POSIX_ICONV 0

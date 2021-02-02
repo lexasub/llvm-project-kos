@@ -94,15 +94,15 @@ class SelectionDAGBuilder {
   /// The current instruction being visited.
   const Instruction *CurInst = nullptr;
 
-  DenseMap<const Value*, SDValue> NodeMap;
+  DenseMap<const Value *, SDValue> NodeMap;
 
   /// Maps argument value for unused arguments. This is used
   /// to preserve debug information for incoming arguments.
-  DenseMap<const Value*, SDValue> UnusedArgNodeMap;
+  DenseMap<const Value *, SDValue> UnusedArgNodeMap;
 
   /// Helper type for DanglingDebugInfoMap.
   class DanglingDebugInfo {
-    const DbgValueInst* DI = nullptr;
+    const DbgValueInst *DI = nullptr;
     DebugLoc dl;
     unsigned SDNodeOrder = 0;
 
@@ -111,7 +111,7 @@ class SelectionDAGBuilder {
     DanglingDebugInfo(const DbgValueInst *di, DebugLoc DL, unsigned SDNO)
         : DI(di), dl(std::move(DL)), SDNodeOrder(SDNO) {}
 
-    const DbgValueInst* getDI() { return DI; }
+    const DbgValueInst *getDI() { return DI; }
     DebugLoc getdl() { return dl; }
     unsigned getSDNodeOrder() { return SDNodeOrder; }
   };
@@ -121,7 +121,7 @@ class SelectionDAGBuilder {
 
   /// Keeps track of dbg_values for which we have not yet seen the referent.
   /// We defer handling these until we do see it.
-  MapVector<const Value*, DanglingDebugInfoVector> DanglingDebugInfoMap;
+  MapVector<const Value *, DanglingDebugInfoVector> DanglingDebugInfoMap;
 
 public:
   /// Loads are not emitted to the program immediately.  We bunch them up and
@@ -311,7 +311,7 @@ private:
                     bool FunctionBasedInstrumentation) {
       // Make sure we are not initialized yet.
       assert(!shouldEmitStackProtector() && "Stack Protector Descriptor is "
-             "already initialized!");
+                                            "already initialized!");
       ParentMBB = MBB;
       if (!FunctionBasedInstrumentation) {
         SuccessMBB = AddSuccessorMBB(BB, MBB, /* IsLikely */ true);
@@ -343,9 +343,7 @@ private:
     ///
     /// 2.The guard variable since the guard variable we are checking against is
     /// always the same.
-    void resetPerFunctionState() {
-      FailureMBB = nullptr;
-    }
+    void resetPerFunctionState() { FailureMBB = nullptr; }
 
     MachineBasicBlock *getParentMBB() { return ParentMBB; }
     MachineBasicBlock *getSuccessMBB() { return SuccessMBB; }
@@ -439,11 +437,10 @@ public:
   SelectionDAGBuilder(SelectionDAG &dag, FunctionLoweringInfo &funcinfo,
                       SwiftErrorValueTracking &swifterror, CodeGenOpt::Level ol)
       : SDNodeOrder(LowestSDNodeOrder), TM(dag.getTarget()), DAG(dag),
-        SL(std::make_unique<SDAGSwitchLowering>(this, funcinfo)), FuncInfo(funcinfo),
-        SwiftError(swifterror) {}
+        SL(std::make_unique<SDAGSwitchLowering>(this, funcinfo)),
+        FuncInfo(funcinfo), SwiftError(swifterror) {}
 
-  void init(GCFunctionInfo *gfi, AAResults *AA,
-            const TargetLibraryInfo *li);
+  void init(GCFunctionInfo *gfi, AAResults *AA, const TargetLibraryInfo *li);
 
   /// Clear out the current SelectionDAG and the associated state and prepare
   /// this SelectionDAGBuilder object to be used for a new block. This doesn't
@@ -474,9 +471,7 @@ public:
   /// It is necessary to do this before emitting a terminator instruction.
   SDValue getControlRoot();
 
-  SDLoc getCurSDLoc() const {
-    return SDLoc(CurInst, SDNodeOrder);
-  }
+  SDLoc getCurSDLoc() const { return SDLoc(CurInst, SDNodeOrder); }
 
   DebugLoc getCurDebugLoc() const {
     return CurInst ? CurInst->getDebugLoc() : DebugLoc();
@@ -510,8 +505,8 @@ public:
   /// For a given Value, attempt to create and record a SDDbgValue in the
   /// SelectionDAG.
   bool handleDebugValue(const Value *V, DILocalVariable *Var,
-                        DIExpression *Expr, DebugLoc CurDL,
-                        DebugLoc InstDL, unsigned Order);
+                        DIExpression *Expr, DebugLoc CurDL, DebugLoc InstDL,
+                        unsigned Order);
 
   /// Evict any dangling debug information, attempting to salvage it first.
   void resolveOrClearDbgInfo();
@@ -542,8 +537,8 @@ public:
                                     MachineBasicBlock *FBB,
                                     MachineBasicBlock *CurBB,
                                     MachineBasicBlock *SwitchBB,
-                                    BranchProbability TProb, BranchProbability FProb,
-                                    bool InvertCond);
+                                    BranchProbability TProb,
+                                    BranchProbability FProb, bool InvertCond);
   bool ShouldEmitAsBranches(const std::vector<SwitchCG::CaseBlock> &Cases);
   bool isExportableFromCurrentBlock(const Value *V, const BasicBlock *FromBB);
   void CopyToExportRegsIfNeeded(const Value *V);
@@ -682,11 +677,11 @@ private:
 
   void visitBinary(const User &I, unsigned Opcode);
   void visitShift(const User &I, unsigned Opcode);
-  void visitAdd(const User &I)  { visitBinary(I, ISD::ADD); }
+  void visitAdd(const User &I) { visitBinary(I, ISD::ADD); }
   void visitFAdd(const User &I) { visitBinary(I, ISD::FADD); }
-  void visitSub(const User &I)  { visitBinary(I, ISD::SUB); }
+  void visitSub(const User &I) { visitBinary(I, ISD::SUB); }
   void visitFSub(const User &I) { visitBinary(I, ISD::FSUB); }
-  void visitMul(const User &I)  { visitBinary(I, ISD::MUL); }
+  void visitMul(const User &I) { visitBinary(I, ISD::MUL); }
   void visitFMul(const User &I) { visitBinary(I, ISD::FMUL); }
   void visitURem(const User &I) { visitBinary(I, ISD::UREM); }
   void visitSRem(const User &I) { visitBinary(I, ISD::SREM); }
@@ -694,10 +689,10 @@ private:
   void visitUDiv(const User &I) { visitBinary(I, ISD::UDIV); }
   void visitSDiv(const User &I);
   void visitFDiv(const User &I) { visitBinary(I, ISD::FDIV); }
-  void visitAnd (const User &I) { visitBinary(I, ISD::AND); }
-  void visitOr  (const User &I) { visitBinary(I, ISD::OR); }
-  void visitXor (const User &I) { visitBinary(I, ISD::XOR); }
-  void visitShl (const User &I) { visitShift(I, ISD::SHL); }
+  void visitAnd(const User &I) { visitBinary(I, ISD::AND); }
+  void visitOr(const User &I) { visitBinary(I, ISD::OR); }
+  void visitXor(const User &I) { visitBinary(I, ISD::XOR); }
+  void visitShl(const User &I) { visitShift(I, ISD::SHL); }
   void visitLShr(const User &I) { visitShift(I, ISD::SRL); }
   void visitAShr(const User &I) { visitShift(I, ISD::SRA); }
   void visitICmp(const User &I);
@@ -781,8 +776,8 @@ private:
     llvm_unreachable("UserOp2 should not exist at instruction selection time!");
   }
 
-  void processIntegerCallValue(const Instruction &I,
-                               SDValue Value, bool IsSigned);
+  void processIntegerCallValue(const Instruction &I, SDValue Value,
+                               bool IsSigned);
 
   void HandlePHINodesInSuccessorBlocks(const BasicBlock *LLVMBB);
 
@@ -854,9 +849,7 @@ struct RegsForValue {
                const DataLayout &DL, unsigned Reg, Type *Ty,
                Optional<CallingConv::ID> CC);
 
-  bool isABIMangled() const {
-    return CallConv.hasValue();
-  }
+  bool isABIMangled() const { return CallConv.hasValue(); }
 
   /// Add the specified values to this one.
   void append(const RegsForValue &RHS) {

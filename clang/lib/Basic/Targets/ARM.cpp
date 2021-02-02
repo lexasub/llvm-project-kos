@@ -42,9 +42,9 @@ void ARMTargetInfo::setABIAAPCS() {
   // Thumb1 add sp, #imm requires the immediate value be multiple of 4,
   // so set preferred for small types to 32.
   if (T.isOSBinFormatMachO()) {
-    resetDataLayout(BigEndian
-                        ? "E-m:o-p:32:32-Fi8-i64:64-v128:64:128-a:0:32-n32-S64"
-                        : "e-m:o-p:32:32-Fi8-i64:64-v128:64:128-a:0:32-n32-S64");
+    resetDataLayout(
+        BigEndian ? "E-m:o-p:32:32-Fi8-i64:64-v128:64:128-a:0:32-n32-S64"
+                  : "e-m:o-p:32:32-Fi8-i64:64-v128:64:128-a:0:32-n32-S64");
   } else if (T.isOSWindows()) {
     assert(!BigEndian && "Windows on ARM does not support big endian");
     resetDataLayout("e"
@@ -60,9 +60,9 @@ void ARMTargetInfo::setABIAAPCS() {
     assert(!BigEndian && "NaCl on ARM does not support big endian");
     resetDataLayout("e-m:e-p:32:32-Fi8-i64:64-v128:64:128-a:0:32-n32-S128");
   } else {
-    resetDataLayout(BigEndian
-                        ? "E-m:e-p:32:32-Fi8-i64:64-v128:64:128-a:0:32-n32-S64"
-                        : "e-m:e-p:32:32-Fi8-i64:64-v128:64:128-a:0:32-n32-S64");
+    resetDataLayout(
+        BigEndian ? "E-m:e-p:32:32-Fi8-i64:64-v128:64:128-a:0:32-n32-S64"
+                  : "e-m:e-p:32:32-Fi8-i64:64-v128:64:128-a:0:32-n32-S64");
   }
 
   // FIXME: Enumerated types are variable width in straight AAPCS.
@@ -98,12 +98,14 @@ void ARMTargetInfo::setABIAPCS(bool IsAAPCS16) {
     resetDataLayout(
         BigEndian
             ? "E-m:o-p:32:32-Fi8-f64:32:64-v64:32:64-v128:32:128-a:0:32-n32-S32"
-            : "e-m:o-p:32:32-Fi8-f64:32:64-v64:32:64-v128:32:128-a:0:32-n32-S32");
+            : "e-m:o-p:32:32-Fi8-f64:32:64-v64:32:64-v128:32:128-a:0:32-n32-"
+              "S32");
   else
     resetDataLayout(
         BigEndian
             ? "E-m:e-p:32:32-Fi8-f64:32:64-v64:32:64-v128:32:128-a:0:32-n32-S32"
-            : "e-m:e-p:32:32-Fi8-f64:32:64-v64:32:64-v128:32:128-a:0:32-n32-S32");
+            : "e-m:e-p:32:32-Fi8-f64:32:64-v64:32:64-v128:32:128-a:0:32-n32-"
+              "S32");
 
   // FIXME: Override "preferred align" for double and long long.
 }
@@ -155,9 +157,7 @@ bool ARMTargetInfo::hasMVE() const {
   return ArchKind == llvm::ARM::ArchKind::ARMV8_1MMainline && MVE != 0;
 }
 
-bool ARMTargetInfo::hasMVEFloat() const {
-  return hasMVE() && (MVE & MVE_FP);
-}
+bool ARMTargetInfo::hasMVEFloat() const { return hasMVE() && (MVE & MVE_FP); }
 
 bool ARMTargetInfo::hasCDE() const { return getARMCDECoprocMask() != 0; }
 
@@ -419,7 +419,6 @@ bool ARMTargetInfo::initFeatureMap(
   return TargetInfo::initFeatureMap(Features, Diags, CPU, UpdatedFeaturesVec);
 }
 
-
 bool ARMTargetInfo::handleTargetFeatures(std::vector<std::string> &Features,
                                          DiagnosticsEngine &Diags) {
   FPU = 0;
@@ -446,25 +445,25 @@ bool ARMTargetInfo::handleTargetFeatures(std::vector<std::string> &Features,
       FPU |= VFP2FPU;
       HW_FP |= HW_FP_SP;
       if (Feature == "+vfp2")
-          HW_FP |= HW_FP_DP;
+        HW_FP |= HW_FP_DP;
     } else if (Feature == "+vfp3sp" || Feature == "+vfp3d16sp" ||
                Feature == "+vfp3" || Feature == "+vfp3d16") {
       FPU |= VFP3FPU;
       HW_FP |= HW_FP_SP;
       if (Feature == "+vfp3" || Feature == "+vfp3d16")
-          HW_FP |= HW_FP_DP;
+        HW_FP |= HW_FP_DP;
     } else if (Feature == "+vfp4sp" || Feature == "+vfp4d16sp" ||
                Feature == "+vfp4" || Feature == "+vfp4d16") {
       FPU |= VFP4FPU;
       HW_FP |= HW_FP_SP | HW_FP_HP;
       if (Feature == "+vfp4" || Feature == "+vfp4d16")
-          HW_FP |= HW_FP_DP;
+        HW_FP |= HW_FP_DP;
     } else if (Feature == "+fp-armv8sp" || Feature == "+fp-armv8d16sp" ||
                Feature == "+fp-armv8" || Feature == "+fp-armv8d16") {
       FPU |= FPARMV8;
       HW_FP |= HW_FP_SP | HW_FP_HP;
       if (Feature == "+fp-armv8" || Feature == "+fp-armv8d16")
-          HW_FP |= HW_FP_DP;
+        HW_FP |= HW_FP_DP;
     } else if (Feature == "+neon") {
       FPU |= NeonFPU;
       HW_FP |= HW_FP_SP;
@@ -1160,8 +1159,7 @@ void ARMbeTargetInfo::getTargetDefines(const LangOptions &Opts,
 
 WindowsARMTargetInfo::WindowsARMTargetInfo(const llvm::Triple &Triple,
                                            const TargetOptions &Opts)
-    : WindowsTargetInfo<ARMleTargetInfo>(Triple, Opts), Triple(Triple) {
-}
+    : WindowsTargetInfo<ARMleTargetInfo>(Triple, Opts), Triple(Triple) {}
 
 void WindowsARMTargetInfo::getVisualStudioDefines(const LangOptions &Opts,
                                                   MacroBuilder &Builder) const {

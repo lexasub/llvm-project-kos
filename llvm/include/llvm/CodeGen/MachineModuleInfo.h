@@ -67,7 +67,7 @@ public:
 protected:
   /// Return the entries from a DenseMap in a deterministic sorted orer.
   /// Clears the map.
-  static SymbolListTy getSortedStubs(DenseMap<MCSymbol*, StubValueTy>&);
+  static SymbolListTy getSortedStubs(DenseMap<MCSymbol *, StubValueTy> &);
 };
 
 //===----------------------------------------------------------------------===//
@@ -141,7 +141,7 @@ class MachineModuleInfo {
   bool HasNosplitStack;
 
   /// Maps IR Functions to their corresponding MachineFunctions.
-  DenseMap<const Function*, std::unique_ptr<MachineFunction>> MachineFunctions;
+  DenseMap<const Function *, std::unique_ptr<MachineFunction>> MachineFunctions;
   /// Next unique number available for a MachineFunction.
   unsigned NextFnNum = 0;
   const Function *LastRequest = nullptr; ///< Used for shortcut/cache.
@@ -187,16 +187,14 @@ public:
 
   /// Keep track of various per-function pieces of information for backends
   /// that would like to do so.
-  template<typename Ty>
-  Ty &getObjFileInfo() {
+  template <typename Ty> Ty &getObjFileInfo() {
     if (ObjFileMMI == nullptr)
       ObjFileMMI = new Ty(*this);
-    return *static_cast<Ty*>(ObjFileMMI);
+    return *static_cast<Ty *>(ObjFileMMI);
   }
 
-  template<typename Ty>
-  const Ty &getObjFileInfo() const {
-    return const_cast<MachineModuleInfo*>(this)->getObjFileInfo<Ty>();
+  template <typename Ty> const Ty &getObjFileInfo() const {
+    return const_cast<MachineModuleInfo *>(this)->getObjFileInfo<Ty>();
   }
 
   /// Returns true if valid debug info is present.
@@ -207,29 +205,17 @@ public:
 
   void setUsesMSVCFloatingPoint(bool b) { UsesMSVCFloatingPoint = b; }
 
-  bool usesMorestackAddr() const {
-    return UsesMorestackAddr;
-  }
+  bool usesMorestackAddr() const { return UsesMorestackAddr; }
 
-  void setUsesMorestackAddr(bool b) {
-    UsesMorestackAddr = b;
-  }
+  void setUsesMorestackAddr(bool b) { UsesMorestackAddr = b; }
 
-  bool hasSplitStack() const {
-    return HasSplitStack;
-  }
+  bool hasSplitStack() const { return HasSplitStack; }
 
-  void setHasSplitStack(bool b) {
-    HasSplitStack = b;
-  }
+  void setHasSplitStack(bool b) { HasSplitStack = b; }
 
-  bool hasNosplitStack() const {
-    return HasNosplitStack;
-  }
+  bool hasNosplitStack() const { return HasNosplitStack; }
 
-  void setHasNosplitStack(bool b) {
-    HasNosplitStack = b;
-  }
+  void setHasNosplitStack(bool b) { HasNosplitStack = b; }
 
   /// Return the symbol to be used for the specified basic block when its
   /// address is taken.  This cannot be its normal LBB label because the block
@@ -257,7 +243,7 @@ public:
   void addPersonality(const Function *Personality);
 
   /// Return array of personality functions ever seen.
-  const std::vector<const Function *>& getPersonalities() const {
+  const std::vector<const Function *> &getPersonalities() const {
     return Personalities;
   }
   /// \}

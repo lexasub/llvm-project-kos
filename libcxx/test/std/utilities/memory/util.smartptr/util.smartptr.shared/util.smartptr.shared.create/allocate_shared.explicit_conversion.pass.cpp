@@ -15,18 +15,21 @@
 
 template <class T>
 struct ExplicitAllocator {
-    ExplicitAllocator() = default;
-    template <class U>
-    explicit ExplicitAllocator(ExplicitAllocator<U>) { }
+  ExplicitAllocator() = default;
+  template <class U>
+  explicit ExplicitAllocator(ExplicitAllocator<U>) {}
 
-    using value_type = T;
-    T* allocate(std::size_t n) { return std::allocator<T>().allocate(n); }
-    void deallocate(T* ptr, std::size_t n) { return std::allocator<T>().deallocate(ptr, n); }
+  using value_type = T;
+  T* allocate(std::size_t n) { return std::allocator<T>().allocate(n); }
+  void deallocate(T* ptr, std::size_t n) {
+    return std::allocator<T>().deallocate(ptr, n);
+  }
 };
 
 int main(int, char**) {
-    std::shared_ptr<int> ptr = std::allocate_shared<int>(ExplicitAllocator<int>(), 0);
-    (void)ptr;
+  std::shared_ptr<int> ptr =
+      std::allocate_shared<int>(ExplicitAllocator<int>(), 0);
+  (void)ptr;
 
-    return 0;
+  return 0;
 }

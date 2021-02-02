@@ -29,8 +29,8 @@ int main(int, char**) {
   // Test incrementing/decrementing a singular iterator
   {
     path::iterator singular;
-    EXPECT_DEATH( ++singular );
-    EXPECT_DEATH( --singular );
+    EXPECT_DEATH(++singular);
+    EXPECT_DEATH(--singular);
   }
   // Test decrementing the begin iterator
   {
@@ -38,16 +38,16 @@ int main(int, char**) {
     auto it = p.begin();
     ++it;
     ++it;
-    EXPECT_DEATH( ++it );
+    EXPECT_DEATH(++it);
   }
   // Test incrementing the end iterator
   {
     path p("foo/bar");
     auto it = p.end();
-    EXPECT_DEATH( ++it );
+    EXPECT_DEATH(++it);
     --it;
     --it;
-    EXPECT_DEATH( --it );
+    EXPECT_DEATH(--it);
   }
 
   return 0;

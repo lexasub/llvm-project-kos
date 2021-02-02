@@ -22,15 +22,16 @@
  *===-----------------------------------------------------------------------===
  */
 #ifndef __IMMINTRIN_H
-#error "Never use <avx512vp2intersect.h> directly; include <immintrin.h> instead."
+#error                                                                         \
+    "Never use <avx512vp2intersect.h> directly; include <immintrin.h> instead."
 #endif
 
 #ifndef _AVX512VP2INTERSECT_H
 #define _AVX512VP2INTERSECT_H
 
-#define __DEFAULT_FN_ATTRS \
-  __attribute__((__always_inline__, __nodebug__,  __target__("avx512vp2intersect"), \
-                 __min_vector_width__(512)))
+#define __DEFAULT_FN_ATTRS                                                     \
+  __attribute__((__always_inline__, __nodebug__,                               \
+                 __target__("avx512vp2intersect"), __min_vector_width__(512)))
 
 /// Store, in an even/odd pair of mask registers, the indicators of the
 /// locations of value matches between dwords in operands __a and __b.
@@ -47,8 +48,8 @@
 ///    A pointer point to 16-bit mask
 /// \param __m1
 ///    A pointer point to 16-bit mask
-static __inline__ void __DEFAULT_FN_ATTRS
-_mm512_2intersect_epi32(__m512i __a, __m512i __b, __mmask16 *__m0, __mmask16 *__m1) {
+static __inline__ void __DEFAULT_FN_ATTRS _mm512_2intersect_epi32(
+    __m512i __a, __m512i __b, __mmask16 *__m0, __mmask16 *__m1) {
   __builtin_ia32_vp2intersect_d_512((__v16si)__a, (__v16si)__b, __m0, __m1);
 }
 
@@ -67,8 +68,8 @@ _mm512_2intersect_epi32(__m512i __a, __m512i __b, __mmask16 *__m0, __mmask16 *__
 ///    A pointer point to 8-bit mask
 /// \param __m1
 ///    A pointer point to 8-bit mask
-static __inline__ void __DEFAULT_FN_ATTRS
-_mm512_2intersect_epi64(__m512i __a, __m512i __b, __mmask8 *__m0, __mmask8 *__m1) {
+static __inline__ void __DEFAULT_FN_ATTRS _mm512_2intersect_epi64(
+    __m512i __a, __m512i __b, __mmask8 *__m0, __mmask8 *__m1) {
   __builtin_ia32_vp2intersect_q_512((__v8di)__a, (__v8di)__b, __m0, __m1);
 }
 

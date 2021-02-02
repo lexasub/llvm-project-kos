@@ -3,71 +3,67 @@
 extern "C" int printf(...);
 extern "C" void abort();
 
-struct A
-{
+struct A {
   int i;
-  A (int j) : i(j) {printf("this = %p A(%d)\n", this, j);}
-  A (const A &j) : i(j.i) {printf("this = %p const A&(%d)\n", this, i);}
-  A& operator= (const A &j) { i = j.i; abort(); return *this; }
+  A(int j) : i(j) { printf("this = %p A(%d)\n", this, j); }
+  A(const A &j) : i(j.i) { printf("this = %p const A&(%d)\n", this, i); }
+  A &operator=(const A &j) {
+    i = j.i;
+    abort();
+    return *this;
+  }
   ~A() { printf("this = %p ~A(%d)\n", this, i); }
 };
 
-struct B
-{
+struct B {
   int i;
-  B (const A& a) { i = a.i; }
-  B() {printf("this = %p B()\n", this);}
-  B (const B &j) : i(j.i) {printf("this = %p const B&(%d)\n", this, i);}
+  B(const A &a) { i = a.i; }
+  B() { printf("this = %p B()\n", this); }
+  B(const B &j) : i(j.i) { printf("this = %p const B&(%d)\n", this, i); }
   ~B() { printf("this = %p ~B(%d)\n", this, i); }
 };
 
-A foo(int j)
-{
+A foo(int j) {
   return ({ j ? A(1) : A(0); });
 }
 
-
-void foo2()
-{
+void foo2() {
   A b = ({ A a(1); A a1(2); A a2(3); a1; a2; a; });
   if (b.i != 1)
-    abort(); 
+    abort();
   A c = ({ A a(1); A a1(2); A a2(3); a1; a2; a; A a3(4); a2; a3; });
   if (c.i != 4)
-    abort(); 
+    abort();
 }
 
-void foo3()
-{
+void foo3() {
   const A &b = ({ A a(1); a; });
   if (b.i != 1)
     abort();
 }
 
-void foo4()
-{
-// CHECK: call {{.*}} @_ZN1AC1Ei
-// CHECK: call {{.*}} @_ZN1AC1ERKS_
-// CHECK: call {{.*}} @_ZN1AD1Ev
-// CHECK: call {{.*}} @_ZN1BC1ERK1A
-// CHECK: call {{.*}} @_ZN1AD1Ev
+void foo4() {
+  // CHECK: call {{.*}} @_ZN1AC1Ei
+  // CHECK: call {{.*}} @_ZN1AC1ERKS_
+  // CHECK: call {{.*}} @_ZN1AD1Ev
+  // CHECK: call {{.*}} @_ZN1BC1ERK1A
+  // CHECK: call {{.*}} @_ZN1AD1Ev
   const B &b = ({ A a(1); a; });
   if (b.i != 1)
     abort();
 }
 
-int main()
-{
+int main() {
   foo2();
   foo3();
   foo4();
-  return foo(1).i-1;
+  return foo(1).i - 1;
 }
 
 // rdar: // 8600553
 int a[128];
-int* foo5() {
-// CHECK-NOT: memcpy
+int *foo5() {
+  // CHECK-NOT: memcpy
   // Check that array-to-pointer conversion occurs in a
   // statement-expression.
   return (({ a; }));
@@ -78,7 +74,8 @@ int* foo5() {
 int foo5(bool b) {
   int y = 0;
   y = ({ A a(1); if (b) goto G; a.i; });
-  G: return y;
+G:
+  return y;
 }
 
 // When we emit a full expression with cleanups that contains branches out of
@@ -141,7 +138,9 @@ extern "C" int cleanup_exit_lvalue(bool cond) {
 
 // Bind the reference to a byval argument. It is not an instruction or Constant,
 // so it's a bit of a corner case.
-struct ByVal { int x[3]; };
+struct ByVal {
+  int x[3];
+};
 extern "C" int cleanup_exit_lvalue_byval(bool cond, ByVal arg) {
   ByVal &r = (A(1), ({ if (cond) return 0; (void)ByVal(); }), arg);
   return r.x[0];
@@ -200,7 +199,7 @@ void volatile_load() {
   // CHECK-NOT: load volatile
   // CHECK: load volatile
   // CHECK-NOT: load volatile
-  ({n;});
+  ({ n; });
 
   // CHECK-LABEL: @then(i32 1)
   then(1);
@@ -208,7 +207,7 @@ void volatile_load() {
   // CHECK-NOT: load volatile
   // CHECK: load volatile
   // CHECK-NOT: load volatile
-  ({goto lab; lab: n;});
+  ({goto lab; lab: n; });
 
   // CHECK-LABEL: @then(i32 2)
   then(2);
@@ -216,7 +215,7 @@ void volatile_load() {
   // CHECK-NOT: load volatile
   // CHECK: load volatile
   // CHECK-NOT: load volatile
-  ({[[gsl::suppress("foo")]] n;});
+  ({ [[gsl::suppress("foo")]] n; });
 
   // CHECK-LABEL: @then(i32 3)
   then(3);
@@ -224,20 +223,20 @@ void volatile_load() {
   // CHECK-NOT: load volatile
   // CHECK: load volatile
   // CHECK-NOT: load volatile
-  ({if (true) n;});
+  ({if (true) n; });
 
   // CHECK: }
 }
 
 // CHECK-LABEL: @{{.*}}volatile_load_template
-template<typename T>
+template <typename T>
 void volatile_load_template() {
   volatile T n;
 
   // CHECK-NOT: load volatile
   // CHECK: load volatile
   // CHECK-NOT: load volatile
-  ({n;});
+  ({ n; });
 
   // CHECK-LABEL: @then(i32 1)
   then(1);
@@ -245,7 +244,7 @@ void volatile_load_template() {
   // CHECK-NOT: load volatile
   // CHECK: load volatile
   // CHECK-NOT: load volatile
-  ({goto lab; lab: n;});
+  ({goto lab; lab: n; });
 
   // CHECK-LABEL: @then(i32 2)
   then(2);
@@ -253,7 +252,7 @@ void volatile_load_template() {
   // CHECK-NOT: load volatile
   // CHECK: load volatile
   // CHECK-NOT: load volatile
-  ({[[gsl::suppress("foo")]] n;});
+  ({ [[gsl::suppress("foo")]] n; });
 
   // CHECK-LABEL: @then(i32 3)
   then(3);
@@ -261,7 +260,7 @@ void volatile_load_template() {
   // CHECK-NOT: load volatile
   // CHECK: load volatile
   // CHECK-NOT: load volatile
-  ({if (true) n;});
+  ({if (true) n; });
 
   // CHECK: }
 }

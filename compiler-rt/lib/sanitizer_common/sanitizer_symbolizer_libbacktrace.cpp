@@ -11,23 +11,23 @@
 // Libbacktrace implementation of symbolizer parts.
 //===----------------------------------------------------------------------===//
 
-#include "sanitizer_platform.h"
-
-#include "sanitizer_internal_defs.h"
-#include "sanitizer_symbolizer.h"
 #include "sanitizer_symbolizer_libbacktrace.h"
 
+#include "sanitizer_internal_defs.h"
+#include "sanitizer_platform.h"
+#include "sanitizer_symbolizer.h"
+
 #if SANITIZER_LIBBACKTRACE
-# include "backtrace-supported.h"
-# if SANITIZER_POSIX && BACKTRACE_SUPPORTED && !BACKTRACE_USES_MALLOC
-#  include "backtrace.h"
-#  if SANITIZER_CP_DEMANGLE
-#   undef ARRAY_SIZE
-#   include "demangle.h"
-#  endif
-# else
-#  define SANITIZER_LIBBACKTRACE 0
-# endif
+#include "backtrace-supported.h"
+#if SANITIZER_POSIX && BACKTRACE_SUPPORTED && !BACKTRACE_USES_MALLOC
+#include "backtrace.h"
+#if SANITIZER_CP_DEMANGLE
+#undef ARRAY_SIZE
+#include "demangle.h"
+#endif
+#else
+#define SANITIZER_LIBBACKTRACE 0
+#endif
 #endif
 
 namespace __sanitizer {
@@ -38,7 +38,7 @@ static char *DemangleAlloc(const char *name, bool always_alloc);
 
 namespace {
 
-# if SANITIZER_CP_DEMANGLE
+#if SANITIZER_CP_DEMANGLE
 struct CplusV3DemangleData {
   char *buf;
   uptr size, allocated;
@@ -82,7 +82,7 @@ char *CplusV3Demangle(const char *name) {
     InternalFree(data.buf);
   return 0;
 }
-# endif  // SANITIZER_CP_DEMANGLE
+#endif  // SANITIZER_CP_DEMANGLE
 
 struct SymbolizeCodeCallbackArg {
   SymbolizedStack *first;
@@ -152,7 +152,7 @@ LibbacktraceSymbolizer *LibbacktraceSymbolizer::get(LowLevelAllocator *alloc) {
                                                 ErrorCallback, NULL));
   if (!state)
     return 0;
-  return new(*alloc) LibbacktraceSymbolizer(state);
+  return new (*alloc) LibbacktraceSymbolizer(state);
 }
 
 bool LibbacktraceSymbolizer::SymbolizePC(uptr addr, SymbolizedStack *stack) {

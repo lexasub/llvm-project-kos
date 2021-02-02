@@ -45,7 +45,7 @@ struct Invalid2 {
 struct Valid {
   typeof(3) x;
   typeof(x) y;
-  typeof(Valid*) self;
+  typeof(Valid *) self;
 };
 #elif defined(SECOND)
 struct Invalid1 {
@@ -58,7 +58,7 @@ struct Invalid2 {
 struct Valid {
   typeof(3) x;
   typeof(x) y;
-  typeof(Valid*) self;
+  typeof(Valid *) self;
 };
 #else
 Invalid1 i1;
@@ -69,7 +69,7 @@ Invalid2 i2;
 // expected-note@first.h:* {{declaration of 'x' does not match}}
 Valid v;
 #endif
-}  // namespace TypeOfExpr
+} // namespace TypeOfExpr
 
 namespace TypeOf {
 #if defined(FIRST)
@@ -117,8 +117,8 @@ Invalid3 i3;
 // expected-note@first.h:* {{declaration of 'x' does not match}}
 Valid v;
 #endif
-}  // namespace TypeOf
-}  // namespace Types
+} // namespace TypeOf
+} // namespace Types
 
 // Keep macros contained to one file.
 #ifdef FIRST

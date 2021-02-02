@@ -38,9 +38,7 @@ struct GCNRegPressure {
     TOTAL_KINDS
   };
 
-  GCNRegPressure() {
-    clear();
-  }
+  GCNRegPressure() { clear(); }
 
   bool empty() const { return getSGPRNum() == 0 && getVGPRNum() == 0; }
 
@@ -49,8 +47,9 @@ struct GCNRegPressure {
   unsigned getSGPRNum() const { return Value[SGPR32]; }
   unsigned getVGPRNum() const { return std::max(Value[VGPR32], Value[AGPR32]); }
 
-  unsigned getVGPRTuplesWeight() const { return std::max(Value[VGPR_TUPLE],
-                                                         Value[AGPR_TUPLE]); }
+  unsigned getVGPRTuplesWeight() const {
+    return std::max(Value[VGPR_TUPLE], Value[AGPR_TUPLE]);
+  }
   unsigned getSGPRTuplesWeight() const { return Value[SGPR_TUPLE]; }
 
   unsigned getOccupancy(const GCNSubtarget &ST) const {
@@ -58,25 +57,21 @@ struct GCNRegPressure {
                     ST.getOccupancyWithNumVGPRs(getVGPRNum()));
   }
 
-  void inc(unsigned Reg,
-           LaneBitmask PrevMask,
-           LaneBitmask NewMask,
+  void inc(unsigned Reg, LaneBitmask PrevMask, LaneBitmask NewMask,
            const MachineRegisterInfo &MRI);
 
-  bool higherOccupancy(const GCNSubtarget &ST, const GCNRegPressure& O) const {
+  bool higherOccupancy(const GCNSubtarget &ST, const GCNRegPressure &O) const {
     return getOccupancy(ST) > O.getOccupancy(ST);
   }
 
-  bool less(const GCNSubtarget &ST, const GCNRegPressure& O,
-    unsigned MaxOccupancy = std::numeric_limits<unsigned>::max()) const;
+  bool less(const GCNSubtarget &ST, const GCNRegPressure &O,
+            unsigned MaxOccupancy = std::numeric_limits<unsigned>::max()) const;
 
   bool operator==(const GCNRegPressure &O) const {
     return std::equal(&Value[0], &Value[TOTAL_KINDS], O.Value);
   }
 
-  bool operator!=(const GCNRegPressure &O) const {
-    return !(*this == O);
-  }
+  bool operator!=(const GCNRegPressure &O) const { return !(*this == O); }
 
   void print(raw_ostream &OS, const GCNSubtarget *ST = nullptr) const;
   void dump() const { print(dbgs()); }
@@ -86,8 +81,7 @@ private:
 
   static unsigned getRegKind(Register Reg, const MachineRegisterInfo &MRI);
 
-  friend GCNRegPressure max(const GCNRegPressure &P1,
-                            const GCNRegPressure &P2);
+  friend GCNRegPressure max(const GCNRegPressure &P1, const GCNRegPressure &P2);
 };
 
 inline GCNRegPressure max(const GCNRegPressure &P1, const GCNRegPressure &P2) {
@@ -127,11 +121,9 @@ public:
     return Res;
   }
 
-  decltype(LiveRegs) moveLiveRegs() {
-    return std::move(LiveRegs);
-  }
+  decltype(LiveRegs) moveLiveRegs() { return std::move(LiveRegs); }
 
-  static void printLiveRegs(raw_ostream &OS, const LiveRegSet& LiveRegs,
+  static void printLiveRegs(raw_ostream &OS, const LiveRegSet &LiveRegs,
                             const MachineRegisterInfo &MRI);
 };
 
@@ -186,13 +178,11 @@ public:
                const LiveRegSet *LiveRegsCopy = nullptr);
 };
 
-LaneBitmask getLiveLaneMask(unsigned Reg,
-                            SlotIndex SI,
+LaneBitmask getLiveLaneMask(unsigned Reg, SlotIndex SI,
                             const LiveIntervals &LIS,
                             const MachineRegisterInfo &MRI);
 
-GCNRPTracker::LiveRegSet getLiveRegs(SlotIndex SI,
-                                     const LiveIntervals &LIS,
+GCNRPTracker::LiveRegSet getLiveRegs(SlotIndex SI, const LiveIntervals &LIS,
                                      const MachineRegisterInfo &MRI);
 
 /// creates a map MachineInstr -> LiveRegSet
@@ -201,7 +191,7 @@ GCNRPTracker::LiveRegSet getLiveRegs(SlotIndex SI,
 /// Note: there is no entry in the map for instructions with empty live reg set
 /// Complexity = O(NumVirtRegs * averageLiveRangeSegmentsPerReg * lg(R))
 template <typename Range>
-DenseMap<MachineInstr*, GCNRPTracker::LiveRegSet>
+DenseMap<MachineInstr *, GCNRPTracker::LiveRegSet>
 getLiveRegMap(Range &&R, bool After, LiveIntervals &LIS) {
   std::vector<SlotIndex> Indexes;
   Indexes.reserve(std::distance(R.begin(), R.end()));
@@ -226,7 +216,7 @@ getLiveRegMap(Range &&R, bool After, LiveIntervals &LIS) {
     if (!LI.hasSubRanges()) {
       for (auto SI : LiveIdxs)
         LiveRegMap[SII.getInstructionFromIndex(SI)][Reg] =
-          MRI.getMaxLaneMaskForVReg(Reg);
+            MRI.getMaxLaneMaskForVReg(Reg);
     } else
       for (const auto &S : LI.subranges()) {
         // constrain search for subranges by indexes live at main range
@@ -263,8 +253,7 @@ GCNRegPressure getRegPressure(const MachineRegisterInfo &MRI,
 bool isEqual(const GCNRPTracker::LiveRegSet &S1,
              const GCNRPTracker::LiveRegSet &S2);
 
-void printLivesAt(SlotIndex SI,
-                  const LiveIntervals &LIS,
+void printLivesAt(SlotIndex SI, const LiveIntervals &LIS,
                   const MachineRegisterInfo &MRI);
 
 } // end namespace llvm

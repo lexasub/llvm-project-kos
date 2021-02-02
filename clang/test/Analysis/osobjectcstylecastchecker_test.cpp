@@ -12,13 +12,13 @@ struct B : public A {
   unsigned getCount();
 };
 
-unsigned warn_on_explicit_downcast(OSObject * obj) {
-  OSArray *a = (OSArray *) obj; // expected-warning{{C-style cast of an OSObject is prone to type confusion attacks; use 'OSRequiredCast' if the object is definitely of type 'OSArray', or 'OSDynamicCast' followed by a null check if unsure}}
+unsigned warn_on_explicit_downcast(OSObject *obj) {
+  OSArray *a = (OSArray *)obj; // expected-warning{{C-style cast of an OSObject is prone to type confusion attacks; use 'OSRequiredCast' if the object is definitely of type 'OSArray', or 'OSDynamicCast' followed by a null check if unsure}}
   return a->getCount();
 }
 
 void no_warn_on_upcast(OSArray *arr) {
-  OSObject *obj = (OSObject *) arr;
+  OSObject *obj = (OSObject *)arr;
   obj->retain();
   obj->release();
 }
@@ -29,11 +29,10 @@ unsigned no_warn_on_dynamic_cast(OSObject *obj) {
 }
 
 __SIZE_TYPE__ no_warn_on_primitive_conversion(OSArray *arr) {
-  return (__SIZE_TYPE__) arr;
+  return (__SIZE_TYPE__)arr;
 }
 
 unsigned no_warn_on_other_type_cast(A *a) {
-  B *b = (B *) a;
+  B *b = (B *)a;
   return b->getCount();
 }
-

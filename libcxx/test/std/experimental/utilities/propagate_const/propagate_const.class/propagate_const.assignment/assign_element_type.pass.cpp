@@ -26,11 +26,11 @@ int main(int, char**) {
   X x1(1);
   P p(2);
 
-  assert(*p==2);
+  assert(*p == 2);
 
   p = x1;
 
-  assert(*p==1);
+  assert(*p == 1);
 
   return 0;
 }

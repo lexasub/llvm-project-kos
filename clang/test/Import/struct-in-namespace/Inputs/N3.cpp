@@ -1,5 +1,5 @@
 namespace M {
-  struct V {
-    int d;
-  };
-}
+struct V {
+  int d;
+};
+} // namespace M

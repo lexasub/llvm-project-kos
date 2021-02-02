@@ -15,7 +15,7 @@ namespace internal {
 // Information kept per benchmark we may want to run
 struct Benchmark::Instance {
   std::string name;
-  Benchmark* benchmark;
+  Benchmark *benchmark;
   ReportMode report_mode;
   std::vector<int64_t> arg;
   TimeUnit time_unit;
@@ -23,25 +23,25 @@ struct Benchmark::Instance {
   bool use_real_time;
   bool use_manual_time;
   BigO complexity;
-  BigOFunc* complexity_lambda;
+  BigOFunc *complexity_lambda;
   UserCounters counters;
-  const std::vector<Statistics>* statistics;
+  const std::vector<Statistics> *statistics;
   bool last_benchmark_instance;
   int repetitions;
   double min_time;
   size_t iterations;
-  int threads;  // Number of concurrent threads to us
+  int threads; // Number of concurrent threads to us
 };
 
-bool FindBenchmarksInternal(const std::string& re,
-                            std::vector<Benchmark::Instance>* benchmarks,
-                            std::ostream* Err);
+bool FindBenchmarksInternal(const std::string &re,
+                            std::vector<Benchmark::Instance> *benchmarks,
+                            std::ostream *Err);
 
 bool IsZero(double n);
 
 ConsoleReporter::OutputOptions GetOutputOptions(bool force_no_color = false);
 
-}  // end namespace internal
-}  // end namespace benchmark
+} // end namespace internal
+} // end namespace benchmark
 
-#endif  // BENCHMARK_API_INTERNAL_H
+#endif // BENCHMARK_API_INTERNAL_H

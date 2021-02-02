@@ -37,8 +37,8 @@ void g() {
   // CHECK-NEXT: %[[B:.*]] = load i32, i32* %[[A]], align 4
   // CHECK-NEXT: switch i32 %[[B]], label %[[C:.*]] [
   switch (int a = 5; a) {
-    case 0:
-      break;
+  case 0:
+    break;
   }
 }
 
@@ -51,8 +51,8 @@ void g1() {
   // CHECK-NEXT: %[[D:.*]] = load i32, i32* %[[C]], align 4
   // CHECK-NEXT: switch i32 %[[D]], label %[[E:.*]] [
   switch (int a, b = 5; int c = 7) {
-    case 0:
-      break;
+  case 0:
+    break;
   }
 }
 
@@ -63,8 +63,8 @@ int g2() {
   // CHECK-NEXT: %[[C:.*]] = load i32, i32* %[[A]], align 4
   // CHECK-NEXT: switch i32 %[[C]], label %[[E:.*]] [
   switch (T{f2()}; int c = 7) {
-    case 0:
-      break;
+  case 0:
+    break;
   }
   return 2;
 }

@@ -6,4 +6,3 @@ struct IncompleteType;
 void NegativeForIncompleteType(IncompleteType I) {
   // CHECK-MESSAGES: [[@LINE-1]]:47: error: variable has incomplete type 'IncompleteType' [clang-diagnostic-error]
 }
-

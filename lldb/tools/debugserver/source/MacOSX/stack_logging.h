@@ -38,8 +38,9 @@
 #define stack_logging_flag_object                                              \
   32 /* NSAllocateObject(Class, extraBytes, zone) */
 #define stack_logging_flag_cleared 64 /* for NewEmptyHandle */
-#define stack_logging_flag_handle 128 /* for Handle (de-)allocation routines   \
-                                         */
+#define stack_logging_flag_handle                                              \
+  128 /* for Handle (de-)allocation routines                                   \
+       */
 #define stack_logging_flag_set_handle_size                                     \
   256 /* (Handle, newSize) treated specially */
 

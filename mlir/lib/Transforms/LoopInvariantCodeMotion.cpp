@@ -74,7 +74,6 @@ static bool canBeHoisted(Operation *op,
   return true;
 }
 
-
 LogicalResult mlir::moveLoopInvariantCode(LoopLikeOpInterface looplike) {
   auto &loopBody = looplike.getLoopBody();
 

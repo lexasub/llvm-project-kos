@@ -38,8 +38,8 @@ namespace llvm {
 class InstrProfReader;
 
 /// A file format agnostic iterator over profiling data.
-class InstrProfIterator : public std::iterator<std::input_iterator_tag,
-                                               NamedInstrProfRecord> {
+class InstrProfIterator
+    : public std::iterator<std::input_iterator_tag, NamedInstrProfRecord> {
   InstrProfReader *Reader = nullptr;
   value_type Record;
 
@@ -49,7 +49,10 @@ public:
   InstrProfIterator() = default;
   InstrProfIterator(InstrProfReader *Reader) : Reader(Reader) { Increment(); }
 
-  InstrProfIterator &operator++() { Increment(); return *this; }
+  InstrProfIterator &operator++() {
+    Increment();
+    return *this;
+  }
   bool operator==(const InstrProfIterator &RHS) const {
     return Reader == RHS.Reader;
   }
@@ -192,8 +195,7 @@ public:
 ///
 /// Templated on the unsigned type whose size matches pointers on the platform
 /// that wrote the profile.
-template <class IntPtrT>
-class RawInstrProfReader : public InstrProfReader {
+template <class IntPtrT> class RawInstrProfReader : public InstrProfReader {
 private:
   /// The profile data file contents.
   std::unique_ptr<MemoryBuffer> DataBuffer;
@@ -277,8 +279,8 @@ private:
   }
 
   const char *getNextHeaderPos() const {
-      assert(atEnd());
-      return (const char *)ValueDataStart;
+    assert(atEnd());
+    return (const char *)ValueDataStart;
   }
 
   /// Get the offset of \p CounterPtr from the start of the counters section of
@@ -366,7 +368,7 @@ struct InstrProfReaderIndexBase {
 
   // Read all the profile records with the key equal to FuncName
   virtual Error getRecords(StringRef FuncName,
-                                     ArrayRef<NamedInstrProfRecord> &Data) = 0;
+                           ArrayRef<NamedInstrProfRecord> &Data) = 0;
   virtual void advanceToNextKey() = 0;
   virtual bool atEnd() const = 0;
   virtual void setValueProfDataEndianness(support::endianness Endianness) = 0;
@@ -380,8 +382,7 @@ struct InstrProfReaderIndexBase {
 using OnDiskHashTableImplV3 =
     OnDiskIterableChainedHashTable<InstrProfLookupTrait>;
 
-template <typename HashTableImpl>
-class InstrProfReaderItaniumRemapper;
+template <typename HashTableImpl> class InstrProfReaderItaniumRemapper;
 
 template <typename HashTableImpl>
 class InstrProfReaderIndex : public InstrProfReaderIndexBase {

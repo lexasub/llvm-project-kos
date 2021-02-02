@@ -47,9 +47,8 @@ unsigned template_test() {
 
 int a = template_test<0>() + template_test<1>() + template_test<2>();
 
-#define comp(x,y) std::max(x, y)
+#define comp(x, y) std::max(x, y)
 
 int b = comp(0, 1);
 int c = comp(0u, 1u);
 int d = comp(2u, 0u);
-

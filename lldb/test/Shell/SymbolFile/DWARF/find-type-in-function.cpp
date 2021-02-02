@@ -17,7 +17,7 @@ struct foo {};
 
 void bar() {
   struct foo {};
-// NAME-DAG: name = "foo", {{.*}} decl = find-type-in-function.cpp:[[@LINE-1]]
+  // NAME-DAG: name = "foo", {{.*}} decl = find-type-in-function.cpp:[[@LINE-1]]
   foo a;
 }
 

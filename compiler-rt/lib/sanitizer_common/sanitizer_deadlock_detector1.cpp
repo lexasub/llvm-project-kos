@@ -10,11 +10,11 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "sanitizer_deadlock_detector_interface.h"
-#include "sanitizer_deadlock_detector.h"
 #include "sanitizer_allocator_internal.h"
-#include "sanitizer_placement_new.h"
+#include "sanitizer_deadlock_detector.h"
+#include "sanitizer_deadlock_detector_interface.h"
 #include "sanitizer_mutex.h"
+#include "sanitizer_placement_new.h"
 
 #if SANITIZER_DEADLOCK_DETECTOR_VERSION == 1
 
@@ -22,8 +22,7 @@ namespace __sanitizer {
 
 typedef TwoLevelBitVector<> DDBV;  // DeadlockDetector's bit vector.
 
-struct DDPhysicalThread {
-};
+struct DDPhysicalThread {};
 
 struct DDLogicalThread {
   u64 ctx;
@@ -61,23 +60,17 @@ struct DD final : public DDetector {
 DDetector *DDetector::Create(const DDFlags *flags) {
   (void)flags;
   void *mem = MmapOrDie(sizeof(DD), "deadlock detector");
-  return new(mem) DD(flags);
+  return new (mem) DD(flags);
 }
 
-DD::DD(const DDFlags *flags)
-    : flags(*flags) {
-  dd.clear();
-}
+DD::DD(const DDFlags *flags) : flags(*flags) { dd.clear(); }
 
-DDPhysicalThread* DD::CreatePhysicalThread() {
-  return nullptr;
-}
+DDPhysicalThread *DD::CreatePhysicalThread() { return nullptr; }
 
-void DD::DestroyPhysicalThread(DDPhysicalThread *pt) {
-}
+void DD::DestroyPhysicalThread(DDPhysicalThread *pt) {}
 
-DDLogicalThread* DD::CreateLogicalThread(u64 ctx) {
-  DDLogicalThread *lt = (DDLogicalThread*)InternalAlloc(sizeof(*lt));
+DDLogicalThread *DD::CreateLogicalThread(u64 ctx) {
+  DDLogicalThread *lt = (DDLogicalThread *)InternalAlloc(sizeof(*lt));
   lt->ctx = ctx;
   lt->dd.clear();
   lt->report_pending = false;
@@ -100,11 +93,12 @@ void DD::MutexEnsureID(DDLogicalThread *lt, DDMutex *m) {
   dd.ensureCurrentEpoch(&lt->dd);
 }
 
-void DD::MutexBeforeLock(DDCallback *cb,
-    DDMutex *m, bool wlock) {
+void DD::MutexBeforeLock(DDCallback *cb, DDMutex *m, bool wlock) {
   DDLogicalThread *lt = cb->lt;
-  if (lt->dd.empty()) return;  // This will be the first lock held by lt.
-  if (dd.hasAllEdges(&lt->dd, m->id)) return;  // We already have all edges.
+  if (lt->dd.empty())
+    return;  // This will be the first lock held by lt.
+  if (dd.hasAllEdges(&lt->dd, m->id))
+    return;  // We already have all edges.
   SpinMutexLock lk(&mtx);
   MutexEnsureID(lt, m);
   if (dd.isHeld(&lt->dd, m->id))
@@ -133,8 +127,8 @@ void DD::ReportDeadlock(DDCallback *cb, DDMutex *m) {
   for (uptr i = 0; i < len; i++) {
     uptr from = path[i];
     uptr to = path[(i + 1) % len];
-    DDMutex *m0 = (DDMutex*)dd.getData(from);
-    DDMutex *m1 = (DDMutex*)dd.getData(to);
+    DDMutex *m0 = (DDMutex *)dd.getData(from);
+    DDMutex *m1 = (DDMutex *)dd.getData(to);
 
     u32 stk_from = -1U, stk_to = -1U;
     int unique_tid = 0;
@@ -174,9 +168,9 @@ void DD::MutexBeforeUnlock(DDCallback *cb, DDMutex *m, bool wlock) {
   dd.onUnlock(&cb->lt->dd, m->id);
 }
 
-void DD::MutexDestroy(DDCallback *cb,
-    DDMutex *m) {
-  if (!m->id) return;
+void DD::MutexDestroy(DDCallback *cb, DDMutex *m) {
+  if (!m->id)
+    return;
   SpinMutexLock lk(&mtx);
   if (dd.nodeBelongsToCurrentEpoch(m->id))
     dd.removeNode(m->id);
@@ -190,5 +184,5 @@ DDReport *DD::GetReport(DDCallback *cb) {
   return &cb->lt->rep;
 }
 
-} // namespace __sanitizer
-#endif // #if SANITIZER_DEADLOCK_DETECTOR_VERSION == 1
+}  // namespace __sanitizer
+#endif  // #if SANITIZER_DEADLOCK_DETECTOR_VERSION == 1

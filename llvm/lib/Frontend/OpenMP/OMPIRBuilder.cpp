@@ -1724,7 +1724,7 @@ CallInst *OpenMPIRBuilder::createCachedThreadPrivate(
   llvm::Value *Args[] = {Ident, ThreadId, Pointer, Size, ThreadPrivateCache};
 
   Function *Fn =
-  		getOrCreateRuntimeFunctionPtr(OMPRTL___kmpc_threadprivate_cached);
+      getOrCreateRuntimeFunctionPtr(OMPRTL___kmpc_threadprivate_cached);
 
   return Builder.CreateCall(Fn, Args);
 }

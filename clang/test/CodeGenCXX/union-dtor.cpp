@@ -2,7 +2,7 @@
 
 // PR10304: destructors should not call destructors for variant members.
 
-template<bool b = false>
+template <bool b = false>
 struct Foo {
   Foo() { static_assert(b, "Foo::Foo used"); }
   ~Foo() { static_assert(b, "Foo::~Foo used"); }

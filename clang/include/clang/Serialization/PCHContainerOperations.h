@@ -1,4 +1,5 @@
-//===--- Serialization/PCHContainerOperations.h - PCH Containers --*- C++ -*-===//
+//===--- Serialization/PCHContainerOperations.h - PCH Containers --*- C++
+//-*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -90,6 +91,7 @@ class RawPCHContainerReader : public PCHContainerReader {
 class PCHContainerOperations {
   llvm::StringMap<std::unique_ptr<PCHContainerWriter>> Writers;
   llvm::StringMap<std::unique_ptr<PCHContainerReader>> Readers;
+
 public:
   /// Automatically registers a RawPCHContainerWriter and
   /// RawPCHContainerReader.
@@ -106,11 +108,9 @@ public:
   const PCHContainerReader *getReaderOrNull(llvm::StringRef Format) {
     return Readers[Format].get();
   }
-  const PCHContainerReader &getRawReader() {
-    return *getReaderOrNull("raw");
-  }
+  const PCHContainerReader &getRawReader() { return *getReaderOrNull("raw"); }
 };
 
-}
+} // namespace clang
 
 #endif

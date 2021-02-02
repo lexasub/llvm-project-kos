@@ -5,16 +5,30 @@
 
 extern "C" int printf(const char *fmt, ...);
 
-struct B0 { int a; B0() : a(0xf00000B0) { printf("B0 = %p\n", this); } };
-struct B1 { int a; B1() : a(0xf00000B1) { printf("B1 = %p\n", this); } };
-struct B2 { B2() { printf("B2 = %p\n", this); } virtual void g() { printf("B2"); } };
-struct B3 : virtual B1 { B3() { printf("B3 = %p\n", this); } };
-struct B4 : virtual B1 { B4() { printf("B4 = %p\n", this); } virtual void g() { printf("B4"); } };
+struct B0 {
+  int a;
+  B0() : a(0xf00000B0) { printf("B0 = %p\n", this); }
+};
+struct B1 {
+  int a;
+  B1() : a(0xf00000B1) { printf("B1 = %p\n", this); }
+};
+struct B2 {
+  B2() { printf("B2 = %p\n", this); }
+  virtual void g() { printf("B2"); }
+};
+struct B3 : virtual B1 {
+  B3() { printf("B3 = %p\n", this); }
+};
+struct B4 : virtual B1 {
+  B4() { printf("B4 = %p\n", this); }
+  virtual void g() { printf("B4"); }
+};
 
 struct A : B0, virtual B1 {
-	__declspec(align(16)) int a;
-	A() : a(0xf000000A) { printf(" A = %p\n\n", this); }
-	virtual void f() { printf("A"); }
+  __declspec(align(16)) int a;
+  A() : a(0xf000000A) { printf(" A = %p\n\n", this); }
+  virtual void f() { printf("A"); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -45,9 +59,9 @@ struct A : B0, virtual B1 {
 // CHECK-X64-NEXT:      |  nvsize=64, nvalign=16]
 
 struct B : B2, B0, virtual B1 {
-	__declspec(align(16)) int a;
-	B() : a(0xf000000B) { printf(" B = %p\n\n", this); }
-	virtual void f() { printf("B"); }
+  __declspec(align(16)) int a;
+  B() : a(0xf000000B) { printf(" B = %p\n\n", this); }
+  virtual void f() { printf("B"); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -78,9 +92,9 @@ struct B : B2, B0, virtual B1 {
 // CHECK-X64-NEXT:      |  nvsize=48, nvalign=16]
 
 struct C : B3, B0, virtual B1 {
-	__declspec(align(16)) int a;
-	C() : a(0xf000000C) { printf(" C = %p\n\n", this); }
-	virtual void f() { printf("C"); }
+  __declspec(align(16)) int a;
+  C() : a(0xf000000C) { printf(" C = %p\n\n", this); }
+  virtual void f() { printf("C"); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -111,9 +125,9 @@ struct C : B3, B0, virtual B1 {
 // CHECK-X64-NEXT:      |  nvsize=48, nvalign=16]
 
 struct D : B4, B0, virtual B1 {
-	__declspec(align(16)) int a;
-	D() : a(0xf000000D) { printf(" D = %p\n\n", this); }
-	virtual void f() { printf("D"); }
+  __declspec(align(16)) int a;
+  D() : a(0xf000000D) { printf(" D = %p\n\n", this); }
+  virtual void f() { printf("D"); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -143,8 +157,7 @@ struct D : B4, B0, virtual B1 {
 // CHECK-X64-NEXT:      | [sizeof=64, align=16
 // CHECK-X64-NEXT:      |  nvsize=48, nvalign=16]
 
-int a[
-sizeof(A)+
-sizeof(B)+
-sizeof(C)+
-sizeof(D)];
+int a[sizeof(A) +
+      sizeof(B) +
+      sizeof(C) +
+      sizeof(D)];

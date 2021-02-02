@@ -26,39 +26,38 @@ namespace ex = std::experimental::pmr;
 
 template <size_t S, size_t Align>
 void testForSizeAndAlign() {
-    using T = typename std::aligned_storage<S, Align>::type;
+  using T = typename std::aligned_storage<S, Align>::type;
 
-    TestResource R;
-    ex::polymorphic_allocator<T> a(&R);
+  TestResource R;
+  ex::polymorphic_allocator<T> a(&R);
 
-    for (int N = 1; N <= 5; ++N) {
-        auto ret = a.allocate(N);
-        assert(R.checkAlloc(ret, N * sizeof(T), alignof(T)));
+  for (int N = 1; N <= 5; ++N) {
+    auto ret = a.allocate(N);
+    assert(R.checkAlloc(ret, N * sizeof(T), alignof(T)));
 
-        a.deallocate(ret, N);
-        assert(R.checkDealloc(ret, N * sizeof(T), alignof(T)));
+    a.deallocate(ret, N);
+    assert(R.checkDealloc(ret, N * sizeof(T), alignof(T)));
 
-        R.reset();
-    }
+    R.reset();
+  }
 }
 
-int main(int, char**)
-{
-    {
-        ex::polymorphic_allocator<int> a;
-        static_assert(
-            std::is_same<decltype(a.deallocate(nullptr, 0)), void>::value, "");
-    }
-    {
-        constexpr std::size_t MA = alignof(std::max_align_t);
-        testForSizeAndAlign<1, 1>();
-        testForSizeAndAlign<1, 2>();
-        testForSizeAndAlign<1, MA>();
-        testForSizeAndAlign<2, 2>();
-        testForSizeAndAlign<73, alignof(void*)>();
-        testForSizeAndAlign<73, MA>();
-        testForSizeAndAlign<13, MA>();
-    }
+int main(int, char**) {
+  {
+    ex::polymorphic_allocator<int> a;
+    static_assert(std::is_same<decltype(a.deallocate(nullptr, 0)), void>::value,
+                  "");
+  }
+  {
+    constexpr std::size_t MA = alignof(std::max_align_t);
+    testForSizeAndAlign<1, 1>();
+    testForSizeAndAlign<1, 2>();
+    testForSizeAndAlign<1, MA>();
+    testForSizeAndAlign<2, 2>();
+    testForSizeAndAlign<73, alignof(void*)>();
+    testForSizeAndAlign<73, MA>();
+    testForSizeAndAlign<13, MA>();
+  }
 
   return 0;
 }

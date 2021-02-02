@@ -42,10 +42,9 @@ uint64_t CGObjCRuntime::ComputeIvarBaseOffset(CodeGen::CodeGenModule &CGM,
          CGM.getContext().getCharWidth();
 }
 
-unsigned CGObjCRuntime::ComputeBitfieldBitOffset(
-    CodeGen::CodeGenModule &CGM,
-    const ObjCInterfaceDecl *ID,
-    const ObjCIvarDecl *Ivar) {
+unsigned CGObjCRuntime::ComputeBitfieldBitOffset(CodeGen::CodeGenModule &CGM,
+                                                 const ObjCInterfaceDecl *ID,
+                                                 const ObjCIvarDecl *Ivar) {
   return CGM.getContext().lookupFieldBitOffset(ID, ID->getImplementation(),
                                                Ivar);
 }
@@ -101,44 +100,44 @@ LValue CGObjCRuntime::EmitValueForIvarAtOffset(CodeGen::CodeGenFunction &CGF,
   // layout object. However, this is blocked on other cleanups to the
   // Objective-C code, so for now we just live with allocating a bunch of these
   // objects.
-  CGBitFieldInfo *Info = new (CGF.CGM.getContext()) CGBitFieldInfo(
-    CGBitFieldInfo::MakeInfo(CGF.CGM.getTypes(), Ivar, BitOffset, BitFieldSize,
-                             CGF.CGM.getContext().toBits(StorageSize),
-                             CharUnits::fromQuantity(0)));
+  CGBitFieldInfo *Info =
+      new (CGF.CGM.getContext()) CGBitFieldInfo(CGBitFieldInfo::MakeInfo(
+          CGF.CGM.getTypes(), Ivar, BitOffset, BitFieldSize,
+          CGF.CGM.getContext().toBits(StorageSize),
+          CharUnits::fromQuantity(0)));
 
   Address Addr(V, Alignment);
-  Addr = CGF.Builder.CreateElementBitCast(Addr,
-                                   llvm::Type::getIntNTy(CGF.getLLVMContext(),
-                                                         Info->StorageSize));
+  Addr = CGF.Builder.CreateElementBitCast(
+      Addr, llvm::Type::getIntNTy(CGF.getLLVMContext(), Info->StorageSize));
   return LValue::MakeBitfield(Addr, *Info, IvarTy,
                               LValueBaseInfo(AlignmentSource::Decl),
                               TBAAAccessInfo());
 }
 
 namespace {
-  struct CatchHandler {
-    const VarDecl *Variable;
-    const Stmt *Body;
-    llvm::BasicBlock *Block;
-    llvm::Constant *TypeInfo;
-    /// Flags used to differentiate cleanups and catchalls in Windows SEH
-    unsigned Flags;
-  };
+struct CatchHandler {
+  const VarDecl *Variable;
+  const Stmt *Body;
+  llvm::BasicBlock *Block;
+  llvm::Constant *TypeInfo;
+  /// Flags used to differentiate cleanups and catchalls in Windows SEH
+  unsigned Flags;
+};
 
-  struct CallObjCEndCatch final : EHScopeStack::Cleanup {
-    CallObjCEndCatch(bool MightThrow, llvm::FunctionCallee Fn)
-        : MightThrow(MightThrow), Fn(Fn) {}
-    bool MightThrow;
-    llvm::FunctionCallee Fn;
+struct CallObjCEndCatch final : EHScopeStack::Cleanup {
+  CallObjCEndCatch(bool MightThrow, llvm::FunctionCallee Fn)
+      : MightThrow(MightThrow), Fn(Fn) {}
+  bool MightThrow;
+  llvm::FunctionCallee Fn;
 
-    void Emit(CodeGenFunction &CGF, Flags flags) override {
-      if (MightThrow)
-        CGF.EmitRuntimeCallOrInvoke(Fn);
-      else
-        CGF.EmitNounwindRuntimeCall(Fn);
-    }
-  };
-}
+  void Emit(CodeGenFunction &CGF, Flags flags) override {
+    if (MightThrow)
+      CGF.EmitRuntimeCallOrInvoke(Fn);
+    else
+      CGF.EmitNounwindRuntimeCall(Fn);
+  }
+};
+} // namespace
 
 void CGObjCRuntime::EmitTryCatchStmt(CodeGenFunction &CGF,
                                      const ObjCAtTryStmt &S,
@@ -155,11 +154,10 @@ void CGObjCRuntime::EmitTryCatchStmt(CodeGenFunction &CGF,
   CodeGenFunction::FinallyInfo FinallyInfo;
   if (!useFunclets)
     if (const ObjCAtFinallyStmt *Finally = S.getFinallyStmt())
-      FinallyInfo.enter(CGF, Finally->getFinallyBody(),
-                        beginCatchFn, endCatchFn, exceptionRethrowFn);
+      FinallyInfo.enter(CGF, Finally->getFinallyBody(), beginCatchFn,
+                        endCatchFn, exceptionRethrowFn);
 
   SmallVector<CatchHandler, 8> Handlers;
-
 
   // Enter the catch, if there is one.
   if (S.getNumCatchStmts()) {
@@ -188,30 +186,29 @@ void CGObjCRuntime::EmitTryCatchStmt(CodeGenFunction &CGF,
 
     EHCatchScope *Catch = CGF.EHStack.pushCatch(Handlers.size());
     for (unsigned I = 0, E = Handlers.size(); I != E; ++I)
-      Catch->setHandler(I, { Handlers[I].TypeInfo, Handlers[I].Flags }, Handlers[I].Block);
+      Catch->setHandler(I, {Handlers[I].TypeInfo, Handlers[I].Flags},
+                        Handlers[I].Block);
   }
 
   if (useFunclets)
     if (const ObjCAtFinallyStmt *Finally = S.getFinallyStmt()) {
-        CodeGenFunction HelperCGF(CGM, /*suppressNewContext=*/true);
-        if (!CGF.CurSEHParent)
-            CGF.CurSEHParent = cast<NamedDecl>(CGF.CurFuncDecl);
-        // Outline the finally block.
-        const Stmt *FinallyBlock = Finally->getFinallyBody();
-        HelperCGF.startOutlinedSEHHelper(CGF, /*isFilter*/false, FinallyBlock);
+      CodeGenFunction HelperCGF(CGM, /*suppressNewContext=*/true);
+      if (!CGF.CurSEHParent)
+        CGF.CurSEHParent = cast<NamedDecl>(CGF.CurFuncDecl);
+      // Outline the finally block.
+      const Stmt *FinallyBlock = Finally->getFinallyBody();
+      HelperCGF.startOutlinedSEHHelper(CGF, /*isFilter*/ false, FinallyBlock);
 
-        // Emit the original filter expression, convert to i32, and return.
-        HelperCGF.EmitStmt(FinallyBlock);
+      // Emit the original filter expression, convert to i32, and return.
+      HelperCGF.EmitStmt(FinallyBlock);
 
-        HelperCGF.FinishFunction(FinallyBlock->getEndLoc());
+      HelperCGF.FinishFunction(FinallyBlock->getEndLoc());
 
-        llvm::Function *FinallyFunc = HelperCGF.CurFn;
+      llvm::Function *FinallyFunc = HelperCGF.CurFn;
 
-
-        // Push a cleanup for __finally blocks.
-        CGF.pushSEHCleanup(NormalAndEHCleanup, FinallyFunc);
+      // Push a cleanup for __finally blocks.
+      CGF.pushSEHCleanup(NormalAndEHCleanup, FinallyFunc);
     }
-
 
   // Emit the try body.
   CGF.EmitStmt(S.getTryBody());
@@ -229,9 +226,11 @@ void CGObjCRuntime::EmitTryCatchStmt(CodeGenFunction &CGF,
 
     CGF.EmitBlock(Handler.Block);
     llvm::CatchPadInst *CPI = nullptr;
-    SaveAndRestore<llvm::Instruction *> RestoreCurrentFuncletPad(CGF.CurrentFuncletPad);
+    SaveAndRestore<llvm::Instruction *> RestoreCurrentFuncletPad(
+        CGF.CurrentFuncletPad);
     if (useFunclets)
-      if ((CPI = dyn_cast_or_null<llvm::CatchPadInst>(Handler.Block->getFirstNonPHI()))) {
+      if ((CPI = dyn_cast_or_null<llvm::CatchPadInst>(
+               Handler.Block->getFirstNonPHI()))) {
         CGF.CurrentFuncletPad = CPI;
         CPI->setOperand(2, CGF.getExceptionSlot().getPointer());
       }
@@ -249,8 +248,7 @@ void CGObjCRuntime::EmitTryCatchStmt(CodeGenFunction &CGF,
       bool EndCatchMightThrow = (Handler.Variable == nullptr);
 
       CGF.EHStack.pushCleanup<CallObjCEndCatch>(NormalAndEHCleanup,
-                                                EndCatchMightThrow,
-                                                endCatchFn);
+                                                EndCatchMightThrow, endCatchFn);
     }
 
     // Bind the catch parameter if it exists.
@@ -262,7 +260,7 @@ void CGObjCRuntime::EmitTryCatchStmt(CodeGenFunction &CGF,
       EmitInitOfCatchParam(CGF, CastExn, CatchParam);
     }
     if (CPI)
-        CGF.EHStack.pushCleanup<CatchRetScope>(NormalCleanup, CPI);
+      CGF.EHStack.pushCleanup<CatchRetScope>(NormalCleanup, CPI);
 
     CGF.ObjCEHValueStack.push_back(Exn);
     CGF.EmitStmt(Handler.Body);
@@ -285,8 +283,7 @@ void CGObjCRuntime::EmitTryCatchStmt(CodeGenFunction &CGF,
     CGF.EmitBlock(Cont.getBlock());
 }
 
-void CGObjCRuntime::EmitInitOfCatchParam(CodeGenFunction &CGF,
-                                         llvm::Value *exn,
+void CGObjCRuntime::EmitInitOfCatchParam(CodeGenFunction &CGF, llvm::Value *exn,
                                          const VarDecl *paramDecl) {
 
   Address paramAddr = CGF.GetAddrOfLocalVar(paramDecl);
@@ -310,17 +307,17 @@ void CGObjCRuntime::EmitInitOfCatchParam(CodeGenFunction &CGF,
 }
 
 namespace {
-  struct CallSyncExit final : EHScopeStack::Cleanup {
-    llvm::FunctionCallee SyncExitFn;
-    llvm::Value *SyncArg;
-    CallSyncExit(llvm::FunctionCallee SyncExitFn, llvm::Value *SyncArg)
-        : SyncExitFn(SyncExitFn), SyncArg(SyncArg) {}
+struct CallSyncExit final : EHScopeStack::Cleanup {
+  llvm::FunctionCallee SyncExitFn;
+  llvm::Value *SyncArg;
+  CallSyncExit(llvm::FunctionCallee SyncExitFn, llvm::Value *SyncArg)
+      : SyncExitFn(SyncExitFn), SyncArg(SyncArg) {}
 
-    void Emit(CodeGenFunction &CGF, Flags flags) override {
-      CGF.EmitNounwindRuntimeCall(SyncExitFn, SyncArg);
-    }
-  };
-}
+  void Emit(CodeGenFunction &CGF, Flags flags) override {
+    CGF.EmitNounwindRuntimeCall(SyncExitFn, SyncArg);
+  }
+};
+} // namespace
 
 void CGObjCRuntime::EmitAtSynchronizedStmt(CodeGenFunction &CGF,
                                            const ObjCAtSynchronizedStmt &S,
@@ -359,29 +356,28 @@ void CGObjCRuntime::EmitAtSynchronizedStmt(CodeGenFunction &CGF,
 /// \param callArgs - the actual arguments, including implicit ones
 CGObjCRuntime::MessageSendInfo
 CGObjCRuntime::getMessageSendInfo(const ObjCMethodDecl *method,
-                                  QualType resultType,
-                                  CallArgList &callArgs) {
+                                  QualType resultType, CallArgList &callArgs) {
   // If there's a method, use information from that.
   if (method) {
     const CGFunctionInfo &signature =
-      CGM.getTypes().arrangeObjCMessageSendSignature(method, callArgs[0].Ty);
+        CGM.getTypes().arrangeObjCMessageSendSignature(method, callArgs[0].Ty);
 
     llvm::PointerType *signatureType =
-      CGM.getTypes().GetFunctionType(signature)->getPointerTo();
+        CGM.getTypes().GetFunctionType(signature)->getPointerTo();
 
     const CGFunctionInfo &signatureForCall =
-      CGM.getTypes().arrangeCall(signature, callArgs);
+        CGM.getTypes().arrangeCall(signature, callArgs);
 
     return MessageSendInfo(signatureForCall, signatureType);
   }
 
   // There's no method;  just use a default CC.
   const CGFunctionInfo &argsInfo =
-    CGM.getTypes().arrangeUnprototypedObjCMessageSend(resultType, callArgs);
+      CGM.getTypes().arrangeUnprototypedObjCMessageSend(resultType, callArgs);
 
   // Derive the signature to call from that.
   llvm::PointerType *signatureType =
-    CGM.getTypes().GetFunctionType(argsInfo)->getPointerTo();
+      CGM.getTypes().GetFunctionType(argsInfo)->getPointerTo();
   return MessageSendInfo(argsInfo, signatureType);
 }
 
@@ -395,8 +391,8 @@ std::string CGObjCRuntime::getSymbolNameForMethod(const ObjCMethodDecl *OMD,
                                                   bool includeCategoryName) {
   std::string buffer;
   llvm::raw_string_ostream out(buffer);
-  CGM.getCXXABI().getMangleContext().mangleObjCMethodName(OMD, out,
-                                       /*includePrefixByte=*/true,
-                                       includeCategoryName);
+  CGM.getCXXABI().getMangleContext().mangleObjCMethodName(
+      OMD, out,
+      /*includePrefixByte=*/true, includeCategoryName);
   return buffer;
 }

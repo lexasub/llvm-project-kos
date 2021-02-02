@@ -139,8 +139,8 @@ bool RegisterValue::GetScalarValue(Scalar &scalar) const {
     break;
   case eTypeBytes: {
     DataExtractor data(buffer.bytes, buffer.length, buffer.byte_order, 1);
-    if (scalar.SetValueFromData(data, lldb::eEncodingUint,
-	  buffer.length).Success())
+    if (scalar.SetValueFromData(data, lldb::eEncodingUint, buffer.length)
+            .Success())
       return true;
   } break;
   case eTypeUInt8:

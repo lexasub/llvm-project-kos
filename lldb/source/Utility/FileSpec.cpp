@@ -118,53 +118,55 @@ bool needsNormalization(const llvm::StringRef &path) {
     return true;
   for (auto i = path.find_first_of("\\/"); i != llvm::StringRef::npos;
        i = path.find_first_of("\\/", i + 1)) {
-    const auto next = safeCharAtIndex(path, i+1);
+    const auto next = safeCharAtIndex(path, i + 1);
     switch (next) {
-      case 0:
-        // path separator char at the end of the string which should be
-        // stripped unless it is the one and only character
-        return i > 0;
-      case '/':
-      case '\\':
-        // two path separator chars in the middle of a path needs to be
-        // normalized
-        if (i > 0)
-          return true;
-        ++i;
-        break;
+    case 0:
+      // path separator char at the end of the string which should be
+      // stripped unless it is the one and only character
+      return i > 0;
+    case '/':
+    case '\\':
+      // two path separator chars in the middle of a path needs to be
+      // normalized
+      if (i > 0)
+        return true;
+      ++i;
+      break;
 
-      case '.': {
-          const auto next_next = safeCharAtIndex(path, i+2);
-          switch (next_next) {
-            default: break;
-            case 0: return true; // ends with "/."
-            case '/':
-            case '\\':
-              return true; // contains "/./"
-            case '.': {
-              const auto next_next_next = safeCharAtIndex(path, i+3);
-              switch (next_next_next) {
-                default: break;
-                case 0: return true; // ends with "/.."
-                case '/':
-                case '\\':
-                  return true; // contains "/../"
-              }
-              break;
-            }
-          }
-        }
-        break;
-
+    case '.': {
+      const auto next_next = safeCharAtIndex(path, i + 2);
+      switch (next_next) {
       default:
         break;
+      case 0:
+        return true; // ends with "/."
+      case '/':
+      case '\\':
+        return true; // contains "/./"
+      case '.': {
+        const auto next_next_next = safeCharAtIndex(path, i + 3);
+        switch (next_next_next) {
+        default:
+          break;
+        case 0:
+          return true; // ends with "/.."
+        case '/':
+        case '\\':
+          return true; // contains "/../"
+        }
+        break;
+      }
+      }
+    } break;
+
+    default:
+      break;
     }
   }
   return false;
 }
 
-
-}
+} // namespace
 
 void FileSpec::SetFile(llvm::StringRef pathname) { SetFile(pathname, m_style); }
 
@@ -201,11 +203,11 @@ void FileSpec::SetFile(llvm::StringRef pathname, Style style) {
   // Split path into filename and directory. We rely on the underlying char
   // pointer to be nullptr when the components are empty.
   llvm::StringRef filename = llvm::sys::path::filename(resolved, m_style);
-  if(!filename.empty())
+  if (!filename.empty())
     m_filename.SetString(filename);
 
   llvm::StringRef directory = llvm::sys::path::parent_path(resolved, m_style);
-  if(!directory.empty())
+  if (!directory.empty())
     m_directory.SetString(directory);
 }
 
@@ -307,7 +309,8 @@ bool FileSpec::Match(const FileSpec &pattern, const FileSpec &file) {
   return true;
 }
 
-llvm::Optional<FileSpec::Style> FileSpec::GuessPathStyle(llvm::StringRef absolute_path) {
+llvm::Optional<FileSpec::Style>
+FileSpec::GuessPathStyle(llvm::StringRef absolute_path) {
   if (absolute_path.startswith("/"))
     return Style::posix;
   if (absolute_path.startswith(R"(\\)"))
@@ -472,9 +475,7 @@ bool FileSpec::IsSourceImplementationFile() const {
   return g_source_file_regex.Execute(extension.GetStringRef());
 }
 
-bool FileSpec::IsRelative() const {
-  return !IsAbsolute();
-}
+bool FileSpec::IsRelative() const { return !IsAbsolute(); }
 
 bool FileSpec::IsAbsolute() const {
   llvm::SmallString<64> current_path;

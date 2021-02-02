@@ -217,9 +217,9 @@ TEST(LLVMHeaderGuardCheckTest, FixHeaderGuards) {
             "\n"
             "\n"
             "#endif\n",
-            runHeaderGuardCheck(
-                "", "/llvm-project/clang-tools-extra/clangd/foo.h",
-                StringRef("header is missing header guard")));
+            runHeaderGuardCheck("",
+                                "/llvm-project/clang-tools-extra/clangd/foo.h",
+                                StringRef("header is missing header guard")));
 }
 #endif
 

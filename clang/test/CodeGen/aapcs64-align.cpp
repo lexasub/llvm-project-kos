@@ -60,9 +60,8 @@ void g3() {
 // CHECK: declare void @f3(i64, i128)
 // CHECK: declare void @f3m(i64, i64, i64, i64, i64, i128)
 
-
 // Packed structure.
-struct  __attribute__((packed)) P {
+struct __attribute__((packed)) P {
   int x;
   long u;
 };
@@ -80,24 +79,22 @@ void g4() {
 // CHECK: declare void @f4(i32, [2 x i64])
 // CHECK: declare void @f4m(i32, i32, i32, i32, i32, [2 x i64])
 
-
 // Packed structure, overaligned, same as above.
-struct  __attribute__((packed, aligned(16))) P16 {
+struct __attribute__((packed, aligned(16))) P16 {
   int x;
   long y;
 };
 
 void f5(int, P16);
 void f5m(int, int, int, int, int, P16);
-  void g5() {
-    P16 s = {6, 7};
-    f5(1, s);
-    f5m(1, 2, 3, 4, 5, s);
+void g5() {
+  P16 s = {6, 7};
+  f5(1, s);
+  f5m(1, 2, 3, 4, 5, s);
 }
 // CHECK: define{{.*}} void @g5()
 // CHECK: call void @f5(i32 1, [2 x i64] [i64 30064771078, i64 0])
 // CHECK: void @f5m(i32 1, i32 2, i32 3, i32 4, i32 5, [2 x i64] [i64 30064771078, i64 0])
 // CHECK: declare void @f5(i32, [2 x i64])
 // CHECK: declare void @f5m(i32, i32, i32, i32, i32, [2 x i64])
-
 }

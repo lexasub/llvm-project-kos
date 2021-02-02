@@ -481,8 +481,7 @@ bool CommandObjectExpression::EvaluateExpression(llvm::StringRef expr,
     }
   }
 
-  return (success != eExpressionSetupError &&
-          success != eExpressionParseError);
+  return (success != eExpressionSetupError && success != eExpressionParseError);
 }
 
 void CommandObjectExpression::IOHandlerInputComplete(IOHandler &io_handler,
@@ -604,12 +603,12 @@ bool CommandObjectExpression::DoExecute(llvm::StringRef command,
         bool initialize = false;
         Status repl_error;
         REPLSP repl_sp(target.GetREPL(repl_error, m_command_options.language,
-                                       nullptr, false));
+                                      nullptr, false));
 
         if (!repl_sp) {
           initialize = true;
           repl_sp = target.GetREPL(repl_error, m_command_options.language,
-                                    nullptr, true);
+                                   nullptr, true);
           if (!repl_error.Success()) {
             result.SetError(repl_error);
             return result.Succeeded();

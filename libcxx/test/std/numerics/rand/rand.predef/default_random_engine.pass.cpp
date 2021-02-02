@@ -15,11 +15,10 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    std::default_random_engine e;
-    e.discard(9999);
-    LIBCPP_ASSERT(e() == 399268537u);
+int main(int, char**) {
+  std::default_random_engine e;
+  e.discard(9999);
+  LIBCPP_ASSERT(e() == 399268537u);
 
   return 0;
 }

@@ -26,7 +26,7 @@ class ConstString;
 class ExecutionContext;
 class Property;
 class Stream;
-}
+} // namespace lldb_private
 
 namespace lldb_private {
 

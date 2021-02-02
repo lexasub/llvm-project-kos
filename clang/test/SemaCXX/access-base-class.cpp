@@ -1,36 +1,36 @@
 // RUN: %clang_cc1 -fsyntax-only -verify %s
 namespace T1 {
-  
-class A { };
-class B : private A { }; // expected-note {{declared private here}}
 
-void f(B* b) {
+class A {};
+class B : private A {}; // expected-note {{declared private here}}
+
+void f(B *b) {
   A *a = b; // expected-error{{cannot cast 'T1::B' to its private base class 'T1::A'}}
 }
 
-}
+} // namespace T1
 
-namespace T2 { 
+namespace T2 {
 
-class A { };
-class B : A { }; // expected-note {{implicitly declared private here}}
+class A {};
+class B : A {}; // expected-note {{implicitly declared private here}}
 
-void f(B* b) {
+void f(B *b) {
   A *a = b; // expected-error {{cannot cast 'T2::B' to its private base class 'T2::A'}}
 }
 
-}
+} // namespace T2
 
 namespace T3 {
 
-class A { };
-class B : public A { }; 
+class A {};
+class B : public A {};
 
-void f(B* b) {
+void f(B *b) {
   A *a = b;
 }
 
-}
+} // namespace T3
 
 namespace T4 {
 
@@ -46,48 +46,48 @@ void f(D *d) {
   A *a = d;
 }
 
-}
+} // namespace T4
 
 namespace T5 {
-  class A {};
-    
-  class B : private A {
-    void f(B *b) {
-      A *a = b;
-    }
-  };    
-}
+class A {};
+
+class B : private A {
+  void f(B *b) {
+    A *a = b;
+  }
+};
+} // namespace T5
 
 namespace T6 {
-  class C;
-  
-  class A {}; // expected-note{{member is declared here}}
-  
-  class B : private A { // expected-note {{declared private here}} expected-note {{constrained by private inheritance here}}
-    void f(C* c);
-  };
-  
-  class C : public B { 
-    void f(C *c) {
-      A* a = c; // expected-error {{cannot cast 'T6::C' to its private base class 'T6::A'}} \
+class C;
+
+class A {}; // expected-note{{member is declared here}}
+
+class B : private A { // expected-note {{declared private here}} expected-note {{constrained by private inheritance here}}
+  void f(C *c);
+};
+
+class C : public B {
+  void f(C *c) {
+    A *a = c; // expected-error {{cannot cast 'T6::C' to its private base class 'T6::A'}} \
                 // expected-error {{'A' is a private member of 'T6::A'}}
-    }
-  };
-  
-  void B::f(C *c) {
-    A *a = c;
   }
+};
+
+void B::f(C *c) {
+  A *a = c;
 }
+} // namespace T6
 
 namespace T7 {
-  class A {};
-  class B : public A {};
-  class C : private B { 
-    void f(C *c) {
-      A* a = c; // okay
-    }
-  };
-}
+class A {};
+class B : public A {};
+class C : private B {
+  void f(C *c) {
+    A *a = c; // okay
+  }
+};
+} // namespace T7
 
 namespace T8 {
 template <int>

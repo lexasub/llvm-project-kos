@@ -1,7 +1,7 @@
 // RUN: %compilexx-run-and-check
 
-#include <stdio.h>
 #include <omp.h>
+#include <stdio.h>
 
 int main(void) {
   int isHost = -1;
@@ -20,7 +20,7 @@ int main(void) {
     }
     if (omp_get_thread_num() > 5) {
       int L2;
-#pragma omp parallel for schedule(dynamic) lastprivate(L2) reduction(+: Count)
+#pragma omp parallel for schedule(dynamic) lastprivate(L2) reduction(+ : Count)
       for (int I = 0; I < 10; ++I) {
         L2 = omp_get_level();
         Count += omp_get_level(); // (10-6)*10*2 = 80

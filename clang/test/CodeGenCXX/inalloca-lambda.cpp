@@ -7,5 +7,6 @@ class A {
   A(const A &);
 };
 typedef void (*fptr_t)(A);
-fptr_t fn1() { return [](A) {}; }
-
+fptr_t fn1() {
+  return [](A) {};
+}

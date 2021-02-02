@@ -22,7 +22,7 @@ private:
   // CHECK-FIXES: ~PositivePrivate() = delete;
 };
 
-template<typename T>
+template <typename T>
 struct PositivePrivateTemplate {
 private:
   PositivePrivateTemplate();

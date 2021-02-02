@@ -72,8 +72,7 @@ class CallDescriptionConsumer : public ExprEngineConsumer {
   }
 
 public:
-  CallDescriptionConsumer(CompilerInstance &C,
-                          ResultMap &RM)
+  CallDescriptionConsumer(CompilerInstance &C, ResultMap &RM)
       : ExprEngineConsumer(C), RM(RM) {}
 
   bool HandleTopLevelDecl(DeclGroupRef DG) override {
@@ -103,21 +102,24 @@ TEST(CallEvent, CallDescription) {
       std::unique_ptr<CallDescriptionAction>(new CallDescriptionAction({
           {{"bar"}, false}, // false: there's no call to 'bar' in this code.
           {{"foo"}, true},  // true: there's a call to 'foo' in this code.
-      })), "void foo(); void bar() { foo(); }"));
+      })),
+      "void foo(); void bar() { foo(); }"));
 
   // Test arguments check.
   EXPECT_TRUE(tooling::runToolOnCode(
       std::unique_ptr<CallDescriptionAction>(new CallDescriptionAction({
           {{"foo", 1}, true},
           {{"foo", 2}, false},
-      })), "void foo(int); void foo(int, int); void bar() { foo(1); }"));
+      })),
+      "void foo(int); void foo(int, int); void bar() { foo(1); }"));
 
   // Test lack of arguments check.
   EXPECT_TRUE(tooling::runToolOnCode(
       std::unique_ptr<CallDescriptionAction>(new CallDescriptionAction({
           {{"foo", None}, true},
           {{"foo", 2}, false},
-      })), "void foo(int); void foo(int, int); void bar() { foo(1); }"));
+      })),
+      "void foo(int); void foo(int, int); void bar() { foo(1); }"));
 
   // Test qualified names.
   EXPECT_TRUE(tooling::runToolOnCode(
@@ -142,14 +144,13 @@ TEST(CallEvent, CallDescription) {
           {{{"foo", "bar"}}, false},
           {{{"bar", "foo"}}, false},
           {{"foo"}, true},
-      })), "void foo(); struct bar { void foo(); }; void test() { foo(); }"));
+      })),
+      "void foo(); struct bar { void foo(); }; void test() { foo(); }"));
 
   // Test CDF_MaybeBuiltin - a flag that allows matching weird builtins.
   EXPECT_TRUE(tooling::runToolOnCode(
-      std::unique_ptr<CallDescriptionAction>(new CallDescriptionAction({
-          {{"memset", 3}, false},
-          {{CDF_MaybeBuiltin, "memset", 3}, true}
-      })),
+      std::unique_ptr<CallDescriptionAction>(new CallDescriptionAction(
+          {{{"memset", 3}, false}, {{CDF_MaybeBuiltin, "memset", 3}, true}})),
       "void foo() {"
       "  int x;"
       "  __builtin___memset_chk(&x, 0, sizeof(x),"

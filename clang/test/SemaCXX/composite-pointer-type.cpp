@@ -1,8 +1,8 @@
 // RUN: %clang_cc1 -fsyntax-only -verify %s
 
-class Base { };
-class Derived1 : public Base { };
-class Derived2 : public Base { };
+class Base {};
+class Derived1 : public Base {};
+class Derived2 : public Base {};
 
 void f0(volatile Base *b, Derived1 *d1, const Derived2 *d2) {
   if (b > d1)
@@ -56,5 +56,5 @@ bool f1(bool b, void **p, const void **q) {
   if (p == q)
     return false;
 
-  return b? p : q;
+  return b ? p : q;
 }

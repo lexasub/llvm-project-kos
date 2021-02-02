@@ -40,14 +40,14 @@ public:
     eAllocationPolicyInvalid =
         0, ///< It is an error for an allocation to have this policy.
     eAllocationPolicyHostOnly, ///< This allocation was created in the host and
-                               ///will never make it into the process.
+                               /// will never make it into the process.
     ///< It is an error to create other types of allocations while such
-    ///allocations exist.
+    /// allocations exist.
     eAllocationPolicyMirror, ///< The intent is that this allocation exist both
-                             ///in the host and the process and have
+                             /// in the host and the process and have
                              ///< the same content in both.
     eAllocationPolicyProcessOnly ///< The intent is that this allocation exist
-                                 ///only in the process.
+                                 /// only in the process.
   };
 
   lldb::addr_t Malloc(size_t size, uint8_t alignment, uint32_t permissions,
@@ -132,6 +132,6 @@ private:
   static bool AllocationsIntersect(lldb::addr_t addr1, size_t size1,
                                    lldb::addr_t addr2, size_t size2);
 };
-}
+} // namespace lldb_private
 
 #endif

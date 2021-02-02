@@ -17,17 +17,17 @@ enum LogColor {
   COLOR_WHITE
 };
 
-std::string FormatString(const char* msg, va_list args);
-std::string FormatString(const char* msg, ...);
+std::string FormatString(const char *msg, va_list args);
+std::string FormatString(const char *msg, ...);
 
-void ColorPrintf(std::ostream& out, LogColor color, const char* fmt,
+void ColorPrintf(std::ostream &out, LogColor color, const char *fmt,
                  va_list args);
-void ColorPrintf(std::ostream& out, LogColor color, const char* fmt, ...);
+void ColorPrintf(std::ostream &out, LogColor color, const char *fmt, ...);
 
 // Returns true if stdout appears to be a terminal that supports colored
 // output, false otherwise.
 bool IsColorTerminal();
 
-}  // end namespace benchmark
+} // end namespace benchmark
 
-#endif  // BENCHMARK_COLORPRINT_H_
+#endif // BENCHMARK_COLORPRINT_H_

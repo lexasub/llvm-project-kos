@@ -15,13 +15,13 @@ struct basic_string {
   const C *data() const;
 };
 typedef basic_string<char, std::char_traits<char>, std::allocator<char>> string;
-}
+} // namespace std
 namespace llvm {
 struct StringRef {
   StringRef(const char *p);
   StringRef(const std::string &);
 };
-}
+} // namespace llvm
 
 void f1(const std::string &s) {
   f1(s.c_str());

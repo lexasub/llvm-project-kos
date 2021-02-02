@@ -74,12 +74,12 @@ enum rnb_err_t { rnb_success = 0, rnb_err = 1, rnb_not_connected = 2 };
 #define LOG_RNB_MINIMAL                                                        \
   ((LOG_LO_USER) << 0) // Minimal logging    (min verbosity)
 #define LOG_RNB_MEDIUM                                                         \
-  ((LOG_LO_USER) << 1)                    // Medium logging     (med verbosity)
-#define LOG_RNB_MAX ((LOG_LO_USER) << 2)  // Max logging        (max verbosity)
+  ((LOG_LO_USER) << 1) // Medium logging     (med verbosity)
+#define LOG_RNB_MAX ((LOG_LO_USER) << 2) // Max logging        (max verbosity)
 #define LOG_RNB_COMM ((LOG_LO_USER) << 3) // Log communications (RNBSocket)
 #define LOG_RNB_REMOTE ((LOG_LO_USER) << 4) // Log remote         (RNBRemote)
 #define LOG_RNB_EVENTS                                                         \
-  ((LOG_LO_USER) << 5)                    // Log events         (PThreadEvents)
+  ((LOG_LO_USER) << 5) // Log events         (PThreadEvents)
 #define LOG_RNB_PROC ((LOG_LO_USER) << 6) // Log process state  (Process thread)
 #define LOG_RNB_PACKETS ((LOG_LO_USER) << 7) // Log gdb remote packets
 #define LOG_RNB_ALL (~((LOG_LO_USER)-1))

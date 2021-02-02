@@ -38,9 +38,8 @@ bool TCEToolChain::isPIEDefault() const { return false; }
 
 bool TCEToolChain::isPICDefaultForced() const { return false; }
 
-TCELEToolChain::TCELEToolChain(const Driver &D, const llvm::Triple& Triple,
+TCELEToolChain::TCELEToolChain(const Driver &D, const llvm::Triple &Triple,
                                const ArgList &Args)
-  : TCEToolChain(D, Triple, Args) {
-}
+    : TCEToolChain(D, Triple, Args) {}
 
 TCELEToolChain::~TCELEToolChain() {}

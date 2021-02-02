@@ -7,18 +7,17 @@
 // any template argument remains neither deduced nor explicitly
 // specified, template argument deduction fails.
 
-template<typename ...> struct tuple;
+template <typename...> struct tuple;
 
-template<typename T, typename U>
+template <typename T, typename U>
 struct same_tuple {
   static const bool value = false;
 };
 
-template<typename ...Types1>
-struct same_tuple<tuple<Types1...>, tuple<Types1...> > {
+template <typename... Types1>
+struct same_tuple<tuple<Types1...>, tuple<Types1...>> {
   static const bool value = true;
 };
 
-int same_tuple_check1[same_tuple<tuple<int, float>, tuple<int, double>>::value? -1 : 1];
-int same_tuple_check2[same_tuple<tuple<float, double>, tuple<float, double>>::value? 1 : -1];
-
+int same_tuple_check1[same_tuple<tuple<int, float>, tuple<int, double>>::value ? -1 : 1];
+int same_tuple_check2[same_tuple<tuple<float, double>, tuple<float, double>>::value ? 1 : -1];

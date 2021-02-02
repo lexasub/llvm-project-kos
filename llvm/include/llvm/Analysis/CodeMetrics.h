@@ -37,8 +37,8 @@ struct CodeMetrics {
 
   /// True if this function cannot be duplicated.
   ///
-  /// True if this function contains one or more indirect branches, or it contains
-  /// one or more 'noduplicate' instructions.
+  /// True if this function contains one or more indirect branches, or it
+  /// contains one or more 'noduplicate' instructions.
   bool notDuplicatable = false;
 
   /// True if this function contains a call to a convergent function.
@@ -89,6 +89,6 @@ struct CodeMetrics {
                                      SmallPtrSetImpl<const Value *> &EphValues);
 };
 
-}
+} // namespace llvm
 
 #endif

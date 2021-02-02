@@ -96,7 +96,7 @@ void func(int sel) {
   int empty_brace_init_int = {};
   svint8_t empty_brace_init_int8 = {};
 #else
-  int empty_brace_init_int = {}; // expected-error {{scalar initializer cannot be empty}}
+  int empty_brace_init_int = {};       // expected-error {{scalar initializer cannot be empty}}
   svint8_t empty_brace_init_int8 = {}; // expected-error {{initializer for sizeless type 'svint8_t' (aka '__SVInt8_t') cannot be empty}}
 #endif
   svint8_t brace_init_int8 = {local_int8};

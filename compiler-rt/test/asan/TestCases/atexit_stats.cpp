@@ -10,9 +10,9 @@
 #if !defined(__APPLE__) && !defined(__FreeBSD__) && !defined(__NetBSD__)
 #include <malloc.h>
 #endif
-int *p1 = (int*)malloc(900);
-int *p2 = (int*)malloc(90000);
-int *p3 = (int*)malloc(9000000);
-int main() { }
+int *p1 = (int *)malloc(900);
+int *p2 = (int *)malloc(90000);
+int *p3 = (int *)malloc(9000000);
+int main() {}
 
 // CHECK: AddressSanitizer exit stats:

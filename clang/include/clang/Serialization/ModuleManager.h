@@ -101,13 +101,9 @@ class ModuleManager {
   /// State used by the "visit" operation to avoid malloc traffic in
   /// calls to visit().
   struct VisitState {
-    explicit VisitState(unsigned N) : VisitNumber(N, 0) {
-      Stack.reserve(N);
-    }
+    explicit VisitState(unsigned N) : VisitNumber(N, 0) { Stack.reserve(N); }
 
-    ~VisitState() {
-      delete NextState;
-    }
+    ~VisitState() { delete NextState; }
 
     /// The stack used when marking the imports of a particular module
     /// as not-to-be-visited.
@@ -246,13 +242,12 @@ public:
   /// \return A pointer to the module that corresponds to this file name,
   /// and a value indicating whether the module was loaded.
   AddModuleResult addModule(StringRef FileName, ModuleKind Type,
-                            SourceLocation ImportLoc,
-                            ModuleFile *ImportedBy, unsigned Generation,
-                            off_t ExpectedSize, time_t ExpectedModTime,
+                            SourceLocation ImportLoc, ModuleFile *ImportedBy,
+                            unsigned Generation, off_t ExpectedSize,
+                            time_t ExpectedModTime,
                             ASTFileSignature ExpectedSignature,
                             ASTFileSignatureReader ReadSignature,
-                            ModuleFile *&Module,
-                            std::string &ErrorStr);
+                            ModuleFile *&Module, std::string &ErrorStr);
 
   /// Remove the modules starting from First (to the end).
   void removeModules(ModuleIterator First, ModuleMap *modMap);

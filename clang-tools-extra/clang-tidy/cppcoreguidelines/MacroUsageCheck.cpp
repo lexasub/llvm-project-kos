@@ -32,7 +32,8 @@ bool isCapsOnly(StringRef Name) {
 class MacroUsageCallbacks : public PPCallbacks {
 public:
   MacroUsageCallbacks(MacroUsageCheck *Check, const SourceManager &SM,
-                      StringRef RegExpStr, bool CapsOnly, bool IgnoreCommandLine)
+                      StringRef RegExpStr, bool CapsOnly,
+                      bool IgnoreCommandLine)
       : Check(Check), SM(SM), RegExp(RegExpStr), CheckCapsOnly(CapsOnly),
         IgnoreCommandLineMacros(IgnoreCommandLine) {}
   void MacroDefined(const Token &MacroNameTok,

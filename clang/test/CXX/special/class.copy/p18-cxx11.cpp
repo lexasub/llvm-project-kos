@@ -34,17 +34,22 @@ struct ByValueCopy {
 };
 
 struct AmbiguousConstCopy {
-  AmbiguousConstCopy &operator=(const AmbiguousConstCopy&);
+  AmbiguousConstCopy &operator=(const AmbiguousConstCopy &);
   AmbiguousConstCopy &operator=(AmbiguousConstCopy);
 };
 
-
 struct A : ConstCopy {};
-struct B : NonConstCopy { ConstCopy a; };
-struct C : ConstCopy { NonConstCopy a; };
+struct B : NonConstCopy {
+  ConstCopy a;
+};
+struct C : ConstCopy {
+  NonConstCopy a;
+};
 struct D : DeletedConstCopy {};
 struct E : DeletedNonConstCopy {};
-struct F { ImplicitlyDeletedConstCopy a; };
+struct F {
+  ImplicitlyDeletedConstCopy a;
+};
 struct G : virtual B {};
 struct H : ByValueCopy {};
 struct I : AmbiguousConstCopy {};

@@ -196,8 +196,7 @@ bool FoldBranchToCommonDest(BranchInst *BI, llvm::DomTreeUpdater *DTU = nullptr,
 /// This allows the CFG to be changed around without fear of invalidating the
 /// SSA information for the value. It returns the pointer to the alloca inserted
 /// to create a stack slot for X.
-AllocaInst *DemoteRegToStack(Instruction &X,
-                             bool VolatileLoads = false,
+AllocaInst *DemoteRegToStack(Instruction &X, bool VolatileLoads = false,
                              Instruction *AllocaPoint = nullptr);
 
 /// This function takes a virtual register computed by a phi node and replaces
@@ -243,18 +242,18 @@ void changeToCall(InvokeInst *II, DomTreeUpdater *DTU = nullptr);
 
 /// Inserts a llvm.dbg.value intrinsic before a store to an alloca'd value
 /// that has an associated llvm.dbg.declare or llvm.dbg.addr intrinsic.
-void ConvertDebugDeclareToDebugValue(DbgVariableIntrinsic *DII,
-                                     StoreInst *SI, DIBuilder &Builder);
+void ConvertDebugDeclareToDebugValue(DbgVariableIntrinsic *DII, StoreInst *SI,
+                                     DIBuilder &Builder);
 
 /// Inserts a llvm.dbg.value intrinsic before a load of an alloca'd value
 /// that has an associated llvm.dbg.declare or llvm.dbg.addr intrinsic.
-void ConvertDebugDeclareToDebugValue(DbgVariableIntrinsic *DII,
-                                     LoadInst *LI, DIBuilder &Builder);
+void ConvertDebugDeclareToDebugValue(DbgVariableIntrinsic *DII, LoadInst *LI,
+                                     DIBuilder &Builder);
 
 /// Inserts a llvm.dbg.value intrinsic after a phi that has an associated
 /// llvm.dbg.declare or llvm.dbg.addr intrinsic.
-void ConvertDebugDeclareToDebugValue(DbgVariableIntrinsic *DII,
-                                     PHINode *LI, DIBuilder &Builder);
+void ConvertDebugDeclareToDebugValue(DbgVariableIntrinsic *DII, PHINode *LI,
+                                     DIBuilder &Builder);
 
 /// Lowers llvm.dbg.declare intrinsics into appropriate set of
 /// llvm.dbg.value intrinsics.
@@ -299,7 +298,6 @@ void replaceDbgValueForAlloca(AllocaInst *AI, Value *NewAllocaAddress,
 /// debug users of \p I by writing the effect of \p I in a DIExpression. If it
 /// cannot be salvaged changes its debug uses to undef.
 void salvageDebugInfo(Instruction &I);
-
 
 /// Implementation of salvageDebugInfo, applying only to instructions in
 /// \p Insns, rather than all debug users from findDbgUsers( \p I).

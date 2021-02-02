@@ -498,7 +498,7 @@ RCParser::ParseType RCParser::parseUserDefinedResource(IntOrString Type) {
   case Kind::String:
   case Kind::Identifier:
     return std::make_unique<UserDefinedResource>(Type, read().value(),
-                                                  MemoryFlags);
+                                                 MemoryFlags);
   default:
     break;
   }
@@ -518,7 +518,7 @@ RCParser::ParseType RCParser::parseUserDefinedResource(IntOrString Type) {
   }
 
   return std::make_unique<UserDefinedResource>(Type, std::move(Data),
-                                                MemoryFlags);
+                                               MemoryFlags);
 }
 
 RCParser::ParseType RCParser::parseVersionInfoResource() {
@@ -557,7 +557,8 @@ Expected<Control> RCParser::parseControl() {
   IntOrString Class;
   Optional<IntWithNotMask> Style;
   if (ClassUpper == "CONTROL") {
-    // CONTROL text, id, class, style, x, y, width, height [, exstyle] [, helpID]
+    // CONTROL text, id, class, style, x, y, width, height [, exstyle] [,
+    // helpID]
     ASSIGN_OR_RETURN(ClassStr, readString());
     RETURN_IF_ERROR(consumeType(Kind::Comma));
     Class = *ClassStr;
@@ -589,8 +590,8 @@ Expected<Control> RCParser::parseControl() {
     HelpID = *Val;
   }
 
-  return Control(*ClassResult, Caption, *ID, (*Args)[0], (*Args)[1],
-                 (*Args)[2], (*Args)[3], Style, ExStyle, HelpID, Class);
+  return Control(*ClassResult, Caption, *ID, (*Args)[0], (*Args)[1], (*Args)[2],
+                 (*Args)[3], Style, ExStyle, HelpID, Class);
 }
 
 RCParser::ParseType RCParser::parseBitmapResource() {
@@ -620,7 +621,7 @@ RCParser::ParseType RCParser::parseMenuResource() {
   ASSIGN_OR_RETURN(OptStatements, parseOptionalStatements());
   ASSIGN_OR_RETURN(Items, parseMenuItemsList());
   return std::make_unique<MenuResource>(std::move(*OptStatements),
-                                         std::move(*Items), MemoryFlags);
+                                        std::move(*Items), MemoryFlags);
 }
 
 Expected<MenuDefinitionList> RCParser::parseMenuItemsList() {
@@ -689,7 +690,7 @@ RCParser::ParseType RCParser::parseStringTableResource() {
   RETURN_IF_ERROR(consumeType(Kind::BlockBegin));
 
   auto Table = std::make_unique<StringTableResource>(std::move(*OptStatements),
-                                                      MemoryFlags);
+                                                     MemoryFlags);
 
   // Read strings until we reach the end of the block.
   while (!consumeOptionalType(Kind::BlockEnd)) {
@@ -753,7 +754,7 @@ Expected<std::unique_ptr<VersionInfoStmt>> RCParser::parseVersionInfoStmt() {
       PrecedingCommas.push_back(HadComma);
     }
     return std::make_unique<VersionInfoValue>(*KeyResult, std::move(Values),
-                                               std::move(PrecedingCommas));
+                                              std::move(PrecedingCommas));
   }
 
   return getExpectedError("BLOCK or VALUE", true);
@@ -835,7 +836,7 @@ RCParser::ParseOptionType RCParser::parseFontStmt(OptStmtType DialogType) {
     }
   }
   return std::make_unique<FontStmt>(*SizeResult, *NameResult, FontWeight,
-                                     FontItalic, FontCharset);
+                                    FontItalic, FontCharset);
 }
 
 RCParser::ParseOptionType RCParser::parseStyleStmt() {

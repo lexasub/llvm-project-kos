@@ -34,7 +34,7 @@ struct P {
 };
 
 int main(int, char**) {
-  int arr[1] = { 1 };
+  int arr[1] = {1};
 
   // expected-warning-re@+1 {{ignoring return value of function declared with {{'nodiscard'|warn_unused_result}} attribute}}
   std::adjacent_find(std::begin(arr), std::end(arr));

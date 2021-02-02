@@ -26,9 +26,9 @@ public:
   public:
     SectCreateAtom(const File &file, StringRef segName, StringRef sectName,
                    std::unique_ptr<MemoryBuffer> content)
-      : SimpleDefinedAtom(file),
-        _combinedName((segName + "/" + sectName).str()),
-        _content(std::move(content)) {}
+        : SimpleDefinedAtom(file),
+          _combinedName((segName + "/" + sectName).str()),
+          _content(std::move(content)) {}
 
     ~SectCreateAtom() override = default;
 
@@ -38,7 +38,9 @@ public:
 
     ContentType contentType() const override { return typeSectCreate; }
 
-    SectionChoice sectionChoice() const override { return sectionCustomRequired; }
+    SectionChoice sectionChoice() const override {
+      return sectionCustomRequired;
+    }
 
     StringRef customSectionName() const override { return _combinedName; }
 
@@ -46,7 +48,7 @@ public:
 
     ArrayRef<uint8_t> rawContent() const override {
       const uint8_t *data =
-        reinterpret_cast<const uint8_t*>(_content->getBufferStart());
+          reinterpret_cast<const uint8_t *>(_content->getBufferStart());
       return ArrayRef<uint8_t>(data, _content->getBufferSize());
     }
 
@@ -65,7 +67,7 @@ public:
   void addSection(StringRef seg, StringRef sect,
                   std::unique_ptr<MemoryBuffer> content) {
     _definedAtoms.push_back(
-      new (allocator()) SectCreateAtom(*this, seg, sect, std::move(content)));
+        new (allocator()) SectCreateAtom(*this, seg, sect, std::move(content)));
   }
 
   const AtomRange<DefinedAtom> defined() const override {

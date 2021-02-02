@@ -1,9 +1,9 @@
 // RUN: %clangxx_tsan -O1 %s -o %t && %run %t 2>&1 | FileCheck %s
-#include <pthread.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
 #include <errno.h>
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 pthread_mutex_t m;
 
@@ -33,4 +33,3 @@ int main() {
 // CHECK-NOT: EOWNERDEAD
 // CHECK: DONE
 // CHECK-NOT: WARNING: ThreadSanitizer
-

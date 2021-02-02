@@ -269,31 +269,33 @@ void Sema::ActOnPragmaOptionsAlign(PragmaOptionsAlignKind Kind,
   AlignPackStack.Act(PragmaLoc, Action, StringRef(), Info);
 }
 
-void Sema::ActOnPragmaClangSection(SourceLocation PragmaLoc, PragmaClangSectionAction Action,
-                                   PragmaClangSectionKind SecKind, StringRef SecName) {
+void Sema::ActOnPragmaClangSection(SourceLocation PragmaLoc,
+                                   PragmaClangSectionAction Action,
+                                   PragmaClangSectionKind SecKind,
+                                   StringRef SecName) {
   PragmaClangSection *CSec;
   int SectionFlags = ASTContext::PSF_Read;
   switch (SecKind) {
-    case PragmaClangSectionKind::PCSK_BSS:
-      CSec = &PragmaClangBSSSection;
-      SectionFlags |= ASTContext::PSF_Write | ASTContext::PSF_ZeroInit;
-      break;
-    case PragmaClangSectionKind::PCSK_Data:
-      CSec = &PragmaClangDataSection;
-      SectionFlags |= ASTContext::PSF_Write;
-      break;
-    case PragmaClangSectionKind::PCSK_Rodata:
-      CSec = &PragmaClangRodataSection;
-      break;
-    case PragmaClangSectionKind::PCSK_Relro:
-      CSec = &PragmaClangRelroSection;
-      break;
-    case PragmaClangSectionKind::PCSK_Text:
-      CSec = &PragmaClangTextSection;
-      SectionFlags |= ASTContext::PSF_Execute;
-      break;
-    default:
-      llvm_unreachable("invalid clang section kind");
+  case PragmaClangSectionKind::PCSK_BSS:
+    CSec = &PragmaClangBSSSection;
+    SectionFlags |= ASTContext::PSF_Write | ASTContext::PSF_ZeroInit;
+    break;
+  case PragmaClangSectionKind::PCSK_Data:
+    CSec = &PragmaClangDataSection;
+    SectionFlags |= ASTContext::PSF_Write;
+    break;
+  case PragmaClangSectionKind::PCSK_Rodata:
+    CSec = &PragmaClangRodataSection;
+    break;
+  case PragmaClangSectionKind::PCSK_Relro:
+    CSec = &PragmaClangRelroSection;
+    break;
+  case PragmaClangSectionKind::PCSK_Text:
+    CSec = &PragmaClangTextSection;
+    SectionFlags |= ASTContext::PSF_Execute;
+    break;
+  default:
+    llvm_unreachable("invalid clang section kind");
   }
 
   if (Action == PragmaClangSectionAction::PCSA_Clear) {
@@ -366,7 +368,8 @@ void Sema::ActOnPragmaPack(SourceLocation PragmaLoc, PragmaMsStackAction Action,
     if (AlignPackStack.Stack.empty()) {
       assert(CurVal.getAlignMode() == AlignPackInfo::Native &&
              "Empty pack stack can only be at Native alignment mode.");
-      Diag(PragmaLoc, diag::warn_pragma_pop_failed) << "pack" << "stack empty";
+      Diag(PragmaLoc, diag::warn_pragma_pop_failed) << "pack"
+                                                    << "stack empty";
     }
   }
 
@@ -621,8 +624,7 @@ bool Sema::UnifySection(StringRef SectionName, int SectionFlags,
   return true;
 }
 
-bool Sema::UnifySection(StringRef SectionName,
-                        int SectionFlags,
+bool Sema::UnifySection(StringRef SectionName, int SectionFlags,
                         SourceLocation PragmaSectionLocation) {
   auto SectionIt = Context.SectionInfos.find(SectionName);
   if (SectionIt != Context.SectionInfos.end()) {
@@ -652,14 +654,14 @@ void Sema::ActOnPragmaMSSeg(SourceLocation PragmaLocation,
                             StringLiteral *SegmentName,
                             llvm::StringRef PragmaName) {
   PragmaStack<StringLiteral *> *Stack =
-    llvm::StringSwitch<PragmaStack<StringLiteral *> *>(PragmaName)
-        .Case("data_seg", &DataSegStack)
-        .Case("bss_seg", &BSSSegStack)
-        .Case("const_seg", &ConstSegStack)
-        .Case("code_seg", &CodeSegStack);
+      llvm::StringSwitch<PragmaStack<StringLiteral *> *>(PragmaName)
+          .Case("data_seg", &DataSegStack)
+          .Case("bss_seg", &BSSSegStack)
+          .Case("const_seg", &ConstSegStack)
+          .Case("code_seg", &CodeSegStack);
   if (Action & PSK_Pop && Stack->Stack.empty())
-    Diag(PragmaLocation, diag::warn_pragma_pop_failed) << PragmaName
-        << "stack empty";
+    Diag(PragmaLocation, diag::warn_pragma_pop_failed)
+        << PragmaName << "stack empty";
   if (SegmentName) {
     if (!checkSectionName(SegmentName->getBeginLoc(), SegmentName->getString()))
       return;
@@ -673,8 +675,8 @@ void Sema::ActOnPragmaMSSeg(SourceLocation PragmaLocation,
 }
 
 /// Called on well formed \#pragma bss_seg().
-void Sema::ActOnPragmaMSSection(SourceLocation PragmaLocation,
-                                int SectionFlags, StringLiteral *SegmentName) {
+void Sema::ActOnPragmaMSSection(SourceLocation PragmaLocation, int SectionFlags,
+                                StringLiteral *SegmentName) {
   UnifySection(SegmentName->getString(), SectionFlags, PragmaLocation);
 }
 
@@ -696,14 +698,14 @@ void Sema::ActOnPragmaUnused(const Token &IdTok, Scope *curScope,
 
   if (Lookup.empty()) {
     Diag(PragmaLoc, diag::warn_pragma_unused_undeclared_var)
-      << Name << SourceRange(IdTok.getLocation());
+        << Name << SourceRange(IdTok.getLocation());
     return;
   }
 
   VarDecl *VD = Lookup.getAsSingle<VarDecl>();
   if (!VD) {
     Diag(PragmaLoc, diag::warn_pragma_unused_expected_var_arg)
-      << Name << SourceRange(IdTok.getLocation());
+        << Name << SourceRange(IdTok.getLocation());
     return;
   }
 
@@ -720,7 +722,8 @@ void Sema::AddCFAuditedAttribute(Decl *D) {
   IdentifierInfo *Ident;
   SourceLocation Loc;
   std::tie(Ident, Loc) = PP.getPragmaARCCFCodeAuditedInfo();
-  if (!Loc.isValid()) return;
+  if (!Loc.isValid())
+    return;
 
   // Don't add a redundant or conflicting attribute.
   if (D->hasAttr<CFAuditedTransferAttr>() ||
@@ -984,7 +987,7 @@ void Sema::DiagnoseUnterminatedPragmaAttribute() {
 }
 
 void Sema::ActOnPragmaOptimize(bool On, SourceLocation PragmaLoc) {
-  if(On)
+  if (On)
     OptimizeOffPragmaLocation = SourceLocation();
   else
     OptimizeOffPragmaLocation = PragmaLoc;
@@ -993,7 +996,7 @@ void Sema::ActOnPragmaOptimize(bool On, SourceLocation PragmaLoc) {
 void Sema::AddRangeBasedOptnone(FunctionDecl *FD) {
   // In the future, check other pragmas if they're implemented (e.g. pragma
   // optimize 0 will probably map to this functionality too).
-  if(OptimizeOffPragmaLocation.isValid())
+  if (OptimizeOffPragmaLocation.isValid())
     AddOptnoneAttributeIfNoConflicts(FD, OptimizeOffPragmaLocation);
 }
 
@@ -1011,7 +1014,7 @@ void Sema::AddOptnoneAttributeIfNoConflicts(FunctionDecl *FD,
     FD->addAttr(NoInlineAttr::CreateImplicit(Context, Loc));
 }
 
-typedef std::vector<std::pair<unsigned, SourceLocation> > VisStack;
+typedef std::vector<std::pair<unsigned, SourceLocation>> VisStack;
 enum : unsigned { NoVisibility = ~0U };
 
 void Sema::AddPushedVisibilityAttribute(Decl *D) {
@@ -1022,12 +1025,12 @@ void Sema::AddPushedVisibilityAttribute(Decl *D) {
   if (ND && ND->getExplicitVisibility(NamedDecl::VisibilityForValue))
     return;
 
-  VisStack *Stack = static_cast<VisStack*>(VisContext);
+  VisStack *Stack = static_cast<VisStack *>(VisContext);
   unsigned rawType = Stack->back().first;
-  if (rawType == NoVisibility) return;
+  if (rawType == NoVisibility)
+    return;
 
-  VisibilityAttr::VisibilityType type
-    = (VisibilityAttr::VisibilityType) rawType;
+  VisibilityAttr::VisibilityType type = (VisibilityAttr::VisibilityType)rawType;
   SourceLocation loc = Stack->back().second;
 
   D->addAttr(VisibilityAttr::CreateImplicit(Context, type, loc));
@@ -1035,7 +1038,7 @@ void Sema::AddPushedVisibilityAttribute(Decl *D) {
 
 /// FreeVisContext - Deallocate and null out VisContext.
 void Sema::FreeVisContext() {
-  delete static_cast<VisStack*>(VisContext);
+  delete static_cast<VisStack *>(VisContext);
   VisContext = nullptr;
 }
 
@@ -1044,11 +1047,11 @@ static void PushPragmaVisibility(Sema &S, unsigned type, SourceLocation loc) {
   if (!S.VisContext)
     S.VisContext = new VisStack;
 
-  VisStack *Stack = static_cast<VisStack*>(S.VisContext);
+  VisStack *Stack = static_cast<VisStack *>(S.VisContext);
   Stack->push_back(std::make_pair(type, loc));
 }
 
-void Sema::ActOnPragmaVisibility(const IdentifierInfo* VisType,
+void Sema::ActOnPragmaVisibility(const IdentifierInfo *VisType,
                                  SourceLocation PragmaLoc) {
   if (VisType) {
     // Compute visibility to use.
@@ -1155,7 +1158,7 @@ void Sema::PopPragmaVisibility(bool IsNamespaceEnd, SourceLocation EndLoc) {
   }
 
   // Pop visibility from stack
-  VisStack *Stack = static_cast<VisStack*>(VisContext);
+  VisStack *Stack = static_cast<VisStack *>(VisContext);
 
   const std::pair<unsigned, SourceLocation> *Back = &Stack->back();
   bool StartsWithPragma = Back->first != NoVisibility;

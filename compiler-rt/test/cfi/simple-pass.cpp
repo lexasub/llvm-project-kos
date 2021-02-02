@@ -66,7 +66,7 @@ struct D2 : D {
   void g() {}
 };
 
-}
+} // namespace
 
 struct E {
   virtual void f() {}

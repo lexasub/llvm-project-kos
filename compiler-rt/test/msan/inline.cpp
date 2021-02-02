@@ -5,8 +5,7 @@
 
 #include <stdlib.h>
 
-__attribute__((no_sanitize_memory))
-int f(int *p) {
+__attribute__((no_sanitize_memory)) int f(int *p) {
   if (*p) // BOOOM?? Nope!
     exit(0);
   return 0;
@@ -14,7 +13,7 @@ int f(int *p) {
 
 int main(int argc, char **argv) {
   int x;
-  int * volatile p = &x;
+  int *volatile p = &x;
   int res = f(p);
   return 0;
 }

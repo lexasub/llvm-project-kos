@@ -25,6 +25,7 @@ namespace llvm {
 class PPCTargetMachine final : public LLVMTargetMachine {
 public:
   enum PPCABI { PPC_ABI_UNKNOWN, PPC_ABI_ELFv1, PPC_ABI_ELFv2 };
+
 private:
   std::unique_ptr<TargetLoweringObjectFile> TLOF;
   PPCABI TargetABI;

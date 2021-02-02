@@ -65,7 +65,7 @@ int main() {
         0, // 1 - worksharing construct, 0 - parallel
         1, // number of reduction objects
         &r_var // related data
-        );
+    );
     var++;
 #pragma omp task /*in_reduction(+:var)*/ shared(var)
     {

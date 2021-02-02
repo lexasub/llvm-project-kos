@@ -111,7 +111,8 @@ size_t ABIWindows_x86_64::GetRedZoneSize() const { return 0; }
 //------------------------------------------------------------------
 
 ABISP
-ABIWindows_x86_64::CreateInstance(lldb::ProcessSP process_sp, const ArchSpec &arch) {
+ABIWindows_x86_64::CreateInstance(lldb::ProcessSP process_sp,
+                                  const ArchSpec &arch) {
   if (arch.GetTriple().getArch() == llvm::Triple::x86_64 &&
       arch.GetTriple().isOSWindows()) {
     return ABISP(
@@ -209,13 +210,14 @@ static bool ReadIntegerArgument(Scalar &scalar, unsigned int bit_width,
   if (bit_width > 64)
     return false; // Scalar can't hold large integer arguments
 
-  if (current_argument_register < 4) { // Windows pass first 4 arguments to register
+  if (current_argument_register <
+      4) { // Windows pass first 4 arguments to register
     scalar = thread.GetRegisterContext()->ReadRegisterAsUnsigned(
         argument_register_ids[current_argument_register], 0);
     current_argument_register++;
     if (is_signed)
       scalar.SignExtend(bit_width);
-  	return true;
+    return true;
   }
   uint32_t byte_size = (bit_width + (CHAR_BIT - 1)) / CHAR_BIT;
   Status error;
@@ -228,7 +230,7 @@ static bool ReadIntegerArgument(Scalar &scalar, unsigned int bit_width,
 }
 
 bool ABIWindows_x86_64::GetArgumentValues(Thread &thread,
-                                       ValueList &values) const {
+                                          ValueList &values) const {
   unsigned int num_values = values.GetSize();
   unsigned int value_index;
 
@@ -292,8 +294,9 @@ bool ABIWindows_x86_64::GetArgumentValues(Thread &thread,
   return true;
 }
 
-Status ABIWindows_x86_64::SetReturnValueObject(lldb::StackFrameSP &frame_sp,
-                                            lldb::ValueObjectSP &new_value_sp) {
+Status
+ABIWindows_x86_64::SetReturnValueObject(lldb::StackFrameSP &frame_sp,
+                                        lldb::ValueObjectSP &new_value_sp) {
   Status error;
   if (!new_value_sp) {
     error.SetErrorString("Empty value object for return value.");
@@ -501,8 +504,7 @@ ValueObjectSP ABIWindows_x86_64::GetReturnValueObjectSimple(
     llvm::Optional<uint64_t> byte_size =
         return_compiler_type.GetByteSize(&thread);
     if (byte_size && *byte_size > 0) {
-      const RegisterInfo *xmm_reg =
-          reg_ctx->GetRegisterInfoByName("xmm0", 0);
+      const RegisterInfo *xmm_reg = reg_ctx->GetRegisterInfoByName("xmm0", 0);
       if (xmm_reg == nullptr)
         xmm_reg = reg_ctx->GetRegisterInfoByName("mm0", 0);
 
@@ -516,9 +518,9 @@ ValueObjectSP ABIWindows_x86_64::GetReturnValueObjectSimple(
             RegisterValue reg_value;
             if (reg_ctx->ReadRegister(xmm_reg, reg_value)) {
               Status error;
-              if (reg_value.GetAsMemoryData(
-                      xmm_reg, heap_data_up->GetBytes(),
-                      heap_data_up->GetByteSize(), byte_order, error)) {
+              if (reg_value.GetAsMemoryData(xmm_reg, heap_data_up->GetBytes(),
+                                            heap_data_up->GetByteSize(),
+                                            byte_order, error)) {
                 DataExtractor data(DataBufferSP(heap_data_up.release()),
                                    byte_order,
                                    process_sp->GetTarget()
@@ -542,12 +544,12 @@ ValueObjectSP ABIWindows_x86_64::GetReturnValueObjectSimple(
 // This helper function will flatten an aggregate type
 // and return true if it can be returned in register(s) by value
 // return false if the aggregate is in memory
-static bool FlattenAggregateType(
-    Thread &thread, ExecutionContext &exe_ctx,
-    CompilerType &return_compiler_type,
-    uint32_t data_byte_offset,
-    std::vector<uint32_t> &aggregate_field_offsets,
-    std::vector<CompilerType> &aggregate_compiler_types) {
+static bool
+FlattenAggregateType(Thread &thread, ExecutionContext &exe_ctx,
+                     CompilerType &return_compiler_type,
+                     uint32_t data_byte_offset,
+                     std::vector<uint32_t> &aggregate_field_offsets,
+                     std::vector<CompilerType> &aggregate_compiler_types) {
 
   const uint32_t num_children = return_compiler_type.GetNumFields();
   for (uint32_t idx = 0; idx < num_children; ++idx) {
@@ -560,7 +562,7 @@ static bool FlattenAggregateType(
     CompilerType field_compiler_type = return_compiler_type.GetFieldAtIndex(
         idx, name, &field_bit_offset, nullptr, nullptr);
     llvm::Optional<uint64_t> field_bit_width =
-          field_compiler_type.GetBitSize(&thread);
+        field_compiler_type.GetBitSize(&thread);
 
     // if we don't know the size of the field (e.g. invalid type), exit
     if (!field_bit_width || *field_bit_width == 0) {
@@ -637,18 +639,16 @@ ValueObjectSP ABIWindows_x86_64::GetReturnValueObjectImpl(
   std::vector<uint32_t> aggregate_field_offsets;
   std::vector<CompilerType> aggregate_compiler_types;
   if (!is_memory &&
-      FlattenAggregateType(thread, exe_ctx, return_compiler_type,
-                           0, aggregate_field_offsets,
-                           aggregate_compiler_types)) {
+      FlattenAggregateType(thread, exe_ctx, return_compiler_type, 0,
+                           aggregate_field_offsets, aggregate_compiler_types)) {
     ByteOrder byte_order = target->GetArchitecture().GetByteOrder();
     DataBufferSP data_sp(
         new DataBufferHeap(max_register_value_bit_width / 8, 0));
     DataExtractor return_ext(data_sp, byte_order,
-        target->GetArchitecture().GetAddressByteSize());
+                             target->GetArchitecture().GetAddressByteSize());
 
     // The only register used to return struct/class by value
-    const RegisterInfo *rax_info =
-        reg_ctx_sp->GetRegisterInfoByName("rax", 0);
+    const RegisterInfo *rax_info = reg_ctx_sp->GetRegisterInfoByName("rax", 0);
     RegisterValue rax_value;
     reg_ctx_sp->ReadRegister(rax_info, rax_value);
     DataExtractor rax_data;
@@ -669,7 +669,8 @@ ValueObjectSP ABIWindows_x86_64::GetReturnValueObjectImpl(
       uint32_t count;
 
       CompilerType field_compiler_type = aggregate_compiler_types[idx];
-      uint32_t field_byte_width = (uint32_t) (*field_compiler_type.GetByteSize(&thread));
+      uint32_t field_byte_width =
+          (uint32_t)(*field_compiler_type.GetByteSize(&thread));
       uint32_t field_byte_offset = aggregate_field_offsets[idx];
 
       // this is unlikely w/o the overall size being greater than 8 bytes
@@ -697,9 +698,10 @@ ValueObjectSP ABIWindows_x86_64::GetReturnValueObjectImpl(
           copy_from_extractor->GetByteSize()) {
         return return_valobj_sp;
       }
-      copy_from_extractor->CopyByteOrderedData(copy_from_offset,
-          field_byte_width, data_sp->GetBytes() + field_byte_offset,
-          field_byte_width, byte_order);
+      copy_from_extractor->CopyByteOrderedData(
+          copy_from_offset, field_byte_width,
+          data_sp->GetBytes() + field_byte_offset, field_byte_width,
+          byte_order);
     }
     if (!is_memory) {
       // The result is in our data buffer.  Let's make a variable object out

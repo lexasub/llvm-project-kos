@@ -11,15 +11,15 @@ class E {
 
 public:
   E(int j) {}
-// CHECK-MESSAGES: :[[@LINE-1]]:9: warning: parameter 'j' is unused
-// CHECK-FIXES: {{^}}  E(int  /*j*/) {}{{$}}
+  // CHECK-MESSAGES: :[[@LINE-1]]:9: warning: parameter 'j' is unused
+  // CHECK-FIXES: {{^}}  E(int  /*j*/) {}{{$}}
 };
 class F {
   int i;
 
 public:
   F(int j) : i() {}
-// CHECK-MESSAGES: :[[@LINE-1]]:9: warning: parameter 'j' is unused
-// CHECK-FIXES: {{^}}  F(int  /*j*/) : i() {}{{$}}
+  // CHECK-MESSAGES: :[[@LINE-1]]:9: warning: parameter 'j' is unused
+  // CHECK-FIXES: {{^}}  F(int  /*j*/) : i() {}{{$}}
 };
-}
+} // namespace strict_mode

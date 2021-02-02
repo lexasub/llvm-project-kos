@@ -22,16 +22,15 @@
 #include "test_macros.h"
 #include "disable_missing_braces_warning.h"
 
-int main(int, char**)
-{
+int main(int, char**) {
 
-    {
-        typedef std::unique_ptr<double> T;
-        typedef std::array<T, 1> C;
-        C c = {std::unique_ptr<double>(new double(3.5))};
-        T t = std::get<0>(std::move(c));
-        assert(*t == 3.5);
-    }
+  {
+    typedef std::unique_ptr<double> T;
+    typedef std::array<T, 1> C;
+    C c = {std::unique_ptr<double>(new double(3.5))};
+    T t = std::get<0>(std::move(c));
+    assert(*t == 3.5);
+  }
 
-    return 0;
+  return 0;
 }

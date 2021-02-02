@@ -198,7 +198,7 @@ OMPDeclareTargetDeclAttr::getLocation(const ValueDecl *VD) {
 namespace clang {
 llvm::raw_ostream &operator<<(llvm::raw_ostream &OS, const OMPTraitInfo &TI);
 llvm::raw_ostream &operator<<(llvm::raw_ostream &OS, const OMPTraitInfo *TI);
-}
+} // namespace clang
 
 void OMPDeclareVariantAttr::printPrettyPragma(
     raw_ostream &OS, const PrintingPolicy &Policy) const {

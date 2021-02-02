@@ -22,10 +22,9 @@ using namespace clang;
 
 /// MacroArgs ctor function - This destroys the vector passed in.
 MacroArgs *MacroArgs::create(const MacroInfo *MI,
-                             ArrayRef<Token> UnexpArgTokens,
-                             bool VarargsElided, Preprocessor &PP) {
-  assert(MI->isFunctionLike() &&
-         "Can't have args for an object-like macro!");
+                             ArrayRef<Token> UnexpArgTokens, bool VarargsElided,
+                             Preprocessor &PP) {
+  assert(MI->isFunctionLike() && "Can't have args for an object-like macro!");
   MacroArgs **ResultEnt = nullptr;
   unsigned ClosestMatch = ~0U;
 
@@ -48,9 +47,9 @@ MacroArgs *MacroArgs::create(const MacroInfo *MI,
   if (!ResultEnt) {
     // Allocate memory for a MacroArgs object with the lexer tokens at the end,
     // and construct the MacroArgs object.
-    Result = new (
-        llvm::safe_malloc(totalSizeToAlloc<Token>(UnexpArgTokens.size())))
-        MacroArgs(UnexpArgTokens.size(), VarargsElided, MI->getNumParams());
+    Result =
+        new (llvm::safe_malloc(totalSizeToAlloc<Token>(UnexpArgTokens.size())))
+            MacroArgs(UnexpArgTokens.size(), VarargsElided, MI->getNumParams());
   } else {
     Result = *ResultEnt;
     // Unlink this node from the preprocessors singly linked list.
@@ -101,7 +100,6 @@ MacroArgs *MacroArgs::deallocate() {
   return Next;
 }
 
-
 /// getArgLength - Given a pointer to an expanded or unexpanded argument,
 /// return the number of tokens, not counting the EOF, that make up the
 /// argument.
@@ -111,7 +109,6 @@ unsigned MacroArgs::getArgLength(const Token *ArgPtr) {
     ++NumArgTokens;
   return NumArgTokens;
 }
-
 
 /// getUnexpArgument - Return the unexpanded tokens for the specified formal.
 ///
@@ -125,11 +122,11 @@ const Token *MacroArgs::getUnexpArgument(unsigned Arg) const {
 
   // Scan to find Arg.
   for (; Arg; ++Result) {
-    assert(Result < Start+NumUnexpArgTokens && "Invalid arg #");
+    assert(Result < Start + NumUnexpArgTokens && "Invalid arg #");
     if (Result->is(tok::eof))
       --Arg;
   }
-  assert(Result < Start+NumUnexpArgTokens && "Invalid arg #");
+  assert(Result < Start + NumUnexpArgTokens && "Invalid arg #");
   return Result;
 }
 
@@ -167,12 +164,13 @@ const std::vector<Token> &MacroArgs::getPreExpArgument(unsigned Arg,
     PreExpArgTokens.resize(getNumMacroArguments());
 
   std::vector<Token> &Result = PreExpArgTokens[Arg];
-  if (!Result.empty()) return Result;
+  if (!Result.empty())
+    return Result;
 
   SaveAndRestore<bool> PreExpandingMacroArgs(PP.InMacroArgPreExpansion, true);
 
   const Token *AT = getUnexpArgument(Arg);
-  unsigned NumToks = getArgLength(AT)+1;  // Include the EOF.
+  unsigned NumToks = getArgLength(AT) + 1; // Include the EOF.
 
   // Otherwise, we have to pre-expand this argument, populating Result.  To do
   // this, we set up a fake TokenLexer to lex from the unexpanded argument
@@ -199,14 +197,13 @@ const std::vector<Token> &MacroArgs::getPreExpArgument(unsigned Arg,
   return Result;
 }
 
-
 /// StringifyArgument - Implement C99 6.10.3.2p2, converting a sequence of
 /// tokens into the literal string token that should be produced by the C #
 /// preprocessor operator.  If Charify is true, then it should be turned into
 /// a character literal for the Microsoft charize (#@) extension.
 ///
-Token MacroArgs::StringifyArgument(const Token *ArgToks,
-                                   Preprocessor &PP, bool Charify,
+Token MacroArgs::StringifyArgument(const Token *ArgToks, Preprocessor &PP,
+                                   bool Charify,
                                    SourceLocation ExpansionLocStart,
                                    SourceLocation ExpansionLocEnd) {
   Token Tok;
@@ -246,7 +243,7 @@ Token MacroArgs::StringifyArgument(const Token *ArgToks,
       // Otherwise, just append the token.  Do some gymnastics to get the token
       // in place and avoid copies where possible.
       unsigned CurStrLen = Result.size();
-      Result.resize(CurStrLen+Tok.getLength());
+      Result.resize(CurStrLen + Tok.getLength());
       const char *BufPtr = Result.data() + CurStrLen;
       bool Invalid = false;
       unsigned ActualTokLen = PP.getSpelling(Tok, BufPtr, &Invalid);
@@ -259,7 +256,7 @@ Token MacroArgs::StringifyArgument(const Token *ArgToks,
 
         // If the token was dirty, the spelling may be shorter than the token.
         if (ActualTokLen != Tok.getLength())
-          Result.resize(CurStrLen+ActualTokLen);
+          Result.resize(CurStrLen + ActualTokLen);
       }
     }
   }
@@ -269,14 +266,14 @@ Token MacroArgs::StringifyArgument(const Token *ArgToks,
   if (Result.back() == '\\') {
     // Count the number of consecutive \ characters.  If even, then they are
     // just escaped backslashes, otherwise it's an error.
-    unsigned FirstNonSlash = Result.size()-2;
+    unsigned FirstNonSlash = Result.size() - 2;
     // Guaranteed to find the starting " if nothing else.
     while (Result[FirstNonSlash] == '\\')
       --FirstNonSlash;
-    if ((Result.size()-1-FirstNonSlash) & 1) {
+    if ((Result.size() - 1 - FirstNonSlash) & 1) {
       // Diagnose errors for things like: #define F(X) #X   /   F(\)
       PP.Diag(ArgToks[-1], diag::pp_invalid_string_literal);
-      Result.pop_back();  // remove one of the \'s.
+      Result.pop_back(); // remove one of the \'s.
     }
   }
   Result += '"';
@@ -286,22 +283,21 @@ Token MacroArgs::StringifyArgument(const Token *ArgToks,
   if (Charify) {
     // First step, turn double quotes into single quotes:
     Result[0] = '\'';
-    Result[Result.size()-1] = '\'';
+    Result[Result.size() - 1] = '\'';
 
     // Check for bogus character.
     bool isBad = false;
     if (Result.size() == 3)
-      isBad = Result[1] == '\'';   // ''' is not legal. '\' already fixed above.
+      isBad = Result[1] == '\''; // ''' is not legal. '\' already fixed above.
     else
-      isBad = (Result.size() != 4 || Result[1] != '\\');  // Not '\x'
+      isBad = (Result.size() != 4 || Result[1] != '\\'); // Not '\x'
 
     if (isBad) {
       PP.Diag(ArgTokStart[0], diag::err_invalid_character_to_charify);
-      Result = "' '";  // Use something arbitrary, but legal.
+      Result = "' '"; // Use something arbitrary, but legal.
     }
   }
 
-  PP.CreateString(Result, Tok,
-                  ExpansionLocStart, ExpansionLocEnd);
+  PP.CreateString(Result, Tok, ExpansionLocStart, ExpansionLocEnd);
   return Tok;
 }

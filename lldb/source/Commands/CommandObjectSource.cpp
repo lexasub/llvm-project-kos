@@ -668,14 +668,12 @@ class CommandObjectSourceList : public CommandObjectParsed {
       case 'r':
         reverse = true;
         break;
-      case 'y':
-      {
+      case 'y': {
         OptionValueFileColonLine value;
         Status fcl_err = value.SetValueFromString(option_arg);
         if (!fcl_err.Success()) {
           error.SetErrorStringWithFormat(
-              "Invalid value for file:line specifier: %s",
-              fcl_err.AsCString());
+              "Invalid value for file:line specifier: %s", fcl_err.AsCString());
         } else {
           file_name = value.GetFileSpec().GetPath();
           start_line = value.GetLineNumber();

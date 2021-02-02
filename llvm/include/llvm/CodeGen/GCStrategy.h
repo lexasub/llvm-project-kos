@@ -74,8 +74,9 @@ protected:
                                /// if set, none of the other options can be
                                /// anything but their default values.
 
-  bool NeededSafePoints = false;    ///< if set, calls are inferred to be safepoints
-  bool UsesMetadata = false;     ///< If set, backend must emit metadata tables.
+  bool NeededSafePoints =
+      false;                 ///< if set, calls are inferred to be safepoints
+  bool UsesMetadata = false; ///< If set, backend must emit metadata tables.
 
 public:
   GCStrategy();

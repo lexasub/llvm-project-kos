@@ -20,26 +20,23 @@
 #include "test_iterators.h"
 
 template <class It>
-void
-test()
-{
-    std::move_iterator<It> r;
-    (void)r;
+void test() {
+  std::move_iterator<It> r;
+  (void)r;
 }
 
-int main(int, char**)
-{
-    test<input_iterator<char*> >();
-    test<forward_iterator<char*> >();
-    test<bidirectional_iterator<char*> >();
-    test<random_access_iterator<char*> >();
-    test<char*>();
+int main(int, char**) {
+  test<input_iterator<char*> >();
+  test<forward_iterator<char*> >();
+  test<bidirectional_iterator<char*> >();
+  test<random_access_iterator<char*> >();
+  test<char*>();
 
 #if TEST_STD_VER > 14
-    {
-    constexpr std::move_iterator<const char *> it;
+  {
+    constexpr std::move_iterator<const char*> it;
     (void)it;
-    }
+  }
 #endif
 
   return 0;

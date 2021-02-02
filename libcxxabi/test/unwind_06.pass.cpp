@@ -15,14 +15,14 @@
 
 // Suppress diagnostics about deprecated volatile operations
 #if defined(__GNUC__) && (__GNUC__ >= 10) && !defined(__clang__)
-# pragma GCC diagnostic ignored "-Wvolatile"
+#pragma GCC diagnostic ignored "-Wvolatile"
 #endif
 
 // Compile with -Os to get compiler uses float registers to hold float variables
 
 double get_(int x) { return (double)x; }
 
-double (* volatile get)(int) = get_;
+double (*volatile get)(int) = get_;
 
 volatile int counter;
 
@@ -31,8 +31,9 @@ double try1(bool v) {
   double b = get(1);
   for (counter = 100; counter; counter = counter - 1)
     a += get(1) + b;
-  if (v) throw 10;
-  return get(0)+a+b;
+  if (v)
+    throw 10;
+  return get(0) + a + b;
 }
 
 double try2(bool v) {
@@ -41,8 +42,9 @@ double try2(bool v) {
   double c = get(2);
   for (counter = 100; counter; counter = counter - 1)
     a += get(1) + b + c;
-  if (v) throw 10;
-  return get(0)+a+b+c;
+  if (v)
+    throw 10;
+  return get(0) + a + b + c;
 }
 
 double try3(bool v) {
@@ -52,8 +54,9 @@ double try3(bool v) {
   double d = get(3);
   for (counter = 100; counter; counter = counter - 1)
     a += get(1) + b + c + d;
-  if (v) throw 10;
-  return get(0)+a+b+c+d;
+  if (v)
+    throw 10;
+  return get(0) + a + b + c + d;
 }
 
 double try4(bool v) {
@@ -63,9 +66,10 @@ double try4(bool v) {
   double d = get(0);
   double e = get(0);
   for (counter = 100; counter; counter = counter - 1)
-    a += get(1) + b+c+d+e;
-  if (v) throw 10;
-  return get(0)+a+b+c+d+e;
+    a += get(1) + b + c + d + e;
+  if (v)
+    throw 10;
+  return get(0) + a + b + c + d + e;
 }
 
 double try5(bool v) {
@@ -76,9 +80,10 @@ double try5(bool v) {
   double e = get(0);
   double f = get(0);
   for (counter = 100; counter; counter = counter - 1)
-    a += get(1) + b+c+d+e+f;
-  if (v) throw 10;
-  return get(0)+a+b+c+d+e+f;
+    a += get(1) + b + c + d + e + f;
+  if (v)
+    throw 10;
+  return get(0) + a + b + c + d + e + f;
 }
 
 double try6(bool v) {
@@ -90,9 +95,10 @@ double try6(bool v) {
   double f = get(0);
   double g = get(0);
   for (counter = 100; counter; counter = counter - 1)
-    a += get(1) + b+c+d+e+f+g;
-  if (v) throw 10;
-  return get(0)+a+b+c+d+e+f+g;
+    a += get(1) + b + c + d + e + f + g;
+  if (v)
+    throw 10;
+  return get(0) + a + b + c + d + e + f + g;
 }
 
 double try7(bool v) {
@@ -105,9 +111,10 @@ double try7(bool v) {
   double g = get(0);
   double h = get(0);
   for (counter = 100; counter; counter = counter - 1)
-    a += get(1) + b+c+d+e+f+g+h;
-  if (v) throw 10;
-  return get(0)+a+b+c+d+e+f+g+h;
+    a += get(1) + b + c + d + e + f + g + h;
+  if (v)
+    throw 10;
+  return get(0) + a + b + c + d + e + f + g + h;
 }
 
 double try8(bool v) {
@@ -121,17 +128,13 @@ double try8(bool v) {
   double h = get(0);
   double i = get(0);
   for (counter = 100; counter; counter = counter - 1)
-    a += get(1) + b+c+d+e+f+g+h+i;
-  if (v) throw 10;
-  return get(0)+a+b+c+d+e+f+g+h+i;
+    a += get(1) + b + c + d + e + f + g + h + i;
+  if (v)
+    throw 10;
+  return get(0) + a + b + c + d + e + f + g + h + i;
 }
 
-
-
-
-
-double foo()
-{
+double foo() {
   double a = get(1);
   double b = get(2);
   double c = get(3);
@@ -142,8 +145,7 @@ double foo()
   double h = get(8);
   try {
     try1(true);
-  }
-  catch (int) {
+  } catch (int) {
   }
   assert(a == get(1));
   assert(b == get(2));
@@ -156,8 +158,7 @@ double foo()
 
   try {
     try2(true);
-  }
-  catch (int) {
+  } catch (int) {
   }
   assert(a == get(1));
   assert(b == get(2));
@@ -170,8 +171,7 @@ double foo()
 
   try {
     try3(true);
-  }
-  catch (int) {
+  } catch (int) {
   }
   assert(a == get(1));
   assert(b == get(2));
@@ -184,8 +184,7 @@ double foo()
 
   try {
     try4(true);
-  }
-  catch (int) {
+  } catch (int) {
   }
   assert(a == get(1));
   assert(b == get(2));
@@ -198,8 +197,7 @@ double foo()
 
   try {
     try5(true);
-  }
-  catch (int) {
+  } catch (int) {
   }
   assert(a == get(1));
   assert(b == get(2));
@@ -212,8 +210,7 @@ double foo()
 
   try {
     try6(true);
-  }
-  catch (int) {
+  } catch (int) {
   }
   assert(a == get(1));
   assert(b == get(2));
@@ -226,8 +223,7 @@ double foo()
 
   try {
     try7(true);
-  }
-  catch (int) {
+  } catch (int) {
   }
   assert(a == get(1));
   assert(b == get(2));
@@ -240,8 +236,7 @@ double foo()
 
   try {
     try8(true);
-  }
-  catch (int) {
+  } catch (int) {
   }
   assert(a == get(1));
   assert(b == get(2));
@@ -252,10 +247,8 @@ double foo()
   assert(g == get(7));
   assert(h == get(8));
 
-  return a+b+c+d+e+f+g+h;
+  return a + b + c + d + e + f + g + h;
 }
-
-
 
 int main(int, char**) {
   foo();

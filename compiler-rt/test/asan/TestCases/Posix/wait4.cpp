@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
 #if defined(WAIT4)
     res = wait4(pid, status, WNOHANG, NULL);
 #elif defined(WAIT4_RUSAGE)
-    struct rusage *ru = (struct rusage*)(x + argc * 3);
+    struct rusage *ru = (struct rusage *)(x + argc * 3);
     int good_status;
     res = wait4(pid, &good_status, WNOHANG, ru);
 #endif

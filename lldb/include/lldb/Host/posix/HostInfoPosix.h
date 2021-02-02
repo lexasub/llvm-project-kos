@@ -38,6 +38,6 @@ protected:
   static bool ComputeSupportExeDirectory(FileSpec &file_spec);
   static bool ComputeHeaderDirectory(FileSpec &file_spec);
 };
-}
+} // namespace lldb_private
 
 #endif

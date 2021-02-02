@@ -1,4 +1,4 @@
- 
+
 // Global functions
 int Func_arg_array(int array[]) { return 1; }
 void Func_arg_void(void) { return; }
@@ -7,34 +7,26 @@ void Func_varargs(...) { return; }
 
 // Class
 namespace MemberTest {
-  class A {
-  public:
-    int Func(int a, ...) { return 1; }
-  };
-}
+class A {
+public:
+  int Func(int a, ...) { return 1; }
+};
+} // namespace MemberTest
 
 // Template
-template <int N=1, class ...T>
-void TemplateFunc(T ...Arg) {
-  return;
-}
+template <int N = 1, class... T> void TemplateFunc(T... Arg) { return; }
 
 // namespace
 namespace {
-  void Func(int a, const long b, volatile bool c, ...) { return; }
-}
+void Func(int a, const long b, volatile bool c, ...) { return; }
+} // namespace
 
 namespace NS {
-  void Func(char a, int b) {
-    return;
-  }
-}
+void Func(char a, int b) { return; }
+} // namespace NS
 
 // Static function
-static long StaticFunction(int a)
-{
-  return 2;
-}
+static long StaticFunction(int a) { return 2; }
 
 // Inlined function
 inline void InlinedFunction(long a) { return; }
@@ -43,13 +35,13 @@ extern void FunctionCall();
 
 int main() {
   MemberTest::A v1;
-  v1.Func('a',10);
+  v1.Func('a', 10);
 
   Func(1, 5, true, 10, 8);
   NS::Func('c', 2);
 
   TemplateFunc(10);
-  TemplateFunc(10,11,88);
+  TemplateFunc(10, 11, 88);
 
   StaticFunction(2);
   InlinedFunction(1);

@@ -122,7 +122,7 @@ PlatformSP PlatformDarwinKernel::CreateInstance(bool force,
       case llvm::Triple::IOS:
       case llvm::Triple::WatchOS:
       case llvm::Triple::TvOS:
-      // NEED_BRIDGEOS_TRIPLE case llvm::Triple::BridgeOS:
+        // NEED_BRIDGEOS_TRIPLE case llvm::Triple::BridgeOS:
         break;
       // Only accept "vendor" for vendor if the host is Apple and it "unknown"
       // wasn't specified (it was just returned because it was NOT specified)
@@ -494,7 +494,8 @@ PlatformDarwinKernel::GetKernelsAndKextsInDirectoryHelper(
   ConstString file_spec_extension = file_spec.GetFileNameExtension();
 
   Log *log(GetLogIfAllCategoriesSet(LIBLLDB_LOG_PLATFORM));
-  Log *log_verbose(GetLogIfAllCategoriesSet(LIBLLDB_LOG_PLATFORM | LLDB_LOG_OPTION_VERBOSE));
+  Log *log_verbose(
+      GetLogIfAllCategoriesSet(LIBLLDB_LOG_PLATFORM | LLDB_LOG_OPTION_VERBOSE));
 
   LLDB_LOGF(log_verbose, "PlatformDarwinKernel examining '%s'",
             file_spec.GetPath().c_str());
@@ -596,17 +597,14 @@ void PlatformDarwinKernel::AddKextToMap(PlatformDarwinKernel *thisp,
     if (CFStringGetCString(bundle_id, bundle_id_buf, sizeof(bundle_id_buf),
                            kCFStringEncodingUTF8)) {
       ConstString bundle_conststr(bundle_id_buf);
-      if (KextHasdSYMSibling(file_spec))
-      {
+      if (KextHasdSYMSibling(file_spec)) {
         LLDB_LOGF(log,
                   "PlatformDarwinKernel registering kext binary '%s' with dSYM "
                   "sibling",
                   file_spec.GetPath().c_str());
         thisp->m_name_to_kext_path_map_with_dsyms.insert(
             std::pair<ConstString, FileSpec>(bundle_conststr, file_spec));
-      }
-      else
-      {
+      } else {
         LLDB_LOGF(log,
                   "PlatformDarwinKernel registering kext binary '%s', no dSYM",
                   file_spec.GetPath().c_str());
@@ -918,8 +916,7 @@ std::vector<lldb_private::FileSpec>
 PlatformDarwinKernel::SearchForExecutablesRecursively(const std::string &dir) {
   std::vector<FileSpec> executables;
   std::error_code EC;
-  for (llvm::sys::fs::recursive_directory_iterator it(dir.c_str(), EC),
-       end;
+  for (llvm::sys::fs::recursive_directory_iterator it(dir.c_str(), EC), end;
        it != end && !EC; it.increment(EC)) {
     auto status = it->status();
     if (!status)

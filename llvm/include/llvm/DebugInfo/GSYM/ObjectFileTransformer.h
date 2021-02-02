@@ -40,8 +40,7 @@ public:
   ///
   /// \returns An error indicating any fatal issues that happen when parsing
   /// the DWARF, or Error::success() if all goes well.
-  static llvm::Error convert(const object::ObjectFile &Obj,
-                             raw_ostream &Log,
+  static llvm::Error convert(const object::ObjectFile &Obj, raw_ostream &Log,
                              GsymCreator &Gsym);
 };
 

@@ -23,15 +23,15 @@ struct TypeMismatchData {
   unsigned char TypeCheckKind;
 };
 
-#define UNRECOVERABLE(checkname, ...) \
-  extern "C" SANITIZER_INTERFACE_ATTRIBUTE NORETURN \
-    void __ubsan_handle_ ## checkname( __VA_ARGS__ );
+#define UNRECOVERABLE(checkname, ...)                                          \
+  extern "C" SANITIZER_INTERFACE_ATTRIBUTE NORETURN void                       \
+      __ubsan_handle_##checkname(__VA_ARGS__);
 
-#define RECOVERABLE(checkname, ...) \
-  extern "C" SANITIZER_INTERFACE_ATTRIBUTE \
-    void __ubsan_handle_ ## checkname( __VA_ARGS__ ); \
-  extern "C" SANITIZER_INTERFACE_ATTRIBUTE NORETURN \
-    void __ubsan_handle_ ## checkname ## _abort( __VA_ARGS__ );
+#define RECOVERABLE(checkname, ...)                                            \
+  extern "C" SANITIZER_INTERFACE_ATTRIBUTE void __ubsan_handle_##checkname(    \
+      __VA_ARGS__);                                                            \
+  extern "C" SANITIZER_INTERFACE_ATTRIBUTE NORETURN void                       \
+      __ubsan_handle_##checkname##_abort(__VA_ARGS__);
 
 /// \brief Handle a runtime type check failure, caused by either a misaligned
 /// pointer, a null pointer, or a pointer to insufficient storage for the
@@ -67,8 +67,8 @@ RECOVERABLE(mul_overflow, OverflowData *Data, ValueHandle LHS, ValueHandle RHS)
 RECOVERABLE(negate_overflow, OverflowData *Data, ValueHandle OldVal)
 
 /// \brief Handle an INT_MIN/-1 overflow or division by zero.
-RECOVERABLE(divrem_overflow, OverflowData *Data,
-            ValueHandle LHS, ValueHandle RHS)
+RECOVERABLE(divrem_overflow, OverflowData *Data, ValueHandle LHS,
+            ValueHandle RHS)
 
 struct ShiftOutOfBoundsData {
   SourceLocation Loc;
@@ -78,8 +78,8 @@ struct ShiftOutOfBoundsData {
 
 /// \brief Handle a shift where the RHS is out of bounds or a left shift where
 /// the LHS is negative or overflows.
-RECOVERABLE(shift_out_of_bounds, ShiftOutOfBoundsData *Data,
-            ValueHandle LHS, ValueHandle RHS)
+RECOVERABLE(shift_out_of_bounds, ShiftOutOfBoundsData *Data, ValueHandle LHS,
+            ValueHandle RHS)
 
 struct OutOfBoundsData {
   SourceLocation Loc;
@@ -227,10 +227,10 @@ RECOVERABLE(cfi_check_fail, CFICheckFailData *Data, ValueHandle Function,
 
 struct ReportOptions;
 
-extern "C" SANITIZER_INTERFACE_ATTRIBUTE void __ubsan_handle_cfi_bad_type(
-    CFICheckFailData *Data, ValueHandle Vtable, bool ValidVtable,
-    ReportOptions Opts);
+extern "C" SANITIZER_INTERFACE_ATTRIBUTE void
+__ubsan_handle_cfi_bad_type(CFICheckFailData *Data, ValueHandle Vtable,
+                            bool ValidVtable, ReportOptions Opts);
 
-}
+} // namespace __ubsan
 
 #endif // UBSAN_HANDLERS_H

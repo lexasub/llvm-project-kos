@@ -24,11 +24,9 @@
 // Newer toolchains define __get_cpuid_count in cpuid.h, but some
 // older-but-still-supported ones (e.g. gcc 5.4.0) don't, so we
 // define it locally here, following the definition in clang/lib/Headers.
-static inline int get_cpuid_count(unsigned int __leaf,
-                                  unsigned int __subleaf,
+static inline int get_cpuid_count(unsigned int __leaf, unsigned int __subleaf,
                                   unsigned int *__eax, unsigned int *__ebx,
-                                  unsigned int *__ecx, unsigned int *__edx)
-{
+                                  unsigned int *__ecx, unsigned int *__edx) {
   unsigned int __max_leaf = __get_cpuid_max(__leaf & 0x80000000, nullptr);
 
   if (__max_leaf == 0 || __max_leaf < __leaf)
@@ -89,8 +87,8 @@ static_assert((sizeof(g_avx_regnums_i386) / sizeof(g_avx_regnums_i386[0])) -
 
 // x64 32-bit MPX registers.
 static const uint32_t g_mpx_regnums_i386[] = {
-    lldb_bnd0_i386,     lldb_bnd1_i386, lldb_bnd2_i386, lldb_bnd3_i386,
-    lldb_bndcfgu_i386,  lldb_bndstatus_i386,
+    lldb_bnd0_i386,     lldb_bnd1_i386,    lldb_bnd2_i386,
+    lldb_bnd3_i386,     lldb_bndcfgu_i386, lldb_bndstatus_i386,
     LLDB_INVALID_REGNUM // register sets need to end with this flag
 };
 static_assert((sizeof(g_mpx_regnums_i386) / sizeof(g_mpx_regnums_i386[0])) -
@@ -183,8 +181,8 @@ static_assert((sizeof(g_avx_regnums_x86_64) / sizeof(g_avx_regnums_x86_64[0])) -
 
 // x86 64-bit MPX registers.
 static const uint32_t g_mpx_regnums_x86_64[] = {
-    lldb_bnd0_x86_64,    lldb_bnd1_x86_64,    lldb_bnd2_x86_64,
-    lldb_bnd3_x86_64,    lldb_bndcfgu_x86_64, lldb_bndstatus_x86_64,
+    lldb_bnd0_x86_64,   lldb_bnd1_x86_64,    lldb_bnd2_x86_64,
+    lldb_bnd3_x86_64,   lldb_bndcfgu_x86_64, lldb_bndstatus_x86_64,
     LLDB_INVALID_REGNUM // register sets need to end with this flag
 };
 static_assert((sizeof(g_mpx_regnums_x86_64) / sizeof(g_mpx_regnums_x86_64[0])) -
@@ -203,7 +201,7 @@ static const RegisterSet g_reg_sets_i386[k_num_register_sets] = {
      g_fpu_regnums_i386},
     {"Advanced Vector Extensions", "avx", k_num_avx_registers_i386,
      g_avx_regnums_i386},
-    { "Memory Protection Extensions", "mpx", k_num_mpx_registers_i386,
+    {"Memory Protection Extensions", "mpx", k_num_mpx_registers_i386,
      g_mpx_regnums_i386}};
 
 // Register sets for x86 64-bit.
@@ -214,7 +212,7 @@ static const RegisterSet g_reg_sets_x86_64[k_num_register_sets] = {
      g_fpu_regnums_x86_64},
     {"Advanced Vector Extensions", "avx", k_num_avx_registers_x86_64,
      g_avx_regnums_x86_64},
-    { "Memory Protection Extensions", "mpx", k_num_mpx_registers_x86_64,
+    {"Memory Protection Extensions", "mpx", k_num_mpx_registers_x86_64,
      g_mpx_regnums_x86_64}};
 
 #define REG_CONTEXT_SIZE (GetRegisterInfoInterface().GetGPRSize() + sizeof(FPR))
@@ -852,7 +850,7 @@ bool NativeRegisterContextLinux_x86_64::IsCPUFeatureAvailable(
                     // reading in the XCR0 area of XSAVE.
     if ((m_xstate->xsave.i387.xcr0 & mask_XSTATE_AVX) == mask_XSTATE_AVX)
       return true;
-     break;
+    break;
   case RegSet::mpx: // Check if CPU has MPX and if there is kernel support, by
                     // reading in the XCR0 area of XSAVE.
     if ((m_xstate->xsave.i387.xcr0 & mask_XSTATE_MPX) == mask_XSTATE_MPX)
@@ -889,8 +887,7 @@ bool NativeRegisterContextLinux_x86_64::IsFPR(uint32_t reg_index) const {
 }
 
 bool NativeRegisterContextLinux_x86_64::IsDR(uint32_t reg_index) const {
-  return (m_reg_info.first_dr <= reg_index &&
-          reg_index <= m_reg_info.last_dr);
+  return (m_reg_info.first_dr <= reg_index && reg_index <= m_reg_info.last_dr);
 }
 
 Status NativeRegisterContextLinux_x86_64::WriteFPR() {
@@ -920,9 +917,8 @@ bool NativeRegisterContextLinux_x86_64::CopyXSTATEtoYMM(
 
   if (byte_order == lldb::eByteOrderLittle) {
     uint32_t reg_no = reg_index - m_reg_info.first_ymm;
-    m_ymm_set.ymm[reg_no] = XStateToYMM(
-        m_xstate->fxsave.xmm[reg_no].bytes,
-        m_xstate->xsave.ymmh[reg_no].bytes);
+    m_ymm_set.ymm[reg_no] = XStateToYMM(m_xstate->fxsave.xmm[reg_no].bytes,
+                                        m_xstate->xsave.ymmh[reg_no].bytes);
     return true;
   }
 
@@ -936,9 +932,8 @@ bool NativeRegisterContextLinux_x86_64::CopyYMMtoXSTATE(
 
   if (byte_order == lldb::eByteOrderLittle) {
     uint32_t reg_no = reg - m_reg_info.first_ymm;
-    YMMToXState(m_ymm_set.ymm[reg_no],
-        m_xstate->fxsave.xmm[reg_no].bytes,
-        m_xstate->xsave.ymmh[reg_no].bytes);
+    YMMToXState(m_ymm_set.ymm[reg_no], m_xstate->fxsave.xmm[reg_no].bytes,
+                m_xstate->xsave.ymmh[reg_no].bytes);
     return true;
   }
 

@@ -14,7 +14,7 @@
 #if SANITIZER_WINDOWS
 
 #if !defined(INCLUDED_FROM_INTERCEPTION_LIB)
-# error "interception_win.h should be included from interception library only"
+#error "interception_win.h should be included from interception library only"
 #endif
 
 #ifndef INTERCEPTION_WIN_H
@@ -43,17 +43,17 @@ bool OverrideImportedFunction(const char *module_to_patch,
 
 #if !SANITIZER_WINDOWS64
 // Exposed for unittests
-bool OverrideFunctionWithDetour(
-    uptr old_func, uptr new_func, uptr *orig_old_func);
+bool OverrideFunctionWithDetour(uptr old_func, uptr new_func,
+                                uptr *orig_old_func);
 #endif
 
 // Exposed for unittests
-bool OverrideFunctionWithRedirectJump(
-    uptr old_func, uptr new_func, uptr *orig_old_func);
-bool OverrideFunctionWithHotPatch(
-    uptr old_func, uptr new_func, uptr *orig_old_func);
-bool OverrideFunctionWithTrampoline(
-    uptr old_func, uptr new_func, uptr *orig_old_func);
+bool OverrideFunctionWithRedirectJump(uptr old_func, uptr new_func,
+                                      uptr *orig_old_func);
+bool OverrideFunctionWithHotPatch(uptr old_func, uptr new_func,
+                                  uptr *orig_old_func);
+bool OverrideFunctionWithTrampoline(uptr old_func, uptr new_func,
+                                    uptr *orig_old_func);
 
 // Exposed for unittests
 void TestOnlyReleaseTrampolineRegions();
@@ -61,14 +61,14 @@ void TestOnlyReleaseTrampolineRegions();
 }  // namespace __interception
 
 #if defined(INTERCEPTION_DYNAMIC_CRT)
-#define INTERCEPT_FUNCTION_WIN(func)                                           \
-  ::__interception::OverrideFunction(#func,                                    \
-                                     (::__interception::uptr)WRAP(func),       \
+#define INTERCEPT_FUNCTION_WIN(func)                                     \
+  ::__interception::OverrideFunction(#func,                              \
+                                     (::__interception::uptr)WRAP(func), \
                                      (::__interception::uptr *)&REAL(func))
 #else
-#define INTERCEPT_FUNCTION_WIN(func)                                           \
-  ::__interception::OverrideFunction((::__interception::uptr)func,             \
-                                     (::__interception::uptr)WRAP(func),       \
+#define INTERCEPT_FUNCTION_WIN(func)                                     \
+  ::__interception::OverrideFunction((::__interception::uptr)func,       \
+                                     (::__interception::uptr)WRAP(func), \
                                      (::__interception::uptr *)&REAL(func))
 #endif
 

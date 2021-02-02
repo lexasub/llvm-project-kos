@@ -2,8 +2,8 @@
 // expected-no-diagnostics
 
 namespace A {
-    struct B { };
-    void operator+(B,B);
-}
+struct B {};
+void operator+(B, B);
+} // namespace A
 
 using A::operator+;

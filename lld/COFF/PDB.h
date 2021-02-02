@@ -17,7 +17,7 @@ namespace llvm {
 namespace codeview {
 union DebugInfo;
 }
-}
+} // namespace llvm
 
 namespace lld {
 class Timer;

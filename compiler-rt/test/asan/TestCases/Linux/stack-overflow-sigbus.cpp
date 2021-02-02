@@ -6,9 +6,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <sys/mman.h>
 #include <sys/resource.h>
+#include <unistd.h>
 
 const int BS = 1024;
 volatile char x;

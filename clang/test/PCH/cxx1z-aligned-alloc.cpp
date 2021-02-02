@@ -16,12 +16,14 @@
 using size_t = decltype(sizeof(0));
 
 // Call the overaligned form of 'operator new'.
-struct alignas(256) Q { int n; };
+struct alignas(256) Q {
+  int n;
+};
 void *f() { return new Q; }
 
 // Extract the std::align_val_t type from the implicit declaration of operator delete.
-template<typename AlignValT>
-AlignValT extract(void (*)(void*, size_t, AlignValT));
+template <typename AlignValT>
+AlignValT extract(void (*)(void *, size_t, AlignValT));
 using T = decltype(extract(&operator delete));
 
 #else
@@ -30,7 +32,7 @@ using T = decltype(extract(&operator delete));
 void *q = new (T{16}) Q;
 
 namespace std {
-  enum class align_val_t : size_t {};
+enum class align_val_t : size_t {};
 }
 
 using T = std::align_val_t; // ok, same type

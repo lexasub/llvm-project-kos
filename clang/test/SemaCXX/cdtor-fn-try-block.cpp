@@ -5,10 +5,11 @@ int FileScope;
 struct A {
   int I;
   void f();
-  A() try {
+  A()
+  try {
   } catch (...) {
     I = 12; // expected-warning {{cannot refer to a non-static member from the handler of a constructor function try block}}
-    f(); // expected-warning {{cannot refer to a non-static member from the handler of a constructor function try block}}
+    f();    // expected-warning {{cannot refer to a non-static member from the handler of a constructor function try block}}
 
     FileScope = 12; // ok
     A a;
@@ -22,10 +23,11 @@ struct B {
 };
 
 struct C : B {
-  C() try {
+  C()
+  try {
   } catch (...) {
     I = 12; // expected-warning {{cannot refer to a non-static member from the handler of a constructor function try block}}
-    f(); // expected-warning {{cannot refer to a non-static member from the handler of a constructor function try block}}
+    f();    // expected-warning {{cannot refer to a non-static member from the handler of a constructor function try block}}
   }
 };
 
@@ -33,10 +35,11 @@ struct D {
   static int I;
   static void f();
 
-  D() try {
+  D()
+  try {
   } catch (...) {
     I = 12; // ok
-    f(); // ok
+    f();    // ok
   }
 };
 int D::I;
@@ -50,10 +53,10 @@ struct E {
   ~E() try {
   } catch (...) {
     I = 12; // expected-warning {{cannot refer to a non-static member from the handler of a destructor function try block}}
-    f(); // expected-warning {{cannot refer to a non-static member from the handler of a destructor function try block}}
+    f();    // expected-warning {{cannot refer to a non-static member from the handler of a destructor function try block}}
 
     J = 12; // ok
-    g(); // ok
+    g();    // ok
   }
 };
 int E::J;
@@ -65,10 +68,11 @@ struct F {
 int F::I;
 
 struct G : F {
-  G() try {
+  G()
+  try {
   } catch (...) {
     I = 12; // ok
-    f(); // ok
+    f();    // ok
   }
 };
 
@@ -78,9 +82,10 @@ struct H {
     E
   };
 
-  H() try {
+  H()
+  try {
   } catch (...) {
-    H::A a; // ok
+    H::A a;    // ok
     int I = E; // ok
   }
 };
@@ -92,6 +97,6 @@ struct I {
     try { // not a function-try-block
     } catch (...) {
       J = 12; // ok
-	}
+    }
   }
 };

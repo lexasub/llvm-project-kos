@@ -28,4 +28,3 @@ int main() {
 
 // CHECK-NOT: failed to open suppressions file
 // CHECK-NOT: WARNING: ThreadSanitizer: data race
-

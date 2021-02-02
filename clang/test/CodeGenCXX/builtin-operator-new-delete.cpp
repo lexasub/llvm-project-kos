@@ -5,24 +5,24 @@
 typedef __SIZE_TYPE__ size_t;
 
 // Declare an 'operator new' template to tickle a bug in __builtin_operator_new.
-template<typename T> void *operator new(size_t, int (*)(T));
+template <typename T> void *operator new(size_t, int (*)(T));
 
 // Ensure that this declaration doesn't cause operator new to lose its
 // 'noalias' attribute.
 void *operator new(size_t);
 
 namespace std {
-  struct nothrow_t {};
-  enum class align_val_t : size_t { __zero = 0,
+struct nothrow_t {};
+enum class align_val_t : size_t { __zero = 0,
                                   __max = (size_t)-1 };
-}
+} // namespace std
 std::nothrow_t nothrow;
 
 // Declare the reserved placement operators.
-void *operator new(size_t, void*) throw();
-void operator delete(void*, void*) throw();
-void *operator new[](size_t, void*) throw();
-void operator delete[](void*, void*) throw();
+void *operator new(size_t, void *) throw();
+void operator delete(void *, void *) throw();
+void *operator new[](size_t, void *) throw();
+void operator delete[](void *, void *) throw();
 
 // Declare the replaceable global allocation operators.
 void *operator new(size_t, const std::nothrow_t &) throw();
@@ -31,9 +31,8 @@ void operator delete(void *, const std::nothrow_t &) throw();
 void operator delete[](void *, const std::nothrow_t &) throw();
 
 // Declare some other placement operators.
-void *operator new(size_t, void*, bool) throw();
-void *operator new[](size_t, void*, bool) throw();
-
+void *operator new(size_t, void *, bool) throw();
+void *operator new[](size_t, void *, bool) throw();
 
 // CHECK-LABEL: define{{.*}} void @test_basic(
 extern "C" void test_basic() {
@@ -61,7 +60,6 @@ extern "C" void test_sized_delete() {
   __builtin_operator_delete(__builtin_operator_new(4), 4);
 }
 // CHECK: declare void @_ZdlPvm(i8*, i64) [[ATTR_NOBUILTIN_UNWIND:#[^ ]*]]
-
 
 // CHECK-DAG: attributes [[ATTR_NOBUILTIN]] = {{[{].*}} nobuiltin {{.*[}]}}
 // CHECK-DAG: attributes [[ATTR_NOBUILTIN_NOUNWIND]] = {{[{].*}} nobuiltin nounwind {{.*[}]}}

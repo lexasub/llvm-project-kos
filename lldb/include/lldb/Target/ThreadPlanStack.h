@@ -170,7 +170,7 @@ public:
   bool DumpPlansForTID(Stream &strm, lldb::tid_t tid,
                        lldb::DescriptionLevel desc_level, bool internal,
                        bool ignore_boring, bool skip_unreported);
-                       
+
   bool PrunePlansForTID(lldb::tid_t tid);
 
 private:

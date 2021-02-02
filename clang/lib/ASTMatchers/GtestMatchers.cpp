@@ -7,10 +7,10 @@
 //===----------------------------------------------------------------------===//
 
 #include "clang/ASTMatchers/GtestMatchers.h"
-#include "clang/ASTMatchers/ASTMatchFinder.h"
 #include "clang/AST/ASTConsumer.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/RecursiveASTVisitor.h"
+#include "clang/ASTMatchers/ASTMatchFinder.h"
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/StringMap.h"
 #include "llvm/Support/Timer.h"
@@ -23,56 +23,56 @@ namespace ast_matchers {
 
 static DeclarationMatcher getComparisonDecl(GtestCmp Cmp) {
   switch (Cmp) {
-    case GtestCmp::Eq:
-      return cxxMethodDecl(hasName("Compare"),
-                           ofClass(cxxRecordDecl(isSameOrDerivedFrom(
-                               hasName("::testing::internal::EqHelper")))));
-    case GtestCmp::Ne:
-      return functionDecl(hasName("::testing::internal::CmpHelperNE"));
-    case GtestCmp::Ge:
-      return functionDecl(hasName("::testing::internal::CmpHelperGE"));
-    case GtestCmp::Gt:
-      return functionDecl(hasName("::testing::internal::CmpHelperGT"));
-    case GtestCmp::Le:
-      return functionDecl(hasName("::testing::internal::CmpHelperLE"));
-    case GtestCmp::Lt:
-      return functionDecl(hasName("::testing::internal::CmpHelperLT"));
+  case GtestCmp::Eq:
+    return cxxMethodDecl(hasName("Compare"),
+                         ofClass(cxxRecordDecl(isSameOrDerivedFrom(
+                             hasName("::testing::internal::EqHelper")))));
+  case GtestCmp::Ne:
+    return functionDecl(hasName("::testing::internal::CmpHelperNE"));
+  case GtestCmp::Ge:
+    return functionDecl(hasName("::testing::internal::CmpHelperGE"));
+  case GtestCmp::Gt:
+    return functionDecl(hasName("::testing::internal::CmpHelperGT"));
+  case GtestCmp::Le:
+    return functionDecl(hasName("::testing::internal::CmpHelperLE"));
+  case GtestCmp::Lt:
+    return functionDecl(hasName("::testing::internal::CmpHelperLT"));
   }
   llvm_unreachable("Unhandled GtestCmp enum");
 }
 
 static llvm::StringRef getAssertMacro(GtestCmp Cmp) {
   switch (Cmp) {
-    case GtestCmp::Eq:
-      return "ASSERT_EQ";
-    case GtestCmp::Ne:
-      return "ASSERT_NE";
-    case GtestCmp::Ge:
-      return "ASSERT_GE";
-    case GtestCmp::Gt:
-      return "ASSERT_GT";
-    case GtestCmp::Le:
-      return "ASSERT_LE";
-    case GtestCmp::Lt:
-      return "ASSERT_LT";
+  case GtestCmp::Eq:
+    return "ASSERT_EQ";
+  case GtestCmp::Ne:
+    return "ASSERT_NE";
+  case GtestCmp::Ge:
+    return "ASSERT_GE";
+  case GtestCmp::Gt:
+    return "ASSERT_GT";
+  case GtestCmp::Le:
+    return "ASSERT_LE";
+  case GtestCmp::Lt:
+    return "ASSERT_LT";
   }
   llvm_unreachable("Unhandled GtestCmp enum");
 }
 
 static llvm::StringRef getExpectMacro(GtestCmp Cmp) {
   switch (Cmp) {
-    case GtestCmp::Eq:
-      return "EXPECT_EQ";
-    case GtestCmp::Ne:
-      return "EXPECT_NE";
-    case GtestCmp::Ge:
-      return "EXPECT_GE";
-    case GtestCmp::Gt:
-      return "EXPECT_GT";
-    case GtestCmp::Le:
-      return "EXPECT_LE";
-    case GtestCmp::Lt:
-      return "EXPECT_LT";
+  case GtestCmp::Eq:
+    return "EXPECT_EQ";
+  case GtestCmp::Ne:
+    return "EXPECT_NE";
+  case GtestCmp::Ge:
+    return "EXPECT_GE";
+  case GtestCmp::Gt:
+    return "EXPECT_GT";
+  case GtestCmp::Le:
+    return "EXPECT_LE";
+  case GtestCmp::Lt:
+    return "EXPECT_LT";
   }
   llvm_unreachable("Unhandled GtestCmp enum");
 }

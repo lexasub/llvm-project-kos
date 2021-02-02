@@ -6,21 +6,21 @@
 //
 // UNSUPPORTED: android
 
+#include <netdb.h>
+#include <pthread.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include <netdb.h>
-#include <sys/types.h>
 #include <sys/socket.h>
-#include <pthread.h>
+#include <sys/types.h>
+#include <unistd.h>
 
-#define CHECK_ERROR(p, m)                                                      \
-  do {                                                                         \
-    if (p) {                                                                   \
-      fprintf(stderr, "ERROR " m "\n");                                        \
-      exit(1);                                                                 \
-    }                                                                          \
+#define CHECK_ERROR(p, m)               \
+  do {                                  \
+    if (p) {                            \
+      fprintf(stderr, "ERROR " m "\n"); \
+      exit(1);                          \
+    }                                   \
   } while (0)
 
 const int kBufSize = 10;
@@ -28,9 +28,13 @@ int sockfd;
 
 static void *client_thread_udp(void *data) {
 #ifdef SENDTO
-  const char buf[kBufSize / 2] = {0, };
+  const char buf[kBufSize / 2] = {
+      0,
+  };
 #else
-  const char buf[kBufSize] = {0, };
+  const char buf[kBufSize] = {
+      0,
+  };
 #endif
   struct sockaddr_in serveraddr;
   socklen_t addrlen = sizeof(serveraddr);

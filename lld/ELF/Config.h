@@ -92,7 +92,8 @@ struct Configuration {
   uint8_t osabi = 0;
   uint32_t andFeatures = 0;
   llvm::CachePruningPolicy thinLTOCachePolicy;
-  llvm::SetVector<llvm::CachedHashString> dependencyFiles; // for --dependency-file
+  llvm::SetVector<llvm::CachedHashString>
+      dependencyFiles; // for --dependency-file
   llvm::StringMap<uint64_t> sectionStartMap;
   llvm::StringRef bfdname;
   llvm::StringRef chroot;

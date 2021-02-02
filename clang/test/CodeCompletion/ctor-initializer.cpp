@@ -45,7 +45,7 @@ Derived::Derived(float) try : Base1(),
 // CHECK-CC5: COMPLETION: Pattern : deriv1(<#int#>)
 
 struct A {
-  A() : , member2() {}
+  A() :, member2() {}
   // RUN: %clang_cc1 -fsyntax-only -std=c++98 -code-completion-at=%s:48:9 %s -o - | FileCheck -check-prefix=CHECK-CC6 %s
   // RUN: %clang_cc1 -fsyntax-only -std=c++14 -code-completion-at=%s:48:9 %s -o - | FileCheck -check-prefix=CHECK-CC6 %s
   // CHECK-CC6: COMPLETION: Pattern : member1(<#int#>)
@@ -97,7 +97,7 @@ struct Y : T {};
 
 template <class T>
 struct X : Y<T> {
-  X() : Y<T>() {};
+  X() : Y<T>(){};
 };
 
 // RUN: %clang_cc1 -fsyntax-only -std=c++98 -code-completion-at=%s:100:9 %s -o - | FileCheck -check-prefix=CHECK-CC11 %s

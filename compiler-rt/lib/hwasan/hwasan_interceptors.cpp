@@ -14,35 +14,35 @@
 // sanitizer_common/sanitizer_common_interceptors.h
 //===----------------------------------------------------------------------===//
 
-#include "interception/interception.h"
+#include <stdarg.h>
+
 #include "hwasan.h"
 #include "hwasan_allocator.h"
 #include "hwasan_mapping.h"
-#include "hwasan_thread.h"
 #include "hwasan_poisoning.h"
 #include "hwasan_report.h"
-#include "sanitizer_common/sanitizer_platform_limits_posix.h"
+#include "hwasan_thread.h"
+#include "interception/interception.h"
 #include "sanitizer_common/sanitizer_allocator.h"
 #include "sanitizer_common/sanitizer_allocator_interface.h"
 #include "sanitizer_common/sanitizer_allocator_internal.h"
 #include "sanitizer_common/sanitizer_atomic.h"
 #include "sanitizer_common/sanitizer_common.h"
 #include "sanitizer_common/sanitizer_errno.h"
-#include "sanitizer_common/sanitizer_stackdepot.h"
 #include "sanitizer_common/sanitizer_libc.h"
 #include "sanitizer_common/sanitizer_linux.h"
+#include "sanitizer_common/sanitizer_platform_limits_posix.h"
+#include "sanitizer_common/sanitizer_stackdepot.h"
 #include "sanitizer_common/sanitizer_tls_get_addr.h"
-
-#include <stdarg.h>
 // ACHTUNG! No other system header includes in this file.
 // Ideally, we should get rid of stdarg.h as well.
 
 using namespace __hwasan;
 
-using __sanitizer::memory_order;
 using __sanitizer::atomic_load;
 using __sanitizer::atomic_store;
 using __sanitizer::atomic_uintptr_t;
+using __sanitizer::memory_order;
 
 static uptr allocated_for_dlsym;
 static const uptr kDlsymAllocPoolSize = 1024;
@@ -61,13 +61,13 @@ static void *AllocateFromLocalPool(uptr size_in_bytes) {
   return mem;
 }
 
-#define ENSURE_HWASAN_INITED() do { \
-  CHECK(!hwasan_init_is_running); \
-  if (!hwasan_inited) { \
-    __hwasan_init(); \
-  } \
-} while (0)
-
+#define ENSURE_HWASAN_INITED()      \
+  do {                              \
+    CHECK(!hwasan_init_is_running); \
+    if (!hwasan_inited) {           \
+      __hwasan_init();              \
+    }                               \
+  } while (0)
 
 int __sanitizer_posix_memalign(void **memptr, uptr alignment, uptr size) {
   GET_MALLOC_STACK_TRACE;
@@ -76,17 +76,17 @@ int __sanitizer_posix_memalign(void **memptr, uptr alignment, uptr size) {
   return res;
 }
 
-void * __sanitizer_memalign(uptr alignment, uptr size) {
+void *__sanitizer_memalign(uptr alignment, uptr size) {
   GET_MALLOC_STACK_TRACE;
   return hwasan_memalign(alignment, size, &stack);
 }
 
-void * __sanitizer_aligned_alloc(uptr alignment, uptr size) {
+void *__sanitizer_aligned_alloc(uptr alignment, uptr size) {
   GET_MALLOC_STACK_TRACE;
   return hwasan_aligned_alloc(alignment, size, &stack);
 }
 
-void * __sanitizer___libc_memalign(uptr alignment, uptr size) {
+void *__sanitizer___libc_memalign(uptr alignment, uptr size) {
   GET_MALLOC_STACK_TRACE;
   void *ptr = hwasan_memalign(alignment, size, &stack);
   if (ptr)
@@ -94,25 +94,27 @@ void * __sanitizer___libc_memalign(uptr alignment, uptr size) {
   return ptr;
 }
 
-void * __sanitizer_valloc(uptr size) {
+void *__sanitizer_valloc(uptr size) {
   GET_MALLOC_STACK_TRACE;
   return hwasan_valloc(size, &stack);
 }
 
-void * __sanitizer_pvalloc(uptr size) {
+void *__sanitizer_pvalloc(uptr size) {
   GET_MALLOC_STACK_TRACE;
   return hwasan_pvalloc(size, &stack);
 }
 
 void __sanitizer_free(void *ptr) {
   GET_MALLOC_STACK_TRACE;
-  if (!ptr || UNLIKELY(IsInDlsymAllocPool(ptr))) return;
+  if (!ptr || UNLIKELY(IsInDlsymAllocPool(ptr)))
+    return;
   hwasan_free(ptr, &stack);
 }
 
 void __sanitizer_cfree(void *ptr) {
   GET_MALLOC_STACK_TRACE;
-  if (!ptr || UNLIKELY(IsInDlsymAllocPool(ptr))) return;
+  if (!ptr || UNLIKELY(IsInDlsymAllocPool(ptr)))
+    return;
   hwasan_free(ptr, &stack);
 }
 
@@ -126,15 +128,13 @@ struct __sanitizer_struct_mallinfo __sanitizer_mallinfo() {
   return sret;
 }
 
-int __sanitizer_mallopt(int cmd, int value) {
-  return 0;
-}
+int __sanitizer_mallopt(int cmd, int value) { return 0; }
 
 void __sanitizer_malloc_stats(void) {
   // FIXME: implement, but don't call REAL(malloc_stats)!
 }
 
-void * __sanitizer_calloc(uptr nmemb, uptr size) {
+void *__sanitizer_calloc(uptr nmemb, uptr size) {
   GET_MALLOC_STACK_TRACE;
   if (UNLIKELY(!hwasan_inited))
     // Hack: dlsym calls calloc before REAL(calloc) is retrieved from dlsym.
@@ -142,7 +142,7 @@ void * __sanitizer_calloc(uptr nmemb, uptr size) {
   return hwasan_calloc(nmemb, size, &stack);
 }
 
-void * __sanitizer_realloc(void *ptr, uptr size) {
+void *__sanitizer_realloc(void *ptr, uptr size) {
   GET_MALLOC_STACK_TRACE;
   if (UNLIKELY(IsInDlsymAllocPool(ptr))) {
     uptr offset = (uptr)ptr - (uptr)alloc_memory_for_dlsym;
@@ -160,12 +160,12 @@ void * __sanitizer_realloc(void *ptr, uptr size) {
   return hwasan_realloc(ptr, size, &stack);
 }
 
-void * __sanitizer_reallocarray(void *ptr, uptr nmemb, uptr size) {
+void *__sanitizer_reallocarray(void *ptr, uptr nmemb, uptr size) {
   GET_MALLOC_STACK_TRACE;
   return hwasan_reallocarray(ptr, nmemb, size, &stack);
 }
 
-void * __sanitizer_malloc(uptr size) {
+void *__sanitizer_malloc(uptr size) {
   GET_MALLOC_STACK_TRACE;
   if (UNLIKELY(!hwasan_init_is_running))
     ENSURE_HWASAN_INITED();
@@ -176,10 +176,10 @@ void * __sanitizer_malloc(uptr size) {
 }
 
 #if HWASAN_WITH_INTERCEPTORS
-#define INTERCEPTOR_ALIAS(RET, FN, ARGS...)                                  \
-  extern "C" SANITIZER_INTERFACE_ATTRIBUTE RET WRAP(FN)(ARGS)                \
-      ALIAS("__sanitizer_" #FN);                                             \
-  extern "C" SANITIZER_INTERFACE_ATTRIBUTE SANITIZER_WEAK_ATTRIBUTE RET FN(  \
+#define INTERCEPTOR_ALIAS(RET, FN, ARGS...)                                 \
+  extern "C" SANITIZER_INTERFACE_ATTRIBUTE RET WRAP(FN)(ARGS)               \
+      ALIAS("__sanitizer_" #FN);                                            \
+  extern "C" SANITIZER_INTERFACE_ATTRIBUTE SANITIZER_WEAK_ATTRIBUTE RET FN( \
       ARGS) ALIAS("__sanitizer_" #FN)
 
 INTERCEPTOR_ALIAS(int, posix_memalign, void **memptr, SIZE_T alignment,
@@ -210,16 +210,16 @@ struct ThreadStartArg {
 
 static void *HwasanThreadStartFunc(void *arg) {
   __hwasan_thread_enter();
-  ThreadStartArg A = *reinterpret_cast<ThreadStartArg*>(arg);
+  ThreadStartArg A = *reinterpret_cast<ThreadStartArg *>(arg);
   UnmapOrDie(arg, GetPageSizeCached());
   return A.callback(A.param);
 }
 
-INTERCEPTOR(int, pthread_create, void *th, void *attr, void *(*callback)(void*),
-            void * param) {
+INTERCEPTOR(int, pthread_create, void *th, void *attr,
+            void *(*callback)(void *), void *param) {
   ScopedTaggingDisabler disabler;
-  ThreadStartArg *A = reinterpret_cast<ThreadStartArg *> (MmapOrDie(
-      GetPageSizeCached(), "pthread_create"));
+  ThreadStartArg *A = reinterpret_cast<ThreadStartArg *>(
+      MmapOrDie(GetPageSizeCached(), "pthread_create"));
   *A = {callback, param};
   int res = REAL(pthread_create)(UntagPtr(th), UntagPtr(attr),
                                  &HwasanThreadStartFunc, A);
@@ -228,7 +228,7 @@ INTERCEPTOR(int, pthread_create, void *th, void *attr, void *(*callback)(void*),
 
 DEFINE_REAL(int, vfork)
 DECLARE_EXTERN_INTERCEPTOR_AND_WRAPPER(int, vfork)
-#endif // HWASAN_WITH_INTERCEPTORS
+#endif  // HWASAN_WITH_INTERCEPTORS
 
 #if HWASAN_WITH_INTERCEPTORS && defined(__aarch64__)
 // Get and/or change the set of blocked signals.
@@ -238,8 +238,8 @@ extern "C" int sigprocmask(int __how, const __hw_sigset_t *__restrict __set,
 #define SIG_SETMASK 2
 extern "C" int __sigjmp_save(__hw_sigjmp_buf env, int savemask) {
   env[0].__mask_was_saved =
-      (savemask && sigprocmask(SIG_BLOCK, (__hw_sigset_t *)0,
-                               &env[0].__saved_mask) == 0);
+      (savemask &&
+       sigprocmask(SIG_BLOCK, (__hw_sigset_t *)0, &env[0].__saved_mask) == 0);
   return 0;
 }
 
@@ -259,33 +259,33 @@ InternalLongjmp(__hw_register_buf env, int retval) {
   // stack pointer so we can't use it without knowing the demangling scheme.
   register long int retval_tmp asm("x1") = retval;
   register void *env_address asm("x0") = &env[0];
-  asm volatile("ldp	x19, x20, [%0, #0<<3];"
-               "ldp	x21, x22, [%0, #2<<3];"
-               "ldp	x23, x24, [%0, #4<<3];"
-               "ldp	x25, x26, [%0, #6<<3];"
-               "ldp	x27, x28, [%0, #8<<3];"
-               "ldp	x29, x30, [%0, #10<<3];"
-               "ldp	 d8,  d9, [%0, #14<<3];"
-               "ldp	d10, d11, [%0, #16<<3];"
-               "ldp	d12, d13, [%0, #18<<3];"
-               "ldp	d14, d15, [%0, #20<<3];"
-               "ldr	x5, [%0, #13<<3];"
-               "mov	sp, x5;"
-               // Return the value requested to return through arguments.
-               // This should be in x1 given what we requested above.
-               "cmp	%1, #0;"
-               "mov	x0, #1;"
-               "csel	x0, %1, x0, ne;"
-               "br	x30;"
-               : "+r"(env_address)
-               : "r"(retval_tmp));
+  asm volatile(
+      "ldp	x19, x20, [%0, #0<<3];"
+      "ldp	x21, x22, [%0, #2<<3];"
+      "ldp	x23, x24, [%0, #4<<3];"
+      "ldp	x25, x26, [%0, #6<<3];"
+      "ldp	x27, x28, [%0, #8<<3];"
+      "ldp	x29, x30, [%0, #10<<3];"
+      "ldp	 d8,  d9, [%0, #14<<3];"
+      "ldp	d10, d11, [%0, #16<<3];"
+      "ldp	d12, d13, [%0, #18<<3];"
+      "ldp	d14, d15, [%0, #20<<3];"
+      "ldr	x5, [%0, #13<<3];"
+      "mov	sp, x5;"
+      // Return the value requested to return through arguments.
+      // This should be in x1 given what we requested above.
+      "cmp	%1, #0;"
+      "mov	x0, #1;"
+      "csel	x0, %1, x0, ne;"
+      "br	x30;"
+      : "+r"(env_address)
+      : "r"(retval_tmp));
 }
 
 INTERCEPTOR(void, siglongjmp, __hw_sigjmp_buf env, int val) {
   if (env[0].__mask_was_saved)
     // Restore the saved signal mask.
-    (void)sigprocmask(SIG_SETMASK, &env[0].__saved_mask,
-                      (__hw_sigset_t *)0);
+    (void)sigprocmask(SIG_SETMASK, &env[0].__saved_mask, (__hw_sigset_t *)0);
   InternalLongjmp(env[0].__jmpbuf, val);
 }
 
@@ -302,15 +302,11 @@ INTERCEPTOR(void, longjmp, __hw_jmp_buf env, int val) {
 #undef SIG_BLOCK
 #undef SIG_SETMASK
 
-#endif // HWASAN_WITH_INTERCEPTORS && __aarch64__
+#endif  // HWASAN_WITH_INTERCEPTORS && __aarch64__
 
-static void BeforeFork() {
-  StackDepotLockAll();
-}
+static void BeforeFork() { StackDepotLockAll(); }
 
-static void AfterFork() {
-  StackDepotUnlockAll();
-}
+static void AfterFork() { StackDepotUnlockAll(); }
 
 INTERCEPTOR(int, fork, void) {
   ENSURE_HWASAN_INITED();
@@ -327,7 +323,7 @@ int OnExit() {
   return 0;
 }
 
-} // namespace __hwasan
+}  // namespace __hwasan
 
 namespace __hwasan {
 
@@ -346,4 +342,4 @@ void InitializeInterceptors() {
 
   inited = 1;
 }
-} // namespace __hwasan
+}  // namespace __hwasan

@@ -76,7 +76,7 @@ private:
 
   bool areTypesIsomorphic(Type *DstTy, Type *SrcTy);
 };
-}
+} // namespace
 
 void TypeMapTy::addTypeMapping(Type *DstTy, Type *SrcTy) {
   assert(SpeculativeTypes.empty());
@@ -398,7 +398,7 @@ class IRLinker {
 
   DenseSet<GlobalValue *> ValuesToLink;
   std::vector<GlobalValue *> Worklist;
-  std::vector<std::pair<GlobalValue *, Value*>> RAUWWorklist;
+  std::vector<std::pair<GlobalValue *, Value *>> RAUWWorklist;
 
   void maybeAdd(GlobalValue *GV) {
     if (ValuesToLink.insert(GV).second)
@@ -535,7 +535,7 @@ public:
   Error run();
   Value *materialize(Value *V, bool ForIndirectSymbol);
 };
-}
+} // namespace
 
 /// The LLVM SymbolTable class autorenames globals that conflict in the symbol
 /// table. This is good for all clients except for us. Go through the trouble
@@ -715,7 +715,8 @@ GlobalValue *IRLinker::copyGlobalValueProto(const GlobalValue *SGV,
     NewGV->setLinkage(GlobalValue::ExternalWeakLinkage);
 
   if (auto *NewGO = dyn_cast<GlobalObject>(NewGV)) {
-    // Metadata for global variables and function declarations is copied eagerly.
+    // Metadata for global variables and function declarations is copied
+    // eagerly.
     if (isa<GlobalVariable>(SGV) || SGV->isDeclaration())
       NewGO->copyMetadata(cast<GlobalObject>(SGV), 0);
   }
@@ -875,8 +876,8 @@ IRLinker::linkAppendingVarProto(GlobalVariable *DstGV,
   if (SrcGV->isDeclaration())
     return DstGV;
 
-  Type *EltTy = cast<ArrayType>(TypeMap.get(SrcGV->getValueType()))
-                    ->getElementType();
+  Type *EltTy =
+      cast<ArrayType>(TypeMap.get(SrcGV->getValueType()))->getElementType();
 
   // FIXME: This upgrade is done during linking to support the C API.  Once the
   // old form is deprecated, we should move this upgrade to
@@ -1039,7 +1040,7 @@ Expected<Constant *> IRLinker::linkGlobalValueProto(GlobalValue *SGV,
   // assumes it is being invoked on a type in the source module.
   if (DGV && NewGV != SGV) {
     C = ConstantExpr::getPointerBitCastOrAddrSpaceCast(
-      NewGV, TypeMap.get(SGV->getType()));
+        NewGV, TypeMap.get(SGV->getType()));
   }
 
   if (DGV && NewGV != DGV) {
@@ -1104,7 +1105,8 @@ Error IRLinker::linkGlobalValueBody(GlobalValue &Dst, GlobalValue &Src) {
     linkGlobalVariable(cast<GlobalVariable>(Dst), *GVar);
     return Error::success();
   }
-  linkIndirectSymbolBody(cast<GlobalIndirectSymbol>(Dst), cast<GlobalIndirectSymbol>(Src));
+  linkIndirectSymbolBody(cast<GlobalIndirectSymbol>(Dst),
+                         cast<GlobalIndirectSymbol>(Src));
   return Error::success();
 }
 
@@ -1382,7 +1384,6 @@ Error IRLinker::linkModuleFlagsMetadata() {
       break;
     }
     }
-
   }
 
   // Check all of the requirements.
@@ -1436,7 +1437,7 @@ Error IRLinker::run() {
 
   Triple SrcTriple(SrcM->getTargetTriple()), DstTriple(DstM.getTargetTriple());
 
-  if (!SrcM->getTargetTriple().empty()&&
+  if (!SrcM->getTargetTriple().empty() &&
       !SrcTriple.isCompatibleWith(DstTriple))
     emitWarning("Linking two modules of different target triples: '" +
                 SrcM->getModuleIdentifier() + "' is '" +
@@ -1478,20 +1479,20 @@ Error IRLinker::run() {
 
   if (!IsPerformingImport && !SrcM->getModuleInlineAsm().empty()) {
     // Append the module inline asm string.
-    DstM.appendModuleInlineAsm(adjustInlineAsm(SrcM->getModuleInlineAsm(),
-                                               SrcTriple));
+    DstM.appendModuleInlineAsm(
+        adjustInlineAsm(SrcM->getModuleInlineAsm(), SrcTriple));
   } else if (IsPerformingImport) {
     // Import any symver directives for symbols in DstM.
     ModuleSymbolTable::CollectAsmSymvers(*SrcM,
                                          [&](StringRef Name, StringRef Alias) {
-      if (DstM.getNamedValue(Name)) {
-        SmallString<256> S(".symver ");
-        S += Name;
-        S += ", ";
-        S += Alias;
-        DstM.appendModuleInlineAsm(S);
-      }
-    });
+                                           if (DstM.getNamedValue(Name)) {
+                                             SmallString<256> S(".symver ");
+                                             S += Name;
+                                             S += ", ";
+                                             S += Alias;
+                                             DstM.appendModuleInlineAsm(S);
+                                           }
+                                         });
   }
 
   // Merge the module flags into the DstM module.

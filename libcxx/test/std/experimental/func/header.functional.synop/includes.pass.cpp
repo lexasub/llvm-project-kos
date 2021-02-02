@@ -16,8 +16,7 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
+int main(int, char**) {
   std::function<int(int)> x;
 
   return 0;

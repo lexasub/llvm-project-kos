@@ -12,7 +12,6 @@
 
 // class strong_ordering
 
-
 #include <compare>
 #include <type_traits>
 #include <cassert>
@@ -44,16 +43,17 @@ void test_signatures() {
   ASSERT_NOEXCEPT(0 >= Eq);
   ASSERT_NOEXCEPT(Eq >= 0);
 #ifndef TEST_HAS_NO_SPACESHIP_OPERATOR
-  ASSERT_NOEXCEPT(0 <=> Eq);
-  ASSERT_NOEXCEPT(Eq <=> 0);
-  ASSERT_SAME_TYPE(decltype(Eq <=> 0), std::strong_ordering);
-  ASSERT_SAME_TYPE(decltype(0 <=> Eq), std::strong_ordering);
+  ASSERT_NOEXCEPT(0 <= > Eq);
+  ASSERT_NOEXCEPT(Eq <= > 0);
+  ASSERT_SAME_TYPE(decltype(Eq <= > 0), std::strong_ordering);
+  ASSERT_SAME_TYPE(decltype(0 <= > Eq), std::strong_ordering);
 #endif
 }
 
 constexpr bool test_conversion() {
   static_assert(std::is_convertible<const std::strong_ordering&,
-      std::weak_equality>::value, "");
+                                    std::weak_equality>::value,
+                "");
   { // value == 0
     auto V = std::strong_ordering::equivalent;
     std::weak_equality WV = V;
@@ -63,13 +63,13 @@ constexpr bool test_conversion() {
       std::strong_ordering::less,
       std::strong_ordering::greater,
   };
-  for (auto V : WeakTestCases)
-  { // value != 0
+  for (auto V : WeakTestCases) { // value != 0
     std::weak_equality WV = V;
     assert(WV != 0);
   }
   static_assert(std::is_convertible<const std::strong_ordering&,
-      std::strong_equality>::value, "");
+                                    std::strong_equality>::value,
+                "");
   { // value == 0
     auto V = std::strong_ordering::equivalent;
     std::strong_equality WV = V;
@@ -84,14 +84,14 @@ constexpr bool test_conversion() {
       std::strong_ordering::less,
       std::strong_ordering::greater,
   };
-  for (auto V : StrongTestCases)
-  { // value != 0
+  for (auto V : StrongTestCases) { // value != 0
     std::strong_equality WV = V;
     assert(WV != 0);
   }
 
   static_assert(std::is_convertible<const std::strong_ordering&,
-      std::partial_ordering>::value, "");
+                                    std::partial_ordering>::value,
+                "");
   { // value == 0
     auto V = std::strong_ordering::equivalent;
     std::partial_ordering WV = V;
@@ -109,7 +109,8 @@ constexpr bool test_conversion() {
   }
 
   static_assert(std::is_convertible<const std::strong_ordering&,
-      std::weak_ordering>::value, "");
+                                    std::weak_ordering>::value,
+                "");
   { // value == 0
     auto V = std::strong_ordering::equivalent;
     std::weak_ordering WV = V;
@@ -164,16 +165,12 @@ constexpr bool test_constexpr() {
   }
 #ifndef TEST_HAS_NO_SPACESHIP_OPERATOR
   {
-    std::strong_ordering res = (Eq <=> 0);
+    std::strong_ordering res = (Eq <= > 0);
     ((void)res);
-    res = (0 <=> Eq);
+    res = (0 <= > Eq);
     ((void)res);
   }
-  enum ExpectRes {
-    ER_Greater,
-    ER_Less,
-    ER_Equiv
-  };
+  enum ExpectRes { ER_Greater, ER_Less, ER_Equiv };
   struct {
     std::strong_ordering Value;
     ExpectRes Expect;
@@ -182,9 +179,8 @@ constexpr bool test_constexpr() {
       {std::strong_ordering::less, ER_Less},
       {std::strong_ordering::greater, ER_Greater},
   };
-  for (auto TC : SpaceshipTestCases)
-  {
-    std::strong_ordering Res = (TC.Value <=> 0);
+  for (auto TC : SpaceshipTestCases) {
+    std::strong_ordering Res = (TC.Value <= > 0);
     switch (TC.Expect) {
     case ER_Equiv:
       assert(Res == 0);

@@ -21,20 +21,19 @@ namespace selectany_init {
 // f() is not getting called if x is not referenced.
 int __declspec(selectany) x = f();
 inline int __declspec(selectany) x1 = f();
-}
+} // namespace selectany_init
 
 namespace explicit_template_instantiation {
-template <typename T> struct A { static  int x; };
+template <typename T> struct A { static int x; };
 template <typename T> int A<T>::x = f();
 template struct A<int>;
-}
+} // namespace explicit_template_instantiation
 
 namespace implicit_template_instantiation {
-template <typename T> struct A { static  int x; };
-template <typename T>  int A<T>::x = f();
+template <typename T> struct A { static int x; };
+template <typename T> int A<T>::x = f();
 int g() { return A<int>::x; }
-}
-
+} // namespace implicit_template_instantiation
 
 template <class T>
 struct X_ {
@@ -70,23 +69,20 @@ class b : aj<3> {
   void c();
 };
 void b::c() { al; }
-}
+} // namespace
 
 // C++17, inline static data member also need to use
-struct A
-{
+struct A {
   A();
   ~A();
 };
 
-struct S1
-{
+struct S1 {
   inline static A aoo; // C++17 inline variable, thus also a definition
 };
 
 int foo();
 inline int zoo = foo();
 inline static int boo = foo();
-
 
 // CHECK: @llvm.used = appending global [7 x i8*] [i8* bitcast (i32* @"?x1@selectany_init@@3HA" to i8*), i8* bitcast (i32* @"?x@?$A@H@explicit_template_instantiation@@2HA" to i8*), i8* bitcast (i32* @"?ioo@?$X_@H@@2HA" to i8*), i8* getelementptr inbounds (%struct.A, %struct.A* @"?aoo@S1@@2UA@@A", i32 0, i32 0), i8* bitcast (i32* @"?zoo@@3HA" to i8*), i8* getelementptr inbounds (%struct.S, %struct.S* @"?s@?$ExportedTemplate@H@@2US@@A", i32 0, i32 0), i8* bitcast (i32* @"?x@?$A@H@implicit_template_instantiation@@2HA" to i8*)], section "llvm.metadata"

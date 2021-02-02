@@ -16,9 +16,9 @@
 
 #ifdef MERGE_LATE
 namespace N {
-  enum { A } a; // expected-note {{candidate}}
-  // expected-note@a.h:1 {{candidate}} (from module B.b)
-}
+enum { A } a; // expected-note {{candidate}}
+// expected-note@a.h:1 {{candidate}} (from module B.b)
+} // namespace N
 #include "a.h"
 #endif
 

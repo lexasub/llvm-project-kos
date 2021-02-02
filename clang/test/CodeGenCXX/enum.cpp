@@ -2,4 +2,4 @@
 // expected-no-diagnostics
 
 enum A { a } __attribute((packed));
-int func(A x) { return x==a; }
+int func(A x) { return x == a; }

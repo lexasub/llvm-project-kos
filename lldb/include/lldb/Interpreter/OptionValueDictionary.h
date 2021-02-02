@@ -61,8 +61,7 @@ public:
   Status SetSubValue(const ExecutionContext *exe_ctx, VarSetOperationType op,
                      llvm::StringRef name, llvm::StringRef value) override;
 
-  bool SetValueForKey(ConstString key,
-                      const lldb::OptionValueSP &value_sp,
+  bool SetValueForKey(ConstString key, const lldb::OptionValueSP &value_sp,
                       bool can_replace = true);
 
   bool DeleteValueForKey(ConstString key);

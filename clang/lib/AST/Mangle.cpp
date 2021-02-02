@@ -9,14 +9,14 @@
 // Implements generic name mangling support for blocks and Objective-C.
 //
 //===----------------------------------------------------------------------===//
-#include "clang/AST/Attr.h"
+#include "clang/AST/Mangle.h"
 #include "clang/AST/ASTContext.h"
+#include "clang/AST/Attr.h"
 #include "clang/AST/Decl.h"
 #include "clang/AST/DeclCXX.h"
 #include "clang/AST/DeclObjC.h"
 #include "clang/AST/DeclTemplate.h"
 #include "clang/AST/ExprCXX.h"
-#include "clang/AST/Mangle.h"
 #include "clang/AST/VTableBuilder.h"
 #include "clang/Basic/ABI.h"
 #include "clang/Basic/SourceManager.h"
@@ -33,18 +33,16 @@ using namespace clang;
 // FIXME: For blocks we currently mimic GCC's mangling scheme, which leaves
 // much to be desired. Come up with a better mangling scheme.
 
-static void mangleFunctionBlock(MangleContext &Context,
-                                StringRef Outer,
-                                const BlockDecl *BD,
-                                raw_ostream &Out) {
+static void mangleFunctionBlock(MangleContext &Context, StringRef Outer,
+                                const BlockDecl *BD, raw_ostream &Out) {
   unsigned discriminator = Context.getBlockId(BD, true);
   if (discriminator == 0)
     Out << "__" << Outer << "_block_invoke";
   else
-    Out << "__" << Outer << "_block_invoke_" << discriminator+1;
+    Out << "__" << Outer << "_block_invoke_" << discriminator + 1;
 }
 
-void MangleContext::anchor() { }
+void MangleContext::anchor() {}
 
 enum CCMangling {
   CCM_Other,
@@ -233,8 +231,7 @@ void MangleContext::mangleMSGuidDecl(const MSGuidDecl *GD, raw_ostream &Out) {
   }
 }
 
-void MangleContext::mangleGlobalBlock(const BlockDecl *BD,
-                                      const NamedDecl *ID,
+void MangleContext::mangleGlobalBlock(const BlockDecl *BD, const NamedDecl *ID,
                                       raw_ostream &Out) {
   unsigned discriminator = getBlockId(BD, false);
   if (ID) {
@@ -247,7 +244,7 @@ void MangleContext::mangleGlobalBlock(const BlockDecl *BD,
   if (discriminator == 0)
     Out << "_block_invoke";
   else
-    Out << "_block_invoke_" << discriminator+1;
+    Out << "_block_invoke_" << discriminator + 1;
 }
 
 void MangleContext::mangleCtorBlock(const CXXConstructorDecl *CD,
@@ -259,8 +256,8 @@ void MangleContext::mangleCtorBlock(const CXXConstructorDecl *CD,
   mangleFunctionBlock(*this, Buffer, BD, ResStream);
 }
 
-void MangleContext::mangleDtorBlock(const CXXDestructorDecl *DD,
-                                    CXXDtorType DT, const BlockDecl *BD,
+void MangleContext::mangleDtorBlock(const CXXDestructorDecl *DD, CXXDtorType DT,
+                                    const BlockDecl *BD,
                                     raw_ostream &ResStream) {
   SmallString<64> Buffer;
   llvm::raw_svector_ostream Out(Buffer);
@@ -281,7 +278,7 @@ void MangleContext::mangleBlock(const DeclContext *DC, const BlockDecl *BD,
            "expected a NamedDecl or BlockDecl");
     if (isa<BlockDecl>(DC))
       for (; DC && isa<BlockDecl>(DC); DC = DC->getParent())
-        (void) getBlockId(cast<BlockDecl>(DC), true);
+        (void)getBlockId(cast<BlockDecl>(DC), true);
     assert((isa<TranslationUnitDecl>(DC) || isa<NamedDecl>(DC)) &&
            "expected a TranslationUnitDecl or a NamedDecl");
     if (const auto *CD = dyn_cast<CXXConstructorDecl>(DC))
@@ -323,10 +320,9 @@ void MangleContext::mangleObjCMethodName(const ObjCMethodDecl *MD,
     OS << '_';
 
     auto selector = MD->getSelector();
-    for (unsigned slotIndex = 0,
-                  numArgs = selector.getNumArgs(),
+    for (unsigned slotIndex = 0, numArgs = selector.getNumArgs(),
                   slotEnd = std::max(numArgs, 1U);
-           slotIndex != slotEnd; ++slotIndex) {
+         slotIndex != slotEnd; ++slotIndex) {
       if (auto name = selector.getIdentifierInfoForSlot(slotIndex))
         OS << name->getName();
 

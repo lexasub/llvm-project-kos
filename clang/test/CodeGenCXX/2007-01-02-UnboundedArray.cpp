@@ -8,7 +8,7 @@ struct Object {
   char buffer[];
 };
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   new Object;
   return 0;
 }

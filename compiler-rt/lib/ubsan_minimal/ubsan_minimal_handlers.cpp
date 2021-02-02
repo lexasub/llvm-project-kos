@@ -1,7 +1,7 @@
 #include "sanitizer_common/sanitizer_atomic.h"
 
-#include <stdlib.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -9,9 +9,7 @@
 extern "C" void ubsan_message(const char *msg);
 static void message(const char *msg) { ubsan_message(msg); }
 #else
-static void message(const char *msg) {
-  (void)write(2, msg, strlen(msg));
-}
+static void message(const char *msg) { (void)write(2, msg, strlen(msg)); }
 #endif
 
 static const int kMaxCallerPcs = 20;
@@ -22,25 +20,30 @@ static __sanitizer::atomic_uint32_t caller_pcs_sz;
 
 __attribute__((noinline)) static bool report_this_error(void *caller_p) {
   uintptr_t caller = reinterpret_cast<uintptr_t>(caller_p);
-  if (caller == 0) return false;
+  if (caller == 0)
+    return false;
   while (true) {
     unsigned sz = __sanitizer::atomic_load_relaxed(&caller_pcs_sz);
-    if (sz > kMaxCallerPcs) return false;  // early exit
+    if (sz > kMaxCallerPcs)
+      return false; // early exit
     // when sz==kMaxCallerPcs print "too many errors", but only when cmpxchg
     // succeeds in order to not print it multiple times.
     if (sz > 0 && sz < kMaxCallerPcs) {
       uintptr_t p;
       for (unsigned i = 0; i < sz; ++i) {
         p = __sanitizer::atomic_load_relaxed(&caller_pcs[i]);
-        if (p == 0) break;  // Concurrent update.
-        if (p == caller) return false;
+        if (p == 0)
+          break; // Concurrent update.
+        if (p == caller)
+          return false;
       }
-      if (p == 0) continue;  // FIXME: yield?
+      if (p == 0)
+        continue; // FIXME: yield?
     }
 
     if (!__sanitizer::atomic_compare_exchange_strong(
             &caller_pcs_sz, &sz, sz + 1, __sanitizer::memory_order_seq_cst))
-      continue;  // Concurrent update! Try again from the start.
+      continue; // Concurrent update! Try again from the start.
 
     if (sz == kMaxCallerPcs) {
       message("ubsan: too many errors\n");
@@ -54,7 +57,8 @@ __attribute__((noinline)) static bool report_this_error(void *caller_p) {
 #if defined(__ANDROID__)
 extern "C" __attribute__((weak)) void android_set_abort_message(const char *);
 static void abort_with_message(const char *msg) {
-  if (&android_set_abort_message) android_set_abort_message(msg);
+  if (&android_set_abort_message)
+    android_set_abort_message(msg);
   abort();
 }
 #else
@@ -78,20 +82,21 @@ void NORETURN CheckFailed(const char *file, int, const char *cond, u64, u64) {
 
 // FIXME: add caller pc to the error message (possibly as "ubsan: error-type
 // @1234ABCD").
-#define HANDLER_RECOVER(name, msg)                               \
-  INTERFACE void __ubsan_handle_##name##_minimal() {             \
-    if (!report_this_error(__builtin_return_address(0))) return; \
-    message("ubsan: " msg "\n");                                 \
+#define HANDLER_RECOVER(name, msg)                                             \
+  INTERFACE void __ubsan_handle_##name##_minimal() {                           \
+    if (!report_this_error(__builtin_return_address(0)))                       \
+      return;                                                                  \
+    message("ubsan: " msg "\n");                                               \
   }
 
-#define HANDLER_NORECOVER(name, msg)                             \
-  INTERFACE void __ubsan_handle_##name##_minimal_abort() {       \
-    message("ubsan: " msg "\n");                                 \
-    abort_with_message("ubsan: " msg);                           \
+#define HANDLER_NORECOVER(name, msg)                                           \
+  INTERFACE void __ubsan_handle_##name##_minimal_abort() {                     \
+    message("ubsan: " msg "\n");                                               \
+    abort_with_message("ubsan: " msg);                                         \
   }
 
-#define HANDLER(name, msg)                                       \
-  HANDLER_RECOVER(name, msg)                                     \
+#define HANDLER(name, msg)                                                     \
+  HANDLER_RECOVER(name, msg)                                                   \
   HANDLER_NORECOVER(name, msg)
 
 HANDLER(type_mismatch, "type-mismatch")

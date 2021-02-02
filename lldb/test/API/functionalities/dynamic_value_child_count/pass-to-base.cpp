@@ -1,36 +1,28 @@
-#include <stdio.h>
 #include <memory>
+#include <stdio.h>
 
-class BaseClass
-{
+class BaseClass {
 public:
-    BaseClass();
-    virtual ~BaseClass() { }
+  BaseClass();
+  virtual ~BaseClass() {}
 };
 
-class DerivedClass : public BaseClass
-{
+class DerivedClass : public BaseClass {
 public:
-    DerivedClass();
-    virtual ~DerivedClass() { }
+  DerivedClass();
+  virtual ~DerivedClass() {}
+
 protected:
-    int mem;
+  int mem;
 };
 
-BaseClass::BaseClass()
-{
-}
+BaseClass::BaseClass() {}
 
-DerivedClass::DerivedClass() : BaseClass()
-{
-    mem = 101;
-}
+DerivedClass::DerivedClass() : BaseClass() { mem = 101; }
 
-int
-main (int argc, char **argv)
-{
+int main(int argc, char **argv) {
   BaseClass *b = nullptr; // Break here and check b has 0 children
-  b = new DerivedClass();  // Break here and check b still has 0 children
-  b = nullptr;  // Break here and check b has one child now
-  return 0; // Break here and check b has 0 children again
+  b = new DerivedClass(); // Break here and check b still has 0 children
+  b = nullptr;            // Break here and check b has one child now
+  return 0;               // Break here and check b has 0 children again
 }

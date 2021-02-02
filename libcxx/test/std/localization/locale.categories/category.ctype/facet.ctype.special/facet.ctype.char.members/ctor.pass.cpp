@@ -17,37 +17,36 @@
 
 #include "test_macros.h"
 
-class my_facet
-    : public std::ctype<char>
-{
+class my_facet : public std::ctype<char> {
 public:
-    static int count;
+  static int count;
 
-    explicit my_facet(const mask* tbl = 0, bool del = false, std::size_t refs = 0)
-        : std::ctype<char>(tbl, del, refs) {++count;}
+  explicit my_facet(const mask* tbl = 0, bool del = false, std::size_t refs = 0)
+      : std::ctype<char>(tbl, del, refs) {
+    ++count;
+  }
 
-    ~my_facet() {--count;}
+  ~my_facet() { --count; }
 };
 
 int my_facet::count = 0;
 
-int main(int, char**)
-{
+int main(int, char**) {
+  {
+    std::locale l(std::locale::classic(), new my_facet);
+    assert(my_facet::count == 1);
+  }
+  assert(my_facet::count == 0);
+  {
+    my_facet f(0, false, 1);
+    assert(my_facet::count == 1);
     {
-        std::locale l(std::locale::classic(), new my_facet);
-        assert(my_facet::count == 1);
+      std::locale l(std::locale::classic(), &f);
+      assert(my_facet::count == 1);
     }
-    assert(my_facet::count == 0);
-    {
-        my_facet f(0, false, 1);
-        assert(my_facet::count == 1);
-        {
-            std::locale l(std::locale::classic(), &f);
-            assert(my_facet::count == 1);
-        }
-        assert(my_facet::count == 1);
-    }
-    assert(my_facet::count == 0);
+    assert(my_facet::count == 1);
+  }
+  assert(my_facet::count == 0);
 
   return 0;
 }

@@ -6,5 +6,5 @@ namespace nb {
 class A {};
 // CHECK: } // namespace y
 // CHECK-NEXT: } // namespace x
-}
-}
+} // namespace nb
+} // namespace na

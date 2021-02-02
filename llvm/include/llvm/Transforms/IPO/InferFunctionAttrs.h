@@ -30,6 +30,6 @@ struct InferFunctionAttrsPass : PassInfoMixin<InferFunctionAttrsPass> {
 /// attributes.
 Pass *createInferFunctionAttrsLegacyPass();
 
-}
+} // namespace llvm
 
 #endif // LLVM_TRANSFORMS_IPO_INFERFUNCTIONATTRS_H

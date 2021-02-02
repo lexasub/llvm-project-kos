@@ -23,9 +23,14 @@ T foofoo() { return T(); }
 // CHECK-NEXT: int bar();
 #pragma omp declare variant(foofoo <int>) match(xxx = {})
 #pragma omp declare variant(foofoo <int>) match(xxx = {vvv})
-#pragma omp declare variant(foofoo <int>) match(implementation = {vendor(score(0): "llvm"), xxx}, device = {kind(cpu)})
+#pragma omp declare variant(foofoo <int>) match(implementation = {vendor(score(0)   \
+                                                                         : "llvm"), \
+                                                                  xxx},             \
+                                                device = {kind(cpu)})
 #pragma omp declare variant(foofoo <int>) match(implementation = {vendor("unknown")})
-#pragma omp declare variant(foofoo <int>) match(implementation = {vendor(score(5): ibm)}, device = {kind(fpga)})
+#pragma omp declare variant(foofoo <int>) match(implementation = {vendor(score(5) \
+                                                                         : ibm)}, \
+                                                device = {kind(fpga)})
 int bar();
 
 // CHECK:      #pragma omp declare variant(foofoo<T>) match(implementation={vendor(score(C + 5): ibm)}, device={kind(cpu, host)})
@@ -41,8 +46,10 @@ int bar();
 #pragma omp declare variant(foofoo <T>) match(user = {condition(true)})
 #pragma omp declare variant(foofoo <T>) match(user = {condition(false)})
 #pragma omp declare variant(foofoo <T>) match(implementation = {vendor(llvm)}, device = {kind(cpu)})
-#pragma omp declare variant(foofoo <T>) match(implementation={vendor(unknown)})
-#pragma omp declare variant(foofoo <T>) match(implementation={vendor(score(C+5): ibm, xxx, ibm)},device={kind(cpu,host)})
+#pragma omp declare variant(foofoo <T>) match(implementation = {vendor(unknown)})
+#pragma omp declare variant(foofoo <T>) match(implementation = {vendor(score(C + 5)       \
+                                                                       : ibm, xxx, ibm)}, \
+                                              device = {kind(cpu, host)})
 template <typename T, int C>
 T barbar();
 
@@ -90,7 +97,7 @@ void h(C *hp, C *hp2, C *hq, C *lin) {
 // CHECK-NEXT: }
 #pragma omp declare variant(h_ref <double>) match(xxx = {})
 #pragma omp declare variant(h_ref <double>) match(implementation = {vendor(ibm)}, device = {kind(cpu, gpu)})
-#pragma omp declare variant(h_ref <double>) match(implementation={vendor(unknown)})
+#pragma omp declare variant(h_ref <double>) match(implementation = {vendor(unknown)})
 template <>
 void h(double *hp, double *hp2, double *hq, double *lin) {
   h((float *)hp, (float *)hp2, (float *)hq, (float *)lin);
@@ -104,7 +111,7 @@ int fn(int);
 // CHECK-NEXT: #pragma omp declare variant(fn) match(implementation={vendor(llvm)})
 // CHECK-NEXT: int overload();
 #pragma omp declare variant(fn) match(xxx = {})
-#pragma omp declare variant(fn) match(implementation={vendor(llvm)})
+#pragma omp declare variant(fn) match(implementation = {vendor(llvm)})
 #pragma omp declare variant(fn) match(implementation = {vendor(unknown)}, device = {kind(cpu, gpu)})
 int overload(void);
 
@@ -181,7 +188,7 @@ static void static_f_variant() {}
 // CHECK-NEXT: }
 #pragma omp declare variant(static_f_variant) match(xxx = {})
 #pragma omp declare variant(static_f_variant) match(implementation = {vendor(llvm)}, device = {kind(fpga)})
-#pragma omp declare variant(static_f_variant) match(implementation={vendor(unknown)})
+#pragma omp declare variant(static_f_variant) match(implementation = {vendor(unknown)})
 static void static_f() {}
 
 // CHECK: void bazzzz() {
@@ -210,4 +217,3 @@ int fn_linkage();
 extern "C" int fn_linkage_variant1();
 #pragma omp declare variant(fn_linkage_variant1) match(implementation = {vendor(gnu)}, device = {kind(cpu, host)})
 int fn_linkage1();
-

@@ -23,7 +23,7 @@ protected:
 
   static const char testKey[];
   static const uint32_t testValue;
-  static const char* testKeyFirst;
+  static const char *testKeyFirst;
   static size_t testKeyLength;
   static const std::string testKeyStr;
 
@@ -40,7 +40,7 @@ protected:
     EXPECT_EQ(0u, testMap.count(StringRef(testKeyFirst, testKeyLength)));
     EXPECT_EQ(0u, testMap.count(testKeyStr));
     EXPECT_TRUE(testMap.find(testKey) == testMap.end());
-    EXPECT_TRUE(testMap.find(StringRef(testKeyFirst, testKeyLength)) == 
+    EXPECT_TRUE(testMap.find(StringRef(testKeyFirst, testKeyLength)) ==
                 testMap.end());
     EXPECT_TRUE(testMap.find(testKeyStr) == testMap.end());
   }
@@ -63,7 +63,7 @@ protected:
     EXPECT_EQ(1u, testMap.count(StringRef(testKeyFirst, testKeyLength)));
     EXPECT_EQ(1u, testMap.count(testKeyStr));
     EXPECT_TRUE(testMap.find(testKey) == testMap.begin());
-    EXPECT_TRUE(testMap.find(StringRef(testKeyFirst, testKeyLength)) == 
+    EXPECT_TRUE(testMap.find(StringRef(testKeyFirst, testKeyLength)) ==
                 testMap.begin());
     EXPECT_TRUE(testMap.find(testKeyStr) == testMap.begin());
   }
@@ -71,7 +71,7 @@ protected:
 
 const char StringMapTest::testKey[] = "key";
 const uint32_t StringMapTest::testValue = 1u;
-const char* StringMapTest::testKeyFirst = testKey;
+const char *StringMapTest::testKeyFirst = testKey;
 size_t StringMapTest::testKeyLength = sizeof(testKey) - 1;
 const std::string StringMapTest::testKeyStr(testKey);
 
@@ -86,13 +86,11 @@ struct CountCopyAndMove {
 };
 
 // Empty map tests.
-TEST_F(StringMapTest, EmptyMapTest) {
-  assertEmptyMap();
-}
+TEST_F(StringMapTest, EmptyMapTest) { assertEmptyMap(); }
 
 // Constant map tests.
 TEST_F(StringMapTest, ConstEmptyMapTest) {
-  const StringMap<uint32_t>& constTestMap = testMap;
+  const StringMap<uint32_t> &constTestMap = testMap;
 
   // Size tests
   EXPECT_EQ(0u, constTestMap.size());
@@ -208,8 +206,8 @@ TEST_F(StringMapTest, IterationTest) {
   }
 
   // Iterate over all numbers and mark each one found.
-  for (StringMap<uint32_t>::iterator it = testMap.begin();
-      it != testMap.end(); ++it) {
+  for (StringMap<uint32_t>::iterator it = testMap.begin(); it != testMap.end();
+       ++it) {
     std::stringstream ss;
     ss << "key_" << it->second;
     ASSERT_STREQ(ss.str().c_str(), it->first().data());
@@ -236,10 +234,8 @@ TEST_F(StringMapTest, StringMapEntryTest) {
 // Test insert() method.
 TEST_F(StringMapTest, InsertTest) {
   SCOPED_TRACE("InsertTest");
-  testMap.insert(
-      StringMap<uint32_t>::value_type::Create(
-          StringRef(testKeyFirst, testKeyLength),
-          testMap.getAllocator(), 1u));
+  testMap.insert(StringMap<uint32_t>::value_type::Create(
+      StringRef(testKeyFirst, testKeyLength), testMap.getAllocator(), 1u));
   assertSingleItemMap();
 }
 
@@ -274,7 +270,7 @@ TEST_F(StringMapTest, InsertRehashingPairTest) {
   EXPECT_EQ(0u, t.getNumBuckets());
 
   StringMap<uint32_t>::iterator It =
-    t.insert(std::make_pair("abcdef", 42)).first;
+      t.insert(std::make_pair("abcdef", 42)).first;
   EXPECT_EQ(16u, t.getNumBuckets());
   EXPECT_EQ("abcdef", It->first());
   EXPECT_EQ(42u, It->second);
@@ -332,13 +328,13 @@ TEST_F(StringMapTest, NonDefaultConstructable) {
 
 struct Immovable {
   Immovable() {}
-  Immovable(Immovable&&) = delete; // will disable the other special members
+  Immovable(Immovable &&) = delete; // will disable the other special members
 };
 
 struct MoveOnly {
   int i;
   MoveOnly(int i) : i(i) {}
-  MoveOnly(const Immovable&) : i(0) {}
+  MoveOnly(const Immovable &) : i(0) {}
   MoveOnly(MoveOnly &&RHS) : i(RHS.i) {}
   MoveOnly &operator=(MoveOnly &&RHS) {
     i = RHS.i;
@@ -564,7 +560,7 @@ struct NonMoveableNonCopyableType {
   NonMoveableNonCopyableType(const NonMoveableNonCopyableType &) = delete;
   NonMoveableNonCopyableType(NonMoveableNonCopyableType &&) = delete;
 };
-}
+} // namespace
 
 // Test that we can "emplace" an element in the map without involving map/move
 TEST(StringMapCustomTest, EmplaceTest) {

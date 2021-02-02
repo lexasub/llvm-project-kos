@@ -36,25 +36,26 @@ namespace pmr = std::experimental::pmr;
 
 template <class Iter, class PmrTypedef>
 void test_match_result_typedef() {
-    using StdMR = std::match_results<Iter, pmr::polymorphic_allocator<std::sub_match<Iter>>>;
-    using PmrMR = pmr::match_results<Iter>;
-    static_assert(std::is_same<StdMR, PmrMR>::value, "");
-    static_assert(std::is_same<PmrMR, PmrTypedef>::value, "");
+  using StdMR =
+      std::match_results<Iter,
+                         pmr::polymorphic_allocator<std::sub_match<Iter> > >;
+  using PmrMR = pmr::match_results<Iter>;
+  static_assert(std::is_same<StdMR, PmrMR>::value, "");
+  static_assert(std::is_same<PmrMR, PmrTypedef>::value, "");
 }
 
-int main(int, char**)
-{
-    {
-        test_match_result_typedef<const char*, pmr::cmatch>();
-        test_match_result_typedef<const wchar_t*, pmr::wcmatch>();
-        test_match_result_typedef<pmr::string::const_iterator, pmr::smatch>();
-        test_match_result_typedef<pmr::wstring::const_iterator, pmr::wsmatch>();
-    }
-    {
-        // Check that std::match_results has been included and is complete.
-        pmr::smatch s;
-        assert(s.get_allocator().resource() == pmr::get_default_resource());
-    }
+int main(int, char**) {
+  {
+    test_match_result_typedef<const char*, pmr::cmatch>();
+    test_match_result_typedef<const wchar_t*, pmr::wcmatch>();
+    test_match_result_typedef<pmr::string::const_iterator, pmr::smatch>();
+    test_match_result_typedef<pmr::wstring::const_iterator, pmr::wsmatch>();
+  }
+  {
+    // Check that std::match_results has been included and is complete.
+    pmr::smatch s;
+    assert(s.get_allocator().resource() == pmr::get_default_resource());
+  }
 
   return 0;
 }

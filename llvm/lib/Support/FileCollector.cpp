@@ -50,8 +50,7 @@ static bool isCaseSensitivePath(StringRef Path) {
 }
 
 FileCollector::FileCollector(std::string Root, std::string OverlayRoot)
-    : Root(std::move(Root)), OverlayRoot(std::move(OverlayRoot)) {
-}
+    : Root(std::move(Root)), OverlayRoot(std::move(OverlayRoot)) {}
 
 void FileCollector::PathCanonicalizer::updateWithRealPath(
     SmallVectorImpl<char> &Path) {

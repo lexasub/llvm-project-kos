@@ -31,8 +31,8 @@ struct SU {
 
 consteval int test_Int() { return 42; }
 consteval float test_Float() { return 1.0f; }
-consteval _Complex int test_ComplexInt() { return 1+2i; }
-consteval _Complex float test_ComplexFloat() { return 1.2f+3.4fi; }
+consteval _Complex int test_ComplexInt() { return 1 + 2i; }
+consteval _Complex float test_ComplexFloat() { return 1.2f + 3.4fi; }
 consteval __int128 test_Int128() { return (__int128)0xFFFFFFFFFFFFFFFF + (__int128)1; }
 // FIXME: consteval array_holder test_Array() { return array_holder(); }
 // FIXME: consteval S test_Struct() { return S(); }
@@ -40,11 +40,11 @@ consteval __int128 test_Int128() { return (__int128)0xFFFFFFFFFFFFFFFF + (__int1
 // FIXME: consteval SU test_SU() { return SU(); }
 
 void Test() {
-  (void) test_Int();
-  (void) test_Float();
-  (void) test_ComplexInt();
-  (void) test_ComplexFloat();
-  (void) test_Int128();
+  (void)test_Int();
+  (void)test_Float();
+  (void)test_ComplexInt();
+  (void)test_ComplexFloat();
+  (void)test_Int128();
   //(void) test_Array();
   //(void) test_Struct();
   //(void) test_Union();

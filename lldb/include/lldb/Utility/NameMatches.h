@@ -23,6 +23,6 @@ enum class NameMatch {
 
 bool NameMatches(llvm::StringRef name, NameMatch match_type,
                  llvm::StringRef match);
-}
+} // namespace lldb_private
 
 #endif

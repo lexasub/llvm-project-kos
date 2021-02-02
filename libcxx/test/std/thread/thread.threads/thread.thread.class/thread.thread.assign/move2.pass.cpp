@@ -23,26 +23,21 @@
 #include "make_test_thread.h"
 #include "test_macros.h"
 
-struct G
-{
-    void operator()() { }
+struct G {
+  void operator()() {}
 };
 
-void f1()
-{
-    std::_Exit(0);
-}
+void f1() { std::_Exit(0); }
 
-int main(int, char**)
-{
-    std::set_terminate(f1);
-    {
-        G g;
-        std::thread t0 = support::make_test_thread(g);
-        std::thread t1;
-        t0 = std::move(t1);
-        assert(false);
-    }
+int main(int, char**) {
+  std::set_terminate(f1);
+  {
+    G g;
+    std::thread t0 = support::make_test_thread(g);
+    std::thread t1;
+    t0 = std::move(t1);
+    assert(false);
+  }
 
-    return 0;
+  return 0;
 }

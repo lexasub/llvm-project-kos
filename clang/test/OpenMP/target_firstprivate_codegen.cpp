@@ -74,7 +74,7 @@ int foo(int n, double *ptr) {
   double cn[5][n];
   TT<long long, char> d;
   const TT<int, int> e = {n, n};
-  int *p __attribute__ ((aligned (64))) = &a;
+  int *p __attribute__((aligned(64))) = &a;
 
 #pragma omp target firstprivate(a, p)
   {

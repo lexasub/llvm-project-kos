@@ -9,8 +9,13 @@
 #include <stdio.h>
 #include <string.h>
 
-struct A { int x, y, z; };
-struct B { A a; /*gap*/ long b; };
+struct A {
+  int x, y, z;
+};
+struct B {
+  A a; /*gap*/
+  long b;
+};
 B *bb;
 
 void test1() {
@@ -24,7 +29,7 @@ char bbb[100000];
 
 void test2() {
   char cc[sizeof(bbb)];
-  memcpy(cc, KKK , sizeof(KKK));
+  memcpy(cc, KKK, sizeof(KKK));
   memcpy(bbb, cc, sizeof(bbb));
 }
 

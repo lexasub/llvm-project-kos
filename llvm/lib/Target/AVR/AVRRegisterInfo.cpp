@@ -17,8 +17,8 @@
 #include "llvm/CodeGen/MachineFunction.h"
 #include "llvm/CodeGen/MachineInstrBuilder.h"
 #include "llvm/CodeGen/MachineRegisterInfo.h"
-#include "llvm/IR/Function.h"
 #include "llvm/CodeGen/TargetFrameLowering.h"
+#include "llvm/IR/Function.h"
 
 #include "AVR.h"
 #include "AVRInstrInfo.h"
@@ -37,9 +37,8 @@ const uint16_t *
 AVRRegisterInfo::getCalleeSavedRegs(const MachineFunction *MF) const {
   const AVRMachineFunctionInfo *AFI = MF->getInfo<AVRMachineFunctionInfo>();
 
-  return AFI->isInterruptOrSignalHandler()
-              ? CSR_Interrupts_SaveList
-              : CSR_Normal_SaveList;
+  return AFI->isInterruptOrSignalHandler() ? CSR_Interrupts_SaveList
+                                           : CSR_Normal_SaveList;
 }
 
 const uint32_t *
@@ -47,9 +46,8 @@ AVRRegisterInfo::getCallPreservedMask(const MachineFunction &MF,
                                       CallingConv::ID CC) const {
   const AVRMachineFunctionInfo *AFI = MF.getInfo<AVRMachineFunctionInfo>();
 
-  return AFI->isInterruptOrSignalHandler()
-              ? CSR_Interrupts_RegMask
-              : CSR_Normal_RegMask;
+  return AFI->isInterruptOrSignalHandler() ? CSR_Interrupts_RegMask
+                                           : CSR_Normal_RegMask;
 }
 
 BitVector AVRRegisterInfo::getReservedRegs(const MachineFunction &MF) const {
@@ -276,18 +274,16 @@ void AVRRegisterInfo::splitReg(Register Reg, Register &LoReg,
   HiReg = getSubReg(Reg, AVR::sub_hi);
 }
 
-bool AVRRegisterInfo::shouldCoalesce(MachineInstr *MI,
-                                     const TargetRegisterClass *SrcRC,
-                                     unsigned SubReg,
-                                     const TargetRegisterClass *DstRC,
-                                     unsigned DstSubReg,
-                                     const TargetRegisterClass *NewRC,
-                                     LiveIntervals &LIS) const {
-  if(this->getRegClass(AVR::PTRDISPREGSRegClassID)->hasSubClassEq(NewRC)) {
+bool AVRRegisterInfo::shouldCoalesce(
+    MachineInstr *MI, const TargetRegisterClass *SrcRC, unsigned SubReg,
+    const TargetRegisterClass *DstRC, unsigned DstSubReg,
+    const TargetRegisterClass *NewRC, LiveIntervals &LIS) const {
+  if (this->getRegClass(AVR::PTRDISPREGSRegClassID)->hasSubClassEq(NewRC)) {
     return false;
   }
 
-  return TargetRegisterInfo::shouldCoalesce(MI, SrcRC, SubReg, DstRC, DstSubReg, NewRC, LIS);
+  return TargetRegisterInfo::shouldCoalesce(MI, SrcRC, SubReg, DstRC, DstSubReg,
+                                            NewRC, LIS);
 }
 
 } // end of namespace llvm

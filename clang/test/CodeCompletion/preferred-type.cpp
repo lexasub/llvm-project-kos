@@ -1,12 +1,15 @@
 void test(bool x) {
-  if (x) {}
+  if (x) {
+  }
   // RUN: %clang_cc1 -fsyntax-only -code-completion-at=%s:2:7 %s | FileCheck %s
   // CHECK: PREFERRED-TYPE: _Bool
 
-  while (x) {}
+  while (x) {
+  }
   // RUN: %clang_cc1 -fsyntax-only -code-completion-at=%s:6:10 %s | FileCheck %s
 
-  for (; x;) {}
+  for (; x;) {
+  }
   // RUN: %clang_cc1 -fsyntax-only -code-completion-at=%s:9:10 %s | FileCheck %s
 
   // FIXME(ibiryukov): the condition in do-while is parsed as expression, so we

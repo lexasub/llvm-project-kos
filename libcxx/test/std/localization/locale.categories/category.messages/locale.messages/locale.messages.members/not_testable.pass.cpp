@@ -22,16 +22,9 @@
 // to test it.
 
 template <class CharT>
-class F
-    : public std::messages<CharT>
-{
+class F : public std::messages<CharT> {
 public:
-    explicit F(std::size_t refs = 0)
-        : std::messages<CharT>(refs) {}
+  explicit F(std::size_t refs = 0) : std::messages<CharT>(refs) {}
 };
 
-int main(int, char**)
-{
-
-  return 0;
-}
+int main(int, char**) { return 0; }

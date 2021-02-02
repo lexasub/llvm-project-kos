@@ -39,5 +39,5 @@ struct __declspec(uuid("{EEEEEEEE-EEEE-EEEE-EEEE-EEEEEEEEEEEE}")) Y {
 const _GUID &xd = __uuidof(X<C>);
 // CHECK-DAG:  @"?xd@@3ABU_GUID@@B" = {{.*}} @_GUID_dddddddd_dddd_dddd_dddd_dddddddddddd
 
-const _GUID &yd = __uuidof(Y<X<C> >);
+const _GUID &yd = __uuidof(Y<X<C>>);
 // CHECK-DAG:  @"?yd@@3ABU_GUID@@B" = {{.*}} @_GUID_dddddddd_dddd_dddd_dddd_dddddddddddd

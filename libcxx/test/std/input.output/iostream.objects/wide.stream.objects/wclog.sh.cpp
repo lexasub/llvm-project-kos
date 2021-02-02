@@ -17,6 +17,6 @@
 #include <iostream>
 
 int main(int, char**) {
-    std::wclog << L"1234";
-    return 0;
+  std::wclog << L"1234";
+  return 0;
 }

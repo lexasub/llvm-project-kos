@@ -17,9 +17,8 @@
 
 #include <chrono>
 
-int main(int, char**)
-{
-    std::chrono::duration<int> d(1.);
+int main(int, char**) {
+  std::chrono::duration<int> d(1.);
 
   return 0;
 }

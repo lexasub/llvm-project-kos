@@ -42,18 +42,22 @@ TEST(FloatingPointModeTest, ParseDenormalFPAttribute) {
   EXPECT_EQ(DenormalMode(DenormalMode::IEEE, DenormalMode::IEEE),
             parseDenormalFPAttribute(","));
 
-  EXPECT_EQ(DenormalMode(DenormalMode::PreserveSign, DenormalMode::PreserveSign),
-            parseDenormalFPAttribute("preserve-sign"));
-  EXPECT_EQ(DenormalMode(DenormalMode::PreserveSign, DenormalMode::PreserveSign),
-            parseDenormalFPAttribute("preserve-sign,"));
-  EXPECT_EQ(DenormalMode(DenormalMode::PreserveSign, DenormalMode::PreserveSign),
-            parseDenormalFPAttribute("preserve-sign,preserve-sign"));
+  EXPECT_EQ(
+      DenormalMode(DenormalMode::PreserveSign, DenormalMode::PreserveSign),
+      parseDenormalFPAttribute("preserve-sign"));
+  EXPECT_EQ(
+      DenormalMode(DenormalMode::PreserveSign, DenormalMode::PreserveSign),
+      parseDenormalFPAttribute("preserve-sign,"));
+  EXPECT_EQ(
+      DenormalMode(DenormalMode::PreserveSign, DenormalMode::PreserveSign),
+      parseDenormalFPAttribute("preserve-sign,preserve-sign"));
 
-  EXPECT_EQ(DenormalMode(DenormalMode::PositiveZero, DenormalMode::PositiveZero),
-            parseDenormalFPAttribute("positive-zero"));
-  EXPECT_EQ(DenormalMode(DenormalMode::PositiveZero, DenormalMode::PositiveZero),
-            parseDenormalFPAttribute("positive-zero,positive-zero"));
-
+  EXPECT_EQ(
+      DenormalMode(DenormalMode::PositiveZero, DenormalMode::PositiveZero),
+      parseDenormalFPAttribute("positive-zero"));
+  EXPECT_EQ(
+      DenormalMode(DenormalMode::PositiveZero, DenormalMode::PositiveZero),
+      parseDenormalFPAttribute("positive-zero,positive-zero"));
 
   EXPECT_EQ(DenormalMode(DenormalMode::IEEE, DenormalMode::PositiveZero),
             parseDenormalFPAttribute("ieee,positive-zero"));
@@ -64,7 +68,6 @@ TEST(FloatingPointModeTest, ParseDenormalFPAttribute) {
             parseDenormalFPAttribute("preserve-sign,ieee"));
   EXPECT_EQ(DenormalMode(DenormalMode::IEEE, DenormalMode::PreserveSign),
             parseDenormalFPAttribute("ieee,preserve-sign"));
-
 
   EXPECT_EQ(DenormalMode(DenormalMode::Invalid, DenormalMode::Invalid),
             parseDenormalFPAttribute("foo"));
@@ -83,41 +86,42 @@ TEST(FloatingPointModeTest, RenderDenormalFPAttribute) {
   EXPECT_EQ(",",
             DenormalMode(DenormalMode::Invalid, DenormalMode::Invalid).str());
 
-  EXPECT_EQ(
-    "preserve-sign,preserve-sign",
-    DenormalMode(DenormalMode::PreserveSign, DenormalMode::PreserveSign).str());
+  EXPECT_EQ("preserve-sign,preserve-sign",
+            DenormalMode(DenormalMode::PreserveSign, DenormalMode::PreserveSign)
+                .str());
 
-  EXPECT_EQ(
-    "positive-zero,positive-zero",
-    DenormalMode(DenormalMode::PositiveZero, DenormalMode::PositiveZero).str());
+  EXPECT_EQ("positive-zero,positive-zero",
+            DenormalMode(DenormalMode::PositiveZero, DenormalMode::PositiveZero)
+                .str());
 
-  EXPECT_EQ(
-    "ieee,preserve-sign",
-    DenormalMode(DenormalMode::IEEE, DenormalMode::PreserveSign).str());
+  EXPECT_EQ("ieee,preserve-sign",
+            DenormalMode(DenormalMode::IEEE, DenormalMode::PreserveSign).str());
 
-  EXPECT_EQ(
-    "preserve-sign,ieee",
-    DenormalMode(DenormalMode::PreserveSign, DenormalMode::IEEE).str());
+  EXPECT_EQ("preserve-sign,ieee",
+            DenormalMode(DenormalMode::PreserveSign, DenormalMode::IEEE).str());
 
-  EXPECT_EQ(
-    "preserve-sign,positive-zero",
-    DenormalMode(DenormalMode::PreserveSign, DenormalMode::PositiveZero).str());
+  EXPECT_EQ("preserve-sign,positive-zero",
+            DenormalMode(DenormalMode::PreserveSign, DenormalMode::PositiveZero)
+                .str());
 }
 
 TEST(FloatingPointModeTest, DenormalModeIsSimple) {
   EXPECT_TRUE(DenormalMode(DenormalMode::IEEE, DenormalMode::IEEE).isSimple());
-  EXPECT_FALSE(DenormalMode(DenormalMode::IEEE,
-                            DenormalMode::Invalid).isSimple());
-  EXPECT_FALSE(DenormalMode(DenormalMode::PreserveSign,
-                            DenormalMode::PositiveZero).isSimple());
+  EXPECT_FALSE(
+      DenormalMode(DenormalMode::IEEE, DenormalMode::Invalid).isSimple());
+  EXPECT_FALSE(
+      DenormalMode(DenormalMode::PreserveSign, DenormalMode::PositiveZero)
+          .isSimple());
 }
 
 TEST(FloatingPointModeTest, DenormalModeIsValid) {
   EXPECT_TRUE(DenormalMode(DenormalMode::IEEE, DenormalMode::IEEE).isValid());
-  EXPECT_FALSE(DenormalMode(DenormalMode::IEEE, DenormalMode::Invalid).isValid());
-  EXPECT_FALSE(DenormalMode(DenormalMode::Invalid, DenormalMode::IEEE).isValid());
-  EXPECT_FALSE(DenormalMode(DenormalMode::Invalid,
-                            DenormalMode::Invalid).isValid());
+  EXPECT_FALSE(
+      DenormalMode(DenormalMode::IEEE, DenormalMode::Invalid).isValid());
+  EXPECT_FALSE(
+      DenormalMode(DenormalMode::Invalid, DenormalMode::IEEE).isValid());
+  EXPECT_FALSE(
+      DenormalMode(DenormalMode::Invalid, DenormalMode::Invalid).isValid());
 }
 
 TEST(FloatingPointModeTest, DenormalModeConstructor) {
@@ -125,10 +129,12 @@ TEST(FloatingPointModeTest, DenormalModeConstructor) {
             DenormalMode::getInvalid());
   EXPECT_EQ(DenormalMode(DenormalMode::IEEE, DenormalMode::IEEE),
             DenormalMode::getIEEE());
-  EXPECT_EQ(DenormalMode(DenormalMode::PreserveSign, DenormalMode::PreserveSign),
-            DenormalMode::getPreserveSign());
-  EXPECT_EQ(DenormalMode(DenormalMode::PositiveZero, DenormalMode::PositiveZero),
-            DenormalMode::getPositiveZero());
+  EXPECT_EQ(
+      DenormalMode(DenormalMode::PreserveSign, DenormalMode::PreserveSign),
+      DenormalMode::getPreserveSign());
+  EXPECT_EQ(
+      DenormalMode(DenormalMode::PositiveZero, DenormalMode::PositiveZero),
+      DenormalMode::getPositiveZero());
 }
 
-}
+} // namespace

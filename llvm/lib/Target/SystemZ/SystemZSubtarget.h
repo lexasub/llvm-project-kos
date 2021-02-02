@@ -32,6 +32,7 @@ class StringRef;
 
 class SystemZSubtarget : public SystemZGenSubtargetInfo {
   virtual void anchor();
+
 protected:
   bool HasDistinctOps;
   bool HasLoadStoreOnCond;
@@ -79,6 +80,7 @@ private:
 
   SystemZSubtarget &initializeSubtargetDependencies(StringRef CPU,
                                                     StringRef FS);
+
 public:
   SystemZSubtarget(const Triple &TT, const std::string &CPU,
                    const std::string &FS, const TargetMachine &TM);
@@ -152,9 +154,7 @@ public:
   bool hasInterlockedAccess1() const { return HasInterlockedAccess1; }
 
   // Return true if the target has the miscellaneous-extensions facility.
-  bool hasMiscellaneousExtensions() const {
-    return HasMiscellaneousExtensions;
-  }
+  bool hasMiscellaneousExtensions() const { return HasMiscellaneousExtensions; }
 
   // Return true if the target has the execution-hint facility.
   bool hasExecutionHint() const { return HasExecutionHint; }

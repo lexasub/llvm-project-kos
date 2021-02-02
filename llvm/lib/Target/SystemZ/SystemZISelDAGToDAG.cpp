@@ -10,8 +10,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "SystemZTargetMachine.h"
 #include "SystemZISelLowering.h"
+#include "SystemZTargetMachine.h"
 #include "llvm/Analysis/AliasAnalysis.h"
 #include "llvm/CodeGen/SelectionDAGISel.h"
 #include "llvm/Support/Debug.h"
@@ -62,8 +62,7 @@ struct SystemZAddressingMode {
   bool IncludesDynAlloc;
 
   SystemZAddressingMode(AddrForm form, DispRange dr)
-    : Form(form), DR(dr), Base(), Disp(0), Index(),
-      IncludesDynAlloc(false) {}
+      : Form(form), DR(dr), Base(), Disp(0), Index(), IncludesDynAlloc(false) {}
 
   // True if the address can have an index register.
   bool hasIndexField() { return Form != FormBD; }
@@ -118,9 +117,8 @@ static uint64_t allOnes(unsigned int Count) {
 // case the result will be truncated as part of the operation).
 struct RxSBGOperands {
   RxSBGOperands(unsigned Op, SDValue N)
-    : Opcode(Op), BitSize(N.getValueSizeInBits()),
-      Mask(allOnes(BitSize)), Input(N), Start(64 - BitSize), End(63),
-      Rotate(0) {}
+      : Opcode(Op), BitSize(N.getValueSizeInBits()), Mask(allOnes(BitSize)),
+        Input(N), Start(64 - BitSize), End(63), Rotate(0) {}
 
   unsigned Opcode;
   unsigned BitSize;
@@ -214,50 +212,50 @@ class SystemZDAGToDAGISel : public SelectionDAGISel {
   bool selectBDXAddr12Only(SDValue Addr, SDValue &Base, SDValue &Disp,
                            SDValue &Index) const {
     return selectBDXAddr(SystemZAddressingMode::FormBDXNormal,
-                         SystemZAddressingMode::Disp12Only,
-                         Addr, Base, Disp, Index);
+                         SystemZAddressingMode::Disp12Only, Addr, Base, Disp,
+                         Index);
   }
   bool selectBDXAddr12Pair(SDValue Addr, SDValue &Base, SDValue &Disp,
                            SDValue &Index) const {
     return selectBDXAddr(SystemZAddressingMode::FormBDXNormal,
-                         SystemZAddressingMode::Disp12Pair,
-                         Addr, Base, Disp, Index);
+                         SystemZAddressingMode::Disp12Pair, Addr, Base, Disp,
+                         Index);
   }
   bool selectDynAlloc12Only(SDValue Addr, SDValue &Base, SDValue &Disp,
                             SDValue &Index) const {
     return selectBDXAddr(SystemZAddressingMode::FormBDXDynAlloc,
-                         SystemZAddressingMode::Disp12Only,
-                         Addr, Base, Disp, Index);
+                         SystemZAddressingMode::Disp12Only, Addr, Base, Disp,
+                         Index);
   }
   bool selectBDXAddr20Only(SDValue Addr, SDValue &Base, SDValue &Disp,
                            SDValue &Index) const {
     return selectBDXAddr(SystemZAddressingMode::FormBDXNormal,
-                         SystemZAddressingMode::Disp20Only,
-                         Addr, Base, Disp, Index);
+                         SystemZAddressingMode::Disp20Only, Addr, Base, Disp,
+                         Index);
   }
   bool selectBDXAddr20Only128(SDValue Addr, SDValue &Base, SDValue &Disp,
                               SDValue &Index) const {
     return selectBDXAddr(SystemZAddressingMode::FormBDXNormal,
-                         SystemZAddressingMode::Disp20Only128,
-                         Addr, Base, Disp, Index);
+                         SystemZAddressingMode::Disp20Only128, Addr, Base, Disp,
+                         Index);
   }
   bool selectBDXAddr20Pair(SDValue Addr, SDValue &Base, SDValue &Disp,
                            SDValue &Index) const {
     return selectBDXAddr(SystemZAddressingMode::FormBDXNormal,
-                         SystemZAddressingMode::Disp20Pair,
-                         Addr, Base, Disp, Index);
+                         SystemZAddressingMode::Disp20Pair, Addr, Base, Disp,
+                         Index);
   }
   bool selectLAAddr12Pair(SDValue Addr, SDValue &Base, SDValue &Disp,
                           SDValue &Index) const {
     return selectBDXAddr(SystemZAddressingMode::FormBDXLA,
-                         SystemZAddressingMode::Disp12Pair,
-                         Addr, Base, Disp, Index);
+                         SystemZAddressingMode::Disp12Pair, Addr, Base, Disp,
+                         Index);
   }
   bool selectLAAddr20Pair(SDValue Addr, SDValue &Base, SDValue &Disp,
                           SDValue &Index) const {
     return selectBDXAddr(SystemZAddressingMode::FormBDXLA,
-                         SystemZAddressingMode::Disp20Pair,
-                         Addr, Base, Disp, Index);
+                         SystemZAddressingMode::Disp20Pair, Addr, Base, Disp,
+                         Index);
   }
 
   // Try to match Addr as an address with a base, 12-bit displacement
@@ -304,8 +302,7 @@ class SystemZDAGToDAGISel : public SelectionDAGISel {
   void splitLargeImmediate(unsigned Opcode, SDNode *Node, SDValue Op0,
                            uint64_t UpperVal, uint64_t LowerVal);
 
-  void loadVectorConstant(const SystemZVectorConstantInfo &VCI,
-                          SDNode *Node);
+  void loadVectorConstant(const SystemZVectorConstantInfo &VCI, SDNode *Node);
 
   // Try to use gather instruction Opcode to implement vector insertion N.
   bool tryGather(SDNode *N, unsigned Opcode);
@@ -374,8 +371,8 @@ public:
   bool IsProfitableToFold(SDValue N, SDNode *U, SDNode *Root) const override;
   void PreprocessISelDAG() override;
 
-  // Include the pieces autogenerated from the target description.
-  #include "SystemZGenDAGISel.inc"
+// Include the pieces autogenerated from the target description.
+#include "SystemZGenDAGISel.inc"
 };
 } // end anonymous namespace
 
@@ -440,8 +437,8 @@ static bool expandIndex(SystemZAddressingMode &AM, SDValue Base,
 
 // The base or index of AM is equivalent to Op0 + Op1, where IsBase selects
 // between the base and index.  Try to fold Op1 into AM's displacement.
-static bool expandDisp(SystemZAddressingMode &AM, bool IsBase,
-                       SDValue Op0, uint64_t Op1) {
+static bool expandDisp(SystemZAddressingMode &AM, bool IsBase, SDValue Op0,
+                       uint64_t Op1) {
   // First try adjusting the displacement.
   int64_t TestDisp = AM.Disp + Op1;
   if (selectDisp(AM.DR, TestDisp)) {
@@ -699,12 +696,11 @@ bool SystemZDAGToDAGISel::selectBDXAddr(SystemZAddressingMode::AddrForm Form,
 }
 
 bool SystemZDAGToDAGISel::selectBDVAddr12Only(SDValue Addr, SDValue Elem,
-                                              SDValue &Base,
-                                              SDValue &Disp,
+                                              SDValue &Base, SDValue &Disp,
                                               SDValue &Index) const {
   SDValue Regs[2];
-  if (selectBDXAddr12Only(Addr, Regs[0], Disp, Regs[1]) &&
-      Regs[0].getNode() && Regs[1].getNode()) {
+  if (selectBDXAddr12Only(Addr, Regs[0], Disp, Regs[1]) && Regs[0].getNode() &&
+      Regs[1].getNode()) {
     for (unsigned int I = 0; I < 2; ++I) {
       Base = Regs[I];
       Index = Regs[1 - I];
@@ -947,8 +943,8 @@ SDValue SystemZDAGToDAGISel::getUNDEF(const SDLoc &DL, EVT VT) const {
 SDValue SystemZDAGToDAGISel::convertTo(const SDLoc &DL, EVT VT,
                                        SDValue N) const {
   if (N.getValueType() == MVT::i32 && VT == MVT::i64)
-    return CurDAG->getTargetInsertSubreg(SystemZ::subreg_l32,
-                                         DL, VT, getUNDEF(DL, MVT::i64), N);
+    return CurDAG->getTargetInsertSubreg(SystemZ::subreg_l32, DL, VT,
+                                         getUNDEF(DL, MVT::i64), N);
   if (N.getValueType() == MVT::i64 && VT == MVT::i32)
     return CurDAG->getTargetExtractSubreg(SystemZ::subreg_l32, DL, VT, N);
   assert(N.getValueType() == VT && "Unexpected value types");
@@ -987,21 +983,18 @@ bool SystemZDAGToDAGISel::tryRISBGZero(SDNode *N) {
       PreferAnd = true;
     // As well as for any 64-bit operation that can be implemented via LLC(R),
     // LLH(R), LLGT(R), or one of the and-immediate instructions.
-    else if (RISBG.Mask == 0xff ||
-             RISBG.Mask == 0xffff ||
-             RISBG.Mask == 0x7fffffff ||
-             SystemZ::isImmLF(~RISBG.Mask) ||
+    else if (RISBG.Mask == 0xff || RISBG.Mask == 0xffff ||
+             RISBG.Mask == 0x7fffffff || SystemZ::isImmLF(~RISBG.Mask) ||
              SystemZ::isImmHF(~RISBG.Mask))
-     PreferAnd = true;
+      PreferAnd = true;
     // And likewise for the LLZRGF instruction, which doesn't have a register
     // to register version.
     else if (auto *Load = dyn_cast<LoadSDNode>(RISBG.Input)) {
       if (Load->getMemoryVT() == MVT::i32 &&
           (Load->getExtensionType() == ISD::EXTLOAD ||
            Load->getExtensionType() == ISD::ZEXTLOAD) &&
-          RISBG.Mask == 0xffffff00 &&
-          Subtarget->hasLoadAndZeroRightmostByte())
-      PreferAnd = true;
+          RISBG.Mask == 0xffffff00 && Subtarget->hasLoadAndZeroRightmostByte())
+        PreferAnd = true;
     }
     if (PreferAnd) {
       // Replace the current node with an AND.  Note that the current node
@@ -1036,19 +1029,17 @@ bool SystemZDAGToDAGISel::tryRISBGZero(SDNode *N) {
       RISBG.Start >= 32 && RISBG.End >= RISBG.Start &&
       ((RISBG.Start + RISBG.Rotate) & 63) >= 32 &&
       ((RISBG.End + RISBG.Rotate) & 63) >=
-      ((RISBG.Start + RISBG.Rotate) & 63)) {
+          ((RISBG.Start + RISBG.Rotate) & 63)) {
     Opcode = SystemZ::RISBMux;
     OpcodeVT = MVT::i32;
     RISBG.Start &= 31;
     RISBG.End &= 31;
   }
-  SDValue Ops[5] = {
-    getUNDEF(DL, OpcodeVT),
-    convertTo(DL, OpcodeVT, RISBG.Input),
-    CurDAG->getTargetConstant(RISBG.Start, DL, MVT::i32),
-    CurDAG->getTargetConstant(RISBG.End | 128, DL, MVT::i32),
-    CurDAG->getTargetConstant(RISBG.Rotate, DL, MVT::i32)
-  };
+  SDValue Ops[5] = {getUNDEF(DL, OpcodeVT),
+                    convertTo(DL, OpcodeVT, RISBG.Input),
+                    CurDAG->getTargetConstant(RISBG.Start, DL, MVT::i32),
+                    CurDAG->getTargetConstant(RISBG.End | 128, DL, MVT::i32),
+                    CurDAG->getTargetConstant(RISBG.Rotate, DL, MVT::i32)};
   SDValue New = convertTo(
       DL, VT, SDValue(CurDAG->getMachineNode(Opcode, DL, OpcodeVT, Ops), 0));
   ReplaceNode(N, New.getNode());
@@ -1062,11 +1053,9 @@ bool SystemZDAGToDAGISel::tryRxSBG(SDNode *N, unsigned Opcode) {
     return false;
   // Try treating each operand of N as the second operand of the RxSBG
   // and see which goes deepest.
-  RxSBGOperands RxSBG[] = {
-    RxSBGOperands(Opcode, N->getOperand(0)),
-    RxSBGOperands(Opcode, N->getOperand(1))
-  };
-  unsigned Count[] = { 0, 0 };
+  RxSBGOperands RxSBG[] = {RxSBGOperands(Opcode, N->getOperand(0)),
+                           RxSBGOperands(Opcode, N->getOperand(1))};
+  unsigned Count[] = {0, 0};
   for (unsigned I = 0; I < 2; ++I)
     while (expandRxSBG(RxSBG[I]))
       // The widening or narrowing is expected to be free.
@@ -1099,13 +1088,11 @@ bool SystemZDAGToDAGISel::tryRxSBG(SDNode *N, unsigned Opcode) {
       Opcode = SystemZ::RISBGN;
   }
 
-  SDValue Ops[5] = {
-    convertTo(DL, MVT::i64, Op0),
-    convertTo(DL, MVT::i64, RxSBG[I].Input),
-    CurDAG->getTargetConstant(RxSBG[I].Start, DL, MVT::i32),
-    CurDAG->getTargetConstant(RxSBG[I].End, DL, MVT::i32),
-    CurDAG->getTargetConstant(RxSBG[I].Rotate, DL, MVT::i32)
-  };
+  SDValue Ops[5] = {convertTo(DL, MVT::i64, Op0),
+                    convertTo(DL, MVT::i64, RxSBG[I].Input),
+                    CurDAG->getTargetConstant(RxSBG[I].Start, DL, MVT::i32),
+                    CurDAG->getTargetConstant(RxSBG[I].End, DL, MVT::i32),
+                    CurDAG->getTargetConstant(RxSBG[I].Rotate, DL, MVT::i32)};
   SDValue New = convertTo(
       DL, VT, SDValue(CurDAG->getMachineNode(Opcode, DL, MVT::i64, Ops), 0));
   ReplaceNode(N, New.getNode());
@@ -1200,10 +1187,12 @@ bool SystemZDAGToDAGISel::tryGather(SDNode *N, unsigned Opcode) {
     return false;
 
   SDLoc DL(Load);
-  SDValue Ops[] = {
-    N->getOperand(0), Base, Disp, Index,
-    CurDAG->getTargetConstant(Elem, DL, MVT::i32), Load->getChain()
-  };
+  SDValue Ops[] = {N->getOperand(0),
+                   Base,
+                   Disp,
+                   Index,
+                   CurDAG->getTargetConstant(Elem, DL, MVT::i32),
+                   Load->getChain()};
   SDNode *Res = CurDAG->getMachineNode(Opcode, DL, VT, MVT::Other, Ops);
   ReplaceUses(SDValue(Load, 1), SDValue(Res, 1));
   ReplaceNode(N, Res);
@@ -1234,10 +1223,12 @@ bool SystemZDAGToDAGISel::tryScatter(StoreSDNode *Store, unsigned Opcode) {
     return false;
 
   SDLoc DL(Store);
-  SDValue Ops[] = {
-    Vec, Base, Disp, Index, CurDAG->getTargetConstant(Elem, DL, MVT::i32),
-    Store->getChain()
-  };
+  SDValue Ops[] = {Vec,
+                   Base,
+                   Disp,
+                   Index,
+                   CurDAG->getTargetConstant(Elem, DL, MVT::i32),
+                   Store->getChain()};
   ReplaceNode(Store, CurDAG->getMachineNode(Opcode, DL, MVT::Other, Ops));
   return true;
 }
@@ -1309,14 +1300,14 @@ static bool isFusableLoadOpStorePattern(StoreSDNode *StoreNode,
           LoopWorklist.push_back(Op.getNode());
 
       // Check if Load is reachable from any of the nodes in the worklist.
-      if (SDNode::hasPredecessorHelper(Load.getNode(), Visited, LoopWorklist, Max,
-                                       true))
+      if (SDNode::hasPredecessorHelper(Load.getNode(), Visited, LoopWorklist,
+                                       Max, true))
         return false;
 
       // Make a new TokenFactor with all the other input chains except
       // for the load.
-      InputChain = CurDAG->getNode(ISD::TokenFactor, SDLoc(Chain),
-                                   MVT::Other, ChainOps);
+      InputChain =
+          CurDAG->getNode(ISD::TokenFactor, SDLoc(Chain), MVT::Other, ChainOps);
     }
   }
   if (!ChainCheck)
@@ -1393,9 +1384,9 @@ bool SystemZDAGToDAGISel::tryFoldLoadStoreIntoMemOperand(SDNode *Node) {
   if (!selectBDAddr20Only(StoreNode->getBasePtr(), Base, Disp))
     return false;
 
-  SDValue Ops[] = { Base, Disp, Operand, InputChain };
+  SDValue Ops[] = {Base, Disp, Operand, InputChain};
   MachineSDNode *Result =
-    CurDAG->getMachineNode(NewOpc, DL, MVT::i32, MVT::Other, Ops);
+      CurDAG->getMachineNode(NewOpc, DL, MVT::i32, MVT::Other, Ops);
   CurDAG->setNodeMemRefs(
       Result, {StoreNode->getMemOperand(), LoadNode->getMemOperand()});
 
@@ -1489,7 +1480,7 @@ bool SystemZDAGToDAGISel::storeLoadIsAligned(SDNode *N) const {
   // Check the alignment of a Global Address.
   if (BasePtr.getNumOperands())
     if (GlobalAddressSDNode *GA =
-        dyn_cast<GlobalAddressSDNode>(BasePtr.getOperand(0))) {
+            dyn_cast<GlobalAddressSDNode>(BasePtr.getOperand(0))) {
       // The immediate offset must be aligned.
       if (GA->getOffset() % StoreSize != 0)
         return false;
@@ -1600,15 +1591,15 @@ void SystemZDAGToDAGISel::Select(SDNode *Node) {
       SDValue CCValid = Node->getOperand(2);
       SDValue CCMask = Node->getOperand(3);
       uint64_t ConstCCValid =
-        cast<ConstantSDNode>(CCValid.getNode())->getZExtValue();
+          cast<ConstantSDNode>(CCValid.getNode())->getZExtValue();
       uint64_t ConstCCMask =
-        cast<ConstantSDNode>(CCMask.getNode())->getZExtValue();
+          cast<ConstantSDNode>(CCMask.getNode())->getZExtValue();
       // Invert the condition.
       CCMask = CurDAG->getTargetConstant(ConstCCValid ^ ConstCCMask,
                                          SDLoc(Node), CCMask.getValueType());
       SDValue Op4 = Node->getOperand(4);
       SDNode *UpdatedNode =
-        CurDAG->UpdateNodeOperands(Node, Op1, Op0, CCValid, CCMask, Op4);
+          CurDAG->UpdateNodeOperands(Node, Op1, Op0, CCValid, CCMask, Op4);
       if (UpdatedNode != Node) {
         // In case this node already exists then replace Node with it.
         ReplaceNode(Node, UpdatedNode);
@@ -1646,7 +1637,8 @@ void SystemZDAGToDAGISel::Select(SDNode *Node) {
     if (Imm.isZero() || Imm.isNegZero())
       break;
     SystemZVectorConstantInfo VCI(Imm);
-    bool Success = VCI.isVectorConstantLegal(*Subtarget); (void)Success;
+    bool Success = VCI.isVectorConstantLegal(*Subtarget);
+    (void)Success;
     assert(Success && "Expected legal FP immediate");
     loadVectorConstant(VCI, Node);
     return;
@@ -1671,15 +1663,13 @@ void SystemZDAGToDAGISel::Select(SDNode *Node) {
   SelectCode(Node);
 }
 
-bool SystemZDAGToDAGISel::
-SelectInlineAsmMemoryOperand(const SDValue &Op,
-                             unsigned ConstraintID,
-                             std::vector<SDValue> &OutOps) {
+bool SystemZDAGToDAGISel::SelectInlineAsmMemoryOperand(
+    const SDValue &Op, unsigned ConstraintID, std::vector<SDValue> &OutOps) {
   SystemZAddressingMode::AddrForm Form;
   SystemZAddressingMode::DispRange DispRange;
   SDValue Base, Disp, Index;
 
-  switch(ConstraintID) {
+  switch (ConstraintID) {
   default:
     llvm_unreachable("Unexpected asm memory constraint");
   case InlineAsm::Constraint_i:
@@ -1712,7 +1702,7 @@ SelectInlineAsmMemoryOperand(const SDValue &Op,
 
   if (selectBDXAddr(Form, DispRange, Op, Base, Disp, Index)) {
     const TargetRegisterClass *TRC =
-      Subtarget->getRegisterInfo()->getPointerRegClass(*MF);
+        Subtarget->getRegisterInfo()->getPointerRegClass(*MF);
     SDLoc DL(Base);
     SDValue RC = CurDAG->getTargetConstant(TRC->getID(), DL, MVT::i32);
 
@@ -1720,18 +1710,16 @@ SelectInlineAsmMemoryOperand(const SDValue &Op,
     // If it's a TargetFrameIndex or a fixed register, we shouldn't do anything.
     if (Base.getOpcode() != ISD::TargetFrameIndex &&
         Base.getOpcode() != ISD::Register) {
-      Base =
-        SDValue(CurDAG->getMachineNode(TargetOpcode::COPY_TO_REGCLASS,
-                                       DL, Base.getValueType(),
-                                       Base, RC), 0);
+      Base = SDValue(CurDAG->getMachineNode(TargetOpcode::COPY_TO_REGCLASS, DL,
+                                            Base.getValueType(), Base, RC),
+                     0);
     }
 
     // Make sure that the index register isn't assigned to %r0 either.
     if (Index.getOpcode() != ISD::Register) {
-      Index =
-        SDValue(CurDAG->getMachineNode(TargetOpcode::COPY_TO_REGCLASS,
-                                       DL, Index.getValueType(),
-                                       Index, RC), 0);
+      Index = SDValue(CurDAG->getMachineNode(TargetOpcode::COPY_TO_REGCLASS, DL,
+                                             Index.getValueType(), Index, RC),
+                      0);
     }
 
     OutOps.push_back(Base);
@@ -1745,9 +1733,8 @@ SelectInlineAsmMemoryOperand(const SDValue &Op,
 
 // IsProfitableToFold - Returns true if is profitable to fold the specific
 // operand node N of U during instruction selection that starts at Root.
-bool
-SystemZDAGToDAGISel::IsProfitableToFold(SDValue N, SDNode *U,
-                                        SDNode *Root) const {
+bool SystemZDAGToDAGISel::IsProfitableToFold(SDValue N, SDNode *U,
+                                             SDNode *Root) const {
   // We want to avoid folding a LOAD into an ICMP node if as a result
   // we would be forced to spill the condition code into a GPR.
   if (N.getOpcode() == ISD::LOAD && U->getOpcode() == SystemZISD::ICMP) {
@@ -1794,7 +1781,7 @@ namespace {
 // (((X ^ XORValue) + AddValue) >> Bit)
 struct IPMConversion {
   IPMConversion(unsigned xorValue, int64_t addValue, unsigned bit)
-    : XORValue(xorValue), AddValue(addValue), Bit(bit) {}
+      : XORValue(xorValue), AddValue(addValue), Bit(bit) {}
 
   int64_t XORValue;
   int64_t AddValue;
@@ -1825,15 +1812,13 @@ static IPMConversion getIPMConversion(unsigned CCValid, unsigned CCMask) {
     return IPMConversion(0, -(1 << SystemZ::IPM_CC), 31);
   if (CCMask == (CCValid & (SystemZ::CCMASK_0 | SystemZ::CCMASK_1)))
     return IPMConversion(0, -(2 << SystemZ::IPM_CC), 31);
-  if (CCMask == (CCValid & (SystemZ::CCMASK_0
-                            | SystemZ::CCMASK_1
-                            | SystemZ::CCMASK_2)))
+  if (CCMask ==
+      (CCValid & (SystemZ::CCMASK_0 | SystemZ::CCMASK_1 | SystemZ::CCMASK_2)))
     return IPMConversion(0, -(3 << SystemZ::IPM_CC), 31);
   if (CCMask == (CCValid & SystemZ::CCMASK_3))
     return IPMConversion(0, TopBit - (3 << SystemZ::IPM_CC), 31);
-  if (CCMask == (CCValid & (SystemZ::CCMASK_1
-                            | SystemZ::CCMASK_2
-                            | SystemZ::CCMASK_3)))
+  if (CCMask ==
+      (CCValid & (SystemZ::CCMASK_1 | SystemZ::CCMASK_2 | SystemZ::CCMASK_3)))
     return IPMConversion(0, TopBit - (1 << SystemZ::IPM_CC), 31);
 
   // Next try inverting the value and testing a bit.  0/1 could be
@@ -1854,17 +1839,15 @@ static IPMConversion getIPMConversion(unsigned CCValid, unsigned CCMask) {
   if (CCMask == (CCValid & SystemZ::CCMASK_1))
     return IPMConversion(1 << SystemZ::IPM_CC, -(1 << SystemZ::IPM_CC), 31);
   if (CCMask == (CCValid & SystemZ::CCMASK_2))
-    return IPMConversion(1 << SystemZ::IPM_CC,
-                         TopBit - (3 << SystemZ::IPM_CC), 31);
-  if (CCMask == (CCValid & (SystemZ::CCMASK_0
-                            | SystemZ::CCMASK_1
-                            | SystemZ::CCMASK_3)))
+    return IPMConversion(1 << SystemZ::IPM_CC, TopBit - (3 << SystemZ::IPM_CC),
+                         31);
+  if (CCMask ==
+      (CCValid & (SystemZ::CCMASK_0 | SystemZ::CCMASK_1 | SystemZ::CCMASK_3)))
     return IPMConversion(1 << SystemZ::IPM_CC, -(3 << SystemZ::IPM_CC), 31);
-  if (CCMask == (CCValid & (SystemZ::CCMASK_0
-                            | SystemZ::CCMASK_2
-                            | SystemZ::CCMASK_3)))
-    return IPMConversion(1 << SystemZ::IPM_CC,
-                         TopBit - (1 << SystemZ::IPM_CC), 31);
+  if (CCMask ==
+      (CCValid & (SystemZ::CCMASK_0 | SystemZ::CCMASK_2 | SystemZ::CCMASK_3)))
+    return IPMConversion(1 << SystemZ::IPM_CC, TopBit - (1 << SystemZ::IPM_CC),
+                         31);
 
   llvm_unreachable("Unexpected CC combination");
 }
@@ -1945,7 +1928,8 @@ void SystemZDAGToDAGISel::PreprocessISelDAG() {
 
     SDValue Res;
     switch (N->getOpcode()) {
-    default: break;
+    default:
+      break;
     case SystemZISD::SELECT_CCMASK:
       Res = expandSelectBoolean(N);
       break;

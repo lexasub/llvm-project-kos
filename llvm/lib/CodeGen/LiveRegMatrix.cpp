@@ -32,16 +32,16 @@ using namespace llvm;
 
 #define DEBUG_TYPE "regalloc"
 
-STATISTIC(NumAssigned   , "Number of registers assigned");
-STATISTIC(NumUnassigned , "Number of registers unassigned");
+STATISTIC(NumAssigned, "Number of registers assigned");
+STATISTIC(NumUnassigned, "Number of registers unassigned");
 
 char LiveRegMatrix::ID = 0;
-INITIALIZE_PASS_BEGIN(LiveRegMatrix, "liveregmatrix",
-                      "Live Register Matrix", false, false)
+INITIALIZE_PASS_BEGIN(LiveRegMatrix, "liveregmatrix", "Live Register Matrix",
+                      false, false)
 INITIALIZE_PASS_DEPENDENCY(LiveIntervals)
 INITIALIZE_PASS_DEPENDENCY(VirtRegMap)
-INITIALIZE_PASS_END(LiveRegMatrix, "liveregmatrix",
-                    "Live Register Matrix", false, false)
+INITIALIZE_PASS_END(LiveRegMatrix, "liveregmatrix", "Live Register Matrix",
+                    false, false)
 
 LiveRegMatrix::LiveRegMatrix() : MachineFunctionPass(ID) {}
 
@@ -167,11 +167,11 @@ bool LiveRegMatrix::checkRegUnitInterference(LiveInterval &VirtReg,
     return false;
   CoalescerPair CP(VirtReg.reg(), PhysReg, *TRI);
 
-  bool Result = foreachUnit(TRI, VirtReg, PhysReg, [&](unsigned Unit,
-                                                       const LiveRange &Range) {
-    const LiveRange &UnitRange = LIS->getRegUnit(Unit);
-    return Range.overlaps(UnitRange, CP, *LIS->getSlotIndexes());
-  });
+  bool Result = foreachUnit(
+      TRI, VirtReg, PhysReg, [&](unsigned Unit, const LiveRange &Range) {
+        const LiveRange &UnitRange = LIS->getRegUnit(Unit);
+        return Range.overlaps(UnitRange, CP, *LIS->getSlotIndexes());
+      });
   return Result;
 }
 

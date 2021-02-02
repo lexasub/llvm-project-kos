@@ -97,12 +97,11 @@ CXStringBuf *getCXStringBuf(CXTranslationUnit TU);
 /// Returns true if the CXString data is managed by a pool.
 bool isManagedByPool(CXString str);
 
-}
+} // namespace cxstring
 
 static inline StringRef getContents(const CXUnsavedFile &UF) {
   return StringRef(UF.Contents, UF.Length);
 }
-}
+} // namespace clang
 
 #endif
-

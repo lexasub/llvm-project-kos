@@ -27,7 +27,9 @@ class AMDGPUAsmBackend : public MCAsmBackend {
 public:
   AMDGPUAsmBackend(const Target &T) : MCAsmBackend(support::little) {}
 
-  unsigned getNumFixupKinds() const override { return AMDGPU::NumTargetFixupKinds; };
+  unsigned getNumFixupKinds() const override {
+    return AMDGPU::NumTargetFixupKinds;
+  };
 
   void applyFixup(const MCAssembler &Asm, const MCFixup &Fixup,
                   const MCValue &Target, MutableArrayRef<char> Data,
@@ -49,7 +51,7 @@ public:
   const MCFixupKindInfo &getFixupKindInfo(MCFixupKind Kind) const override;
 };
 
-} //End anonymous namespace
+} // End anonymous namespace
 
 void AMDGPUAsmBackend::relaxInstruction(MCInst &Inst,
                                         const MCSubtargetInfo &STI) const {
@@ -67,11 +69,11 @@ bool AMDGPUAsmBackend::fixupNeedsRelaxation(const MCFixup &Fixup,
   // if the branch target has an offset of x3f this needs to be relaxed to
   // add a s_nop 0 immediately after branch to effectively increment offset
   // for hardware workaround in gfx1010
-  return (((int64_t(Value)/4)-1) == 0x3f);
+  return (((int64_t(Value) / 4) - 1) == 0x3f);
 }
 
 bool AMDGPUAsmBackend::mayNeedRelaxation(const MCInst &Inst,
-                       const MCSubtargetInfo &STI) const {
+                                         const MCSubtargetInfo &STI) const {
   if (!STI.getFeatureBits()[AMDGPU::FeatureOffset3fBug])
     return false;
 
@@ -152,11 +154,11 @@ void AMDGPUAsmBackend::applyFixup(const MCAssembler &Asm, const MCFixup &Fixup,
     Data[Offset + i] |= static_cast<uint8_t>((Value >> (i * 8)) & 0xff);
 }
 
-const MCFixupKindInfo &AMDGPUAsmBackend::getFixupKindInfo(
-                                                       MCFixupKind Kind) const {
+const MCFixupKindInfo &
+AMDGPUAsmBackend::getFixupKindInfo(MCFixupKind Kind) const {
   const static MCFixupKindInfo Infos[AMDGPU::NumTargetFixupKinds] = {
-    // name                   offset bits  flags
-    { "fixup_si_sopp_br",     0,     16,   MCFixupKindInfo::FKF_IsPCRel },
+      // name                   offset bits  flags
+      {"fixup_si_sopp_br", 0, 16, MCFixupKindInfo::FKF_IsPCRel},
   };
 
   if (Kind < FirstTargetFixupKind)
@@ -165,9 +167,7 @@ const MCFixupKindInfo &AMDGPUAsmBackend::getFixupKindInfo(
   return Infos[Kind - FirstTargetFixupKind];
 }
 
-unsigned AMDGPUAsmBackend::getMinimumNopSize() const {
-  return 4;
-}
+unsigned AMDGPUAsmBackend::getMinimumNopSize() const { return 4; }
 
 bool AMDGPUAsmBackend::writeNopData(raw_ostream &OS, uint64_t Count) const {
   // If the count is not 4-byte aligned, we must be writing data into the text
@@ -201,10 +201,10 @@ class ELFAMDGPUAsmBackend : public AMDGPUAsmBackend {
   uint8_t ABIVersion = 0;
 
 public:
-  ELFAMDGPUAsmBackend(const Target &T, const Triple &TT, uint8_t ABIVersion) :
-      AMDGPUAsmBackend(T), Is64Bit(TT.getArch() == Triple::amdgcn),
-      HasRelocationAddend(TT.getOS() == Triple::AMDHSA),
-      ABIVersion(ABIVersion) {
+  ELFAMDGPUAsmBackend(const Target &T, const Triple &TT, uint8_t ABIVersion)
+      : AMDGPUAsmBackend(T), Is64Bit(TT.getArch() == Triple::amdgcn),
+        HasRelocationAddend(TT.getOS() == Triple::AMDHSA),
+        ABIVersion(ABIVersion) {
     switch (TT.getOS()) {
     case Triple::AMDHSA:
       OSABI = ELF::ELFOSABI_AMDGPU_HSA;

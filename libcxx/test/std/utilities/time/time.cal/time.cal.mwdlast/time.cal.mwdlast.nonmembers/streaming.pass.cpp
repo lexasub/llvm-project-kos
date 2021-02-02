@@ -17,7 +17,6 @@
 //
 //     Returns: os << mdl.month() << "/last".
 
-
 #include <chrono>
 #include <type_traits>
 #include <cassert>
@@ -25,14 +24,13 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    using month_weekday_last = std::chrono::month_weekday_last;
-    using month              = std::chrono::month;
-    using weekday            = std::chrono::weekday;
-    using weekday_last       = std::chrono::weekday_last;
+int main(int, char**) {
+  using month_weekday_last = std::chrono::month_weekday_last;
+  using month = std::chrono::month;
+  using weekday = std::chrono::weekday;
+  using weekday_last = std::chrono::weekday_last;
 
-    std::cout << month_weekday_last{month{1}, weekday_last{weekday{3}}};
+  std::cout << month_weekday_last{month{1}, weekday_last{weekday{3}}};
 
   return 0;
 }

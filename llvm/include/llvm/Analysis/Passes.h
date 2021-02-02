@@ -15,98 +15,98 @@
 #define LLVM_ANALYSIS_PASSES_H
 
 namespace llvm {
-  class FunctionPass;
-  class ImmutablePass;
-  class ModulePass;
+class FunctionPass;
+class ImmutablePass;
+class ModulePass;
 
-  //===--------------------------------------------------------------------===//
-  //
-  // createObjCARCAAWrapperPass - This pass implements ObjC-ARC-based
-  // alias analysis.
-  //
-  ImmutablePass *createObjCARCAAWrapperPass();
+//===--------------------------------------------------------------------===//
+//
+// createObjCARCAAWrapperPass - This pass implements ObjC-ARC-based
+// alias analysis.
+//
+ImmutablePass *createObjCARCAAWrapperPass();
 
-  FunctionPass *createPAEvalPass();
+FunctionPass *createPAEvalPass();
 
-  //===--------------------------------------------------------------------===//
-  //
-  /// createLazyValueInfoPass - This creates an instance of the LazyValueInfo
-  /// pass.
-  FunctionPass *createLazyValueInfoPass();
+//===--------------------------------------------------------------------===//
+//
+/// createLazyValueInfoPass - This creates an instance of the LazyValueInfo
+/// pass.
+FunctionPass *createLazyValueInfoPass();
 
-  //===--------------------------------------------------------------------===//
-  //
-  // createDependenceAnalysisWrapperPass - This creates an instance of the
-  // DependenceAnalysisWrapper pass.
-  //
-  FunctionPass *createDependenceAnalysisWrapperPass();
+//===--------------------------------------------------------------------===//
+//
+// createDependenceAnalysisWrapperPass - This creates an instance of the
+// DependenceAnalysisWrapper pass.
+//
+FunctionPass *createDependenceAnalysisWrapperPass();
 
-  //===--------------------------------------------------------------------===//
-  //
-  // createCostModelAnalysisPass - This creates an instance of the
-  // CostModelAnalysis pass.
-  //
-  FunctionPass *createCostModelAnalysisPass();
+//===--------------------------------------------------------------------===//
+//
+// createCostModelAnalysisPass - This creates an instance of the
+// CostModelAnalysis pass.
+//
+FunctionPass *createCostModelAnalysisPass();
 
-  //===--------------------------------------------------------------------===//
-  //
-  // createDelinearizationPass - This pass implements attempts to restore
-  // multidimensional array indices from linearized expressions.
-  //
-  FunctionPass *createDelinearizationPass();
+//===--------------------------------------------------------------------===//
+//
+// createDelinearizationPass - This pass implements attempts to restore
+// multidimensional array indices from linearized expressions.
+//
+FunctionPass *createDelinearizationPass();
 
-  //===--------------------------------------------------------------------===//
-  //
-  // createLegacyDivergenceAnalysisPass - This pass determines which branches in a GPU
-  // program are divergent.
-  //
-  FunctionPass *createLegacyDivergenceAnalysisPass();
+//===--------------------------------------------------------------------===//
+//
+// createLegacyDivergenceAnalysisPass - This pass determines which branches in a
+// GPU program are divergent.
+//
+FunctionPass *createLegacyDivergenceAnalysisPass();
 
-  //===--------------------------------------------------------------------===//
-  //
-  // Minor pass prototypes, allowing us to expose them through bugpoint and
-  // analyze.
-  FunctionPass *createInstCountPass();
+//===--------------------------------------------------------------------===//
+//
+// Minor pass prototypes, allowing us to expose them through bugpoint and
+// analyze.
+FunctionPass *createInstCountPass();
 
-  //===--------------------------------------------------------------------===//
-  //
-  // createRegionInfoPass - This pass finds all single entry single exit regions
-  // in a function and builds the region hierarchy.
-  //
-  FunctionPass *createRegionInfoPass();
+//===--------------------------------------------------------------------===//
+//
+// createRegionInfoPass - This pass finds all single entry single exit regions
+// in a function and builds the region hierarchy.
+//
+FunctionPass *createRegionInfoPass();
 
-  // Print module-level debug info metadata in human-readable form.
-  ModulePass *createModuleDebugInfoPrinterPass();
+// Print module-level debug info metadata in human-readable form.
+ModulePass *createModuleDebugInfoPrinterPass();
 
-  //===--------------------------------------------------------------------===//
-  //
-  // createMemDepPrinter - This pass exhaustively collects all memdep
-  // information and prints it with -analyze.
-  //
-  FunctionPass *createMemDepPrinter();
+//===--------------------------------------------------------------------===//
+//
+// createMemDepPrinter - This pass exhaustively collects all memdep
+// information and prints it with -analyze.
+//
+FunctionPass *createMemDepPrinter();
 
-  //===--------------------------------------------------------------------===//
-  //
-  // createMemDerefPrinter - This pass collects memory dereferenceability
-  // information and prints it with -analyze.
-  //
-  FunctionPass *createMemDerefPrinter();
+//===--------------------------------------------------------------------===//
+//
+// createMemDerefPrinter - This pass collects memory dereferenceability
+// information and prints it with -analyze.
+//
+FunctionPass *createMemDerefPrinter();
 
-  //===--------------------------------------------------------------------===//
-  //
-  // createMustExecutePrinter - This pass collects information about which
-  // instructions within a loop are guaranteed to execute if the loop header is
-  // entered and prints it with -analyze.
-  //
-  FunctionPass *createMustExecutePrinter();
+//===--------------------------------------------------------------------===//
+//
+// createMustExecutePrinter - This pass collects information about which
+// instructions within a loop are guaranteed to execute if the loop header is
+// entered and prints it with -analyze.
+//
+FunctionPass *createMustExecutePrinter();
 
-  //===--------------------------------------------------------------------===//
-  //
-  // createMustBeExecutedContextPrinter - This pass prints information about which
-  // instructions are guaranteed to execute together (run with -analyze).
-  //
-  ModulePass *createMustBeExecutedContextPrinter();
+//===--------------------------------------------------------------------===//
+//
+// createMustBeExecutedContextPrinter - This pass prints information about which
+// instructions are guaranteed to execute together (run with -analyze).
+//
+ModulePass *createMustBeExecutedContextPrinter();
 
-}
+} // namespace llvm
 
 #endif

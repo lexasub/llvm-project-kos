@@ -136,7 +136,7 @@ template <class T> void deallocateBuffer(T *B, size_t S) XRAY_NEVER_INSTRUMENT {
 }
 
 template <class T, class... U>
-T *initArray(size_t N, U &&... Us) XRAY_NEVER_INSTRUMENT {
+T *initArray(size_t N, U &&...Us) XRAY_NEVER_INSTRUMENT {
   auto A = allocateBuffer<T>(N);
   if (A != nullptr)
     while (N > 0)

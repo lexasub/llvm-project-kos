@@ -31,9 +31,8 @@ SBEnvironment::SBEnvironment(Environment rhs)
 SBEnvironment::~SBEnvironment() = default;
 
 const SBEnvironment &SBEnvironment::operator=(const SBEnvironment &rhs) {
-  LLDB_RECORD_METHOD(const lldb::SBEnvironment &,
-                     SBEnvironment, operator=,(const lldb::SBEnvironment &),
-                     rhs);
+  LLDB_RECORD_METHOD(const lldb::SBEnvironment &, SBEnvironment, operator=,
+                     (const lldb::SBEnvironment &), rhs);
 
   if (this != &rhs)
     m_opaque_up = clone(rhs.m_opaque_up);
@@ -136,8 +135,8 @@ namespace repro {
 template <> void RegisterMethods<SBEnvironment>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBEnvironment, ());
   LLDB_REGISTER_CONSTRUCTOR(SBEnvironment, (const lldb::SBEnvironment &));
-  LLDB_REGISTER_METHOD(const lldb::SBEnvironment &,
-                       SBEnvironment, operator=,(const lldb::SBEnvironment &));
+  LLDB_REGISTER_METHOD(const lldb::SBEnvironment &, SBEnvironment, operator=,
+                       (const lldb::SBEnvironment &));
   LLDB_REGISTER_METHOD(size_t, SBEnvironment, GetNumValues, ());
   LLDB_REGISTER_METHOD(const char *, SBEnvironment, Get, (const char *));
   LLDB_REGISTER_METHOD(const char *, SBEnvironment, GetNameAtIndex, (size_t));

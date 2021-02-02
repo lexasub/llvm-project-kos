@@ -21,11 +21,10 @@
 
 #include "test_macros.h"
 
-double unary_f(int i) {return 0.5 - i;}
+double unary_f(int i) { return 0.5 - i; }
 
-int main(int, char**)
-{
-    assert(std::ptr_fun(unary_f)(36) == -35.5);
+int main(int, char**) {
+  assert(std::ptr_fun(unary_f)(36) == -35.5);
 
   return 0;
 }

@@ -30,19 +30,20 @@ struct __attribute__((aligned)) AlignedType {};
 // EHABI  : 8-byte aligned
 // Itanium: Largest supported alignment for the system
 #if defined(_LIBCXXABI_ARM_EHABI)
-#  define EXPECTED_ALIGNMENT 8
+#define EXPECTED_ALIGNMENT 8
 #else
-#  define EXPECTED_ALIGNMENT alignof(AlignedType)
+#define EXPECTED_ALIGNMENT alignof(AlignedType)
 #endif
 
-static_assert(alignof(_Unwind_Exception) == EXPECTED_ALIGNMENT,
-  "_Unwind_Exception is incorrectly aligned. This test is expected to fail");
+static_assert(
+    alignof(_Unwind_Exception) == EXPECTED_ALIGNMENT,
+    "_Unwind_Exception is incorrectly aligned. This test is expected to fail");
 
-struct MinAligned {  };
+struct MinAligned {};
 static_assert(alignof(MinAligned) == 1 && sizeof(MinAligned) == 1, "");
 
 int main(int, char**) {
-  for (int i=0; i < 10; ++i) {
+  for (int i = 0; i < 10; ++i) {
     try {
       throw MinAligned{};
     } catch (MinAligned const& ref) {

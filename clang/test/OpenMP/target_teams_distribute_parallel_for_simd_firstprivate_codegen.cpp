@@ -108,97 +108,97 @@ int main() {
   // HLAMBDA-LABEL: @main
   // HLAMBDA: call void [[OUTER_LAMBDA:@.+]](
   [&]() {
-    // HLAMBDA: define{{.*}} internal{{.*}} void [[OUTER_LAMBDA]](
-    // HLAMBDA: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}}, i64 -1, i8* @{{[^,]+}}, i32 3, i8** %{{[^,]+}}, i8** %{{[^,]+}}, i{{64|32}}* {{.+}}@{{[^,]+}}, i32 0, i32 0), i64* {{.+}}@{{[^,]+}}, i32 0, i32 0), i8** null, i8** null, i32 0, i32 0)
-    // HLAMBDA: call void @[[LOFFL1:.+]](i{{64|32}} %{{.+}})
-    // HLAMBDA:  ret
+  // HLAMBDA: define{{.*}} internal{{.*}} void [[OUTER_LAMBDA]](
+  // HLAMBDA: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}}, i64 -1, i8* @{{[^,]+}}, i32 3, i8** %{{[^,]+}}, i8** %{{[^,]+}}, i{{64|32}}* {{.+}}@{{[^,]+}}, i32 0, i32 0), i64* {{.+}}@{{[^,]+}}, i32 0, i32 0), i8** null, i8** null, i32 0, i32 0)
+  // HLAMBDA: call void @[[LOFFL1:.+]](i{{64|32}} %{{.+}})
+  // HLAMBDA:  ret
 #pragma omp target teams distribute parallel for simd firstprivate(g, g1, sivar)
-  for (int i = 0; i < 2; ++i) {
-    // HLAMBDA: define{{.*}} internal{{.*}} void @[[LOFFL1]](i{{64|32}} {{%.+}}, i{{64|32}} {{%.+}})
-    // TLAMBDA: define weak{{.*}} void @[[LOFFL1:.+]](i{{64|32}} {{%.+}}, i{{64|32}} {{%.+}})
-    // LAMBDA: {{%.+}} = alloca i{{[0-9]+}},
-    // LAMBDA: {{%.+}} = alloca i{{[0-9]+}},
-    // LAMBDA: {{%.+}} = alloca i{{[0-9]+}},
-    // LAMBDA: [[G_CAST:%.+]] = alloca i{{[0-9]+}},
-    // LAMBDA: [[G1_CAST:%.+]] = alloca i{{[0-9]+}},
-    // LAMBDA: [[SIVAR_CAST:%.+]] = alloca i{{[0-9]+}},
-    // LAMBDA-DAG: [[G_CAST_VAL:%.+]] = load{{.+}} [[G_CAST]],
-    // LAMBDA-DAG: [[G1_CAST_VAL:%.+]] = load{{.+}} [[G1_CAST]],
-    // LAMBDA-DAG: [[SIVAR_CAST_VAL:%.+]] = load{{.+}} [[SIVAR_CAST]],
-    // LAMBDA: call void {{.+}} @__kmpc_fork_teams({{.+}}, i32 3, {{.+}} @[[LOUTL1:.+]] to {{.+}}, {{.+}} [[G_CAST_VAL]], {{.+}} [[G1_CAST_VAL]], {{.+}} [[SIVAR_CAST_VAL]])
-    // LAMBDA: ret void
+    for (int i = 0; i < 2; ++i) {
+      // HLAMBDA: define{{.*}} internal{{.*}} void @[[LOFFL1]](i{{64|32}} {{%.+}}, i{{64|32}} {{%.+}})
+      // TLAMBDA: define weak{{.*}} void @[[LOFFL1:.+]](i{{64|32}} {{%.+}}, i{{64|32}} {{%.+}})
+      // LAMBDA: {{%.+}} = alloca i{{[0-9]+}},
+      // LAMBDA: {{%.+}} = alloca i{{[0-9]+}},
+      // LAMBDA: {{%.+}} = alloca i{{[0-9]+}},
+      // LAMBDA: [[G_CAST:%.+]] = alloca i{{[0-9]+}},
+      // LAMBDA: [[G1_CAST:%.+]] = alloca i{{[0-9]+}},
+      // LAMBDA: [[SIVAR_CAST:%.+]] = alloca i{{[0-9]+}},
+      // LAMBDA-DAG: [[G_CAST_VAL:%.+]] = load{{.+}} [[G_CAST]],
+      // LAMBDA-DAG: [[G1_CAST_VAL:%.+]] = load{{.+}} [[G1_CAST]],
+      // LAMBDA-DAG: [[SIVAR_CAST_VAL:%.+]] = load{{.+}} [[SIVAR_CAST]],
+      // LAMBDA: call void {{.+}} @__kmpc_fork_teams({{.+}}, i32 3, {{.+}} @[[LOUTL1:.+]] to {{.+}}, {{.+}} [[G_CAST_VAL]], {{.+}} [[G1_CAST_VAL]], {{.+}} [[SIVAR_CAST_VAL]])
+      // LAMBDA: ret void
 
-    // LAMBDA: define internal void @[[LOUTL1]]({{.+}})
-    // Skip global and bound tid vars
-    // LAMBDA: {{.+}} = alloca i32*,
-    // LAMBDA: {{.+}} = alloca i32*,
-    // LAMBDA: [[G_ADDR:%.+]] = alloca i{{[0-9]+}},
-    // LAMBDA: [[G1_ADDR:%.+]] = alloca i{{[0-9]+}},
-    // LAMBDA: [[SIVAR_ADDR:%.+]] = alloca i{{[0-9]+}},
-    // LAMBDA: [[G1_TMP:%.+]] = alloca i32*,
-    // skip loop vars
-    // LAMBDA-DAG: store {{.+}}, {{.+}} [[G_ADDR]],
-    // LAMBDA-DAG: store {{.+}}, {{.+}} [[G1_ADDR]],
-    // LAMBDA-DAG: store {{.+}}, {{.+}} [[SIVAR_ADDR]],
-    // LAMBDA-DAG: [[G_CONV:%.+]] = bitcast {{.+}} [[G_ADDR]] to
-    // LAMBDA-DAG: [[G1_CONV:%.+]] = bitcast {{.+}} [[G1_ADDR]] to
-    // LAMBDA-DAG: [[SIVAR_CONV:%.+]] = bitcast {{.+}} [[SIVAR_ADDR]] to
-    // LAMBDA-DAG: store{{.+}} [[G1_CONV]], {{.+}} [[G1_TMP]],
-    g = 1;
-    g1 = 1;
-    sivar = 2;
-    // LAMBDA: call void @__kmpc_for_static_init_4(
-    // LAMBDA: call void {{.*}} @__kmpc_fork_call({{.+}}, {{.+}}, {{.+}} @[[LPAR_OUTL:.+]] to
-    // LAMBDA: call void @__kmpc_for_static_fini(
-    // LAMBDA: ret void
+      // LAMBDA: define internal void @[[LOUTL1]]({{.+}})
+      // Skip global and bound tid vars
+      // LAMBDA: {{.+}} = alloca i32*,
+      // LAMBDA: {{.+}} = alloca i32*,
+      // LAMBDA: [[G_ADDR:%.+]] = alloca i{{[0-9]+}},
+      // LAMBDA: [[G1_ADDR:%.+]] = alloca i{{[0-9]+}},
+      // LAMBDA: [[SIVAR_ADDR:%.+]] = alloca i{{[0-9]+}},
+      // LAMBDA: [[G1_TMP:%.+]] = alloca i32*,
+      // skip loop vars
+      // LAMBDA-DAG: store {{.+}}, {{.+}} [[G_ADDR]],
+      // LAMBDA-DAG: store {{.+}}, {{.+}} [[G1_ADDR]],
+      // LAMBDA-DAG: store {{.+}}, {{.+}} [[SIVAR_ADDR]],
+      // LAMBDA-DAG: [[G_CONV:%.+]] = bitcast {{.+}} [[G_ADDR]] to
+      // LAMBDA-DAG: [[G1_CONV:%.+]] = bitcast {{.+}} [[G1_ADDR]] to
+      // LAMBDA-DAG: [[SIVAR_CONV:%.+]] = bitcast {{.+}} [[SIVAR_ADDR]] to
+      // LAMBDA-DAG: store{{.+}} [[G1_CONV]], {{.+}} [[G1_TMP]],
+      g = 1;
+      g1 = 1;
+      sivar = 2;
+      // LAMBDA: call void @__kmpc_for_static_init_4(
+      // LAMBDA: call void {{.*}} @__kmpc_fork_call({{.+}}, {{.+}}, {{.+}} @[[LPAR_OUTL:.+]] to
+      // LAMBDA: call void @__kmpc_for_static_fini(
+      // LAMBDA: ret void
 
-    // LAMBDA: define internal void @[[LPAR_OUTL]]({{.+}})
-    // Skip global and bound tid vars, and prev lb and ub vars
-    // LAMBDA: {{.+}} = alloca i32*,
-    // LAMBDA: {{.+}} = alloca i32*,
-    // LAMBDA: {{.+}} = alloca i{{[0-9]+}},
-    // LAMBDA: {{.+}} = alloca i{{[0-9]+}},
-    // LAMBDA: [[G_ADDR:%.+]] = alloca i{{[0-9]+}},
-    // LAMBDA: [[G1_ADDR:%.+]] = alloca i{{[0-9]+}},
-    // LAMBDA: [[SIVAR_ADDR:%.+]] = alloca i{{[0-9]+}},
-    // LAMBDA: [[G1_TMP:%.+]] = alloca i32*,
-    // skip loop vars
-    // LAMBDA-DAG: store {{.+}}, {{.+}} [[G_ADDR]],
-    // LAMBDA-DAG: store {{.+}}, {{.+}} [[G1_ADDR]],
-    // LAMBDA-DAG: store {{.+}}, {{.+}} [[SIVAR_ADDR]],
-    // LAMBDA-DAG: [[G_CONV:%.+]] = bitcast {{.+}} [[G_ADDR]] to
-    // LAMBDA-DAG: [[G1_CONV:%.+]] = bitcast {{.+}} [[G1_ADDR]] to
-    // LAMBDA-DAG: [[SIVAR_CONV:%.+]] = bitcast {{.+}} [[SIVAR_ADDR]] to
-    // LAMBDA-DAG: store{{.+}} [[G1_CONV]], {{.+}} [[G1_TMP]],
+      // LAMBDA: define internal void @[[LPAR_OUTL]]({{.+}})
+      // Skip global and bound tid vars, and prev lb and ub vars
+      // LAMBDA: {{.+}} = alloca i32*,
+      // LAMBDA: {{.+}} = alloca i32*,
+      // LAMBDA: {{.+}} = alloca i{{[0-9]+}},
+      // LAMBDA: {{.+}} = alloca i{{[0-9]+}},
+      // LAMBDA: [[G_ADDR:%.+]] = alloca i{{[0-9]+}},
+      // LAMBDA: [[G1_ADDR:%.+]] = alloca i{{[0-9]+}},
+      // LAMBDA: [[SIVAR_ADDR:%.+]] = alloca i{{[0-9]+}},
+      // LAMBDA: [[G1_TMP:%.+]] = alloca i32*,
+      // skip loop vars
+      // LAMBDA-DAG: store {{.+}}, {{.+}} [[G_ADDR]],
+      // LAMBDA-DAG: store {{.+}}, {{.+}} [[G1_ADDR]],
+      // LAMBDA-DAG: store {{.+}}, {{.+}} [[SIVAR_ADDR]],
+      // LAMBDA-DAG: [[G_CONV:%.+]] = bitcast {{.+}} [[G_ADDR]] to
+      // LAMBDA-DAG: [[G1_CONV:%.+]] = bitcast {{.+}} [[G1_ADDR]] to
+      // LAMBDA-DAG: [[SIVAR_CONV:%.+]] = bitcast {{.+}} [[SIVAR_ADDR]] to
+      // LAMBDA-DAG: store{{.+}} [[G1_CONV]], {{.+}} [[G1_TMP]],
 
-    // use of private vars
-    // LAMBDA-DAG: store{{.+}} 1, {{.+}} [[G_CONV]],
-    // LAMBDA-DAG: [[G1:%.+]] = load{{.+}}, {{.+}}* [[G1_TMP]]
-    // LAMBDA-DAG: store{{.+}} 1, {{.+}} [[G1]],
-    // LAMBDA-DAG: store{{.+}} 2, {{.+}} [[SIVAR_CONV]],
-    // LAMBDA-DAG: [[G1_REF:%.+]] = load{{.+}}, {{.+}} [[G1_TMP]],
-    // LAMBDA: call void [[INNER_LAMBDA:@.+]](
-    // LAMBDA: call void @__kmpc_for_static_fini(
-    // LAMBDA: ret void
-    [&]() {
-      // LAMBDA: define {{.+}} void [[INNER_LAMBDA]]({{.+}} [[ARG_PTR:%.+]])
-      // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
-      g = 2;
-      g1 = 2;
-      sivar = 4;
-      // LAMBDA: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
+      // use of private vars
+      // LAMBDA-DAG: store{{.+}} 1, {{.+}} [[G_CONV]],
+      // LAMBDA-DAG: [[G1:%.+]] = load{{.+}}, {{.+}}* [[G1_TMP]]
+      // LAMBDA-DAG: store{{.+}} 1, {{.+}} [[G1]],
+      // LAMBDA-DAG: store{{.+}} 2, {{.+}} [[SIVAR_CONV]],
+      // LAMBDA-DAG: [[G1_REF:%.+]] = load{{.+}}, {{.+}} [[G1_TMP]],
+      // LAMBDA: call void [[INNER_LAMBDA:@.+]](
+      // LAMBDA: call void @__kmpc_for_static_fini(
+      // LAMBDA: ret void
+      [&]() {
+        // LAMBDA: define {{.+}} void [[INNER_LAMBDA]]({{.+}} [[ARG_PTR:%.+]])
+        // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
+        g = 2;
+        g1 = 2;
+        sivar = 4;
+        // LAMBDA: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
 
-      // LAMBDA: [[G_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
-      // LAMBDA: [[G_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[G_PTR_REF]]
-      // LAMBDA: store i{{[0-9]+}} 2, i{{[0-9]+}}* [[G_REF]]
-      // LAMBDA: [[G1_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 1
-      // LAMBDA: [[G1_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[G1_PTR_REF]]
-      // LAMBDA: store i{{[0-9]+}} 2, i{{[0-9]+}}* [[G1_REF]]
-      // LAMBDA: [[SIVAR_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 2
-      // LAMBDA: [[SIVAR_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[SIVAR_PTR_REF]]
-      // LAMBDA: store i{{[0-9]+}} 4, i{{[0-9]+}}* [[SIVAR_REF]]
-    }();
-  }
+        // LAMBDA: [[G_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
+        // LAMBDA: [[G_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[G_PTR_REF]]
+        // LAMBDA: store i{{[0-9]+}} 2, i{{[0-9]+}}* [[G_REF]]
+        // LAMBDA: [[G1_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 1
+        // LAMBDA: [[G1_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[G1_PTR_REF]]
+        // LAMBDA: store i{{[0-9]+}} 2, i{{[0-9]+}}* [[G1_REF]]
+        // LAMBDA: [[SIVAR_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 2
+        // LAMBDA: [[SIVAR_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[SIVAR_PTR_REF]]
+        // LAMBDA: store i{{[0-9]+}} 4, i{{[0-9]+}}* [[SIVAR_REF]]
+      }();
+    }
   }();
   return 0;
 #else

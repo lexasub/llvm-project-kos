@@ -29,7 +29,7 @@ private:
   const R600InstrInfo *TII = nullptr;
 
   void SetFlagInNewMI(MachineInstr *NewMI, const MachineInstr *OldMI,
-      unsigned Op);
+                      unsigned Op);
 
 public:
   static char ID;
@@ -46,7 +46,7 @@ public:
 } // end anonymous namespace
 
 INITIALIZE_PASS_BEGIN(R600ExpandSpecialInstrsPass, DEBUG_TYPE,
-                     "R600 Expand Special Instrs", false, false)
+                      "R600 Expand Special Instrs", false, false)
 INITIALIZE_PASS_END(R600ExpandSpecialInstrsPass, DEBUG_TYPE,
                     "R600ExpandSpecialInstrs", false, false)
 
@@ -59,7 +59,8 @@ FunctionPass *llvm::createR600ExpandSpecialInstrsPass() {
 }
 
 void R600ExpandSpecialInstrsPass::SetFlagInNewMI(MachineInstr *NewMI,
-    const MachineInstr *OldMI, unsigned Op) {
+                                                 const MachineInstr *OldMI,
+                                                 unsigned Op) {
   int OpIdx = TII->getOperandIdx(*OldMI, Op);
   if (OpIdx > -1) {
     uint64_t Val = OldMI->getOperand(OpIdx).getImm();
@@ -73,8 +74,8 @@ bool R600ExpandSpecialInstrsPass::runOnMachineFunction(MachineFunction &MF) {
 
   const R600RegisterInfo &TRI = TII->getRegisterInfo();
 
-  for (MachineFunction::iterator BB = MF.begin(), BB_E = MF.end();
-                                                  BB != BB_E; ++BB) {
+  for (MachineFunction::iterator BB = MF.begin(), BB_E = MF.end(); BB != BB_E;
+       ++BB) {
     MachineBasicBlock &MBB = *BB;
     MachineBasicBlock::iterator I = MBB.begin();
     while (I != MBB.end()) {
@@ -86,30 +87,32 @@ bool R600ExpandSpecialInstrsPass::runOnMachineFunction(MachineFunction &MF) {
         int DstIdx = TII->getOperandIdx(MI.getOpcode(), R600::OpName::dst);
         assert(DstIdx != -1);
         MachineOperand &DstOp = MI.getOperand(DstIdx);
-        MachineInstr *Mov = TII->buildMovInstr(&MBB, I,
-                                               DstOp.getReg(), R600::OQAP);
+        MachineInstr *Mov =
+            TII->buildMovInstr(&MBB, I, DstOp.getReg(), R600::OQAP);
         DstOp.setReg(R600::OQAP);
-        int LDSPredSelIdx = TII->getOperandIdx(MI.getOpcode(),
-                                           R600::OpName::pred_sel);
-        int MovPredSelIdx = TII->getOperandIdx(Mov->getOpcode(),
-                                           R600::OpName::pred_sel);
+        int LDSPredSelIdx =
+            TII->getOperandIdx(MI.getOpcode(), R600::OpName::pred_sel);
+        int MovPredSelIdx =
+            TII->getOperandIdx(Mov->getOpcode(), R600::OpName::pred_sel);
         // Copy the pred_sel bit
-        Mov->getOperand(MovPredSelIdx).setReg(
-            MI.getOperand(LDSPredSelIdx).getReg());
+        Mov->getOperand(MovPredSelIdx)
+            .setReg(MI.getOperand(LDSPredSelIdx).getReg());
       }
 
       switch (MI.getOpcode()) {
-      default: break;
+      default:
+        break;
       // Expand PRED_X to one of the PRED_SET instructions.
       case R600::PRED_X: {
         uint64_t Flags = MI.getOperand(3).getImm();
         // The native opcode used by PRED_X is stored as an immediate in the
         // third operand.
-        MachineInstr *PredSet = TII->buildDefaultInstruction(MBB, I,
-                                            MI.getOperand(2).getImm(), // opcode
-                                            MI.getOperand(0).getReg(), // dst
-                                            MI.getOperand(1).getReg(), // src0
-                                            R600::ZERO);             // src1
+        MachineInstr *PredSet =
+            TII->buildDefaultInstruction(MBB, I,
+                                         MI.getOperand(2).getImm(), // opcode
+                                         MI.getOperand(0).getReg(), // dst
+                                         MI.getOperand(1).getReg(), // src0
+                                         R600::ZERO);               // src1
         TII->addFlag(*PredSet, 0, MO_FLAG_MASK);
         if (Flags & MO_FLAG_PUSH) {
           TII->setImmOperand(*PredSet, R600::OpName::update_exec_mask, 1);
@@ -118,7 +121,7 @@ bool R600ExpandSpecialInstrsPass::runOnMachineFunction(MachineFunction &MF) {
         }
         MI.eraseFromParent();
         continue;
-        }
+      }
       case R600::DOT_4: {
 
         const R600RegisterInfo &TRI = TII->getRegisterInfo();
@@ -149,8 +152,8 @@ bool R600ExpandSpecialInstrsPass::runOnMachineFunction(MachineFunction &MF) {
           Register Src1 =
               BMI->getOperand(TII->getOperandIdx(Opcode, R600::OpName::src1))
                   .getReg();
-          (void) Src0;
-          (void) Src1;
+          (void)Src0;
+          (void)Src1;
           if ((TRI.getEncodingValue(Src0) & 0xff) < 127 &&
               (TRI.getEncodingValue(Src1) & 0xff) < 127)
             assert(TRI.getHWRegChan(Src0) == TRI.getHWRegChan(Src1));
@@ -212,8 +215,10 @@ bool R600ExpandSpecialInstrsPass::runOnMachineFunction(MachineFunction &MF) {
           Src1 = TRI.getSubReg(Src1, SubRegIndex);
         } else if (IsCube) {
           static const int CubeSrcSwz[] = {2, 2, 0, 1};
-          unsigned SubRegIndex0 = R600RegisterInfo::getSubRegFromChannel(CubeSrcSwz[Chan]);
-          unsigned SubRegIndex1 = R600RegisterInfo::getSubRegFromChannel(CubeSrcSwz[3 - Chan]);
+          unsigned SubRegIndex0 =
+              R600RegisterInfo::getSubRegFromChannel(CubeSrcSwz[Chan]);
+          unsigned SubRegIndex1 =
+              R600RegisterInfo::getSubRegFromChannel(CubeSrcSwz[3 - Chan]);
           Src1 = TRI.getSubReg(Src0, SubRegIndex1);
           Src0 = TRI.getSubReg(Src0, SubRegIndex0);
         }
@@ -233,7 +238,7 @@ bool R600ExpandSpecialInstrsPass::runOnMachineFunction(MachineFunction &MF) {
         }
 
         // Set the IsLast bit
-        NotLast = (Chan != 3 );
+        NotLast = (Chan != 3);
 
         // Add the new instruction
         unsigned Opcode = MI.getOpcode();
@@ -249,7 +254,7 @@ bool R600ExpandSpecialInstrsPass::runOnMachineFunction(MachineFunction &MF) {
         }
 
         MachineInstr *NewMI =
-          TII->buildDefaultInstruction(MBB, I, Opcode, DstReg, Src0, Src1);
+            TII->buildDefaultInstruction(MBB, I, Opcode, DstReg, Src0, Src1);
 
         if (Chan != 0)
           NewMI->bundleWithPred();

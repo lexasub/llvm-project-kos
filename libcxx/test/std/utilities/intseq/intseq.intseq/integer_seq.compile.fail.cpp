@@ -26,8 +26,8 @@
 #include "test_macros.h"
 
 int main(int, char**) {
-    // Should fail to compile, since float is not an integral type
-    using floatmix = std::integer_sequence<float>;
-    floatmix::value_type I;
-    return 0;
+  // Should fail to compile, since float is not an integral type
+  using floatmix = std::integer_sequence<float>;
+  floatmix::value_type I;
+  return 0;
 }

@@ -129,8 +129,7 @@ bool ImplicitControlFlowTracking::isSpecialInstruction(
   return !isGuaranteedToTransferExecutionToSuccessor(Insn);
 }
 
-bool MemoryWriteTracking::isSpecialInstruction(
-    const Instruction *Insn) const {
+bool MemoryWriteTracking::isSpecialInstruction(const Instruction *Insn) const {
   using namespace PatternMatch;
   if (match(Insn, m_Intrinsic<Intrinsic::experimental_widenable_condition>()))
     return false;

@@ -13,9 +13,9 @@ struct A {
 void f(A &&a);
 
 void g() {
-  f({}); // expected-error {{abstract class}}
+  f({});  // expected-error {{abstract class}}
   f({0}); // expected-error {{abstract class}}
-  f(0); // expected-error {{abstract class}}
+  f(0);   // expected-error {{abstract class}}
 }
 
 struct B : A {

@@ -6,9 +6,8 @@
 // signatures do not match the type of its first argument.
 // e.g. ARM and WebAssembly have destructors that return this instead of void.
 
-
 class Foo {
- public:
+public:
   ~Foo() {
   }
 };

@@ -61,17 +61,11 @@ public:
     ResourcesModel->clearResources();
   }
 
-  ~VLIWResourceModel() {
-    delete ResourcesModel;
-  }
+  ~VLIWResourceModel() { delete ResourcesModel; }
 
-  void resetPacketState() {
-    Packet.clear();
-  }
+  void resetPacketState() { Packet.clear(); }
 
-  void resetDFA() {
-    ResourcesModel->clearResources();
-  }
+  void resetDFA() { ResourcesModel->clearResources(); }
 
   void reset() {
     Packet.clear();
@@ -124,8 +118,15 @@ class ConvergingVLIWScheduler : public MachineSchedStrategy {
   };
   /// Represent the type of SchedCandidate found within a single queue.
   enum CandResult {
-    NoCand, NodeOrder, SingleExcess, SingleCritical, SingleMax, MultiPressure,
-    BestCost, Weak};
+    NoCand,
+    NodeOrder,
+    SingleExcess,
+    SingleCritical,
+    SingleMax,
+    MultiPressure,
+    BestCost,
+    Weak
+  };
 
   /// Each Scheduling boundary is associated with ready queues. It tracks the
   /// current cycle in whichever direction at has moved, and maintains the state
@@ -154,8 +155,8 @@ class ConvergingVLIWScheduler : public MachineSchedStrategy {
     /// Pending queues extend the ready queues with the same ID and the
     /// PendingFlag set.
     VLIWSchedBoundary(unsigned ID, const Twine &Name)
-        : Available(ID, Name+".A"),
-          Pending(ID << ConvergingVLIWScheduler::LogMaxQID, Name+".P") {}
+        : Available(ID, Name + ".A"),
+          Pending(ID << ConvergingVLIWScheduler::LogMaxQID, Name + ".P") {}
 
     ~VLIWSchedBoundary() {
       delete ResourceModel;
@@ -226,11 +227,7 @@ class ConvergingVLIWScheduler : public MachineSchedStrategy {
 
 public:
   /// SUnit::NodeQueueId: 0 (none), 1 (top), 2 (bot), 3 (both)
-  enum {
-    TopQID = 1,
-    BotQID = 2,
-    LogMaxQID = 2
-  };
+  enum { TopQID = 1, BotQID = 2, LogMaxQID = 2 };
 
   ConvergingVLIWScheduler() : Top(TopQID, "TopQ"), Bot(BotQID, "BotQ") {}
 
@@ -254,8 +251,7 @@ protected:
 
   int pressureChange(const SUnit *SU, bool isBotUp);
 
-  int SchedulingCost(ReadyQueue &Q,
-                     SUnit *SU, SchedCandidate &Candidate,
+  int SchedulingCost(ReadyQueue &Q, SUnit *SU, SchedCandidate &Candidate,
                      RegPressureDelta &Delta, bool verbose);
 
   CandResult pickNodeFromQueue(VLIWSchedBoundary &Zone,

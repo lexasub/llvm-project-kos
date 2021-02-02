@@ -1,4 +1,5 @@
-//===- MCSymbolXCOFF.h -  ----------------------------------------*- C++ -*-===//
+//===- MCSymbolXCOFF.h -  ----------------------------------------*- C++
+//-*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -34,9 +35,7 @@ public:
     return Name;
   }
 
-  void setStorageClass(XCOFF::StorageClass SC) {
-    StorageClass = SC;
-  };
+  void setStorageClass(XCOFF::StorageClass SC) { StorageClass = SC; };
 
   XCOFF::StorageClass getStorageClass() const {
     assert(StorageClass.hasValue() &&

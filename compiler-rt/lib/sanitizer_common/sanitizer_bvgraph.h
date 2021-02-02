@@ -14,22 +14,21 @@
 #ifndef SANITIZER_BVGRAPH_H
 #define SANITIZER_BVGRAPH_H
 
-#include "sanitizer_common.h"
 #include "sanitizer_bitvector.h"
+#include "sanitizer_common.h"
 
 namespace __sanitizer {
 
 // Directed graph of fixed size implemented as an array of bit vectors.
 // Not thread-safe, all accesses should be protected by an external lock.
-template<class BV>
+template <class BV>
 class BVGraph {
  public:
   enum SizeEnum : uptr { kSize = BV::kSize };
   uptr size() const { return kSize; }
   // No CTOR.
   void clear() {
-    for (uptr i = 0; i < size(); i++)
-      v[i].clear();
+    for (uptr i = 0; i < size(); i++) v[i].clear();
   }
 
   bool empty() const {
@@ -68,9 +67,7 @@ class BVGraph {
   bool hasEdge(uptr from, uptr to) { return v[from].getBit(to); }
 
   // Returns true if the edge from=>to was removed.
-  bool removeEdge(uptr from, uptr to) {
-    return v[from].clearBit(to);
-  }
+  bool removeEdge(uptr from, uptr to) { return v[from].clearBit(to); }
 
   // Returns true if at least one edge *=>to was removed.
   bool removeEdgesTo(const BV &to) {
@@ -96,9 +93,7 @@ class BVGraph {
     return res;
   }
 
-  void removeEdgesFrom(uptr from) {
-    return v[from].clear();
-  }
+  void removeEdgesFrom(uptr from) { return v[from].clear(); }
 
   bool hasEdge(uptr from, uptr to) const {
     check(from, to);
@@ -108,8 +103,7 @@ class BVGraph {
   // Returns true if there is a path from the node 'from'
   // to any of the nodes in 'targets'.
   bool isReachable(uptr from, const BV &targets) {
-    BV &to_visit = t1,
-       &visited = t2;
+    BV &to_visit = t1, &visited = t2;
     to_visit.copyFrom(v[from]);
     visited.clear();
     visited.setBit(from);
@@ -132,7 +126,7 @@ class BVGraph {
       return 1;
     // The function is recursive, so we don't want to create BV on stack.
     // Instead of a getAndClearFirstOne loop we use the slower iterator.
-    for (typename BV::Iterator it(v[from]); it.hasNext(); ) {
+    for (typename BV::Iterator it(v[from]); it.hasNext();) {
       uptr idx = it.next();
       if (uptr res = findPath(idx, targets, path + 1, path_size - 1))
         return res + 1;
@@ -159,6 +153,6 @@ class BVGraph {
   BV t1, t2;
 };
 
-} // namespace __sanitizer
+}  // namespace __sanitizer
 
-#endif // SANITIZER_BVGRAPH_H
+#endif  // SANITIZER_BVGRAPH_H

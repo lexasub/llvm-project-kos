@@ -64,7 +64,7 @@ void ModuleDepCollectorPP::FileChanged(SourceLocation Loc,
                                        FileID PrevFID) {
   if (Reason != PPCallbacks::EnterFile)
     return;
-  
+
   // This has to be delayed as the context hash can change at the start of
   // `CompilerInstance::ExecuteAction`.
   if (MDC.ContextHash.empty()) {

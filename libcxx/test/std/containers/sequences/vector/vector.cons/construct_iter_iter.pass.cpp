@@ -146,9 +146,15 @@ void test_ctor_under_alloc() {
 }
 
 // In C++03, you can't instantiate a template with a local type.
-struct B1 { int x; };
-struct B2 { int y; };
-struct Der : B1, B2 { int z; };
+struct B1 {
+  int x;
+};
+struct B2 {
+  int y;
+};
+struct Der : B1, B2 {
+  int z;
+};
 
 // Initialize a vector with a different value type.
 void test_ctor_with_different_value_type() {
@@ -157,12 +163,13 @@ void test_ctor_with_different_value_type() {
     // a memory blob.
     float array[3] = {0.0f, 1.0f, 2.0f};
 #ifdef TEST_COMPILER_C1XX
-    #pragma warning(push)
-    #pragma warning(disable: 4244) // conversion from 'float' to 'int', possible loss of data
+#pragma warning(push)
+#pragma warning(                                                               \
+    disable : 4244) // conversion from 'float' to 'int', possible loss of data
 #endif // TEST_COMPILER_C1XX
     std::vector<int> v(array, array + 3);
 #ifdef TEST_COMPILER_C1XX
-    #pragma warning(pop)
+#pragma warning(pop)
 #endif // TEST_COMPILER_C1XX
     assert(v[0] == 0);
     assert(v[1] == 1);
@@ -170,7 +177,7 @@ void test_ctor_with_different_value_type() {
   }
   {
     Der z;
-    Der *array[1] = { &z };
+    Der* array[1] = {&z};
     // Though the types Der* and B2* are very similar, initialization still cannot
     // be done with `memcpy`.
     std::vector<B2*> v(array, array + 1);
@@ -178,12 +185,11 @@ void test_ctor_with_different_value_type() {
   }
   {
     // Though the types are different, initialization can be done with `memcpy`.
-    int32_t array[1] = { -1 };
+    int32_t array[1] = {-1};
     std::vector<uint32_t> v(array, array + 1);
     assert(v[0] == 4294967295U);
   }
 }
-
 
 int main(int, char**) {
   basic_test_cases();

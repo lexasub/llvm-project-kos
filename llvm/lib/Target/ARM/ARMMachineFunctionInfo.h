@@ -120,14 +120,14 @@ class ARMFunctionInfo : public MachineFunctionInfo {
 
   /// CoalescedWeights - mapping of basic blocks to the rolling counter of
   /// coalesced weights.
-  DenseMap<const MachineBasicBlock*, unsigned> CoalescedWeights;
+  DenseMap<const MachineBasicBlock *, unsigned> CoalescedWeights;
 
   /// True if this function has a subset of CSRs that is handled explicitly via
   /// copies.
   bool IsSplitCSR = false;
 
   /// Globals that have had their storage promoted into the constant pool.
-  SmallPtrSet<const GlobalVariable*,2> PromotedGlobals;
+  SmallPtrSet<const GlobalVariable *, 2> PromotedGlobals;
 
   /// The amount the literal pool has been increasedby due to promoted globals.
   int PromotedGlobalsIncrease = 0;
@@ -174,38 +174,32 @@ public:
 
   unsigned getGPRCalleeSavedArea1Offset() const { return GPRCS1Offset; }
   unsigned getGPRCalleeSavedArea2Offset() const { return GPRCS2Offset; }
-  unsigned getDPRCalleeSavedAreaOffset()  const { return DPRCSOffset; }
+  unsigned getDPRCalleeSavedAreaOffset() const { return DPRCSOffset; }
 
   void setGPRCalleeSavedArea1Offset(unsigned o) { GPRCS1Offset = o; }
   void setGPRCalleeSavedArea2Offset(unsigned o) { GPRCS2Offset = o; }
-  void setDPRCalleeSavedAreaOffset(unsigned o)  { DPRCSOffset = o; }
+  void setDPRCalleeSavedAreaOffset(unsigned o) { DPRCSOffset = o; }
 
-  unsigned getFPCXTSaveAreaSize() const       { return FPCXTSaveSize; }
+  unsigned getFPCXTSaveAreaSize() const { return FPCXTSaveSize; }
   unsigned getGPRCalleeSavedArea1Size() const { return GPRCS1Size; }
   unsigned getGPRCalleeSavedArea2Size() const { return GPRCS2Size; }
-  unsigned getDPRCalleeSavedGapSize() const   { return DPRCSAlignGapSize; }
-  unsigned getDPRCalleeSavedAreaSize()  const { return DPRCSSize; }
+  unsigned getDPRCalleeSavedGapSize() const { return DPRCSAlignGapSize; }
+  unsigned getDPRCalleeSavedAreaSize() const { return DPRCSSize; }
 
-  void setFPCXTSaveAreaSize(unsigned s)       { FPCXTSaveSize = s; }
+  void setFPCXTSaveAreaSize(unsigned s) { FPCXTSaveSize = s; }
   void setGPRCalleeSavedArea1Size(unsigned s) { GPRCS1Size = s; }
   void setGPRCalleeSavedArea2Size(unsigned s) { GPRCS2Size = s; }
-  void setDPRCalleeSavedGapSize(unsigned s)   { DPRCSAlignGapSize = s; }
-  void setDPRCalleeSavedAreaSize(unsigned s)  { DPRCSSize = s; }
+  void setDPRCalleeSavedGapSize(unsigned s) { DPRCSAlignGapSize = s; }
+  void setDPRCalleeSavedAreaSize(unsigned s) { DPRCSSize = s; }
 
   unsigned getArgumentStackSize() const { return ArgumentStackSize; }
   void setArgumentStackSize(unsigned size) { ArgumentStackSize = size; }
 
-  void initPICLabelUId(unsigned UId) {
-    PICLabelUId = UId;
-  }
+  void initPICLabelUId(unsigned UId) { PICLabelUId = UId; }
 
-  unsigned getNumPICLabels() const {
-    return PICLabelUId;
-  }
+  unsigned getNumPICLabels() const { return PICLabelUId; }
 
-  unsigned createPICLabelUId() {
-    return PICLabelUId++;
-  }
+  unsigned createPICLabelUId() { return PICLabelUId++; }
 
   int getVarArgsFrameIndex() const { return VarArgsFrameIndex; }
   void setVarArgsFrameIndex(int Index) { VarArgsFrameIndex = Index; }
@@ -229,8 +223,8 @@ public:
       return -1U;
   }
 
-  DenseMap<const MachineBasicBlock*, unsigned>::iterator getCoalescedWeight(
-                                                  MachineBasicBlock* MBB) {
+  DenseMap<const MachineBasicBlock *, unsigned>::iterator
+  getCoalescedWeight(MachineBasicBlock *MBB) {
     auto It = CoalescedWeights.find(MBB);
     if (It == CoalescedWeights.end()) {
       It = CoalescedWeights.insert(std::make_pair(MBB, 0)).first;
@@ -244,15 +238,11 @@ public:
   void markGlobalAsPromotedToConstantPool(const GlobalVariable *GV) {
     PromotedGlobals.insert(GV);
   }
-  SmallPtrSet<const GlobalVariable*, 2>& getGlobalsPromotedToConstantPool() {
+  SmallPtrSet<const GlobalVariable *, 2> &getGlobalsPromotedToConstantPool() {
     return PromotedGlobals;
   }
-  int getPromotedConstpoolIncrease() const {
-    return PromotedGlobalsIncrease;
-  }
-  void setPromotedConstpoolIncrease(int Sz) {
-    PromotedGlobalsIncrease = Sz;
-  }
+  int getPromotedConstpoolIncrease() const { return PromotedGlobalsIncrease; }
+  void setPromotedConstpoolIncrease(int Sz) { PromotedGlobalsIncrease = Sz; }
 
   DenseMap<unsigned, unsigned> EHPrologueRemappedRegs;
   DenseMap<unsigned, unsigned> EHPrologueOffsetInRegs;

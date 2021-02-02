@@ -7,5 +7,5 @@ void f(char8_t c) {}
 
 // ITANIUM: define weak_odr void @_Z1gIiEvDTplplcvT__ELA4_KDuELDu114EE(
 // MSABI: define weak_odr {{.*}}void @"??$g@H@@YAXPEB_Q@Z"(
-template<typename T> void g(decltype(T() + u8"foo" + u8'r')) {}
-template void g<int>(const char8_t*);
+template <typename T> void g(decltype(T() + u8"foo" + u8'r')) {}
+template void g<int>(const char8_t *);

@@ -6,35 +6,35 @@
 extern "C" int printf(const char *fmt, ...);
 
 struct A4 {
-	int a;
-	A4() : a(0xf00000a4) {}
+  int a;
+  A4() : a(0xf00000a4) {}
 };
 
 struct B4 {
-	int a;
-	B4() : a(0xf00000b4) {}
+  int a;
+  B4() : a(0xf00000b4) {}
 };
 
 struct C4 {
-	int a;
-	C4() : a(0xf00000c4) {}
-	virtual void f() {printf("C4");}
+  int a;
+  C4() : a(0xf00000c4) {}
+  virtual void f() { printf("C4"); }
 };
 
 struct A16 {
-	__declspec(align(16)) int a;
-	A16() : a(0xf0000a16) {}
+  __declspec(align(16)) int a;
+  A16() : a(0xf0000a16) {}
 };
 
 struct C16 {
-	__declspec(align(16)) int a;
-	C16() : a(0xf0000c16) {}
-	virtual void f() {printf("C16");}
+  __declspec(align(16)) int a;
+  C16() : a(0xf0000c16) {}
+  virtual void f() { printf("C16"); }
 };
 
 struct TestF0 : A4, virtual B4 {
-	int a;
-	TestF0() : a(0xf00000F0) {}
+  int a;
+  TestF0() : a(0xf00000F0) {}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -63,8 +63,8 @@ struct TestF0 : A4, virtual B4 {
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
 struct TestF1 : A4, virtual A16 {
-	int a;
-	TestF1() : a(0xf00000f1) {}
+  int a;
+  TestF1() : a(0xf00000f1) {}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -91,8 +91,8 @@ struct TestF1 : A4, virtual A16 {
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=16]
 
 struct TestF2 : A4, virtual C4 {
-	int a;
-	TestF2() : a(0xf00000f2) {}
+  int a;
+  TestF2() : a(0xf00000f2) {}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -121,8 +121,8 @@ struct TestF2 : A4, virtual C4 {
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
 struct TestF3 : A4, virtual C16 {
-	int a;
-	TestF3() : a(0xf00000f3) {}
+  int a;
+  TestF3() : a(0xf00000f3) {}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -151,8 +151,8 @@ struct TestF3 : A4, virtual C16 {
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=16]
 
 struct TestF4 : TestF3, A4 {
-	int a;
-	TestF4() : a(0xf00000f4) {}
+  int a;
+  TestF4() : a(0xf00000f4) {}
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -187,9 +187,9 @@ struct TestF4 : TestF3, A4 {
 // CHECK-X64-NEXT:      |  nvsize=32, nvalign=16]
 
 struct TestF5 : TestF3, A4 {
-	int a;
-	TestF5() : a(0xf00000f5) {}
-	virtual void g() {printf("F5");}
+  int a;
+  TestF5() : a(0xf00000f5) {}
+  virtual void g() { printf("F5"); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -226,9 +226,9 @@ struct TestF5 : TestF3, A4 {
 // CHECK-X64-NEXT:      |  nvsize=48, nvalign=16]
 
 struct TestF6 : TestF3, A4 {
-	int a;
-	TestF6() : a(0xf00000f6) {}
-	virtual void f() {printf("F6");}
+  int a;
+  TestF6() : a(0xf00000f6) {}
+  virtual void f() { printf("F6"); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -265,9 +265,9 @@ struct TestF6 : TestF3, A4 {
 // CHECK-X64-NEXT:      |  nvsize=32, nvalign=16]
 
 struct TestF7 : A4, virtual C16 {
-	int a;
-	TestF7() : a(0xf00000f7) {}
-	virtual void f() {printf("F7");}
+  int a;
+  TestF7() : a(0xf00000f7) {}
+  virtual void f() { printf("F7"); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -296,9 +296,9 @@ struct TestF7 : A4, virtual C16 {
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=16]
 
 struct TestF8 : TestF7, A4 {
-	int a;
-	TestF8() : a(0xf00000f8) {}
-	virtual void f() {printf("F8");}
+  int a;
+  TestF8() : a(0xf00000f8) {}
+  virtual void f() { printf("F8"); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -335,9 +335,9 @@ struct TestF8 : TestF7, A4 {
 // CHECK-X64-NEXT:      |  nvsize=32, nvalign=16]
 
 struct TestF9 : A4, virtual C16 {
-	int a;
-	TestF9() : a(0xf00000f9) {}
-	virtual void g() {printf("F9");}
+  int a;
+  TestF9() : a(0xf00000f9) {}
+  virtual void g() { printf("F9"); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -366,9 +366,9 @@ struct TestF9 : A4, virtual C16 {
 // CHECK-X64-NEXT:      |  nvsize=32, nvalign=16]
 
 struct TestFA : TestF9, A4 {
-	int a;
-	TestFA() : a(0xf00000fa) {}
-	virtual void g() {printf("FA");}
+  int a;
+  TestFA() : a(0xf00000fa) {}
+  virtual void g() { printf("FA"); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -405,9 +405,9 @@ struct TestFA : TestF9, A4 {
 // CHECK-X64-NEXT:      |  nvsize=48, nvalign=16]
 
 struct TestFB : A16, virtual C16 {
-	int a;
-	TestFB() : a(0xf00000fb) {}
-	virtual void g() {printf("Fb");}
+  int a;
+  TestFB() : a(0xf00000fb) {}
+  virtual void g() { printf("Fb"); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -436,9 +436,9 @@ struct TestFB : A16, virtual C16 {
 // CHECK-X64-NEXT:      |  nvsize=64, nvalign=16]
 
 struct TestFC : TestFB, A4 {
-	int a;
-	TestFC() : a(0xf00000fc) {}
-	virtual void g() {printf("FC");}
+  int a;
+  TestFC() : a(0xf00000fc) {}
+  virtual void g() { printf("FC"); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -474,25 +474,27 @@ struct TestFC : TestFB, A4 {
 // CHECK-X64-NEXT:      | [sizeof=112, align=16
 // CHECK-X64-NEXT:      |  nvsize=80, nvalign=16]
 
-
 struct A16f {
-	__declspec(align(16)) int a;
-	A16f() : a(0xf0000a16) {}
-	virtual void f() {printf("A16f");}
+  __declspec(align(16)) int a;
+  A16f() : a(0xf0000a16) {}
+  virtual void f() { printf("A16f"); }
 };
 
-struct Y { char y; Y() : y(0xaa) {} };
+struct Y {
+  char y;
+  Y() : y(0xaa) {}
+};
 struct X : virtual A16f {};
 
 struct B : A4, Y, X {
-	int a;
-	B() : a(0xf000000b) {}
+  int a;
+  B() : a(0xf000000b) {}
 };
 
 struct F0 : A4, B {
-	int a;
-	F0() : a(0xf00000f0) {}
-	virtual void g() {printf("F0");}
+  int a;
+  F0() : a(0xf00000f0) {}
+  virtual void g() { printf("F0"); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -543,9 +545,9 @@ struct F0 : A4, B {
 // CHECK-X64-NEXT:      |  nvsize=80, nvalign=16]
 
 struct F1 : B, A4 {
-	int a;
-	F1() : a(0xf00000f1) {}
-	virtual void g() {printf("F1");}
+  int a;
+  F1() : a(0xf00000f1) {}
+  virtual void g() { printf("F1"); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -588,9 +590,9 @@ struct F1 : B, A4 {
 // CHECK-X64-NEXT:      |  nvsize=64, nvalign=16]
 
 struct F2 : A4, virtual A16f {
-	int a;
-	F2() : a(0xf00000f2) {}
-	virtual void g() {printf("F2");}
+  int a;
+  F2() : a(0xf00000f2) {}
+  virtual void g() { printf("F2"); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -619,9 +621,9 @@ struct F2 : A4, virtual A16f {
 // CHECK-X64-NEXT:      |  nvsize=32, nvalign=16]
 
 struct F3 : A4, virtual A16f {
-	__declspec(align(16)) int a;
-	F3() : a(0xf00000f3) {}
-	virtual void g() {printf("F3");}
+  __declspec(align(16)) int a;
+  F3() : a(0xf00000f3) {}
+  virtual void g() { printf("F3"); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -650,9 +652,9 @@ struct F3 : A4, virtual A16f {
 // CHECK-X64-NEXT:      |  nvsize=64, nvalign=16]
 
 struct F4 : A4, B {
-	__declspec(align(16)) int a;
-	F4() : a(0xf00000f4) {}
-	virtual void g() {printf("F4");}
+  __declspec(align(16)) int a;
+  F4() : a(0xf00000f4) {}
+  virtual void g() { printf("F4"); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -695,9 +697,9 @@ struct F4 : A4, B {
 // CHECK-X64-NEXT:      |  nvsize=80, nvalign=16]
 
 struct F5 : A16f, virtual A4 {
-	int a;
-	F5() : a(0xf00000f5) {}
-	virtual void g() {printf("F5");}
+  int a;
+  F5() : a(0xf00000f5) {}
+  virtual void g() { printf("F5"); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -724,9 +726,9 @@ struct F5 : A16f, virtual A4 {
 // CHECK-X64-NEXT:      |  nvsize=64, nvalign=16]
 
 struct F6 : virtual A16f, A4, virtual B {
-	int a;
-	F6() : a(0xf00000f6) {}
-	virtual void g() {printf("F6");}
+  int a;
+  F6() : a(0xf00000f6) {}
+  virtual void g() { printf("F6"); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -846,30 +848,29 @@ struct EmptyLongLongMemb {
 // CHECK-X64-NEXT:      | [sizeof=8, align=8
 // CHECK-X64-NEXT:      |  nvsize=0, nvalign=8]
 
-int a[
-sizeof(TestF0)+
-sizeof(TestF1)+
-sizeof(TestF2)+
-sizeof(TestF3)+
-sizeof(TestF4)+
-sizeof(TestF5)+
-sizeof(TestF6)+
-sizeof(TestF7)+
-sizeof(TestF8)+
-sizeof(TestF9)+
-sizeof(TestFA)+
-sizeof(TestFB)+
-sizeof(TestFC)+
-sizeof(F0)+
-sizeof(F1)+
-sizeof(F2)+
-sizeof(F3)+
-sizeof(F4)+
-sizeof(F5)+
-sizeof(F6)+
-sizeof(ArrayFieldOfRecords)+
-sizeof(ArrayOfArrayFieldOfRecords)+
-sizeof(RecordArrayTypedef)+
-sizeof(EmptyIntMemb)+
-sizeof(EmptyLongLongMemb)+
-0];
+int a[sizeof(TestF0) +
+      sizeof(TestF1) +
+      sizeof(TestF2) +
+      sizeof(TestF3) +
+      sizeof(TestF4) +
+      sizeof(TestF5) +
+      sizeof(TestF6) +
+      sizeof(TestF7) +
+      sizeof(TestF8) +
+      sizeof(TestF9) +
+      sizeof(TestFA) +
+      sizeof(TestFB) +
+      sizeof(TestFC) +
+      sizeof(F0) +
+      sizeof(F1) +
+      sizeof(F2) +
+      sizeof(F3) +
+      sizeof(F4) +
+      sizeof(F5) +
+      sizeof(F6) +
+      sizeof(ArrayFieldOfRecords) +
+      sizeof(ArrayOfArrayFieldOfRecords) +
+      sizeof(RecordArrayTypedef) +
+      sizeof(EmptyIntMemb) +
+      sizeof(EmptyLongLongMemb) +
+      0];

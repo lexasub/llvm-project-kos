@@ -13,9 +13,9 @@ typedef __UINT32_TYPE__ uword;
 __attribute__((interrupt)) void foo7(int *a, uword b) {}
 namespace S {
 __attribute__((interrupt)) void foo8(int *a) {}
-}
+} // namespace S
 struct St {
-static void foo9(int *a) __attribute__((interrupt)) {}
+  static void foo9(int *a) __attribute__((interrupt)) {}
 };
 // X86_64_LINUX: @llvm.used = appending global [3 x i8*] [i8* bitcast (void (i32*, i64)* @{{.*}}foo7{{.*}} to i8*), i8* bitcast (void (i32*)* @{{.*}}foo8{{.*}} to i8*), i8* bitcast (void (i32*)* @{{.*}}foo9{{.*}} to i8*)], section "llvm.metadata"
 // X86_64_LINUX: define{{.*}} x86_intrcc void @{{.*}}foo7{{.*}}(i32* byval(i32) %{{.+}}, i64 %{{.+}})

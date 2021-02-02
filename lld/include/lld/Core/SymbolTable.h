@@ -70,17 +70,17 @@ private:
       return lhs.equals(rhs);
     }
   };
-  typedef llvm::DenseMap<StringRef, const Atom *,
-                                           StringRefMappingInfo> NameToAtom;
+  typedef llvm::DenseMap<StringRef, const Atom *, StringRefMappingInfo>
+      NameToAtom;
 
   struct AtomMappingInfo {
-    static const DefinedAtom * getEmptyKey() { return nullptr; }
-    static const DefinedAtom * getTombstoneKey() { return (DefinedAtom*)(-1); }
-    static unsigned getHashValue(const DefinedAtom * const Val);
-    static bool isEqual(const DefinedAtom * const LHS,
-                        const DefinedAtom * const RHS);
+    static const DefinedAtom *getEmptyKey() { return nullptr; }
+    static const DefinedAtom *getTombstoneKey() { return (DefinedAtom *)(-1); }
+    static unsigned getHashValue(const DefinedAtom *const Val);
+    static bool isEqual(const DefinedAtom *const LHS,
+                        const DefinedAtom *const RHS);
   };
-  typedef llvm::DenseSet<const DefinedAtom*, AtomMappingInfo> AtomContentSet;
+  typedef llvm::DenseSet<const DefinedAtom *, AtomMappingInfo> AtomContentSet;
 
   bool addByName(const Atom &);
   bool addByContent(const DefinedAtom &);

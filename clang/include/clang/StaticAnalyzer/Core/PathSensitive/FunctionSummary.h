@@ -50,8 +50,8 @@ class FunctionSummariesTy {
     unsigned TimesInlined : 32;
 
     FunctionSummary()
-        : TotalBasicBlocks(0), InlineChecked(0), MayInline(0),
-          TimesInlined(0) {}
+        : TotalBasicBlocks(0), InlineChecked(0), MayInline(0), TimesInlined(0) {
+    }
   };
 
   using MapTy = llvm::DenseMap<const Decl *, FunctionSummary>;
@@ -82,9 +82,7 @@ public:
     I->second.MayInline = 0;
   }
 
-  void markReachedMaxBlockCount(const Decl *D) {
-    markShouldNotInline(D);
-  }
+  void markReachedMaxBlockCount(const Decl *D) { markShouldNotInline(D); }
 
   Optional<bool> mayInline(const Decl *D) {
     MapTy::const_iterator I = Map.find(D);
@@ -93,7 +91,7 @@ public:
     return None;
   }
 
-  void markVisitedBasicBlock(unsigned ID, const Decl* D, unsigned TotalIDs) {
+  void markVisitedBasicBlock(unsigned ID, const Decl *D, unsigned TotalIDs) {
     MapTy::iterator I = findOrInsertSummary(D);
     llvm::SmallBitVector &Blocks = I->second.VisitedBasicBlocks;
     assert(ID < TotalIDs);
@@ -104,21 +102,21 @@ public:
     Blocks.set(ID);
   }
 
-  unsigned getNumVisitedBasicBlocks(const Decl* D) {
+  unsigned getNumVisitedBasicBlocks(const Decl *D) {
     MapTy::const_iterator I = Map.find(D);
     if (I != Map.end())
       return I->second.VisitedBasicBlocks.count();
     return 0;
   }
 
-  unsigned getNumTimesInlined(const Decl* D) {
+  unsigned getNumTimesInlined(const Decl *D) {
     MapTy::const_iterator I = Map.find(D);
     if (I != Map.end())
       return I->second.TimesInlined;
     return 0;
   }
 
-  void bumpNumTimesInlined(const Decl* D) {
+  void bumpNumTimesInlined(const Decl *D) {
     MapTy::iterator I = findOrInsertSummary(D);
     I->second.TimesInlined++;
   }
@@ -126,9 +124,9 @@ public:
   /// Get the percentage of the reachable blocks.
   unsigned getPercentBlocksReachable(const Decl *D) {
     MapTy::const_iterator I = Map.find(D);
-      if (I != Map.end())
-        return ((I->second.VisitedBasicBlocks.count() * 100) /
-                 I->second.TotalBasicBlocks);
+    if (I != Map.end())
+      return ((I->second.VisitedBasicBlocks.count() * 100) /
+              I->second.TotalBasicBlocks);
     return 0;
   }
 

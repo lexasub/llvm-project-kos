@@ -25,7 +25,7 @@ TEST(formatted_raw_ostreamTest, Test_Tell) {
   for (unsigned i = 0; i != 3; ++i) {
     C.write(tmp, 100);
 
-    EXPECT_EQ(100*(i+1), (unsigned) C.tell());
+    EXPECT_EQ(100 * (i + 1), (unsigned)C.tell());
   }
 }
 
@@ -168,4 +168,4 @@ TEST(formatted_raw_ostreamTest, Test_UTF8TinyBuffer) {
   C.flush();
   EXPECT_EQ(3U, A.size());
 }
-}
+} // namespace

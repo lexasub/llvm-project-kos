@@ -457,8 +457,8 @@ protected:
           else if (!m_options.m_function_name.empty()) {
             std::string oneliner(m_options.m_function_name);
             oneliner += "(frame, wp, internal_dict)";
-            script_interp->SetWatchpointCommandCallback(
-                wp_options, oneliner.c_str());
+            script_interp->SetWatchpointCommandCallback(wp_options,
+                                                        oneliner.c_str());
           } else {
             script_interp->CollectDataForWatchpointCommandCallback(wp_options,
                                                                    result);

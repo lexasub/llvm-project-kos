@@ -40,25 +40,25 @@ STATISTIC(NumRemoved, "Number of invokes removed");
 STATISTIC(NumUnreach, "Number of noreturn calls optimized");
 
 namespace {
-  struct PruneEH : public CallGraphSCCPass {
-    static char ID; // Pass identification, replacement for typeid
-    PruneEH() : CallGraphSCCPass(ID) {
-      initializePruneEHPass(*PassRegistry::getPassRegistry());
-    }
+struct PruneEH : public CallGraphSCCPass {
+  static char ID; // Pass identification, replacement for typeid
+  PruneEH() : CallGraphSCCPass(ID) {
+    initializePruneEHPass(*PassRegistry::getPassRegistry());
+  }
 
-    // runOnSCC - Analyze the SCC, performing the transformation if possible.
-    bool runOnSCC(CallGraphSCC &SCC) override;
-  };
-}
+  // runOnSCC - Analyze the SCC, performing the transformation if possible.
+  bool runOnSCC(CallGraphSCC &SCC) override;
+};
+} // namespace
 static bool SimplifyFunction(Function *F, CallGraphUpdater &CGU);
 static void DeleteBasicBlock(BasicBlock *BB, CallGraphUpdater &CGU);
 
 char PruneEH::ID = 0;
 INITIALIZE_PASS_BEGIN(PruneEH, "prune-eh",
-                "Remove unused exception handling info", false, false)
+                      "Remove unused exception handling info", false, false)
 INITIALIZE_PASS_DEPENDENCY(CallGraphWrapperPass)
 INITIALIZE_PASS_END(PruneEH, "prune-eh",
-                "Remove unused exception handling info", false, false)
+                    "Remove unused exception handling info", false, false)
 
 Pass *llvm::createPruneEHPass() { return new PruneEH(); }
 
@@ -134,8 +134,8 @@ static bool runImpl(CallGraphUpdater &CGU, SetVector<Function *> &Functions) {
                   SCCMightReturn = true;
         }
       }
-        if (SCCMightUnwind && SCCMightReturn)
-          break;
+      if (SCCMightUnwind && SCCMightReturn)
+        break;
     }
   }
 
@@ -177,7 +177,6 @@ bool PruneEH::runOnSCC(CallGraphSCC &SCC) {
   return runImpl(CGU, Functions);
 }
 
-
 // SimplifyFunction - Given information about callees, simplify the specified
 // function if we have invokes to non-unwinding functions or code after calls to
 // no-return functions.
@@ -197,7 +196,7 @@ static bool SimplifyFunction(Function *F, CallGraphUpdater &CGU) {
         MadeChange = true;
       }
 
-    for (BasicBlock::iterator I = BB->begin(), E = BB->end(); I != E; )
+    for (BasicBlock::iterator I = BB->begin(), E = BB->end(); I != E;)
       if (CallInst *CI = dyn_cast<CallInst>(I++))
         if (CI->doesNotReturn() && !CI->isMustTailCall() &&
             !isa<UnreachableInst>(I)) {
@@ -229,7 +228,7 @@ static void DeleteBasicBlock(BasicBlock *BB, CallGraphUpdater &CGU) {
 
   Instruction *TokenInst = nullptr;
 
-  for (BasicBlock::iterator I = BB->end(), E = BB->begin(); I != E; ) {
+  for (BasicBlock::iterator I = BB->end(), E = BB->begin(); I != E;) {
     --I;
 
     if (I->getType()->isTokenTy()) {

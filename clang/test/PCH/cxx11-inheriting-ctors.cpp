@@ -16,7 +16,6 @@
 // RxN: %clang_cc1 -std=c++11 -include-pch %t.1 -emit-pch -fpch-instantiate-templates -o %t.2 -verify %s
 // RxN: %clang_cc1 -std=c++11 -include-pch %t.1 -include-pch %t.2 -verify %s
 
-
 // expected-no-diagnostics
 
 #ifndef HEADER1

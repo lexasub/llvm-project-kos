@@ -9,10 +9,19 @@
 // CHECK: @__profc__Z10foo_inlinev = linkonce_odr hidden global
 // CHECK: @__profd__Z10foo_inlinev = linkonce_odr hidden global
 
-void foo(void) { }
+void foo(void) {}
 
 void foo_weak(void) __attribute__((weak));
-void foo_weak(void) { if (0){} if (0){} if (0){} if (0){} }
+void foo_weak(void) {
+  if (0) {
+  }
+  if (0) {
+  }
+  if (0) {
+  }
+  if (0) {
+  }
+}
 
 inline void foo_inline(void);
 int main(void) {
@@ -22,4 +31,17 @@ int main(void) {
   return 0;
 }
 
-inline void foo_inline(void) { if (0){} if (0){} if (0){} if (0){} if (0){} if (0){}}
+inline void foo_inline(void) {
+  if (0) {
+  }
+  if (0) {
+  }
+  if (0) {
+  }
+  if (0) {
+  }
+  if (0) {
+  }
+  if (0) {
+  }
+}

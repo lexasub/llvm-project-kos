@@ -42,7 +42,7 @@ class ASTRecordReader
 public:
   /// Construct an ASTRecordReader that uses the default encoding scheme.
   ASTRecordReader(ASTReader &Reader, ModuleFile &F)
-    : DataStreamBasicReader(Reader.getContext()), Reader(&Reader), F(&F) {}
+      : DataStreamBasicReader(Reader.getContext()), Reader(&Reader), F(&F) {}
 
   /// Reads a record with id AbbrevID from Cursor, resetting the
   /// internal state.
@@ -84,8 +84,7 @@ public:
   void skipInts(unsigned N) { Idx += N; }
 
   /// Retrieve the global submodule ID its local ID number.
-  serialization::SubmoduleID
-  getGlobalSubmoduleID(unsigned LocalID) {
+  serialization::SubmoduleID getGlobalSubmoduleID(unsigned LocalID) {
     return Reader->getGlobalSubmoduleID(*F, LocalID);
   }
 
@@ -116,8 +115,8 @@ public:
   }
 
   /// Read information about an exception specification (inherited).
-  //FunctionProtoType::ExceptionSpecInfo
-  //readExceptionSpecInfo(SmallVectorImpl<QualType> &ExceptionStorage);
+  // FunctionProtoType::ExceptionSpecInfo
+  // readExceptionSpecInfo(SmallVectorImpl<QualType> &ExceptionStorage);
 
   /// Get the global offset corresponding to a local offset.
   uint64_t getGlobalBitOffset(uint64_t LocalOffset) {
@@ -140,8 +139,7 @@ public:
   /// Reads a declaration with the given local ID in the given module.
   ///
   /// \returns The requested declaration, casted to the given return type.
-  template<typename T>
-  T *GetLocalDeclAs(uint32_t LocalID) {
+  template <typename T> T *GetLocalDeclAs(uint32_t LocalID) {
     return cast_or_null<T>(Reader->GetLocalDecl(*F, LocalID));
   }
 
@@ -153,8 +151,7 @@ public:
   /// Reads a TemplateArgumentLoc, advancing Idx.
   TemplateArgumentLoc readTemplateArgumentLoc();
 
-  const ASTTemplateArgumentListInfo*
-  readASTTemplateArgumentListInfo();
+  const ASTTemplateArgumentListInfo *readASTTemplateArgumentListInfo();
 
   /// Reads a declarator info from the given record, advancing Idx.
   TypeSourceInfo *readTypeSourceInfo();
@@ -162,23 +159,16 @@ public:
   /// Reads the location information for a type.
   void readTypeLoc(TypeLoc TL);
 
-
   /// Map a local type ID within a given AST file to a global type ID.
   serialization::TypeID getGlobalTypeID(unsigned LocalID) const {
     return Reader->getGlobalTypeID(*F, LocalID);
   }
 
-  Qualifiers readQualifiers() {
-    return Qualifiers::fromOpaqueValue(readInt());
-  }
+  Qualifiers readQualifiers() { return Qualifiers::fromOpaqueValue(readInt()); }
 
   /// Read a type from the current position in the record.
-  QualType readType() {
-    return Reader->readType(*F, Record, Idx);
-  }
-  QualType readQualType() {
-    return readType();
-  }
+  QualType readType() { return Reader->readType(*F, Record, Idx); }
+  QualType readQualType() { return readType(); }
 
   /// Reads a declaration ID from the given position in this record.
   ///
@@ -189,20 +179,15 @@ public:
 
   /// Reads a declaration from the given position in a record in the
   /// given module, advancing Idx.
-  Decl *readDecl() {
-    return Reader->ReadDecl(*F, Record, Idx);
-  }
-  Decl *readDeclRef() {
-    return readDecl();
-  }
+  Decl *readDecl() { return Reader->ReadDecl(*F, Record, Idx); }
+  Decl *readDeclRef() { return readDecl(); }
 
   /// Reads a declaration from the given position in the record,
   /// advancing Idx.
   ///
   /// \returns The declaration read from this location, casted to the given
   /// result type.
-  template<typename T>
-  T *readDeclAs() {
+  template <typename T> T *readDeclAs() {
     return Reader->ReadDeclAs<T>(*F, Record, Idx);
   }
 
@@ -211,9 +196,7 @@ public:
   }
 
   /// Read a selector from the Record, advancing Idx.
-  Selector readSelector() {
-    return Reader->ReadSelector(*F, Record, Idx);
-  }
+  Selector readSelector() { return Reader->ReadSelector(*F, Record, Idx); }
 
   /// Read a declaration name, advancing Idx.
   // DeclarationName readDeclarationName(); (inherited)
@@ -296,24 +279,16 @@ public:
   bool readBool() { return readInt() != 0; }
 
   /// Read a 32-bit unsigned value; required to satisfy BasicReader.
-  uint32_t readUInt32() {
-    return uint32_t(readInt());
-  }
+  uint32_t readUInt32() { return uint32_t(readInt()); }
 
   /// Read a 64-bit unsigned value; required to satisfy BasicReader.
-  uint64_t readUInt64() {
-    return readInt();
-  }
+  uint64_t readUInt64() { return readInt(); }
 
   /// Read a string, advancing Idx.
-  std::string readString() {
-    return Reader->ReadString(Record, Idx);
-  }
+  std::string readString() { return Reader->ReadString(Record, Idx); }
 
   /// Read a path, advancing Idx.
-  std::string readPath() {
-    return Reader->ReadPath(*F, Record, Idx);
-  }
+  std::string readPath() { return Reader->ReadPath(*F, Record, Idx); }
 
   /// Read a version tuple, advancing Idx.
   VersionTuple readVersionTuple() {
@@ -327,9 +302,7 @@ public:
   void readAttributes(AttrVec &Attrs);
 
   /// Reads a token out of a record, advancing Idx.
-  Token readToken() {
-    return Reader->ReadToken(*F, Record, Idx);
-  }
+  Token readToken() { return Reader->ReadToken(*F, Record, Idx); }
 
   void recordSwitchCaseID(SwitchCase *SC, unsigned ID) {
     Reader->RecordSwitchCaseID(SC, ID);
@@ -359,9 +332,7 @@ private:
   uint64_t Offset;
 };
 
-inline void PCHValidator::Error(const char *Msg) {
-  Reader.Error(Msg);
-}
+inline void PCHValidator::Error(const char *Msg) { Reader.Error(Msg); }
 
 } // namespace clang
 

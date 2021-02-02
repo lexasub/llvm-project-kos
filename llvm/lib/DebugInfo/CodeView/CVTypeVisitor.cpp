@@ -19,7 +19,6 @@
 using namespace llvm;
 using namespace llvm::codeview;
 
-
 template <typename T>
 static Error visitKnownRecord(CVType &Record, TypeVisitorCallbacks &Callbacks) {
   TypeRecordKind RK = static_cast<TypeRecordKind>(Record.kind());
@@ -213,7 +212,7 @@ struct VisitHelper {
   TypeVisitorCallbackPipeline Pipeline;
   CVTypeVisitor Visitor;
 };
-}
+} // namespace
 
 Error llvm::codeview::visitTypeRecord(CVType &Record, TypeIndex Index,
                                       TypeVisitorCallbacks &Callbacks,

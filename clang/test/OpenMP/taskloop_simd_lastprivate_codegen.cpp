@@ -70,33 +70,33 @@ int main() {
 // LAMBDA: call void @__kmpc_taskloop(%{{.+}}* @{{.+}}, i32 %{{.+}}, i8* [[RES]], i32 1, i64* %{{.+}}, i64* %{{.+}}, i64 %{{.+}}, i32 1, i32 0, i64 0, i8* bitcast (void ([[KMP_TASK_MAIN_TY:%[^*]+]]*, [[KMP_TASK_MAIN_TY]]*, i32)* [[MAIN_DUP:@.+]] to i8*))
 // LAMBDA: ret
 #pragma omp taskloop simd lastprivate(g, sivar)
-  for (int i = 0; i < 10; ++i) {
-    // LAMBDA: define {{.+}} void [[INNER_LAMBDA:@.+]]({{.+}} [[ARG_PTR:%.+]])
-    // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
-    // LAMBDA: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
-    // LAMBDA: [[G_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
-    // LAMBDA: [[G_REF:%.+]] = load double*, double** [[G_PTR_REF]]
-    // LAMBDA: store double 2.0{{.+}}, double* [[G_REF]]
+    for (int i = 0; i < 10; ++i) {
+      // LAMBDA: define {{.+}} void [[INNER_LAMBDA:@.+]]({{.+}} [[ARG_PTR:%.+]])
+      // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
+      // LAMBDA: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
+      // LAMBDA: [[G_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
+      // LAMBDA: [[G_REF:%.+]] = load double*, double** [[G_PTR_REF]]
+      // LAMBDA: store double 2.0{{.+}}, double* [[G_REF]]
 
-    // LAMBDA: store double* %{{.+}}, double** %{{.+}},
-    // LAMBDA: define internal i32 [[TASK_ENTRY]](i32 %0, %{{.+}}* noalias %1)
-    g = 1;
-    sivar = 11;
-    // LAMBDA: store double 1.0{{.+}}, double* %{{.+}},
-    // LAMBDA: store i{{[0-9]+}} 11, i{{[0-9]+}}* %{{.+}},
-    // LAMBDA: call void [[INNER_LAMBDA]]({{.+}}
-    // LAMBDA: icmp ne i32 %{{.+}}, 0
-    // LAMBDA: br i1
-    // LAMBDA: load double, double* %
-    // LAMBDA: store volatile double %
-    // LAMBDA: load i32, i32* %
-    // LAMBDA: store i32 %
-    // LAMBDA: ret
-    [&]() {
-      g = 2;
-      sivar = 22;
-    }();
-  }
+      // LAMBDA: store double* %{{.+}}, double** %{{.+}},
+      // LAMBDA: define internal i32 [[TASK_ENTRY]](i32 %0, %{{.+}}* noalias %1)
+      g = 1;
+      sivar = 11;
+      // LAMBDA: store double 1.0{{.+}}, double* %{{.+}},
+      // LAMBDA: store i{{[0-9]+}} 11, i{{[0-9]+}}* %{{.+}},
+      // LAMBDA: call void [[INNER_LAMBDA]]({{.+}}
+      // LAMBDA: icmp ne i32 %{{.+}}, 0
+      // LAMBDA: br i1
+      // LAMBDA: load double, double* %
+      // LAMBDA: store volatile double %
+      // LAMBDA: load i32, i32* %
+      // LAMBDA: store i32 %
+      // LAMBDA: ret
+      [&]() {
+        g = 2;
+        sivar = 22;
+      }();
+    }
   }();
   return 0;
 #elif defined(BLOCKS)
@@ -110,37 +110,37 @@ int main() {
   // BLOCKS: call void @__kmpc_taskloop(%{{.+}}* @{{.+}}, i32 %{{.+}}, i8* [[RES]], i32 1, i64* %{{.+}}, i64* %{{.+}}, i64 %{{.+}}, i32 1, i32 0, i64 0, i8* bitcast (void ([[KMP_TASK_MAIN_TY:%[^*]+]]*, [[KMP_TASK_MAIN_TY]]*, i32)* [[MAIN_DUP:@.+]] to i8*))
   // BLOCKS: ret
 #pragma omp taskloop simd lastprivate(g, sivar)
-  for (int i = 0; i < 10; ++i) {
-    // BLOCKS: define {{.+}} void {{@.+}}(i8*
-    // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-    // BLOCKS: store double 2.0{{.+}}, double*
-    // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-    // BLOCKS-NOT: [[ISVAR]]{{[[^:word:]]}}
-    // BLOCKS: store i{{[0-9]+}} 22, i{{[0-9]+}}*
-    // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
-    // BLOCKS: ret
+    for (int i = 0; i < 10; ++i) {
+      // BLOCKS: define {{.+}} void {{@.+}}(i8*
+      // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
+      // BLOCKS: store double 2.0{{.+}}, double*
+      // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
+      // BLOCKS-NOT: [[ISVAR]]{{[[^:word:]]}}
+      // BLOCKS: store i{{[0-9]+}} 22, i{{[0-9]+}}*
+      // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
+      // BLOCKS: ret
 
-    // BLOCKS: store double* %{{.+}}, double** %{{.+}},
-    // BLOCKS: store i{{[0-9]+}}* %{{.+}}, i{{[0-9]+}}** %{{.+}},
-    // BLOCKS: define internal i32 [[TASK_ENTRY]](i32 %0, %{{.+}}* noalias %1)
-    g = 1;
-    sivar = 11;
-    // BLOCKS: store double 1.0{{.+}}, double* %{{.+}},
-    // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-    // BLOCKS: store i{{[0-9]+}} 11, i{{[0-9]+}}* %{{.+}},
-    // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
-    // BLOCKS: call void {{%.+}}(i8
-    // BLOCKS: icmp ne i32 %{{.+}}, 0
-    // BLOCKS: br i1
-    // BLOCKS: load double, double* %
-    // BLOCKS: store volatile double %
-    // BLOCKS: load i32, i32* %
-    // BLOCKS: store i32 %
-    ^{
-      g = 2;
-      sivar = 22;
-    }();
-  }
+      // BLOCKS: store double* %{{.+}}, double** %{{.+}},
+      // BLOCKS: store i{{[0-9]+}}* %{{.+}}, i{{[0-9]+}}** %{{.+}},
+      // BLOCKS: define internal i32 [[TASK_ENTRY]](i32 %0, %{{.+}}* noalias %1)
+      g = 1;
+      sivar = 11;
+      // BLOCKS: store double 1.0{{.+}}, double* %{{.+}},
+      // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
+      // BLOCKS: store i{{[0-9]+}} 11, i{{[0-9]+}}* %{{.+}},
+      // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
+      // BLOCKS: call void {{%.+}}(i8
+      // BLOCKS: icmp ne i32 %{{.+}}, 0
+      // BLOCKS: br i1
+      // BLOCKS: load double, double* %
+      // BLOCKS: store volatile double %
+      // BLOCKS: load i32, i32* %
+      // BLOCKS: store i32 %
+      ^{
+        g = 2;
+        sivar = 22;
+      }();
+    }
   }();
   return 0;
 #else
@@ -522,4 +522,3 @@ void array_func(int n, float a[n], St s[2]) {
     ;
 }
 #endif
-

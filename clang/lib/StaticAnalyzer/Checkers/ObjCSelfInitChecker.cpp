@@ -35,8 +35,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "clang/StaticAnalyzer/Checkers/BuiltinCheckerRegistration.h"
 #include "clang/AST/ParentMap.h"
+#include "clang/StaticAnalyzer/Checkers/BuiltinCheckerRegistration.h"
 #include "clang/StaticAnalyzer/Core/BugReporter/BugType.h"
 #include "clang/StaticAnalyzer/Core/Checker.h"
 #include "clang/StaticAnalyzer/Core/CheckerManager.h"
@@ -54,13 +54,10 @@ static bool isInitMessage(const ObjCMethodCall &Msg);
 static bool isSelfVar(SVal location, CheckerContext &C);
 
 namespace {
-class ObjCSelfInitChecker : public Checker<  check::PostObjCMessage,
-                                             check::PostStmt<ObjCIvarRefExpr>,
-                                             check::PreStmt<ReturnStmt>,
-                                             check::PreCall,
-                                             check::PostCall,
-                                             check::Location,
-                                             check::Bind > {
+class ObjCSelfInitChecker
+    : public Checker<check::PostObjCMessage, check::PostStmt<ObjCIvarRefExpr>,
+                     check::PreStmt<ReturnStmt>, check::PreCall,
+                     check::PostCall, check::Location, check::Bind> {
   mutable std::unique_ptr<BugType> BT;
 
   void checkForInvalidSelf(const Expr *E, CheckerContext &C,
@@ -78,8 +75,8 @@ public:
   void checkPreCall(const CallEvent &CE, CheckerContext &C) const;
   void checkPostCall(const CallEvent &CE, CheckerContext &C) const;
 
-  void printState(raw_ostream &Out, ProgramStateRef State,
-                  const char *NL, const char *Sep) const override;
+  void printState(raw_ostream &Out, ProgramStateRef State, const char *NL,
+                  const char *Sep) const override;
 };
 } // end anonymous namespace
 
@@ -88,7 +85,7 @@ enum SelfFlagEnum {
   /// No flag set.
   SelfFlag_None = 0x0,
   /// Value came from 'self'.
-  SelfFlag_Self    = 0x1,
+  SelfFlag_Self = 0x1,
   /// Value came from the result of an initializer (e.g. [super init]).
   SelfFlag_InitRes = 0x2
 };
@@ -114,8 +111,8 @@ static SelfFlagEnum getSelfFlags(SVal val, CheckerContext &C) {
   return getSelfFlags(val, C.getState());
 }
 
-static void addSelfFlag(ProgramStateRef state, SVal val,
-                        SelfFlagEnum flag, CheckerContext &C) {
+static void addSelfFlag(ProgramStateRef state, SVal val, SelfFlagEnum flag,
+                        CheckerContext &C) {
   // We tag the symbol that the SVal wraps.
   if (SymbolRef sym = val.getAsSymbol()) {
     state = state->set<SelfFlag>(sym, getSelfFlags(val, state) | flag);
@@ -169,8 +166,8 @@ void ObjCSelfInitChecker::checkPostObjCMessage(const ObjCMethodCall &Msg,
   // then it is properly initialized.
 
   // FIXME: A callback should disable checkers at the start of functions.
-  if (!shouldRunOnFunctionOrMethod(dyn_cast<NamedDecl>(
-                                C.getCurrentAnalysisDeclContext()->getDecl())))
+  if (!shouldRunOnFunctionOrMethod(
+          dyn_cast<NamedDecl>(C.getCurrentAnalysisDeclContext()->getDecl())))
     return;
 
   if (isInitMessage(Msg)) {
@@ -196,8 +193,8 @@ void ObjCSelfInitChecker::checkPostObjCMessage(const ObjCMethodCall &Msg,
 void ObjCSelfInitChecker::checkPostStmt(const ObjCIvarRefExpr *E,
                                         CheckerContext &C) const {
   // FIXME: A callback should disable checkers at the start of functions.
-  if (!shouldRunOnFunctionOrMethod(dyn_cast<NamedDecl>(
-                                 C.getCurrentAnalysisDeclContext()->getDecl())))
+  if (!shouldRunOnFunctionOrMethod(
+          dyn_cast<NamedDecl>(C.getCurrentAnalysisDeclContext()->getDecl())))
     return;
 
   checkForInvalidSelf(
@@ -209,8 +206,8 @@ void ObjCSelfInitChecker::checkPostStmt(const ObjCIvarRefExpr *E,
 void ObjCSelfInitChecker::checkPreStmt(const ReturnStmt *S,
                                        CheckerContext &C) const {
   // FIXME: A callback should disable checkers at the start of functions.
-  if (!shouldRunOnFunctionOrMethod(dyn_cast<NamedDecl>(
-                                 C.getCurrentAnalysisDeclContext()->getDecl())))
+  if (!shouldRunOnFunctionOrMethod(
+          dyn_cast<NamedDecl>(C.getCurrentAnalysisDeclContext()->getDecl())))
     return;
 
   checkForInvalidSelf(S->getRetValue(), C,
@@ -237,8 +234,8 @@ void ObjCSelfInitChecker::checkPreStmt(const ReturnStmt *S,
 void ObjCSelfInitChecker::checkPreCall(const CallEvent &CE,
                                        CheckerContext &C) const {
   // FIXME: A callback should disable checkers at the start of functions.
-  if (!shouldRunOnFunctionOrMethod(dyn_cast<NamedDecl>(
-                                 C.getCurrentAnalysisDeclContext()->getDecl())))
+  if (!shouldRunOnFunctionOrMethod(
+          dyn_cast<NamedDecl>(C.getCurrentAnalysisDeclContext()->getDecl())))
     return;
 
   ProgramStateRef state = C.getState();
@@ -265,8 +262,8 @@ void ObjCSelfInitChecker::checkPreCall(const CallEvent &CE,
 void ObjCSelfInitChecker::checkPostCall(const CallEvent &CE,
                                         CheckerContext &C) const {
   // FIXME: A callback should disable checkers at the start of functions.
-  if (!shouldRunOnFunctionOrMethod(dyn_cast<NamedDecl>(
-                                 C.getCurrentAnalysisDeclContext()->getDecl())))
+  if (!shouldRunOnFunctionOrMethod(
+          dyn_cast<NamedDecl>(C.getCurrentAnalysisDeclContext()->getDecl())))
     return;
 
   ProgramStateRef state = C.getState();
@@ -300,8 +297,8 @@ void ObjCSelfInitChecker::checkPostCall(const CallEvent &CE,
 void ObjCSelfInitChecker::checkLocation(SVal location, bool isLoad,
                                         const Stmt *S,
                                         CheckerContext &C) const {
-  if (!shouldRunOnFunctionOrMethod(dyn_cast<NamedDecl>(
-        C.getCurrentAnalysisDeclContext()->getDecl())))
+  if (!shouldRunOnFunctionOrMethod(
+          dyn_cast<NamedDecl>(C.getCurrentAnalysisDeclContext()->getDecl())))
     return;
 
   // Tag the result of a load from 'self' so that we can easily know that the
@@ -312,7 +309,6 @@ void ObjCSelfInitChecker::checkLocation(SVal location, bool isLoad,
                 C);
 }
 
-
 void ObjCSelfInitChecker::checkBind(SVal loc, SVal val, const Stmt *S,
                                     CheckerContext &C) const {
   // Allow assignment of anything to self. Self is a local variable in the
@@ -320,10 +316,8 @@ void ObjCSelfInitChecker::checkBind(SVal loc, SVal val, const Stmt *S,
   // static functions/method calls. After self is assigned something we cannot
   // reason about, stop enforcing the rules.
   // (Only continue checking if the assigned value should be treated as self.)
-  if ((isSelfVar(loc, C)) &&
-      !hasSelfFlag(val, SelfFlag_InitRes, C) &&
-      !hasSelfFlag(val, SelfFlag_Self, C) &&
-      !isSelfVar(val, C)) {
+  if ((isSelfVar(loc, C)) && !hasSelfFlag(val, SelfFlag_InitRes, C) &&
+      !hasSelfFlag(val, SelfFlag_Self, C) && !isSelfVar(val, C)) {
 
     // Stop tracking the checker-specific state in the state.
     ProgramStateRef State = C.getState();
@@ -360,8 +354,8 @@ void ObjCSelfInitChecker::printState(raw_ostream &Out, ProgramStateRef State,
   }
 
   Out << NL;
-  for (SelfFlagTy::iterator I = FlagMap.begin(), E = FlagMap.end();
-       I != E; ++I) {
+  for (SelfFlagTy::iterator I = FlagMap.begin(), E = FlagMap.end(); I != E;
+       ++I) {
     Out << I->first << " : ";
 
     if (I->second == SelfFlag_None)
@@ -380,7 +374,6 @@ void ObjCSelfInitChecker::printState(raw_ostream &Out, ProgramStateRef State,
   }
 }
 
-
 // FIXME: A callback should disable checkers at the start of functions.
 static bool shouldRunOnFunctionOrMethod(const NamedDecl *ND) {
   if (!ND)
@@ -395,9 +388,9 @@ static bool shouldRunOnFunctionOrMethod(const NamedDecl *ND) {
   // self = [super init] applies only to NSObject subclasses.
   // For instance, NSProxy doesn't implement -init.
   ASTContext &Ctx = MD->getASTContext();
-  IdentifierInfo* NSObjectII = &Ctx.Idents.get("NSObject");
+  IdentifierInfo *NSObjectII = &Ctx.Idents.get("NSObject");
   ObjCInterfaceDecl *ID = MD->getClassInterface()->getSuperClass();
-  for ( ; ID ; ID = ID->getSuperClass()) {
+  for (; ID; ID = ID->getSuperClass()) {
     IdentifierInfo *II = ID->getIdentifier();
 
     if (II == NSObjectII)

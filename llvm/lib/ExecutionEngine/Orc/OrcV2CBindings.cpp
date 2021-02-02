@@ -132,7 +132,7 @@ public:
     for (auto &KV : LookupSet) {
       LLVMOrcSymbolLookupFlags SLF;
       LLVMOrcSymbolStringPoolEntryRef Name =
-        ::wrap(OrcV2CAPIHelper::getRawPoolEntryPtr(KV.first));
+          ::wrap(OrcV2CAPIHelper::getRawPoolEntryPtr(KV.first));
       switch (KV.second) {
       case SymbolLookupFlags::RequiredSymbol:
         SLF = LLVMOrcSymbolLookupFlagsRequiredSymbol;

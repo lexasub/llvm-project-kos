@@ -91,9 +91,7 @@ public:
     return &FrameLowering;
   }
   const RISCVInstrInfo *getInstrInfo() const override { return &InstrInfo; }
-  const RISCVRegisterInfo *getRegisterInfo() const override {
-    return &RegInfo;
-  }
+  const RISCVRegisterInfo *getRegisterInfo() const override { return &RegInfo; }
   const RISCVTargetLowering *getTargetLowering() const override {
     return &TLInfo;
   }
@@ -148,6 +146,6 @@ public:
   const LegalizerInfo *getLegalizerInfo() const override;
   const RegisterBankInfo *getRegBankInfo() const override;
 };
-} // End llvm namespace
+} // namespace llvm
 
 #endif

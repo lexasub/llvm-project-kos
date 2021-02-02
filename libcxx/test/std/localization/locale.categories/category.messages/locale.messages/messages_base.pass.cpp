@@ -19,9 +19,8 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    std::messages_base mb;
+int main(int, char**) {
+  std::messages_base mb;
 
   return 0;
 }

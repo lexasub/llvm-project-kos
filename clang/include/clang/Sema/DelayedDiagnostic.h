@@ -82,7 +82,8 @@ public:
 
   // ...and these apply to hierarchy conversions.
   CXXRecordDecl *getBaseClass() const {
-    assert(!IsMember); return cast<CXXRecordDecl>(Target);
+    assert(!IsMember);
+    return cast<CXXRecordDecl>(Target);
   }
   CXXRecordDecl *getDerivedClass() const { return NamingClass; }
 
@@ -106,9 +107,7 @@ public:
     Diag.Reset(DiagID);
     return Diag;
   }
-  const PartialDiagnostic &getDiag() const {
-    return Diag;
-  }
+  const PartialDiagnostic &getDiag() const { return Diag; }
 
 private:
   unsigned Access : 2;
@@ -132,14 +131,13 @@ public:
 
   void Destroy();
 
-  static DelayedDiagnostic makeAvailability(AvailabilityResult AR,
-                                            ArrayRef<SourceLocation> Locs,
-                                            const NamedDecl *ReferringDecl,
-                                            const NamedDecl *OffendingDecl,
-                                            const ObjCInterfaceDecl *UnknownObjCClass,
-                                            const ObjCPropertyDecl  *ObjCProperty,
-                                            StringRef Msg,
-                                            bool ObjCPropertyAccess);
+  static DelayedDiagnostic
+  makeAvailability(AvailabilityResult AR, ArrayRef<SourceLocation> Locs,
+                   const NamedDecl *ReferringDecl,
+                   const NamedDecl *OffendingDecl,
+                   const ObjCInterfaceDecl *UnknownObjCClass,
+                   const ObjCPropertyDecl *ObjCProperty, StringRef Msg,
+                   bool ObjCPropertyAccess);
 
   static DelayedDiagnostic makeAccess(SourceLocation Loc,
                                       const AccessedEntity &Entity) {
@@ -152,8 +150,7 @@ public:
   }
 
   static DelayedDiagnostic makeForbiddenType(SourceLocation loc,
-                                             unsigned diagnostic,
-                                             QualType type,
+                                             unsigned diagnostic, QualType type,
                                              unsigned argument) {
     DelayedDiagnostic DD;
     DD.Kind = ForbiddenType;
@@ -167,11 +164,11 @@ public:
 
   AccessedEntity &getAccessData() {
     assert(Kind == Access && "Not an access diagnostic.");
-    return *reinterpret_cast<AccessedEntity*>(AccessData);
+    return *reinterpret_cast<AccessedEntity *>(AccessData);
   }
   const AccessedEntity &getAccessData() const {
     assert(Kind == Access && "Not an access diagnostic.");
-    return *reinterpret_cast<const AccessedEntity*>(AccessData);
+    return *reinterpret_cast<const AccessedEntity *>(AccessData);
   }
 
   const NamedDecl *getAvailabilityReferringDecl() const {
@@ -235,7 +232,7 @@ private:
     const NamedDecl *ReferringDecl;
     const NamedDecl *OffendingDecl;
     const ObjCInterfaceDecl *UnknownObjCClass;
-    const ObjCPropertyDecl  *ObjCProperty;
+    const ObjCPropertyDecl *ObjCProperty;
     const char *Message;
     size_t MessageLen;
     SourceLocation *SelectorLocs;
@@ -283,8 +280,9 @@ public:
   }
 
   ~DelayedDiagnosticPool() {
-    for (SmallVectorImpl<DelayedDiagnostic>::iterator
-           i = Diagnostics.begin(), e = Diagnostics.end(); i != e; ++i)
+    for (SmallVectorImpl<DelayedDiagnostic>::iterator i = Diagnostics.begin(),
+                                                      e = Diagnostics.end();
+         i != e; ++i)
       i->Destroy();
   }
 
@@ -296,13 +294,12 @@ public:
   }
 
   /// Add a diagnostic to this pool.
-  void add(const DelayedDiagnostic &diag) {
-    Diagnostics.push_back(diag);
-  }
+  void add(const DelayedDiagnostic &diag) { Diagnostics.push_back(diag); }
 
   /// Steal the diagnostics from the given pool.
   void steal(DelayedDiagnosticPool &pool) {
-    if (pool.Diagnostics.empty()) return;
+    if (pool.Diagnostics.empty())
+      return;
 
     if (Diagnostics.empty()) {
       Diagnostics = std::move(pool.Diagnostics);
@@ -319,7 +316,7 @@ public:
   bool pool_empty() const { return Diagnostics.empty(); }
 };
 
-} // namespace clang
+} // namespace sema
 
 /// Add a diagnostic to the current delay pool.
 inline void Sema::DelayedDiagnostics::add(const sema::DelayedDiagnostic &diag) {

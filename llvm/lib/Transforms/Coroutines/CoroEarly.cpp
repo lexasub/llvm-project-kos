@@ -37,7 +37,7 @@ public:
                              ->getPointerTo()) {}
   bool lowerEarlyIntrinsics(Function &F);
 };
-}
+} // namespace
 
 // Replace a direct call to coro.resume or coro.destroy with an indirect call to
 // an address returned by coro.subfn.addr intrinsic. This is done so that
@@ -65,8 +65,8 @@ void Lowerer::lowerCoroPromise(CoroPromiseInst *Intrin) {
   auto *SampleStruct =
       StructType::get(Context, {AnyResumeFnPtrTy, AnyResumeFnPtrTy, Int8Ty});
   const DataLayout &DL = TheModule.getDataLayout();
-  int64_t Offset = alignTo(
-      DL.getStructLayout(SampleStruct)->getElementOffset(2), Alignment);
+  int64_t Offset =
+      alignTo(DL.getStructLayout(SampleStruct)->getElementOffset(2), Alignment);
   if (Intrin->isFromPromise())
     Offset = -Offset;
 
@@ -122,11 +122,11 @@ void Lowerer::lowerCoroNoop(IntrinsicInst *II) {
     ReturnInst::Create(C, Entry);
 
     // Create a constant struct for the frame.
-    Constant* Values[] = {NoopFn, NoopFn};
-    Constant* NoopCoroConst = ConstantStruct::get(FrameTy, Values);
-    NoopCoro = new GlobalVariable(M, NoopCoroConst->getType(), /*isConstant=*/true,
-                                GlobalVariable::PrivateLinkage, NoopCoroConst,
-                                "NoopCoro.Frame.Const");
+    Constant *Values[] = {NoopFn, NoopFn};
+    Constant *NoopCoroConst = ConstantStruct::get(FrameTy, Values);
+    NoopCoro = new GlobalVariable(
+        M, NoopCoroConst->getType(), /*isConstant=*/true,
+        GlobalVariable::PrivateLinkage, NoopCoroConst, "NoopCoro.Frame.Const");
   }
 
   Builder.SetInsertPoint(II);
@@ -267,7 +267,7 @@ struct CoroEarlyLegacy : public FunctionPass {
     return "Lower early coroutine intrinsics";
   }
 };
-}
+} // namespace
 
 char CoroEarlyLegacy::ID = 0;
 INITIALIZE_PASS(CoroEarlyLegacy, "coro-early",

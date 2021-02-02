@@ -36,39 +36,40 @@ template <class T>
 struct TestFn {
   void operator()() const {
     {
-        typedef std::atomic<T> A;
-        A a;
-        T t(T(1));
-        std::atomic_init(&a, t);
-        assert(c_cmpxchg_weak_loop(&a, &t, T(2),
-               std::memory_order_seq_cst, std::memory_order_seq_cst) == true);
-        assert(a == T(2));
-        assert(t == T(1));
-        assert(std::atomic_compare_exchange_weak_explicit(&a, &t, T(3),
-               std::memory_order_seq_cst, std::memory_order_seq_cst) == false);
-        assert(a == T(2));
-        assert(t == T(2));
+      typedef std::atomic<T> A;
+      A a;
+      T t(T(1));
+      std::atomic_init(&a, t);
+      assert(c_cmpxchg_weak_loop(&a, &t, T(2), std::memory_order_seq_cst,
+                                 std::memory_order_seq_cst) == true);
+      assert(a == T(2));
+      assert(t == T(1));
+      assert(std::atomic_compare_exchange_weak_explicit(
+                 &a, &t, T(3), std::memory_order_seq_cst,
+                 std::memory_order_seq_cst) == false);
+      assert(a == T(2));
+      assert(t == T(2));
     }
     {
-        typedef std::atomic<T> A;
-        volatile A a;
-        T t(T(1));
-        std::atomic_init(&a, t);
-        assert(c_cmpxchg_weak_loop(&a, &t, T(2),
-               std::memory_order_seq_cst, std::memory_order_seq_cst) == true);
-        assert(a == T(2));
-        assert(t == T(1));
-        assert(std::atomic_compare_exchange_weak_explicit(&a, &t, T(3),
-               std::memory_order_seq_cst, std::memory_order_seq_cst) == false);
-        assert(a == T(2));
-        assert(t == T(2));
+      typedef std::atomic<T> A;
+      volatile A a;
+      T t(T(1));
+      std::atomic_init(&a, t);
+      assert(c_cmpxchg_weak_loop(&a, &t, T(2), std::memory_order_seq_cst,
+                                 std::memory_order_seq_cst) == true);
+      assert(a == T(2));
+      assert(t == T(1));
+      assert(std::atomic_compare_exchange_weak_explicit(
+                 &a, &t, T(3), std::memory_order_seq_cst,
+                 std::memory_order_seq_cst) == false);
+      assert(a == T(2));
+      assert(t == T(2));
     }
   }
 };
 
-int main(int, char**)
-{
-    TestEachAtomicType<TestFn>()();
+int main(int, char**) {
+  TestEachAtomicType<TestFn>()();
 
   return 0;
 }

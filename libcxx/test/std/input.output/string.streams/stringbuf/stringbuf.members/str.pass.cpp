@@ -18,20 +18,19 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        std::stringbuf buf("testing");
-        assert(buf.str() == "testing");
-        buf.str("another test");
-        assert(buf.str() == "another test");
-    }
-    {
-        std::wstringbuf buf(L"testing");
-        assert(buf.str() == L"testing");
-        buf.str(L"another test");
-        assert(buf.str() == L"another test");
-    }
+int main(int, char**) {
+  {
+    std::stringbuf buf("testing");
+    assert(buf.str() == "testing");
+    buf.str("another test");
+    assert(buf.str() == "another test");
+  }
+  {
+    std::wstringbuf buf(L"testing");
+    assert(buf.str() == L"testing");
+    buf.str(L"another test");
+    assert(buf.str() == L"another test");
+  }
 
   return 0;
 }

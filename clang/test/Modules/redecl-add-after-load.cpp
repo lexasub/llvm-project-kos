@@ -13,10 +13,10 @@ extern constexpr int function();
 constexpr int test(bool b) { return b ? variable : function(); }
 
 namespace N {
-  typedef struct A B;
-  extern const int variable;
-  extern constexpr int function();
-}
+typedef struct A B;
+extern const int variable;
+extern constexpr int function();
+} // namespace N
 typedef N::B NB;
 constexpr int N_test(bool b) { return b ? N::variable : N::function(); }
 

@@ -245,9 +245,9 @@ private:
   /// - Each hashdata offset is valid
   /// - Each DIE is valid
   ///
-  /// \param AccelSection pointer to the section containing the acceleration table
-  /// \param StrData pointer to the string section
-  /// \param SectionName the name of the table we're verifying
+  /// \param AccelSection pointer to the section containing the acceleration
+  /// table \param StrData pointer to the string section \param SectionName the
+  /// name of the table we're verifying
   ///
   /// \returns The number of errors occurred during verification
   unsigned verifyAppleAccelTable(const DWARFSection *AccelSection,

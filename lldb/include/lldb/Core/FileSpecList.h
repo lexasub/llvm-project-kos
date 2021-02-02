@@ -84,7 +84,7 @@ public:
   ///
   /// \param[in] args
   ///     Arguments to create the FileSpec
-  template <class... Args> void EmplaceBack(Args &&... args) {
+  template <class... Args> void EmplaceBack(Args &&...args) {
     m_files.emplace_back(std::forward<Args>(args)...);
   }
 

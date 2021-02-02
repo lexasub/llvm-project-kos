@@ -20,43 +20,41 @@
 
 using std::optional;
 
-struct X
-{
-    static bool dtor_called;
-    ~X() {dtor_called = true;}
+struct X {
+  static bool dtor_called;
+  ~X() { dtor_called = true; }
 };
 
 bool X::dtor_called = false;
 
-int main(int, char**)
-{
-    {
-        optional<int> opt;
-        static_assert(noexcept(opt.reset()) == true, "");
-        opt.reset();
-        assert(static_cast<bool>(opt) == false);
-    }
-    {
-        optional<int> opt(3);
-        opt.reset();
-        assert(static_cast<bool>(opt) == false);
-    }
-    {
-        optional<X> opt;
-        static_assert(noexcept(opt.reset()) == true, "");
-        assert(X::dtor_called == false);
-        opt.reset();
-        assert(X::dtor_called == false);
-        assert(static_cast<bool>(opt) == false);
-    }
-    {
-        optional<X> opt(X{});
-        X::dtor_called = false;
-        opt.reset();
-        assert(X::dtor_called == true);
-        assert(static_cast<bool>(opt) == false);
-        X::dtor_called = false;
-    }
+int main(int, char**) {
+  {
+    optional<int> opt;
+    static_assert(noexcept(opt.reset()) == true, "");
+    opt.reset();
+    assert(static_cast<bool>(opt) == false);
+  }
+  {
+    optional<int> opt(3);
+    opt.reset();
+    assert(static_cast<bool>(opt) == false);
+  }
+  {
+    optional<X> opt;
+    static_assert(noexcept(opt.reset()) == true, "");
+    assert(X::dtor_called == false);
+    opt.reset();
+    assert(X::dtor_called == false);
+    assert(static_cast<bool>(opt) == false);
+  }
+  {
+    optional<X> opt(X{});
+    X::dtor_called = false;
+    opt.reset();
+    assert(X::dtor_called == true);
+    assert(static_cast<bool>(opt) == false);
+    X::dtor_called = false;
+  }
 
   return 0;
 }

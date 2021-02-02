@@ -39,6 +39,6 @@ template <> struct format_provider<pdb::PdbRaw_ImplVer> {
     }
   }
 };
-}
+} // namespace llvm
 
 #endif

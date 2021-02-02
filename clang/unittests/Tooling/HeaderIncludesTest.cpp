@@ -34,7 +34,8 @@ protected:
   std::string remove(llvm::StringRef Code, llvm::StringRef Header) {
     HeaderIncludes Includes(FileName, Code, Style);
     assert(Header.startswith("\"") || Header.startswith("<"));
-    auto Replaces = Includes.remove(Header.trim("\"<>"), Header.startswith("<"));
+    auto Replaces =
+        Includes.remove(Header.trim("\"<>"), Header.startswith("<"));
     auto Result = applyAllReplacements(Code, Replaces);
     EXPECT_TRUE(static_cast<bool>(Result));
     return *Result;

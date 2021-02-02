@@ -12,8 +12,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "Transforms.h"
 #include "Internals.h"
+#include "Transforms.h"
 #include "clang/AST/ASTContext.h"
 
 using namespace clang;
@@ -22,13 +22,14 @@ using namespace trans;
 
 namespace {
 
-class ZeroOutInDeallocRemover :
-                           public RecursiveASTVisitor<ZeroOutInDeallocRemover> {
+class ZeroOutInDeallocRemover
+    : public RecursiveASTVisitor<ZeroOutInDeallocRemover> {
   typedef RecursiveASTVisitor<ZeroOutInDeallocRemover> base;
 
   MigrationPass &Pass;
 
-  llvm::DenseMap<ObjCPropertyDecl*, ObjCPropertyImplDecl*> SynthesizedProperties;
+  llvm::DenseMap<ObjCPropertyDecl *, ObjCPropertyImplDecl *>
+      SynthesizedProperties;
   ImplicitParamDecl *SelfD;
   ExprSet Removables;
   Selector FinalizeSel;
@@ -54,9 +55,10 @@ public:
       return true;
 
     bool BackedBySynthesizeSetter = false;
-    for (llvm::DenseMap<ObjCPropertyDecl*, ObjCPropertyImplDecl*>::iterator
-         P = SynthesizedProperties.begin(),
-         E = SynthesizedProperties.end(); P != E; ++P) {
+    for (llvm::DenseMap<ObjCPropertyDecl *, ObjCPropertyImplDecl *>::iterator
+             P = SynthesizedProperties.begin(),
+             E = SynthesizedProperties.end();
+         P != E; ++P) {
       ObjCPropertyDecl *PropDecl = P->first;
       if (PropDecl->getSetterName() == ME->getSelector()) {
         BackedBySynthesizeSetter = true;
@@ -70,8 +72,7 @@ public:
     Transaction Trans(TA);
     Expr *RHS = ME->getArg(0);
     bool RHSIsNull =
-      RHS->isNullPointerConstant(Ctx,
-                                 Expr::NPC_ValueDependentIsNull);
+        RHS->isNullPointerConstant(Ctx, Expr::NPC_ValueDependentIsNull);
     if (RHSIsNull && isRemovable(ME))
       TA.removeStmt(ME);
 
@@ -142,9 +143,7 @@ public:
   bool TraverseBlockExpr(BlockExpr *block) { return true; }
 
 private:
-  bool isRemovable(Expr *E) const {
-    return Removables.count(E);
-  }
+  bool isRemovable(Expr *E) const { return Removables.count(E); }
 
   bool isZeroingPropIvar(Expr *E) {
     E = E->IgnoreParens();
@@ -169,9 +168,10 @@ private:
       if (!IVDecl->getType()->isObjCObjectPointerType())
         return false;
       bool IvarBacksPropertySynthesis = false;
-      for (llvm::DenseMap<ObjCPropertyDecl*, ObjCPropertyImplDecl*>::iterator
-           P = SynthesizedProperties.begin(),
-           E = SynthesizedProperties.end(); P != E; ++P) {
+      for (llvm::DenseMap<ObjCPropertyDecl *, ObjCPropertyImplDecl *>::iterator
+               P = SynthesizedProperties.begin(),
+               E = SynthesizedProperties.end();
+           P != E; ++P) {
         ObjCPropertyImplDecl *PropImpDecl = P->second;
         if (PropImpDecl && PropImpDecl->getPropertyIvarDecl() == IVDecl) {
           IvarBacksPropertySynthesis = true;
@@ -180,21 +180,23 @@ private:
       }
       if (!IvarBacksPropertySynthesis)
         return false;
-    }
-    else
-        return false;
+    } else
+      return false;
 
     return isZero(BOE->getRHS());
   }
 
   bool isZeroingPropIvar(PseudoObjectExpr *PO) {
     BinaryOperator *BO = dyn_cast<BinaryOperator>(PO->getSyntacticForm());
-    if (!BO) return false;
-    if (BO->getOpcode() != BO_Assign) return false;
+    if (!BO)
+      return false;
+    if (BO->getOpcode() != BO_Assign)
+      return false;
 
     ObjCPropertyRefExpr *PropRefExp =
-      dyn_cast<ObjCPropertyRefExpr>(BO->getLHS()->IgnoreParens());
-    if (!PropRefExp) return false;
+        dyn_cast<ObjCPropertyRefExpr>(BO->getLHS()->IgnoreParens());
+    if (!PropRefExp)
+      return false;
 
     // TODO: Using implicit property decl.
     if (PropRefExp->isImplicitProperty())

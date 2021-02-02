@@ -38,4 +38,3 @@ int main() {
 // CHECK:      <string>Calling &apos;f&lt;int&gt;&apos;</string>
 // CHECK:      <string>Calling &apos;defaultTemplateParameterFunction&lt;0&gt;&apos;</string>
 // CHECK:      <string>Calling &apos;variadicTemplateFunction&lt;char, float, double, int *&gt;&apos;</string>
-

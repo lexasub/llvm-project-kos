@@ -15,7 +15,7 @@ namespace clang {
 namespace tidy {
 namespace bugprone {
 
-class PosixReturnCheck: public ClangTidyCheck {
+class PosixReturnCheck : public ClangTidyCheck {
 public:
   PosixReturnCheck(StringRef Name, ClangTidyContext *Context)
       : ClangTidyCheck(Name, Context) {}

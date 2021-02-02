@@ -6,17 +6,17 @@ struct default_delete {};
 
 template <typename T, typename D = default_delete<T>>
 class unique_ptr {
- public:
+public:
   unique_ptr();
   ~unique_ptr();
-  explicit unique_ptr(T*);
+  explicit unique_ptr(T *);
   template <typename U, typename E>
-  unique_ptr(unique_ptr<U, E>&&);
-  T* release();
+  unique_ptr(unique_ptr<U, E> &&);
+  T *release();
 };
-}  // namespace std
+} // namespace std
 
-std::unique_ptr<int>& ReturnsAUnique();
+std::unique_ptr<int> &ReturnsAUnique();
 
 void Positives() {
   std::unique_ptr<int> P;
@@ -42,7 +42,7 @@ void Positives() {
 struct NotDefaultDeleter {};
 
 struct NotUniquePtr {
-  int* release();
+  int *release();
 };
 
 void Negatives() {

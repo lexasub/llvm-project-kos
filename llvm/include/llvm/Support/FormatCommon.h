@@ -71,6 +71,6 @@ private:
       S << Fill;
   }
 };
-}
+} // namespace llvm
 
 #endif

@@ -11,13 +11,17 @@ public:
 };
 
 Zone::Zone() {
-    dispatch_once(^{});
-    dispatch_once(^{});
+  dispatch_once(^{
+  });
+  dispatch_once(^{
+  });
 }
 
 Zone::~Zone() {
-    dispatch_once(^{});
-    dispatch_once(^{});
+  dispatch_once(^{
+  });
+  dispatch_once(^{
+  });
 }
 
 class X : public virtual Zone {
@@ -26,15 +30,18 @@ class X : public virtual Zone {
 };
 
 X::X() {
-    dispatch_once(^{});
-    dispatch_once(^{});
+  dispatch_once(^{
+  });
+  dispatch_once(^{
+  });
 };
 
 X::~X() {
-    dispatch_once(^{});
-    dispatch_once(^{});
+  dispatch_once(^{
+  });
+  dispatch_once(^{
+  });
 };
-
 
 // CHECK-LABEL: define internal void @___ZN4ZoneC2Ev_block_invoke
 // CHECK-LABEL: define internal void @___ZN4ZoneC2Ev_block_invoke_

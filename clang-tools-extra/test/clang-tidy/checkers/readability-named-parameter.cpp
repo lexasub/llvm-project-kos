@@ -1,6 +1,7 @@
 // RUN: %check_clang_tidy %s readability-named-parameter %t
 
-void Method(char *) { /* */ }
+void Method(char *) { /* */
+}
 // CHECK-MESSAGES: :[[@LINE-1]]:19: warning: all parameters should be named in a function
 // CHECK-FIXES: void Method(char * /*unused*/) { /* */ }
 void Method2(char *) {}
@@ -21,15 +22,18 @@ int Method5(int) { return 0; }
 void Method6(void (*)(void *)) {}
 // CHECK-MESSAGES: :[[@LINE-1]]:21: warning: all parameters should be named in a function
 // CHECK-FIXES: void Method6(void (* /*unused*/)(void *)) {}
-template <typename T> void Method7(T) {}
+template <typename T>
+void Method7(T) {}
 // CHECK-MESSAGES: :[[@LINE-1]]:37: warning: all parameters should be named in a function
 // CHECK-FIXES: template <typename T> void Method7(T /*unused*/) {}
 
 // Don't warn in macros.
-#define M void MethodM(int) {}
+#define M \
+  void MethodM(int) {}
 M
 
-void operator delete(void *x) throw() {}
+    void
+    operator delete(void *x) throw() {}
 void Method7(char * /*x*/) {}
 void Method8(char *x) {}
 typedef void (*TypeM)(int x);
@@ -40,21 +44,22 @@ struct X {
   X operator++(int) {}
   X operator--(int) {}
 
-  X(X&) = delete;
-  X &operator=(X&) = default;
+  X(X &) = delete;
+  X &operator=(X &) = default;
 
   const int &i;
 };
 
 void (*Func1)(void *);
 void Func2(void (*func)(void *)) {}
-template <void Func(void *)> void Func3() {}
+template <void Func(void *)>
+void Func3() {}
 
 template <typename T>
 struct Y {
   void foo(T) {}
-// CHECK-MESSAGES: :[[@LINE-1]]:13: warning: all parameters should be named in a function
-// CHECK-FIXES: void foo(T /*unused*/) {}
+  // CHECK-MESSAGES: :[[@LINE-1]]:13: warning: all parameters should be named in a function
+  // CHECK-FIXES: void foo(T /*unused*/) {}
 };
 
 Y<int> y;
@@ -67,8 +72,8 @@ struct Base {
 
 struct Derived : public Base {
   void foo(int);
-// CHECK-MESSAGES: :[[@LINE-1]]:15: warning: all parameters should be named in a function
-// CHECK-FIXES: void foo(int /*argname*/);
+  // CHECK-MESSAGES: :[[@LINE-1]]:15: warning: all parameters should be named in a function
+  // CHECK-FIXES: void foo(int /*argname*/);
 };
 
 void FDef(int);
@@ -87,32 +92,32 @@ void FNoDef(int);
 
 class Z {};
 
-Z &operator++(Z&) {}
+Z &operator++(Z &) {}
 // CHECK-MESSAGES: :[[@LINE-1]]:17: warning: all parameters should be named in a function
 // CHECK-FIXES: Z &operator++(Z& /*unused*/) {}
 
-Z &operator++(Z&, int) {}
+Z &operator++(Z &, int) {}
 // CHECK-MESSAGES: :[[@LINE-1]]:17: warning: all parameters should be named in a function
 // CHECK-FIXES: Z &operator++(Z& /*unused*/, int) {}
 
-Z &operator--(Z&) {}
+Z &operator--(Z &) {}
 // CHECK-MESSAGES: :[[@LINE-1]]:17: warning: all parameters should be named in a function
 // CHECK-FIXES: Z &operator--(Z& /*unused*/) {}
 
-Z &operator--(Z&, int) {}
+Z &operator--(Z &, int) {}
 // CHECK-MESSAGES: :[[@LINE-1]]:17: warning: all parameters should be named in a function
 // CHECK-FIXES: Z &operator--(Z& /*unused*/, int) {}
 
 namespace testing {
 namespace internal {
 class IgnoredValue {
- public:
+public:
   template <typename T>
-  IgnoredValue(const T& /* ignored */) {}
+  IgnoredValue(const T & /* ignored */) {}
 };
-}
+} // namespace internal
 typedef internal::IgnoredValue Unused;
-}
+} // namespace testing
 
 using ::testing::Unused;
 
@@ -128,6 +133,6 @@ typedef decltype(nullptr) nullptr_t;
 
 void f(std::nullptr_t) {}
 
-typedef void (F)(int);
+typedef void(F)(int);
 F f;
 void f(int x) {}

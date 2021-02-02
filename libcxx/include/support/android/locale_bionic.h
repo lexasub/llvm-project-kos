@@ -41,8 +41,8 @@ extern "C" {
 extern "C" {
 #endif
 
-inline _LIBCPP_INLINE_VISIBILITY float strtof_l(const char* __nptr, char** __endptr,
-                                                locale_t) {
+inline _LIBCPP_INLINE_VISIBILITY float strtof_l(const char* __nptr,
+                                                char** __endptr, locale_t) {
   return ::strtof(__nptr, __endptr);
 }
 
@@ -51,8 +51,8 @@ inline _LIBCPP_INLINE_VISIBILITY double strtod_l(const char* __nptr,
   return ::strtod(__nptr, __endptr);
 }
 
-inline _LIBCPP_INLINE_VISIBILITY long strtol_l(const char* __nptr, char** __endptr,
-                                               int __base, locale_t) {
+inline _LIBCPP_INLINE_VISIBILITY long
+strtol_l(const char* __nptr, char** __endptr, int __base, locale_t) {
   return ::strtol(__nptr, __endptr, __base);
 }
 

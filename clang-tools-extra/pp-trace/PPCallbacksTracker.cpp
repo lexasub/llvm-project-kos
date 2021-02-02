@@ -56,37 +56,31 @@ static std::string getSourceLocationString(Preprocessor &PP,
 
 // FileChangeReason strings.
 static const char *const FileChangeReasonStrings[] = {
-  "EnterFile", "ExitFile", "SystemHeaderPragma", "RenameFile"
-};
+    "EnterFile", "ExitFile", "SystemHeaderPragma", "RenameFile"};
 
 // CharacteristicKind strings.
-static const char *const CharacteristicKindStrings[] = { "C_User", "C_System",
-                                                         "C_ExternCSystem" };
+static const char *const CharacteristicKindStrings[] = {"C_User", "C_System",
+                                                        "C_ExternCSystem"};
 
 // MacroDirective::Kind strings.
 static const char *const MacroDirectiveKindStrings[] = {
-  "MD_Define","MD_Undefine", "MD_Visibility"
-};
+    "MD_Define", "MD_Undefine", "MD_Visibility"};
 
 // PragmaIntroducerKind strings.
-static const char *const PragmaIntroducerKindStrings[] = { "PIK_HashPragma",
-                                                           "PIK__Pragma",
-                                                           "PIK___pragma" };
+static const char *const PragmaIntroducerKindStrings[] = {
+    "PIK_HashPragma", "PIK__Pragma", "PIK___pragma"};
 
 // PragmaMessageKind strings.
 static const char *const PragmaMessageKindStrings[] = {
-  "PMK_Message", "PMK_Warning", "PMK_Error"
-};
+    "PMK_Message", "PMK_Warning", "PMK_Error"};
 
 // ConditionValueKind strings.
 static const char *const ConditionValueKindStrings[] = {
-  "CVK_NotEvaluated", "CVK_False", "CVK_True"
-};
+    "CVK_NotEvaluated", "CVK_False", "CVK_True"};
 
 // Mapping strings.
-static const char *const MappingStrings[] = { "0",          "MAP_IGNORE",
-                                              "MAP_REMARK", "MAP_WARNING",
-                                              "MAP_ERROR",  "MAP_FATAL" };
+static const char *const MappingStrings[] = {
+    "0", "MAP_IGNORE", "MAP_REMARK", "MAP_WARNING", "MAP_ERROR", "MAP_FATAL"};
 
 // PPCallbacksTracker functions.
 
@@ -124,9 +118,8 @@ void PPCallbacksTracker::FileSkipped(const FileEntryRef &SkippedFile,
 
 // Callback invoked whenever an inclusion directive results in a
 // file-not-found error.
-bool
-PPCallbacksTracker::FileNotFound(llvm::StringRef FileName,
-                                 llvm::SmallVectorImpl<char> &RecoveryPath) {
+bool PPCallbacksTracker::FileNotFound(
+    llvm::StringRef FileName, llvm::SmallVectorImpl<char> &RecoveryPath) {
   beginCallback("FileNotFound");
   appendFilePathArgument("FileName", FileName);
   return false;
@@ -582,7 +575,8 @@ void PPCallbacksTracker::appendArgument(const char *Name,
     Any = true;
   }
   for (auto *MM : Value.getModuleMacros()) {
-    if (Any) SS << ", ";
+    if (Any)
+      SS << ", ";
     SS << MM->getOwningModule()->getFullModuleName();
   }
   SS << "]";

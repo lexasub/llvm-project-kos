@@ -21,35 +21,31 @@
 int showmanyc_called = 0;
 
 template <class CharT>
-struct test
-    : public std::basic_streambuf<CharT>
-{
-    typedef std::basic_streambuf<CharT> base;
+struct test : public std::basic_streambuf<CharT> {
+  typedef std::basic_streambuf<CharT> base;
 
-    test() {}
+  test() {}
 
-    void setg(CharT* gbeg, CharT* gnext, CharT* gend)
-    {
-        base::setg(gbeg, gnext, gend);
-    }
+  void setg(CharT* gbeg, CharT* gnext, CharT* gend) {
+    base::setg(gbeg, gnext, gend);
+  }
+
 protected:
-    std::streamsize showmanyc()
-    {
-        ++showmanyc_called;
-        return 5;
-    }
+  std::streamsize showmanyc() {
+    ++showmanyc_called;
+    return 5;
+  }
 };
 
-int main(int, char**)
-{
-    {
-        test<char> t;
-        assert(t.in_avail() == 5);
-        assert(showmanyc_called == 1);
-        char in[5];
-        t.setg(in, in+2, in+5);
-        assert(t.in_avail() == 3);
-    }
+int main(int, char**) {
+  {
+    test<char> t;
+    assert(t.in_avail() == 5);
+    assert(showmanyc_called == 1);
+    char in[5];
+    t.setg(in, in + 2, in + 5);
+    assert(t.in_avail() == 3);
+  }
 
   return 0;
 }

@@ -234,7 +234,8 @@ public:
   ModelledPHI() = default;
 
   ModelledPHI(const PHINode *PN) {
-    // BasicBlock comes first so we sort by basic block pointer order, then by value pointer order.
+    // BasicBlock comes first so we sort by basic block pointer order, then by
+    // value pointer order.
     SmallVector<std::pair<BasicBlock *, Value *>, 4> Ops;
     for (unsigned I = 0, E = PN->getNumIncomingValues(); I != E; ++I)
       Ops.push_back({PN->getIncomingBlock(I), PN->getIncomingValue(I)});
@@ -245,12 +246,12 @@ public:
     }
   }
 
-  /// Create a dummy ModelledPHI that will compare unequal to any other ModelledPHI
-  /// without the same ID.
-  /// \note This is specifically for DenseMapInfo - do not use this!
+  /// Create a dummy ModelledPHI that will compare unequal to any other
+  /// ModelledPHI without the same ID. \note This is specifically for
+  /// DenseMapInfo - do not use this!
   static ModelledPHI createDummy(size_t ID) {
     ModelledPHI M;
-    M.Values.push_back(reinterpret_cast<Value*>(ID));
+    M.Values.push_back(reinterpret_cast<Value *>(ID));
     return M;
   }
 
@@ -304,7 +305,7 @@ public:
 
   // Hash functor
   unsigned hash() const {
-      return (unsigned)hash_combine_range(Values.begin(), Values.end());
+    return (unsigned)hash_combine_range(Values.begin(), Values.end());
   }
 
   bool operator==(const ModelledPHI &Other) const {
@@ -569,7 +570,7 @@ public:
                       << "\n");
 
     unsigned NumSunk = 0;
-    ReversePostOrderTraversal<Function*> RPOT(&F);
+    ReversePostOrderTraversal<Function *> RPOT(&F);
     for (auto *N : RPOT)
       NumSunk += sinkBB(N);
 
@@ -631,8 +632,8 @@ private:
 };
 
 Optional<SinkingInstructionCandidate> GVNSink::analyzeInstructionForSinking(
-  LockstepReverseIterator &LRI, unsigned &InstNum, unsigned &MemoryInstNum,
-  ModelledPHISet &NeededPHIs, SmallPtrSetImpl<Value *> &PHIContents) {
+    LockstepReverseIterator &LRI, unsigned &InstNum, unsigned &MemoryInstNum,
+    ModelledPHISet &NeededPHIs, SmallPtrSetImpl<Value *> &PHIContents) {
   auto Insts = *LRI;
   LLVM_DEBUG(dbgs() << " -- Analyzing instruction set: [\n"; for (auto *I
                                                                   : Insts) {

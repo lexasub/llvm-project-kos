@@ -1,6 +1,5 @@
 // RUN: clang-diff -ast-dump %s -- -std=c++11 | FileCheck %s
 
-
 // CHECK: {{^}}TranslationUnitDecl(0)
 // CHECK: {{^}} NamespaceDecl: test;(
 namespace test {
@@ -86,7 +85,7 @@ void macros() {
 namespace world {
 // nodes from other files are excluded, there should be no output here
 #include "clang-diff-ast.cpp"
-}
+} // namespace world
 // CHECK-NEXT: FunctionDecl: sentinel
 void sentinel();
 #endif

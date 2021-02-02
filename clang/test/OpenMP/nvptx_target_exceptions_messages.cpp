@@ -12,8 +12,9 @@
 template <typename T>
 class TemplateClass {
   T a;
+
 public:
-  TemplateClass() { throw 1;}
+  TemplateClass() { throw 1; }
   T f_method() const { return a; }
 };
 
@@ -51,14 +52,14 @@ int maini1() {
   try {
 #pragma omp target map(tofrom \
                        : a, b)
-  {
-    S s(a);
-    static long aaa = 23;
-    a = foo() + bar() + b + c + d + aa + aaa + FA<int>(); // expected-note{{called by 'maini1'}}
-    if (!a)
-      throw "Error"; // expected-error {{cannot use 'throw' with exceptions disabled}}
-  }
-  } catch(...) {
+    {
+      S s(a);
+      static long aaa = 23;
+      a = foo() + bar() + b + c + d + aa + aaa + FA<int>(); // expected-note{{called by 'maini1'}}
+      if (!a)
+        throw "Error"; // expected-error {{cannot use 'throw' with exceptions disabled}}
+    }
+  } catch (...) {
   }
   return baz4();
 }
@@ -67,7 +68,7 @@ int baz3() { return 2 + baz2(); }
 int baz2() {
 #pragma omp target
   try { // expected-error {{cannot use 'try' with exceptions disabled}}
-  ++c;
+    ++c;
   } catch (...) {
   }
   return 2 + baz3();
@@ -85,7 +86,6 @@ int (*B)() = &foobar2;
 
 int foobar1() { throw 1; }
 int foobar2() { throw 1; } // expected-error {{cannot use 'throw' with exceptions disabled}}
-
 
 int foobar3();
 int (*C)() = &foobar3; // expected-warning {{declaration is not declared in any declare target region}}

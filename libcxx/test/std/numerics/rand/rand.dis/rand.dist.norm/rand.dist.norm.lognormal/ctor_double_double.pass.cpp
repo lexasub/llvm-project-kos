@@ -35,29 +35,28 @@ void test_implicit() {
 #endif
 }
 
-int main(int, char**)
-{
-    {
-        typedef std::lognormal_distribution<> D;
-        D d;
-        assert(d.m() == 0);
-        assert(d.s() == 1);
-    }
-    {
-        typedef std::lognormal_distribution<> D;
-        D d(14.5);
-        assert(d.m() == 14.5);
-        assert(d.s() == 1);
-    }
-    {
-        typedef std::lognormal_distribution<> D;
-        D d(14.5, 5.25);
-        assert(d.m() == 14.5);
-        assert(d.s() == 5.25);
-    }
+int main(int, char**) {
+  {
+    typedef std::lognormal_distribution<> D;
+    D d;
+    assert(d.m() == 0);
+    assert(d.s() == 1);
+  }
+  {
+    typedef std::lognormal_distribution<> D;
+    D d(14.5);
+    assert(d.m() == 14.5);
+    assert(d.s() == 1);
+  }
+  {
+    typedef std::lognormal_distribution<> D;
+    D d(14.5, 5.25);
+    assert(d.m() == 14.5);
+    assert(d.s() == 5.25);
+  }
 
-    test_implicit<float>();
-    test_implicit<double>();
+  test_implicit<float>();
+  test_implicit<double>();
 
-    return 0;
+  return 0;
 }

@@ -20,14 +20,16 @@
 #include "test_macros.h"
 
 struct Incomplete;
-template<class T> struct Holder { T t; };
+template <class T>
+struct Holder {
+  T t;
+};
 
-void f(Holder<Incomplete> *) { }
+void f(Holder<Incomplete>*) {}
 
-int main(int, char **)
-{
-    Holder<Incomplete> *p = nullptr;
-    std::thread t(f, p);
-    t.join();
-    return 0;
+int main(int, char**) {
+  Holder<Incomplete>* p = nullptr;
+  std::thread t(f, p);
+  t.join();
+  return 0;
 }

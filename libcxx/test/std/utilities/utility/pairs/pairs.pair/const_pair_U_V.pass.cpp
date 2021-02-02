@@ -163,32 +163,32 @@ TEST_CONSTEXPR_CXX20 bool test() {
                     ExplicitTypes::ConvertingType&&, true, false>();
   }
 #if TEST_STD_VER > 11
-    {
-        typedef std::pair<int, int> P1;
-        typedef std::pair<double, long> P2;
-        constexpr P1 p1(3, 4);
-        constexpr P2 p2 = p1;
-        static_assert(p2.first == 3, "");
-        static_assert(p2.second == 4, "");
-    }
-    {
-        using P1 = std::pair<int, int>;
-        using P2 = std::pair<ExplicitT, ExplicitT>;
-        constexpr P1 p1(42, 101);
-        constexpr P2 p2(p1);
-        static_assert(p2.first.value == 42, "");
-        static_assert(p2.second.value == 101, "");
-    }
-    {
-      using P1 = std::pair<int, int>;
-      using P2 = std::pair<ImplicitT, ImplicitT>;
-      constexpr P1 p1(42, 101);
-      constexpr P2 p2 = p1;
-      static_assert(p2.first.value == 42, "");
-      static_assert(p2.second.value == 101, "");
-    }
+  {
+    typedef std::pair<int, int> P1;
+    typedef std::pair<double, long> P2;
+    constexpr P1 p1(3, 4);
+    constexpr P2 p2 = p1;
+    static_assert(p2.first == 3, "");
+    static_assert(p2.second == 4, "");
+  }
+  {
+    using P1 = std::pair<int, int>;
+    using P2 = std::pair<ExplicitT, ExplicitT>;
+    constexpr P1 p1(42, 101);
+    constexpr P2 p2(p1);
+    static_assert(p2.first.value == 42, "");
+    static_assert(p2.second.value == 101, "");
+  }
+  {
+    using P1 = std::pair<int, int>;
+    using P2 = std::pair<ImplicitT, ImplicitT>;
+    constexpr P1 p1(42, 101);
+    constexpr P2 p2 = p1;
+    static_assert(p2.first.value == 42, "");
+    static_assert(p2.second.value == 101, "");
+  }
 #endif
-    return true;
+  return true;
 }
 
 int main(int, char**) {

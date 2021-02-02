@@ -197,7 +197,8 @@ static bool isValidCoroutineContext(Sema &S, SourceLocation Loc,
   if (!FD) {
     S.Diag(Loc, isa<ObjCMethodDecl>(S.CurContext)
                     ? diag::err_coroutine_objc_method
-                    : diag::err_coroutine_outside_function) << Keyword;
+                    : diag::err_coroutine_outside_function)
+        << Keyword;
     return false;
   }
 
@@ -321,8 +322,7 @@ static ExprResult buildCoroutineHandle(Sema &S, QualType PromiseType,
   LookupResult Found(S, &S.PP.getIdentifierTable().get("from_address"), Loc,
                      Sema::LookupOrdinaryName);
   if (!S.LookupQualifiedName(Found, LookupCtx)) {
-    S.Diag(Loc, diag::err_coroutine_handle_missing_member)
-        << "from_address";
+    S.Diag(Loc, diag::err_coroutine_handle_missing_member) << "from_address";
     return ExprError();
   }
 
@@ -352,8 +352,8 @@ static ExprResult buildMemberCall(Sema &S, Expr *Base, SourceLocation Loc,
   // FIXME: Fix BuildMemberReferenceExpr to take a const CXXScopeSpec&.
   CXXScopeSpec SS;
   ExprResult Result = S.BuildMemberReferenceExpr(
-      Base, Base->getType(), Loc, /*IsPtr=*/false, SS,
-      SourceLocation(), nullptr, NameInfo, /*TemplateArgs=*/nullptr,
+      Base, Base->getType(), Loc, /*IsPtr=*/false, SS, SourceLocation(),
+      nullptr, NameInfo, /*TemplateArgs=*/nullptr,
       /*Scope=*/nullptr);
   if (Result.isInvalid())
     return ExprError();
@@ -480,8 +480,7 @@ static ReadySuspendResumeResult buildCoawaitCalls(Sema &S, VarDecl *CoroPromise,
     QualType RetType = AwaitSuspend->getCallReturnType(S.Context);
 
     // Experimental support for coroutine_handle returning await_suspend.
-    if (Expr *TailCallSuspend =
-            maybeTailCall(S, RetType, AwaitSuspend, Loc))
+    if (Expr *TailCallSuspend = maybeTailCall(S, RetType, AwaitSuspend, Loc))
       // Note that we don't wrap the expression with ExprWithCleanups here
       // because that might interfere with tailcall contract (e.g. inserting
       // clean up instructions in-between tailcall and return). Instead
@@ -595,8 +594,8 @@ VarDecl *Sema::buildCoroutinePromise(SourceLocation Loc) {
   if (!CtorArgExprs.empty()) {
     // Create an initialization sequence for the promise type using the
     // constructor arguments, wrapped in a parenthesized list expression.
-    Expr *PLE = ParenListExpr::Create(Context, FD->getLocation(),
-                                      CtorArgExprs, FD->getLocation());
+    Expr *PLE = ParenListExpr::Create(Context, FD->getLocation(), CtorArgExprs,
+                                      FD->getLocation());
     InitializedEntity Entity = InitializedEntity::InitializeVariable(VD);
     InitializationKind Kind = InitializationKind::CreateForInit(
         VD->getLocation(), /*DirectInit=*/true, PLE);
@@ -829,14 +828,15 @@ ExprResult Sema::ActOnCoawaitExpr(Scope *S, SourceLocation Loc, Expr *E) {
 
   if (E->getType()->isPlaceholderType()) {
     ExprResult R = CheckPlaceholderExpr(E);
-    if (R.isInvalid()) return ExprError();
+    if (R.isInvalid())
+      return ExprError();
     E = R.get();
   }
   ExprResult Lookup = buildOperatorCoawaitLookupExpr(*this, S, Loc);
   if (Lookup.isInvalid())
     return ExprError();
   return BuildUnresolvedCoawaitExpr(Loc, E,
-                                   cast<UnresolvedLookupExpr>(Lookup.get()));
+                                    cast<UnresolvedLookupExpr>(Lookup.get()));
 }
 
 ExprResult Sema::BuildUnresolvedCoawaitExpr(SourceLocation Loc, Expr *E,
@@ -878,20 +878,21 @@ ExprResult Sema::BuildUnresolvedCoawaitExpr(SourceLocation Loc, Expr *E,
 }
 
 ExprResult Sema::BuildResolvedCoawaitExpr(SourceLocation Loc, Expr *E,
-                                  bool IsImplicit) {
+                                          bool IsImplicit) {
   auto *Coroutine = checkCoroutineContext(*this, Loc, "co_await", IsImplicit);
   if (!Coroutine)
     return ExprError();
 
   if (E->getType()->isPlaceholderType()) {
     ExprResult R = CheckPlaceholderExpr(E);
-    if (R.isInvalid()) return ExprError();
+    if (R.isInvalid())
+      return ExprError();
     E = R.get();
   }
 
   if (E->getType()->isDependentType()) {
-    Expr *Res = new (Context)
-        CoawaitExpr(Loc, Context.DependentTy, E, IsImplicit);
+    Expr *Res =
+        new (Context) CoawaitExpr(Loc, Context.DependentTy, E, IsImplicit);
     return Res;
   }
 
@@ -906,8 +907,8 @@ ExprResult Sema::BuildResolvedCoawaitExpr(SourceLocation Loc, Expr *E,
   SourceLocation CallLoc = E->getExprLoc();
 
   // Build the await_ready, await_suspend, await_resume calls.
-  ReadySuspendResumeResult RSS = buildCoawaitCalls(
-      *this, Coroutine->CoroutinePromise, CallLoc, E);
+  ReadySuspendResumeResult RSS =
+      buildCoawaitCalls(*this, Coroutine->CoroutinePromise, CallLoc, E);
   if (RSS.IsInvalid)
     return ExprError();
 
@@ -946,7 +947,8 @@ ExprResult Sema::BuildCoyieldExpr(SourceLocation Loc, Expr *E) {
 
   if (E->getType()->isPlaceholderType()) {
     ExprResult R = CheckPlaceholderExpr(E);
-    if (R.isInvalid()) return ExprError();
+    if (R.isInvalid())
+      return ExprError();
     E = R.get();
   }
 
@@ -961,14 +963,13 @@ ExprResult Sema::BuildCoyieldExpr(SourceLocation Loc, Expr *E) {
     E = CreateMaterializeTemporaryExpr(E->getType(), E, true);
 
   // Build the await_ready, await_suspend, await_resume calls.
-  ReadySuspendResumeResult RSS = buildCoawaitCalls(
-      *this, Coroutine->CoroutinePromise, Loc, E);
+  ReadySuspendResumeResult RSS =
+      buildCoawaitCalls(*this, Coroutine->CoroutinePromise, Loc, E);
   if (RSS.IsInvalid)
     return ExprError();
 
-  Expr *Res =
-      new (Context) CoyieldExpr(Loc, E, RSS.Results[0], RSS.Results[1],
-                                RSS.Results[2], RSS.OpaqueValue);
+  Expr *Res = new (Context) CoyieldExpr(Loc, E, RSS.Results[0], RSS.Results[1],
+                                        RSS.Results[2], RSS.OpaqueValue);
 
   return Res;
 }
@@ -990,13 +991,15 @@ StmtResult Sema::BuildCoreturnStmt(SourceLocation Loc, Expr *E,
   if (E && E->getType()->isPlaceholderType() &&
       !E->getType()->isSpecificPlaceholderType(BuiltinType::Overload)) {
     ExprResult R = CheckPlaceholderExpr(E);
-    if (R.isInvalid()) return StmtError();
+    if (R.isInvalid())
+      return StmtError();
     E = R.get();
   }
 
   // Move the return value if we can
   if (E) {
-    auto NRVOCandidate = this->getCopyElisionCandidate(E->getType(), E, CES_AsIfByStdMove);
+    auto NRVOCandidate =
+        this->getCopyElisionCandidate(E->getType(), E, CES_AsIfByStdMove);
     if (NRVOCandidate) {
       InitializedEntity Entity =
           InitializedEntity::InitializeResult(Loc, E->getType(), NRVOCandidate);
@@ -1083,7 +1086,6 @@ static FunctionDecl *findDeleteForPromise(Sema &S, SourceLocation Loc,
   return OperatorDelete;
 }
 
-
 void Sema::CheckCompletedCoroutineBody(FunctionDecl *FD, Stmt *&Body) {
   FunctionScopeInfo *Fn = getCurFunction();
   assert(Fn && Fn->isCoroutine() && "not a coroutine");
@@ -1106,10 +1108,10 @@ void Sema::CheckCompletedCoroutineBody(FunctionDecl *FD, Stmt *&Body) {
   //   A return statement shall not appear in a coroutine.
   if (Fn->FirstReturnLoc.isValid()) {
     assert(Fn->FirstCoroutineStmtLoc.isValid() &&
-                   "first coroutine location not set");
+           "first coroutine location not set");
     Diag(Fn->FirstReturnLoc, diag::err_return_in_coroutine);
     Diag(Fn->FirstCoroutineStmtLoc, diag::note_declared_coroutine_here)
-            << Fn->getFirstCoroutineStmtKeyword();
+        << Fn->getFirstCoroutineStmtKeyword();
   }
   CoroutineStmtBuilder Builder(*this, *FD, *Fn, Body);
   if (Builder.isInvalid() || !Builder.buildStatements())
@@ -1191,9 +1193,8 @@ static bool diagReturnOnAllocFailure(Sema &S, Expr *E,
     }
   }
 
-  S.Diag(
-      Loc,
-      diag::err_coroutine_promise_get_return_object_on_allocation_failure)
+  S.Diag(Loc,
+         diag::err_coroutine_promise_get_return_object_on_allocation_failure)
       << PromiseRecordDecl;
   S.Diag(Fn.FirstCoroutineStmtLoc, diag::note_declared_coroutine_here)
       << Fn.getFirstCoroutineStmtKeyword();
@@ -1467,7 +1468,7 @@ bool CoroutineStmtBuilder::makeOnFallthrough() {
     // coroutine is equivalent to a co_return with no operand. Otherwise,
     // flowing off the end of a coroutine results in undefined behavior.
     Fallthrough = S.BuildCoreturnStmt(FD.getLocation(), nullptr,
-                                      /*IsImplicit*/false);
+                                      /*IsImplicit*/ false);
     Fallthrough = S.ActOnFinishFullStmt(Fallthrough.get());
     if (Fallthrough.isInvalid())
       return false;

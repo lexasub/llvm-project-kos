@@ -9,24 +9,24 @@ namespace std {
 template <typename T>
 struct unique_ptr {
   template <typename T2 = T>
-  T2& operator*() const;
+  T2 &operator*() const;
   template <typename T2 = T>
-  T2* operator->() const;
-  T* get() const;
+  T2 *operator->() const;
+  T *get() const;
   explicit operator bool() const noexcept;
 };
 
 template <typename T>
 struct shared_ptr {
   template <typename T2 = T>
-  T2& operator*() const;
+  T2 &operator*() const;
   template <typename T2 = T>
-  T2* operator->() const;
-  T* get() const;
+  T2 *operator->() const;
+  T *get() const;
   explicit operator bool() const noexcept;
 };
 
-}  // namespace std
+} // namespace std
 
 struct Bar {
   void Do();
@@ -34,7 +34,7 @@ struct Bar {
 };
 
 void Positive() {
-  std::unique_ptr<Bar>* up;
+  std::unique_ptr<Bar> *up;
   (*up->get()).Do();
   // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: redundant get() call
   // CHECK-MESSAGES: (*up->get()).Do();
@@ -47,11 +47,13 @@ void Positive() {
   // CHECK-MESSAGES: uu.get() == nullptr;
   // CHECK-FIXES: bool bb = uu == nullptr;
 
-  if (up->get());
+  if (up->get())
+    ;
   // CHECK-MESSAGES: :[[@LINE-1]]:7: warning: redundant get() call
   // CHECK-MESSAGES: if (up->get());
   // CHECK-FIXES: if (*up);
-  if ((uu.get()));
+  if ((uu.get()))
+    ;
   // CHECK-MESSAGES: :[[@LINE-1]]:8: warning: redundant get() call
   // CHECK-MESSAGES: if ((uu.get()));
   // CHECK-FIXES: if ((uu));
@@ -75,19 +77,23 @@ void Positive() {
   // CHECK-FIXES: bb = *ss == NULL;
 
   std::unique_ptr<int> x, y;
-  if (x.get() == nullptr);
+  if (x.get() == nullptr)
+    ;
   // CHECK-MESSAGES: :[[@LINE-1]]:7: warning: redundant get() call
   // CHECK-MESSAGES: if (x.get() == nullptr);
   // CHECK-FIXES: if (x == nullptr);
-  if (nullptr == y.get());
+  if (nullptr == y.get())
+    ;
   // CHECK-MESSAGES: :[[@LINE-1]]:18: warning: redundant get() call
   // CHECK-MESSAGES: if (nullptr == y.get());
   // CHECK-FIXES: if (nullptr == y);
-  if (x.get() == NULL);
+  if (x.get() == NULL)
+    ;
   // CHECK-MESSAGES: :[[@LINE-1]]:7: warning: redundant get() call
   // CHECK-MESSAGES: if (x.get() == NULL);
   // CHECK-FIXES: if (x == NULL);
-  if (NULL == x.get());
+  if (NULL == x.get())
+    ;
   // CHECK-MESSAGES: :[[@LINE-1]]:15: warning: redundant get() call
   // CHECK-MESSAGES: if (NULL == x.get());
   // CHECK-FIXES: if (NULL == x);

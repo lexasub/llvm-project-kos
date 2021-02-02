@@ -169,7 +169,7 @@ llvm::StringMap<llvm::SmallVector<llvm::StringRef, 2>>
 SplitPairList(llvm::StringRef s);
 
 template <typename... Args>
-llvm::Error make_parsing_error(llvm::StringRef format, Args &&... args) {
+llvm::Error make_parsing_error(llvm::StringRef format, Args &&...args) {
   std::string error =
       "Unable to parse " +
       llvm::formatv(format.data(), std::forward<Args>(args)...).str();

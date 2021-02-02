@@ -12,7 +12,7 @@ struct M {
 struct N {
   int iN;
   N() : iN(200) {}
-  N(N const & arg){this->iN = arg.iN; }
+  N(N const &arg) { this->iN = arg.iN; }
 };
 
 struct P {
@@ -20,19 +20,18 @@ struct P {
   P() : iP(init++) {}
 };
 
-
 // CHECK-LABEL: define linkonce_odr void @_ZN1XC1ERKS_(%struct.X* {{[^,]*}} %this, %struct.X* nonnull align {{[0-9]+}} dereferenceable({{[0-9]+}}) %0) unnamed_addr
-struct X  : M, N, P { // ...
+struct X : M, N, P { // ...
   X() : f1(1.0), d1(2.0), i1(3), name("HELLO"), bf1(0xff), bf2(0xabcd),
         au_i1(1234), au1_4("MASKED") {}
   P p0;
   void pr() {
-    printf("iM = %d iN = %d, m1.iM = %d\n", iM, iN, m1.iM); 
-    printf("im = %d p0.iP = %d, p1.iP = %d\n", iP, p0.iP, p1.iP); 
+    printf("iM = %d iN = %d, m1.iM = %d\n", iM, iN, m1.iM);
+    printf("im = %d p0.iP = %d, p1.iP = %d\n", iP, p0.iP, p1.iP);
     printf("f1 = %f  d1 = %f  i1 = %d name(%s) \n", f1, d1, i1, name);
     printf("bf1 = %x  bf2 = %x\n", bf1, bf2);
-    printf("au_i2 = %d\n", au_i2); 
-    printf("au1_1 = %s\n", au1_1); 
+    printf("au_i2 = %d\n", au_i2);
+    printf("au1_1 = %s\n", au1_1);
   }
   M m1;
   P p1;
@@ -50,39 +49,39 @@ struct X  : M, N, P { // ...
     int au_i2;
   };
   union {
-    const char * au1_1;
+    const char *au1_1;
     float au1_2;
     int au1_3;
-    const char * au1_4;
+    const char *au1_4;
   };
 };
 
 static int ix = 1;
 // class with user-defined copy constructor.
 struct S {
-  S() : iS(ix++) {  }
-  S(const S& arg) { *this = arg; }
+  S() : iS(ix++) {}
+  S(const S &arg) { *this = arg; }
   int iS;
 };
 
 // class with trivial copy constructor.
 struct I {
-  I() : iI(ix++) {  }
+  I() : iI(ix++) {}
   int iI;
 };
 
 struct XM {
-  XM() {  }
+  XM() {}
   double dXM;
   S ARR_S[3][4][2];
   void pr() {
-   for (unsigned i = 0; i < 3; i++)
-     for (unsigned j = 0; j < 4; j++)
+    for (unsigned i = 0; i < 3; i++)
+      for (unsigned j = 0; j < 4; j++)
+        for (unsigned k = 0; k < 2; k++)
+          printf("ARR_S[%d][%d][%d] = %d\n", i, j, k, ARR_S[i][j][k].iS);
+    for (unsigned i = 0; i < 3; i++)
       for (unsigned k = 0; k < 2; k++)
-        printf("ARR_S[%d][%d][%d] = %d\n", i,j,k, ARR_S[i][j][k].iS);
-   for (unsigned i = 0; i < 3; i++)
-      for (unsigned k = 0; k < 2; k++)
-        printf("ARR_I[%d][%d] = %d\n", i,k, ARR_I[i][k].iI);
+        printf("ARR_I[%d][%d] = %d\n", i, k, ARR_I[i][k].iI);
   }
   I ARR_I[3][2];
 };
@@ -122,7 +121,7 @@ struct T {
 };
 
 struct A {
-  A(const A &other, const T &t = T(), const T& t2 = T());
+  A(const A &other, const T &t = T(), const T &t2 = T());
 };
 
 struct B : A {
@@ -174,20 +173,20 @@ void f(B b1) {
 // CHECK-NEXT: [[T5:%.*]] = bitcast i16* [[T2]] to i8*
 // CHECK-NEXT: call void @llvm.memcpy.p0i8.p0i8.i64(i8* align 8 [[T4]], i8* align 8 [[T5]], i64 8, i1 false)
 // CHECK-NEXT: ret void
-}
+} // namespace PR6628
 
 // rdar://13816940
 // Test above because things get weirdly re-ordered.
 namespace rdar13816940 {
-  struct A {
-    virtual ~A();
-    unsigned short a : 1;
-    unsigned short : 15;
-    unsigned other;
-  };
+struct A {
+  virtual ~A();
+  unsigned short a : 1;
+  unsigned short : 15;
+  unsigned other;
+};
 
-  void test(A &a) {
-    A x = a; // force copy constructor into existence
-    x = a; // also force the copy assignment operator
-  }
+void test(A &a) {
+  A x = a; // force copy constructor into existence
+  x = a;   // also force the copy assignment operator
 }
+} // namespace rdar13816940

@@ -26,8 +26,8 @@ class ClangOpcodesEmitter {
 
 public:
   ClangOpcodesEmitter(RecordKeeper &R)
-    : Records(R), Root("Opcode", SMLoc(), R),
-      NumTypes(Records.getAllDerivedDefinitions("Type").size()) {}
+      : Records(R), Root("Opcode", SMLoc(), R),
+        NumTypes(Records.getAllDerivedDefinitions("Type").size()) {}
 
   void run(raw_ostream &OS);
 
@@ -57,8 +57,7 @@ private:
   void PrintTypes(raw_ostream &OS, ArrayRef<Record *> Types);
 };
 
-void Enumerate(const Record *R,
-               StringRef N,
+void Enumerate(const Record *R, StringRef N,
                std::function<void(ArrayRef<Record *>, Twine)> &&F) {
   llvm::SmallVector<Record *, 2> TypePath;
   auto *Types = R->getValueAsListInit("Types");
@@ -340,7 +339,8 @@ void ClangOpcodesEmitter::EmitEval(raw_ostream &OS, StringRef N, Record *R) {
   OS << "#endif\n";
 }
 
-void ClangOpcodesEmitter::PrintTypes(raw_ostream &OS, ArrayRef<Record *> Types) {
+void ClangOpcodesEmitter::PrintTypes(raw_ostream &OS,
+                                     ArrayRef<Record *> Types) {
   if (Types.empty())
     return;
   OS << "<";

@@ -121,9 +121,7 @@ public:
 
   /// Called before a source file is processed by a FrontEndAction.
   /// \see clang::FrontendAction::BeginSourceFileAction
-  virtual bool handleBeginSource(CompilerInstance &CI) {
-    return true;
-  }
+  virtual bool handleBeginSource(CompilerInstance &CI) { return true; }
 
   /// Called after a source file is processed by a FrontendAction.
   /// \see clang::FrontendAction::EndSourceFileAction
@@ -142,8 +140,9 @@ public:
 /// std::unique_ptr<FrontendActionFactory> FactoryAdapter(
 ///   newFrontendActionFactory(&Factory));
 template <typename FactoryT>
-inline std::unique_ptr<FrontendActionFactory> newFrontendActionFactory(
-    FactoryT *ConsumerFactory, SourceFileCallbacks *Callbacks = nullptr);
+inline std::unique_ptr<FrontendActionFactory>
+newFrontendActionFactory(FactoryT *ConsumerFactory,
+                         SourceFileCallbacks *Callbacks = nullptr);
 
 /// Runs (and deletes) the tool on 'Code' with the -fsyntax-only flag.
 ///
@@ -154,8 +153,8 @@ inline std::unique_ptr<FrontendActionFactory> newFrontendActionFactory(
 ///                         clang modules.
 ///
 /// \return - True if 'ToolAction' was successfully executed.
-bool runToolOnCode(std::unique_ptr<FrontendAction> ToolAction, const Twine &Code,
-                   const Twine &FileName = "input.cc",
+bool runToolOnCode(std::unique_ptr<FrontendAction> ToolAction,
+                   const Twine &Code, const Twine &FileName = "input.cc",
                    std::shared_ptr<PCHContainerOperations> PCHContainerOps =
                        std::make_shared<PCHContainerOperations>());
 
@@ -216,7 +215,8 @@ buildASTFromCode(StringRef Code, StringRef FileName = "input.cc",
 /// \param PCHContainerOps The PCHContainerOperations for loading and creating
 /// clang modules.
 ///
-/// \param Adjuster A function to filter the command line arguments as specified.
+/// \param Adjuster A function to filter the command line arguments as
+/// specified.
 ///
 /// \return The resulting AST or null if an error occurred.
 std::unique_ptr<ASTUnit> buildASTFromCodeWithArgs(
@@ -270,9 +270,8 @@ public:
   /// \returns True if there were no errors during execution.
   bool run();
 
- private:
-  bool runInvocation(const char *BinaryName,
-                     driver::Compilation *Compilation,
+private:
+  bool runInvocation(const char *BinaryName, driver::Compilation *Compilation,
                      std::shared_ptr<CompilerInvocation> Invocation,
                      std::shared_ptr<PCHContainerOperations> PCHContainerOps);
 
@@ -399,8 +398,9 @@ std::unique_ptr<FrontendActionFactory> newFrontendActionFactory() {
 }
 
 template <typename FactoryT>
-inline std::unique_ptr<FrontendActionFactory> newFrontendActionFactory(
-    FactoryT *ConsumerFactory, SourceFileCallbacks *Callbacks) {
+inline std::unique_ptr<FrontendActionFactory>
+newFrontendActionFactory(FactoryT *ConsumerFactory,
+                         SourceFileCallbacks *Callbacks) {
   class FrontendActionFactoryAdapter : public FrontendActionFactory {
   public:
     explicit FrontendActionFactoryAdapter(FactoryT *ConsumerFactory,
@@ -419,8 +419,8 @@ inline std::unique_ptr<FrontendActionFactory> newFrontendActionFactory(
                              SourceFileCallbacks *Callbacks)
           : ConsumerFactory(ConsumerFactory), Callbacks(Callbacks) {}
 
-      std::unique_ptr<ASTConsumer>
-      CreateASTConsumer(CompilerInstance &, StringRef) override {
+      std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &,
+                                                     StringRef) override {
         return ConsumerFactory->newASTConsumer();
       }
 

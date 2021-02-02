@@ -17,7 +17,7 @@
 
 #include <stdlib.h> // for malloc, calloc, free
 #include <string.h> // for memset
-#include <new> // for std::__libcpp_aligned_{alloc,free}
+#include <new>      // for std::__libcpp_aligned_{alloc,free}
 
 //  A small, simple heap manager based (loosely) on
 //  the startup heap manager from FreeBSD, optimized for space.
@@ -149,8 +149,8 @@ void fallback_free(void* ptr) {
        prev = p, p = node_from_offset(p->next_node)) {
 #ifdef DEBUG_FALLBACK_MALLOC
     std::printf("  p=%d, cp=%d, after(p)=%d, after(cp)=%d\n",
-      offset_from_node(p), offset_from_node(cp),
-      offset_from_node(after(p)), offset_from_node(after(cp)));
+                offset_from_node(p), offset_from_node(cp),
+                offset_from_node(after(p)), offset_from_node(after(cp)));
 #endif
     if (after(p) == cp) {
 #ifdef DEBUG_FALLBACK_MALLOC
@@ -189,8 +189,8 @@ size_t print_free_list() {
 
   for (p = freelist, prev = 0; p && p != list_end;
        prev = p, p = node_from_offset(p->next_node)) {
-    std::printf("%sOffset: %d\tsize: %d Next: %d\n",
-      (prev == 0 ? "" : "  "), offset_from_node(p), p->len, p->next_node);
+    std::printf("%sOffset: %d\tsize: %d Next: %d\n", (prev == 0 ? "" : "  "),
+                offset_from_node(p), p->len, p->next_node);
     total_free += p->len;
   }
   std::printf("Total Free space: %d\n", total_free);

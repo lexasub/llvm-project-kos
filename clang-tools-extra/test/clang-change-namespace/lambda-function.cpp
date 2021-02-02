@@ -13,14 +13,16 @@ public:
 namespace x {
 // CHECK: namespace x {
 class X {};
-}
+} // namespace x
 
 namespace na {
 namespace nb {
 // CHECK: namespace x {
 // CHECK-NEXT: namespace y {
 void f(function<void(int)> func, int param) { func(param); }
-void g() { f([](int x) {}, 1); }
+void g() {
+  f([](int x) {}, 1);
+}
 
 // x::X in function type parameter list will have translation unit context, so
 // we simply replace it with fully-qualified name.
@@ -33,5 +35,5 @@ using TA = function<A(A)>;
 
 // CHECK: } // namespace y
 // CHECK-NEXT: } // namespace x
-}
-}
+} // namespace nb
+} // namespace na

@@ -13,7 +13,7 @@
 // When -fsanitize=thread is used TBAA should be generated at all opt levels
 // even if -relaxed-aliasing is present.
 struct A {
-  virtual int foo() const ;
+  virtual int foo() const;
   virtual ~A();
 };
 

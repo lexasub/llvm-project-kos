@@ -1050,7 +1050,8 @@ public:
       : CommandObjectParsed(
             interpreter, "settings clear",
             "Clear a debugger setting array, dictionary, or string. "
-            "If '-a' option is specified, it clears all settings.", nullptr) {
+            "If '-a' option is specified, it clears all settings.",
+            nullptr) {
     CommandArgumentEntry arg;
     CommandArgumentData var_name_arg;
 
@@ -1078,7 +1079,7 @@ public:
           request, nullptr);
   }
 
-   Options *GetOptions() override { return &m_options; }
+  Options *GetOptions() override { return &m_options; }
 
   class CommandOptions : public Options {
   public:
@@ -1150,8 +1151,8 @@ protected:
     return result.Succeeded();
   }
 
-  private:
-    CommandOptions m_options;
+private:
+  CommandOptions m_options;
 };
 
 // CommandObjectMultiwordSettings

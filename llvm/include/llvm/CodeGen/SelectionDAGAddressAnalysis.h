@@ -86,7 +86,7 @@ public:
   /// Parses tree in N for base, index, offset addresses.
   static BaseIndexOffset match(const SDNode *N, const SelectionDAG &DAG);
 
-  void print(raw_ostream& OS) const;
+  void print(raw_ostream &OS) const;
   void dump() const;
 };
 

@@ -69,12 +69,7 @@ enum {
   TRAP_NUM_SGPRS = 16
 };
 
-enum class TargetIDSetting {
-  Unsupported,
-  Any,
-  Off,
-  On
-};
+enum class TargetIDSetting { Unsupported, Any, Off, On };
 
 class AMDGPUTargetID {
 private:
@@ -93,21 +88,19 @@ public:
   /// \returns True if the current xnack setting is "On" or "Any".
   bool isXnackOnOrAny() const {
     return XnackSetting == TargetIDSetting::On ||
-        XnackSetting == TargetIDSetting::Any;
+           XnackSetting == TargetIDSetting::Any;
   }
 
   /// \returns True if current xnack setting is "On" or "Off",
   /// false otherwise.
   bool isXnackOnOrOff() const {
     return getXnackSetting() == TargetIDSetting::On ||
-        getXnackSetting() == TargetIDSetting::Off;
+           getXnackSetting() == TargetIDSetting::Off;
   }
 
   /// \returns The current xnack TargetIDSetting, possible options are
   /// "Unsupported", "Any", "Off", and "On".
-  TargetIDSetting getXnackSetting() const {
-    return XnackSetting;
-  }
+  TargetIDSetting getXnackSetting() const { return XnackSetting; }
 
   /// Sets xnack setting to \p NewXnackSetting.
   void setXnackSetting(TargetIDSetting NewXnackSetting) {
@@ -121,22 +114,20 @@ public:
 
   /// \returns True if the current sramecc setting is "On" or "Any".
   bool isSramEccOnOrAny() const {
-  return SramEccSetting == TargetIDSetting::On ||
-      SramEccSetting == TargetIDSetting::Any;
+    return SramEccSetting == TargetIDSetting::On ||
+           SramEccSetting == TargetIDSetting::Any;
   }
 
   /// \returns True if current sramecc setting is "On" or "Off",
   /// false otherwise.
   bool isSramEccOnOrOff() const {
     return getSramEccSetting() == TargetIDSetting::On ||
-        getSramEccSetting() == TargetIDSetting::Off;
+           getSramEccSetting() == TargetIDSetting::Off;
   }
 
   /// \returns The current sramecc TargetIDSetting, possible options are
   /// "Unsupported", "Any", "Off", and "On".
-  TargetIDSetting getSramEccSetting() const {
-    return SramEccSetting;
-  }
+  TargetIDSetting getSramEccSetting() const { return SramEccSetting; }
 
   /// Sets sramecc setting to \p NewSramEccSetting.
   void setSramEccSetting(TargetIDSetting NewSramEccSetting) {
@@ -403,8 +394,8 @@ int getMCOpcode(uint16_t Opcode, unsigned Gen);
 void initDefaultAMDKernelCodeT(amd_kernel_code_t &Header,
                                const MCSubtargetInfo *STI);
 
-amdhsa::kernel_descriptor_t getDefaultAmdhsaKernelDescriptor(
-    const MCSubtargetInfo *STI);
+amdhsa::kernel_descriptor_t
+getDefaultAmdhsaKernelDescriptor(const MCSubtargetInfo *STI);
 
 bool isGroupSegment(const GlobalValue *GV);
 bool isGlobalSegment(const GlobalValue *GV);
@@ -431,8 +422,7 @@ int getIntegerAttribute(const Function &F, StringRef Name, int Default);
 /// \returns \p Default and emits error if one of the requested values cannot be
 /// converted to integer, or \p OnlyFirstRequired is false and "second" value is
 /// not present.
-std::pair<int, int> getIntegerPairAttribute(const Function &F,
-                                            StringRef Name,
+std::pair<int, int> getIntegerPairAttribute(const Function &F, StringRef Name,
                                             std::pair<int, int> Default,
                                             bool OnlyFirstRequired = false);
 
@@ -502,8 +492,8 @@ unsigned decodeLgkmcnt(const IsaVersion &Version, unsigned Waitcnt);
 ///     \p Expcnt = \p Waitcnt[6:4]
 ///     \p Lgkmcnt = \p Waitcnt[11:8]                   (pre-gfx10 only)
 ///     \p Lgkmcnt = \p Waitcnt[13:8]                   (gfx10+ only)
-void decodeWaitcnt(const IsaVersion &Version, unsigned Waitcnt,
-                   unsigned &Vmcnt, unsigned &Expcnt, unsigned &Lgkmcnt);
+void decodeWaitcnt(const IsaVersion &Version, unsigned Waitcnt, unsigned &Vmcnt,
+                   unsigned &Expcnt, unsigned &Lgkmcnt);
 
 Waitcnt decodeWaitcnt(const IsaVersion &Version, unsigned Encoded);
 
@@ -532,8 +522,8 @@ unsigned encodeLgkmcnt(const IsaVersion &Version, unsigned Waitcnt,
 ///
 /// \returns Waitcnt with encoded \p Vmcnt, \p Expcnt and \p Lgkmcnt for given
 /// isa \p Version.
-unsigned encodeWaitcnt(const IsaVersion &Version,
-                       unsigned Vmcnt, unsigned Expcnt, unsigned Lgkmcnt);
+unsigned encodeWaitcnt(const IsaVersion &Version, unsigned Vmcnt,
+                       unsigned Expcnt, unsigned Lgkmcnt);
 
 unsigned encodeWaitcnt(const IsaVersion &Version, const Waitcnt &Decoded);
 
@@ -624,13 +614,15 @@ LLVM_READNONE
 StringRef getMsgOpName(int64_t MsgId, int64_t OpId);
 
 LLVM_READNONE
-bool isValidMsgId(int64_t MsgId, const MCSubtargetInfo &STI, bool Strict = true);
+bool isValidMsgId(int64_t MsgId, const MCSubtargetInfo &STI,
+                  bool Strict = true);
 
 LLVM_READNONE
 bool isValidMsgOp(int64_t MsgId, int64_t OpId, bool Strict = true);
 
 LLVM_READNONE
-bool isValidMsgStream(int64_t MsgId, int64_t OpId, int64_t StreamId, bool Strict = true);
+bool isValidMsgStream(int64_t MsgId, int64_t OpId, int64_t StreamId,
+                      bool Strict = true);
 
 LLVM_READNONE
 bool msgRequiresOp(int64_t MsgId);
@@ -638,18 +630,13 @@ bool msgRequiresOp(int64_t MsgId);
 LLVM_READNONE
 bool msgSupportsStream(int64_t MsgId, int64_t OpId);
 
-void decodeMsg(unsigned Val,
-               uint16_t &MsgId,
-               uint16_t &OpId,
+void decodeMsg(unsigned Val, uint16_t &MsgId, uint16_t &OpId,
                uint16_t &StreamId);
 
 LLVM_READNONE
-uint64_t encodeMsg(uint64_t MsgId,
-                   uint64_t OpId,
-                   uint64_t StreamId);
+uint64_t encodeMsg(uint64_t MsgId, uint64_t OpId, uint64_t StreamId);
 
 } // namespace SendMsg
-
 
 unsigned getInitialPSInputAddr(const Function &F);
 
@@ -705,10 +692,10 @@ bool isGFX10_BEncoding(const MCSubtargetInfo &STI);
 bool hasGFX10_3Insts(const MCSubtargetInfo &STI);
 
 /// Is Reg - scalar register
-bool isSGPR(unsigned Reg, const MCRegisterInfo* TRI);
+bool isSGPR(unsigned Reg, const MCRegisterInfo *TRI);
 
 /// Is there any intersection between registers
-bool isRegIntersect(unsigned Reg0, unsigned Reg1, const MCRegisterInfo* TRI);
+bool isRegIntersect(unsigned Reg0, unsigned Reg1, const MCRegisterInfo *TRI);
 
 /// If \p Reg is a pseudo reg, return the correct hardware register given
 /// \p STI otherwise return \p Reg.
@@ -812,8 +799,7 @@ bool isLegalSMRDEncodedUnsignedOffset(const MCSubtargetInfo &ST,
 
 LLVM_READONLY
 bool isLegalSMRDEncodedSignedOffset(const MCSubtargetInfo &ST,
-                                    int64_t EncodedOffset,
-                                    bool IsBuffer);
+                                    int64_t EncodedOffset, bool IsBuffer);
 
 /// Convert \p ByteOffset to dwords if the subtarget uses dword SMRD immediate
 /// offsets.
@@ -872,13 +858,10 @@ struct SIModeRegisterDefaults {
   bool FP64FP16InputDenormals : 1;
   bool FP64FP16OutputDenormals : 1;
 
-  SIModeRegisterDefaults() :
-    IEEE(true),
-    DX10Clamp(true),
-    FP32InputDenormals(true),
-    FP32OutputDenormals(true),
-    FP64FP16InputDenormals(true),
-    FP64FP16OutputDenormals(true) {}
+  SIModeRegisterDefaults()
+      : IEEE(true), DX10Clamp(true), FP32InputDenormals(true),
+        FP32OutputDenormals(true), FP64FP16InputDenormals(true),
+        FP64FP16OutputDenormals(true) {}
 
   SIModeRegisterDefaults(const Function &F);
 
@@ -888,7 +871,7 @@ struct SIModeRegisterDefaults {
     return Mode;
   }
 
-  bool operator ==(const SIModeRegisterDefaults Other) const {
+  bool operator==(const SIModeRegisterDefaults Other) const {
     return IEEE == Other.IEEE && DX10Clamp == Other.DX10Clamp &&
            FP32InputDenormals == Other.FP32InputDenormals &&
            FP32OutputDenormals == Other.FP32OutputDenormals &&
@@ -943,10 +926,14 @@ struct SIModeRegisterDefaults {
       return false;
 
     // Allow inlining denormals enabled into denormals flushed functions.
-    return oneWayCompatible(FP64FP16InputDenormals, CalleeMode.FP64FP16InputDenormals) &&
-           oneWayCompatible(FP64FP16OutputDenormals, CalleeMode.FP64FP16OutputDenormals) &&
-           oneWayCompatible(FP32InputDenormals, CalleeMode.FP32InputDenormals) &&
-           oneWayCompatible(FP32OutputDenormals, CalleeMode.FP32OutputDenormals);
+    return oneWayCompatible(FP64FP16InputDenormals,
+                            CalleeMode.FP64FP16InputDenormals) &&
+           oneWayCompatible(FP64FP16OutputDenormals,
+                            CalleeMode.FP64FP16OutputDenormals) &&
+           oneWayCompatible(FP32InputDenormals,
+                            CalleeMode.FP32InputDenormals) &&
+           oneWayCompatible(FP32OutputDenormals,
+                            CalleeMode.FP32OutputDenormals);
   }
 };
 

@@ -163,8 +163,7 @@ static inline Error defaultWarningHandler(const Twine &Msg) {
   return createError(Msg);
 }
 
-template <class ELFT>
-class ELFFile {
+template <class ELFT> class ELFFile {
 public:
   LLVM_ELF_IMPORT_TYPES_ELFT(ELFT)
 
@@ -336,9 +335,7 @@ public:
   }
 
   /// Get the end iterator for notes.
-  Elf_Note_Iterator notes_end() const {
-    return Elf_Note_Iterator();
-  }
+  Elf_Note_Iterator notes_end() const { return Elf_Note_Iterator(); }
 
   /// Get an iterator range over notes of a program header.
   ///

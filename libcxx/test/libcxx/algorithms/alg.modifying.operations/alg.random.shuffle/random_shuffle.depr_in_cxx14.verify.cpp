@@ -27,21 +27,19 @@
 
 #include "test_macros.h"
 
-struct gen
-{
-    std::ptrdiff_t operator()(std::ptrdiff_t n)
-    {
-        return n-1;
-    }
+struct gen {
+  std::ptrdiff_t operator()(std::ptrdiff_t n) { return n - 1; }
 };
 
-
-int main(int, char**)
-{
-    int v[1] = {1};
-    std::random_shuffle(&v[0], &v[1]); // expected-warning {{'random_shuffle<int *>' is deprecated}}
-    gen r;
-    std::random_shuffle(&v[0], &v[1], r); // expected-warning {{'random_shuffle<int *, gen &>' is deprecated}}
+int main(int, char**) {
+  int v[1] = {1};
+  std::random_shuffle(
+      &v[0],
+      &v[1]); // expected-warning {{'random_shuffle<int *>' is deprecated}}
+  gen r;
+  std::random_shuffle(
+      &v[0], &v[1],
+      r); // expected-warning {{'random_shuffle<int *, gen &>' is deprecated}}
 
   return 0;
 }

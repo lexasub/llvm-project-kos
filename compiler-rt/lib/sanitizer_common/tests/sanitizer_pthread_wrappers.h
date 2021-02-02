@@ -20,10 +20,10 @@
 #include "sanitizer_test_utils.h"
 
 #if !defined(_WIN32)
-# include <pthread.h>
+#include <pthread.h>
 // Simply forward the arguments and check that the pthread functions succeed.
-# define PTHREAD_CREATE(a, b, c, d) ASSERT_EQ(0, pthread_create(a, b, c, d))
-# define PTHREAD_JOIN(a, b) ASSERT_EQ(0, pthread_join(a, b))
+#define PTHREAD_CREATE(a, b, c, d) ASSERT_EQ(0, pthread_create(a, b, c, d))
+#define PTHREAD_JOIN(a, b) ASSERT_EQ(0, pthread_join(a, b))
 #else
 typedef HANDLE pthread_t;
 
@@ -34,7 +34,7 @@ struct PthreadHelperCreateThreadInfo {
 
 inline DWORD WINAPI PthreadHelperThreadProc(void *arg) {
   PthreadHelperCreateThreadInfo *start_data =
-      reinterpret_cast<PthreadHelperCreateThreadInfo*>(arg);
+      reinterpret_cast<PthreadHelperCreateThreadInfo *>(arg);
   (start_data->start_routine)(start_data->arg);
   delete start_data;
   return 0;
@@ -48,8 +48,8 @@ inline void PTHREAD_CREATE(pthread_t *thread, void *attr,
   data->arg = arg;
   *thread = CreateThread(0, 0, PthreadHelperThreadProc, data, 0, 0);
   DWORD err = GetLastError();
-  ASSERT_NE(nullptr, *thread) << "Failed to create a thread, got error 0x"
-                              << std::hex << err;
+  ASSERT_NE(nullptr, *thread)
+      << "Failed to create a thread, got error 0x" << std::hex << err;
 }
 
 inline void PTHREAD_JOIN(pthread_t thread, void **value_ptr) {

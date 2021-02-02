@@ -14,13 +14,13 @@
 #define LLVM_CLANG_STATICANALYZER_CORE_PATHSENSITIVE_STORE_H
 
 #include "clang/AST/Type.h"
+#include "clang/Basic/LLVM.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/MemRegion.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/ProgramState_Fwd.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/SValBuilder.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/SVals.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/StoreRef.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/SymExpr.h"
-#include "clang/Basic/LLVM.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseSet.h"
 #include "llvm/ADT/Optional.h"
@@ -127,9 +127,9 @@ public:
 
   /// getRegionManager - Returns the internal RegionManager object that is
   ///  used to query and manipulate MemRegion objects.
-  MemRegionManager& getRegionManager() { return MRMgr; }
+  MemRegionManager &getRegionManager() { return MRMgr; }
 
-  SValBuilder& getSValBuilder() { return svalBuilder; }
+  SValBuilder &getSValBuilder() { return svalBuilder; }
 
   virtual Loc getLValueVar(const VarDecl *VD, const LocationContext *LC) {
     return svalBuilder.makeLoc(MRMgr.getVarRegion(VD, LC));
@@ -160,8 +160,7 @@ public:
   SVal evalDerivedToBase(SVal Derived, const CXXBasePath &CastPath);
 
   /// Evaluates a derived-to-base cast through a single level of derivation.
-  SVal evalDerivedToBase(SVal Derived, QualType DerivedPtrType,
-                         bool IsVirtual);
+  SVal evalDerivedToBase(SVal Derived, QualType DerivedPtrType, bool IsVirtual);
 
   /// Attempts to do a down cast. Used to model BaseToDerived and C++
   ///        dynamic_cast.
@@ -183,7 +182,8 @@ public:
   ///  casted and 'CastToTy' the result type of the cast.
   const MemRegion *castRegion(const MemRegion *region, QualType CastToTy);
 
-  virtual StoreRef removeDeadBindings(Store store, const StackFrameContext *LCtx,
+  virtual StoreRef removeDeadBindings(Store store,
+                                      const StackFrameContext *LCtx,
                                       SymbolReaper &SymReaper) = 0;
 
   virtual bool includedInBindings(Store store,
@@ -223,20 +223,18 @@ public:
   ///   invalidated. This should include any regions explicitly invalidated
   ///   even if they do not currently have bindings. Pass \c NULL if this
   ///   information will not be used.
-  virtual StoreRef invalidateRegions(Store store,
-                                  ArrayRef<SVal> Values,
-                                  const Expr *E, unsigned Count,
-                                  const LocationContext *LCtx,
-                                  const CallEvent *Call,
-                                  InvalidatedSymbols &IS,
-                                  RegionAndSymbolInvalidationTraits &ITraits,
-                                  InvalidatedRegions *InvalidatedTopLevel,
-                                  InvalidatedRegions *Invalidated) = 0;
+  virtual StoreRef invalidateRegions(Store store, ArrayRef<SVal> Values,
+                                     const Expr *E, unsigned Count,
+                                     const LocationContext *LCtx,
+                                     const CallEvent *Call,
+                                     InvalidatedSymbols &IS,
+                                     RegionAndSymbolInvalidationTraits &ITraits,
+                                     InvalidatedRegions *InvalidatedTopLevel,
+                                     InvalidatedRegions *Invalidated) = 0;
 
   /// enterStackFrame - Let the StoreManager to do something when execution
   /// engine is about to execute into a callee.
-  StoreRef enterStackFrame(Store store,
-                           const CallEvent &Call,
+  StoreRef enterStackFrame(Store store, const CallEvent &Call,
                            const StackFrameContext *CalleeCtx);
 
   /// Finds the transitive closure of symbols within the given region.
@@ -253,13 +251,13 @@ public:
     virtual ~BindingsHandler();
 
     /// \return whether the iteration should continue.
-    virtual bool HandleBinding(StoreManager& SMgr, Store store,
+    virtual bool HandleBinding(StoreManager &SMgr, Store store,
                                const MemRegion *region, SVal val) = 0;
   };
 
   class FindUniqueBinding : public BindingsHandler {
     SymbolRef Sym;
-    const MemRegion* Binding = nullptr;
+    const MemRegion *Binding = nullptr;
     bool First = true;
 
   public:
@@ -267,13 +265,13 @@ public:
 
     explicit operator bool() { return First && Binding; }
 
-    bool HandleBinding(StoreManager& SMgr, Store store, const MemRegion* R,
+    bool HandleBinding(StoreManager &SMgr, Store store, const MemRegion *R,
                        SVal val) override;
     const MemRegion *getRegion() { return Binding; }
   };
 
   /// iterBindings - Iterate over the bindings in the Store.
-  virtual void iterBindings(Store store, BindingsHandler& f) = 0;
+  virtual void iterBindings(Store store, BindingsHandler &f) = 0;
 
 protected:
   const ElementRegion *MakeElementRegion(const SubRegion *baseRegion,
@@ -290,15 +288,13 @@ private:
   SVal getLValueFieldOrIvar(const Decl *decl, SVal base);
 };
 
-inline StoreRef::StoreRef(Store store, StoreManager & smgr)
+inline StoreRef::StoreRef(Store store, StoreManager &smgr)
     : store(store), mgr(smgr) {
   if (store)
     mgr.incrementReferenceCount(store);
 }
 
-inline StoreRef::StoreRef(const StoreRef &sr)
-    : store(sr.store), mgr(sr.mgr)
-{
+inline StoreRef::StoreRef(const StoreRef &sr) : store(sr.store), mgr(sr.mgr) {
   if (store)
     mgr.incrementReferenceCount(store);
 }

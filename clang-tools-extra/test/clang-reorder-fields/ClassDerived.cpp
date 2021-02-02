@@ -8,26 +8,24 @@ public:
   int p;
 };
 
-
 class Derived : public Base {
 public:
   Derived(long ny);
   Derived(char nz);
+
 private:
   long y;
   char z;
 };
 
-Derived::Derived(long ny) : 
-    Base(ny, 0),
-    y(ny),                   // CHECK:       {{^  z\(static_cast<char>\(ny\)\),}}
-    z(static_cast<char>(ny)) // CHECK-NEXT:  {{^  y\(ny\)}}
+Derived::Derived(long ny) : Base(ny, 0),
+                            y(ny),                   // CHECK:       {{^  z\(static_cast<char>\(ny\)\),}}
+                            z(static_cast<char>(ny)) // CHECK-NEXT:  {{^  y\(ny\)}}
 {}
 
-Derived::Derived(char nz) : 
-    Base(1, 2),
-    y(nz),  // CHECK:       {{^  z\(x\),}}
-    z(x)    // CHECK-NEXT:  {{^  y\(nz\)}}
+Derived::Derived(char nz) : Base(1, 2),
+                            y(nz), // CHECK:       {{^  z\(x\),}}
+                            z(x)   // CHECK-NEXT:  {{^  y\(nz\)}}
 {}
 
 } // namespace bar

@@ -37,71 +37,68 @@
 using namespace llvm;
 
 namespace {
-  class StripSymbols : public ModulePass {
-    bool OnlyDebugInfo;
-  public:
-    static char ID; // Pass identification, replacement for typeid
-    explicit StripSymbols(bool ODI = false)
-      : ModulePass(ID), OnlyDebugInfo(ODI) {
-        initializeStripSymbolsPass(*PassRegistry::getPassRegistry());
-      }
+class StripSymbols : public ModulePass {
+  bool OnlyDebugInfo;
 
-    bool runOnModule(Module &M) override;
+public:
+  static char ID; // Pass identification, replacement for typeid
+  explicit StripSymbols(bool ODI = false) : ModulePass(ID), OnlyDebugInfo(ODI) {
+    initializeStripSymbolsPass(*PassRegistry::getPassRegistry());
+  }
 
-    void getAnalysisUsage(AnalysisUsage &AU) const override {
-      AU.setPreservesAll();
-    }
-  };
+  bool runOnModule(Module &M) override;
 
-  class StripNonDebugSymbols : public ModulePass {
-  public:
-    static char ID; // Pass identification, replacement for typeid
-    explicit StripNonDebugSymbols()
-      : ModulePass(ID) {
-        initializeStripNonDebugSymbolsPass(*PassRegistry::getPassRegistry());
-      }
+  void getAnalysisUsage(AnalysisUsage &AU) const override {
+    AU.setPreservesAll();
+  }
+};
 
-    bool runOnModule(Module &M) override;
+class StripNonDebugSymbols : public ModulePass {
+public:
+  static char ID; // Pass identification, replacement for typeid
+  explicit StripNonDebugSymbols() : ModulePass(ID) {
+    initializeStripNonDebugSymbolsPass(*PassRegistry::getPassRegistry());
+  }
 
-    void getAnalysisUsage(AnalysisUsage &AU) const override {
-      AU.setPreservesAll();
-    }
-  };
+  bool runOnModule(Module &M) override;
 
-  class StripDebugDeclare : public ModulePass {
-  public:
-    static char ID; // Pass identification, replacement for typeid
-    explicit StripDebugDeclare()
-      : ModulePass(ID) {
-        initializeStripDebugDeclarePass(*PassRegistry::getPassRegistry());
-      }
+  void getAnalysisUsage(AnalysisUsage &AU) const override {
+    AU.setPreservesAll();
+  }
+};
 
-    bool runOnModule(Module &M) override;
+class StripDebugDeclare : public ModulePass {
+public:
+  static char ID; // Pass identification, replacement for typeid
+  explicit StripDebugDeclare() : ModulePass(ID) {
+    initializeStripDebugDeclarePass(*PassRegistry::getPassRegistry());
+  }
 
-    void getAnalysisUsage(AnalysisUsage &AU) const override {
-      AU.setPreservesAll();
-    }
-  };
+  bool runOnModule(Module &M) override;
 
-  class StripDeadDebugInfo : public ModulePass {
-  public:
-    static char ID; // Pass identification, replacement for typeid
-    explicit StripDeadDebugInfo()
-      : ModulePass(ID) {
-        initializeStripDeadDebugInfoPass(*PassRegistry::getPassRegistry());
-      }
+  void getAnalysisUsage(AnalysisUsage &AU) const override {
+    AU.setPreservesAll();
+  }
+};
 
-    bool runOnModule(Module &M) override;
+class StripDeadDebugInfo : public ModulePass {
+public:
+  static char ID; // Pass identification, replacement for typeid
+  explicit StripDeadDebugInfo() : ModulePass(ID) {
+    initializeStripDeadDebugInfoPass(*PassRegistry::getPassRegistry());
+  }
 
-    void getAnalysisUsage(AnalysisUsage &AU) const override {
-      AU.setPreservesAll();
-    }
-  };
-}
+  bool runOnModule(Module &M) override;
+
+  void getAnalysisUsage(AnalysisUsage &AU) const override {
+    AU.setPreservesAll();
+  }
+};
+} // namespace
 
 char StripSymbols::ID = 0;
-INITIALIZE_PASS(StripSymbols, "strip",
-                "Strip all symbols from a module", false, false)
+INITIALIZE_PASS(StripSymbols, "strip", "Strip all symbols from a module", false,
+                false)
 
 ModulePass *llvm::createStripSymbolsPass(bool OnlyDebugInfo) {
   return new StripSymbols(OnlyDebugInfo);
@@ -109,8 +106,8 @@ ModulePass *llvm::createStripSymbolsPass(bool OnlyDebugInfo) {
 
 char StripNonDebugSymbols::ID = 0;
 INITIALIZE_PASS(StripNonDebugSymbols, "strip-nondebug",
-                "Strip all symbols, except dbg symbols, from a module",
-                false, false)
+                "Strip all symbols, except dbg symbols, from a module", false,
+                false)
 
 ModulePass *llvm::createStripNonDebugSymbolsPass() {
   return new StripNonDebugSymbols();
@@ -143,12 +140,13 @@ static bool OnlyUsedBy(Value *V, Value *Usr) {
 
 static void RemoveDeadConstant(Constant *C) {
   assert(C->use_empty() && "Constant is not dead!");
-  SmallPtrSet<Constant*, 4> Operands;
+  SmallPtrSet<Constant *, 4> Operands;
   for (Value *Op : C->operands())
     if (OnlyUsedBy(Op, C))
       Operands.insert(cast<Constant>(Op));
   if (GlobalVariable *GV = dyn_cast<GlobalVariable>(C)) {
-    if (!GV->hasLocalLinkage()) return;   // Don't delete non-static globals.
+    if (!GV->hasLocalLinkage())
+      return; // Don't delete non-static globals.
     GV->eraseFromParent();
   } else if (!isa<Function>(C)) {
     // FIXME: Why does the type of the constant matter here?
@@ -165,7 +163,7 @@ static void RemoveDeadConstant(Constant *C) {
 // Strip the symbol table of its names.
 //
 static void StripSymtab(ValueSymbolTable &ST, bool PreserveDbgInfo) {
-  for (ValueSymbolTable::iterator VI = ST.begin(), VE = ST.end(); VI != VE; ) {
+  for (ValueSymbolTable::iterator VI = ST.begin(), VE = ST.end(); VI != VE;) {
     Value *V = VI->getValue();
     ++VI;
     if (!isa<GlobalValue>(V) || cast<GlobalValue>(V)->hasLocalLinkage()) {
@@ -183,7 +181,8 @@ static void StripTypeNames(Module &M, bool PreserveDbgInfo) {
 
   for (unsigned i = 0, e = StructTypes.size(); i != e; ++i) {
     StructType *STy = StructTypes[i];
-    if (STy->isLiteral() || STy->getName().empty()) continue;
+    if (STy->isLiteral() || STy->getName().empty())
+      continue;
 
     if (PreserveDbgInfo && STy->getName().startswith("llvm.dbg"))
       continue;
@@ -194,30 +193,31 @@ static void StripTypeNames(Module &M, bool PreserveDbgInfo) {
 
 /// Find values that are marked as llvm.used.
 static void findUsedValues(GlobalVariable *LLVMUsed,
-                           SmallPtrSetImpl<const GlobalValue*> &UsedValues) {
-  if (!LLVMUsed) return;
+                           SmallPtrSetImpl<const GlobalValue *> &UsedValues) {
+  if (!LLVMUsed)
+    return;
   UsedValues.insert(LLVMUsed);
 
   ConstantArray *Inits = cast<ConstantArray>(LLVMUsed->getInitializer());
 
   for (unsigned i = 0, e = Inits->getNumOperands(); i != e; ++i)
     if (GlobalValue *GV =
-          dyn_cast<GlobalValue>(Inits->getOperand(i)->stripPointerCasts()))
+            dyn_cast<GlobalValue>(Inits->getOperand(i)->stripPointerCasts()))
       UsedValues.insert(GV);
 }
 
 /// StripSymbolNames - Strip symbol names.
 static bool StripSymbolNames(Module &M, bool PreserveDbgInfo) {
 
-  SmallPtrSet<const GlobalValue*, 8> llvmUsedValues;
+  SmallPtrSet<const GlobalValue *, 8> llvmUsedValues;
   findUsedValues(M.getGlobalVariable("llvm.used"), llvmUsedValues);
   findUsedValues(M.getGlobalVariable("llvm.compiler.used"), llvmUsedValues);
 
-  for (Module::global_iterator I = M.global_begin(), E = M.global_end();
-       I != E; ++I) {
+  for (Module::global_iterator I = M.global_begin(), E = M.global_end(); I != E;
+       ++I) {
     if (I->hasLocalLinkage() && llvmUsedValues.count(&*I) == 0)
       if (!PreserveDbgInfo || !I->getName().startswith("llvm.dbg"))
-        I->setName("");     // Internal symbols can't participate in linkage
+        I->setName(""); // Internal symbols can't participate in linkage
   }
 
   for (Function &I : M) {
@@ -255,7 +255,7 @@ bool StripNonDebugSymbols::runOnModule(Module &M) {
 static bool stripDebugDeclareImpl(Module &M) {
 
   Function *Declare = M.getFunction("llvm.dbg.declare");
-  std::vector<Constant*> DeadConstants;
+  std::vector<Constant *> DeadConstants;
 
   if (Declare) {
     while (!Declare->use_empty()) {

@@ -228,9 +228,8 @@ static bool removeTerminatorBit(const SIInstrInfo &TII, MachineInstr &MI) {
 // Turn all pseudoterminators in the block into their equivalent non-terminator
 // instructions. Returns the reverse iterator to the first non-terminator
 // instruction in the block.
-static MachineBasicBlock::reverse_iterator fixTerminators(
-  const SIInstrInfo &TII,
-  MachineBasicBlock &MBB) {
+static MachineBasicBlock::reverse_iterator
+fixTerminators(const SIInstrInfo &TII, MachineBasicBlock &MBB) {
   MachineBasicBlock::reverse_iterator I = MBB.rbegin(), E = MBB.rend();
 
   bool Seen = false;
@@ -250,12 +249,10 @@ static MachineBasicBlock::reverse_iterator fixTerminators(
   return FirstNonTerm;
 }
 
-static MachineBasicBlock::reverse_iterator findExecCopy(
-  const SIInstrInfo &TII,
-  const GCNSubtarget &ST,
-  MachineBasicBlock &MBB,
-  MachineBasicBlock::reverse_iterator I,
-  unsigned CopyToExec) {
+static MachineBasicBlock::reverse_iterator
+findExecCopy(const SIInstrInfo &TII, const GCNSubtarget &ST,
+             MachineBasicBlock &MBB, MachineBasicBlock::reverse_iterator I,
+             unsigned CopyToExec) {
   const unsigned InstLimit = 25;
 
   auto E = MBB.rend();
@@ -354,8 +351,9 @@ bool SIOptimizeExecMasking::runOnMachineFunction(MachineFunction &MF) {
     MachineInstr *SaveExecInst = nullptr;
     SmallVector<MachineInstr *, 4> OtherUseInsts;
 
-    for (MachineBasicBlock::iterator J
-           = std::next(CopyFromExecInst->getIterator()), JE = I->getIterator();
+    for (MachineBasicBlock::iterator
+             J = std::next(CopyFromExecInst->getIterator()),
+             JE = I->getIterator();
          J != JE; ++J) {
       if (SaveExecInst && J->readsRegister(Exec, TRI)) {
         LLVM_DEBUG(dbgs() << "exec read prevents saveexec: " << *J << '\n');
@@ -435,17 +433,16 @@ bool SIOptimizeExecMasking::runOnMachineFunction(MachineFunction &MF) {
 
     BuildMI(MBB, InsPt, DL, TII->get(getSaveExecOp(SaveExecInst->getOpcode())),
             CopyFromExec)
-      .addReg(OtherOp->getReg());
+        .addReg(OtherOp->getReg());
     SaveExecInst->eraseFromParent();
 
     CopyToExecInst->eraseFromParent();
 
     for (MachineInstr *OtherInst : OtherUseInsts) {
-      OtherInst->substituteRegister(CopyToExec, Exec,
-                                    AMDGPU::NoSubRegister, *TRI);
+      OtherInst->substituteRegister(CopyToExec, Exec, AMDGPU::NoSubRegister,
+                                    *TRI);
     }
   }
 
   return true;
-
 }

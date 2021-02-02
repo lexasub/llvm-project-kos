@@ -29,7 +29,7 @@ namespace llvm {
 namespace ELFYAML {
 
 StringRef dropUniqueSuffix(StringRef S);
-std::string appendUniqueSuffix(StringRef Name, const Twine& Msg);
+std::string appendUniqueSuffix(StringRef Name, const Twine &Msg);
 
 // These types are invariant across 32/64-bit ELF, so for simplicity just
 // directly give them their exact sizes. We don't need to worry about
@@ -335,9 +335,7 @@ struct StackSizesSection : Section {
     return S->Kind == ChunkKind::StackSizes;
   }
 
-  static bool nameMatches(StringRef Name) {
-    return Name == ".stack_sizes";
-  }
+  static bool nameMatches(StringRef Name) { return Name == ".stack_sizes"; }
 };
 
 struct DynamicSection : Section {
@@ -462,9 +460,7 @@ struct VerneedSection : Section {
     return {{"Dependencies", VerneedV.hasValue()}};
   };
 
-  static bool classof(const Chunk *S) {
-    return S->Kind == ChunkKind::Verneed;
-  }
+  static bool classof(const Chunk *S) { return S->Kind == ChunkKind::Verneed; }
 };
 
 struct AddrsigSection : Section {
@@ -615,9 +611,7 @@ struct RelrSection : Section {
     return {{"Entries", Entries.hasValue()}};
   };
 
-  static bool classof(const Chunk *S) {
-    return S->Kind == ChunkKind::Relr;
-  }
+  static bool classof(const Chunk *S) { return S->Kind == ChunkKind::Relr; }
 };
 
 struct SymtabShndxSection : Section {
@@ -759,8 +753,7 @@ template <> struct ScalarTraits<ELFYAML::YAMLIntUInt> {
   static QuotingType mustQuote(StringRef) { return QuotingType::None; }
 };
 
-template <>
-struct ScalarEnumerationTraits<ELFYAML::ELF_ET> {
+template <> struct ScalarEnumerationTraits<ELFYAML::ELF_ET> {
   static void enumeration(IO &IO, ELFYAML::ELF_ET &Value);
 };
 
@@ -768,28 +761,23 @@ template <> struct ScalarEnumerationTraits<ELFYAML::ELF_PT> {
   static void enumeration(IO &IO, ELFYAML::ELF_PT &Value);
 };
 
-template <>
-struct ScalarEnumerationTraits<ELFYAML::ELF_EM> {
+template <> struct ScalarEnumerationTraits<ELFYAML::ELF_EM> {
   static void enumeration(IO &IO, ELFYAML::ELF_EM &Value);
 };
 
-template <>
-struct ScalarEnumerationTraits<ELFYAML::ELF_ELFCLASS> {
+template <> struct ScalarEnumerationTraits<ELFYAML::ELF_ELFCLASS> {
   static void enumeration(IO &IO, ELFYAML::ELF_ELFCLASS &Value);
 };
 
-template <>
-struct ScalarEnumerationTraits<ELFYAML::ELF_ELFDATA> {
+template <> struct ScalarEnumerationTraits<ELFYAML::ELF_ELFDATA> {
   static void enumeration(IO &IO, ELFYAML::ELF_ELFDATA &Value);
 };
 
-template <>
-struct ScalarEnumerationTraits<ELFYAML::ELF_ELFOSABI> {
+template <> struct ScalarEnumerationTraits<ELFYAML::ELF_ELFOSABI> {
   static void enumeration(IO &IO, ELFYAML::ELF_ELFOSABI &Value);
 };
 
-template <>
-struct ScalarBitSetTraits<ELFYAML::ELF_EF> {
+template <> struct ScalarBitSetTraits<ELFYAML::ELF_EF> {
   static void bitset(IO &IO, ELFYAML::ELF_EF &Value);
 };
 
@@ -797,13 +785,11 @@ template <> struct ScalarBitSetTraits<ELFYAML::ELF_PF> {
   static void bitset(IO &IO, ELFYAML::ELF_PF &Value);
 };
 
-template <>
-struct ScalarEnumerationTraits<ELFYAML::ELF_SHT> {
+template <> struct ScalarEnumerationTraits<ELFYAML::ELF_SHT> {
   static void enumeration(IO &IO, ELFYAML::ELF_SHT &Value);
 };
 
-template <>
-struct ScalarBitSetTraits<ELFYAML::ELF_SHF> {
+template <> struct ScalarBitSetTraits<ELFYAML::ELF_SHF> {
   static void bitset(IO &IO, ELFYAML::ELF_SHF &Value);
 };
 
@@ -815,58 +801,47 @@ template <> struct ScalarEnumerationTraits<ELFYAML::ELF_STB> {
   static void enumeration(IO &IO, ELFYAML::ELF_STB &Value);
 };
 
-template <>
-struct ScalarEnumerationTraits<ELFYAML::ELF_STT> {
+template <> struct ScalarEnumerationTraits<ELFYAML::ELF_STT> {
   static void enumeration(IO &IO, ELFYAML::ELF_STT &Value);
 };
 
-template <>
-struct ScalarEnumerationTraits<ELFYAML::ELF_REL> {
+template <> struct ScalarEnumerationTraits<ELFYAML::ELF_REL> {
   static void enumeration(IO &IO, ELFYAML::ELF_REL &Value);
 };
 
-template <>
-struct ScalarEnumerationTraits<ELFYAML::ELF_DYNTAG> {
+template <> struct ScalarEnumerationTraits<ELFYAML::ELF_DYNTAG> {
   static void enumeration(IO &IO, ELFYAML::ELF_DYNTAG &Value);
 };
 
-template <>
-struct ScalarEnumerationTraits<ELFYAML::ELF_RSS> {
+template <> struct ScalarEnumerationTraits<ELFYAML::ELF_RSS> {
   static void enumeration(IO &IO, ELFYAML::ELF_RSS &Value);
 };
 
-template <>
-struct ScalarEnumerationTraits<ELFYAML::MIPS_AFL_REG> {
+template <> struct ScalarEnumerationTraits<ELFYAML::MIPS_AFL_REG> {
   static void enumeration(IO &IO, ELFYAML::MIPS_AFL_REG &Value);
 };
 
-template <>
-struct ScalarEnumerationTraits<ELFYAML::MIPS_ABI_FP> {
+template <> struct ScalarEnumerationTraits<ELFYAML::MIPS_ABI_FP> {
   static void enumeration(IO &IO, ELFYAML::MIPS_ABI_FP &Value);
 };
 
-template <>
-struct ScalarEnumerationTraits<ELFYAML::MIPS_AFL_EXT> {
+template <> struct ScalarEnumerationTraits<ELFYAML::MIPS_AFL_EXT> {
   static void enumeration(IO &IO, ELFYAML::MIPS_AFL_EXT &Value);
 };
 
-template <>
-struct ScalarEnumerationTraits<ELFYAML::MIPS_ISA> {
+template <> struct ScalarEnumerationTraits<ELFYAML::MIPS_ISA> {
   static void enumeration(IO &IO, ELFYAML::MIPS_ISA &Value);
 };
 
-template <>
-struct ScalarBitSetTraits<ELFYAML::MIPS_AFL_ASE> {
+template <> struct ScalarBitSetTraits<ELFYAML::MIPS_AFL_ASE> {
   static void bitset(IO &IO, ELFYAML::MIPS_AFL_ASE &Value);
 };
 
-template <>
-struct ScalarBitSetTraits<ELFYAML::MIPS_AFL_FLAGS1> {
+template <> struct ScalarBitSetTraits<ELFYAML::MIPS_AFL_FLAGS1> {
   static void bitset(IO &IO, ELFYAML::MIPS_AFL_FLAGS1 &Value);
 };
 
-template <>
-struct MappingTraits<ELFYAML::FileHeader> {
+template <> struct MappingTraits<ELFYAML::FileHeader> {
   static void mapping(IO &IO, ELFYAML::FileHeader &FileHdr);
 };
 
@@ -879,8 +854,7 @@ template <> struct MappingTraits<ELFYAML::ProgramHeader> {
   static std::string validate(IO &IO, ELFYAML::ProgramHeader &FileHdr);
 };
 
-template <>
-struct MappingTraits<ELFYAML::Symbol> {
+template <> struct MappingTraits<ELFYAML::Symbol> {
   static void mapping(IO &IO, ELFYAML::Symbol &Symbol);
   static std::string validate(IO &IO, ELFYAML::Symbol &Symbol);
 };
@@ -942,8 +916,7 @@ template <> struct MappingTraits<std::unique_ptr<ELFYAML::Chunk>> {
   static std::string validate(IO &io, std::unique_ptr<ELFYAML::Chunk> &C);
 };
 
-template <>
-struct MappingTraits<ELFYAML::Object> {
+template <> struct MappingTraits<ELFYAML::Object> {
   static void mapping(IO &IO, ELFYAML::Object &Object);
 };
 

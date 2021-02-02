@@ -24,28 +24,25 @@
 
 #include "test_macros.h"
 
-
-int main(int, char**)
-{
-    {
+int main(int, char**) {
+  {
     typedef std::allocator<char> AC;
     typedef std::allocator<long> AL;
 
     constexpr AC a1;
     constexpr AC a2{a1};
     constexpr AL a3{a2};
-    (void) a3;
-    }
-    {
+    (void)a3;
+  }
+  {
     typedef std::allocator<const char> AC;
     typedef std::allocator<const long> AL;
 
     constexpr AC a1;
     constexpr AC a2{a1};
     constexpr AL a3{a2};
-    (void) a3;
-    }
-
+    (void)a3;
+  }
 
   return 0;
 }

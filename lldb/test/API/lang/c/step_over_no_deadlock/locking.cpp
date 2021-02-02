@@ -1,28 +1,26 @@
+#include <condition_variable>
+#include <mutex>
 #include <stdio.h>
 #include <thread>
-#include <mutex>
-#include <condition_variable>
 
 std::mutex contended_mutex;
 
 std::mutex control_mutex;
-std::condition_variable  control_condition;
+std::condition_variable control_condition;
 
 std::mutex thread_started_mutex;
-std::condition_variable  thread_started_condition;
+std::condition_variable thread_started_condition;
 
-// This function runs in a thread.  The locking dance is to make sure that 
+// This function runs in a thread.  The locking dance is to make sure that
 // by the time the main thread reaches the pthread_join below, this thread
 // has for sure acquired the contended_mutex.  So then the call_me_to_get_lock
 // function will block trying to get the mutex, and only succeed once it
 // signals this thread, then lets it run to wake up from the cond_wait and
 // release the mutex.
 
-void
-lock_acquirer_1 (void)
-{
+void lock_acquirer_1(void) {
   std::unique_lock<std::mutex> contended_lock(contended_mutex);
-  
+
   // Grab this mutex, that will ensure that the main thread
   // is in its cond_wait for it (since that's when it drops the mutex.
 
@@ -38,24 +36,17 @@ lock_acquirer_1 (void)
   thread_started_condition.notify_all();
 
   control_condition.wait(control_lock);
-
 }
 
-int
-call_me_to_get_lock (int ret_val)
-{
+int call_me_to_get_lock(int ret_val) {
   control_condition.notify_all();
   contended_mutex.lock();
   return ret_val;
 }
 
-int
-get_int() {
-  return 567;
-}
+int get_int() { return 567; }
 
-int main ()
-{
+int main() {
   std::unique_lock<std::mutex> thread_started_lock(thread_started_mutex);
 
   std::thread thread_1(lock_acquirer_1);
@@ -74,5 +65,4 @@ int main ()
   thread_1.join();
 
   return 0;
-
 }

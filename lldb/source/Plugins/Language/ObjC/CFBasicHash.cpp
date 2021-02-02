@@ -41,7 +41,7 @@ template <typename T>
 bool CFBasicHash::UpdateFor(std::unique_ptr<__CFBasicHash<T>> &m_ht) {
   if (m_byte_order != endian::InlHostByteOrder())
     return false;
-  
+
   Status error;
   Target *target = m_exe_ctx_ref.GetTargetSP().get();
   addr_t addr = m_address.GetLoadAddress(target);
@@ -49,8 +49,7 @@ bool CFBasicHash::UpdateFor(std::unique_ptr<__CFBasicHash<T>> &m_ht) {
                 sizeof(typename __CFBasicHash<T>::Bits);
 
   m_ht = std::make_unique<__CFBasicHash<T>>();
-  m_exe_ctx_ref.GetProcessSP()->ReadMemory(addr, m_ht.get(),
-                                           size, error);
+  m_exe_ctx_ref.GetProcessSP()->ReadMemory(addr, m_ht.get(), size, error);
   if (error.Fail())
     return false;
 

@@ -16,9 +16,7 @@ using namespace llvm;
 namespace {
 
 TEST(BitstreamReaderTest, AtEndOfStream) {
-  uint8_t Bytes[4] = {
-    0x00, 0x01, 0x02, 0x03
-  };
+  uint8_t Bytes[4] = {0x00, 0x01, 0x02, 0x03};
   BitstreamCursor Cursor(Bytes);
 
   EXPECT_FALSE(Cursor.AtEndOfStream());
@@ -37,9 +35,7 @@ TEST(BitstreamReaderTest, AtEndOfStream) {
 }
 
 TEST(BitstreamReaderTest, AtEndOfStreamJump) {
-  uint8_t Bytes[4] = {
-    0x00, 0x01, 0x02, 0x03
-  };
+  uint8_t Bytes[4] = {0x00, 0x01, 0x02, 0x03};
   BitstreamCursor Cursor(Bytes);
 
   EXPECT_FALSE(Cursor.JumpToBit(32));

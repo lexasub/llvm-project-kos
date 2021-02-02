@@ -15,7 +15,7 @@ struct A : Base {
   ~A();
 
   virtual void f();
-  
+
   Field field;
 };
 
@@ -24,18 +24,18 @@ struct A : Base {
 // CHECK: store i32 (...)** bitcast (i8** getelementptr inbounds ({ [3 x i8*] }, { [3 x i8*] }* @_ZTV1A, i32 0, inrange i32 0, i32 2) to i32 (...)**)
 // CHECK: call void @_ZN5FieldC1Ev(
 // CHECK: ret void
-A::A() { }
+A::A() {}
 
 // CHECK-LABEL: define{{.*}} void @_ZN1AD2Ev(%struct.A* {{[^,]*}} %this) unnamed_addr
 // CHECK: store i32 (...)** bitcast (i8** getelementptr inbounds ({ [3 x i8*] }, { [3 x i8*] }* @_ZTV1A, i32 0, inrange i32 0, i32 2) to i32 (...)**)
 // CHECK: call void @_ZN5FieldD1Ev(
 // CHECK: call void @_ZN4BaseD2Ev(
 // CHECK: ret void
-A::~A() { } 
+A::~A() {}
 
 struct B : Base {
   virtual void f();
-  
+
   Field field;
 };
 

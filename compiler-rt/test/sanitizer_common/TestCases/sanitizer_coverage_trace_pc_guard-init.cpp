@@ -13,13 +13,13 @@
 // RUN: %env_tool_opts=coverage=1 %t 2>&1 | FileCheck %s
 // RUN: rm -rf $DIR
 
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 extern "C" {
-  int bar();
-  int baz();
+int bar();
+int baz();
 }
 
 #ifdef MAIN
@@ -28,8 +28,7 @@ extern "C" void __sanitizer_cov_trace_pc_guard_init(uint32_t *start, uint32_t *s
   fprintf(stderr, "__sanitizer_cov_trace_pc_guard_init\n");
 }
 
-extern "C" void __sanitizer_cov_trace_pc_guard(uint32_t *guard) { }
-
+extern "C" void __sanitizer_cov_trace_pc_guard(uint32_t *guard) {}
 
 int foo() {
   fprintf(stderr, "foo\n");

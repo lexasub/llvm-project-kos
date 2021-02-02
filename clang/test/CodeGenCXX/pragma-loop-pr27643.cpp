@@ -1,10 +1,10 @@
 // RUN: %clang_cc1 -triple x86_64-apple-darwin -std=c++11 -emit-llvm -o - %s | FileCheck %s
 
 void loop1(int *List, int Length) {
-// CHECK-LABEL: @{{.*}}loop1{{.*}}(
-// CHECK: br label {{.*}}, !llvm.loop ![[LOOP1:.*]]
+  // CHECK-LABEL: @{{.*}}loop1{{.*}}(
+  // CHECK: br label {{.*}}, !llvm.loop ![[LOOP1:.*]]
 
-  #pragma clang loop vectorize(enable) vectorize_width(1)
+#pragma clang loop vectorize(enable) vectorize_width(1)
   for (int i = 0; i < Length; i++)
     List[i] = i * 2;
 }
@@ -12,30 +12,30 @@ void loop1(int *List, int Length) {
 // Here, vectorize.enable should be set, obviously, but also check that
 // metadata isn't added twice.
 void loop2(int *List, int Length) {
-// CHECK-LABEL: @{{.*}}loop2{{.*}}(
-// CHECK: br label {{.*}}, !llvm.loop ![[LOOP2:.*]]
+  // CHECK-LABEL: @{{.*}}loop2{{.*}}(
+  // CHECK: br label {{.*}}, !llvm.loop ![[LOOP2:.*]]
 
-  #pragma clang loop vectorize(enable) vectorize_width(2)
+#pragma clang loop vectorize(enable) vectorize_width(2)
   for (int i = 0; i < Length; i++)
     List[i] = i * 2;
 }
 
 // Test that we do *not* imply vectorize.enable.
 void loop3(int *List, int Length) {
-// CHECK-LABEL: @{{.*}}loop3{{.*}}(
-// CHECK: br label {{.*}}, !llvm.loop ![[LOOP3:.*]]
+  // CHECK-LABEL: @{{.*}}loop3{{.*}}(
+  // CHECK: br label {{.*}}, !llvm.loop ![[LOOP3:.*]]
 
-  #pragma clang loop vectorize_width(1)
+#pragma clang loop vectorize_width(1)
   for (int i = 0; i < Length; i++)
     List[i] = i * 2;
 }
 
 // Test that we *do* imply vectorize.enable.
 void loop4(int *List, int Length) {
-// CHECK-LABEL: @{{.*}}loop4{{.*}}(
-// CHECK: br label {{.*}}, !llvm.loop ![[LOOP4:.*]]
+  // CHECK-LABEL: @{{.*}}loop4{{.*}}(
+  // CHECK: br label {{.*}}, !llvm.loop ![[LOOP4:.*]]
 
-  #pragma clang loop vectorize_width(2)
+#pragma clang loop vectorize_width(2)
   for (int i = 0; i < Length; i++)
     List[i] = i * 2;
 }

@@ -75,8 +75,7 @@ public:
   // not be a path to a property path that refers to a property within a
   // property
   virtual const Property *GetProperty(const ExecutionContext *exe_ctx,
-                                      bool will_modify,
-                                      ConstString name) const;
+                                      bool will_modify, ConstString name) const;
 
   virtual const Property *GetPropertyAtIndex(const ExecutionContext *exe_ctx,
                                              bool will_modify,
@@ -84,9 +83,9 @@ public:
 
   // Property can be be a property path like
   // "target.process.extra-startup-command"
-  virtual const Property *GetPropertyAtPath(const ExecutionContext *exe_ctx,
-                                            bool will_modify,
-    llvm::StringRef property_path) const;
+  virtual const Property *
+  GetPropertyAtPath(const ExecutionContext *exe_ctx, bool will_modify,
+                    llvm::StringRef property_path) const;
 
   virtual lldb::OptionValueSP
   GetPropertyValueAtIndex(const ExecutionContext *exe_ctx, bool will_modify,
@@ -160,8 +159,8 @@ public:
                                   uint64_t new_value);
 
   llvm::StringRef GetPropertyAtIndexAsString(const ExecutionContext *exe_ctx,
-                                         uint32_t idx,
-                                         llvm::StringRef fail_value) const;
+                                             uint32_t idx,
+                                             llvm::StringRef fail_value) const;
 
   bool SetPropertyAtIndexAsString(const ExecutionContext *exe_ctx, uint32_t idx,
                                   llvm::StringRef new_value);
@@ -186,8 +185,8 @@ public:
   OptionValueFileSpecList *GetPropertyAtIndexAsOptionValueFileSpecList(
       const ExecutionContext *exe_ctx, bool will_modify, uint32_t idx) const;
 
-  void AppendProperty(ConstString name, ConstString desc,
-                      bool is_global, const lldb::OptionValueSP &value_sp);
+  void AppendProperty(ConstString name, ConstString desc, bool is_global,
+                      const lldb::OptionValueSP &value_sp);
 
   lldb::OptionValuePropertiesSP GetSubProperty(const ExecutionContext *exe_ctx,
                                                ConstString name);

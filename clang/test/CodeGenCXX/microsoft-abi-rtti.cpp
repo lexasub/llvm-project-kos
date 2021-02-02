@@ -3,28 +3,57 @@
 
 struct N {};
 struct M : private N {};
-struct X { virtual void f() {} };
-class Z { virtual void f() {} };
-class V : public X { virtual void f() {} };
-class W : M, virtual V { public: virtual void f() {} };
-class Y : Z, W, virtual V { public: virtual void g() {} } y;
+struct X {
+  virtual void f() {}
+};
+class Z {
+  virtual void f() {}
+};
+class V : public X {
+  virtual void f() {}
+};
+class W : M, virtual V {
+public:
+  virtual void f() {}
+};
+class Y : Z, W, virtual V {
+public:
+  virtual void g() {}
+} y;
 
 struct A {};
 struct B : A {};
-struct C : B { virtual void f() {} } c;
+struct C : B {
+  virtual void f() {}
+} c;
 
-struct X1 { virtual void f() {} };
+struct X1 {
+  virtual void f() {}
+};
 struct V1 : X1 {};
 struct W1 : virtual V1 {};
-struct Y1 : W1, virtual V1 {} y1;
+struct Y1 : W1, virtual V1 {
+} y1;
 
-struct A1 { virtual void f() {} };
-struct B1 : virtual A1 { virtual void f() {} B1() {} } b1;
+struct A1 {
+  virtual void f() {}
+};
+struct B1 : virtual A1 {
+  virtual void f() {}
+  B1() {}
+} b1;
 
-struct Z2 { virtual void f() {} };
-struct Y2 { virtual void f() {} };
+struct Z2 {
+  virtual void f() {}
+};
+struct Y2 {
+  virtual void f() {}
+};
 struct A2 : Z2, Y2 {};
-struct B2 : virtual A2 { B2() {} virtual void f() {} } b2;
+struct B2 : virtual A2 {
+  B2() {}
+  virtual void f() {}
+} b2;
 
 // CHECK-DAG: @"??_R4B2@@6BZ2@@@" = linkonce_odr constant %rtti.CompleteObjectLocator { i32 0, i32 8, i32 4, i8* bitcast (%rtti.TypeDescriptor8* @"??_R0?AUB2@@@8" to i8*), %rtti.ClassHierarchyDescriptor* @"??_R3B2@@8" }, comdat
 // CHECK-DAG: @"??_R0?AUB2@@@8" = linkonce_odr global %rtti.TypeDescriptor8 { i8** @"??_7type_info@@6B@", i8* null, [9 x i8] c".?AUB2@@\00" }, comdat

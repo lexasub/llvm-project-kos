@@ -10,7 +10,7 @@ void foo();
 namespace Cake {
 // CHECK-NAMESPACE: FunctionDecl:{ResultType void}{TypedText lie}
 void lie();
-}
+} // namespace Cake
 
 #elif !defined(HEADER2)
 #define HEADER2
@@ -22,7 +22,7 @@ extern int Baz;
 #else
 
 void func() {
-Cake::
+  Cake::
 }
 
 #endif

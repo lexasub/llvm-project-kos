@@ -430,9 +430,8 @@ TEST_F(TUSchedulerTests, InvalidationUnchanged) {
   std::atomic<int> Actions(0);
 
   Notification Start;
-  updateWithDiags(S, Path, "a", WantDiagnostics::Yes, [&](std::vector<Diag>) {
-    Start.wait();
-  });
+  updateWithDiags(S, Path, "a", WantDiagnostics::Yes,
+                  [&](std::vector<Diag>) { Start.wait(); });
   S.runWithAST(
       "invalidatable", Path,
       [&](llvm::Expected<InputsAndAST> AST) {

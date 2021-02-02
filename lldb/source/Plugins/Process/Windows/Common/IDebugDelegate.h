@@ -38,6 +38,6 @@ public:
   virtual void OnDebugString(const std::string &string) = 0;
   virtual void OnDebuggerError(const Status &error, uint32_t type) = 0;
 };
-}
+} // namespace lldb_private
 
 #endif

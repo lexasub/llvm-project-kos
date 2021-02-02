@@ -34,6 +34,6 @@ int C::c = 15;
 const int C::a;
 
 int main() {
-    C instance_C;
-    return C::a;
+  C instance_C;
+  return C::a;
 }

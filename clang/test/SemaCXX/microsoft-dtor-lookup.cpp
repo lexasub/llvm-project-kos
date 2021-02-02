@@ -28,7 +28,7 @@ void f() {
   VC vc;
 }
 
-}
+} // namespace Test1
 
 namespace Test2 {
 
@@ -56,11 +56,11 @@ struct D {
   C o;
 };
 
-void foo(B b) { } // expected-error {{attempt to use a deleted function}}
-void bar(A a) { } // no error; MSVC rejects this, but we skip the direct access check.
-void baz(D d) { } // no error
+void foo(B b) {} // expected-error {{attempt to use a deleted function}}
+void bar(A a) {} // no error; MSVC rejects this, but we skip the direct access check.
+void baz(D d) {} // no error
 
-}
+} // namespace Test2
 
 #ifdef MSVC_ABI
 namespace Test3 {
@@ -72,28 +72,28 @@ class A {
   int a;
 };
 
-void bar(A a) { }
-void baz(A a) { } // no error; MSVC rejects this, but the standard allows it.
+void bar(A a) {}
+void baz(A a) {} // no error; MSVC rejects this, but the standard allows it.
 
 // MSVC accepts foo() but we reject it for consistency with Itanium.  MSVC also
 // rejects this if A has a copy ctor or if we call A's ctor.
 void foo(A *a) {
   bar(*a); // expected-error {{temporary of type 'Test3::A' has private destructor}}
 }
-}
+} // namespace Test3
 #endif
 
 namespace Test4 {
 // Don't try to access the dtor of an incomplete on a function declaration.
 class A;
 void foo(A a);
-}
+} // namespace Test4
 
 #ifdef MSVC_ABI
 namespace Test5 {
 // Do the operator delete access control check from the context of the dtor.
 class A {
- protected:
+protected:
   void operator delete(void *);
 };
 class B : public A {
@@ -104,7 +104,7 @@ B *test() {
   // lookup from this context, which doesn't have access.
   return new B;
 }
-}
+} // namespace Test5
 #endif
 
 namespace Test6 {
@@ -114,11 +114,12 @@ protected:
 };
 class B : public A {
   virtual ~B();
+
 public:
   virtual void m_fn1();
 };
 void fn1(B *b) { b->m_fn1(); }
-}
+} // namespace Test6
 
 namespace Test7 {
 class A {
@@ -129,4 +130,4 @@ struct B : public A {
   virtual ~B();
 };
 void fn1(B b) {}
-}
+} // namespace Test7

@@ -19,14 +19,13 @@ int interceptWhenPossible(uptr dll_function, const char *real_function);
 // ----------------- Function interception helper macros -------------------- //
 // Weak functions, could be redefined in the main executable, but that is not
 // necessary, so we shouldn't die if we can not find a reference.
-#define INTERCEPT_WEAK(Name) interceptWhenPossible((uptr) Name, #Name);
+#define INTERCEPT_WEAK(Name) interceptWhenPossible((uptr)Name, #Name);
 
 #define INTERCEPT_SANITIZER_WEAK_FUNCTION(Name)                                \
   static int intercept_##Name() {                                              \
-    return __sanitizer::interceptWhenPossible((__sanitizer::uptr) Name, #Name);\
+    return __sanitizer::interceptWhenPossible((__sanitizer::uptr)Name, #Name); \
   }                                                                            \
-  __pragma(section(".WEAK$M", long, read))                                     \
-  __declspec(allocate(".WEAK$M")) int (*__weak_intercept_##Name)() =           \
-      intercept_##Name;
+  __pragma(section(".WEAK$M", long, read)) __declspec(allocate(                \
+      ".WEAK$M")) int (*__weak_intercept_##Name)() = intercept_##Name;
 
-#endif // SANITIZER_WIN_WEAK_INTERCEPTION_H
+#endif  // SANITIZER_WIN_WEAK_INTERCEPTION_H

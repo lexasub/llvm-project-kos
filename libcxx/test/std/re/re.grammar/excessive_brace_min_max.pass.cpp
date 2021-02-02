@@ -19,12 +19,11 @@
 
 int main(int, char**) {
   // test that `n <= m`
-  for (std::regex_constants::syntax_option_type op :
-       {std::regex::basic}) {
+  for (std::regex_constants::syntax_option_type op : {std::regex::basic}) {
     try {
       TEST_IGNORE_NODISCARD std::regex("a\\{3,2\\}", op);
       assert(false);
-    } catch (const std::regex_error &e) {
+    } catch (const std::regex_error& e) {
       assert(e.code() == std::regex_constants::error_badbrace);
       LIBCPP_ASSERT(e.code() == std::regex_constants::error_badbrace);
     }
@@ -35,19 +34,19 @@ int main(int, char**) {
     try {
       TEST_IGNORE_NODISCARD std::regex("a{3,2}", op);
       assert(false);
-    } catch (const std::regex_error &e) {
+    } catch (const std::regex_error& e) {
       assert(e.code() == std::regex_constants::error_badbrace);
       LIBCPP_ASSERT(e.code() == std::regex_constants::error_badbrace);
     }
   }
 
   // test that both bounds are within the limit
-  for (std::regex_constants::syntax_option_type op :
-       {std::regex::basic}) {
+  for (std::regex_constants::syntax_option_type op : {std::regex::basic}) {
     try {
-      TEST_IGNORE_NODISCARD std::regex("a\\{100000000000000000000,10000000000000000000\\}", op);
+      TEST_IGNORE_NODISCARD std::regex(
+          "a\\{100000000000000000000,10000000000000000000\\}", op);
       assert(false);
-    } catch (const std::regex_error &e) {
+    } catch (const std::regex_error& e) {
       assert(e.code() == std::regex_constants::error_badbrace);
       LIBCPP_ASSERT(e.code() == std::regex_constants::error_badbrace);
     }
@@ -56,9 +55,10 @@ int main(int, char**) {
        {std::regex::ECMAScript, std::regex::extended, std::regex::egrep,
         std::regex::awk}) {
     try {
-      TEST_IGNORE_NODISCARD std::regex("a{100000000000000000000,10000000000000000000}", op);
+      TEST_IGNORE_NODISCARD std::regex(
+          "a{100000000000000000000,10000000000000000000}", op);
       assert(false);
-    } catch (const std::regex_error &e) {
+    } catch (const std::regex_error& e) {
       assert(e.code() == std::regex_constants::error_badbrace);
       LIBCPP_ASSERT(e.code() == std::regex_constants::error_badbrace);
     }

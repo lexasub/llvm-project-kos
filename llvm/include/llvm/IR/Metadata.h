@@ -143,7 +143,7 @@ DEFINE_ISA_CONVERSION_FUNCTIONS(Metadata, LLVMMetadataRef)
 
 // Specialized opaque metadata conversions.
 inline Metadata **unwrap(LLVMMetadataRef *MDs) {
-  return reinterpret_cast<Metadata**>(MDs);
+  return reinterpret_cast<Metadata **>(MDs);
 }
 
 #define HANDLE_METADATA(CLASS) class CLASS;
@@ -427,8 +427,7 @@ public:
 class LocalAsMetadata : public ValueAsMetadata {
   friend class ValueAsMetadata;
 
-  LocalAsMetadata(Value *Local)
-      : ValueAsMetadata(LocalAsMetadataKind, Local) {
+  LocalAsMetadata(Value *Local) : ValueAsMetadata(LocalAsMetadataKind, Local) {
     assert(!isa<Constant>(Local) && "Expected local value");
   }
 
@@ -683,16 +682,15 @@ struct AAMDNodes {
 };
 
 // Specialize DenseMapInfo for AAMDNodes.
-template<>
-struct DenseMapInfo<AAMDNodes> {
+template <> struct DenseMapInfo<AAMDNodes> {
   static inline AAMDNodes getEmptyKey() {
-    return AAMDNodes(DenseMapInfo<MDNode *>::getEmptyKey(),
-                     nullptr, nullptr, nullptr);
+    return AAMDNodes(DenseMapInfo<MDNode *>::getEmptyKey(), nullptr, nullptr,
+                     nullptr);
   }
 
   static inline AAMDNodes getTombstoneKey() {
-    return AAMDNodes(DenseMapInfo<MDNode *>::getTombstoneKey(),
-                     nullptr, nullptr, nullptr);
+    return AAMDNodes(DenseMapInfo<MDNode *>::getTombstoneKey(), nullptr,
+                     nullptr, nullptr);
   }
 
   static unsigned getHashValue(const AAMDNodes &Val) {
@@ -1365,9 +1363,9 @@ class NamedMDNode : public ilist_node<NamedMDNode> {
 
   explicit NamedMDNode(const Twine &N);
 
-  template<class T1, class T2>
-  class op_iterator_impl :
-      public std::iterator<std::bidirectional_iterator_tag, T2> {
+  template <class T1, class T2>
+  class op_iterator_impl
+      : public std::iterator<std::bidirectional_iterator_tag, T2> {
     friend class NamedMDNode;
 
     const NamedMDNode *Node = nullptr;
@@ -1438,14 +1436,16 @@ public:
   using op_iterator = op_iterator_impl<MDNode *, MDNode>;
 
   op_iterator op_begin() { return op_iterator(this, 0); }
-  op_iterator op_end()   { return op_iterator(this, getNumOperands()); }
+  op_iterator op_end() { return op_iterator(this, getNumOperands()); }
 
   using const_op_iterator = op_iterator_impl<const MDNode *, MDNode>;
 
   const_op_iterator op_begin() const { return const_op_iterator(this, 0); }
-  const_op_iterator op_end()   const { return const_op_iterator(this, getNumOperands()); }
+  const_op_iterator op_end() const {
+    return const_op_iterator(this, getNumOperands());
+  }
 
-  inline iterator_range<op_iterator>  operands() {
+  inline iterator_range<op_iterator> operands() {
     return make_range(op_begin(), op_end());
   }
   inline iterator_range<const_op_iterator> operands() const {

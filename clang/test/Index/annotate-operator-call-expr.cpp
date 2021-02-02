@@ -81,4 +81,3 @@ void testFoo(Foo foo, int index) {
 // CHECK7: Punctuation: "]" [15:29 - 15:30] DeclRefExpr=operator[]:2:7 RefName=[15:23 - 15:24] RefName=[15:29 - 15:30]
 // CHECK7: Punctuation: "]" [15:30 - 15:31] DeclRefExpr=operator[]:2:7 RefName=[15:6 - 15:7] RefName=[15:30 - 15:31]
 // CHECK7: Punctuation: ";" [15:31 - 15:32] CompoundStmt=
-

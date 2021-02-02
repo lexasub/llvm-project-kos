@@ -21,17 +21,17 @@ void foo() {
   S1().foo();
   S1().bar();
   // expected-error@-1 {{invalid reference to function 'bar': constraints not satisfied}}
-  (void) static_cast<bool>(S1());
-  (void) static_cast<S2>(S1());
+  (void)static_cast<bool>(S1());
+  (void)static_cast<S2>(S1());
   // expected-error@-1 {{no matching conversion for static_cast from 'S1' to 'S2'}}
 }
 
 // Test that constraints are checked before implicit conversions are formed.
 
-template<typename T>
+template <typename T>
 struct invalid_template { using X = typename T::non_existant; };
 struct A {
-  template<typename T, bool=invalid_template<T>::aadasas>
+  template <typename T, bool = invalid_template<T>::aadasas>
   operator T() {}
 };
 
@@ -41,8 +41,10 @@ void foo(A) requires true;
 struct S {
   void foo(int) requires false;
   void foo(A) requires true;
-  S(A) requires false;
-  S(double) requires true;
+  S(A)
+  requires false;
+  S(double)
+  requires true;
   ~S() requires false;
   // expected-note@-1 2{{because 'false' evaluated to false}}
   ~S() requires true;

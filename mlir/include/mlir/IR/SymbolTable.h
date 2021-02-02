@@ -29,7 +29,8 @@ public:
   /// Look up a symbol with the specified name, returning null if no such
   /// name exists. Names never include the @ on them.
   Operation *lookup(StringRef name) const;
-  template <typename T> T lookup(StringRef name) const {
+  template <typename T>
+  T lookup(StringRef name) const {
     return dyn_cast_or_null<T>(lookup(name));
   }
 
@@ -290,7 +291,8 @@ public:
   Operation *lookupSymbol(StringRef name) {
     return mlir::SymbolTable::lookupSymbolIn(this->getOperation(), name);
   }
-  template <typename T> T lookupSymbol(StringRef name) {
+  template <typename T>
+  T lookupSymbol(StringRef name) {
     return dyn_cast_or_null<T>(lookupSymbol(name));
   }
   Operation *lookupSymbol(SymbolRefAttr symbol) {

@@ -18,18 +18,15 @@
 
 #include "test_macros.h"
 
-void
-test1()
-{
-    typedef std::normal_distribution<> D;
-    D d1(20, 1.75);
-    D d2 = d1;
-    assert(d1 == d2);
+void test1() {
+  typedef std::normal_distribution<> D;
+  D d1(20, 1.75);
+  D d2 = d1;
+  assert(d1 == d2);
 }
 
-int main(int, char**)
-{
-    test1();
+int main(int, char**) {
+  test1();
 
   return 0;
 }

@@ -24,7 +24,8 @@
 
 using namespace IteratorDebugChecks;
 
-typedef std::basic_string<char, std::char_traits<char>, test_allocator<char>>  StringType;
+typedef std::basic_string<char, std::char_traits<char>, test_allocator<char> >
+    StringType;
 
 template <class Container = StringType, ContainerType CT = CT_String>
 struct StringContainerChecks : BasicContainerChecks<Container, CT> {
@@ -58,10 +59,10 @@ private:
     (void)C.back();
     (void)CC.back();
     C.pop_back();
-    EXPECT_DEATH( C.erase(it) );
+    EXPECT_DEATH(C.erase(it));
     C.clear();
-    EXPECT_DEATH( C.back() );
-    EXPECT_DEATH( CC.back() );
+    EXPECT_DEATH(C.back());
+    EXPECT_DEATH(CC.back());
   }
 
   static void FrontOnEmptyContainer(int N) {
@@ -71,8 +72,8 @@ private:
     (void)C.front();
     (void)CC.front();
     C.clear();
-    EXPECT_DEATH( C.front() );
-    EXPECT_DEATH( CC.front() );
+    EXPECT_DEATH(C.front());
+    EXPECT_DEATH(CC.front());
   }
 
   static void PopBack(int N) {
@@ -81,15 +82,16 @@ private:
     iterator it1 = C1.end();
     --it1;
     C1.pop_back();
-    EXPECT_DEATH( C1.erase(it1) );
+    EXPECT_DEATH(C1.erase(it1));
     C1.erase(C1.begin(), C1.end());
     assert(C1.size() == 0);
-    EXPECT_DEATH_MATCHES(DebugInfoMatcher("string::pop_back(): string is already empty"), C1.pop_back() );
+    EXPECT_DEATH_MATCHES(
+        DebugInfoMatcher("string::pop_back(): string is already empty"),
+        C1.pop_back());
   }
 };
 
-int main(int, char**)
-{
+int main(int, char**) {
   StringContainerChecks<>::run();
 
   return 0;

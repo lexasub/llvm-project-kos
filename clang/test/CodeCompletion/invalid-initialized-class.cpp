@@ -1,4 +1,7 @@
-struct Foo { Foo(int); int abc; };
+struct Foo {
+  Foo(int);
+  int abc;
+};
 
 void test1() {
   Foo foo;

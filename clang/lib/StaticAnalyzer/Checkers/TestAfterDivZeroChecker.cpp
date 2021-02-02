@@ -168,12 +168,13 @@ void TestAfterDivZeroChecker::reportBug(SVal Val, CheckerContext &C) const {
       DivZeroBug.reset(new BuiltinBug(this, "Division by zero"));
 
     auto R = std::make_unique<PathSensitiveBugReport>(
-        *DivZeroBug, "Value being compared against zero has already been used "
-                     "for division",
+        *DivZeroBug,
+        "Value being compared against zero has already been used "
+        "for division",
         N);
 
     R->addVisitor(std::make_unique<DivisionBRVisitor>(Val.getAsSymbol(),
-                                                       C.getStackFrame()));
+                                                      C.getStackFrame()));
     C.emitReport(std::move(R));
   }
 }

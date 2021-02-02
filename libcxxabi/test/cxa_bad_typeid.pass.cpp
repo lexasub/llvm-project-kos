@@ -18,38 +18,35 @@
 #include "test_macros.h"
 
 class Base {
-  virtual void foo() {};
+  virtual void foo(){};
 };
 
 class Derived : public Base {};
 
-std::string test_bad_typeid(Derived *p) {
-    return typeid(*p).name();
-}
+std::string test_bad_typeid(Derived* p) { return typeid(*p).name(); }
 
 void my_terminate() { exit(0); }
 
-int main ()
-{
-    // swap-out the terminate handler
-    void (*default_handler)() = std::get_terminate();
-    std::set_terminate(my_terminate);
+int main() {
+  // swap-out the terminate handler
+  void (*default_handler)() = std::get_terminate();
+  std::set_terminate(my_terminate);
 
 #ifndef TEST_HAS_NO_EXCEPTIONS
-    try {
+  try {
 #endif
-        test_bad_typeid(nullptr);
-        assert(false);
+    test_bad_typeid(nullptr);
+    assert(false);
 #ifndef TEST_HAS_NO_EXCEPTIONS
-    } catch (std::bad_typeid const&) {
-        // success
-        return 0;
-    } catch (...) {
-        assert(false);
-    }
+  } catch (std::bad_typeid const&) {
+    // success
+    return 0;
+  } catch (...) {
+    assert(false);
+  }
 #endif
 
-    // failure, restore the default terminate handler and fire
-    std::set_terminate(default_handler);
-    std::terminate();
+  // failure, restore the default terminate handler and fire
+  std::set_terminate(default_handler);
+  std::terminate();
 }

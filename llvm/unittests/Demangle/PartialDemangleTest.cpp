@@ -6,9 +6,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include <cstdlib>
 #include "llvm/Demangle/Demangle.h"
 #include "gtest/gtest.h"
+#include <cstdlib>
 
 struct ChoppedName {
   const char *Mangled;
@@ -16,45 +16,45 @@ struct ChoppedName {
 };
 
 static ChoppedName NamesToTest[] = {
-  {"_Z1fv", "", "f", "", "()"},
-  {"_ZN1a1b1cIiiiEEvm", "a::b", "c", "void", "(unsigned long)"},
-  {"_ZZ5OuterIiEivEN5Inner12inner_memberEv",
-   "int Outer<int>()::Inner", "inner_member", "", "()"},
-  {"_Z1fIiEPFvvEv", "", "f", "void (*)()", "()"},
-  {"_ZN1S1fIiEEvv", "S", "f", "void", "()"},
+    {"_Z1fv", "", "f", "", "()"},
+    {"_ZN1a1b1cIiiiEEvm", "a::b", "c", "void", "(unsigned long)"},
+    {"_ZZ5OuterIiEivEN5Inner12inner_memberEv", "int Outer<int>()::Inner",
+     "inner_member", "", "()"},
+    {"_Z1fIiEPFvvEv", "", "f", "void (*)()", "()"},
+    {"_ZN1S1fIiEEvv", "S", "f", "void", "()"},
 
-  // Call operator for a lambda in f().
-  {"_ZZ1fvENK3$_0clEi", "f()::$_0", "operator()", "", "(int)"},
+    // Call operator for a lambda in f().
+    {"_ZZ1fvENK3$_0clEi", "f()::$_0", "operator()", "", "(int)"},
 
-  // A call operator for a lambda in a lambda in f().
-  {"_ZZZ1fvENK3$_0clEvENKUlvE_clEv",
-   "f()::$_0::operator()() const::'lambda'()", "operator()", "", "()"},
+    // A call operator for a lambda in a lambda in f().
+    {"_ZZZ1fvENK3$_0clEvENKUlvE_clEv",
+     "f()::$_0::operator()() const::'lambda'()", "operator()", "", "()"},
 
-  {"_ZZN1S1fEiiEd0_NKUlvE_clEv",
-   "S::f(int, int)::'lambda'()", "operator()", "", "()"},
+    {"_ZZN1S1fEiiEd0_NKUlvE_clEv", "S::f(int, int)::'lambda'()", "operator()",
+     "", "()"},
 
-  {"_ZN1Scv7MuncherIJDpPT_EEIJFivEA_iEEEv",
-   "S", "operator Muncher<int (*)(), int (*) []>", "", "()"},
+    {"_ZN1Scv7MuncherIJDpPT_EEIJFivEA_iEEEv", "S",
+     "operator Muncher<int (*)(), int (*) []>", "", "()"},
 
-  // Attributes.
-  {"_ZN5test4IdE1fEUa9enable_ifIXeqfL0p_Li1EEXeqfL0p0_Li2EEEi",
-   "test4<double>", "f", "", "(int)"},
-  {"_ZN1SC2B8ctor_tagEv", "S", "S", "", "()"},
-  {"_ZN1S1fB4MERPIiEEvv", "S", "f", "void", "()"},
+    // Attributes.
+    {"_ZN5test4IdE1fEUa9enable_ifIXeqfL0p_Li1EEXeqfL0p0_Li2EEEi",
+     "test4<double>", "f", "", "(int)"},
+    {"_ZN1SC2B8ctor_tagEv", "S", "S", "", "()"},
+    {"_ZN1S1fB4MERPIiEEvv", "S", "f", "void", "()"},
 
-  {"_ZNSsC1EmcRKSaIcE",
-   "std::basic_string<char, std::char_traits<char>, std::allocator<char> >",
-   "basic_string", "", "(unsigned long, char, std::allocator<char> const&)"},
-  {"_ZNSsixEm", "std::string", "operator[]", "", "(unsigned long)"},
-  {"_ZSt17__throw_bad_allocv", "std", "__throw_bad_alloc", "", "()"},
+    {"_ZNSsC1EmcRKSaIcE",
+     "std::basic_string<char, std::char_traits<char>, std::allocator<char> >",
+     "basic_string", "", "(unsigned long, char, std::allocator<char> const&)"},
+    {"_ZNSsixEm", "std::string", "operator[]", "", "(unsigned long)"},
+    {"_ZSt17__throw_bad_allocv", "std", "__throw_bad_alloc", "", "()"},
 
-  {"_ZN1AI1BEC2Ev", "A<B>", "A", "", "()"},
-  {"_ZN1AI1BED2Ev", "A<B>", "~A", "", "()"},
-  {"_ZN1AI1BECI24BaseEi", "A<B>", "A", "", "(int)"},
-  {"_ZNKR1AI1BE1fIiEEiv", "A<B>", "f", "int", "()"},
+    {"_ZN1AI1BEC2Ev", "A<B>", "A", "", "()"},
+    {"_ZN1AI1BED2Ev", "A<B>", "~A", "", "()"},
+    {"_ZN1AI1BECI24BaseEi", "A<B>", "A", "", "(int)"},
+    {"_ZNKR1AI1BE1fIiEEiv", "A<B>", "f", "int", "()"},
 
-  {"_ZN1SIJicfEE3mfnIJjcdEEEvicfDpT_", "S<int, char, float>",
-   "mfn", "void", "(int, char, float, unsigned int, char, double)"},
+    {"_ZN1SIJicfEE3mfnIJjcdEEEvicfDpT_", "S<int, char, float>", "mfn", "void",
+     "(int, char, float, unsigned int, char, double)"},
 };
 
 TEST(PartialDemanglerTest, TestNameChopping) {
@@ -116,7 +116,7 @@ TEST(PartialDemanglerTest, TestCtorOrDtor) {
       "_ZN1BIiEC1IcEET_", // B<int>::B<char>(char)
       "_ZN1AC1B1TEv",     // A::A[abi:T]()
       "_ZNSt1AD2Ev",      // std::A::~A()
-      "_ZN2ns1AD1Ev",      // ns::A::~A()
+      "_ZN2ns1AD1Ev",     // ns::A::~A()
   };
   static const char *Neg[] = {
       "_Z1fv",

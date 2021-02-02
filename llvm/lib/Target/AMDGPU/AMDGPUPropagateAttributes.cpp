@@ -41,27 +41,24 @@
 using namespace llvm;
 
 namespace llvm {
-extern const SubtargetFeatureKV AMDGPUFeatureKV[AMDGPU::NumSubtargetFeatures-1];
+extern const SubtargetFeatureKV
+    AMDGPUFeatureKV[AMDGPU::NumSubtargetFeatures - 1];
 }
 
 namespace {
 
 // Target features to propagate.
 static constexpr const FeatureBitset TargetFeatures = {
-  AMDGPU::FeatureWavefrontSize16,
-  AMDGPU::FeatureWavefrontSize32,
-  AMDGPU::FeatureWavefrontSize64
-};
+    AMDGPU::FeatureWavefrontSize16, AMDGPU::FeatureWavefrontSize32,
+    AMDGPU::FeatureWavefrontSize64};
 
 // Attributes to propagate.
 // TODO: Support conservative min/max merging instead of cloning.
-static constexpr const char* AttributeNames[] = {
-  "amdgpu-waves-per-eu",
-  "amdgpu-flat-work-group-size"
-};
+static constexpr const char *AttributeNames[] = {"amdgpu-waves-per-eu",
+                                                 "amdgpu-flat-work-group-size"};
 
 static constexpr unsigned NumAttr =
-  sizeof(AttributeNames) / sizeof(AttributeNames[0]);
+    sizeof(AttributeNames) / sizeof(AttributeNames[0]);
 
 class AMDGPUPropagateAttributes {
 
@@ -78,7 +75,7 @@ class AMDGPUPropagateAttributes {
           Attributes[I] = F.getFnAttribute(AttributeNames[I]);
     }
 
-    bool operator == (const FnProperties &Other) const {
+    bool operator==(const FnProperties &Other) const {
       if ((Features & TargetFeatures) != (Other.Features & TargetFeatures))
         return false;
       for (unsigned I = 0; I < NumAttr; ++I)
@@ -100,8 +97,8 @@ class AMDGPUPropagateAttributes {
 
   class Clone {
   public:
-    Clone(const FnProperties &Props, Function *OrigF, Function *NewF) :
-      Properties(Props), OrigF(OrigF), NewF(NewF) {}
+    Clone(const FnProperties &Props, Function *OrigF, Function *NewF)
+        : Properties(Props), OrigF(OrigF), NewF(NewF) {}
 
     FnProperties Properties;
     Function *OrigF;
@@ -120,8 +117,7 @@ class AMDGPUPropagateAttributes {
   SmallVector<Clone, 32> Clones;
 
   // Find a clone with required features.
-  Function *findFunction(const FnProperties &PropsNeeded,
-                         Function *OrigF);
+  Function *findFunction(const FnProperties &PropsNeeded, Function *OrigF);
 
   // Clone function \p F and set \p NewProps on the clone.
   // Cole takes the name of original function.
@@ -139,8 +135,8 @@ class AMDGPUPropagateAttributes {
   bool process();
 
 public:
-  AMDGPUPropagateAttributes(const TargetMachine *TM, bool AllowClone) :
-    TM(TM), AllowClone(AllowClone) {}
+  AMDGPUPropagateAttributes(const TargetMachine *TM, bool AllowClone)
+      : TM(TM), AllowClone(AllowClone) {}
 
   // Use F as a root and propagate its attributes.
   bool process(Function &F);
@@ -159,10 +155,10 @@ class AMDGPUPropagateAttributesEarly : public FunctionPass {
 public:
   static char ID; // Pass identification
 
-  AMDGPUPropagateAttributesEarly(const TargetMachine *TM = nullptr) :
-    FunctionPass(ID), TM(TM) {
+  AMDGPUPropagateAttributesEarly(const TargetMachine *TM = nullptr)
+      : FunctionPass(ID), TM(TM) {
     initializeAMDGPUPropagateAttributesEarlyPass(
-      *PassRegistry::getPassRegistry());
+        *PassRegistry::getPassRegistry());
   }
 
   bool runOnFunction(Function &F) override;
@@ -176,28 +172,28 @@ class AMDGPUPropagateAttributesLate : public ModulePass {
 public:
   static char ID; // Pass identification
 
-  AMDGPUPropagateAttributesLate(const TargetMachine *TM = nullptr) :
-    ModulePass(ID), TM(TM) {
+  AMDGPUPropagateAttributesLate(const TargetMachine *TM = nullptr)
+      : ModulePass(ID), TM(TM) {
     initializeAMDGPUPropagateAttributesLatePass(
-      *PassRegistry::getPassRegistry());
+        *PassRegistry::getPassRegistry());
   }
 
   bool runOnModule(Module &M) override;
 };
 
-}  // end anonymous namespace.
+} // end anonymous namespace.
 
 char AMDGPUPropagateAttributesEarly::ID = 0;
 char AMDGPUPropagateAttributesLate::ID = 0;
 
 INITIALIZE_PASS(AMDGPUPropagateAttributesEarly,
                 "amdgpu-propagate-attributes-early",
-                "Early propagate attributes from kernels to functions",
-                false, false)
+                "Early propagate attributes from kernels to functions", false,
+                false)
 INITIALIZE_PASS(AMDGPUPropagateAttributesLate,
                 "amdgpu-propagate-attributes-late",
-                "Late propagate attributes from kernels to functions",
-                false, false)
+                "Late propagate attributes from kernels to functions", false,
+                false)
 
 Function *
 AMDGPUPropagateAttributes::findFunction(const FnProperties &PropsNeeded,
@@ -337,15 +333,15 @@ void AMDGPUPropagateAttributes::setFeatures(Function &F,
   std::string NewFeatureStr = getFeatureString(NewFeatures);
 
   LLVM_DEBUG(dbgs() << "Set features "
-                    << getFeatureString(NewFeatures & TargetFeatures)
-                    << " on " << F.getName() << '\n');
+                    << getFeatureString(NewFeatures & TargetFeatures) << " on "
+                    << F.getName() << '\n');
 
   F.removeFnAttr("target-features");
   F.addFnAttr("target-features", NewFeatureStr);
 }
 
-void AMDGPUPropagateAttributes::setAttributes(Function &F,
-    const ArrayRef<Optional<Attribute>> NewAttrs) {
+void AMDGPUPropagateAttributes::setAttributes(
+    Function &F, const ArrayRef<Optional<Attribute>> NewAttrs) {
   LLVM_DEBUG(dbgs() << "Set attributes on " << F.getName() << ":\n");
   for (unsigned I = 0; I < NumAttr; ++I) {
     F.removeFnAttr(AttributeNames[I]);
@@ -356,9 +352,8 @@ void AMDGPUPropagateAttributes::setAttributes(Function &F,
   }
 }
 
-std::string
-AMDGPUPropagateAttributes::getFeatureString(const FeatureBitset &Features) const
-{
+std::string AMDGPUPropagateAttributes::getFeatureString(
+    const FeatureBitset &Features) const {
   std::string Ret;
   for (const SubtargetFeatureKV &KV : AMDGPUFeatureKV) {
     if (Features[KV.Value])
@@ -397,13 +392,13 @@ bool AMDGPUPropagateAttributesLate::runOnModule(Module &M) {
   return AMDGPUPropagateAttributes(TM, true).process(M);
 }
 
-FunctionPass
-*llvm::createAMDGPUPropagateAttributesEarlyPass(const TargetMachine *TM) {
+FunctionPass *
+llvm::createAMDGPUPropagateAttributesEarlyPass(const TargetMachine *TM) {
   return new AMDGPUPropagateAttributesEarly(TM);
 }
 
-ModulePass
-*llvm::createAMDGPUPropagateAttributesLatePass(const TargetMachine *TM) {
+ModulePass *
+llvm::createAMDGPUPropagateAttributesLatePass(const TargetMachine *TM) {
   return new AMDGPUPropagateAttributesLate(TM);
 }
 

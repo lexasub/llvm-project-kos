@@ -18,44 +18,43 @@
 #include "test_macros.h"
 #include "platform_support.h"
 
-int main(int, char**)
-{
+int main(int, char**) {
 #ifdef _LIBCPP_HAS_OPEN_WITH_WCHAR
-    std::wstring temp = get_wide_temp_file_name();
-    {
-        std::ofstream fs(temp.c_str());
-        fs << 3.25;
-    }
-    {
-        std::ifstream fs(temp.c_str());
-        double x = 0;
-        fs >> x;
-        assert(x == 3.25);
-    }
-    {
-        std::ifstream fs(temp.c_str(), std::ios_base::out);
-        double x = 0;
-        fs >> x;
-        assert(x == 3.25);
-    }
-    _wremove(temp.c_str());
-    {
-        std::wofstream fs(temp.c_str());
-        fs << 3.25;
-    }
-    {
-        std::wifstream fs(temp.c_str());
-        double x = 0;
-        fs >> x;
-        assert(x == 3.25);
-    }
-    {
-        std::wifstream fs(temp.c_str(), std::ios_base::out);
-        double x = 0;
-        fs >> x;
-        assert(x == 3.25);
-    }
-    _wremove(temp.c_str());
+  std::wstring temp = get_wide_temp_file_name();
+  {
+    std::ofstream fs(temp.c_str());
+    fs << 3.25;
+  }
+  {
+    std::ifstream fs(temp.c_str());
+    double x = 0;
+    fs >> x;
+    assert(x == 3.25);
+  }
+  {
+    std::ifstream fs(temp.c_str(), std::ios_base::out);
+    double x = 0;
+    fs >> x;
+    assert(x == 3.25);
+  }
+  _wremove(temp.c_str());
+  {
+    std::wofstream fs(temp.c_str());
+    fs << 3.25;
+  }
+  {
+    std::wifstream fs(temp.c_str());
+    double x = 0;
+    fs >> x;
+    assert(x == 3.25);
+  }
+  {
+    std::wifstream fs(temp.c_str(), std::ios_base::out);
+    double x = 0;
+    fs >> x;
+    assert(x == 3.25);
+  }
+  _wremove(temp.c_str());
 #endif
 
   return 0;

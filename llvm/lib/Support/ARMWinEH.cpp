@@ -34,4 +34,3 @@ std::pair<uint16_t, uint32_t> SavedRegisterMask(const RuntimeFunction &RF) {
 } // namespace WinEH
 } // namespace ARM
 } // namespace llvm
-

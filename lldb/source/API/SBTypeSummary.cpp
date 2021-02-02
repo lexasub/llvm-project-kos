@@ -82,8 +82,8 @@ lldb_private::TypeSummaryOptions *SBTypeSummaryOptions::operator->() {
   return m_opaque_up.get();
 }
 
-const lldb_private::TypeSummaryOptions *SBTypeSummaryOptions::
-operator->() const {
+const lldb_private::TypeSummaryOptions *
+SBTypeSummaryOptions::operator->() const {
   return m_opaque_up.get();
 }
 
@@ -337,9 +337,8 @@ bool SBTypeSummary::DoesPrintValue(lldb::SBValue value) {
 }
 
 lldb::SBTypeSummary &SBTypeSummary::operator=(const lldb::SBTypeSummary &rhs) {
-  LLDB_RECORD_METHOD(lldb::SBTypeSummary &,
-                     SBTypeSummary, operator=,(const lldb::SBTypeSummary &),
-                     rhs);
+  LLDB_RECORD_METHOD(lldb::SBTypeSummary &, SBTypeSummary, operator=,
+                     (const lldb::SBTypeSummary &), rhs);
 
   if (this != &rhs) {
     m_opaque_sp = rhs.m_opaque_sp;
@@ -348,7 +347,7 @@ lldb::SBTypeSummary &SBTypeSummary::operator=(const lldb::SBTypeSummary &rhs) {
 }
 
 bool SBTypeSummary::operator==(lldb::SBTypeSummary &rhs) {
-  LLDB_RECORD_METHOD(bool, SBTypeSummary, operator==,(lldb::SBTypeSummary &),
+  LLDB_RECORD_METHOD(bool, SBTypeSummary, operator==, (lldb::SBTypeSummary &),
                      rhs);
 
   if (!IsValid())
@@ -398,7 +397,7 @@ bool SBTypeSummary::IsEqualTo(lldb::SBTypeSummary &rhs) {
 }
 
 bool SBTypeSummary::operator!=(lldb::SBTypeSummary &rhs) {
-  LLDB_RECORD_METHOD(bool, SBTypeSummary, operator!=,(lldb::SBTypeSummary &),
+  LLDB_RECORD_METHOD(bool, SBTypeSummary, operator!=, (lldb::SBTypeSummary &),
                      rhs);
 
   if (!IsValid())
@@ -476,8 +475,7 @@ bool SBTypeSummary::ChangeSummaryType(bool want_script) {
 namespace lldb_private {
 namespace repro {
 
-template <>
-void RegisterMethods<SBTypeSummaryOptions>(Registry &R) {
+template <> void RegisterMethods<SBTypeSummaryOptions>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBTypeSummaryOptions, ());
   LLDB_REGISTER_CONSTRUCTOR(SBTypeSummaryOptions,
                             (const lldb::SBTypeSummaryOptions &));
@@ -495,15 +493,13 @@ void RegisterMethods<SBTypeSummaryOptions>(Registry &R) {
                             (const lldb_private::TypeSummaryOptions *));
 }
 
-template <>
-void RegisterMethods<SBTypeSummary>(Registry &R) {
+template <> void RegisterMethods<SBTypeSummary>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBTypeSummary, ());
   LLDB_REGISTER_STATIC_METHOD(lldb::SBTypeSummary, SBTypeSummary,
                               CreateWithSummaryString,
                               (const char *, uint32_t));
   LLDB_REGISTER_STATIC_METHOD(lldb::SBTypeSummary, SBTypeSummary,
-                              CreateWithFunctionName,
-                              (const char *, uint32_t));
+                              CreateWithFunctionName, (const char *, uint32_t));
   LLDB_REGISTER_STATIC_METHOD(lldb::SBTypeSummary, SBTypeSummary,
                               CreateWithScriptCode, (const char *, uint32_t));
   LLDB_REGISTER_CONSTRUCTOR(SBTypeSummary, (const lldb::SBTypeSummary &));
@@ -521,16 +517,14 @@ void RegisterMethods<SBTypeSummary>(Registry &R) {
   LLDB_REGISTER_METHOD(bool, SBTypeSummary, GetDescription,
                        (lldb::SBStream &, lldb::DescriptionLevel));
   LLDB_REGISTER_METHOD(bool, SBTypeSummary, DoesPrintValue, (lldb::SBValue));
-  LLDB_REGISTER_METHOD(
-      lldb::SBTypeSummary &,
-      SBTypeSummary, operator=,(const lldb::SBTypeSummary &));
-  LLDB_REGISTER_METHOD(bool,
-                       SBTypeSummary, operator==,(lldb::SBTypeSummary &));
-  LLDB_REGISTER_METHOD(bool, SBTypeSummary, IsEqualTo,
+  LLDB_REGISTER_METHOD(lldb::SBTypeSummary &, SBTypeSummary, operator=,
+                       (const lldb::SBTypeSummary &));
+  LLDB_REGISTER_METHOD(bool, SBTypeSummary, operator==,
                        (lldb::SBTypeSummary &));
-  LLDB_REGISTER_METHOD(bool,
-                       SBTypeSummary, operator!=,(lldb::SBTypeSummary &));
+  LLDB_REGISTER_METHOD(bool, SBTypeSummary, IsEqualTo, (lldb::SBTypeSummary &));
+  LLDB_REGISTER_METHOD(bool, SBTypeSummary, operator!=,
+                       (lldb::SBTypeSummary &));
 }
 
-}
-}
+} // namespace repro
+} // namespace lldb_private

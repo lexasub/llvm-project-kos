@@ -13,9 +13,9 @@
 #ifndef SANITIZER_FLAG_REGISTRY_H
 #define SANITIZER_FLAG_REGISTRY_H
 
+#include "sanitizer_common.h"
 #include "sanitizer_internal_defs.h"
 #include "sanitizer_libc.h"
-#include "sanitizer_common.h"
 
 namespace __sanitizer {
 
@@ -52,14 +52,12 @@ class FlagHandler final : public FlagHandlerBase {
 };
 
 inline bool ParseBool(const char *value, bool *b) {
-  if (internal_strcmp(value, "0") == 0 ||
-      internal_strcmp(value, "no") == 0 ||
+  if (internal_strcmp(value, "0") == 0 || internal_strcmp(value, "no") == 0 ||
       internal_strcmp(value, "false") == 0) {
     *b = false;
     return true;
   }
-  if (internal_strcmp(value, "1") == 0 ||
-      internal_strcmp(value, "yes") == 0 ||
+  if (internal_strcmp(value, "1") == 0 || internal_strcmp(value, "yes") == 0 ||
       internal_strcmp(value, "true") == 0) {
     *b = true;
     return true;
@@ -69,7 +67,8 @@ inline bool ParseBool(const char *value, bool *b) {
 
 template <>
 inline bool FlagHandler<bool>::Parse(const char *value) {
-  if (ParseBool(value, t_)) return true;
+  if (ParseBool(value, t_))
+    return true;
   Printf("ERROR: Invalid value for bool option: '%s'\n", value);
   return false;
 }
@@ -117,7 +116,8 @@ inline bool FlagHandler<int>::Parse(const char *value) {
   const char *value_end;
   *t_ = internal_simple_strtoll(value, &value_end, 10);
   bool ok = *value_end == 0;
-  if (!ok) Printf("ERROR: Invalid value for int option: '%s'\n", value);
+  if (!ok)
+    Printf("ERROR: Invalid value for int option: '%s'\n", value);
   return ok;
 }
 
@@ -132,7 +132,8 @@ inline bool FlagHandler<uptr>::Parse(const char *value) {
   const char *value_end;
   *t_ = internal_simple_strtoll(value, &value_end, 10);
   bool ok = *value_end == 0;
-  if (!ok) Printf("ERROR: Invalid value for uptr option: '%s'\n", value);
+  if (!ok)
+    Printf("ERROR: Invalid value for uptr option: '%s'\n", value);
   return ok;
 }
 
@@ -147,7 +148,8 @@ inline bool FlagHandler<s64>::Parse(const char *value) {
   const char *value_end;
   *t_ = internal_simple_strtoll(value, &value_end, 10);
   bool ok = *value_end == 0;
-  if (!ok) Printf("ERROR: Invalid value for s64 option: '%s'\n", value);
+  if (!ok)
+    Printf("ERROR: Invalid value for s64 option: '%s'\n", value);
   return ok;
 }
 
@@ -163,7 +165,7 @@ class FlagParser {
     const char *name;
     const char *desc;
     FlagHandlerBase *handler;
-  } *flags_;
+  } * flags_;
   int n_flags_;
 
   const char *buf_;

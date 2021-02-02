@@ -1,4 +1,5 @@
-template <typename T> struct Test {
+template <typename T>
+struct Test {
   Test() : M(10) {}
   void doIt(int N) { // CHECK: [[@LINE]]| 2|  void doIt
     if (N > 10) {    // CHECK: [[@LINE]]| 2|    if (N > 10) {

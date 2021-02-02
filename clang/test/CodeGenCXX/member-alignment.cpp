@@ -13,16 +13,14 @@ public:
   void bar(void);
 };
 
-void
-t::bar(void) {
-// CHECK-ITANIUM: @_ZN1t3barEv({{.*}}) #0 align 2 {
-// CHECK-WEBASSEMBLY32: @_ZN1t3barEv({{.*}}) #0 {
-// CHECK-WEBASSEMBLY64: @_ZN1t3barEv({{.*}}) #0 {
+void t::bar(void) {
+  // CHECK-ITANIUM: @_ZN1t3barEv({{.*}}) #0 align 2 {
+  // CHECK-WEBASSEMBLY32: @_ZN1t3barEv({{.*}}) #0 {
+  // CHECK-WEBASSEMBLY64: @_ZN1t3barEv({{.*}}) #0 {
 }
 
-void
-t::foo(void) {
-// CHECK-ITANIUM: @_ZN1t3fooEv({{.*}}) unnamed_addr #0 align 2 {
-// CHECK-WEBASSEMBLY32: @_ZN1t3fooEv({{.*}}) unnamed_addr #0 {
-// CHECK-WEBASSEMBLY64: @_ZN1t3fooEv({{.*}}) unnamed_addr #0 {
+void t::foo(void) {
+  // CHECK-ITANIUM: @_ZN1t3fooEv({{.*}}) unnamed_addr #0 align 2 {
+  // CHECK-WEBASSEMBLY32: @_ZN1t3fooEv({{.*}}) unnamed_addr #0 {
+  // CHECK-WEBASSEMBLY64: @_ZN1t3fooEv({{.*}}) unnamed_addr #0 {
 }

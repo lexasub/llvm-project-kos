@@ -50,14 +50,14 @@ enum {
 enum PPC970_Unit {
   /// These are the various PPC970 execution unit pipelines.  Each instruction
   /// is one of these.
-  PPC970_Pseudo = 0 << PPC970_Shift,   // Pseudo instruction
-  PPC970_FXU    = 1 << PPC970_Shift,   // Fixed Point (aka Integer/ALU) Unit
-  PPC970_LSU    = 2 << PPC970_Shift,   // Load Store Unit
-  PPC970_FPU    = 3 << PPC970_Shift,   // Floating Point Unit
-  PPC970_CRU    = 4 << PPC970_Shift,   // Control Register Unit
-  PPC970_VALU   = 5 << PPC970_Shift,   // Vector ALU
-  PPC970_VPERM  = 6 << PPC970_Shift,   // Vector Permute Unit
-  PPC970_BRU    = 7 << PPC970_Shift    // Branch Unit
+  PPC970_Pseudo = 0 << PPC970_Shift, // Pseudo instruction
+  PPC970_FXU = 1 << PPC970_Shift,    // Fixed Point (aka Integer/ALU) Unit
+  PPC970_LSU = 2 << PPC970_Shift,    // Load Store Unit
+  PPC970_FPU = 3 << PPC970_Shift,    // Floating Point Unit
+  PPC970_CRU = 4 << PPC970_Shift,    // Control Register Unit
+  PPC970_VALU = 5 << PPC970_Shift,   // Vector ALU
+  PPC970_VPERM = 6 << PPC970_Shift,  // Vector Permute Unit
+  PPC970_BRU = 7 << PPC970_Shift     // Branch Unit
 };
 
 enum {
@@ -67,7 +67,7 @@ enum {
   /// This instruction is an X-Form memory operation.
   XFormMemOp = 0x1 << NewDef_Shift,
   /// This instruction is prefixed.
-  Prefixed = 0x1 << (NewDef_Shift+1)
+  Prefixed = 0x1 << (NewDef_Shift + 1)
 };
 } // end namespace PPCII
 
@@ -230,14 +230,12 @@ class PPCInstrInfo : public PPCGenInstrInfo {
   // forwarded from an add-immediate that feeds it?
   bool isUseMIElgibleForForwarding(MachineInstr &MI, const ImmInstrInfo &III,
                                    unsigned OpNoForForwarding) const;
-  bool isDefMIElgibleForForwarding(MachineInstr &DefMI,
-                                   const ImmInstrInfo &III,
+  bool isDefMIElgibleForForwarding(MachineInstr &DefMI, const ImmInstrInfo &III,
                                    MachineOperand *&ImmMO,
                                    MachineOperand *&RegMO) const;
   bool isImmElgibleForForwarding(const MachineOperand &ImmMO,
                                  const MachineInstr &DefMI,
-                                 const ImmInstrInfo &III,
-                                 int64_t &Imm,
+                                 const ImmInstrInfo &III, int64_t &Imm,
                                  int64_t BaseImm = 0) const;
   bool isRegElgibleForForwarding(const MachineOperand &RegMO,
                                  const MachineInstr &DefMI,
@@ -316,9 +314,9 @@ public:
                         const MachineInstr &DefMI, unsigned DefIdx,
                         const MachineInstr &UseMI,
                         unsigned UseIdx) const override;
-  int getOperandLatency(const InstrItineraryData *ItinData,
-                        SDNode *DefNode, unsigned DefIdx,
-                        SDNode *UseNode, unsigned UseIdx) const override {
+  int getOperandLatency(const InstrItineraryData *ItinData, SDNode *DefNode,
+                        unsigned DefIdx, SDNode *UseNode,
+                        unsigned UseIdx) const override {
     return PPCGenInstrInfo::getOperandLatency(ItinData, DefNode, DefIdx,
                                               UseNode, UseIdx);
   }
@@ -332,9 +330,7 @@ public:
     return false;
   }
 
-  bool useMachineCombiner() const override {
-    return true;
-  }
+  bool useMachineCombiner() const override { return true; }
 
   /// When getMachineCombinerPatterns() finds patterns, this function generates
   /// the instructions that could replace the original code sequence
@@ -390,9 +386,8 @@ public:
 
   void setSpecialOperandAttr(MachineInstr &MI, uint16_t Flags) const override;
 
-  bool isCoalescableExtInstr(const MachineInstr &MI,
-                             Register &SrcReg, Register &DstReg,
-                             unsigned &SubIdx) const override;
+  bool isCoalescableExtInstr(const MachineInstr &MI, Register &SrcReg,
+                             Register &DstReg, unsigned &SubIdx) const override;
   unsigned isLoadFromStackSlot(const MachineInstr &MI,
                                int &FrameIndex) const override;
   bool isReallyTriviallyReMaterializable(const MachineInstr &MI,
@@ -405,7 +400,6 @@ public:
 
   void insertNoop(MachineBasicBlock &MBB,
                   MachineBasicBlock::iterator MI) const override;
-
 
   // Branch analysis.
   bool analyzeBranch(MachineBasicBlock &MBB, MachineBasicBlock *&TBB,
@@ -433,8 +427,8 @@ public:
                    bool KillSrc) const override;
 
   void storeRegToStackSlot(MachineBasicBlock &MBB,
-                           MachineBasicBlock::iterator MBBI,
-                           Register SrcReg, bool isKill, int FrameIndex,
+                           MachineBasicBlock::iterator MBBI, Register SrcReg,
+                           bool isKill, int FrameIndex,
                            const TargetRegisterClass *RC,
                            const TargetRegisterInfo *TRI) const override;
 
@@ -448,9 +442,8 @@ public:
                                 const TargetRegisterInfo *TRI) const;
 
   void loadRegFromStackSlot(MachineBasicBlock &MBB,
-                            MachineBasicBlock::iterator MBBI,
-                            Register DestReg, int FrameIndex,
-                            const TargetRegisterClass *RC,
+                            MachineBasicBlock::iterator MBBI, Register DestReg,
+                            int FrameIndex, const TargetRegisterClass *RC,
                             const TargetRegisterInfo *TRI) const override;
 
   // Emits a register reload without updating the register class for vector
@@ -478,15 +471,14 @@ public:
   // If conversion by predication (only supported by some branch instructions).
   // All of the profitability checks always return true; it is always
   // profitable to use the predicated branches.
-  bool isProfitableToIfCvt(MachineBasicBlock &MBB,
-                          unsigned NumCycles, unsigned ExtraPredCycles,
-                          BranchProbability Probability) const override {
+  bool isProfitableToIfCvt(MachineBasicBlock &MBB, unsigned NumCycles,
+                           unsigned ExtraPredCycles,
+                           BranchProbability Probability) const override {
     return true;
   }
 
-  bool isProfitableToIfCvt(MachineBasicBlock &TMBB,
-                           unsigned NumT, unsigned ExtraT,
-                           MachineBasicBlock &FMBB,
+  bool isProfitableToIfCvt(MachineBasicBlock &TMBB, unsigned NumT,
+                           unsigned ExtraT, MachineBasicBlock &FMBB,
                            unsigned NumF, unsigned ExtraF,
                            BranchProbability Probability) const override;
 
@@ -525,7 +517,6 @@ public:
                             Register SrcReg2, int Mask, int Value,
                             const MachineRegisterInfo *MRI) const override;
 
-
   /// Return true if get the base operand, byte offset of an instruction and
   /// the memory width. Width is the size of memory that is being
   /// loaded/stored (e.g. 1, 2, 4, 8).
@@ -550,9 +541,8 @@ public:
 
   /// Return true if two MIs access different memory addresses and false
   /// otherwise
-  bool
-  areMemAccessesTriviallyDisjoint(const MachineInstr &MIa,
-                                  const MachineInstr &MIb) const override;
+  bool areMemAccessesTriviallyDisjoint(const MachineInstr &MIa,
+                                       const MachineInstr &MIb) const override;
 
   /// GetInstSize - Return the number of bytes of code the specified
   /// instruction may be.  This returns the maximum number of bytes.
@@ -599,7 +589,7 @@ public:
   /// Return true if the output of the instruction is always zero-extended,
   /// i.e. 0 to 31-th bits are all zeros
   bool isZeroExtended(const MachineInstr &MI, const unsigned depth = 0) const {
-   return isSignOrZeroExtended(MI, false, depth);
+    return isSignOrZeroExtended(MI, false, depth);
   }
 
   bool convertToImmediateForm(MachineInstr &MI,
@@ -657,22 +647,22 @@ public:
                                       unsigned OpNo) {
     int16_t regClass = Desc.OpInfo[OpNo].RegClass;
     switch (regClass) {
-      // We store F0-F31, VF0-VF31 in MCOperand and it should be F0-F31,
-      // VSX32-VSX63 during encoding/disassembling
-      case PPC::VSSRCRegClassID:
-      case PPC::VSFRCRegClassID:
-        if (isVFRegister(Reg))
-          return PPC::VSX32 + (Reg - PPC::VF0);
-        break;
-      // We store VSL0-VSL31, V0-V31 in MCOperand and it should be VSL0-VSL31,
-      // VSX32-VSX63 during encoding/disassembling
-      case PPC::VSRCRegClassID:
-        if (isVRRegister(Reg))
-          return PPC::VSX32 + (Reg - PPC::V0);
-        break;
-      // Other RegClass doesn't need mapping
-      default:
-        break;
+    // We store F0-F31, VF0-VF31 in MCOperand and it should be F0-F31,
+    // VSX32-VSX63 during encoding/disassembling
+    case PPC::VSSRCRegClassID:
+    case PPC::VSFRCRegClassID:
+      if (isVFRegister(Reg))
+        return PPC::VSX32 + (Reg - PPC::VF0);
+      break;
+    // We store VSL0-VSL31, V0-V31 in MCOperand and it should be VSL0-VSL31,
+    // VSX32-VSX63 during encoding/disassembling
+    case PPC::VSRCRegClassID:
+      if (isVRRegister(Reg))
+        return PPC::VSX32 + (Reg - PPC::V0);
+      break;
+    // Other RegClass doesn't need mapping
+    default:
+      break;
     }
     return Reg;
   }
@@ -694,6 +684,6 @@ public:
   analyzeLoopForPipelining(MachineBasicBlock *LoopBB) const override;
 };
 
-}
+} // namespace llvm
 
 #endif

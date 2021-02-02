@@ -29,10 +29,9 @@
 #include <stdlib.h>
 int main(int argc, char *argv[]) {
   double a = atof(argv[1]);
-  unsigned int ai = (unsigned int) a;
+  unsigned int ai = (unsigned int)a;
   printf("%f %u\n", a, ai);
   return 0;
 }
 
 // CHECK-ERROR: runtime error: -4 is outside the range of representable values of type 'unsigned int'
-

@@ -75,6 +75,6 @@ class MsanThread {
 MsanThread *GetCurrentThread();
 void SetCurrentThread(MsanThread *t);
 
-} // namespace __msan
+}  // namespace __msan
 
-#endif // MSAN_THREAD_H
+#endif  // MSAN_THREAD_H

@@ -11,21 +11,20 @@
 // Test utils, Linux, FreeBSD, NetBSD and Darwin implementation.
 //===----------------------------------------------------------------------===//
 
+#include <assert.h>
+#include <errno.h>
+#include <pthread.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+
+#include "gtest/gtest.h"
 #include "sanitizer_common/sanitizer_atomic.h"
 #include "tsan_interface.h"
 #include "tsan_posix_util.h"
-#include "tsan_test_util.h"
 #include "tsan_report.h"
-
-#include "gtest/gtest.h"
-
-#include <assert.h>
-#include <pthread.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
-#include <unistd.h>
-#include <errno.h>
+#include "tsan_test_util.h"
 
 #define CALLERPC (__builtin_return_address(0))
 
@@ -40,8 +39,7 @@ static void *BeforeInitThread(void *param) {
   return 0;
 }
 
-static void AtExit() {
-}
+static void AtExit() {}
 
 void TestMutexBeforeInit() {
   // Mutexes must be usable before __tsan_init();
@@ -73,43 +71,36 @@ bool OnReport(const ReportDesc *rep, bool suppressed) {
 }
 }  // namespace __tsan
 
-static void* allocate_addr(int size, int offset_from_aligned = 0) {
+static void *allocate_addr(int size, int offset_from_aligned = 0) {
   static uintptr_t foo;
   static atomic_uintptr_t uniq = {(uintptr_t)&foo};  // Some real address.
   const int kAlign = 16;
   CHECK(offset_from_aligned < kAlign);
   size = (size + 2 * kAlign) & ~(kAlign - 1);
   uintptr_t addr = atomic_fetch_add(&uniq, size, memory_order_relaxed);
-  return (void*)(addr + offset_from_aligned);
+  return (void *)(addr + offset_from_aligned);
 }
 
 MemLoc::MemLoc(int offset_from_aligned)
-  : loc_(allocate_addr(16, offset_from_aligned)) {
-}
+    : loc_(allocate_addr(16, offset_from_aligned)) {}
 
-MemLoc::~MemLoc() {
-}
+MemLoc::~MemLoc() {}
 
-Mutex::Mutex(Type type)
-  : alive_()
-  , type_(type) {
-}
+Mutex::Mutex(Type type) : alive_(), type_(type) {}
 
-Mutex::~Mutex() {
-  CHECK(!alive_);
-}
+Mutex::~Mutex() { CHECK(!alive_); }
 
 void Mutex::Init() {
   CHECK(!alive_);
   alive_ = true;
   if (type_ == Normal)
-    CHECK_EQ(__interceptor_pthread_mutex_init((pthread_mutex_t*)mtx_, 0), 0);
+    CHECK_EQ(__interceptor_pthread_mutex_init((pthread_mutex_t *)mtx_, 0), 0);
 #ifndef __APPLE__
   else if (type_ == Spin)
-    CHECK_EQ(pthread_spin_init((pthread_spinlock_t*)mtx_, 0), 0);
+    CHECK_EQ(pthread_spin_init((pthread_spinlock_t *)mtx_, 0), 0);
 #endif
   else if (type_ == RW)
-    CHECK_EQ(__interceptor_pthread_rwlock_init((pthread_rwlock_t*)mtx_, 0), 0);
+    CHECK_EQ(__interceptor_pthread_rwlock_init((pthread_rwlock_t *)mtx_, 0), 0);
   else
     CHECK(0);
 }
@@ -126,68 +117,69 @@ void Mutex::Destroy() {
   CHECK(alive_);
   alive_ = false;
   if (type_ == Normal)
-    CHECK_EQ(__interceptor_pthread_mutex_destroy((pthread_mutex_t*)mtx_), 0);
+    CHECK_EQ(__interceptor_pthread_mutex_destroy((pthread_mutex_t *)mtx_), 0);
 #ifndef __APPLE__
   else if (type_ == Spin)
-    CHECK_EQ(pthread_spin_destroy((pthread_spinlock_t*)mtx_), 0);
+    CHECK_EQ(pthread_spin_destroy((pthread_spinlock_t *)mtx_), 0);
 #endif
   else if (type_ == RW)
-    CHECK_EQ(__interceptor_pthread_rwlock_destroy((pthread_rwlock_t*)mtx_), 0);
+    CHECK_EQ(__interceptor_pthread_rwlock_destroy((pthread_rwlock_t *)mtx_), 0);
 }
 
 void Mutex::Lock() {
   CHECK(alive_);
   if (type_ == Normal)
-    CHECK_EQ(__interceptor_pthread_mutex_lock((pthread_mutex_t*)mtx_), 0);
+    CHECK_EQ(__interceptor_pthread_mutex_lock((pthread_mutex_t *)mtx_), 0);
 #ifndef __APPLE__
   else if (type_ == Spin)
-    CHECK_EQ(pthread_spin_lock((pthread_spinlock_t*)mtx_), 0);
+    CHECK_EQ(pthread_spin_lock((pthread_spinlock_t *)mtx_), 0);
 #endif
   else if (type_ == RW)
-    CHECK_EQ(__interceptor_pthread_rwlock_wrlock((pthread_rwlock_t*)mtx_), 0);
+    CHECK_EQ(__interceptor_pthread_rwlock_wrlock((pthread_rwlock_t *)mtx_), 0);
 }
 
 bool Mutex::TryLock() {
   CHECK(alive_);
   if (type_ == Normal)
-    return __interceptor_pthread_mutex_trylock((pthread_mutex_t*)mtx_) == 0;
+    return __interceptor_pthread_mutex_trylock((pthread_mutex_t *)mtx_) == 0;
 #ifndef __APPLE__
   else if (type_ == Spin)
-    return pthread_spin_trylock((pthread_spinlock_t*)mtx_) == 0;
+    return pthread_spin_trylock((pthread_spinlock_t *)mtx_) == 0;
 #endif
   else if (type_ == RW)
-    return __interceptor_pthread_rwlock_trywrlock((pthread_rwlock_t*)mtx_) == 0;
+    return __interceptor_pthread_rwlock_trywrlock((pthread_rwlock_t *)mtx_) ==
+           0;
   return false;
 }
 
 void Mutex::Unlock() {
   CHECK(alive_);
   if (type_ == Normal)
-    CHECK_EQ(__interceptor_pthread_mutex_unlock((pthread_mutex_t*)mtx_), 0);
+    CHECK_EQ(__interceptor_pthread_mutex_unlock((pthread_mutex_t *)mtx_), 0);
 #ifndef __APPLE__
   else if (type_ == Spin)
-    CHECK_EQ(pthread_spin_unlock((pthread_spinlock_t*)mtx_), 0);
+    CHECK_EQ(pthread_spin_unlock((pthread_spinlock_t *)mtx_), 0);
 #endif
   else if (type_ == RW)
-    CHECK_EQ(__interceptor_pthread_rwlock_unlock((pthread_rwlock_t*)mtx_), 0);
+    CHECK_EQ(__interceptor_pthread_rwlock_unlock((pthread_rwlock_t *)mtx_), 0);
 }
 
 void Mutex::ReadLock() {
   CHECK(alive_);
   CHECK(type_ == RW);
-  CHECK_EQ(__interceptor_pthread_rwlock_rdlock((pthread_rwlock_t*)mtx_), 0);
+  CHECK_EQ(__interceptor_pthread_rwlock_rdlock((pthread_rwlock_t *)mtx_), 0);
 }
 
 bool Mutex::TryReadLock() {
   CHECK(alive_);
   CHECK(type_ == RW);
-  return __interceptor_pthread_rwlock_tryrdlock((pthread_rwlock_t*)mtx_) ==  0;
+  return __interceptor_pthread_rwlock_tryrdlock((pthread_rwlock_t *)mtx_) == 0;
 }
 
 void Mutex::ReadUnlock() {
   CHECK(alive_);
   CHECK(type_ == RW);
-  CHECK_EQ(__interceptor_pthread_rwlock_unlock((pthread_rwlock_t*)mtx_), 0);
+  CHECK_EQ(__interceptor_pthread_rwlock_unlock((pthread_rwlock_t *)mtx_), 0);
 }
 
 struct Event {
@@ -249,97 +241,98 @@ void ScopedThread::Impl::HandleEvent(Event *ev) {
   expect_report_reported = false;
   expect_report_type = ev->report_type;
   switch (ev->type) {
-  case Event::READ:
-  case Event::WRITE: {
-    void (*tsan_mop)(void *addr, void *pc) = 0;
-    if (ev->type == Event::READ) {
-      switch (ev->arg /*size*/) {
-        case 1:
-          tsan_mop = __tsan_read1_pc;
-          break;
-        case 2:
-          tsan_mop = __tsan_read2_pc;
-          break;
-        case 4:
-          tsan_mop = __tsan_read4_pc;
-          break;
-        case 8:
-          tsan_mop = __tsan_read8_pc;
-          break;
-        case 16:
-          tsan_mop = __tsan_read16_pc;
-          break;
+    case Event::READ:
+    case Event::WRITE: {
+      void (*tsan_mop)(void *addr, void *pc) = 0;
+      if (ev->type == Event::READ) {
+        switch (ev->arg /*size*/) {
+          case 1:
+            tsan_mop = __tsan_read1_pc;
+            break;
+          case 2:
+            tsan_mop = __tsan_read2_pc;
+            break;
+          case 4:
+            tsan_mop = __tsan_read4_pc;
+            break;
+          case 8:
+            tsan_mop = __tsan_read8_pc;
+            break;
+          case 16:
+            tsan_mop = __tsan_read16_pc;
+            break;
+        }
+      } else {
+        switch (ev->arg /*size*/) {
+          case 1:
+            tsan_mop = __tsan_write1_pc;
+            break;
+          case 2:
+            tsan_mop = __tsan_write2_pc;
+            break;
+          case 4:
+            tsan_mop = __tsan_write4_pc;
+            break;
+          case 8:
+            tsan_mop = __tsan_write8_pc;
+            break;
+          case 16:
+            tsan_mop = __tsan_write16_pc;
+            break;
+        }
       }
-    } else {
-      switch (ev->arg /*size*/) {
-        case 1:
-          tsan_mop = __tsan_write1_pc;
-          break;
-        case 2:
-          tsan_mop = __tsan_write2_pc;
-          break;
-        case 4:
-          tsan_mop = __tsan_write4_pc;
-          break;
-        case 8:
-          tsan_mop = __tsan_write8_pc;
-          break;
-        case 16:
-          tsan_mop = __tsan_write16_pc;
-          break;
-      }
-    }
-    CHECK_NE(tsan_mop, 0);
+      CHECK_NE(tsan_mop, 0);
 #if defined(__FreeBSD__) || defined(__APPLE__) || defined(__NetBSD__)
-    const int ErrCode = ESOCKTNOSUPPORT;
+      const int ErrCode = ESOCKTNOSUPPORT;
 #else
-    const int ErrCode = ECHRNG;
+      const int ErrCode = ECHRNG;
 #endif
-    errno = ErrCode;
-    tsan_mop(ev->ptr, (void *)ev->arg2);
-    CHECK_EQ(ErrCode, errno);  // In no case must errno be changed.
-    break;
-  }
-  case Event::VPTR_UPDATE:
-    __tsan_vptr_update((void**)ev->ptr, (void*)ev->arg);
-    break;
-  case Event::CALL:
-    __tsan_func_entry((void*)((uptr)ev->ptr));
-    break;
-  case Event::RETURN:
-    __tsan_func_exit();
-    break;
-  case Event::MUTEX_CREATE:
-    static_cast<Mutex*>(ev->ptr)->Init();
-    break;
-  case Event::MUTEX_DESTROY:
-    static_cast<Mutex*>(ev->ptr)->Destroy();
-    break;
-  case Event::MUTEX_LOCK:
-    static_cast<Mutex*>(ev->ptr)->Lock();
-    break;
-  case Event::MUTEX_TRYLOCK:
-    ev->res = static_cast<Mutex*>(ev->ptr)->TryLock();
-    break;
-  case Event::MUTEX_UNLOCK:
-    static_cast<Mutex*>(ev->ptr)->Unlock();
-    break;
-  case Event::MUTEX_READLOCK:
-    static_cast<Mutex*>(ev->ptr)->ReadLock();
-    break;
-  case Event::MUTEX_TRYREADLOCK:
-    ev->res = static_cast<Mutex*>(ev->ptr)->TryReadLock();
-    break;
-  case Event::MUTEX_READUNLOCK:
-    static_cast<Mutex*>(ev->ptr)->ReadUnlock();
-    break;
-  case Event::MEMCPY:
-    __interceptor_memcpy(ev->ptr, (void*)ev->arg, ev->arg2);
-    break;
-  case Event::MEMSET:
-    __interceptor_memset(ev->ptr, ev->arg, ev->arg2);
-    break;
-  default: CHECK(0);
+      errno = ErrCode;
+      tsan_mop(ev->ptr, (void *)ev->arg2);
+      CHECK_EQ(ErrCode, errno);  // In no case must errno be changed.
+      break;
+    }
+    case Event::VPTR_UPDATE:
+      __tsan_vptr_update((void **)ev->ptr, (void *)ev->arg);
+      break;
+    case Event::CALL:
+      __tsan_func_entry((void *)((uptr)ev->ptr));
+      break;
+    case Event::RETURN:
+      __tsan_func_exit();
+      break;
+    case Event::MUTEX_CREATE:
+      static_cast<Mutex *>(ev->ptr)->Init();
+      break;
+    case Event::MUTEX_DESTROY:
+      static_cast<Mutex *>(ev->ptr)->Destroy();
+      break;
+    case Event::MUTEX_LOCK:
+      static_cast<Mutex *>(ev->ptr)->Lock();
+      break;
+    case Event::MUTEX_TRYLOCK:
+      ev->res = static_cast<Mutex *>(ev->ptr)->TryLock();
+      break;
+    case Event::MUTEX_UNLOCK:
+      static_cast<Mutex *>(ev->ptr)->Unlock();
+      break;
+    case Event::MUTEX_READLOCK:
+      static_cast<Mutex *>(ev->ptr)->ReadLock();
+      break;
+    case Event::MUTEX_TRYREADLOCK:
+      ev->res = static_cast<Mutex *>(ev->ptr)->TryReadLock();
+      break;
+    case Event::MUTEX_READUNLOCK:
+      static_cast<Mutex *>(ev->ptr)->ReadUnlock();
+      break;
+    case Event::MEMCPY:
+      __interceptor_memcpy(ev->ptr, (void *)ev->arg, ev->arg2);
+      break;
+    case Event::MEMSET:
+      __interceptor_memset(ev->ptr, ev->arg, ev->arg2);
+      break;
+    default:
+      CHECK(0);
   }
   if (expect_report && !expect_report_reported) {
     printf("Missed expected report of type %d\n", (int)ev->report_type);
@@ -350,9 +343,9 @@ void ScopedThread::Impl::HandleEvent(Event *ev) {
 
 void *ScopedThread::Impl::ScopedThreadCallback(void *arg) {
   __tsan_func_entry(CALLERPC);
-  Impl *impl = (Impl*)arg;
+  Impl *impl = (Impl *)arg;
   for (;;) {
-    Event* ev = (Event*)atomic_load(&impl->event, memory_order_acquire);
+    Event *ev = (Event *)atomic_load(&impl->event, memory_order_acquire);
     if (ev == 0) {
       sched_yield();
       continue;
@@ -374,8 +367,7 @@ void ScopedThread::Impl::send(Event *e) {
   } else {
     CHECK_EQ(atomic_load(&event, memory_order_relaxed), 0);
     atomic_store(&event, (uintptr_t)e, memory_order_release);
-    while (atomic_load(&event, memory_order_acquire) != 0)
-      sched_yield();
+    while (atomic_load(&event, memory_order_acquire) != 0) sched_yield();
   }
 }
 
@@ -389,9 +381,9 @@ ScopedThread::ScopedThread(bool detached, bool main) {
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(
         &attr, detached ? PTHREAD_CREATE_DETACHED : PTHREAD_CREATE_JOINABLE);
-    pthread_attr_setstacksize(&attr, 64*1024);
-    __interceptor_pthread_create(&impl_->thread, &attr,
-        ScopedThread::Impl::ScopedThreadCallback, impl_);
+    pthread_attr_setstacksize(&attr, 64 * 1024);
+    __interceptor_pthread_create(
+        &impl_->thread, &attr, ScopedThread::Impl::ScopedThreadCallback, impl_);
   }
 }
 
@@ -412,8 +404,8 @@ void ScopedThread::Detach() {
   __interceptor_pthread_detach(impl_->thread);
 }
 
-void ScopedThread::Access(void *addr, bool is_write,
-                          int size, bool expect_race) {
+void ScopedThread::Access(void *addr, bool is_write, int size,
+                          bool expect_race) {
   Event event(is_write ? Event::WRITE : Event::READ, addr, size,
               (uptr)CALLERPC);
   if (expect_race)
@@ -421,8 +413,7 @@ void ScopedThread::Access(void *addr, bool is_write,
   impl_->send(&event);
 }
 
-void ScopedThread::VptrUpdate(const MemLoc &vptr,
-                              const MemLoc &new_val,
+void ScopedThread::VptrUpdate(const MemLoc &vptr, const MemLoc &new_val,
                               bool expect_race) {
   Event event(Event::VPTR_UPDATE, vptr.loc(), (uptr)new_val.loc());
   if (expect_race)
@@ -430,8 +421,8 @@ void ScopedThread::VptrUpdate(const MemLoc &vptr,
   impl_->send(&event);
 }
 
-void ScopedThread::Call(void(*pc)()) {
-  Event event(Event::CALL, (void*)((uintptr_t)pc));
+void ScopedThread::Call(void (*pc)()) {
+  Event event(Event::CALL, (void *)((uintptr_t)pc));
   impl_->send(&event);
 }
 
@@ -490,8 +481,7 @@ void ScopedThread::Memcpy(void *dst, const void *src, int size,
   impl_->send(&event);
 }
 
-void ScopedThread::Memset(void *dst, int val, int size,
-                          bool expect_race) {
+void ScopedThread::Memset(void *dst, int val, int size, bool expect_race) {
   Event event(Event::MEMSET, dst, val, size);
   if (expect_race)
     event.ExpectReport(ReportTypeRace);

@@ -36,7 +36,6 @@ public:
   bool contains(StringRef S) const;
 
 private:
-
   struct GlobListItem {
     bool IsPositive;
     llvm::Regex Regex;

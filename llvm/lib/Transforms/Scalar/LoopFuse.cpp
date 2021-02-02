@@ -803,7 +803,7 @@ private:
         }
         // Cannot modify the predecessors inside the above loop as it will cause
         // the iterators to be nullptrs, causing memory errors.
-        for (Instruction *CurrentBranch: WorkList) {
+        for (Instruction *CurrentBranch : WorkList) {
           BasicBlock *Succ = CurrentBranch->getSuccessor(0);
           if (Succ == BB)
             Succ = CurrentBranch->getSuccessor(1);

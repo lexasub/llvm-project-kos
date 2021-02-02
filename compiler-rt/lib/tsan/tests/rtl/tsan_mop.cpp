@@ -9,11 +9,12 @@
 // This file is a part of ThreadSanitizer (TSan), a race detector.
 //
 //===----------------------------------------------------------------------===//
-#include "tsan_interface.h"
-#include "tsan_test_util.h"
-#include "gtest/gtest.h"
 #include <stddef.h>
 #include <stdint.h>
+
+#include "gtest/gtest.h"
+#include "tsan_interface.h"
+#include "tsan_test_util.h"
 
 TEST(ThreadSanitizer, SimpleWrite) {
   ScopedThread t;
@@ -102,38 +103,37 @@ TEST(ThreadSanitizer, LockedWriteThenRead) {
   t0.Destroy(m);
 }
 
-
 TEST(ThreadSanitizer, RaceWithOffset) {
   ScopedThread t1, t2;
   {
     MemLoc l;
     t1.Access(l.loc(), true, 8, false);
-    t2.Access((char*)l.loc() + 4, true, 4, true);
+    t2.Access((char *)l.loc() + 4, true, 4, true);
   }
   {
     MemLoc l;
     t1.Access(l.loc(), true, 8, false);
-    t2.Access((char*)l.loc() + 7, true, 1, true);
+    t2.Access((char *)l.loc() + 7, true, 1, true);
   }
   {
     MemLoc l;
-    t1.Access((char*)l.loc() + 4, true, 4, false);
-    t2.Access((char*)l.loc() + 4, true, 2, true);
+    t1.Access((char *)l.loc() + 4, true, 4, false);
+    t2.Access((char *)l.loc() + 4, true, 2, true);
   }
   {
     MemLoc l;
-    t1.Access((char*)l.loc() + 4, true, 4, false);
-    t2.Access((char*)l.loc() + 6, true, 2, true);
+    t1.Access((char *)l.loc() + 4, true, 4, false);
+    t2.Access((char *)l.loc() + 6, true, 2, true);
   }
   {
     MemLoc l;
-    t1.Access((char*)l.loc() + 3, true, 2, false);
-    t2.Access((char*)l.loc() + 4, true, 1, true);
+    t1.Access((char *)l.loc() + 3, true, 2, false);
+    t2.Access((char *)l.loc() + 4, true, 1, true);
   }
   {
     MemLoc l;
-    t1.Access((char*)l.loc() + 1, true, 8, false);
-    t2.Access((char*)l.loc() + 3, true, 1, true);
+    t1.Access((char *)l.loc() + 1, true, 8, false);
+    t2.Access((char *)l.loc() + 3, true, 1, true);
   }
 }
 
@@ -141,13 +141,13 @@ TEST(ThreadSanitizer, RaceWithOffset2) {
   ScopedThread t1, t2;
   {
     MemLoc l;
-    t1.Access((char*)l.loc(), true, 4, false);
-    t2.Access((char*)l.loc() + 2, true, 1, true);
+    t1.Access((char *)l.loc(), true, 4, false);
+    t2.Access((char *)l.loc() + 2, true, 1, true);
   }
   {
     MemLoc l;
-    t1.Access((char*)l.loc() + 2, true, 1, false);
-    t2.Access((char*)l.loc(), true, 4, true);
+    t1.Access((char *)l.loc() + 2, true, 1, false);
+    t2.Access((char *)l.loc(), true, 4, true);
   }
 }
 
@@ -156,13 +156,13 @@ TEST(ThreadSanitizer, NoRaceWithOffset) {
   {
     MemLoc l;
     t1.Access(l.loc(), true, 4, false);
-    t2.Access((char*)l.loc() + 4, true, 4, false);
+    t2.Access((char *)l.loc() + 4, true, 4, false);
   }
   {
     MemLoc l;
-    t1.Access((char*)l.loc() + 3, true, 2, false);
-    t2.Access((char*)l.loc() + 1, true, 2, false);
-    t2.Access((char*)l.loc() + 5, true, 2, false);
+    t1.Access((char *)l.loc() + 3, true, 2, false);
+    t2.Access((char *)l.loc() + 1, true, 2, false);
+    t2.Access((char *)l.loc() + 5, true, 2, false);
   }
 }
 

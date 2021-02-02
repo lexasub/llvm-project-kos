@@ -36,7 +36,8 @@ struct OtherType {
   ~OtherType();
 };
 
-template <typename T> struct SomeComplexTemplate {
+template <typename T>
+struct SomeComplexTemplate {
   ~SomeComplexTemplate();
 };
 

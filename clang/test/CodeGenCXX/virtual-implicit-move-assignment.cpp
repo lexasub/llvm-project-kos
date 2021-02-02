@@ -2,11 +2,14 @@
 
 struct D;
 struct B {
- virtual D &operator=(D&&) = 0;
+  virtual D &operator=(D &&) = 0;
 };
-struct D : B { D(); virtual void a(); };
+struct D : B {
+  D();
+  virtual void a();
+};
 void D::a() {}
 D d;
 
-// CHECK: @_ZTV1D = {{.*}} @_ZN1DaSEOS_ 
+// CHECK: @_ZTV1D = {{.*}} @_ZN1DaSEOS_
 // CHECK: define linkonce_odr {{.*}} @_ZN1DaSEOS_

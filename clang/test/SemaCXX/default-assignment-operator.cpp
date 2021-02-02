@@ -15,7 +15,7 @@ class Base { // expected-warning{{class 'Base' does not declare any constructor 
 #endif
 };
 
-class X  : Base {
+class X : Base {
 #if __cplusplus <= 199711L
 // expected-note@-2 {{assignment operator for 'Base' first required here}}
 // expected-error@-3 {{cannot define the implicit copy assignment operator for 'X', because non-static const member 'cint' cannot use copy assignment operator}}
@@ -23,21 +23,21 @@ class X  : Base {
 // expected-note@-5 2 {{copy assignment operator of 'X' is implicitly deleted because base class 'Base' has a deleted copy assignment operator}}
 #endif
 
-public: 
+public:
   X();
   const int cint;
 #if __cplusplus <= 199711L
 // expected-note@-2 {{declared here}}
 #endif
-}; 
+};
 
-struct Y  : X { 
+struct Y : X {
   Y();
-  Y& operator=(const Y&);
-  Y& operator=(volatile Y&);
-  Y& operator=(const volatile Y&);
-  Y& operator=(Y&);
-}; 
+  Y &operator=(const Y &);
+  Y &operator=(volatile Y &);
+  Y &operator=(const volatile Y &);
+  Y &operator=(Y &);
+};
 
 class Z : Y {};
 
@@ -73,7 +73,7 @@ void g() {
 class V {
 public:
   V();
-  V &operator = (V &b);
+  V &operator=(V &b);
 };
 
 class W : V {};
@@ -88,7 +88,7 @@ void h() {
 class B1 {
 public:
   B1();
-  B1 &operator = (B1 b);
+  B1 &operator=(B1 b);
 };
 
 class D1 : B1 {};
@@ -113,7 +113,6 @@ public:
 // expected-note@-4 {{copy assignment operator of 'E1' is implicitly deleted because field 'a' is of const-qualified type 'const int'}}
 #endif
   E1() : a(0) {}
-
 };
 
 E1 e1, e2;
@@ -128,44 +127,44 @@ void j() {
 }
 
 namespace ProtectedCheck {
-  struct X {
-  protected:
-    X &operator=(const X&);
+struct X {
+protected:
+  X &operator=(const X &);
 #if __cplusplus <= 199711L
-    // expected-note@-2 {{declared protected here}}
+  // expected-note@-2 {{declared protected here}}
 #endif
-  };
+};
 
-  struct Y : public X { };
+struct Y : public X {};
 
-  void f(Y y) { y = y; }
+void f(Y y) { y = y; }
 
-  struct Z {
+struct Z {
 #if __cplusplus <= 199711L
   // expected-error@-2 {{'operator=' is a protected member of 'ProtectedCheck::X'}}
 #endif
-    X x;
+  X x;
 #if __cplusplus >= 201103L
-    // expected-note@-2 {{copy assignment operator of 'Z' is implicitly deleted because field 'x' has an inaccessible copy assignment operator}}
+  // expected-note@-2 {{copy assignment operator of 'Z' is implicitly deleted because field 'x' has an inaccessible copy assignment operator}}
 #endif
-  };
+};
 
-  void f(Z z) { z = z; }
+void f(Z z) { z = z; }
 #if __cplusplus <= 199711L
-  // expected-note@-2 {{implicit copy assignment operator}}
+// expected-note@-2 {{implicit copy assignment operator}}
 #else
-  // expected-error@-4 {{object of type 'ProtectedCheck::Z' cannot be assigned because its copy assignment operator is implicitly deleted}}
+// expected-error@-4 {{object of type 'ProtectedCheck::Z' cannot be assigned because its copy assignment operator is implicitly deleted}}
 #endif
-}
+} // namespace ProtectedCheck
 
 namespace MultiplePaths {
-  struct X0 { 
-    X0 &operator=(const X0&);
-  };
+struct X0 {
+  X0 &operator=(const X0 &);
+};
 
-  struct X1 : public virtual X0 { };
+struct X1 : public virtual X0 {};
 
-  struct X2 : X0, X1 { }; // expected-warning{{direct base 'MultiplePaths::X0' is inaccessible due to ambiguity:\n    struct MultiplePaths::X2 -> struct MultiplePaths::X0\n    struct MultiplePaths::X2 -> struct MultiplePaths::X1 -> struct MultiplePaths::X0}}
+struct X2 : X0, X1 {}; // expected-warning{{direct base 'MultiplePaths::X0' is inaccessible due to ambiguity:\n    struct MultiplePaths::X2 -> struct MultiplePaths::X0\n    struct MultiplePaths::X2 -> struct MultiplePaths::X1 -> struct MultiplePaths::X0}}
 
-  void f(X2 x2) { x2 = x2; }
-}
+void f(X2 x2) { x2 = x2; }
+} // namespace MultiplePaths

@@ -146,4 +146,4 @@ TEST_F(GlobPatternTest, IsTrivialMatchAll) {
     EXPECT_FALSE(Pat2->isTrivialMatchAll());
   }
 }
-}
+} // namespace

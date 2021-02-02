@@ -118,7 +118,7 @@ static bool isLoopNeverExecuted(Loop *L) {
     return false;
   // All predecessors of the preheader should have a constant conditional
   // branch, with the loop's preheader as not-taken.
-  for (auto *Pred: predecessors(Preheader)) {
+  for (auto *Pred : predecessors(Preheader)) {
     BasicBlock *Taken, *NotTaken;
     ConstantInt *Cond;
     if (!match(Pred->getTerminator(),
@@ -270,8 +270,8 @@ PreservedAnalyses LoopDeletionPass::run(Loop &L, LoopAnalysisManager &AM,
   // leaves the loop structure in place which means it can handle dispatching
   // to the right exit based on whatever loop invariant structure remains.
   if (Result != LoopDeletionResult::Deleted)
-    Result = merge(Result, breakBackedgeIfNotTaken(&L, AR.DT, AR.SE, AR.LI,
-                                                   AR.MSSA, ORE));
+    Result = merge(
+        Result, breakBackedgeIfNotTaken(&L, AR.DT, AR.SE, AR.LI, AR.MSSA, ORE));
 
   if (Result == LoopDeletionResult::Unmodified)
     return PreservedAnalyses::all();
@@ -301,7 +301,7 @@ public:
     getLoopAnalysisUsage(AU);
   }
 };
-}
+} // namespace
 
 char LoopDeletionLegacyPass::ID = 0;
 INITIALIZE_PASS_BEGIN(LoopDeletionLegacyPass, "loop-deletion",

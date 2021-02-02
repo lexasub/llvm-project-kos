@@ -6,11 +6,13 @@
 // RUN:   -implicit-check-not="{{warning|error}}:"
 
 struct S {
-  S() noexcept(false);
+  S()
+  noexcept(false);
 };
 
 struct T {
-  T() noexcept;
+  T()
+  noexcept;
 };
 
 struct U {
@@ -26,11 +28,13 @@ struct Cleanup {
 };
 
 struct W {
-  W(Cleanup c = {}) noexcept(false);
+  W(Cleanup c = {})
+  noexcept(false);
 };
 
 struct X {
-  X(S = {}) noexcept;
+  X(S = {})
+  noexcept;
 };
 
 struct Y {
@@ -125,23 +129,23 @@ thread_local W w3;
 // CHECK-NONEXCEPTIONS-NOT: warning:
 
 void f(S s1, T t1, U u1, V v1, W w1) { // ok, ok, ok, ok, ok
-  S s2; // ok
-  T t2; // ok
-  U u2; // ok
-  V v2("v"); // ok
-  W w2; // ok
+  S s2;                                // ok
+  T t2;                                // ok
+  U u2;                                // ok
+  V v2("v");                           // ok
+  W w2;                                // ok
 
-  thread_local S s3; // ok
-  thread_local T t3; // ok
-  thread_local U u3; // ok
+  thread_local S s3;      // ok
+  thread_local T t3;      // ok
+  thread_local U u3;      // ok
   thread_local V v3("v"); // ok
-  thread_local W w3; // ok
+  thread_local W w3;      // ok
 
-  static S s4; // ok
-  static T t4; // ok
-  static U u4; // ok
+  static S s4;      // ok
+  static T t4;      // ok
+  static U u4;      // ok
   static V v4("v"); // ok
-  static W w4; // ok
+  static W w4;      // ok
 }
 
 namespace {
@@ -226,7 +230,11 @@ W Statics::w;
 
 #ifndef NONEXCEPTIONS
 namespace pr35457 {
-constexpr int foo(int x) { if (x <= 0) throw 12; return x; }
+constexpr int foo(int x) {
+  if (x <= 0)
+    throw 12;
+  return x;
+}
 
 constexpr int bar = foo(1); // OK
 // CHECK-EXCEPTIONS-NOT: warning: initialization of 'bar' with static storage
@@ -237,12 +245,17 @@ int baz = foo(0); // Not OK; throws at runtime when exceptions are enabled.
 #endif // NONEXCEPTIONS
 
 namespace pr39777 {
-struct S { S(); };
-struct T { T() noexcept; };
+struct S {
+  S();
+};
+struct T {
+  T()
+  noexcept;
+};
 
-auto Okay1 = []{ S s; };
-auto Okay2 = []{ (void)new int; };
-auto NotOkay1 = []{ S s; return 12; }(); // Because the lambda call is not noexcept
+auto Okay1 = [] { S s; };
+auto Okay2 = [] { (void)new int; };
+auto NotOkay1 = [] { S s; return 12; }(); // Because the lambda call is not noexcept
 // CHECK-EXCEPTIONS: :[[@LINE-1]]:6: warning: initialization of 'NotOkay1' with static storage duration may throw an exception that cannot be caught [cert-err58-cpp]
 // CHECK-EXCEPTIONS: :[[@LINE-7]]:12: note: possibly throwing constructor declared here
 auto NotOkay2 = []() noexcept { S s; return 12; }(); // Because S::S() is not noexcept
@@ -251,12 +264,13 @@ auto NotOkay2 = []() noexcept { S s; return 12; }(); // Because S::S() is not no
 auto Okay3 = []() noexcept { T t; return t; }();
 
 struct U {
-  U() noexcept;
+  U()
+  noexcept;
   auto getBadLambda() const noexcept {
-    return []{ S s; return s; };
+    return [] { S s; return s; };
   }
 };
-auto Okay4 = []{ U u; return u.getBadLambda(); }();
+auto Okay4 = [] { U u; return u.getBadLambda(); }();
 auto NotOkay3 = []() noexcept { U u; return u.getBadLambda(); }()(); // Because the lambda returned and called is not noexcept
 // CHECK-EXCEPTIONS: :[[@LINE-1]]:6: warning: initialization of 'NotOkay3' with static storage duration may throw an exception that cannot be caught [cert-err58-cpp]
 // CHECK-EXCEPTIONS: :[[@LINE-6]]:12: note: possibly throwing function declared here
@@ -268,8 +282,8 @@ struct Bad {
   }
 };
 
-static auto NotOkay4 = [bad = Bad{}](){};
+static auto NotOkay4 = [bad = Bad{}]() {};
 // FIXME: the above should be diagnosed because the capture init can trigger
 // an exception when constructing the Bad object.
 #endif // NONEXCEPTIONS
-}
+} // namespace pr39777

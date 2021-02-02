@@ -40,7 +40,7 @@ int main(int, char **argv) {
     break;
   case 'r':
     // CHECK-REFERENCE: null.cpp:[[@LINE+1]]:15: runtime error: reference binding to null pointer of type 'int'
-    {int &r = *p;}
+    { int &r = *p; }
     break;
   case 'm':
     // CHECK-MEMBER: null.cpp:[[@LINE+1]]:15: runtime error: member access within null pointer of type 'S'

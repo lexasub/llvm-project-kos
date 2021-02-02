@@ -50,7 +50,8 @@ FixItRewriter::~FixItRewriter() {
 
 bool FixItRewriter::WriteFixedFile(FileID ID, raw_ostream &OS) {
   const RewriteBuffer *RewriteBuf = Rewrite.getRewriteBufferFor(ID);
-  if (!RewriteBuf) return true;
+  if (!RewriteBuf)
+    return true;
   RewriteBuf->write(OS);
   OS.flush();
   return false;
@@ -76,7 +77,7 @@ public:
 } // namespace
 
 bool FixItRewriter::WriteFixedFiles(
-             std::vector<std::pair<std::string, std::string>> *RewrittenFiles) {
+    std::vector<std::pair<std::string, std::string>> *RewrittenFiles) {
   if (NumFailures > 0 && !FixItOpts->FixWhatYouCan) {
     Diag(FullSourceLoc(), diag::warn_fixit_no_changes);
     return true;
@@ -105,8 +106,8 @@ bool FixItRewriter::WriteFixedFiles(
       OS.reset(new llvm::raw_fd_ostream(Filename, EC, llvm::sys::fs::OF_None));
     }
     if (EC) {
-      Diags.Report(clang::diag::err_fe_unable_to_open_output) << Filename
-                                                              << EC.message();
+      Diags.Report(clang::diag::err_fe_unable_to_open_output)
+          << Filename << EC.message();
       continue;
     }
     RewriteBuffer &RewriteBuf = I->second;
@@ -130,8 +131,7 @@ void FixItRewriter::HandleDiagnostic(DiagnosticsEngine::Level DiagLevel,
   // Default implementation (Warnings/errors count).
   DiagnosticConsumer::HandleDiagnostic(DiagLevel, Info);
 
-  if (!FixItOpts->Silent ||
-      DiagLevel >= DiagnosticsEngine::Error ||
+  if (!FixItOpts->Silent || DiagLevel >= DiagnosticsEngine::Error ||
       (DiagLevel == DiagnosticsEngine::Note && !PrevDiagSilenced) ||
       (DiagLevel > DiagnosticsEngine::Note && Info.getNumFixItHints())) {
     Client->HandleDiagnostic(DiagLevel, Info);
@@ -152,15 +152,14 @@ void FixItRewriter::HandleDiagnostic(DiagnosticsEngine::Level DiagLevel,
   // Make sure that we can perform all of the modifications we
   // in this diagnostic.
   edit::Commit commit(Editor);
-  for (unsigned Idx = 0, Last = Info.getNumFixItHints();
-       Idx < Last; ++Idx) {
+  for (unsigned Idx = 0, Last = Info.getNumFixItHints(); Idx < Last; ++Idx) {
     const FixItHint &Hint = Info.getFixItHint(Idx);
 
     if (Hint.CodeToInsert.empty()) {
       if (Hint.InsertFromRange.isValid())
         commit.insertFromRange(Hint.RemoveRange.getBegin(),
-                           Hint.InsertFromRange, /*afterToken=*/false,
-                           Hint.BeforePreviousInsertions);
+                               Hint.InsertFromRange, /*afterToken=*/false,
+                               Hint.BeforePreviousInsertions);
       else
         commit.remove(Hint.RemoveRange);
     } else {
@@ -169,7 +168,7 @@ void FixItRewriter::HandleDiagnostic(DiagnosticsEngine::Level DiagLevel,
         commit.replace(Hint.RemoveRange, Hint.CodeToInsert);
       else
         commit.insert(Hint.RemoveRange.getBegin(), Hint.CodeToInsert,
-                    /*afterToken=*/false, Hint.BeforePreviousInsertions);
+                      /*afterToken=*/false, Hint.BeforePreviousInsertions);
     }
   }
   bool CanRewrite = Info.getNumFixItHints() > 0 && commit.isCommitable();

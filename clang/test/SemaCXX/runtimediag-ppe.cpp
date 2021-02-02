@@ -5,14 +5,16 @@
 // the context is unevaluated.
 
 namespace std {
-  class type_info;
+class type_info;
 }
 
-int& NP(int);
+int &NP(int);
 void test1() { (void)typeid(NP(1 << 32)); }
 
-class Poly { virtual ~Poly(); };
-Poly& P(int);
+class Poly {
+  virtual ~Poly();
+};
+Poly &P(int);
 void test2() { (void)typeid(P(1 << 32)); } // expected-warning {{shift count >= width of type}}
 
 void test3() { 1 ? (void)0 : (void)typeid(P(1 << 32)); }

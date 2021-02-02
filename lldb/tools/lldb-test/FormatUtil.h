@@ -45,7 +45,7 @@ public:
   void NewLine();
 
   void printLine(const llvm::Twine &T) { line() << T; }
-  template <typename... Ts> void formatLine(const char *Fmt, Ts &&... Items) {
+  template <typename... Ts> void formatLine(const char *Fmt, Ts &&...Items) {
     printLine(llvm::formatv(Fmt, std::forward<Ts>(Items)...));
   }
 

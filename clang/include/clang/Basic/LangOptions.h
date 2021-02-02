@@ -44,7 +44,7 @@ protected:
   // Define language options of enumeration type. These are private, and will
   // have accessors (below).
 #define LANGOPT(Name, Bits, Default, Description)
-#define ENUM_LANGOPT(Name, Type, Bits, Default, Description) \
+#define ENUM_LANGOPT(Name, Type, Bits, Default, Description)                   \
   unsigned Name : Bits;
 #include "clang/Basic/LangOptions.def"
 };
@@ -339,15 +339,13 @@ public:
 
   // Define accessors/mutators for language options of enumeration type.
 #define LANGOPT(Name, Bits, Default, Description)
-#define ENUM_LANGOPT(Name, Type, Bits, Default, Description) \
-  Type get##Name() const { return static_cast<Type>(Name); } \
+#define ENUM_LANGOPT(Name, Type, Bits, Default, Description)                   \
+  Type get##Name() const { return static_cast<Type>(Name); }                   \
   void set##Name(Type Value) { Name = static_cast<unsigned>(Value); }
 #include "clang/Basic/LangOptions.def"
 
   /// Are we compiling a module interface (.cppm or module map)?
-  bool isCompilingModule() const {
-    return getCompilingModule() != CMK_None;
-  }
+  bool isCompilingModule() const { return getCompilingModule() != CMK_None; }
 
   /// Do we need to track the owning module for a local declaration?
   bool trackLocalOwningModule() const {
@@ -380,9 +378,7 @@ public:
     return ObjCAutoRefCount || ObjCWeak;
   }
 
-  bool assumeFunctionsAreConvergent() const {
-    return ConvergentFunctions;
-  }
+  bool assumeFunctionsAreConvergent() const { return ConvergentFunctions; }
 
   /// Return the OpenCL C or C++ version as a VersionTuple.
   VersionTuple getOpenCLVersionTuple() const;
@@ -609,7 +605,7 @@ public:
   FPOptions applyOverrides(FPOptions Base) {
     FPOptions Result =
         FPOptions::getFromOpaqueInt((Base.getAsOpaqueInt() & ~OverrideMask) |
-                                     (Options.getAsOpaqueInt() & OverrideMask));
+                                    (Options.getAsOpaqueInt() & OverrideMask));
     return Result;
   }
 

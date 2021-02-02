@@ -20,14 +20,13 @@
 #include <vector>
 
 namespace clang {
-  class MacroInfo;
-  class Preprocessor;
-  class SourceLocation;
+class MacroInfo;
+class Preprocessor;
+class SourceLocation;
 
 /// MacroArgs - An instance of this class captures information about
 /// the formal arguments specified to a function-like macro invocation.
-class MacroArgs final
-    : private llvm::TrailingObjects<MacroArgs, Token> {
+class MacroArgs final : private llvm::TrailingObjects<MacroArgs, Token> {
 
   friend TrailingObjects;
   /// NumUnexpArgTokens - The number of raw, unexpanded tokens for the
@@ -46,7 +45,7 @@ class MacroArgs final
   /// PreExpArgTokens - Pre-expanded tokens for arguments that need them.  Empty
   /// if not yet computed.  This includes the EOF marker at the end of the
   /// stream.
-  std::vector<std::vector<Token> > PreExpArgTokens;
+  std::vector<std::vector<Token>> PreExpArgTokens;
 
   /// ArgCache - This is a linked list of MacroArgs objects that the
   /// Preprocessor owns which we use to avoid thrashing malloc/free.
@@ -63,8 +62,7 @@ class MacroArgs final
 public:
   /// MacroArgs ctor function - Create a new MacroArgs object with the specified
   /// macro and argument info.
-  static MacroArgs *create(const MacroInfo *MI,
-                           ArrayRef<Token> UnexpArgTokens,
+  static MacroArgs *create(const MacroInfo *MI, ArrayRef<Token> UnexpArgTokens,
                            bool VarargsElided, Preprocessor &PP);
 
   /// destroy - Destroy and deallocate the memory for this object.
@@ -87,8 +85,7 @@ public:
 
   /// getPreExpArgument - Return the pre-expanded form of the specified
   /// argument.
-  const std::vector<Token> &
-    getPreExpArgument(unsigned Arg, Preprocessor &PP);
+  const std::vector<Token> &getPreExpArgument(unsigned Arg, Preprocessor &PP);
 
   /// getNumMacroArguments - Return the number of arguments the invoked macro
   /// expects.
@@ -121,17 +118,15 @@ public:
   /// preprocessor operator.  If Charify is true, then it should be turned into
   /// a character literal for the Microsoft charize (#@) extension.
   ///
-  static Token StringifyArgument(const Token *ArgToks,
-                                 Preprocessor &PP, bool Charify,
-                                 SourceLocation ExpansionLocStart,
+  static Token StringifyArgument(const Token *ArgToks, Preprocessor &PP,
+                                 bool Charify, SourceLocation ExpansionLocStart,
                                  SourceLocation ExpansionLocEnd);
-
 
   /// deallocate - This should only be called by the Preprocessor when managing
   /// its freelist.
   MacroArgs *deallocate();
 };
 
-}  // end namespace clang
+} // end namespace clang
 
 #endif

@@ -215,9 +215,9 @@ static MarshallingInfo createMarshallingInfo(const Record &R) {
 namespace llvm {
 void EmitOptParser(RecordKeeper &Records, raw_ostream &OS) {
   // Get the option groups and options.
-  const std::vector<Record*> &Groups =
-    Records.getAllDerivedDefinitions("OptionGroup");
-  std::vector<Record*> Opts = Records.getAllDerivedDefinitions("Option");
+  const std::vector<Record *> &Groups =
+      Records.getAllDerivedDefinitions("OptionGroup");
+  std::vector<Record *> Opts = Records.getAllDerivedDefinitions("Option");
 
   emitSourceFileHeader("Option Parsing Definitions", OS);
 

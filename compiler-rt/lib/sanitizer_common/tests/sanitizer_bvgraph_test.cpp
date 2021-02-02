@@ -12,13 +12,12 @@
 //===----------------------------------------------------------------------===//
 #include "sanitizer_common/sanitizer_bvgraph.h"
 
-#include "sanitizer_test_utils.h"
+#include <algorithm>
+#include <set>
+#include <vector>
 
 #include "gtest/gtest.h"
-
-#include <algorithm>
-#include <vector>
-#include <set>
+#include "sanitizer_test_utils.h"
 
 using namespace __sanitizer;
 using namespace std;
@@ -28,7 +27,7 @@ typedef BasicBitVector<> BV2;
 typedef TwoLevelBitVector<> BV3;
 typedef TwoLevelBitVector<3, BasicBitVector<u8> > BV4;
 
-template<class G>
+template <class G>
 void PrintGraph(const G &g) {
   for (uptr i = 0; i < g.size(); i++) {
     for (uptr j = 0; j < g.size(); j++) {
@@ -38,16 +37,11 @@ void PrintGraph(const G &g) {
   }
 }
 
-
 class SimpleGraph {
  public:
   void clear() { s_.clear(); }
-  bool addEdge(uptr from, uptr to) {
-    return s_.insert(idx(from, to)).second;
-  }
-  bool removeEdge(uptr from, uptr to) {
-    return s_.erase(idx(from, to));
-  }
+  bool addEdge(uptr from, uptr to) { return s_.insert(idx(from, to)).second; }
+  bool removeEdge(uptr from, uptr to) { return s_.erase(idx(from, to)); }
   template <class G>
   void checkSameAs(G *g) {
     for (set<uptr>::iterator it = s_.begin(); it != s_.end(); ++it) {
@@ -57,9 +51,10 @@ class SimpleGraph {
     }
     EXPECT_TRUE(g->empty());
   }
+
  private:
   uptr idx(uptr from, uptr to) {
-    CHECK_LE(from|to, 1 << 16);
+    CHECK_LE(from | to, 1 << 16);
     return (from << 16) + to;
   }
   set<uptr> s_;
@@ -139,14 +134,12 @@ void RemoveEdges() {
     if (it % 2) {
       g.removeEdgesFrom(bv);
       for (set<uptr>::iterator from = s.begin(); from != s.end(); ++from) {
-        for (uptr to = 0; to < g.size(); to++)
-          s_g.removeEdge(*from, to);
+        for (uptr to = 0; to < g.size(); to++) s_g.removeEdge(*from, to);
       }
     } else {
       g.removeEdgesTo(bv);
       for (set<uptr>::iterator to = s.begin(); to != s.end(); ++to) {
-        for (uptr from = 0; from < g.size(); from++)
-          s_g.removeEdge(from, *to);
+        for (uptr from = 0; from < g.size(); from++) s_g.removeEdge(from, *to);
       }
     }
     s_g.checkSameAs(&g);
@@ -226,8 +219,7 @@ void LongCycle() {
   uptr start = 5;
   for (uptr i = start; i < g.size() - 1; i++) {
     g.addEdge(i, i + 1);
-    for (uptr j = 0; j < start; j++)
-      g.addEdge(i, j);
+    for (uptr j = 0; j < start; j++) g.addEdge(i, j);
   }
   //  Bad graph that looks like this:
   // 00000000000000
@@ -333,6 +325,4 @@ void RunAddEdgesTest() {
   EXPECT_EQ(3U, added_edges[1]);
 }
 
-TEST(BVGraph, AddEdgesTest) {
-  RunAddEdgesTest<BV2>();
-}
+TEST(BVGraph, AddEdgesTest) { RunAddEdgesTest<BV2>(); }

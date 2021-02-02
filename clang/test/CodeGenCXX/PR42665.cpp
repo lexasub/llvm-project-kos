@@ -19,16 +19,15 @@ template <typename Deleter>
 Pair(Foo, Deleter) -> Pair<Deleter>;
 
 template <typename T>
-void deleter(T& t) { t.~T(); }
+void deleter(T &t) { t.~T(); }
 
 auto make_pair() {
-  return Pair{ Foo(), deleter<Foo> };
+  return Pair{Foo(), deleter<Foo>};
 }
 
 void foobar() {
   auto p = make_pair();
-  auto& f = p.first;
-  auto& d = p.second;
+  auto &f = p.first;
+  auto &d = p.second;
   d(f); // Invoke virtual destructor of Foo through d.
 } // p's destructor is invoked.
-

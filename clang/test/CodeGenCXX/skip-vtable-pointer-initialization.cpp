@@ -12,11 +12,10 @@ struct A {
 
 // CHECK-LABEL: define{{.*}} void @_ZN5Test11AD2Ev
 // CHECK-NOT: store i32 (...)** bitcast (i8** getelementptr inbounds ({ [3 x i8*] }, { [3 x i8*] }* @_ZTVN5Test11AE, i64 0, i64 2) to i32 (...)**), i32 (...)***
-A::~A() 
-{
+A::~A() {
 }
 
-}
+} // namespace Test1
 
 namespace Test2 {
 
@@ -32,14 +31,14 @@ A::~A() {
   f();
 }
 
-}
+} // namespace Test2
 
 namespace Test3 {
 
 // Check that we don't initialize the vtable pointer in A::~A(), since the destructor body is trivial
 // and Field's destructor body is also trivial.
 struct Field {
-  ~Field() { }
+  ~Field() {}
 };
 
 struct A {
@@ -52,10 +51,9 @@ struct A {
 // CHECK-LABEL: define{{.*}} void @_ZN5Test31AD2Ev
 // CHECK-NOT: store i32 (...)** bitcast (i8** getelementptr inbounds ({ [3 x i8*] }, { [3 x i8*] }* @_ZTVN5Test31AE, i32 0, inrange i32 0, i32 2) to i32 (...)**), i32 (...)***
 A::~A() {
-  
 }
 
-}
+} // namespace Test3
 
 namespace Test4 {
 
@@ -77,11 +75,10 @@ struct A {
 
 // CHECK-LABEL: define{{.*}} void @_ZN5Test41AD2Ev
 // CHECK: store i32 (...)** bitcast (i8** getelementptr inbounds ({ [3 x i8*] }, { [3 x i8*] }* @_ZTVN5Test41AE, i32 0, inrange i32 0, i32 2) to i32 (...)**), i32 (...)***
-A::~A()
-{
+A::~A() {
 }
 
-}
+} // namespace Test4
 
 namespace Test5 {
 
@@ -101,11 +98,10 @@ struct A {
 
 // CHECK-LABEL: define{{.*}} void @_ZN5Test51AD2Ev
 // CHECK: store i32 (...)** bitcast (i8** getelementptr inbounds ({ [3 x i8*] }, { [3 x i8*] }* @_ZTVN5Test51AE, i32 0, inrange i32 0, i32 2) to i32 (...)**), i32 (...)***
-A::~A()
-{
+A::~A() {
 }
 
-}
+} // namespace Test5
 
 namespace Test6 {
 
@@ -129,11 +125,10 @@ struct A {
 
 // CHECK-LABEL: define{{.*}} void @_ZN5Test61AD2Ev
 // CHECK: store i32 (...)** bitcast (i8** getelementptr inbounds ({ [3 x i8*] }, { [3 x i8*] }* @_ZTVN5Test61AE, i32 0, inrange i32 0, i32 2) to i32 (...)**), i32 (...)***
-A::~A()
-{
+A::~A() {
 }
 
-}
+} // namespace Test6
 
 namespace Test7 {
 
@@ -144,7 +139,7 @@ struct NonTrivialDestructorBody {
   ~NonTrivialDestructorBody();
 };
 
-struct Field : NonTrivialDestructorBody { };
+struct Field : NonTrivialDestructorBody {};
 
 struct A {
   virtual void f();
@@ -155,11 +150,10 @@ struct A {
 
 // CHECK-LABEL: define{{.*}} void @_ZN5Test71AD2Ev
 // CHECK: store i32 (...)** bitcast (i8** getelementptr inbounds ({ [3 x i8*] }, { [3 x i8*] }* @_ZTVN5Test71AE, i32 0, inrange i32 0, i32 2) to i32 (...)**), i32 (...)***
-A::~A()
-{
+A::~A() {
 }
 
-}
+} // namespace Test7
 
 namespace Test8 {
 
@@ -170,7 +164,7 @@ struct NonTrivialDestructorBody {
   ~NonTrivialDestructorBody();
 };
 
-struct Field : virtual NonTrivialDestructorBody { };
+struct Field : virtual NonTrivialDestructorBody {};
 
 struct A {
   virtual void f();
@@ -181,20 +175,21 @@ struct A {
 
 // CHECK-LABEL: define{{.*}} void @_ZN5Test81AD2Ev
 // CHECK: store i32 (...)** bitcast (i8** getelementptr inbounds ({ [3 x i8*] }, { [3 x i8*] }* @_ZTVN5Test81AE, i32 0, inrange i32 0, i32 2) to i32 (...)**), i32 (...)***
-A::~A()
-{
+A::~A() {
 }
 
-}
+} // namespace Test8
 
 namespace Test9 {
 
 // Check that we emit a VTT for B, even though we don't initialize the vtable pointer in the destructor.
-struct A { virtual ~A () { } };
+struct A {
+  virtual ~A() {}
+};
 struct B : virtual A {};
-struct C : virtual B { 
+struct C : virtual B {
   virtual ~C();
 };
 C::~C() {}
 
-}
+} // namespace Test9

@@ -13,6 +13,7 @@ int main(void) {
   int v = rand_r(&seed);
   // CHECK: MemorySanitizer: use-of-uninitialized-value
   // CHECK: in main{{.*}}rand_r.cpp:[[@LINE-2]]
-  if (v) printf(".\n");
+  if (v)
+    printf(".\n");
   return 0;
 }

@@ -34,9 +34,7 @@ void __declspec(noinline) callerOfInlineCrashFrame(bool is_keeping_alive) {
     doTailCall();
 }
 
-int __attribute__((optnone)) main() {
-  callerOfInlineCrashFrame(true);
-}
+int __attribute__((optnone)) main() { callerOfInlineCrashFrame(true); }
 
 /*
 DexExpectProgramState({'frames':[

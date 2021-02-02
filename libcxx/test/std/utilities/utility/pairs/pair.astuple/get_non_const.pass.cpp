@@ -21,34 +21,32 @@
 
 #if TEST_STD_VER > 11
 struct S {
-   std::pair<int, int> a;
-   int k;
-   constexpr S() : a{1,2}, k(std::get<0>(a)) {}
-   };
+  std::pair<int, int> a;
+  int k;
+  constexpr S() : a{1, 2}, k(std::get<0>(a)) {}
+};
 
-constexpr std::pair<int, int> getP () { return { 3, 4 }; }
+constexpr std::pair<int, int> getP() { return {3, 4}; }
 #endif
 
-int main(int, char**)
-{
-    {
-        typedef std::pair<int, short> P;
-        P p(3, static_cast<short>(4));
-        assert(std::get<0>(p) == 3);
-        assert(std::get<1>(p) == 4);
-        std::get<0>(p) = 5;
-        std::get<1>(p) = 6;
-        assert(std::get<0>(p) == 5);
-        assert(std::get<1>(p) == 6);
-    }
+int main(int, char**) {
+  {
+    typedef std::pair<int, short> P;
+    P p(3, static_cast<short>(4));
+    assert(std::get<0>(p) == 3);
+    assert(std::get<1>(p) == 4);
+    std::get<0>(p) = 5;
+    std::get<1>(p) = 6;
+    assert(std::get<0>(p) == 5);
+    assert(std::get<1>(p) == 6);
+  }
 
 #if TEST_STD_VER > 11
-    {
-        static_assert(S().k == 1, "");
-        static_assert(std::get<1>(getP()) == 4, "");
-    }
+  {
+    static_assert(S().k == 1, "");
+    static_assert(std::get<1>(getP()) == 4, "");
+  }
 #endif
-
 
   return 0;
 }

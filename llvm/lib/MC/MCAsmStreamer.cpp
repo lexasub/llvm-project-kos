@@ -78,7 +78,7 @@ public:
         ShowInst(showInst), UseDwarfDirectory(useDwarfDirectory) {
     assert(InstPrinter);
     if (IsVerboseAsm)
-        InstPrinter->setCommentStream(CommentStream);
+      InstPrinter->setCommentStream(CommentStream);
     if (Assembler->getBackendPtr())
       setAllowAutoPadding(Assembler->getBackend().allowAutoPadding());
 
@@ -122,7 +122,7 @@ public:
   /// use this method.
   raw_ostream &GetCommentOS() override {
     if (!IsVerboseAsm)
-      return nulls();  // Discard comments unless in verbose asm mode.
+      return nulls(); // Discard comments unless in verbose asm mode.
     return CommentStream;
   }
 
@@ -132,9 +132,7 @@ public:
   void emitExplicitComments() override;
 
   /// Emit a blank line to a .s file to pretty it up.
-  void AddBlankLine() override {
-    EmitEOL();
-  }
+  void AddBlankLine() override { EmitEOL(); }
 
   /// @name MCStreamer Interface
   /// @{
@@ -239,17 +237,14 @@ public:
   void emitCodeAlignment(unsigned ByteAlignment,
                          unsigned MaxBytesToEmit = 0) override;
 
-  void emitValueToOffset(const MCExpr *Offset,
-                         unsigned char Value,
+  void emitValueToOffset(const MCExpr *Offset, unsigned char Value,
                          SMLoc Loc) override;
 
   void emitFileDirective(StringRef Filename) override;
-  Expected<unsigned> tryEmitDwarfFileDirective(unsigned FileNo,
-                                               StringRef Directory,
-                                               StringRef Filename,
-                                               Optional<MD5::MD5Result> Checksum = None,
-                                               Optional<StringRef> Source = None,
-                                               unsigned CUID = 0) override;
+  Expected<unsigned> tryEmitDwarfFileDirective(
+      unsigned FileNo, StringRef Directory, StringRef Filename,
+      Optional<MD5::MD5Result> Checksum = None,
+      Optional<StringRef> Source = None, unsigned CUID = 0) override;
   void emitDwarfFile0Directive(StringRef Directory, StringRef Filename,
                                Optional<MD5::MD5Result> Checksum,
                                Optional<StringRef> Source,
@@ -377,7 +372,8 @@ public:
 } // end anonymous namespace.
 
 void MCAsmStreamer::AddComment(const Twine &T, bool EOL) {
-  if (!IsVerboseAsm) return;
+  if (!IsVerboseAsm)
+    return;
 
   T.toVector(CommentToEmit);
 
@@ -393,15 +389,15 @@ void MCAsmStreamer::EmitCommentsAndEOL() {
 
   StringRef Comments = CommentToEmit;
 
-  assert(Comments.back() == '\n' &&
-         "Comment array not newline terminated");
+  assert(Comments.back() == '\n' && "Comment array not newline terminated");
   do {
     // Emit a line of comments.
     OS.PadToColumn(MAI->getCommentColumn());
     size_t Position = Comments.find('\n');
-    OS << MAI->getCommentString() << ' ' << Comments.substr(0, Position) <<'\n';
+    OS << MAI->getCommentString() << ' ' << Comments.substr(0, Position)
+       << '\n';
 
-    Comments = Comments.substr(Position+1);
+    Comments = Comments.substr(Position + 1);
   } while (!Comments.empty());
 
   CommentToEmit.clear();
@@ -409,7 +405,7 @@ void MCAsmStreamer::EmitCommentsAndEOL() {
 
 static inline int64_t truncateToSize(int64_t Value, unsigned Bytes) {
   assert(Bytes > 0 && Bytes <= 8 && "Invalid size!");
-  return Value & ((uint64_t) (int64_t) -1 >> (64 - Bytes * 8));
+  return Value & ((uint64_t)(int64_t)-1 >> (64 - Bytes * 8));
 }
 
 void MCAsmStreamer::emitRawComment(const Twine &T, bool TabPrefix) {
@@ -514,11 +510,21 @@ void MCAsmStreamer::emitLOHDirective(MCLOHType Kind, const MCLOHArgs &Args) {
 
 void MCAsmStreamer::emitAssemblerFlag(MCAssemblerFlag Flag) {
   switch (Flag) {
-  case MCAF_SyntaxUnified:         OS << "\t.syntax unified"; break;
-  case MCAF_SubsectionsViaSymbols: OS << ".subsections_via_symbols"; break;
-  case MCAF_Code16:                OS << '\t'<< MAI->getCode16Directive();break;
-  case MCAF_Code32:                OS << '\t'<< MAI->getCode32Directive();break;
-  case MCAF_Code64:                OS << '\t'<< MAI->getCode64Directive();break;
+  case MCAF_SyntaxUnified:
+    OS << "\t.syntax unified";
+    break;
+  case MCAF_SubsectionsViaSymbols:
+    OS << ".subsections_via_symbols";
+    break;
+  case MCAF_Code16:
+    OS << '\t' << MAI->getCode16Directive();
+    break;
+  case MCAF_Code32:
+    OS << '\t' << MAI->getCode32Directive();
+    break;
+  case MCAF_Code64:
+    OS << '\t' << MAI->getCode64Directive();
+    break;
   }
   EmitEOL();
 }
@@ -527,7 +533,8 @@ void MCAsmStreamer::emitLinkerOptions(ArrayRef<std::string> Options) {
   assert(!Options.empty() && "At least one option is required!");
   OS << "\t.linker_option \"" << Options[0] << '"';
   for (ArrayRef<std::string>::iterator it = Options.begin() + 1,
-         ie = Options.end(); it != ie; ++it) {
+                                       ie = Options.end();
+       it != ie; ++it) {
     OS << ", " << '"' << *it << '"';
   }
   EmitEOL();
@@ -537,21 +544,35 @@ void MCAsmStreamer::emitDataRegion(MCDataRegionType Kind) {
   if (!MAI->doesSupportDataRegionDirectives())
     return;
   switch (Kind) {
-  case MCDR_DataRegion:            OS << "\t.data_region"; break;
-  case MCDR_DataRegionJT8:         OS << "\t.data_region jt8"; break;
-  case MCDR_DataRegionJT16:        OS << "\t.data_region jt16"; break;
-  case MCDR_DataRegionJT32:        OS << "\t.data_region jt32"; break;
-  case MCDR_DataRegionEnd:         OS << "\t.end_data_region"; break;
+  case MCDR_DataRegion:
+    OS << "\t.data_region";
+    break;
+  case MCDR_DataRegionJT8:
+    OS << "\t.data_region jt8";
+    break;
+  case MCDR_DataRegionJT16:
+    OS << "\t.data_region jt16";
+    break;
+  case MCDR_DataRegionJT32:
+    OS << "\t.data_region jt32";
+    break;
+  case MCDR_DataRegionEnd:
+    OS << "\t.end_data_region";
+    break;
   }
   EmitEOL();
 }
 
 static const char *getVersionMinDirective(MCVersionMinType Type) {
   switch (Type) {
-  case MCVM_WatchOSVersionMin: return ".watchos_version_min";
-  case MCVM_TvOSVersionMin:    return ".tvos_version_min";
-  case MCVM_IOSVersionMin:     return ".ios_version_min";
-  case MCVM_OSXVersionMin:     return ".macosx_version_min";
+  case MCVM_WatchOSVersionMin:
+    return ".watchos_version_min";
+  case MCVM_TvOSVersionMin:
+    return ".tvos_version_min";
+  case MCVM_IOSVersionMin:
+    return ".ios_version_min";
+  case MCVM_OSXVersionMin:
+    return ".macosx_version_min";
   }
   llvm_unreachable("Invalid MC version min type");
 }
@@ -581,16 +602,26 @@ void MCAsmStreamer::emitVersionMin(MCVersionMinType Type, unsigned Major,
 
 static const char *getPlatformName(MachO::PlatformType Type) {
   switch (Type) {
-  case MachO::PLATFORM_MACOS:            return "macos";
-  case MachO::PLATFORM_IOS:              return "ios";
-  case MachO::PLATFORM_TVOS:             return "tvos";
-  case MachO::PLATFORM_WATCHOS:          return "watchos";
-  case MachO::PLATFORM_BRIDGEOS:         return "bridgeos";
-  case MachO::PLATFORM_MACCATALYST:      return "macCatalyst";
-  case MachO::PLATFORM_IOSSIMULATOR:     return "iossimulator";
-  case MachO::PLATFORM_TVOSSIMULATOR:    return "tvossimulator";
-  case MachO::PLATFORM_WATCHOSSIMULATOR: return "watchossimulator";
-  case MachO::PLATFORM_DRIVERKIT:        return "driverkit";
+  case MachO::PLATFORM_MACOS:
+    return "macos";
+  case MachO::PLATFORM_IOS:
+    return "ios";
+  case MachO::PLATFORM_TVOS:
+    return "tvos";
+  case MachO::PLATFORM_WATCHOS:
+    return "watchos";
+  case MachO::PLATFORM_BRIDGEOS:
+    return "bridgeos";
+  case MachO::PLATFORM_MACCATALYST:
+    return "macCatalyst";
+  case MachO::PLATFORM_IOSSIMULATOR:
+    return "iossimulator";
+  case MachO::PLATFORM_TVOSSIMULATOR:
+    return "tvossimulator";
+  case MachO::PLATFORM_WATCHOSSIMULATOR:
+    return "watchossimulator";
+  case MachO::PLATFORM_DRIVERKIT:
+    return "driverkit";
   }
   llvm_unreachable("Invalid Mach-O platform type");
 }
@@ -647,62 +678,104 @@ void MCAsmStreamer::emitWeakReference(MCSymbol *Alias, const MCSymbol *Symbol) {
 bool MCAsmStreamer::emitSymbolAttribute(MCSymbol *Symbol,
                                         MCSymbolAttr Attribute) {
   switch (Attribute) {
-  case MCSA_Invalid: llvm_unreachable("Invalid symbol attribute");
+  case MCSA_Invalid:
+    llvm_unreachable("Invalid symbol attribute");
   case MCSA_ELF_TypeFunction:    /// .type _foo, STT_FUNC  # aka @function
   case MCSA_ELF_TypeIndFunction: /// .type _foo, STT_GNU_IFUNC
   case MCSA_ELF_TypeObject:      /// .type _foo, STT_OBJECT  # aka @object
   case MCSA_ELF_TypeTLS:         /// .type _foo, STT_TLS     # aka @tls_object
   case MCSA_ELF_TypeCommon:      /// .type _foo, STT_COMMON  # aka @common
   case MCSA_ELF_TypeNoType:      /// .type _foo, STT_NOTYPE  # aka @notype
-  case MCSA_ELF_TypeGnuUniqueObject:  /// .type _foo, @gnu_unique_object
+  case MCSA_ELF_TypeGnuUniqueObject: /// .type _foo, @gnu_unique_object
     if (!MAI->hasDotTypeDotSizeDirective())
       return false; // Symbol attribute not supported
     OS << "\t.type\t";
     Symbol->print(OS, MAI);
     OS << ',' << ((MAI->getCommentString()[0] != '@') ? '@' : '%');
     switch (Attribute) {
-    default: return false;
-    case MCSA_ELF_TypeFunction:    OS << "function"; break;
-    case MCSA_ELF_TypeIndFunction: OS << "gnu_indirect_function"; break;
-    case MCSA_ELF_TypeObject:      OS << "object"; break;
-    case MCSA_ELF_TypeTLS:         OS << "tls_object"; break;
-    case MCSA_ELF_TypeCommon:      OS << "common"; break;
-    case MCSA_ELF_TypeNoType:      OS << "notype"; break;
-    case MCSA_ELF_TypeGnuUniqueObject: OS << "gnu_unique_object"; break;
+    default:
+      return false;
+    case MCSA_ELF_TypeFunction:
+      OS << "function";
+      break;
+    case MCSA_ELF_TypeIndFunction:
+      OS << "gnu_indirect_function";
+      break;
+    case MCSA_ELF_TypeObject:
+      OS << "object";
+      break;
+    case MCSA_ELF_TypeTLS:
+      OS << "tls_object";
+      break;
+    case MCSA_ELF_TypeCommon:
+      OS << "common";
+      break;
+    case MCSA_ELF_TypeNoType:
+      OS << "notype";
+      break;
+    case MCSA_ELF_TypeGnuUniqueObject:
+      OS << "gnu_unique_object";
+      break;
     }
     EmitEOL();
     return true;
   case MCSA_Global: // .globl/.global
     OS << MAI->getGlobalDirective();
     break;
-  case MCSA_LGlobal:        OS << "\t.lglobl\t";          break;
-  case MCSA_Hidden:         OS << "\t.hidden\t";          break;
-  case MCSA_IndirectSymbol: OS << "\t.indirect_symbol\t"; break;
-  case MCSA_Internal:       OS << "\t.internal\t";        break;
-  case MCSA_LazyReference:  OS << "\t.lazy_reference\t";  break;
-  case MCSA_Local:          OS << "\t.local\t";           break;
+  case MCSA_LGlobal:
+    OS << "\t.lglobl\t";
+    break;
+  case MCSA_Hidden:
+    OS << "\t.hidden\t";
+    break;
+  case MCSA_IndirectSymbol:
+    OS << "\t.indirect_symbol\t";
+    break;
+  case MCSA_Internal:
+    OS << "\t.internal\t";
+    break;
+  case MCSA_LazyReference:
+    OS << "\t.lazy_reference\t";
+    break;
+  case MCSA_Local:
+    OS << "\t.local\t";
+    break;
   case MCSA_NoDeadStrip:
     if (!MAI->hasNoDeadStrip())
       return false;
     OS << "\t.no_dead_strip\t";
     break;
-  case MCSA_SymbolResolver: OS << "\t.symbol_resolver\t"; break;
-  case MCSA_AltEntry:       OS << "\t.alt_entry\t";       break;
+  case MCSA_SymbolResolver:
+    OS << "\t.symbol_resolver\t";
+    break;
+  case MCSA_AltEntry:
+    OS << "\t.alt_entry\t";
+    break;
   case MCSA_PrivateExtern:
     OS << "\t.private_extern\t";
     break;
-  case MCSA_Protected:      OS << "\t.protected\t";       break;
-  case MCSA_Reference:      OS << "\t.reference\t";       break;
+  case MCSA_Protected:
+    OS << "\t.protected\t";
+    break;
+  case MCSA_Reference:
+    OS << "\t.reference\t";
+    break;
   case MCSA_Extern:
     OS << "\t.extern\t";
     break;
-  case MCSA_Weak:           OS << MAI->getWeakDirective(); break;
+  case MCSA_Weak:
+    OS << MAI->getWeakDirective();
+    break;
   case MCSA_WeakDefinition:
     OS << "\t.weak_definition\t";
     break;
-      // .weak_reference
-  case MCSA_WeakReference:  OS << MAI->getWeakRefDirective(); break;
-  case MCSA_WeakDefAutoPrivate: OS << "\t.weak_def_can_be_hidden\t"; break;
+    // .weak_reference
+  case MCSA_WeakReference:
+    OS << MAI->getWeakRefDirective();
+    break;
+  case MCSA_WeakDefAutoPrivate:
+    OS << "\t.weak_def_can_be_hidden\t";
+    break;
   case MCSA_Cold:
     // Assemblers currently do not support a .cold directive.
     return false;
@@ -738,12 +811,12 @@ void MCAsmStreamer::BeginCOFFSymbolDef(const MCSymbol *Symbol) {
   EmitEOL();
 }
 
-void MCAsmStreamer::EmitCOFFSymbolStorageClass (int StorageClass) {
+void MCAsmStreamer::EmitCOFFSymbolStorageClass(int StorageClass) {
   OS << "\t.scl\t" << StorageClass << ';';
   EmitEOL();
 }
 
-void MCAsmStreamer::EmitCOFFSymbolType (int Type) {
+void MCAsmStreamer::EmitCOFFSymbolType(int Type) {
   OS << "\t.type\t" << Type << ';';
   EmitEOL();
 }
@@ -903,7 +976,6 @@ void MCAsmStreamer::emitCommonSymbol(MCSymbol *Symbol, uint64_t Size,
   MCSymbolXCOFF *XSym = dyn_cast<MCSymbolXCOFF>(Symbol);
   if (XSym && XSym->hasRename())
     emitXCOFFRenameDirective(XSym, XSym->getSymbolTableName());
-
 }
 
 void MCAsmStreamer::emitLocalCommonSymbol(MCSymbol *Symbol, uint64_t Size,
@@ -941,7 +1013,7 @@ void MCAsmStreamer::emitZerofill(MCSection *Section, MCSymbol *Symbol,
          ".zerofill is a Mach-O specific directive");
   // This is a mach-o specific directive.
 
-  const MCSectionMachO *MOSection = ((const MCSectionMachO*)Section);
+  const MCSectionMachO *MOSection = ((const MCSectionMachO *)Section);
   OS << MOSection->getSegmentName() << "," << MOSection->getName();
 
   if (Symbol) {
@@ -974,12 +1046,13 @@ void MCAsmStreamer::emitTBSSSymbol(MCSection *Section, MCSymbol *Symbol,
 
   // Output align if we have it.  We default to 1 so don't bother printing
   // that.
-  if (ByteAlignment > 1) OS << ", " << Log2_32(ByteAlignment);
+  if (ByteAlignment > 1)
+    OS << ", " << Log2_32(ByteAlignment);
 
   EmitEOL();
 }
 
-static inline char toOctal(int X) { return (X&7)+'0'; }
+static inline char toOctal(int X) { return (X & 7) + '0'; }
 
 static void PrintByteList(StringRef Data, raw_ostream &OS,
                           MCAsmInfo::AsmCharLiteralSyntax ACLS) {
@@ -1038,17 +1111,27 @@ static void PrintQuotedString(StringRef Data, raw_ostream &OS) {
     }
 
     switch (C) {
-      case '\b': OS << "\\b"; break;
-      case '\f': OS << "\\f"; break;
-      case '\n': OS << "\\n"; break;
-      case '\r': OS << "\\r"; break;
-      case '\t': OS << "\\t"; break;
-      default:
-        OS << '\\';
-        OS << toOctal(C >> 6);
-        OS << toOctal(C >> 3);
-        OS << toOctal(C >> 0);
-        break;
+    case '\b':
+      OS << "\\b";
+      break;
+    case '\f':
+      OS << "\\f";
+      break;
+    case '\n':
+      OS << "\\n";
+      break;
+    case '\r':
+      OS << "\\r";
+      break;
+    case '\t':
+      OS << "\\t";
+      break;
+    default:
+      OS << '\\';
+      OS << toOctal(C >> 6);
+      OS << toOctal(C >> 3);
+      OS << toOctal(C >> 0);
+      break;
     }
   }
 
@@ -1058,7 +1141,8 @@ static void PrintQuotedString(StringRef Data, raw_ostream &OS) {
 void MCAsmStreamer::emitBytes(StringRef Data) {
   assert(getCurrentSectionOnly() &&
          "Cannot emit contents before setting section!");
-  if (Data.empty()) return;
+  if (Data.empty())
+    return;
 
   const auto emitAsString = [this](StringRef Data) {
     // If the data ends with 0 and the target supports .asciz, use it, otherwise
@@ -1132,11 +1216,20 @@ void MCAsmStreamer::emitValueImpl(const MCExpr *Value, unsigned Size,
          "Cannot emit contents before setting section!");
   const char *Directive = nullptr;
   switch (Size) {
-  default: break;
-  case 1: Directive = MAI->getData8bitsDirective();  break;
-  case 2: Directive = MAI->getData16bitsDirective(); break;
-  case 4: Directive = MAI->getData32bitsDirective(); break;
-  case 8: Directive = MAI->getData64bitsDirective(); break;
+  default:
+    break;
+  case 1:
+    Directive = MAI->getData8bitsDirective();
+    break;
+  case 2:
+    Directive = MAI->getData16bitsDirective();
+    break;
+  case 4:
+    Directive = MAI->getData32bitsDirective();
+    break;
+  case 8:
+    Directive = MAI->getData64bitsDirective();
+    break;
   }
 
   if (!Directive) {
@@ -1335,11 +1428,19 @@ void MCAsmStreamer::emitValueToAlignment(unsigned ByteAlignment, int64_t Value,
   // Non-power of two alignment.  This is not widely supported by assemblers.
   // FIXME: Parameterize this based on MAI.
   switch (ValueSize) {
-  default: llvm_unreachable("Invalid size for machine code value!");
-  case 1: OS << ".balign";  break;
-  case 2: OS << ".balignw"; break;
-  case 4: OS << ".balignl"; break;
-  case 8: llvm_unreachable("Unsupported alignment size!");
+  default:
+    llvm_unreachable("Invalid size for machine code value!");
+  case 1:
+    OS << ".balign";
+    break;
+  case 2:
+    OS << ".balignw";
+    break;
+  case 4:
+    OS << ".balignl";
+    break;
+  case 8:
+    llvm_unreachable("Unsupported alignment size!");
   }
 
   OS << ' ' << ByteAlignment;
@@ -1352,12 +1453,11 @@ void MCAsmStreamer::emitValueToAlignment(unsigned ByteAlignment, int64_t Value,
 void MCAsmStreamer::emitCodeAlignment(unsigned ByteAlignment,
                                       unsigned MaxBytesToEmit) {
   // Emit with a text fill value.
-  emitValueToAlignment(ByteAlignment, MAI->getTextAlignFillValue(),
-                       1, MaxBytesToEmit);
+  emitValueToAlignment(ByteAlignment, MAI->getTextAlignFillValue(), 1,
+                       MaxBytesToEmit);
 }
 
-void MCAsmStreamer::emitValueToOffset(const MCExpr *Offset,
-                                      unsigned char Value,
+void MCAsmStreamer::emitValueToOffset(const MCExpr *Offset, unsigned char Value,
                                       SMLoc Loc) {
   // FIXME: Verify that Offset is associated with the current section.
   OS << ".org ";
@@ -1408,7 +1508,8 @@ static void printDwarfFileDirective(unsigned FileNo, StringRef Directory,
 
 Expected<unsigned> MCAsmStreamer::tryEmitDwarfFileDirective(
     unsigned FileNo, StringRef Directory, StringRef Filename,
-    Optional<MD5::MD5Result> Checksum, Optional<StringRef> Source, unsigned CUID) {
+    Optional<MD5::MD5Result> Checksum, Optional<StringRef> Source,
+    unsigned CUID) {
   assert(CUID == 0 && "multiple CUs not supported by MCAsmStreamer");
 
   MCDwarfLineTable &Table = getContext().getMCDwarfLineTable(CUID);
@@ -1490,8 +1591,8 @@ void MCAsmStreamer::emitDwarfLocDirective(unsigned FileNo, unsigned Line,
 
   if (IsVerboseAsm) {
     OS.PadToColumn(MAI->getCommentColumn());
-    OS << MAI->getCommentString() << ' ' << FileName << ':'
-       << Line << ':' << Column;
+    OS << MAI->getCommentString() << ' ' << FileName << ':' << Line << ':'
+       << Column;
   }
   EmitEOL();
   this->MCStreamer::emitDwarfLocDirective(FileNo, Line, Column, Flags, Isa,
@@ -1743,7 +1844,7 @@ void MCAsmStreamer::emitCFIEscape(StringRef Values) {
 void MCAsmStreamer::emitCFIGnuArgsSize(int64_t Size) {
   MCStreamer::emitCFIGnuArgsSize(Size);
 
-  uint8_t Buffer[16] = { dwarf::DW_CFA_GNU_args_size };
+  uint8_t Buffer[16] = {dwarf::DW_CFA_GNU_args_size};
   unsigned Len = encodeULEB128(Size, Buffer + 1) + 1;
 
   PrintCFIEscape(OS, StringRef((const char *)&Buffer[0], Len));
@@ -1765,8 +1866,7 @@ void MCAsmStreamer::emitCFIOffset(int64_t Register, int64_t Offset) {
   EmitEOL();
 }
 
-void MCAsmStreamer::emitCFIPersonality(const MCSymbol *Sym,
-                                       unsigned Encoding) {
+void MCAsmStreamer::emitCFIPersonality(const MCSymbol *Sym, unsigned Encoding) {
   MCStreamer::emitCFIPersonality(Sym, Encoding);
   OS << "\t.cfi_personality " << Encoding << ", ";
   Sym->print(OS, MAI);
@@ -2080,7 +2180,7 @@ void MCAsmStreamer::AddEncodingComment(const MCInst &Inst,
         if (MAI->isLittleEndian())
           FixupBit = i * 8 + j;
         else
-          FixupBit = i * 8 + (7-j);
+          FixupBit = i * 8 + (7 - j);
 
         if (uint8_t MapEntry = FixupMap[FixupBit]) {
           assert(Bit == 0 && "Encoder wrote into fixed up bit!");
@@ -2096,8 +2196,9 @@ void MCAsmStreamer::AddEncodingComment(const MCInst &Inst,
     MCFixup &F = Fixups[i];
     const MCFixupKindInfo &Info =
         getAssembler().getBackend().getFixupKindInfo(F.getKind());
-    OS << "  fixup " << char('A' + i) << " - " << "offset: " << F.getOffset()
-       << ", value: " << *F.getValue() << ", kind: " << Info.Name << "\n";
+    OS << "  fixup " << char('A' + i) << " - "
+       << "offset: " << F.getOffset() << ", value: " << *F.getValue()
+       << ", kind: " << Info.Name << "\n";
   }
 }
 
@@ -2115,7 +2216,7 @@ void MCAsmStreamer::emitInstruction(const MCInst &Inst,
     GetCommentOS() << "\n";
   }
 
-  if(getTargetStreamer())
+  if (getTargetStreamer())
     getTargetStreamer()->prettyPrintAsm(*InstPrinter, 0, Inst, STI, OS);
   else
     InstPrinter->printInst(&Inst, 0, "", STI, OS);
@@ -2187,7 +2288,7 @@ void MCAsmStreamer::emitAddrsigSym(const MCSymbol *Sym) {
 /// indicated by the hasRawTextSupport() predicate.
 void MCAsmStreamer::emitRawTextImpl(StringRef String) {
   if (!String.empty() && String.back() == '\n')
-    String = String.substr(0, String.size()-1);
+    String = String.substr(0, String.size() - 1);
   OS << String;
   EmitEOL();
 }

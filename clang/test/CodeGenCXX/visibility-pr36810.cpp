@@ -6,7 +6,7 @@ template <class>
 class __attribute__((__type_visibility__("default"))) shared_ptr {
   template <class> friend class shared_ptr;
 };
-}
+} // namespace std
 struct dict;
 #ifndef UNDEF_G
 std::shared_ptr<dict> g;

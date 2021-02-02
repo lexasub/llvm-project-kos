@@ -98,8 +98,7 @@ void promoteTypeIds(Module &M, StringRef ModuleId) {
         GlobalMD = MDString::get(M.getContext(), NewName);
       }
 
-      CI->setArgOperand(ArgNo,
-                        MetadataAsValue::get(M.getContext(), GlobalMD));
+      CI->setArgOperand(ArgNo, MetadataAsValue::get(M.getContext(), GlobalMD));
     }
   };
 
@@ -155,9 +154,8 @@ void simplifyExternals(Module &M) {
         F.getName().startswith("llvm."))
       continue;
 
-    Function *NewF =
-        Function::Create(EmptyFT, GlobalValue::ExternalLinkage,
-                         F.getAddressSpace(), "", &M);
+    Function *NewF = Function::Create(EmptyFT, GlobalValue::ExternalLinkage,
+                                      F.getAddressSpace(), "", &M);
     NewF->setVisibility(F.getVisibility());
     NewF->takeName(&F);
     F.replaceAllUsesWith(ConstantExpr::getBitCast(NewF, F.getType()));
@@ -338,7 +336,7 @@ void splitAndWriteThinLTOBitcode(
     CfiFunctionMDs.push_back(MDTuple::get(Ctx, Elts));
   }
 
-  if(!CfiFunctionMDs.empty()) {
+  if (!CfiFunctionMDs.empty()) {
     NamedMDNode *NMD = MergedM->getOrInsertNamedMetadata("cfi.functions");
     for (auto MD : CfiFunctionMDs)
       NMD->addOperand(MD);
@@ -540,10 +538,11 @@ PreservedAnalyses
 llvm::ThinLTOBitcodeWriterPass::run(Module &M, ModuleAnalysisManager &AM) {
   FunctionAnalysisManager &FAM =
       AM.getResult<FunctionAnalysisManagerModuleProxy>(M).getManager();
-  writeThinLTOBitcode(OS, ThinLinkOS,
-                      [&FAM](Function &F) -> AAResults & {
-                        return FAM.getResult<AAManager>(F);
-                      },
-                      M, &AM.getResult<ModuleSummaryIndexAnalysis>(M));
+  writeThinLTOBitcode(
+      OS, ThinLinkOS,
+      [&FAM](Function &F) -> AAResults & {
+        return FAM.getResult<AAManager>(F);
+      },
+      M, &AM.getResult<ModuleSummaryIndexAnalysis>(M));
   return PreservedAnalyses::all();
 }

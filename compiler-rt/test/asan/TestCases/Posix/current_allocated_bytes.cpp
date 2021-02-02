@@ -10,13 +10,13 @@
 
 const size_t kLargeAlloc = 1UL << 20;
 
-void* allocate(void *arg) {
+void *allocate(void *arg) {
   volatile void *ptr = malloc(kLargeAlloc);
-  free((void*)ptr);
+  free((void *)ptr);
   return 0;
 }
 
-void* check_stats(void *arg) {
+void *check_stats(void *arg) {
   assert(__sanitizer_get_current_allocated_bytes() > 0);
   return 0;
 }

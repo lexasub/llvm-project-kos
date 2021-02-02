@@ -1,6 +1,6 @@
 struct A {
-  public:
-    int x;
+public:
+  int x;
 };
 
 struct B : A {
@@ -10,8 +10,8 @@ struct B : A {
 
 struct C {
   C(int i = 10);
-  C(const C&);
-  C &operator=(C&);
+  C(const C &);
+  C &operator=(C &);
   ~C();
 };
 

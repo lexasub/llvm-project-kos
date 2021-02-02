@@ -44,7 +44,7 @@ static void EmitUnknownDiagWarning(DiagnosticsEngine &Diags,
 void clang::ProcessWarningOptions(DiagnosticsEngine &Diags,
                                   const DiagnosticOptions &Opts,
                                   bool ReportDiags) {
-  Diags.setSuppressSystemWarnings(true);  // Default to -Wno-system-headers
+  Diags.setSuppressSystemWarnings(true); // Default to -Wno-system-headers
   Diags.setIgnoreAllWarnings(Opts.IgnoreWarnings);
   Diags.setShowOverloads(Opts.getShowOverloads());
 
@@ -71,8 +71,7 @@ void clang::ProcessWarningOptions(DiagnosticsEngine &Diags,
     Diags.setExtensionHandlingBehavior(diag::Severity::Ignored);
 
   SmallVector<diag::kind, 10> _Diags;
-  const IntrusiveRefCntPtr< DiagnosticIDs > DiagIDs =
-    Diags.getDiagnosticIDs();
+  const IntrusiveRefCntPtr<DiagnosticIDs> DiagIDs = Diags.getDiagnosticIDs();
   // We parse the warning options twice.  The first pass sets diagnostic state,
   // while the second pass reports warnings/errors.  This has the effect that
   // we follow the more canonical "last option wins" paradigm when there are
@@ -135,12 +134,12 @@ void clang::ProcessWarningOptions(DiagnosticsEngine &Diags,
       // a few projects.
       if (Opt.startswith("error")) {
         StringRef Specifier;
-        if (Opt.size() > 5) {  // Specifier must be present.
+        if (Opt.size() > 5) { // Specifier must be present.
           if (Opt[5] != '=' &&
               Opt.substr(5) != "-implicit-function-declaration") {
             if (Report)
               Diags.Report(diag::warn_unknown_warning_specifier)
-                << "-Werror" << ("-W" + OrigOpt.str());
+                  << "-Werror" << ("-W" + OrigOpt.str());
             continue;
           }
           Specifier = Opt.substr(6);
@@ -168,7 +167,7 @@ void clang::ProcessWarningOptions(DiagnosticsEngine &Diags,
           if ((Opt[12] != '=' && Opt[12] != '-') || Opt.size() == 13) {
             if (Report)
               Diags.Report(diag::warn_unknown_warning_specifier)
-                << "-Wfatal-errors" << ("-W" + OrigOpt.str());
+                  << "-Wfatal-errors" << ("-W" + OrigOpt.str());
             continue;
           }
           Specifier = Opt.substr(13);
@@ -205,10 +204,11 @@ void clang::ProcessWarningOptions(DiagnosticsEngine &Diags,
       // Check to see if this warning starts with "no-", if so, this is a
       // negative form of the option.
       bool IsPositive = !Opt.startswith("no-");
-      if (!IsPositive) Opt = Opt.substr(3);
+      if (!IsPositive)
+        Opt = Opt.substr(3);
 
-      auto Severity = IsPositive ? diag::Severity::Remark
-                                 : diag::Severity::Ignored;
+      auto Severity =
+          IsPositive ? diag::Severity::Remark : diag::Severity::Ignored;
 
       // -Reverything sets the state of all remarks. Note that all remarks are
       // in remark groups, so we don't need a separate 'all remarks enabled'

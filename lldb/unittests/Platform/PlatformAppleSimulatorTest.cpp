@@ -18,8 +18,7 @@ using namespace lldb;
 using namespace lldb_private;
 
 class PlatformAppleSimulatorTest : public ::testing::Test {
-  SubsystemRAII<FileSystem, HostInfo, PlatformAppleSimulator>
-      subsystems;
+  SubsystemRAII<FileSystem, HostInfo, PlatformAppleSimulator> subsystems;
 };
 
 #ifdef __APPLE__

@@ -31,8 +31,8 @@ SBStringList::SBStringList(const SBStringList &rhs) : m_opaque_up() {
 }
 
 const SBStringList &SBStringList::operator=(const SBStringList &rhs) {
-  LLDB_RECORD_METHOD(const lldb::SBStringList &,
-                     SBStringList, operator=,(const lldb::SBStringList &), rhs);
+  LLDB_RECORD_METHOD(const lldb::SBStringList &, SBStringList, operator=,
+                     (const lldb::SBStringList &), rhs);
 
   if (this != &rhs)
     m_opaque_up = clone(rhs.m_opaque_up);
@@ -139,12 +139,11 @@ void SBStringList::Clear() {
 namespace lldb_private {
 namespace repro {
 
-template <>
-void RegisterMethods<SBStringList>(Registry &R) {
+template <> void RegisterMethods<SBStringList>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBStringList, ());
   LLDB_REGISTER_CONSTRUCTOR(SBStringList, (const lldb::SBStringList &));
-  LLDB_REGISTER_METHOD(const lldb::SBStringList &,
-                       SBStringList, operator=,(const lldb::SBStringList &));
+  LLDB_REGISTER_METHOD(const lldb::SBStringList &, SBStringList, operator=,
+                       (const lldb::SBStringList &));
   LLDB_REGISTER_METHOD_CONST(bool, SBStringList, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBStringList, operator bool, ());
   LLDB_REGISTER_METHOD(void, SBStringList, AppendString, (const char *));
@@ -152,12 +151,11 @@ void RegisterMethods<SBStringList>(Registry &R) {
   LLDB_REGISTER_METHOD(void, SBStringList, AppendList,
                        (const lldb::SBStringList &));
   LLDB_REGISTER_METHOD_CONST(uint32_t, SBStringList, GetSize, ());
-  LLDB_REGISTER_METHOD(const char *, SBStringList, GetStringAtIndex,
-                       (size_t));
+  LLDB_REGISTER_METHOD(const char *, SBStringList, GetStringAtIndex, (size_t));
   LLDB_REGISTER_METHOD_CONST(const char *, SBStringList, GetStringAtIndex,
                              (size_t));
   LLDB_REGISTER_METHOD(void, SBStringList, Clear, ());
 }
 
-}
-}
+} // namespace repro
+} // namespace lldb_private

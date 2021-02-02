@@ -43,7 +43,7 @@ static cl::opt<unsigned> MaxInterleaveGroupFactor(
 /// hasVectorInstrinsicScalarOpd).
 bool llvm::isTriviallyVectorizable(Intrinsic::ID ID) {
   switch (ID) {
-  case Intrinsic::abs:   // Begin integer bit-manipulation.
+  case Intrinsic::abs: // Begin integer bit-manipulation.
   case Intrinsic::bswap:
   case Intrinsic::bitreverse:
   case Intrinsic::ctpop:
@@ -315,7 +315,8 @@ Value *llvm::findScalarElement(Value *V, unsigned EltNo) {
 
   // Extract a value from a vector add operation with a constant zero.
   // TODO: Use getBinOpIdentity() to generalize this.
-  Value *Val; Constant *C;
+  Value *Val;
+  Constant *C;
   if (match(V, m_Add(m_Value(Val), m_Constant(C))))
     if (Constant *Elt = C->getAggregateElement(EltNo))
       if (Elt->isNullValue())
@@ -354,9 +355,8 @@ Value *llvm::getSplatValue(const Value *V) {
 
   // shuf (inselt ?, Splat, 0), ?, <0, undef, 0, ...>
   Value *Splat;
-  if (match(V,
-            m_Shuffle(m_InsertElt(m_Value(), m_Value(Splat), m_ZeroInt()),
-                      m_Value(), m_ZeroMask())))
+  if (match(V, m_Shuffle(m_InsertElt(m_Value(), m_Value(Splat), m_ZeroInt()),
+                         m_Value(), m_ZeroMask())))
     return Splat;
 
   return nullptr;
@@ -598,10 +598,12 @@ llvm::computeMinimumValueSizes(ArrayRef<BasicBlock *> Blocks, DemandedBits &DB,
     // We don't modify the types of PHIs. Reductions will already have been
     // truncated if possible, and inductions' sizes will have been chosen by
     // indvars.
-    // If we are required to shrink a PHI, abandon this entire equivalence class.
+    // If we are required to shrink a PHI, abandon this entire equivalence
+    // class.
     bool Abort = false;
     for (auto MI = ECs.member_begin(I), ME = ECs.member_end(); MI != ME; ++MI)
-      if (isa<PHINode>(*MI) && MinBW < (*MI)->getType()->getScalarSizeInBits()) {
+      if (isa<PHINode>(*MI) &&
+          MinBW < (*MI)->getType()->getScalarSizeInBits()) {
         Abort = true;
         break;
       }
@@ -891,7 +893,6 @@ bool llvm::maskIsAllZeroOrUndef(Value *Mask) {
   return true;
 }
 
-
 bool llvm::maskIsAllOneOrUndef(Value *Mask) {
   assert(isa<VectorType>(Mask->getType()) &&
          isa<IntegerType>(Mask->getType()->getScalarType()) &&
@@ -976,8 +977,8 @@ void InterleavedAccessInfo::collectConstStrideAccesses(
       const SCEV *Scev = replaceSymbolicStrideSCEV(PSE, Strides, Ptr);
       PointerType *PtrTy = cast<PointerType>(Ptr->getType());
       uint64_t Size = DL.getTypeAllocSize(PtrTy->getElementType());
-      AccessStrideInfo[&I] = StrideDescriptor(Stride, Scev, Size,
-                                              getLoadStoreAlignment(&I));
+      AccessStrideInfo[&I] =
+          StrideDescriptor(Stride, Scev, Size, getLoadStoreAlignment(&I));
     }
 }
 
@@ -1018,7 +1019,7 @@ void InterleavedAccessInfo::collectConstStrideAccesses(
 // with other accesses that may precede it in program order. Note that a
 // bottom-up order does not imply that WAW dependences should not be checked.
 void InterleavedAccessInfo::analyzeInterleaving(
-                                 bool EnablePredicatedInterleavedMemAccesses) {
+    bool EnablePredicatedInterleavedMemAccesses) {
   LLVM_DEBUG(dbgs() << "LV: Analyzing interleaved accesses...\n");
   const ValueToValueMap &Strides = LAI->getSymbolicStrides();
 
@@ -1058,8 +1059,8 @@ void InterleavedAccessInfo::analyzeInterleaving(
     // create a group for B, we continue with the bottom-up algorithm to ensure
     // we don't break any of B's dependences.
     InterleaveGroup<Instruction> *Group = nullptr;
-    if (isStrided(DesB.Stride) &&
-        (!isPredicated(B->getParent()) || EnablePredicatedInterleavedMemAccesses)) {
+    if (isStrided(DesB.Stride) && (!isPredicated(B->getParent()) ||
+                                   EnablePredicatedInterleavedMemAccesses)) {
       Group = getInterleaveGroup(B);
       if (!Group) {
         LLVM_DEBUG(dbgs() << "LV: Creating an interleave group with:" << *B
@@ -1105,7 +1106,8 @@ void InterleavedAccessInfo::analyzeInterleaving(
           InterleaveGroup<Instruction> *StoreGroup = getInterleaveGroup(A);
 
           LLVM_DEBUG(dbgs() << "LV: Invalidated store group due to "
-                               "dependence between " << *A << " and "<< *B << '\n');
+                               "dependence between "
+                            << *A << " and " << *B << '\n');
 
           StoreGroups.remove(StoreGroup);
           releaseGroup(StoreGroup);
@@ -1157,8 +1159,8 @@ void InterleavedAccessInfo::analyzeInterleaving(
       if (DistanceToB % static_cast<int64_t>(DesB.Size))
         continue;
 
-      // All members of a predicated interleave-group must have the same predicate,
-      // and currently must reside in the same BB.
+      // All members of a predicated interleave-group must have the same
+      // predicate, and currently must reside in the same BB.
       BasicBlock *BlockA = A->getParent();
       BasicBlock *BlockB = B->getParent();
       if ((isPredicated(BlockA) || isPredicated(BlockB)) &&
@@ -1296,7 +1298,7 @@ void InterleaveGroup<Instruction>::addMetadata(Instruction *NewInst) const {
                  [](std::pair<int, Instruction *> p) { return p.second; });
   propagateMetadata(NewInst, VL);
 }
-}
+} // namespace llvm
 
 std::string VFABI::mangleTLIVectorName(StringRef VectorName,
                                        StringRef ScalarName, unsigned numArgs,

@@ -31,6 +31,6 @@ int MyClass::c = 15;
 const int MyClass::a;
 
 int main() {
-    MyClass instance_MyClass;
-    return MyClass::a;
+  MyClass instance_MyClass;
+  return MyClass::a;
 }

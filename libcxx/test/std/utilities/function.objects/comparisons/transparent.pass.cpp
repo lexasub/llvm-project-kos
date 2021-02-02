@@ -13,48 +13,51 @@
 #include "test_macros.h"
 
 template <class T>
-struct is_transparent
-{
+struct is_transparent {
 private:
-    struct two {char lx; char lxx;};
-    template <class U> static two test(...);
-    template <class U> static char test(typename U::is_transparent* = 0);
+  struct two {
+    char lx;
+    char lxx;
+  };
+  template <class U>
+  static two test(...);
+  template <class U>
+  static char test(typename U::is_transparent* = 0);
+
 public:
-    static const bool value = sizeof(test<T>(0)) == 1;
+  static const bool value = sizeof(test<T>(0)) == 1;
 };
 
+int main(int, char**) {
+  static_assert(!is_transparent<std::less<int> >::value, "");
+  static_assert(!is_transparent<std::less<std::string> >::value, "");
+  static_assert(is_transparent<std::less<void> >::value, "");
+  static_assert(is_transparent<std::less<> >::value, "");
 
-int main(int, char**)
-{
-    static_assert ( !is_transparent<std::less<int>>::value, "" );
-    static_assert ( !is_transparent<std::less<std::string>>::value, "" );
-    static_assert (  is_transparent<std::less<void>>::value, "" );
-    static_assert (  is_transparent<std::less<>>::value, "" );
+  static_assert(!is_transparent<std::less_equal<int> >::value, "");
+  static_assert(!is_transparent<std::less_equal<std::string> >::value, "");
+  static_assert(is_transparent<std::less_equal<void> >::value, "");
+  static_assert(is_transparent<std::less_equal<> >::value, "");
 
-    static_assert ( !is_transparent<std::less_equal<int>>::value, "" );
-    static_assert ( !is_transparent<std::less_equal<std::string>>::value, "" );
-    static_assert (  is_transparent<std::less_equal<void>>::value, "" );
-    static_assert (  is_transparent<std::less_equal<>>::value, "" );
+  static_assert(!is_transparent<std::equal_to<int> >::value, "");
+  static_assert(!is_transparent<std::equal_to<std::string> >::value, "");
+  static_assert(is_transparent<std::equal_to<void> >::value, "");
+  static_assert(is_transparent<std::equal_to<> >::value, "");
 
-    static_assert ( !is_transparent<std::equal_to<int>>::value, "" );
-    static_assert ( !is_transparent<std::equal_to<std::string>>::value, "" );
-    static_assert (  is_transparent<std::equal_to<void>>::value, "" );
-    static_assert (  is_transparent<std::equal_to<>>::value, "" );
+  static_assert(!is_transparent<std::not_equal_to<int> >::value, "");
+  static_assert(!is_transparent<std::not_equal_to<std::string> >::value, "");
+  static_assert(is_transparent<std::not_equal_to<void> >::value, "");
+  static_assert(is_transparent<std::not_equal_to<> >::value, "");
 
-    static_assert ( !is_transparent<std::not_equal_to<int>>::value, "" );
-    static_assert ( !is_transparent<std::not_equal_to<std::string>>::value, "" );
-    static_assert (  is_transparent<std::not_equal_to<void>>::value, "" );
-    static_assert (  is_transparent<std::not_equal_to<>>::value, "" );
+  static_assert(!is_transparent<std::greater<int> >::value, "");
+  static_assert(!is_transparent<std::greater<std::string> >::value, "");
+  static_assert(is_transparent<std::greater<void> >::value, "");
+  static_assert(is_transparent<std::greater<> >::value, "");
 
-    static_assert ( !is_transparent<std::greater<int>>::value, "" );
-    static_assert ( !is_transparent<std::greater<std::string>>::value, "" );
-    static_assert (  is_transparent<std::greater<void>>::value, "" );
-    static_assert (  is_transparent<std::greater<>>::value, "" );
+  static_assert(!is_transparent<std::greater_equal<int> >::value, "");
+  static_assert(!is_transparent<std::greater_equal<std::string> >::value, "");
+  static_assert(is_transparent<std::greater_equal<void> >::value, "");
+  static_assert(is_transparent<std::greater_equal<> >::value, "");
 
-    static_assert ( !is_transparent<std::greater_equal<int>>::value, "" );
-    static_assert ( !is_transparent<std::greater_equal<std::string>>::value, "" );
-    static_assert (  is_transparent<std::greater_equal<void>>::value, "" );
-    static_assert (  is_transparent<std::greater_equal<>>::value, "" );
-
-    return 0;
+  return 0;
 }

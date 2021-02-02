@@ -12,7 +12,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-
 #ifndef LLVM_TRANSFORMS_SCALAR_GUARD_WIDENING_H
 #define LLVM_TRANSFORMS_SCALAR_GUARD_WIDENING_H
 
@@ -29,7 +28,6 @@ struct GuardWideningPass : public PassInfoMixin<GuardWideningPass> {
   PreservedAnalyses run(Loop &L, LoopAnalysisManager &AM,
                         LoopStandardAnalysisResults &AR, LPMUpdater &U);
 };
-}
+} // namespace llvm
 
-
-#endif  // LLVM_TRANSFORMS_SCALAR_GUARD_WIDENING_H
+#endif // LLVM_TRANSFORMS_SCALAR_GUARD_WIDENING_H

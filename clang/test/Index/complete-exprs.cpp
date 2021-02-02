@@ -1,23 +1,22 @@
 // Line- and column-sensitive test; run lines follow.
 
 class string {
- public:
+public:
   string();
   string(const char *);
   string(const char *, int n);
 };
 
-template<typename T>
+template <typename T>
 class vector {
 public:
   vector(const T &, unsigned n);
-  template<typename InputIterator>
+  template <typename InputIterator>
   vector(InputIterator first, InputIterator last);
-  void push_back(const T&);
+  void push_back(const T &);
 };
-template<typename T> void vector<T>::push_back(const T&) { }
+template <typename T> void vector<T>::push_back(const T &) {}
 void f() {
-  
 }
 
 int foo();
@@ -31,19 +30,18 @@ struct X {
 };
 
 void X::f() const {
-
 }
 
 namespace N {
-  int x;
-  class C {
-    int member;
+int x;
+class C {
+  int member;
 
-    int f(int param) {
-      return member;
-    }
-  };
-}
+  int f(int param) {
+    return member;
+  }
+};
+} // namespace N
 
 // RUN: c-index-test -code-completion-at=%s:20:2 %s -std=c++0x | FileCheck -check-prefix=CHECK-CC1 %s
 // RUN: env CINDEXTEST_EDITING=1 CINDEXTEST_COMPLETION_CACHING=1 c-index-test -code-completion-at=%s:20:2 -std=c++0x %s | FileCheck -check-prefix=CHECK-CC1 %s

@@ -10,16 +10,16 @@
 #include "a.h"
 #include "b.h"
 #else
-#include "b.h"
 #include "a.h"
+#include "b.h"
 #endif
 
 struct Y {
-  int value; // expected-note 0-1{{target of using}}
+  int value;        // expected-note 0-1{{target of using}}
   typedef int type; // expected-note 0-1{{target of using}}
 };
 
-template<typename T> int Use() {
+template <typename T> int Use() {
   int k = T().v + T().value; // expected-note 0-2{{instantiation of}}
   typedef typename T::type I;
   typedef typename T::t I;
@@ -27,11 +27,11 @@ template<typename T> int Use() {
   return k;
 }
 
-template<typename T> int UseAll() {
+template <typename T> int UseAll() {
 #if __cplusplus <= 199711L // C++11 does not allow access declarations
-  return Use<C<T> >() + Use<D<T> >() + Use<E<T> >() + Use<F<T> >(); // expected-note 0-2{{instantiation of}}
+  return Use<C<T>>() + Use<D<T>>() + Use<E<T>>() + Use<F<T>>(); // expected-note 0-2{{instantiation of}}
 #else
-  return Use<C<T> >() + Use<D<T> >() + Use<F<T> >(); // expected-note 0-2{{instantiation of}}
+  return Use<C<T>>() + Use<D<T>>() + Use<F<T>>(); // expected-note 0-2{{instantiation of}}
 #endif
 }
 
@@ -72,7 +72,6 @@ template int UseAll<Y>();
 // expected-error@a.h:* {{'E::v' from module 'A' is not present in definition of 'E<T>' in module 'B'}}
 // expected-note@b.h:* 2{{definition has no member}}
 #endif
-
 
 // expected-error@a.h:* {{'F::type' from module 'A' is not present in definition of 'F<T>' in module 'B'}}
 // expected-error@a.h:* {{'F::t' from module 'A' is not present in definition of 'F<T>' in module 'B'}}

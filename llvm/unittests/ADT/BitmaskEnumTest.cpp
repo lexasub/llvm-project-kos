@@ -121,8 +121,8 @@ enum FlagsInNamespace {
   LLVM_MARK_AS_BITMASK_ENUM(F3)
 };
 } // namespace
-} // namespace foo
 } // namespace bar
+} // namespace foo
 
 namespace {
 TEST(BitmaskEnumTest, EnumInNamespace) {

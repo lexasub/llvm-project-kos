@@ -4,7 +4,7 @@
 
 struct C {
   // Constructor for testing emplace.
-  C(int i) : i(i) {};
+  C(int i) : i(i){};
   int i;
 };
 

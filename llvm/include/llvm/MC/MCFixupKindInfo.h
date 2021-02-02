@@ -45,6 +45,6 @@ struct MCFixupKindInfo {
   unsigned Flags;
 };
 
-} // End llvm namespace
+} // namespace llvm
 
 #endif

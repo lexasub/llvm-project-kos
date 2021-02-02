@@ -15,4 +15,3 @@ int main() {
 // CHECK:     #0 AnnotateRWLockReleased
 // CHECK:     #1 main
 // CHECK: SUMMARY: ThreadSanitizer: unlock of an unlocked mutex (or by a wrong thread)
-

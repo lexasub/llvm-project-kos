@@ -22,11 +22,11 @@ int main() {
 #endif
 
 #ifdef ADD_I128
-# if defined(__SIZEOF_INT128__) && !defined(_WIN32)
+#if defined(__SIZEOF_INT128__) && !defined(_WIN32)
   (void)((__uint128_t(1) << 127) + (__uint128_t(1) << 127));
-# else
+#else
   puts("__int128 not supported");
-# endif
+#endif
   // CHECK-ADD_I128: {{0x80000000000000000000000000000000 \+ 0x80000000000000000000000000000000 cannot be represented in type 'unsigned __int128'|__int128 not supported}}
 #endif
 }

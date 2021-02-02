@@ -214,8 +214,8 @@ public:
   /// \return
   ///     A pointer to the containing breakpoint's options if this
   ///     location doesn't have its own copy.
-  const BreakpointOptions *GetOptionsSpecifyingKind(
-      BreakpointOptions::OptionKind kind) const;
+  const BreakpointOptions *
+  GetOptionsSpecifyingKind(BreakpointOptions::OptionKind kind) const;
 
   bool ValidForThisThread(Thread *thread);
 
@@ -335,14 +335,14 @@ private:
                                                    /// using our breakpoint's
                                                    /// options.
   lldb::BreakpointSiteSP m_bp_site_sp; ///< Our breakpoint site (it may be
-                                       ///shared by more than one location.)
+                                       /// shared by more than one location.)
   lldb::UserExpressionSP m_user_expression_sp; ///< The compiled expression to
-                                               ///use in testing our condition.
+                                               /// use in testing our condition.
   std::mutex m_condition_mutex; ///< Guards parsing and evaluation of the
-                                ///condition, which could be evaluated by
+                                /// condition, which could be evaluated by
                                 /// multiple processes.
-  size_t m_condition_hash; ///< For testing whether the condition source code
-                           ///changed.
+  size_t m_condition_hash;   ///< For testing whether the condition source code
+                             /// changed.
   lldb::break_id_t m_loc_id; ///< Breakpoint location ID.
   StoppointHitCounter m_hit_counter; ///< Number of times this breakpoint
                                      /// location has been hit.

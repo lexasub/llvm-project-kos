@@ -19,9 +19,10 @@
 #include "../test_func.h"
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    std::bind1st(test_func(1), 5); // expected-warning {{'bind1st<test_func, int>' is deprecated}}
+int main(int, char**) {
+  std::bind1st(
+      test_func(1),
+      5); // expected-warning {{'bind1st<test_func, int>' is deprecated}}
 
-    return 0;
+  return 0;
 }

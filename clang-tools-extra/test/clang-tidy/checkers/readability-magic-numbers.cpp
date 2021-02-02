@@ -81,21 +81,20 @@ int getAnswer() {
 }
 
 struct HardwareGateway {
-   unsigned int Some: 5;
-   // CHECK-MESSAGES: :[[@LINE-1]]:23: warning: 5 is a magic number; consider replacing it with a named constant [readability-magic-numbers]
-   unsigned int Bits: 7;
-   // CHECK-MESSAGES: :[[@LINE-1]]:23: warning: 7 is a magic number; consider replacing it with a named constant [readability-magic-numbers]
-   unsigned int: 6;
-   // CHECK-MESSAGES: :[[@LINE-1]]:18: warning: 6 is a magic number; consider replacing it with a named constant [readability-magic-numbers]
-   unsigned int Flag: 1; // no warning since this is suppressed by IgnoredIntegerValues rule
-   unsigned int: 0;      // no warning since this is suppressed by IgnoredIntegerValues rule
-   unsigned int Rest: 13;
-   // CHECK-MESSAGES: :[[@LINE-1]]:23: warning: 13 is a magic number; consider replacing it with a named constant [readability-magic-numbers]
-   //
-   unsigned int Another[3];
-   // CHECK-MESSAGES: :[[@LINE-1]]:25: warning: 3 is a magic number; consider replacing it with a named constant [readability-magic-numbers]
+  unsigned int Some : 5;
+  // CHECK-MESSAGES: :[[@LINE-1]]:23: warning: 5 is a magic number; consider replacing it with a named constant [readability-magic-numbers]
+  unsigned int Bits : 7;
+  // CHECK-MESSAGES: :[[@LINE-1]]:23: warning: 7 is a magic number; consider replacing it with a named constant [readability-magic-numbers]
+  unsigned int : 6;
+  // CHECK-MESSAGES: :[[@LINE-1]]:18: warning: 6 is a magic number; consider replacing it with a named constant [readability-magic-numbers]
+  unsigned int Flag : 1; // no warning since this is suppressed by IgnoredIntegerValues rule
+  unsigned int : 0;      // no warning since this is suppressed by IgnoredIntegerValues rule
+  unsigned int Rest : 13;
+  // CHECK-MESSAGES: :[[@LINE-1]]:23: warning: 13 is a magic number; consider replacing it with a named constant [readability-magic-numbers]
+  //
+  unsigned int Another[3];
+  // CHECK-MESSAGES: :[[@LINE-1]]:25: warning: 3 is a magic number; consider replacing it with a named constant [readability-magic-numbers]
 };
-
 
 /*
  * Clean code
@@ -218,11 +217,22 @@ int TestCheckerOverreach() {
 
 // Prove that using enumerations values don't produce warnings.
 enum class Letter : unsigned {
-    A, B, C, D, E, F, G, H, I, J
+  A,
+  B,
+  C,
+  D,
+  E,
+  F,
+  G,
+  H,
+  I,
+  J
 };
 
-template<Letter x> struct holder  { Letter letter = x;  };
-template<Letter x> struct wrapper { using h_type = holder<x>;  };
+template <Letter x>
+struct holder { Letter letter = x; };
+template <Letter x>
+struct wrapper { using h_type = holder<x>; };
 
 template struct wrapper<Letter::A>;
 template struct wrapper<Letter::J>;

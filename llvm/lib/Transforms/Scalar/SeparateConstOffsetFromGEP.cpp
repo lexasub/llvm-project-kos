@@ -500,10 +500,9 @@ FunctionPass *llvm::createSeparateConstOffsetFromGEPPass(bool LowerGEP) {
   return new SeparateConstOffsetFromGEPLegacyPass(LowerGEP);
 }
 
-bool ConstantOffsetExtractor::CanTraceInto(bool SignExtended,
-                                            bool ZeroExtended,
-                                            BinaryOperator *BO,
-                                            bool NonNegative) {
+bool ConstantOffsetExtractor::CanTraceInto(bool SignExtended, bool ZeroExtended,
+                                           BinaryOperator *BO,
+                                           bool NonNegative) {
   // We only consider ADD, SUB and OR, because a non-zero constant found in
   // expressions composed of these operations can be easily hoisted as a
   // constant offset by reassociation.
@@ -580,7 +579,8 @@ APInt ConstantOffsetExtractor::findInEitherOperand(BinaryOperator *BO,
   // constant offsets in both operands, e.g., (a + 4) + (b + 5) => (a + b) + 9.
   // However, such cases are probably already handled by -instcombine,
   // given this pass runs after the standard optimizations.
-  if (ConstantOffset != 0) return ConstantOffset;
+  if (ConstantOffset != 0)
+    return ConstantOffset;
 
   // Reset the chain back to where it was when we started exploring this node,
   // since visiting the LHS didn't pan out.
@@ -609,7 +609,8 @@ APInt ConstantOffsetExtractor::find(Value *V, bool SignExtended,
 
   // We cannot do much with Values that are not a User, such as an Argument.
   User *U = dyn_cast<User>(V);
-  if (U == nullptr) return APInt(BitWidth, 0);
+  if (U == nullptr)
+    return APInt(BitWidth, 0);
 
   APInt ConstantOffset(BitWidth, 0);
   if (ConstantInt *CI = dyn_cast<ConstantInt>(V)) {
@@ -625,15 +626,16 @@ APInt ConstantOffsetExtractor::find(Value *V, bool SignExtended,
             .trunc(BitWidth);
   } else if (isa<SExtInst>(V)) {
     ConstantOffset = find(U->getOperand(0), /* SignExtended */ true,
-                          ZeroExtended, NonNegative).sext(BitWidth);
+                          ZeroExtended, NonNegative)
+                         .sext(BitWidth);
   } else if (isa<ZExtInst>(V)) {
     // As an optimization, we can clear the SignExtended flag because
     // sext(zext(a)) = zext(a). Verified in @sext_zext in split-gep.ll.
     //
     // Clear the NonNegative flag, because zext(a) >= 0 does not imply a >= 0.
-    ConstantOffset =
-        find(U->getOperand(0), /* SignExtended */ false,
-             /* ZeroExtended */ true, /* NonNegative */ false).zext(BitWidth);
+    ConstantOffset = find(U->getOperand(0), /* SignExtended */ false,
+                          /* ZeroExtended */ true, /* NonNegative */ false)
+                         .zext(BitWidth);
   }
 
   // If we found a non-zero constant offset, add it to the path for
@@ -797,8 +799,8 @@ bool SeparateConstOffsetFromGEP::canonicalizeArrayIndicesToPointerSize(
   bool Changed = false;
   Type *IntPtrTy = DL->getIntPtrType(GEP->getType());
   gep_type_iterator GTI = gep_type_begin(*GEP);
-  for (User::op_iterator I = GEP->op_begin() + 1, E = GEP->op_end();
-       I != E; ++I, ++GTI) {
+  for (User::op_iterator I = GEP->op_begin() + 1, E = GEP->op_end(); I != E;
+       ++I, ++GTI) {
     // Skip struct member indices which must be i32.
     if (GTI.isSequential()) {
       if ((*I)->getType() != IntPtrTy) {
@@ -853,9 +855,8 @@ void SeparateConstOffsetFromGEP::lowerToSingleIndexGEPs(
   Value *ResultPtr = Variadic->getOperand(0);
   Loop *L = LI->getLoopFor(Variadic->getParent());
   // Check if the base is not loop invariant or used more than once.
-  bool isSwapCandidate =
-      L && L->isLoopInvariant(ResultPtr) &&
-      !hasMoreThanOneUseInLoop(ResultPtr, L);
+  bool isSwapCandidate = L && L->isLoopInvariant(ResultPtr) &&
+                         !hasMoreThanOneUseInLoop(ResultPtr, L);
   Value *FirstResult = nullptr;
 
   if (ResultPtr->getType() != I8PtrTy)
@@ -914,9 +915,8 @@ void SeparateConstOffsetFromGEP::lowerToSingleIndexGEPs(
   Variadic->eraseFromParent();
 }
 
-void
-SeparateConstOffsetFromGEP::lowerToArithmetics(GetElementPtrInst *Variadic,
-                                               int64_t AccumulativeByteOffset) {
+void SeparateConstOffsetFromGEP::lowerToArithmetics(
+    GetElementPtrInst *Variadic, int64_t AccumulativeByteOffset) {
   IRBuilder<> Builder(Variadic);
   Type *IntPtrTy = DL->getIntPtrType(Variadic->getType());
 
@@ -1095,8 +1095,8 @@ bool SeparateConstOffsetFromGEP::splitGEP(GetElementPtrInst *GEP) {
   // Per ANSI C standard, signed / unsigned = unsigned and signed % unsigned =
   // unsigned.. Therefore, we cast ElementTypeSizeOfGEP to signed because it is
   // used with unsigned integers later.
-  int64_t ElementTypeSizeOfGEP = static_cast<int64_t>(
-      DL->getTypeAllocSize(GEP->getResultElementType()));
+  int64_t ElementTypeSizeOfGEP =
+      static_cast<int64_t>(DL->getTypeAllocSize(GEP->getResultElementType()));
   Type *IntPtrTy = DL->getIntPtrType(GEP->getType());
   if (AccumulativeByteOffset % ElementTypeSizeOfGEP == 0) {
     // Very likely. As long as %gep is naturally aligned, the byte offset we
@@ -1123,8 +1123,8 @@ bool SeparateConstOffsetFromGEP::splitGEP(GetElementPtrInst *GEP) {
     // sizeof(int64).
     //
     // Emit an uglygep in this case.
-    Type *I8PtrTy = Type::getInt8PtrTy(GEP->getContext(),
-                                       GEP->getPointerAddressSpace());
+    Type *I8PtrTy =
+        Type::getInt8PtrTy(GEP->getContext(), GEP->getPointerAddressSpace());
     NewGEP = new BitCastInst(NewGEP, I8PtrTy, "", GEP);
     NewGEP = GetElementPtrInst::Create(
         Type::getInt8Ty(GEP->getContext()), NewGEP,
@@ -1258,7 +1258,7 @@ bool SeparateConstOffsetFromGEP::reuniteExts(Function &F) {
   DominatingSubs.clear();
   for (const auto Node : depth_first(DT)) {
     BasicBlock *BB = Node->getBlock();
-    for (auto I = BB->begin(); I != BB->end(); ) {
+    for (auto I = BB->begin(); I != BB->end();) {
       Instruction *Cur = &*I++;
       Changed |= reuniteExts(Cur);
     }
@@ -1361,8 +1361,7 @@ void SeparateConstOffsetFromGEP::swapGEPOperand(GetElementPtrInst *First,
   Value *NewBase =
       First->stripAndAccumulateInBoundsConstantOffsets(DAL, Offset);
   uint64_t ObjectSize;
-  if (!getObjectSize(NewBase, ObjectSize, DAL, TLI) ||
-     Offset.ugt(ObjectSize)) {
+  if (!getObjectSize(NewBase, ObjectSize, DAL, TLI) || Offset.ugt(ObjectSize)) {
     First->setIsInBounds(false);
     Second->setIsInBounds(false);
   } else

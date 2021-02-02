@@ -29,6 +29,7 @@ class ThreadPoolTest : public testing::Test {
   SmallVector<Triple::ArchType, 4> UnsupportedArchs;
   SmallVector<Triple::OSType, 4> UnsupportedOSs;
   SmallVector<Triple::EnvironmentType, 1> UnsupportedEnvironments;
+
 protected:
   // This is intended for platform as a temporary "XFAIL"
   bool isUnsupportedOSOrEnvironment() {

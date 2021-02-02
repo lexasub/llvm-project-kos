@@ -91,5 +91,5 @@ double ToDouble(const char *s, double fail_value, bool *success_ptr) {
     *success_ptr = false;
   return fail_value;
 }
-}
-}
+} // namespace StringConvert
+} // namespace lldb_private

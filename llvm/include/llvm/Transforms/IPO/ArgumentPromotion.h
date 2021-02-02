@@ -28,8 +28,8 @@ public:
   ArgumentPromotionPass(unsigned MaxElements = 3u) : MaxElements(MaxElements) {}
 
   /// Check if callers and the callee \p F agree how promoted arguments would be
-  /// passed. The ones that they do not agree on are eliminated from the sets but
-  /// the return value has to be observed as well.
+  /// passed. The ones that they do not agree on are eliminated from the sets
+  /// but the return value has to be observed as well.
   static bool areFunctionArgsABICompatible(
       const Function &F, const TargetTransformInfo &TTI,
       SmallPtrSetImpl<Argument *> &ArgsToPromote,

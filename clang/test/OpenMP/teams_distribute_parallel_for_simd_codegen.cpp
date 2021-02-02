@@ -21,38 +21,42 @@
 int a[100];
 
 // CK1: define {{.*}}i32 @{{.+}}teams_argument_globali(
-int teams_argument_global(int n){
+int teams_argument_global(int n) {
   int te = n / 128;
   int th = 128;
-  // discard n_addr
-  // CK1: alloca i32,
-  // CK1: [[TE:%.+]] = alloca i32,
-  // CK1: [[TH:%.+]] = alloca i32,
-  // CK1: [[TE_CAST:%.+]] = alloca i{{32|64}},
-  // CK1: [[TH_CAST:%.+]] = alloca i{{32|64}},
-  // CK1: [[TE_PAR:%.+]] = load{{.+}}, {{.+}} [[TE_CAST]],
-  // CK1: [[TH_PAR:%.+]] = load{{.+}}, {{.+}} [[TH_CAST]],
+// discard n_addr
+// CK1: alloca i32,
+// CK1: [[TE:%.+]] = alloca i32,
+// CK1: [[TH:%.+]] = alloca i32,
+// CK1: [[TE_CAST:%.+]] = alloca i{{32|64}},
+// CK1: [[TH_CAST:%.+]] = alloca i{{32|64}},
+// CK1: [[TE_PAR:%.+]] = load{{.+}}, {{.+}} [[TE_CAST]],
+// CK1: [[TH_PAR:%.+]] = load{{.+}}, {{.+}} [[TH_CAST]],
 
-  // CK1: call void @__kmpc_push_target_tripcount(%struct.ident_t* @{{.+}}, i64 -1, i64 %{{.+}})
-  // CK1: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}}, i64 -1, i8* @{{[^,]+}}, i32 4, i8** %{{[^,]+}}, i8** %{{[^,]+}}, i{{64|32}}* {{.+}}@{{[^,]+}}, i32 0, i32 0), i64* {{.+}}@{{[^,]+}}, i32 0, i32 0), i8** null
+// CK1: call void @__kmpc_push_target_tripcount(%struct.ident_t* @{{.+}}, i64 -1, i64 %{{.+}})
+// CK1: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}}, i64 -1, i8* @{{[^,]+}}, i32 4, i8** %{{[^,]+}}, i8** %{{[^,]+}}, i{{64|32}}* {{.+}}@{{[^,]+}}, i32 0, i32 0), i64* {{.+}}@{{[^,]+}}, i32 0, i32 0), i8** null
 
-  // CK1: call void @[[OFFL1:.+]](i{{32|64}} [[TE_PAR]], i{{32|64}} [[TH_PAR]],
-  #pragma omp target
-  #pragma omp teams distribute parallel for simd num_teams(te), thread_limit(th) simdlen(64)
-  for(int i = 0; i < n; i++) {
+// CK1: call void @[[OFFL1:.+]](i{{32|64}} [[TE_PAR]], i{{32|64}} [[TH_PAR]],
+#pragma omp target
+#pragma omp teams distribute parallel for simd num_teams(te), thread_limit(th) simdlen(64)
+  for (int i = 0; i < n; i++) {
     a[i] = 0;
   }
 
   int i;
-  // CK1: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}}, i64 -1, i8* @{{[^,]+}}, i32 3, i8** %{{[^,]+}}, i8** %{{[^,]+}}, i{{64|32}}* {{.+}}@{{[^,]+}}, i32 0, i32 0), i64* {{.+}}@{{[^,]+}}, i32 0, i32 0), i8** null
-  // CK1: call void @[[OFFL2:.+]](
-  #pragma omp target
-  {{{
-  #pragma omp teams distribute parallel for simd safelen(4) aligned(a) linear(i) 
-  for(i = 0; i < n; i++) {
-    a[i] = 0;
+// CK1: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}}, i64 -1, i8* @{{[^,]+}}, i32 3, i8** %{{[^,]+}}, i8** %{{[^,]+}}, i{{64|32}}* {{.+}}@{{[^,]+}}, i32 0, i32 0), i64* {{.+}}@{{[^,]+}}, i32 0, i32 0), i8** null
+// CK1: call void @[[OFFL2:.+]](
+#pragma omp target
+  {
+    {
+      {
+#pragma omp teams distribute parallel for simd safelen(4) aligned(a) linear(i)
+        for (i = 0; i < n; i++) {
+          a[i] = 0;
+        }
+      }
+    }
   }
-  }}}
   // outlined target regions
   // CK1: define internal void @[[OFFL1]](i{{32|64}} [[TE_ARG:%.+]], i{{32|64}} [[TH_ARG:%.+]], i{{32|64}} {{.+}}, {{.+}})
   // CK1: [[TE_ADDR:%.+]] = alloca i{{32|64}},
@@ -116,11 +120,11 @@ int teams_local_arg(void) {
   int n = 100;
   int a[n], i;
 
-  // CK2: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}}, i64 -1, i8* @{{[^,]+}}, i32 4, i8** %{{[^,]+}}, i8** %{{[^,]+}}, i{{64|32}}* {{.+}}, i64* {{.+}}@{{[^,]+}}, i32 0, i32 0), i8** null
-  // CK2: call void @[[OFFL1:.+]](
-  #pragma omp target
-  #pragma omp teams distribute parallel for simd safelen(4) aligned(a) linear(i)
-  for(i = 0; i < n; i++) {
+// CK2: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}}, i64 -1, i8* @{{[^,]+}}, i32 4, i8** %{{[^,]+}}, i8** %{{[^,]+}}, i{{64|32}}* {{.+}}, i64* {{.+}}@{{[^,]+}}, i32 0, i32 0), i8** null
+// CK2: call void @[[OFFL1:.+]](
+#pragma omp target
+#pragma omp teams distribute parallel for simd safelen(4) aligned(a) linear(i)
+  for (i = 0; i < n; i++) {
     a[i] = 0;
   }
 
@@ -163,30 +167,30 @@ int teams_local_arg(void) {
 // CK3: [[SSI:%.+]] = type { [{{.+}} x i32], float }
 
 template <typename T, int X, long long Y>
-struct SS{
+struct SS {
   T a[X];
   float b;
   // CK3: define {{.*}}i32 @{{.+}}foo{{.+}}(
   int foo(void) {
     int i;
-  // CK3: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}}, i64 -1, i8* @{{[^,]+}}, i32 2, i8** %{{[^,]+}}, i8** %{{[^,]+}}, i64* {{.+}}@{{[^,]+}}, i32 0, i32 0), i64* {{.+}}@{{[^,]+}}, i32 0, i32 0), i8** null
-  // CK3: call void @[[OFFL1:.+]]([[SSI]]* %{{.+}})
-    #pragma omp target
-    #pragma omp teams distribute parallel for simd safelen(4) aligned(a) linear(i)
-    for(i = 0; i < X; i++) {
+    // CK3: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}}, i64 -1, i8* @{{[^,]+}}, i32 2, i8** %{{[^,]+}}, i8** %{{[^,]+}}, i64* {{.+}}@{{[^,]+}}, i32 0, i32 0), i64* {{.+}}@{{[^,]+}}, i32 0, i32 0), i8** null
+    // CK3: call void @[[OFFL1:.+]]([[SSI]]* %{{.+}})
+#pragma omp target
+#pragma omp teams distribute parallel for simd safelen(4) aligned(a) linear(i)
+    for (i = 0; i < X; i++) {
       a[i] = (T)0;
     }
 
-      // outlined target region
-  // CK3: define internal void @[[OFFL1]]([[SSI]]* {{.+}})
-  // CK3: call void {{.+}} @__kmpc_fork_teams({{.+}}, i32 2, {{.+}} @[[OUTL1:.+]] to {{.+}}, {{.+}}, {{.+}})
-  // CK3: ret void
+    // outlined target region
+    // CK3: define internal void @[[OFFL1]]([[SSI]]* {{.+}})
+    // CK3: call void {{.+}} @__kmpc_fork_teams({{.+}}, i32 2, {{.+}} @[[OUTL1:.+]] to {{.+}}, {{.+}}, {{.+}})
+    // CK3: ret void
 
-  // CK3: define internal void @[[OUTL1]]({{.+}})
-  // CK3: call void @__kmpc_for_static_init_4(
-  // CK3: call void {{.+}} @__kmpc_fork_call(
-  // CK3: call void @__kmpc_for_static_fini(
-  // CK3: ret void
+    // CK3: define internal void @[[OUTL1]]({{.+}})
+    // CK3: call void @__kmpc_for_static_init_4(
+    // CK3: call void {{.+}} @__kmpc_fork_call(
+    // CK3: call void @__kmpc_for_static_fini(
+    // CK3: ret void
 
     return a[0];
   }
@@ -195,7 +199,6 @@ struct SS{
 int teams_template_struct(void) {
   SS<int, 123, 456> V;
   return V.foo();
-
 }
 
 // CK3-DAG: !{!"llvm.loop.vectorize.enable", i1 true}
@@ -223,22 +226,22 @@ int teams_template_struct(void) {
 template <typename T, int n>
 int tmain(T argc) {
   T a[n];
-  int te = n/128;
+  int te = n / 128;
   int th = 128;
 #pragma omp target
 #pragma omp teams distribute parallel for simd num_teams(te) thread_limit(th) simdlen(64)
-  for(int i = 0; i < n; i++) {
+  for (int i = 0; i < n; i++) {
     a[i] = (T)0;
   }
   return 0;
 }
 
-int main (int argc, char **argv) {
+int main(int argc, char **argv) {
   int n = 100;
   int a[n], i;
 #pragma omp target
 #pragma omp teams distribute parallel for simd safelen(4) aligned(a) linear(i)
-  for(i = 0; i < n; i++) {
+  for (i = 0; i < n; i++) {
     a[i] = 0;
   }
   return tmain<int, 10>(argc);
@@ -293,4 +296,3 @@ int main (int argc, char **argv) {
 
 #endif // CK4
 #endif
-

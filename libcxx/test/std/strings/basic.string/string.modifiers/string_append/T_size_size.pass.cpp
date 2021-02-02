@@ -20,60 +20,46 @@
 #include "min_allocator.h"
 
 template <class S, class SV>
-void
-test(S s, SV sv, typename S::size_type pos, typename S::size_type n, S expected)
-{
-    if (pos <= sv.size())
-    {
-        s.append(sv, pos, n);
-        LIBCPP_ASSERT(s.__invariants());
-        assert(s == expected);
-    }
+void test(S s, SV sv, typename S::size_type pos, typename S::size_type n,
+          S expected) {
+  if (pos <= sv.size()) {
+    s.append(sv, pos, n);
+    LIBCPP_ASSERT(s.__invariants());
+    assert(s == expected);
+  }
 #ifndef TEST_HAS_NO_EXCEPTIONS
-    else
-    {
-        try
-        {
-            s.append(sv, pos, n);
-            assert(false);
-        }
-        catch (std::out_of_range&)
-        {
-            assert(pos > sv.size());
-        }
+  else {
+    try {
+      s.append(sv, pos, n);
+      assert(false);
+    } catch (std::out_of_range&) {
+      assert(pos > sv.size());
     }
+  }
 #endif
 }
 
 template <class S, class SV>
-void
-test_npos(S s, SV sv, typename S::size_type pos, S expected)
-{
-    if (pos <= sv.size())
-    {
-        s.append(sv, pos);
-        LIBCPP_ASSERT(s.__invariants());
-        assert(s == expected);
-    }
+void test_npos(S s, SV sv, typename S::size_type pos, S expected) {
+  if (pos <= sv.size()) {
+    s.append(sv, pos);
+    LIBCPP_ASSERT(s.__invariants());
+    assert(s == expected);
+  }
 #ifndef TEST_HAS_NO_EXCEPTIONS
-    else
-    {
-        try
-        {
-            s.append(sv, pos);
-            assert(false);
-        }
-        catch (std::out_of_range&)
-        {
-            assert(pos > sv.size());
-        }
+  else {
+    try {
+      s.append(sv, pos);
+      assert(false);
+    } catch (std::out_of_range&) {
+      assert(pos > sv.size());
     }
+  }
 #endif
 }
 
-int main(int, char**)
-{
-    {
+int main(int, char**) {
+  {
     typedef std::string S;
     typedef std::string_view SV;
     test(S(), SV(), 0, 0, S());
@@ -94,13 +80,16 @@ int main(int, char**)
     test(S("12345"), SV("1234567890"), 0, 100, S("123451234567890"));
 
     test(S("12345678901234567890"), SV(), 0, 0, S("12345678901234567890"));
-    test(S("12345678901234567890"), SV("12345"), 1, 3, S("12345678901234567890234"));
+    test(S("12345678901234567890"), SV("12345"), 1, 3,
+         S("12345678901234567890234"));
     test(S("12345678901234567890"), SV("12345678901234567890"), 5, 10,
          S("123456789012345678906789012345"));
-    }
+  }
 #if TEST_STD_VER >= 11
-    {
-    typedef std::basic_string     <char, std::char_traits<char>, min_allocator<char>> S;
+  {
+    typedef std::basic_string<char, std::char_traits<char>,
+                              min_allocator<char> >
+        S;
     typedef std::basic_string_view<char, std::char_traits<char> > SV;
     test(S(), SV(), 0, 0, S());
     test(S(), SV(), 1, 0, S());
@@ -120,12 +109,13 @@ int main(int, char**)
     test(S("12345"), SV("1234567890"), 0, 100, S("123451234567890"));
 
     test(S("12345678901234567890"), SV(), 0, 0, S("12345678901234567890"));
-    test(S("12345678901234567890"), SV("12345"), 1, 3, S("12345678901234567890234"));
+    test(S("12345678901234567890"), SV("12345"), 1, 3,
+         S("12345678901234567890234"));
     test(S("12345678901234567890"), SV("12345678901234567890"), 5, 10,
          S("123456789012345678906789012345"));
-    }
+  }
 #endif
-    {
+  {
     typedef std::string S;
     typedef std::string_view SV;
     test_npos(S(), SV(), 0, S());
@@ -135,43 +125,45 @@ int main(int, char**)
     test_npos(S(), SV("12345"), 3, S("45"));
     test_npos(S(), SV("12345"), 5, S(""));
     test_npos(S(), SV("12345"), 6, S("not happening"));
-    }
+  }
 
-    {
+  {
     std::string s;
     std::string_view sv = "EFGH";
     char arr[] = "IJKL";
 
-    s.append("CDEF", 0);    // calls append(const char *, len)
+    s.append("CDEF", 0); // calls append(const char *, len)
     assert(s == "");
     s.clear();
 
-    s.append("QRST", 0, std::string::npos); // calls append(string("QRST"), pos, npos)
+    s.append("QRST", 0,
+             std::string::npos); // calls append(string("QRST"), pos, npos)
     assert(s == "QRST");
     s.clear();
 
-    s.append(sv, 0);  // calls append(T, pos, npos)
+    s.append(sv, 0); // calls append(T, pos, npos)
     assert(s == sv);
     s.clear();
 
-    s.append(sv, 0, std::string::npos);   // calls append(T, pos, npos)
+    s.append(sv, 0, std::string::npos); // calls append(T, pos, npos)
     assert(s == sv);
     s.clear();
 
-    s.append(arr, 0);     // calls append(const char *, len)
+    s.append(arr, 0); // calls append(const char *, len)
     assert(s == "");
     s.clear();
 
-    s.append(arr, 0, std::string::npos);    // calls append(string("IJKL"), pos, npos)
+    s.append(arr, 0,
+             std::string::npos); // calls append(string("IJKL"), pos, npos)
     assert(s == "IJKL");
     s.clear();
 
-    s.append(arr, 0);     // calls append(const char *, len)
+    s.append(arr, 0); // calls append(const char *, len)
     assert(s == "");
     s.clear();
-    }
+  }
 
-    {
+  {
     std::string s = "ABCD";
     std::string_view sv = s;
     s.append(sv);
@@ -184,9 +176,9 @@ int main(int, char**)
     sv = s;
     s.append(sv, sv.size());
     assert(s == "ABCDABCDABCDABCD");
-    }
+  }
 
-    {
+  {
     std::string s = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     std::string_view sv = s;
     s.append(sv);
@@ -194,8 +186,9 @@ int main(int, char**)
 
     sv = s;
     s.append(sv, 0, std::string::npos);
-    assert(s == "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ");
-    }
+    assert(s == "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJ"
+                "KLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ");
+  }
 
   return 0;
 }

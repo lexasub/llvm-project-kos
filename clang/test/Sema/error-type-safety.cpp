@@ -32,8 +32,7 @@ public:
       __attribute__((argument_with_type_tag(test, 4, 2)));
 };
 
-void test_bounds()
-{
+void test_bounds() {
   C c;
 
   // Test the boundary edges (ensure no off-by-one) with argument indexing.

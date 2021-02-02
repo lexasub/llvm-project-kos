@@ -489,7 +489,9 @@ public:
       : SymbolRecord(SymbolRecordKind::DefRangeRegisterSym),
         RecordOffset(RecordOffset) {}
 
-  uint32_t getRelocationOffset() const { return RecordOffset + sizeof(DefRangeRegisterHeader); }
+  uint32_t getRelocationOffset() const {
+    return RecordOffset + sizeof(DefRangeRegisterHeader);
+  }
 
   DefRangeRegisterHeader Hdr;
   LocalVariableAddrRange Range;
@@ -513,7 +515,9 @@ public:
       : SymbolRecord(SymbolRecordKind::DefRangeSubfieldRegisterSym),
         RecordOffset(RecordOffset) {}
 
-  uint32_t getRelocationOffset() const { return RecordOffset + sizeof(DefRangeSubfieldRegisterHeader); }
+  uint32_t getRelocationOffset() const {
+    return RecordOffset + sizeof(DefRangeSubfieldRegisterHeader);
+  }
 
   DefRangeSubfieldRegisterHeader Hdr;
   LocalVariableAddrRange Range;
@@ -574,7 +578,9 @@ public:
   bool hasSpilledUDTMember() const { return Hdr.Flags & IsSubfieldFlag; }
   uint16_t offsetInParent() const { return Hdr.Flags >> OffsetInParentShift; }
 
-  uint32_t getRelocationOffset() const { return RecordOffset + sizeof(DefRangeRegisterRelHeader); }
+  uint32_t getRelocationOffset() const {
+    return RecordOffset + sizeof(DefRangeRegisterRelHeader);
+  }
 
   DefRangeRegisterRelHeader Hdr;
   LocalVariableAddrRange Range;

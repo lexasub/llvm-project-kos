@@ -44,7 +44,6 @@ int baz(void) {
 }
 #pragma omp end declare variant
 
-
 int explicit1() {
   // Should return 0.
   return A::foo() + B::bar() + C::baz();

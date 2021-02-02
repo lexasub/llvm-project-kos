@@ -49,7 +49,7 @@ extern "C" void use_cxx() {
 extern "C" void use_seh() {
   __try {
     might_throw();
-  } __except(1) {
+  } __except (1) {
   }
 }
 
@@ -101,7 +101,7 @@ void use_seh_in_lambda() {
   ([]() {
     __try {
       might_throw();
-    } __except(1) {
+    } __except (1) {
     }
   })();
   HasCleanup x;
@@ -126,7 +126,7 @@ static int my_unique_global;
 extern "C" inline void use_seh_in_inline_func() {
   __try {
     might_throw();
-  } __except(_exception_code() == 424242) {
+  } __except (_exception_code() == 424242) {
   }
   __try {
     might_throw();

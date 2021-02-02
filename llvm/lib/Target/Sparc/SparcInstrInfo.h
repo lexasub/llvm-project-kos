@@ -27,18 +27,19 @@ class SparcSubtarget;
 /// instruction info tracks.
 ///
 namespace SPII {
-  enum {
-    Pseudo = (1<<0),
-    Load = (1<<1),
-    Store = (1<<2),
-    DelaySlot = (1<<3)
-  };
+enum {
+  Pseudo = (1 << 0),
+  Load = (1 << 1),
+  Store = (1 << 2),
+  DelaySlot = (1 << 3)
+};
 }
 
 class SparcInstrInfo : public SparcGenInstrInfo {
   const SparcRegisterInfo RI;
-  const SparcSubtarget& Subtarget;
+  const SparcSubtarget &Subtarget;
   virtual void anchor();
+
 public:
   explicit SparcInstrInfo(SparcSubtarget &ST);
 
@@ -85,15 +86,14 @@ public:
                    bool KillSrc) const override;
 
   void storeRegToStackSlot(MachineBasicBlock &MBB,
-                           MachineBasicBlock::iterator MBBI,
-                           Register SrcReg, bool isKill, int FrameIndex,
+                           MachineBasicBlock::iterator MBBI, Register SrcReg,
+                           bool isKill, int FrameIndex,
                            const TargetRegisterClass *RC,
                            const TargetRegisterInfo *TRI) const override;
 
   void loadRegFromStackSlot(MachineBasicBlock &MBB,
-                            MachineBasicBlock::iterator MBBI,
-                            Register DestReg, int FrameIndex,
-                            const TargetRegisterClass *RC,
+                            MachineBasicBlock::iterator MBBI, Register DestReg,
+                            int FrameIndex, const TargetRegisterClass *RC,
                             const TargetRegisterInfo *TRI) const override;
 
   Register getGlobalBaseReg(MachineFunction *MF) const;
@@ -102,6 +102,6 @@ public:
   bool expandPostRAPseudo(MachineInstr &MI) const override;
 };
 
-}
+} // namespace llvm
 
 #endif

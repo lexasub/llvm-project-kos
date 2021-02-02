@@ -16,7 +16,6 @@
 // RUN: %clang_cc1 -triple i686-pc-win32 -fms-extensions -emit-obj -emit-llvm -include-pch %t -o - %s | FileCheck -check-prefix=PCHWITHOBJ -check-prefix=PCHWITHOBJ-O0 %s
 // RUN: %clang_cc1 -triple i686-pc-win32 -fms-extensions -emit-obj -emit-llvm -include-pch %t -o - %s | FileCheck -check-prefix=PCHWITHOBJVARS %s
 
-
 #ifndef IN_HEADER
 #define IN_HEADER
 
@@ -25,7 +24,6 @@ inline void __declspec(dllexport) foo() {}
 // PCH: define weak_odr dso_local dllexport void @"?foo@@YAXXZ"
 // PCHWITHOBJ-NOT: define {{.*}}foo
 
-
 // This function is referenced, so gets emitted as usual.
 inline void __declspec(dllexport) baz() {}
 // OBJ: define weak_odr dso_local dllexport void @"?baz@@YAXXZ"
@@ -33,12 +31,11 @@ inline void __declspec(dllexport) baz() {}
 // PCHWITHOBJ-O1: define available_externally dso_local void @"?baz@@YAXXZ"
 // PCHWITHOBJ-O0-NOT: define {{.*}}"?baz@@YAXXZ"
 
-
 struct __declspec(dllexport) S {
   void bar() {}
-// OBJ: define weak_odr dso_local dllexport x86_thiscallcc void @"?bar@S@@QAEXXZ"
-// PCH: define weak_odr dso_local dllexport x86_thiscallcc void @"?bar@S@@QAEXXZ"
-// PCHWITHOBJ-NOT: define {{.*}}bar
+  // OBJ: define weak_odr dso_local dllexport x86_thiscallcc void @"?bar@S@@QAEXXZ"
+  // PCH: define weak_odr dso_local dllexport x86_thiscallcc void @"?bar@S@@QAEXXZ"
+  // PCHWITHOBJ-NOT: define {{.*}}bar
 };
 
 // This isn't dllexported, attribute((used)) or referenced, so not emitted.
@@ -70,7 +67,7 @@ template <typename T> struct S {};
 extern template struct S<int>;
 // The use here causes the S<int>::operator= decl to go into the PCH.
 inline void use(S<int> *a, S<int> *b) { *a = *b; };
-}
+} // namespace pr38934
 
 #else
 
@@ -84,7 +81,7 @@ void use() {
 void useTemplate() { implicitInstantiation(42); }
 // PCHWITHOBJ: define weak_odr dso_local dllexport void @"??$implicitInstantiation@H@@YAXH@Z"
 
-template<> inline void __declspec(dllexport) explicitSpecialization<int>(int) {}
+template <> inline void __declspec(dllexport) explicitSpecialization<int>(int) {}
 // PCHWITHOBJ: define weak_odr dso_local  dllexport void @"??$explicitSpecialization@H@@YAXH@Z"
 
 template void __declspec(dllexport) explicitInstantiationDef<int>(int);

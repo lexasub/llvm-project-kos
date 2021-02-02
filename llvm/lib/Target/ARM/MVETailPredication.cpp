@@ -57,30 +57,28 @@ using namespace llvm;
 #define DESC "Transform predicated vector loops to use MVE tail predication"
 
 cl::opt<TailPredication::Mode> EnableTailPredication(
-   "tail-predication", cl::desc("MVE tail-predication pass options"),
-   cl::init(TailPredication::Enabled),
-   cl::values(clEnumValN(TailPredication::Disabled, "disabled",
-                         "Don't tail-predicate loops"),
-              clEnumValN(TailPredication::EnabledNoReductions,
-                         "enabled-no-reductions",
-                         "Enable tail-predication, but not for reduction loops"),
-              clEnumValN(TailPredication::Enabled,
-                         "enabled",
-                         "Enable tail-predication, including reduction loops"),
-              clEnumValN(TailPredication::ForceEnabledNoReductions,
-                         "force-enabled-no-reductions",
-                         "Enable tail-predication, but not for reduction loops, "
-                         "and force this which might be unsafe"),
-              clEnumValN(TailPredication::ForceEnabled,
-                         "force-enabled",
-                         "Enable tail-predication, including reduction loops, "
-                         "and force this which might be unsafe")));
-
+    "tail-predication", cl::desc("MVE tail-predication pass options"),
+    cl::init(TailPredication::Enabled),
+    cl::values(
+        clEnumValN(TailPredication::Disabled, "disabled",
+                   "Don't tail-predicate loops"),
+        clEnumValN(TailPredication::EnabledNoReductions,
+                   "enabled-no-reductions",
+                   "Enable tail-predication, but not for reduction loops"),
+        clEnumValN(TailPredication::Enabled, "enabled",
+                   "Enable tail-predication, including reduction loops"),
+        clEnumValN(TailPredication::ForceEnabledNoReductions,
+                   "force-enabled-no-reductions",
+                   "Enable tail-predication, but not for reduction loops, "
+                   "and force this which might be unsafe"),
+        clEnumValN(TailPredication::ForceEnabled, "force-enabled",
+                   "Enable tail-predication, including reduction loops, "
+                   "and force this which might be unsafe")));
 
 namespace {
 
 class MVETailPredication : public LoopPass {
-  SmallVector<IntrinsicInst*, 4> MaskedInsts;
+  SmallVector<IntrinsicInst *, 4> MaskedInsts;
   Loop *L = nullptr;
   ScalarEvolution *SE = nullptr;
   TargetTransformInfo *TTI = nullptr;
@@ -89,7 +87,7 @@ class MVETailPredication : public LoopPass {
 public:
   static char ID;
 
-  MVETailPredication() : LoopPass(ID) { }
+  MVETailPredication() : LoopPass(ID) {}
 
   void getAnalysisUsage(AnalysisUsage &AU) const override {
     AU.addRequired<ScalarEvolutionWrapperPass>();
@@ -100,7 +98,7 @@ public:
     AU.setPreservesCFG();
   }
 
-  bool runOnLoop(Loop *L, LPPassManager&) override;
+  bool runOnLoop(Loop *L, LPPassManager &) override;
 
 private:
   /// Perform the relevant checks on the loop and convert active lane masks if
@@ -124,7 +122,7 @@ private:
 
 } // end namespace
 
-bool MVETailPredication::runOnLoop(Loop *L, LPPassManager&) {
+bool MVETailPredication::runOnLoop(Loop *L, LPPassManager &) {
   if (skipLoop(L) || !EnableTailPredication)
     return false;
 
@@ -148,7 +146,7 @@ bool MVETailPredication::runOnLoop(Loop *L, LPPassManager&) {
   if (!Preheader)
     return false;
 
-  auto FindLoopIterations = [](BasicBlock *BB) -> IntrinsicInst* {
+  auto FindLoopIterations = [](BasicBlock *BB) -> IntrinsicInst * {
     for (auto &I : *BB) {
       auto *Call = dyn_cast<IntrinsicInst>(&I);
       if (!Call)
@@ -201,11 +199,11 @@ bool MVETailPredication::runOnLoop(Loop *L, LPPassManager&) {
 bool MVETailPredication::IsSafeActiveMask(IntrinsicInst *ActiveLaneMask,
                                           Value *TripCount) {
   bool ForceTailPredication =
-    EnableTailPredication == TailPredication::ForceEnabledNoReductions ||
-    EnableTailPredication == TailPredication::ForceEnabled;
+      EnableTailPredication == TailPredication::ForceEnabledNoReductions ||
+      EnableTailPredication == TailPredication::ForceEnabled;
 
   Value *ElemCount = ActiveLaneMask->getOperand(1);
-  auto *EC= SE->getSCEV(ElemCount);
+  auto *EC = SE->getSCEV(ElemCount);
   auto *TC = SE->getSCEV(TripCount);
   int VectorWidth =
       cast<FixedVectorType>(ActiveLaneMask->getType())->getNumElements();
@@ -242,8 +240,8 @@ bool MVETailPredication::IsSafeActiveMask(IntrinsicInst *ActiveLaneMask,
     // and legalize this.
     if (TC1 != TC2) {
       LLVM_DEBUG(dbgs() << "ARM TP: inconsistent constant tripcount values: "
-                 << TC1 << " from set.loop.iterations, and "
-                 << TC2 << " from get.active.lane.mask\n");
+                        << TC1 << " from set.loop.iterations, and " << TC2
+                        << " from get.active.lane.mask\n");
       return false;
     }
   } else if (!ForceTailPredication) {
@@ -261,7 +259,8 @@ bool MVETailPredication::IsSafeActiveMask(IntrinsicInst *ActiveLaneMask,
     //
     auto *VW = SE->getSCEV(ConstantInt::get(TripCount->getType(), VectorWidth));
     // ElementCount + (VW-1):
-    auto *ECPlusVWMinus1 = SE->getAddExpr(EC,
+    auto *ECPlusVWMinus1 = SE->getAddExpr(
+        EC,
         SE->getSCEV(ConstantInt::get(TripCount->getType(), VectorWidth - 1)));
 
     // Ceil = ElementCount + (VW-1) / VW
@@ -269,13 +268,11 @@ bool MVETailPredication::IsSafeActiveMask(IntrinsicInst *ActiveLaneMask,
 
     // Prevent unused variable warnings with TC
     (void)TC;
-    LLVM_DEBUG(
-      dbgs() << "ARM TP: Analysing overflow behaviour for:\n";
-      dbgs() << "ARM TP: - TripCount = "; TC->dump();
-      dbgs() << "ARM TP: - ElemCount = "; EC->dump();
-      dbgs() << "ARM TP: - VecWidth =  " << VectorWidth << "\n";
-      dbgs() << "ARM TP: - (ElemCount+VW-1) / VW = "; Ceil->dump();
-    );
+    LLVM_DEBUG(dbgs() << "ARM TP: Analysing overflow behaviour for:\n";
+               dbgs() << "ARM TP: - TripCount = "; TC->dump();
+               dbgs() << "ARM TP: - ElemCount = "; EC->dump();
+               dbgs() << "ARM TP: - VecWidth =  " << VectorWidth << "\n";
+               dbgs() << "ARM TP: - (ElemCount+VW-1) / VW = "; Ceil->dump(););
 
     // As an example, almost all the tripcount expressions (produced by the
     // vectoriser) look like this:
@@ -363,9 +360,15 @@ void MVETailPredication::InsertVCTPIntrinsic(IntrinsicInst *ActiveLaneMask,
   switch (VectorWidth) {
   default:
     llvm_unreachable("unexpected number of lanes");
-  case 4:  VCTPID = Intrinsic::arm_mve_vctp32; break;
-  case 8:  VCTPID = Intrinsic::arm_mve_vctp16; break;
-  case 16: VCTPID = Intrinsic::arm_mve_vctp8; break;
+  case 4:
+    VCTPID = Intrinsic::arm_mve_vctp32;
+    break;
+  case 8:
+    VCTPID = Intrinsic::arm_mve_vctp16;
+    break;
+  case 16:
+    VCTPID = Intrinsic::arm_mve_vctp8;
+    break;
 
     // FIXME: vctp64 currently not supported because the predicate
     // vector wants to be <2 x i1>, but v2i1 is not a legal MVE
@@ -381,9 +384,9 @@ void MVETailPredication::InsertVCTPIntrinsic(IntrinsicInst *ActiveLaneMask,
   // TODO: This add likely already exists in the loop.
   Value *Remaining = Builder.CreateSub(Processed, Factor);
   Processed->addIncoming(Remaining, L->getLoopLatch());
-  LLVM_DEBUG(dbgs() << "ARM TP: Insert processed elements phi: "
-             << *Processed << "\n"
-             << "ARM TP: Inserted VCTP: " << *VCTPCall << "\n");
+  LLVM_DEBUG(dbgs() << "ARM TP: Insert processed elements phi: " << *Processed
+                    << "\n"
+                    << "ARM TP: Inserted VCTP: " << *VCTPCall << "\n");
 }
 
 bool MVETailPredication::TryConvertActiveLaneMask(Value *TripCount) {
@@ -400,8 +403,8 @@ bool MVETailPredication::TryConvertActiveLaneMask(Value *TripCount) {
   LLVM_DEBUG(dbgs() << "ARM TP: Found predicated vector loop.\n");
 
   for (auto *ActiveLaneMask : ActiveLaneMasks) {
-    LLVM_DEBUG(dbgs() << "ARM TP: Found active lane mask: "
-                      << *ActiveLaneMask << "\n");
+    LLVM_DEBUG(dbgs() << "ARM TP: Found active lane mask: " << *ActiveLaneMask
+                      << "\n");
 
     if (!IsSafeActiveMask(ActiveLaneMask, TripCount)) {
       LLVM_DEBUG(dbgs() << "ARM TP: Not safe to insert VCTP.\n");
@@ -419,9 +422,7 @@ bool MVETailPredication::TryConvertActiveLaneMask(Value *TripCount) {
   return true;
 }
 
-Pass *llvm::createMVETailPredicationPass() {
-  return new MVETailPredication();
-}
+Pass *llvm::createMVETailPredicationPass() { return new MVETailPredication(); }
 
 char MVETailPredication::ID = 0;
 

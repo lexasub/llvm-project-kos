@@ -415,8 +415,8 @@ unsigned clang_ParamCommandComment_isDirectionExplicit(CXComment Comment);
  * \returns parameter passing direction.
  */
 CINDEX_LINKAGE
-enum CXCommentParamPassDirection clang_ParamCommandComment_getDirection(
-                                                            CXComment Comment);
+enum CXCommentParamPassDirection
+clang_ParamCommandComment_getDirection(CXComment Comment);
 
 /**
  * \param Comment a \c CXComment_TParamCommand AST node.
@@ -441,7 +441,8 @@ unsigned clang_TParamCommandComment_isParamPositionValid(CXComment Comment);
 /**
  * \param Comment a \c CXComment_TParamCommand AST node.
  *
- * \returns zero-based nesting depth of this parameter in the template parameter list.
+ * \returns zero-based nesting depth of this parameter in the template parameter
+ * list.
  *
  * For example,
  * \verbatim
@@ -552,4 +553,3 @@ CINDEX_LINKAGE CXString clang_FullComment_getAsXML(CXComment Comment);
 LLVM_CLANG_C_EXTERN_C_END
 
 #endif /* CLANG_C_DOCUMENTATION_H */
-

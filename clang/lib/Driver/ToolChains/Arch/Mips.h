@@ -1,4 +1,5 @@
-//===--- Mips.h - Mips-specific Tool Helpers ----------------------*- C++ -*-===//
+//===--- Mips.h - Mips-specific Tool Helpers ----------------------*- C++
+//-*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -54,7 +55,7 @@ bool shouldUseFPXX(const llvm::opt::ArgList &Args, const llvm::Triple &Triple,
 bool supportsIndirectJumpHazardBarrier(StringRef &CPU);
 
 } // end namespace mips
-} // end namespace target
+} // namespace tools
 } // end namespace driver
 } // end namespace clang
 

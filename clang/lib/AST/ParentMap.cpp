@@ -19,14 +19,11 @@
 
 using namespace clang;
 
-typedef llvm::DenseMap<Stmt*, Stmt*> MapTy;
+typedef llvm::DenseMap<Stmt *, Stmt *> MapTy;
 
-enum OpaqueValueMode {
-  OV_Transparent,
-  OV_Opaque
-};
+enum OpaqueValueMode { OV_Transparent, OV_Opaque };
 
-static void BuildParentMap(MapTy& M, Stmt* S,
+static void BuildParentMap(MapTy &M, Stmt *S,
                            OpaqueValueMode OVMode = OV_Transparent) {
   if (!S)
     return;
@@ -114,13 +111,11 @@ ParentMap::ParentMap(Stmt *S) : Impl(nullptr) {
   }
 }
 
-ParentMap::~ParentMap() {
-  delete (MapTy*) Impl;
-}
+ParentMap::~ParentMap() { delete (MapTy *)Impl; }
 
-void ParentMap::addStmt(Stmt* S) {
+void ParentMap::addStmt(Stmt *S) {
   if (S) {
-    BuildParentMap(*(MapTy*) Impl, S);
+    BuildParentMap(*(MapTy *)Impl, S);
   }
 }
 
@@ -131,22 +126,23 @@ void ParentMap::setParent(const Stmt *S, const Stmt *Parent) {
   M->insert(std::make_pair(const_cast<Stmt *>(S), const_cast<Stmt *>(Parent)));
 }
 
-Stmt* ParentMap::getParent(Stmt* S) const {
-  MapTy* M = (MapTy*) Impl;
+Stmt *ParentMap::getParent(Stmt *S) const {
+  MapTy *M = (MapTy *)Impl;
   MapTy::iterator I = M->find(S);
   return I == M->end() ? nullptr : I->second;
 }
 
 Stmt *ParentMap::getParentIgnoreParens(Stmt *S) const {
-  do { S = getParent(S); } while (S && isa<ParenExpr>(S));
+  do {
+    S = getParent(S);
+  } while (S && isa<ParenExpr>(S));
   return S;
 }
 
 Stmt *ParentMap::getParentIgnoreParenCasts(Stmt *S) const {
   do {
     S = getParent(S);
-  }
-  while (S && (isa<ParenExpr>(S) || isa<CastExpr>(S)));
+  } while (S && (isa<ParenExpr>(S) || isa<CastExpr>(S)));
 
   return S;
 }
@@ -168,13 +164,12 @@ Stmt *ParentMap::getOuterParenParent(Stmt *S) const {
   return Paren;
 }
 
-bool ParentMap::isConsumedExpr(Expr* E) const {
+bool ParentMap::isConsumedExpr(Expr *E) const {
   Stmt *P = getParent(E);
   Stmt *DirectChild = E;
 
   // Ignore parents that don't guarantee consumption.
-  while (P && (isa<ParenExpr>(P) || isa<CastExpr>(P) ||
-               isa<FullExpr>(P))) {
+  while (P && (isa<ParenExpr>(P) || isa<CastExpr>(P) || isa<FullExpr>(P))) {
     DirectChild = P;
     P = getParent(P);
   }
@@ -183,32 +178,31 @@ bool ParentMap::isConsumedExpr(Expr* E) const {
     return false;
 
   switch (P->getStmtClass()) {
-    default:
-      return isa<Expr>(P);
-    case Stmt::DeclStmtClass:
-      return true;
-    case Stmt::BinaryOperatorClass: {
-      BinaryOperator *BE = cast<BinaryOperator>(P);
-      // If it is a comma, only the right side is consumed.
-      // If it isn't a comma, both sides are consumed.
-      return BE->getOpcode()!=BO_Comma ||DirectChild==BE->getRHS();
-    }
-    case Stmt::ForStmtClass:
-      return DirectChild == cast<ForStmt>(P)->getCond();
-    case Stmt::WhileStmtClass:
-      return DirectChild == cast<WhileStmt>(P)->getCond();
-    case Stmt::DoStmtClass:
-      return DirectChild == cast<DoStmt>(P)->getCond();
-    case Stmt::IfStmtClass:
-      return DirectChild == cast<IfStmt>(P)->getCond();
-    case Stmt::IndirectGotoStmtClass:
-      return DirectChild == cast<IndirectGotoStmt>(P)->getTarget();
-    case Stmt::SwitchStmtClass:
-      return DirectChild == cast<SwitchStmt>(P)->getCond();
-    case Stmt::ObjCForCollectionStmtClass:
-      return DirectChild == cast<ObjCForCollectionStmt>(P)->getCollection();
-    case Stmt::ReturnStmtClass:
-      return true;
+  default:
+    return isa<Expr>(P);
+  case Stmt::DeclStmtClass:
+    return true;
+  case Stmt::BinaryOperatorClass: {
+    BinaryOperator *BE = cast<BinaryOperator>(P);
+    // If it is a comma, only the right side is consumed.
+    // If it isn't a comma, both sides are consumed.
+    return BE->getOpcode() != BO_Comma || DirectChild == BE->getRHS();
+  }
+  case Stmt::ForStmtClass:
+    return DirectChild == cast<ForStmt>(P)->getCond();
+  case Stmt::WhileStmtClass:
+    return DirectChild == cast<WhileStmt>(P)->getCond();
+  case Stmt::DoStmtClass:
+    return DirectChild == cast<DoStmt>(P)->getCond();
+  case Stmt::IfStmtClass:
+    return DirectChild == cast<IfStmt>(P)->getCond();
+  case Stmt::IndirectGotoStmtClass:
+    return DirectChild == cast<IndirectGotoStmt>(P)->getTarget();
+  case Stmt::SwitchStmtClass:
+    return DirectChild == cast<SwitchStmt>(P)->getCond();
+  case Stmt::ObjCForCollectionStmtClass:
+    return DirectChild == cast<ObjCForCollectionStmt>(P)->getCollection();
+  case Stmt::ReturnStmtClass:
+    return true;
   }
 }
-

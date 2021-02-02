@@ -21,7 +21,7 @@ bool foobool(int argc) {
 }
 
 void xxx(int argc) {
-  int fp; // expected-note {{initialize the variable 'fp' to silence this warning}}
+  int fp;                                 // expected-note {{initialize the variable 'fp' to silence this warning}}
 #pragma omp target teams firstprivate(fp) // expected-warning {{variable 'fp' is uninitialized when used here}}
   for (int i = 0; i < 10; ++i)
     ;
@@ -72,7 +72,7 @@ S3 h;
 namespace A {
 double x;
 #pragma omp threadprivate(x) // expected-note {{defined as threadprivate or thread local}}
-}
+} // namespace A
 namespace B {
 using A::x;
 }
@@ -96,7 +96,10 @@ int main(int argc, char **argv) {
   foo();
 #pragma omp target teams firstprivate(argc > 0 ? argv[1] : argv[2]) // expected-error {{expected variable name}}
   foo();
-#pragma omp target teams firstprivate(argc) allocate , allocate(, allocate(omp_default , allocate(omp_default_mem_alloc, allocate(omp_default_mem_alloc:, allocate(omp_default_mem_alloc: argc, allocate(omp_default_mem_alloc: argv), allocate(argv) // expected-error {{expected '(' after 'allocate'}} expected-error 2 {{expected expression}} expected-error 2 {{expected ')'}} expected-error {{use of undeclared identifier 'omp_default'}} expected-note 2 {{to match this '('}}
+#pragma omp target teams firstprivate(argc) allocate, allocate(, allocate(omp_default, allocate(omp_default_mem_alloc, allocate(omp_default_mem_alloc:, allocate(omp_default_mem_alloc                  \
+                                                                                                                                                                 : argc, allocate(omp_default_mem_alloc \
+                                                                                                                                                                                  : argv),              \
+                                                                                                                                                                   allocate(argv) // expected-error {{expected '(' after 'allocate'}} expected-error 2 {{expected expression}} expected-error 2 {{expected ')'}} expected-error {{use of undeclared identifier 'omp_default'}} expected-note 2 {{to match this '('}}
   foo();
 #pragma omp target teams firstprivate(S1) // expected-error {{'S1' does not refer to a value}}
   foo();
@@ -104,7 +107,8 @@ int main(int argc, char **argv) {
   foo();
 #pragma omp target teams firstprivate(argv[1]) // expected-error {{expected variable name}}
   foo();
-#pragma omp target teams allocate(omp_thread_mem_alloc: ba) uses_allocators(omp_thread_mem_alloc) firstprivate(ba) // expected-warning {{allocator with the 'thread' trait access has unspecified behavior on 'target teams' directive}}
+#pragma omp target teams allocate(omp_thread_mem_alloc \
+                                  : ba) uses_allocators(omp_thread_mem_alloc) firstprivate(ba) // expected-warning {{allocator with the 'thread' trait access has unspecified behavior on 'target teams' directive}}
   foo();
 #pragma omp target teams firstprivate(ca, z)
   foo();

@@ -40,21 +40,21 @@
 // CK10-DAG: [[TYPES:@.+]] = {{.+}}constant [1 x i64] [i64 544]
 
 // CK10-LABEL: implicit_maps_pointer{{.*}}(
-void implicit_maps_pointer (){
+void implicit_maps_pointer() {
   double *ddyn;
 
-  // CK10-DAG: call i32 @__tgt_target_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i8* {{.+}}, i32 1, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[SIZES]]{{.+}}, {{.+}}[[TYPES]]{{.+}}, i8** null, i8** null)
-  // CK10-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
-  // CK10-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
-  // CK10-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
-  // CK10-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
-  // CK10-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to double**
-  // CK10-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to double**
-  // CK10-DAG: store double* [[PTR:%[^,]+]], double** [[CBP1]]
-  // CK10-DAG: store double* [[PTR]], double** [[CP1]]
+// CK10-DAG: call i32 @__tgt_target_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i8* {{.+}}, i32 1, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[SIZES]]{{.+}}, {{.+}}[[TYPES]]{{.+}}, i8** null, i8** null)
+// CK10-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
+// CK10-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
+// CK10-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
+// CK10-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
+// CK10-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to double**
+// CK10-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to double**
+// CK10-DAG: store double* [[PTR:%[^,]+]], double** [[CBP1]]
+// CK10-DAG: store double* [[PTR]], double** [[CP1]]
 
-  // CK10: call void [[KERNEL:@.+]](double* [[PTR]])
-  #pragma omp target
+// CK10: call void [[KERNEL:@.+]](double* [[PTR]])
+#pragma omp target
   {
     ddyn[0] += 1.0;
     ddyn[1] += 1.0;

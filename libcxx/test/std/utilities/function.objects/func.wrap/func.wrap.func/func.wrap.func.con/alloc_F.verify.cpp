@@ -23,8 +23,9 @@
 
 void foo(int) {}
 
-int main(int, char**)
-{
-    std::function<void(int)> f(std::allocator_arg, std::allocator<int>(), foo); // expected-error {{no matching constructor for initialization of}}
-    return 0;
+int main(int, char**) {
+  std::function<void(int)> f(
+      std::allocator_arg, std::allocator<int>(),
+      foo); // expected-error {{no matching constructor for initialization of}}
+  return 0;
 }

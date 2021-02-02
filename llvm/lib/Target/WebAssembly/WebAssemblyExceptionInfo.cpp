@@ -64,7 +64,7 @@ void WebAssemblyExceptionInfo::recalculate(
       WE->addBlock(MBB);
   }
 
-  SmallVector<WebAssemblyException*, 8> ExceptionPointers;
+  SmallVector<WebAssemblyException *, 8> ExceptionPointers;
   ExceptionPointers.reserve(Exceptions.size());
 
   // Add subexceptions to exceptions

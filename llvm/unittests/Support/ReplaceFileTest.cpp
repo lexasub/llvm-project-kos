@@ -17,13 +17,13 @@
 using namespace llvm;
 using namespace llvm::sys;
 
-#define ASSERT_NO_ERROR(x)                                                 \
-  do {                                                                     \
-    if (std::error_code ASSERT_NO_ERROR_ec = x) {                          \
-      errs() << #x ": did not return errc::success.\n"                     \
-             << "error number: " << ASSERT_NO_ERROR_ec.value() << "\n"     \
-             << "error message: " << ASSERT_NO_ERROR_ec.message() << "\n"; \
-    }                                                                      \
+#define ASSERT_NO_ERROR(x)                                                     \
+  do {                                                                         \
+    if (std::error_code ASSERT_NO_ERROR_ec = x) {                              \
+      errs() << #x ": did not return errc::success.\n"                         \
+             << "error number: " << ASSERT_NO_ERROR_ec.value() << "\n"         \
+             << "error message: " << ASSERT_NO_ERROR_ec.message() << "\n";     \
+    }                                                                          \
   } while (false)
 
 namespace {
@@ -46,7 +46,7 @@ class ScopedFD {
   ScopedFD(const ScopedFD &) = delete;
   ScopedFD &operator=(const ScopedFD &) = delete;
 
- public:
+public:
   explicit ScopedFD(int Descriptor) : FD(Descriptor) {}
   ~ScopedFD() { Process::SafelyCloseFileDescriptor(FD); }
 };
@@ -171,4 +171,4 @@ TEST(rename, ExistingTemp) {
   ASSERT_NO_ERROR(fs::remove(TestDirectory.str()));
 }
 
-}  // anonymous namespace
+} // anonymous namespace

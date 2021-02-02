@@ -8,7 +8,6 @@
 
 #include "lldb/Breakpoint/StoppointSite.h"
 
-
 using namespace lldb;
 using namespace lldb_private;
 
@@ -16,8 +15,8 @@ StoppointSite::StoppointSite(break_id_t id, addr_t addr, bool hardware)
     : m_id(id), m_addr(addr), m_is_hardware_required(hardware),
       m_hardware_index(LLDB_INVALID_INDEX32), m_byte_size(0), m_hit_counter() {}
 
-StoppointSite::StoppointSite(break_id_t id, addr_t addr,
-                             uint32_t byte_size, bool hardware)
+StoppointSite::StoppointSite(break_id_t id, addr_t addr, uint32_t byte_size,
+                             bool hardware)
     : m_id(id), m_addr(addr), m_is_hardware_required(hardware),
       m_hardware_index(LLDB_INVALID_INDEX32), m_byte_size(byte_size),
       m_hit_counter() {}

@@ -112,8 +112,6 @@ static list<uint64_t> LookupAddresses("address",
                                       cl::value_desc("addr"),
                                       cat(LookupOptions));
 
-
-
 } // namespace
 /// @}
 //===----------------------------------------------------------------------===//
@@ -132,7 +130,6 @@ static void error(StringRef Prefix, std::error_code EC) {
   errs() << Prefix << ": " << EC.message() << "\n";
   exit(1);
 }
-
 
 /// If the input path is a .dSYM bundle (as created by the dsymutil tool),
 /// replace it with individual entries for each of the object files inside the
@@ -271,7 +268,6 @@ static llvm::Optional<uint64_t> getImageBaseAddress(object::ObjectFile &Obj) {
   return llvm::None;
 }
 
-
 static llvm::Error handleObjectFile(ObjectFile &Obj,
                                     const std::string &OutFile) {
   auto ThreadCount =
@@ -306,8 +302,7 @@ static llvm::Error handleObjectFile(ObjectFile &Obj,
   if (!DICtx)
     return createStringError(std::errc::invalid_argument,
                              "unable to create DWARF context");
-  logAllUnhandledErrors(DICtx->loadRegisterInfo(Obj), OS,
-                        "DwarfTransformer: ");
+  logAllUnhandledErrors(DICtx->loadRegisterInfo(Obj), OS, "DwarfTransformer: ");
 
   // Make a DWARF transformer object and populate the ranges of the code
   // so we don't end up adding invalid functions to GSYM data.
@@ -330,8 +325,8 @@ static llvm::Error handleObjectFile(ObjectFile &Obj,
     return Err;
 
   // Save the GSYM file to disk.
-  support::endianness Endian = Obj.makeTriple().isLittleEndian() ?
-      support::little : support::big;
+  support::endianness Endian =
+      Obj.makeTriple().isLittleEndian() ? support::little : support::big;
   if (auto Err = Gsym.save(OutFile.c_str(), Endian))
     return Err;
 
@@ -360,7 +355,7 @@ static llvm::Error handleBuffer(StringRef Filename, MemoryBufferRef Buffer,
     // Iterate over all contained architectures and filter out any that were
     // not specified with the "--arch <arch>" option. If the --arch option was
     // not specified on the command line, we will process all architectures.
-    std::vector< std::unique_ptr<MachOObjectFile> > FilterObjs;
+    std::vector<std::unique_ptr<MachOObjectFile>> FilterObjs;
     for (auto &ObjForArch : Fat->objects()) {
       if (auto MachOOrErr = ObjForArch.getAsObjectFile()) {
         auto &Obj = **MachOOrErr;
@@ -375,7 +370,7 @@ static llvm::Error handleBuffer(StringRef Filename, MemoryBufferRef Buffer,
                                         "no matching architectures found"));
 
     // Now handle each architecture we need to convert.
-    for (auto &Obj: FilterObjs) {
+    for (auto &Obj : FilterObjs) {
       Triple ObjTriple(Obj->getArchTriple());
       auto ArchName = ObjTriple.getArchName();
       std::string ArchOutFile(OutFile);
@@ -441,8 +436,7 @@ int main(int argc, char const *argv[]) {
       "lookup addresses within that GSYM file.\n"
       "Use the --convert option to specify a file with option --out-file "
       "option to convert to GSYM format.\n";
-  HideUnrelatedOptions(
-      {&GeneralOptions, &ConversionOptions, &LookupOptions});
+  HideUnrelatedOptions({&GeneralOptions, &ConversionOptions, &LookupOptions});
   cl::ParseCommandLineOptions(argc, argv, Overview);
 
   if (Help) {
@@ -478,7 +472,7 @@ int main(int argc, char const *argv[]) {
 
     // Lookup an address in a GSYM file and print any matches.
     OS << "Looking up addresses in \"" << GSYMPath << "\":\n";
-    for (auto Addr: LookupAddresses) {
+    for (auto Addr : LookupAddresses) {
       if (auto Result = Gsym->lookup(Addr)) {
         // If verbose is enabled dump the full function info for the address.
         if (Verbose) {

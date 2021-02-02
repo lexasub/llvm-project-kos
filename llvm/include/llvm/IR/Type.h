@@ -28,7 +28,7 @@
 
 namespace llvm {
 
-template<class GraphType> struct GraphTraits;
+template <class GraphType> struct GraphTraits;
 class IntegerType;
 class LLVMContext;
 class PointerType;
@@ -82,7 +82,7 @@ private:
   /// This refers to the LLVMContext in which this type was uniqued.
   LLVMContext &Context;
 
-  TypeID   ID : 8;            // The current base type of this type.
+  TypeID ID : 8;              // The current base type of this type.
   unsigned SubclassData : 24; // Space for subclasses to store data.
                               // Note that this should be synchronized with
                               // MAX_INT_BITS value in IntegerType class.
@@ -91,7 +91,7 @@ protected:
   friend class LLVMContextImpl;
 
   explicit Type(LLVMContext &C, TypeID tid)
-    : Context(C), ID(tid), SubclassData(0) {}
+      : Context(C), ID(tid), SubclassData(0) {}
   ~Type() = default;
 
   unsigned getSubclassData() const { return SubclassData; }
@@ -110,7 +110,7 @@ protected:
   /// the pointee of a pointer, the element type of an array, etc. This pointer
   /// may be 0 for types that don't contain other types (Integer, Double,
   /// Float).
-  Type * const *ContainedTys = nullptr;
+  Type *const *ContainedTys = nullptr;
 
 public:
   /// Print the current type.
@@ -169,14 +169,22 @@ public:
 
   const fltSemantics &getFltSemantics() const {
     switch (getTypeID()) {
-    case HalfTyID: return APFloat::IEEEhalf();
-    case BFloatTyID: return APFloat::BFloat();
-    case FloatTyID: return APFloat::IEEEsingle();
-    case DoubleTyID: return APFloat::IEEEdouble();
-    case X86_FP80TyID: return APFloat::x87DoubleExtended();
-    case FP128TyID: return APFloat::IEEEquad();
-    case PPC_FP128TyID: return APFloat::PPCDoubleDouble();
-    default: llvm_unreachable("Invalid floating type");
+    case HalfTyID:
+      return APFloat::IEEEhalf();
+    case BFloatTyID:
+      return APFloat::BFloat();
+    case FloatTyID:
+      return APFloat::IEEEsingle();
+    case DoubleTyID:
+      return APFloat::IEEEdouble();
+    case X86_FP80TyID:
+      return APFloat::x87DoubleExtended();
+    case FP128TyID:
+      return APFloat::IEEEquad();
+    case PPC_FP128TyID:
+      return APFloat::PPCDoubleDouble();
+    default:
+      llvm_unreachable("Invalid floating type");
     }
   }
 
@@ -269,7 +277,7 @@ public:
   /// Return true if it makes sense to take the size of this type. To get the
   /// actual size for a particular target, it is reasonable to use the
   /// DataLayout subsystem to do this.
-  bool isSized(SmallPtrSetImpl<Type*> *Visited = nullptr) const {
+  bool isSized(SmallPtrSetImpl<Type *> *Visited = nullptr) const {
     // If it's a primitive, it is always sized.
     if (getTypeID() == IntegerTyID || isFloatingPointTy() ||
         getTypeID() == PointerTyID || getTypeID() == X86_MMXTyID ||
@@ -319,11 +327,13 @@ public:
   //===--------------------------------------------------------------------===//
   // Type Iteration support.
   //
-  using subtype_iterator = Type * const *;
+  using subtype_iterator = Type *const *;
 
   subtype_iterator subtype_begin() const { return ContainedTys; }
-  subtype_iterator subtype_end() const { return &ContainedTys[NumContainedTys];}
-  ArrayRef<Type*> subtypes() const {
+  subtype_iterator subtype_end() const {
+    return &ContainedTys[NumContainedTys];
+  }
+  ArrayRef<Type *> subtypes() const {
     return makeArrayRef(subtype_begin(), subtype_end());
   }
 
@@ -421,7 +431,7 @@ public:
   template <typename ScalarTy> static Type *getScalarTy(LLVMContext &C) {
     int noOfBits = sizeof(ScalarTy) * CHAR_BIT;
     if (std::is_integral<ScalarTy>::value) {
-      return (Type*) Type::getIntNTy(C, noOfBits);
+      return (Type *)Type::getIntNTy(C, noOfBits);
     } else if (std::is_floating_point<ScalarTy>::value) {
       switch (noOfBits) {
       case 32:
@@ -481,7 +491,7 @@ private:
   /// Derived types like structures and arrays are sized iff all of the members
   /// of the type are sized as well. Since asking for their size is relatively
   /// uncommon, move this operation out-of-line.
-  bool isSizedDerivedType(SmallPtrSetImpl<Type*> *Visited = nullptr) const;
+  bool isSizedDerivedType(SmallPtrSetImpl<Type *> *Visited = nullptr) const;
 };
 
 // Printing of types.
@@ -502,12 +512,12 @@ DEFINE_ISA_CONVERSION_FUNCTIONS(Type, LLVMTypeRef)
 
 /* Specialized opaque type conversions.
  */
-inline Type **unwrap(LLVMTypeRef* Tys) {
-  return reinterpret_cast<Type**>(Tys);
+inline Type **unwrap(LLVMTypeRef *Tys) {
+  return reinterpret_cast<Type **>(Tys);
 }
 
 inline LLVMTypeRef *wrap(Type **Tys) {
-  return reinterpret_cast<LLVMTypeRef*>(const_cast<Type**>(Tys));
+  return reinterpret_cast<LLVMTypeRef *>(const_cast<Type **>(Tys));
 }
 
 } // end namespace llvm

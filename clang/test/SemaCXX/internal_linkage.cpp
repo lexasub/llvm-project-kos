@@ -10,13 +10,14 @@ public:
   void f1() __attribute__((internal_linkage));
   void f2() __attribute__((internal_linkage)) {}
   static void f3() __attribute__((internal_linkage)) {}
-  void f4(); // expected-note{{previous definition is here}}
+  void f4();     // expected-note{{previous definition is here}}
   static int zz; // expected-note{{previous definition is here}}
-  A() __attribute__((internal_linkage)) {}
+  A()
+  __attribute__((internal_linkage)) {}
   ~A() __attribute__((internal_linkage)) {}
-  A& operator=(const A&) __attribute__((internal_linkage)) { return *this; }
+  A &operator=(const A &) __attribute__((internal_linkage)) { return *this; }
   struct {
-    int z  __attribute__((internal_linkage)); // expected-warning{{'internal_linkage' attribute only applies to}}
+    int z __attribute__((internal_linkage)); // expected-warning{{'internal_linkage' attribute only applies to}}
   };
 };
 
@@ -42,6 +43,6 @@ void A::f1() {
 }
 
 void g(int a [[clang::internal_linkage]]) { // expected-warning{{'internal_linkage' attribute only applies to variables, functions and classes}}
-  int x [[clang::internal_linkage]]; // expected-warning{{'internal_linkage' attribute on a non-static local variable is ignored}}
+  int x [[clang::internal_linkage]];        // expected-warning{{'internal_linkage' attribute on a non-static local variable is ignored}}
   static int y [[clang::internal_linkage]];
 }

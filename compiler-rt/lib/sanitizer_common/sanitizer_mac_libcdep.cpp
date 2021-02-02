@@ -12,9 +12,9 @@
 
 #include "sanitizer_platform.h"
 #if SANITIZER_MAC
-#include "sanitizer_mac.h"
-
 #include <sys/mman.h>
+
+#include "sanitizer_mac.h"
 
 namespace __sanitizer {
 

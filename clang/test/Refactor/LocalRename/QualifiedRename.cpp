@@ -2,21 +2,21 @@
 
 namespace foo {
 class A {};
-}
+} // namespace foo
 // CHECK: namespace foo {
 // CHECK-NEXT: class B {};
 // CHECK-NEXT: }
 
 namespace bar {
-void f(foo::A* a) {
+void f(foo::A *a) {
   foo::A b;
 }
 // CHECK: void f(B* a) {
 // CHECK-NEXT:   B b;
 // CHECK-NEXT: }
-}
+} // namespace bar
 
-void f(foo::A* a) {
+void f(foo::A *a) {
   foo::A b;
 }
 // CHECK: void f(bar::B* a) {

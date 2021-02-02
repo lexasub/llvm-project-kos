@@ -354,7 +354,8 @@ llvm::Optional<uint64_t> Type::GetByteSize(ExecutionContextScope *exe_scope) {
   case eEncodingIsTypedefUID: {
     Type *encoding_type = GetEncodingType();
     if (encoding_type)
-      if (llvm::Optional<uint64_t> size = encoding_type->GetByteSize(exe_scope)) {
+      if (llvm::Optional<uint64_t> size =
+              encoding_type->GetByteSize(exe_scope)) {
         m_byte_size = *size;
         m_byte_size_has_value = true;
         return m_byte_size;
@@ -364,26 +365,27 @@ llvm::Optional<uint64_t> Type::GetByteSize(ExecutionContextScope *exe_scope) {
             GetLayoutCompilerType().GetByteSize(exe_scope)) {
       m_byte_size = *size;
       m_byte_size_has_value = true;
-        return m_byte_size;
+      return m_byte_size;
     }
   } break;
 
-    // If we are a pointer or reference, then this is just a pointer size;
-    case eEncodingIsPointerUID:
-    case eEncodingIsLValueReferenceUID:
-    case eEncodingIsRValueReferenceUID: {
-      if (ArchSpec arch = m_symbol_file->GetObjectFile()->GetArchitecture()) {
-        m_byte_size = arch.GetAddressByteSize();
-        m_byte_size_has_value = true;
-        return m_byte_size;
-      }
-    } break;
+  // If we are a pointer or reference, then this is just a pointer size;
+  case eEncodingIsPointerUID:
+  case eEncodingIsLValueReferenceUID:
+  case eEncodingIsRValueReferenceUID: {
+    if (ArchSpec arch = m_symbol_file->GetObjectFile()->GetArchitecture()) {
+      m_byte_size = arch.GetAddressByteSize();
+      m_byte_size_has_value = true;
+      return m_byte_size;
+    }
+  } break;
   }
   return {};
 }
 
 uint32_t Type::GetNumChildren(bool omit_empty_base_classes) {
-  return GetForwardCompilerType().GetNumChildren(omit_empty_base_classes, nullptr);
+  return GetForwardCompilerType().GetNumChildren(omit_empty_base_classes,
+                                                 nullptr);
 }
 
 bool Type::IsAggregateType() {
@@ -664,7 +666,7 @@ ConstString Type::GetQualifiedName() {
   return GetForwardCompilerType().GetTypeName();
 }
 
-bool Type::GetTypeScopeAndBasename(const llvm::StringRef& name,
+bool Type::GetTypeScopeAndBasename(const llvm::StringRef &name,
                                    llvm::StringRef &scope,
                                    llvm::StringRef &basename,
                                    TypeClass &type_class) {
@@ -694,8 +696,7 @@ bool Type::GetTypeScopeAndBasename(const llvm::StringRef& name,
     if (template_begin != llvm::StringRef::npos &&
         namespace_separator > template_begin) {
       size_t template_depth = 1;
-      llvm::StringRef template_arg =
-          basename.drop_front(template_begin + 1);
+      llvm::StringRef template_arg = basename.drop_front(template_begin + 1);
       while (template_depth > 0 && !template_arg.empty()) {
         if (template_arg.front() == '<')
           template_depth++;
@@ -768,9 +769,7 @@ ConstString TypeAndOrName::GetName() const {
   return ConstString("<invalid>");
 }
 
-void TypeAndOrName::SetName(ConstString type_name) {
-  m_type_name = type_name;
-}
+void TypeAndOrName::SetName(ConstString type_name) { m_type_name = type_name; }
 
 void TypeAndOrName::SetName(const char *type_name_cstr) {
   m_type_name.SetCString(type_name_cstr);
@@ -897,9 +896,7 @@ bool TypeImpl::operator==(const TypeImpl &rhs) const {
          m_dynamic_type == rhs.m_dynamic_type;
 }
 
-bool TypeImpl::operator!=(const TypeImpl &rhs) const {
-  return !(*this == rhs);
-}
+bool TypeImpl::operator!=(const TypeImpl &rhs) const { return !(*this == rhs); }
 
 bool TypeImpl::IsValid() const {
   // just a name is not valid

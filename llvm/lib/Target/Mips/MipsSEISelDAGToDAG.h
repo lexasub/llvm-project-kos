@@ -24,17 +24,15 @@ public:
       : MipsDAGToDAGISel(TM, OL) {}
 
 private:
-
   bool runOnMachineFunction(MachineFunction &MF) override;
 
   void getAnalysisUsage(AnalysisUsage &AU) const override;
 
-  void addDSPCtrlRegOperands(bool IsDef, MachineInstr &MI,
-                             MachineFunction &MF);
+  void addDSPCtrlRegOperands(bool IsDef, MachineInstr &MI, MachineFunction &MF);
 
   unsigned getMSACtrlReg(const SDValue RegIdx) const;
 
-  bool replaceUsesWithZeroReg(MachineRegisterInfo *MRI, const MachineInstr&);
+  bool replaceUsesWithZeroReg(MachineRegisterInfo *MRI, const MachineInstr &);
 
   std::pair<SDNode *, SDNode *> selectMULT(SDNode *N, unsigned Opc,
                                            const SDLoc &dl, EVT Ty, bool HasLo,
@@ -56,17 +54,13 @@ private:
   bool selectIntAddr(SDValue Addr, SDValue &Base,
                      SDValue &Offset) const override;
 
-  bool selectAddrRegImm9(SDValue Addr, SDValue &Base,
-                         SDValue &Offset) const;
+  bool selectAddrRegImm9(SDValue Addr, SDValue &Base, SDValue &Offset) const;
 
-  bool selectAddrRegImm11(SDValue Addr, SDValue &Base,
-                          SDValue &Offset) const;
+  bool selectAddrRegImm11(SDValue Addr, SDValue &Base, SDValue &Offset) const;
 
-  bool selectAddrRegImm12(SDValue Addr, SDValue &Base,
-                          SDValue &Offset) const;
+  bool selectAddrRegImm12(SDValue Addr, SDValue &Base, SDValue &Offset) const;
 
-  bool selectAddrRegImm16(SDValue Addr, SDValue &Base,
-                          SDValue &Offset) const;
+  bool selectAddrRegImm16(SDValue Addr, SDValue &Base, SDValue &Offset) const;
 
   bool selectIntAddr11MM(SDValue Addr, SDValue &Base,
                          SDValue &Offset) const override;
@@ -97,7 +91,7 @@ private:
                     unsigned MinSizeInBits) const override;
   /// Select constant vector splats whose value fits in a given integer.
   bool selectVSplatCommon(SDValue N, SDValue &Imm, bool Signed,
-                                  unsigned ImmBitSize) const;
+                          unsigned ImmBitSize) const;
   /// Select constant vector splats whose value fits in a uimm1.
   bool selectVSplatUimm1(SDValue N, SDValue &Imm) const override;
   /// Select constant vector splats whose value fits in a uimm2.
@@ -134,13 +128,12 @@ private:
 
   void processFunctionAfterISel(MachineFunction &MF) override;
 
-  bool SelectInlineAsmMemoryOperand(const SDValue &Op,
-                                    unsigned ConstraintID,
+  bool SelectInlineAsmMemoryOperand(const SDValue &Op, unsigned ConstraintID,
                                     std::vector<SDValue> &OutOps) override;
 };
 
 FunctionPass *createMipsSEISelDag(MipsTargetMachine &TM,
                                   CodeGenOpt::Level OptLevel);
-}
+} // namespace llvm
 
 #endif

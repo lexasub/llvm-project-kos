@@ -11,15 +11,16 @@
 ///
 //===----------------------------------------------------------------------===//
 
-#include <sstream>
 #include "Views/InstructionView.h"
 #include "llvm/MC/MCInst.h"
 #include "llvm/MC/MCSubtargetInfo.h"
+#include <sstream>
 
 namespace llvm {
 namespace mca {
 
-StringRef InstructionView::printInstructionString(const llvm::MCInst &MCI) const {
+StringRef
+InstructionView::printInstructionString(const llvm::MCInst &MCI) const {
   InstructionString = "";
   MCIP.printInst(&MCI, 0, "", STI, InstrStream);
   InstrStream.flush();
@@ -52,7 +53,9 @@ json::Value InstructionView::toJSON() const {
       Resources.push_back(ResNameStream.str());
     }
   }
-  JO.try_emplace("Resources", json::Object({{"CPUName", MCPU}, {"Resources", std::move(Resources)}}));
+  JO.try_emplace(
+      "Resources",
+      json::Object({{"CPUName", MCPU}, {"Resources", std::move(Resources)}}));
 
   return JO;
 }

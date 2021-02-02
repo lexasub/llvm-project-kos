@@ -2,19 +2,18 @@
 extern "C" {
 
 #pragma pack(push, 2)
-  typedef struct ABC* abc;
+typedef struct ABC *abc;
 
-  struct ABCS {
-    float red;
-    float green;
-    float blue;
-    float alpha;
-  };
+struct ABCS {
+  float red;
+  float green;
+  float blue;
+  float alpha;
+};
 
-  typedef void (*XYZ)();
+typedef void (*XYZ)();
 #pragma pack(pop)
 }
-
 
 union ABCU {
   ABCS color;
@@ -26,16 +25,14 @@ struct AData {
 };
 
 class L {
- public:
+public:
   L() {}
-  L(const L& other);
+  L(const L &other);
 
- private:
+private:
   AData fdata;
 };
 
-
-L::L(const L& other)
-{
+L::L(const L &other) {
   fdata = other.fdata;
 }

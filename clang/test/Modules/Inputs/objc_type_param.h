@@ -4,10 +4,10 @@ __attribute__((objc_root_class))
 }
 @end
 
-@interface A<T,U> : Root
+@interface A<T, U> : Root
 @end
 
-@interface B<T,U> : A<T,U>
+@interface B<T, U> : A <T, U>
 typedef void (*BCallback)(T, U);
-+ (id) newWithCallback: (BCallback) callback;
++ (id)newWithCallback:(BCallback)callback;
 @end

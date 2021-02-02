@@ -23,26 +23,25 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        typedef std::codecvt_utf16<wchar_t> C;
-        C c;
-        bool r = c.always_noconv();
-        assert(r == false);
-    }
-    {
-        typedef std::codecvt_utf16<char16_t> C;
-        C c;
-        bool r = c.always_noconv();
-        assert(r == false);
-    }
-    {
-        typedef std::codecvt_utf16<char32_t> C;
-        C c;
-        bool r = c.always_noconv();
-        assert(r == false);
-    }
+int main(int, char**) {
+  {
+    typedef std::codecvt_utf16<wchar_t> C;
+    C c;
+    bool r = c.always_noconv();
+    assert(r == false);
+  }
+  {
+    typedef std::codecvt_utf16<char16_t> C;
+    C c;
+    bool r = c.always_noconv();
+    assert(r == false);
+  }
+  {
+    typedef std::codecvt_utf16<char32_t> C;
+    C c;
+    bool r = c.always_noconv();
+    assert(r == false);
+  }
 
   return 0;
 }

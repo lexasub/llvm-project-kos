@@ -25,8 +25,9 @@ class RefactoringResultConsumer {
 public:
   virtual ~RefactoringResultConsumer() {}
 
-  /// Handles an initiation or an invication error. An initiation error typically
-  /// has a \c DiagnosticError payload that describes why initiation failed.
+  /// Handles an initiation or an invication error. An initiation error
+  /// typically has a \c DiagnosticError payload that describes why initiation
+  /// failed.
   virtual void handleError(llvm::Error Err) = 0;
 
   /// Handles the source replacements that are produced by a refactoring action.

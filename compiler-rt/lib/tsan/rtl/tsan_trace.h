@@ -14,8 +14,8 @@
 
 #include "tsan_defs.h"
 #include "tsan_mutex.h"
-#include "tsan_stack_trace.h"
 #include "tsan_mutexset.h"
+#include "tsan_stack_trace.h"
 
 namespace __tsan {
 
@@ -48,8 +48,8 @@ struct TraceHeader {
 #else
   VarSizeStackTrace stack0;
 #endif
-  u64        epoch0;  // Start epoch for the trace.
-  MutexSet   mset0;
+  u64 epoch0;  // Start epoch for the trace.
+  MutexSet mset0;
 
   TraceHeader() : stack0(), epoch0() {}
 };
@@ -65,9 +65,7 @@ struct Trace {
   // CreateThreadContext.
   TraceHeader headers[kTraceParts];
 
-  Trace()
-    : mtx(MutexTypeTrace, StatMtxTrace) {
-  }
+  Trace() : mtx(MutexTypeTrace, StatMtxTrace) {}
 };
 
 }  // namespace __tsan

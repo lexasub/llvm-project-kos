@@ -36,5 +36,5 @@ public:
     return MBB.erase(MI);
   }
 };
-}
+} // namespace llvm
 #endif

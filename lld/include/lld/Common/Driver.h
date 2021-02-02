@@ -61,6 +61,6 @@ namespace kos {
 bool link(llvm::ArrayRef<const char *> args, bool canExitEarly,
           llvm::raw_ostream &stdoutOS, llvm::raw_ostream &stderrOS);
 }
-}
+} // namespace lld
 
 #endif

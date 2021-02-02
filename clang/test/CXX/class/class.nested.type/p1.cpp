@@ -3,7 +3,7 @@
 class X {
 public:
   typedef int I; // expected-note{{'X::I' declared here}}
-  class Y { }; // expected-note{{'X::Y' declared here}}
+  class Y {};    // expected-note{{'X::Y' declared here}}
   I a;
 };
 

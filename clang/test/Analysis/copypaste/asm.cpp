@@ -6,11 +6,10 @@ int foo1(int src) {
   int dst = src;
   if (src < 100 && src > 0) {
 
-    asm ("mov %1, %0\n\t"
-         "add $1, %0"
-         : "=r" (dst)
-         : "r" (src));
-
+    asm("mov %1, %0\n\t"
+        "add $1, %0"
+        : "=r"(dst)
+        : "r"(src));
   }
   return dst;
 }
@@ -20,11 +19,10 @@ int foo2(int src) {
   int dst = src;
   if (src < 100 && src > 0) {
 
-    asm ("mov %1, %0\n\t"
-         "add $2, %0"
-         : "=r" (dst)
-         : "r" (src));
-
+    asm("mov %1, %0\n\t"
+        "add $2, %0"
+        : "=r"(dst)
+        : "r"(src));
   }
   return dst;
 }
@@ -34,11 +32,10 @@ int foo3(int src) {
   int dst = src;
   if (src < 100 && src > 0) {
 
-    asm volatile ("mov %1, %0\n\t"
-         "add $1, %0"
-         : "=r" (dst)
-         : "r" (src));
-
+    asm volatile("mov %1, %0\n\t"
+                 "add $1, %0"
+                 : "=r"(dst)
+                 : "r"(src));
   }
   return dst;
 }

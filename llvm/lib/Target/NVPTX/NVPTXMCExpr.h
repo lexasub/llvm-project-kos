@@ -41,7 +41,7 @@ public:
                                         MCContext &Ctx);
 
   static const NVPTXFloatMCExpr *createConstantFPHalf(const APFloat &Flt,
-                                                        MCContext &Ctx) {
+                                                      MCContext &Ctx) {
     return create(VK_NVPTX_HALF_PREC_FLOAT, Flt, Ctx);
   }
 
@@ -65,15 +65,14 @@ public:
   /// getSubExpr - Get the child of this expression.
   APFloat getAPFloat() const { return Flt; }
 
-/// @}
+  /// @}
 
   void printImpl(raw_ostream &OS, const MCAsmInfo *MAI) const override;
-  bool evaluateAsRelocatableImpl(MCValue &Res,
-                                 const MCAsmLayout *Layout,
+  bool evaluateAsRelocatableImpl(MCValue &Res, const MCAsmLayout *Layout,
                                  const MCFixup *Fixup) const override {
     return false;
   }
-  void visitUsedExpr(MCStreamer &Streamer) const override {};
+  void visitUsedExpr(MCStreamer &Streamer) const override{};
   MCFragment *findAssociatedFragment() const override { return nullptr; }
 
   // There are no TLS NVPTXMCExprs at the moment.
@@ -97,8 +96,8 @@ public:
   /// @name Construction
   /// @{
 
-  static const NVPTXGenericMCSymbolRefExpr
-  *create(const MCSymbolRefExpr *SymExpr, MCContext &Ctx);
+  static const NVPTXGenericMCSymbolRefExpr *
+  create(const MCSymbolRefExpr *SymExpr, MCContext &Ctx);
 
   /// @}
   /// @name Accessors
@@ -110,12 +109,11 @@ public:
   /// @}
 
   void printImpl(raw_ostream &OS, const MCAsmInfo *MAI) const override;
-  bool evaluateAsRelocatableImpl(MCValue &Res,
-                                 const MCAsmLayout *Layout,
+  bool evaluateAsRelocatableImpl(MCValue &Res, const MCAsmLayout *Layout,
                                  const MCFixup *Fixup) const override {
     return false;
   }
-  void visitUsedExpr(MCStreamer &Streamer) const override {};
+  void visitUsedExpr(MCStreamer &Streamer) const override{};
   MCFragment *findAssociatedFragment() const override { return nullptr; }
 
   // There are no TLS NVPTXMCExprs at the moment.
@@ -124,7 +122,7 @@ public:
   static bool classof(const MCExpr *E) {
     return E->getKind() == MCExpr::Target;
   }
-  };
+};
 } // end namespace llvm
 
 #endif

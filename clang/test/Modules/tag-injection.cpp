@@ -16,10 +16,10 @@ struct A {
 };
 
 namespace N {
-  struct B : A {
-    void f(struct X *q) override;
-  };
-}
+struct B : A {
+  void f(struct X *q) override;
+};
+} // namespace N
 
 X x; // expected-error {{'X' must be defined before it is used}}
 // expected-note@b.h:1 {{here}}

@@ -23,8 +23,8 @@ namespace sys {
 
 /// A time point on the system clock. This is provided for two reasons:
 /// - to insulate us agains subtle differences in behavoir to differences in
-///   system clock precision (which is implementation-defined and differs between
-///   platforms).
+///   system clock precision (which is implementation-defined and differs
+///   between platforms).
 /// - to shorten the type name
 /// The default precision is nanoseconds. If need a specific precision specify
 /// it explicitly. If unsure, use the default. If you need a time point on a
@@ -40,18 +40,16 @@ inline std::time_t toTimeT(TimePoint<> TP) {
 }
 
 /// Convert a std::time_t to a TimePoint
-inline TimePoint<std::chrono::seconds>
-toTimePoint(std::time_t T) {
+inline TimePoint<std::chrono::seconds> toTimePoint(std::time_t T) {
   using namespace std::chrono;
   return time_point_cast<seconds>(system_clock::from_time_t(T));
 }
 
 /// Convert a std::time_t + nanoseconds to a TimePoint
-inline TimePoint<>
-toTimePoint(std::time_t T, uint32_t nsec) {
+inline TimePoint<> toTimePoint(std::time_t T, uint32_t nsec) {
   using namespace std::chrono;
-  return time_point_cast<nanoseconds>(system_clock::from_time_t(T))
-    + nanoseconds(nsec);
+  return time_point_cast<nanoseconds>(system_clock::from_time_t(T)) +
+         nanoseconds(nsec);
 }
 
 } // namespace sys
@@ -66,8 +64,7 @@ raw_ostream &operator<<(raw_ostream &OS, sys::TimePoint<> TP);
 ///   - %N is nanos: 000000000 - 999999999
 ///
 /// If no options are given, the default format is "%Y-%m-%d %H:%M:%S.%N".
-template <>
-struct format_provider<sys::TimePoint<>> {
+template <> struct format_provider<sys::TimePoint<>> {
   static void format(const sys::TimePoint<> &TP, llvm::raw_ostream &OS,
                      StringRef Style);
 };
@@ -122,7 +119,7 @@ private:
   }
 
   static std::pair<InternalRep, StringRef> consumeUnit(StringRef &Style,
-                                                        const Dur &D) {
+                                                       const Dur &D) {
     using namespace std::chrono;
     if (Style.consume_front("ns"))
       return {getAs<std::nano>(D), "ns"};

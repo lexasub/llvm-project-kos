@@ -26,4 +26,3 @@ int main() {
 // CHECK:     #0 AnnotateRWLockAcquired
 // CHECK:     #1 main
 // CHECK: SUMMARY: ThreadSanitizer: double lock of a mutex {{.*}}mutex_double_lock.cpp{{.*}}ThreadFunc
-

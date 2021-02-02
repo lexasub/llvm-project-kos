@@ -51,8 +51,7 @@ std::vector<SymbolInfo::Context> GetContexts(const NamedDecl *ND) {
         llvm::isa<LinkageSpecDecl>(Context))
       break;
 
-    assert(llvm::isa<NamedDecl>(Context) &&
-           "Expect Context to be a NamedDecl");
+    assert(llvm::isa<NamedDecl>(Context) && "Expect Context to be a NamedDecl");
     if (const auto *NSD = dyn_cast<NamespaceDecl>(Context)) {
       if (!NSD->isInlineNamespace())
         Contexts.emplace_back(SymbolInfo::ContextType::Namespace,
@@ -106,7 +105,8 @@ CreateSymbolInfo(const NamedDecl *ND, const SourceManager &SM,
   }
 
   std::string FilePath = getIncludePath(SM, Loc, Collector);
-  if (FilePath.empty()) return llvm::None;
+  if (FilePath.empty())
+    return llvm::None;
 
   return SymbolInfo(ND->getNameAsString(), Type, FilePath, GetContexts(ND));
 }

@@ -125,8 +125,7 @@ std::error_code MissingSymbolDefinitions::convertToErrorCode() const {
 }
 
 void MissingSymbolDefinitions::log(raw_ostream &OS) const {
-  OS << "Missing definitions in module " << ModuleName
-     << ": " << Symbols;
+  OS << "Missing definitions in module " << ModuleName << ": " << Symbols;
 }
 
 std::error_code UnexpectedSymbolDefinitions::convertToErrorCode() const {
@@ -134,8 +133,7 @@ std::error_code UnexpectedSymbolDefinitions::convertToErrorCode() const {
 }
 
 void UnexpectedSymbolDefinitions::log(raw_ostream &OS) const {
-  OS << "Unexpected definitions in module " << ModuleName
-     << ": " << Symbols;
+  OS << "Unexpected definitions in module " << ModuleName << ": " << Symbols;
 }
 
 AsynchronousSymbolQuery::AsynchronousSymbolQuery(
@@ -662,7 +660,7 @@ JITDylib::defineMaterializing(SymbolFlagsMap SymbolFlags) {
         continue;
       } else
         EntryItr =
-          Symbols.insert(std::make_pair(Name, SymbolTableEntry(Flags))).first;
+            Symbols.insert(std::make_pair(Name, SymbolTableEntry(Flags))).first;
 
       AddedSyms.push_back(EntryItr);
       EntryItr->second.setState(SymbolState::Materializing);
@@ -684,66 +682,64 @@ Error JITDylib::replace(MaterializationResponsibility &FromMR,
   std::unique_ptr<MaterializationUnit> MustRunMU;
   std::unique_ptr<MaterializationResponsibility> MustRunMR;
 
-  auto Err =
-      ES.runSessionLocked([&, this]() -> Error {
-        auto RT = getTracker(FromMR);
+  auto Err = ES.runSessionLocked([&, this]() -> Error {
+    auto RT = getTracker(FromMR);
 
-        if (RT->isDefunct())
-          return make_error<ResourceTrackerDefunct>(std::move(RT));
+    if (RT->isDefunct())
+      return make_error<ResourceTrackerDefunct>(std::move(RT));
 
 #ifndef NDEBUG
-        for (auto &KV : MU->getSymbols()) {
-          auto SymI = Symbols.find(KV.first);
-          assert(SymI != Symbols.end() && "Replacing unknown symbol");
-          assert(SymI->second.getState() == SymbolState::Materializing &&
-                 "Can not replace a symbol that ha is not materializing");
-          assert(!SymI->second.hasMaterializerAttached() &&
-                 "Symbol should not have materializer attached already");
-          assert(UnmaterializedInfos.count(KV.first) == 0 &&
-                 "Symbol being replaced should have no UnmaterializedInfo");
-        }
+    for (auto &KV : MU->getSymbols()) {
+      auto SymI = Symbols.find(KV.first);
+      assert(SymI != Symbols.end() && "Replacing unknown symbol");
+      assert(SymI->second.getState() == SymbolState::Materializing &&
+             "Can not replace a symbol that ha is not materializing");
+      assert(!SymI->second.hasMaterializerAttached() &&
+             "Symbol should not have materializer attached already");
+      assert(UnmaterializedInfos.count(KV.first) == 0 &&
+             "Symbol being replaced should have no UnmaterializedInfo");
+    }
 #endif // NDEBUG
 
-        // If the tracker is defunct we need to bail out immediately.
+    // If the tracker is defunct we need to bail out immediately.
 
-        // If any symbol has pending queries against it then we need to
-        // materialize MU immediately.
-        for (auto &KV : MU->getSymbols()) {
-          auto MII = MaterializingInfos.find(KV.first);
-          if (MII != MaterializingInfos.end()) {
-            if (MII->second.hasQueriesPending()) {
-              MustRunMR = ES.createMaterializationResponsibility(
-                  *RT, std::move(MU->SymbolFlags), std::move(MU->InitSymbol));
-              MustRunMU = std::move(MU);
-              return Error::success();
-            }
-          }
+    // If any symbol has pending queries against it then we need to
+    // materialize MU immediately.
+    for (auto &KV : MU->getSymbols()) {
+      auto MII = MaterializingInfos.find(KV.first);
+      if (MII != MaterializingInfos.end()) {
+        if (MII->second.hasQueriesPending()) {
+          MustRunMR = ES.createMaterializationResponsibility(
+              *RT, std::move(MU->SymbolFlags), std::move(MU->InitSymbol));
+          MustRunMU = std::move(MU);
+          return Error::success();
         }
+      }
+    }
 
-        // Otherwise, make MU responsible for all the symbols.
-        auto RTI = MRTrackers.find(&FromMR);
-        assert(RTI != MRTrackers.end() && "No tracker for FromMR");
-        auto UMI =
-            std::make_shared<UnmaterializedInfo>(std::move(MU), RTI->second);
-        for (auto &KV : UMI->MU->getSymbols()) {
-          auto SymI = Symbols.find(KV.first);
-          assert(SymI->second.getState() == SymbolState::Materializing &&
-                 "Can not replace a symbol that is not materializing");
-          assert(!SymI->second.hasMaterializerAttached() &&
-                 "Can not replace a symbol that has a materializer attached");
-          assert(UnmaterializedInfos.count(KV.first) == 0 &&
-                 "Unexpected materializer entry in map");
-          SymI->second.setAddress(SymI->second.getAddress());
-          SymI->second.setMaterializerAttached(true);
+    // Otherwise, make MU responsible for all the symbols.
+    auto RTI = MRTrackers.find(&FromMR);
+    assert(RTI != MRTrackers.end() && "No tracker for FromMR");
+    auto UMI = std::make_shared<UnmaterializedInfo>(std::move(MU), RTI->second);
+    for (auto &KV : UMI->MU->getSymbols()) {
+      auto SymI = Symbols.find(KV.first);
+      assert(SymI->second.getState() == SymbolState::Materializing &&
+             "Can not replace a symbol that is not materializing");
+      assert(!SymI->second.hasMaterializerAttached() &&
+             "Can not replace a symbol that has a materializer attached");
+      assert(UnmaterializedInfos.count(KV.first) == 0 &&
+             "Unexpected materializer entry in map");
+      SymI->second.setAddress(SymI->second.getAddress());
+      SymI->second.setMaterializerAttached(true);
 
-          auto &UMIEntry = UnmaterializedInfos[KV.first];
-          assert((!UMIEntry || !UMIEntry->MU) &&
-                 "Replacing symbol with materializer still attached");
-          UMIEntry = UMI;
-        }
+      auto &UMIEntry = UnmaterializedInfos[KV.first];
+      assert((!UMIEntry || !UMIEntry->MU) &&
+             "Replacing symbol with materializer still attached");
+      UMIEntry = UMI;
+    }
 
-        return Error::success();
-      });
+    return Error::success();
+  });
 
   if (Err)
     return Err;
@@ -805,9 +801,9 @@ void JITDylib::addDependencies(const SymbolStringPtr &Name,
          "Can not add dependencies for a symbol that is not materializing");
 
   LLVM_DEBUG({
-      dbgs() << "In " << getName() << " adding dependencies for "
-             << *Name << ": " << Dependencies << "\n";
-    });
+    dbgs() << "In " << getName() << " adding dependencies for " << *Name << ": "
+           << Dependencies << "\n";
+  });
 
   // If Name is already in an error state then just bail out.
   if (Symbols[Name].getFlags().hasError())
@@ -2640,7 +2636,8 @@ Error ExecutionSession::OL_notifyResolved(MaterializationResponsibility &MR,
 
 Error ExecutionSession::OL_notifyEmitted(MaterializationResponsibility &MR) {
   LLVM_DEBUG({
-    dbgs() << "In " << MR.JD->getName() << " emitting " << MR.SymbolFlags << "\n";
+    dbgs() << "In " << MR.JD->getName() << " emitting " << MR.SymbolFlags
+           << "\n";
   });
 
   if (auto Err = MR.JD->emit(MR, MR.SymbolFlags))
@@ -2657,7 +2654,8 @@ Error ExecutionSession::OL_defineMaterializing(
     dbgs() << "In " << MR.JD->getName() << " defining materializing symbols "
            << NewSymbolFlags << "\n";
   });
-  if (auto AcceptedDefs = MR.JD->defineMaterializing(std::move(NewSymbolFlags))) {
+  if (auto AcceptedDefs =
+          MR.JD->defineMaterializing(std::move(NewSymbolFlags))) {
     // Add all newly accepted symbols to this responsibility object.
     for (auto &KV : *AcceptedDefs)
       MR.SymbolFlags.insert(KV);
@@ -2758,8 +2756,8 @@ void ExecutionSession::OL_addDependenciesForAll(
     MaterializationResponsibility &MR,
     const SymbolDependenceMap &Dependencies) {
   LLVM_DEBUG({
-    dbgs() << "Adding dependencies for all symbols in " << MR.SymbolFlags << ": "
-           << Dependencies << "\n";
+    dbgs() << "Adding dependencies for all symbols in " << MR.SymbolFlags
+           << ": " << Dependencies << "\n";
   });
   for (auto &KV : MR.SymbolFlags)
     MR.JD->addDependencies(KV.first, Dependencies);

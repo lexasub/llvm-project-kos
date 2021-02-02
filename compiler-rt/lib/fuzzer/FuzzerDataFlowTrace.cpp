@@ -45,25 +45,29 @@ bool BlockCoverage::AppendCoverage(std::istream &IN) {
     if (L.empty())
       continue;
     std::stringstream SS(L.c_str() + 1);
-    size_t FunctionId  = 0;
+    size_t FunctionId = 0;
     SS >> FunctionId;
     if (L[0] == 'F') {
       FunctionsWithDFT.insert(FunctionId);
       continue;
     }
-    if (L[0] != 'C') continue;
+    if (L[0] != 'C')
+      continue;
     Vector<uint32_t> CoveredBlocks;
     while (true) {
       uint32_t BB = 0;
       SS >> BB;
-      if (!SS) break;
+      if (!SS)
+        break;
       CoveredBlocks.push_back(BB);
     }
-    if (CoveredBlocks.empty()) return false;
+    if (CoveredBlocks.empty())
+      return false;
     uint32_t NumBlocks = CoveredBlocks.back();
     CoveredBlocks.pop_back();
     for (auto BB : CoveredBlocks)
-      if (BB >= NumBlocks) return false;
+      if (BB >= NumBlocks)
+        return false;
     auto It = Functions.find(FunctionId);
     auto &Counters =
         It == Functions.end()
@@ -71,7 +75,8 @@ bool BlockCoverage::AppendCoverage(std::istream &IN) {
                   .first->second
             : It->second;
 
-    if (Counters.size() != NumBlocks) return false;  // wrong number of blocks.
+    if (Counters.size() != NumBlocks)
+      return false; // wrong number of blocks.
 
     Counters[0]++;
     for (auto BB : CoveredBlocks)
@@ -107,8 +112,10 @@ void DataFlowTrace::ReadCoverage(const std::string &DirPath) {
   GetSizedFilesFromDir(DirPath, &Files);
   for (auto &SF : Files) {
     auto Name = Basename(SF.File);
-    if (Name == kFunctionsTxt) continue;
-    if (!CorporaHashes.count(Name)) continue;
+    if (Name == kFunctionsTxt)
+      continue;
+    if (!CorporaHashes.count(Name))
+      continue;
     std::ifstream IF(SF.File);
     Coverage.AppendCoverage(IF);
   }
@@ -159,7 +166,8 @@ static bool ParseDFTLine(const std::string &Line, size_t *FunctionNum,
 
 bool DataFlowTrace::Init(const std::string &DirPath, std::string *FocusFunction,
                          Vector<SizedFile> &CorporaFiles, Random &Rand) {
-  if (DirPath.empty()) return false;
+  if (DirPath.empty())
+    return false;
   Printf("INFO: DataFlowTrace: reading from '%s'\n", DirPath.c_str());
   Vector<SizedFile> Files;
   GetSizedFilesFromDir(DirPath, &Files);
@@ -200,7 +208,8 @@ bool DataFlowTrace::Init(const std::string &DirPath, std::string *FocusFunction,
     Printf("INFO: AUTOFOCUS: %zd %s\n", FocusFuncIdx,
            FunctionNames[FocusFuncIdx].c_str());
     for (size_t i = 0; i < NumFunctions; i++) {
-      if (!Weights[i]) continue;
+      if (!Weights[i])
+        continue;
       Printf("  [%zd] W %g\tBB-tot %u\tBB-cov %u\tEntryFreq %u:\t%s\n", i,
              Weights[i], Coverage.GetNumberOfBlocks(i),
              Coverage.GetNumberOfCoveredBlocks(i), Coverage.GetCounter(i, 0),
@@ -216,8 +225,10 @@ bool DataFlowTrace::Init(const std::string &DirPath, std::string *FocusFunction,
   size_t NumTracesWithFocusFunction = 0;
   for (auto &SF : Files) {
     auto Name = Basename(SF.File);
-    if (Name == kFunctionsTxt) continue;
-    if (!CorporaHashes.count(Name)) continue;  // not in the corpus.
+    if (Name == kFunctionsTxt)
+      continue;
+    if (!CorporaHashes.count(Name))
+      continue; // not in the corpus.
     NumTraceFiles++;
     // Printf("=== %s\n", Name.c_str());
     std::ifstream IF(SF.File);
@@ -283,4 +294,4 @@ int CollectDataFlow(const std::string &DFTBinary, const std::string &DirPath,
   return 0;
 }
 
-}  // namespace fuzzer
+} // namespace fuzzer

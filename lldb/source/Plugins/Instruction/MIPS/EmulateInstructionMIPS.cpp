@@ -75,7 +75,7 @@ EmulateInstructionMIPS::EmulateInstructionMIPS(
  * MCDisassembler
  * to decode the instructions so that the decoding complexity stays with LLVM.
  * Initialize the MIPS targets and disassemblers.
-*/
+ */
 #ifdef __mips__
   if (!target) {
     LLVMInitializeMipsTargetInfo();
@@ -1008,7 +1008,7 @@ bool EmulateInstructionMIPS::SetInstruction(const Opcode &insn_opcode,
       /*
        * The address belongs to microMIPS function. To find the size of
        * next instruction use microMIPS disassembler.
-      */
+       */
       m_use_alt_disaasm = true;
 
       uint32_t current_inst_size = insn_opcode.GetByteSize();
@@ -1033,7 +1033,7 @@ bool EmulateInstructionMIPS::SetInstruction(const Opcode &insn_opcode,
        * If the address class is not AddressClass::eCodeAlternateISA then
        * the function is not microMIPS. In this case instruction size is
        * always 4 bytes.
-      */
+       */
       m_next_inst_size = 4;
       return true;
     }
@@ -1083,7 +1083,7 @@ bool EmulateInstructionMIPS::EvaluateInstruction(uint32_t evaluate_options) {
   /*
    * mc_insn.getOpcode() returns decoded opcode. However to make use
    * of llvm::Mips::<insn> we would need "MipsGenInstrInfo.inc".
-  */
+   */
   const char *op_name = m_insn_info->getName(mc_insn.getOpcode()).data();
 
   if (op_name == nullptr)
@@ -1092,7 +1092,7 @@ bool EmulateInstructionMIPS::EvaluateInstruction(uint32_t evaluate_options) {
   /*
    * Decoding has been done already. Just get the call-back function
    * and emulate the instruction.
-  */
+   */
   MipsOpcode *opcode_data = GetOpcodeForInstruction(op_name);
 
   if (opcode_data == nullptr)
@@ -1752,9 +1752,9 @@ bool EmulateInstructionMIPS::Emulate_JRADDIUSP(llvm::MCInst &insn) {
   int32_t imm5 = insn.getOperand(0).getImm();
 
   /* JRADDIUSP immediate
-  *       PC <- RA
-  *       SP <- SP + zero_extend(Immediate << 2)
-  */
+   *       PC <- RA
+   *       SP <- SP + zero_extend(Immediate << 2)
+   */
 
   // This instruction operates implicitly on stack pointer, so read <sp>
   // register.
@@ -2209,7 +2209,7 @@ bool EmulateInstructionMIPS::Emulate_Branch_MM(llvm::MCInst &insn) {
    *      condition <- (GPR[rs] == 0)
    *      if condition then
    *         PC = PC + 4 + sign_ext (offset || 0)
-  */
+   */
 
   uint32_t rs = m_reg_info->getEncodingValue(insn.getOperand(0).getReg());
   int32_t offset = insn.getOperand(1).getImm();
@@ -2340,7 +2340,7 @@ bool EmulateInstructionMIPS::Emulate_JALx(llvm::MCInst &insn) {
    *      RA = PC + 8
    *      offset = sign_ext (offset << 2)
    *      PC = PC[31-28] | offset
-  */
+   */
   offset = insn.getOperand(0).getImm();
 
   pc = ReadRegisterUnsigned(eRegisterKindDWARF, dwarf_pc_mips, 0, &success);
@@ -2417,7 +2417,7 @@ bool EmulateInstructionMIPS::Emulate_BAL(llvm::MCInst &insn) {
    *      offset = sign_ext (offset << 2)
    *      RA = PC + 8
    *      PC = PC + offset
-  */
+   */
   offset = insn.getOperand(0).getImm();
 
   pc = ReadRegisterUnsigned(eRegisterKindDWARF, dwarf_pc_mips, 0, &success);
@@ -2448,7 +2448,7 @@ bool EmulateInstructionMIPS::Emulate_BALC(llvm::MCInst &insn) {
    *      offset = sign_ext (offset << 2)
    *      RA = PC + 4
    *      PC = PC + 4 + offset
-  */
+   */
   offset = insn.getOperand(0).getImm();
 
   pc = ReadRegisterUnsigned(eRegisterKindDWARF, dwarf_pc_mips, 0, &success);
@@ -2478,7 +2478,7 @@ bool EmulateInstructionMIPS::Emulate_BC(llvm::MCInst &insn) {
    * BC offset
    *      offset = sign_ext (offset << 2)
    *      PC = PC + 4 + offset
-  */
+   */
   offset = insn.getOperand(0).getImm();
 
   pc = ReadRegisterUnsigned(eRegisterKindDWARF, dwarf_pc_mips, 0, &success);
@@ -2501,7 +2501,7 @@ bool EmulateInstructionMIPS::Emulate_J(llvm::MCInst &insn) {
    * J offset
    *      offset = sign_ext (offset << 2)
    *      PC = PC[63-28] | offset
-  */
+   */
   offset = insn.getOperand(0).getImm();
 
   pc = ReadRegisterUnsigned(eRegisterKindDWARF, dwarf_pc_mips, 0, &success);
@@ -2524,7 +2524,7 @@ bool EmulateInstructionMIPS::Emulate_JAL(llvm::MCInst &insn) {
    * JAL offset
    *      offset = sign_ext (offset << 2)
    *      PC = PC[63-28] | offset
-  */
+   */
   offset = insn.getOperand(0).getImm();
 
   pc = ReadRegisterUnsigned(eRegisterKindDWARF, dwarf_pc_mips, 0, &success);
@@ -2556,7 +2556,7 @@ bool EmulateInstructionMIPS::Emulate_JALR(llvm::MCInst &insn) {
    * JALR rt, rs
    *      GPR[rt] = PC + 8
    *      PC = GPR[rs]
-  */
+   */
   rt = m_reg_info->getEncodingValue(insn.getOperand(0).getReg());
   rs = m_reg_info->getEncodingValue(insn.getOperand(1).getReg());
 
@@ -2592,7 +2592,7 @@ bool EmulateInstructionMIPS::Emulate_JIALC(llvm::MCInst &insn) {
    *      offset = sign_ext (offset)
    *      PC = GPR[rt] + offset
    *      RA = PC + 4
-  */
+   */
   rt = m_reg_info->getEncodingValue(insn.getOperand(0).getReg());
   offset = insn.getOperand(1).getImm();
 
@@ -2629,7 +2629,7 @@ bool EmulateInstructionMIPS::Emulate_JIC(llvm::MCInst &insn) {
    * JIC rt, offset
    *      offset = sign_ext (offset)
    *      PC = GPR[rt] + offset
-  */
+   */
   rt = m_reg_info->getEncodingValue(insn.getOperand(0).getReg());
   offset = insn.getOperand(1).getImm();
 
@@ -2654,7 +2654,7 @@ bool EmulateInstructionMIPS::Emulate_JR(llvm::MCInst &insn) {
   /*
    * JR rs
    *      PC = GPR[rs]
-  */
+   */
   rs = m_reg_info->getEncodingValue(insn.getOperand(0).getReg());
 
   rs_val = ReadRegisterUnsigned(eRegisterKindDWARF, dwarf_zero_mips + rs, 0,
@@ -2722,7 +2722,7 @@ bool EmulateInstructionMIPS::Emulate_BC1EQZ(llvm::MCInst &insn) {
    *      if condition then
    *          offset = sign_ext (offset)
    *          PC = PC + 4 + offset
-  */
+   */
   ft = m_reg_info->getEncodingValue(insn.getOperand(0).getReg());
   offset = insn.getOperand(1).getImm();
 
@@ -2758,7 +2758,7 @@ bool EmulateInstructionMIPS::Emulate_BC1NEZ(llvm::MCInst &insn) {
    *      if condition then
    *          offset = sign_ext (offset)
    *          PC = PC + 4 + offset
-  */
+   */
   ft = m_reg_info->getEncodingValue(insn.getOperand(0).getReg());
   offset = insn.getOperand(1).getImm();
 

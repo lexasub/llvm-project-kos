@@ -3,18 +3,18 @@
 // expected-note@+1 {{previous definition is here}}
 int main() {
   return 0;
-}  // no-warning
+} // no-warning
 
 // expected-error@+1 {{redefinition of 'main'}}
 int main() {
   return 1.0;
-}  // no-warning
+} // no-warning
 
 int main() {
   bool b = true;
-  return b;  // no-warning
+  return b; // no-warning
 }
 
 int main() {
-  return true;  // expected-warning {{bool literal returned from 'main'}}
+  return true; // expected-warning {{bool literal returned from 'main'}}
 }

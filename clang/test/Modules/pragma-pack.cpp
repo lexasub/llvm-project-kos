@@ -20,6 +20,6 @@
 
 // Check that we don't serialize pragma pack state until/unless including an
 // empty file from the same module (but different submodule) has no effect.
-#pragma pack (show) // expected-warning {{value of #pragma pack(show) == 8}}
+#pragma pack(show) // expected-warning {{value of #pragma pack(show) == 8}}
 #include "empty.h"
-#pragma pack (show) // expected-warning {{value of #pragma pack(show) == 8}}
+#pragma pack(show) // expected-warning {{value of #pragma pack(show) == 8}}

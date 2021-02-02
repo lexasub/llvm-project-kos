@@ -18,19 +18,18 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        typedef std::minstd_rand0 Engine;
-        typedef std::knuth_b Adaptor;
-        Engine e;
-        Adaptor a(e);
-        for (unsigned k = 0; k <= Adaptor::table_size; ++k) {
-            (void)e();
-        }
-
-        assert(a.base() == e);
+int main(int, char**) {
+  {
+    typedef std::minstd_rand0 Engine;
+    typedef std::knuth_b Adaptor;
+    Engine e;
+    Adaptor a(e);
+    for (unsigned k = 0; k <= Adaptor::table_size; ++k) {
+      (void)e();
     }
+
+    assert(a.base() == e);
+  }
 
   return 0;
 }

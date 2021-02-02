@@ -15,7 +15,7 @@ void funcF() {}
 
 namespace namespaceG {
 // CHECK-MESSAGES: :[[@LINE-1]]:11: warning: '__llvm_libc' needs to be the outermost namespace
-namespace __llvm_libc{
+namespace __llvm_libc {
 namespace namespaceH {
 class ClassB;
 } // namespace namespaceH

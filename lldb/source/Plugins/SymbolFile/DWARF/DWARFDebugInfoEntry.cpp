@@ -442,7 +442,8 @@ size_t DWARFDebugInfoEntry::GetAttributes(DWARFUnit *cu,
                                              recurse, curr_depth + 1);
         }
       } else {
-        llvm::Optional<uint8_t> fixed_skip_size = DWARFFormValue::GetFixedSize(form, cu);
+        llvm::Optional<uint8_t> fixed_skip_size =
+            DWARFFormValue::GetFixedSize(form, cu);
         if (fixed_skip_size)
           offset += *fixed_skip_size;
         else
@@ -474,8 +475,8 @@ dw_offset_t DWARFDebugInfoEntry::GetAttributeValue(
 
       uint32_t idx = 0;
       while (idx < attr_idx)
-        DWARFFormValue::SkipValue(abbrevDecl->GetFormByIndex(idx++),
-                                  data, &offset, cu);
+        DWARFFormValue::SkipValue(abbrevDecl->GetFormByIndex(idx++), data,
+                                  &offset, cu);
 
       const dw_offset_t attr_offset = offset;
       form_value.SetUnit(cu);
@@ -880,9 +881,8 @@ bool DWARFDebugInfoEntry::IsGlobalOrStaticScopeVariable() const {
 
 bool DWARFDebugInfoEntry::operator==(const DWARFDebugInfoEntry &rhs) const {
   return m_offset == rhs.m_offset && m_parent_idx == rhs.m_parent_idx &&
-         m_sibling_idx == rhs.m_sibling_idx &&
-         m_abbr_idx == rhs.m_abbr_idx && m_has_children == rhs.m_has_children &&
-         m_tag == rhs.m_tag;
+         m_sibling_idx == rhs.m_sibling_idx && m_abbr_idx == rhs.m_abbr_idx &&
+         m_has_children == rhs.m_has_children && m_tag == rhs.m_tag;
 }
 
 bool DWARFDebugInfoEntry::operator!=(const DWARFDebugInfoEntry &rhs) const {

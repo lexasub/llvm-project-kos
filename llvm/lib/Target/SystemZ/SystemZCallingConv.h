@@ -15,11 +15,11 @@
 
 namespace llvm {
 namespace SystemZ {
-  const unsigned NumArgGPRs = 5;
-  extern const MCPhysReg ArgGPRs[NumArgGPRs];
+const unsigned NumArgGPRs = 5;
+extern const MCPhysReg ArgGPRs[NumArgGPRs];
 
-  const unsigned NumArgFPRs = 4;
-  extern const MCPhysReg ArgFPRs[NumArgFPRs];
+const unsigned NumArgFPRs = 4;
+extern const MCPhysReg ArgFPRs[NumArgFPRs];
 } // end namespace SystemZ
 
 class SystemZCCState : public CCState {
@@ -84,11 +84,9 @@ public:
 //    CCIfType<[i128], CCPassIndirect<i64>>,
 // except that i128 is not a legal type, and therefore gets split by
 // common code into a pair of i64 arguments.
-inline bool CC_SystemZ_I128Indirect(unsigned &ValNo, MVT &ValVT,
-                                    MVT &LocVT,
+inline bool CC_SystemZ_I128Indirect(unsigned &ValNo, MVT &ValVT, MVT &LocVT,
                                     CCValAssign::LocInfo &LocInfo,
-                                    ISD::ArgFlagsTy &ArgFlags,
-                                    CCState &State) {
+                                    ISD::ArgFlagsTy &ArgFlags, CCState &State) {
   SmallVectorImpl<CCValAssign> &PendingMembers = State.getPendingLocs();
 
   // ArgFlags.isSplit() is true on the first part of a i128 argument;
@@ -99,8 +97,8 @@ inline bool CC_SystemZ_I128Indirect(unsigned &ValNo, MVT &ValVT,
   // Push a pending Indirect value location for each part.
   LocVT = MVT::i64;
   LocInfo = CCValAssign::Indirect;
-  PendingMembers.push_back(CCValAssign::getPending(ValNo, ValVT,
-                                                   LocVT, LocInfo));
+  PendingMembers.push_back(
+      CCValAssign::getPending(ValNo, ValVT, LocVT, LocInfo));
   if (!ArgFlags.isSplitEnd())
     return true;
 

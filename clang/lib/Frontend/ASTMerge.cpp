@@ -5,12 +5,12 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 //
 //===----------------------------------------------------------------------===//
-#include "clang/Frontend/ASTUnit.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/ASTDiagnostic.h"
 #include "clang/AST/ASTImporter.h"
 #include "clang/AST/ASTImporterSharedState.h"
 #include "clang/Basic/Diagnostic.h"
+#include "clang/Frontend/ASTUnit.h"
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/FrontendActions.h"
 
@@ -33,19 +33,18 @@ bool ASTMergeAction::BeginSourceFileAction(CompilerInstance &CI) {
 void ASTMergeAction::ExecuteAction() {
   CompilerInstance &CI = getCompilerInstance();
   CI.getDiagnostics().getClient()->BeginSourceFile(
-                                             CI.getASTContext().getLangOpts());
+      CI.getASTContext().getLangOpts());
   CI.getDiagnostics().SetArgToStringFn(&FormatASTNodeDiagnosticArgument,
                                        &CI.getASTContext());
-  IntrusiveRefCntPtr<DiagnosticIDs>
-      DiagIDs(CI.getDiagnostics().getDiagnosticIDs());
+  IntrusiveRefCntPtr<DiagnosticIDs> DiagIDs(
+      CI.getDiagnostics().getDiagnosticIDs());
   auto SharedState = std::make_shared<ASTImporterSharedState>(
       *CI.getASTContext().getTranslationUnitDecl());
   for (unsigned I = 0, N = ASTFiles.size(); I != N; ++I) {
-    IntrusiveRefCntPtr<DiagnosticsEngine>
-        Diags(new DiagnosticsEngine(DiagIDs, &CI.getDiagnosticOpts(),
-                                    new ForwardingDiagnosticConsumer(
-                                          *CI.getDiagnostics().getClient()),
-                                    /*ShouldOwnClient=*/true));
+    IntrusiveRefCntPtr<DiagnosticsEngine> Diags(new DiagnosticsEngine(
+        DiagIDs, &CI.getDiagnosticOpts(),
+        new ForwardingDiagnosticConsumer(*CI.getDiagnostics().getClient()),
+        /*ShouldOwnClient=*/true));
     std::unique_ptr<ASTUnit> Unit = ASTUnit::LoadFromASTFile(
         ASTFiles[I], CI.getPCHContainerReader(), ASTUnit::LoadEverything, Diags,
         CI.getFileSystemOpts(), false);
@@ -86,12 +85,12 @@ void ASTMergeAction::EndSourceFileAction() {
 
 ASTMergeAction::ASTMergeAction(std::unique_ptr<FrontendAction> adaptedAction,
                                ArrayRef<std::string> ASTFiles)
-: AdaptedAction(std::move(adaptedAction)), ASTFiles(ASTFiles.begin(), ASTFiles.end()) {
+    : AdaptedAction(std::move(adaptedAction)),
+      ASTFiles(ASTFiles.begin(), ASTFiles.end()) {
   assert(AdaptedAction && "ASTMergeAction needs an action to adapt");
 }
 
-ASTMergeAction::~ASTMergeAction() {
-}
+ASTMergeAction::~ASTMergeAction() {}
 
 bool ASTMergeAction::usesPreprocessorOnly() const {
   return AdaptedAction->usesPreprocessorOnly();

@@ -16,6 +16,6 @@ struct B : public A {
 };
 
 int main() {
-  A* a = new B();
-  B *b = (B*)a;
+  A *a = new B();
+  B *b = (B *)a;
 }

@@ -64,23 +64,22 @@ static codegen::RegisterCodeGenFlags CGF;
 // and back-end code generation options are specified with the target machine.
 //
 static cl::opt<std::string>
-InputFilename(cl::Positional, cl::desc("<input bitcode>"), cl::init("-"));
+    InputFilename(cl::Positional, cl::desc("<input bitcode>"), cl::init("-"));
 
 static cl::opt<std::string>
-InputLanguage("x", cl::desc("Input language ('ir' or 'mir')"));
+    InputLanguage("x", cl::desc("Input language ('ir' or 'mir')"));
+
+static cl::opt<std::string> OutputFilename("o", cl::desc("Output filename"),
+                                           cl::value_desc("filename"));
 
 static cl::opt<std::string>
-OutputFilename("o", cl::desc("Output filename"), cl::value_desc("filename"));
-
-static cl::opt<std::string>
-    SplitDwarfOutputFile("split-dwarf-output",
-                         cl::desc(".dwo output filename"),
+    SplitDwarfOutputFile("split-dwarf-output", cl::desc(".dwo output filename"),
                          cl::value_desc("filename"));
 
 static cl::opt<unsigned>
-TimeCompilations("time-compilations", cl::Hidden, cl::init(1u),
-                 cl::value_desc("N"),
-                 cl::desc("Repeat compilation N times for timing"));
+    TimeCompilations("time-compilations", cl::Hidden, cl::init(1u),
+                     cl::value_desc("N"),
+                     cl::desc("Repeat compilation N times for timing"));
 
 static cl::opt<std::string>
     BinutilsVersion("binutils-version", cl::Hidden,
@@ -92,8 +91,8 @@ static cl::opt<std::string>
                              "regardless of binutils support"));
 
 static cl::opt<bool>
-NoIntegratedAssembler("no-integrated-as", cl::Hidden,
-                      cl::desc("Disable integrated assembler"));
+    NoIntegratedAssembler("no-integrated-as", cl::Hidden,
+                          cl::desc("Disable integrated assembler"));
 
 static cl::opt<bool>
     PreserveComments("preserve-as-comments", cl::Hidden,
@@ -102,15 +101,13 @@ static cl::opt<bool>
 
 // Determine optimization level.
 static cl::opt<char>
-OptLevel("O",
-         cl::desc("Optimization level. [-O0, -O1, -O2, or -O3] "
-                  "(default = '-O2')"),
-         cl::Prefix,
-         cl::ZeroOrMore,
-         cl::init(' '));
+    OptLevel("O",
+             cl::desc("Optimization level. [-O0, -O1, -O2, or -O3] "
+                      "(default = '-O2')"),
+             cl::Prefix, cl::ZeroOrMore, cl::init(' '));
 
 static cl::opt<std::string>
-TargetTriple("mtriple", cl::desc("Override target triple for module"));
+    TargetTriple("mtriple", cl::desc("Override target triple for module"));
 
 static cl::opt<std::string> SplitDwarfFile(
     "split-dwarf-file",
@@ -120,8 +117,9 @@ static cl::opt<std::string> SplitDwarfFile(
 static cl::opt<bool> NoVerify("disable-verify", cl::Hidden,
                               cl::desc("Do not verify input module"));
 
-static cl::opt<bool> DisableSimplifyLibCalls("disable-simplify-libcalls",
-                                             cl::desc("Disable simplify-libcalls"));
+static cl::opt<bool>
+    DisableSimplifyLibCalls("disable-simplify-libcalls",
+                            cl::desc("Disable simplify-libcalls"));
 
 static cl::opt<bool> ShowMCEncoding("show-mc-encoding", cl::Hidden,
                                     cl::desc("Show encoding in .s output"));
@@ -189,7 +187,7 @@ struct RunPassOption {
       RunPassNames->push_back(std::string(PassName));
   }
 };
-}
+} // namespace
 
 static RunPassOption RunPassOpt;
 
@@ -390,8 +388,8 @@ int main(int argc, char **argv) {
   return 0;
 }
 
-static bool addPass(PassManagerBase &PM, const char *argv0,
-                    StringRef PassName, TargetPassConfig &TPC) {
+static bool addPass(PassManagerBase &PM, const char *argv0, StringRef PassName,
+                    TargetPassConfig &TPC) {
   if (PassName == "none")
     return false;
 
@@ -442,11 +440,20 @@ static int compileModule(char **argv, LLVMContext &Context) {
   default:
     WithColor::error(errs(), argv[0]) << "invalid optimization level.\n";
     return 1;
-  case ' ': break;
-  case '0': OLvl = CodeGenOpt::None; break;
-  case '1': OLvl = CodeGenOpt::Less; break;
-  case '2': OLvl = CodeGenOpt::Default; break;
-  case '3': OLvl = CodeGenOpt::Aggressive; break;
+  case ' ':
+    break;
+  case '0':
+    OLvl = CodeGenOpt::None;
+    break;
+  case '1':
+    OLvl = CodeGenOpt::Less;
+    break;
+  case '2':
+    OLvl = CodeGenOpt::Default;
+    break;
+  case '3':
+    OLvl = CodeGenOpt::Aggressive;
+    break;
   }
 
   // Parse 'none' or '$major.$minor'. Disallow -binutils-version=0 because we
@@ -571,13 +578,14 @@ static int compileModule(char **argv, LLVMContext &Context) {
   // Figure out where we are going to send the output.
   std::unique_ptr<ToolOutputFile> Out =
       GetOutputStream(TheTarget->getName(), TheTriple.getOS(), argv[0]);
-  if (!Out) return 1;
+  if (!Out)
+    return 1;
 
   std::unique_ptr<ToolOutputFile> DwoOut;
   if (!SplitDwarfOutputFile.empty()) {
     std::error_code EC;
     DwoOut = std::make_unique<ToolOutputFile>(SplitDwarfOutputFile, EC,
-                                               sys::fs::OF_None);
+                                              sys::fs::OF_None);
     if (EC)
       reportError(EC.message(), SplitDwarfOutputFile);
   }

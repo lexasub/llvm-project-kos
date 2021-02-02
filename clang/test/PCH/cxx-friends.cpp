@@ -17,15 +17,15 @@
 
 class F {
   void m() {
-    A* a;
+    A *a;
     a->x = 0;
   }
 };
 
-template<typename T> class PR12585::future_base::setter {
+template <typename T> class PR12585::future_base::setter {
 public:
   int f() {
-    return promise<T*>().k;
+    return promise<T *>().k;
   }
 };
 int k = PR12585::future_base::setter<int>().f();

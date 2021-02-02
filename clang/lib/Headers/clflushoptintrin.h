@@ -15,10 +15,10 @@
 #define __CLFLUSHOPTINTRIN_H
 
 /* Define the default attributes for the functions in this file. */
-#define __DEFAULT_FN_ATTRS __attribute__((__always_inline__, __nodebug__,  __target__("clflushopt")))
+#define __DEFAULT_FN_ATTRS                                                     \
+  __attribute__((__always_inline__, __nodebug__, __target__("clflushopt")))
 
-static __inline__ void __DEFAULT_FN_ATTRS
-_mm_clflushopt(void const * __m) {
+static __inline__ void __DEFAULT_FN_ATTRS _mm_clflushopt(void const *__m) {
   __builtin_ia32_clflushopt(__m);
 }
 

@@ -9,8 +9,7 @@
 #include "GISelMITest.h"
 
 namespace llvm {
-std::ostream &
-operator<<(std::ostream &OS, const LLT Ty) {
+std::ostream &operator<<(std::ostream &OS, const LLT Ty) {
   std::string Repr;
   raw_string_ostream SS{Repr};
   Ty.print(SS);
@@ -18,8 +17,7 @@ operator<<(std::ostream &OS, const LLT Ty) {
   return OS;
 }
 
-std::ostream &
-operator<<(std::ostream &OS, const MachineFunction &MF) {
+std::ostream &operator<<(std::ostream &OS, const MachineFunction &MF) {
   std::string Repr;
   raw_string_ostream SS{Repr};
   MF.print(SS);
@@ -27,7 +25,7 @@ operator<<(std::ostream &OS, const MachineFunction &MF) {
   return OS;
 }
 
-}
+} // namespace llvm
 
 std::unique_ptr<LLVMTargetMachine>
 AArch64GISelMITest::createTargetMachine() const {
@@ -76,14 +74,13 @@ AMDGPUGISelMITest::createTargetMachine() const {
     return nullptr;
 
   TargetOptions Options;
-  return std::unique_ptr<LLVMTargetMachine>(
-      static_cast<LLVMTargetMachine *>(T->createTargetMachine(
-          "amdgcn-amd-amdhsa", "gfx900", "", Options, None, None,
-          CodeGenOpt::Aggressive)));
+  return std::unique_ptr<LLVMTargetMachine>(static_cast<LLVMTargetMachine *>(
+      T->createTargetMachine("amdgcn-amd-amdhsa", "gfx900", "", Options, None,
+                             None, CodeGenOpt::Aggressive)));
 }
 
-void AMDGPUGISelMITest::getTargetTestModuleString(
-  SmallString<512> &S, StringRef MIRFunc) const {
+void AMDGPUGISelMITest::getTargetTestModuleString(SmallString<512> &S,
+                                                  StringRef MIRFunc) const {
   (Twine(R"MIR(
 ---
 ...
@@ -101,6 +98,7 @@ body: |
     %0(s32) = COPY $vgpr0
     %1(s32) = COPY $vgpr1
     %2(s32) = COPY $vgpr2
-)MIR") + Twine(MIRFunc) + Twine("...\n"))
-                            .toNullTerminatedStringRef(S);
+)MIR") +
+   Twine(MIRFunc) + Twine("...\n"))
+      .toNullTerminatedStringRef(S);
 }

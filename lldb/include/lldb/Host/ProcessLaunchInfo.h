@@ -162,6 +162,6 @@ protected:
   lldb::ListenerSP m_listener_sp;
   lldb::ListenerSP m_hijack_listener_sp;
 };
-}
+} // namespace lldb_private
 
 #endif // LLDB_HOST_PROCESSLAUNCHINFO_H

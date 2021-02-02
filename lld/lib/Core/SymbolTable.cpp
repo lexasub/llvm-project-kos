@@ -62,24 +62,15 @@ enum NameCollisionResolution {
 };
 
 static NameCollisionResolution cases[4][4] = {
-  //regular     absolute    undef      sharedLib
-  {
-    // first is regular
-    NCR_DupDef, NCR_Error,   NCR_First, NCR_First
-  },
-  {
-    // first is absolute
-    NCR_Error,  NCR_Error,  NCR_First, NCR_First
-  },
-  {
-    // first is undef
-    NCR_Second, NCR_Second, NCR_DupUndef, NCR_Second
-  },
-  {
-    // first is sharedLib
-    NCR_Second, NCR_Second, NCR_First, NCR_DupShLib
-  }
-};
+    // regular     absolute    undef      sharedLib
+    {// first is regular
+     NCR_DupDef, NCR_Error, NCR_First, NCR_First},
+    {// first is absolute
+     NCR_Error, NCR_Error, NCR_First, NCR_First},
+    {// first is undef
+     NCR_Second, NCR_Second, NCR_DupUndef, NCR_Second},
+    {// first is sharedLib
+     NCR_Second, NCR_Second, NCR_First, NCR_DupShLib}};
 
 static NameCollisionResolution collide(Atom::Definition first,
                                        Atom::Definition second) {
@@ -95,13 +86,20 @@ enum MergeResolution {
 };
 
 static MergeResolution mergeCases[][6] = {
-  // no          tentative      weak          weakAddress   sameNameAndSize largest
-  {MCR_Error,    MCR_First,     MCR_First,    MCR_First,    MCR_SameSize,   MCR_Largest},  // no
-  {MCR_Second,   MCR_Largest,   MCR_Second,   MCR_Second,   MCR_SameSize,   MCR_Largest},  // tentative
-  {MCR_Second,   MCR_First,     MCR_First,    MCR_Second,   MCR_SameSize,   MCR_Largest},  // weak
-  {MCR_Second,   MCR_First,     MCR_First,    MCR_First,    MCR_SameSize,   MCR_Largest},  // weakAddress
-  {MCR_SameSize, MCR_SameSize,  MCR_SameSize, MCR_SameSize, MCR_SameSize,   MCR_SameSize}, // sameSize
-  {MCR_Largest,  MCR_Largest,   MCR_Largest,  MCR_Largest,  MCR_SameSize,   MCR_Largest},  // largest
+    // no          tentative      weak          weakAddress   sameNameAndSize
+    // largest
+    {MCR_Error, MCR_First, MCR_First, MCR_First, MCR_SameSize,
+     MCR_Largest}, // no
+    {MCR_Second, MCR_Largest, MCR_Second, MCR_Second, MCR_SameSize,
+     MCR_Largest}, // tentative
+    {MCR_Second, MCR_First, MCR_First, MCR_Second, MCR_SameSize,
+     MCR_Largest}, // weak
+    {MCR_Second, MCR_First, MCR_First, MCR_First, MCR_SameSize,
+     MCR_Largest}, // weakAddress
+    {MCR_SameSize, MCR_SameSize, MCR_SameSize, MCR_SameSize, MCR_SameSize,
+     MCR_SameSize}, // sameSize
+    {MCR_Largest, MCR_Largest, MCR_Largest, MCR_Largest, MCR_SameSize,
+     MCR_Largest}, // largest
 };
 
 static MergeResolution mergeSelect(DefinedAtom::Merge first,
@@ -172,8 +170,8 @@ bool SymbolTable::addByName(const Atom &newAtom) {
     break;
   }
   case NCR_DupUndef: {
-    const UndefinedAtom* existingUndef = cast<UndefinedAtom>(existing);
-    const UndefinedAtom* newUndef = cast<UndefinedAtom>(&newAtom);
+    const UndefinedAtom *existingUndef = cast<UndefinedAtom>(existing);
+    const UndefinedAtom *newUndef = cast<UndefinedAtom>(&newAtom);
 
     bool sameCanBeNull = (existingUndef->canBeNull() == newUndef->canBeNull());
     if (sameCanBeNull)
@@ -206,14 +204,13 @@ bool SymbolTable::addByName(const Atom &newAtom) {
 
 unsigned SymbolTable::AtomMappingInfo::getHashValue(const DefinedAtom *atom) {
   auto content = atom->rawContent();
-  return llvm::hash_combine(atom->size(),
-                            atom->contentType(),
-                            llvm::hash_combine_range(content.begin(),
-                                                     content.end()));
+  return llvm::hash_combine(
+      atom->size(), atom->contentType(),
+      llvm::hash_combine_range(content.begin(), content.end()));
 }
 
-bool SymbolTable::AtomMappingInfo::isEqual(const DefinedAtom * const l,
-                                           const DefinedAtom * const r) {
+bool SymbolTable::AtomMappingInfo::isEqual(const DefinedAtom *const l,
+                                           const DefinedAtom *const r) {
   if (l == r)
     return true;
   if (l == getEmptyKey() || r == getEmptyKey())
@@ -241,7 +238,7 @@ bool SymbolTable::addByContent(const DefinedAtom &newAtom) {
     _contentTable.insert(&newAtom);
     return true;
   }
-  const Atom* existing = *pos;
+  const Atom *existing = *pos;
   // New atom is not being used.  Add it to replacement table.
   _replacedAtoms[&newAtom] = existing;
   return false;

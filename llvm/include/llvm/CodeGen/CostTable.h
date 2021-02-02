@@ -28,8 +28,8 @@ struct CostTblEntry {
 };
 
 /// Find in cost table, TypeTy must be comparable to CompareTy by ==
-inline const CostTblEntry *CostTableLookup(ArrayRef<CostTblEntry> Tbl,
-                                           int ISD, MVT Ty) {
+inline const CostTblEntry *CostTableLookup(ArrayRef<CostTblEntry> Tbl, int ISD,
+                                           MVT Ty) {
   auto I = find_if(Tbl, [=](const CostTblEntry &Entry) {
     return ISD == Entry.ISD && Ty == Entry.Type;
   });
@@ -51,8 +51,8 @@ struct TypeConversionCostTblEntry {
 /// Find in type conversion cost table, TypeTy must be comparable to CompareTy
 /// by ==
 inline const TypeConversionCostTblEntry *
-ConvertCostTableLookup(ArrayRef<TypeConversionCostTblEntry> Tbl,
-                       int ISD, MVT Dst, MVT Src) {
+ConvertCostTableLookup(ArrayRef<TypeConversionCostTblEntry> Tbl, int ISD,
+                       MVT Dst, MVT Src) {
   auto I = find_if(Tbl, [=](const TypeConversionCostTblEntry &Entry) {
     return ISD == Entry.ISD && Src == Entry.Src && Dst == Entry.Dst;
   });

@@ -16,15 +16,16 @@ struct SystemB {
 template <typename T>
 class simple_ptr {
 public:
-  simple_ptr(T* t): _ptr(t) {}
+  simple_ptr(T *t) : _ptr(t) {}
   ~simple_ptr() { delete _ptr; } // \
     // expected-warning {{delete called on non-final 'dnvd::B' that has virtual functions but non-virtual destructor}} \
     // expected-warning {{delete called on non-final 'dnvd::D' that has virtual functions but non-virtual destructor}}
-  T& operator*() const { return *_ptr; }
+  T &operator*() const { return *_ptr; }
+
 private:
-  T* _ptr;
+  T *_ptr;
 };
-}
+} // namespace dnvd
 
 #else
 
@@ -38,16 +39,16 @@ public:
 
 class B {
 public:
-  ~B() { }
+  ~B() {}
 };
 
 class C {
 public:
-  (~C)() { }
+  (~C)() {}
 };
 
 struct D {
-  static void ~D(int, ...) const { } //                          \
+  static void ~D(int, ...) const {} //                          \
     // expected-error{{static member function cannot have 'const' qualifier}} \
     // expected-error{{destructor cannot be declared 'static'}}  \
     // expected-error{{destructor cannot have any parameters}}   \
@@ -57,10 +58,9 @@ struct D {
 };
 
 struct D2 {
-  void ~D2() { } //                          \
-  // expected-error{{destructor cannot have a return type}}  
+  void ~D2() {} //                          \
+  // expected-error{{destructor cannot have a return type}}
 };
-
 
 struct E;
 
@@ -71,23 +71,23 @@ struct E {
 
 struct F {
   (~F)(); // expected-note {{previous declaration is here}}
-  ~F(); // expected-error {{destructor cannot be redeclared}}
+  ~F();   // expected-error {{destructor cannot be redeclared}}
 };
 
-~; // expected-error {{expected a class name after '~' to name a destructor}}
-~undef(); // expected-error {{undeclared identifier 'undef' in destructor name}}
-~operator+(int, int);  // expected-error {{expected a class name after '~' to name a destructor}}
-~F(){} // expected-error {{destructor must be a non-static member function}}
+~;                    // expected-error {{expected a class name after '~' to name a destructor}}
+~undef();             // expected-error {{undeclared identifier 'undef' in destructor name}}
+~operator+(int, int); // expected-error {{expected a class name after '~' to name a destructor}}
+~F() {}               // expected-error {{destructor must be a non-static member function}}
 
 struct G {
   ~G();
 };
 
-G::~G() { }
+G::~G() {}
 
 // <rdar://problem/6841210>
 struct H {
-  ~H(void) { } 
+  ~H(void) {}
 };
 
 struct X {};
@@ -97,72 +97,77 @@ struct Y {
 };
 
 namespace PR6421 {
-  class T; // expected-note{{forward declaration}}
+class T; // expected-note{{forward declaration}}
 
-  class QGenericArgument
-  {
-    template<typename U>
-    void foo(T t) // expected-error{{variable has incomplete type}}
-    { }
-    
-    void disconnect()
-    {
-      T* t;
-      bob<QGenericArgument>(t); // expected-error{{undeclared identifier 'bob'}}
-    }
-  };
-}
+class QGenericArgument {
+  template <typename U>
+  void foo(T t) // expected-error{{variable has incomplete type}}
+  {}
+
+  void disconnect() {
+    T *t;
+    bob<QGenericArgument>(t); // expected-error{{undeclared identifier 'bob'}}
+  }
+};
+} // namespace PR6421
 
 namespace PR6709 {
 #ifdef MSABI
-  // This bug, "Clang instantiates destructor for function argument" is intended
-  // behaviour in the Microsoft ABI because the callee needs to destruct the arguments.
-  // expected-error@+3 {{indirection requires pointer operand ('int' invalid)}}
-  // expected-note@+3 {{in instantiation of member function 'PR6709::X<int>::~X' requested here}}
+// This bug, "Clang instantiates destructor for function argument" is intended
+// behaviour in the Microsoft ABI because the callee needs to destruct the arguments.
+// expected-error@+3 {{indirection requires pointer operand ('int' invalid)}}
+// expected-note@+3 {{in instantiation of member function 'PR6709::X<int>::~X' requested here}}
 #endif
-  template<class T> class X { T v; ~X() { ++*v; } };
-  void a(X<int> x) {}
-}
+template <class T> class X {
+  T v;
+  ~X() { ++*v; }
+};
+void a(X<int> x) {}
+} // namespace PR6709
 
-struct X0 { virtual ~X0() throw(); };
-struct X1 : public X0 { };
+struct X0 {
+  virtual ~X0() throw();
+};
+struct X1 : public X0 {};
 
 // Make sure we instantiate operator deletes when building a virtual
 // destructor.
 namespace test6 {
-  template <class T> class A {
-  public:
-    void *operator new(__SIZE_TYPE__);
-    void operator delete(void *p) {
-      T::deleteIt(p); // expected-error {{type 'int' cannot be used prior to '::'}}
-    }
+template <class T> class A {
+public:
+  void *operator new(__SIZE_TYPE__);
+  void operator delete(void *p) {
+    T::deleteIt(p); // expected-error {{type 'int' cannot be used prior to '::'}}
+  }
 
 #ifdef MSABI
-    // expected-note@+2 {{in instantiation of member function 'test6::A<int>::operator delete' requested here}}
+  // expected-note@+2 {{in instantiation of member function 'test6::A<int>::operator delete' requested here}}
 #endif
-    virtual ~A() {}
-  };
+  virtual ~A() {}
+};
 
 #ifndef MSABI
-    // expected-note@+2 {{in instantiation of member function 'test6::A<int>::operator delete' requested here}}
+// expected-note@+2 {{in instantiation of member function 'test6::A<int>::operator delete' requested here}}
 #endif
-  class B : A<int> { B(); };
-  B::B() {}
-}
+class B : A<int> {
+  B();
+};
+B::B() {}
+} // namespace test6
 
 // Make sure classes are marked invalid when they have invalid
 // members.  This avoids a crash-on-invalid.
 namespace test7 {
-  struct A {
-    ~A() const; // expected-error {{'const' qualifier is not allowed on a destructor}}
-  };
-  struct B : A {};
+struct A {
+  ~A() const; // expected-error {{'const' qualifier is not allowed on a destructor}}
+};
+struct B : A {};
 
-  void test() {
-    B *b;
-    b->~B();
-  }
+void test() {
+  B *b;
+  b->~B();
 }
+} // namespace test7
 
 namespace nonvirtualdtor {
 struct S1 { // expected-warning {{has virtual functions but non-virtual destructor}}
@@ -174,11 +179,11 @@ struct S2 {
   virtual void m();
 };
 
-struct S3 : public S1 {  // expected-warning {{has virtual functions but non-virtual destructor}}
+struct S3 : public S1 { // expected-warning {{has virtual functions but non-virtual destructor}}
   virtual void m();
 };
 
-struct S4 : public S2 {  // expected-warning {{has virtual functions but non-virtual destructor}}
+struct S4 : public S2 { // expected-warning {{has virtual functions but non-virtual destructor}}
   virtual void m();
 };
 
@@ -193,34 +198,37 @@ struct S5 : public B {
 
 struct S6 {
   virtual void m();
+
 private:
   ~S6();
 };
 
 struct S7 {
   virtual void m();
+
 protected:
   ~S7();
 };
 
-struct S8 {} s8;
+struct S8 {
+} s8;
 
 UnknownType S8::~S8() { // expected-error {{unknown type name 'UnknownType'}}
   s8.~S8();
 }
 
-template<class T> class TS : public B {
+template <class T> class TS : public B {
   virtual void m();
 };
 
 TS<int> baz;
 
-template<class T> class TS2 { // expected-warning {{'nonvirtualdtor::TS2<int>' has virtual functions but non-virtual destructor}}
+template <class T> class TS2 { // expected-warning {{'nonvirtualdtor::TS2<int>' has virtual functions but non-virtual destructor}}
   virtual void m();
 };
 
 TS2<int> foo; // expected-note {{instantiation}}
-}
+} // namespace nonvirtualdtor
 
 namespace dnvd { // delete-non-virtual-dtor warning
 struct NP {};
@@ -229,7 +237,7 @@ struct B { // expected-warning {{has virtual functions but non-virtual destructo
   virtual void foo();
 };
 
-struct D: B {}; // expected-warning {{has virtual functions but non-virtual destructor}}
+struct D : B {}; // expected-warning {{has virtual functions but non-virtual destructor}}
 
 struct F final : B {};
 
@@ -238,40 +246,47 @@ struct VB {
   virtual ~VB();
 };
 
-struct VD: VB {};
+struct VD : VB {};
 
-struct VF final: VB {};
+struct VF final : VB {};
 
 template <typename T>
 class simple_ptr2 {
 public:
-  simple_ptr2(T* t): _ptr(t) {}
+  simple_ptr2(T *t) : _ptr(t) {}
   ~simple_ptr2() { delete _ptr; } // expected-warning {{delete called on non-final 'dnvd::B' that has virtual functions but non-virtual destructor}}
-  T& operator*() const { return *_ptr; }
+  T &operator*() const { return *_ptr; }
+
 private:
-  T* _ptr;
+  T *_ptr;
 };
 
-void use(B&);
-void use(SystemB&);
-void use(VB&);
+void use(B &);
+void use(SystemB &);
+void use(VB &);
 
 void nowarnstack() {
-  B b; use(b);
-  D d; use(d);
-  F f; use(f);
-  VB vb; use(vb);
-  VD vd; use(vd);
-  VF vf; use(vf);
+  B b;
+  use(b);
+  D d;
+  use(d);
+  F f;
+  use(f);
+  VB vb;
+  use(vb);
+  VD vd;
+  use(vd);
+  VF vf;
+  use(vf);
 }
 
 void nowarnnonpoly() {
   {
-    NP* np = new NP();
+    NP *np = new NP();
     delete np;
   }
   {
-    NP* np = new NP[4];
+    NP *np = new NP[4];
     delete[] np;
   }
 }
@@ -279,19 +294,19 @@ void nowarnnonpoly() {
 // FIXME: Why are these supposed to not warn?
 void nowarnarray() {
   {
-    B* b = new B[4];
+    B *b = new B[4];
     delete[] b;
   }
   {
-    D* d = new D[4];
+    D *d = new D[4];
     delete[] d;
   }
   {
-    VB* vb = new VB[4];
+    VB *vb = new VB[4];
     delete[] vb;
   }
   {
-    VD* vd = new VD[4];
+    VD *vd = new VD[4];
     delete[] vd;
   }
 }
@@ -299,39 +314,39 @@ void nowarnarray() {
 template <typename T>
 void nowarntemplate() {
   {
-    T* t = new T();
+    T *t = new T();
     delete t;
   }
   {
-    T* t = new T[4];
+    T *t = new T[4];
     delete[] t;
   }
 }
 
 void nowarn0() {
   {
-    F* f = new F();
+    F *f = new F();
     delete f;
   }
   {
-    VB* vb = new VB();
+    VB *vb = new VB();
     delete vb;
   }
   {
-    VB* vb = new VD();
+    VB *vb = new VD();
     delete vb;
   }
   {
-    VD* vd = new VD();
+    VD *vd = new VD();
     delete vd;
   }
   {
-    VF* vf = new VF();
+    VF *vf = new VF();
     delete vf;
   }
 }
 
-void nowarn0_explicit_dtor(F* f, VB* vb, VD* vd, VF* vf) {
+void nowarn0_explicit_dtor(F *f, VB *vb, VD *vd, VF *vf) {
   f->~F();
   f->~F();
   vb->~VB();
@@ -341,15 +356,15 @@ void nowarn0_explicit_dtor(F* f, VB* vb, VD* vd, VF* vf) {
 
 void warn0() {
   {
-    B* b = new B();
+    B *b = new B();
     delete b; // expected-warning {{delete called on non-final 'dnvd::B' that has virtual functions but non-virtual destructor}}
   }
   {
-    B* b = new D();
+    B *b = new D();
     delete b; // expected-warning {{delete called on non-final 'dnvd::B' that has virtual functions but non-virtual destructor}}
   }
   {
-    D* d = new D();
+    D *d = new D();
     delete d; // expected-warning {{delete called on non-final 'dnvd::D' that has virtual functions but non-virtual destructor}}
   }
 }
@@ -357,20 +372,22 @@ void warn0() {
 // Taken from libc++, slightly simplified.
 template <class>
 struct __is_destructible_apply { typedef int type; };
-struct __two {char __lx[2];};
+struct __two {
+  char __lx[2];
+};
 template <typename _Tp>
 struct __is_destructor_wellformed {
   template <typename _Tp1>
   static char __test(typename __is_destructible_apply<
-                       decltype(_Tp1().~_Tp1())>::type);
+                     decltype(_Tp1().~_Tp1())>::type);
   template <typename _Tp1>
-  static __two __test (...);
-              
+  static __two __test(...);
+
   static const bool value = sizeof(__test<_Tp>(12)) == sizeof(char);
 };
 
-void warn0_explicit_dtor(B* b, B& br, D* d) {
-  b->~B(); // expected-warning {{destructor called on non-final 'dnvd::B' that has virtual functions but non-virtual destructor}} expected-note{{qualify call to silence this warning}}
+void warn0_explicit_dtor(B *b, B &br, D *d) {
+  b->~B();    // expected-warning {{destructor called on non-final 'dnvd::B' that has virtual functions but non-virtual destructor}} expected-note{{qualify call to silence this warning}}
   b->B::~B(); // No warning when the call isn't virtual.
 
   // No warning in unevaluated contexts.
@@ -424,35 +441,41 @@ void warn1() {
     use(*d);
   }
 }
-}
+} // namespace dnvd
 
 namespace PR9238 {
-  class B { public: ~B(); };
-  class C : virtual B { public: ~C() { } };
-}
+class B {
+public:
+  ~B();
+};
+class C : virtual B {
+public:
+  ~C() {}
+};
+} // namespace PR9238
 
 namespace PR7900 {
-  struct A { // expected-note 2{{type 'PR7900::A' found by destructor name lookup}}
-  };
-  struct B : public A {
-  };
-  void foo() {
-    B b;
-    b.~B();
-    b.~A(); // expected-error{{destructor type 'PR7900::A' in object destruction expression does not match the type 'PR7900::B' of the object being destroyed}}
-    (&b)->~A(); // expected-error{{destructor type 'PR7900::A' in object destruction expression does not match the type 'PR7900::B' of the object being destroyed}}
-  }
+struct A { // expected-note 2{{type 'PR7900::A' found by destructor name lookup}}
+};
+struct B : public A {
+};
+void foo() {
+  B b;
+  b.~B();
+  b.~A();     // expected-error{{destructor type 'PR7900::A' in object destruction expression does not match the type 'PR7900::B' of the object being destroyed}}
+  (&b)->~A(); // expected-error{{destructor type 'PR7900::A' in object destruction expression does not match the type 'PR7900::B' of the object being destroyed}}
 }
+} // namespace PR7900
 
 namespace PR16892 {
-  auto p = &A::~A; // expected-error{{taking the address of a destructor}}
+auto p = &A::~A; // expected-error{{taking the address of a destructor}}
 }
 
 namespace PR20238 {
 struct S {
-  volatile ~S() { } // expected-error{{destructor cannot have a return type}}
+  volatile ~S() {} // expected-error{{destructor cannot have a return type}}
 };
-}
+} // namespace PR20238
 
 namespace PR22668 {
 struct S {
@@ -463,11 +486,11 @@ void f(S s) {
 void g(S s) {
   (s.~S); // expected-error{{reference to destructor must be called}}
 }
-}
+} // namespace PR22668
 
 class Invalid {
-    ~Invalid();
-    UnknownType xx; // expected-error{{unknown type name}}
+  ~Invalid();
+  UnknownType xx; // expected-error{{unknown type name}}
 };
 
 // The constructor definition should not have errors
@@ -477,13 +500,13 @@ namespace PR30361 {
 template <typename T>
 struct C1 {
   ~C1() {}
-  operator C1<T>* () { return nullptr; }
+  operator C1<T> *() { return nullptr; }
   void foo1();
 };
 
-template<typename T>
+template <typename T>
 void C1<T>::foo1() {
-  C1::operator C1<T>*();
+  C1::operator C1<T> *();
   C1::~C1();
 }
 
@@ -491,63 +514,79 @@ void foo1() {
   C1<int> x;
   x.foo1();
 }
-}
+} // namespace PR30361
 
 namespace DtorTypedef {
-  struct A { ~A(); };
-  using A = A;
-  DtorTypedef::A::~A() {}
+struct A {
+  ~A();
+};
+using A = A;
+DtorTypedef::A::~A() {}
 
-  // This is invalid, but compilers accept it.
-  struct B { ~B(); };
-  namespace N { using B = B; }
-  N::B::~B() {} // expected-error {{destructor cannot be declared using a type alias}}
+// This is invalid, but compilers accept it.
+struct B {
+  ~B();
+};
+namespace N {
+using B = B;
+}
+N::B::~B() {} // expected-error {{destructor cannot be declared using a type alias}}
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdtor-typedef"
-  struct C { ~C(); };
-  namespace N { using C = C; }
-  N::C::~C() {}
-#pragma clang diagnostic pop
+struct C {
+  ~C();
+};
+namespace N {
+using C = C;
 }
+N::C::~C() {}
+#pragma clang diagnostic pop
+} // namespace DtorTypedef
 
 // Ignore ambiguity errors in destructor name lookup. This matches the observed
 // behavior of ICC, and is compatible with the observed behavior of GCC (which
 // appears to ignore lookups that result in ambiguity) and MSVC (which appears
 // to perform the lookups in the opposite order from Clang).
 namespace PR44978 {
-  // All compilers accept this despite it being clearly ill-formed per the
-  // current wording.
-  namespace n {
-    class Foo {}; // expected-note {{found}}
-  }
-  class Foo {}; // expected-note {{found}}
-  using namespace n;
-  static void func(n::Foo *p) { p->~Foo(); } // expected-warning {{ambiguous}}
+// All compilers accept this despite it being clearly ill-formed per the
+// current wording.
+namespace n {
+class Foo {}; // expected-note {{found}}
+} // namespace n
+class Foo {}; // expected-note {{found}}
+using namespace n;
+static void func(n::Foo *p) { p->~Foo(); } // expected-warning {{ambiguous}}
 
-  // GCC rejects this case, ICC accepts, despite the class member lookup being
-  // ambiguous.
-  struct Z;
-  struct X { using T = Z; }; // expected-note {{found}}
-  struct Y { using T = int; }; // expected-note {{found}}
-  struct Z : X, Y {};
-  void f(Z *p) { p->~T(); } // expected-warning {{ambiguous}}
-
-  // GCC accepts this and ignores the ambiguous class member lookup.
-  //
-  // FIXME: We should warn on the ambiguity here too, but that requires us to
-  // keep doing lookups after we've already found the type we want.
+// GCC rejects this case, ICC accepts, despite the class member lookup being
+// ambiguous.
+struct Z;
+struct X {
   using T = Z;
-  void g(Z *p) { p->~T(); }
+}; // expected-note {{found}}
+struct Y {
+  using T = int;
+}; // expected-note {{found}}
+struct Z : X, Y {};
+void f(Z *p) { p->~T(); } // expected-warning {{ambiguous}}
 
-  // ICC accepts this and ignores the ambiguous unqualified lookup.
-  struct Q {};
-  namespace { using U = Q; } // expected-note {{candidate}} expected-note {{found}}
-  using U = int; // expected-note {{candidate}} expected-note {{found}}
-  void f(Q *p) { p->~U(); } // expected-warning {{ambiguous}}
+// GCC accepts this and ignores the ambiguous class member lookup.
+//
+// FIXME: We should warn on the ambiguity here too, but that requires us to
+// keep doing lookups after we've already found the type we want.
+using T = Z;
+void g(Z *p) { p->~T(); }
 
-  // We still diagnose if the unqualified lookup is dependent, though.
-  template<typename T> void f(T *p) { p->~U(); } // expected-error {{ambiguous}}
-}
+// ICC accepts this and ignores the ambiguous unqualified lookup.
+struct Q {};
+namespace {
+using U = Q;
+} // namespace
+using U = int;            // expected-note {{candidate}} expected-note {{found}}
+void f(Q *p) { p->~U(); } // expected-warning {{ambiguous}}
+
+// We still diagnose if the unqualified lookup is dependent, though.
+template <typename T> void f(T *p) { p->~U(); } // expected-error {{ambiguous}}
+} // namespace PR44978
 
 #endif // BE_THE_HEADER

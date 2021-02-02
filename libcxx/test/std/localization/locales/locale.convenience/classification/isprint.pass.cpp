@@ -15,20 +15,19 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    std::locale l;
-    assert( std::isprint(' ', l));
-    assert( std::isprint('<', l));
-    assert(!std::isprint('\x8', l));
-    assert( std::isprint('A', l));
-    assert( std::isprint('a', l));
-    assert( std::isprint('z', l));
-    assert( std::isprint('3', l));
-    assert( std::isprint('.', l));
-    assert( std::isprint('f', l));
-    assert( std::isprint('9', l));
-    assert( std::isprint('+', l));
+int main(int, char**) {
+  std::locale l;
+  assert(std::isprint(' ', l));
+  assert(std::isprint('<', l));
+  assert(!std::isprint('\x8', l));
+  assert(std::isprint('A', l));
+  assert(std::isprint('a', l));
+  assert(std::isprint('z', l));
+  assert(std::isprint('3', l));
+  assert(std::isprint('.', l));
+  assert(std::isprint('f', l));
+  assert(std::isprint('9', l));
+  assert(std::isprint('+', l));
 
   return 0;
 }

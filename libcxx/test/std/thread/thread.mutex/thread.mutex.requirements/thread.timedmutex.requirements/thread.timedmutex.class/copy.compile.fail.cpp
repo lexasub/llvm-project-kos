@@ -14,10 +14,9 @@
 
 #include <mutex>
 
-int main(int, char**)
-{
-    std::timed_mutex m0;
-    std::timed_mutex m1(m0);
+int main(int, char**) {
+  std::timed_mutex m0;
+  std::timed_mutex m1(m0);
 
   return 0;
 }

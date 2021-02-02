@@ -261,7 +261,6 @@ void ObjCMessageExpr::getSelectorLocs(
     SelLocs.push_back(getSelectorLoc(i));
 }
 
-
 QualType ObjCMessageExpr::getCallReturnType(ASTContext &Ctx) const {
   if (const ObjCMethodDecl *MD = getMethodDecl()) {
     QualType QT = MD->getReturnType();

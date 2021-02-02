@@ -1,13 +1,5 @@
 #include <exception>
 
-void
-throws_int ()
-{
-    throw 5;
-}
+void throws_int() { throw 5; }
 
-int
-main ()
-{
-    throws_int();
-}
+int main() { throws_int(); }

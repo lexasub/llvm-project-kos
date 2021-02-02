@@ -55,11 +55,12 @@ void func2(void) {
 void destroy(int x);
 
 class A {
-int x;
+  int x;
+
 public:
-  A():x(0) {}
+  A() : x(0) {}
   ~A() {
-   destroy(x);
+    destroy(x);
   }
 };
 

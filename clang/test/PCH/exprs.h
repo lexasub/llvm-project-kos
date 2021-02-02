@@ -17,7 +17,9 @@ typedef typeof((42.5)) floating_literal;
 typedef typeof(17.0i) imaginary_literal;
 
 // StringLiteral
-const char *hello = "Hello" "PCH" "World";
+const char *hello = "Hello"
+                    "PCH"
+                    "World";
 
 // CharacterLiteral
 typedef typeof('a') char_literal;
@@ -35,8 +37,8 @@ struct Y {
 struct Z {
   struct Y y;
 };
-typedef typeof(__builtin_offsetof(struct Z, y.array[1 + 2].member)) 
-  offsetof_type;
+typedef typeof(__builtin_offsetof(struct Z, y.array[1 + 2].member))
+    offsetof_type;
 
 // UnaryExprOrTypeTraitExpr
 typedef typeof(sizeof(int)) typeof_sizeof;
@@ -55,7 +57,7 @@ typedef typeof((&dplus)(d0, d1)) call_returning_double;
 struct S {
   double x;
 };
-typedef typeof(((struct S*)0)->x) member_ref_double;
+typedef typeof(((struct S *)0)->x) member_ref_double;
 
 // BinaryOperator
 typedef typeof(i + Enumerator) add_result;
@@ -64,7 +66,7 @@ typedef typeof(i + Enumerator) add_result;
 typedef typeof(i += Enumerator) addeq_result;
 
 // ConditionalOperator
-typedef typeof(i? : d0) conditional_operator;
+typedef typeof(i ?: d0) conditional_operator;
 
 // CStyleCastExpr
 typedef typeof((void *)0) void_ptr;
@@ -75,20 +77,20 @@ typedef typeof((struct S){.x = 3.5}) compound_literal;
 typedef typeof(i + sizeof(int[i + Enumerator])) add_result_with_typeinfo;
 
 // ExtVectorElementExpr
-typedef __attribute__(( ext_vector_type(2) )) double double2;
+typedef __attribute__((ext_vector_type(2))) double double2;
 extern double2 vec2, vec2b;
 typedef typeof(vec2.x) ext_vector_element;
 
 // InitListExpr
-double double_array[3] = { 1.0, 2.0 };
+double double_array[3] = {1.0, 2.0};
 
 // DesignatedInitExpr
 struct {
   int x;
   float y;
-} designated_inits[3] = { [0].y = 17,
-                          [2].x = 12.3, // expected-warning {{implicit conversion from 'double' to 'int' changes value from 12.3 to 12}}
-                          3.5 };
+} designated_inits[3] = {[0].y = 17,
+                         [2].x = 12.3, // expected-warning {{implicit conversion from 'double' to 'int' changes value from 12.3 to 12}}
+                         3.5};
 
 // TypesCompatibleExpr
 typedef typeof(__builtin_types_compatible_p(float, double)) types_compatible;
@@ -103,9 +105,10 @@ typedef typeof(__builtin_choose_expr(17 > 19, d0, 1)) choose_expr;
 typedef typeof(__builtin_shufflevector(vec2, vec2b, 2, 1)) shuffle_expr;
 
 // ConvertVectorExpr
-typedef __attribute__(( ext_vector_type(2) )) float float2;
+typedef __attribute__((ext_vector_type(2))) float float2;
 typedef typeof(__builtin_convertvector(vec2, float2)) convert_expr;
 
 // GenericSelectionExpr
-typedef typeof(_Generic(i, char*: 0, int: 0., default: hello))
-  generic_selection_expr;
+typedef typeof(_Generic(i, char * : 0, int : 0., default
+                        : hello))
+    generic_selection_expr;

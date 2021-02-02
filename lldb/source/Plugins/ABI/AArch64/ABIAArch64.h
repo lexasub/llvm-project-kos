@@ -11,7 +11,7 @@
 
 #include "lldb/Target/ABI.h"
 
-class ABIAArch64: public lldb_private::MCBasedABI {
+class ABIAArch64 : public lldb_private::MCBasedABI {
 public:
   static void Initialize();
   static void Terminate();

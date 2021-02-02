@@ -21,21 +21,20 @@
 #include "test_convertible.h"
 #endif
 
-int main(int, char**)
-{
-    typedef std::vector<int, limited_allocator<int, 10> > Container;
-    typedef std::priority_queue<int, Container> Q;
-    Q q;
-    assert(q.size() == 0);
-    q.push(1);
-    q.push(2);
-    assert(q.size() == 2);
-    assert(q.top() == 2);
+int main(int, char**) {
+  typedef std::vector<int, limited_allocator<int, 10> > Container;
+  typedef std::priority_queue<int, Container> Q;
+  Q q;
+  assert(q.size() == 0);
+  q.push(1);
+  q.push(2);
+  assert(q.size() == 2);
+  assert(q.top() == 2);
 
 #if TEST_STD_VER >= 11
-    // It should be explicit, so not convertible before C++20.
-    static_assert(test_convertible<Q>(), "");
+  // It should be explicit, so not convertible before C++20.
+  static_assert(test_convertible<Q>(), "");
 #endif
 
-    return 0;
+  return 0;
 }

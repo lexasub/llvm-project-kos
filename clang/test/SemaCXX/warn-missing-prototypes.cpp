@@ -1,30 +1,30 @@
 // RUN: %clang_cc1 -fsyntax-only -verify -Wmissing-prototypes -std=c++11 %s
 // RUN: %clang_cc1 -fsyntax-only -Wmissing-prototypes -fdiagnostics-parseable-fixits %s 2>&1 | FileCheck %s
 
-void f() { } // expected-warning {{no previous prototype for function 'f'}}
+void f() {} // expected-warning {{no previous prototype for function 'f'}}
 // expected-note@-1{{declare 'static' if the function is not intended to be used outside of this translation unit}}
 // CHECK: fix-it:"{{.*}}":{[[@LINE-2]]:1-[[@LINE-2]]:1}:"static "
 
 namespace NS {
-  void f() { } // expected-warning {{no previous prototype for function 'f'}}
-  // expected-note@-1{{declare 'static' if the function is not intended to be used outside of this translation unit}}
-}
+void f() {} // expected-warning {{no previous prototype for function 'f'}}
+// expected-note@-1{{declare 'static' if the function is not intended to be used outside of this translation unit}}
+} // namespace NS
 
 namespace {
-  // Don't warn about functions in anonymous namespaces.
-  void f() { }
-}
+// Don't warn about functions in anonymous namespaces.
+void f() {}
+} // namespace
 
 struct A {
   // Don't warn about member functions.
-  void f() { }
+  void f() {}
 };
 
 // Don't warn about inline functions.
-inline void g() { }
+inline void g() {}
 
 // Don't warn about function templates.
-template<typename> void h() { }
+template <typename> void h() {}
 
 // Don't warn when instantiating function templates.
 template void h<int>();

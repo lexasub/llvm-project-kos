@@ -13,8 +13,8 @@
 //===----------------------------------------------------------------------===//
 
 #include "ASTTableGen.h"
-#include "llvm/TableGen/Record.h"
 #include "llvm/TableGen/Error.h"
+#include "llvm/TableGen/Record.h"
 
 using namespace llvm;
 using namespace clang;
@@ -45,15 +45,11 @@ static StringRef removeExpectedNodeNameSuffix(Record *node, StringRef suffix) {
 std::string clang::tblgen::DeclNode::getClassName() const {
   return (Twine(getName()) + "Decl").str();
 }
-StringRef clang::tblgen::DeclNode::getId() const {
-  return getName();
-}
+StringRef clang::tblgen::DeclNode::getId() const { return getName(); }
 
 // Type nodes are all named ending in Type, just like the corresponding
 // C++ class, and the ID just strips this suffix.
-StringRef clang::tblgen::TypeNode::getClassName() const {
-  return getName();
-}
+StringRef clang::tblgen::TypeNode::getClassName() const { return getName(); }
 StringRef clang::tblgen::TypeNode::getId() const {
   return removeExpectedNodeNameSuffix(getRecord(), "Type");
 }
@@ -63,9 +59,7 @@ StringRef clang::tblgen::TypeNode::getId() const {
 // and *many* expressions end in Expr, but there are also several
 // core expression classes like IntegerLiteral and BinaryOperator with
 // no standard suffix).  The ID adds "Class" for historical reasons.
-StringRef clang::tblgen::StmtNode::getClassName() const {
-  return getName();
-}
+StringRef clang::tblgen::StmtNode::getClassName() const { return getName(); }
 std::string clang::tblgen::StmtNode::getId() const {
   return (Twine(getName()) + "Class").str();
 }
@@ -85,7 +79,7 @@ void PropertyType::emitCXXValueTypeName(bool forRead, raw_ostream &out) const {
     valueType.emitCXXValueTypeName(forRead, out);
     out << ">";
   } else {
-    //PrintFatalError(getLoc(), "unexpected generic property type");
+    // PrintFatalError(getLoc(), "unexpected generic property type");
     abort();
   }
 }
@@ -104,13 +98,12 @@ static void visitASTNodeRecursive(ASTNode node, ASTNode base,
   }
 }
 
-static void visitHierarchy(RecordKeeper &records,
-                           StringRef nodeClassName,
+static void visitHierarchy(RecordKeeper &records, StringRef nodeClassName,
                            ASTNodeHierarchyVisitor<ASTNode> visit) {
   // Check for the node class, just as a sanity check.
   if (!records.getClass(nodeClassName)) {
-    PrintFatalError(Twine("cannot find definition for node class ")
-                      + nodeClassName);
+    PrintFatalError(Twine("cannot find definition for node class ") +
+                    nodeClassName);
   }
 
   // Find all the nodes in the hierarchy.
@@ -135,8 +128,8 @@ static void visitHierarchy(RecordKeeper &records,
   visitASTNodeRecursive(root, ASTNode(), hierarchy, visit);
 }
 
-void clang::tblgen::visitASTNodeHierarchyImpl(RecordKeeper &records,
-                                              StringRef nodeClassName,
-                                      ASTNodeHierarchyVisitor<ASTNode> visit) {
+void clang::tblgen::visitASTNodeHierarchyImpl(
+    RecordKeeper &records, StringRef nodeClassName,
+    ASTNodeHierarchyVisitor<ASTNode> visit) {
   visitHierarchy(records, nodeClassName, visit);
 }

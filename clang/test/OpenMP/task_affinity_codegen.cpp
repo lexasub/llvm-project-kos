@@ -124,7 +124,9 @@ int main() {
   // CHECK: call i32 @__kmpc_omp_reg_task_with_affinity(%struct.ident_t* @{{.+}} i32 [[GTID]], i8* [[TD]], i32 [[NAFFS]], i8* [[BC]])
   // CHECK: [[SV:%.+]] = load i8*, i8** [[SV_ADDR]],
   // CHECK: call void @llvm.stackrestore(i8* [[SV]])
-#pragma omp task affinity(iterator(i=0:a): p[i]) affinity(a)
+#pragma omp task affinity(iterator(i = 0 \
+                                   : a)  \
+                          : p[i]) affinity(a)
   ;
   return 0;
 }

@@ -330,7 +330,7 @@ static bool tryToRecognizePopCount(Instruction &I) {
   Value *MulOp0;
   // Matching "(i * 0x01010101...) >> 24".
   if ((match(Op0, m_Mul(m_Value(MulOp0), m_SpecificInt(Mask01)))) &&
-       match(Op1, m_SpecificInt(MaskShift))) {
+      match(Op1, m_SpecificInt(MaskShift))) {
     Value *ShiftOp0;
     // Matching "((i + (i >> 4)) & 0x0F0F0F0F...)".
     if (match(MulOp0, m_And(m_c_Add(m_LShr(m_Value(ShiftOp0), m_SpecificInt(4)),
@@ -380,7 +380,7 @@ static bool foldUnusualPatterns(Function &F, DominatorTree &DT) {
     for (Instruction &I : make_range(BB.rbegin(), BB.rend())) {
       MadeChange |= foldAnyOrAllBitsSet(I);
       MadeChange |= foldGuardedFunnelShift(I, DT);
-      MadeChange |= tryToRecognizePopCount(I); 
+      MadeChange |= tryToRecognizePopCount(I);
     }
   }
 

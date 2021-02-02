@@ -23,13 +23,13 @@
 #include "llvm/CodeGen/MachineInstr.h"
 #include "llvm/CodeGen/MachineInstrBuilder.h"
 #include "llvm/CodeGen/MachineModuleInfo.h"
+#include "llvm/CodeGen/TargetFrameLowering.h"
 #include "llvm/IR/DebugLoc.h"
 #include "llvm/MC/MCContext.h"
 #include "llvm/MC/MCDwarf.h"
 #include "llvm/MC/MCRegisterInfo.h"
 #include "llvm/MC/MachineLocation.h"
 #include "llvm/Support/MathExtras.h"
-#include "llvm/CodeGen/TargetFrameLowering.h"
 #include <cassert>
 #include <cstdint>
 #include <vector>
@@ -53,7 +53,8 @@ void Mips16FrameLowering::emitPrologue(MachineFunction &MF,
   uint64_t StackSize = MFI.getStackSize();
 
   // No need to allocate space on the stack.
-  if (StackSize == 0 && !MFI.adjustsStack()) return;
+  if (StackSize == 0 && !MFI.adjustsStack())
+    return;
 
   MachineModuleInfo &MMI = MF.getMMI();
   const MCRegisterInfo *MRI = MMI.getContext().getRegisterInfo();
@@ -73,7 +74,8 @@ void Mips16FrameLowering::emitPrologue(MachineFunction &MF,
     const std::vector<CalleeSavedInfo> &CSI = MFI.getCalleeSavedInfo();
 
     for (std::vector<CalleeSavedInfo>::const_iterator I = CSI.begin(),
-         E = CSI.end(); I != E; ++I) {
+                                                      E = CSI.end();
+         I != E; ++I) {
       int64_t Offset = MFI.getObjectOffset(I->getFrameIdx());
       unsigned Reg = I->getReg();
       unsigned DReg = MRI->getDwarfRegNum(Reg, true);
@@ -85,11 +87,12 @@ void Mips16FrameLowering::emitPrologue(MachineFunction &MF,
   }
   if (hasFP(MF))
     BuildMI(MBB, MBBI, dl, TII.get(Mips::MoveR3216), Mips::S0)
-      .addReg(Mips::SP).setMIFlag(MachineInstr::FrameSetup);
+        .addReg(Mips::SP)
+        .setMIFlag(MachineInstr::FrameSetup);
 }
 
 void Mips16FrameLowering::emitEpilogue(MachineFunction &MF,
-                                 MachineBasicBlock &MBB) const {
+                                       MachineBasicBlock &MBB) const {
   MachineBasicBlock::iterator MBBI = MBB.getFirstTerminator();
   MachineFrameInfo &MFI = MF.getFrameInfo();
   const Mips16InstrInfo &TII =
@@ -101,8 +104,7 @@ void Mips16FrameLowering::emitEpilogue(MachineFunction &MF,
     return;
 
   if (hasFP(MF))
-    BuildMI(MBB, MBBI, dl, TII.get(Mips::Move32R16), Mips::SP)
-      .addReg(Mips::S0);
+    BuildMI(MBB, MBBI, dl, TII.get(Mips::Move32R16), Mips::SP).addReg(Mips::S0);
 
   // Adjust stack.
   // assumes stacksize multiple of 8
@@ -126,8 +128,8 @@ bool Mips16FrameLowering::spillCalleeSavedRegisters(
     // It's killed at the spill, unless the register is RA and return address
     // is taken.
     unsigned Reg = CSI[i].getReg();
-    bool IsRAAndRetAddrIsTaken = (Reg == Mips::RA)
-      && MF->getFrameInfo().isReturnAddressTaken();
+    bool IsRAAndRetAddrIsTaken =
+        (Reg == Mips::RA) && MF->getFrameInfo().isReturnAddressTaken();
     if (!IsRAAndRetAddrIsTaken)
       MBB.addLiveIn(Reg);
   }
@@ -148,8 +150,8 @@ bool Mips16FrameLowering::restoreCalleeSavedRegisters(
   return true;
 }
 
-bool
-Mips16FrameLowering::hasReservedCallFrame(const MachineFunction &MF) const {
+bool Mips16FrameLowering::hasReservedCallFrame(
+    const MachineFunction &MF) const {
   const MachineFrameInfo &MFI = MF.getFrameInfo();
   // Reserve call frame if the size of the maximum call frame fits into 15-bit
   // immediate field and there are no variable sized objects on the stack.

@@ -30,7 +30,7 @@ class ProcessImplicitDefs : public MachineFunctionPass {
   const TargetRegisterInfo *TRI;
   MachineRegisterInfo *MRI;
 
-  SmallSetVector<MachineInstr*, 16> WorkList;
+  SmallSetVector<MachineInstr *, 16> WorkList;
 
   void processImplicitDef(MachineInstr *MI);
   bool canTurnIntoImplicitDef(MachineInstr *MI);
@@ -51,8 +51,8 @@ public:
 char ProcessImplicitDefs::ID = 0;
 char &llvm::ProcessImplicitDefsID = ProcessImplicitDefs::ID;
 
-INITIALIZE_PASS(ProcessImplicitDefs, DEBUG_TYPE,
-                "Process Implicit Definitions", false, false)
+INITIALIZE_PASS(ProcessImplicitDefs, DEBUG_TYPE, "Process Implicit Definitions",
+                false, false)
 
 void ProcessImplicitDefs::getAnalysisUsage(AnalysisUsage &AU) const {
   AU.setPreservesCFG();
@@ -61,9 +61,7 @@ void ProcessImplicitDefs::getAnalysisUsage(AnalysisUsage &AU) const {
 }
 
 bool ProcessImplicitDefs::canTurnIntoImplicitDef(MachineInstr *MI) {
-  if (!MI->isCopyLike() &&
-      !MI->isInsertSubreg() &&
-      !MI->isRegSequence() &&
+  if (!MI->isCopyLike() && !MI->isInsertSubreg() && !MI->isRegSequence() &&
       !MI->isPHI())
     return false;
   for (const MachineOperand &MO : MI->operands())
@@ -143,11 +141,12 @@ bool ProcessImplicitDefs::runOnMachineFunction(MachineFunction &MF) {
   assert(MRI->isSSA() && "ProcessImplicitDefs only works on SSA form.");
   assert(WorkList.empty() && "Inconsistent worklist state");
 
-  for (MachineFunction::iterator MFI = MF.begin(), MFE = MF.end();
-       MFI != MFE; ++MFI) {
+  for (MachineFunction::iterator MFI = MF.begin(), MFE = MF.end(); MFI != MFE;
+       ++MFI) {
     // Scan the basic block for implicit defs.
     for (MachineBasicBlock::instr_iterator MBBI = MFI->instr_begin(),
-         MBBE = MFI->instr_end(); MBBI != MBBE; ++MBBI)
+                                           MBBE = MFI->instr_end();
+         MBBI != MBBE; ++MBBI)
       if (MBBI->isImplicitDef())
         WorkList.insert(&*MBBI);
 
@@ -159,7 +158,8 @@ bool ProcessImplicitDefs::runOnMachineFunction(MachineFunction &MF) {
     Changed = true;
 
     // Drain the WorkList to recursively process any new implicit defs.
-    do processImplicitDef(WorkList.pop_back_val());
+    do
+      processImplicitDef(WorkList.pop_back_val());
     while (!WorkList.empty());
   }
   return Changed;

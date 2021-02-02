@@ -19,17 +19,15 @@
 // bool operator> (directory_entry const&) const noexcept;
 // bool operator>=(directory_entry const&) const noexcept;
 
-
 #include "filesystem_include.h"
 #include <type_traits>
 #include <cassert>
 
 #include "test_macros.h"
 
-
-#define CHECK_OP(Op) \
-  static_assert(std::is_same<decltype(ce Op ce), bool>::value, ""); \
-  static_assert(noexcept(ce Op ce), "Operation must be noexcept" )
+#define CHECK_OP(Op)                                                           \
+  static_assert(std::is_same<decltype(ce Op ce), bool>::value, "");            \
+  static_assert(noexcept(ce Op ce), "Operation must be noexcept")
 
 void test_comparison_signatures() {
   using namespace fs;
@@ -40,9 +38,9 @@ void test_comparison_signatures() {
     directory_entry const ce(p);
     CHECK_OP(==);
     CHECK_OP(!=);
-    CHECK_OP(< );
+    CHECK_OP(<);
     CHECK_OP(<=);
-    CHECK_OP(> );
+    CHECK_OP(>);
     CHECK_OP(>=);
   }
 }
@@ -52,27 +50,24 @@ void test_comparison_signatures() {
 void test_comparisons_simple() {
   using namespace fs;
   typedef std::pair<path, path> TestType;
-  TestType TestCases[] =
-  {
-      {"", ""},
-      {"", "a"},
-      {"a", "a"},
-      {"a", "b"},
-      {"foo/bar/baz", "foo/bar/baz/"}
-  };
+  TestType TestCases[] = {{"", ""},
+                          {"", "a"},
+                          {"a", "a"},
+                          {"a", "b"},
+                          {"foo/bar/baz", "foo/bar/baz/"}};
   auto TestFn = [](path const& LHS, const directory_entry& LHSE,
                    path const& RHS, const directory_entry& RHSE) {
     assert((LHS == RHS) == (LHSE == RHSE));
     assert((LHS != RHS) == (LHSE != RHSE));
-    assert((LHS < RHS) ==  (LHSE < RHSE));
+    assert((LHS < RHS) == (LHSE < RHSE));
     assert((LHS <= RHS) == (LHSE <= RHSE));
-    assert((LHS > RHS) ==  (LHSE > RHSE));
+    assert((LHS > RHS) == (LHSE > RHSE));
     assert((LHS >= RHS) == (LHSE >= RHSE));
   };
   for (auto const& TC : TestCases) {
     const directory_entry L(TC.first);
     const directory_entry R(TC.second);
-    TestFn(TC.first,  L, TC.second, R);
+    TestFn(TC.first, L, TC.second, R);
     TestFn(TC.second, R, TC.first, L);
   }
 }

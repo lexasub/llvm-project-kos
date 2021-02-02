@@ -12,7 +12,6 @@
 //===----------------------------------------------------------------------===//
 
 #include "clang/AST/ASTConsumer.h"
-#include "clang/AST/ASTConsumer.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/RecursiveASTVisitor.h"
 #include "clang/Tooling/Tooling.h"
@@ -30,7 +29,7 @@ typedef std::map<std::string, bool> VarInfoMap;
 /// \brief Records information on variable initializers to a map.
 class EvaluateConstantInitializersVisitor
     : public clang::RecursiveASTVisitor<EvaluateConstantInitializersVisitor> {
- public:
+public:
   explicit EvaluateConstantInitializersVisitor(VarInfoMap &VarInfo)
       : VarInfo(VarInfo) {}
 
@@ -50,21 +49,21 @@ class EvaluateConstantInitializersVisitor
     return true;
   }
 
- private:
+private:
   VarInfoMap &VarInfo;
 };
 
 class EvaluateConstantInitializersAction : public clang::ASTFrontendAction {
- public:
-   std::unique_ptr<clang::ASTConsumer>
-   CreateASTConsumer(clang::CompilerInstance &Compiler,
-                     llvm::StringRef FilePath) override {
-     return std::make_unique<Consumer>();
+public:
+  std::unique_ptr<clang::ASTConsumer>
+  CreateASTConsumer(clang::CompilerInstance &Compiler,
+                    llvm::StringRef FilePath) override {
+    return std::make_unique<Consumer>();
   }
 
- private:
+private:
   class Consumer : public clang::ASTConsumer {
-   public:
+  public:
     ~Consumer() override {}
 
     void HandleTranslationUnit(clang::ASTContext &Ctx) override {
@@ -78,7 +77,7 @@ class EvaluateConstantInitializersAction : public clang::ASTFrontendAction {
     }
   };
 };
-}
+} // namespace
 
 TEST(EvaluateAsRValue, FailsGracefullyForUnknownTypes) {
   // This is a regression test; the AST library used to trigger assertion

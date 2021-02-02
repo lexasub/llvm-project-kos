@@ -27,17 +27,17 @@ namespace clang {
 namespace CodeGen {
 class ConstantInitBuilderBase;
 }
-}
+} // namespace clang
 namespace llvm {
 template <>
-struct PointerLikeTypeTraits< ::clang::CodeGen::ConstantInitBuilderBase*> {
-  using T = ::clang::CodeGen::ConstantInitBuilderBase*;
+struct PointerLikeTypeTraits<::clang::CodeGen::ConstantInitBuilderBase *> {
+  using T = ::clang::CodeGen::ConstantInitBuilderBase *;
 
   static inline void *getAsVoidPointer(T p) { return p; }
-  static inline T getFromVoidPointer(void *p) {return static_cast<T>(p);}
+  static inline T getFromVoidPointer(void *p) { return static_cast<T>(p); }
   static constexpr int NumLowBitsAvailable = 2;
 };
-}
+} // namespace llvm
 
 namespace clang {
 namespace CodeGen {
@@ -45,7 +45,8 @@ namespace CodeGen {
 /// A "future" for a completed constant initializer, which can be passed
 /// around independently of any sub-builders (but not the original parent).
 class ConstantInitFuture {
-  using PairTy = llvm::PointerUnion<ConstantInitBuilderBase*, llvm::Constant*>;
+  using PairTy =
+      llvm::PointerUnion<ConstantInitBuilderBase *, llvm::Constant *>;
 
   PairTy Data;
 
@@ -83,13 +84,12 @@ public:
       llvm::PointerLikeTypeTraits<PairTy>::NumLowBitsAvailable;
 };
 
-}  // end namespace CodeGen
-}  // end namespace clang
+} // end namespace CodeGen
+} // end namespace clang
 
 namespace llvm {
 
-template <>
-struct PointerLikeTypeTraits< ::clang::CodeGen::ConstantInitFuture> {
+template <> struct PointerLikeTypeTraits<::clang::CodeGen::ConstantInitFuture> {
   using T = ::clang::CodeGen::ConstantInitFuture;
 
   static inline void *getAsVoidPointer(T future) {

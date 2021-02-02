@@ -24,13 +24,13 @@
 
 // CHECK-FS: WRITE of size 4
 
-extern "C" void foo(int* a) {
+extern "C" void foo(int *a) {
   // CHECK-FS: #0 0x{{.+}} in foo {{.*}}asan-symbolize-partial-report-with-module-map.cpp:[[@LINE+1]]
   *a = 5;
 }
 
 int main() {
-  int* a = (int*) malloc(sizeof(int));
+  int *a = (int *)malloc(sizeof(int));
   if (!a)
     return 0;
   free(a);

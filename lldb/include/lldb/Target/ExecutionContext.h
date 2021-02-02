@@ -264,9 +264,9 @@ protected:
   lldb::ProcessWP m_process_wp;       ///< A weak reference to a process
   mutable lldb::ThreadWP m_thread_wp; ///< A weak reference to a thread
   lldb::tid_t m_tid;  ///< The thread ID that this object refers to in case the
-                      ///backing object changes
+                      /// backing object changes
   StackID m_stack_id; ///< The stack ID that this object refers to in case the
-                      ///backing object changes
+                      /// backing object changes
 };
 
 /// \class ExecutionContext ExecutionContext.h

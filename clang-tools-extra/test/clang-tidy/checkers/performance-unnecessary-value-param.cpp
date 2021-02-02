@@ -3,7 +3,7 @@
 // CHECK-FIXES: #include <utility>
 
 struct ExpensiveToCopyType {
-  const ExpensiveToCopyType & constReference() const {
+  const ExpensiveToCopyType &constReference() const {
     return *this;
   }
   void nonConstMethod();
@@ -15,13 +15,14 @@ void mutate(ExpensiveToCopyType *);
 void useAsConstReference(const ExpensiveToCopyType &);
 void useByValue(ExpensiveToCopyType);
 
-template <class T> class Vector {
- public:
-  using iterator = T*;
-  using const_iterator = const T*;
+template <class T>
+class Vector {
+public:
+  using iterator = T *;
+  using const_iterator = const T *;
 
-  Vector(const Vector&);
-  Vector& operator=(const Vector&);
+  Vector(const Vector &);
+  Vector &operator=(const Vector &);
 
   iterator begin();
   iterator end();
@@ -32,11 +33,11 @@ template <class T> class Vector {
 // This class simulates std::pair<>. It is trivially copy constructible
 // and trivially destructible, but not trivially copy assignable.
 class SomewhatTrivial {
- public:
+public:
   SomewhatTrivial();
-  SomewhatTrivial(const SomewhatTrivial&) = default;
+  SomewhatTrivial(const SomewhatTrivial &) = default;
   ~SomewhatTrivial() = default;
-  SomewhatTrivial& operator=(const SomewhatTrivial&);
+  SomewhatTrivial &operator=(const SomewhatTrivial &);
 };
 
 struct MoveOnlyType {
@@ -76,7 +77,7 @@ void positiveExpensiveValue(ExpensiveToCopyType Obj) {
 void positiveVector(Vector<ExpensiveToCopyType> V) {
   // CHECK-MESSAGES: [[@LINE-1]]:49: warning: the parameter 'V' is copied for each invocation but only used as a const reference; consider making it a const reference [performance-unnecessary-value-param]
   // CHECK-FIXES: void positiveVector(const Vector<ExpensiveToCopyType>& V) {
-  for (const auto& Obj : V) {
+  for (const auto &Obj : V) {
     useByValue(Obj);
   }
 }
@@ -93,9 +94,9 @@ void positiveUnnamedParam(const ExpensiveToCopyType) {
   // CHECK-FIXES: void positiveUnnamedParam(const ExpensiveToCopyType&) {
 }
 
-void positiveAndNegative(const ExpensiveToCopyType ConstCopy, const ExpensiveToCopyType& ConstRef, ExpensiveToCopyType Copy);
+void positiveAndNegative(const ExpensiveToCopyType ConstCopy, const ExpensiveToCopyType &ConstRef, ExpensiveToCopyType Copy);
 // CHECK-FIXES: void positiveAndNegative(const ExpensiveToCopyType& ConstCopy, const ExpensiveToCopyType& ConstRef, const ExpensiveToCopyType& Copy);
-void positiveAndNegative(const ExpensiveToCopyType ConstCopy, const ExpensiveToCopyType& ConstRef, ExpensiveToCopyType Copy) {
+void positiveAndNegative(const ExpensiveToCopyType ConstCopy, const ExpensiveToCopyType &ConstRef, ExpensiveToCopyType Copy) {
   // CHECK-MESSAGES: [[@LINE-1]]:52: warning: the const qualified parameter 'ConstCopy'
   // CHECK-MESSAGES: [[@LINE-2]]:120: warning: the parameter 'Copy'
   // CHECK-FIXES: void positiveAndNegative(const ExpensiveToCopyType& ConstCopy, const ExpensiveToCopyType& ConstRef, const ExpensiveToCopyType& Copy) {
@@ -107,7 +108,8 @@ struct PositiveConstValueConstructor {
   // CHECK-FIXES: PositiveConstValueConstructor(const ExpensiveToCopyType& ConstCopy) {}
 };
 
-template <typename T> void templateWithNonTemplatizedParameter(const ExpensiveToCopyType S, T V) {
+template <typename T>
+void templateWithNonTemplatizedParameter(const ExpensiveToCopyType S, T V) {
   // CHECK-MESSAGES: [[@LINE-1]]:90: warning: the const qualified parameter 'S'
   // CHECK-FIXES: template <typename T> void templateWithNonTemplatizedParameter(const ExpensiveToCopyType& S, T V) {
 }
@@ -117,25 +119,26 @@ void instantiated() {
   templateWithNonTemplatizedParameter(ExpensiveToCopyType(), 5);
 }
 
-template <typename T> void negativeTemplateType(const T V) {
+template <typename T>
+void negativeTemplateType(const T V) {
 }
 
 void negativeArray(const ExpensiveToCopyType[]) {
 }
 
-void negativePointer(ExpensiveToCopyType* Obj) {
+void negativePointer(ExpensiveToCopyType *Obj) {
 }
 
-void negativeConstPointer(const ExpensiveToCopyType* Obj) {
+void negativeConstPointer(const ExpensiveToCopyType *Obj) {
 }
 
-void negativeConstReference(const ExpensiveToCopyType& Obj) {
+void negativeConstReference(const ExpensiveToCopyType &Obj) {
 }
 
-void negativeReference(ExpensiveToCopyType& Obj) {
+void negativeReference(ExpensiveToCopyType &Obj) {
 }
 
-void negativeUniversalReference(ExpensiveToCopyType&& Obj) {
+void negativeUniversalReference(ExpensiveToCopyType &&Obj) {
 }
 
 void negativeSomewhatTrivialConstValue(const SomewhatTrivial Somewhat) {
@@ -193,25 +196,25 @@ struct NegativeValueMovedConstructor {
 
 template <typename T>
 struct Container {
-  typedef const T & const_reference;
+  typedef const T &const_reference;
 };
 
 void NegativeTypedefParam(const Container<ExpensiveToCopyType>::const_reference Param) {
 }
 
-#define UNNECESSARY_VALUE_PARAM_IN_MACRO_BODY()         \
-  void inMacro(const ExpensiveToCopyType T) {           \
-  }                                                     \
-// Ensure fix is not applied.
-// CHECK-FIXES: void inMacro(const ExpensiveToCopyType T) {
+#define UNNECESSARY_VALUE_PARAM_IN_MACRO_BODY() \
+  void inMacro(const ExpensiveToCopyType T) {   \
+  }                                             \
+  // Ensure fix is not applied.                 \
+  // CHECK-FIXES: void inMacro(const ExpensiveToCopyType T) {
 
 UNNECESSARY_VALUE_PARAM_IN_MACRO_BODY()
 // CHECK-MESSAGES: [[@LINE-1]]:1: warning: the const qualified parameter 'T'
 
-#define UNNECESSARY_VALUE_PARAM_IN_MACRO_ARGUMENT(ARGUMENT)     \
+#define UNNECESSARY_VALUE_PARAM_IN_MACRO_ARGUMENT(ARGUMENT) \
   ARGUMENT
 
-UNNECESSARY_VALUE_PARAM_IN_MACRO_ARGUMENT(void inMacroArgument(const ExpensiveToCopyType InMacroArg) {})
+UNNECESSARY_VALUE_PARAM_IN_MACRO_ARGUMENT(void inMacroArgument(const ExpensiveToCopyType InMacroArg){})
 // CHECK-MESSAGES: [[@LINE-1]]:90: warning: the const qualified parameter 'InMacroArg'
 // CHECK-FIXES: void inMacroArgument(const ExpensiveToCopyType InMacroArg) {}
 
@@ -241,7 +244,7 @@ struct PositiveNonVirualMethod {
 
 struct NegativeDeletedMethod {
   ~NegativeDeletedMethod() {}
-  NegativeDeletedMethod& operator=(NegativeDeletedMethod N) = delete;
+  NegativeDeletedMethod &operator=(NegativeDeletedMethod N) = delete;
   // CHECK-FIXES: NegativeDeletedMethod& operator=(NegativeDeletedMethod N) = delete;
 };
 
@@ -371,11 +374,11 @@ void fun() {
   NegativeUsingConstructor S(E);
 }
 
-template<typename T>
+template <typename T>
 void templateFunction(T) {
 }
 
-template<>
+template <>
 void templateFunction<ExpensiveToCopyType>(ExpensiveToCopyType E) {
   // CHECK-MESSAGES: [[@LINE-1]]:64: warning: the parameter 'E' is copied
   // CHECK-FIXES: void templateFunction<ExpensiveToCopyType>(ExpensiveToCopyType E) {

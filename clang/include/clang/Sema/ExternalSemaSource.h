@@ -76,16 +76,17 @@ public:
 
   /// Load the set of namespaces that are known to the external source,
   /// which will be used during typo correction.
-  virtual void ReadKnownNamespaces(
-                           SmallVectorImpl<NamespaceDecl *> &Namespaces);
+  virtual void
+  ReadKnownNamespaces(SmallVectorImpl<NamespaceDecl *> &Namespaces);
 
   /// Load the set of used but not defined functions or variables with
   /// internal linkage, or used but not defined internal functions.
   virtual void
   ReadUndefinedButUsed(llvm::MapVector<NamedDecl *, SourceLocation> &Undefined);
 
-  virtual void ReadMismatchingDeleteExpressions(llvm::MapVector<
-      FieldDecl *, llvm::SmallVector<std::pair<SourceLocation, bool>, 4>> &);
+  virtual void ReadMismatchingDeleteExpressions(
+      llvm::MapVector<FieldDecl *,
+                      llvm::SmallVector<std::pair<SourceLocation, bool>, 4>> &);
 
   /// Do last resort, unqualified lookup on a LookupResult that
   /// Sema cannot find.
@@ -104,8 +105,8 @@ public:
   /// given vector of tentative definitions. Note that this routine may be
   /// invoked multiple times; the external source should take care not to
   /// introduce the same declarations repeatedly.
-  virtual void ReadTentativeDefinitions(
-                                  SmallVectorImpl<VarDecl *> &TentativeDefs) {}
+  virtual void
+  ReadTentativeDefinitions(SmallVectorImpl<VarDecl *> &TentativeDefs) {}
 
   /// Read the set of unused file-scope declarations known to the
   /// external Sema source.
@@ -114,8 +115,8 @@ public:
   /// given vector of declarations. Note that this routine may be
   /// invoked multiple times; the external source should take care not to
   /// introduce the same declarations repeatedly.
-  virtual void ReadUnusedFileScopedDecls(
-                 SmallVectorImpl<const DeclaratorDecl *> &Decls) {}
+  virtual void
+  ReadUnusedFileScopedDecls(SmallVectorImpl<const DeclaratorDecl *> &Decls) {}
 
   /// Read the set of delegating constructors known to the
   /// external Sema source.
@@ -124,8 +125,8 @@ public:
   /// given vector of declarations. Note that this routine may be
   /// invoked multiple times; the external source should take care not to
   /// introduce the same declarations repeatedly.
-  virtual void ReadDelegatingConstructors(
-                 SmallVectorImpl<CXXConstructorDecl *> &Decls) {}
+  virtual void
+  ReadDelegatingConstructors(SmallVectorImpl<CXXConstructorDecl *> &Decls) {}
 
   /// Read the set of ext_vector type declarations known to the
   /// external Sema source.
@@ -153,7 +154,7 @@ public:
   /// may be invoked multiple times; the external source should take care not
   /// to introduce the same selectors repeatedly.
   virtual void ReadReferencedSelectors(
-                 SmallVectorImpl<std::pair<Selector, SourceLocation> > &Sels) {}
+      SmallVectorImpl<std::pair<Selector, SourceLocation>> &Sels) {}
 
   /// Read the set of weak, undeclared identifiers known to the
   /// external Sema source.
@@ -163,7 +164,7 @@ public:
   /// the external source should take care not to introduce the same identifiers
   /// repeatedly.
   virtual void ReadWeakUndeclaredIdentifiers(
-                 SmallVectorImpl<std::pair<IdentifierInfo *, WeakInfo> > &WI) {}
+      SmallVectorImpl<std::pair<IdentifierInfo *, WeakInfo>> &WI) {}
 
   /// Read the set of used vtables known to the external Sema source.
   ///
@@ -180,8 +181,7 @@ public:
   /// external source should take care not to introduce the same instantiations
   /// repeatedly.
   virtual void ReadPendingInstantiations(
-                 SmallVectorImpl<std::pair<ValueDecl *,
-                                           SourceLocation> > &Pending) {}
+      SmallVectorImpl<std::pair<ValueDecl *, SourceLocation>> &Pending) {}
 
   /// Read the set of late parsed template functions for this source.
   ///
@@ -199,8 +199,8 @@ public:
   /// and variable decls which may cause deferred diags. Note that this routine
   /// may be invoked multiple times; the external source should take care not to
   /// introduce the same declarations repeatedly.
-  virtual void ReadDeclsToCheckForDeferredDiags(
-      llvm::SmallVector<Decl *, 4> &Decls) {}
+  virtual void
+  ReadDeclsToCheckForDeferredDiags(llvm::SmallVector<Decl *, 4> &Decls) {}
 
   /// \copydoc Sema::CorrectTypo
   /// \note LookupKind must correspond to a valid Sema::LookupNameKind

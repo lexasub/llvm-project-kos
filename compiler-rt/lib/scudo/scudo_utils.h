@@ -19,8 +19,7 @@
 
 namespace __scudo {
 
-template <class Dest, class Source>
-inline Dest bit_cast(const Source& source) {
+template <class Dest, class Source> inline Dest bit_cast(const Source &source) {
   static_assert(sizeof(Dest) == sizeof(Source), "Sizes are not equal!");
   Dest dest;
   memcpy(&dest, &source, sizeof(dest));
@@ -31,6 +30,6 @@ void NORETURN dieWithMessage(const char *Format, ...);
 
 bool hasHardwareCRC32();
 
-}  // namespace __scudo
+} // namespace __scudo
 
-#endif  // SCUDO_UTILS_H_
+#endif // SCUDO_UTILS_H_

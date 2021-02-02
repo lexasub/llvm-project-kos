@@ -1,117 +1,66 @@
-class Conversion
-{
+class Conversion {
 public:
-    Conversion (int i) :
-      m_i (i)
-      {}
+  Conversion(int i) : m_i(i) {}
 
-    operator bool()
-    {
-        return m_i != 0;
-    }
-    
+  operator bool() { return m_i != 0; }
+
 private:
-    int m_i;
+  int m_i;
 };
 
-class A
-{
+class A {
 public:
-    A(int i=0):
-        m_a_int(i),
-        m_aa_int(i+1)
-    {
-    }
+  A(int i = 0) : m_a_int(i), m_aa_int(i + 1) {}
 
-    //virtual
-    ~A()
-    {
-    }
+  // virtual
+  ~A() {}
 
-    int
-    GetInteger() const
-    {
-        return m_a_int;
-    }
-    void
-    SetInteger(int i)
-    {
-        m_a_int = i;
-    }
+  int GetInteger() const { return m_a_int; }
+  void SetInteger(int i) { m_a_int = i; }
 
 protected:
-    int m_a_int;
-    int m_aa_int;
+  int m_a_int;
+  int m_aa_int;
 };
 
-class B : public A
-{
+class B : public A {
 public:
-    B(int ai, int bi) :
-        A(ai),
-        m_b_int(bi)
-    {
-    }
+  B(int ai, int bi) : A(ai), m_b_int(bi) {}
 
-    //virtual
-    ~B()
-    {
-    }
+  // virtual
+  ~B() {}
 
-    int
-    GetIntegerB() const
-    {
-        return m_b_int;
-    }
-    void
-    SetIntegerB(int i)
-    {
-        m_b_int = i;
-    }
+  int GetIntegerB() const { return m_b_int; }
+  void SetIntegerB(int i) { m_b_int = i; }
 
 protected:
-    int m_b_int;
+  int m_b_int;
 };
 
 #include <cstdio>
-class C : public B
-{
+class C : public B {
 public:
-    C(int ai, int bi, int ci) :
-        B(ai, bi),
-        m_c_int(ci)
-    {
-      std::printf("Within C::ctor() m_c_int=%d\n", m_c_int); // Set break point at this line.
-    }
+  C(int ai, int bi, int ci) : B(ai, bi), m_c_int(ci) {
+    std::printf("Within C::ctor() m_c_int=%d\n",
+                m_c_int); // Set break point at this line.
+  }
 
-    //virtual
-    ~C()
-    {
-    }
+  // virtual
+  ~C() {}
 
-    int
-    GetIntegerC() const
-    {
-        return m_c_int;
-    }
-    void
-    SetIntegerC(int i)
-    {
-        m_c_int = i;
-    }
+  int GetIntegerC() const { return m_c_int; }
+  void SetIntegerC(int i) { m_c_int = i; }
 
 protected:
-    int m_c_int;
+  int m_c_int;
 };
 
-int
-main (int argc, char const *argv[])
-{
-    A a(12);
-    B b(22,33);
-    C c(44,55,66);
-    Conversion conv(1);
-    if (conv)
-        return b.GetIntegerB() - a.GetInteger() + c.GetInteger();
-    return 0;
+int main(int argc, char const *argv[]) {
+  A a(12);
+  B b(22, 33);
+  C c(44, 55, 66);
+  Conversion conv(1);
+  if (conv)
+    return b.GetIntegerB() - a.GetInteger() + c.GetInteger();
+  return 0;
 }

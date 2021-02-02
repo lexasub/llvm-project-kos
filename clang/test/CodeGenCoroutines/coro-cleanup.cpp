@@ -14,7 +14,7 @@ template <> struct coroutine_handle<void> {
   template <class PromiseType>
   coroutine_handle(coroutine_handle<PromiseType>) noexcept;
 };
-}
+} // namespace std::experimental
 
 struct suspend_always {
   bool await_ready() noexcept;
@@ -34,7 +34,9 @@ template <> struct std::experimental::coroutine_traits<void> {
   };
 };
 
-struct Cleanup { ~Cleanup(); };
+struct Cleanup {
+  ~Cleanup();
+};
 void may_throw();
 
 // CHECK-LABEL: define{{.*}} void @_Z1fv(

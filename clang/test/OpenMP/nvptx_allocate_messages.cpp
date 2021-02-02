@@ -33,13 +33,13 @@ extern const omp_allocator_handle_t omp_cgroup_mem_alloc;
 extern const omp_allocator_handle_t omp_pteam_mem_alloc;
 extern const omp_allocator_handle_t omp_thread_mem_alloc;
 
-struct St{
- int a;
+struct St {
+  int a;
 };
 
-struct St1{
- int a;
- static int b;
+struct St1 {
+  int a;
+  static int b;
 #pragma omp allocate(b) allocator(omp_default_mem_alloc)
 } d;
 
@@ -51,12 +51,12 @@ int a, b, c;
 template <class T>
 struct ST {
   static T m;
-  #pragma omp allocate(m) allocator(omp_low_lat_mem_alloc)
+#pragma omp allocate(m) allocator(omp_low_lat_mem_alloc)
 };
 
 template <class T> T foo() {
   T v;
-  #pragma omp allocate(v) allocator(omp_cgroup_mem_alloc)
+#pragma omp allocate(v) allocator(omp_cgroup_mem_alloc)
   v = ST<T>::m;
 #if defined(DEVICE) && !defined(REQUIRES)
 // expected-error@+2 {{expected an allocator expression inside of the target region; provide an allocator expression or use 'requires' directive with the 'dynamic_allocators' clause}}
@@ -66,15 +66,15 @@ template <class T> T foo() {
   return v;
 }
 
-namespace ns{
-  int a;
+namespace ns {
+int a;
 }
 #pragma omp allocate(ns::a) allocator(omp_pteam_mem_alloc)
 
-int main () {
+int main() {
   static int a;
 #pragma omp allocate(a) allocator(omp_thread_mem_alloc)
-  a=2;
+  a = 2;
   double b = 3;
 #if defined(DEVICE) && !defined(REQUIRES)
 // expected-error@+2 {{expected an 'allocator' clause inside of the target region; provide an 'allocator' clause or use 'requires' directive with the 'dynamic_allocators' clause}}

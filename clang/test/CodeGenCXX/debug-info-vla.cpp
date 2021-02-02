@@ -1,6 +1,5 @@
 // RUN: %clang_cc1 -emit-llvm -debug-info-kind=limited -std=c++11 -triple x86_64-unknown-unknown %s -o - | FileCheck %s
 
-
 void f(int m) {
   int x[3][m];
 }

@@ -5,7 +5,9 @@ class MyCls {
   }
   void out_foo();
 
-  struct Vec { int x, y; };
+  struct Vec {
+    int x, y;
+  };
   Vec vec;
 };
 
@@ -15,7 +17,7 @@ void MyCls::out_foo() {
 
 class OtherClass : public MyCls {
 public:
-  OtherClass(const OtherClass &other) : MyCls(other), value(value) { }
+  OtherClass(const OtherClass &other) : MyCls(other), value(value) {}
 
 private:
   int value;
@@ -28,7 +30,7 @@ class X {};
 class Y : public X<int> {
   Y() : X<int>() {}
 };
-}
+} // namespace
 
 // RUN: c-index-test -code-completion-at=%s:4:9 -std=c++98 %s | FileCheck %s
 // RUN: c-index-test -code-completion-at=%s:13:7 -std=c++98 %s | FileCheck %s

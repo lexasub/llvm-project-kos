@@ -1,9 +1,8 @@
 namespace ns {
-  typedef int id;
+typedef int id;
 };
 
-int main()
-{
+int main() {
   ns::id foo = 0;
   return foo; // Set breakpoint here.
 }

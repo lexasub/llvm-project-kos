@@ -171,11 +171,11 @@ protected:
 private:
   void operator delete(void *);
   /// Placement delete - required by std, but never called.
-  void operator delete(void*, unsigned) {
+  void operator delete(void *, unsigned) {
     llvm_unreachable("Constructor throws?");
   }
   /// Placement delete - required by std, but never called.
-  void operator delete(void*, unsigned, bool) {
+  void operator delete(void *, unsigned, bool) {
     llvm_unreachable("Constructor throws?");
   }
 
@@ -186,7 +186,7 @@ private:
     return (*(Name - 1)).NameEntry;
   }
   const StringMapEntry<bool> *&getNameEntryPtr() const {
-    return const_cast<MCSymbol*>(this)->getNameEntryPtr();
+    return const_cast<MCSymbol *>(this)->getNameEntryPtr();
   }
 
 public:
@@ -243,9 +243,7 @@ public:
 
   /// isInSection - Check if this symbol is defined in some section (i.e., it
   /// is defined but not absolute).
-  bool isInSection() const {
-    return isDefined() && !isAbsolute();
-  }
+  bool isInSection() const { return isDefined() && !isAbsolute(); }
 
   /// isUndefined - Check if this symbol undefined (i.e., implicitly defined).
   bool isUndefined(bool SetUsed = true) const {
@@ -253,9 +251,7 @@ public:
   }
 
   /// isAbsolute - Check if this is an absolute symbol.
-  bool isAbsolute() const {
-    return getFragment() == AbsolutePseudoFragment;
-  }
+  bool isAbsolute() const { return getFragment() == AbsolutePseudoFragment; }
 
   /// Get the section associated with a defined, non-absolute symbol.
   MCSection &getSection() const {
@@ -287,9 +283,7 @@ public:
   /// @{
 
   /// isVariable - Check if this is a variable symbol.
-  bool isVariable() const {
-    return SymbolContents == SymContentsVariable;
-  }
+  bool isVariable() const { return SymbolContents == SymContentsVariable; }
 
   /// getVariableValue - Get the value for variable symbols.
   const MCExpr *getVariableValue(bool SetUsed = true) const {
@@ -303,14 +297,10 @@ public:
   /// @}
 
   /// Get the (implementation defined) index.
-  uint32_t getIndex() const {
-    return Index;
-  }
+  uint32_t getIndex() const { return Index; }
 
   /// Set the (implementation defined) index.
-  void setIndex(uint32_t Value) const {
-    Index = Value;
-  }
+  void setIndex(uint32_t Value) const { Index = Value; }
 
   bool isUnset() const { return SymbolContents == SymContentsUnset; }
 
@@ -366,7 +356,7 @@ public:
   /// \return True if symbol was already declared as a different type
   bool declareCommon(uint64_t Size, unsigned Align, bool Target = false) {
     assert(isCommon() || getOffset() == 0);
-    if(isCommon()) {
+    if (isCommon()) {
       if (CommonSize != Size || getCommonAlignment() != Align ||
           isTargetCommon() != Target)
         return true;

@@ -48,7 +48,7 @@ void faultyBusyIncrement() {
   while (true) {
     if (m1.try_lock()) {
       ++i;
-      m2.unlock();  // expected-warning{{Potential copy-paste error; did you really mean to use 'm2' here?}}
+      m2.unlock(); // expected-warning{{Potential copy-paste error; did you really mean to use 'm2' here?}}
       if (i > 1000) {
         return;
       }
@@ -71,7 +71,6 @@ int fooClone(int a, int b, int c) {
   c -= a * a; // expected-note{{Similar code using 'a' here}}
   return c;
 }
-
 
 // Tests that for clone groups with a many possible suspicious clone pairs, at
 // most one warning per clone group is generated and every relevant clone is

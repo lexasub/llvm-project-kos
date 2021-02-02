@@ -86,7 +86,7 @@ public:
     /// Kills - List of MachineInstruction's which are the last use of this
     /// virtual register (kill it) in their basic block.
     ///
-    std::vector<MachineInstr*> Kills;
+    std::vector<MachineInstr *> Kills;
 
     /// removeKill - Delete a kill corresponding to the specified
     /// machine instruction. Returns true if there was a kill
@@ -122,10 +122,10 @@ private:
   /// building live intervals.
   SparseBitVector<> PHIJoins;
 
-private:   // Intermediate data structures
+private: // Intermediate data structures
   MachineFunction *MF;
 
-  MachineRegisterInfo* MRI;
+  MachineRegisterInfo *MRI;
 
   const TargetRegisterInfo *TRI;
 
@@ -143,15 +143,16 @@ private:   // Intermediate data structures
 
   // DistanceMap - Keep track the distance of a MI from the start of the
   // current basic block.
-  DenseMap<MachineInstr*, unsigned> DistanceMap;
+  DenseMap<MachineInstr *, unsigned> DistanceMap;
 
   /// HandlePhysRegKill - Add kills of Reg and its sub-registers to the
   /// uses. Pay special attention to the sub-register uses which may come below
   /// the last use of the whole register.
   bool HandlePhysRegKill(Register Reg, MachineInstr *MI);
 
-  /// HandleRegMask - Call HandlePhysRegKill for all registers clobbered by Mask.
-  void HandleRegMask(const MachineOperand&);
+  /// HandleRegMask - Call HandlePhysRegKill for all registers clobbered by
+  /// Mask.
+  void HandleRegMask(const MachineOperand &);
 
   void HandlePhysRegUse(Register Reg, MachineInstr &MI);
   void HandlePhysRegDef(Register Reg, MachineInstr *MI,
@@ -172,13 +173,13 @@ private:   // Intermediate data structures
   /// particular, we want to map the variable information of a virtual
   /// register which is used in a PHI node. We map that to the BB the vreg
   /// is coming from.
-  void analyzePHINodes(const MachineFunction& Fn);
+  void analyzePHINodes(const MachineFunction &Fn);
 
   void runOnInstr(MachineInstr &MI, SmallVectorImpl<unsigned> &Defs);
 
   void runOnBlock(MachineBasicBlock *MBB, unsigned NumRegs);
-public:
 
+public:
   bool runOnMachineFunction(MachineFunction &MF) override;
 
   /// RegisterDefIsDead - Return true if the specified instruction defines the
@@ -263,15 +264,13 @@ public:
 
   void getAnalysisUsage(AnalysisUsage &AU) const override;
 
-  void releaseMemory() override {
-    VirtRegInfo.clear();
-  }
+  void releaseMemory() override { VirtRegInfo.clear(); }
 
   /// getVarInfo - Return the VarInfo structure for the specified VIRTUAL
   /// register.
   VarInfo &getVarInfo(Register Reg);
 
-  void MarkVirtRegAliveInBlock(VarInfo& VRInfo, MachineBasicBlock* DefBlock,
+  void MarkVirtRegAliveInBlock(VarInfo &VRInfo, MachineBasicBlock *DefBlock,
                                MachineBasicBlock *BB);
   void MarkVirtRegAliveInBlock(VarInfo &VRInfo, MachineBasicBlock *DefBlock,
                                MachineBasicBlock *BB,
@@ -293,12 +292,10 @@ public:
   /// variables that are live out of DomBB and live into SuccBB will be marked
   /// as passing live through BB. This method assumes that the machine code is
   /// still in SSA form.
-  void addNewBlock(MachineBasicBlock *BB,
-                   MachineBasicBlock *DomBB,
+  void addNewBlock(MachineBasicBlock *BB, MachineBasicBlock *DomBB,
                    MachineBasicBlock *SuccBB);
 
-  void addNewBlock(MachineBasicBlock *BB,
-                   MachineBasicBlock *DomBB,
+  void addNewBlock(MachineBasicBlock *BB, MachineBasicBlock *DomBB,
                    MachineBasicBlock *SuccBB,
                    std::vector<SparseBitVector<>> &LiveInSets);
 
@@ -309,6 +306,6 @@ public:
   void setPHIJoin(Register Reg) { PHIJoins.set(Reg.id()); }
 };
 
-} // End llvm namespace
+} // namespace llvm
 
 #endif

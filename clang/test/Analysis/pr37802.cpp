@@ -53,7 +53,6 @@ Z g() {
 }
 } // namespace pr37802_v1
 
-
 // This slightly modified code crashed differently.
 namespace pr37802_v2 {
 struct J {

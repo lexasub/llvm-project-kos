@@ -44,8 +44,7 @@ public:
 
 std::unique_ptr<ProfileSpecialCaseList>
 ProfileSpecialCaseList::create(const std::vector<std::string> &Paths,
-                               llvm::vfs::FileSystem &VFS,
-                               std::string &Error) {
+                               llvm::vfs::FileSystem &VFS, std::string &Error) {
   auto PSCL = std::make_unique<ProfileSpecialCaseList>();
   if (PSCL->createInternal(Paths, VFS, Error))
     return PSCL;
@@ -61,7 +60,7 @@ ProfileSpecialCaseList::createOrDie(const std::vector<std::string> &Paths,
   llvm::report_fatal_error(Error);
 }
 
-}
+} // namespace clang
 
 ProfileList::ProfileList(ArrayRef<std::string> Paths, SourceManager &SM)
     : SCL(ProfileSpecialCaseList::createOrDie(

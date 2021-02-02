@@ -46,13 +46,13 @@ public:
   int theMethod(int x) {
     return x + x;
   }
-  int n __attribute__((aligned(1+1)));
+  int n __attribute__((aligned(1 + 1)));
 };
 
 // Used to fail with -ast-dump-filter X
-template<template<typename T> class C> class Z {};
+template <template <typename T> class C> class Z {};
 
 // Check that traversal continues after the previous construct.
 class AfterNullNode {};
 
-}
+} // namespace test_namespace

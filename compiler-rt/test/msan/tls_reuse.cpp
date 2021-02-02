@@ -11,7 +11,7 @@ void *ThreadFn(void *) {
   if (!x)
     printf("zzz\n");
   int y;
-  int * volatile p = &y;
+  int *volatile p = &y;
   x = *p;
   return 0;
 }

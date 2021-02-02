@@ -16,8 +16,8 @@
 // RUN: %clang_cc1 %s -ffreestanding -std=c++1z -fsyntax-only -triple=xcore-none-none
 // RUN: %clang_cc1 %s -ffreestanding -std=c++1z -fsyntax-only
 
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 
 static_assert(__is_same(__typeof__(INTPTR_MIN), intptr_t));
 static_assert(__is_same(__typeof__(INTPTR_MAX), intptr_t));

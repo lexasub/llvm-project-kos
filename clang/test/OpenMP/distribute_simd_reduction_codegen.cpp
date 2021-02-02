@@ -32,9 +32,10 @@ T tmain() {
   T vec[] = {1, 2};
 #pragma omp target
 #pragma omp teams
-#pragma omp distribute simd reduction(+: t_var)
+#pragma omp distribute simd reduction(+ \
+                                      : t_var)
   for (int i = 0; i < 2; ++i) {
-    t_var += (T) i;
+    t_var += (T)i;
   }
   return T();
 }
@@ -45,76 +46,78 @@ int main() {
   // LAMBDA-LABEL: @main
   // LAMBDA: call void [[OUTER_LAMBDA:@.+]](
   [&]() {
-    // LAMBDA: define{{.*}} internal{{.*}} void [[OUTER_LAMBDA]](
-    // LAMBDA: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}}, i64 -1, i8* @{{[^,]+}}, i32 1, i8** %{{[^,]+}}, i8** %{{[^,]+}}, i{{64|32}}* {{.+}}@{{[^,]+}}, i32 0, i32 0), i64* {{.+}}@{{[^,]+}}, i32 0, i32 0), i8** null, i8** null, i32 0, i32 1)
-    // LAMBDA: call void @[[LOFFL1:.+]](
-    // LAMBDA:  ret
+  // LAMBDA: define{{.*}} internal{{.*}} void [[OUTER_LAMBDA]](
+  // LAMBDA: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}}, i64 -1, i8* @{{[^,]+}}, i32 1, i8** %{{[^,]+}}, i8** %{{[^,]+}}, i{{64|32}}* {{.+}}@{{[^,]+}}, i32 0, i32 0), i64* {{.+}}@{{[^,]+}}, i32 0, i32 0), i8** null, i8** null, i32 0, i32 1)
+  // LAMBDA: call void @[[LOFFL1:.+]](
+  // LAMBDA:  ret
 #pragma omp target
 #pragma omp teams
-#pragma omp distribute simd reduction(+: sivar)
-  for (int i = 0; i < 2; ++i) {
-    // LAMBDA: define{{.*}} internal{{.*}} void @[[LOFFL1]](i{{64|32}} [[SIVAR_ARG:%.+]])
-    // LAMBDA: [[SIVAR_ADDR:%.+]] = alloca i{{.+}},
-    // LAMBDA: store{{.+}} [[SIVAR_ARG]], {{.+}} [[SIVAR_ADDR]],
-    // LAMBDA: [[SIVAR_CONV:%.+]] = bitcast{{.+}} [[SIVAR_ADDR]] to
-    // LAMBDA: call void {{.+}} @__kmpc_fork_teams({{.+}}, i32 1, {{.+}} @[[LOUTL1:.+]] to {{.+}}, {{.+}} [[SIVAR_CONV]])
-    // LAMBDA: ret void
+#pragma omp distribute simd reduction(+ \
+                                      : sivar)
+    for (int i = 0; i < 2; ++i) {
+      // LAMBDA: define{{.*}} internal{{.*}} void @[[LOFFL1]](i{{64|32}} [[SIVAR_ARG:%.+]])
+      // LAMBDA: [[SIVAR_ADDR:%.+]] = alloca i{{.+}},
+      // LAMBDA: store{{.+}} [[SIVAR_ARG]], {{.+}} [[SIVAR_ADDR]],
+      // LAMBDA: [[SIVAR_CONV:%.+]] = bitcast{{.+}} [[SIVAR_ADDR]] to
+      // LAMBDA: call void {{.+}} @__kmpc_fork_teams({{.+}}, i32 1, {{.+}} @[[LOUTL1:.+]] to {{.+}}, {{.+}} [[SIVAR_CONV]])
+      // LAMBDA: ret void
 
-    // LAMBDA: define internal void @[[LOUTL1]]({{.+}}, {{.+}}, {{.+}} [[SIVAR_ARG:%.+]])
-    // Skip global and bound tid vars
-    // LAMBDA: {{.+}} = alloca i32*,
-    // LAMBDA: {{.+}} = alloca i32*,
-    // LAMBDA: [[SIVAR_ADDR:%.+]] = alloca i{{.+}}*,
-    // LAMBDA: alloca i{{.+}},
-    // LAMBDA: alloca i{{.+}},
-    // LAMBDA: alloca i{{.+}},
-    // LAMBDA: alloca i{{.+}},
-    // LAMBDA: alloca i{{.+}},
-    // LAMBDA: alloca i{{.+}},
-    // LAMBDA: [[SIVAR_PRIV:%.+]] = alloca i{{.+}},
-    // LAMBDA: store{{.+}} [[SIVAR_ARG]], {{.+}} [[SIVAR_ADDR]],
-    // LAMBDA: [[SIVAR_REF:%.+]] = load{{.+}}, {{.+}} [[SIVAR_ADDR]]
-    // LAMBDA: store{{.+}} 0, {{.+}} [[SIVAR_PRIV]],
+      // LAMBDA: define internal void @[[LOUTL1]]({{.+}}, {{.+}}, {{.+}} [[SIVAR_ARG:%.+]])
+      // Skip global and bound tid vars
+      // LAMBDA: {{.+}} = alloca i32*,
+      // LAMBDA: {{.+}} = alloca i32*,
+      // LAMBDA: [[SIVAR_ADDR:%.+]] = alloca i{{.+}}*,
+      // LAMBDA: alloca i{{.+}},
+      // LAMBDA: alloca i{{.+}},
+      // LAMBDA: alloca i{{.+}},
+      // LAMBDA: alloca i{{.+}},
+      // LAMBDA: alloca i{{.+}},
+      // LAMBDA: alloca i{{.+}},
+      // LAMBDA: [[SIVAR_PRIV:%.+]] = alloca i{{.+}},
+      // LAMBDA: store{{.+}} [[SIVAR_ARG]], {{.+}} [[SIVAR_ADDR]],
+      // LAMBDA: [[SIVAR_REF:%.+]] = load{{.+}}, {{.+}} [[SIVAR_ADDR]]
+      // LAMBDA: store{{.+}} 0, {{.+}} [[SIVAR_PRIV]],
 
-    // LAMBDA: call void @__kmpc_for_static_init_4(
-    // LAMBDA: store{{.+}}, {{.+}} [[SIVAR_PRIV]],
-    // LAMBDA: call void [[INNER_LAMBDA:@.+]](
-    // LAMBDA: call void @__kmpc_for_static_fini(
-    // LAMBDA: [[LAST_ITER:%.+]] = load i32, i32* %
-    // LAMBDA: [[IS_LAST:%.+]] = icmp ne i32 [[LAST_ITER]], 0
-    // LAMBDA: br i1 [[IS_LAST]], label %[[THEN:.+]], label %[[DONE:.+]]
-    // LAMBDA: [[THEN]]
-    // LAMBDA: store i32 2, i32* %
-    // LAMBDA: br label %[[DONE]]
-    // LAMBDA: [[DONE]]
-    // LAMBDA: [[SIVAR_ORIG_VAL:%.+]] = load i32, i32* [[SIVAR_REF]],
-    // LAMBDA: [[SIVAR_PRIV_VAL:%.+]] = load i32, i32* [[SIVAR_PRIV]],
-    // LAMBDA: [[ADD:%.+]] = add nsw i32 [[SIVAR_ORIG_VAL]], [[SIVAR_PRIV_VAL]]
-    // LAMBDA: store i32 [[ADD]], i32* [[SIVAR_REF]],
-    // LAMBDA: ret void
+      // LAMBDA: call void @__kmpc_for_static_init_4(
+      // LAMBDA: store{{.+}}, {{.+}} [[SIVAR_PRIV]],
+      // LAMBDA: call void [[INNER_LAMBDA:@.+]](
+      // LAMBDA: call void @__kmpc_for_static_fini(
+      // LAMBDA: [[LAST_ITER:%.+]] = load i32, i32* %
+      // LAMBDA: [[IS_LAST:%.+]] = icmp ne i32 [[LAST_ITER]], 0
+      // LAMBDA: br i1 [[IS_LAST]], label %[[THEN:.+]], label %[[DONE:.+]]
+      // LAMBDA: [[THEN]]
+      // LAMBDA: store i32 2, i32* %
+      // LAMBDA: br label %[[DONE]]
+      // LAMBDA: [[DONE]]
+      // LAMBDA: [[SIVAR_ORIG_VAL:%.+]] = load i32, i32* [[SIVAR_REF]],
+      // LAMBDA: [[SIVAR_PRIV_VAL:%.+]] = load i32, i32* [[SIVAR_PRIV]],
+      // LAMBDA: [[ADD:%.+]] = add nsw i32 [[SIVAR_ORIG_VAL]], [[SIVAR_PRIV_VAL]]
+      // LAMBDA: store i32 [[ADD]], i32* [[SIVAR_REF]],
+      // LAMBDA: ret void
 
-    sivar += i;
+      sivar += i;
 
-    [&]() {
-      // LAMBDA: define {{.+}} void [[INNER_LAMBDA]]({{.+}} [[ARG_PTR:%.+]])
-      // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
+      [&]() {
+        // LAMBDA: define {{.+}} void [[INNER_LAMBDA]]({{.+}} [[ARG_PTR:%.+]])
+        // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
 
-      sivar += 4;
-      // LAMBDA: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
+        sivar += 4;
+        // LAMBDA: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
 
-      // LAMBDA: [[SIVAR_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
-      // LAMBDA: [[SIVAR_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[SIVAR_PTR_REF]]
-      // LAMBDA: [[SIVAR_VAL:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[SIVAR_REF]]
-      // LAMBDA: [[SIVAR_INC:%.+]] = add{{.+}} [[SIVAR_VAL]], 4
-      // LAMBDA: store i{{[0-9]+}} [[SIVAR_INC]], i{{[0-9]+}}* [[SIVAR_REF]]
-    }();
-  }
+        // LAMBDA: [[SIVAR_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
+        // LAMBDA: [[SIVAR_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[SIVAR_PTR_REF]]
+        // LAMBDA: [[SIVAR_VAL:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[SIVAR_REF]]
+        // LAMBDA: [[SIVAR_INC:%.+]] = add{{.+}} [[SIVAR_VAL]], 4
+        // LAMBDA: store i{{[0-9]+}} [[SIVAR_INC]], i{{[0-9]+}}* [[SIVAR_REF]]
+      }();
+    }
   }();
   return 0;
 #else
 #pragma omp target
 #pragma omp teams
-#pragma omp distribute simd reduction(+: sivar)
+#pragma omp distribute simd reduction(+ \
+                                      : sivar)
   for (int i = 0; i < 2; ++i) {
     sivar += i;
   }

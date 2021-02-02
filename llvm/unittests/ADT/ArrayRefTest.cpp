@@ -33,26 +33,23 @@ static_assert(
 
 // Check that we can't accidentally assign a temporary location to an ArrayRef.
 // (Unfortunately we can't make use of the same thing with constructors.)
+static_assert(!std::is_assignable<ArrayRef<int *> &, int *>::value,
+              "Assigning from single prvalue element");
+static_assert(!std::is_assignable<ArrayRef<int *> &, int *&&>::value,
+              "Assigning from single xvalue element");
+static_assert(std::is_assignable<ArrayRef<int *> &, int *&>::value,
+              "Assigning from single lvalue element");
 static_assert(
-    !std::is_assignable<ArrayRef<int *>&, int *>::value,
-    "Assigning from single prvalue element");
-static_assert(
-    !std::is_assignable<ArrayRef<int *>&, int * &&>::value,
-    "Assigning from single xvalue element");
-static_assert(
-    std::is_assignable<ArrayRef<int *>&, int * &>::value,
-    "Assigning from single lvalue element");
-static_assert(
-    !std::is_assignable<ArrayRef<int *>&, std::initializer_list<int *>>::value,
+    !std::is_assignable<ArrayRef<int *> &, std::initializer_list<int *>>::value,
     "Assigning from an initializer list");
 
 namespace {
 
 TEST(ArrayRefTest, AllocatorCopy) {
   BumpPtrAllocator Alloc;
-  static const uint16_t Words1[] = { 1, 4, 200, 37 };
+  static const uint16_t Words1[] = {1, 4, 200, 37};
   ArrayRef<uint16_t> Array1 = makeArrayRef(Words1, 4);
-  static const uint16_t Words2[] = { 11, 4003, 67, 64000, 13 };
+  static const uint16_t Words2[] = {11, 4003, 67, 64000, 13};
   ArrayRef<uint16_t> Array2 = makeArrayRef(Words2, 5);
   ArrayRef<uint16_t> Array1c = Array1.copy(Alloc);
   ArrayRef<uint16_t> Array2c = Array2.copy(Alloc);
@@ -208,7 +205,7 @@ static void ArgTest12(ArrayRef<int> A) {
 }
 
 TEST(ArrayRefTest, InitializerList) {
-  std::initializer_list<int> init_list = { 0, 1, 2, 3, 4 };
+  std::initializer_list<int> init_list = {0, 1, 2, 3, 4};
   ArrayRef<int> A = init_list;
   for (int i = 0; i < 5; ++i)
     EXPECT_EQ(i, A[i]);

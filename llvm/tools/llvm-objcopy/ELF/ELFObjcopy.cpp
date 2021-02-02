@@ -205,7 +205,7 @@ findBuildID(const CopyConfig &Config, const object::ELFObjectFileBase &In) {
 
 template <class... Ts>
 static Error makeStringError(std::error_code EC, const Twine &Msg,
-                             Ts &&... Args) {
+                             Ts &&...Args) {
   std::string FullMsg = (EC.message() + ": " + Msg).str();
   return createStringError(EC, FullMsg.c_str(), std::forward<Ts>(Args)...);
 }

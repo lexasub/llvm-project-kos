@@ -1,8 +1,8 @@
 // RUN: %clangxx_tsan -O1 %s -o %t && %deflake %run %t | FileCheck %s
 #include <pthread.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <sched.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 struct Cache {
   int x;
@@ -15,7 +15,7 @@ Cache *CreateCache() {
   return &g_cache;
 }
 
-_Atomic(Cache*) queue;
+_Atomic(Cache *) queue;
 
 void *Thread1(void *x) {
   static Cache *c = CreateCache();

@@ -514,7 +514,7 @@ class __root_task
     friend class __func_task<_Func>;
 };
 
-#else  // TBB_INTERFACE_VERSION <= 12000
+#else // TBB_INTERFACE_VERSION <= 12000
 class __task : public tbb::detail::d1::task
 {
   protected:
@@ -734,7 +734,7 @@ class __merge_func
     bool _root;   //means a task is merging root task
     bool _x_orig; //"true" means X(or left ) subrange is in the original container; false - in the buffer
     bool _y_orig; //"true" means Y(or right) subrange is in the original container; false - in the buffer
-    bool _split; //"true" means a merge task is a split task for parallel merging, the execution logic differs
+    bool _split;  //"true" means a merge task is a split task for parallel merging, the execution logic differs
 
     bool
     is_partial() const
@@ -828,8 +828,8 @@ class __merge_func
                  _Cleanup, _LeafMerge __leaf_merge, _SizeType __nsort, _RandomAccessIterator1 __x_beg,
                  _RandomAccessIterator2 __z_beg, bool __x_orig, bool __y_orig, bool __root)
         : _M_xs(__xs), _M_xe(__xe), _M_ys(__ys), _M_ye(__ye), _M_zs(__zs), _M_x_beg(__x_beg), _M_z_beg(__z_beg),
-          _M_comp(__comp), _M_leaf_merge(__leaf_merge), _M_nsort(__nsort), _root(__root),
-          _x_orig(__x_orig), _y_orig(__y_orig), _split(false)
+          _M_comp(__comp), _M_leaf_merge(__leaf_merge), _M_nsort(__nsort), _root(__root), _x_orig(__x_orig),
+          _y_orig(__y_orig), _split(false)
     {
     }
 
@@ -1047,8 +1047,8 @@ class __merge_func
 template <typename _RandomAccessIterator1, typename _RandomAccessIterator2, typename __M_Compare, typename _Cleanup,
           typename _LeafMerge>
 __task*
-__merge_func<_RandomAccessIterator1, _RandomAccessIterator2, __M_Compare, _Cleanup, _LeafMerge>::
-operator()(__task* __self)
+__merge_func<_RandomAccessIterator1, _RandomAccessIterator2, __M_Compare, _Cleanup, _LeafMerge>::operator()(
+    __task* __self)
 {
     //a. split merge task into 2 of the same level; the special logic,
     //without processing(process_ranges) adjacent sub-ranges x and y
@@ -1211,8 +1211,8 @@ class __merge_func_static
 template <typename _RandomAccessIterator1, typename _RandomAccessIterator2, typename _RandomAccessIterator3,
           typename __M_Compare, typename _LeafMerge>
 __task*
-__merge_func_static<_RandomAccessIterator1, _RandomAccessIterator2, _RandomAccessIterator3, __M_Compare, _LeafMerge>::
-operator()(__task* __self)
+__merge_func_static<_RandomAccessIterator1, _RandomAccessIterator2, _RandomAccessIterator3, __M_Compare,
+                    _LeafMerge>::operator()(__task* __self)
 {
     typedef typename std::iterator_traits<_RandomAccessIterator1>::difference_type _DifferenceType1;
     typedef typename std::iterator_traits<_RandomAccessIterator2>::difference_type _DifferenceType2;

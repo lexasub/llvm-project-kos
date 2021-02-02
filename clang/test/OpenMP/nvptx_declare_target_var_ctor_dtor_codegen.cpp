@@ -24,14 +24,14 @@
 int foo() { return 0; }
 #pragma omp end declare target
 int bar() { return 0; }
-#pragma omp declare target (bar)
+#pragma omp declare target(bar)
 int baz() { return 0; }
 
 #pragma omp declare target
 int doo() { return 0; }
 #pragma omp end declare target
 int car() { return 0; }
-#pragma omp declare target (bar)
+#pragma omp declare target(bar)
 int caz() { return 0; }
 
 // DEVICE-DAG: define{{ hidden | }}i32 [[FOO:@.*foo.*]]()
@@ -42,7 +42,7 @@ int caz() { return 0; }
 // DEVICE-DAG: define{{ hidden | }}i32 [[CAZ:@.*caz.*]]()
 
 static int c = foo() + bar() + baz();
-#pragma omp declare target (c)
+#pragma omp declare target(c)
 // HOST-DAG: @[[C_CTOR:__omp_offloading__.+_c_l44_ctor]] = private constant i8 0
 // DEVICE-DAG: define internal void [[C_CTOR:@__omp_offloading__.+_c_l44_ctor]]()
 // DEVICE-DAG: call i32 [[FOO]]()
@@ -84,7 +84,8 @@ S cd = doo() + car() + caz() + baz();
 // HOST-DAG: @.omp_offloading.entry.[[CD_DTOR]] = weak{{.*}} constant %struct.__tgt_offload_entry { i8* @[[CD_DTOR]], i8* getelementptr inbounds ([{{[0-9]+}} x i8], [{{[0-9]+}} x i8]* @.omp_offloading.entry_name{{.*}}, i32 0, i32 0), i64 0, i32 4, i32 0 }, section "omp_offloading_entries", align 1
 int maini1() {
   int a;
-#pragma omp target map(tofrom : a)
+#pragma omp target map(tofrom \
+                       : a)
   {
     a = c;
   }
@@ -108,4 +109,3 @@ int maini1() {
 // DEVICE-DAG: !{void ()* [[CD_DTOR]], !"kernel", i32 1}
 
 #endif // HEADER
-

@@ -21,7 +21,7 @@ Token getPreviousToken(SourceLocation Location, const SourceManager &SM,
 
   Location = Location.getLocWithOffset(-1);
   if (Location.isInvalid())
-      return Token;
+    return Token;
 
   auto StartOfFile = SM.getLocForStartOfFile(SM.getFileID(Location));
   while (Location != StartOfFile) {

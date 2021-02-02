@@ -11,5 +11,7 @@ int b;
 
 void test() {
   int &a = b;
-  ^{ a = 2; };
+  ^{
+    a = 2;
+  };
 }

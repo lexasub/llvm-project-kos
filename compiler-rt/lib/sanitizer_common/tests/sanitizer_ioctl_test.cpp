@@ -14,28 +14,28 @@
 #if SANITIZER_LINUX
 
 #include <linux/input.h>
+
 #include <vector>
 
-#include "interception/interception.h"
-#include "sanitizer_test_utils.h"
-#include "sanitizer_common/sanitizer_platform_limits_posix.h"
-#include "sanitizer_common/sanitizer_common.h"
 #include "gtest/gtest.h"
-
+#include "interception/interception.h"
+#include "sanitizer_common/sanitizer_common.h"
+#include "sanitizer_common/sanitizer_platform_limits_posix.h"
+#include "sanitizer_test_utils.h"
 
 using namespace __sanitizer;
 
 #define COMMON_INTERCEPTOR_READ_RANGE(ctx, ptr, sz) \
   do {                                              \
-    (void) ctx;                                     \
-    (void) ptr;                                     \
-    (void) sz;                                      \
+    (void)ctx;                                      \
+    (void)ptr;                                      \
+    (void)sz;                                       \
   } while (0)
 #define COMMON_INTERCEPTOR_WRITE_RANGE(ctx, ptr, sz) \
   do {                                               \
-    (void) ctx;                                      \
-    (void) ptr;                                      \
-    (void) sz;                                       \
+    (void)ctx;                                       \
+    (void)ptr;                                       \
+    (void)sz;                                        \
   } while (0)
 
 #include "sanitizer_common/sanitizer_common_interceptors_ioctl.inc"
@@ -101,4 +101,4 @@ TEST(SanitizerIoctl, KVM_GET_MSR_INDEX_LIST) {
   EXPECT_EQ(4U, desc.size);
 }
 
-#endif // SANITIZER_LINUX
+#endif  // SANITIZER_LINUX

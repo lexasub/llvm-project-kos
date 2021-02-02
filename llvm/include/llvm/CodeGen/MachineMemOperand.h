@@ -64,24 +64,23 @@ struct MachinePointerInfo {
         AddrSpace(AddressSpace) {}
 
   explicit MachinePointerInfo(
-    PointerUnion<const Value *, const PseudoSourceValue *> v,
-    int64_t offset = 0,
-    uint8_t ID = 0)
-    : V(v), Offset(offset), StackID(ID) {
+      PointerUnion<const Value *, const PseudoSourceValue *> v,
+      int64_t offset = 0, uint8_t ID = 0)
+      : V(v), Offset(offset), StackID(ID) {
     if (V) {
-      if (const auto *ValPtr = V.dyn_cast<const Value*>())
+      if (const auto *ValPtr = V.dyn_cast<const Value *>())
         AddrSpace = ValPtr->getType()->getPointerAddressSpace();
       else
-        AddrSpace = V.get<const PseudoSourceValue*>()->getAddressSpace();
+        AddrSpace = V.get<const PseudoSourceValue *>()->getAddressSpace();
     }
   }
 
   MachinePointerInfo getWithOffset(int64_t O) const {
     if (V.isNull())
       return MachinePointerInfo(AddrSpace, Offset + O);
-    if (V.is<const Value*>())
-      return MachinePointerInfo(V.get<const Value*>(), Offset + O, StackID);
-    return MachinePointerInfo(V.get<const PseudoSourceValue*>(), Offset + O,
+    if (V.is<const Value *>())
+      return MachinePointerInfo(V.get<const Value *>(), Offset + O, StackID);
+    return MachinePointerInfo(V.get<const PseudoSourceValue *>(), Offset + O,
                               StackID);
   }
 
@@ -114,7 +113,6 @@ struct MachinePointerInfo {
   /// Stack memory without other information.
   static MachinePointerInfo getUnknownStack(MachineFunction &MF);
 };
-
 
 //===----------------------------------------------------------------------===//
 /// A description of a memory reference used in the backend.
@@ -158,10 +156,10 @@ private:
   /// Atomic information for this memory operation.
   struct MachineAtomicInfo {
     /// Synchronization scope ID for this memory operation.
-    unsigned SSID : 8;            // SyncScope::ID
+    unsigned SSID : 8; // SyncScope::ID
     /// Atomic ordering requirements for this memory operation. For cmpxchg
     /// atomic operations, atomic ordering requirements when store occurs.
-    unsigned Ordering : 4;        // enum AtomicOrdering
+    unsigned Ordering : 4; // enum AtomicOrdering
     /// For cmpxchg atomic operations, atomic ordering requirements when store
     /// does not occur.
     unsigned FailureOrdering : 4; // enum AtomicOrdering
@@ -197,10 +195,10 @@ public:
   /// other PseudoSourceValue member functions which return objects which stand
   /// for frame/stack pointer relative references and other special references
   /// which are not representable in the high-level IR.
-  const Value *getValue() const { return PtrInfo.V.dyn_cast<const Value*>(); }
+  const Value *getValue() const { return PtrInfo.V.dyn_cast<const Value *>(); }
 
   const PseudoSourceValue *getPseudoValue() const {
-    return PtrInfo.V.dyn_cast<const PseudoSourceValue*>();
+    return PtrInfo.V.dyn_cast<const PseudoSourceValue *>();
   }
 
   const void *getOpaqueValue() const { return PtrInfo.V.getOpaqueValue(); }
@@ -276,7 +274,7 @@ public:
 
   /// Returns true if this memory operation doesn't have any ordering
   /// constraints other than normal aliasing. Volatile and (ordered) atomic
-  /// memory operations can't be reordered. 
+  /// memory operations can't be reordered.
   bool isUnordered() const {
     return (getOrdering() == AtomicOrdering::NotAtomic ||
             getOrdering() == AtomicOrdering::Unordered) &&
@@ -325,6 +323,6 @@ public:
   }
 };
 
-} // End llvm namespace
+} // namespace llvm
 
 #endif

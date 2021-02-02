@@ -22,13 +22,13 @@
 //       otherwise the program is ill-formed.
 
 // From PR 7247
-template<typename T>
-struct set{};
+template <typename T>
+struct set {};
 #if __cplusplus <= 199711L
 // expected-note@-2 {{lookup from the current scope refers here}}
 #endif
 struct Value {
-  template<typename T>
+  template <typename T>
   void set(T value) {}
 #if __cplusplus <= 199711L
   // expected-note@-2 {{lookup in the object type 'Value' refers here}}
@@ -50,51 +50,51 @@ void resolves_to_different() {
 #endif
   }
   {
-    int set;  // Non-template.
+    int set; // Non-template.
     Value v;
     v.set<double>(3.2);
   }
 }
 
 namespace rdar9915664 {
-  struct A {
-    template<typename T> void a();
-  };
+struct A {
+  template <typename T> void a();
+};
 
-  struct B : A { };
+struct B : A {};
 
-  struct C : A { };
+struct C : A {};
 
-  struct D : B, C {
-    A &getA() { return static_cast<B&>(*this); }
+struct D : B, C {
+  A &getA() { return static_cast<B &>(*this); }
 
-    void test_a() {
-      getA().a<int>();
-    }
-  };
-}
+  void test_a() {
+    getA().a<int>();
+  }
+};
+} // namespace rdar9915664
 
 namespace PR11856 {
-  template<typename T> T end(T);
+template <typename T> T end(T);
 
-  template <typename T>
-  void Foo() {
-    T it1;
-    if (it1->end < it1->end) {
-    }
-  }
-
-  template<typename T> T *end(T*);
-
-  class X { };
-  template <typename T>
-  void Foo2() {
-    T it1;
-    if (it1->end < it1->end) {
-    }
-
-    X *x;
-    if (x->end < 7) {  // expected-error{{no member named 'end' in 'PR11856::X'}}
-    }
+template <typename T>
+void Foo() {
+  T it1;
+  if (it1->end < it1->end) {
   }
 }
+
+template <typename T> T *end(T *);
+
+class X {};
+template <typename T>
+void Foo2() {
+  T it1;
+  if (it1->end < it1->end) {
+  }
+
+  X *x;
+  if (x->end < 7) { // expected-error{{no member named 'end' in 'PR11856::X'}}
+  }
+}
+} // namespace PR11856

@@ -29,13 +29,14 @@ void do_test(int *List, int Length) {
   } while (i < Length);
 }
 
-enum struct Tuner : short { Interleave = 4, Unroll = 8 };
+enum struct Tuner : short { Interleave = 4,
+                            Unroll = 8 };
 
 // Verify for loop is recognized after sequence of pragma clang loop directives.
 void for_test(int *List, int Length) {
 #pragma clang loop interleave(enable)
-#pragma clang loop interleave_count(static_cast<int>(Tuner::Interleave))
-#pragma clang loop unroll_count(static_cast<int>(Tuner::Unroll))
+#pragma clang loop interleave_count(static_cast <int>(Tuner::Interleave))
+#pragma clang loop unroll_count(static_cast <int>(Tuner::Unroll))
   for (int i = 0; i < Length; i++) {
     // CHECK: br label {{.*}}, !llvm.loop ![[LOOP_3:.*]]
     List[i] = i * 2;
@@ -132,7 +133,7 @@ void for_template_constant_expression_test(A *List, int Length) {
   }
 
   const int Scale = 4;
-#pragma clang loop vectorize_width(Scale * V) interleave_count(Scale * I) unroll_count(Scale * U)
+#pragma clang loop vectorize_width(Scale *V) interleave_count(Scale *I) unroll_count(Scale *U)
   for (int i = 0; i < Length; i++) {
     // CHECK: br label {{.*}}, !llvm.loop ![[LOOP_13:.*]]
     List[i] += i;

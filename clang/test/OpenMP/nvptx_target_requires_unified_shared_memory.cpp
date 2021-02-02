@@ -26,11 +26,11 @@ double to_var = 20.0;
 #pragma omp declare target link(var)
 #pragma omp declare target to(to_var)
 
-int bar(int n){
+int bar(int n) {
   double sum = 0;
 
 #pragma omp target
-  for(int i = 0; i < n; i++) {
+  for (int i = 0; i < n; i++) {
     sum += var + to_var;
   }
 

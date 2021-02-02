@@ -6,15 +6,15 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "clang/Tooling/FixIt.h"
 #include "TestVisitor.h"
 #include "clang/Basic/Diagnostic.h"
-#include "clang/Tooling/FixIt.h"
 
 using namespace clang;
 
-using tooling::fixit::getText;
 using tooling::fixit::createRemoval;
 using tooling::fixit::createReplacement;
+using tooling::fixit::getText;
 
 namespace {
 

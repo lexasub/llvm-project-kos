@@ -23,7 +23,6 @@ namespace mlir {
 class Operation;
 class Value;
 
-
 //===--------------------------------------------------------------------===//
 // OperationFolder
 //===--------------------------------------------------------------------===//
@@ -58,7 +57,7 @@ public:
   /// the results after folding the operation.
   template <typename OpTy, typename... Args>
   void create(OpBuilder &builder, SmallVectorImpl<Value> &results,
-              Location location, Args &&... args) {
+              Location location, Args &&...args) {
     // The op needs to be inserted only if the fold (below) fails, or the number
     // of results produced by the successful folding is zero (which is treated
     // as an in-place fold). Using create methods of the builder will insert the
@@ -79,7 +78,7 @@ public:
   template <typename OpTy, typename... Args>
   typename std::enable_if<OpTy::template hasTrait<OpTrait::OneResult>(),
                           Value>::type
-  create(OpBuilder &builder, Location location, Args &&... args) {
+  create(OpBuilder &builder, Location location, Args &&...args) {
     SmallVector<Value, 1> results;
     create<OpTy>(builder, results, location, std::forward<Args>(args)...);
     return results.front();
@@ -89,7 +88,7 @@ public:
   template <typename OpTy, typename... Args>
   typename std::enable_if<OpTy::template hasTrait<OpTrait::ZeroResult>(),
                           OpTy>::type
-  create(OpBuilder &builder, Location location, Args &&... args) {
+  create(OpBuilder &builder, Location location, Args &&...args) {
     auto op = builder.create<OpTy>(location, std::forward<Args>(args)...);
     SmallVector<Value, 0> unused;
     (void)tryToFold(op.getOperation(), unused);

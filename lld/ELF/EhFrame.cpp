@@ -56,7 +56,7 @@ private:
   InputSectionBase *isec;
   ArrayRef<uint8_t> d;
 };
-}
+} // namespace
 
 size_t elf::readEhRecordSize(InputSectionBase *s, size_t off) {
   return EhReader(s, s->data().slice(off)).readEhRecordSize();

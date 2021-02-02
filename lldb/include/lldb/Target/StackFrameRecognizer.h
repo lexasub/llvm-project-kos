@@ -55,13 +55,11 @@ protected:
 class StackFrameRecognizer
     : public std::enable_shared_from_this<StackFrameRecognizer> {
 public:
-  virtual lldb::RecognizedStackFrameSP RecognizeFrame(
-      lldb::StackFrameSP frame) {
+  virtual lldb::RecognizedStackFrameSP
+  RecognizeFrame(lldb::StackFrameSP frame) {
     return lldb::RecognizedStackFrameSP();
   };
-  virtual std::string GetName() {
-    return "";
-  }
+  virtual std::string GetName() { return ""; }
 
   virtual ~StackFrameRecognizer(){};
 };
@@ -82,14 +80,12 @@ public:
                                const char *pclass);
   ~ScriptedStackFrameRecognizer() override {}
 
-  std::string GetName() override {
-    return GetPythonClassName();
-  }
+  std::string GetName() override { return GetPythonClassName(); }
 
   const char *GetPythonClassName() { return m_python_class.c_str(); }
 
-  lldb::RecognizedStackFrameSP RecognizeFrame(
-      lldb::StackFrameSP frame) override;
+  lldb::RecognizedStackFrameSP
+  RecognizeFrame(lldb::StackFrameSP frame) override;
 
 private:
   ScriptedStackFrameRecognizer(const ScriptedStackFrameRecognizer &) = delete;
@@ -144,7 +140,7 @@ private:
 /// instances of this class as the returned objects in GetRecognizedArguments().
 
 class ValueObjectRecognizerSynthesizedValue : public ValueObject {
- public:
+public:
   static lldb::ValueObjectSP Create(ValueObject &parent, lldb::ValueType type) {
     return (new ValueObjectRecognizerSynthesizedValue(parent, type))->GetSP();
   }
@@ -159,7 +155,8 @@ class ValueObjectRecognizerSynthesizedValue : public ValueObject {
   }
   lldb::ValueType GetValueType() const override { return m_type; }
   bool UpdateValue() override {
-    if (!m_parent->UpdateValueIfNeeded()) return false;
+    if (!m_parent->UpdateValueIfNeeded())
+      return false;
     m_value = m_parent->GetValue();
     return true;
   }
@@ -171,7 +168,7 @@ class ValueObjectRecognizerSynthesizedValue : public ValueObject {
   }
   bool IsSynthetic() override { return true; }
 
- private:
+private:
   lldb::ValueType m_type;
 };
 

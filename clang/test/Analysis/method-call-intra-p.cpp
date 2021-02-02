@@ -9,7 +9,7 @@ struct InvalidateArgs {
   void ttt(const int &nptr);
   virtual void vttt(const int *nptr);
 };
-struct ChildOfInvalidateArgs: public InvalidateArgs {
+struct ChildOfInvalidateArgs : public InvalidateArgs {
   virtual void vttt(const int *nptr);
 };
 void declarationFun(int x) {
@@ -19,7 +19,7 @@ void declarationFun(int x) {
   int *p = 0;
   t.ttt(y);
   if (x == y)
-      y = *p; // no-warning
+    y = *p; // no-warning
 }
 void virtualFun(int x) {
   ChildOfInvalidateArgs t;
@@ -29,5 +29,5 @@ void virtualFun(int x) {
   int *p = 0;
   pt->vttt(&y);
   if (x == y)
-      y = *p; // no-warning
+    y = *p; // no-warning
 }

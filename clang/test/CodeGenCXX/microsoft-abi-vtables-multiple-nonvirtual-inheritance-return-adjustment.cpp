@@ -19,7 +19,7 @@ struct C : A, B {
 };
 
 struct D {
-  virtual B* foo();
+  virtual B *foo();
   virtual void z();
 };
 
@@ -38,11 +38,11 @@ struct X : D {
 
   // MANGLING-DAG: @"??_7X@test1@@6B@"
 
-  virtual C* foo();
+  virtual C *foo();
 } x;
 
 void build_vftable(X *obj) { obj->foo(); }
-}
+} // namespace test1
 
 namespace test2 {
 struct A {
@@ -59,18 +59,18 @@ struct C : A, B {
 };
 
 struct D {
-  virtual B* foo();
+  virtual B *foo();
   virtual void z();
 };
 
 struct E : D {
-  virtual C* foo();
+  virtual C *foo();
 };
 
-struct F : C { };
+struct F : C {};
 
 struct X : E {
-  virtual F* foo();
+  virtual F *foo();
   // CHECK-LABEL: VFTable for 'test2::D' in 'test2::E' in 'test2::X' (4 entries).
   // CHECK-NEXT:   0 | test2::F *test2::X::foo()
   // CHECK-NEXT:       [return adjustment (to type 'struct test2::B *'): 4 non-virtual]
@@ -88,7 +88,7 @@ struct X : E {
 };
 
 void build_vftable(X *obj) { obj->foo(); }
-}
+} // namespace test2
 
 namespace test3 {
 struct A {
@@ -105,15 +105,15 @@ struct C : A, B {
 };
 
 struct D {
-  virtual B* foo();
+  virtual B *foo();
   virtual void z();
 };
 
 struct E : D {
-  virtual C* foo();
+  virtual C *foo();
 };
 
-struct F : A, C { };
+struct F : A, C {};
 
 struct X : E {
   // CHECK-LABEL: VFTable for 'test3::D' in 'test3::E' in 'test3::X' (4 entries).
@@ -131,11 +131,11 @@ struct X : E {
   // CHECK-LABEL: VFTable indices for 'test3::X' (1 entry).
   // CHECK-NEXT:   3 | test3::F *test3::X::foo()
 
-  virtual F* foo();
+  virtual F *foo();
 };
 
 void build_vftable(X *obj) { obj->foo(); }
-}
+} // namespace test3
 
 namespace test4 {
 struct A {
@@ -152,15 +152,15 @@ struct C : A, B {
 };
 
 struct D {
-  virtual B* foo();
+  virtual B *foo();
   virtual void z();
 };
 
 struct E : D {
-  virtual C* foo();
+  virtual C *foo();
 };
 
-struct F : A, C { };
+struct F : A, C {};
 
 struct X : D, E {
   // CHECK-LABEL: VFTable for 'test4::D' in 'test4::X' (3 entries).
@@ -195,11 +195,11 @@ struct X : D, E {
   // CHECK-LABEL: VFTable indices for 'test4::X' (1 entry).
   // CHECK-NEXT:   2 | test4::F *test4::X::foo()
 
-  virtual F* foo();
+  virtual F *foo();
 };
 
 void build_vftable(X *obj) { obj->foo(); }
-}
+} // namespace test4
 
 namespace test5 {
 struct A {
@@ -216,7 +216,7 @@ struct C : A, B {
 };
 
 struct D {
-  virtual B* foo();
+  virtual B *foo();
   virtual void z();
 };
 
@@ -238,11 +238,11 @@ struct X : A, D {
   // CHECK-NEXT:   via vfptr at offset 4
   // CHECK-NEXT:   2 | test5::C *test5::X::foo()
 
-  virtual C* foo();
+  virtual C *foo();
 };
 
 void build_vftable(X *obj) { obj->foo(); }
-}
+} // namespace test5
 
 namespace test6 {
 struct A {
@@ -259,15 +259,15 @@ struct C : A, B {
 };
 
 struct D {
-  virtual B* foo();
+  virtual B *foo();
   virtual void z();
 };
 
 struct E : A, D {
-  virtual C* foo();
+  virtual C *foo();
 };
 
-struct F : A, C { };
+struct F : A, C {};
 
 struct X : E {
   // CHECK-LABEL: VFTable for 'test6::A' in 'test6::E' in 'test6::X' (2 entries).
@@ -290,11 +290,11 @@ struct X : E {
   // CHECK-NEXT:   -- accessible via vfptr at offset 4 --
   // CHECK-NEXT:   3 | test6::F *test6::X::foo()
 
-  virtual F* foo();
+  virtual F *foo();
 };
 
 void build_vftable(X *obj) { obj->foo(); }
-}
+} // namespace test6
 
 namespace test7 {
 struct A {
@@ -318,17 +318,17 @@ struct C : B, A {
 };
 
 void build_vftable(C *obj) { obj->g(); }
-}
+} // namespace test7
 
 namespace pr20444 {
 struct A {
-  virtual A* f();
+  virtual A *f();
 };
 struct B {
-  virtual B* f();
+  virtual B *f();
 };
 struct C : A, B {
-  virtual C* f();
+  virtual C *f();
   // CHECK-LABEL: VFTable for 'pr20444::A' in 'pr20444::C' (1 entry).
   // CHECK-NEXT:   0 | pr20444::C *pr20444::C::f()
 
@@ -344,7 +344,7 @@ struct C : A, B {
 void build_vftable(C *obj) { obj->f(); }
 
 struct D : C {
-  virtual D* f();
+  virtual D *f();
   // CHECK-LABEL: VFTable for 'pr20444::A' in 'pr20444::C' in 'pr20444::D' (1 entry).
   // CHECK-NEXT:   0 | pr20444::D *pr20444::D::f()
 
@@ -361,4 +361,4 @@ struct D : C {
 };
 
 void build_vftable(D *obj) { obj->f(); }
-}
+} // namespace pr20444

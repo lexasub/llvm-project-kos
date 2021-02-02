@@ -16,17 +16,15 @@
 #ifndef SANITIZER_LFSTACK_H
 #define SANITIZER_LFSTACK_H
 
-#include "sanitizer_internal_defs.h"
-#include "sanitizer_common.h"
 #include "sanitizer_atomic.h"
+#include "sanitizer_common.h"
+#include "sanitizer_internal_defs.h"
 
 namespace __sanitizer {
 
-template<typename T>
+template <typename T>
 struct LFStack {
-  void Clear() {
-    atomic_store(&head_, 0, memory_order_relaxed);
-  }
+  void Clear() { atomic_store(&head_, 0, memory_order_relaxed); }
 
   bool Empty() const {
     return (atomic_load(&head_, memory_order_relaxed) & kPtrMask) == 0;
@@ -37,9 +35,8 @@ struct LFStack {
     for (;;) {
       u64 cnt = (cmp & kCounterMask) + kCounterInc;
       u64 xch = (u64)(uptr)p | cnt;
-      p->next = (T*)(uptr)(cmp & kPtrMask);
-      if (atomic_compare_exchange_weak(&head_, &cmp, xch,
-                                       memory_order_release))
+      p->next = (T *)(uptr)(cmp & kPtrMask);
+      if (atomic_compare_exchange_weak(&head_, &cmp, xch, memory_order_release))
         break;
     }
   }
@@ -47,14 +44,13 @@ struct LFStack {
   T *Pop() {
     u64 cmp = atomic_load(&head_, memory_order_acquire);
     for (;;) {
-      T *cur = (T*)(uptr)(cmp & kPtrMask);
+      T *cur = (T *)(uptr)(cmp & kPtrMask);
       if (!cur)
         return nullptr;
       T *nxt = cur->next;
       u64 cnt = (cmp & kCounterMask);
       u64 xch = (u64)(uptr)nxt | cnt;
-      if (atomic_compare_exchange_weak(&head_, &cmp, xch,
-                                       memory_order_acquire))
+      if (atomic_compare_exchange_weak(&head_, &cmp, xch, memory_order_acquire))
         return cur;
     }
   }
@@ -67,6 +63,6 @@ struct LFStack {
 
   atomic_uint64_t head_;
 };
-} // namespace __sanitizer
+}  // namespace __sanitizer
 
-#endif // SANITIZER_LFSTACK_H
+#endif  // SANITIZER_LFSTACK_H

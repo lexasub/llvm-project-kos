@@ -6,7 +6,7 @@
 //
 //===----------------------------------------------------------------------===//
 
- // test climits
+// test climits
 
 #include <climits>
 
@@ -88,8 +88,4 @@
 #error ULLONG_MAX not defined
 #endif
 
-int main(int, char**)
-{
-
-  return 0;
-}
+int main(int, char**) { return 0; }

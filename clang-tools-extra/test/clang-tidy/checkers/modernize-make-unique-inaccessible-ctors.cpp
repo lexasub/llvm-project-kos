@@ -20,13 +20,13 @@ struct NoCopyMoveCtorVisible {
   NoCopyMoveCtorVisible() = default;
 #endif
 private:
-  NoCopyMoveCtorVisible(const NoCopyMoveCtorVisible&) = default;
-  NoCopyMoveCtorVisible(NoCopyMoveCtorVisible&&) = default;
+  NoCopyMoveCtorVisible(const NoCopyMoveCtorVisible &) = default;
+  NoCopyMoveCtorVisible(NoCopyMoveCtorVisible &&) = default;
 };
 
 struct OnlyMoveCtor {
   OnlyMoveCtor() = default;
-  OnlyMoveCtor(OnlyMoveCtor&&) = default;
+  OnlyMoveCtor(OnlyMoveCtor &&) = default;
   OnlyMoveCtor(const OnlyMoveCtor &) = delete;
 };
 
@@ -34,8 +34,8 @@ struct OnlyCopyCtor {
 #ifdef CXX_20
   OnlyCopyCtor() = default;
 #endif
-  OnlyCopyCtor(const OnlyCopyCtor&) = default;
-  OnlyCopyCtor(OnlyCopyCtor&&) = delete;
+  OnlyCopyCtor(const OnlyCopyCtor &) = default;
+  OnlyCopyCtor(OnlyCopyCtor &&) = delete;
 };
 
 struct OnlyCopyCtorVisible {
@@ -101,7 +101,6 @@ void f() {
   // CHECK-FIXES-CXX-14-17: auto PImplicitDeletedCopyCtor = std::unique_ptr<ImplicitDeletedCopyCtor>(new ImplicitDeletedCopyCtor{});
   // CHECK-MESSAGES-CXX-20: :[[@LINE-3]]:35: warning: use std::make_unique instead
   // CHECK-FIXES-CXX-20: auto PImplicitDeletedCopyCtor = std::unique_ptr<ImplicitDeletedCopyCtor>(new ImplicitDeletedCopyCtor{});
-
 
 #ifdef CXX_14_17
   // FIXME: it is impossible to use make_unique for this case, the check should

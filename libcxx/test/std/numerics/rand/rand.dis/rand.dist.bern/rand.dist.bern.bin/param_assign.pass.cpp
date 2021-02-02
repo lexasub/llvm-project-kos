@@ -19,17 +19,16 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        typedef std::binomial_distribution<> D;
-        typedef D::param_type param_type;
-        param_type p0(6, .7);
-        param_type p;
-        p = p0;
-        assert(p.t() == 6);
-        assert(p.p() == .7);
-    }
+int main(int, char**) {
+  {
+    typedef std::binomial_distribution<> D;
+    typedef D::param_type param_type;
+    param_type p0(6, .7);
+    param_type p;
+    p = p0;
+    assert(p.t() == 6);
+    assert(p.p() == .7);
+  }
 
   return 0;
 }

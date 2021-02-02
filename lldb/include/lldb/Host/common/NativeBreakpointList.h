@@ -21,6 +21,6 @@ struct HardwareBreakpoint {
 };
 
 using HardwareBreakpointMap = std::map<lldb::addr_t, HardwareBreakpoint>;
-}
+} // namespace lldb_private
 
 #endif // LLDB_HOST_COMMON_NATIVEBREAKPOINTLIST_H

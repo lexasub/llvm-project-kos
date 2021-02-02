@@ -8,7 +8,7 @@
 
 void test1() {
   RMD160_CTX ctx;
-  uint8_t entropy[] = { 0x11, 0x22, 0x33, 0x44, 0x55, 0x66 };
+  uint8_t entropy[] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66};
   uint8_t digest[RMD160_DIGEST_LENGTH];
 
   RMD160Init(&ctx);
@@ -23,7 +23,7 @@ void test1() {
 
 void test2() {
   RMD160_CTX ctx;
-  uint8_t entropy[] = { 0x11, 0x22, 0x33, 0x44, 0x55, 0x66 };
+  uint8_t entropy[] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66};
   char digest[RMD160_DIGEST_STRING_LENGTH];
 
   RMD160Init(&ctx);
@@ -36,7 +36,7 @@ void test2() {
 
 void test3() {
   RMD160_CTX ctx;
-  uint8_t entropy[] = { 0x11, 0x22, 0x33, 0x44, 0x55, 0x66 };
+  uint8_t entropy[] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66};
 
   RMD160Init(&ctx);
   RMD160Update(&ctx, entropy, __arraycount(entropy));
@@ -85,7 +85,7 @@ void test7() {
 }
 
 void test8() {
-  uint8_t entropy[] = { 0x11, 0x22, 0x33, 0x44, 0x55, 0x66 };
+  uint8_t entropy[] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66};
   char digest[RMD160_DIGEST_STRING_LENGTH];
 
   char *p = RMD160Data(entropy, __arraycount(entropy), digest);
@@ -95,7 +95,7 @@ void test8() {
 }
 
 void test9() {
-  uint8_t entropy[] = { 0x11, 0x22, 0x33, 0x44, 0x55, 0x66 };
+  uint8_t entropy[] = {0x11, 0x22, 0x33, 0x44, 0x55, 0x66};
 
   char *p = RMD160Data(entropy, __arraycount(entropy), NULL);
   assert(strlen(p) == RMD160_DIGEST_STRING_LENGTH - 1);

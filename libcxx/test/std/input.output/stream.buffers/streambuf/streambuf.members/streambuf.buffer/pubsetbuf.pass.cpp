@@ -19,18 +19,15 @@
 #include "test_macros.h"
 
 template <class CharT>
-struct test
-    : public std::basic_streambuf<CharT>
-{
-    test() {}
+struct test : public std::basic_streambuf<CharT> {
+  test() {}
 };
 
-int main(int, char**)
-{
-    {
-        test<char> t;
-        assert(t.pubsetbuf(0, 0) == &t);
-    }
+int main(int, char**) {
+  {
+    test<char> t;
+    assert(t.pubsetbuf(0, 0) == &t);
+  }
 
   return 0;
 }

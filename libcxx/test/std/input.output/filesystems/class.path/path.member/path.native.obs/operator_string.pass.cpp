@@ -22,9 +22,7 @@
 #include "test_macros.h"
 #include "filesystem_test_helper.h"
 
-
-int main(int, char**)
-{
+int main(int, char**) {
   using namespace fs;
   using string_type = path::string_type;
   const char* const value = "hello world";

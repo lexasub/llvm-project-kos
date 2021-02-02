@@ -31,6 +31,6 @@ void AvoidNSErrorInitCheck::check(const MatchFinder::MatchResult &Result) {
        "create a new NSError");
 }
 
-}  // namespace objc
-}  // namespace tidy
-}  // namespace clang
+} // namespace objc
+} // namespace tidy
+} // namespace clang

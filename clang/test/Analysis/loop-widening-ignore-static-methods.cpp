@@ -7,6 +7,7 @@
 
 class Test {
   static void foo() {
-    for (;;) {}
+    for (;;) {
+    }
   }
 };

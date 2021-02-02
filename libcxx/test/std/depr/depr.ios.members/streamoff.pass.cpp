@@ -20,11 +20,10 @@
 #include <ios>
 #include <type_traits>
 
-int main(int, char**)
-{
+int main(int, char**) {
 #if TEST_STD_VER <= 14
-    static_assert((std::is_integral<std::ios_base::streamoff>::value), "");
-    static_assert((std::is_signed<std::ios_base::streamoff>::value), "");
+  static_assert((std::is_integral<std::ios_base::streamoff>::value), "");
+  static_assert((std::is_signed<std::ios_base::streamoff>::value), "");
 #endif
 
   return 0;

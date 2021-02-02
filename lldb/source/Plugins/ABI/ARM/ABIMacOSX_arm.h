@@ -69,7 +69,8 @@ public:
 
   static void Terminate();
 
-  static lldb::ABISP CreateInstance(lldb::ProcessSP process_sp, const lldb_private::ArchSpec &arch);
+  static lldb::ABISP CreateInstance(lldb::ProcessSP process_sp,
+                                    const lldb_private::ArchSpec &arch);
 
   static lldb_private::ConstString GetPluginNameStatic();
 
@@ -85,7 +86,8 @@ protected:
                            lldb_private::CompilerType &ast_type) const override;
 
 private:
-  using lldb_private::RegInfoBasedABI::RegInfoBasedABI; // Call CreateInstance instead.
+  using lldb_private::RegInfoBasedABI::RegInfoBasedABI; // Call CreateInstance
+                                                        // instead.
 };
 
 #endif // LLDB_SOURCE_PLUGINS_ABI_ARM_ABIMACOSX_ARM_H

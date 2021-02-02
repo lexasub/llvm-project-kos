@@ -47,10 +47,9 @@ void do_test() {
   }
 }
 
-int main(int, char**)
-{
-  do_test<coro::coroutine_handle<>>();
-  do_test<coro::coroutine_handle<int>>();
+int main(int, char**) {
+  do_test<coro::coroutine_handle<> >();
+  do_test<coro::coroutine_handle<int> >();
 
   return 0;
 }

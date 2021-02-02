@@ -9,8 +9,8 @@
 #pragma clang diagnostic ignored "-W#warnings"
 #endif
 
-#define min THIS IS A NASTY MACRO!
-#define max THIS IS A NASTY MACRO!
+#define min THIS IS A NASTY MACRO !
+#define max THIS IS A NASTY MACRO !
 
 #include <cmath>
 

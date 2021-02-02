@@ -5,24 +5,27 @@
 typedef struct Point Point;
 
 namespace NameSpace {
-  class Point;
+class Point;
 }
 
 using namespace NameSpace;
 
-class Test
-{
+class Test {
 public:
-  struct Point { };
-  virtual bool testMethod (Test::Point& p) = 0;
+  struct Point {};
+  virtual bool testMethod(Test::Point &p) = 0;
 };
 
 // PR8151
-namespace A { struct Face {}; }
-namespace B { struct Face {}; }
+namespace A {
+struct Face {};
+} // namespace A
+namespace B {
+struct Face {};
+} // namespace B
 using namespace A;
 using namespace B;
- 
+
 class C {
   struct Face;
   Face *mFaces;

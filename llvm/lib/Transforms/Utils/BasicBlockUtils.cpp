@@ -90,7 +90,7 @@ void llvm::DeleteDeadBlock(BasicBlock *BB, DomTreeUpdater *DTU,
   DeleteDeadBlocks({BB}, DTU, KeepOneInputPHIs);
 }
 
-void llvm::DeleteDeadBlocks(ArrayRef <BasicBlock *> BBs, DomTreeUpdater *DTU,
+void llvm::DeleteDeadBlocks(ArrayRef<BasicBlock *> BBs, DomTreeUpdater *DTU,
                             bool KeepOneInputPHIs) {
 #ifndef NDEBUG
   // Make sure that all predecessors of each dead block is also dead.
@@ -116,14 +116,14 @@ void llvm::DeleteDeadBlocks(ArrayRef <BasicBlock *> BBs, DomTreeUpdater *DTU,
 
 bool llvm::EliminateUnreachableBlocks(Function &F, DomTreeUpdater *DTU,
                                       bool KeepOneInputPHIs) {
-  df_iterator_default_set<BasicBlock*> Reachable;
+  df_iterator_default_set<BasicBlock *> Reachable;
 
   // Mark all reachable blocks.
   for (BasicBlock *BB : depth_first_ext(&F, Reachable))
-    (void)BB/* Mark all reachable blocks */;
+    (void)BB /* Mark all reachable blocks */;
 
   // Collect all dead blocks.
-  std::vector<BasicBlock*> DeadBlocks;
+  std::vector<BasicBlock *> DeadBlocks;
   for (Function::iterator I = F.begin(), E = F.end(); I != E; ++I)
     if (!Reachable.count(&*I)) {
       BasicBlock *BB = &*I;
@@ -148,7 +148,7 @@ bool llvm::FoldSingleEntryPHINodes(BasicBlock *BB,
       PN->replaceAllUsesWith(UndefValue::get(PN->getType()));
 
     if (MemDep)
-      MemDep->removeInstruction(PN);  // Memdep updates AA itself.
+      MemDep->removeInstruction(PN); // Memdep updates AA itself.
 
     PN->eraseFromParent();
   }
@@ -165,7 +165,7 @@ bool llvm::DeleteDeadPHIs(BasicBlock *BB, const TargetLibraryInfo *TLI,
 
   bool Changed = false;
   for (unsigned i = 0, e = PHIs.size(); i != e; ++i)
-    if (PHINode *PN = dyn_cast_or_null<PHINode>(PHIs[i].operator Value*()))
+    if (PHINode *PN = dyn_cast_or_null<PHINode>(PHIs[i].operator Value *()))
       Changed |= RecursivelyDeleteDeadPHINode(PN, TLI, MSSAU);
 
   return Changed;
@@ -180,10 +180,12 @@ bool llvm::MergeBlockIntoPredecessor(BasicBlock *BB, DomTreeUpdater *DTU,
 
   // Can't merge if there are multiple predecessors, or no predecessors.
   BasicBlock *PredBB = BB->getUniquePredecessor();
-  if (!PredBB) return false;
+  if (!PredBB)
+    return false;
 
   // Don't break self-loops.
-  if (PredBB == BB) return false;
+  if (PredBB == BB)
+    return false;
   // Don't break unwinding instructions.
   if (PredBB->getTerminator()->isExceptionalTerminator())
     return false;
@@ -365,8 +367,7 @@ static bool removeRedundantDbgInstrsUsingBackwardScan(BasicBlock *BB) {
   SmallDenseSet<DebugVariable> VariableSet;
   for (auto &I : reverse(*BB)) {
     if (DbgValueInst *DVI = dyn_cast<DbgValueInst>(&I)) {
-      DebugVariable Key(DVI->getVariable(),
-                        DVI->getExpression(),
+      DebugVariable Key(DVI->getVariable(), DVI->getExpression(),
                         DVI->getDebugLoc()->getInlinedAt());
       auto R = VariableSet.insert(Key);
       // If the same variable fragment is described more than once it is enough
@@ -409,19 +410,17 @@ static bool removeRedundantDbgInstrsUsingBackwardScan(BasicBlock *BB) {
 /// - Keep track of non-overlapping fragments.
 static bool removeRedundantDbgInstrsUsingForwardScan(BasicBlock *BB) {
   SmallVector<DbgValueInst *, 8> ToBeRemoved;
-  DenseMap<DebugVariable, std::pair<Value *, DIExpression *> > VariableMap;
+  DenseMap<DebugVariable, std::pair<Value *, DIExpression *>> VariableMap;
   for (auto &I : *BB) {
     if (DbgValueInst *DVI = dyn_cast<DbgValueInst>(&I)) {
-      DebugVariable Key(DVI->getVariable(),
-                        NoneType(),
+      DebugVariable Key(DVI->getVariable(), NoneType(),
                         DVI->getDebugLoc()->getInlinedAt());
       auto VMI = VariableMap.find(Key);
       // Update the map if we found a new value/expression describing the
       // variable, or if the variable wasn't mapped already.
-      if (VMI == VariableMap.end() ||
-          VMI->second.first != DVI->getValue() ||
+      if (VMI == VariableMap.end() || VMI->second.first != DVI->getValue() ||
           VMI->second.second != DVI->getExpression()) {
-        VariableMap[Key] = { DVI->getValue(), DVI->getExpression() };
+        VariableMap[Key] = {DVI->getValue(), DVI->getExpression()};
         continue;
       }
       // Found an identical mapping. Remember the instruction for later removal.
@@ -452,8 +451,8 @@ bool llvm::RemoveRedundantDbgInstrs(BasicBlock *BB) {
   MadeChanges |= removeRedundantDbgInstrsUsingForwardScan(BB);
 
   if (MadeChanges)
-    LLVM_DEBUG(dbgs() << "Removed redundant dbg instrs from: "
-                      << BB->getName() << "\n");
+    LLVM_DEBUG(dbgs() << "Removed redundant dbg instrs from: " << BB->getName()
+                      << "\n");
   return MadeChanges;
 }
 
@@ -775,7 +774,7 @@ static void UpdatePHINodes(BasicBlock *OrigBB, BasicBlock *NewBB,
                            bool HasLoopExit) {
   // Otherwise, create a new PHI node in NewBB for each PHI node in OrigBB.
   SmallPtrSet<BasicBlock *, 16> PredSet(Preds.begin(), Preds.end());
-  for (BasicBlock::iterator I = OrigBB->begin(); isa<PHINode>(I); ) {
+  for (BasicBlock::iterator I = OrigBB->begin(); isa<PHINode>(I);) {
     PHINode *PN = cast<PHINode>(I++);
 
     // Check to see if all of the values coming in are the same.  If so, we
@@ -854,7 +853,7 @@ SplitBlockPredecessorsImpl(BasicBlock *BB, ArrayRef<BasicBlock *> Preds,
   // For the landingpads we need to act a bit differently.
   // Delegate this work to the SplitLandingPadPredecessors.
   if (BB->isLandingPad()) {
-    SmallVector<BasicBlock*, 2> NewBBs;
+    SmallVector<BasicBlock *, 2> NewBBs;
     std::string NewName = std::string(Suffix) + ".split-lp";
 
     SplitLandingPadPredecessorsImpl(BB, Preds, Suffix, NewName.c_str(), NewBBs,
@@ -957,9 +956,9 @@ static void SplitLandingPadPredecessorsImpl(
 
   // Create a new basic block for OrigBB's predecessors listed in Preds. Insert
   // it right before the original block.
-  BasicBlock *NewBB1 = BasicBlock::Create(OrigBB->getContext(),
-                                          OrigBB->getName() + Suffix1,
-                                          OrigBB->getParent(), OrigBB);
+  BasicBlock *NewBB1 =
+      BasicBlock::Create(OrigBB->getContext(), OrigBB->getName() + Suffix1,
+                         OrigBB->getParent(), OrigBB);
   NewBBs.push_back(NewBB1);
 
   // The new block unconditionally branches to the old block.
@@ -984,11 +983,11 @@ static void SplitLandingPadPredecessorsImpl(
   UpdatePHINodes(OrigBB, NewBB1, Preds, BI1, HasLoopExit);
 
   // Move the remaining edges from OrigBB to point to NewBB2.
-  SmallVector<BasicBlock*, 8> NewBB2Preds;
-  for (pred_iterator i = pred_begin(OrigBB), e = pred_end(OrigBB);
-       i != e; ) {
+  SmallVector<BasicBlock *, 8> NewBB2Preds;
+  for (pred_iterator i = pred_begin(OrigBB), e = pred_end(OrigBB); i != e;) {
     BasicBlock *Pred = *i++;
-    if (Pred == NewBB1) continue;
+    if (Pred == NewBB1)
+      continue;
     assert(!isa<IndirectBrInst>(Pred->getTerminator()) &&
            "Cannot split an edge from an IndirectBrInst");
     NewBB2Preds.push_back(Pred);
@@ -998,9 +997,9 @@ static void SplitLandingPadPredecessorsImpl(
   BasicBlock *NewBB2 = nullptr;
   if (!NewBB2Preds.empty()) {
     // Create another basic block for the rest of OrigBB's predecessors.
-    NewBB2 = BasicBlock::Create(OrigBB->getContext(),
-                                OrigBB->getName() + Suffix2,
-                                OrigBB->getParent(), OrigBB);
+    NewBB2 =
+        BasicBlock::Create(OrigBB->getContext(), OrigBB->getName() + Suffix2,
+                           OrigBB->getParent(), OrigBB);
     NewBBs.push_back(NewBB2);
 
     // The new block unconditionally branches to the old block.
@@ -1083,8 +1082,8 @@ ReturnInst *llvm::FoldReturnIntoUncondBranch(ReturnInst *RI, BasicBlock *BB,
 
   // If the return instruction returns a value, and if the value was a
   // PHI node in "BB", propagate the right value into the return.
-  for (User::op_iterator i = NewRet->op_begin(), e = NewRet->op_end();
-       i != e; ++i) {
+  for (User::op_iterator i = NewRet->op_begin(), e = NewRet->op_end(); i != e;
+       ++i) {
     Value *V = *i;
     Instruction *NewBC = nullptr;
     if (BitCastInst *BCI = dyn_cast<BitCastInst>(V)) {
@@ -1237,13 +1236,13 @@ void llvm::SplitBlockAndInsertIfThenElse(Value *Cond, Instruction *SplitBefore,
   *ElseTerm = BranchInst::Create(Tail, ElseBlock);
   (*ElseTerm)->setDebugLoc(SplitBefore->getDebugLoc());
   BranchInst *HeadNewTerm =
-    BranchInst::Create(/*ifTrue*/ThenBlock, /*ifFalse*/ElseBlock, Cond);
+      BranchInst::Create(/*ifTrue*/ ThenBlock, /*ifFalse*/ ElseBlock, Cond);
   HeadNewTerm->setMetadata(LLVMContext::MD_prof, BranchWeights);
   ReplaceInstWithInst(HeadOldTerm, HeadNewTerm);
 }
 
 Value *llvm::GetIfCondition(BasicBlock *BB, BasicBlock *&IfTrue,
-                             BasicBlock *&IfFalse) {
+                            BasicBlock *&IfFalse) {
   PHINode *SomePHI = dyn_cast<PHINode>(BB->begin());
   BasicBlock *Pred1 = nullptr;
   BasicBlock *Pred2 = nullptr;
@@ -1295,8 +1294,7 @@ Value *llvm::GetIfCondition(BasicBlock *BB, BasicBlock *&IfTrue,
 
     // If we found a conditional branch predecessor, make sure that it branches
     // to BB and Pred2Br.  If it doesn't, this isn't an "if statement".
-    if (Pred1Br->getSuccessor(0) == BB &&
-        Pred1Br->getSuccessor(1) == Pred2) {
+    if (Pred1Br->getSuccessor(0) == BB && Pred1Br->getSuccessor(1) == Pred2) {
       IfTrue = Pred1;
       IfFalse = Pred2;
     } else if (Pred1Br->getSuccessor(0) == Pred2 &&
@@ -1321,7 +1319,8 @@ Value *llvm::GetIfCondition(BasicBlock *BB, BasicBlock *&IfTrue,
 
   // Otherwise, if this is a conditional branch, then we can use it!
   BranchInst *BI = dyn_cast<BranchInst>(CommonPred->getTerminator());
-  if (!BI) return nullptr;
+  if (!BI)
+    return nullptr;
 
   assert(BI->isConditional() && "Two successors but not conditional?");
   if (BI->getSuccessor(0) == Pred1) {

@@ -99,8 +99,7 @@ BreakpointResolverFileLine::SerializeToStructuredData() {
                                  m_file_spec.GetPath());
   options_dict_sp->AddIntegerItem(GetKey(OptionNames::LineNumber),
                                   m_line_number);
-  options_dict_sp->AddIntegerItem(GetKey(OptionNames::Column),
-                                  m_column);
+  options_dict_sp->AddIntegerItem(GetKey(OptionNames::Column), m_column);
   options_dict_sp->AddBooleanItem(GetKey(OptionNames::Inlines), m_inlines);
   options_dict_sp->AddBooleanItem(GetKey(OptionNames::SkipPrologue),
                                   m_skip_prologue);
@@ -126,8 +125,8 @@ void BreakpointResolverFileLine::FilterContexts(SymbolContextList &sc_list,
   if (is_relative)
     relative_path = m_file_spec.GetDirectory().GetStringRef();
 
-  Log * log = GetLogIfAllCategoriesSet(LIBLLDB_LOG_BREAKPOINTS);
-  for(uint32_t i = 0; i < sc_list.GetSize(); ++i) {
+  Log *log = GetLogIfAllCategoriesSet(LIBLLDB_LOG_BREAKPOINTS);
+  for (uint32_t i = 0; i < sc_list.GetSize(); ++i) {
     SymbolContext sc;
     sc_list.GetContextAtIndex(i, sc);
     if (is_relative) {
@@ -137,8 +136,10 @@ void BreakpointResolverFileLine::FilterContexts(SymbolContextList &sc_list,
       if (!sc_dir.endswith(relative_path)) {
         // We had a relative path specified and the relative directory doesn't
         // match so remove this one
-        LLDB_LOG(log, "removing not matching relative path {0} since it "
-                "doesn't end with {1}", sc_dir, relative_path);
+        LLDB_LOG(log,
+                 "removing not matching relative path {0} since it "
+                 "doesn't end with {1}",
+                 sc_dir, relative_path);
         sc_list.RemoveContextAtIndex(i);
         --i;
         continue;
@@ -152,7 +153,8 @@ void BreakpointResolverFileLine::FilterContexts(SymbolContextList &sc_list,
     uint32_t line;
     const Block *inline_block = sc.block->GetContainingInlinedBlock();
     if (inline_block) {
-      const Declaration &inline_declaration = inline_block->GetInlinedFunctionInfo()->GetDeclaration();
+      const Declaration &inline_declaration =
+          inline_block->GetInlinedFunctionInfo()->GetDeclaration();
       if (!inline_declaration.IsValid())
         continue;
       file = inline_declaration.GetFile();
@@ -187,11 +189,11 @@ void BreakpointResolverFileLine::FilterContexts(SymbolContextList &sc_list,
     // is 0, then we can't do this calculation.  That can happen if
     // GetStartLineSourceInfo gets an error, or if the first line number in
     // the function really is 0 - which happens for some languages.
-    
+
     // But only do this calculation if the line number we found in the SC
     // was different from the one requested in the source file.  If we actually
     // found an exact match it must be valid.
-    
+
     if (m_line_number == sc.line_entry.line)
       continue;
 

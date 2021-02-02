@@ -27,8 +27,8 @@
 #include "llvm/ADT/iterator_range.h"
 #include "llvm/Support/Casting.h"
 #include <algorithm>
-#include <utility>
 #include <cassert>
+#include <utility>
 #include <vector>
 
 using namespace clang;
@@ -76,7 +76,7 @@ bool CXXRecordDecl::isDerivedFrom(const CXXRecordDecl *Base,
   if (getCanonicalDecl() == Base->getCanonicalDecl())
     return false;
 
-  Paths.setOrigin(const_cast<CXXRecordDecl*>(this));
+  Paths.setOrigin(const_cast<CXXRecordDecl *>(this));
 
   const CXXRecordDecl *BaseDecl = Base->getCanonicalDecl();
   return lookupInBases(
@@ -96,7 +96,7 @@ bool CXXRecordDecl::isVirtuallyDerivedFrom(const CXXRecordDecl *Base) const {
   if (getCanonicalDecl() == Base->getCanonicalDecl())
     return false;
 
-  Paths.setOrigin(const_cast<CXXRecordDecl*>(this));
+  Paths.setOrigin(const_cast<CXXRecordDecl *>(this));
 
   const CXXRecordDecl *BaseDecl = Base->getCanonicalDecl();
   return lookupInBases(
@@ -113,8 +113,8 @@ bool CXXRecordDecl::isProvablyNotDerivedFrom(const CXXRecordDecl *Base) const {
   });
 }
 
-bool
-CXXRecordDecl::isCurrentInstantiation(const DeclContext *CurContext) const {
+bool CXXRecordDecl::isCurrentInstantiation(
+    const DeclContext *CurContext) const {
   assert(isDependentContext());
 
   for (; !CurContext->isFileContext(); CurContext = CurContext->getParent())
@@ -125,7 +125,7 @@ CXXRecordDecl::isCurrentInstantiation(const DeclContext *CurContext) const {
 }
 
 bool CXXRecordDecl::forallBases(ForallBasesCallback BaseMatches) const {
-  SmallVector<const CXXRecordDecl*, 8> Queue;
+  SmallVector<const CXXRecordDecl *, 8> Queue;
 
   const CXXRecordDecl *Record = this;
   while (true) {
@@ -135,10 +135,9 @@ bool CXXRecordDecl::forallBases(ForallBasesCallback BaseMatches) const {
         return false;
 
       CXXRecordDecl *Base =
-            cast_or_null<CXXRecordDecl>(Ty->getDecl()->getDefinition());
-      if (!Base ||
-          (Base->isDependentContext() &&
-           !Base->isCurrentInstantiation(Record))) {
+          cast_or_null<CXXRecordDecl>(Ty->getDecl()->getDefinition());
+      if (!Base || (Base->isDependentContext() &&
+                    !Base->isCurrentInstantiation(Record))) {
         return false;
       }
 
@@ -225,8 +224,8 @@ bool CXXBasePaths::lookupInBases(ASTContext &Context,
       if (IsFirstStep)
         ScratchPath.Access = BaseSpec.getAccessSpecifier();
       else
-        ScratchPath.Access = CXXRecordDecl::MergeAccess(AccessToHere,
-                                                 BaseSpec.getAccessSpecifier());
+        ScratchPath.Access = CXXRecordDecl::MergeAccess(
+            AccessToHere, BaseSpec.getAccessSpecifier());
     }
 
     // Track whether there's a path involving this specific base.
@@ -365,8 +364,10 @@ bool CXXRecordDecl::FindBaseClass(const CXXBaseSpecifier *Specifier,
                                   const CXXRecordDecl *BaseRecord) {
   assert(BaseRecord->getCanonicalDecl() == BaseRecord &&
          "User data for FindBaseClass is not canonical!");
-  return Specifier->getType()->castAs<RecordType>()->getDecl()
-            ->getCanonicalDecl() == BaseRecord;
+  return Specifier->getType()
+             ->castAs<RecordType>()
+             ->getDecl()
+             ->getCanonicalDecl() == BaseRecord;
 }
 
 bool CXXRecordDecl::FindVirtualBaseClass(const CXXBaseSpecifier *Specifier,
@@ -374,9 +375,10 @@ bool CXXRecordDecl::FindVirtualBaseClass(const CXXBaseSpecifier *Specifier,
                                          const CXXRecordDecl *BaseRecord) {
   assert(BaseRecord->getCanonicalDecl() == BaseRecord &&
          "User data for FindBaseClass is not canonical!");
-  return Specifier->isVirtual() &&
-         Specifier->getType()->castAs<RecordType>()->getDecl()
-            ->getCanonicalDecl() == BaseRecord;
+  return Specifier->isVirtual() && Specifier->getType()
+                                           ->castAs<RecordType>()
+                                           ->getDecl()
+                                           ->getCanonicalDecl() == BaseRecord;
 }
 
 static bool isOrdinaryMember(const NamedDecl *ND) {
@@ -462,8 +464,8 @@ std::vector<const NamedDecl *> CXXRecordDecl::lookupDependentName(
 
 void OverridingMethods::add(unsigned OverriddenSubobject,
                             UniqueVirtualMethod Overriding) {
-  SmallVectorImpl<UniqueVirtualMethod> &SubobjectOverrides
-    = Overrides[OverriddenSubobject];
+  SmallVectorImpl<UniqueVirtualMethod> &SubobjectOverrides =
+      Overrides[OverriddenSubobject];
   if (llvm::find(SubobjectOverrides, Overriding) == SubobjectOverrides.end())
     SubobjectOverrides.push_back(Overriding);
 }
@@ -471,9 +473,8 @@ void OverridingMethods::add(unsigned OverriddenSubobject,
 void OverridingMethods::add(const OverridingMethods &Other) {
   for (const_iterator I = Other.begin(), IE = Other.end(); I != IE; ++I) {
     for (overriding_const_iterator M = I->second.begin(),
-                                MEnd = I->second.end();
-         M != MEnd;
-         ++M)
+                                   MEnd = I->second.end();
+         M != MEnd; ++M)
       add(I->first, *M);
   }
 }
@@ -493,7 +494,8 @@ class FinalOverriderCollector {
   llvm::DenseMap<const CXXRecordDecl *, unsigned> SubobjectCount;
 
   /// Overriders for each virtual base subobject.
-  llvm::DenseMap<const CXXRecordDecl *, CXXFinalOverriderMap *> VirtualOverriders;
+  llvm::DenseMap<const CXXRecordDecl *, CXXFinalOverriderMap *>
+      VirtualOverriders;
 
   CXXFinalOverriderMap FinalOverriders;
 
@@ -507,14 +509,13 @@ public:
 
 } // namespace
 
-void FinalOverriderCollector::Collect(const CXXRecordDecl *RD,
-                                      bool VirtualBase,
+void FinalOverriderCollector::Collect(const CXXRecordDecl *RD, bool VirtualBase,
                                       const CXXRecordDecl *InVirtualSubobject,
                                       CXXFinalOverriderMap &Overriders) {
   unsigned SubobjectNumber = 0;
   if (!VirtualBase)
-    SubobjectNumber
-      = ++SubobjectCount[cast<CXXRecordDecl>(RD->getCanonicalDecl())];
+    SubobjectNumber =
+        ++SubobjectCount[cast<CXXRecordDecl>(RD->getCanonicalDecl())];
 
   for (const auto &Base : RD->bases()) {
     if (const RecordType *RT = Base.getType()->getAs<RecordType>()) {
@@ -537,7 +538,8 @@ void FinalOverriderCollector::Collect(const CXXRecordDecl *RD,
       CXXFinalOverriderMap ComputedBaseOverriders;
       CXXFinalOverriderMap *BaseOverriders = &ComputedBaseOverriders;
       if (Base.isVirtual()) {
-        CXXFinalOverriderMap *&MyVirtualOverriders = VirtualOverriders[BaseDecl];
+        CXXFinalOverriderMap *&MyVirtualOverriders =
+            VirtualOverriders[BaseDecl];
         BaseOverriders = MyVirtualOverriders;
         if (!MyVirtualOverriders) {
           MyVirtualOverriders = new CXXFinalOverriderMap;
@@ -555,9 +557,8 @@ void FinalOverriderCollector::Collect(const CXXRecordDecl *RD,
       // Merge the overriders from this base class into our own set of
       // overriders.
       for (CXXFinalOverriderMap::iterator OM = BaseOverriders->begin(),
-                               OMEnd = BaseOverriders->end();
-           OM != OMEnd;
-           ++OM) {
+                                          OMEnd = BaseOverriders->end();
+           OM != OMEnd; ++OM) {
         const CXXMethodDecl *CanonOM = OM->first->getCanonicalDecl();
         Overriders[CanonOM].add(OM->second);
       }
@@ -581,9 +582,9 @@ void FinalOverriderCollector::Collect(const CXXRecordDecl *RD,
 
       // C++ [class.virtual]p2:
       //   For convenience we say that any virtual function overrides itself.
-      Overriders[CanonM].add(SubobjectNumber,
-                             UniqueVirtualMethod(CanonM, SubobjectNumber,
-                                                 InVirtualSubobject));
+      Overriders[CanonM].add(
+          SubobjectNumber,
+          UniqueVirtualMethod(CanonM, SubobjectNumber, InVirtualSubobject));
       continue;
     }
 
@@ -608,8 +609,7 @@ void FinalOverriderCollector::Collect(const CXXRecordDecl *RD,
         // replace any overrides from base classes with this
         // overriding virtual function.
         Overriders[CanonOM].replaceAll(
-                               UniqueVirtualMethod(CanonM, SubobjectNumber,
-                                                   InVirtualSubobject));
+            UniqueVirtualMethod(CanonM, SubobjectNumber, InVirtualSubobject));
 
         auto OverriddenMethods = CanonOM->overridden_methods();
         if (OverriddenMethods.begin() == OverriddenMethods.end())
@@ -623,22 +623,22 @@ void FinalOverriderCollector::Collect(const CXXRecordDecl *RD,
 
     // C++ [class.virtual]p2:
     //   For convenience we say that any virtual function overrides itself.
-    Overriders[CanonM].add(SubobjectNumber,
-                           UniqueVirtualMethod(CanonM, SubobjectNumber,
-                                               InVirtualSubobject));
+    Overriders[CanonM].add(
+        SubobjectNumber,
+        UniqueVirtualMethod(CanonM, SubobjectNumber, InVirtualSubobject));
   }
 }
 
 FinalOverriderCollector::~FinalOverriderCollector() {
   for (llvm::DenseMap<const CXXRecordDecl *, CXXFinalOverriderMap *>::iterator
-         VO = VirtualOverriders.begin(), VOEnd = VirtualOverriders.end();
-       VO != VOEnd;
-       ++VO)
+           VO = VirtualOverriders.begin(),
+           VOEnd = VirtualOverriders.end();
+       VO != VOEnd; ++VO)
     delete VO->second;
 }
 
-void
-CXXRecordDecl::getFinalOverriders(CXXFinalOverriderMap &FinalOverriders) const {
+void CXXRecordDecl::getFinalOverriders(
+    CXXFinalOverriderMap &FinalOverriders) const {
   FinalOverriderCollector Collector;
   Collector.Collect(this, false, nullptr, FinalOverriders);
 
@@ -661,9 +661,8 @@ CXXRecordDecl::getFinalOverriders(CXXFinalOverriderMap &FinalOverriders) const {
         // in a base class subobject that hides the virtual base class
         // subobject.
         for (const UniqueVirtualMethod &OP : Overriding)
-          if (&M != &OP &&
-              OP.Method->getParent()->isVirtuallyDerivedFrom(
-                  M.InVirtualSubobject))
+          if (&M != &OP && OP.Method->getParent()->isVirtuallyDerivedFrom(
+                               M.InVirtualSubobject))
             return true;
         return false;
       };
@@ -677,9 +676,9 @@ CXXRecordDecl::getFinalOverriders(CXXFinalOverriderMap &FinalOverriders) const {
   }
 }
 
-static void
-AddIndirectPrimaryBases(const CXXRecordDecl *RD, ASTContext &Context,
-                        CXXIndirectPrimaryBaseSet& Bases) {
+static void AddIndirectPrimaryBases(const CXXRecordDecl *RD,
+                                    ASTContext &Context,
+                                    CXXIndirectPrimaryBaseSet &Bases) {
   // If the record has a virtual primary base class, add it to our set.
   const ASTRecordLayout &Layout = Context.getASTRecordLayout(RD);
   if (Layout.isPrimaryBaseVirtual())
@@ -690,18 +689,17 @@ AddIndirectPrimaryBases(const CXXRecordDecl *RD, ASTContext &Context,
            "Cannot get indirect primary bases for class with dependent bases.");
 
     const CXXRecordDecl *BaseDecl =
-      cast<CXXRecordDecl>(I.getType()->castAs<RecordType>()->getDecl());
+        cast<CXXRecordDecl>(I.getType()->castAs<RecordType>()->getDecl());
 
     // Only bases with virtual bases participate in computing the
     // indirect primary virtual base classes.
     if (BaseDecl->getNumVBases())
       AddIndirectPrimaryBases(BaseDecl, Context, Bases);
   }
-
 }
 
-void
-CXXRecordDecl::getIndirectPrimaryBases(CXXIndirectPrimaryBaseSet& Bases) const {
+void CXXRecordDecl::getIndirectPrimaryBases(
+    CXXIndirectPrimaryBaseSet &Bases) const {
   ASTContext &Context = getASTContext();
 
   if (!getNumVBases())
@@ -712,7 +710,7 @@ CXXRecordDecl::getIndirectPrimaryBases(CXXIndirectPrimaryBaseSet& Bases) const {
            "Cannot get indirect primary bases for class with dependent bases.");
 
     const CXXRecordDecl *BaseDecl =
-      cast<CXXRecordDecl>(I.getType()->castAs<RecordType>()->getDecl());
+        cast<CXXRecordDecl>(I.getType()->castAs<RecordType>()->getDecl());
 
     // Only bases with virtual bases participate in computing the
     // indirect primary virtual base classes.

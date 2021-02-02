@@ -1,3 +1,2 @@
 typedef int Int;
-enum FFF
-extern Int *const www;
+enum FFF extern Int *const www;

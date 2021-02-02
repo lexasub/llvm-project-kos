@@ -37,9 +37,10 @@ int Arg;
 void gtid_test() {
 // CHECK:  call void {{.+}} @__kmpc_fork_call(%{{.+}}* @{{.+}}, i{{.+}} 0, {{.+}}* [[GTID_TEST_REGION1:@.+]] to void
 #pragma omp parallel
-#pragma omp task if (task: false)
+#pragma omp task if (task \
+                     : false)
   gtid_test();
-// CHECK: ret void
+  // CHECK: ret void
 }
 
 // CHECK: define internal void [[GTID_TEST_REGION1]](i32* noalias [[GTID_PARAM:%.+]], i
@@ -59,17 +60,22 @@ void gtid_test() {
 
 template <typename T>
 int tmain(T Arg) {
-#pragma omp task if (task: true)
+#pragma omp task if (task \
+                     : true)
   fn1();
 #pragma omp task if (false)
   fn2();
 #pragma omp task if (Arg)
   fn3();
-#pragma omp task if (task: Arg) depend(in : Arg)
+#pragma omp task if (task             \
+                     : Arg) depend(in \
+                                   : Arg)
   fn4();
-#pragma omp task if (Arg) depend(out : Arg)
+#pragma omp task if (Arg) depend(out \
+                                 : Arg)
   fn5();
-#pragma omp task if (Arg) depend(inout : Arg)
+#pragma omp task if (Arg) depend(inout \
+                                 : Arg)
   fn6();
   return 0;
 }
@@ -116,7 +122,8 @@ int main() {
 // CHECK: call void @__kmpc_omp_task_complete_if0(%{{.+}}* @{{.+}}, i{{.+}} [[GTID]], i8* [[ORIG_TASK_PTR]])
 // CHECK: br label %[[OMP_END]]
 // CHECK: [[OMP_END]]
-#pragma omp task if (Arg) depend(inout : Arg)
+#pragma omp task if (Arg) depend(inout \
+                                 : Arg)
   fn10();
   // CHECK: = call {{.*}}i{{.+}} @{{.+}}tmain
   return tmain(Arg);

@@ -2,25 +2,25 @@
 // Don't crash (PR13394).
 
 namespace stretch_v1 {
-  struct closure_t {
-    const stretch_v1::ops_t* d_methods; // expected-error {{no type named 'ops_t' in namespace 'stretch_v1'}}
-  };
-}
+struct closure_t {
+  const stretch_v1::ops_t *d_methods; // expected-error {{no type named 'ops_t' in namespace 'stretch_v1'}}
+};
+} // namespace stretch_v1
 namespace gatekeeper_v1 {
-  namespace gatekeeper_factory_v1 {
-    struct closure_t { // expected-note {{'closure_t' declared here}} expected-note {{'gatekeeper_factory_v1::closure_t' declared here}}
-      gatekeeper_v1::closure_t* create(); // expected-error {{no type named 'closure_t' in namespace 'gatekeeper_v1'; did you mean simply 'closure_t'?}}
-    };
-  }
-  // FIXME: Typo correction should remove the 'gatekeeper_v1::' name specifier
-  gatekeeper_v1::closure_t *x; // expected-error {{no type named 'closure_t' in namespace 'gatekeeper_v1'; did you mean 'gatekeeper_factory_v1::closure_t'}}
-}
+namespace gatekeeper_factory_v1 {
+struct closure_t {                    // expected-note {{'closure_t' declared here}} expected-note {{'gatekeeper_factory_v1::closure_t' declared here}}
+  gatekeeper_v1::closure_t *create(); // expected-error {{no type named 'closure_t' in namespace 'gatekeeper_v1'; did you mean simply 'closure_t'?}}
+};
+} // namespace gatekeeper_factory_v1
+// FIXME: Typo correction should remove the 'gatekeeper_v1::' name specifier
+gatekeeper_v1::closure_t *x; // expected-error {{no type named 'closure_t' in namespace 'gatekeeper_v1'; did you mean 'gatekeeper_factory_v1::closure_t'}}
+} // namespace gatekeeper_v1
 
 namespace Foo {
 struct Base {
   void Bar() {} // expected-note{{'Bar' declared here}}
 };
-}
+} // namespace Foo
 
 struct Derived : public Foo::Base {
   void test() {

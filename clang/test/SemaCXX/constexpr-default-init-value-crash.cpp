@@ -11,4 +11,4 @@ constexpr Foo getFoo() {
   Foo e = 123; // expected-error {{no viable conversion from 'int' to 'NoCrash::Foo'}}
   return e;
 }
-}
+} // namespace NoCrash

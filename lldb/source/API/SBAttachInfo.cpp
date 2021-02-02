@@ -59,8 +59,8 @@ SBAttachInfo::~SBAttachInfo() = default;
 lldb_private::ProcessAttachInfo &SBAttachInfo::ref() { return *m_opaque_sp; }
 
 SBAttachInfo &SBAttachInfo::operator=(const SBAttachInfo &rhs) {
-  LLDB_RECORD_METHOD(lldb::SBAttachInfo &,
-                     SBAttachInfo, operator=,(const lldb::SBAttachInfo &), rhs);
+  LLDB_RECORD_METHOD(lldb::SBAttachInfo &, SBAttachInfo, operator=,
+                     (const lldb::SBAttachInfo &), rhs);
 
   if (this != &rhs)
     m_opaque_sp = clone(rhs.m_opaque_sp);
@@ -262,15 +262,14 @@ void SBAttachInfo::SetListener(SBListener &listener) {
 namespace lldb_private {
 namespace repro {
 
-template <>
-void RegisterMethods<SBAttachInfo>(Registry &R) {
+template <> void RegisterMethods<SBAttachInfo>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBAttachInfo, ());
   LLDB_REGISTER_CONSTRUCTOR(SBAttachInfo, (lldb::pid_t));
   LLDB_REGISTER_CONSTRUCTOR(SBAttachInfo, (const char *, bool));
   LLDB_REGISTER_CONSTRUCTOR(SBAttachInfo, (const char *, bool, bool));
   LLDB_REGISTER_CONSTRUCTOR(SBAttachInfo, (const lldb::SBAttachInfo &));
-  LLDB_REGISTER_METHOD(lldb::SBAttachInfo &,
-                       SBAttachInfo, operator=,(const lldb::SBAttachInfo &));
+  LLDB_REGISTER_METHOD(lldb::SBAttachInfo &, SBAttachInfo, operator=,
+                       (const lldb::SBAttachInfo &));
   LLDB_REGISTER_METHOD(lldb::pid_t, SBAttachInfo, GetProcessID, ());
   LLDB_REGISTER_METHOD(void, SBAttachInfo, SetProcessID, (lldb::pid_t));
   LLDB_REGISTER_METHOD(uint32_t, SBAttachInfo, GetResumeCount, ());
@@ -304,5 +303,5 @@ void RegisterMethods<SBAttachInfo>(Registry &R) {
   LLDB_REGISTER_METHOD(void, SBAttachInfo, SetListener, (lldb::SBListener &));
 }
 
-}
-}
+} // namespace repro
+} // namespace lldb_private

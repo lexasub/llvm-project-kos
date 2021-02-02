@@ -112,7 +112,7 @@ public:
 
 AArch64TargetAsmStreamer::AArch64TargetAsmStreamer(MCStreamer &S,
                                                    formatted_raw_ostream &OS)
-  : AArch64TargetStreamer(S), OS(OS) {}
+    : AArch64TargetStreamer(S), OS(OS) {}
 
 void AArch64TargetAsmStreamer::emitInst(uint32_t Inst) {
   OS << "\t.inst\t0x" << Twine::utohexstr(Inst) << "\n";
@@ -201,16 +201,13 @@ public:
   }
 
   void emitFill(const MCExpr &NumBytes, uint64_t FillValue,
-                                  SMLoc Loc) override {
+                SMLoc Loc) override {
     emitDataMappingSymbol();
     MCObjectStreamer::emitFill(NumBytes, FillValue, Loc);
   }
+
 private:
-  enum ElfMappingSymbol {
-    EMS_None,
-    EMS_A64,
-    EMS_Data
-  };
+  enum ElfMappingSymbol { EMS_None, EMS_A64, EMS_Data };
 
   void emitDataMappingSymbol() {
     if (LastEMS == EMS_Data)

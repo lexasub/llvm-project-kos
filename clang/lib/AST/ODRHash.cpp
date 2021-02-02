@@ -159,30 +159,30 @@ void ODRHash::AddTemplateArgument(TemplateArgument TA) {
   ID.AddInteger(Kind);
 
   switch (Kind) {
-    case TemplateArgument::Null:
-      llvm_unreachable("Expected valid TemplateArgument");
-    case TemplateArgument::Type:
-      AddQualType(TA.getAsType());
-      break;
-    case TemplateArgument::Declaration:
-      AddDecl(TA.getAsDecl());
-      break;
-    case TemplateArgument::NullPtr:
-    case TemplateArgument::Integral:
-      break;
-    case TemplateArgument::Template:
-    case TemplateArgument::TemplateExpansion:
-      AddTemplateName(TA.getAsTemplateOrTemplatePattern());
-      break;
-    case TemplateArgument::Expression:
-      AddStmt(TA.getAsExpr());
-      break;
-    case TemplateArgument::Pack:
-      ID.AddInteger(TA.pack_size());
-      for (auto SubTA : TA.pack_elements()) {
-        AddTemplateArgument(SubTA);
-      }
-      break;
+  case TemplateArgument::Null:
+    llvm_unreachable("Expected valid TemplateArgument");
+  case TemplateArgument::Type:
+    AddQualType(TA.getAsType());
+    break;
+  case TemplateArgument::Declaration:
+    AddDecl(TA.getAsDecl());
+    break;
+  case TemplateArgument::NullPtr:
+  case TemplateArgument::Integral:
+    break;
+  case TemplateArgument::Template:
+  case TemplateArgument::TemplateExpansion:
+    AddTemplateName(TA.getAsTemplateOrTemplatePattern());
+    break;
+  case TemplateArgument::Expression:
+    AddStmt(TA.getAsExpr());
+    break;
+  case TemplateArgument::Pack:
+    ID.AddInteger(TA.pack_size());
+    for (auto SubTA : TA.pack_elements()) {
+      AddTemplateArgument(SubTA);
+    }
+    break;
   }
 }
 
@@ -259,9 +259,7 @@ public:
     }
   }
 
-  void AddQualType(QualType T) {
-    Hash.AddQualType(T);
-  }
+  void AddQualType(QualType T) { Hash.AddQualType(T); }
 
   void AddDecl(const Decl *D) {
     Hash.AddBoolean(D);
@@ -441,25 +439,27 @@ public:
 // Only allow a small portion of Decl's to be processed.  Remove this once
 // all Decl's can be handled.
 bool ODRHash::isDeclToBeProcessed(const Decl *D, const DeclContext *Parent) {
-  if (D->isImplicit()) return false;
-  if (D->getDeclContext() != Parent) return false;
+  if (D->isImplicit())
+    return false;
+  if (D->getDeclContext() != Parent)
+    return false;
 
   switch (D->getKind()) {
-    default:
-      return false;
-    case Decl::AccessSpec:
-    case Decl::CXXConstructor:
-    case Decl::CXXDestructor:
-    case Decl::CXXMethod:
-    case Decl::EnumConstant: // Only found in EnumDecl's.
-    case Decl::Field:
-    case Decl::Friend:
-    case Decl::FunctionTemplate:
-    case Decl::StaticAssert:
-    case Decl::TypeAlias:
-    case Decl::Typedef:
-    case Decl::Var:
-      return true;
+  default:
+    return false;
+  case Decl::AccessSpec:
+  case Decl::CXXConstructor:
+  case Decl::CXXDestructor:
+  case Decl::CXXMethod:
+  case Decl::EnumConstant: // Only found in EnumDecl's.
+  case Decl::Field:
+  case Decl::Friend:
+  case Decl::FunctionTemplate:
+  case Decl::StaticAssert:
+  case Decl::TypeAlias:
+  case Decl::Typedef:
+  case Decl::Var:
+    return true;
   }
 }
 
@@ -516,18 +516,20 @@ void ODRHash::AddCXXRecordDecl(const CXXRecordDecl *Record) {
   }
 }
 
-void ODRHash::AddFunctionDecl(const FunctionDecl *Function,
-                              bool SkipBody) {
+void ODRHash::AddFunctionDecl(const FunctionDecl *Function, bool SkipBody) {
   assert(Function && "Expecting non-null pointer.");
 
   // Skip functions that are specializations or in specialization context.
   const DeclContext *DC = Function;
   while (DC) {
-    if (isa<ClassTemplateSpecializationDecl>(DC)) return;
+    if (isa<ClassTemplateSpecializationDecl>(DC))
+      return;
     if (auto *F = dyn_cast<FunctionDecl>(DC)) {
       if (F->isFunctionTemplateSpecialization()) {
-        if (!isa<CXXMethodDecl>(DC)) return;
-        if (DC->getLexicalParent()->isFileContext()) return;
+        if (!isa<CXXMethodDecl>(DC))
+          return;
+        if (DC->getLexicalParent()->isFileContext())
+          return;
         // Inline method specializations are the only supported
         // specialization for now.
       }
@@ -624,7 +626,6 @@ void ODRHash::AddEnumDecl(const EnumDecl *Enum) {
   for (auto SubDecl : Decls) {
     AddSubDecl(SubDecl);
   }
-
 }
 
 void ODRHash::AddDecl(const Decl *D) {
@@ -640,8 +641,7 @@ void ODRHash::AddDecl(const Decl *D) {
 
   AddDeclarationName(ND->getDeclName());
 
-  const auto *Specialization =
-            dyn_cast<ClassTemplateSpecializationDecl>(D);
+  const auto *Specialization = dyn_cast<ClassTemplateSpecializationDecl>(D);
   AddBoolean(Specialization);
   if (Specialization) {
     const TemplateArgumentList &List = Specialization->getTemplateArgs();
@@ -677,9 +677,7 @@ public:
     }
   }
 
-  void AddQualType(QualType T) {
-    Hash.AddQualType(T);
-  }
+  void AddQualType(QualType T) { Hash.AddQualType(T); }
 
   void AddType(const Type *T) {
     Hash.AddBoolean(T);
@@ -1110,9 +1108,7 @@ public:
     VisitType(T);
   }
 
-  void VisitExtVectorType(const ExtVectorType * T) {
-    VisitVectorType(T);
-  }
+  void VisitExtVectorType(const ExtVectorType *T) { VisitVectorType(T); }
 };
 } // namespace
 
@@ -1130,6 +1126,4 @@ void ODRHash::AddQualType(QualType T) {
   AddType(split.Ty);
 }
 
-void ODRHash::AddBoolean(bool Value) {
-  Bools.push_back(Value);
-}
+void ODRHash::AddBoolean(bool Value) { Bools.push_back(Value); }

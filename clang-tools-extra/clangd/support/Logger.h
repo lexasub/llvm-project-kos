@@ -45,7 +45,7 @@ inline decltype(fmt_consume(llvm::Error::success())) wrap(llvm::Error &&V) {
   return fmt_consume(std::move(V));
 }
 template <typename... Ts>
-void log(Logger::Level L, const char *Fmt, Ts &&... Vals) {
+void log(Logger::Level L, const char *Fmt, Ts &&...Vals) {
   detail::logImpl(L, Fmt,
                   llvm::formatv(Fmt, detail::wrap(std::forward<Ts>(Vals))...));
 }
@@ -59,31 +59,31 @@ llvm::Error error(std::error_code, std::string &&);
 
 // elog() is used for "loud" errors and warnings.
 // This level is often visible to users.
-template <typename... Ts> void elog(const char *Fmt, Ts &&... Vals) {
+template <typename... Ts> void elog(const char *Fmt, Ts &&...Vals) {
   detail::log(Logger::Error, Fmt, std::forward<Ts>(Vals)...);
 }
 // log() is used for information important to understand a clangd session.
 // e.g. the names of LSP messages sent are logged at this level.
 // This level could be enabled in production builds to allow later inspection.
-template <typename... Ts> void log(const char *Fmt, Ts &&... Vals) {
+template <typename... Ts> void log(const char *Fmt, Ts &&...Vals) {
   detail::log(Logger::Info, Fmt, std::forward<Ts>(Vals)...);
 }
 // vlog() is used for details often needed for debugging clangd sessions.
 // This level would typically be enabled for clangd developers.
-template <typename... Ts> void vlog(const char *Fmt, Ts &&... Vals) {
+template <typename... Ts> void vlog(const char *Fmt, Ts &&...Vals) {
   detail::log(Logger::Verbose, Fmt, std::forward<Ts>(Vals)...);
 }
 // error() constructs an llvm::Error object, using formatv()-style arguments.
 // It is not automatically logged! (This function is a little out of place).
 // The error simply embeds the message string.
 template <typename... Ts>
-llvm::Error error(std::error_code EC, const char *Fmt, Ts &&... Vals) {
+llvm::Error error(std::error_code EC, const char *Fmt, Ts &&...Vals) {
   // We must render the formatv_object eagerly, while references are valid.
   return detail::error(
       EC, llvm::formatv(Fmt, detail::wrap(std::forward<Ts>(Vals))...).str());
 }
 // Overload with no error_code conversion, the error will be inconvertible.
-template <typename... Ts> llvm::Error error(const char *Fmt, Ts &&... Vals) {
+template <typename... Ts> llvm::Error error(const char *Fmt, Ts &&...Vals) {
   return detail::error(
       llvm::inconvertibleErrorCode(),
       llvm::formatv(Fmt, detail::wrap(std::forward<Ts>(Vals))...).str());

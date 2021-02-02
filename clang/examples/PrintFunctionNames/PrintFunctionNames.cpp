@@ -11,11 +11,11 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "clang/Frontend/FrontendPluginRegistry.h"
 #include "clang/AST/AST.h"
 #include "clang/AST/ASTConsumer.h"
 #include "clang/AST/RecursiveASTVisitor.h"
 #include "clang/Frontend/CompilerInstance.h"
+#include "clang/Frontend/FrontendPluginRegistry.h"
 #include "clang/Sema/Sema.h"
 #include "llvm/Support/raw_ostream.h"
 using namespace clang;
@@ -41,7 +41,7 @@ public:
     return true;
   }
 
-  void HandleTranslationUnit(ASTContext& context) override {
+  void HandleTranslationUnit(ASTContext &context) override {
     if (!Instance.getLangOpts().DelayedTemplateParsing)
       return;
 
@@ -63,7 +63,7 @@ public:
         return true;
       }
 
-      std::set<FunctionDecl*> LateParsedDecls;
+      std::set<FunctionDecl *> LateParsedDecls;
     } v(ParsedTemplates);
     v.TraverseDecl(context.getTranslationUnitDecl());
     clang::Sema &sema = Instance.getSema();
@@ -72,12 +72,13 @@ public:
           *sema.LateParsedTemplateMap.find(FD)->second;
       sema.LateTemplateParser(sema.OpaqueParser, LPT);
       llvm::errs() << "late-parsed-decl: \"" << FD->getNameAsString() << "\"\n";
-    }   
+    }
   }
 };
 
 class PrintFunctionNamesAction : public PluginASTAction {
   std::set<std::string> ParsedTemplates;
+
 protected:
   std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI,
                                                  llvm::StringRef) override {
@@ -111,13 +112,12 @@ protected:
 
     return true;
   }
-  void PrintHelp(llvm::raw_ostream& ros) {
+  void PrintHelp(llvm::raw_ostream &ros) {
     ros << "Help for PrintFunctionNames plugin goes here\n";
   }
-
 };
 
-}
+} // namespace
 
 static FrontendPluginRegistry::Add<PrintFunctionNamesAction>
-X("print-fns", "print function names");
+    X("print-fns", "print function names");

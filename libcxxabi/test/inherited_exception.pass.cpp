@@ -77,105 +77,65 @@ void f3() {
   throw static_cast<Base2*>(&child);
 }
 
-int main(int, char**)
-{
-    try
-    {
-        f1();
-        assert(false);
-    }
-    catch (const Child& c)
-    {
-        assert(true);
-    }
-    catch (const Base& b)
-    {
-        assert(false);
-    }
-    catch (...)
-    {
-        assert(false);
-    }
+int main(int, char**) {
+  try {
+    f1();
+    assert(false);
+  } catch (const Child& c) {
+    assert(true);
+  } catch (const Base& b) {
+    assert(false);
+  } catch (...) {
+    assert(false);
+  }
 
-    try
-    {
-        f1();
-        assert(false);
-    }
-    catch (const Base& c)
-    {
-        assert(true);
-    }
-    catch (const Child& b)
-    {
-        assert(false);
-    }
-    catch (...)
-    {
-        assert(false);
-    }
+  try {
+    f1();
+    assert(false);
+  } catch (const Base& c) {
+    assert(true);
+  } catch (const Child& b) {
+    assert(false);
+  } catch (...) {
+    assert(false);
+  }
 
-    try
-    {
-        f1();
-        assert(false);
-    }
-    catch (const Base2& c)
-    {
-        assert(true);
-    }
-    catch (const Child& b)
-    {
-        assert(false);
-    }
-    catch (...)
-    {
-        assert(false);
-    }
+  try {
+    f1();
+    assert(false);
+  } catch (const Base2& c) {
+    assert(true);
+  } catch (const Child& b) {
+    assert(false);
+  } catch (...) {
+    assert(false);
+  }
 
-    try
-    {
-        f2();
-        assert(false);
-    }
-    catch (const Child& c)
-    {
-        assert(false);
-    }
-    catch (const Base& b)
-    {
-        assert(false);
-    }
-    catch (const Base2& b)
-    {
-        assert(true);
-    }
-    catch (...)
-    {
-        assert(false);
-    }
+  try {
+    f2();
+    assert(false);
+  } catch (const Child& c) {
+    assert(false);
+  } catch (const Base& b) {
+    assert(false);
+  } catch (const Base2& b) {
+    assert(true);
+  } catch (...) {
+    assert(false);
+  }
 
-    try
-    {
-        f3();
-        assert(false);
-    }
-    catch (const Base* c)
-    {
-        assert(false);
-    }
-    catch (const Child* b)
-    {
-        assert(false);
-    }
-    catch (const Base2* c)
-    {
-        assert(true);
-    }
-    catch (...)
-    {
-        assert(false);
-    }
+  try {
+    f3();
+    assert(false);
+  } catch (const Base* c) {
+    assert(false);
+  } catch (const Child* b) {
+    assert(false);
+  } catch (const Base2* c) {
+    assert(true);
+  } catch (...) {
+    assert(false);
+  }
 
-    return 0;
+  return 0;
 }

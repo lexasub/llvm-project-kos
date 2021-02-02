@@ -23,33 +23,32 @@
 #include "count_new.h"
 #include "filesystem_test_helper.h"
 
-
 struct SwapTestcase {
   const char* value1;
   const char* value2;
 };
 
-#define LONG_STR1 "_THIS_IS_LONG_THIS_IS_LONG_THIS_IS_LONG_THIS_IS_LONG_THIS_IS_LONG_THIS_IS_LONG_THIS_IS_LONG"
-#define LONG_STR2 "_THIS_IS_LONG2_THIS_IS_LONG2_THIS_IS_LONG2_THIS_IS_LONG2_THIS_IS_LONG2_THIS_IS_LONG2_THIS_IS_LONG2"
-const SwapTestcase TestCases[] =
-  {
-      {"", ""}
-    , {"shortstr", LONG_STR1}
-    , {LONG_STR1, "shortstr"}
-    , {LONG_STR1, LONG_STR2}
-  };
+#define LONG_STR1                                                              \
+  "_THIS_IS_LONG_THIS_IS_LONG_THIS_IS_LONG_THIS_IS_LONG_THIS_IS_LONG_THIS_IS_" \
+  "LONG_THIS_IS_LONG"
+#define LONG_STR2                                                              \
+  "_THIS_IS_LONG2_THIS_IS_LONG2_THIS_IS_LONG2_THIS_IS_LONG2_THIS_IS_LONG2_"    \
+  "THIS_IS_LONG2_THIS_IS_LONG2"
+const SwapTestcase TestCases[] = {{"", ""},
+                                  {"shortstr", LONG_STR1},
+                                  {LONG_STR1, "shortstr"},
+                                  {LONG_STR1, LONG_STR2}};
 #undef LONG_STR1
 #undef LONG_STR2
 
-int main(int, char**)
-{
+int main(int, char**) {
   using namespace fs;
   {
     path p;
     ASSERT_NOEXCEPT(p.swap(p));
     ASSERT_SAME_TYPE(void, decltype(p.swap(p)));
   }
-  for (auto const & TC : TestCases) {
+  for (auto const& TC : TestCases) {
     path p1(TC.value1);
     path p2(TC.value2);
     {

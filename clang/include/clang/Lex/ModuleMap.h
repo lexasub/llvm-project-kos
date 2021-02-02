@@ -106,7 +106,7 @@ class ModuleMap {
   llvm::DenseMap<const IdentifierInfo *, Module *> CachedModuleLoads;
 
   /// Shadow modules created while building this module map.
-  llvm::SmallVector<Module*, 2> ShadowModules;
+  llvm::SmallVector<Module *, 2> ShadowModules;
 
   /// The number of modules we have created in total.
   unsigned NumCreatedModules = 0;
@@ -127,7 +127,7 @@ public:
   /// Flags describing the role of a module header.
   enum ModuleHeaderRole {
     /// This header is normally included in the module.
-    NormalHeader  = 0x0,
+    NormalHeader = 0x0,
 
     /// This header is included but private.
     PrivateHeader = 0x1,
@@ -173,9 +173,7 @@ public:
     ModuleHeaderRole getRole() const { return Storage.getInt(); }
 
     /// Whether this header is available in the module.
-    bool isAvailable() const {
-      return getModule()->isAvailable();
-    }
+    bool isAvailable() const { return getModule()->isAvailable(); }
 
     /// Whether this header is accessible from the specified module.
     bool isAccessibleFrom(Module *M) const {
@@ -185,9 +183,7 @@ public:
 
     // Whether this known header is valid (i.e., it has an
     // associated module).
-    explicit operator bool() const {
-      return Storage.getPointer() != nullptr;
-    }
+    explicit operator bool() const { return Storage.getPointer() != nullptr; }
   };
 
   using AdditionalModMapsSet = llvm::SmallPtrSet<const FileEntry *, 1>;
@@ -203,11 +199,12 @@ private:
   HeadersMap Headers;
 
   /// Map from file sizes to modules with lazy header directives of that size.
-  mutable llvm::DenseMap<off_t, llvm::TinyPtrVector<Module*>> LazyHeadersBySize;
+  mutable llvm::DenseMap<off_t, llvm::TinyPtrVector<Module *>>
+      LazyHeadersBySize;
 
   /// Map from mtimes to modules with lazy header directives with those mtimes.
-  mutable llvm::DenseMap<time_t, llvm::TinyPtrVector<Module*>>
-              LazyHeadersByModTime;
+  mutable llvm::DenseMap<time_t, llvm::TinyPtrVector<Module *>>
+      LazyHeadersByModTime;
 
   /// Mapping from directories with umbrella headers to the module
   /// that is generated from the umbrella header.
@@ -360,8 +357,9 @@ private:
   ///
   /// \param IntermediateDirs On success, contains the set of directories
   /// searched before finding \p File.
-  KnownHeader findHeaderInUmbrellaDirs(const FileEntry *File,
-                    SmallVectorImpl<const DirectoryEntry *> &IntermediateDirs);
+  KnownHeader findHeaderInUmbrellaDirs(
+      const FileEntry *File,
+      SmallVectorImpl<const DirectoryEntry *> &IntermediateDirs);
 
   /// Given that \p File is not in the Headers map, look it up within
   /// umbrella directories and find or create a module for it.
@@ -406,9 +404,7 @@ public:
   }
 
   /// Get the directory that contains Clang-supplied include files.
-  const DirectoryEntry *getBuiltinDir() const {
-    return BuiltinIncludeDir;
-  }
+  const DirectoryEntry *getBuiltinDir() const { return BuiltinIncludeDir; }
 
   /// Is this a compiler builtin header?
   static bool isBuiltinHeader(StringRef FileName);
@@ -658,8 +654,8 @@ public:
 
   /// Adds this header to the given module.
   /// \param Role The role of the header wrt the module.
-  void addHeader(Module *Mod, Module::Header Header,
-                 ModuleHeaderRole Role, bool Imported = false);
+  void addHeader(Module *Mod, Module::Header Header, ModuleHeaderRole Role,
+                 bool Imported = false);
 
   /// Marks this header as being excluded from the given module.
   void excludeHeader(Module *Mod, Module::Header Header);
@@ -685,8 +681,8 @@ public:
   ///
   /// \returns true if an error occurred, false otherwise.
   bool parseModuleMapFile(const FileEntry *File, bool IsSystem,
-                          const DirectoryEntry *HomeDir,
-                          FileID ID = FileID(), unsigned *Offset = nullptr,
+                          const DirectoryEntry *HomeDir, FileID ID = FileID(),
+                          unsigned *Offset = nullptr,
                           SourceLocation ExternModuleLoc = SourceLocation());
 
   /// Dump the contents of the module map, for debugging purposes.
@@ -695,7 +691,7 @@ public:
   using module_iterator = llvm::StringMap<Module *>::const_iterator;
 
   module_iterator module_begin() const { return Modules.begin(); }
-  module_iterator module_end()   const { return Modules.end(); }
+  module_iterator module_end() const { return Modules.end(); }
 
   /// Cache a module load.  M might be nullptr.
   void cacheModuleLoad(const IdentifierInfo &II, Module *M) {

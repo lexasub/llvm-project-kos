@@ -122,14 +122,15 @@ struct CustomMappingTraits<std::map<uint64_t, WholeProgramDevirtResolution>> {
     }
     io.mapRequired(Key.str().c_str(), V[KeyInt]);
   }
-  static void output(IO &io, std::map<uint64_t, WholeProgramDevirtResolution> &V) {
+  static void output(IO &io,
+                     std::map<uint64_t, WholeProgramDevirtResolution> &V) {
     for (auto &P : V)
       io.mapRequired(llvm::utostr(P.first).c_str(), P.second);
   }
 };
 
 template <> struct MappingTraits<TypeIdSummary> {
-  static void mapping(IO &io, TypeIdSummary& summary) {
+  static void mapping(IO &io, TypeIdSummary &summary) {
     io.mapOptional("TTRes", summary.TTRes);
     io.mapOptional("WPDRes", summary.WPDRes);
   }
@@ -146,28 +147,28 @@ struct FunctionSummaryYaml {
       TypeCheckedLoadConstVCalls;
 };
 
-} // End yaml namespace
-} // End llvm namespace
+} // namespace yaml
+} // namespace llvm
 
 namespace llvm {
 namespace yaml {
 
 template <> struct MappingTraits<FunctionSummary::VFuncId> {
-  static void mapping(IO &io, FunctionSummary::VFuncId& id) {
+  static void mapping(IO &io, FunctionSummary::VFuncId &id) {
     io.mapOptional("GUID", id.GUID);
     io.mapOptional("Offset", id.Offset);
   }
 };
 
 template <> struct MappingTraits<FunctionSummary::ConstVCall> {
-  static void mapping(IO &io, FunctionSummary::ConstVCall& id) {
+  static void mapping(IO &io, FunctionSummary::ConstVCall &id) {
     io.mapOptional("VFunc", id.VFunc);
     io.mapOptional("Args", id.Args);
   }
 };
 
-} // End yaml namespace
-} // End llvm namespace
+} // namespace yaml
+} // namespace llvm
 
 LLVM_YAML_IS_SEQUENCE_VECTOR(FunctionSummary::VFuncId)
 LLVM_YAML_IS_SEQUENCE_VECTOR(FunctionSummary::ConstVCall)
@@ -176,7 +177,7 @@ namespace llvm {
 namespace yaml {
 
 template <> struct MappingTraits<FunctionSummaryYaml> {
-  static void mapping(IO &io, FunctionSummaryYaml& summary) {
+  static void mapping(IO &io, FunctionSummaryYaml &summary) {
     io.mapOptional("Linkage", summary.Linkage);
     io.mapOptional("Visibility", summary.Visibility);
     io.mapOptional("NotEligibleToImport", summary.NotEligibleToImport);
@@ -194,8 +195,8 @@ template <> struct MappingTraits<FunctionSummaryYaml> {
   }
 };
 
-} // End yaml namespace
-} // End llvm namespace
+} // namespace yaml
+} // namespace llvm
 
 LLVM_YAML_IS_SEQUENCE_VECTOR(FunctionSummaryYaml)
 
@@ -255,7 +256,7 @@ template <> struct CustomMappingTraits<GlobalValueSummaryMapTy> {
               FSum->type_checked_load_vcalls(),
               FSum->type_test_assume_const_vcalls(),
               FSum->type_checked_load_const_vcalls()});
-          }
+        }
       }
       if (!FSums.empty())
         io.mapRequired(llvm::utostr(P.first).c_str(), FSums);
@@ -276,7 +277,7 @@ template <> struct CustomMappingTraits<TypeIdSummaryMapTy> {
 };
 
 template <> struct MappingTraits<ModuleSummaryIndex> {
-  static void mapping(IO &io, ModuleSummaryIndex& index) {
+  static void mapping(IO &io, ModuleSummaryIndex &index) {
     io.mapOptional("GlobalValueMap", index.GlobalValueMap);
     io.mapOptional("TypeIdMap", index.TypeIdMap);
     io.mapOptional("WithGlobalValueDeadStripping",
@@ -301,7 +302,7 @@ template <> struct MappingTraits<ModuleSummaryIndex> {
   }
 };
 
-} // End yaml namespace
-} // End llvm namespace
+} // namespace yaml
+} // namespace llvm
 
 #endif

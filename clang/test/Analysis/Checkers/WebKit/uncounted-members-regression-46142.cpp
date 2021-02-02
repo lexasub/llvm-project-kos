@@ -5,5 +5,5 @@
 
 class ClassWithoutADefinition;
 class Foo {
-    const ClassWithoutADefinition *foo;
+  const ClassWithoutADefinition *foo;
 };

@@ -1,12 +1,12 @@
 // RUN: %clang_cc1 -O1 -fno-experimental-new-pass-manager -triple %itanium_abi_triple -emit-llvm -o - -fvisibility hidden %s | FileCheck %s
 
-template<typename T>
+template <typename T>
 struct X {
   void f();
-  void g() { }
+  void g() {}
 };
 
-template<typename T> void X<T>::f() { }
+template <typename T> void X<T>::f() {}
 
 extern template struct X<int>;
 template struct X<int>;
@@ -23,4 +23,3 @@ void test_X(X<int> xi, X<char> xc) {
   // CHECK-LABEL: define available_externally {{.*}}void @_ZN1XIcE1gEv
   xc.g();
 }
-

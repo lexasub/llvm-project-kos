@@ -1,50 +1,52 @@
 // RUN: %clang_cc1 -std=c++2a -triple %itanium_abi_triple -emit-llvm -o - %s -w | FileCheck %s
 
-template<class, int, class>
-struct DummyType { };
+template <class, int, class>
+struct DummyType {};
 
 inline void inline_func() {
   // CHECK: UlvE
-  []{}();
+  [] {}();
 
   // CHECK: UlTyvE
-  []<class>{}.operator()<int>();
+  []<class> {}.operator()<int>();
 
   // CHECK: UlTyT_E
-  []<class T>(T){}(1);
+  []<class T>(T) {}(1);
 
   // CHECK: UlTyTyT_T0_E
-  []<class T1, class T2>(T1, T2){}(1, 2);
+  []<class T1, class T2>(T1, T2) {}(1, 2);
 
   // CHECK: UlTyTyT0_T_E
-  []<class T1, class T2>(T2, T1){}(2, 1);
+  []<class T1, class T2>(T2, T1) {}(2, 1);
 
   // CHECK: UlTniTyTnjT0_E
-  []<int I, class T, unsigned U>(T){}.operator()<1, int, 2>(3);
+  []<int I, class T, unsigned U>(T) {}.operator()<1, int, 2>(3);
 
   // CHECK: UlTyTtTyTniTyETniTyvE
   []<class,
-     template<class, int, class> class,
+     template <class, int, class> class,
      int,
-     class>{}.operator()<unsigned, DummyType, 5, int>();
+     class> {}
+      .
+      operator()<unsigned, DummyType, 5, int>();
 }
 
 void call_inline_func() {
   inline_func();
 }
 
-template<typename T, int> struct X {};
+template <typename T, int> struct X {};
 
-inline auto pack = []<typename ...T, T ...N>(T (&...)[N]) {};
+inline auto pack = []<typename... T, T... N>(T(&...)[N]){};
 int arr1[] = {1};
 int arr2[] = {1, 2};
 // CHECK: @_ZNK4packMUlTpTyTpTnT_DpRAT0__S_E_clIJiiEJLi1ELi2EEEEDaS2_(
 void use_pack() { pack(arr1, arr2); }
 
 inline void collision() {
-  auto a = []<typename T, template<typename U, T> typename>{};
-  auto b = []<typename T, template<typename U, U> typename>{};
-  auto c = []<typename T, template<typename U, T> typename>{};
+  auto a = []<typename T, template <typename U, T> typename> {};
+  auto b = []<typename T, template <typename U, U> typename> {};
+  auto c = []<typename T, template <typename U, T> typename> {};
   a.operator()<int, X>();
   // CHECK: @_ZZ9collisionvENKUlTyTtTyTnT_EvE_clIi1XEEDav
   b.operator()<int, X>();
@@ -55,26 +57,27 @@ inline void collision() {
 void use_collision() { collision(); }
 
 namespace pack_not_pack_expansion {
-  template<typename T, int, T...> struct X;
-  // CHECK: @_ZNK23pack_not_pack_expansion1xMUlTyTtTyTnT_TpTnTL0__ETpTyvE_clIiNS_1XEJfEEEDav
-  inline auto x = []<typename T, template<typename U, T, U...> typename, typename ...V>(){}; void f() { x.operator()<int, X, float>(); }
-}
+template <typename T, int, T...> struct X;
+// CHECK: @_ZNK23pack_not_pack_expansion1xMUlTyTtTyTnT_TpTnTL0__ETpTyvE_clIiNS_1XEJfEEEDav
+inline auto x = []<typename T, template <typename U, T, U...> typename, typename... V>(){};
+void f() { x.operator()<int, X, float>(); }
+} // namespace pack_not_pack_expansion
 
-template<typename> void f() {
+template <typename> void f() {
   // CHECK: define linkonce_odr {{.*}} @_ZZ1fIiEvvENKUlT_E_clIiEEDaS0_(
-  auto x = [](auto){};
+  auto x = [](auto) {};
   x(0);
 }
 void use_f() { f<int>(); }
 
-template<typename> struct Y {
-  template<int> struct Z {};
+template <typename> struct Y {
+  template <int> struct Z {};
 };
 
-template<typename ...T> void expanded() {
-  auto x = []<T..., template<T> typename...>{};
-  auto y = []<int, template<int> typename>{};
-  auto z = []<int, int, template<int> typename, template<int> typename>{};
+template <typename... T> void expanded() {
+  auto x = []<T..., template <T> typename...>{};
+  auto y = []<int, template <int> typename> {};
+  auto z = []<int, int, template <int> typename, template <int> typename> {};
   // FIXME: Should we really require 'template' for y and z?
   x.template operator()<(T())..., Y<T>::template Z...>();
   y.template operator()<0, Y<int>::Z>();

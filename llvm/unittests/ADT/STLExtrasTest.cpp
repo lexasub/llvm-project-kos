@@ -221,7 +221,7 @@ class apply_variadic {
   static StringRef apply_one(StringRef S) { return S.drop_back(); }
 
 public:
-  template <typename... Ts> auto operator()(Ts &&... Items) {
+  template <typename... Ts> auto operator()(Ts &&...Items) {
     return std::make_tuple(apply_one(Items)...);
   }
 };
@@ -371,7 +371,7 @@ TEST(STLExtrasTest, ADLTest) {
 }
 
 TEST(STLExtrasTest, EmptyTest) {
-  std::vector<void*> V;
+  std::vector<void *> V;
   EXPECT_TRUE(llvm::empty(V));
   V.push_back(nullptr);
   EXPECT_FALSE(llvm::empty(V));

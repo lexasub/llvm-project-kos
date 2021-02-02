@@ -32,10 +32,8 @@ void CodeGen::addDefaultFunctionDefinitionAttributes(CodeGenModule &CGM,
   CGM.addDefaultFunctionDefinitionAttributes(attrs);
 }
 
-const CGFunctionInfo &
-CodeGen::arrangeObjCMessageSendSignature(CodeGenModule &CGM,
-                                         const ObjCMethodDecl *MD,
-                                         QualType receiverType) {
+const CGFunctionInfo &CodeGen::arrangeObjCMessageSendSignature(
+    CodeGenModule &CGM, const ObjCMethodDecl *MD, QualType receiverType) {
   return CGM.getTypes().arrangeObjCMessageSendSignature(MD, receiverType);
 }
 
@@ -52,22 +50,18 @@ CodeGen::arrangeFreeFunctionType(CodeGenModule &CGM,
 }
 
 const CGFunctionInfo &
-CodeGen::arrangeCXXMethodType(CodeGenModule &CGM,
-                              const CXXRecordDecl *RD,
+CodeGen::arrangeCXXMethodType(CodeGenModule &CGM, const CXXRecordDecl *RD,
                               const FunctionProtoType *FTP,
                               const CXXMethodDecl *MD) {
   return CGM.getTypes().arrangeCXXMethodType(RD, FTP, MD);
 }
 
-const CGFunctionInfo &
-CodeGen::arrangeFreeFunctionCall(CodeGenModule &CGM,
-                                 CanQualType returnType,
-                                 ArrayRef<CanQualType> argTypes,
-                                 FunctionType::ExtInfo info,
-                                 RequiredArgs args) {
+const CGFunctionInfo &CodeGen::arrangeFreeFunctionCall(
+    CodeGenModule &CGM, CanQualType returnType, ArrayRef<CanQualType> argTypes,
+    FunctionType::ExtInfo info, RequiredArgs args) {
   return CGM.getTypes().arrangeLLVMFunctionInfo(
-      returnType, /*instanceMethod=*/false, /*chainCall=*/false, argTypes,
-      info, {}, args);
+      returnType, /*instanceMethod=*/false, /*chainCall=*/false, argTypes, info,
+      {}, args);
 }
 
 ImplicitCXXConstructorArgs
@@ -94,8 +88,8 @@ CodeGen::getImplicitCXXConstructorArgs(CodeGenModule &CGM,
   return implicitArgs;
 }
 
-llvm::FunctionType *
-CodeGen::convertFreeFunctionType(CodeGenModule &CGM, const FunctionDecl *FD) {
+llvm::FunctionType *CodeGen::convertFreeFunctionType(CodeGenModule &CGM,
+                                                     const FunctionDecl *FD) {
   assert(FD != nullptr && "Expected a non-null function declaration!");
   llvm::Type *T = CGM.getTypes().ConvertType(FD->getType());
 
@@ -105,13 +99,11 @@ CodeGen::convertFreeFunctionType(CodeGenModule &CGM, const FunctionDecl *FD) {
   return nullptr;
 }
 
-llvm::Type *
-CodeGen::convertTypeForMemory(CodeGenModule &CGM, QualType T) {
+llvm::Type *CodeGen::convertTypeForMemory(CodeGenModule &CGM, QualType T) {
   return CGM.getTypes().ConvertTypeForMem(T);
 }
 
-unsigned CodeGen::getLLVMFieldNumber(CodeGenModule &CGM,
-                                     const RecordDecl *RD,
+unsigned CodeGen::getLLVMFieldNumber(CodeGenModule &CGM, const RecordDecl *RD,
                                      const FieldDecl *FD) {
   return CGM.getTypes().getCGRecordLayout(RD).getLLVMFieldNo(FD);
 }

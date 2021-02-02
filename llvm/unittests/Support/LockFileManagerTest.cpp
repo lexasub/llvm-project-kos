@@ -75,7 +75,6 @@ TEST(LockFileManagerTest, LinkLockExists) {
   EXPECT_FALSE(sys::fs::exists(StringRef(LockedFile)));
 }
 
-
 TEST(LockFileManagerTest, RelativePath) {
   TempDir LockFileManagerTestDir("LockFileManagerTestDir", /*Unique*/ true);
 

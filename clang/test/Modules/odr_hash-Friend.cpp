@@ -52,25 +52,25 @@
 
 #if defined(TEST2)
 #include "Box.h"
+#include "Good.h"
 #include "M1.h"
 #include "M3.h"
-#include "Good.h"
 // expected-no-diagnostics
 #endif
 
 #if defined(TEST3)
-#include "Good.h"
 #include "Box.h"
+#include "Good.h"
 #include "M1.h"
 #include "M3.h"
 // expected-no-diagnostics
 #endif
 
 #if defined(TEST4)
+#include "Bad.h"
 #include "Box.h"
 #include "M1.h"
 #include "M3.h"
-#include "Bad.h"
 // expected-error@Bad.h:* {{'Check' has different definitions in different modules; definition in module 'Bad' first difference is function body}}
 // expected-note@Box.h:* {{but in 'Box' found a different body}}
 #endif
@@ -83,7 +83,6 @@
 // expected-error@Bad.h:* {{'Check' has different definitions in different modules; definition in module 'Bad' first difference is function body}}
 // expected-note@Box.h:* {{but in 'Box' found a different body}}
 #endif
-
 
 void Run() {
   Box<> Present;

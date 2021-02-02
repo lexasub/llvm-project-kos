@@ -93,8 +93,7 @@ Properties::Apropos(llvm::StringRef keyword,
 }
 
 lldb::OptionValuePropertiesSP
-Properties::GetSubProperty(const ExecutionContext *exe_ctx,
-                           ConstString name) {
+Properties::GetSubProperty(const ExecutionContext *exe_ctx, ConstString name) {
   OptionValuePropertiesSP properties_sp(GetValueProperties());
   if (properties_sp)
     return properties_sp->GetSubProperty(exe_ctx, name);

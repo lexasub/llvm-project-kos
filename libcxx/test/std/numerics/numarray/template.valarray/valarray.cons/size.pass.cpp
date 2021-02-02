@@ -18,41 +18,40 @@
 #include "test_macros.h"
 
 struct S {
-    S() : x(1) {}
-    ~S() { ++cnt_dtor; }
-    int x;
-    static size_t cnt_dtor;
+  S() : x(1) {}
+  ~S() { ++cnt_dtor; }
+  int x;
+  static size_t cnt_dtor;
 };
 
 size_t S::cnt_dtor = 0;
 
-int main(int, char**)
-{
-    {
-        std::valarray<int> v(100);
-        assert(v.size() == 100);
-        for (int i = 0; i < 100; ++i)
-            assert(v[i] == 0);
-    }
-    {
-        std::valarray<double> v(100);
-        assert(v.size() == 100);
-        for (int i = 0; i < 100; ++i)
-            assert(v[i] == 0);
-    }
-    {
-        std::valarray<std::valarray<double> > v(100);
-        assert(v.size() == 100);
-        for (int i = 0; i < 100; ++i)
-            assert(v[i].size() == 0);
-    }
-    {
-        std::valarray<S> v(100);
-        assert(v.size() == 100);
-        for (int i = 0; i < 100; ++i)
-            assert(v[i].x == 1);
-    }
-    assert(S::cnt_dtor == 100);
+int main(int, char**) {
+  {
+    std::valarray<int> v(100);
+    assert(v.size() == 100);
+    for (int i = 0; i < 100; ++i)
+      assert(v[i] == 0);
+  }
+  {
+    std::valarray<double> v(100);
+    assert(v.size() == 100);
+    for (int i = 0; i < 100; ++i)
+      assert(v[i] == 0);
+  }
+  {
+    std::valarray<std::valarray<double> > v(100);
+    assert(v.size() == 100);
+    for (int i = 0; i < 100; ++i)
+      assert(v[i].size() == 0);
+  }
+  {
+    std::valarray<S> v(100);
+    assert(v.size() == 100);
+    for (int i = 0; i < 100; ++i)
+      assert(v[i].x == 1);
+  }
+  assert(S::cnt_dtor == 100);
 
   return 0;
 }

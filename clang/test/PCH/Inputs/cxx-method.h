@@ -2,8 +2,8 @@ struct S {
   void m(int x);
 
   S();
-  S(const S&);
+  S(const S &);
 
-  operator const char*();
-  operator char*();
+  operator const char *();
+  operator char *();
 };

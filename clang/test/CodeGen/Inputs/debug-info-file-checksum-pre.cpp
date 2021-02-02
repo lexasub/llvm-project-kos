@@ -6,5 +6,5 @@ void test1() {}
 void test2() {}
 #line 3 "F:\\svn\\clang\\test\\CodeGen\\Inputs\\debug-info-file-checksum.c"
 int foo(int x) {
-  return x+1;
+  return x + 1;
 }

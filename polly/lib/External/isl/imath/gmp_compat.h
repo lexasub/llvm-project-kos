@@ -30,8 +30,8 @@
 #include "imrat.h"
 #include <stddef.h>
 
-#define GMPZAPI(fun) impz_ ## fun
-#define GMPQAPI(fun) impq_ ## fun
+#define GMPZAPI(fun) impz_##fun
+#define GMPQAPI(fun) impq_##fun
 
 #ifdef __cplusplus
 extern "C" {
@@ -165,13 +165,13 @@ void GMPZAPI(gcd)(mp_int rop, mp_int op1, mp_int op2);
 
 /* gmp: mpz_get_str */
 /* gmp: If str is NULL then allocate space using the default allocator. */
-char* GMPZAPI(get_str)(char *str, int radix, mp_int op);
+char *GMPZAPI(get_str)(char *str, int radix, mp_int op);
 
 /* gmp: mpq_get_str */
 /* gmp: If str is NULL then allocate space using the default allocator. */
 /* gmp: If value is a whole number do not print denomenator. */
 /* TODO: Need to handle 0 values better. GMP prints 0/4 instead of 0.*/
-char* GMPQAPI(get_str)(char *str, int radix, mp_rat op);
+char *GMPQAPI(get_str)(char *str, int radix, mp_rat op);
 
 /* gmp: mpz_set_str */
 /* gmp: Allow and ignore spaces in string. */
@@ -218,10 +218,12 @@ void GMPZAPI(fdiv_r)(mp_int r, mp_int n, mp_int d);
 void GMPZAPI(tdiv_q)(mp_int q, mp_int n, mp_int d);
 
 /* gmp: mpz_export */
-void* GMPZAPI(export)(void *rop, size_t *countp, int order, size_t size, int endian, size_t nails, mp_int op);
+void *GMPZAPI(export)(void *rop, size_t *countp, int order, size_t size,
+                      int endian, size_t nails, mp_int op);
 
 /* gmp: mpz_import */
-void GMPZAPI(import)(mp_int rop, size_t count, int order, size_t size, int endian, size_t nails, const void* op);
+void GMPZAPI(import)(mp_int rop, size_t count, int order, size_t size,
+                     int endian, size_t nails, const void *op);
 
 #ifdef __cplusplus
 }

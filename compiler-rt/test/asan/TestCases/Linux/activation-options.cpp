@@ -62,9 +62,9 @@ int main(int argc, char *argv[]) {
 
   return 0;
 }
-#else  // SHARED_LIB
+#else // SHARED_LIB
 // Empty: all we need is an ASan shared library constructor.
-#endif  // SHARED_LIB
+#endif // SHARED_LIB
 
 // CHECK-HELP: Available flags for {{.*}}Sanitizer:
 // CHECK-NO-HELP-NOT: Available flags for {{.*}}Sanitizer:

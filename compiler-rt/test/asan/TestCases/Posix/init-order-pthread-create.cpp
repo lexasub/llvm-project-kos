@@ -8,8 +8,8 @@
 
 #ifdef CONFIG1
 
-#include <stdio.h>
 #include <pthread.h>
+#include <stdio.h>
 #include <unistd.h>
 
 void *bar(void *input, bool sleep_before_init) {
@@ -18,11 +18,11 @@ void *bar(void *input, bool sleep_before_init) {
   return input;
 }
 
-void *glob = bar((void*)0x1234, false);
+void *glob = bar((void *)0x1234, false);
 extern void *glob2;
 
 void *poll(void *arg) {
-  void **glob = (void**)arg;
+  void **glob = (void **)arg;
   while (true) {
     usleep(100000);
     printf("glob is now: %p\n", *glob);
@@ -49,6 +49,6 @@ int main() {
 #else // CONFIG1
 
 void *bar(void *input, bool sleep_before_init);
-void *glob2 = bar((void*)0x2345, true);
+void *glob2 = bar((void *)0x2345, true);
 
 #endif

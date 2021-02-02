@@ -6,14 +6,15 @@ struct A {
 };
 
 namespace NS {
-  void *operator new(size_t);; // expected-error {{'operator new' cannot be declared inside a namespace}}
-}
+void *operator new(size_t);
+; // expected-error {{'operator new' cannot be declared inside a namespace}}
+} // namespace NS
 
-static void *operator new(size_t); // expected-error {{static declaration of 'operator new' follows non-static declaration}} expected-note {{previous}}
+static void *operator new(size_t);           // expected-error {{static declaration of 'operator new' follows non-static declaration}} expected-note {{previous}}
 static void *operator new(size_t, int, int); // expected-error {{'operator new' cannot be declared static in global scope}}
 
 struct B {
-  void operator new(size_t);  // expected-error {{'operator new' must return type 'void *'}}
+  void operator new(size_t); // expected-error {{'operator new' must return type 'void *'}}
 };
 
 struct C {
@@ -29,17 +30,17 @@ struct E {
 };
 
 struct F {
-  template<typename T> void *operator new(size_t, int);
+  template <typename T> void *operator new(size_t, int);
 };
 
 struct G {
-  template<typename T> T operator new(size_t, int); // expected-error {{'operator new' cannot have a dependent return type; use 'void *' instead}}
+  template <typename T> T operator new(size_t, int); // expected-error {{'operator new' cannot have a dependent return type; use 'void *' instead}}
 };
 
 struct H {
-  template<typename T> void *operator new(T, int); // expected-error {{'operator new' cannot take a dependent type as first parameter; use size_t}}
+  template <typename T> void *operator new(T, int); // expected-error {{'operator new' cannot take a dependent type as first parameter; use size_t}}
 };
 
 struct I {
-  template<typename T> void *operator new(size_t); // expected-error {{'operator new' template must have at least two parameters}}
+  template <typename T> void *operator new(size_t); // expected-error {{'operator new' template must have at least two parameters}}
 };

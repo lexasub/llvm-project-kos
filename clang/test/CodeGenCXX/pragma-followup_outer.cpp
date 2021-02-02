@@ -6,11 +6,10 @@ extern "C" void followup_outer(int n, int *x) {
 #pragma unroll_and_jam
 #pragma clang loop vectorize(assume_safety)
 #pragma clang loop distribute(enable)
-  for(int j = 0; j < n; j++) {
+  for (int j = 0; j < n; j++) {
     x[j] = 10;
   }
 }
-
 
 // CHECK-LABEL: define{{.*}} void @followup_outer
 // CHECK: br label %for.cond, !llvm.loop ![[LOOP_3:[0-9]+]]

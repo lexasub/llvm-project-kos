@@ -247,7 +247,7 @@ struct CallDescriptor {
 using CallSequence = std::vector<CallDescriptor>;
 
 /// Find the unique path through the call graph from \p begin (with return PC
-/// \p return_pc) to \p end. On success this path is stored into \p path, and 
+/// \p return_pc) to \p end. On success this path is stored into \p path, and
 /// on failure \p path is unchanged.
 static void FindInterveningFrames(Function &begin, Function &end,
                                   ExecutionContext &exe_ctx, Target &target,

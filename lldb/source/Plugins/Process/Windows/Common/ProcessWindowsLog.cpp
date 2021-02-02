@@ -29,12 +29,3 @@ void ProcessWindowsLog::Initialize() {
 }
 
 void ProcessWindowsLog::Terminate() {}
-
-
-
-
-
-
-
-
-

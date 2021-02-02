@@ -39,7 +39,7 @@ struct fake_container2 {
   size_t size(); // non-const
 };
 
-}
+} // namespace std
 
 using std::size_t;
 
@@ -53,7 +53,7 @@ struct string {
   std::size_t size() const;
 };
 
-template<typename T>
+template <typename T>
 void g(T t) {
   (void)sizeof(t);
 }
@@ -64,15 +64,15 @@ void f() {
   std::vector<int> v;
 
   int a = 42 + sizeof(s1);
-// CHECK-MESSAGES: :[[@LINE-1]]:16: warning: sizeof() doesn't return the size of the container; did you mean .size()? [bugprone-sizeof-container]
+  // CHECK-MESSAGES: :[[@LINE-1]]:16: warning: sizeof() doesn't return the size of the container; did you mean .size()? [bugprone-sizeof-container]
   a = 123 * sizeof(s2);
-// CHECK-MESSAGES: :[[@LINE-1]]:13: warning: sizeof() doesn't return the size
+  // CHECK-MESSAGES: :[[@LINE-1]]:13: warning: sizeof() doesn't return the size
   a = 45 + sizeof(s2 + "asdf");
-// CHECK-MESSAGES: :[[@LINE-1]]:12: warning: sizeof() doesn't return the size
+  // CHECK-MESSAGES: :[[@LINE-1]]:12: warning: sizeof() doesn't return the size
   a = sizeof(v);
-// CHECK-MESSAGES: :[[@LINE-1]]:7: warning: sizeof() doesn't return the size
+  // CHECK-MESSAGES: :[[@LINE-1]]:7: warning: sizeof() doesn't return the size
   a = sizeof(std::vector<int>{});
-// CHECK-MESSAGES: :[[@LINE-1]]:7: warning: sizeof() doesn't return the size
+  // CHECK-MESSAGES: :[[@LINE-1]]:7: warning: sizeof() doesn't return the size
 
   a = sizeof(a);
   a = sizeof(int);
@@ -92,7 +92,6 @@ void f() {
   a = sizeof(fake2);
   a = sizeof(std_bitset);
   a = sizeof(std_array);
-
 
   std::string arr[3];
   a = ARRAYSIZE(arr);

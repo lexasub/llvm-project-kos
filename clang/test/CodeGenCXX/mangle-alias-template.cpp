@@ -1,15 +1,15 @@
 // RUN: %clang_cc1 -std=c++11 -triple x86_64-apple-darwin10 -emit-llvm -o - %s | FileCheck %s
 
-template<typename T> struct alloc {};
-template<typename T> using Alloc = alloc<T>;
-template<typename T, typename A = Alloc<T>> struct vector {};
+template <typename T> struct alloc {};
+template <typename T> using Alloc = alloc<T>;
+template <typename T, typename A = Alloc<T>> struct vector {};
 
-template<typename T> using Vec = vector<T>;
+template <typename T> using Vec = vector<T>;
 
-template<typename T> void f(Vec<T> v);
-template<typename T> void g(T);
+template <typename T> void f(Vec<T> v);
+template <typename T> void g(T);
 
-template<template<typename> class F> void h(F<int>);
+template <template <typename> class F> void h(F<int>);
 
 // CHECK-LABEL: define{{.*}} void @_Z1zv(
 void z() {

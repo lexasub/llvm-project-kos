@@ -23,44 +23,43 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        typedef std::codecvt_utf16<wchar_t> C;
-        C c;
-        int r = c.max_length();
-        assert(r == 4);
-    }
-    {
-        typedef std::codecvt_utf16<wchar_t, 0xFFFFFFFF, std::consume_header> C;
-        C c;
-        int r = c.max_length();
-        assert(r == 6);
-    }
-    {
-        typedef std::codecvt_utf16<char16_t> C;
-        C c;
-        int r = c.max_length();
-        assert(r == 2);
-    }
-    {
-        typedef std::codecvt_utf16<char16_t, 0xFFFFFFFF, std::consume_header> C;
-        C c;
-        int r = c.max_length();
-        assert(r == 4);
-    }
-    {
-        typedef std::codecvt_utf16<char32_t> C;
-        C c;
-        int r = c.max_length();
-        assert(r == 4);
-    }
-    {
-        typedef std::codecvt_utf16<char32_t, 0xFFFFFFFF, std::consume_header> C;
-        C c;
-        int r = c.max_length();
-        assert(r == 6);
-    }
+int main(int, char**) {
+  {
+    typedef std::codecvt_utf16<wchar_t> C;
+    C c;
+    int r = c.max_length();
+    assert(r == 4);
+  }
+  {
+    typedef std::codecvt_utf16<wchar_t, 0xFFFFFFFF, std::consume_header> C;
+    C c;
+    int r = c.max_length();
+    assert(r == 6);
+  }
+  {
+    typedef std::codecvt_utf16<char16_t> C;
+    C c;
+    int r = c.max_length();
+    assert(r == 2);
+  }
+  {
+    typedef std::codecvt_utf16<char16_t, 0xFFFFFFFF, std::consume_header> C;
+    C c;
+    int r = c.max_length();
+    assert(r == 4);
+  }
+  {
+    typedef std::codecvt_utf16<char32_t> C;
+    C c;
+    int r = c.max_length();
+    assert(r == 4);
+  }
+  {
+    typedef std::codecvt_utf16<char32_t, 0xFFFFFFFF, std::consume_header> C;
+    C c;
+    int r = c.max_length();
+    assert(r == 6);
+  }
 
   return 0;
 }

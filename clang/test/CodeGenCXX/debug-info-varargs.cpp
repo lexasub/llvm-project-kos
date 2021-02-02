@@ -1,13 +1,12 @@
 // RUN: %clang_cc1 -triple %itanium_abi_triple -emit-llvm -debug-info-kind=limited %s -o - | FileCheck %s
 
-struct A
-{
+struct A {
   void a(int c, ...) {}
 };
 
-  // CHECK: !DISubprogram(name: "b", linkageName: "_Z1biz"
-  // CHECK-SAME:          line: [[@LINE+2]]
-  // CHECK-SAME:          type: ![[BTY:[0-9]+]]
+// CHECK: !DISubprogram(name: "b", linkageName: "_Z1biz"
+// CHECK-SAME:          line: [[@LINE+2]]
+// CHECK-SAME:          type: ![[BTY:[0-9]+]]
 void b(int c, ...) {
   // CHECK: ![[BTY]] = !DISubroutineType(types: ![[BARGS:[0-9]+]])
   // CHECK: ![[BARGS]] = !{null, !{{[0-9]+}}, null}

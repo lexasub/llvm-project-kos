@@ -28,6 +28,4 @@
 // bool is_relative() const;
 
 // tested in path.decompose
-int main(int, char**) {
-  return 0;
-}
+int main(int, char**) { return 0; }

@@ -257,7 +257,7 @@ void fCharPointerTest() {
 }
 
 struct VectorSizePointer {
-  VectorSizePointer() {} // expected-warning{{1 uninitialized field}}
+  VectorSizePointer() {}                      // expected-warning{{1 uninitialized field}}
   __attribute__((__vector_size__(8))) int *x; // expected-note{{uninitialized pointer 'this->x'}}
   int dontGetFilteredByNonPedanticMode = 0;
 };

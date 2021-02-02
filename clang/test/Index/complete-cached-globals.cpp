@@ -2,10 +2,10 @@
 // matter in this test.
 
 namespace SomeNamespace {
-    class SomeClass {
-    };
-    void SomeFunction();
-}
+class SomeClass {
+};
+void SomeFunction();
+} // namespace SomeNamespace
 
 using SomeNamespace::SomeClass;
 using SomeNamespace::SomeFunction;

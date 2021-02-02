@@ -10,13 +10,15 @@
 //
 //===----------------------------------------------------------------------===//
 #include "tsan_dense_alloc.h"
-#include "tsan_rtl.h"
-#include "tsan_mman.h"
-#include "gtest/gtest.h"
 
-#include <stdlib.h>
 #include <stdint.h>
+#include <stdlib.h>
+
 #include <map>
+
+#include "gtest/gtest.h"
+#include "tsan_mman.h"
+#include "tsan_rtl.h"
 
 namespace __tsan {
 

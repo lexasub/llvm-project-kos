@@ -190,7 +190,6 @@ X86RegisterBankInfo::getInstrMapping(const MachineInstr &MI) const {
 
     auto Mapping = getValueMapping(getPartialMappingIdx(Ty, false), 3);
     return getInstructionMapping(DefaultMappingID, 1, Mapping, NumOperands);
-
   }
   default:
     break;

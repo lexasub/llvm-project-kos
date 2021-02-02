@@ -3,10 +3,16 @@
 // RUN: %clang_cc1 -fno-rtti -emit-llvm-only -triple x86_64-pc-win32 -fdump-record-layouts -fsyntax-only %s 2>/dev/null \
 // RUN:            | FileCheck %s -check-prefix CHECK-X64
 
-struct B0 { int a; };
-struct B1 { int a; };
+struct B0 {
+  int a;
+};
+struct B1 {
+  int a;
+};
 
-struct A : virtual B0 { char a : 1; };
+struct A : virtual B0 {
+  char a : 1;
+};
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK: *** Dumping AST Record Layout
@@ -27,7 +33,9 @@ struct A : virtual B0 { char a : 1; };
 // CHECK-X64-NEXT:      | [sizeof=24, align=8
 // CHECK-X64-NEXT:      |  nvsize=16, nvalign=8]
 
-struct B : virtual B0 { short a : 1; };
+struct B : virtual B0 {
+  short a : 1;
+};
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK-NEXT:    0 | struct B
@@ -46,7 +54,10 @@ struct B : virtual B0 { short a : 1; };
 // CHECK-X64-NEXT:      | [sizeof=24, align=8
 // CHECK-X64-NEXT:      |  nvsize=16, nvalign=8]
 
-struct C : virtual B0 { char a : 1; char : 0; };
+struct C : virtual B0 {
+  char a : 1;
+  char : 0;
+};
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK-NEXT:    0 | struct C
@@ -67,7 +78,10 @@ struct C : virtual B0 { char a : 1; char : 0; };
 // CHECK-X64-NEXT:      | [sizeof=24, align=8
 // CHECK-X64-NEXT:      |  nvsize=16, nvalign=8]
 
-struct D : virtual B0 { char a : 1; char b; };
+struct D : virtual B0 {
+  char a : 1;
+  char b;
+};
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK-NEXT:    0 | struct D
@@ -88,7 +102,9 @@ struct D : virtual B0 { char a : 1; char b; };
 // CHECK-X64-NEXT:      | [sizeof=24, align=8
 // CHECK-X64-NEXT:      |  nvsize=16, nvalign=8]
 
-struct E : virtual B0, virtual B1 { long long : 1; };
+struct E : virtual B0, virtual B1 {
+  long long : 1;
+};
 // CHECK: *** Dumping AST Record Layout
 // CHECK: *** Dumping AST Record Layout
 // CHECK-NEXT:    0 | struct E
@@ -112,9 +128,8 @@ struct E : virtual B0, virtual B1 { long long : 1; };
 // CHECK-X64-NEXT:      | [sizeof=24, align=8
 // CHECK-X64-NEXT:      |  nvsize=16, nvalign=8]
 
-int a[
-sizeof(A)+
-sizeof(B)+
-sizeof(C)+
-sizeof(D)+
-sizeof(E)];
+int a[sizeof(A) +
+      sizeof(B) +
+      sizeof(C) +
+      sizeof(D) +
+      sizeof(E)];

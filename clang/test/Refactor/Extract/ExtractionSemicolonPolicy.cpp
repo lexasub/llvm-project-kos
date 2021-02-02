@@ -1,9 +1,11 @@
 // RUN: clang-refactor extract -selection=test:%s %s -- -std=c++11 -fcxx-exceptions | grep -v CHECK | FileCheck %s
 
-struct Rectangle { int width, height; };
+struct Rectangle {
+  int width, height;
+};
 
 void extractStatement(const Rectangle &r) {
-  /*range adeclstmt=->+0:59*/int area = r.width * r.height;
+  /*range adeclstmt=->+0:59*/ int area = r.width * r.height;
 }
 // CHECK: 1 'adeclstmt' results:
 // CHECK:      static void extracted() {
@@ -14,7 +16,7 @@ void extractStatement(const Rectangle &r) {
 // CHECK-NEXT: }
 
 void extractStatementNoSemiIf(const Rectangle &r) {
-  /*range bextractif=->+2:4*/if (r.width) {
+  /*range bextractif=->+2:4*/ if (r.width) {
     int x = r.height;
   }
 }
@@ -29,9 +31,9 @@ void extractStatementNoSemiIf(const Rectangle &r) {
 // CHECK-NEXT: }
 
 void extractStatementDontExtraneousSemi(const Rectangle &r) {
-  /*range cextractif=->+2:4*/if (r.width) {
+  /*range cextractif=->+2:4*/ if (r.width) {
     int x = r.height;
-  } ;
+  };
 } //^ This semicolon shouldn't be extracted.
 // CHECK: 1 'cextractif' results:
 // CHECK:      static void extracted() {
@@ -44,7 +46,7 @@ void extractStatementDontExtraneousSemi(const Rectangle &r) {
 // CHECK-NEXT: }
 
 void extractStatementNotSemiSwitch() {
-  /*range dextract=->+5:4*/switch (2) {
+  /*range dextract=->+5:4*/ switch (2) {
   case 1:
     break;
   case 2:
@@ -64,9 +66,8 @@ void extractStatementNotSemiSwitch() {
 // CHECK-NEXT: extracted();{{$}}
 // CHECK-NEXT: }
 
-
 void extractStatementNotSemiWhile() {
-  /*range eextract=->+2:4*/while (true) {
+  /*range eextract=->+2:4*/ while (true) {
     int x = 0;
   }
 }
@@ -81,7 +82,7 @@ void extractStatementNotSemiWhile() {
 // CHECK-NEXT: }
 
 void extractStatementNotSemiFor() {
-  /*range fextract=->+1:4*/for (int i = 0; i < 10; ++i) {
+  /*range fextract=->+1:4*/ for (int i = 0; i < 10; ++i) {
   }
 }
 // CHECK: 1 'fextract' results:
@@ -99,7 +100,7 @@ struct XS {
 };
 
 void extractStatementNotSemiRangedFor(XS xs) {
-  /*range gextract=->+1:4*/for (int i : xs) {
+  /*range gextract=->+1:4*/ for (int i : xs) {
   }
 }
 // CHECK: 1 'gextract' results:
@@ -112,8 +113,7 @@ void extractStatementNotSemiRangedFor(XS xs) {
 // CHECK-NEXT: }
 
 void extractStatementNotSemiRangedTryCatch() {
-  /*range hextract=->+3:4*/try { int x = 0; }
-  catch (const int &i) {
+  /*range hextract=->+3:4*/ try { int x = 0; } catch (const int &i) {
     int y = i;
   }
 }
@@ -129,11 +129,11 @@ void extractStatementNotSemiRangedTryCatch() {
 // CHECK-NEXT: }
 
 void extractCantFindSemicolon() {
-  /*range iextract=->+1:17*/do {
+  /*range iextract=->+1:17*/ do {
   } while (true)
-  // Add a semicolon in both the extracted and original function as we don't
-  // want to extract the semicolon below.
-  ;
+      // Add a semicolon in both the extracted and original function as we don't
+      // want to extract the semicolon below.
+      ;
 }
 // CHECK: 1 'iextract' results:
 // CHECK:      static void extracted() {
@@ -148,8 +148,8 @@ void extractCantFindSemicolon() {
 // CHECK-NEXT: }
 
 void extractFindSemicolon() {
-  /*range jextract=->+1:17*/do {
-  } while (true) /*grab*/ ;
+  /*range jextract=->+1:17*/ do {
+  } while (true) /*grab*/;
 }
 // CHECK: 1 'jextract' results:
 // CHECK:      static void extracted() {
@@ -163,7 +163,7 @@ void extractFindSemicolon() {
 void call();
 
 void careForNonCompoundSemicolons1() {
-  /*range kextract=->+1:11*/if (true)
+  /*range kextract=->+1:11*/ if (true)
     call();
 }
 // CHECK: 1 'kextract' results:
@@ -176,7 +176,7 @@ void careForNonCompoundSemicolons1() {
 // CHECK-NEXT: }
 
 void careForNonCompoundSemicolons2() {
-  /*range lextract=->+3:1*/for (int i = 0; i < 10; ++i)
+  /*range lextract=->+3:1*/ for (int i = 0; i < 10; ++i)
     while (i != 0)
       ;
   // end right here111!
@@ -193,7 +193,9 @@ void careForNonCompoundSemicolons2() {
 // CHECK-NEXT: }
 
 void careForSwitchSemicolon() {
-  /*range mextract=->+0:53*/switch(0) default: break;
+  /*range mextract=->+0:53*/ switch (0)
+  default:
+    break;
 }
 // CHECK: 1 'mextract' results:
 // CHECK:      static void extracted() {
@@ -204,7 +206,7 @@ void careForSwitchSemicolon() {
 // CHECK-NEXT: }
 
 void extractStatementNotSemiDecl() {
-  /*range nextract=->+0:38*/int x = 5;
+  /*range nextract=->+0:38*/ int x = 5;
 }
 // CHECK: 1 'nextract' results:
 // CHECK:      static void extracted() {
@@ -213,4 +215,3 @@ void extractStatementNotSemiDecl() {
 // CHECK-NEXT: void extractStatementNotSemiDecl() {
 // CHECK-NEXT: extracted();{{$}}
 // CHECK-NEXT: }
-

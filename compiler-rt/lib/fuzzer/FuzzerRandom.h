@@ -15,13 +15,13 @@
 
 namespace fuzzer {
 class Random : public std::minstd_rand {
- public:
+public:
   Random(unsigned int seed) : std::minstd_rand(seed) {}
   result_type operator()() { return this->std::minstd_rand::operator()(); }
   size_t Rand() { return this->operator()(); }
   size_t RandBool() { return Rand() % 2; }
   size_t SkewTowardsLast(size_t n) {
-    size_t T = this->operator()(n * n);
+    size_t T = this->operator()(n *n);
     size_t Res = sqrt(T);
     return Res;
   }
@@ -33,6 +33,6 @@ class Random : public std::minstd_rand {
   }
 };
 
-}  // namespace fuzzer
+} // namespace fuzzer
 
-#endif  // LLVM_FUZZER_RANDOM_H
+#endif // LLVM_FUZZER_RANDOM_H

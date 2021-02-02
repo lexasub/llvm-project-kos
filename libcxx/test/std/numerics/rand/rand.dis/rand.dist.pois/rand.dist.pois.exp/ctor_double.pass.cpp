@@ -34,21 +34,20 @@ void test_implicit() {
 #endif
 }
 
-int main(int, char**)
-{
-    {
-        typedef std::exponential_distribution<> D;
-        D d;
-        assert(d.lambda() == 1);
-    }
-    {
-        typedef std::exponential_distribution<> D;
-        D d(3.5);
-        assert(d.lambda() == 3.5);
-    }
+int main(int, char**) {
+  {
+    typedef std::exponential_distribution<> D;
+    D d;
+    assert(d.lambda() == 1);
+  }
+  {
+    typedef std::exponential_distribution<> D;
+    D d(3.5);
+    assert(d.lambda() == 3.5);
+  }
 
-    test_implicit<float>();
-    test_implicit<double>();
+  test_implicit<float>();
+  test_implicit<double>();
 
-    return 0;
+  return 0;
 }

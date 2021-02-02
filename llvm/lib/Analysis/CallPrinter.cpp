@@ -14,15 +14,15 @@
 //===----------------------------------------------------------------------===//
 
 #include "llvm/Analysis/CallPrinter.h"
+#include "llvm/ADT/DenseMap.h"
+#include "llvm/ADT/SmallSet.h"
 #include "llvm/Analysis/BlockFrequencyInfo.h"
 #include "llvm/Analysis/BranchProbabilityInfo.h"
 #include "llvm/Analysis/CallGraph.h"
 #include "llvm/Analysis/DOTGraphTraitsPass.h"
 #include "llvm/Analysis/HeatUtils.h"
-#include "llvm/Support/CommandLine.h"
 #include "llvm/InitializePasses.h"
-#include "llvm/ADT/DenseMap.h"
-#include "llvm/ADT/SmallSet.h"
+#include "llvm/Support/CommandLine.h"
 
 using namespace llvm;
 
@@ -35,11 +35,11 @@ static cl::opt<bool> ShowHeatColors("callgraph-heat-colors", cl::init(false),
 
 static cl::opt<bool>
     ShowEdgeWeight("callgraph-show-weights", cl::init(false), cl::Hidden,
-                       cl::desc("Show edges labeled with weights"));
+                   cl::desc("Show edges labeled with weights"));
 
-static cl::opt<bool>
-    CallMultiGraph("callgraph-multigraph", cl::init(false), cl::Hidden,
-            cl::desc("Show call-multigraph (do not remove parallel edges)"));
+static cl::opt<bool> CallMultiGraph(
+    "callgraph-multigraph", cl::init(false), cl::Hidden,
+    cl::desc("Show call-multigraph (do not remove parallel edges)"));
 
 static cl::opt<std::string> CallGraphDotFilenamePrefix(
     "callgraph-dot-filename-prefix", cl::Hidden,
@@ -62,13 +62,14 @@ public:
       : M(M), CG(CG), LookupBFI(LookupBFI) {
     MaxFreq = 0;
 
-    for (auto F = M->getFunctionList().begin(); F != M->getFunctionList().end(); ++F) {
+    for (auto F = M->getFunctionList().begin(); F != M->getFunctionList().end();
+         ++F) {
       uint64_t localSumFreq = 0;
       SmallSet<Function *, 16> Callers;
       for (User *U : (*F).users())
         if (isa<CallInst>(U))
           Callers.insert(cast<Instruction>(U)->getFunction());
-      for (auto iter = Callers.begin() ; iter != Callers.end() ; ++iter)
+      for (auto iter = Callers.begin(); iter != Callers.end(); ++iter)
         localSumFreq += getNumOfCalls((**iter), *F);
       if (localSumFreq >= MaxFreq)
         MaxFreq = localSumFreq;
@@ -184,8 +185,7 @@ struct DOTGraphTraits<CallGraphDOTInfo *> : public DefaultDOTGraphTraits {
       return "";
 
     uint64_t Counter = getNumOfCalls(*Caller, *Callee);
-    double Width =
-        1 + 2 * (double(Counter) / CGInfo->getMaxFreq());
+    double Width = 1 + 2 * (double(Counter) / CGInfo->getMaxFreq());
     std::string Attrs = "label=\"" + std::to_string(Counter) +
                         "\" penwidth=" + std::to_string(Width);
     return Attrs;
@@ -210,7 +210,7 @@ struct DOTGraphTraits<CallGraphDOTInfo *> : public DefaultDOTGraphTraits {
   }
 };
 
-} // end llvm namespace
+} // namespace llvm
 
 namespace {
 // Viewer

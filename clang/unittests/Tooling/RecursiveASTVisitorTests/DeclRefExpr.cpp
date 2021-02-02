@@ -34,41 +34,37 @@ private:
 TEST(RecursiveASTVisitor, VisitsBaseClassTemplateArguments) {
   DeclRefExprVisitor Visitor;
   Visitor.ExpectMatch("x", 2, 3);
-  EXPECT_TRUE(Visitor.runOver(
-    "void x(); template <void (*T)()> class X {};\nX<x> y;"));
+  EXPECT_TRUE(
+      Visitor.runOver("void x(); template <void (*T)()> class X {};\nX<x> y;"));
 }
 
 TEST(RecursiveASTVisitor, VisitsCXXForRangeStmtRange) {
   DeclRefExprVisitor Visitor;
   Visitor.ExpectMatch("x", 2, 25);
   Visitor.ExpectMatch("x", 2, 30);
-  EXPECT_TRUE(Visitor.runOver(
-    "int x[5];\n"
-    "void f() { for (int i : x) { x[0] = 1; } }",
-    DeclRefExprVisitor::Lang_CXX11));
+  EXPECT_TRUE(Visitor.runOver("int x[5];\n"
+                              "void f() { for (int i : x) { x[0] = 1; } }",
+                              DeclRefExprVisitor::Lang_CXX11));
 }
 
 TEST(RecursiveASTVisitor, VisitsCallExpr) {
   DeclRefExprVisitor Visitor;
   Visitor.ExpectMatch("x", 1, 22);
-  EXPECT_TRUE(Visitor.runOver(
-    "void x(); void y() { x(); }"));
+  EXPECT_TRUE(Visitor.runOver("void x(); void y() { x(); }"));
 }
 
 TEST(RecursiveASTVisitor, VisitsExplicitLambdaCaptureInit) {
   DeclRefExprVisitor Visitor;
   Visitor.ExpectMatch("i", 1, 20);
-  EXPECT_TRUE(Visitor.runOver(
-    "void f() { int i; [i]{}; }",
-    DeclRefExprVisitor::Lang_CXX11));
+  EXPECT_TRUE(Visitor.runOver("void f() { int i; [i]{}; }",
+                              DeclRefExprVisitor::Lang_CXX11));
 }
 
 TEST(RecursiveASTVisitor, VisitsUseOfImplicitLambdaCapture) {
   DeclRefExprVisitor Visitor;
   Visitor.ExpectMatch("i", 1, 24);
-  EXPECT_TRUE(Visitor.runOver(
-    "void f() { int i; [=]{ i; }; }",
-    DeclRefExprVisitor::Lang_CXX11));
+  EXPECT_TRUE(Visitor.runOver("void f() { int i; [=]{ i; }; }",
+                              DeclRefExprVisitor::Lang_CXX11));
 }
 
 TEST(RecursiveASTVisitor, VisitsImplicitLambdaCaptureInit) {
@@ -79,17 +75,15 @@ TEST(RecursiveASTVisitor, VisitsImplicitLambdaCaptureInit) {
   // the use of "i" inside the lambda.
   Visitor.ExpectMatch("i", 1, 20, /*Times=*/1);
   Visitor.ExpectMatch("i", 1, 24, /*Times=*/1);
-  EXPECT_TRUE(Visitor.runOver(
-    "void f() { int i; [=]{ i; }; }",
-    DeclRefExprVisitor::Lang_CXX11));
+  EXPECT_TRUE(Visitor.runOver("void f() { int i; [=]{ i; }; }",
+                              DeclRefExprVisitor::Lang_CXX11));
 }
 
 TEST(RecursiveASTVisitor, VisitsLambdaInitCaptureInit) {
   DeclRefExprVisitor Visitor;
   Visitor.ExpectMatch("i", 1, 24);
-  EXPECT_TRUE(Visitor.runOver(
-    "void f() { int i; [a = i + 1]{}; }",
-    DeclRefExprVisitor::Lang_CXX14));
+  EXPECT_TRUE(Visitor.runOver("void f() { int i; [a = i + 1]{}; }",
+                              DeclRefExprVisitor::Lang_CXX14));
 }
 
 /* FIXME: According to Richard Smith this is a bug in the AST.
@@ -107,8 +101,7 @@ TEST(RecursiveASTVisitor, VisitsBaseClassTemplateArgumentsInInstantiation) {
 TEST(RecursiveASTVisitor, VisitsExtension) {
   DeclRefExprVisitor Visitor;
   Visitor.ExpectMatch("s", 1, 24);
-  EXPECT_TRUE(Visitor.runOver(
-    "int s = __extension__ (s);\n"));
+  EXPECT_TRUE(Visitor.runOver("int s = __extension__ (s);\n"));
 }
 
 TEST(RecursiveASTVisitor, VisitsCopyExprOfBlockDeclCapture) {

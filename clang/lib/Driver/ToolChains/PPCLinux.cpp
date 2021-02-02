@@ -14,8 +14,8 @@
 using namespace clang::driver::toolchains;
 using namespace llvm::opt;
 
-void PPCLinuxToolChain::AddClangSystemIncludeArgs(const ArgList &DriverArgs,
-                                                  ArgStringList &CC1Args) const {
+void PPCLinuxToolChain::AddClangSystemIncludeArgs(
+    const ArgList &DriverArgs, ArgStringList &CC1Args) const {
   if (!DriverArgs.hasArg(clang::driver::options::OPT_nostdinc) &&
       !DriverArgs.hasArg(options::OPT_nobuiltininc)) {
     const Driver &D = getDriver();

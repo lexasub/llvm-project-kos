@@ -19,17 +19,15 @@
   f(&v);
 }
 
-[[ clang::xray_always_instrument, clang::xray_log_args(1) ]]
-__attribute__((noinline)) void arg1(int) {
+[[clang::xray_always_instrument, clang::xray_log_args(1)]] __attribute__((noinline)) void arg1(int) {
   __m128 v = {};
   f(&v);
 }
 
-[[clang::xray_always_instrument]] __attribute__((noinline))
-void no_alignment() {}
+[[clang::xray_always_instrument]] __attribute__((noinline)) void no_alignment() {}
 
 [[clang::xray_never_instrument]] void noarg_handler(int32_t,
-                                                        XRayEntryType) {
+                                                    XRayEntryType) {
   printf("noarg handler called\n");
   __m128 v = {};
   f(&v);

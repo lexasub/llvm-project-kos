@@ -20,29 +20,28 @@
 #include "test_macros.h"
 #include "any_helpers.h"
 
-int main(int, char**)
-{
-    using std::any;
-    {
-        any const a;
-        assert(a.type() == typeid(void));
-        ASSERT_NOEXCEPT(a.type());
-    }
-    {
-        small const s(1);
-        any const a(s);
-        assert(a.type() == typeid(small));
-    }
-    {
-        large const l(1);
-        any const a(l);
-        assert(a.type() == typeid(large));
-    }
-    {
-        int arr[3];
-        any const a(arr);
-        assert(a.type() == typeid(int*));  // ensure that it is decayed
-    }
+int main(int, char**) {
+  using std::any;
+  {
+    any const a;
+    assert(a.type() == typeid(void));
+    ASSERT_NOEXCEPT(a.type());
+  }
+  {
+    small const s(1);
+    any const a(s);
+    assert(a.type() == typeid(small));
+  }
+  {
+    large const l(1);
+    any const a(l);
+    assert(a.type() == typeid(large));
+  }
+  {
+    int arr[3];
+    any const a(arr);
+    assert(a.type() == typeid(int*)); // ensure that it is decayed
+  }
 
   return 0;
 }

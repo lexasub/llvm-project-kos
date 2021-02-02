@@ -2,8 +2,8 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 int fds[2];
 int X;
@@ -29,7 +29,7 @@ int main() {
     fprintf(stderr, "FAIL to vfork\n");
     exit(1);
   }
-  if (pid == 0) {  // child
+  if (pid == 0) { // child
     // Closing of fds must not affect parent process.
     // Strictly saying this is undefined behavior, because vfork child is not
     // allowed to call any functions other than exec/exit. But this is what

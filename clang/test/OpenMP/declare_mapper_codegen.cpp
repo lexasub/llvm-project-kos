@@ -84,7 +84,8 @@ public:
   double *b;
 };
 
-#pragma omp declare mapper(id: C s) map(s.a, s.b[0:2])
+#pragma omp declare mapper(id \
+                           : C s) map(s.a, s.b [0:2])
 
 // CK0: define {{.*}}void [[MPRFUNC:@[.]omp_mapper[.].*C[.]id]](i8*{{.*}}, i8*{{.*}}, i8*{{.*}}, i64{{.*}}, i64{{.*}}, i8*{{.*}})
 // CK0: store i8* %{{[^,]+}}, i8** [[HANDLEADDR:%[^,]+]]
@@ -250,243 +251,252 @@ public:
 // CK0: [[DONE]]
 // CK0: ret void
 
-
 // CK0-LABEL: define {{.*}}void @{{.*}}foo{{.*}}
-void foo(int a){
+void foo(int a) {
   int i = a;
   C c;
   c.a = a;
 
-  // CK0-DAG: call i32 @__tgt_target_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i8* {{.+}}, i32 1, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[SIZES]]{{.+}}, {{.+}}[[TYPES]]{{.+}}, i8** null, i8** [[MPRGEP:%.+]])
-  // CK0-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
-  // CK0-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
-  // CK0-DAG: [[MPRGEP]] = bitcast [1 x i8*]* [[MPR:%[^,]+]] to i8**
-  // CK0-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
-  // CK0-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
-  // CK0-DAG: [[MPR1:%.+]] = getelementptr inbounds {{.+}}[[MPR]], i[[sz]] 0, i[[sz]] 0
-  // CK0-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to %class.C**
-  // CK0-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to %class.C**
-  // CK0-DAG: store %class.C* [[VAL:%[^,]+]], %class.C** [[CBP1]]
-  // CK0-DAG: store %class.C* [[VAL]], %class.C** [[CP1]]
-  // CK0-DAG: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[MPR1]]
-  // CK0: call void [[KERNEL_1:@.+]](%class.C* [[VAL]])
-  #pragma omp target map(mapper(id),tofrom: c)
+// CK0-DAG: call i32 @__tgt_target_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i8* {{.+}}, i32 1, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[SIZES]]{{.+}}, {{.+}}[[TYPES]]{{.+}}, i8** null, i8** [[MPRGEP:%.+]])
+// CK0-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
+// CK0-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
+// CK0-DAG: [[MPRGEP]] = bitcast [1 x i8*]* [[MPR:%[^,]+]] to i8**
+// CK0-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
+// CK0-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
+// CK0-DAG: [[MPR1:%.+]] = getelementptr inbounds {{.+}}[[MPR]], i[[sz]] 0, i[[sz]] 0
+// CK0-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to %class.C**
+// CK0-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to %class.C**
+// CK0-DAG: store %class.C* [[VAL:%[^,]+]], %class.C** [[CBP1]]
+// CK0-DAG: store %class.C* [[VAL]], %class.C** [[CP1]]
+// CK0-DAG: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[MPR1]]
+// CK0: call void [[KERNEL_1:@.+]](%class.C* [[VAL]])
+#pragma omp target map(mapper(id), tofrom \
+                       : c)
   {
     ++c.a;
   }
 
-  // CK0: [[BP2GEP:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[OFFLOAD_BP2:%[^,]+]], i32 0, i32 0
-  // CK0: [[BP2CAST:%.+]] = bitcast i8** [[BP2GEP]] to %class.C**
-  // CK0: store %class.C* [[CADDR:%[^,]+]], %class.C** [[BP2CAST]], align
-  // CK0: [[P2GEP:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[OFFLOAD_P2:%[^,]+]], i32 0, i32 0
-  // CK0: [[P2CAST:%.+]] = bitcast i8** [[P2GEP]] to %class.C**
-  // CK0: store %class.C* [[CADDR]], %class.C** [[P2CAST]], align
-  // CK0: [[MAPPER2GEP:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[OFFLOAD_MAPPER2:%[^,]+]], i[[SZ]] 0, i[[SZ]] 0
-  // CK0: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[MAPPER2GEP]], align
-  // CK0: [[BP2:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[OFFLOAD_BP2]], i32 0, i32 0
-  // CK0: [[P2:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[OFFLOAD_P2]], i32 0, i32 0
-  // CK0: [[MAPPER2:%.+]] = bitcast [1 x i8*]* [[OFFLOAD_MAPPER2]] to i8**
-  // CK0-32: [[TASK:%.+]] = call i8* @__kmpc_omp_target_task_alloc([[IDENT_T]]* {{@.+}}, i32 {{%.+}}, i32 1, i32 40, i32 4, i32 (i32, i8*)* bitcast (i32 (i32, [[KMP_TASK_T_WITH_PRIVATES]]*)* [[TASK_ENTRY:@.+]] to i32 (i32, i8*)*), i64 -1)
-  // CK0-64: [[TASK:%.+]] = call i8* @__kmpc_omp_target_task_alloc([[IDENT_T]]* {{@.+}}, i32 {{%.+}}, i32 1, i64 72, i64 8, i32 (i32, i8*)* bitcast (i32 (i32, [[KMP_TASK_T_WITH_PRIVATES]]*)* [[TASK_ENTRY:@.+]] to i32 (i32, i8*)*), i64 -1)
-  // CK0: [[TASK_CAST:%.+]] = bitcast i8* [[TASK]] to [[KMP_TASK_T_WITH_PRIVATES]]*
-  // CK0: [[TASK_WITH_PRIVATES:%.+]] = getelementptr inbounds [[KMP_TASK_T_WITH_PRIVATES]], [[KMP_TASK_T_WITH_PRIVATES]]* [[TASK_CAST]], i32 0, i32 1
-  // CK0: {{.+}} = call i32 @__kmpc_omp_task([[IDENT_T]]* @1, i32 {{.+}}, i8* [[TASK]])
-  #pragma omp target map(mapper(id),tofrom: c) nowait
+// CK0: [[BP2GEP:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[OFFLOAD_BP2:%[^,]+]], i32 0, i32 0
+// CK0: [[BP2CAST:%.+]] = bitcast i8** [[BP2GEP]] to %class.C**
+// CK0: store %class.C* [[CADDR:%[^,]+]], %class.C** [[BP2CAST]], align
+// CK0: [[P2GEP:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[OFFLOAD_P2:%[^,]+]], i32 0, i32 0
+// CK0: [[P2CAST:%.+]] = bitcast i8** [[P2GEP]] to %class.C**
+// CK0: store %class.C* [[CADDR]], %class.C** [[P2CAST]], align
+// CK0: [[MAPPER2GEP:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[OFFLOAD_MAPPER2:%[^,]+]], i[[SZ]] 0, i[[SZ]] 0
+// CK0: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[MAPPER2GEP]], align
+// CK0: [[BP2:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[OFFLOAD_BP2]], i32 0, i32 0
+// CK0: [[P2:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[OFFLOAD_P2]], i32 0, i32 0
+// CK0: [[MAPPER2:%.+]] = bitcast [1 x i8*]* [[OFFLOAD_MAPPER2]] to i8**
+// CK0-32: [[TASK:%.+]] = call i8* @__kmpc_omp_target_task_alloc([[IDENT_T]]* {{@.+}}, i32 {{%.+}}, i32 1, i32 40, i32 4, i32 (i32, i8*)* bitcast (i32 (i32, [[KMP_TASK_T_WITH_PRIVATES]]*)* [[TASK_ENTRY:@.+]] to i32 (i32, i8*)*), i64 -1)
+// CK0-64: [[TASK:%.+]] = call i8* @__kmpc_omp_target_task_alloc([[IDENT_T]]* {{@.+}}, i32 {{%.+}}, i32 1, i64 72, i64 8, i32 (i32, i8*)* bitcast (i32 (i32, [[KMP_TASK_T_WITH_PRIVATES]]*)* [[TASK_ENTRY:@.+]] to i32 (i32, i8*)*), i64 -1)
+// CK0: [[TASK_CAST:%.+]] = bitcast i8* [[TASK]] to [[KMP_TASK_T_WITH_PRIVATES]]*
+// CK0: [[TASK_WITH_PRIVATES:%.+]] = getelementptr inbounds [[KMP_TASK_T_WITH_PRIVATES]], [[KMP_TASK_T_WITH_PRIVATES]]* [[TASK_CAST]], i32 0, i32 1
+// CK0: {{.+}} = call i32 @__kmpc_omp_task([[IDENT_T]]* @1, i32 {{.+}}, i8* [[TASK]])
+#pragma omp target map(mapper(id), tofrom \
+                       : c) nowait
   {
     ++c.a;
   }
 
-  // CK0-DAG: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i8* {{.+}}, i32 1, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[TEAMSIZES]]{{.+}}, {{.+}}[[TEAMTYPES]]{{.+}}, i8** null, i8** [[MPRGEP:%.+]], i32 0, i32 0)
-  // CK0-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
-  // CK0-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
-  // CK0-DAG: [[MPRGEP]] = bitcast [1 x i8*]* [[MPR:%[^,]+]] to i8**
-  // CK0-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
-  // CK0-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
-  // CK0-DAG: [[MPR1:%.+]] = getelementptr inbounds {{.+}}[[MPR]], i[[sz]] 0, i[[sz]] 0
-  // CK0-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to %class.C**
-  // CK0-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to %class.C**
-  // CK0-DAG: store %class.C* [[VAL:%[^,]+]], %class.C** [[CBP1]]
-  // CK0-DAG: store %class.C* [[VAL]], %class.C** [[CP1]]
-  // CK0-DAG: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[MPR1]]
-  // CK0: call void [[KERNEL_3:@.+]](%class.C* [[VAL]])
-  #pragma omp target teams map(mapper(id),to: c)
+// CK0-DAG: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i8* {{.+}}, i32 1, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[TEAMSIZES]]{{.+}}, {{.+}}[[TEAMTYPES]]{{.+}}, i8** null, i8** [[MPRGEP:%.+]], i32 0, i32 0)
+// CK0-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
+// CK0-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
+// CK0-DAG: [[MPRGEP]] = bitcast [1 x i8*]* [[MPR:%[^,]+]] to i8**
+// CK0-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
+// CK0-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
+// CK0-DAG: [[MPR1:%.+]] = getelementptr inbounds {{.+}}[[MPR]], i[[sz]] 0, i[[sz]] 0
+// CK0-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to %class.C**
+// CK0-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to %class.C**
+// CK0-DAG: store %class.C* [[VAL:%[^,]+]], %class.C** [[CBP1]]
+// CK0-DAG: store %class.C* [[VAL]], %class.C** [[CP1]]
+// CK0-DAG: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[MPR1]]
+// CK0: call void [[KERNEL_3:@.+]](%class.C* [[VAL]])
+#pragma omp target teams map(mapper(id), to \
+                             : c)
   {
     ++c.a;
   }
 
-  // CK0-32: [[TASK_1:%.+]] = call i8* @__kmpc_omp_target_task_alloc([[IDENT_T]]* {{@.+}}, i32 {{%.+}}, i32 1, i32 40, i32 4, i32 (i32, i8*)* bitcast (i32 (i32, [[KMP_TASK_T_WITH_PRIVATES_1]]*)* [[TASK_ENTRY_1:@.+]] to i32 (i32, i8*)*), i64 -1)
-  // CK0-64: [[TASK_1:%.+]] = call i8* @__kmpc_omp_target_task_alloc([[IDENT_T]]* {{@.+}}, i32 {{%.+}}, i32 1, i64 72, i64 8, i32 (i32, i8*)* bitcast (i32 (i32, [[KMP_TASK_T_WITH_PRIVATES_1]]*)* [[TASK_ENTRY_1:@.+]] to i32 (i32, i8*)*), i64 -1)
-  // CK0: [[TASK_CAST_1:%.+]] = bitcast i8* [[TASK_1]] to [[KMP_TASK_T_WITH_PRIVATES_1]]*
-  // CK0: [[TASK_CAST_GET_1:%.+]] = getelementptr inbounds [[KMP_TASK_T_WITH_PRIVATES_1]], [[KMP_TASK_T_WITH_PRIVATES_1]]* [[TASK_CAST_1]], i32 0, i32 0
-  // CK0: {{.+}} = getelementptr inbounds [[KMP_TASK_T]], [[KMP_TASK_T]]* [[TASK_CAST_GET_1]], i32 0, i32 0
-  // CK0: {{.+}} = call i32 @__kmpc_omp_task([[IDENT_T]]* @1, i32 {{.+}}, i8* [[TASK_1]])
-  #pragma omp target teams map(mapper(id),to: c) nowait
+// CK0-32: [[TASK_1:%.+]] = call i8* @__kmpc_omp_target_task_alloc([[IDENT_T]]* {{@.+}}, i32 {{%.+}}, i32 1, i32 40, i32 4, i32 (i32, i8*)* bitcast (i32 (i32, [[KMP_TASK_T_WITH_PRIVATES_1]]*)* [[TASK_ENTRY_1:@.+]] to i32 (i32, i8*)*), i64 -1)
+// CK0-64: [[TASK_1:%.+]] = call i8* @__kmpc_omp_target_task_alloc([[IDENT_T]]* {{@.+}}, i32 {{%.+}}, i32 1, i64 72, i64 8, i32 (i32, i8*)* bitcast (i32 (i32, [[KMP_TASK_T_WITH_PRIVATES_1]]*)* [[TASK_ENTRY_1:@.+]] to i32 (i32, i8*)*), i64 -1)
+// CK0: [[TASK_CAST_1:%.+]] = bitcast i8* [[TASK_1]] to [[KMP_TASK_T_WITH_PRIVATES_1]]*
+// CK0: [[TASK_CAST_GET_1:%.+]] = getelementptr inbounds [[KMP_TASK_T_WITH_PRIVATES_1]], [[KMP_TASK_T_WITH_PRIVATES_1]]* [[TASK_CAST_1]], i32 0, i32 0
+// CK0: {{.+}} = getelementptr inbounds [[KMP_TASK_T]], [[KMP_TASK_T]]* [[TASK_CAST_GET_1]], i32 0, i32 0
+// CK0: {{.+}} = call i32 @__kmpc_omp_task([[IDENT_T]]* @1, i32 {{.+}}, i8* [[TASK_1]])
+#pragma omp target teams map(mapper(id), to \
+                             : c) nowait
   {
     ++c.a;
   }
 
-  // CK0-DAG: call void @__tgt_target_data_begin_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i32 1, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[EDSIZES]]{{.+}}, {{.+}}[[EDTYPES]]{{.+}}, i8** null, i8** [[MPRGEP:%.+]])
-  // CK0-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
-  // CK0-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
-  // CK0-DAG: [[MPRGEP]] = bitcast [1 x i8*]* [[MPR:%[^,]+]] to i8**
-  // CK0-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
-  // CK0-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
-  // CK0-DAG: [[MPR1:%.+]] = getelementptr inbounds {{.+}}[[MPR]], i[[sz]] 0, i[[sz]] 0
-  // CK0-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to %class.C**
-  // CK0-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to %class.C**
-  // CK0-DAG: store %class.C* [[VAL:%[^,]+]], %class.C** [[CBP1]]
-  // CK0-DAG: store %class.C* [[VAL]], %class.C** [[CP1]]
-  // CK0-DAG: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[MPR1]]
-  #pragma omp target enter data map(mapper(id),to: c)
+// CK0-DAG: call void @__tgt_target_data_begin_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i32 1, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[EDSIZES]]{{.+}}, {{.+}}[[EDTYPES]]{{.+}}, i8** null, i8** [[MPRGEP:%.+]])
+// CK0-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
+// CK0-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
+// CK0-DAG: [[MPRGEP]] = bitcast [1 x i8*]* [[MPR:%[^,]+]] to i8**
+// CK0-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
+// CK0-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
+// CK0-DAG: [[MPR1:%.+]] = getelementptr inbounds {{.+}}[[MPR]], i[[sz]] 0, i[[sz]] 0
+// CK0-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to %class.C**
+// CK0-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to %class.C**
+// CK0-DAG: store %class.C* [[VAL:%[^,]+]], %class.C** [[CBP1]]
+// CK0-DAG: store %class.C* [[VAL]], %class.C** [[CP1]]
+// CK0-DAG: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[MPR1]]
+#pragma omp target enter data map(mapper(id), to \
+                                  : c)
 
-  // CK0-DAG: call i32 @__kmpc_omp_task([[IDENT_T]]* @{{[^,]+}}, i32 %{{[^,]+}}, i8* [[TASK_2:%.+]])
-  // CK0-DAG: [[TASK_2]] = call i8* @__kmpc_omp_target_task_alloc([[IDENT_T]]* @{{[^,]+}}, i32 %{{[^,]+}}, i32 1, i[[sz]] {{40|72}}, i[[sz]] 1, i32 (i32, i8*)* bitcast (i32 (i32, [[KMP_TASK_T_WITH_PRIVATES_4]]*)* [[OMP_TASK_ENTRY_18:@[^,]+]] to i32 (i32, i8*)*), i64 -1)
-  // CK0-DAG: [[TASK_WITH_PRIVATES:%.+]] = bitcast i8* [[TASK_2]] to [[KMP_TASK_T_WITH_PRIVATES_4]]*
-  // CK0-DAG: [[PRIVATES:%.+]] = getelementptr inbounds [[KMP_TASK_T_WITH_PRIVATES_4]], [[KMP_TASK_T_WITH_PRIVATES_4]]* [[TASK_WITH_PRIVATES]], i32 0, i32 1
-  // CK0-32-DAG: [[FPBPGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_5]], [[KMP_PRIVATES_T_5]]* [[PRIVATES]], i32 0, i32 1
-  // CK0-64-DAG: [[FPBPGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_5]], [[KMP_PRIVATES_T_5]]* [[PRIVATES]], i32 0, i32 0
-  // CK0-DAG: [[FPBPADDR:%.+]] = bitcast [1 x i8*]* [[FPBPGEP]] to i8*
-  // CK0-DAG: [[BPADDR:%.+]] = bitcast i8** [[BPGEP:%.+]] to i8*
-  // CK0-DAG: call void @llvm.memcpy.p0i8.p0i8.i[[sz]](i8* align {{4|8}} [[FPBPADDR]], i8* align {{4|8}} [[BPADDR]], i[[sz]] {{4|8}}, i1 false)
-  // CK0-DAG: [[BPGEP]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[BP:%.+]], i32 0, i32 0
-  // CK0-DAG: [[BPGEP:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[BP]], i32 0, i32 0
-  // CK0-DAG: [[BPADDR:%.+]] = bitcast i8** [[BPGEP]] to %class.C**
-  // CK0-DAG: store %class.C* [[C:%[^,]+]], %class.C** [[BPADDR]], align
-  // CK0-32-DAG: [[FPPGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_5]], [[KMP_PRIVATES_T_5]]* [[PRIVATES]], i32 0, i32 2
-  // CK0-64-DAG: [[FPPGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_5]], [[KMP_PRIVATES_T_5]]* [[PRIVATES]], i32 0, i32 1
-  // CK0-DAG: [[FPPADDR:%.+]] = bitcast [1 x i8*]* [[FPPGEP]] to i8*
-  // CK0-DAG: [[PADDR:%.+]] = bitcast i8** [[PGEP:%.+]] to i8*
-  // CK0-DAG: call void @llvm.memcpy.p0i8.p0i8.i[[sz]](i8* align {{4|8}} [[FPPADDR]], i8* align {{4|8}} [[PADDR]], i[[sz]] {{4|8}}, i1 false)
-  // CK0-DAG: [[PGEP]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[P:%.+]], i32 0, i32 0
-  // CK0-DAG: [[PGEP:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[P]], i32 0, i32 0
-  // CK0-DAG: [[PADDR:%.+]] = bitcast i8** [[PGEP]] to %class.C**
-  // CK0-DAG: store %class.C* [[C]], %class.C** [[PADDR]], align
-  // CK0-32-DAG: [[FPSZGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_5]], [[KMP_PRIVATES_T_5]]* [[PRIVATES]], i32 0, i32 0
-  // CK0-64-DAG: [[FPSZGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_5]], [[KMP_PRIVATES_T_5]]* [[PRIVATES]], i32 0, i32 2
-  // CK0-DAG: [[FPSZADDR:%.+]] = bitcast [1 x i64]* [[FPSZGEP]] to i8*
-  // CK0-DAG: call void @llvm.memcpy.p0i8.p0i8.i[[sz]](i8* align {{4|8}} [[FPSZADDR]], i8* align {{4|8}} bitcast ([1 x i64]* [[EDNWSIZES]] to i8*), i[[sz]] {{4|8}}, i1 false)
-  // CK0-DAG: [[FPMPRGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_5]], [[KMP_PRIVATES_T_5]]* [[PRIVATES]], i32 0, i32 3
-  // CK0-DAG: [[FPMPRADDR:%.+]] = bitcast [1 x i8*]* [[FPMPRGEP]] to i8*
-  // CK0-DAG: [[MPRADDR:%.+]] = bitcast i8** [[MPRGEP:%.+]] to i8*
-  // CK0-DAG: call void @llvm.memcpy.p0i8.p0i8.i[[sz]](i8* align {{4|8}} [[FPMPRADDR]], i8* align {{4|8}} [[MPRADDR]], i[[sz]] {{4|8}}, i1 false)
-  // CK0-DAG: [[MPRGEP]] = bitcast [1 x i8*]* [[MPR:%.+]] to i8**
-  // CK0-DAG: [[MPRGEP:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[MPR]], i[[sz]] 0, i[[sz]] 0
-  // CK0-DAG: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[MPRGEP]], align
-  #pragma omp target enter data map(mapper(id),to: c) nowait
+// CK0-DAG: call i32 @__kmpc_omp_task([[IDENT_T]]* @{{[^,]+}}, i32 %{{[^,]+}}, i8* [[TASK_2:%.+]])
+// CK0-DAG: [[TASK_2]] = call i8* @__kmpc_omp_target_task_alloc([[IDENT_T]]* @{{[^,]+}}, i32 %{{[^,]+}}, i32 1, i[[sz]] {{40|72}}, i[[sz]] 1, i32 (i32, i8*)* bitcast (i32 (i32, [[KMP_TASK_T_WITH_PRIVATES_4]]*)* [[OMP_TASK_ENTRY_18:@[^,]+]] to i32 (i32, i8*)*), i64 -1)
+// CK0-DAG: [[TASK_WITH_PRIVATES:%.+]] = bitcast i8* [[TASK_2]] to [[KMP_TASK_T_WITH_PRIVATES_4]]*
+// CK0-DAG: [[PRIVATES:%.+]] = getelementptr inbounds [[KMP_TASK_T_WITH_PRIVATES_4]], [[KMP_TASK_T_WITH_PRIVATES_4]]* [[TASK_WITH_PRIVATES]], i32 0, i32 1
+// CK0-32-DAG: [[FPBPGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_5]], [[KMP_PRIVATES_T_5]]* [[PRIVATES]], i32 0, i32 1
+// CK0-64-DAG: [[FPBPGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_5]], [[KMP_PRIVATES_T_5]]* [[PRIVATES]], i32 0, i32 0
+// CK0-DAG: [[FPBPADDR:%.+]] = bitcast [1 x i8*]* [[FPBPGEP]] to i8*
+// CK0-DAG: [[BPADDR:%.+]] = bitcast i8** [[BPGEP:%.+]] to i8*
+// CK0-DAG: call void @llvm.memcpy.p0i8.p0i8.i[[sz]](i8* align {{4|8}} [[FPBPADDR]], i8* align {{4|8}} [[BPADDR]], i[[sz]] {{4|8}}, i1 false)
+// CK0-DAG: [[BPGEP]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[BP:%.+]], i32 0, i32 0
+// CK0-DAG: [[BPGEP:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[BP]], i32 0, i32 0
+// CK0-DAG: [[BPADDR:%.+]] = bitcast i8** [[BPGEP]] to %class.C**
+// CK0-DAG: store %class.C* [[C:%[^,]+]], %class.C** [[BPADDR]], align
+// CK0-32-DAG: [[FPPGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_5]], [[KMP_PRIVATES_T_5]]* [[PRIVATES]], i32 0, i32 2
+// CK0-64-DAG: [[FPPGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_5]], [[KMP_PRIVATES_T_5]]* [[PRIVATES]], i32 0, i32 1
+// CK0-DAG: [[FPPADDR:%.+]] = bitcast [1 x i8*]* [[FPPGEP]] to i8*
+// CK0-DAG: [[PADDR:%.+]] = bitcast i8** [[PGEP:%.+]] to i8*
+// CK0-DAG: call void @llvm.memcpy.p0i8.p0i8.i[[sz]](i8* align {{4|8}} [[FPPADDR]], i8* align {{4|8}} [[PADDR]], i[[sz]] {{4|8}}, i1 false)
+// CK0-DAG: [[PGEP]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[P:%.+]], i32 0, i32 0
+// CK0-DAG: [[PGEP:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[P]], i32 0, i32 0
+// CK0-DAG: [[PADDR:%.+]] = bitcast i8** [[PGEP]] to %class.C**
+// CK0-DAG: store %class.C* [[C]], %class.C** [[PADDR]], align
+// CK0-32-DAG: [[FPSZGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_5]], [[KMP_PRIVATES_T_5]]* [[PRIVATES]], i32 0, i32 0
+// CK0-64-DAG: [[FPSZGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_5]], [[KMP_PRIVATES_T_5]]* [[PRIVATES]], i32 0, i32 2
+// CK0-DAG: [[FPSZADDR:%.+]] = bitcast [1 x i64]* [[FPSZGEP]] to i8*
+// CK0-DAG: call void @llvm.memcpy.p0i8.p0i8.i[[sz]](i8* align {{4|8}} [[FPSZADDR]], i8* align {{4|8}} bitcast ([1 x i64]* [[EDNWSIZES]] to i8*), i[[sz]] {{4|8}}, i1 false)
+// CK0-DAG: [[FPMPRGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_5]], [[KMP_PRIVATES_T_5]]* [[PRIVATES]], i32 0, i32 3
+// CK0-DAG: [[FPMPRADDR:%.+]] = bitcast [1 x i8*]* [[FPMPRGEP]] to i8*
+// CK0-DAG: [[MPRADDR:%.+]] = bitcast i8** [[MPRGEP:%.+]] to i8*
+// CK0-DAG: call void @llvm.memcpy.p0i8.p0i8.i[[sz]](i8* align {{4|8}} [[FPMPRADDR]], i8* align {{4|8}} [[MPRADDR]], i[[sz]] {{4|8}}, i1 false)
+// CK0-DAG: [[MPRGEP]] = bitcast [1 x i8*]* [[MPR:%.+]] to i8**
+// CK0-DAG: [[MPRGEP:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[MPR]], i[[sz]] 0, i[[sz]] 0
+// CK0-DAG: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[MPRGEP]], align
+#pragma omp target enter data map(mapper(id), to \
+                                  : c) nowait
 
-  // CK0-DAG: call void @__tgt_target_data_end_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i32 1, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[EXDSIZES]]{{.+}}, {{.+}}[[EXDTYPES]]{{.+}}, i8** null, i8** [[MPRGEP:%.+]])
-  // CK0-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
-  // CK0-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
-  // CK0-DAG: [[MPRGEP]] = bitcast [1 x i8*]* [[MPR:%[^,]+]] to i8**
-  // CK0-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
-  // CK0-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
-  // CK0-DAG: [[MPR1:%.+]] = getelementptr inbounds {{.+}}[[MPR]], i[[sz]] 0, i[[sz]] 0
-  // CK0-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to %class.C**
-  // CK0-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to %class.C**
-  // CK0-DAG: store %class.C* [[VAL:%[^,]+]], %class.C** [[CBP1]]
-  // CK0-DAG: store %class.C* [[VAL]], %class.C** [[CP1]]
-  // CK0-DAG: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[MPR1]]
-  #pragma omp target exit data map(mapper(id),from: c)
+// CK0-DAG: call void @__tgt_target_data_end_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i32 1, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[EXDSIZES]]{{.+}}, {{.+}}[[EXDTYPES]]{{.+}}, i8** null, i8** [[MPRGEP:%.+]])
+// CK0-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
+// CK0-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
+// CK0-DAG: [[MPRGEP]] = bitcast [1 x i8*]* [[MPR:%[^,]+]] to i8**
+// CK0-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
+// CK0-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
+// CK0-DAG: [[MPR1:%.+]] = getelementptr inbounds {{.+}}[[MPR]], i[[sz]] 0, i[[sz]] 0
+// CK0-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to %class.C**
+// CK0-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to %class.C**
+// CK0-DAG: store %class.C* [[VAL:%[^,]+]], %class.C** [[CBP1]]
+// CK0-DAG: store %class.C* [[VAL]], %class.C** [[CP1]]
+// CK0-DAG: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[MPR1]]
+#pragma omp target exit data map(mapper(id), from \
+                                 : c)
 
-  // CK0-DAG: call i32 @__kmpc_omp_task([[IDENT_T]]* @{{[^,]+}}, i32 %{{[^,]+}}, i8* [[TASK_3:%.+]])
-  // CK0-DAG: [[TASK_3]] = call i8* @__kmpc_omp_target_task_alloc([[IDENT_T]]* @{{[^,]+}}, i32 %{{[^,]+}}, i32 1, i[[sz]] {{40|72}}, i[[sz]] 1, i32 (i32, i8*)* bitcast (i32 (i32, [[KMP_TASK_T_WITH_PRIVATES_7]]*)* [[OMP_TASK_ENTRY_25:@[^,]+]] to i32 (i32, i8*)*), i64 -1)
-  // CK0-DAG: [[TASK_WITH_PRIVATES:%.+]] = bitcast i8* [[TASK_3]] to [[KMP_TASK_T_WITH_PRIVATES_7]]*
-  // CK0-DAG: [[PRIVATES:%.+]] = getelementptr inbounds [[KMP_TASK_T_WITH_PRIVATES_7]], [[KMP_TASK_T_WITH_PRIVATES_7]]* [[TASK_WITH_PRIVATES]], i32 0, i32 1
-  // CK0-32-DAG: [[FPBPGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_8]], [[KMP_PRIVATES_T_8]]* [[PRIVATES]], i32 0, i32 1
-  // CK0-64-DAG: [[FPBPGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_8]], [[KMP_PRIVATES_T_8]]* [[PRIVATES]], i32 0, i32 0
-  // CK0-DAG: [[FPBPADDR:%.+]] = bitcast [1 x i8*]* [[FPBPGEP]] to i8*
-  // CK0-DAG: [[BPADDR:%.+]] = bitcast i8** [[BPGEP:%.+]] to i8*
-  // CK0-DAG: call void @llvm.memcpy.p0i8.p0i8.i[[sz]](i8* align {{4|8}} [[FPBPADDR]], i8* align {{4|8}} [[BPADDR]], i[[sz]] {{4|8}}, i1 false)
-  // CK0-DAG: [[BPGEP]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[BP:%.+]], i32 0, i32 0
-  // CK0-DAG: [[BPGEP:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[BP]], i32 0, i32 0
-  // CK0-DAG: [[BPADDR:%.+]] = bitcast i8** [[BPGEP]] to %class.C**
-  // CK0-DAG: store %class.C* [[C:%[^,]+]], %class.C** [[BPADDR]], align
-  // CK0-32-DAG: [[FPPGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_8]], [[KMP_PRIVATES_T_8]]* [[PRIVATES]], i32 0, i32 2
-  // CK0-64-DAG: [[FPPGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_8]], [[KMP_PRIVATES_T_8]]* [[PRIVATES]], i32 0, i32 1
-  // CK0-DAG: [[FPPADDR:%.+]] = bitcast [1 x i8*]* [[FPPGEP]] to i8*
-  // CK0-DAG: [[PADDR:%.+]] = bitcast i8** [[PGEP:%.+]] to i8*
-  // CK0-DAG: call void @llvm.memcpy.p0i8.p0i8.i[[sz]](i8* align {{4|8}} [[FPPADDR]], i8* align {{4|8}} [[PADDR]], i[[sz]] {{4|8}}, i1 false)
-  // CK0-DAG: [[PGEP]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[P:%.+]], i32 0, i32 0
-  // CK0-DAG: [[PGEP:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[P]], i32 0, i32 0
-  // CK0-DAG: [[PADDR:%.+]] = bitcast i8** [[PGEP]] to %class.C**
-  // CK0-DAG: store %class.C* [[C]], %class.C** [[PADDR]], align
-  // CK0-32-DAG: [[FPSZGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_8]], [[KMP_PRIVATES_T_8]]* [[PRIVATES]], i32 0, i32 0
-  // CK0-64-DAG: [[FPSZGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_8]], [[KMP_PRIVATES_T_8]]* [[PRIVATES]], i32 0, i32 2
-  // CK0-DAG: [[FPSZADDR:%.+]] = bitcast [1 x i64]* [[FPSZGEP]] to i8*
-  // CK0-DAG: call void @llvm.memcpy.p0i8.p0i8.i[[sz]](i8* align {{4|8}} [[FPSZADDR]], i8* align {{4|8}} bitcast ([1 x i64]* [[EXDNWSIZES]] to i8*), i[[sz]] {{4|8}}, i1 false)
-  // CK0-DAG: [[FPMPRGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_8]], [[KMP_PRIVATES_T_8]]* [[PRIVATES]], i32 0, i32 3
-  // CK0-DAG: [[FPMPRADDR:%.+]] = bitcast [1 x i8*]* [[FPMPRGEP]] to i8*
-  // CK0-DAG: [[MPRADDR:%.+]] = bitcast i8** [[MPRGEP:%.+]] to i8*
-  // CK0-DAG: call void @llvm.memcpy.p0i8.p0i8.i[[sz]](i8* align {{4|8}} [[FPMPRADDR]], i8* align {{4|8}} [[MPRADDR]], i[[sz]] {{4|8}}, i1 false)
-  // CK0-DAG: [[MPRGEP]] = bitcast [1 x i8*]* [[MPR:%.+]] to i8**
-  // CK0-DAG: [[MPRGEP:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[MPR]], i[[sz]] 0, i[[sz]] 0
-  // CK0-DAG: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[MPRGEP]], align
-  #pragma omp target exit data map(mapper(id),from: c) nowait
+// CK0-DAG: call i32 @__kmpc_omp_task([[IDENT_T]]* @{{[^,]+}}, i32 %{{[^,]+}}, i8* [[TASK_3:%.+]])
+// CK0-DAG: [[TASK_3]] = call i8* @__kmpc_omp_target_task_alloc([[IDENT_T]]* @{{[^,]+}}, i32 %{{[^,]+}}, i32 1, i[[sz]] {{40|72}}, i[[sz]] 1, i32 (i32, i8*)* bitcast (i32 (i32, [[KMP_TASK_T_WITH_PRIVATES_7]]*)* [[OMP_TASK_ENTRY_25:@[^,]+]] to i32 (i32, i8*)*), i64 -1)
+// CK0-DAG: [[TASK_WITH_PRIVATES:%.+]] = bitcast i8* [[TASK_3]] to [[KMP_TASK_T_WITH_PRIVATES_7]]*
+// CK0-DAG: [[PRIVATES:%.+]] = getelementptr inbounds [[KMP_TASK_T_WITH_PRIVATES_7]], [[KMP_TASK_T_WITH_PRIVATES_7]]* [[TASK_WITH_PRIVATES]], i32 0, i32 1
+// CK0-32-DAG: [[FPBPGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_8]], [[KMP_PRIVATES_T_8]]* [[PRIVATES]], i32 0, i32 1
+// CK0-64-DAG: [[FPBPGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_8]], [[KMP_PRIVATES_T_8]]* [[PRIVATES]], i32 0, i32 0
+// CK0-DAG: [[FPBPADDR:%.+]] = bitcast [1 x i8*]* [[FPBPGEP]] to i8*
+// CK0-DAG: [[BPADDR:%.+]] = bitcast i8** [[BPGEP:%.+]] to i8*
+// CK0-DAG: call void @llvm.memcpy.p0i8.p0i8.i[[sz]](i8* align {{4|8}} [[FPBPADDR]], i8* align {{4|8}} [[BPADDR]], i[[sz]] {{4|8}}, i1 false)
+// CK0-DAG: [[BPGEP]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[BP:%.+]], i32 0, i32 0
+// CK0-DAG: [[BPGEP:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[BP]], i32 0, i32 0
+// CK0-DAG: [[BPADDR:%.+]] = bitcast i8** [[BPGEP]] to %class.C**
+// CK0-DAG: store %class.C* [[C:%[^,]+]], %class.C** [[BPADDR]], align
+// CK0-32-DAG: [[FPPGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_8]], [[KMP_PRIVATES_T_8]]* [[PRIVATES]], i32 0, i32 2
+// CK0-64-DAG: [[FPPGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_8]], [[KMP_PRIVATES_T_8]]* [[PRIVATES]], i32 0, i32 1
+// CK0-DAG: [[FPPADDR:%.+]] = bitcast [1 x i8*]* [[FPPGEP]] to i8*
+// CK0-DAG: [[PADDR:%.+]] = bitcast i8** [[PGEP:%.+]] to i8*
+// CK0-DAG: call void @llvm.memcpy.p0i8.p0i8.i[[sz]](i8* align {{4|8}} [[FPPADDR]], i8* align {{4|8}} [[PADDR]], i[[sz]] {{4|8}}, i1 false)
+// CK0-DAG: [[PGEP]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[P:%.+]], i32 0, i32 0
+// CK0-DAG: [[PGEP:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[P]], i32 0, i32 0
+// CK0-DAG: [[PADDR:%.+]] = bitcast i8** [[PGEP]] to %class.C**
+// CK0-DAG: store %class.C* [[C]], %class.C** [[PADDR]], align
+// CK0-32-DAG: [[FPSZGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_8]], [[KMP_PRIVATES_T_8]]* [[PRIVATES]], i32 0, i32 0
+// CK0-64-DAG: [[FPSZGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_8]], [[KMP_PRIVATES_T_8]]* [[PRIVATES]], i32 0, i32 2
+// CK0-DAG: [[FPSZADDR:%.+]] = bitcast [1 x i64]* [[FPSZGEP]] to i8*
+// CK0-DAG: call void @llvm.memcpy.p0i8.p0i8.i[[sz]](i8* align {{4|8}} [[FPSZADDR]], i8* align {{4|8}} bitcast ([1 x i64]* [[EXDNWSIZES]] to i8*), i[[sz]] {{4|8}}, i1 false)
+// CK0-DAG: [[FPMPRGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_8]], [[KMP_PRIVATES_T_8]]* [[PRIVATES]], i32 0, i32 3
+// CK0-DAG: [[FPMPRADDR:%.+]] = bitcast [1 x i8*]* [[FPMPRGEP]] to i8*
+// CK0-DAG: [[MPRADDR:%.+]] = bitcast i8** [[MPRGEP:%.+]] to i8*
+// CK0-DAG: call void @llvm.memcpy.p0i8.p0i8.i[[sz]](i8* align {{4|8}} [[FPMPRADDR]], i8* align {{4|8}} [[MPRADDR]], i[[sz]] {{4|8}}, i1 false)
+// CK0-DAG: [[MPRGEP]] = bitcast [1 x i8*]* [[MPR:%.+]] to i8**
+// CK0-DAG: [[MPRGEP:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[MPR]], i[[sz]] 0, i[[sz]] 0
+// CK0-DAG: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[MPRGEP]], align
+#pragma omp target exit data map(mapper(id), from \
+                                 : c) nowait
 
-  // CK0-DAG: call void @__tgt_target_data_update_mapper(%struct.ident_t* @{{.+}}, i64 -1, i32 1, i8** [[TGEPBP:%.+]], i8** [[TGEPP:%.+]], i64* getelementptr {{.+}}[1 x i64]* [[TSIZES]], i32 0, i32 0), {{.+}}getelementptr {{.+}}[1 x i64]* [[TTYPES]]{{.+}}, i8** null, i8** [[TMPRGEP:%.+]])
-  // CK0-DAG: [[TGEPBP]] = getelementptr inbounds {{.+}}[[TBP:%[^,]+]], i{{.+}} 0, i{{.+}} 0
-  // CK0-DAG: [[TGEPP]] = getelementptr inbounds {{.+}}[[TP:%[^,]+]], i{{.+}} 0, i{{.+}} 0
-  // CK0-DAG: [[TMPRGEP]] = bitcast [1 x i8*]* [[TMPR:%[^,]+]] to i8**
-  // CK0-DAG: [[TBP0:%.+]] = getelementptr inbounds {{.+}}[[TBP]], i{{.+}} 0, i{{.+}} 0
-  // CK0-DAG: [[TP0:%.+]] = getelementptr inbounds {{.+}}[[TP]], i{{.+}} 0, i{{.+}} 0
-  // CK0-DAG: [[TMPR1:%.+]] = getelementptr inbounds {{.+}}[[TMPR]], i[[sz]] 0, i[[sz]] 0
-  // CK0-DAG: [[TCBP0:%.+]] = bitcast i8** [[TBP0]] to %class.C**
-  // CK0-DAG: [[TCP0:%.+]] = bitcast i8** [[TP0]] to %class.C**
-  // CK0-DAG: store %class.C* [[VAL]], %class.C** [[TCBP0]]
-  // CK0-DAG: store %class.C* [[VAL]], %class.C** [[TCP0]]
-  // CK0-DAG: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[TMPR1]]
-  #pragma omp target update to(mapper(id): c)
+// CK0-DAG: call void @__tgt_target_data_update_mapper(%struct.ident_t* @{{.+}}, i64 -1, i32 1, i8** [[TGEPBP:%.+]], i8** [[TGEPP:%.+]], i64* getelementptr {{.+}}[1 x i64]* [[TSIZES]], i32 0, i32 0), {{.+}}getelementptr {{.+}}[1 x i64]* [[TTYPES]]{{.+}}, i8** null, i8** [[TMPRGEP:%.+]])
+// CK0-DAG: [[TGEPBP]] = getelementptr inbounds {{.+}}[[TBP:%[^,]+]], i{{.+}} 0, i{{.+}} 0
+// CK0-DAG: [[TGEPP]] = getelementptr inbounds {{.+}}[[TP:%[^,]+]], i{{.+}} 0, i{{.+}} 0
+// CK0-DAG: [[TMPRGEP]] = bitcast [1 x i8*]* [[TMPR:%[^,]+]] to i8**
+// CK0-DAG: [[TBP0:%.+]] = getelementptr inbounds {{.+}}[[TBP]], i{{.+}} 0, i{{.+}} 0
+// CK0-DAG: [[TP0:%.+]] = getelementptr inbounds {{.+}}[[TP]], i{{.+}} 0, i{{.+}} 0
+// CK0-DAG: [[TMPR1:%.+]] = getelementptr inbounds {{.+}}[[TMPR]], i[[sz]] 0, i[[sz]] 0
+// CK0-DAG: [[TCBP0:%.+]] = bitcast i8** [[TBP0]] to %class.C**
+// CK0-DAG: [[TCP0:%.+]] = bitcast i8** [[TP0]] to %class.C**
+// CK0-DAG: store %class.C* [[VAL]], %class.C** [[TCBP0]]
+// CK0-DAG: store %class.C* [[VAL]], %class.C** [[TCP0]]
+// CK0-DAG: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[TMPR1]]
+#pragma omp target update to(mapper(id) \
+                             : c)
 
-  // CK0-DAG: call void @__tgt_target_data_update_mapper(%struct.ident_t* @{{.+}}, i64 -1, i32 1, i8** [[FGEPBP:%.+]], i8** [[FGEPP:%.+]], i64* getelementptr {{.+}}[1 x i64]* [[FSIZES]], i32 0, i32 0), {{.+}}getelementptr {{.+}}[1 x i64]* [[FTYPES]]{{.+}}, i8** null, i8** [[FMPRGEP:%.+]])
-  // CK0-DAG: [[FGEPBP]] = getelementptr inbounds {{.+}}[[FBP:%[^,]+]], i{{.+}} 0, i{{.+}} 0
-  // CK0-DAG: [[FGEPP]] = getelementptr inbounds {{.+}}[[FP:%[^,]+]], i{{.+}} 0, i{{.+}} 0
-  // CK0-DAG: [[FMPRGEP]] = bitcast [1 x i8*]* [[FMPR:%[^,]+]] to i8**
-  // CK0-DAG: [[FBP0:%.+]] = getelementptr inbounds {{.+}}[[FBP]], i{{.+}} 0, i{{.+}} 0
-  // CK0-DAG: [[FP0:%.+]] = getelementptr inbounds {{.+}}[[FP]], i{{.+}} 0, i{{.+}} 0
-  // CK0-DAG: [[FMPR1:%.+]] = getelementptr inbounds {{.+}}[[FMPR]], i[[sz]] 0, i[[sz]] 0
-  // CK0-DAG: [[FCBP0:%.+]] = bitcast i8** [[FBP0]] to %class.C**
-  // CK0-DAG: [[FCP0:%.+]] = bitcast i8** [[FP0]] to %class.C**
-  // CK0-DAG: store %class.C* [[VAL]], %class.C** [[FCBP0]]
-  // CK0-DAG: store %class.C* [[VAL]], %class.C** [[FCP0]]
-  // CK0-DAG: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[FMPR1]]
-  #pragma omp target update from(mapper(id): c)
+// CK0-DAG: call void @__tgt_target_data_update_mapper(%struct.ident_t* @{{.+}}, i64 -1, i32 1, i8** [[FGEPBP:%.+]], i8** [[FGEPP:%.+]], i64* getelementptr {{.+}}[1 x i64]* [[FSIZES]], i32 0, i32 0), {{.+}}getelementptr {{.+}}[1 x i64]* [[FTYPES]]{{.+}}, i8** null, i8** [[FMPRGEP:%.+]])
+// CK0-DAG: [[FGEPBP]] = getelementptr inbounds {{.+}}[[FBP:%[^,]+]], i{{.+}} 0, i{{.+}} 0
+// CK0-DAG: [[FGEPP]] = getelementptr inbounds {{.+}}[[FP:%[^,]+]], i{{.+}} 0, i{{.+}} 0
+// CK0-DAG: [[FMPRGEP]] = bitcast [1 x i8*]* [[FMPR:%[^,]+]] to i8**
+// CK0-DAG: [[FBP0:%.+]] = getelementptr inbounds {{.+}}[[FBP]], i{{.+}} 0, i{{.+}} 0
+// CK0-DAG: [[FP0:%.+]] = getelementptr inbounds {{.+}}[[FP]], i{{.+}} 0, i{{.+}} 0
+// CK0-DAG: [[FMPR1:%.+]] = getelementptr inbounds {{.+}}[[FMPR]], i[[sz]] 0, i[[sz]] 0
+// CK0-DAG: [[FCBP0:%.+]] = bitcast i8** [[FBP0]] to %class.C**
+// CK0-DAG: [[FCP0:%.+]] = bitcast i8** [[FP0]] to %class.C**
+// CK0-DAG: store %class.C* [[VAL]], %class.C** [[FCBP0]]
+// CK0-DAG: store %class.C* [[VAL]], %class.C** [[FCP0]]
+// CK0-DAG: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[FMPR1]]
+#pragma omp target update from(mapper(id) \
+                               : c)
 
-  // CK0-DAG: call i32 @__kmpc_omp_task([[IDENT_T]]* @{{[^,]+}}, i32 %{{[^,]+}}, i8* [[TASK_4:%.+]])
-  // CK0-DAG: [[TASK_4]] = call i8* @__kmpc_omp_target_task_alloc([[IDENT_T]]* @{{[^,]+}}, i32 %{{[^,]+}}, i32 1, i[[sz]] {{40|72}}, i[[sz]] 1, i32 (i32, i8*)* bitcast (i32 (i32, [[KMP_TASK_T_WITH_PRIVATES_10]]*)* [[OMP_TASK_ENTRY_34:@[^,]+]] to i32 (i32, i8*)*), i64 -1)
-  // CK0-DAG: [[TASK_WITH_PRIVATES:%.+]] = bitcast i8* [[TASK_4]] to [[KMP_TASK_T_WITH_PRIVATES_10]]*
-  // CK0-DAG: [[PRIVATES:%.+]] = getelementptr inbounds [[KMP_TASK_T_WITH_PRIVATES_10]], [[KMP_TASK_T_WITH_PRIVATES_10]]* [[TASK_WITH_PRIVATES]], i32 0, i32 1
-  // CK0-32-DAG: [[FPBPGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_11]], [[KMP_PRIVATES_T_11]]* [[PRIVATES]], i32 0, i32 1
-  // CK0-64-DAG: [[FPBPGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_11]], [[KMP_PRIVATES_T_11]]* [[PRIVATES]], i32 0, i32 0
-  // CK0-DAG: [[FPBPADDR:%.+]] = bitcast [1 x i8*]* [[FPBPGEP]] to i8*
-  // CK0-DAG: [[BPADDR:%.+]] = bitcast i8** [[BPGEP:%.+]] to i8*
-  // CK0-DAG: call void @llvm.memcpy.p0i8.p0i8.i[[sz]](i8* align {{4|8}} [[FPBPADDR]], i8* align {{4|8}} [[BPADDR]], i[[sz]] {{4|8}}, i1 false)
-  // CK0-DAG: [[BPGEP]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[BP:%.+]], i32 0, i32 0
-  // CK0-DAG: [[BPGEP:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[BP]], i32 0, i32 0
-  // CK0-DAG: [[BPADDR:%.+]] = bitcast i8** [[BPGEP]] to %class.C**
-  // CK0-DAG: store %class.C* [[C:%[^,]+]], %class.C** [[BPADDR]], align
-  // CK0-32-DAG: [[FPPGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_11]], [[KMP_PRIVATES_T_11]]* [[PRIVATES]], i32 0, i32 2
-  // CK0-64-DAG: [[FPPGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_11]], [[KMP_PRIVATES_T_11]]* [[PRIVATES]], i32 0, i32 1
-  // CK0-DAG: [[FPPADDR:%.+]] = bitcast [1 x i8*]* [[FPPGEP]] to i8*
-  // CK0-DAG: [[PADDR:%.+]] = bitcast i8** [[PGEP:%.+]] to i8*
-  // CK0-DAG: call void @llvm.memcpy.p0i8.p0i8.i[[sz]](i8* align {{4|8}} [[FPPADDR]], i8* align {{4|8}} [[PADDR]], i[[sz]] {{4|8}}, i1 false)
-  // CK0-DAG: [[PGEP]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[P:%.+]], i32 0, i32 0
-  // CK0-DAG: [[PGEP:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[P]], i32 0, i32 0
-  // CK0-DAG: [[PADDR:%.+]] = bitcast i8** [[PGEP]] to %class.C**
-  // CK0-DAG: store %class.C* [[C]], %class.C** [[PADDR]], align
-  // CK0-32-DAG: [[FPSZGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_11]], [[KMP_PRIVATES_T_11]]* [[PRIVATES]], i32 0, i32 0
-  // CK0-64-DAG: [[FPSZGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_11]], [[KMP_PRIVATES_T_11]]* [[PRIVATES]], i32 0, i32 2
-  // CK0-DAG: [[FPSZADDR:%.+]] = bitcast [1 x i64]* [[FPSZGEP]] to i8*
-  // CK0-DAG: call void @llvm.memcpy.p0i8.p0i8.i[[sz]](i8* align {{4|8}} [[FPSZADDR]], i8* align {{4|8}} bitcast ([1 x i64]* [[FNWSIZES]] to i8*), i[[sz]] {{4|8}}, i1 false)
-  // CK0-DAG: [[FPMPRGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_11]], [[KMP_PRIVATES_T_11]]* [[PRIVATES]], i32 0, i32 3
-  // CK0-DAG: [[FPMPRADDR:%.+]] = bitcast [1 x i8*]* [[FPMPRGEP]] to i8*
-  // CK0-DAG: [[MPRADDR:%.+]] = bitcast i8** [[MPRGEP:%.+]] to i8*
-  // CK0-DAG: call void @llvm.memcpy.p0i8.p0i8.i[[sz]](i8* align {{4|8}} [[FPMPRADDR]], i8* align {{4|8}} [[MPRADDR]], i[[sz]] {{4|8}}, i1 false)
-  // CK0-DAG: [[MPRGEP]] = bitcast [1 x i8*]* [[MPR:%.+]] to i8**
-  // CK0-DAG: [[MPRGEP:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[MPR]], i[[sz]] 0, i[[sz]] 0
-  // CK0-DAG: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[MPRGEP]], align
-  #pragma omp target update from(mapper(id): c) nowait
+// CK0-DAG: call i32 @__kmpc_omp_task([[IDENT_T]]* @{{[^,]+}}, i32 %{{[^,]+}}, i8* [[TASK_4:%.+]])
+// CK0-DAG: [[TASK_4]] = call i8* @__kmpc_omp_target_task_alloc([[IDENT_T]]* @{{[^,]+}}, i32 %{{[^,]+}}, i32 1, i[[sz]] {{40|72}}, i[[sz]] 1, i32 (i32, i8*)* bitcast (i32 (i32, [[KMP_TASK_T_WITH_PRIVATES_10]]*)* [[OMP_TASK_ENTRY_34:@[^,]+]] to i32 (i32, i8*)*), i64 -1)
+// CK0-DAG: [[TASK_WITH_PRIVATES:%.+]] = bitcast i8* [[TASK_4]] to [[KMP_TASK_T_WITH_PRIVATES_10]]*
+// CK0-DAG: [[PRIVATES:%.+]] = getelementptr inbounds [[KMP_TASK_T_WITH_PRIVATES_10]], [[KMP_TASK_T_WITH_PRIVATES_10]]* [[TASK_WITH_PRIVATES]], i32 0, i32 1
+// CK0-32-DAG: [[FPBPGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_11]], [[KMP_PRIVATES_T_11]]* [[PRIVATES]], i32 0, i32 1
+// CK0-64-DAG: [[FPBPGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_11]], [[KMP_PRIVATES_T_11]]* [[PRIVATES]], i32 0, i32 0
+// CK0-DAG: [[FPBPADDR:%.+]] = bitcast [1 x i8*]* [[FPBPGEP]] to i8*
+// CK0-DAG: [[BPADDR:%.+]] = bitcast i8** [[BPGEP:%.+]] to i8*
+// CK0-DAG: call void @llvm.memcpy.p0i8.p0i8.i[[sz]](i8* align {{4|8}} [[FPBPADDR]], i8* align {{4|8}} [[BPADDR]], i[[sz]] {{4|8}}, i1 false)
+// CK0-DAG: [[BPGEP]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[BP:%.+]], i32 0, i32 0
+// CK0-DAG: [[BPGEP:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[BP]], i32 0, i32 0
+// CK0-DAG: [[BPADDR:%.+]] = bitcast i8** [[BPGEP]] to %class.C**
+// CK0-DAG: store %class.C* [[C:%[^,]+]], %class.C** [[BPADDR]], align
+// CK0-32-DAG: [[FPPGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_11]], [[KMP_PRIVATES_T_11]]* [[PRIVATES]], i32 0, i32 2
+// CK0-64-DAG: [[FPPGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_11]], [[KMP_PRIVATES_T_11]]* [[PRIVATES]], i32 0, i32 1
+// CK0-DAG: [[FPPADDR:%.+]] = bitcast [1 x i8*]* [[FPPGEP]] to i8*
+// CK0-DAG: [[PADDR:%.+]] = bitcast i8** [[PGEP:%.+]] to i8*
+// CK0-DAG: call void @llvm.memcpy.p0i8.p0i8.i[[sz]](i8* align {{4|8}} [[FPPADDR]], i8* align {{4|8}} [[PADDR]], i[[sz]] {{4|8}}, i1 false)
+// CK0-DAG: [[PGEP]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[P:%.+]], i32 0, i32 0
+// CK0-DAG: [[PGEP:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[P]], i32 0, i32 0
+// CK0-DAG: [[PADDR:%.+]] = bitcast i8** [[PGEP]] to %class.C**
+// CK0-DAG: store %class.C* [[C]], %class.C** [[PADDR]], align
+// CK0-32-DAG: [[FPSZGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_11]], [[KMP_PRIVATES_T_11]]* [[PRIVATES]], i32 0, i32 0
+// CK0-64-DAG: [[FPSZGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_11]], [[KMP_PRIVATES_T_11]]* [[PRIVATES]], i32 0, i32 2
+// CK0-DAG: [[FPSZADDR:%.+]] = bitcast [1 x i64]* [[FPSZGEP]] to i8*
+// CK0-DAG: call void @llvm.memcpy.p0i8.p0i8.i[[sz]](i8* align {{4|8}} [[FPSZADDR]], i8* align {{4|8}} bitcast ([1 x i64]* [[FNWSIZES]] to i8*), i[[sz]] {{4|8}}, i1 false)
+// CK0-DAG: [[FPMPRGEP:%.+]] = getelementptr inbounds [[KMP_PRIVATES_T_11]], [[KMP_PRIVATES_T_11]]* [[PRIVATES]], i32 0, i32 3
+// CK0-DAG: [[FPMPRADDR:%.+]] = bitcast [1 x i8*]* [[FPMPRGEP]] to i8*
+// CK0-DAG: [[MPRADDR:%.+]] = bitcast i8** [[MPRGEP:%.+]] to i8*
+// CK0-DAG: call void @llvm.memcpy.p0i8.p0i8.i[[sz]](i8* align {{4|8}} [[FPMPRADDR]], i8* align {{4|8}} [[MPRADDR]], i[[sz]] {{4|8}}, i1 false)
+// CK0-DAG: [[MPRGEP]] = bitcast [1 x i8*]* [[MPR:%.+]] to i8**
+// CK0-DAG: [[MPRGEP:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* [[MPR]], i[[sz]] 0, i[[sz]] 0
+// CK0-DAG: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[MPRGEP]], align
+#pragma omp target update from(mapper(id) \
+                               : c) nowait
 }
-
 
 // CK0: define internal void [[KERNEL_1]](%class.C* {{.+}}[[ARG:%.+]])
 // CK0: [[ADDR:%.+]] = alloca %class.C*,
@@ -625,7 +635,6 @@ void foo(int a){
 
 #endif // CK0
 
-
 ///==========================================================================///
 // RUN: %clang_cc1 -DCK1 -verify -fopenmp -fopenmp-targets=powerpc64le-ibm-linux-gnu -x c++ -triple powerpc64le-unknown-unknown -emit-llvm -femit-all-decls -disable-llvm-passes %s -o - | FileCheck --check-prefix CK1 --check-prefix CK1-64 %s
 // RUN: %clang_cc1 -DCK1 -fopenmp -fopenmp-targets=powerpc64le-ibm-linux-gnu -x c++ -std=c++11 -triple powerpc64le-unknown-unknown -emit-pch -femit-all-decls -disable-llvm-passes -o %t %s
@@ -650,7 +659,9 @@ public:
   T a;
 };
 
-#pragma omp declare mapper(id: C<int> s) map(s.a)
+#pragma omp declare mapper(id        \
+                           : C <int> \
+                               s) map(s.a)
 
 // CK1-LABEL: define {{.*}}void @.omp_mapper.{{.*}}C{{.*}}.id{{.*}}(i8*{{.*}}, i8*{{.*}}, i8*{{.*}}, i64{{.*}}, i64{{.*}}, i8*{{.*}})
 // CK1: store i8* %{{[^,]+}}, i8** [[HANDLEADDR:%[^,]+]]
@@ -740,7 +751,6 @@ public:
 
 #endif // CK1
 
-
 ///==========================================================================///
 // RUN: %clang_cc1 -DCK2 -verify -fopenmp -fopenmp-targets=powerpc64le-ibm-linux-gnu -x c++ -triple powerpc64le-unknown-unknown -emit-llvm -femit-all-decls -disable-llvm-passes %s -o - | FileCheck --check-prefix CK2 --check-prefix CK2-64 %s
 // RUN: %clang_cc1 -DCK2 -fopenmp -fopenmp-targets=powerpc64le-ibm-linux-gnu -x c++ -std=c++11 -triple powerpc64le-unknown-unknown -emit-pch -femit-all-decls -disable-llvm-passes -o %t %s
@@ -772,7 +782,8 @@ public:
 
 #pragma omp declare mapper(B s) map(s.a)
 
-#pragma omp declare mapper(id: C s) map(s.b)
+#pragma omp declare mapper(id \
+                           : C s) map(s.b)
 
 // CK2: define {{.*}}void [[BMPRFUNC:@[.]omp_mapper[.].*B[.]default]](i8*{{.*}}, i8*{{.*}}, i8*{{.*}}, i64{{.*}}, i64{{.*}}, i8*{{.*}})
 
@@ -864,7 +875,6 @@ public:
 
 #endif // CK2
 
-
 ///==========================================================================///
 // RUN: %clang_cc1 -DCK3 -verify -fopenmp -fopenmp-targets=powerpc64le-ibm-linux-gnu -x c++ -triple powerpc64le-unknown-unknown -emit-llvm -femit-all-decls -disable-llvm-passes %s -o - | FileCheck --check-prefix CK3 %s
 // RUN: %clang_cc1 -DCK3 -fopenmp -fopenmp-targets=powerpc64le-ibm-linux-gnu -x c++ -std=c++11 -triple powerpc64le-unknown-unknown -emit-pch -femit-all-decls -disable-llvm-passes -o %t %s
@@ -898,47 +908,48 @@ public:
   C c;
 };
 
-#pragma omp declare mapper(id: C s) map(s.a, s.b[0:2])
+#pragma omp declare mapper(id \
+                           : C s) map(s.a, s.b [0:2])
 
 // CK3: define {{.*}}void [[MPRFUNC:@[.]omp_mapper[.].*C[.]id]](i8*{{.*}}, i8*{{.*}}, i8*{{.*}}, i64{{.*}}, i64{{.*}}, i8*{{.*}})
 
 // CK3-LABEL: define {{.*}}void @{{.*}}foo{{.*}}
-void foo(int a){
+void foo(int a) {
   // CK3-DAG: [[CVAL:%.+]] = alloca [10 x %class.C]
   // CK3-DAG: [[BVAL:%.+]] = alloca %class.B
   C c[10];
   B b;
 
-  // CK3-DAG: [[BC:%.+]] = getelementptr inbounds %class.B, %class.B* [[BVAL]], i32 0, i32 0
+// CK3-DAG: [[BC:%.+]] = getelementptr inbounds %class.B, %class.B* [[BVAL]], i32 0, i32 0
 
-  // CK3-DAG: call i32 @__tgt_target_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i8* {{.+}}, i32 2, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[SIZES]]{{.+}}, {{.+}}[[TYPES]]{{.+}}, i8** null, i8** [[MPRGEP:%.+]])
-  // CK3-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
-  // CK3-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
-  // CK3-DAG: [[MPRGEP]] = bitcast [2 x i8*]* [[MPR:%[^,]+]] to i8**
-  // CK3-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
-  // CK3-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
-  // CK3-DAG: [[MPR1:%.+]] = getelementptr inbounds {{.+}}[[MPR]], i{{64|32}} 0, i{{64|32}} 0
-  // CK3-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to %class.B**
-  // CK3-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to %class.C**
-  // CK3-DAG: store %class.B* [[BVAL]], %class.B** [[CBP1]]
-  // CK3-DAG: store %class.C* [[BC]], %class.C** [[CP1]]
-  // CK3-DAG: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[MPR1]]
-  // CK3-DAG: [[BP2:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 1
-  // CK3-DAG: [[P2:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 1
-  // CK3-DAG: [[MPR2:%.+]] = getelementptr inbounds {{.+}}[[MPR]], i{{64|32}} 0, i{{64|32}} 1
-  // CK3-DAG: [[CBP2:%.+]] = bitcast i8** [[BP2]] to [10 x %class.C]**
-  // CK3-DAG: [[CP2:%.+]] = bitcast i8** [[P2]] to %class.C**
-  // CK3-DAG: store [10 x %class.C]* [[CVAL]], [10 x %class.C]** [[CBP2]]
-  // CK3-DAG: [[CVALGEP:%.+]] = getelementptr inbounds {{.+}}[[CVAL]], i{{64|32}} 0, i{{64|32}} 0
-  // CK3-DAG: store %class.C* [[CVALGEP]], %class.C** [[CP2]]
-  // CK3-DAG: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[MPR2]]
-  // CK3: call void [[KERNEL:@.+]](%class.B* [[BVAL]], [10 x %class.C]* [[CVAL]])
-  #pragma omp target map(mapper(id),tofrom: c[0:10], b.c)
+// CK3-DAG: call i32 @__tgt_target_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i8* {{.+}}, i32 2, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[SIZES]]{{.+}}, {{.+}}[[TYPES]]{{.+}}, i8** null, i8** [[MPRGEP:%.+]])
+// CK3-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
+// CK3-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
+// CK3-DAG: [[MPRGEP]] = bitcast [2 x i8*]* [[MPR:%[^,]+]] to i8**
+// CK3-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
+// CK3-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
+// CK3-DAG: [[MPR1:%.+]] = getelementptr inbounds {{.+}}[[MPR]], i{{64|32}} 0, i{{64|32}} 0
+// CK3-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to %class.B**
+// CK3-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to %class.C**
+// CK3-DAG: store %class.B* [[BVAL]], %class.B** [[CBP1]]
+// CK3-DAG: store %class.C* [[BC]], %class.C** [[CP1]]
+// CK3-DAG: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[MPR1]]
+// CK3-DAG: [[BP2:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 1
+// CK3-DAG: [[P2:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 1
+// CK3-DAG: [[MPR2:%.+]] = getelementptr inbounds {{.+}}[[MPR]], i{{64|32}} 0, i{{64|32}} 1
+// CK3-DAG: [[CBP2:%.+]] = bitcast i8** [[BP2]] to [10 x %class.C]**
+// CK3-DAG: [[CP2:%.+]] = bitcast i8** [[P2]] to %class.C**
+// CK3-DAG: store [10 x %class.C]* [[CVAL]], [10 x %class.C]** [[CBP2]]
+// CK3-DAG: [[CVALGEP:%.+]] = getelementptr inbounds {{.+}}[[CVAL]], i{{64|32}} 0, i{{64|32}} 0
+// CK3-DAG: store %class.C* [[CVALGEP]], %class.C** [[CP2]]
+// CK3-DAG: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[MPR2]]
+// CK3: call void [[KERNEL:@.+]](%class.B* [[BVAL]], [10 x %class.C]* [[CVAL]])
+#pragma omp target map(mapper(id), tofrom \
+                       : c [0:10], b.c)
   for (int i = 0; i < 10; i++) {
     b.c.a += ++c[i].a;
   }
 }
-
 
 // CK3: define internal void [[KERNEL]](%class.B* {{[^,]+}}, [10 x %class.C]* {{[^,]+}})
 
@@ -978,7 +989,8 @@ public:
   double *b;
 };
 
-#pragma omp declare mapper(id: C s) map(s.a, s.b[0:2])
+#pragma omp declare mapper(id \
+                           : C s) map(s.a, s.b [0:2])
 
 // CK4: define {{.*}}void [[MPRFUNC:@[.]omp_mapper[.].*C[.]id]](i8*{{.*}}, i8*{{.*}}, i8*{{.*}}, i64{{.*}}, i64{{.*}}, i8*{{.*}})
 // CK4: store i8* %{{[^,]+}}, i8** [[HANDLEADDR:%[^,]+]]
@@ -1144,40 +1156,41 @@ public:
 // CK4: [[DONE]]
 // CK4: ret void
 
-
 // CK4-LABEL: define {{.*}}void @{{.*}}foo{{.*}}
-void foo(int a){
+void foo(int a) {
   int i = a;
   C c;
   c.a = a;
 
-  // CK4-DAG: call void @__tgt_target_data_update_mapper(%struct.ident_t* @{{.+}}, i64 -1, i32 1, i8** [[TGEPBP:%.+]], i8** [[TGEPP:%.+]], i64* getelementptr {{.+}}[1 x i64]* [[TSIZES]], i32 0, i32 0), {{.+}}getelementptr {{.+}}[1 x i64]* [[TTYPES]]{{.+}}, i8** null, i8** [[TMPRGEP:%.+]])
-  // CK4-DAG: [[TGEPBP]] = getelementptr inbounds {{.+}}[[TBP:%[^,]+]], i{{.+}} 0, i{{.+}} 0
-  // CK4-DAG: [[TGEPP]] = getelementptr inbounds {{.+}}[[TP:%[^,]+]], i{{.+}} 0, i{{.+}} 0
-  // CK4-DAG: [[TMPRGEP]] = bitcast [1 x i8*]* [[TMPR:%[^,]+]] to i8**
-  // CK4-DAG: [[TBP0:%.+]] = getelementptr inbounds {{.+}}[[TBP]], i{{.+}} 0, i{{.+}} 0
-  // CK4-DAG: [[TP0:%.+]] = getelementptr inbounds {{.+}}[[TP]], i{{.+}} 0, i{{.+}} 0
-  // CK4-DAG: [[TMPR1:%.+]] = getelementptr inbounds {{.+}}[[TMPR]], i[[sz]] 0, i[[sz]] 0
-  // CK4-DAG: [[TCBP0:%.+]] = bitcast i8** [[TBP0]] to %class.C**
-  // CK4-DAG: [[TCP0:%.+]] = bitcast i8** [[TP0]] to %class.C**
-  // CK4-DAG: store %class.C* [[VAL:%[^,]+]], %class.C** [[TCBP0]]
-  // CK4-DAG: store %class.C* [[VAL]], %class.C** [[TCP0]]
-  // CK4-DAG: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[TMPR1]]
-  #pragma omp target update to(present, mapper(id): c)
+// CK4-DAG: call void @__tgt_target_data_update_mapper(%struct.ident_t* @{{.+}}, i64 -1, i32 1, i8** [[TGEPBP:%.+]], i8** [[TGEPP:%.+]], i64* getelementptr {{.+}}[1 x i64]* [[TSIZES]], i32 0, i32 0), {{.+}}getelementptr {{.+}}[1 x i64]* [[TTYPES]]{{.+}}, i8** null, i8** [[TMPRGEP:%.+]])
+// CK4-DAG: [[TGEPBP]] = getelementptr inbounds {{.+}}[[TBP:%[^,]+]], i{{.+}} 0, i{{.+}} 0
+// CK4-DAG: [[TGEPP]] = getelementptr inbounds {{.+}}[[TP:%[^,]+]], i{{.+}} 0, i{{.+}} 0
+// CK4-DAG: [[TMPRGEP]] = bitcast [1 x i8*]* [[TMPR:%[^,]+]] to i8**
+// CK4-DAG: [[TBP0:%.+]] = getelementptr inbounds {{.+}}[[TBP]], i{{.+}} 0, i{{.+}} 0
+// CK4-DAG: [[TP0:%.+]] = getelementptr inbounds {{.+}}[[TP]], i{{.+}} 0, i{{.+}} 0
+// CK4-DAG: [[TMPR1:%.+]] = getelementptr inbounds {{.+}}[[TMPR]], i[[sz]] 0, i[[sz]] 0
+// CK4-DAG: [[TCBP0:%.+]] = bitcast i8** [[TBP0]] to %class.C**
+// CK4-DAG: [[TCP0:%.+]] = bitcast i8** [[TP0]] to %class.C**
+// CK4-DAG: store %class.C* [[VAL:%[^,]+]], %class.C** [[TCBP0]]
+// CK4-DAG: store %class.C* [[VAL]], %class.C** [[TCP0]]
+// CK4-DAG: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[TMPR1]]
+#pragma omp target update to(present, mapper(id) \
+                             : c)
 
-  // CK4-DAG: call void @__tgt_target_data_update_mapper(%struct.ident_t* @{{.+}}, i64 -1, i32 1, i8** [[FGEPBP:%.+]], i8** [[FGEPP:%.+]], i64* getelementptr {{.+}}[1 x i64]* [[FSIZES]], i32 0, i32 0), {{.+}}getelementptr {{.+}}[1 x i64]* [[FTYPES]]{{.+}}, i8** null, i8** [[FMPRGEP:%.+]])
-  // CK4-DAG: [[FGEPBP]] = getelementptr inbounds {{.+}}[[FBP:%[^,]+]], i{{.+}} 0, i{{.+}} 0
-  // CK4-DAG: [[FGEPP]] = getelementptr inbounds {{.+}}[[FP:%[^,]+]], i{{.+}} 0, i{{.+}} 0
-  // CK4-DAG: [[FMPRGEP]] = bitcast [1 x i8*]* [[FMPR:%[^,]+]] to i8**
-  // CK4-DAG: [[FBP0:%.+]] = getelementptr inbounds {{.+}}[[FBP]], i{{.+}} 0, i{{.+}} 0
-  // CK4-DAG: [[FP0:%.+]] = getelementptr inbounds {{.+}}[[FP]], i{{.+}} 0, i{{.+}} 0
-  // CK4-DAG: [[FMPR1:%.+]] = getelementptr inbounds {{.+}}[[FMPR]], i[[sz]] 0, i[[sz]] 0
-  // CK4-DAG: [[FCBP0:%.+]] = bitcast i8** [[FBP0]] to %class.C**
-  // CK4-DAG: [[FCP0:%.+]] = bitcast i8** [[FP0]] to %class.C**
-  // CK4-DAG: store %class.C* [[VAL]], %class.C** [[FCBP0]]
-  // CK4-DAG: store %class.C* [[VAL]], %class.C** [[FCP0]]
-  // CK4-DAG: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[FMPR1]]
-  #pragma omp target update from(mapper(id), present: c)
+// CK4-DAG: call void @__tgt_target_data_update_mapper(%struct.ident_t* @{{.+}}, i64 -1, i32 1, i8** [[FGEPBP:%.+]], i8** [[FGEPP:%.+]], i64* getelementptr {{.+}}[1 x i64]* [[FSIZES]], i32 0, i32 0), {{.+}}getelementptr {{.+}}[1 x i64]* [[FTYPES]]{{.+}}, i8** null, i8** [[FMPRGEP:%.+]])
+// CK4-DAG: [[FGEPBP]] = getelementptr inbounds {{.+}}[[FBP:%[^,]+]], i{{.+}} 0, i{{.+}} 0
+// CK4-DAG: [[FGEPP]] = getelementptr inbounds {{.+}}[[FP:%[^,]+]], i{{.+}} 0, i{{.+}} 0
+// CK4-DAG: [[FMPRGEP]] = bitcast [1 x i8*]* [[FMPR:%[^,]+]] to i8**
+// CK4-DAG: [[FBP0:%.+]] = getelementptr inbounds {{.+}}[[FBP]], i{{.+}} 0, i{{.+}} 0
+// CK4-DAG: [[FP0:%.+]] = getelementptr inbounds {{.+}}[[FP]], i{{.+}} 0, i{{.+}} 0
+// CK4-DAG: [[FMPR1:%.+]] = getelementptr inbounds {{.+}}[[FMPR]], i[[sz]] 0, i[[sz]] 0
+// CK4-DAG: [[FCBP0:%.+]] = bitcast i8** [[FBP0]] to %class.C**
+// CK4-DAG: [[FCP0:%.+]] = bitcast i8** [[FP0]] to %class.C**
+// CK4-DAG: store %class.C* [[VAL]], %class.C** [[FCBP0]]
+// CK4-DAG: store %class.C* [[VAL]], %class.C** [[FCP0]]
+// CK4-DAG: store i8* bitcast (void (i8*, i8*, i8*, i64, i64, i8*)* [[MPRFUNC]] to i8*), i8** [[FMPR1]]
+#pragma omp target update from(mapper(id), present \
+                               : c)
 }
 
 #endif // CK4

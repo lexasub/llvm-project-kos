@@ -2,7 +2,7 @@
 
 void foo(int x) {
   if (x == 0) { // CHECK: [[@LINE]]|{{ +}}2|
-    return; // CHECK-NEXT: [[@LINE]]|{{ +}}1|
+    return;     // CHECK-NEXT: [[@LINE]]|{{ +}}1|
   }
 
 } // CHECK: [[@LINE]]|{{ +}}1|
@@ -17,11 +17,11 @@ void for_loop() {
     return; // CHECK: [[@LINE]]|{{ +}}0|
 
   for (int i = 0; i < 10; ++i) { // CHECK: [[@LINE]]|{{ +}}2|
-    if (i % 2 == 0) // CHECK: [[@LINE]]|{{ +}}2|
-      continue; // CHECK: [[@LINE]]|{{ +}}1|
+    if (i % 2 == 0)              // CHECK: [[@LINE]]|{{ +}}2|
+      continue;                  // CHECK: [[@LINE]]|{{ +}}1|
 
     if (i % 5 == 0) // CHECK: [[@LINE]]|{{ +}}1|
-      break; // CHECK: [[@LINE]]|{{ +}}0|
+      break;        // CHECK: [[@LINE]]|{{ +}}0|
 
     int x = i;
     return; // CHECK: [[@LINE]]|{{ +}}1|
@@ -37,35 +37,35 @@ void while_loop() {
 
   int x = 0;
   while (++x < 10) { // CHECK: [[@LINE]]|{{ +}}3|
-    if (x == 1) // CHECK: [[@LINE]]|{{ +}}2|
-      continue; // CHECK: [[@LINE]]|{{ +}}1|
+    if (x == 1)      // CHECK: [[@LINE]]|{{ +}}2|
+      continue;      // CHECK: [[@LINE]]|{{ +}}1|
 
     while (++x < 4) { // CHECK: [[@LINE]]|{{ +}}1|
-      if (x == 3) // CHECK: [[@LINE]]|{{ +}}1|
-        break; // CHECK: [[@LINE]]|{{ +}}1|
-               // CHECK: [[@LINE]]|{{ +}}0|
-      while (++x < 5) {} // CHECK: [[@LINE]]|{{ +}}0|
-    } // CHECK: [[@LINE]]|{{ +}}0|
+      if (x == 3)     // CHECK: [[@LINE]]|{{ +}}1|
+        break;        // CHECK: [[@LINE]]|{{ +}}1|
+                      // CHECK: [[@LINE]]|{{ +}}0|
+      while (++x < 5) {
+      } // CHECK: [[@LINE]]|{{ +}}0|
+    }   // CHECK: [[@LINE]]|{{ +}}0|
 
-    if (x == 0) // CHECK: [[@LINE]]|{{ +}}1|
-      throw Error(); // CHECK: [[@LINE]]|{{ +}}0|
-                // CHECK: [[@LINE]]|{{ +}}1|
+    if (x == 0)       // CHECK: [[@LINE]]|{{ +}}1|
+      throw Error();  // CHECK: [[@LINE]]|{{ +}}0|
+                      // CHECK: [[@LINE]]|{{ +}}1|
     while (++x < 9) { // CHECK: [[@LINE]]|{{ +}}6|
-      if (x == 0) // CHECK: [[@LINE]]|{{ +}}5|
-        break; // CHECK: [[@LINE]]|{{ +}}0|
-
+      if (x == 0)     // CHECK: [[@LINE]]|{{ +}}5|
+        break;        // CHECK: [[@LINE]]|{{ +}}0|
     }
   }
 }
 
 void gotos() {
-  if (false) // CHECK: [[@LINE]]|{{ +}}1|
+  if (false)  // CHECK: [[@LINE]]|{{ +}}1|
     goto out; // CHECK: [[@LINE]]|{{ +}}0|
-          // CHECK: [[@LINE]]|{{ +}}1|
-  return; // CHECK: [[@LINE]]|{{ +}}1|
+              // CHECK: [[@LINE]]|{{ +}}1|
+  return;     // CHECK: [[@LINE]]|{{ +}}1|
 
 out: // CHECK: [[@LINE]]|{{ +}}0|
-	return;
+  return;
 }
 
 void if_else(bool flag) {

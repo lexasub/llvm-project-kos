@@ -9,8 +9,8 @@ __vector char vv_c;
 __vector signed char vv_sc;
 __vector unsigned char vv_uc;
 __vector short vv_s;
-__vector signed  short vv_ss;
-__vector unsigned  short vv_us;
+__vector signed short vv_ss;
+__vector unsigned short vv_us;
 __vector short int vv_si;
 __vector signed short int vv_ssi;
 __vector unsigned short int vv_usi;
@@ -34,8 +34,8 @@ vector char v_c;
 vector signed char v_sc;
 vector unsigned char v_uc;
 vector short v_s;
-vector signed  short v_ss;
-vector unsigned  short v_us;
+vector signed short v_ss;
+vector unsigned short v_us;
 vector short int v_si;
 vector signed short int v_ssi;
 vector unsigned short int v_usi;
@@ -58,34 +58,34 @@ void f_a2(int b, vector int a);
 vector int v = (vector int)(-1);
 
 // These should have errors on AIX and warnings otherwise.
-__vector long vv_l;                 // nonaix-warning {{Use of 'long' with '__vector' is deprecated}}
-                                    // aix-error@-1 {{cannot use 'long' with '__vector'}}
-__vector signed long vv_sl;         // nonaix-warning {{Use of 'long' with '__vector' is deprecated}}
-                                    // aix-error@-1 {{cannot use 'long' with '__vector'}}
-__vector unsigned long vv_ul;       // nonaix-warning {{Use of 'long' with '__vector' is deprecated}}
-                                    // aix-error@-1 {{cannot use 'long' with '__vector'}}
-__vector long int vv_li;            // nonaix-warning {{Use of 'long' with '__vector' is deprecated}}
-                                    // aix-error@-1 {{cannot use 'long' with '__vector'}}
-__vector signed long int vv_sli;    // nonaix-warning {{Use of 'long' with '__vector' is deprecated}}
-                                    // aix-error@-1 {{cannot use 'long' with '__vector'}}
-__vector unsigned long int vv_uli;  // nonaix-warning {{Use of 'long' with '__vector' is deprecated}}
-                                    // aix-error@-1 {{cannot use 'long' with '__vector'}}
-vector long v_l;                    // nonaix-warning {{Use of 'long' with '__vector' is deprecated}}
-                                    // aix-error@-1 {{cannot use 'long' with '__vector'}}
-vector signed long v_sl;            // nonaix-warning {{Use of 'long' with '__vector' is deprecated}}
-                                    // aix-error@-1 {{cannot use 'long' with '__vector'}}
-vector unsigned long v_ul;          // nonaix-warning {{Use of 'long' with '__vector' is deprecated}}
-                                    // aix-error@-1 {{cannot use 'long' with '__vector'}}
-vector long int v_li;               // nonaix-warning {{Use of 'long' with '__vector' is deprecated}}
-                                    // aix-error@-1 {{cannot use 'long' with '__vector'}}
-vector signed long int v_sli;       // nonaix-warning {{Use of 'long' with '__vector' is deprecated}}
-                                    // aix-error@-1 {{cannot use 'long' with '__vector'}}
-vector unsigned long int v_uli;     // nonaix-warning {{Use of 'long' with '__vector' is deprecated}}
-                                    // aix-error@-1 {{cannot use 'long' with '__vector'}}
+__vector long vv_l;                // nonaix-warning {{Use of 'long' with '__vector' is deprecated}}
+                                   // aix-error@-1 {{cannot use 'long' with '__vector'}}
+__vector signed long vv_sl;        // nonaix-warning {{Use of 'long' with '__vector' is deprecated}}
+                                   // aix-error@-1 {{cannot use 'long' with '__vector'}}
+__vector unsigned long vv_ul;      // nonaix-warning {{Use of 'long' with '__vector' is deprecated}}
+                                   // aix-error@-1 {{cannot use 'long' with '__vector'}}
+__vector long int vv_li;           // nonaix-warning {{Use of 'long' with '__vector' is deprecated}}
+                                   // aix-error@-1 {{cannot use 'long' with '__vector'}}
+__vector signed long int vv_sli;   // nonaix-warning {{Use of 'long' with '__vector' is deprecated}}
+                                   // aix-error@-1 {{cannot use 'long' with '__vector'}}
+__vector unsigned long int vv_uli; // nonaix-warning {{Use of 'long' with '__vector' is deprecated}}
+                                   // aix-error@-1 {{cannot use 'long' with '__vector'}}
+vector long v_l;                   // nonaix-warning {{Use of 'long' with '__vector' is deprecated}}
+                                   // aix-error@-1 {{cannot use 'long' with '__vector'}}
+vector signed long v_sl;           // nonaix-warning {{Use of 'long' with '__vector' is deprecated}}
+                                   // aix-error@-1 {{cannot use 'long' with '__vector'}}
+vector unsigned long v_ul;         // nonaix-warning {{Use of 'long' with '__vector' is deprecated}}
+                                   // aix-error@-1 {{cannot use 'long' with '__vector'}}
+vector long int v_li;              // nonaix-warning {{Use of 'long' with '__vector' is deprecated}}
+                                   // aix-error@-1 {{cannot use 'long' with '__vector'}}
+vector signed long int v_sli;      // nonaix-warning {{Use of 'long' with '__vector' is deprecated}}
+                                   // aix-error@-1 {{cannot use 'long' with '__vector'}}
+vector unsigned long int v_uli;    // nonaix-warning {{Use of 'long' with '__vector' is deprecated}}
+                                   // aix-error@-1 {{cannot use 'long' with '__vector'}}
 
 // These should have warnings.
-__vector long double  vv_ld;        // expected-error {{cannot use 'long double' with '__vector'}}
-vector long double  v_ld;           // expected-error {{cannot use 'long double' with '__vector'}}
+__vector long double vv_ld; // expected-error {{cannot use 'long double' with '__vector'}}
+vector long double v_ld;    // expected-error {{cannot use 'long double' with '__vector'}}
 
 // These should have errors.
 __vector double vv_d1;               // expected-error {{use of 'double' with '__vector' requires VSX support to be enabled (available on POWER7 or later)}}
@@ -94,8 +94,8 @@ __vector bool long long v_bll1;      // expected-error {{use of 'long long' with
 __vector __bool long long v_bll2;    // expected-error {{use of 'long long' with '__vector bool' requires VSX support (available on POWER7 or later) or extended Altivec support (available on POWER8 or later) to be enabled}}
 vector bool long long v_bll3;        // expected-error {{use of 'long long' with '__vector bool' requires VSX support (available on POWER7 or later) or extended Altivec support (available on POWER8 or later) to be enabled}}
 vector __bool long long v_bll4;      // expected-error {{use of 'long long' with '__vector bool' requires VSX support (available on POWER7 or later) or extended Altivec support (available on POWER8 or later) to be enabled}}
-__vector long double  vv_ld3;        // expected-error {{cannot use 'long double' with '__vector'}}
-vector long double  v_ld4;           // expected-error {{cannot use 'long double' with '__vector'}}
+__vector long double vv_ld3;         // expected-error {{cannot use 'long double' with '__vector'}}
+vector long double v_ld4;            // expected-error {{cannot use 'long double' with '__vector'}}
 vector bool v_b;                     // expected-error {{C++ requires a type specifier for all declarations}}
 vector bool float v_bf;              // expected-error {{cannot use 'float' with '__vector bool'}}
 vector bool double v_bd;             // expected-error {{cannot use 'double' with '__vector bool'}}
@@ -116,14 +116,14 @@ vector signed long long v_sll;
 vector unsigned long long v_ull;
 
 void f() {
-  __vector unsigned int v = {0,0,0,0};
+  __vector unsigned int v = {0, 0, 0, 0};
   __vector int v__cast = (__vector int)v;
   __vector int v_cast = (vector int)v;
   __vector char vb_cast = (vector char)v;
 
-  // Check some casting between gcc and altivec vectors.
-  #define gccvector __attribute__((vector_size(16)))
-  gccvector unsigned int gccv = {0,0,0,0};
+// Check some casting between gcc and altivec vectors.
+#define gccvector __attribute__((vector_size(16)))
+  gccvector unsigned int gccv = {0, 0, 0, 0};
   gccvector unsigned int gccv1 = gccv;
   gccvector int gccv2 = (gccvector int)gccv;
   gccvector unsigned int gccv3 = v;
@@ -132,8 +132,8 @@ void f() {
   gccvector unsigned int gv = v;
   gccvector int gvi = (gccvector int)v;
   __attribute__((vector_size(8))) unsigned int gv8;
-  gv8 = gccv;     // expected-error {{assigning to '__attribute__((__vector_size__(2 * sizeof(unsigned int)))) unsigned int' (vector of 2 'unsigned int' values) from incompatible type '__attribute__((__vector_size__(4 * sizeof(unsigned int)))) unsigned int' (vector of 4 'unsigned int' values)}}
-  av = gv8;       // expected-error {{assigning to '__vector unsigned int' (vector of 4 'unsigned int' values) from incompatible type '__attribute__((__vector_size__(2 * sizeof(unsigned int)))) unsigned int' (vector of 2 'unsigned int' values)}}
+  gv8 = gccv; // expected-error {{assigning to '__attribute__((__vector_size__(2 * sizeof(unsigned int)))) unsigned int' (vector of 2 'unsigned int' values) from incompatible type '__attribute__((__vector_size__(4 * sizeof(unsigned int)))) unsigned int' (vector of 4 'unsigned int' values)}}
+  av = gv8;   // expected-error {{assigning to '__vector unsigned int' (vector of 4 'unsigned int' values) from incompatible type '__attribute__((__vector_size__(2 * sizeof(unsigned int)))) unsigned int' (vector of 2 'unsigned int' values)}}
 
   v = gccv;
   __vector unsigned int tv = gccv;
@@ -157,14 +157,13 @@ class c_v {
   void f__a2(int b, vector int a);
 };
 
-
 // bug 6895 - Vectorl literal casting confusion.
 vector char v1 = (vector char)((vector int)(1, 2, 3, 4));
 vector char v2 = (vector char)((vector float)(1.0f, 2.0f, 3.0f, 4.0f));
 vector char v3 = (vector char)((vector int)('a', 'b', 'c', 'd'));
 vector int v4 = (vector int)(1, 2, 3, 4);
 vector float v5 = (vector float)(1.0f, 2.0f, 3.0f, 4.0f);
-vector char v6 = (vector char)((vector int)(1+2, -2, (int)(2.0 * 3), -(5-3)));
+vector char v6 = (vector char)((vector int)(1 + 2, -2, (int)(2.0 * 3), -(5 - 3)));
 
 // bug 7553 - Problem with '==' and vectors
 void func() {
@@ -179,36 +178,32 @@ void func() {
 }
 
 // vecreturn attribute test
-struct Vector
-{
-	__vector float xyzw;
+struct Vector {
+  __vector float xyzw;
 } __attribute__((vecreturn));
 
-Vector Add(Vector lhs, Vector rhs)
-{
-	Vector result;
-	result.xyzw = vec_add(lhs.xyzw, rhs.xyzw);
-	return result; // This will (eventually) be returned in a register
+Vector Add(Vector lhs, Vector rhs) {
+  Vector result;
+  result.xyzw = vec_add(lhs.xyzw, rhs.xyzw);
+  return result; // This will (eventually) be returned in a register
 }
 
 // vecreturn attribute test - should error because of virtual function.
-class VectorClassNonPod
-{
-	__vector float xyzw;
+class VectorClassNonPod {
+  __vector float xyzw;
+
 public:
   VectorClassNonPod() {}
   virtual ~VectorClassNonPod() {}
-} __attribute__((vecreturn));     // expected-error {{the vecreturn attribute can only be used on a POD (plain old data) class or structure (i.e. no virtual functions)}}
+} __attribute__((vecreturn)); // expected-error {{the vecreturn attribute can only be used on a POD (plain old data) class or structure (i.e. no virtual functions)}}
 
 // vecreturn attribute test - should error because of virtual function.
-class VectorClassMultipleMembers
-{
+class VectorClassMultipleMembers {
 public:
-	__vector float xyzw;
-	__vector float abcd;
-} __attribute__((vecreturn));     // expected-error {{the vecreturn attribute can only be used on a class or structure with one member, which must be a vector}}
+  __vector float xyzw;
+  __vector float abcd;
+} __attribute__((vecreturn)); // expected-error {{the vecreturn attribute can only be used on a class or structure with one member, which must be a vector}}
 
-template<typename... Args> void PR16874() {
-	(void) (Args::foo()...); // expected-error {{expression contains unexpanded parameter pack 'Args'}} expected-error {{expected ')'}} expected-note {{to match this '('}}
+template <typename... Args> void PR16874() {
+  (void)(Args::foo()...); // expected-error {{expression contains unexpanded parameter pack 'Args'}} expected-error {{expected ')'}} expected-note {{to match this '('}}
 }
-

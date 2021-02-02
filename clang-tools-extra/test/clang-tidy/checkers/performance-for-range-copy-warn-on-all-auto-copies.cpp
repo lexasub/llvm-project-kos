@@ -4,8 +4,8 @@
 template <typename T>
 struct Iterator {
   void operator++() {}
-  const T& operator*() {
-    static T* TT = new T();
+  const T &operator*() {
+    static T *TT = new T();
     return *TT;
   }
   bool operator!=(const Iterator &) { return false; }
@@ -27,7 +27,7 @@ struct S {
 
 void NegativeLoopVariableNotAuto() {
   for (S S1 : View<Iterator<S>>()) {
-    S* S2 = &S1;
+    S *S2 = &S1;
   }
 }
 
@@ -35,6 +35,6 @@ void PositiveTriggeredForAutoLoopVariable() {
   for (auto S1 : View<Iterator<S>>()) {
     // CHECK-MESSAGES: [[@LINE-1]]:13: warning: the loop variable's type is not a reference type; this creates a copy in each iteration; consider making this a reference [performance-for-range-copy]
     // CHECK-FIXES: for (const auto& S1 : View<Iterator<S>>()) {
-    S* S2 = &S1;
+    S *S2 = &S1;
   }
 }

@@ -49,8 +49,8 @@ T tmain() {
   T vec[] = {1, 2};
   S<T> s_arr[] = {1, 2};
   S<T> &var = test;
-  #pragma omp target
-  #pragma omp teams
+#pragma omp target
+#pragma omp teams
 #pragma omp distribute firstprivate(t_var, vec, s_arr, s_arr, var, var)
   for (int i = 0; i < 2; ++i) {
     vec[i] = t_var;
@@ -64,19 +64,19 @@ int main() {
   volatile double g;
   volatile double &g1 = g;
 
-  #ifdef LAMBDA
+#ifdef LAMBDA
   // LAMBDA-LABEL: @main
   // LAMBDA: call{{.*}} void [[OUTER_LAMBDA:@.+]](
   [&]() {
     static float sfvar;
-    // LAMBDA: define{{.*}} internal{{.*}} void [[OUTER_LAMBDA]](
-    // LAMBDA: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
-    // LAMBDA: call void [[OFFLOADING_FUN:@.+]](
+// LAMBDA: define{{.*}} internal{{.*}} void [[OUTER_LAMBDA]](
+// LAMBDA: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
+// LAMBDA: call void [[OFFLOADING_FUN:@.+]](
 
-    // LAMBDA: define{{.+}} void [[OFFLOADING_FUN]](
-    // LAMBDA: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, {{.+}}, {{.+}}* [[OMP_OUTLINED:@.+]] to {{.+}})
-    #pragma omp target
-    #pragma omp teams
+// LAMBDA: define{{.+}} void [[OFFLOADING_FUN]](
+// LAMBDA: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, {{.+}}, {{.+}}* [[OMP_OUTLINED:@.+]] to {{.+}})
+#pragma omp target
+#pragma omp teams
 #pragma omp distribute firstprivate(g, g1, svar, sfvar)
     for (int i = 0; i < 2; ++i) {
       // LAMBDA: define internal{{.*}} void [[OMP_OUTLINED]](i32* noalias %{{.+}}, i32* noalias %{{.+}}, double*{{.*}} [[G_IN:%.+]], double*{{.*}} [[G1_IN:%.+]], i32*{{.*}} [[SVAR_IN:%.+]], float*{{.*}} [[SFVAR_IN:%.+]])
@@ -152,58 +152,58 @@ int main() {
       // LAMBDA: call{{.*}} void [[INNER_LAMBDA:@.+]](%{{.+}}* {{.+}})
       // LAMBDA: call {{.*}}void @__kmpc_for_static_fini(
       [&]() {
-	// LAMBDA: define {{.+}} void [[INNER_LAMBDA]](%{{.+}}* {{[^,]*}} [[ARG_PTR:%.+]])
-	// LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
-	g += 2;
-	g1 += 2;
-	svar += 4;
-	sfvar += 8.0;
-	// LAMBDA-DAG: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
-	// LAMBDA-DAG: [[G_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
-	// LAMBDA-DAG: [[G_REF:%.+]] = load double*, double** [[G_PTR_REF]],
-	// LAMBDA-DAG: [[G_REF_VAL:%.+]] = load double, double* [[G_REF]],
-	// LAMBDA-DAG: [[G_REF_ADD:%.+]] = fadd double [[G_REF_VAL]], 2.{{.+}}
-	// LAMBDA-DAG: store double [[G_REF_ADD]], double* [[G_REF]]
+        // LAMBDA: define {{.+}} void [[INNER_LAMBDA]](%{{.+}}* {{[^,]*}} [[ARG_PTR:%.+]])
+        // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
+        g += 2;
+        g1 += 2;
+        svar += 4;
+        sfvar += 8.0;
+        // LAMBDA-DAG: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
+        // LAMBDA-DAG: [[G_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
+        // LAMBDA-DAG: [[G_REF:%.+]] = load double*, double** [[G_PTR_REF]],
+        // LAMBDA-DAG: [[G_REF_VAL:%.+]] = load double, double* [[G_REF]],
+        // LAMBDA-DAG: [[G_REF_ADD:%.+]] = fadd double [[G_REF_VAL]], 2.{{.+}}
+        // LAMBDA-DAG: store double [[G_REF_ADD]], double* [[G_REF]]
 
-	// LAMBDA-DAG: [[TMP_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 1
-	// LAMBDA-DAG: [[G1_REF:%.+]] = load double*, double** [[TMP_PTR_REF]]
-	// LAMBDA-DAG: [[G1_REF_VAL:%.+]] = load double, double* [[G1_REF]],
-	// LAMBDA-DAG: [[G1_ADD:%.+]] = fadd double [[G1_REF_VAL]], 2.{{.+}}
-	// LAMBDA-DAG: store double [[G1_ADD]], double* [[G1_REF]],
+        // LAMBDA-DAG: [[TMP_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 1
+        // LAMBDA-DAG: [[G1_REF:%.+]] = load double*, double** [[TMP_PTR_REF]]
+        // LAMBDA-DAG: [[G1_REF_VAL:%.+]] = load double, double* [[G1_REF]],
+        // LAMBDA-DAG: [[G1_ADD:%.+]] = fadd double [[G1_REF_VAL]], 2.{{.+}}
+        // LAMBDA-DAG: store double [[G1_ADD]], double* [[G1_REF]],
 
-	// LAMBDA-DAG: [[SVAR_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 2
-	// LAMBDA-DAG: [[SVAR_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[SVAR_PTR_REF]]
-	// LAMBDA-DAG: [[SVAR_REF_VAL:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[SVAR_REF]]
-	// LAMBDA-DAG: [[SVAR_ADD:%.+]] = add{{.*}} i{{[0-9]+}} [[SVAR_REF_VAL]], 4
-	// LAMBDA-DAG: store i{{[0-9]+}} [[SVAR_ADD]], i{{[0-9]+}}* [[SVAR_REF]]
+        // LAMBDA-DAG: [[SVAR_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 2
+        // LAMBDA-DAG: [[SVAR_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[SVAR_PTR_REF]]
+        // LAMBDA-DAG: [[SVAR_REF_VAL:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[SVAR_REF]]
+        // LAMBDA-DAG: [[SVAR_ADD:%.+]] = add{{.*}} i{{[0-9]+}} [[SVAR_REF_VAL]], 4
+        // LAMBDA-DAG: store i{{[0-9]+}} [[SVAR_ADD]], i{{[0-9]+}}* [[SVAR_REF]]
 
-	// LAMBDA-DAG: [[SFVAR_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 3
-	// LAMBDA-DAG: [[SFVAR_REF:%.+]] = load float*, float** [[SFVAR_PTR_REF]]
-	// LAMBDA-DAG: [[SFVAR_REF_VAL:%.+]] = load float, float* [[SFVAR_REF]]
-	// LAMBDA-DAG: [[SFVAR_REF_CONV:%.+]] = fpext float [[SFVAR_REF_VAL]] to double
-	// LAMBDA-DAG: [[SFVAR_ADD:%.+]] = fadd double [[SFVAR_REF_CONV]], 8.{{.+}}
-	// LAMBDA-DAG: [[SFVAR_ADD_CONV:%.+]] = fptrunc double [[SFVAR_ADD]] to float
-	// LAMBDA-DAG: store float [[SFVAR_ADD_CONV]], float* [[SFVAR_REF]],
+        // LAMBDA-DAG: [[SFVAR_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 3
+        // LAMBDA-DAG: [[SFVAR_REF:%.+]] = load float*, float** [[SFVAR_PTR_REF]]
+        // LAMBDA-DAG: [[SFVAR_REF_VAL:%.+]] = load float, float* [[SFVAR_REF]]
+        // LAMBDA-DAG: [[SFVAR_REF_CONV:%.+]] = fpext float [[SFVAR_REF_VAL]] to double
+        // LAMBDA-DAG: [[SFVAR_ADD:%.+]] = fadd double [[SFVAR_REF_CONV]], 8.{{.+}}
+        // LAMBDA-DAG: [[SFVAR_ADD_CONV:%.+]] = fptrunc double [[SFVAR_ADD]] to float
+        // LAMBDA-DAG: store float [[SFVAR_ADD_CONV]], float* [[SFVAR_REF]],
       }();
     }
   }();
   return 0;
-  #else
+#else
   S<float> test;
   int t_var = 0;
   int vec[] = {1, 2};
   S<float> s_arr[] = {1, 2};
   S<float> &var = test;
 
-  #pragma omp target
-  #pragma omp teams
-  #pragma omp distribute firstprivate(t_var, vec, s_arr, s_arr, var, var, svar)
+#pragma omp target
+#pragma omp teams
+#pragma omp distribute firstprivate(t_var, vec, s_arr, s_arr, var, var, svar)
   for (int i = 0; i < 2; ++i) {
     vec[i] = t_var;
     s_arr[i] = var;
   }
   return tmain<int>();
-  #endif
+#endif
 }
 
 // CHECK: define{{.*}} i{{[0-9]+}} @main()

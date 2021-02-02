@@ -54,9 +54,8 @@ public:
   bool isCoalescableExtInstr(const MachineInstr &MI, Register &SrcReg,
                              Register &DstReg, unsigned &SubIdx) const override;
 
-  bool
-  areMemAccessesTriviallyDisjoint(const MachineInstr &MIa,
-                                  const MachineInstr &MIb) const override;
+  bool areMemAccessesTriviallyDisjoint(const MachineInstr &MIa,
+                                       const MachineInstr &MIb) const override;
 
   unsigned isLoadFromStackSlot(const MachineInstr &MI,
                                int &FrameIndex) const override;
@@ -94,7 +93,6 @@ public:
   static int getMemScale(const MachineInstr &MI) {
     return getMemScale(MI.getOpcode());
   }
-
 
   /// Returns the index for the immediate for a given instruction.
   static unsigned getLoadStoreImmIdx(unsigned Opc);
@@ -173,12 +171,12 @@ public:
   bool isSubregFoldable() const override { return true; }
 
   using TargetInstrInfo::foldMemoryOperandImpl;
-  MachineInstr *
-  foldMemoryOperandImpl(MachineFunction &MF, MachineInstr &MI,
-                        ArrayRef<unsigned> Ops,
-                        MachineBasicBlock::iterator InsertPt, int FrameIndex,
-                        LiveIntervals *LIS = nullptr,
-                        VirtRegMap *VRM = nullptr) const override;
+  MachineInstr *foldMemoryOperandImpl(MachineFunction &MF, MachineInstr &MI,
+                                      ArrayRef<unsigned> Ops,
+                                      MachineBasicBlock::iterator InsertPt,
+                                      int FrameIndex,
+                                      LiveIntervals *LIS = nullptr,
+                                      VirtRegMap *VRM = nullptr) const override;
 
   /// \returns true if a branch from an instruction with opcode \p BranchOpc
   ///  bytes is capable of jumping to a position \p BrOffset bytes away.
@@ -267,8 +265,8 @@ public:
                                    bool OutlineFromLinkOnceODRs) const override;
   outliner::OutlinedFunction getOutliningCandidateInfo(
       std::vector<outliner::Candidate> &RepeatedSequenceLocs) const override;
-  outliner::InstrType
-  getOutliningType(MachineBasicBlock::iterator &MIT, unsigned Flags) const override;
+  outliner::InstrType getOutliningType(MachineBasicBlock::iterator &MIT,
+                                       unsigned Flags) const override;
   bool isMBBSafeToOutlineFrom(MachineBasicBlock &MBB,
                               unsigned &Flags) const override;
   void buildOutlinedFrame(MachineBasicBlock &MBB, MachineFunction &MF,
@@ -439,10 +437,10 @@ static inline bool isPTrueOpcode(unsigned Opc) {
 unsigned getBLRCallOpcode(const MachineFunction &MF);
 
 // struct TSFlags {
-#define TSFLAG_ELEMENT_SIZE_TYPE(X)      (X)       // 3-bits
+#define TSFLAG_ELEMENT_SIZE_TYPE(X) (X) // 3-bits
 #define TSFLAG_DESTRUCTIVE_INST_TYPE(X) ((X) << 3) // 4-bit
-#define TSFLAG_FALSE_LANE_TYPE(X)       ((X) << 7) // 2-bits
-#define TSFLAG_INSTR_FLAGS(X)           ((X) << 9) // 2-bits
+#define TSFLAG_FALSE_LANE_TYPE(X) ((X) << 7) // 2-bits
+#define TSFLAG_INSTR_FLAGS(X) ((X) << 9) // 2-bits
 // }
 
 namespace AArch64 {
@@ -450,33 +448,33 @@ namespace AArch64 {
 enum ElementSizeType {
   ElementSizeMask = TSFLAG_ELEMENT_SIZE_TYPE(0x7),
   ElementSizeNone = TSFLAG_ELEMENT_SIZE_TYPE(0x0),
-  ElementSizeB    = TSFLAG_ELEMENT_SIZE_TYPE(0x1),
-  ElementSizeH    = TSFLAG_ELEMENT_SIZE_TYPE(0x2),
-  ElementSizeS    = TSFLAG_ELEMENT_SIZE_TYPE(0x3),
-  ElementSizeD    = TSFLAG_ELEMENT_SIZE_TYPE(0x4),
+  ElementSizeB = TSFLAG_ELEMENT_SIZE_TYPE(0x1),
+  ElementSizeH = TSFLAG_ELEMENT_SIZE_TYPE(0x2),
+  ElementSizeS = TSFLAG_ELEMENT_SIZE_TYPE(0x3),
+  ElementSizeD = TSFLAG_ELEMENT_SIZE_TYPE(0x4),
 };
 
 enum DestructiveInstType {
-  DestructiveInstTypeMask       = TSFLAG_DESTRUCTIVE_INST_TYPE(0xf),
-  NotDestructive                = TSFLAG_DESTRUCTIVE_INST_TYPE(0x0),
-  DestructiveOther              = TSFLAG_DESTRUCTIVE_INST_TYPE(0x1),
-  DestructiveUnary              = TSFLAG_DESTRUCTIVE_INST_TYPE(0x2),
-  DestructiveBinaryImm          = TSFLAG_DESTRUCTIVE_INST_TYPE(0x3),
-  DestructiveBinaryShImmUnpred  = TSFLAG_DESTRUCTIVE_INST_TYPE(0x4),
-  DestructiveBinary             = TSFLAG_DESTRUCTIVE_INST_TYPE(0x5),
-  DestructiveBinaryComm         = TSFLAG_DESTRUCTIVE_INST_TYPE(0x6),
-  DestructiveBinaryCommWithRev  = TSFLAG_DESTRUCTIVE_INST_TYPE(0x7),
+  DestructiveInstTypeMask = TSFLAG_DESTRUCTIVE_INST_TYPE(0xf),
+  NotDestructive = TSFLAG_DESTRUCTIVE_INST_TYPE(0x0),
+  DestructiveOther = TSFLAG_DESTRUCTIVE_INST_TYPE(0x1),
+  DestructiveUnary = TSFLAG_DESTRUCTIVE_INST_TYPE(0x2),
+  DestructiveBinaryImm = TSFLAG_DESTRUCTIVE_INST_TYPE(0x3),
+  DestructiveBinaryShImmUnpred = TSFLAG_DESTRUCTIVE_INST_TYPE(0x4),
+  DestructiveBinary = TSFLAG_DESTRUCTIVE_INST_TYPE(0x5),
+  DestructiveBinaryComm = TSFLAG_DESTRUCTIVE_INST_TYPE(0x6),
+  DestructiveBinaryCommWithRev = TSFLAG_DESTRUCTIVE_INST_TYPE(0x7),
   DestructiveTernaryCommWithRev = TSFLAG_DESTRUCTIVE_INST_TYPE(0x8),
 };
 
 enum FalseLaneType {
-  FalseLanesMask  = TSFLAG_FALSE_LANE_TYPE(0x3),
-  FalseLanesZero  = TSFLAG_FALSE_LANE_TYPE(0x1),
+  FalseLanesMask = TSFLAG_FALSE_LANE_TYPE(0x3),
+  FalseLanesZero = TSFLAG_FALSE_LANE_TYPE(0x1),
   FalseLanesUndef = TSFLAG_FALSE_LANE_TYPE(0x2),
 };
 
 // NOTE: This is a bit field.
-static const uint64_t InstrFlagIsWhile     = TSFLAG_INSTR_FLAGS(0x1);
+static const uint64_t InstrFlagIsWhile = TSFLAG_INSTR_FLAGS(0x1);
 static const uint64_t InstrFlagIsPTestLike = TSFLAG_INSTR_FLAGS(0x2);
 
 #undef TSFLAG_ELEMENT_SIZE_TYPE
@@ -487,7 +485,7 @@ static const uint64_t InstrFlagIsPTestLike = TSFLAG_INSTR_FLAGS(0x2);
 int getSVEPseudoMap(uint16_t Opcode);
 int getSVERevInstr(uint16_t Opcode);
 int getSVENonRevInstr(uint16_t Opcode);
-}
+} // namespace AArch64
 
 } // end namespace llvm
 

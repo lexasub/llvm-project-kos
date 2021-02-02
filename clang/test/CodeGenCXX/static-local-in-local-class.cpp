@@ -18,27 +18,27 @@ void X::f() {
     struct Y {
       static void g() {
         i = new int();
-	*i = 100;
-	(*i) = (*i) +1;
+        *i = 100;
+        (*i) = (*i) + 1;
       }
     };
     (void)Y::g();
   }
   (void)i;
 }
-}
+} // namespace pr6769
 
 namespace pr7101 {
 void foo() {
-    static int n = 0;
-    struct Helper {
-        static void Execute() {
-            n++;
-        }
-    };
-    Helper::Execute();
+  static int n = 0;
+  struct Helper {
+    static void Execute() {
+      n++;
+    }
+  };
+  Helper::Execute();
 }
-}
+} // namespace pr7101
 
 // These tests all break the assumption that the static var decl has to be
 // emitted before use of the var decl.  This happens because we defer emission
@@ -53,7 +53,7 @@ auto x = []() {
   return [] { return l1; };
 };
 int f() { return x()(); }
-}
+} // namespace pr18020_lambda
 
 // CHECK-LABEL: define internal i32 @"_ZZNK14pr18020_lambda3$_0clEvENKUlvE_clEv"
 // CHECK: load i32, i32* @"_ZZNK14pr18020_lambda3$_0clEvE2l1"
@@ -68,7 +68,7 @@ auto x = []() {
   };
 };
 int f() { return x()(); }
-}
+} // namespace pr18020_constexpr
 
 // CHECK-LABEL: define internal i32 @"_ZZNK17pr18020_constexpr3$_1clEvENKUlvE_clEv"
 // CHECK: load i32*, i32** @"_ZZZNK17pr18020_constexpr3$_1clEvENKUlvE_clEvE2l2"
@@ -95,7 +95,9 @@ int pr18020_f() { return x()(); }
 // is called, and the static local is referenced and must be emitted.
 static auto deduced_return() {
   static int n = 42;
-  struct S { int *operator()() { return &n; } };
+  struct S {
+    int *operator()() { return &n; }
+  };
   return S();
 }
 extern "C" int call_deduced_return_operator() {
@@ -113,7 +115,9 @@ extern "C" int call_deduced_return_operator() {
 static auto block_deduced_return() {
   auto (^b)() = ^() {
     static int n = 42;
-    struct S { int *operator()() { return &n; } };
+    struct S {
+      int *operator()() { return &n; }
+    };
     return S();
   };
   return b();
@@ -134,7 +138,9 @@ inline auto static_local_label(void *p) {
   if (p)
     goto *p;
   static void *q = &&label;
-  struct S { static void *get() { return q; } };
+  struct S {
+    static void *get() { return q; }
+  };
   return S();
 label:
   __builtin_abort();
@@ -147,7 +153,9 @@ void *global_label = decltype(static_local_label(0))::get();
 
 auto global_lambda = []() {
   static int x = 42;
-  struct S { static int *get() { return &x; } };
+  struct S {
+    static int *get() { return &x; }
+  };
   return S();
 };
 extern "C" int use_global_lambda() {

@@ -1,16 +1,10 @@
 // Header for PCH test cxx-using.cpp
 
-
-
-
-
-
 struct B {
-    void f(char c);
+  void f(char c);
 };
 
-struct D : B 
-{
-    using B::f;
-    void f(int);
+struct D : B {
+  using B::f;
+  void f(int);
 };

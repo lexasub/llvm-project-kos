@@ -7,5 +7,5 @@ extern void g(S a);
 
 void h() {
   g(a); // expected-error {{argument type 'S' is incomplete}}
-  f(); // expected-error {{calling 'f' with incomplete return type 'S'}}
+  f();  // expected-error {{calling 'f' with incomplete return type 'S'}}
 }

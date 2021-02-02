@@ -34,7 +34,7 @@
 
 // Local
 static void l() {}
-void use_locals(){l();}
+void use_locals() { l(); }
 // DEFAULTS-DAG: define internal void @_ZL1lv()
 // EXPLICIT-DAG: define internal void @_ZL1lv()
 // ALL_DEFAULT-DAG: define internal void @_ZL1lv()
@@ -81,10 +81,8 @@ extern void __declspec(dllimport) imported_e();
 // ALL_DEFAULT-DAG: declare void @_Z10imported_ev()
 
 // Weak Declaration
-__attribute__((weak))
-extern void w();
-__attribute__((weak))
-extern void __declspec(dllimport) imported_w();
+__attribute__((weak)) extern void w();
+__attribute__((weak)) extern void __declspec(dllimport) imported_w();
 // DEFAULTS-DAG: declare extern_weak hidden void @_Z1wv()
 // DEFAULTS-DAG: declare extern_weak void @_Z10imported_wv()
 // EXPLICIT-DAG: declare extern_weak protected void @_Z1wv()
@@ -92,7 +90,12 @@ extern void __declspec(dllimport) imported_w();
 // ALL_DEFAULT-DAG: declare extern_weak void @_Z1wv()
 // ALL_DEFAULT-DAG: declare extern_weak void @_Z10imported_wv()
 
-void use_declarations(){e(); imported_e(); w(); imported_w();}
+void use_declarations() {
+  e();
+  imported_e();
+  w();
+  imported_w();
+}
 
 // Show that -fvisibility-from-dllstorageclass overrides the effect of visibility annotations.
 
@@ -102,7 +105,7 @@ struct __attribute__((type_visibility("protected"))) t {
 void t::foo() {}
 // DEFAULTS-DAG: @_ZTV1t = hidden unnamed_addr constant
 
-int v __attribute__ ((__visibility__ ("protected"))) = 123;
+int v __attribute__((__visibility__("protected"))) = 123;
 // DEFAULTS-DAG: @v = hidden global
 
 #pragma GCC visibility push(protected)

@@ -63,6 +63,6 @@ std::unique_ptr<Module> parseIR(
 std::unique_ptr<Module> parseIRFile(
     StringRef Filename, SMDiagnostic &Err, LLVMContext &Context,
     DataLayoutCallbackTy DataLayoutCallback = [](StringRef) { return None; });
-}
+} // namespace llvm
 
 #endif

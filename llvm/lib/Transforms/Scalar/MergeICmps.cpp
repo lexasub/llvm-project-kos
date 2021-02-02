@@ -133,7 +133,7 @@ public:
 
 private:
   unsigned Order = 1;
-  DenseMap<const Value*, int> BaseToIndex;
+  DenseMap<const Value *, int> BaseToIndex;
 };
 
 // If this value is a load from a constant offset w.r.t. a base address, and
@@ -187,12 +187,13 @@ BCEAtom visitICmpLoadOperand(Value *const Val, BaseIdentifier &BaseId) {
 // left (resp. right), so that we can detect consecutive loads. To ensure this
 // we put the smallest atom on the left.
 class BCECmpBlock {
- public:
+public:
   BCECmpBlock() {}
 
   BCECmpBlock(BCEAtom L, BCEAtom R, int SizeBits)
       : Lhs_(std::move(L)), Rhs_(std::move(R)), SizeBits_(SizeBits) {
-    if (Rhs_ < Lhs_) std::swap(Rhs_, Lhs_);
+    if (Rhs_ < Lhs_)
+      std::swap(Rhs_, Lhs_);
   }
 
   bool IsValid() const { return Lhs_.BaseId != 0 && Rhs_.BaseId != 0; }
@@ -277,8 +278,8 @@ void BCECmpBlock::split(BasicBlock *NewParent, AliasAnalysis &AA) const {
   for (Instruction &Inst : *BB) {
     if (BlockInsts.count(&Inst))
       continue;
-      assert(canSinkBCECmpInst(&Inst, BlockInsts, AA) &&
-             "Split unsplittable block");
+    assert(canSinkBCECmpInst(&Inst, BlockInsts, AA) &&
+           "Split unsplittable block");
     // This is a non-BCE-cmp-block instruction. And it can be separated
     // from the BCE-cmp-block instruction.
     OtherInsts.push_back(&Inst);
@@ -353,9 +354,11 @@ BCECmpBlock visitICmp(const ICmpInst *const CmpI,
 BCECmpBlock visitCmpBlock(Value *const Val, BasicBlock *const Block,
                           const BasicBlock *const PhiBlock,
                           BaseIdentifier &BaseId) {
-  if (Block->empty()) return {};
+  if (Block->empty())
+    return {};
   auto *const BranchI = dyn_cast<BranchInst>(Block->getTerminator());
-  if (!BranchI) return {};
+  if (!BranchI)
+    return {};
   LLVM_DEBUG(dbgs() << "branch\n");
   if (BranchI->isUnconditional()) {
     // In this case, we expect an incoming value which is the result of the
@@ -363,7 +366,8 @@ BCECmpBlock visitCmpBlock(Value *const Val, BasicBlock *const Block,
     // that this does not mean that this is the last incoming value, blocks
     // can be reordered).
     auto *const CmpI = dyn_cast<ICmpInst>(Val);
-    if (!CmpI) return {};
+    if (!CmpI)
+      return {};
     LLVM_DEBUG(dbgs() << "icmp\n");
     auto Result = visitICmp(CmpI, ICmpInst::ICMP_EQ, BaseId);
     Result.CmpI = CmpI;
@@ -374,10 +378,12 @@ BCECmpBlock visitCmpBlock(Value *const Val, BasicBlock *const Block,
     // chained).
     const auto *const Const = cast<ConstantInt>(Val);
     LLVM_DEBUG(dbgs() << "const\n");
-    if (!Const->isZero()) return {};
+    if (!Const->isZero())
+      return {};
     LLVM_DEBUG(dbgs() << "false\n");
     auto *const CmpI = dyn_cast<ICmpInst>(BranchI->getCondition());
-    if (!CmpI) return {};
+    if (!CmpI)
+      return {};
     LLVM_DEBUG(dbgs() << "icmp\n");
     assert(BranchI->getNumSuccessors() == 2 && "expecting a cond branch");
     BasicBlock *const FalseBlock = BranchI->getSuccessor(1);
@@ -405,15 +411,15 @@ static inline void enqueueBlock(std::vector<BCECmpBlock> &Comparisons,
 
 // A chain of comparisons.
 class BCECmpChain {
- public:
-   BCECmpChain(const std::vector<BasicBlock *> &Blocks, PHINode &Phi,
-               AliasAnalysis &AA);
+public:
+  BCECmpChain(const std::vector<BasicBlock *> &Blocks, PHINode &Phi,
+              AliasAnalysis &AA);
 
-   int size() const { return Comparisons_.size(); }
+  int size() const { return Comparisons_.size(); }
 
 #ifdef MERGEICMPS_DOT_ON
   void dump() const;
-#endif  // MERGEICMPS_DOT_ON
+#endif // MERGEICMPS_DOT_ON
 
   bool simplify(const TargetLibraryInfo &TLI, AliasAnalysis &AA,
                 DomTreeUpdater &DTU);
@@ -518,7 +524,7 @@ BCECmpChain::BCECmpChain(const std::vector<BasicBlock *> &Blocks, PHINode &Phi,
 #ifdef MERGEICMPS_DOT_ON
   errs() << "BEFORE REORDERING:\n\n";
   dump();
-#endif  // MERGEICMPS_DOT_ON
+#endif // MERGEICMPS_DOT_ON
   // Reorder blocks by LHS. We can do that without changing the
   // semantics because we are only accessing dereferencable memory.
   llvm::sort(Comparisons_,
@@ -529,7 +535,7 @@ BCECmpChain::BCECmpChain(const std::vector<BasicBlock *> &Blocks, PHINode &Phi,
 #ifdef MERGEICMPS_DOT_ON
   errs() << "AFTER REORDERING:\n\n";
   dump();
-#endif  // MERGEICMPS_DOT_ON
+#endif // MERGEICMPS_DOT_ON
 }
 
 #ifdef MERGEICMPS_DOT_ON
@@ -547,13 +553,14 @@ void BCECmpChain::dump() const {
            << Comparison.Rhs().Offset << " (" << (Comparison.SizeBits() / 8)
            << " bytes)\"];\n";
     const Value *const Val = Phi_.getIncomingValueForBlock(Comparison.BB);
-    if (I > 0) errs() << " \"" << (I - 1) << "\" -> \"" << I << "\";\n";
+    if (I > 0)
+      errs() << " \"" << (I - 1) << "\" -> \"" << I << "\";\n";
     errs() << " \"" << I << "\" -> \"Phi\" [label=\"" << *Val << "\"];\n";
   }
   errs() << " \"Phi\" [label=\"Phi\"];\n";
   errs() << "}\n\n";
 }
-#endif  // MERGEICMPS_DOT_ON
+#endif // MERGEICMPS_DOT_ON
 
 namespace {
 
@@ -723,7 +730,7 @@ bool BCECmpChain::simplify(const TargetLibraryInfo &TLI, AliasAnalysis &AA,
   // predecessors of EntryBlock_ to NextCmpBlock instead. This makes all cmp
   // blocks in the old chain unreachable.
   while (!pred_empty(EntryBlock_)) {
-    BasicBlock* const Pred = *pred_begin(EntryBlock_);
+    BasicBlock *const Pred = *pred_begin(EntryBlock_);
     LLVM_DEBUG(dbgs() << "Updating jump into old chain from " << Pred->getName()
                       << "\n");
     Pred->getTerminator()->replaceUsesOfWith(EntryBlock_, NextCmpBlock);
@@ -756,9 +763,8 @@ bool BCECmpChain::simplify(const TargetLibraryInfo &TLI, AliasAnalysis &AA,
   return true;
 }
 
-std::vector<BasicBlock *> getOrderedBlocks(PHINode &Phi,
-                                           BasicBlock *const LastBlock,
-                                           int NumBlocks) {
+std::vector<BasicBlock *>
+getOrderedBlocks(PHINode &Phi, BasicBlock *const LastBlock, int NumBlocks) {
   // Walk up from the last block to find other blocks.
   std::vector<BasicBlock *> Blocks(NumBlocks);
   assert(LastBlock && "invalid last block");
@@ -816,7 +822,8 @@ bool processPhi(PHINode &Phi, const TargetLibraryInfo &TLI, AliasAnalysis &AA,
   // last block and reconstruct the order.
   BasicBlock *LastBlock = nullptr;
   for (unsigned I = 0; I < Phi.getNumIncomingValues(); ++I) {
-    if (isa<ConstantInt>(Phi.getIncomingValue(I))) continue;
+    if (isa<ConstantInt>(Phi.getIncomingValue(I)))
+      continue;
     if (LastBlock) {
       // There are several non-constant values.
       LLVM_DEBUG(dbgs() << "skip: several non-constant values\n");
@@ -849,7 +856,8 @@ bool processPhi(PHINode &Phi, const TargetLibraryInfo &TLI, AliasAnalysis &AA,
 
   const auto Blocks =
       getOrderedBlocks(Phi, LastBlock, Phi.getNumIncomingValues());
-  if (Blocks.empty()) return false;
+  if (Blocks.empty())
+    return false;
   BCECmpChain CmpChain(Blocks, Phi, AA);
 
   if (CmpChain.size() < 2) {
@@ -897,7 +905,8 @@ public:
   }
 
   bool runOnFunction(Function &F) override {
-    if (skipFunction(F)) return false;
+    if (skipFunction(F))
+      return false;
     const auto &TLI = getAnalysis<TargetLibraryInfoWrapperPass>().getTLI(F);
     const auto &TTI = getAnalysis<TargetTransformInfoWrapperPass>().getTTI(F);
     // MergeICmps does not need the DominatorTree, but we update it if it's
@@ -907,7 +916,7 @@ public:
     return runImpl(F, TLI, TTI, AA, DTWP ? &DTWP->getDomTree() : nullptr);
   }
 
- private:
+private:
   void getAnalysisUsage(AnalysisUsage &AU) const override {
     AU.addRequired<TargetLibraryInfoWrapperPass>();
     AU.addRequired<TargetTransformInfoWrapperPass>();

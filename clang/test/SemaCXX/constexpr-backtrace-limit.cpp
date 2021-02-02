@@ -30,5 +30,5 @@
 // TEST4-NEXT: in call to 'recurse(4)'
 // TEST4-NEXT: in call to 'recurse(5)'
 
-constexpr int recurse(int n) { return n ? recurse(n-1) : *(int*)n; }
+constexpr int recurse(int n) { return n ? recurse(n - 1) : *(int *)n; }
 static_assert(recurse(5), "");

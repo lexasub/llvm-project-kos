@@ -8,4 +8,3 @@ union x {
   x(int y) : a(y) {}
 };
 x a(1), b(1.0f);
-

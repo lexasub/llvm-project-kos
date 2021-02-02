@@ -19,7 +19,7 @@ using BEFORE_AND_1::before_and_1;
 void test_before() {
   before_and_1();
   after_and_2(); // expected-error {{use of undeclared identifier 'after_and_2'; did you mean 'AFTER_AND_2::after_and_2'?}}
-  only_1(); // expected-error {{use of undeclared identifier 'only_1'; did you mean 'ONLY_1::only_1'?}}
+  only_1();      // expected-error {{use of undeclared identifier 'only_1'; did you mean 'ONLY_1::only_1'?}}
   before_1_and_2();
 }
 

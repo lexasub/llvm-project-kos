@@ -7,4 +7,8 @@
 // CHECK-NEXT: Symbols:
 // CHECK-NEXT: ...
 
-template<typename T> class C2 { union { T c; }; };
+template <typename T> class C2 {
+  union {
+    T c;
+  };
+};

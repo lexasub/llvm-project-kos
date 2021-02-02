@@ -22,17 +22,21 @@ using internal::DynTypedMatcher;
 
 #if GTEST_HAS_DEATH_TEST
 TEST(HasNameDeathTest, DiesOnEmptyName) {
-  ASSERT_DEBUG_DEATH({
-    DeclarationMatcher HasEmptyName = recordDecl(hasName(""));
-    EXPECT_TRUE(notMatches("class X {};", HasEmptyName));
-  }, "");
+  ASSERT_DEBUG_DEATH(
+      {
+        DeclarationMatcher HasEmptyName = recordDecl(hasName(""));
+        EXPECT_TRUE(notMatches("class X {};", HasEmptyName));
+      },
+      "");
 }
 
 TEST(HasNameDeathTest, DiesOnEmptyPattern) {
-  ASSERT_DEBUG_DEATH({
-      DeclarationMatcher HasEmptyName = recordDecl(matchesName(""));
-      EXPECT_TRUE(notMatches("class X {};", HasEmptyName));
-    }, "");
+  ASSERT_DEBUG_DEATH(
+      {
+        DeclarationMatcher HasEmptyName = recordDecl(matchesName(""));
+        EXPECT_TRUE(notMatches("class X {};", HasEmptyName));
+      },
+      "");
 }
 #endif
 
@@ -55,36 +59,41 @@ AST_MATCHER_P(Decl, just, internal::Matcher<Decl>, AMatcher) {
 TEST(AstMatcherPMacro, Works) {
   DeclarationMatcher HasClassB = just(has(recordDecl(hasName("B")).bind("b")));
 
-  EXPECT_TRUE(matchAndVerifyResultTrue("class A { class B {}; };",
-      HasClassB, std::make_unique<VerifyIdIsBoundTo<Decl>>("b")));
+  EXPECT_TRUE(
+      matchAndVerifyResultTrue("class A { class B {}; };", HasClassB,
+                               std::make_unique<VerifyIdIsBoundTo<Decl>>("b")));
 
-  EXPECT_TRUE(matchAndVerifyResultFalse("class A { class B {}; };",
-      HasClassB, std::make_unique<VerifyIdIsBoundTo<Decl>>("a")));
+  EXPECT_TRUE(matchAndVerifyResultFalse(
+      "class A { class B {}; };", HasClassB,
+      std::make_unique<VerifyIdIsBoundTo<Decl>>("a")));
 
-  EXPECT_TRUE(matchAndVerifyResultFalse("class A { class C {}; };",
-      HasClassB, std::make_unique<VerifyIdIsBoundTo<Decl>>("b")));
+  EXPECT_TRUE(matchAndVerifyResultFalse(
+      "class A { class C {}; };", HasClassB,
+      std::make_unique<VerifyIdIsBoundTo<Decl>>("b")));
 }
 
 AST_POLYMORPHIC_MATCHER_P(polymorphicHas,
                           AST_POLYMORPHIC_SUPPORTED_TYPES(Decl, Stmt),
                           internal::Matcher<Decl>, AMatcher) {
-  return Finder->matchesChildOf(
-      Node, AMatcher, Builder,
-      ASTMatchFinder::BK_First);
+  return Finder->matchesChildOf(Node, AMatcher, Builder,
+                                ASTMatchFinder::BK_First);
 }
 
 TEST(AstPolymorphicMatcherPMacro, Works) {
   DeclarationMatcher HasClassB =
       polymorphicHas(recordDecl(hasName("B")).bind("b"));
 
-  EXPECT_TRUE(matchAndVerifyResultTrue("class A { class B {}; };",
-      HasClassB, std::make_unique<VerifyIdIsBoundTo<Decl>>("b")));
+  EXPECT_TRUE(
+      matchAndVerifyResultTrue("class A { class B {}; };", HasClassB,
+                               std::make_unique<VerifyIdIsBoundTo<Decl>>("b")));
 
-  EXPECT_TRUE(matchAndVerifyResultFalse("class A { class B {}; };",
-      HasClassB, std::make_unique<VerifyIdIsBoundTo<Decl>>("a")));
+  EXPECT_TRUE(matchAndVerifyResultFalse(
+      "class A { class B {}; };", HasClassB,
+      std::make_unique<VerifyIdIsBoundTo<Decl>>("a")));
 
-  EXPECT_TRUE(matchAndVerifyResultFalse("class A { class C {}; };",
-      HasClassB, std::make_unique<VerifyIdIsBoundTo<Decl>>("b")));
+  EXPECT_TRUE(matchAndVerifyResultFalse(
+      "class A { class C {}; };", HasClassB,
+      std::make_unique<VerifyIdIsBoundTo<Decl>>("b")));
 
   StatementMatcher StatementHasClassB =
       polymorphicHas(recordDecl(hasName("B")));
@@ -223,8 +232,8 @@ TEST(Matcher, IsExpansionInSystemHeader) {
   EXPECT_TRUE(matchesConditionally("#include \"other\"\n",
                                    recordDecl(isExpansionInSystemHeader()),
                                    false, {"-I/"}, M));
-  EXPECT_TRUE(notMatches("class X {};",
-                         recordDecl(isExpansionInSystemHeader())));
+  EXPECT_TRUE(
+      notMatches("class X {};", recordDecl(isExpansionInSystemHeader())));
   EXPECT_TRUE(notMatches("", recordDecl(isExpansionInSystemHeader())));
 }
 

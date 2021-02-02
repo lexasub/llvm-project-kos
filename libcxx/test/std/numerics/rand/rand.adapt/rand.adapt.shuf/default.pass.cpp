@@ -18,18 +18,15 @@
 
 #include "test_macros.h"
 
-void
-test1()
-{
-    std::knuth_b e1;
-    std::knuth_b e2(std::minstd_rand0::default_seed);
-    assert(e1 == e2);
-    assert(e1() == 152607844u);
+void test1() {
+  std::knuth_b e1;
+  std::knuth_b e2(std::minstd_rand0::default_seed);
+  assert(e1 == e2);
+  assert(e1() == 152607844u);
 }
 
-int main(int, char**)
-{
-    test1();
+int main(int, char**) {
+  test1();
 
   return 0;
 }

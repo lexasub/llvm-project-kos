@@ -98,8 +98,8 @@ struct CodeGenIntrinsic {
     WriteMem = MR_Mod | MR_Anywhere,
     ReadWriteArgMem = MR_ModRef | MR_ArgMem,
     ReadWriteInaccessibleMem = MR_ModRef | MR_InaccessibleMem,
-    ReadWriteInaccessibleMemOrArgMem = MR_ModRef | MR_ArgMem |
-                                       MR_InaccessibleMem,
+    ReadWriteInaccessibleMemOrArgMem =
+        MR_ModRef | MR_ArgMem | MR_InaccessibleMem,
     ReadWriteMem = MR_ModRef | MR_Anywhere,
   };
   ModRefBehavior ModRef;
@@ -173,9 +173,7 @@ struct CodeGenIntrinsic {
 
   std::vector<ArgAttribute> ArgumentAttributes;
 
-  bool hasProperty(enum SDNP Prop) const {
-    return Properties & (1 << Prop);
-  }
+  bool hasProperty(enum SDNP Prop) const { return Properties & (1 << Prop); }
 
   /// Goes through all IntrProperties that have IsDefault
   /// value set and sets the property.
@@ -217,6 +215,6 @@ public:
     return Intrinsics[Pos];
   }
 };
-}
+} // namespace llvm
 
 #endif

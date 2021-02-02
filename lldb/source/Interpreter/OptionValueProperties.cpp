@@ -52,7 +52,8 @@ void OptionValueProperties::Initialize(const PropertyDefinitions &defs) {
   for (const auto &definition : defs) {
     Property property(definition);
     assert(property.IsValid());
-    m_name_to_index.Append(ConstString(property.GetName()), m_properties.size());
+    m_name_to_index.Append(ConstString(property.GetName()),
+                           m_properties.size());
     property.GetValue()->SetParent(shared_from_this());
     m_properties.push_back(property);
   }
@@ -66,8 +67,7 @@ void OptionValueProperties::SetValueChangedCallback(
     property->SetValueChangedCallback(std::move(callback));
 }
 
-void OptionValueProperties::AppendProperty(ConstString name,
-                                           ConstString desc,
+void OptionValueProperties::AppendProperty(ConstString name, ConstString desc,
                                            bool is_global,
                                            const OptionValueSP &value_sp) {
   Property property(name, desc, is_global, value_sp);
@@ -98,8 +98,7 @@ void OptionValueProperties::AppendProperty(ConstString name,
 //
 lldb::OptionValueSP
 OptionValueProperties::GetValueForKey(const ExecutionContext *exe_ctx,
-                                      ConstString key,
-                                      bool will_modify) const {
+                                      ConstString key, bool will_modify) const {
   lldb::OptionValueSP value_sp;
   size_t idx = m_name_to_index.Find(key, SIZE_MAX);
   if (idx < m_properties.size())
@@ -131,15 +130,16 @@ OptionValueProperties::GetSubValue(const ExecutionContext *exe_ctx,
   switch (sub_name[0]) {
   case '.': {
     lldb::OptionValueSP return_val_sp;
-    return_val_sp =
-        value_sp->GetSubValue(exe_ctx, sub_name.drop_front(), will_modify, error);
+    return_val_sp = value_sp->GetSubValue(exe_ctx, sub_name.drop_front(),
+                                          will_modify, error);
     if (!return_val_sp) {
       if (Properties::IsSettingExperimental(sub_name.drop_front())) {
         size_t experimental_len =
             strlen(Properties::GetExperimentalSettingsName());
         if (sub_name[experimental_len + 1] == '.')
           return_val_sp = value_sp->GetSubValue(
-              exe_ctx, sub_name.drop_front(experimental_len + 2), will_modify, error);
+              exe_ctx, sub_name.drop_front(experimental_len + 2), will_modify,
+              error);
         // It isn't an error if an experimental setting is not present.
         if (!return_val_sp)
           error.Clear();
@@ -179,24 +179,22 @@ Status OptionValueProperties::SetSubValue(const ExecutionContext *exe_ctx,
     // Don't set an error if the path contained .experimental. - those are
     // allowed to be missing and should silently fail.
     if (!name_contains_experimental && error.AsCString() == nullptr) {
-      error.SetErrorStringWithFormat("invalid value path '%s'", name.str().c_str());
+      error.SetErrorStringWithFormat("invalid value path '%s'",
+                                     name.str().c_str());
     }
   }
   return error;
 }
 
-uint32_t
-OptionValueProperties::GetPropertyIndex(ConstString name) const {
+uint32_t OptionValueProperties::GetPropertyIndex(ConstString name) const {
   return m_name_to_index.Find(name, SIZE_MAX);
 }
 
 const Property *
 OptionValueProperties::GetProperty(const ExecutionContext *exe_ctx,
-                                   bool will_modify,
-                                   ConstString name) const {
-  return GetPropertyAtIndex(
-      exe_ctx, will_modify,
-      m_name_to_index.Find(name, SIZE_MAX));
+                                   bool will_modify, ConstString name) const {
+  return GetPropertyAtIndex(exe_ctx, will_modify,
+                            m_name_to_index.Find(name, SIZE_MAX));
 }
 
 const Property *OptionValueProperties::GetPropertyAtIndex(
@@ -556,8 +554,10 @@ lldb::OptionValueSP OptionValueProperties::DeepCopy() const {
   llvm_unreachable("this shouldn't happen");
 }
 
-const Property *OptionValueProperties::GetPropertyAtPath(
-    const ExecutionContext *exe_ctx, bool will_modify, llvm::StringRef name) const {
+const Property *
+OptionValueProperties::GetPropertyAtPath(const ExecutionContext *exe_ctx,
+                                         bool will_modify,
+                                         llvm::StringRef name) const {
   const Property *property = nullptr;
   if (name.empty())
     return nullptr;
@@ -580,7 +580,7 @@ const Property *OptionValueProperties::GetPropertyAtPath(
         property->GetValue()->GetAsProperties();
     if (sub_properties)
       return sub_properties->GetPropertyAtPath(exe_ctx, will_modify,
-                                                sub_name.drop_front());
+                                               sub_name.drop_front());
   }
   return nullptr;
 }

@@ -62,10 +62,9 @@ TEST_F(BenchmarkResultTest, WriteToAndReadFromDisk) {
 
   InstructionBenchmark ToDisk;
 
-  ToDisk.Key.Instructions.push_back(MCInstBuilder(Mips::XOR)
-                                        .addReg(Mips::T0)
-                                        .addReg(Mips::T1)
-                                        .addReg(Mips::T2));
+  ToDisk.Key.Instructions.push_back(
+      MCInstBuilder(Mips::XOR).addReg(Mips::T0).addReg(Mips::T1).addReg(
+          Mips::T2));
   ToDisk.Key.Config = "config";
   ToDisk.Key.RegisterInitialValues = {
       RegisterValue{Mips::T1, APInt(8, "123", 10)},

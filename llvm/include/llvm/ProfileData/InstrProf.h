@@ -97,9 +97,7 @@ inline StringRef getInstrProfVNodesVarName() { return "__llvm_prf_vnodes"; }
 
 /// Return the name of the variable holding the strings (possibly compressed)
 /// of all function's PGO names.
-inline StringRef getInstrProfNamesVarName() {
-  return "__llvm_prf_nm";
-}
+inline StringRef getInstrProfNamesVarName() { return "__llvm_prf_nm"; }
 
 /// Return the name of a covarage mapping variable (internal linkage)
 /// for each instrumented source module. Such variables are allocated
@@ -131,7 +129,8 @@ inline StringRef getInstrProfRegFuncName() {
   return "__llvm_profile_register_function";
 }
 
-/// Return the name of the runtime interface that registers the PGO name strings.
+/// Return the name of the runtime interface that registers the PGO name
+/// strings.
 inline StringRef getInstrProfNamesRegFuncName() {
   return "__llvm_profile_register_names_function";
 }
@@ -428,9 +427,7 @@ private:
   AddrHashMap AddrToMD5Map;
   bool Sorted = false;
 
-  static StringRef getExternalSymbol() {
-    return "** External Symbol **";
-  }
+  static StringRef getExternalSymbol() { return "** External Symbol **"; }
 
   // If the symtab is created by a series of calls to \c addFuncName, \c
   // finalizeSymtab needs to be called before looking up function names.
@@ -466,7 +463,8 @@ public:
 
   /// Create InstrProfSymtab from a set of names iteratable from
   /// \p IterRange. This interface is used by IndexedProfReader.
-  template <typename NameIterRange> Error create(const NameIterRange &IterRange);
+  template <typename NameIterRange>
+  Error create(const NameIterRange &IterRange);
 
   /// Update the symtab by adding \p FuncName to the table. This interface
   /// is used by the raw and text profile readers.
@@ -570,7 +568,7 @@ StringRef InstrProfSymtab::getFuncName(uint64_t FuncMD5Hash) {
   return StringRef();
 }
 
-Function* InstrProfSymtab::getFunction(uint64_t FuncMD5Hash) {
+Function *InstrProfSymtab::getFunction(uint64_t FuncMD5Hash) {
   finalizeSymtab();
   auto Result = llvm::lower_bound(MD5FuncMap, FuncMD5Hash,
                                   [](const std::pair<uint64_t, Function *> &LHS,
@@ -944,10 +942,7 @@ void InstrProfValueSiteRecord::sortByCount() {
 
 namespace IndexedInstrProf {
 
-enum class HashT : uint32_t {
-  MD5,
-  Last = MD5
-};
+enum class HashT : uint32_t { MD5, Last = MD5 };
 
 inline uint64_t ComputeHash(HashT Type, StringRef K) {
   switch (Type) {
@@ -1065,13 +1060,9 @@ struct Summary {
     return reinterpret_cast<Entry *>(&getSummaryDataBase()[NumSummaryFields]);
   }
 
-  uint64_t get(SummaryFieldKind K) const {
-    return getSummaryDataBase()[K];
-  }
+  uint64_t get(SummaryFieldKind K) const { return getSummaryDataBase()[K]; }
 
-  void set(SummaryFieldKind K, uint64_t V) {
-    getSummaryDataBase()[K] = V;
-  }
+  void set(SummaryFieldKind K, uint64_t V) { getSummaryDataBase()[K] = V; }
 
   const Entry &getEntry(uint32_t I) const { return getCutoffEntryBase()[I]; }
 
@@ -1118,8 +1109,8 @@ template <> inline uint64_t getMagic<uint32_t>() {
 // It should also match the synthesized type in
 // Transforms/Instrumentation/InstrProfiling.cpp:getOrCreateRegionCounters.
 template <class IntPtrT> struct alignas(8) ProfileData {
-  #define INSTR_PROF_DATA(Type, LLVMType, Name, Init) Type Name;
-  #include "llvm/ProfileData/InstrProfData.inc"
+#define INSTR_PROF_DATA(Type, LLVMType, Name, Init) Type Name;
+#include "llvm/ProfileData/InstrProfData.inc"
 };
 
 // File header structure of the LLVM profile data in raw format.

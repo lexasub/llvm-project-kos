@@ -1,9 +1,9 @@
 // RUN: %clangxx_tsan -O1 %s -o %t && %deflake %run %t | FileCheck %s
 #include "test.h"
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <errno.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 int fd;
 char buf;
@@ -42,4 +42,3 @@ int main() {
 // CHECK:   Previous write of size 1
 // CHECK:     #0 read
 // CHECK: DONE
-

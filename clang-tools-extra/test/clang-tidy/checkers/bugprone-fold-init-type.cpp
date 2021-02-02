@@ -155,4 +155,4 @@ int negative5() {
   // Note that this is using blah::std::accumulate.
   return std::accumulate(a, a + 1, 0);
 }
-}
+} // namespace blah

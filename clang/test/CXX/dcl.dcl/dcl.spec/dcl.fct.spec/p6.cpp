@@ -5,18 +5,18 @@
 class A {
 public:
   explicit A();
-  
+
   explicit operator int();
 #if __cplusplus <= 199711L // C++03 or earlier modes
   // expected-warning@-2 {{explicit conversion functions are a C++11 extension}}
 #endif
 
   explicit void f0(); // expected-error {{'explicit' can only be applied to a constructor or conversion function}}
-  
+
   operator bool();
 };
 
-explicit A::A() { } // expected-error {{'explicit' can only be specified inside the class definition}}
+explicit A::A() {} // expected-error {{'explicit' can only be specified inside the class definition}}
 explicit A::operator bool() { return false; }
 #if __cplusplus <= 199711L // C++03 or earlier modes
 // expected-warning@-2 {{explicit conversion functions are a C++11 extension}}

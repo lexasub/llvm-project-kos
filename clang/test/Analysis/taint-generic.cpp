@@ -3,34 +3,34 @@
 #define BUFSIZE 10
 int Buffer[BUFSIZE];
 
-int scanf(const char*, ...);
+int scanf(const char *, ...);
 int mySource1();
 int mySource3();
 
-bool isOutOfRange2(const int*);
+bool isOutOfRange2(const int *);
 
 void mySink2(int);
 
 // Test configuration
 namespace myNamespace {
-  void scanf(const char*, ...);
-  void myScanf(const char*, ...);
-  int mySource3();
+void scanf(const char *, ...);
+void myScanf(const char *, ...);
+int mySource3();
 
-  bool isOutOfRange(const int*);
-  bool isOutOfRange2(const int*);
+bool isOutOfRange(const int *);
+bool isOutOfRange2(const int *);
 
-  void mySink(int, int, int);
-  void mySink2(int);
-}
+void mySink(int, int, int);
+void mySink2(int);
+} // namespace myNamespace
 
 namespace myAnotherNamespace {
-  int mySource3();
+int mySource3();
 
-  bool isOutOfRange2(const int*);
+bool isOutOfRange2(const int *);
 
-  void mySink2(int);
-}
+void mySink2(int);
+} // namespace myAnotherNamespace
 
 void testConfigurationNamespacePropagation1() {
   int x;
@@ -111,8 +111,8 @@ void testConfigurationNamespaceSink3() {
 }
 
 struct Foo {
-    void scanf(const char*, int*);
-    void myMemberScanf(const char*, int*);
+  void scanf(const char *, int *);
+  void myMemberScanf(const char *, int *);
 };
 
 void testConfigurationMemberFunc() {

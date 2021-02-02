@@ -19,26 +19,25 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    int i = std::max({2, 3, 1});
-    assert(i == 3);
-    i = std::max({2, 1, 3});
-    assert(i == 3);
-    i = std::max({3, 1, 2});
-    assert(i == 3);
-    i = std::max({3, 2, 1});
-    assert(i == 3);
-    i = std::max({1, 2, 3});
-    assert(i == 3);
-    i = std::max({1, 3, 2});
-    assert(i == 3);
+int main(int, char**) {
+  int i = std::max({2, 3, 1});
+  assert(i == 3);
+  i = std::max({2, 1, 3});
+  assert(i == 3);
+  i = std::max({3, 1, 2});
+  assert(i == 3);
+  i = std::max({3, 2, 1});
+  assert(i == 3);
+  i = std::max({1, 2, 3});
+  assert(i == 3);
+  i = std::max({1, 3, 2});
+  assert(i == 3);
 #if TEST_STD_VER >= 14
-    {
+  {
     static_assert(std::max({1, 3, 2}) == 3, "");
     static_assert(std::max({2, 1, 3}) == 3, "");
     static_assert(std::max({3, 2, 1}) == 3, "");
-    }
+  }
 #endif
 
   return 0;

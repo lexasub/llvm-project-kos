@@ -23,7 +23,7 @@
 // expected-no-diagnostics
 typedef int Int;
 typedef char Char;
-typedef Char* Carp;
+typedef Char *Carp;
 
 Int main(Int argc, Carp argv[]) {
 }
@@ -33,7 +33,7 @@ Int main(Int argc, Carp argv[]) {
 // expected-no-diagnostics
 typedef int Int;
 typedef char Char;
-typedef Char* Carp;
+typedef Char *Carp;
 
 Int main(Int argc, Carp argv[], Char *env[]) {
 }
@@ -58,8 +58,7 @@ inline int main() { // expected-error {{'main' is not allowed to be declared inl
 
 void  // expected-error {{'main' must return 'int'}}
 main( // expected-error {{first parameter of 'main' (argument count) must be of type 'int'}}
-     float a
-) {
+    float a) {
 }
 
 const int main(); // expected-error {{'main' must return 'int'}}
@@ -67,36 +66,36 @@ const int main(); // expected-error {{'main' must return 'int'}}
 #elif TEST7
 
 // expected-no-diagnostics
-int main(int argc, const char* const* argv) {
+int main(int argc, const char *const *argv) {
 }
 
 #elif TEST8
 
-template<typename T>
-int main() { } // expected-error{{'main' cannot be a template}}
+template <typename T>
+int main() {} // expected-error{{'main' cannot be a template}}
 
 #elif TEST9
 
-constexpr int main() { } // expected-error{{'main' is not allowed to be declared constexpr}}
+constexpr int main() {} // expected-error{{'main' is not allowed to be declared constexpr}}
 
 #elif TEST10
 
 // PR15100
 // expected-no-diagnostics
 typedef char charT;
-int main(int, const charT**) {}
+int main(int, const charT **) {}
 
 #elif TEST11
 
 // expected-no-diagnostics
 typedef char charT;
-int main(int, charT* const *) {}
+int main(int, charT *const *) {}
 
 #elif TEST12
 
 // expected-no-diagnostics
 typedef char charT;
-int main(int, const charT* const *) {}
+int main(int, const charT *const *) {}
 
 #elif TEST13
 

@@ -151,10 +151,9 @@ public:
     return error;
   }
 
-  virtual Status GenerateBreakpointCommandCallbackData(
-      StringList &input,
-      std::string &output,
-      bool has_extra_args) {
+  virtual Status GenerateBreakpointCommandCallbackData(StringList &input,
+                                                       std::string &output,
+                                                       bool has_extra_args) {
     Status error;
     error.SetErrorString("not implemented");
     return error;
@@ -208,9 +207,9 @@ public:
     return StructuredData::GenericSP();
   }
 
-  virtual lldb::ValueObjectListSP GetRecognizedArguments(
-      const StructuredData::ObjectSP &implementor,
-      lldb::StackFrameSP frame_sp) {
+  virtual lldb::ValueObjectListSP
+  GetRecognizedArguments(const StructuredData::ObjectSP &implementor,
+                         lldb::StackFrameSP frame_sp) {
     return lldb::ValueObjectListSP();
   }
 
@@ -242,11 +241,9 @@ public:
     return StructuredData::DictionarySP();
   }
 
-  virtual StructuredData::ObjectSP
-  CreateScriptedThreadPlan(const char *class_name,
-                           StructuredDataImpl *args_data,
-                           std::string &error_str,
-                           lldb::ThreadPlanSP thread_plan_sp) {
+  virtual StructuredData::ObjectSP CreateScriptedThreadPlan(
+      const char *class_name, StructuredDataImpl *args_data,
+      std::string &error_str, lldb::ThreadPlanSP thread_plan_sp) {
     return StructuredData::ObjectSP();
   }
 
@@ -285,16 +282,13 @@ public:
     return StructuredData::GenericSP();
   }
 
-  virtual bool
-  ScriptedBreakpointResolverSearchCallback(StructuredData::GenericSP implementor_sp,
-                                           SymbolContext *sym_ctx)
-  {
+  virtual bool ScriptedBreakpointResolverSearchCallback(
+      StructuredData::GenericSP implementor_sp, SymbolContext *sym_ctx) {
     return false;
   }
 
-  virtual lldb::SearchDepth
-  ScriptedBreakpointResolverSearchDepth(StructuredData::GenericSP implementor_sp)
-  {
+  virtual lldb::SearchDepth ScriptedBreakpointResolverSearchDepth(
+      StructuredData::GenericSP implementor_sp) {
     return lldb::eSearchDepthModule;
   }
 
@@ -367,10 +361,9 @@ public:
 
   /// Set a script function as the callback for the breakpoint.
   virtual Status
-  SetBreakpointCommandCallbackFunction(
-      BreakpointOptions *bp_options,
-      const char *function_name,
-      StructuredData::ObjectSP extra_args_sp) {
+  SetBreakpointCommandCallbackFunction(BreakpointOptions *bp_options,
+                                       const char *function_name,
+                                       StructuredData::ObjectSP extra_args_sp) {
     Status error;
     error.SetErrorString("unimplemented");
     return error;
@@ -518,8 +511,8 @@ public:
 
   virtual llvm::Expected<unsigned>
   GetMaxPositionalArgumentsForCallable(const llvm::StringRef &callable_name) {
-    return llvm::createStringError(
-    llvm::inconvertibleErrorCode(), "Unimplemented function");
+    return llvm::createStringError(llvm::inconvertibleErrorCode(),
+                                   "Unimplemented function");
   }
 
   static std::string LanguageToString(lldb::ScriptLanguage language);

@@ -54,7 +54,6 @@ public:
   };
 
 private:
-
   /// Keeps track of relocations.
   class AddressManager : public AddressesMap {
     struct ValidReloc {

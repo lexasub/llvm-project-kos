@@ -78,7 +78,7 @@ enum CallEventKind {
 class CallEvent;
 class CallDescription;
 
-template<typename T = CallEvent>
+template <typename T = CallEvent>
 class CallEventRef : public IntrusiveRefCntPtr<const T> {
 public:
   CallEventRef(const T *Call) : IntrusiveRefCntPtr<const T>(Call) {}
@@ -90,8 +90,7 @@ public:
 
   // Allow implicit conversions to a superclass type, since CallEventRef
   // behaves like a pointer-to-const.
-  template <typename SuperT>
-  operator CallEventRef<SuperT> () const {
+  template <typename SuperT> operator CallEventRef<SuperT>() const {
     return this->get();
   }
 };
@@ -116,8 +115,8 @@ class RuntimeDefinition {
 
 public:
   RuntimeDefinition() = default;
-  RuntimeDefinition(const Decl *InD): D(InD) {}
-  RuntimeDefinition(const Decl *InD, const MemRegion *InR): D(InD), R(InR) {}
+  RuntimeDefinition(const Decl *InD) : D(InD) {}
+  RuntimeDefinition(const Decl *InD, const MemRegion *InR) : D(InD), R(InR) {}
 
   const Decl *getDecl() { return D; }
 
@@ -192,8 +191,9 @@ protected:
 
   /// Used to specify non-argument regions that will be invalidated as a
   /// result of this call.
-  virtual void getExtraInvalidatedValues(ValueList &Values,
-                 RegionAndSymbolInvalidationTraits *ETraits) const {}
+  virtual void
+  getExtraInvalidatedValues(ValueList &Values,
+                            RegionAndSymbolInvalidationTraits *ETraits) const {}
 
 public:
   CallEvent &operator=(const CallEvent &) = delete;
@@ -210,14 +210,10 @@ public:
   }
 
   /// The state in which the call is being evaluated.
-  const ProgramStateRef &getState() const {
-    return State;
-  }
+  const ProgramStateRef &getState() const { return State; }
 
   /// The context in which the call is being evaluated.
-  const LocationContext *getLocationContext() const {
-    return LCtx;
-  }
+  const LocationContext *getLocationContext() const { return LCtx; }
 
   /// Returns the definition of the function or method that will be
   /// called.
@@ -245,7 +241,7 @@ public:
     SourceLocation Loc = D->getLocation();
     if (Loc.isValid()) {
       const SourceManager &SM =
-        getState()->getStateManager().getContext().getSourceManager();
+          getState()->getStateManager().getContext().getSourceManager();
       return SM.isInSystemHeader(D->getLocation());
     }
 
@@ -267,7 +263,7 @@ public:
   /// Returns true whether the CallEvent is any of the CallDescriptions supplied
   /// as a parameter.
   template <typename FirstCallDesc, typename... CallDescs>
-  bool isCalled(const FirstCallDesc &First, const CallDescs &... Rest) const {
+  bool isCalled(const FirstCallDesc &First, const CallDescs &...Rest) const {
     return isCalled(First) || isCalled(Rest...);
   }
 
@@ -313,9 +309,7 @@ public:
   // NOTE: The exact semantics of this are still being defined!
   // We don't really want a list of hardcoded exceptions in the long run,
   // but we don't want duplicated lists of known APIs in the short term either.
-  virtual bool argumentsMayEscape() const {
-    return hasNonZeroCallbackArg();
-  }
+  virtual bool argumentsMayEscape() const { return hasNonZeroCallbackArg(); }
 
   /// Returns true if the callee is an externally-visible function in the
   /// top-level namespace, such as \c malloc.
@@ -416,7 +410,8 @@ public:
   bool isArgumentConstructedDirectly(unsigned Index) const {
     // This assumes that the object was not yet removed from the state.
     return ExprEngine::getObjectUnderConstruction(
-        getState(), {getOriginExpr(), Index}, getLocationContext()).hasValue();
+               getState(), {getOriginExpr(), Index}, getLocationContext())
+        .hasValue();
   }
 
   /// Some calls have parameter numbering mismatched from argument numbering.
@@ -557,15 +552,15 @@ class BlockCall : public CallEvent {
   friend class CallEventManager;
 
 protected:
-  BlockCall(const CallExpr *CE, ProgramStateRef St,
-            const LocationContext *LCtx)
+  BlockCall(const CallExpr *CE, ProgramStateRef St, const LocationContext *LCtx)
       : CallEvent(CE, St, LCtx) {}
   BlockCall(const BlockCall &Other) = default;
 
   void cloneTo(void *Dest) const override { new (Dest) BlockCall(*this); }
 
-  void getExtraInvalidatedValues(ValueList &Values,
-         RegionAndSymbolInvalidationTraits *ETraits) const override;
+  void getExtraInvalidatedValues(
+      ValueList &Values,
+      RegionAndSymbolInvalidationTraits *ETraits) const override;
 
 public:
   const CallExpr *getOriginExpr() const override {
@@ -636,14 +631,12 @@ public:
     // the block body and analyze the operator() method on the captured lambda.
     const VarDecl *LambdaVD = getRegionStoringCapturedLambda()->getDecl();
     const CXXRecordDecl *LambdaDecl = LambdaVD->getType()->getAsCXXRecordDecl();
-    CXXMethodDecl* LambdaCallOperator = LambdaDecl->getLambdaCallOperator();
+    CXXMethodDecl *LambdaCallOperator = LambdaDecl->getLambdaCallOperator();
 
     return RuntimeDefinition(LambdaCallOperator);
   }
 
-  bool argumentsMayEscape() const override {
-    return true;
-  }
+  bool argumentsMayEscape() const override { return true; }
 
   void getInitialStackFrameContents(const StackFrameContext *CalleeCtx,
                                     BindingsTy &Bindings) const override;
@@ -668,8 +661,9 @@ protected:
       : AnyFunctionCall(D, St, LCtx) {}
   CXXInstanceCall(const CXXInstanceCall &Other) = default;
 
-  void getExtraInvalidatedValues(ValueList &Values,
-         RegionAndSymbolInvalidationTraits *ETraits) const override;
+  void getExtraInvalidatedValues(
+      ValueList &Values,
+      RegionAndSymbolInvalidationTraits *ETraits) const override;
 
 public:
   /// Returns the expression representing the implicit 'this' object.
@@ -817,7 +811,9 @@ protected:
 
   CXXDestructorCall(const CXXDestructorCall &Other) = default;
 
-  void cloneTo(void *Dest) const override {new (Dest) CXXDestructorCall(*this);}
+  void cloneTo(void *Dest) const override {
+    new (Dest) CXXDestructorCall(*this);
+  }
 
 public:
   SourceRange getSourceRange() const override { return Location; }
@@ -853,8 +849,9 @@ protected:
     Data = Target;
   }
 
-  void getExtraInvalidatedValues(ValueList &Values,
-         RegionAndSymbolInvalidationTraits *ETraits) const override;
+  void getExtraInvalidatedValues(
+      ValueList &Values,
+      RegionAndSymbolInvalidationTraits *ETraits) const override;
 
   void getInitialStackFrameContents(const StackFrameContext *CalleeCtx,
                                     BindingsTy &Bindings) const override;
@@ -889,7 +886,9 @@ protected:
 
   CXXConstructorCall(const CXXConstructorCall &Other) = default;
 
-  void cloneTo(void *Dest) const override { new (Dest) CXXConstructorCall(*this); }
+  void cloneTo(void *Dest) const override {
+    new (Dest) CXXConstructorCall(*this);
+  }
 
 public:
   const CXXConstructExpr *getOriginExpr() const override {
@@ -1006,7 +1005,9 @@ protected:
       : AnyFunctionCall(E, St, LCtx) {}
   CXXAllocatorCall(const CXXAllocatorCall &Other) = default;
 
-  void cloneTo(void *Dest) const override { new (Dest) CXXAllocatorCall(*this); }
+  void cloneTo(void *Dest) const override {
+    new (Dest) CXXAllocatorCall(*this);
+  }
 
 public:
   const CXXNewExpr *getOriginExpr() const override {
@@ -1108,11 +1109,7 @@ public:
 //
 // Note to maintainers: OCM_Message should always be last, since it does not
 // need to fit in the Data field's low bits.
-enum ObjCMessageKind {
-  OCM_PropertyAccess,
-  OCM_Subscript,
-  OCM_Message
-};
+enum ObjCMessageKind { OCM_PropertyAccess, OCM_Subscript, OCM_Message };
 
 /// Represents any expression that calls an Objective-C method.
 ///
@@ -1133,8 +1130,9 @@ protected:
 
   void cloneTo(void *Dest) const override { new (Dest) ObjCMethodCall(*this); }
 
-  void getExtraInvalidatedValues(ValueList &Values,
-         RegionAndSymbolInvalidationTraits *ETraits) const override;
+  void getExtraInvalidatedValues(
+      ValueList &Values,
+      RegionAndSymbolInvalidationTraits *ETraits) const override;
 
   /// Check if the selector may have multiple definitions (may have overrides).
   virtual bool canBeOverridenInSubclass(ObjCInterfaceDecl *IDecl,
@@ -1149,9 +1147,7 @@ public:
     return getOriginExpr()->getMethodDecl();
   }
 
-  unsigned getNumArgs() const override {
-    return getOriginExpr()->getNumArgs();
-  }
+  unsigned getNumArgs() const override { return getOriginExpr()->getNumArgs(); }
 
   const Expr *getArgExpr(unsigned Index) const override {
     return getOriginExpr()->getArg(Index);
@@ -1165,9 +1161,7 @@ public:
     return getOriginExpr()->getMethodFamily();
   }
 
-  Selector getSelector() const {
-    return getOriginExpr()->getSelector();
-  }
+  Selector getSelector() const { return getOriginExpr()->getSelector(); }
 
   SourceRange getSourceRange() const override;
 
@@ -1215,7 +1209,7 @@ public:
   void getInitialStackFrameContents(const StackFrameContext *CalleeCtx,
                                     BindingsTy &Bindings) const override;
 
-  ArrayRef<ParmVarDecl*> parameters() const override;
+  ArrayRef<ParmVarDecl *> parameters() const override;
 
   Kind getKind() const override { return CE_ObjCMessage; }
   StringRef getKindAsString() const override { return "ObjCMethodCall"; }
@@ -1380,22 +1374,20 @@ public:
   CallEventManager(llvm::BumpPtrAllocator &alloc) : Alloc(alloc) {}
 
   /// Gets an outside caller given a callee context.
-  CallEventRef<>
-  getCaller(const StackFrameContext *CalleeCtx, ProgramStateRef State);
+  CallEventRef<> getCaller(const StackFrameContext *CalleeCtx,
+                           ProgramStateRef State);
 
   /// Gets a call event for a function call, Objective-C method call,
   /// or a 'new' call.
-  CallEventRef<>
-  getCall(const Stmt *S, ProgramStateRef State,
-          const LocationContext *LC);
+  CallEventRef<> getCall(const Stmt *S, ProgramStateRef State,
+                         const LocationContext *LC);
 
-  CallEventRef<>
-  getSimpleCall(const CallExpr *E, ProgramStateRef State,
-                const LocationContext *LCtx);
+  CallEventRef<> getSimpleCall(const CallExpr *E, ProgramStateRef State,
+                               const LocationContext *LCtx);
 
-  CallEventRef<ObjCMethodCall>
-  getObjCMethodCall(const ObjCMessageExpr *E, ProgramStateRef State,
-                    const LocationContext *LCtx) {
+  CallEventRef<ObjCMethodCall> getObjCMethodCall(const ObjCMessageExpr *E,
+                                                 ProgramStateRef State,
+                                                 const LocationContext *LCtx) {
     return create<ObjCMethodCall>(E, State, LCtx);
   }
 
@@ -1470,11 +1462,10 @@ inline void CallEvent::Release() const {
 namespace llvm {
 
 // Support isa<>, cast<>, and dyn_cast<> for CallEventRef.
-template<class T> struct simplify_type< clang::ento::CallEventRef<T>> {
+template <class T> struct simplify_type<clang::ento::CallEventRef<T>> {
   using SimpleType = const T *;
 
-  static SimpleType
-  getSimplifiedValue(clang::ento::CallEventRef<T> Val) {
+  static SimpleType getSimplifiedValue(clang::ento::CallEventRef<T> Val) {
     return Val.get();
   }
 };

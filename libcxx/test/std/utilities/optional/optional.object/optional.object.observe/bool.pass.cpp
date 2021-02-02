@@ -17,22 +17,22 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    using std::optional;
-    {
-        const optional<int> opt; ((void)opt);
-        ASSERT_NOEXCEPT(bool(opt));
-        static_assert(!std::is_convertible<optional<int>, bool>::value, "");
-    }
-    {
-        constexpr optional<int> opt;
-        static_assert(!opt, "");
-    }
-    {
-        constexpr optional<int> opt(0);
-        static_assert(opt, "");
-    }
+int main(int, char**) {
+  using std::optional;
+  {
+    const optional<int> opt;
+    ((void)opt);
+    ASSERT_NOEXCEPT(bool(opt));
+    static_assert(!std::is_convertible<optional<int>, bool>::value, "");
+  }
+  {
+    constexpr optional<int> opt;
+    static_assert(!opt, "");
+  }
+  {
+    constexpr optional<int> opt(0);
+    static_assert(opt, "");
+  }
 
   return 0;
 }

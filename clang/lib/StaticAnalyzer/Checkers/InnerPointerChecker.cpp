@@ -13,8 +13,8 @@
 //===----------------------------------------------------------------------===//
 
 #include "AllocationState.h"
-#include "clang/StaticAnalyzer/Checkers/BuiltinCheckerRegistration.h"
 #include "InterCheckerAPI.h"
+#include "clang/StaticAnalyzer/Checkers/BuiltinCheckerRegistration.h"
 #include "clang/StaticAnalyzer/Core/BugReporter/BugType.h"
 #include "clang/StaticAnalyzer/Core/BugReporter/CommonBugCategories.h"
 #include "clang/StaticAnalyzer/Core/Checker.h"
@@ -27,7 +27,6 @@ using namespace ento;
 // Associate container objects with a set of raw pointer symbols.
 REGISTER_SET_FACTORY_WITH_PROGRAMSTATE(PtrSet, SymbolRef)
 REGISTER_MAP_WITH_PROGRAMSTATE(RawPtrMap, const MemRegion *, PtrSet)
-
 
 namespace {
 
@@ -96,8 +95,8 @@ public:
                               const MemRegion *ObjRegion,
                               CheckerContext &C) const;
 
-  /// Standard library functions that take a non-const `basic_string` argument by
-  /// reference may invalidate its inner pointers. Check for these cases and
+  /// Standard library functions that take a non-const `basic_string` argument
+  /// by reference may invalidate its inner pointers. Check for these cases and
   /// mark the pointers released.
   void checkFunctionArguments(const CallEvent &Call, ProgramStateRef State,
                               CheckerContext &C) const;
@@ -114,7 +113,7 @@ public:
 } // end anonymous namespace
 
 bool InnerPointerChecker::isInvalidatingMemberFunction(
-        const CallEvent &Call) const {
+    const CallEvent &Call) const {
   if (const auto *MemOpCall = dyn_cast<CXXMemberOperatorCall>(&Call)) {
     OverloadedOperatorKind Opc = MemOpCall->getOriginExpr()->getOperator();
     if (Opc == OO_Equal || Opc == OO_PlusEqual)
@@ -164,7 +163,7 @@ void InnerPointerChecker::checkFunctionArguments(const CallEvent &Call,
       // In case of member operator calls, `this` is counted as an
       // argument but not as a parameter.
       bool isaMemberOpCall = isa<CXXMemberOperatorCall>(FC);
-      unsigned ArgI = isaMemberOpCall ? I+1 : I;
+      unsigned ArgI = isaMemberOpCall ? I + 1 : I;
 
       SVal Arg = FC->getArgSVal(ArgI);
       const auto *ArgRegion =

@@ -1,16 +1,24 @@
 // RUN: %clang_cc1 -triple x86_64-apple-darwin10 %s -emit-llvm -o - | FileCheck %s --implicit-check-not=should_not_appear_in_output --check-prefixes=CHECK,NULL-INVALID
 // RUN: %clang_cc1 -triple x86_64-apple-darwin10 %s -emit-llvm -fno-delete-null-pointer-checks -o - | FileCheck %s --implicit-check-not=should_not_appear_in_output --check-prefixes=CHECK,NULL-VALID
 
-struct Member { int x; Member(); Member(int); Member(const Member &); };
-struct VBase { int x; VBase(); VBase(int); VBase(const VBase &); };
+struct Member {
+  int x;
+  Member();
+  Member(int);
+  Member(const Member &);
+};
+struct VBase {
+  int x;
+  VBase();
+  VBase(int);
+  VBase(const VBase &);
+};
 
 struct ValueClass {
   ValueClass(int x, int y) : x(x), y(y) {}
   int x;
   int y;
 }; // subject to ABI trickery
-
-
 
 /* Test basic functionality. */
 struct A {
@@ -55,7 +63,6 @@ B::B(struct Undeclared &ref) : A(ref), mem(1) {}
 // NULL-VALID-LABEL: define{{.*}} void @_ZN1BC1ER10Undeclared(%struct.B* {{[^,]*}} %this, %struct.Undeclared* align 1 %ref) unnamed_addr
 // CHECK: call void @_ZN1BC2ER10Undeclared(
 
-
 /* Test that the delegation optimization is disabled for classes with
    virtual bases (for now).  This is necessary because a vbase
    initializer could access one of the parameter variables by
@@ -65,7 +72,7 @@ struct C : virtual A {
   C(int);
   Member mem;
 };
-C::C(int x) : A(ValueClass(x, x+1)), mem(x * x) {}
+C::C(int x) : A(ValueClass(x, x + 1)), mem(x * x) {}
 
 // CHECK-LABEL: define{{.*}} void @_ZN1CC2Ei(%struct.C* {{[^,]*}} %this, i8** %vtt, i32 %x) unnamed_addr
 // CHECK: call void @_ZN6MemberC1Ei(
@@ -75,7 +82,6 @@ C::C(int x) : A(ValueClass(x, x+1)), mem(x * x) {}
 // CHECK: call void @_ZN1AC2E10ValueClass(
 // CHECK: call void @_ZN6MemberC1Ei(
 
-
 /* Test that the delegation optimization is disabled for varargs
    constructors. */
 struct D : A {
@@ -83,7 +89,7 @@ struct D : A {
   Member mem;
 };
 
-D::D(int x, ...) : A(ValueClass(x, x+1)), mem(x*x) {}
+D::D(int x, ...) : A(ValueClass(x, x + 1)), mem(x * x) {}
 
 // CHECK-LABEL: define{{.*}} void @_ZN1DC2Eiz(%struct.D* {{[^,]*}} %this, i32 %x, ...) unnamed_addr
 // CHECK: call void @_ZN10ValueClassC1Eii(
@@ -97,27 +103,36 @@ D::D(int x, ...) : A(ValueClass(x, x+1)), mem(x*x) {}
 
 // PR6622:  this shouldn't crash
 namespace test0 {
-  struct A {};
-  struct B : virtual A { int x; };
-  struct C : B {};
-  
-  void test(C &in) {
-    C tmp = in;
-  }
+struct A {};
+struct B : virtual A {
+  int x;
+};
+struct C : B {};
+
+void test(C &in) {
+  C tmp = in;
 }
+} // namespace test0
 
 namespace test1 {
-  struct A { A(); void *ptr; };
-  struct B { B(); int x; A a[0]; };
-  B::B() {}
-  // CHECK-LABEL:    define{{.*}} void @_ZN5test11BC2Ev(
-  // CHECK:      [[THIS:%.*]] = load [[B:%.*]]*, [[B:%.*]]**
-  // CHECK-NEXT: ret void
-}
+struct A {
+  A();
+  void *ptr;
+};
+struct B {
+  B();
+  int x;
+  A a[0];
+};
+B::B() {}
+// CHECK-LABEL:    define{{.*}} void @_ZN5test11BC2Ev(
+// CHECK:      [[THIS:%.*]] = load [[B:%.*]]*, [[B:%.*]]**
+// CHECK-NEXT: ret void
+} // namespace test1
 
 // Ensure that we
 // a) emit the ABI-required but useless complete object and deleting destructor
-//    symbols for an abstract class, and 
+//    symbols for an abstract class, and
 // b) do *not* emit references to virtual base destructors for an abstract class
 //
 // Our approach to this is to give these functions a body that simply traps.
@@ -128,43 +143,45 @@ namespace test1 {
 //
 //   https://github.com/itanium-cxx-abi/cxx-abi/issues/10
 namespace abstract {
-  // Note, the destructor of this class is not instantiated here.
-  template<typename T> struct should_not_appear_in_output {
-    ~should_not_appear_in_output() { int arr[-(int)sizeof(T)]; }
-  };
+// Note, the destructor of this class is not instantiated here.
+template <typename T> struct should_not_appear_in_output {
+  ~should_not_appear_in_output() { int arr[-(int)sizeof(T)]; }
+};
 
-  struct X { ~X(); };
+struct X {
+  ~X();
+};
 
-  struct A : virtual should_not_appear_in_output<int>, X {
-    virtual ~A() = 0;
-  };
+struct A : virtual should_not_appear_in_output<int>, X {
+  virtual ~A() = 0;
+};
 
-  // CHECK-LABEL: define{{.*}} void @_ZN8abstract1AD2Ev(
-  // CHECK: call {{.*}}@_ZN8abstract1XD2Ev(
-  // CHECK: ret
+// CHECK-LABEL: define{{.*}} void @_ZN8abstract1AD2Ev(
+// CHECK: call {{.*}}@_ZN8abstract1XD2Ev(
+// CHECK: ret
 
-  // CHECK-LABEL: define{{.*}} void @_ZN8abstract1AD1Ev(
-  // CHECK: call {{.*}}@llvm.trap(
-  // CHECK: unreachable
+// CHECK-LABEL: define{{.*}} void @_ZN8abstract1AD1Ev(
+// CHECK: call {{.*}}@llvm.trap(
+// CHECK: unreachable
 
-  // CHECK-LABEL: define{{.*}} void @_ZN8abstract1AD0Ev(
-  // CHECK: call {{.*}}@llvm.trap(
-  // CHECK: unreachable
-  A::~A() {}
+// CHECK-LABEL: define{{.*}} void @_ZN8abstract1AD0Ev(
+// CHECK: call {{.*}}@llvm.trap(
+// CHECK: unreachable
+A::~A() {}
 
-  struct B : virtual should_not_appear_in_output<int>, X {
-    virtual void f() = 0;
-    ~B();
-  };
+struct B : virtual should_not_appear_in_output<int>, X {
+  virtual void f() = 0;
+  ~B();
+};
 
-  // CHECK-LABEL: define{{.*}} void @_ZN8abstract1BD2Ev(
-  // CHECK: call {{.*}}@_ZN8abstract1XD2Ev(
-  // CHECK: ret
+// CHECK-LABEL: define{{.*}} void @_ZN8abstract1BD2Ev(
+// CHECK: call {{.*}}@_ZN8abstract1XD2Ev(
+// CHECK: ret
 
-  // CHECK-LABEL: define{{.*}} void @_ZN8abstract1BD1Ev(
-  // CHECK: call {{.*}}@llvm.trap(
-  // CHECK: unreachable
+// CHECK-LABEL: define{{.*}} void @_ZN8abstract1BD1Ev(
+// CHECK: call {{.*}}@llvm.trap(
+// CHECK: unreachable
 
-  // CHECK-NOT: @_ZN8abstract1BD0Ev(
-  B::~B() {}
-}
+// CHECK-NOT: @_ZN8abstract1BD0Ev(
+B::~B() {}
+} // namespace abstract

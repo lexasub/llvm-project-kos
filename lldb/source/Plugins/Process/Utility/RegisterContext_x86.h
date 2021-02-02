@@ -264,10 +264,10 @@ struct XMMReg {
 
 // i387_fxsave_struct
 struct FXSAVE {
-  uint16_t fctrl;     // FPU Control Word (fcw)
-  uint16_t fstat;     // FPU Status Word (fsw)
-  uint16_t ftag;      // FPU Tag Word (ftw)
-  uint16_t fop;       // Last Instruction Opcode (fop)
+  uint16_t fctrl; // FPU Control Word (fcw)
+  uint16_t fstat; // FPU Status Word (fsw)
+  uint16_t ftag;  // FPU Tag Word (ftw)
+  uint16_t fop;   // Last Instruction Opcode (fop)
   union {
     struct {
       uint64_t fip; // Instruction Pointer
@@ -353,9 +353,9 @@ struct XSAVE {
   YMMHReg ymmh[16]; // High 16 bytes of each of 16 YMM registers (the low bytes
                     // are in FXSAVE.xmm for compatibility with SSE)
   uint64_t reserved3[16];
-  MPXReg mpxr[4];   // MPX BNDREG state, containing 128-bit bound registers
-  MPXCsr mpxc[2];   // MPX BNDCSR state, containing 64-bit BNDCFGU and
-                    // BNDSTATUS registers
+  MPXReg mpxr[4]; // MPX BNDREG state, containing 128-bit bound registers
+  MPXCsr mpxc[2]; // MPX BNDCSR state, containing 64-bit BNDCFGU and
+                  // BNDSTATUS registers
 };
 LLVM_PACKED_END
 
@@ -368,7 +368,7 @@ union FPR {
 LLVM_ENABLE_BITMASK_ENUMS_IN_NAMESPACE();
 
 // Convenience function to combine YMM register data from XSAVE-style input.
-inline YMMReg XStateToYMM(const void* xmm_bytes, const void* ymmh_bytes) {
+inline YMMReg XStateToYMM(const void *xmm_bytes, const void *ymmh_bytes) {
   YMMReg ret;
 
   ::memcpy(ret.bytes, xmm_bytes, sizeof(XMMReg));
@@ -378,7 +378,8 @@ inline YMMReg XStateToYMM(const void* xmm_bytes, const void* ymmh_bytes) {
 }
 
 // Convenience function to copy YMM register data into XSAVE-style output.
-inline void YMMToXState(const YMMReg& input, void* xmm_bytes, void* ymmh_bytes) {
+inline void YMMToXState(const YMMReg &input, void *xmm_bytes,
+                        void *ymmh_bytes) {
   ::memcpy(xmm_bytes, input.bytes, sizeof(XMMReg));
   ::memcpy(ymmh_bytes, input.bytes + sizeof(XMMReg), sizeof(YMMHReg));
 }

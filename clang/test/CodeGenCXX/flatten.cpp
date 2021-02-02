@@ -8,7 +8,8 @@ void f(void) {}
 
 [[gnu::flatten]]
 // CHECK: define{{.*}} void @_Z1gv()
-void g(void) {
+void
+g(void) {
   // CHECK-NOT: call {{.*}} @_Z1fv
   f();
 }

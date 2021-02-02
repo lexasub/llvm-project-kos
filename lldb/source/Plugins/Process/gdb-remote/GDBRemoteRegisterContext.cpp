@@ -8,6 +8,11 @@
 
 #include "GDBRemoteRegisterContext.h"
 
+#include "ProcessGDBRemote.h"
+#include "ProcessGDBRemoteLog.h"
+#include "ThreadGDBRemote.h"
+#include "Utility/ARM_DWARF_Registers.h"
+#include "Utility/ARM_ehframe_Registers.h"
 #include "lldb/Target/ExecutionContext.h"
 #include "lldb/Target/Target.h"
 #include "lldb/Utility/DataBufferHeap.h"
@@ -15,11 +20,6 @@
 #include "lldb/Utility/RegisterValue.h"
 #include "lldb/Utility/Scalar.h"
 #include "lldb/Utility/StreamString.h"
-#include "ProcessGDBRemote.h"
-#include "ProcessGDBRemoteLog.h"
-#include "ThreadGDBRemote.h"
-#include "Utility/ARM_DWARF_Registers.h"
-#include "Utility/ARM_ehframe_Registers.h"
 #include "lldb/Utility/StringExtractorGDBRemote.h"
 
 #include <memory>
@@ -223,8 +223,8 @@ bool GDBRemoteRegisterContext::ReadRegisterBytes(const RegisterInfo *reg_info,
           }
           return true;
         } else {
-          Log *log(ProcessGDBRemoteLog::GetLogIfAnyCategoryIsSet(GDBR_LOG_THREAD |
-                                                                GDBR_LOG_PACKETS));
+          Log *log(ProcessGDBRemoteLog::GetLogIfAnyCategoryIsSet(
+              GDBR_LOG_THREAD | GDBR_LOG_PACKETS));
           LLDB_LOGF(
               log,
               "error: GDBRemoteRegisterContext::ReadRegisterBytes tried "
@@ -672,8 +672,9 @@ bool GDBRemoteRegisterContext::WriteAllRegisterValues(
       if (m_thread.GetProcess().get()) {
         const ArchSpec &arch =
             m_thread.GetProcess()->GetTarget().GetArchitecture();
-        if (arch.IsValid() && (arch.GetMachine() == llvm::Triple::aarch64 ||
-                               arch.GetMachine() == llvm::Triple::aarch64_32) &&
+        if (arch.IsValid() &&
+            (arch.GetMachine() == llvm::Triple::aarch64 ||
+             arch.GetMachine() == llvm::Triple::aarch64_32) &&
             arch.GetTriple().getVendor() == llvm::Triple::Apple &&
             arch.GetTriple().getOS() == llvm::Triple::IOS) {
           arm64_debugserver = true;

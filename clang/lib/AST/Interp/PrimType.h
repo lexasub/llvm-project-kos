@@ -1,4 +1,5 @@
-//===--- PrimType.h - Types for the constexpr VM --------------------*- C++ -*-===//
+//===--- PrimType.h - Types for the constexpr VM --------------------*- C++
+//-*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -13,12 +14,12 @@
 #ifndef LLVM_CLANG_AST_INTERP_TYPE_H
 #define LLVM_CLANG_AST_INTERP_TYPE_H
 
-#include <climits>
-#include <cstddef>
-#include <cstdint>
 #include "Boolean.h"
 #include "Integral.h"
 #include "Pointer.h"
+#include <climits>
+#include <cstddef>
+#include <cstdint>
 
 namespace clang {
 namespace interp {
@@ -80,8 +81,14 @@ inline bool isPrimitiveIntegral(PrimType Type) {
 
 /// Helper macro to simplify type switches.
 /// The macro implicitly exposes a type T in the scope of the inner block.
-#define TYPE_SWITCH_CASE(Name, B) \
-  case Name: { using T = PrimConv<Name>::T; do {B;} while(0); break; }
+#define TYPE_SWITCH_CASE(Name, B)                                              \
+  case Name: {                                                                 \
+    using T = PrimConv<Name>::T;                                               \
+    do {                                                                       \
+      B;                                                                       \
+    } while (0);                                                               \
+    break;                                                                     \
+  }
 #define TYPE_SWITCH(Expr, B)                                                   \
   switch (Expr) {                                                              \
     TYPE_SWITCH_CASE(PT_Sint8, B)                                              \
@@ -98,7 +105,11 @@ inline bool isPrimitiveIntegral(PrimType Type) {
 #define COMPOSITE_TYPE_SWITCH(Expr, B, D)                                      \
   switch (Expr) {                                                              \
     TYPE_SWITCH_CASE(PT_Ptr, B)                                                \
-    default: do { D; } while(0); break;                                        \
+  default:                                                                     \
+    do {                                                                       \
+      D;                                                                       \
+    } while (0);                                                               \
+    break;                                                                     \
   }
 #define INT_TYPE_SWITCH(Expr, B)                                               \
   switch (Expr) {                                                              \
@@ -110,6 +121,7 @@ inline bool isPrimitiveIntegral(PrimType Type) {
     TYPE_SWITCH_CASE(PT_Uint32, B)                                             \
     TYPE_SWITCH_CASE(PT_Sint64, B)                                             \
     TYPE_SWITCH_CASE(PT_Uint64, B)                                             \
-    default: llvm_unreachable("not an integer");                               \
+  default:                                                                     \
+    llvm_unreachable("not an integer");                                        \
   }
 #endif

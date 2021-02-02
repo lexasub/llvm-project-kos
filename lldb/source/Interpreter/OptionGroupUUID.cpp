@@ -18,8 +18,16 @@ OptionGroupUUID::OptionGroupUUID() : m_uuid() {}
 OptionGroupUUID::~OptionGroupUUID() {}
 
 static constexpr OptionDefinition g_option_table[] = {
-    {LLDB_OPT_SET_1, false, "uuid", 'u', OptionParser::eRequiredArgument,
-     nullptr, {}, 0, eArgTypeModuleUUID, "A module UUID value."},
+    {LLDB_OPT_SET_1,
+     false,
+     "uuid",
+     'u',
+     OptionParser::eRequiredArgument,
+     nullptr,
+     {},
+     0,
+     eArgTypeModuleUUID,
+     "A module UUID value."},
 };
 
 llvm::ArrayRef<OptionDefinition> OptionGroupUUID::GetDefinitions() {

@@ -14,48 +14,48 @@
 #ifndef _OMPTARGET_H_
 #define _OMPTARGET_H_
 
-#include <stdint.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #include <SourceInfo.h>
 
 #define OFFLOAD_SUCCESS (0)
 #define OFFLOAD_FAIL (~0)
 
-#define OFFLOAD_DEVICE_DEFAULT     -1
+#define OFFLOAD_DEVICE_DEFAULT -1
 
 /// Data attributes for each data reference used in an OpenMP target region.
 enum tgt_map_type {
   // No flags
-  OMP_TGT_MAPTYPE_NONE            = 0x000,
+  OMP_TGT_MAPTYPE_NONE = 0x000,
   // copy data from host to device
-  OMP_TGT_MAPTYPE_TO              = 0x001,
+  OMP_TGT_MAPTYPE_TO = 0x001,
   // copy data from device to host
-  OMP_TGT_MAPTYPE_FROM            = 0x002,
+  OMP_TGT_MAPTYPE_FROM = 0x002,
   // copy regardless of the reference count
-  OMP_TGT_MAPTYPE_ALWAYS          = 0x004,
+  OMP_TGT_MAPTYPE_ALWAYS = 0x004,
   // force unmapping of data
-  OMP_TGT_MAPTYPE_DELETE          = 0x008,
+  OMP_TGT_MAPTYPE_DELETE = 0x008,
   // map the pointer as well as the pointee
-  OMP_TGT_MAPTYPE_PTR_AND_OBJ     = 0x010,
+  OMP_TGT_MAPTYPE_PTR_AND_OBJ = 0x010,
   // pass device base address to kernel
-  OMP_TGT_MAPTYPE_TARGET_PARAM    = 0x020,
+  OMP_TGT_MAPTYPE_TARGET_PARAM = 0x020,
   // return base device address of mapped data
-  OMP_TGT_MAPTYPE_RETURN_PARAM    = 0x040,
+  OMP_TGT_MAPTYPE_RETURN_PARAM = 0x040,
   // private variable - not mapped
-  OMP_TGT_MAPTYPE_PRIVATE         = 0x080,
+  OMP_TGT_MAPTYPE_PRIVATE = 0x080,
   // copy by value - not mapped
-  OMP_TGT_MAPTYPE_LITERAL         = 0x100,
+  OMP_TGT_MAPTYPE_LITERAL = 0x100,
   // mapping is implicit
-  OMP_TGT_MAPTYPE_IMPLICIT        = 0x200,
+  OMP_TGT_MAPTYPE_IMPLICIT = 0x200,
   // copy data to device
-  OMP_TGT_MAPTYPE_CLOSE           = 0x400,
+  OMP_TGT_MAPTYPE_CLOSE = 0x400,
   // runtime error if not already allocated
-  OMP_TGT_MAPTYPE_PRESENT         = 0x1000,
+  OMP_TGT_MAPTYPE_PRESENT = 0x1000,
   // descriptor for non-contiguous target-update
-  OMP_TGT_MAPTYPE_NON_CONTIG      = 0x100000000000,
+  OMP_TGT_MAPTYPE_NON_CONTIG = 0x100000000000,
   // member of struct, member given by [16 MSBs] - 1
-  OMP_TGT_MAPTYPE_MEMBER_OF       = 0xffff000000000000
+  OMP_TGT_MAPTYPE_MEMBER_OF = 0xffff000000000000
 };
 
 enum OpenMPOffloadingDeclareTargetFlags {
@@ -69,26 +69,26 @@ enum OpenMPOffloadingDeclareTargetFlags {
 
 enum OpenMPOffloadingRequiresDirFlags {
   /// flag undefined.
-  OMP_REQ_UNDEFINED               = 0x000,
+  OMP_REQ_UNDEFINED = 0x000,
   /// no requires directive present.
-  OMP_REQ_NONE                    = 0x001,
+  OMP_REQ_NONE = 0x001,
   /// reverse_offload clause.
-  OMP_REQ_REVERSE_OFFLOAD         = 0x002,
+  OMP_REQ_REVERSE_OFFLOAD = 0x002,
   /// unified_address clause.
-  OMP_REQ_UNIFIED_ADDRESS         = 0x004,
+  OMP_REQ_UNIFIED_ADDRESS = 0x004,
   /// unified_shared_memory clause.
-  OMP_REQ_UNIFIED_SHARED_MEMORY   = 0x008,
+  OMP_REQ_UNIFIED_SHARED_MEMORY = 0x008,
   /// dynamic_allocators clause.
-  OMP_REQ_DYNAMIC_ALLOCATORS      = 0x010
+  OMP_REQ_DYNAMIC_ALLOCATORS = 0x010
 };
 
 /// This struct is a record of an entry point or global. For a function
 /// entry point the size is expected to be zero
 struct __tgt_offload_entry {
-  void *addr;   // Pointer to the offload entry info (function or global)
-  char *name;   // Name of the function or global
-  size_t size;  // Size of the entry info (0 if it is a function)
-  int32_t flags; // Flags associated with the entry, e.g. 'link'.
+  void *addr;       // Pointer to the offload entry info (function or global)
+  char *name;       // Name of the function or global
+  size_t size;      // Size of the entry info (0 if it is a function)
+  int32_t flags;    // Flags associated with the entry, e.g. 'link'.
   int32_t reserved; // Reserved, to be used by the runtime library.
 };
 
@@ -103,8 +103,8 @@ struct __tgt_device_image {
 /// This struct is a record of all the host code that may be offloaded to a
 /// target.
 struct __tgt_bin_desc {
-  int32_t NumDeviceImages;           // Number of device types supported
-  __tgt_device_image *DeviceImages;  // Array of device images (1 per dev. type)
+  int32_t NumDeviceImages;          // Number of device types supported
+  __tgt_device_image *DeviceImages; // Array of device images (1 per dev. type)
   __tgt_offload_entry *HostEntriesBegin; // Begin of table with all host entries
   __tgt_offload_entry *HostEntriesEnd;   // End of table (non inclusive)
 };
@@ -142,13 +142,15 @@ void *omp_target_alloc(size_t size, int device_num);
 void omp_target_free(void *device_ptr, int device_num);
 int omp_target_is_present(void *ptr, int device_num);
 int omp_target_memcpy(void *dst, void *src, size_t length, size_t dst_offset,
-    size_t src_offset, int dst_device, int src_device);
+                      size_t src_offset, int dst_device, int src_device);
 int omp_target_memcpy_rect(void *dst, void *src, size_t element_size,
-    int num_dims, const size_t *volume, const size_t *dst_offsets,
-    const size_t *src_offsets, const size_t *dst_dimensions,
-    const size_t *src_dimensions, int dst_device, int src_device);
+                           int num_dims, const size_t *volume,
+                           const size_t *dst_offsets, const size_t *src_offsets,
+                           const size_t *dst_dimensions,
+                           const size_t *src_dimensions, int dst_device,
+                           int src_device);
 int omp_target_associate_ptr(void *host_ptr, void *device_ptr, size_t size,
-    size_t device_offset, int device_num);
+                             size_t device_offset, int device_num);
 int omp_target_disassociate_ptr(void *host_ptr, int device_num);
 
 /// add the clauses of the requires directives in a given file

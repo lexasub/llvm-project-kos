@@ -6,7 +6,7 @@ template <class T>
 T tmain(T argc) {
 #pragma omp taskyield allocate(argc) // expected-error {{unexpected OpenMP clause 'allocate' in directive '#pragma omp taskyield'}}
   ;
-#pragma omp taskyield untied  // expected-error {{unexpected OpenMP clause 'untied' in directive '#pragma omp taskyield'}}
+#pragma omp taskyield untied // expected-error {{unexpected OpenMP clause 'untied' in directive '#pragma omp taskyield'}}
 #pragma omp taskyield unknown // expected-warning {{extra tokens at the end of '#pragma omp taskyield' are ignored}}
   if (argc)
 #pragma omp taskyield // expected-error {{'#pragma omp taskyield' cannot be an immediate substatement}}
@@ -30,19 +30,19 @@ T tmain(T argc) {
     switch (argc)
     case 1:
 #pragma omp taskyield // expected-error {{'#pragma omp taskyield' cannot be an immediate substatement}}
-  switch (argc)
-  case 1: {
+      switch (argc)
+      case 1: {
 #pragma omp taskyield
-  }
-  switch (argc) {
+      }
+        switch (argc) {
 #pragma omp taskyield
-  case 1:
+        case 1:
 #pragma omp taskyield
-    break;
-  default: {
+          break;
+        default: {
 #pragma omp taskyield
-  } break;
-  }
+        } break;
+        }
   for (;;)
 #pragma omp taskyield // expected-error {{'#pragma omp taskyield' cannot be an immediate substatement}}
     for (;;) {
@@ -53,17 +53,17 @@ label:
 label1 : {
 #pragma omp taskyield
 }
-if (1)
+  if (1)
   label2:
 #pragma omp taskyield // expected-error {{'#pragma omp taskyield' cannot be an immediate substatement}}
 
-  return T();
+    return T();
 }
 
 int main(int argc, char **argv) {
 #pragma omp taskyield
   ;
-#pragma omp taskyield untied  // expected-error {{unexpected OpenMP clause 'untied' in directive '#pragma omp taskyield'}}
+#pragma omp taskyield untied // expected-error {{unexpected OpenMP clause 'untied' in directive '#pragma omp taskyield'}}
 #pragma omp taskyield unknown // expected-warning {{extra tokens at the end of '#pragma omp taskyield' are ignored}}
   if (argc)
 #pragma omp taskyield // expected-error {{'#pragma omp taskyield' cannot be an immediate substatement}}
@@ -87,19 +87,19 @@ int main(int argc, char **argv) {
     switch (argc)
     case 1:
 #pragma omp taskyield // expected-error {{'#pragma omp taskyield' cannot be an immediate substatement}}
-  switch (argc)
-  case 1: {
+      switch (argc)
+      case 1: {
 #pragma omp taskyield
-  }
-  switch (argc) {
+      }
+        switch (argc) {
 #pragma omp taskyield
-  case 1:
+        case 1:
 #pragma omp taskyield
-    break;
-  default: {
+          break;
+        default: {
 #pragma omp taskyield
-  } break;
-  }
+        } break;
+        }
   for (;;)
 #pragma omp taskyield // expected-error {{'#pragma omp taskyield' cannot be an immediate substatement}}
     for (;;) {
@@ -110,9 +110,9 @@ label:
 label1 : {
 #pragma omp taskyield
 }
-if (1)
+  if (1)
   label2:
 #pragma omp taskyield // expected-error {{'#pragma omp taskyield' cannot be an immediate substatement}}
 
-  return tmain(argc);
+    return tmain(argc);
 }

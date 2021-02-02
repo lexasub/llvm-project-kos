@@ -10,8 +10,8 @@
 // rdar://12897704
 
 struct sAFSearchPos {
-    unsigned char *pos;
-    unsigned char count;
+  unsigned char *pos;
+  unsigned char count;
 };
 
 static volatile struct sAFSearchPos testPositions;
@@ -21,5 +21,5 @@ static volatile struct sAFSearchPos arrayPositions[100][10][5];
 // CHECK: @_ZL14arrayPositions = internal global [100 x [10 x [5 x %struct.sAFSearchPos]]] zeroinitializer
 
 int main() {
-  return testPositions.count + arrayPositions[10][4][3].count; 
+  return testPositions.count + arrayPositions[10][4][3].count;
 }

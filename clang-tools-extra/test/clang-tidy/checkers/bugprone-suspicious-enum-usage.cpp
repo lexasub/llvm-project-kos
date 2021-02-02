@@ -79,7 +79,7 @@ int dont_trigger() {
   int d = c | H, e = b * a;
   a = B | C;
   b = X | Z;
-  
+
   if (Tuesday != Monday + 1 ||
       Friday - Thursday != 1 ||
       Sunday + Wednesday == (Sunday | Wednesday))
@@ -93,4 +93,4 @@ namespace PR34400 {
 enum { E1 = 0 };
 enum { E2 = -1 };
 enum { l = E1 | E2 };
-}
+} // namespace PR34400

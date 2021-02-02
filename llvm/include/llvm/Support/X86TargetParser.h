@@ -25,8 +25,7 @@ namespace X86 {
 // as a proxy for what's in libgcc/compiler-rt.
 enum ProcessorVendors : unsigned {
   VENDOR_DUMMY,
-#define X86_VENDOR(ENUM, STRING) \
-  ENUM,
+#define X86_VENDOR(ENUM, STRING) ENUM,
 #include "llvm/Support/X86TargetParser.def"
   VENDOR_OTHER
 };
@@ -35,8 +34,7 @@ enum ProcessorVendors : unsigned {
 // as a proxy for what's in libgcc/compiler-rt.
 enum ProcessorTypes : unsigned {
   CPU_TYPE_DUMMY,
-#define X86_CPU_TYPE(ENUM, STRING) \
-  ENUM,
+#define X86_CPU_TYPE(ENUM, STRING) ENUM,
 #include "llvm/Support/X86TargetParser.def"
   CPU_TYPE_MAX
 };
@@ -45,8 +43,7 @@ enum ProcessorTypes : unsigned {
 // as a proxy for what's in libgcc/compiler-rt.
 enum ProcessorSubtypes : unsigned {
   CPU_SUBTYPE_DUMMY,
-#define X86_CPU_SUBTYPE(ENUM, STRING) \
-  ENUM,
+#define X86_CPU_SUBTYPE(ENUM, STRING) ENUM,
 #include "llvm/Support/X86TargetParser.def"
   CPU_SUBTYPE_MAX
 };

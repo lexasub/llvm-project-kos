@@ -17,8 +17,8 @@ class ARMMCExpr : public MCTargetExpr {
 public:
   enum VariantKind {
     VK_ARM_None,
-    VK_ARM_HI16,  // The R_ARM_MOVT_ABS relocation (:upper16: in the .s file)
-    VK_ARM_LO16   // The R_ARM_MOVW_ABS_NC relocation (:lower16: in the .s file)
+    VK_ARM_HI16, // The R_ARM_MOVT_ABS relocation (:upper16: in the .s file)
+    VK_ARM_LO16  // The R_ARM_MOVW_ABS_NC relocation (:lower16: in the .s file)
   };
 
 private:
@@ -33,7 +33,7 @@ public:
   /// @{
 
   static const ARMMCExpr *create(VariantKind Kind, const MCExpr *Expr,
-                                      MCContext &Ctx);
+                                 MCContext &Ctx);
 
   static const ARMMCExpr *createUpper16(const MCExpr *Expr, MCContext &Ctx) {
     return create(VK_ARM_HI16, Expr, Ctx);
@@ -56,8 +56,7 @@ public:
   /// @}
 
   void printImpl(raw_ostream &OS, const MCAsmInfo *MAI) const override;
-  bool evaluateAsRelocatableImpl(MCValue &Res,
-                                 const MCAsmLayout *Layout,
+  bool evaluateAsRelocatableImpl(MCValue &Res, const MCAsmLayout *Layout,
                                  const MCFixup *Fixup) const override {
     return false;
   }

@@ -57,7 +57,7 @@ public:
   LibOptTable() : OptTable(InfoTable, true) {}
 };
 
-}
+} // namespace
 
 static std::string getDefaultOutputPath(const NewArchiveMember &FirstMember) {
   SmallString<128> Val = StringRef(FirstMember.Buf->getBufferIdentifier());
@@ -107,7 +107,7 @@ static void fatalOpenError(llvm::Error E, Twine File) {
   });
 }
 
-static void doList(opt::InputArgList& Args) {
+static void doList(opt::InputArgList &Args) {
   // lib.exe prints the contents of the first archive file.
   std::unique_ptr<MemoryBuffer> B;
   for (auto *Arg : Args.filtered(OPT_INPUT)) {
@@ -229,10 +229,11 @@ static void appendFile(std::vector<NewArchiveMember> &Members,
         (Magic == file_magic::coff_object) ? getCOFFFileMachine(MB)
                                            : getBitcodeFileMachine(MB);
     if (!MaybeFileMachine) {
-      handleAllErrors(MaybeFileMachine.takeError(), [&](const ErrorInfoBase &EIB) {
-        llvm::errs() << MB.getBufferIdentifier() << ": " << EIB.message()
-                     << "\n";
-      });
+      handleAllErrors(MaybeFileMachine.takeError(),
+                      [&](const ErrorInfoBase &EIB) {
+                        llvm::errs() << MB.getBufferIdentifier() << ": "
+                                     << EIB.message() << "\n";
+                      });
       exit(1);
     }
     COFF::MachineTypes FileMachine = *MaybeFileMachine;

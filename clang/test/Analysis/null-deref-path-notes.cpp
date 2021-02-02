@@ -4,7 +4,7 @@ namespace pr34731 {
 int b;
 class c {
   class B {
-   public:
+  public:
     double ***d;
     B();
   };
@@ -15,11 +15,11 @@ class c {
 // Properly track the null pointer in the array field back to the default
 // constructor of 'h'.
 void c::f(B &g, int &i) {
-  e(g.d[9], i); // expected-warning{{Array access (via field 'd') results in a null pointer dereference}}
-                // expected-note@-1{{Array access (via field 'd') results in a null pointer dereference}}
-  B h, a; // expected-note{{Value assigned to 'h.d'}}
+  e(g.d[9], i);  // expected-warning{{Array access (via field 'd') results in a null pointer dereference}}
+                 // expected-note@-1{{Array access (via field 'd') results in a null pointer dereference}}
+  B h, a;        // expected-note{{Value assigned to 'h.d'}}
   a.d == __null; // expected-note{{Assuming the condition is true}}
-  a.d != h.d; // expected-note{{Assuming 'a.d' is equal to 'h.d'}}
-  f(h, b); // expected-note{{Calling 'c::f'}}
+  a.d != h.d;    // expected-note{{Assuming 'a.d' is equal to 'h.d'}}
+  f(h, b);       // expected-note{{Calling 'c::f'}}
 }
-}
+} // namespace pr34731

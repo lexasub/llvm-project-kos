@@ -22,94 +22,92 @@
 
 namespace llvm {
 
-  /// DiffFilesWithTolerance - Compare the two files specified, returning 0 if
-  /// the files match, 1 if they are different, and 2 if there is a file error.
-  /// This function allows you to specify an absolute and relative FP error that
-  /// is allowed to exist.  If you specify a string to fill in for the error
-  /// option, it will set the string to an error message if an error occurs, or
-  /// if the files are different.
-  ///
-  int DiffFilesWithTolerance(StringRef FileA,
-                             StringRef FileB,
-                             double AbsTol, double RelTol,
-                             std::string *Error = nullptr);
+/// DiffFilesWithTolerance - Compare the two files specified, returning 0 if
+/// the files match, 1 if they are different, and 2 if there is a file error.
+/// This function allows you to specify an absolute and relative FP error that
+/// is allowed to exist.  If you specify a string to fill in for the error
+/// option, it will set the string to an error message if an error occurs, or
+/// if the files are different.
+///
+int DiffFilesWithTolerance(StringRef FileA, StringRef FileB, double AbsTol,
+                           double RelTol, std::string *Error = nullptr);
 
+/// FileRemover - This class is a simple object meant to be stack allocated.
+/// If an exception is thrown from a region, the object removes the filename
+/// specified (if deleteIt is true).
+///
+class FileRemover {
+  SmallString<128> Filename;
+  bool DeleteIt;
 
-  /// FileRemover - This class is a simple object meant to be stack allocated.
-  /// If an exception is thrown from a region, the object removes the filename
-  /// specified (if deleteIt is true).
-  ///
-  class FileRemover {
-    SmallString<128> Filename;
-    bool DeleteIt;
-  public:
-    FileRemover() : DeleteIt(false) {}
+public:
+  FileRemover() : DeleteIt(false) {}
 
-    explicit FileRemover(const Twine& filename, bool deleteIt = true)
+  explicit FileRemover(const Twine &filename, bool deleteIt = true)
       : DeleteIt(deleteIt) {
-      filename.toVector(Filename);
+    filename.toVector(Filename);
+  }
+
+  ~FileRemover() {
+    if (DeleteIt) {
+      // Ignore problems deleting the file.
+      sys::fs::remove(Filename);
+    }
+  }
+
+  /// setFile - Give ownership of the file to the FileRemover so it will
+  /// be removed when the object is destroyed.  If the FileRemover already
+  /// had ownership of a file, remove it first.
+  void setFile(const Twine &filename, bool deleteIt = true) {
+    if (DeleteIt) {
+      // Ignore problems deleting the file.
+      sys::fs::remove(Filename);
     }
 
-    ~FileRemover() {
-      if (DeleteIt) {
-        // Ignore problems deleting the file.
-        sys::fs::remove(Filename);
-      }
-    }
+    Filename.clear();
+    filename.toVector(Filename);
+    DeleteIt = deleteIt;
+  }
 
-    /// setFile - Give ownership of the file to the FileRemover so it will
-    /// be removed when the object is destroyed.  If the FileRemover already
-    /// had ownership of a file, remove it first.
-    void setFile(const Twine& filename, bool deleteIt = true) {
-      if (DeleteIt) {
-        // Ignore problems deleting the file.
-        sys::fs::remove(Filename);
-      }
+  /// releaseFile - Take ownership of the file away from the FileRemover so it
+  /// will not be removed when the object is destroyed.
+  void releaseFile() { DeleteIt = false; }
+};
 
-      Filename.clear();
-      filename.toVector(Filename);
-      DeleteIt = deleteIt;
-    }
+enum class atomic_write_error {
+  failed_to_create_uniq_file = 0,
+  output_stream_error,
+  failed_to_rename_temp_file
+};
 
-    /// releaseFile - Take ownership of the file away from the FileRemover so it
-    /// will not be removed when the object is destroyed.
-    void releaseFile() { DeleteIt = false; }
-  };
+class AtomicFileWriteError : public llvm::ErrorInfo<AtomicFileWriteError> {
+public:
+  AtomicFileWriteError(atomic_write_error Error) : Error(Error) {}
 
-  enum class atomic_write_error {
-    failed_to_create_uniq_file = 0,
-    output_stream_error,
-    failed_to_rename_temp_file
-  };
+  void log(raw_ostream &OS) const override;
 
-  class AtomicFileWriteError : public llvm::ErrorInfo<AtomicFileWriteError> {
-  public:
-    AtomicFileWriteError(atomic_write_error Error) : Error(Error) {}
+  const atomic_write_error Error;
+  static char ID;
 
-    void log(raw_ostream &OS) const override;
+private:
+  // Users are not expected to use error_code.
+  std::error_code convertToErrorCode() const override {
+    return llvm::inconvertibleErrorCode();
+  }
+};
 
-    const atomic_write_error Error;
-    static char ID;
+// atomic_write_error + whatever the Writer can return
 
-  private:
-    // Users are not expected to use error_code.
-    std::error_code convertToErrorCode() const override {
-      return llvm::inconvertibleErrorCode();
-    }
-  };
+/// Creates a unique file with name according to the given \p TempPathModel,
+/// writes content of \p Buffer to the file and renames it to \p FinalPath.
+///
+/// \returns \c AtomicFileWriteError in case of error.
+llvm::Error writeFileAtomically(StringRef TempPathModel, StringRef FinalPath,
+                                StringRef Buffer);
 
-  // atomic_write_error + whatever the Writer can return
-
-  /// Creates a unique file with name according to the given \p TempPathModel,
-  /// writes content of \p Buffer to the file and renames it to \p FinalPath.
-  ///
-  /// \returns \c AtomicFileWriteError in case of error.
-  llvm::Error writeFileAtomically(StringRef TempPathModel, StringRef FinalPath,
-                                  StringRef Buffer);
-
-  llvm::Error
-  writeFileAtomically(StringRef TempPathModel, StringRef FinalPath,
-                      std::function<llvm::Error(llvm::raw_ostream &)> Writer);
-} // End llvm namespace
+llvm::Error
+writeFileAtomically(StringRef TempPathModel, StringRef FinalPath,
+                    std::function<llvm::Error(llvm::raw_ostream &)> Writer);
+} // namespace llvm
 
 #endif

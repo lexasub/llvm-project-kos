@@ -26,7 +26,8 @@ void f() {
 #define RPAREN )
 
 int f2() {
-  int n = ({ 1; }RPAREN; // expected-warning {{'}' and ')' tokens terminating statement expression appear in different macro expansion contexts}} expected-note {{')' token is here}}
+  int n = ({
+    1; }RPAREN; // expected-warning {{'}' and ')' tokens terminating statement expression appear in different macro expansion contexts}} expected-note {{')' token is here}}
   return n;
 }
 
@@ -35,9 +36,9 @@ int f2() {
 #include __FILE__
   noreturn ]]  void g();
 
-[[noreturn] ] void h(); // space-warning-re {{{{^}}']' tokens terminating attribute are separated by whitespace}}
+[[noreturn]] void h(); // space-warning-re {{{{^}}']' tokens terminating attribute are separated by whitespace}}
 
 struct X {};
-int X:: *p; // space-warning {{'::' and '*' tokens forming pointer to member type are separated by whitespace}}
+int X::*p; // space-warning {{'::' and '*' tokens forming pointer to member type are separated by whitespace}}
 
 #endif

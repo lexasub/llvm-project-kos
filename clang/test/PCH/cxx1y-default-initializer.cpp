@@ -15,15 +15,15 @@ struct A {
   int y = 3;
   int z = x + y;
 };
-template<typename T> constexpr A make() { return A {}; }
-template<typename T> constexpr A make(T t) { return A { t }; }
+template <typename T> constexpr A make() { return A{}; }
+template <typename T> constexpr A make(T t) { return A{t}; }
 
 struct B {
   int z1, z2 = z1;
   constexpr B(int k) : z1(k) {}
 };
 
-template<typename T> struct C {
+template <typename T> struct C {
   constexpr C() {}
   T c = T();
   struct U {};
@@ -41,7 +41,7 @@ C<int> ci;
 
 static_assert(A{}.z == 3, "");
 static_assert(A{1}.z == 4, "");
-static_assert(A{.y = 5}.z == 5, ""); // expected-warning {{C++20}}
+static_assert(A{.y = 5}.z == 5, "");    // expected-warning {{C++20}}
 static_assert(A{3, .y = 1}.z == 4, ""); // expected-warning {{C99}} expected-note {{here}}
 static_assert(make<int>().z == 3, "");
 static_assert(make<int>(12).z == 15, "");

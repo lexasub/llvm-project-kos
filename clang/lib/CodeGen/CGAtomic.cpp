@@ -27,272 +27,267 @@ using namespace clang;
 using namespace CodeGen;
 
 namespace {
-  class AtomicInfo {
-    CodeGenFunction &CGF;
-    QualType AtomicTy;
-    QualType ValueTy;
-    uint64_t AtomicSizeInBits;
-    uint64_t ValueSizeInBits;
-    CharUnits AtomicAlign;
-    CharUnits ValueAlign;
-    TypeEvaluationKind EvaluationKind;
-    bool UseLibcall;
-    LValue LVal;
-    CGBitFieldInfo BFI;
-  public:
-    AtomicInfo(CodeGenFunction &CGF, LValue &lvalue)
-        : CGF(CGF), AtomicSizeInBits(0), ValueSizeInBits(0),
-          EvaluationKind(TEK_Scalar), UseLibcall(true) {
-      assert(!lvalue.isGlobalReg());
-      ASTContext &C = CGF.getContext();
-      if (lvalue.isSimple()) {
-        AtomicTy = lvalue.getType();
-        if (auto *ATy = AtomicTy->getAs<AtomicType>())
-          ValueTy = ATy->getValueType();
-        else
-          ValueTy = AtomicTy;
-        EvaluationKind = CGF.getEvaluationKind(ValueTy);
+class AtomicInfo {
+  CodeGenFunction &CGF;
+  QualType AtomicTy;
+  QualType ValueTy;
+  uint64_t AtomicSizeInBits;
+  uint64_t ValueSizeInBits;
+  CharUnits AtomicAlign;
+  CharUnits ValueAlign;
+  TypeEvaluationKind EvaluationKind;
+  bool UseLibcall;
+  LValue LVal;
+  CGBitFieldInfo BFI;
 
-        uint64_t ValueAlignInBits;
-        uint64_t AtomicAlignInBits;
-        TypeInfo ValueTI = C.getTypeInfo(ValueTy);
-        ValueSizeInBits = ValueTI.Width;
-        ValueAlignInBits = ValueTI.Align;
+public:
+  AtomicInfo(CodeGenFunction &CGF, LValue &lvalue)
+      : CGF(CGF), AtomicSizeInBits(0), ValueSizeInBits(0),
+        EvaluationKind(TEK_Scalar), UseLibcall(true) {
+    assert(!lvalue.isGlobalReg());
+    ASTContext &C = CGF.getContext();
+    if (lvalue.isSimple()) {
+      AtomicTy = lvalue.getType();
+      if (auto *ATy = AtomicTy->getAs<AtomicType>())
+        ValueTy = ATy->getValueType();
+      else
+        ValueTy = AtomicTy;
+      EvaluationKind = CGF.getEvaluationKind(ValueTy);
 
-        TypeInfo AtomicTI = C.getTypeInfo(AtomicTy);
-        AtomicSizeInBits = AtomicTI.Width;
-        AtomicAlignInBits = AtomicTI.Align;
+      uint64_t ValueAlignInBits;
+      uint64_t AtomicAlignInBits;
+      TypeInfo ValueTI = C.getTypeInfo(ValueTy);
+      ValueSizeInBits = ValueTI.Width;
+      ValueAlignInBits = ValueTI.Align;
 
-        assert(ValueSizeInBits <= AtomicSizeInBits);
-        assert(ValueAlignInBits <= AtomicAlignInBits);
+      TypeInfo AtomicTI = C.getTypeInfo(AtomicTy);
+      AtomicSizeInBits = AtomicTI.Width;
+      AtomicAlignInBits = AtomicTI.Align;
 
-        AtomicAlign = C.toCharUnitsFromBits(AtomicAlignInBits);
-        ValueAlign = C.toCharUnitsFromBits(ValueAlignInBits);
-        if (lvalue.getAlignment().isZero())
-          lvalue.setAlignment(AtomicAlign);
+      assert(ValueSizeInBits <= AtomicSizeInBits);
+      assert(ValueAlignInBits <= AtomicAlignInBits);
 
-        LVal = lvalue;
-      } else if (lvalue.isBitField()) {
-        ValueTy = lvalue.getType();
-        ValueSizeInBits = C.getTypeSize(ValueTy);
-        auto &OrigBFI = lvalue.getBitFieldInfo();
-        auto Offset = OrigBFI.Offset % C.toBits(lvalue.getAlignment());
-        AtomicSizeInBits = C.toBits(
-            C.toCharUnitsFromBits(Offset + OrigBFI.Size + C.getCharWidth() - 1)
-                .alignTo(lvalue.getAlignment()));
-        auto VoidPtrAddr = CGF.EmitCastToVoidPtr(lvalue.getBitFieldPointer());
-        auto OffsetInChars =
-            (C.toCharUnitsFromBits(OrigBFI.Offset) / lvalue.getAlignment()) *
-            lvalue.getAlignment();
-        VoidPtrAddr = CGF.Builder.CreateConstGEP1_64(
-            VoidPtrAddr, OffsetInChars.getQuantity());
-        auto Addr = CGF.Builder.CreatePointerBitCastOrAddrSpaceCast(
-            VoidPtrAddr,
-            CGF.Builder.getIntNTy(AtomicSizeInBits)->getPointerTo(),
-            "atomic_bitfield_base");
-        BFI = OrigBFI;
-        BFI.Offset = Offset;
-        BFI.StorageSize = AtomicSizeInBits;
-        BFI.StorageOffset += OffsetInChars;
-        LVal = LValue::MakeBitfield(Address(Addr, lvalue.getAlignment()),
-                                    BFI, lvalue.getType(), lvalue.getBaseInfo(),
-                                    lvalue.getTBAAInfo());
-        AtomicTy = C.getIntTypeForBitwidth(AtomicSizeInBits, OrigBFI.IsSigned);
-        if (AtomicTy.isNull()) {
-          llvm::APInt Size(
-              /*numBits=*/32,
-              C.toCharUnitsFromBits(AtomicSizeInBits).getQuantity());
-          AtomicTy =
-              C.getConstantArrayType(C.CharTy, Size, nullptr, ArrayType::Normal,
-                                     /*IndexTypeQuals=*/0);
-        }
-        AtomicAlign = ValueAlign = lvalue.getAlignment();
-      } else if (lvalue.isVectorElt()) {
-        ValueTy = lvalue.getType()->castAs<VectorType>()->getElementType();
-        ValueSizeInBits = C.getTypeSize(ValueTy);
-        AtomicTy = lvalue.getType();
-        AtomicSizeInBits = C.getTypeSize(AtomicTy);
-        AtomicAlign = ValueAlign = lvalue.getAlignment();
-        LVal = lvalue;
-      } else {
-        assert(lvalue.isExtVectorElt());
-        ValueTy = lvalue.getType();
-        ValueSizeInBits = C.getTypeSize(ValueTy);
-        AtomicTy = ValueTy = CGF.getContext().getExtVectorType(
-            lvalue.getType(), cast<llvm::FixedVectorType>(
-                                  lvalue.getExtVectorAddress().getElementType())
-                                  ->getNumElements());
-        AtomicSizeInBits = C.getTypeSize(AtomicTy);
-        AtomicAlign = ValueAlign = lvalue.getAlignment();
-        LVal = lvalue;
+      AtomicAlign = C.toCharUnitsFromBits(AtomicAlignInBits);
+      ValueAlign = C.toCharUnitsFromBits(ValueAlignInBits);
+      if (lvalue.getAlignment().isZero())
+        lvalue.setAlignment(AtomicAlign);
+
+      LVal = lvalue;
+    } else if (lvalue.isBitField()) {
+      ValueTy = lvalue.getType();
+      ValueSizeInBits = C.getTypeSize(ValueTy);
+      auto &OrigBFI = lvalue.getBitFieldInfo();
+      auto Offset = OrigBFI.Offset % C.toBits(lvalue.getAlignment());
+      AtomicSizeInBits = C.toBits(
+          C.toCharUnitsFromBits(Offset + OrigBFI.Size + C.getCharWidth() - 1)
+              .alignTo(lvalue.getAlignment()));
+      auto VoidPtrAddr = CGF.EmitCastToVoidPtr(lvalue.getBitFieldPointer());
+      auto OffsetInChars =
+          (C.toCharUnitsFromBits(OrigBFI.Offset) / lvalue.getAlignment()) *
+          lvalue.getAlignment();
+      VoidPtrAddr = CGF.Builder.CreateConstGEP1_64(VoidPtrAddr,
+                                                   OffsetInChars.getQuantity());
+      auto Addr = CGF.Builder.CreatePointerBitCastOrAddrSpaceCast(
+          VoidPtrAddr, CGF.Builder.getIntNTy(AtomicSizeInBits)->getPointerTo(),
+          "atomic_bitfield_base");
+      BFI = OrigBFI;
+      BFI.Offset = Offset;
+      BFI.StorageSize = AtomicSizeInBits;
+      BFI.StorageOffset += OffsetInChars;
+      LVal = LValue::MakeBitfield(Address(Addr, lvalue.getAlignment()), BFI,
+                                  lvalue.getType(), lvalue.getBaseInfo(),
+                                  lvalue.getTBAAInfo());
+      AtomicTy = C.getIntTypeForBitwidth(AtomicSizeInBits, OrigBFI.IsSigned);
+      if (AtomicTy.isNull()) {
+        llvm::APInt Size(
+            /*numBits=*/32,
+            C.toCharUnitsFromBits(AtomicSizeInBits).getQuantity());
+        AtomicTy =
+            C.getConstantArrayType(C.CharTy, Size, nullptr, ArrayType::Normal,
+                                   /*IndexTypeQuals=*/0);
       }
-      UseLibcall = !C.getTargetInfo().hasBuiltinAtomic(
-          AtomicSizeInBits, C.toBits(lvalue.getAlignment()));
+      AtomicAlign = ValueAlign = lvalue.getAlignment();
+    } else if (lvalue.isVectorElt()) {
+      ValueTy = lvalue.getType()->castAs<VectorType>()->getElementType();
+      ValueSizeInBits = C.getTypeSize(ValueTy);
+      AtomicTy = lvalue.getType();
+      AtomicSizeInBits = C.getTypeSize(AtomicTy);
+      AtomicAlign = ValueAlign = lvalue.getAlignment();
+      LVal = lvalue;
+    } else {
+      assert(lvalue.isExtVectorElt());
+      ValueTy = lvalue.getType();
+      ValueSizeInBits = C.getTypeSize(ValueTy);
+      AtomicTy = ValueTy = CGF.getContext().getExtVectorType(
+          lvalue.getType(), cast<llvm::FixedVectorType>(
+                                lvalue.getExtVectorAddress().getElementType())
+                                ->getNumElements());
+      AtomicSizeInBits = C.getTypeSize(AtomicTy);
+      AtomicAlign = ValueAlign = lvalue.getAlignment();
+      LVal = lvalue;
     }
+    UseLibcall = !C.getTargetInfo().hasBuiltinAtomic(
+        AtomicSizeInBits, C.toBits(lvalue.getAlignment()));
+  }
 
-    QualType getAtomicType() const { return AtomicTy; }
-    QualType getValueType() const { return ValueTy; }
-    CharUnits getAtomicAlignment() const { return AtomicAlign; }
-    uint64_t getAtomicSizeInBits() const { return AtomicSizeInBits; }
-    uint64_t getValueSizeInBits() const { return ValueSizeInBits; }
-    TypeEvaluationKind getEvaluationKind() const { return EvaluationKind; }
-    bool shouldUseLibcall() const { return UseLibcall; }
-    const LValue &getAtomicLValue() const { return LVal; }
-    llvm::Value *getAtomicPointer() const {
-      if (LVal.isSimple())
-        return LVal.getPointer(CGF);
-      else if (LVal.isBitField())
-        return LVal.getBitFieldPointer();
-      else if (LVal.isVectorElt())
-        return LVal.getVectorPointer();
-      assert(LVal.isExtVectorElt());
-      return LVal.getExtVectorPointer();
-    }
-    Address getAtomicAddress() const {
-      return Address(getAtomicPointer(), getAtomicAlignment());
-    }
+  QualType getAtomicType() const { return AtomicTy; }
+  QualType getValueType() const { return ValueTy; }
+  CharUnits getAtomicAlignment() const { return AtomicAlign; }
+  uint64_t getAtomicSizeInBits() const { return AtomicSizeInBits; }
+  uint64_t getValueSizeInBits() const { return ValueSizeInBits; }
+  TypeEvaluationKind getEvaluationKind() const { return EvaluationKind; }
+  bool shouldUseLibcall() const { return UseLibcall; }
+  const LValue &getAtomicLValue() const { return LVal; }
+  llvm::Value *getAtomicPointer() const {
+    if (LVal.isSimple())
+      return LVal.getPointer(CGF);
+    else if (LVal.isBitField())
+      return LVal.getBitFieldPointer();
+    else if (LVal.isVectorElt())
+      return LVal.getVectorPointer();
+    assert(LVal.isExtVectorElt());
+    return LVal.getExtVectorPointer();
+  }
+  Address getAtomicAddress() const {
+    return Address(getAtomicPointer(), getAtomicAlignment());
+  }
 
-    Address getAtomicAddressAsAtomicIntPointer() const {
-      return emitCastToAtomicIntPointer(getAtomicAddress());
-    }
+  Address getAtomicAddressAsAtomicIntPointer() const {
+    return emitCastToAtomicIntPointer(getAtomicAddress());
+  }
 
-    /// Is the atomic size larger than the underlying value type?
-    ///
-    /// Note that the absence of padding does not mean that atomic
-    /// objects are completely interchangeable with non-atomic
-    /// objects: we might have promoted the alignment of a type
-    /// without making it bigger.
-    bool hasPadding() const {
-      return (ValueSizeInBits != AtomicSizeInBits);
-    }
+  /// Is the atomic size larger than the underlying value type?
+  ///
+  /// Note that the absence of padding does not mean that atomic
+  /// objects are completely interchangeable with non-atomic
+  /// objects: we might have promoted the alignment of a type
+  /// without making it bigger.
+  bool hasPadding() const { return (ValueSizeInBits != AtomicSizeInBits); }
 
-    bool emitMemSetZeroIfNecessary() const;
+  bool emitMemSetZeroIfNecessary() const;
 
-    llvm::Value *getAtomicSizeValue() const {
-      CharUnits size = CGF.getContext().toCharUnitsFromBits(AtomicSizeInBits);
-      return CGF.CGM.getSize(size);
-    }
+  llvm::Value *getAtomicSizeValue() const {
+    CharUnits size = CGF.getContext().toCharUnitsFromBits(AtomicSizeInBits);
+    return CGF.CGM.getSize(size);
+  }
 
-    /// Cast the given pointer to an integer pointer suitable for atomic
-    /// operations if the source.
-    Address emitCastToAtomicIntPointer(Address Addr) const;
+  /// Cast the given pointer to an integer pointer suitable for atomic
+  /// operations if the source.
+  Address emitCastToAtomicIntPointer(Address Addr) const;
 
-    /// If Addr is compatible with the iN that will be used for an atomic
-    /// operation, bitcast it. Otherwise, create a temporary that is suitable
-    /// and copy the value across.
-    Address convertToAtomicIntPointer(Address Addr) const;
+  /// If Addr is compatible with the iN that will be used for an atomic
+  /// operation, bitcast it. Otherwise, create a temporary that is suitable
+  /// and copy the value across.
+  Address convertToAtomicIntPointer(Address Addr) const;
 
-    /// Turn an atomic-layout object into an r-value.
-    RValue convertAtomicTempToRValue(Address addr, AggValueSlot resultSlot,
-                                     SourceLocation loc, bool AsValue) const;
+  /// Turn an atomic-layout object into an r-value.
+  RValue convertAtomicTempToRValue(Address addr, AggValueSlot resultSlot,
+                                   SourceLocation loc, bool AsValue) const;
 
-    /// Converts a rvalue to integer value.
-    llvm::Value *convertRValueToInt(RValue RVal) const;
+  /// Converts a rvalue to integer value.
+  llvm::Value *convertRValueToInt(RValue RVal) const;
 
-    RValue ConvertIntToValueOrAtomic(llvm::Value *IntVal,
-                                     AggValueSlot ResultSlot,
-                                     SourceLocation Loc, bool AsValue) const;
+  RValue ConvertIntToValueOrAtomic(llvm::Value *IntVal, AggValueSlot ResultSlot,
+                                   SourceLocation Loc, bool AsValue) const;
 
-    /// Copy an atomic r-value into atomic-layout memory.
-    void emitCopyIntoMemory(RValue rvalue) const;
+  /// Copy an atomic r-value into atomic-layout memory.
+  void emitCopyIntoMemory(RValue rvalue) const;
 
-    /// Project an l-value down to the value field.
-    LValue projectValue() const {
-      assert(LVal.isSimple());
-      Address addr = getAtomicAddress();
-      if (hasPadding())
-        addr = CGF.Builder.CreateStructGEP(addr, 0);
+  /// Project an l-value down to the value field.
+  LValue projectValue() const {
+    assert(LVal.isSimple());
+    Address addr = getAtomicAddress();
+    if (hasPadding())
+      addr = CGF.Builder.CreateStructGEP(addr, 0);
 
-      return LValue::MakeAddr(addr, getValueType(), CGF.getContext(),
-                              LVal.getBaseInfo(), LVal.getTBAAInfo());
-    }
+    return LValue::MakeAddr(addr, getValueType(), CGF.getContext(),
+                            LVal.getBaseInfo(), LVal.getTBAAInfo());
+  }
 
-    /// Emits atomic load.
-    /// \returns Loaded value.
-    RValue EmitAtomicLoad(AggValueSlot ResultSlot, SourceLocation Loc,
-                          bool AsValue, llvm::AtomicOrdering AO,
-                          bool IsVolatile);
+  /// Emits atomic load.
+  /// \returns Loaded value.
+  RValue EmitAtomicLoad(AggValueSlot ResultSlot, SourceLocation Loc,
+                        bool AsValue, llvm::AtomicOrdering AO, bool IsVolatile);
 
-    /// Emits atomic compare-and-exchange sequence.
-    /// \param Expected Expected value.
-    /// \param Desired Desired value.
-    /// \param Success Atomic ordering for success operation.
-    /// \param Failure Atomic ordering for failed operation.
-    /// \param IsWeak true if atomic operation is weak, false otherwise.
-    /// \returns Pair of values: previous value from storage (value type) and
-    /// boolean flag (i1 type) with true if success and false otherwise.
-    std::pair<RValue, llvm::Value *>
-    EmitAtomicCompareExchange(RValue Expected, RValue Desired,
+  /// Emits atomic compare-and-exchange sequence.
+  /// \param Expected Expected value.
+  /// \param Desired Desired value.
+  /// \param Success Atomic ordering for success operation.
+  /// \param Failure Atomic ordering for failed operation.
+  /// \param IsWeak true if atomic operation is weak, false otherwise.
+  /// \returns Pair of values: previous value from storage (value type) and
+  /// boolean flag (i1 type) with true if success and false otherwise.
+  std::pair<RValue, llvm::Value *>
+  EmitAtomicCompareExchange(RValue Expected, RValue Desired,
+                            llvm::AtomicOrdering Success =
+                                llvm::AtomicOrdering::SequentiallyConsistent,
+                            llvm::AtomicOrdering Failure =
+                                llvm::AtomicOrdering::SequentiallyConsistent,
+                            bool IsWeak = false);
+
+  /// Emits atomic update.
+  /// \param AO Atomic ordering.
+  /// \param UpdateOp Update operation for the current lvalue.
+  void EmitAtomicUpdate(llvm::AtomicOrdering AO,
+                        const llvm::function_ref<RValue(RValue)> &UpdateOp,
+                        bool IsVolatile);
+  /// Emits atomic update.
+  /// \param AO Atomic ordering.
+  void EmitAtomicUpdate(llvm::AtomicOrdering AO, RValue UpdateRVal,
+                        bool IsVolatile);
+
+  /// Materialize an atomic r-value in atomic-layout memory.
+  Address materializeRValue(RValue rvalue) const;
+
+  /// Creates temp alloca for intermediate operations on atomic value.
+  Address CreateTempAlloca() const;
+
+private:
+  bool requiresMemSetZero(llvm::Type *type) const;
+
+  /// Emits atomic load as a libcall.
+  void EmitAtomicLoadLibcall(llvm::Value *AddForLoaded, llvm::AtomicOrdering AO,
+                             bool IsVolatile);
+  /// Emits atomic load as LLVM instruction.
+  llvm::Value *EmitAtomicLoadOp(llvm::AtomicOrdering AO, bool IsVolatile);
+  /// Emits atomic compare-and-exchange op as a libcall.
+  llvm::Value *EmitAtomicCompareExchangeLibcall(
+      llvm::Value *ExpectedAddr, llvm::Value *DesiredAddr,
+      llvm::AtomicOrdering Success =
+          llvm::AtomicOrdering::SequentiallyConsistent,
+      llvm::AtomicOrdering Failure =
+          llvm::AtomicOrdering::SequentiallyConsistent);
+  /// Emits atomic compare-and-exchange op as LLVM instruction.
+  std::pair<llvm::Value *, llvm::Value *>
+  EmitAtomicCompareExchangeOp(llvm::Value *ExpectedVal, llvm::Value *DesiredVal,
                               llvm::AtomicOrdering Success =
                                   llvm::AtomicOrdering::SequentiallyConsistent,
                               llvm::AtomicOrdering Failure =
                                   llvm::AtomicOrdering::SequentiallyConsistent,
                               bool IsWeak = false);
-
-    /// Emits atomic update.
-    /// \param AO Atomic ordering.
-    /// \param UpdateOp Update operation for the current lvalue.
-    void EmitAtomicUpdate(llvm::AtomicOrdering AO,
+  /// Emit atomic update as libcalls.
+  void
+  EmitAtomicUpdateLibcall(llvm::AtomicOrdering AO,
                           const llvm::function_ref<RValue(RValue)> &UpdateOp,
                           bool IsVolatile);
-    /// Emits atomic update.
-    /// \param AO Atomic ordering.
-    void EmitAtomicUpdate(llvm::AtomicOrdering AO, RValue UpdateRVal,
+  /// Emit atomic update as LLVM instructions.
+  void EmitAtomicUpdateOp(llvm::AtomicOrdering AO,
+                          const llvm::function_ref<RValue(RValue)> &UpdateOp,
                           bool IsVolatile);
-
-    /// Materialize an atomic r-value in atomic-layout memory.
-    Address materializeRValue(RValue rvalue) const;
-
-    /// Creates temp alloca for intermediate operations on atomic value.
-    Address CreateTempAlloca() const;
-  private:
-    bool requiresMemSetZero(llvm::Type *type) const;
-
-
-    /// Emits atomic load as a libcall.
-    void EmitAtomicLoadLibcall(llvm::Value *AddForLoaded,
-                               llvm::AtomicOrdering AO, bool IsVolatile);
-    /// Emits atomic load as LLVM instruction.
-    llvm::Value *EmitAtomicLoadOp(llvm::AtomicOrdering AO, bool IsVolatile);
-    /// Emits atomic compare-and-exchange op as a libcall.
-    llvm::Value *EmitAtomicCompareExchangeLibcall(
-        llvm::Value *ExpectedAddr, llvm::Value *DesiredAddr,
-        llvm::AtomicOrdering Success =
-            llvm::AtomicOrdering::SequentiallyConsistent,
-        llvm::AtomicOrdering Failure =
-            llvm::AtomicOrdering::SequentiallyConsistent);
-    /// Emits atomic compare-and-exchange op as LLVM instruction.
-    std::pair<llvm::Value *, llvm::Value *> EmitAtomicCompareExchangeOp(
-        llvm::Value *ExpectedVal, llvm::Value *DesiredVal,
-        llvm::AtomicOrdering Success =
-            llvm::AtomicOrdering::SequentiallyConsistent,
-        llvm::AtomicOrdering Failure =
-            llvm::AtomicOrdering::SequentiallyConsistent,
-        bool IsWeak = false);
-    /// Emit atomic update as libcalls.
-    void
-    EmitAtomicUpdateLibcall(llvm::AtomicOrdering AO,
-                            const llvm::function_ref<RValue(RValue)> &UpdateOp,
-                            bool IsVolatile);
-    /// Emit atomic update as LLVM instructions.
-    void EmitAtomicUpdateOp(llvm::AtomicOrdering AO,
-                            const llvm::function_ref<RValue(RValue)> &UpdateOp,
-                            bool IsVolatile);
-    /// Emit atomic update as libcalls.
-    void EmitAtomicUpdateLibcall(llvm::AtomicOrdering AO, RValue UpdateRVal,
-                                 bool IsVolatile);
-    /// Emit atomic update as LLVM instructions.
-    void EmitAtomicUpdateOp(llvm::AtomicOrdering AO, RValue UpdateRal,
-                            bool IsVolatile);
-  };
-}
+  /// Emit atomic update as libcalls.
+  void EmitAtomicUpdateLibcall(llvm::AtomicOrdering AO, RValue UpdateRVal,
+                               bool IsVolatile);
+  /// Emit atomic update as LLVM instructions.
+  void EmitAtomicUpdateOp(llvm::AtomicOrdering AO, RValue UpdateRal,
+                          bool IsVolatile);
+};
+} // namespace
 
 Address AtomicInfo::CreateTempAlloca() const {
   Address TempAlloca = CGF.CreateMemTemp(
       (LVal.isBitField() && ValueSizeInBits > AtomicSizeInBits) ? ValueTy
                                                                 : AtomicTy,
-      getAtomicAlignment(),
-      "atomic-temp");
+      getAtomicAlignment(), "atomic-temp");
   // Cast to pointer to value type for bitfields.
   if (LVal.isBitField())
     return CGF.Builder.CreatePointerBitCastOrAddrSpaceCast(
@@ -300,12 +295,10 @@ Address AtomicInfo::CreateTempAlloca() const {
   return TempAlloca;
 }
 
-static RValue emitAtomicLibcall(CodeGenFunction &CGF,
-                                StringRef fnName,
-                                QualType resultType,
-                                CallArgList &args) {
+static RValue emitAtomicLibcall(CodeGenFunction &CGF, StringRef fnName,
+                                QualType resultType, CallArgList &args) {
   const CGFunctionInfo &fnInfo =
-    CGF.CGM.getTypes().arrangeBuiltinFunctionCall(resultType, args);
+      CGF.CGM.getTypes().arrangeBuiltinFunctionCall(resultType, args);
   llvm::FunctionType *fnTy = CGF.CGM.getTypes().GetFunctionType(fnInfo);
   llvm::AttrBuilder fnAttrB;
   fnAttrB.addAttribute(llvm::Attribute::NoUnwind);
@@ -330,7 +323,8 @@ static bool isFullSizeType(CodeGenModule &CGM, llvm::Type *type,
 /// The IR type is provided as a way of making certain queries faster.
 bool AtomicInfo::requiresMemSetZero(llvm::Type *type) const {
   // If the atomic type has size padding, we definitely need a memset.
-  if (hasPadding()) return true;
+  if (hasPadding())
+    return true;
 
   // Otherwise, do some simple heuristics to try to avoid it:
   switch (getEvaluationKind()) {
@@ -363,9 +357,8 @@ bool AtomicInfo::emitMemSetZeroIfNecessary() const {
 }
 
 static void emitAtomicCmpXchg(CodeGenFunction &CGF, AtomicExpr *E, bool IsWeak,
-                              Address Dest, Address Ptr,
-                              Address Val1, Address Val2,
-                              uint64_t Size,
+                              Address Dest, Address Ptr, Address Val1,
+                              Address Val2, uint64_t Size,
                               llvm::AtomicOrdering SuccessOrder,
                               llvm::AtomicOrdering FailureOrder,
                               llvm::SyncScope::ID Scope) {
@@ -374,8 +367,7 @@ static void emitAtomicCmpXchg(CodeGenFunction &CGF, AtomicExpr *E, bool IsWeak,
   llvm::Value *Desired = CGF.Builder.CreateLoad(Val2);
 
   llvm::AtomicCmpXchgInst *Pair = CGF.Builder.CreateAtomicCmpXchg(
-      Ptr.getPointer(), Expected, Desired, SuccessOrder, FailureOrder,
-      Scope);
+      Ptr.getPointer(), Expected, Desired, SuccessOrder, FailureOrder, Scope);
   Pair->setVolatile(E->isVolatile());
   Pair->setWeak(IsWeak);
 
@@ -412,13 +404,10 @@ static void emitAtomicCmpXchg(CodeGenFunction &CGF, AtomicExpr *E, bool IsWeak,
 /// Given an ordering required on success, emit all possible cmpxchg
 /// instructions to cope with the provided (but possibly only dynamically known)
 /// FailureOrder.
-static void emitAtomicCmpXchgFailureSet(CodeGenFunction &CGF, AtomicExpr *E,
-                                        bool IsWeak, Address Dest, Address Ptr,
-                                        Address Val1, Address Val2,
-                                        llvm::Value *FailureOrderVal,
-                                        uint64_t Size,
-                                        llvm::AtomicOrdering SuccessOrder,
-                                        llvm::SyncScope::ID Scope) {
+static void emitAtomicCmpXchgFailureSet(
+    CodeGenFunction &CGF, AtomicExpr *E, bool IsWeak, Address Dest, Address Ptr,
+    Address Val1, Address Val2, llvm::Value *FailureOrderVal, uint64_t Size,
+    llvm::AtomicOrdering SuccessOrder, llvm::SyncScope::ID Scope) {
   llvm::AtomicOrdering FailureOrder;
   if (llvm::ConstantInt *FO = dyn_cast<llvm::ConstantInt>(FailureOrderVal)) {
     auto FOS = FO->getSExtValue();
@@ -470,14 +459,14 @@ static void emitAtomicCmpXchgFailureSet(CodeGenFunction &CGF, AtomicExpr *E,
   // doesn't matter unless someone is crazy enough to use something that
   // doesn't fold to a constant for the ordering.
   CGF.Builder.SetInsertPoint(MonotonicBB);
-  emitAtomicCmpXchg(CGF, E, IsWeak, Dest, Ptr, Val1, Val2,
-                    Size, SuccessOrder, llvm::AtomicOrdering::Monotonic, Scope);
+  emitAtomicCmpXchg(CGF, E, IsWeak, Dest, Ptr, Val1, Val2, Size, SuccessOrder,
+                    llvm::AtomicOrdering::Monotonic, Scope);
   CGF.Builder.CreateBr(ContBB);
 
   if (AcquireBB) {
     CGF.Builder.SetInsertPoint(AcquireBB);
-    emitAtomicCmpXchg(CGF, E, IsWeak, Dest, Ptr, Val1, Val2,
-                      Size, SuccessOrder, llvm::AtomicOrdering::Acquire, Scope);
+    emitAtomicCmpXchg(CGF, E, IsWeak, Dest, Ptr, Val1, Val2, Size, SuccessOrder,
+                      llvm::AtomicOrdering::Acquire, Scope);
     CGF.Builder.CreateBr(ContBB);
     SI->addCase(CGF.Builder.getInt32((int)llvm::AtomicOrderingCABI::consume),
                 AcquireBB);
@@ -499,8 +488,7 @@ static void emitAtomicCmpXchgFailureSet(CodeGenFunction &CGF, AtomicExpr *E,
 /// Duplicate the atomic min/max operation in conventional IR for the builtin
 /// variants that return the new rather than the original value.
 static llvm::Value *EmitPostAtomicMinMax(CGBuilderTy &Builder,
-                                         AtomicExpr::AtomicOp Op,
-                                         bool IsSigned,
+                                         AtomicExpr::AtomicOp Op, bool IsSigned,
                                          llvm::Value *OldVal,
                                          llvm::Value *RHS) {
   llvm::CmpInst::Predicate Pred;
@@ -696,8 +684,7 @@ static void EmitAtomicOp(CodeGenFunction &CGF, AtomicExpr *E, Address Dest,
 
 // This function emits any expression (scalar, complex, or aggregate)
 // into a temporary alloca.
-static Address
-EmitValToTemp(CodeGenFunction &CGF, Expr *E) {
+static Address EmitValToTemp(CodeGenFunction &CGF, Expr *E) {
   Address DeclPtr = CGF.CreateMemTemp(E->getType(), ".atomictmp");
   CGF.EmitAnyExprToMem(E, DeclPtr, E->getType().getQualifiers(),
                        /*Init*/ true);
@@ -722,8 +709,8 @@ static void EmitAtomicOp(CodeGenFunction &CGF, AtomicExpr *Expr, Address Dest,
   // Handle constant scope.
   if (auto SC = dyn_cast<llvm::ConstantInt>(Scope)) {
     auto SCID = CGF.getTargetHooks().getLLVMSyncScopeID(
-        CGF.CGM.getLangOpts(), ScopeModel->map(SC->getZExtValue()),
-        Order, CGF.CGM.getLLVMContext());
+        CGF.CGM.getLangOpts(), ScopeModel->map(SC->getZExtValue()), Order,
+        CGF.CGM.getLLVMContext());
     EmitAtomicOp(CGF, Expr, Dest, Ptr, Val1, Val2, IsWeak, FailureOrder, Size,
                  Order, SCID);
     return;
@@ -752,38 +739,37 @@ static void EmitAtomicOp(CodeGenFunction &CGF, AtomicExpr *Expr, Address Dest,
     Builder.SetInsertPoint(B);
     EmitAtomicOp(CGF, Expr, Dest, Ptr, Val1, Val2, IsWeak, FailureOrder, Size,
                  Order,
-                 CGF.getTargetHooks().getLLVMSyncScopeID(CGF.CGM.getLangOpts(),
-                                                         ScopeModel->map(S),
-                                                         Order,
-                                                         CGF.getLLVMContext()));
+                 CGF.getTargetHooks().getLLVMSyncScopeID(
+                     CGF.CGM.getLangOpts(), ScopeModel->map(S), Order,
+                     CGF.getLLVMContext()));
     Builder.CreateBr(ContBB);
   }
 
   Builder.SetInsertPoint(ContBB);
 }
 
-static void
-AddDirectArgument(CodeGenFunction &CGF, CallArgList &Args,
-                  bool UseOptimizedLibcall, llvm::Value *Val, QualType ValTy,
-                  SourceLocation Loc, CharUnits SizeInChars) {
+static void AddDirectArgument(CodeGenFunction &CGF, CallArgList &Args,
+                              bool UseOptimizedLibcall, llvm::Value *Val,
+                              QualType ValTy, SourceLocation Loc,
+                              CharUnits SizeInChars) {
   if (UseOptimizedLibcall) {
     // Load value and pass it to the function directly.
     CharUnits Align = CGF.getContext().getTypeAlignInChars(ValTy);
     int64_t SizeInBits = CGF.getContext().toBits(SizeInChars);
     ValTy =
         CGF.getContext().getIntTypeForBitwidth(SizeInBits, /*Signed=*/false);
-    llvm::Type *IPtrTy = llvm::IntegerType::get(CGF.getLLVMContext(),
-                                                SizeInBits)->getPointerTo();
+    llvm::Type *IPtrTy =
+        llvm::IntegerType::get(CGF.getLLVMContext(), SizeInBits)
+            ->getPointerTo();
     Address Ptr = Address(CGF.Builder.CreateBitCast(Val, IPtrTy), Align);
     Val = CGF.EmitLoadOfScalar(Ptr, false,
-                               CGF.getContext().getPointerType(ValTy),
-                               Loc);
+                               CGF.getContext().getPointerType(ValTy), Loc);
     // Coerce the value into an appropriately sized integer type.
     Args.add(RValue::get(Val), ValTy);
   } else {
     // Non-optimized functions always take a reference.
     Args.add(RValue::get(CGF.EmitCastToVoidPtr(Val)),
-                         CGF.getContext().VoidPtrTy);
+             CGF.getContext().VoidPtrTy);
   }
 }
 
@@ -892,7 +878,7 @@ RValue CodeGenFunction::EmitAtomicExpr(AtomicExpr *E) {
       EmitStoreOfScalar(Val1Scalar, MakeAddrLValue(Temp, Val1Ty));
       break;
     }
-      LLVM_FALLTHROUGH;
+    LLVM_FALLTHROUGH;
   case AtomicExpr::AO__atomic_fetch_add:
   case AtomicExpr::AO__atomic_fetch_sub:
   case AtomicExpr::AO__atomic_add_fetch:
@@ -938,8 +924,10 @@ RValue CodeGenFunction::EmitAtomicExpr(AtomicExpr *E) {
   AtomicInfo Atomics(*this, AtomicVal);
 
   Ptr = Atomics.emitCastToAtomicIntPointer(Ptr);
-  if (Val1.isValid()) Val1 = Atomics.convertToAtomicIntPointer(Val1);
-  if (Val2.isValid()) Val2 = Atomics.convertToAtomicIntPointer(Val2);
+  if (Val1.isValid())
+    Val1 = Atomics.convertToAtomicIntPointer(Val1);
+  if (Val2.isValid())
+    Val2 = Atomics.convertToAtomicIntPointer(Val2);
   if (Dest.isValid())
     Dest = Atomics.emitCastToAtomicIntPointer(Dest);
   else if (E->isCmpXChg())
@@ -1048,7 +1036,7 @@ RValue CodeGenFunction::EmitAtomicExpr(AtomicExpr *E) {
 
     std::string LibCallName;
     QualType LoweredMemTy =
-      MemTy->isPointerType() ? getContext().getIntPtrType() : MemTy;
+        MemTy->isPointerType() ? getContext().getIntPtrType() : MemTy;
     QualType RetTy;
     bool HaveRetTy = false;
     llvm::Instruction::BinaryOps PostOp = (llvm::Instruction::BinaryOps)0;
@@ -1211,9 +1199,8 @@ RValue CodeGenFunction::EmitAtomicExpr(AtomicExpr *E) {
     }
 
     if (E->isOpenCL()) {
-      LibCallName = std::string("__opencl") +
-          StringRef(LibCallName).drop_front(1).str();
-
+      LibCallName =
+          std::string("__opencl") + StringRef(LibCallName).drop_front(1).str();
     }
     // Optimized functions have the size in their name.
     if (UseOptimizedLibcall)
@@ -1233,8 +1220,7 @@ RValue CodeGenFunction::EmitAtomicExpr(AtomicExpr *E) {
       }
     }
     // order is always the last parameter
-    Args.add(RValue::get(Order),
-             getContext().IntTy);
+    Args.add(RValue::get(Order), getContext().IntTy);
     if (E->isOpenCL())
       Args.add(RValue::get(Scope), getContext().IntTy);
 
@@ -1264,9 +1250,8 @@ RValue CodeGenFunction::EmitAtomicExpr(AtomicExpr *E) {
       if (E->getOp() == AtomicExpr::AO__atomic_nand_fetch)
         ResVal = Builder.CreateNot(ResVal);
 
-      Builder.CreateStore(
-          ResVal,
-          Builder.CreateBitCast(Dest, ResVal->getType()->getPointerTo()));
+      Builder.CreateStore(ResVal, Builder.CreateBitCast(
+                                      Dest, ResVal->getType()->getPointerTo()));
     }
 
     if (RValTy->isVoidType())
@@ -1404,9 +1389,9 @@ RValue CodeGenFunction::EmitAtomicExpr(AtomicExpr *E) {
 
 Address AtomicInfo::emitCastToAtomicIntPointer(Address addr) const {
   unsigned addrspace =
-    cast<llvm::PointerType>(addr.getPointer()->getType())->getAddressSpace();
+      cast<llvm::PointerType>(addr.getPointer()->getType())->getAddressSpace();
   llvm::IntegerType *ty =
-    llvm::IntegerType::get(CGF.getLLVMContext(), AtomicSizeInBits);
+      llvm::IntegerType::get(CGF.getLLVMContext(), AtomicSizeInBits);
   return CGF.Builder.CreateBitCast(addr, ty->getPointerTo(addrspace));
 }
 
@@ -1445,15 +1430,17 @@ RValue AtomicInfo::convertAtomicTempToRValue(Address addr,
   if (LVal.isBitField())
     return CGF.EmitLoadOfBitfieldLValue(
         LValue::MakeBitfield(addr, LVal.getBitFieldInfo(), LVal.getType(),
-                             LVal.getBaseInfo(), TBAAAccessInfo()), loc);
+                             LVal.getBaseInfo(), TBAAAccessInfo()),
+        loc);
   if (LVal.isVectorElt())
     return CGF.EmitLoadOfLValue(
         LValue::MakeVectorElt(addr, LVal.getVectorIdx(), LVal.getType(),
-                              LVal.getBaseInfo(), TBAAAccessInfo()), loc);
+                              LVal.getBaseInfo(), TBAAAccessInfo()),
+        loc);
   assert(LVal.isExtVectorElt());
-  return CGF.EmitLoadOfExtVectorElementLValue(LValue::MakeExtVectorElt(
-      addr, LVal.getExtVectorElts(), LVal.getType(),
-      LVal.getBaseInfo(), TBAAAccessInfo()));
+  return CGF.EmitLoadOfExtVectorElementLValue(
+      LValue::MakeExtVectorElt(addr, LVal.getExtVectorElts(), LVal.getType(),
+                               LVal.getBaseInfo(), TBAAAccessInfo()));
 }
 
 RValue AtomicInfo::ConvertIntToValueOrAtomic(llvm::Value *IntVal,
@@ -1493,8 +1480,7 @@ RValue AtomicInfo::ConvertIntToValueOrAtomic(llvm::Value *IntVal,
 
   // Slam the integer into the temporary.
   Address CastTemp = emitCastToAtomicIntPointer(Temp);
-  CGF.Builder.CreateStore(IntVal, CastTemp)
-      ->setVolatile(TempIsVolatile);
+  CGF.Builder.CreateStore(IntVal, CastTemp)->setVolatile(TempIsVolatile);
 
   return convertAtomicTempToRValue(Temp, ResultSlot, Loc, AsValue);
 }
@@ -1532,7 +1518,8 @@ llvm::Value *AtomicInfo::EmitAtomicLoadOp(llvm::AtomicOrdering AO,
 /// we are operating under /volatile:ms *and* the LValue itself is volatile and
 /// performing such an operation can be performed without a libcall.
 bool CodeGenFunction::LValueIsSuitableForInlineAtomic(LValue LV) {
-  if (!CGM.getCodeGenOpts().MSVolatile) return false;
+  if (!CGM.getCodeGenOpts().MSVolatile)
+    return false;
   AtomicInfo AI(*this, LV);
   bool IsVolatile = LV.isVolatile() || hasVolatileMember(LV.getType());
   // An atomic is inline if we don't need to use a libcall.
@@ -1607,10 +1594,10 @@ void AtomicInfo::emitCopyIntoMemory(RValue rvalue) const {
   // any padding.  Just do an aggregate copy of that type.
   if (rvalue.isAggregate()) {
     LValue Dest = CGF.MakeAddrLValue(getAtomicAddress(), getAtomicType());
-    LValue Src = CGF.MakeAddrLValue(rvalue.getAggregateAddress(),
-                                    getAtomicType());
-    bool IsVolatile = rvalue.isVolatileQualified() ||
-                      LVal.isVolatileQualified();
+    LValue Src =
+        CGF.MakeAddrLValue(rvalue.getAggregateAddress(), getAtomicType());
+    bool IsVolatile =
+        rvalue.isVolatileQualified() || LVal.isVolatileQualified();
     CGF.EmitAggregateCopy(Dest, Src, getAtomicType(),
                           AggValueSlot::DoesNotOverlap, IsVolatile);
     return;
@@ -1631,7 +1618,6 @@ void AtomicInfo::emitCopyIntoMemory(RValue rvalue) const {
     CGF.EmitStoreOfComplex(rvalue.getComplexVal(), TempLVal, /*init*/ true);
   }
 }
-
 
 /// Materialize an r-value into memory for the purposes of storing it
 /// to an atomic type.
@@ -1679,9 +1665,8 @@ std::pair<llvm::Value *, llvm::Value *> AtomicInfo::EmitAtomicCompareExchangeOp(
     llvm::AtomicOrdering Success, llvm::AtomicOrdering Failure, bool IsWeak) {
   // Do the atomic store.
   Address Addr = getAtomicAddressAsAtomicIntPointer();
-  auto *Inst = CGF.Builder.CreateAtomicCmpXchg(Addr.getPointer(),
-                                               ExpectedVal, DesiredVal,
-                                               Success, Failure);
+  auto *Inst = CGF.Builder.CreateAtomicCmpXchg(Addr.getPointer(), ExpectedVal,
+                                               DesiredVal, Success, Failure);
   // Other decoration.
   Inst->setVolatile(LVal.isVolatileQualified());
   Inst->setWeak(IsWeak);
@@ -1692,11 +1677,9 @@ std::pair<llvm::Value *, llvm::Value *> AtomicInfo::EmitAtomicCompareExchangeOp(
   return std::make_pair(PreviousVal, SuccessFailureVal);
 }
 
-llvm::Value *
-AtomicInfo::EmitAtomicCompareExchangeLibcall(llvm::Value *ExpectedAddr,
-                                             llvm::Value *DesiredAddr,
-                                             llvm::AtomicOrdering Success,
-                                             llvm::AtomicOrdering Failure) {
+llvm::Value *AtomicInfo::EmitAtomicCompareExchangeLibcall(
+    llvm::Value *ExpectedAddr, llvm::Value *DesiredAddr,
+    llvm::AtomicOrdering Success, llvm::AtomicOrdering Failure) {
   // bool __atomic_compare_exchange(size_t size, void *obj, void *expected,
   // void *desired, int success, int failure);
   CallArgList Args;
@@ -1732,9 +1715,8 @@ std::pair<RValue, llvm::Value *> AtomicInfo::EmitAtomicCompareExchange(
     // Produce a source address.
     Address ExpectedAddr = materializeRValue(Expected);
     Address DesiredAddr = materializeRValue(Desired);
-    auto *Res = EmitAtomicCompareExchangeLibcall(ExpectedAddr.getPointer(),
-                                                 DesiredAddr.getPointer(),
-                                                 Success, Failure);
+    auto *Res = EmitAtomicCompareExchangeLibcall(
+        ExpectedAddr.getPointer(), DesiredAddr.getPointer(), Success, Failure);
     return std::make_pair(
         convertAtomicTempToRValue(ExpectedAddr, AggValueSlot::ignored(),
                                   SourceLocation(), /*AsValue=*/false),
@@ -1768,29 +1750,24 @@ EmitAtomicUpdateValue(CodeGenFunction &CGF, AtomicInfo &Atomics, RValue OldRVal,
     Address Ptr = Atomics.materializeRValue(OldRVal);
     LValue UpdateLVal;
     if (AtomicLVal.isBitField()) {
-      UpdateLVal =
-          LValue::MakeBitfield(Ptr, AtomicLVal.getBitFieldInfo(),
-                               AtomicLVal.getType(),
-                               AtomicLVal.getBaseInfo(),
-                               AtomicLVal.getTBAAInfo());
-      DesiredLVal =
-          LValue::MakeBitfield(DesiredAddr, AtomicLVal.getBitFieldInfo(),
-                               AtomicLVal.getType(), AtomicLVal.getBaseInfo(),
-                               AtomicLVal.getTBAAInfo());
+      UpdateLVal = LValue::MakeBitfield(
+          Ptr, AtomicLVal.getBitFieldInfo(), AtomicLVal.getType(),
+          AtomicLVal.getBaseInfo(), AtomicLVal.getTBAAInfo());
+      DesiredLVal = LValue::MakeBitfield(
+          DesiredAddr, AtomicLVal.getBitFieldInfo(), AtomicLVal.getType(),
+          AtomicLVal.getBaseInfo(), AtomicLVal.getTBAAInfo());
     } else if (AtomicLVal.isVectorElt()) {
-      UpdateLVal = LValue::MakeVectorElt(Ptr, AtomicLVal.getVectorIdx(),
-                                         AtomicLVal.getType(),
-                                         AtomicLVal.getBaseInfo(),
-                                         AtomicLVal.getTBAAInfo());
+      UpdateLVal = LValue::MakeVectorElt(
+          Ptr, AtomicLVal.getVectorIdx(), AtomicLVal.getType(),
+          AtomicLVal.getBaseInfo(), AtomicLVal.getTBAAInfo());
       DesiredLVal = LValue::MakeVectorElt(
           DesiredAddr, AtomicLVal.getVectorIdx(), AtomicLVal.getType(),
           AtomicLVal.getBaseInfo(), AtomicLVal.getTBAAInfo());
     } else {
       assert(AtomicLVal.isExtVectorElt());
-      UpdateLVal = LValue::MakeExtVectorElt(Ptr, AtomicLVal.getExtVectorElts(),
-                                            AtomicLVal.getType(),
-                                            AtomicLVal.getBaseInfo(),
-                                            AtomicLVal.getTBAAInfo());
+      UpdateLVal = LValue::MakeExtVectorElt(
+          Ptr, AtomicLVal.getExtVectorElts(), AtomicLVal.getType(),
+          AtomicLVal.getBaseInfo(), AtomicLVal.getTBAAInfo());
       DesiredLVal = LValue::MakeExtVectorElt(
           DesiredAddr, AtomicLVal.getExtVectorElts(), AtomicLVal.getType(),
           AtomicLVal.getBaseInfo(), AtomicLVal.getTBAAInfo());
@@ -1825,14 +1802,12 @@ void AtomicInfo::EmitAtomicUpdateLibcall(
     auto *OldVal = CGF.Builder.CreateLoad(ExpectedAddr);
     CGF.Builder.CreateStore(OldVal, DesiredAddr);
   }
-  auto OldRVal = convertAtomicTempToRValue(ExpectedAddr,
-                                           AggValueSlot::ignored(),
-                                           SourceLocation(), /*AsValue=*/false);
+  auto OldRVal =
+      convertAtomicTempToRValue(ExpectedAddr, AggValueSlot::ignored(),
+                                SourceLocation(), /*AsValue=*/false);
   EmitAtomicUpdateValue(CGF, *this, OldRVal, UpdateOp, DesiredAddr);
-  auto *Res =
-      EmitAtomicCompareExchangeLibcall(ExpectedAddr.getPointer(),
-                                       DesiredAddr.getPointer(),
-                                       AO, Failure);
+  auto *Res = EmitAtomicCompareExchangeLibcall(
+      ExpectedAddr.getPointer(), DesiredAddr.getPointer(), AO, Failure);
   CGF.Builder.CreateCondBr(Res, ExitBB, ContBB);
   CGF.EmitBlock(ExitBB, /*IsFinished=*/true);
 }
@@ -1875,15 +1850,13 @@ static void EmitAtomicUpdateValue(CodeGenFunction &CGF, AtomicInfo &Atomics,
   LValue DesiredLVal;
   // Build new lvalue for temp address.
   if (AtomicLVal.isBitField()) {
-    DesiredLVal =
-        LValue::MakeBitfield(DesiredAddr, AtomicLVal.getBitFieldInfo(),
-                             AtomicLVal.getType(), AtomicLVal.getBaseInfo(),
-                             AtomicLVal.getTBAAInfo());
+    DesiredLVal = LValue::MakeBitfield(
+        DesiredAddr, AtomicLVal.getBitFieldInfo(), AtomicLVal.getType(),
+        AtomicLVal.getBaseInfo(), AtomicLVal.getTBAAInfo());
   } else if (AtomicLVal.isVectorElt()) {
-    DesiredLVal =
-        LValue::MakeVectorElt(DesiredAddr, AtomicLVal.getVectorIdx(),
-                              AtomicLVal.getType(), AtomicLVal.getBaseInfo(),
-                              AtomicLVal.getTBAAInfo());
+    DesiredLVal = LValue::MakeVectorElt(
+        DesiredAddr, AtomicLVal.getVectorIdx(), AtomicLVal.getType(),
+        AtomicLVal.getBaseInfo(), AtomicLVal.getTBAAInfo());
   } else {
     assert(AtomicLVal.isExtVectorElt());
     DesiredLVal = LValue::MakeExtVectorElt(
@@ -1912,10 +1885,8 @@ void AtomicInfo::EmitAtomicUpdateLibcall(llvm::AtomicOrdering AO,
     CGF.Builder.CreateStore(OldVal, DesiredAddr);
   }
   EmitAtomicUpdateValue(CGF, *this, UpdateRVal, DesiredAddr);
-  auto *Res =
-      EmitAtomicCompareExchangeLibcall(ExpectedAddr.getPointer(),
-                                       DesiredAddr.getPointer(),
-                                       AO, Failure);
+  auto *Res = EmitAtomicCompareExchangeLibcall(
+      ExpectedAddr.getPointer(), DesiredAddr.getPointer(), AO, Failure);
   CGF.Builder.CreateCondBr(Res, ExitBB, ContBB);
   CGF.EmitBlock(ExitBB, /*IsFinished=*/true);
 }
@@ -2031,8 +2002,8 @@ void CodeGenFunction::EmitAtomicStore(RValue rvalue, LValue dest,
     // Do the atomic store.
     Address addr =
         atomics.emitCastToAtomicIntPointer(atomics.getAtomicAddress());
-    intValue = Builder.CreateIntCast(
-        intValue, addr.getElementType(), /*isSigned=*/false);
+    intValue = Builder.CreateIntCast(intValue, addr.getElementType(),
+                                     /*isSigned=*/false);
     llvm::StoreInst *store = Builder.CreateStore(intValue, addr);
 
     if (AO == llvm::AtomicOrdering::Acquire)

@@ -17,9 +17,13 @@
 int main(int, char**) {
   {
     static_assert(std::is_enum<std::align_val_t>::value, "");
-    static_assert(std::is_same<std::underlying_type<std::align_val_t>::type, std::size_t>::value, "");
-    static_assert(!std::is_constructible<std::align_val_t, std::size_t>::value, "");
-    static_assert(!std::is_constructible<std::size_t, std::align_val_t>::value, "");
+    static_assert(std::is_same<std::underlying_type<std::align_val_t>::type,
+                               std::size_t>::value,
+                  "");
+    static_assert(!std::is_constructible<std::align_val_t, std::size_t>::value,
+                  "");
+    static_assert(!std::is_constructible<std::size_t, std::align_val_t>::value,
+                  "");
   }
   {
     constexpr auto a = std::align_val_t(0);

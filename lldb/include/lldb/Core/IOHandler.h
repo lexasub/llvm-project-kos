@@ -34,7 +34,7 @@ class Debugger;
 namespace repro {
 class DataRecorder;
 }
-}
+} // namespace lldb_private
 
 namespace curses {
 class Application;

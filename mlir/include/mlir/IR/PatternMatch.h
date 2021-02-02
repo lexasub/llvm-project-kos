@@ -480,7 +480,7 @@ public:
   /// Replaces the result op with a new op that is created without verification.
   /// The result values of the two ops must be the same types.
   template <typename OpTy, typename... Args>
-  void replaceOpWithNewOp(Operation *op, Args &&... args) {
+  void replaceOpWithNewOp(Operation *op, Args &&...args) {
     auto newOp = create<OpTy>(op->getLoc(), std::forward<Args>(args)...);
     replaceOpWithResultsOfAnotherOp(op, newOp.getOperation());
   }
@@ -642,7 +642,8 @@ public:
 
   /// Add an instance of each of the pattern types 'Ts'. Return a reference to
   /// `this` for chaining insertions.
-  template <typename... Ts> OwningRewritePatternList &insert() {
+  template <typename... Ts>
+  OwningRewritePatternList &insert() {
     (void)std::initializer_list<int>{0, (insertImpl<Ts>(), 0)...};
     return *this;
   }

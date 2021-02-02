@@ -6,7 +6,7 @@ struct A {
   virtual int vf2() { return 2; }
 };
 
-int f(A* a, int (A::*fp)()) {
+int f(A *a, int (A::*fp)()) {
   return (a->*fp)();
 }
 

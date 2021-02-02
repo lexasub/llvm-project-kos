@@ -187,14 +187,13 @@ static json::Object createTextRegion(const LangOptions &LO, SourceRange R,
   } else {
     Region["endLine"] = SM.getExpansionLineNumber(R.getEnd());
     Region["endColumn"] = adjustColumnPos(
-        SM, R.getEnd(),
-        Lexer::MeasureTokenLength(R.getEnd(), SM, LO));
+        SM, R.getEnd(), Lexer::MeasureTokenLength(R.getEnd(), SM, LO));
   }
   return Region;
 }
 
-static json::Object createPhysicalLocation(const LangOptions &LO,
-                                           SourceRange R, const FileEntry &FE,
+static json::Object createPhysicalLocation(const LangOptions &LO, SourceRange R,
+                                           const FileEntry &FE,
                                            const SourceManager &SMgr,
                                            json::Array &Artifacts) {
   return json::Object{
@@ -366,7 +365,7 @@ static json::Object createRun(const LangOptions &LO,
   json::Array Results, Artifacts;
   StringMap<unsigned> RuleMapping;
   json::Object Tool = createTool(Diags, RuleMapping);
-  
+
   llvm::for_each(Diags, [&](const PathDiagnostic *D) {
     Results.push_back(createResult(LO, *D, Artifacts, RuleMapping));
   });
@@ -391,8 +390,8 @@ void SarifDiagnostics::FlushDiagnosticsImpl(
     return;
   }
   json::Object Sarif{
-      {"$schema",
-       "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json"},
+      {"$schema", "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/"
+                  "master/Schemata/sarif-schema-2.1.0.json"},
       {"version", "2.1.0"},
       {"runs", json::Array{createRun(LO, Diags)}}};
   OS << llvm::formatv("{0:2}\n", json::Value(std::move(Sarif)));

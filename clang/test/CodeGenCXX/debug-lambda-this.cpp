@@ -2,7 +2,7 @@
 
 struct D {
   D();
-  D(const D&);
+  D(const D &);
   int x;
   int d(int x);
 };

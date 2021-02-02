@@ -13,13 +13,13 @@
 #ifndef HWASAN_ALLOCATOR_H
 #define HWASAN_ALLOCATOR_H
 
+#include "hwasan_poisoning.h"
 #include "sanitizer_common/sanitizer_allocator.h"
 #include "sanitizer_common/sanitizer_allocator_checks.h"
 #include "sanitizer_common/sanitizer_allocator_interface.h"
 #include "sanitizer_common/sanitizer_allocator_report.h"
 #include "sanitizer_common/sanitizer_common.h"
 #include "sanitizer_common/sanitizer_ring_buffer.h"
-#include "hwasan_poisoning.h"
 
 #if !defined(__aarch64__) && !defined(__x86_64__)
 #error Unsupported platform
@@ -73,13 +73,14 @@ class HwasanChunkView {
   HwasanChunkView() : block_(0), metadata_(nullptr) {}
   HwasanChunkView(uptr block, Metadata *metadata)
       : block_(block), metadata_(metadata) {}
-  bool IsAllocated() const;    // Checks if the memory is currently allocated
-  uptr Beg() const;            // First byte of user memory
-  uptr End() const;            // Last byte of user memory
-  uptr UsedSize() const;       // Size requested by the user
-  uptr ActualSize() const;     // Size allocated by the allocator.
+  bool IsAllocated() const;  // Checks if the memory is currently allocated
+  uptr Beg() const;          // First byte of user memory
+  uptr End() const;          // Last byte of user memory
+  uptr UsedSize() const;     // Size requested by the user
+  uptr ActualSize() const;   // Size allocated by the allocator.
   u32 GetAllocStackId() const;
   bool FromSmallHeap() const;
+
  private:
   uptr block_;
   Metadata *const metadata_;
@@ -93,15 +94,15 @@ HwasanChunkView FindHeapChunkByAddress(uptr address);
 // Compress it to 16 bytes or extend it to be more useful.
 struct HeapAllocationRecord {
   uptr tagged_addr;
-  u32  alloc_context_id;
-  u32  free_context_id;
-  u32  requested_size;
+  u32 alloc_context_id;
+  u32 free_context_id;
+  u32 requested_size;
 };
 
 typedef RingBuffer<HeapAllocationRecord> HeapAllocationsRingBuffer;
 
 void GetAllocatorStats(AllocatorStatCounters s);
 
-} // namespace __hwasan
+}  // namespace __hwasan
 
-#endif // HWASAN_ALLOCATOR_H
+#endif  // HWASAN_ALLOCATOR_H

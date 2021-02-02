@@ -20,8 +20,7 @@
 
 using namespace clang;
 
-void clang_fuzzer::HandleCXX(const std::string &S,
-                             const char *FileName,
+void clang_fuzzer::HandleCXX(const std::string &S, const char *FileName,
                              const std::vector<const char *> &ExtraArgs) {
   llvm::opt::ArgStringList CC1Args;
   CC1Args.push_back("-cc1");
@@ -40,8 +39,7 @@ void clang_fuzzer::HandleCXX(const std::string &S,
       tooling::newInvocation(&Diagnostics, CC1Args, /*BinaryName=*/nullptr));
   std::unique_ptr<llvm::MemoryBuffer> Input =
       llvm::MemoryBuffer::getMemBuffer(S);
-  Invocation->getPreprocessorOpts().addRemappedFile(FileName,
-                                                    Input.release());
+  Invocation->getPreprocessorOpts().addRemappedFile(FileName, Input.release());
   std::unique_ptr<tooling::ToolAction> action(
       tooling::newFrontendActionFactory<clang::EmitObjAction>());
   std::shared_ptr<PCHContainerOperations> PCHContainerOps =
@@ -49,4 +47,3 @@ void clang_fuzzer::HandleCXX(const std::string &S,
   action->runInvocation(std::move(Invocation), Files.get(), PCHContainerOps,
                         &Diags);
 }
-

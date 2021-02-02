@@ -24,29 +24,29 @@
 using namespace llvm;
 
 namespace llvm {
-  FunctionPass *createHexagonOptimizeSZextends();
-  void initializeHexagonOptimizeSZextendsPass(PassRegistry&);
-}
+FunctionPass *createHexagonOptimizeSZextends();
+void initializeHexagonOptimizeSZextendsPass(PassRegistry &);
+} // namespace llvm
 
 namespace {
-  struct HexagonOptimizeSZextends : public FunctionPass {
-  public:
-    static char ID;
-    HexagonOptimizeSZextends() : FunctionPass(ID) {
-      initializeHexagonOptimizeSZextendsPass(*PassRegistry::getPassRegistry());
-    }
-    bool runOnFunction(Function &F) override;
+struct HexagonOptimizeSZextends : public FunctionPass {
+public:
+  static char ID;
+  HexagonOptimizeSZextends() : FunctionPass(ID) {
+    initializeHexagonOptimizeSZextendsPass(*PassRegistry::getPassRegistry());
+  }
+  bool runOnFunction(Function &F) override;
 
-    StringRef getPassName() const override { return "Remove sign extends"; }
+  StringRef getPassName() const override { return "Remove sign extends"; }
 
-    void getAnalysisUsage(AnalysisUsage &AU) const override {
-      AU.addPreserved<StackProtector>();
-      FunctionPass::getAnalysisUsage(AU);
-    }
+  void getAnalysisUsage(AnalysisUsage &AU) const override {
+    AU.addPreserved<StackProtector>();
+    FunctionPass::getAnalysisUsage(AU);
+  }
 
-    bool intrinsicAlreadySextended(Intrinsic::ID IntID);
-  };
-}
+  bool intrinsicAlreadySextended(Intrinsic::ID IntID);
+};
+} // namespace
 
 char HexagonOptimizeSZextends::ID = 0;
 
@@ -54,11 +54,11 @@ INITIALIZE_PASS(HexagonOptimizeSZextends, "reargs",
                 "Remove Sign and Zero Extends for Args", false, false)
 
 bool HexagonOptimizeSZextends::intrinsicAlreadySextended(Intrinsic::ID IntID) {
-  switch(IntID) {
-    case llvm::Intrinsic::hexagon_A2_addh_l16_sat_ll:
-      return true;
-    default:
-      break;
+  switch (IntID) {
+  case llvm::Intrinsic::hexagon_A2_addh_l16_sat_ll:
+    return true;
+  default:
+    break;
   }
   return false;
 }
@@ -76,13 +76,12 @@ bool HexagonOptimizeSZextends::runOnFunction(Function &F) {
       if (!isa<PointerType>(Arg.getType())) {
         for (auto UI = Arg.use_begin(); UI != Arg.use_end();) {
           if (isa<SExtInst>(*UI)) {
-            Instruction* Use = cast<Instruction>(*UI);
-            SExtInst* SI = new SExtInst(&Arg, Use->getType());
-            assert (EVT::getEVT(SI->getType()) ==
-                    (EVT::getEVT(Use->getType())));
+            Instruction *Use = cast<Instruction>(*UI);
+            SExtInst *SI = new SExtInst(&Arg, Use->getType());
+            assert(EVT::getEVT(SI->getType()) == (EVT::getEVT(Use->getType())));
             ++UI;
             Use->replaceAllUsesWith(SI);
-            Instruction* First = &F.getEntryBlock().front();
+            Instruction *First = &F.getEntryBlock().front();
             SI->insertBefore(First);
             Use->eraseFromParent();
           } else {
@@ -128,8 +127,8 @@ bool HexagonOptimizeSZextends::runOnFunction(Function &F) {
         if (!intrinsicAlreadySextended(I->getIntrinsicID()))
           continue;
         // All is well. Replace all uses of AShr with I.
-        for (auto UI = Ashr->user_begin(), UE = Ashr->user_end();
-             UI != UE; ++UI) {
+        for (auto UI = Ashr->user_begin(), UE = Ashr->user_end(); UI != UE;
+             ++UI) {
           const Use &TheUse = UI.getUse();
           if (Instruction *J = dyn_cast<Instruction>(TheUse.getUser())) {
             J->replaceUsesOfWith(Ashr, I);
@@ -141,7 +140,6 @@ bool HexagonOptimizeSZextends::runOnFunction(Function &F) {
 
   return true;
 }
-
 
 FunctionPass *llvm::createHexagonOptimizeSZextends() {
   return new HexagonOptimizeSZextends();

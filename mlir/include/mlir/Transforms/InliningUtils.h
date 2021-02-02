@@ -209,8 +209,7 @@ LogicalResult inlineRegion(InlinerInterface &interface, Region *src,
 /// providing the set of operands ('inlinedOperands') that should be used
 /// in-favor of the region arguments when inlining.
 LogicalResult inlineRegion(InlinerInterface &interface, Region *src,
-                           Operation *inlinePoint,
-                           ValueRange inlinedOperands,
+                           Operation *inlinePoint, ValueRange inlinedOperands,
                            ValueRange resultsToReplace,
                            Optional<Location> inlineLoc = llvm::None,
                            bool shouldCloneInlinedRegion = true);

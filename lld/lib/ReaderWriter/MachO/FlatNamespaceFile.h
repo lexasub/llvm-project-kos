@@ -24,11 +24,11 @@ namespace mach_o {
 class FlatNamespaceFile : public SharedLibraryFile {
 public:
   FlatNamespaceFile(const MachOLinkingContext &context)
-    : SharedLibraryFile("flat namespace") { }
+      : SharedLibraryFile("flat namespace") {}
 
   OwningAtomPtr<SharedLibraryAtom> exports(StringRef name) const override {
-    return new (allocator()) MachOSharedLibraryAtom(*this, name, getDSOName(),
-                                                    false);
+    return new (allocator())
+        MachOSharedLibraryAtom(*this, name, getDSOName(), false);
   }
 
   StringRef getDSOName() const override { return "flat-namespace"; }

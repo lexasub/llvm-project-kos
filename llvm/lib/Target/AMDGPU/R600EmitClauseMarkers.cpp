@@ -22,7 +22,7 @@ using namespace llvm;
 
 namespace llvm {
 
-  void initializeR600EmitClauseMarkersPass(PassRegistry&);
+void initializeR600EmitClauseMarkersPass(PassRegistry &);
 
 } // end namespace llvm
 
@@ -120,9 +120,8 @@ private:
 
     const SmallVectorImpl<std::pair<MachineOperand *, int64_t>> &Consts =
         TII->getSrcs(MI);
-    assert(
-        (TII->isALUInstr(MI.getOpcode()) || MI.getOpcode() == R600::DOT_4) &&
-        "Can't assign Const");
+    assert((TII->isALUInstr(MI.getOpcode()) || MI.getOpcode() == R600::DOT_4) &&
+           "Can't assign Const");
     for (unsigned i = 0, n = Consts.size(); i < n; ++i) {
       if (Consts[i].first->getReg() != R600::ALU_CONST)
         continue;
@@ -157,7 +156,7 @@ private:
     for (unsigned i = 0, j = 0, n = Consts.size(); i < n; ++i) {
       if (Consts[i].first->getReg() != R600::ALU_CONST)
         continue;
-      switch(UsedKCache[j].first) {
+      switch (UsedKCache[j].first) {
       case 0:
         Consts[i].first->setReg(
             R600::R600_KC0RegClass.getRegister(UsedKCache[j].second));
@@ -175,15 +174,14 @@ private:
   }
 
   bool canClauseLocalKillFitInClause(
-                        unsigned AluInstCount,
-                        std::vector<std::pair<unsigned, unsigned>> KCacheBanks,
-                        MachineBasicBlock::iterator Def,
-                        MachineBasicBlock::iterator BBEnd) {
+      unsigned AluInstCount,
+      std::vector<std::pair<unsigned, unsigned>> KCacheBanks,
+      MachineBasicBlock::iterator Def, MachineBasicBlock::iterator BBEnd) {
     const R600RegisterInfo &TRI = TII->getRegisterInfo();
-    //TODO: change this to defs?
-    for (MachineInstr::const_mop_iterator
-           MOI = Def->operands_begin(),
-           MOE = Def->operands_end(); MOI != MOE; ++MOI) {
+    // TODO: change this to defs?
+    for (MachineInstr::const_mop_iterator MOI = Def->operands_begin(),
+                                          MOE = Def->operands_end();
+         MOI != MOE; ++MOI) {
       if (!MOI->isReg() || !MOI->isDef() ||
           TRI.isPhysRegLiveAcrossClauses(MOI->getReg()))
         continue;
@@ -223,8 +221,8 @@ private:
     return true;
   }
 
-  MachineBasicBlock::iterator
-  MakeALUClause(MachineBasicBlock &MBB, MachineBasicBlock::iterator I) {
+  MachineBasicBlock::iterator MakeALUClause(MachineBasicBlock &MBB,
+                                            MachineBasicBlock::iterator I) {
     MachineBasicBlock::iterator ClauseHead = I;
     std::vector<std::pair<unsigned, unsigned>> KCacheBanks;
     bool PushBeforeModifier = false;
@@ -247,7 +245,7 @@ private:
           break;
         if (TII->getFlagOp(*I).getImm() & MO_FLAG_PUSH)
           PushBeforeModifier = true;
-        AluInstCount ++;
+        AluInstCount++;
         continue;
       }
       // XXX: GROUP_BARRIER instructions cannot be in the same ALU clause as:
@@ -271,22 +269,23 @@ private:
         break;
       AluInstCount += OccupiedDwords(*I);
     }
-    unsigned Opcode = PushBeforeModifier ?
-        R600::CF_ALU_PUSH_BEFORE : R600::CF_ALU;
+    unsigned Opcode =
+        PushBeforeModifier ? R600::CF_ALU_PUSH_BEFORE : R600::CF_ALU;
     BuildMI(MBB, ClauseHead, MBB.findDebugLoc(ClauseHead), TII->get(Opcode))
-    // We don't use the ADDR field until R600ControlFlowFinalizer pass, where
-    // it is safe to assume it is 0. However if we always put 0 here, the ifcvt
-    // pass may assume that identical ALU clause starter at the beginning of a
-    // true and false branch can be factorized which is not the case.
-        .addImm(Address++) // ADDR
-        .addImm(KCacheBanks.empty()?0:KCacheBanks[0].first) // KB0
-        .addImm((KCacheBanks.size() < 2)?0:KCacheBanks[1].first) // KB1
-        .addImm(KCacheBanks.empty()?0:2) // KM0
-        .addImm((KCacheBanks.size() < 2)?0:2) // KM1
-        .addImm(KCacheBanks.empty()?0:KCacheBanks[0].second) // KLINE0
-        .addImm((KCacheBanks.size() < 2)?0:KCacheBanks[1].second) // KLINE1
-        .addImm(AluInstCount) // COUNT
-        .addImm(1); // Enabled
+        // We don't use the ADDR field until R600ControlFlowFinalizer pass,
+        // where it is safe to assume it is 0. However if we always put 0 here,
+        // the ifcvt pass may assume that identical ALU clause starter at the
+        // beginning of a true and false branch can be factorized which is not
+        // the case.
+        .addImm(Address++)                                            // ADDR
+        .addImm(KCacheBanks.empty() ? 0 : KCacheBanks[0].first)       // KB0
+        .addImm((KCacheBanks.size() < 2) ? 0 : KCacheBanks[1].first)  // KB1
+        .addImm(KCacheBanks.empty() ? 0 : 2)                          // KM0
+        .addImm((KCacheBanks.size() < 2) ? 0 : 2)                     // KM1
+        .addImm(KCacheBanks.empty() ? 0 : KCacheBanks[0].second)      // KLINE0
+        .addImm((KCacheBanks.size() < 2) ? 0 : KCacheBanks[1].second) // KLINE1
+        .addImm(AluInstCount)                                         // COUNT
+        .addImm(1);                                                   // Enabled
     return I;
   }
 
@@ -301,8 +300,8 @@ public:
     const R600Subtarget &ST = MF.getSubtarget<R600Subtarget>();
     TII = ST.getInstrInfo();
 
-    for (MachineFunction::iterator BB = MF.begin(), BB_E = MF.end();
-                                                    BB != BB_E; ++BB) {
+    for (MachineFunction::iterator BB = MF.begin(), BB_E = MF.end(); BB != BB_E;
+         ++BB) {
       MachineBasicBlock &MBB = *BB;
       MachineBasicBlock::iterator I = MBB.begin();
       if (I != MBB.end() && I->getOpcode() == R600::CF_ALU)
@@ -331,7 +330,7 @@ char R600EmitClauseMarkers::ID = 0;
 INITIALIZE_PASS_BEGIN(R600EmitClauseMarkers, "emitclausemarkers",
                       "R600 Emit Clause Markters", false, false)
 INITIALIZE_PASS_END(R600EmitClauseMarkers, "emitclausemarkers",
-                      "R600 Emit Clause Markters", false, false)
+                    "R600 Emit Clause Markters", false, false)
 
 FunctionPass *llvm::createR600EmitClauseMarkers() {
   return new R600EmitClauseMarkers();

@@ -269,13 +269,13 @@ bool BPFAsmParser::PreMatchCheck(OperandVector &Operands) {
     BPFOperand &Op1 = (BPFOperand &)*Operands[1];
     BPFOperand &Op2 = (BPFOperand &)*Operands[2];
     BPFOperand &Op3 = (BPFOperand &)*Operands[3];
-    if (Op0.isReg() && Op1.isToken() && Op2.isToken() && Op3.isReg()
-        && Op1.getToken() == "="
-        && (Op2.getToken() == "-" || Op2.getToken() == "be16"
-            || Op2.getToken() == "be32" || Op2.getToken() == "be64"
-            || Op2.getToken() == "le16" || Op2.getToken() == "le32"
-            || Op2.getToken() == "le64")
-        && Op0.getReg() != Op3.getReg())
+    if (Op0.isReg() && Op1.isToken() && Op2.isToken() && Op3.isReg() &&
+        Op1.getToken() == "=" &&
+        (Op2.getToken() == "-" || Op2.getToken() == "be16" ||
+         Op2.getToken() == "be32" || Op2.getToken() == "be64" ||
+         Op2.getToken() == "le16" || Op2.getToken() == "le32" ||
+         Op2.getToken() == "le64") &&
+        Op0.getReg() != Op3.getReg())
       return true;
   }
 
@@ -467,7 +467,7 @@ bool BPFAsmParser::ParseInstruction(ParseInstructionInfo &Info, StringRef Name,
   if (RegNo != 0) {
     SMLoc E = SMLoc::getFromPointer(NameLoc.getPointer() - 1);
     Operands.push_back(BPFOperand::createReg(RegNo, NameLoc, E));
-  } else if (BPFOperand::isValidIdAtStart (Name))
+  } else if (BPFOperand::isValidIdAtStart(Name))
     Operands.push_back(BPFOperand::createToken(Name, NameLoc));
   else
     return Error(NameLoc, "invalid register/token name");

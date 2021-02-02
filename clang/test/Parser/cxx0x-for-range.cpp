@@ -1,23 +1,23 @@
 // RUN: not %clang_cc1 -fsyntax-only -fdiagnostics-parseable-fixits -std=c++11 %s 2>&1 | FileCheck %s
 
-template<typename T, typename U>
+template <typename T, typename U>
 struct pair {};
 
-template<typename T, typename U>
+template <typename T, typename U>
 struct map {
-  typedef pair<T,U> *iterator;
+  typedef pair<T, U> *iterator;
   iterator begin();
   iterator end();
 };
 
-template<typename T, typename U>
-pair<T,U> &tie(T &, U &);
+template <typename T, typename U>
+pair<T, U> &tie(T &, U &);
 
-int foo(map<char*,int> &m) {
+int foo(map<char *, int> &m) {
   char *p;
   int n;
 
-  for (pair<char*,int> x : m) {
+  for (pair<char *, int> x : m) {
     (void)x;
   }
 
@@ -44,19 +44,17 @@ struct Vector {
 void f() {
   Vector v;
   int a[] = {1, 2, 3, 4};
-  for (auto foo   =     a) // expected-error {{range-based 'for' statement uses ':', not '='}}
+  for (auto foo = a) // expected-error {{range-based 'for' statement uses ':', not '='}}
     // CHECK: fix-it:"{{.*}}":{[[@LINE-1]]:19-[[@LINE-1]]:20}:":"
     (void)foo;
-  for (auto i
-      =
-      v) // expected-error@-1 {{range-based 'for' statement uses ':', not '='}}
+  for (auto i =
+           v) // expected-error@-1 {{range-based 'for' statement uses ':', not '='}}
     // CHECK: fix-it:"{{.*}}":{[[@LINE-2]]:7-[[@LINE-2]]:8}:":"
     (void)i;
-#define FORRANGE(v, a) for (DECLVARWITHINIT(v) a)  // expected-note {{expanded from macro}}
+#define FORRANGE(v, a) for (DECLVARWITHINIT(v) a) // expected-note {{expanded from macro}}
 #define DECLAUTOVAR(v) auto v
-#define DECLVARWITHINIT(v) DECLAUTOVAR(v) =  // expected-note {{expanded from macro}}
-  FORRANGE(i, a) {  // expected-error {{range-based 'for' statement uses ':', not '='}}
-
+#define DECLVARWITHINIT(v) DECLAUTOVAR(v) = // expected-note {{expanded from macro}}
+  FORRANGE(i, a) { // expected-error {{range-based 'for' statement uses ':', not '='}}
   }
 }
-}
+} // namespace PR19176

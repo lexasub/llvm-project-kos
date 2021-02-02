@@ -5,10 +5,10 @@ void f_vararg(int i, ...);
 
 struct C {
   void g_vararg(...);
-  void g(const char*);
+  void g(const char *);
 } c;
 
-template<typename... P>
+template <typename... P>
 void cpp_vararg(P... p);
 
 void check() {
@@ -17,27 +17,27 @@ void check() {
   c.g_vararg("foo");
   // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: do not call c-style vararg functions
 
-  f(3); // OK
-  c.g("foo"); // OK
+  f(3);                // OK
+  c.g("foo");          // OK
   cpp_vararg(1, 7, 9); // OK
 }
 
 // ... as a parameter is allowed (e.g. for SFINAE)
 template <typename T>
-void CallFooIfAvailableImpl(T& t, ...) {
+void CallFooIfAvailableImpl(T &t, ...) {
   // nothing
 }
 template <typename T>
-void CallFooIfAvailableImpl(T& t, decltype(t.foo())*) {
+void CallFooIfAvailableImpl(T &t, decltype(t.foo()) *) {
   t.foo();
 }
 template <typename T>
-void CallFooIfAvailable(T& t) {
+void CallFooIfAvailable(T &t) {
   CallFooIfAvailableImpl(t, 0); // OK to call variadic function when the argument is a literal 0
 }
 
 #include <stdarg.h>
-void my_printf(const char* format, ...) {
+void my_printf(const char *format, ...) {
   va_list ap;
   // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: do not declare variables of type va_list; use variadic templates instead
   va_start(ap, format);
@@ -49,7 +49,7 @@ void my_printf(const char* format, ...) {
   va_end(ap);
 }
 
-int my_vprintf(const char* format, va_list arg ); // OK to declare function taking va_list
+int my_vprintf(const char *format, va_list arg); // OK to declare function taking va_list
 
 void ignoredBuiltinsTest() {
   (void)__builtin_assume_aligned(0, 8);

@@ -37,10 +37,10 @@
 
 namespace lldb {
 typedef void *rwlock_t;
-typedef void *process_t;             // Process type is HANDLE
-typedef void *thread_t;              // Host thread type
-typedef void *file_t;                // Host file type
-typedef unsigned int __w64 socket_t; // Host socket type
+typedef void *process_t;                          // Process type is HANDLE
+typedef void *thread_t;                           // Host thread type
+typedef void *file_t;                             // Host file type
+typedef unsigned int __w64 socket_t;              // Host socket type
 typedef void *thread_arg_t;                       // Host thread argument type
 typedef unsigned thread_result_t;                 // Host thread result type
 typedef thread_result_t (*thread_func_t)(void *); // Host thread function type
@@ -54,10 +54,10 @@ typedef void *pipe_t;                             // Host pipe type is HANDLE
 namespace lldb {
 // MacOSX Types
 typedef pthread_rwlock_t rwlock_t;
-typedef uint64_t process_t; // Process type is just a pid.
-typedef pthread_t thread_t; // Host thread type
-typedef int file_t;         // Host file type
-typedef int socket_t;       // Host socket type
+typedef uint64_t process_t;             // Process type is just a pid.
+typedef pthread_t thread_t;             // Host thread type
+typedef int file_t;                     // Host file type
+typedef int socket_t;                   // Host socket type
 typedef void *thread_arg_t;             // Host thread argument type
 typedef void *thread_result_t;          // Host thread result type
 typedef void *(*thread_func_t)(void *); // Host thread function type

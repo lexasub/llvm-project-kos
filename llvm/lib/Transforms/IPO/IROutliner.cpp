@@ -231,7 +231,6 @@ constantMatches(Value *V, unsigned GVN,
   DenseMap<unsigned, Constant *>::iterator GVNToConstantIt;
   bool Inserted;
 
-
   // If we have a constant, try to make a new entry in the GVNToConstant.
   std::tie(GVNToConstantIt, Inserted) =
       GVNToConstant.insert(std::make_pair(GVN, CST));
@@ -1068,8 +1067,7 @@ alignOutputBlockWithAggFunc(OutlinableGroup &OG, OutlinableRegion &Region,
   Region.OutputBlockNum = OutputStoreBBs.size();
 
   LLVM_DEBUG(dbgs() << "Create output block for region in"
-                    << Region.ExtractedFunction << " to "
-                    << *OutputBB);
+                    << Region.ExtractedFunction << " to " << *OutputBB);
   OutputStoreBBs.push_back(OutputBB);
   BranchInst::Create(EndBB, OutputBB);
 }
@@ -1200,7 +1198,7 @@ void IROutliner::deduplicateExtractedSections(
   for (unsigned Idx = 1; Idx < CurrentGroup.Regions.size(); Idx++) {
     CurrentOS = CurrentGroup.Regions[Idx];
     AttributeFuncs::mergeAttributesForOutlining(*CurrentGroup.OutlinedFunction,
-                                               *CurrentOS->ExtractedFunction);
+                                                *CurrentOS->ExtractedFunction);
 
     // Create a new BasicBlock to hold the needed store instructions.
     BasicBlock *NewBB = BasicBlock::Create(
@@ -1279,8 +1277,8 @@ void IROutliner::pruneIncompatibleRegions(
     if (BadInst)
       continue;
 
-    OutlinableRegion *OS = new (RegionAllocator.Allocate())
-        OutlinableRegion(IRSC, CurrentGroup);
+    OutlinableRegion *OS =
+        new (RegionAllocator.Allocate()) OutlinableRegion(IRSC, CurrentGroup);
     CurrentGroup.Regions.push_back(OS);
 
     CurrentEndIdx = EndIdx;
@@ -1417,8 +1415,7 @@ void IROutliner::findCostBenefit(Module &M, OutlinableGroup &CurrentGroup) {
   LLVM_DEBUG(dbgs() << "Adding: " << OverallArgumentNum
                     << " instructions to cost for each argument in the new"
                     << " function.\n");
-  CurrentGroup.Cost +=
-      OverallArgumentNum * TargetTransformInfo::TCC_Basic;
+  CurrentGroup.Cost += OverallArgumentNum * TargetTransformInfo::TCC_Basic;
   LLVM_DEBUG(dbgs() << "Current Cost: " << CurrentGroup.Cost << "\n");
 
   // Each argument needs to either be loaded into a register or onto the stack.
@@ -1437,8 +1434,7 @@ void IROutliner::findCostBenefit(Module &M, OutlinableGroup &CurrentGroup) {
 }
 
 void IROutliner::updateOutputMapping(OutlinableRegion &Region,
-                                     ArrayRef<Value *> Outputs,
-                                     LoadInst *LI) {
+                                     ArrayRef<Value *> Outputs, LoadInst *LI) {
   // For and load instructions following the call
   Value *Operand = LI->getPointerOperand();
   Optional<unsigned> OutputIdx = None;
@@ -1602,8 +1598,8 @@ unsigned IROutliner::doOutline(Module &M) {
     if (CurrentGroup.Cost >= CurrentGroup.Benefit && CostModel) {
       for (OutlinableRegion *OS : CurrentGroup.Regions)
         OS->reattachCandidate();
-      OptimizationRemarkEmitter &ORE = getORE(
-          *CurrentGroup.Regions[0]->Candidate->getFunction());
+      OptimizationRemarkEmitter &ORE =
+          getORE(*CurrentGroup.Regions[0]->Candidate->getFunction());
       ORE.emit([&]() {
         IRSimilarityCandidate *C = CurrentGroup.Regions[0]->Candidate;
         OptimizationRemarkMissed R(DEBUG_TYPE, "WouldNotDecreaseSize",

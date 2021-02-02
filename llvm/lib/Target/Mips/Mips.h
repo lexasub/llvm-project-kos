@@ -18,35 +18,35 @@
 #include "llvm/Target/TargetMachine.h"
 
 namespace llvm {
-  class MipsTargetMachine;
-  class ModulePass;
-  class FunctionPass;
-  class MipsRegisterBankInfo;
-  class MipsSubtarget;
-  class MipsTargetMachine;
-  class InstructionSelector;
-  class PassRegistry;
+class MipsTargetMachine;
+class ModulePass;
+class FunctionPass;
+class MipsRegisterBankInfo;
+class MipsSubtarget;
+class MipsTargetMachine;
+class InstructionSelector;
+class PassRegistry;
 
-  ModulePass *createMipsOs16Pass();
-  ModulePass *createMips16HardFloatPass();
+ModulePass *createMipsOs16Pass();
+ModulePass *createMips16HardFloatPass();
 
-  FunctionPass *createMipsModuleISelDagPass();
-  FunctionPass *createMipsOptimizePICCallPass();
-  FunctionPass *createMipsDelaySlotFillerPass();
-  FunctionPass *createMipsBranchExpansion();
-  FunctionPass *createMipsConstantIslandPass();
-  FunctionPass *createMicroMipsSizeReducePass();
-  FunctionPass *createMipsExpandPseudoPass();
-  FunctionPass *createMipsPreLegalizeCombiner();
+FunctionPass *createMipsModuleISelDagPass();
+FunctionPass *createMipsOptimizePICCallPass();
+FunctionPass *createMipsDelaySlotFillerPass();
+FunctionPass *createMipsBranchExpansion();
+FunctionPass *createMipsConstantIslandPass();
+FunctionPass *createMicroMipsSizeReducePass();
+FunctionPass *createMipsExpandPseudoPass();
+FunctionPass *createMipsPreLegalizeCombiner();
 
-  InstructionSelector *createMipsInstructionSelector(const MipsTargetMachine &,
-                                                     MipsSubtarget &,
-                                                     MipsRegisterBankInfo &);
+InstructionSelector *createMipsInstructionSelector(const MipsTargetMachine &,
+                                                   MipsSubtarget &,
+                                                   MipsRegisterBankInfo &);
 
-  void initializeMipsDelaySlotFillerPass(PassRegistry &);
-  void initializeMipsBranchExpansionPass(PassRegistry &);
-  void initializeMicroMipsSizeReducePass(PassRegistry &);
-  void initializeMipsPreLegalizerCombinerPass(PassRegistry&);
-} // end namespace llvm;
+void initializeMipsDelaySlotFillerPass(PassRegistry &);
+void initializeMipsBranchExpansionPass(PassRegistry &);
+void initializeMicroMipsSizeReducePass(PassRegistry &);
+void initializeMipsPreLegalizerCombinerPass(PassRegistry &);
+} // namespace llvm
 
 #endif

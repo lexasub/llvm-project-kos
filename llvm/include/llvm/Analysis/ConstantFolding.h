@@ -112,8 +112,7 @@ Constant *ConstantFoldExtractValueInstruction(Constant *Agg,
 /// Attempt to constant fold an insertelement instruction with the
 /// specified operands and indices.  The constant result is returned if
 /// successful; if not, null is returned.
-Constant *ConstantFoldInsertElementInstruction(Constant *Val,
-                                               Constant *Elt,
+Constant *ConstantFoldInsertElementInstruction(Constant *Val, Constant *Elt,
                                                Constant *Idx);
 
 /// Attempt to constant fold an extractelement instruction with the
@@ -131,7 +130,8 @@ Constant *ConstantFoldShuffleVectorInstruction(Constant *V1, Constant *V2,
 /// ConstantFoldLoadFromConstPtr - Return the value that a load from C would
 /// produce if it is constant and determinable.  If this is not determinable,
 /// return null.
-Constant *ConstantFoldLoadFromConstPtr(Constant *C, Type *Ty, const DataLayout &DL);
+Constant *ConstantFoldLoadFromConstPtr(Constant *C, Type *Ty,
+                                       const DataLayout &DL);
 
 /// ConstantFoldLoadThroughGEPConstantExpr - Given a constant and a
 /// getelementptr constantexpr, return the constant value being addressed by the
@@ -164,6 +164,6 @@ Constant *ConstantFoldLoadThroughBitcast(Constant *C, Type *DestTy,
 /// Check whether the given call has no side-effects.
 /// Specifically checks for math routimes which sometimes set errno.
 bool isMathLibCallNoop(const CallBase *Call, const TargetLibraryInfo *TLI);
-}
+} // namespace llvm
 
 #endif

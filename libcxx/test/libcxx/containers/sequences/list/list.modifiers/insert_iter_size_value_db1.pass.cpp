@@ -21,12 +21,11 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    std::list<int> c1(100);
-    std::list<int> c2;
-    std::list<int>::iterator i = c1.insert(next(c2.cbegin(), 10), 5, 1);
-    assert(false);
+int main(int, char**) {
+  std::list<int> c1(100);
+  std::list<int> c2;
+  std::list<int>::iterator i = c1.insert(next(c2.cbegin(), 10), 5, 1);
+  assert(false);
 
   return 0;
 }

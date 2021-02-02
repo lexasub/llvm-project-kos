@@ -10,8 +10,7 @@ void TestAttributedStmt() {
   switch (1) {
   case 1:
     [[clang::fallthrough]];
-  case 2:
-    ;
+  case 2:;
   }
 }
 

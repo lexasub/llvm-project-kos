@@ -60,7 +60,7 @@ struct CompactUnwindEntry {
 struct UnwindInfoPage {
   ArrayRef<CompactUnwindEntry> entries;
 };
-}
+} // namespace
 
 class UnwindInfoAtom : public SimpleDefinedAtom {
 public:
@@ -218,8 +218,8 @@ public:
         headerSize + 2 * page.entries.size() * sizeof(uint32_t);
     _contents.resize(curPageOffset + curPageSize);
 
-    using normalized::write32;
     using normalized::write16;
+    using normalized::write32;
     // 2 => regular page
     write32(&_contents[curPageOffset], 2, _isBig);
     // offset of 1st entry
@@ -478,10 +478,10 @@ private:
   /// An EH frame is considered unused if there is a corresponding compact
   /// unwind atom that doesn't require the EH frame.
   void pruneUnusedEHFrames(
-                   SimpleFile &mergedFile,
-                   const std::vector<CompactUnwindEntry> &unwindInfos,
-                   const std::map<const Atom *, CompactUnwindEntry> &unwindLocs,
-                   const std::map<const Atom *, const Atom *> &dwarfFrames) {
+      SimpleFile &mergedFile,
+      const std::vector<CompactUnwindEntry> &unwindInfos,
+      const std::map<const Atom *, CompactUnwindEntry> &unwindLocs,
+      const std::map<const Atom *, const Atom *> &dwarfFrames) {
 
     // Worklist of all 'used' FDEs.
     std::vector<const DefinedAtom *> usedDwarfWorklist;
@@ -535,7 +535,6 @@ private:
       entry.rangeLength = function->size();
     } else
       entry = unwindLoc->second;
-
 
     // If there's no __compact_unwind entry, or it explicitly says to use
     // __eh_frame, we need to try and fill in the correct DWARF atom.

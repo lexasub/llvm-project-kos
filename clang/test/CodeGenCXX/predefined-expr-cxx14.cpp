@@ -22,7 +22,7 @@
 
 // CHECK-DAG: private unnamed_addr constant [32 x i8] c"const char *ConstexprPrettyFn()\00"
 
-int printf(const char * _Format, ...);
+int printf(const char *_Format, ...);
 
 class ClassInTopLevelNamespace {
 public:
@@ -40,7 +40,7 @@ public:
     return a;
   }
 
-  template<typename T>
+  template <typename T>
   auto &functionTemplate(T &t) {
     printf("__func__ %s\n", __func__);
     printf("__FUNCTION__ %s\n", __FUNCTION__);
@@ -49,7 +49,7 @@ public:
   }
 };
 
-template<typename T>
+template <typename T>
 class ClassTemplate {
 public:
   const auto &classTemplateFunction(T &t) {
@@ -64,13 +64,13 @@ struct ClassBlockConstr {
   const char *s;
   ClassBlockConstr() {
     const char * (^b)() = ^() {
-    return __func__;
+      return __func__;
     };
     s = b();
   }
   ~ClassBlockConstr() {
     const char * (^b)() = ^() {
-    return __func__;
+      return __func__;
     };
     s = b();
   }
@@ -85,13 +85,12 @@ public:
   const char *getFunc() const { return Func; }
 };
 
-constexpr const char* ConstexprPrettyFn() {
+constexpr const char *ConstexprPrettyFn() {
   return __PRETTY_FUNCTION__;
 }
-const char* ConstexprPrettyVar = ConstexprPrettyFn();
+const char *ConstexprPrettyVar = ConstexprPrettyFn();
 
-int
-main() {
+int main() {
   int a;
   ClassInTopLevelNamespace topLevelNamespace;
   ClassBlockConstr classBlockConstr;
@@ -109,4 +108,3 @@ void Foo() {
   (void)FTi.getFunc();
 }
 #endif
-

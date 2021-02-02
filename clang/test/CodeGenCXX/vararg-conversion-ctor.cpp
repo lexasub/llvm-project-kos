@@ -3,18 +3,17 @@
 
 extern "C" int printf(...);
 
-struct A { 
+struct A {
   A(...) {
-    printf("A::A(...)\n"); 
-  } 
+    printf("A::A(...)\n");
+  }
 };
 
 A a(1.34);
 
 A b = 2.34;
 
-int main()
-{
+int main() {
   A c[3];
 }
 

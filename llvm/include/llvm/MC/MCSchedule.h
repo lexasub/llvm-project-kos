@@ -54,8 +54,8 @@ struct MCProcResourceDesc {
   const unsigned *SubUnitsIdxBegin;
 
   bool operator==(const MCProcResourceDesc &Other) const {
-    return NumUnits == Other.NumUnits && SuperIdx == Other.SuperIdx
-      && BufferSize == Other.BufferSize;
+    return NumUnits == Other.NumUnits && SuperIdx == Other.SuperIdx &&
+           BufferSize == Other.BufferSize;
   }
 };
 
@@ -98,8 +98,8 @@ struct MCReadAdvanceEntry {
   int Cycles;
 
   bool operator==(const MCReadAdvanceEntry &Other) const {
-    return UseIdx == Other.UseIdx && WriteResourceID == Other.WriteResourceID
-      && Cycles == Other.Cycles;
+    return UseIdx == Other.UseIdx && WriteResourceID == Other.WriteResourceID &&
+           Cycles == Other.Cycles;
   }
 };
 
@@ -112,11 +112,11 @@ struct MCSchedClassDesc {
   static const unsigned short VariantNumMicroOps = InvalidNumMicroOps - 1;
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
-  const char* Name;
+  const char *Name;
 #endif
   uint16_t NumMicroOps : 14;
-  bool     BeginGroup : 1;
-  bool     EndGroup : 1;
+  bool BeginGroup : 1;
+  bool EndGroup : 1;
   uint16_t WriteProcResIdx; // First index into WriteProcResTable.
   uint16_t NumWriteProcResEntries;
   uint16_t WriteLatencyIdx; // First index into WriteLatencyTable.
@@ -124,12 +124,8 @@ struct MCSchedClassDesc {
   uint16_t ReadAdvanceIdx; // First index into ReadAdvanceTable.
   uint16_t NumReadAdvanceEntries;
 
-  bool isValid() const {
-    return NumMicroOps != InvalidNumMicroOps;
-  }
-  bool isVariant() const {
-    return NumMicroOps == VariantNumMicroOps;
-  }
+  bool isValid() const { return NumMicroOps != InvalidNumMicroOps; }
+  bool isVariant() const { return NumMicroOps == VariantNumMicroOps; }
 };
 
 /// Specify the cost of a register definition in terms of number of physical
@@ -332,9 +328,7 @@ struct MCSchedModel {
   /// Return true if machine supports out of order execution.
   bool isOutOfOrder() const { return MicroOpBufferSize > 1; }
 
-  unsigned getNumProcResourceKinds() const {
-    return NumProcResourceKinds;
-  }
+  unsigned getNumProcResourceKinds() const { return NumProcResourceKinds; }
 
   const MCProcResourceDesc *getProcResource(unsigned ProcResourceIdx) const {
     assert(hasInstrSchedModel() && "No scheduling machine model");
@@ -359,16 +353,15 @@ struct MCSchedModel {
                           const MCInst &Inst) const;
 
   // Returns the reciprocal throughput information from a MCSchedClassDesc.
-  static double
-  getReciprocalThroughput(const MCSubtargetInfo &STI,
-                          const MCSchedClassDesc &SCDesc);
+  static double getReciprocalThroughput(const MCSubtargetInfo &STI,
+                                        const MCSchedClassDesc &SCDesc);
 
-  static double
-  getReciprocalThroughput(unsigned SchedClass, const InstrItineraryData &IID);
+  static double getReciprocalThroughput(unsigned SchedClass,
+                                        const InstrItineraryData &IID);
 
-  double
-  getReciprocalThroughput(const MCSubtargetInfo &STI, const MCInstrInfo &MCII,
-                          const MCInst &Inst) const;
+  double getReciprocalThroughput(const MCSubtargetInfo &STI,
+                                 const MCInstrInfo &MCII,
+                                 const MCInst &Inst) const;
 
   /// Returns the maximum forwarding delay for register reads dependent on
   /// writes of scheduling class WriteResourceIdx.

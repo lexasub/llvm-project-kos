@@ -21,9 +21,8 @@ using namespace lld::mach_o::normalized;
 namespace lld {
 namespace mach_o {
 
-using llvm::support::ulittle32_t;
 using llvm::support::little32_t;
-
+using llvm::support::ulittle32_t;
 
 class ArchHandler_arm : public ArchHandler {
 public:
@@ -40,39 +39,25 @@ public:
   bool isPairedReloc(const normalized::Relocation &) override;
   bool isNonCallBranch(const Reference &) override;
 
-  bool needsCompactUnwind() override {
-    return false;
-  }
-  Reference::KindValue imageOffsetKind() override {
-    return invalid;
-  }
-  Reference::KindValue imageOffsetKindIndirect() override {
-    return invalid;
-  }
+  bool needsCompactUnwind() override { return false; }
+  Reference::KindValue imageOffsetKind() override { return invalid; }
+  Reference::KindValue imageOffsetKindIndirect() override { return invalid; }
 
   Reference::KindValue unwindRefToPersonalityFunctionKind() override {
     return invalid;
   }
 
-  Reference::KindValue unwindRefToCIEKind() override {
-    return invalid;
-  }
+  Reference::KindValue unwindRefToCIEKind() override { return invalid; }
 
-  Reference::KindValue unwindRefToFunctionKind() override {
-    return invalid;
-  }
+  Reference::KindValue unwindRefToFunctionKind() override { return invalid; }
 
-  Reference::KindValue unwindRefToEhFrameKind() override {
-    return invalid;
-  }
+  Reference::KindValue unwindRefToEhFrameKind() override { return invalid; }
 
   Reference::KindValue lazyImmediateLocationKind() override {
     return lazyImmediateLocation;
   }
 
-  Reference::KindValue pointerKind() override {
-    return invalid;
-  }
+  Reference::KindValue pointerKind() override { return invalid; }
 
   uint32_t dwarfCompactUnwindType() override {
     // FIXME
@@ -80,38 +65,30 @@ public:
   }
 
   llvm::Error getReferenceInfo(const normalized::Relocation &reloc,
-                               const DefinedAtom *inAtom,
-                               uint32_t offsetInAtom,
+                               const DefinedAtom *inAtom, uint32_t offsetInAtom,
                                uint64_t fixupAddress, bool swap,
                                FindAtomBySectionAndAddress atomFromAddress,
                                FindAtomBySymbolIndex atomFromSymbolIndex,
                                Reference::KindValue *kind,
                                const lld::Atom **target,
                                Reference::Addend *addend) override;
-  llvm::Error
-      getPairReferenceInfo(const normalized::Relocation &reloc1,
-                           const normalized::Relocation &reloc2,
-                           const DefinedAtom *inAtom,
-                           uint32_t offsetInAtom,
-                           uint64_t fixupAddress, bool swap, bool scatterable,
-                           FindAtomBySectionAndAddress atomFromAddress,
-                           FindAtomBySymbolIndex atomFromSymbolIndex,
-                           Reference::KindValue *kind,
-                           const lld::Atom **target,
-                           Reference::Addend *addend) override;
+  llvm::Error getPairReferenceInfo(
+      const normalized::Relocation &reloc1,
+      const normalized::Relocation &reloc2, const DefinedAtom *inAtom,
+      uint32_t offsetInAtom, uint64_t fixupAddress, bool swap, bool scatterable,
+      FindAtomBySectionAndAddress atomFromAddress,
+      FindAtomBySymbolIndex atomFromSymbolIndex, Reference::KindValue *kind,
+      const lld::Atom **target, Reference::Addend *addend) override;
 
-  void generateAtomContent(const DefinedAtom &atom, bool relocatable,
-                           FindAddressForAtom findAddress,
-                           FindAddressForAtom findSectionAddress,
-                           uint64_t imageBaseAddress,
-                           llvm::MutableArrayRef<uint8_t> atomContentBuffer) override;
+  void generateAtomContent(
+      const DefinedAtom &atom, bool relocatable, FindAddressForAtom findAddress,
+      FindAddressForAtom findSectionAddress, uint64_t imageBaseAddress,
+      llvm::MutableArrayRef<uint8_t> atomContentBuffer) override;
 
   void appendSectionRelocations(const DefinedAtom &atom,
                                 uint64_t atomSectionOffset,
-                                const Reference &ref,
-                                FindSymbolIndexForAtom,
-                                FindSectionIndexForAtom,
-                                FindAddressForAtom,
+                                const Reference &ref, FindSymbolIndexForAtom,
+                                FindSectionIndexForAtom, FindAddressForAtom,
                                 normalized::Relocations &) override;
 
   void addAdditionalReferences(MachODefinedAtom &atom) override;
@@ -128,13 +105,13 @@ public:
     }
   }
 
-  Reference::KindValue dataInCodeTransitionStart(
-                                        const MachODefinedAtom &atom) override {
+  Reference::KindValue
+  dataInCodeTransitionStart(const MachODefinedAtom &atom) override {
     return modeData;
   }
 
-  Reference::KindValue dataInCodeTransitionEnd(
-                                        const MachODefinedAtom &atom) override {
+  Reference::KindValue
+  dataInCodeTransitionEnd(const MachODefinedAtom &atom) override {
     return atom.isThumb() ? modeThumbCode : modeArmCode;
   }
 
@@ -147,30 +124,30 @@ private:
   friend class ArmToThumbShimAtom;
 
   static const Registry::KindStrings _sKindStrings[];
-  static const StubInfo              _sStubInfoArmPIC;
+  static const StubInfo _sStubInfoArmPIC;
 
   enum ArmKind : Reference::KindValue {
-    invalid,               /// for error condition
+    invalid, /// for error condition
 
-    modeThumbCode,         /// Content starting at this offset is thumb.
-    modeArmCode,           /// Content starting at this offset is arm.
-    modeData,              /// Content starting at this offset is data.
+    modeThumbCode, /// Content starting at this offset is thumb.
+    modeArmCode,   /// Content starting at this offset is arm.
+    modeData,      /// Content starting at this offset is data.
 
     // Kinds found in mach-o .o files:
-    thumb_bl22,            /// ex: bl _foo
-    thumb_b22,             /// ex: b _foo
-    thumb_movw,            /// ex: movw	r1, :lower16:_foo
-    thumb_movt,            /// ex: movt	r1, :lower16:_foo
-    thumb_movw_funcRel,    /// ex: movw	r1, :lower16:(_foo-(L1+4))
-    thumb_movt_funcRel,    /// ex: movt r1, :upper16:(_foo-(L1+4))
-    arm_bl24,              /// ex: bl _foo
-    arm_b24,               /// ex: b _foo
-    arm_movw,              /// ex: movw	r1, :lower16:_foo
-    arm_movt,              /// ex: movt	r1, :lower16:_foo
-    arm_movw_funcRel,      /// ex: movw	r1, :lower16:(_foo-(L1+4))
-    arm_movt_funcRel,      /// ex: movt r1, :upper16:(_foo-(L1+4))
-    pointer32,             /// ex: .long _foo
-    delta32,               /// ex: .long _foo - .
+    thumb_bl22,         /// ex: bl _foo
+    thumb_b22,          /// ex: b _foo
+    thumb_movw,         /// ex: movw	r1, :lower16:_foo
+    thumb_movt,         /// ex: movt	r1, :lower16:_foo
+    thumb_movw_funcRel, /// ex: movw	r1, :lower16:(_foo-(L1+4))
+    thumb_movt_funcRel, /// ex: movt r1, :upper16:(_foo-(L1+4))
+    arm_bl24,           /// ex: bl _foo
+    arm_b24,            /// ex: b _foo
+    arm_movw,           /// ex: movw	r1, :lower16:_foo
+    arm_movt,           /// ex: movt	r1, :lower16:_foo
+    arm_movw_funcRel,   /// ex: movw	r1, :lower16:(_foo-(L1+4))
+    arm_movt_funcRel,   /// ex: movt r1, :upper16:(_foo-(L1+4))
+    pointer32,          /// ex: .long _foo
+    delta32,            /// ex: .long _foo - .
 
     // Kinds introduced by Passes:
     lazyPointer,           /// Location contains a lazy pointer.
@@ -203,8 +180,7 @@ private:
                        bool targetIsThumb);
 
   void applyFixupRelocatable(const Reference &ref, uint8_t *location,
-                             uint64_t fixupAddress,
-                             uint64_t targetAddress,
+                             uint64_t fixupAddress, uint64_t targetAddress,
                              uint64_t inAtomAddress, bool &thumbMode,
                              bool targetIsThumb);
 };
@@ -214,83 +190,81 @@ private:
 //===----------------------------------------------------------------------===//
 
 const Registry::KindStrings ArchHandler_arm::_sKindStrings[] = {
-  LLD_KIND_STRING_ENTRY(invalid),
-  LLD_KIND_STRING_ENTRY(modeThumbCode),
-  LLD_KIND_STRING_ENTRY(modeArmCode),
-  LLD_KIND_STRING_ENTRY(modeData),
-  LLD_KIND_STRING_ENTRY(thumb_bl22),
-  LLD_KIND_STRING_ENTRY(thumb_b22),
-  LLD_KIND_STRING_ENTRY(thumb_movw),
-  LLD_KIND_STRING_ENTRY(thumb_movt),
-  LLD_KIND_STRING_ENTRY(thumb_movw_funcRel),
-  LLD_KIND_STRING_ENTRY(thumb_movt_funcRel),
-  LLD_KIND_STRING_ENTRY(arm_bl24),
-  LLD_KIND_STRING_ENTRY(arm_b24),
-  LLD_KIND_STRING_ENTRY(arm_movw),
-  LLD_KIND_STRING_ENTRY(arm_movt),
-  LLD_KIND_STRING_ENTRY(arm_movw_funcRel),
-  LLD_KIND_STRING_ENTRY(arm_movt_funcRel),
-  LLD_KIND_STRING_ENTRY(pointer32),
-  LLD_KIND_STRING_ENTRY(delta32),
-  LLD_KIND_STRING_ENTRY(lazyPointer),
-  LLD_KIND_STRING_ENTRY(lazyImmediateLocation),
-  LLD_KIND_STRING_END
-};
+    LLD_KIND_STRING_ENTRY(invalid),
+    LLD_KIND_STRING_ENTRY(modeThumbCode),
+    LLD_KIND_STRING_ENTRY(modeArmCode),
+    LLD_KIND_STRING_ENTRY(modeData),
+    LLD_KIND_STRING_ENTRY(thumb_bl22),
+    LLD_KIND_STRING_ENTRY(thumb_b22),
+    LLD_KIND_STRING_ENTRY(thumb_movw),
+    LLD_KIND_STRING_ENTRY(thumb_movt),
+    LLD_KIND_STRING_ENTRY(thumb_movw_funcRel),
+    LLD_KIND_STRING_ENTRY(thumb_movt_funcRel),
+    LLD_KIND_STRING_ENTRY(arm_bl24),
+    LLD_KIND_STRING_ENTRY(arm_b24),
+    LLD_KIND_STRING_ENTRY(arm_movw),
+    LLD_KIND_STRING_ENTRY(arm_movt),
+    LLD_KIND_STRING_ENTRY(arm_movw_funcRel),
+    LLD_KIND_STRING_ENTRY(arm_movt_funcRel),
+    LLD_KIND_STRING_ENTRY(pointer32),
+    LLD_KIND_STRING_ENTRY(delta32),
+    LLD_KIND_STRING_ENTRY(lazyPointer),
+    LLD_KIND_STRING_ENTRY(lazyImmediateLocation),
+    LLD_KIND_STRING_END};
 
 const ArchHandler::StubInfo ArchHandler_arm::_sStubInfoArmPIC = {
-  "dyld_stub_binder",
+    "dyld_stub_binder",
 
-  // References in lazy pointer
-  { Reference::KindArch::ARM, pointer32, 0, 0 },
-  { Reference::KindArch::ARM, lazyPointer, 0, 0 },
+    // References in lazy pointer
+    {Reference::KindArch::ARM, pointer32, 0, 0},
+    {Reference::KindArch::ARM, lazyPointer, 0, 0},
 
-  // GOT pointer to dyld_stub_binder
-  { Reference::KindArch::ARM, pointer32, 0, 0 },
+    // GOT pointer to dyld_stub_binder
+    {Reference::KindArch::ARM, pointer32, 0, 0},
 
-  // arm code alignment 2^2
-  2,
+    // arm code alignment 2^2
+    2,
 
-  // Stub size and code
-  16,
-  { 0x04, 0xC0, 0x9F, 0xE5,       // 	ldr ip, pc + 12
-    0x0C, 0xC0, 0x8F, 0xE0,       //  add ip, pc, ip
-    0x00, 0xF0, 0x9C, 0xE5,       // 	ldr pc, [ip]
-    0x00, 0x00, 0x00, 0x00 },     // 	.long L_foo$lazy_ptr - (L1$scv + 8)
-  { Reference::KindArch::ARM, delta32, 12, 0 },
-  { false, 0, 0, 0 },
+    // Stub size and code
+    16,
+    {0x04, 0xC0, 0x9F, 0xE5,  // 	ldr ip, pc + 12
+     0x0C, 0xC0, 0x8F, 0xE0,  //  add ip, pc, ip
+     0x00, 0xF0, 0x9C, 0xE5,  // 	ldr pc, [ip]
+     0x00, 0x00, 0x00, 0x00}, // 	.long L_foo$lazy_ptr - (L1$scv + 8)
+    {Reference::KindArch::ARM, delta32, 12, 0},
+    {false, 0, 0, 0},
 
-  // Stub Helper size and code
-  12,
-  { 0x00, 0xC0, 0x9F, 0xE5,       // ldr   ip, [pc, #0]
-    0x00, 0x00, 0x00, 0xEA,       // b	     _helperhelper
-    0x00, 0x00, 0x00, 0x00 },     // .long  lazy-info-offset
-  { Reference::KindArch::ARM, lazyImmediateLocation, 8, 0 },
-  { Reference::KindArch::ARM, arm_b24, 4, 0 },
+    // Stub Helper size and code
+    12,
+    {0x00, 0xC0, 0x9F, 0xE5,  // ldr   ip, [pc, #0]
+     0x00, 0x00, 0x00, 0xEA,  // b	     _helperhelper
+     0x00, 0x00, 0x00, 0x00}, // .long  lazy-info-offset
+    {Reference::KindArch::ARM, lazyImmediateLocation, 8, 0},
+    {Reference::KindArch::ARM, arm_b24, 4, 0},
 
-  // Stub helper image cache content type
-  DefinedAtom::typeGOT,
+    // Stub helper image cache content type
+    DefinedAtom::typeGOT,
 
-  // Stub Helper-Common size and code
-  36,
-  // Stub helper alignment
-  2,
-	{ // push lazy-info-offset
-    0x04, 0xC0, 0x2D, 0xE5,       // str ip, [sp, #-4]!
-		// push address of dyld_mageLoaderCache
-    0x10, 0xC0, 0x9F, 0xE5,       // ldr	ip, L1
-    0x0C, 0xC0, 0x8F, 0xE0,       // add	ip, pc, ip
-    0x04, 0xC0, 0x2D, 0xE5,       // str ip, [sp, #-4]!
-		// jump through dyld_stub_binder
-    0x08, 0xC0, 0x9F, 0xE5,       // ldr	ip, L2
-    0x0C, 0xC0, 0x8F, 0xE0,       // add	ip, pc, ip
-    0x00, 0xF0, 0x9C, 0xE5,       // ldr	pc, [ip]
-    0x00, 0x00, 0x00, 0x00,       // L1: .long fFastStubGOTAtom - (helper+16)
-    0x00, 0x00, 0x00, 0x00 },     // L2: .long dyld_stub_binder - (helper+28)
-  { Reference::KindArch::ARM, delta32, 28, 0xC },
-  { false, 0, 0, 0 },
-  { Reference::KindArch::ARM, delta32, 32, 0x04 },
-  { false, 0, 0, 0 }
-};
+    // Stub Helper-Common size and code
+    36,
+    // Stub helper alignment
+    2,
+    {                         // push lazy-info-offset
+     0x04, 0xC0, 0x2D, 0xE5,  // str ip, [sp, #-4]!
+                              // push address of dyld_mageLoaderCache
+     0x10, 0xC0, 0x9F, 0xE5,  // ldr	ip, L1
+     0x0C, 0xC0, 0x8F, 0xE0,  // add	ip, pc, ip
+     0x04, 0xC0, 0x2D, 0xE5,  // str ip, [sp, #-4]!
+                              // jump through dyld_stub_binder
+     0x08, 0xC0, 0x9F, 0xE5,  // ldr	ip, L2
+     0x0C, 0xC0, 0x8F, 0xE0,  // add	ip, pc, ip
+     0x00, 0xF0, 0x9C, 0xE5,  // ldr	pc, [ip]
+     0x00, 0x00, 0x00, 0x00,  // L1: .long fFastStubGOTAtom - (helper+16)
+     0x00, 0x00, 0x00, 0x00}, // L2: .long dyld_stub_binder - (helper+28)
+    {Reference::KindArch::ARM, delta32, 28, 0xC},
+    {false, 0, 0, 0},
+    {Reference::KindArch::ARM, delta32, 32, 0x04},
+    {false, 0, 0, 0}};
 
 const ArchHandler::StubInfo &ArchHandler_arm::stubInfo() {
   // If multiple kinds of stubs are supported, select which StubInfo here.
@@ -339,7 +313,7 @@ bool ArchHandler_arm::isPairedReloc(const Relocation &reloc) {
 StringRef ArchHandler_arm::stubName(const DefinedAtom &stubAtom) {
   assert(stubAtom.contentType() == DefinedAtom::typeStub);
   for (const Reference *ref : stubAtom) {
-    if (const DefinedAtom* lp = dyn_cast<DefinedAtom>(ref->target())) {
+    if (const DefinedAtom *lp = dyn_cast<DefinedAtom>(ref->target())) {
       if (lp->contentType() != DefinedAtom::typeLazyPointer)
         continue;
       for (const Reference *ref2 : *lp) {
@@ -368,8 +342,8 @@ int32_t ArchHandler_arm::getDisplacementFromArmBranch(uint32_t instruction) {
 uint32_t ArchHandler_arm::setDisplacementInArmBranch(uint32_t instruction,
                                                      int32_t displacement,
                                                      bool targetIsThumb) {
-  assert((displacement <= 33554428) && (displacement > (-33554432))
-                                              && "arm branch out of range");
+  assert((displacement <= 33554428) && (displacement > (-33554432)) &&
+         "arm branch out of range");
   bool is_blx = ((instruction & 0xF0000000) == 0xF0000000);
   uint32_t newInstruction = (instruction & 0xFF000000);
   uint32_t h = 0;
@@ -377,15 +351,14 @@ uint32_t ArchHandler_arm::setDisplacementInArmBranch(uint32_t instruction,
     // Force use of BLX.
     newInstruction = 0xFA000000;
     if (!is_blx) {
-      assert(((instruction & 0xF0000000) == 0xE0000000)
-                                                   && "no conditional arm blx");
-      assert(((instruction & 0xFF000000) == 0xEB000000)
-                                             && "no arm pc-rel BX instruction");
+      assert(((instruction & 0xF0000000) == 0xE0000000) &&
+             "no conditional arm blx");
+      assert(((instruction & 0xFF000000) == 0xEB000000) &&
+             "no arm pc-rel BX instruction");
     }
     if (displacement & 2)
       h = 1;
-  }
-  else {
+  } else {
     // Force use of B/BL.
     if (is_blx)
       newInstruction = 0xEB000000;
@@ -424,11 +397,11 @@ uint32_t ArchHandler_arm::setDisplacementInThumbBranch(uint32_t instruction,
                                                        uint32_t instrAddr,
                                                        int32_t displacement,
                                                        bool targetIsThumb) {
-  assert((displacement <= 16777214) && (displacement > (-16777216))
-                                              && "thumb branch out of range");
-	bool is_bl = ((instruction & 0xD000F800) == 0xD000F000);
-	bool is_blx = ((instruction & 0xD000F800) == 0xC000F000);
-	bool is_b = ((instruction & 0xD000F800) == 0x9000F000);
+  assert((displacement <= 16777214) && (displacement > (-16777216)) &&
+         "thumb branch out of range");
+  bool is_bl = ((instruction & 0xD000F800) == 0xD000F000);
+  bool is_blx = ((instruction & 0xD000F800) == 0xC000F000);
+  bool is_b = ((instruction & 0xD000F800) == 0x9000F000);
   uint32_t newInstruction = (instruction & 0xD000F800);
   if (is_bl || is_blx) {
     if (targetIsThumb) {
@@ -441,9 +414,8 @@ uint32_t ArchHandler_arm::setDisplacementInThumbBranch(uint32_t instruction,
     }
   } else if (is_b) {
     assert(targetIsThumb && "no pc-rel thumb branch instruction that "
-                             "switches to arm mode");
-  }
-  else {
+                            "switches to arm mode");
+  } else {
     llvm_unreachable("thumb branch22 reloc on a non-branch instruction");
   }
   uint32_t s = (uint32_t)(displacement >> 24) & 0x1;
@@ -494,10 +466,10 @@ uint16_t ArchHandler_arm::getWordFromArmMov(uint32_t instruction) {
 uint32_t ArchHandler_arm::setWordFromThumbMov(uint32_t instr, uint16_t word) {
   assert(isThumbMovw(instr) || isThumbMovt(instr));
   uint32_t imm4 = (word & 0xF000) >> 12;
-  uint32_t i =    (word & 0x0800) >> 11;
+  uint32_t i = (word & 0x0800) >> 11;
   uint32_t imm3 = (word & 0x0700) >> 8;
-  uint32_t imm8 =  word & 0x00FF;
-	return (instr & 0x8F00FBF0) | imm4 | (i << 10) | (imm3 << 28) | (imm8 << 16);
+  uint32_t imm8 = word & 0x00FF;
+  return (instr & 0x8F00FBF0) | imm4 | (i << 10) | (imm3 << 28) | (imm8 << 16);
 }
 
 uint32_t ArchHandler_arm::setWordFromArmMov(uint32_t instr, uint16_t word) {
@@ -569,8 +541,8 @@ llvm::Error ArchHandler_arm::getReferenceInfo(
     return llvm::Error::success();
   case ARM_RELOC_BR24 | rPcRel | rExtern | rLength4:
     // ex: bl _foo (and _foo is undefined)
-    if (((instruction & 0x0F000000) == 0x0A000000)
-        && ((instruction & 0xF0000000) != 0xF0000000))
+    if (((instruction & 0x0F000000) == 0x0A000000) &&
+        ((instruction & 0xF0000000) != 0xF0000000))
       *kind = arm_b24;
     else
       *kind = arm_bl24;
@@ -582,8 +554,8 @@ llvm::Error ArchHandler_arm::getReferenceInfo(
     return llvm::Error::success();
   case ARM_RELOC_BR24 | rPcRel | rLength4:
     // ex: bl _foo (and _foo is defined)
-    if (((instruction & 0x0F000000) == 0x0A000000)
-        && ((instruction & 0xF0000000) != 0xF0000000))
+    if (((instruction & 0x0F000000) == 0x0A000000) &&
+        ((instruction & 0xF0000000) != 0xF0000000))
       *kind = arm_b24;
     else
       *kind = arm_bl24;
@@ -592,8 +564,8 @@ llvm::Error ArchHandler_arm::getReferenceInfo(
     return atomFromAddress(reloc.symbol, targetAddress, target, addend);
   case ARM_RELOC_BR24 | rScattered | rPcRel | rLength4:
     // ex: bl _foo+4 (and _foo is defined)
-    if (((instruction & 0x0F000000) == 0x0A000000)
-        && ((instruction & 0xF0000000) != 0xF0000000))
+    if (((instruction & 0x0F000000) == 0x0A000000) &&
+        ((instruction & 0xF0000000) != 0xF0000000))
       *kind = arm_b24;
     else
       *kind = arm_bl24;
@@ -617,7 +589,7 @@ llvm::Error ArchHandler_arm::getReferenceInfo(
     *kind = pointer32;
     if (auto ec = atomFromAddress(reloc.symbol, instruction, target, addend))
       return ec;
-    *addend = clearThumbBit((uint32_t) * addend, *target);
+    *addend = clearThumbBit((uint32_t)*addend, *target);
     return llvm::Error::success();
   case ARM_RELOC_VANILLA | rScattered | rLength4:
     // ex: .long _foo+a (and _foo is defined)
@@ -632,155 +604,145 @@ llvm::Error ArchHandler_arm::getReferenceInfo(
   return llvm::Error::success();
 }
 
-llvm::Error
-ArchHandler_arm::getPairReferenceInfo(const normalized::Relocation &reloc1,
-                                     const normalized::Relocation &reloc2,
-                                     const DefinedAtom *inAtom,
-                                     uint32_t offsetInAtom,
-                                     uint64_t fixupAddress, bool isBig,
-                                     bool scatterable,
-                                     FindAtomBySectionAndAddress atomFromAddr,
-                                     FindAtomBySymbolIndex atomFromSymbolIndex,
-                                     Reference::KindValue *kind,
-                                     const lld::Atom **target,
-                                     Reference::Addend *addend) {
+llvm::Error ArchHandler_arm::getPairReferenceInfo(
+    const normalized::Relocation &reloc1, const normalized::Relocation &reloc2,
+    const DefinedAtom *inAtom, uint32_t offsetInAtom, uint64_t fixupAddress,
+    bool isBig, bool scatterable, FindAtomBySectionAndAddress atomFromAddr,
+    FindAtomBySymbolIndex atomFromSymbolIndex, Reference::KindValue *kind,
+    const lld::Atom **target, Reference::Addend *addend) {
   bool pointerDiff = false;
   bool funcRel;
   bool top;
   bool thumbReloc;
-  switch(relocPattern(reloc1) << 16 | relocPattern(reloc2)) {
-  case ((ARM_RELOC_HALF_SECTDIFF  | rScattered | rLenThmbLo) << 16 |
-         ARM_RELOC_PAIR           | rScattered | rLenThmbLo):
+  switch (relocPattern(reloc1) << 16 | relocPattern(reloc2)) {
+  case ((ARM_RELOC_HALF_SECTDIFF | rScattered | rLenThmbLo) << 16 |
+        ARM_RELOC_PAIR | rScattered | rLenThmbLo):
     // ex: movw	r1, :lower16:(_x-L1) [thumb mode]
     *kind = thumb_movw_funcRel;
     funcRel = true;
     top = false;
     thumbReloc = true;
     break;
-  case ((ARM_RELOC_HALF_SECTDIFF  | rScattered | rLenThmbHi) << 16 |
-         ARM_RELOC_PAIR           | rScattered | rLenThmbHi):
+  case ((ARM_RELOC_HALF_SECTDIFF | rScattered | rLenThmbHi) << 16 |
+        ARM_RELOC_PAIR | rScattered | rLenThmbHi):
     // ex: movt	r1, :upper16:(_x-L1) [thumb mode]
     *kind = thumb_movt_funcRel;
     funcRel = true;
     top = true;
     thumbReloc = true;
     break;
-  case ((ARM_RELOC_HALF_SECTDIFF  | rScattered | rLenArmLo) << 16 |
-         ARM_RELOC_PAIR           | rScattered | rLenArmLo):
+  case ((ARM_RELOC_HALF_SECTDIFF | rScattered | rLenArmLo) << 16 |
+        ARM_RELOC_PAIR | rScattered | rLenArmLo):
     // ex: movw	r1, :lower16:(_x-L1) [arm mode]
     *kind = arm_movw_funcRel;
     funcRel = true;
     top = false;
     thumbReloc = false;
     break;
-  case ((ARM_RELOC_HALF_SECTDIFF  | rScattered | rLenArmHi) << 16 |
-         ARM_RELOC_PAIR           | rScattered | rLenArmHi):
+  case ((ARM_RELOC_HALF_SECTDIFF | rScattered | rLenArmHi) << 16 |
+        ARM_RELOC_PAIR | rScattered | rLenArmHi):
     // ex: movt	r1, :upper16:(_x-L1) [arm mode]
     *kind = arm_movt_funcRel;
     funcRel = true;
     top = true;
     thumbReloc = false;
     break;
-  case ((ARM_RELOC_HALF     | rLenThmbLo) << 16 |
-         ARM_RELOC_PAIR     | rLenThmbLo):
+  case ((ARM_RELOC_HALF | rLenThmbLo) << 16 | ARM_RELOC_PAIR | rLenThmbLo):
     // ex: movw	r1, :lower16:_x [thumb mode]
     *kind = thumb_movw;
     funcRel = false;
     top = false;
     thumbReloc = true;
     break;
-  case ((ARM_RELOC_HALF     | rLenThmbHi) << 16 |
-         ARM_RELOC_PAIR     | rLenThmbHi):
+  case ((ARM_RELOC_HALF | rLenThmbHi) << 16 | ARM_RELOC_PAIR | rLenThmbHi):
     // ex: movt	r1, :upper16:_x [thumb mode]
     *kind = thumb_movt;
     funcRel = false;
     top = true;
     thumbReloc = true;
     break;
-  case ((ARM_RELOC_HALF     | rLenArmLo) << 16 |
-         ARM_RELOC_PAIR     | rLenArmLo):
+  case ((ARM_RELOC_HALF | rLenArmLo) << 16 | ARM_RELOC_PAIR | rLenArmLo):
     // ex: movw	r1, :lower16:_x [arm mode]
     *kind = arm_movw;
     funcRel = false;
     top = false;
     thumbReloc = false;
     break;
-  case ((ARM_RELOC_HALF     | rLenArmHi) << 16 |
-         ARM_RELOC_PAIR     | rLenArmHi):
+  case ((ARM_RELOC_HALF | rLenArmHi) << 16 | ARM_RELOC_PAIR | rLenArmHi):
     // ex: movt	r1, :upper16:_x [arm mode]
     *kind = arm_movt;
     funcRel = false;
     top = true;
     thumbReloc = false;
     break;
-  case ((ARM_RELOC_HALF | rScattered  | rLenThmbLo) << 16 |
-         ARM_RELOC_PAIR               | rLenThmbLo):
+  case ((ARM_RELOC_HALF | rScattered | rLenThmbLo) << 16 | ARM_RELOC_PAIR |
+        rLenThmbLo):
     // ex: movw	r1, :lower16:_x+a [thumb mode]
     *kind = thumb_movw;
     funcRel = false;
     top = false;
     thumbReloc = true;
     break;
-  case ((ARM_RELOC_HALF | rScattered  | rLenThmbHi) << 16 |
-         ARM_RELOC_PAIR               | rLenThmbHi):
+  case ((ARM_RELOC_HALF | rScattered | rLenThmbHi) << 16 | ARM_RELOC_PAIR |
+        rLenThmbHi):
     // ex: movt	r1, :upper16:_x+a [thumb mode]
     *kind = thumb_movt;
     funcRel = false;
     top = true;
     thumbReloc = true;
     break;
-  case ((ARM_RELOC_HALF | rScattered  | rLenArmLo) << 16 |
-         ARM_RELOC_PAIR               | rLenArmLo):
+  case ((ARM_RELOC_HALF | rScattered | rLenArmLo) << 16 | ARM_RELOC_PAIR |
+        rLenArmLo):
     // ex: movw	r1, :lower16:_x+a [arm mode]
     *kind = arm_movw;
     funcRel = false;
     top = false;
     thumbReloc = false;
     break;
-  case ((ARM_RELOC_HALF | rScattered  | rLenArmHi) << 16 |
-         ARM_RELOC_PAIR               | rLenArmHi):
+  case ((ARM_RELOC_HALF | rScattered | rLenArmHi) << 16 | ARM_RELOC_PAIR |
+        rLenArmHi):
     // ex: movt	r1, :upper16:_x+a [arm mode]
     *kind = arm_movt;
     funcRel = false;
     top = true;
     thumbReloc = false;
     break;
-  case ((ARM_RELOC_HALF | rExtern   | rLenThmbLo) << 16 |
-         ARM_RELOC_PAIR             | rLenThmbLo):
+  case ((ARM_RELOC_HALF | rExtern | rLenThmbLo) << 16 | ARM_RELOC_PAIR |
+        rLenThmbLo):
     // ex: movw	r1, :lower16:_undef [thumb mode]
     *kind = thumb_movw;
     funcRel = false;
     top = false;
     thumbReloc = true;
     break;
-  case ((ARM_RELOC_HALF | rExtern   | rLenThmbHi) << 16 |
-         ARM_RELOC_PAIR             | rLenThmbHi):
+  case ((ARM_RELOC_HALF | rExtern | rLenThmbHi) << 16 | ARM_RELOC_PAIR |
+        rLenThmbHi):
     // ex: movt	r1, :upper16:_undef [thumb mode]
     *kind = thumb_movt;
     funcRel = false;
     top = true;
     thumbReloc = true;
     break;
-  case ((ARM_RELOC_HALF | rExtern   | rLenArmLo) << 16 |
-         ARM_RELOC_PAIR             | rLenArmLo):
+  case ((ARM_RELOC_HALF | rExtern | rLenArmLo) << 16 | ARM_RELOC_PAIR |
+        rLenArmLo):
     // ex: movw	r1, :lower16:_undef [arm mode]
     *kind = arm_movw;
     funcRel = false;
     top = false;
     thumbReloc = false;
     break;
-  case ((ARM_RELOC_HALF | rExtern   | rLenArmHi) << 16 |
-         ARM_RELOC_PAIR             | rLenArmHi):
+  case ((ARM_RELOC_HALF | rExtern | rLenArmHi) << 16 | ARM_RELOC_PAIR |
+        rLenArmHi):
     // ex: movt	r1, :upper16:_undef [arm mode]
     *kind = arm_movt;
     funcRel = false;
     top = true;
     thumbReloc = false;
     break;
-  case ((ARM_RELOC_SECTDIFF       | rScattered | rLength4) << 16 |
-         ARM_RELOC_PAIR           | rScattered | rLength4):
+  case ((ARM_RELOC_SECTDIFF | rScattered | rLength4) << 16 | ARM_RELOC_PAIR |
+        rScattered | rLength4):
   case ((ARM_RELOC_LOCAL_SECTDIFF | rScattered | rLength4) << 16 |
-         ARM_RELOC_PAIR           | rScattered | rLength4):
+        ARM_RELOC_PAIR | rScattered | rLength4):
     // ex: .long _foo - .
     pointerDiff = true;
     break;
@@ -818,26 +780,24 @@ ArchHandler_arm::getPairReferenceInfo(const normalized::Relocation &reloc1,
     if (auto ec = atomFromAddr(0, fromAddress, &fromTarget, &offsetInFrom))
       return ec;
     if (fromTarget != inAtom)
-      return llvm::make_error<GenericError>("ARM_RELOC_HALF_SECTDIFF relocation"
-                                     " where subtrahend label is not in atom");
+      return llvm::make_error<GenericError>(
+          "ARM_RELOC_HALF_SECTDIFF relocation"
+          " where subtrahend label is not in atom");
     other16 = (reloc2.offset & 0xFFFF);
     if (thumbReloc) {
       if (top) {
         if (!isThumbMovt(instruction))
           return llvm::make_error<GenericError>("expected movt instruction");
-      }
-      else {
+      } else {
         if (!isThumbMovw(instruction))
           return llvm::make_error<GenericError>("expected movw instruction");
       }
       instruction16 = getWordFromThumbMov(instruction);
-    }
-    else {
+    } else {
       if (top) {
         if (!isArmMovt(instruction))
           return llvm::make_error<GenericError>("expected movt instruction");
-      }
-      else {
+      } else {
         if (!isArmMovw(instruction))
           return llvm::make_error<GenericError>("expected movw instruction");
       }
@@ -848,7 +808,7 @@ ArchHandler_arm::getPairReferenceInfo(const normalized::Relocation &reloc1,
     else
       value = (other16 << 16) | instruction16;
     value = clearThumbBit(value, *target);
-    int64_t ta = (int64_t) value - (toAddress - fromAddress);
+    int64_t ta = (int64_t)value - (toAddress - fromAddress);
     *addend = ta - offsetInFrom;
     return llvm::Error::success();
   } else {
@@ -857,19 +817,16 @@ ArchHandler_arm::getPairReferenceInfo(const normalized::Relocation &reloc1,
       if (top) {
         if (!isThumbMovt(instruction))
           return llvm::make_error<GenericError>("expected movt instruction");
-      }
-      else {
+      } else {
         if (!isThumbMovw(instruction))
           return llvm::make_error<GenericError>("expected movw instruction");
       }
       instruction16 = getWordFromThumbMov(instruction);
-    }
-    else {
+    } else {
       if (top) {
         if (!isArmMovt(instruction))
           return llvm::make_error<GenericError>("expected movt instruction");
-      }
-      else {
+      } else {
         if (!isArmMovw(instruction))
           return llvm::make_error<GenericError>("expected movw instruction");
       }
@@ -904,8 +861,8 @@ ArchHandler_arm::getPairReferenceInfo(const normalized::Relocation &reloc1,
 void ArchHandler_arm::applyFixupFinal(const Reference &ref, uint8_t *loc,
                                       uint64_t fixupAddress,
                                       uint64_t targetAddress,
-                                      uint64_t inAtomAddress,
-                                      bool &thumbMode, bool targetIsThumb) {
+                                      uint64_t inAtomAddress, bool &thumbMode,
+                                      bool targetIsThumb) {
   if (ref.kindNamespace() != Reference::KindNamespace::mach_o)
     return;
   assert(ref.kindArch() == Reference::KindArch::ARM);
@@ -926,8 +883,8 @@ void ArchHandler_arm::applyFixupFinal(const Reference &ref, uint8_t *loc,
   case thumb_bl22:
     assert(thumbMode);
     displacement = (targetAddress - (fixupAddress + 4)) + ref.addend();
-    value32 = setDisplacementInThumbBranch(*loc32, fixupAddress,
-                                           displacement, targetIsThumb);
+    value32 = setDisplacementInThumbBranch(*loc32, fixupAddress, displacement,
+                                           targetIsThumb);
     *loc32 = value32;
     break;
   case thumb_movw:
@@ -956,7 +913,7 @@ void ArchHandler_arm::applyFixupFinal(const Reference &ref, uint8_t *loc,
     break;
   case arm_b24:
   case arm_bl24:
-   assert(!thumbMode);
+    assert(!thumbMode);
     displacement = (targetAddress - (fixupAddress + 8)) + ref.addend();
     value32 = setDisplacementInArmBranch(*loc32, displacement, targetIsThumb);
     *loc32 = value32;
@@ -1009,12 +966,10 @@ void ArchHandler_arm::applyFixupFinal(const Reference &ref, uint8_t *loc,
   }
 }
 
-void ArchHandler_arm::generateAtomContent(const DefinedAtom &atom,
-                                          bool relocatable,
-                                          FindAddressForAtom findAddress,
-                                          FindAddressForAtom findSectionAddress,
-                                          uint64_t imageBaseAddress,
-                            llvm::MutableArrayRef<uint8_t> atomContentBuffer) {
+void ArchHandler_arm::generateAtomContent(
+    const DefinedAtom &atom, bool relocatable, FindAddressForAtom findAddress,
+    FindAddressForAtom findSectionAddress, uint64_t imageBaseAddress,
+    llvm::MutableArrayRef<uint8_t> atomContentBuffer) {
   // Copy raw bytes.
   std::copy(atom.rawContent().begin(), atom.rawContent().end(),
             atomContentBuffer.begin());
@@ -1047,16 +1002,16 @@ bool ArchHandler_arm::useExternalRelocationTo(const Atom &target) {
   if (isa<UndefinedAtom>(&target))
     return true;
   if (const DefinedAtom *defAtom = dyn_cast<DefinedAtom>(&target)) {
-     switch (defAtom->merge()) {
-     case DefinedAtom::mergeAsTentative:
-       // Tentative definitions are referenced via external relocations.
-       return true;
-     case DefinedAtom::mergeAsWeak:
-     case DefinedAtom::mergeAsWeakAndAddressUsed:
-       // Global weak-defs are referenced via external relocations.
-       return (defAtom->scope() == DefinedAtom::scopeGlobal);
-     default:
-       break;
+    switch (defAtom->merge()) {
+    case DefinedAtom::mergeAsTentative:
+      // Tentative definitions are referenced via external relocations.
+      return true;
+    case DefinedAtom::mergeAsWeak:
+    case DefinedAtom::mergeAsWeakAndAddressUsed:
+      // Global weak-defs are referenced via external relocations.
+      return (defAtom->scope() == DefinedAtom::scopeGlobal);
+    default:
+      break;
     }
   }
   // Everything else is reference via an internal relocation.
@@ -1094,8 +1049,7 @@ void ArchHandler_arm::applyFixupRelocatable(const Reference &ref, uint8_t *loc,
       displacement = (ref.addend() - (fixupAddress + 4));
     else
       displacement = (targetAddress - (fixupAddress + 4)) + ref.addend();
-    value32 = setDisplacementInThumbBranch(*loc32, fixupAddress,
-                                           displacement,
+    value32 = setDisplacementInThumbBranch(*loc32, fixupAddress, displacement,
                                            targetIsUndef || targetIsThumb);
     *loc32 = value32;
     break;
@@ -1132,8 +1086,7 @@ void ArchHandler_arm::applyFixupRelocatable(const Reference &ref, uint8_t *loc,
       displacement = (ref.addend() - (fixupAddress + 8));
     else
       displacement = (targetAddress - (fixupAddress + 8)) + ref.addend();
-    value32 = setDisplacementInArmBranch(*loc32, displacement,
-                                         targetIsThumb);
+    value32 = setDisplacementInArmBranch(*loc32, displacement, targetIsThumb);
     *loc32 = value32;
     break;
   case arm_movw:
@@ -1179,13 +1132,10 @@ void ArchHandler_arm::applyFixupRelocatable(const Reference &ref, uint8_t *loc,
 }
 
 void ArchHandler_arm::appendSectionRelocations(
-                                   const DefinedAtom &atom,
-                                   uint64_t atomSectionOffset,
-                                   const Reference &ref,
-                                   FindSymbolIndexForAtom symbolIndexForAtom,
-                                   FindSectionIndexForAtom sectionIndexForAtom,
-                                   FindAddressForAtom addressForAtom,
-                                   normalized::Relocations &relocs) {
+    const DefinedAtom &atom, uint64_t atomSectionOffset, const Reference &ref,
+    FindSymbolIndexForAtom symbolIndexForAtom,
+    FindSectionIndexForAtom sectionIndexForAtom,
+    FindAddressForAtom addressForAtom, normalized::Relocations &relocs) {
   if (ref.kindNamespace() != Reference::KindNamespace::mach_o)
     return;
   assert(ref.kindArch() == Reference::KindArch::ARM);
@@ -1204,37 +1154,34 @@ void ArchHandler_arm::appendSectionRelocations(
   case thumb_bl22:
     if (useExternalReloc) {
       appendReloc(relocs, sectionOffset, symbolIndexForAtom(*ref.target()), 0,
-                  ARM_THUMB_RELOC_BR22 | rExtern    | rPcRel | rLength4);
+                  ARM_THUMB_RELOC_BR22 | rExtern | rPcRel | rLength4);
     } else {
       if (ref.addend() != 0)
         appendReloc(relocs, sectionOffset, 0, addressForAtom(*ref.target()),
-                  ARM_THUMB_RELOC_BR22 | rScattered | rPcRel | rLength4);
+                    ARM_THUMB_RELOC_BR22 | rScattered | rPcRel | rLength4);
       else
-        appendReloc(relocs, sectionOffset, sectionIndexForAtom(*ref.target()),0,
-                  ARM_THUMB_RELOC_BR22 |              rPcRel | rLength4);
+        appendReloc(relocs, sectionOffset, sectionIndexForAtom(*ref.target()),
+                    0, ARM_THUMB_RELOC_BR22 | rPcRel | rLength4);
     }
     break;
   case thumb_movw:
     if (useExternalReloc) {
       other16 = ref.addend() >> 16;
       appendReloc(relocs, sectionOffset, symbolIndexForAtom(*ref.target()), 0,
-                  ARM_RELOC_HALF | rExtern    | rLenThmbLo);
-      appendReloc(relocs, other16, 0, 0,
-                  ARM_RELOC_PAIR              | rLenThmbLo);
+                  ARM_RELOC_HALF | rExtern | rLenThmbLo);
+      appendReloc(relocs, other16, 0, 0, ARM_RELOC_PAIR | rLenThmbLo);
     } else {
       targetAtomAddress = addressForAtom(*ref.target());
       if (ref.addend() != 0) {
         other16 = (targetAtomAddress + ref.addend()) >> 16;
         appendReloc(relocs, sectionOffset, 0, targetAtomAddress,
-                  ARM_RELOC_HALF | rScattered | rLenThmbLo);
-        appendReloc(relocs, other16, 0, 0,
-                  ARM_RELOC_PAIR              | rLenThmbLo);
+                    ARM_RELOC_HALF | rScattered | rLenThmbLo);
+        appendReloc(relocs, other16, 0, 0, ARM_RELOC_PAIR | rLenThmbLo);
       } else {
         other16 = (targetAtomAddress + ref.addend()) >> 16;
-        appendReloc(relocs, sectionOffset, sectionIndexForAtom(*ref.target()),0,
-                  ARM_RELOC_HALF              | rLenThmbLo);
-        appendReloc(relocs, other16, 0, 0,
-                  ARM_RELOC_PAIR              | rLenThmbLo);
+        appendReloc(relocs, sectionOffset, sectionIndexForAtom(*ref.target()),
+                    0, ARM_RELOC_HALF | rLenThmbLo);
+        appendReloc(relocs, other16, 0, 0, ARM_RELOC_PAIR | rLenThmbLo);
       }
     }
     break;
@@ -1242,23 +1189,20 @@ void ArchHandler_arm::appendSectionRelocations(
     if (useExternalReloc) {
       other16 = ref.addend() & 0xFFFF;
       appendReloc(relocs, sectionOffset, symbolIndexForAtom(*ref.target()), 0,
-                  ARM_RELOC_HALF | rExtern    | rLenThmbHi);
-      appendReloc(relocs, other16, 0, 0,
-                  ARM_RELOC_PAIR              | rLenThmbHi);
+                  ARM_RELOC_HALF | rExtern | rLenThmbHi);
+      appendReloc(relocs, other16, 0, 0, ARM_RELOC_PAIR | rLenThmbHi);
     } else {
       targetAtomAddress = addressForAtom(*ref.target());
       if (ref.addend() != 0) {
         other16 = (targetAtomAddress + ref.addend()) & 0xFFFF;
         appendReloc(relocs, sectionOffset, 0, targetAtomAddress,
                     ARM_RELOC_HALF | rScattered | rLenThmbHi);
-        appendReloc(relocs, other16, 0, 0,
-                    ARM_RELOC_PAIR              | rLenThmbHi);
+        appendReloc(relocs, other16, 0, 0, ARM_RELOC_PAIR | rLenThmbHi);
       } else {
         other16 = (targetAtomAddress + ref.addend()) & 0xFFFF;
-        appendReloc(relocs, sectionOffset, sectionIndexForAtom(*ref.target()),0,
-                    ARM_RELOC_HALF              | rLenThmbHi);
-        appendReloc(relocs, other16, 0, 0,
-                    ARM_RELOC_PAIR              | rLenThmbHi);
+        appendReloc(relocs, sectionOffset, sectionIndexForAtom(*ref.target()),
+                    0, ARM_RELOC_HALF | rLenThmbHi);
+        appendReloc(relocs, other16, 0, 0, ARM_RELOC_PAIR | rLenThmbHi);
       }
     }
     break;
@@ -1269,7 +1213,7 @@ void ArchHandler_arm::appendSectionRelocations(
     appendReloc(relocs, sectionOffset, 0, targetAtomAddress,
                 ARM_RELOC_HALF_SECTDIFF | rScattered | rLenThmbLo);
     appendReloc(relocs, other16, 0, fromAtomAddress,
-                ARM_RELOC_PAIR          | rScattered | rLenThmbLo);
+                ARM_RELOC_PAIR | rScattered | rLenThmbLo);
     break;
   case thumb_movt_funcRel:
     fromAtomAddress = addressForAtom(atom);
@@ -1278,43 +1222,40 @@ void ArchHandler_arm::appendSectionRelocations(
     appendReloc(relocs, sectionOffset, 0, targetAtomAddress,
                 ARM_RELOC_HALF_SECTDIFF | rScattered | rLenThmbHi);
     appendReloc(relocs, other16, 0, fromAtomAddress,
-                ARM_RELOC_PAIR          | rScattered | rLenThmbHi);
+                ARM_RELOC_PAIR | rScattered | rLenThmbHi);
     break;
   case arm_b24:
   case arm_bl24:
     if (useExternalReloc) {
       appendReloc(relocs, sectionOffset, symbolIndexForAtom(*ref.target()), 0,
-                  ARM_RELOC_BR24 | rExtern    | rPcRel | rLength4);
+                  ARM_RELOC_BR24 | rExtern | rPcRel | rLength4);
     } else {
       if (ref.addend() != 0)
         appendReloc(relocs, sectionOffset, 0, addressForAtom(*ref.target()),
-                  ARM_RELOC_BR24 | rScattered | rPcRel | rLength4);
+                    ARM_RELOC_BR24 | rScattered | rPcRel | rLength4);
       else
-        appendReloc(relocs, sectionOffset, sectionIndexForAtom(*ref.target()),0,
-                  ARM_RELOC_BR24 |              rPcRel | rLength4);
+        appendReloc(relocs, sectionOffset, sectionIndexForAtom(*ref.target()),
+                    0, ARM_RELOC_BR24 | rPcRel | rLength4);
     }
     break;
   case arm_movw:
     if (useExternalReloc) {
       other16 = ref.addend() >> 16;
       appendReloc(relocs, sectionOffset, symbolIndexForAtom(*ref.target()), 0,
-                  ARM_RELOC_HALF | rExtern    | rLenArmLo);
-      appendReloc(relocs, other16, 0, 0,
-                  ARM_RELOC_PAIR              | rLenArmLo);
+                  ARM_RELOC_HALF | rExtern | rLenArmLo);
+      appendReloc(relocs, other16, 0, 0, ARM_RELOC_PAIR | rLenArmLo);
     } else {
       targetAtomAddress = addressForAtom(*ref.target());
       if (ref.addend() != 0) {
         other16 = (targetAtomAddress + ref.addend()) >> 16;
         appendReloc(relocs, sectionOffset, 0, targetAtomAddress,
-                  ARM_RELOC_HALF | rScattered | rLenArmLo);
-        appendReloc(relocs, other16, 0, 0,
-                  ARM_RELOC_PAIR              | rLenArmLo);
+                    ARM_RELOC_HALF | rScattered | rLenArmLo);
+        appendReloc(relocs, other16, 0, 0, ARM_RELOC_PAIR | rLenArmLo);
       } else {
         other16 = (targetAtomAddress + ref.addend()) >> 16;
-        appendReloc(relocs, sectionOffset, sectionIndexForAtom(*ref.target()),0,
-                  ARM_RELOC_HALF              | rLenArmLo);
-        appendReloc(relocs, other16, 0, 0,
-                  ARM_RELOC_PAIR              | rLenArmLo);
+        appendReloc(relocs, sectionOffset, sectionIndexForAtom(*ref.target()),
+                    0, ARM_RELOC_HALF | rLenArmLo);
+        appendReloc(relocs, other16, 0, 0, ARM_RELOC_PAIR | rLenArmLo);
       }
     }
     break;
@@ -1322,23 +1263,20 @@ void ArchHandler_arm::appendSectionRelocations(
     if (useExternalReloc) {
       other16 = ref.addend() & 0xFFFF;
       appendReloc(relocs, sectionOffset, symbolIndexForAtom(*ref.target()), 0,
-                  ARM_RELOC_HALF | rExtern    | rLenArmHi);
-      appendReloc(relocs, other16, 0, 0,
-                  ARM_RELOC_PAIR              | rLenArmHi);
+                  ARM_RELOC_HALF | rExtern | rLenArmHi);
+      appendReloc(relocs, other16, 0, 0, ARM_RELOC_PAIR | rLenArmHi);
     } else {
       targetAtomAddress = addressForAtom(*ref.target());
       if (ref.addend() != 0) {
         other16 = (targetAtomAddress + ref.addend()) & 0xFFFF;
         appendReloc(relocs, sectionOffset, 0, targetAtomAddress,
-                  ARM_RELOC_HALF | rScattered | rLenArmHi);
-        appendReloc(relocs, other16, 0, 0,
-                  ARM_RELOC_PAIR              | rLenArmHi);
+                    ARM_RELOC_HALF | rScattered | rLenArmHi);
+        appendReloc(relocs, other16, 0, 0, ARM_RELOC_PAIR | rLenArmHi);
       } else {
         other16 = (targetAtomAddress + ref.addend()) & 0xFFFF;
-        appendReloc(relocs, sectionOffset, sectionIndexForAtom(*ref.target()),0,
-                  ARM_RELOC_HALF              | rLenArmHi);
-        appendReloc(relocs, other16, 0, 0,
-                  ARM_RELOC_PAIR              | rLenArmHi);
+        appendReloc(relocs, sectionOffset, sectionIndexForAtom(*ref.target()),
+                    0, ARM_RELOC_HALF | rLenArmHi);
+        appendReloc(relocs, other16, 0, 0, ARM_RELOC_PAIR | rLenArmHi);
       }
     }
     break;
@@ -1349,7 +1287,7 @@ void ArchHandler_arm::appendSectionRelocations(
     appendReloc(relocs, sectionOffset, 0, targetAtomAddress,
                 ARM_RELOC_HALF_SECTDIFF | rScattered | rLenArmLo);
     appendReloc(relocs, other16, 0, fromAtomAddress,
-                ARM_RELOC_PAIR          | rScattered | rLenArmLo);
+                ARM_RELOC_PAIR | rScattered | rLenArmLo);
     break;
   case arm_movt_funcRel:
     fromAtomAddress = addressForAtom(atom);
@@ -1358,28 +1296,27 @@ void ArchHandler_arm::appendSectionRelocations(
     appendReloc(relocs, sectionOffset, 0, targetAtomAddress,
                 ARM_RELOC_HALF_SECTDIFF | rScattered | rLenArmHi);
     appendReloc(relocs, other16, 0, fromAtomAddress,
-                ARM_RELOC_PAIR          | rScattered | rLenArmHi);
+                ARM_RELOC_PAIR | rScattered | rLenArmHi);
     break;
   case pointer32:
     if (useExternalReloc) {
-      appendReloc(relocs, sectionOffset, symbolIndexForAtom(*ref.target()),  0,
-                ARM_RELOC_VANILLA |    rExtern     |  rLength4);
-    }
-    else {
+      appendReloc(relocs, sectionOffset, symbolIndexForAtom(*ref.target()), 0,
+                  ARM_RELOC_VANILLA | rExtern | rLength4);
+    } else {
       if (ref.addend() != 0)
         appendReloc(relocs, sectionOffset, 0, addressForAtom(*ref.target()),
-                ARM_RELOC_VANILLA |    rScattered  |  rLength4);
+                    ARM_RELOC_VANILLA | rScattered | rLength4);
       else
-        appendReloc(relocs, sectionOffset, sectionIndexForAtom(*ref.target()),0,
-                ARM_RELOC_VANILLA |                   rLength4);
+        appendReloc(relocs, sectionOffset, sectionIndexForAtom(*ref.target()),
+                    0, ARM_RELOC_VANILLA | rLength4);
     }
     break;
   case delta32:
     appendReloc(relocs, sectionOffset, 0, addressForAtom(*ref.target()),
-              ARM_RELOC_SECTDIFF  |  rScattered    | rLength4);
-    appendReloc(relocs, sectionOffset, 0, addressForAtom(atom) +
-                                                           ref.offsetInAtom(),
-              ARM_RELOC_PAIR      |  rScattered    | rLength4);
+                ARM_RELOC_SECTDIFF | rScattered | rLength4);
+    appendReloc(relocs, sectionOffset, 0,
+                addressForAtom(atom) + ref.offsetInAtom(),
+                ARM_RELOC_PAIR | rScattered | rLength4);
     break;
   case lazyPointer:
   case lazyImmediateLocation:
@@ -1427,33 +1364,28 @@ public:
 
   ~Thumb2ToArmShimAtom() override = default;
 
-  StringRef name() const override {
-    return _name;
-  }
+  StringRef name() const override { return _name; }
 
-  ContentType contentType() const override {
-    return DefinedAtom::typeCode;
-  }
+  ContentType contentType() const override { return DefinedAtom::typeCode; }
 
   Alignment alignment() const override { return 4; }
 
-  uint64_t size() const override {
-    return 12;
-  }
+  uint64_t size() const override { return 12; }
 
   ContentPermissions permissions() const override {
     return DefinedAtom::permR_X;
   }
 
   ArrayRef<uint8_t> rawContent() const override {
-    static const uint8_t bytes[] =
-    { 0xDF, 0xF8, 0x04, 0xC0,       //  ldr ip, pc + 4
-      0xFF, 0x44,                   //  add ip, pc, ip
-      0x60, 0x47,                   //  ldr pc, [ip]
-      0x00, 0x00, 0x00, 0x00 };     //  .long target - this
+    static const uint8_t bytes[] = {
+        0xDF, 0xF8, 0x04, 0xC0,  //  ldr ip, pc + 4
+        0xFF, 0x44,              //  add ip, pc, ip
+        0x60, 0x47,              //  ldr pc, [ip]
+        0x00, 0x00, 0x00, 0x00}; //  .long target - this
     assert(sizeof(bytes) == size());
     return llvm::makeArrayRef(bytes, sizeof(bytes));
   }
+
 private:
   StringRef _name;
 };
@@ -1472,39 +1404,33 @@ public:
 
   ~ArmToThumbShimAtom() override = default;
 
-  StringRef name() const override {
-    return _name;
-  }
+  StringRef name() const override { return _name; }
 
-  ContentType contentType() const override {
-    return DefinedAtom::typeCode;
-  }
+  ContentType contentType() const override { return DefinedAtom::typeCode; }
 
   Alignment alignment() const override { return 4; }
 
-  uint64_t size() const override {
-    return 16;
-  }
+  uint64_t size() const override { return 16; }
 
   ContentPermissions permissions() const override {
     return DefinedAtom::permR_X;
   }
 
   ArrayRef<uint8_t> rawContent() const override {
-    static const uint8_t bytes[] =
-    { 0x04, 0xC0, 0x9F, 0xE5,       //  ldr ip, pc + 4
-      0x0C, 0xC0, 0x8F, 0xE0,       //  add ip, pc, ip
-      0x1C, 0xFF, 0x2F, 0xE1,       //  ldr pc, [ip]
-      0x00, 0x00, 0x00, 0x00 };     //  .long target - this
+    static const uint8_t bytes[] = {
+        0x04, 0xC0, 0x9F, 0xE5,  //  ldr ip, pc + 4
+        0x0C, 0xC0, 0x8F, 0xE0,  //  add ip, pc, ip
+        0x1C, 0xFF, 0x2F, 0xE1,  //  ldr pc, [ip]
+        0x00, 0x00, 0x00, 0x00}; //  .long target - this
     assert(sizeof(bytes) == size());
     return llvm::makeArrayRef(bytes, sizeof(bytes));
   }
+
 private:
   StringRef _name;
 };
 
-const DefinedAtom *ArchHandler_arm::createShim(MachOFile &file,
-                                               bool thumbToArm,
+const DefinedAtom *ArchHandler_arm::createShim(MachOFile &file, bool thumbToArm,
                                                const DefinedAtom &target) {
   bool isStub = (target.contentType() == DefinedAtom::typeStub);
   StringRef targetName = isStub ? stubName(target) : target.name();

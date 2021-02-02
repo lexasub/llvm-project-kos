@@ -9,7 +9,9 @@
 // The Microsoft ABI doesn't have the concept of key functions, so we have different
 // expectations about when functions are first required for that case.
 
-class NoDestroy { ~NoDestroy(); };
+class NoDestroy {
+  ~NoDestroy();
+};
 #if __cplusplus <= 199711L
 // expected-note@-2 3 {{declared private here}}
 #ifdef MSABI
@@ -109,7 +111,6 @@ struct F : public E {
 #endif
 #endif
 };
-
 
 struct G : public virtual F {
 #ifdef MSABI

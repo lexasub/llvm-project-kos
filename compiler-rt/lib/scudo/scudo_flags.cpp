@@ -14,12 +14,12 @@
 #include "scudo_interface_internal.h"
 #include "scudo_utils.h"
 
-#include "sanitizer_common/sanitizer_flags.h"
 #include "sanitizer_common/sanitizer_flag_parser.h"
+#include "sanitizer_common/sanitizer_flags.h"
 
 namespace __scudo {
 
-static Flags ScudoFlags;  // Use via getFlags().
+static Flags ScudoFlags; // Use via getFlags().
 
 void Flags::setDefaults() {
 #define SCUDO_FLAG(Type, Name, DefaultValue, Description) Name = DefaultValue;
@@ -28,7 +28,7 @@ void Flags::setDefaults() {
 }
 
 static void RegisterScudoFlags(FlagParser *parser, Flags *f) {
-#define SCUDO_FLAG(Type, Name, DefaultValue, Description) \
+#define SCUDO_FLAG(Type, Name, DefaultValue, Description)                      \
   RegisterFlag(parser, #Name, Description, &f->Name);
 #include "scudo_flags.inc"
 #undef SCUDO_FLAG
@@ -78,10 +78,11 @@ void initFlags() {
     // Backward compatible logic if QuarantineSizeMb is set.
     if (f->QuarantineSizeKb >= 0) {
       dieWithMessage("ERROR: please use either QuarantineSizeMb (deprecated) "
-          "or QuarantineSizeKb, but not both\n");
+                     "or QuarantineSizeKb, but not both\n");
     }
     if (f->QuarantineChunksUpToSize >= 0) {
-      dieWithMessage("ERROR: QuarantineChunksUpToSize cannot be used in "
+      dieWithMessage(
+          "ERROR: QuarantineChunksUpToSize cannot be used in "
           " conjunction with the deprecated QuarantineSizeMb option\n");
     }
     // If everything is in order, update QuarantineSizeKb accordingly.
@@ -115,22 +116,20 @@ void initFlags() {
   // And an upper limit of 8Mb for the thread quarantine cache.
   if (f->ThreadLocalQuarantineSizeKb > (8 * 1024)) {
     dieWithMessage("ERROR: the per thread quarantine cache size is too "
-        "large\n");
+                   "large\n");
   }
   if (f->ThreadLocalQuarantineSizeKb == 0 && f->QuarantineSizeKb > 0) {
     dieWithMessage("ERROR: ThreadLocalQuarantineSizeKb can be set to 0 only "
-        "when QuarantineSizeKb is set to 0\n");
+                   "when QuarantineSizeKb is set to 0\n");
   }
 }
 
-Flags *getFlags() {
-  return &ScudoFlags;
-}
+Flags *getFlags() { return &ScudoFlags; }
 
-}  // namespace __scudo
+} // namespace __scudo
 
 #if !SANITIZER_SUPPORTS_WEAK_HOOKS
-SANITIZER_INTERFACE_WEAK_DEF(const char*, __scudo_default_options, void) {
+SANITIZER_INTERFACE_WEAK_DEF(const char *, __scudo_default_options, void) {
   return "";
 }
 #endif

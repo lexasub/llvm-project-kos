@@ -13,7 +13,6 @@
 #include <sys/types.h>
 #endif
 
-
 #include "lldb/Core/Module.h"
 #include "lldb/Core/StreamFile.h"
 #include "lldb/Expression/DiagnosticManager.h"

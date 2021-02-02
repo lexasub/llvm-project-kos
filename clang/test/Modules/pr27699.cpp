@@ -6,4 +6,3 @@
 #include "Subdir/b.h"
 
 // expected-no-diagnostics
-

@@ -44,7 +44,7 @@ using namespace llvm;
 static mc::RegisterMCTargetOptionsFlags MOF;
 
 static cl::opt<std::string>
-InputFilename(cl::Positional, cl::desc("<input file>"), cl::init("-"));
+    InputFilename(cl::Positional, cl::desc("<input file>"), cl::init("-"));
 
 static cl::opt<std::string> OutputFilename("o", cl::desc("Output filename"),
                                            cl::value_desc("filename"),
@@ -54,8 +54,8 @@ static cl::opt<std::string> SplitDwarfFile("split-dwarf-file",
                                            cl::desc("DWO output filename"),
                                            cl::value_desc("filename"));
 
-static cl::opt<bool>
-ShowEncoding("show-encoding", cl::desc("Show instruction encodings"));
+static cl::opt<bool> ShowEncoding("show-encoding",
+                                  cl::desc("Show instruction encodings"));
 
 static cl::opt<bool> RelaxELFRel(
     "relax-relocations", cl::init(true),
@@ -72,66 +72,61 @@ static cl::opt<DebugCompressionType> CompressDebugSections(
                           "Use zlib-gnu compression (deprecated)")));
 
 static cl::opt<bool>
-ShowInst("show-inst", cl::desc("Show internal instruction representation"));
+    ShowInst("show-inst", cl::desc("Show internal instruction representation"));
 
 static cl::opt<bool>
-ShowInstOperands("show-inst-operands",
-                 cl::desc("Show instructions operands as parsed"));
+    ShowInstOperands("show-inst-operands",
+                     cl::desc("Show instructions operands as parsed"));
 
 static cl::opt<unsigned>
-OutputAsmVariant("output-asm-variant",
-                 cl::desc("Syntax variant to use for output printing"));
+    OutputAsmVariant("output-asm-variant",
+                     cl::desc("Syntax variant to use for output printing"));
 
 static cl::opt<bool>
-PrintImmHex("print-imm-hex", cl::init(false),
-            cl::desc("Prefer hex format for immediate values"));
+    PrintImmHex("print-imm-hex", cl::init(false),
+                cl::desc("Prefer hex format for immediate values"));
 
 static cl::list<std::string>
-DefineSymbol("defsym", cl::desc("Defines a symbol to be an integer constant"));
+    DefineSymbol("defsym",
+                 cl::desc("Defines a symbol to be an integer constant"));
 
 static cl::opt<bool>
     PreserveComments("preserve-comments",
                      cl::desc("Preserve Comments in outputted assembly"));
 
-enum OutputFileType {
-  OFT_Null,
-  OFT_AssemblyFile,
-  OFT_ObjectFile
-};
+enum OutputFileType { OFT_Null, OFT_AssemblyFile, OFT_ObjectFile };
 static cl::opt<OutputFileType>
-FileType("filetype", cl::init(OFT_AssemblyFile),
-  cl::desc("Choose an output file type:"),
-  cl::values(
-       clEnumValN(OFT_AssemblyFile, "asm",
-                  "Emit an assembly ('.s') file"),
-       clEnumValN(OFT_Null, "null",
-                  "Don't emit anything (for timing purposes)"),
-       clEnumValN(OFT_ObjectFile, "obj",
-                  "Emit a native object ('.o') file")));
+    FileType("filetype", cl::init(OFT_AssemblyFile),
+             cl::desc("Choose an output file type:"),
+             cl::values(clEnumValN(OFT_AssemblyFile, "asm",
+                                   "Emit an assembly ('.s') file"),
+                        clEnumValN(OFT_Null, "null",
+                                   "Don't emit anything (for timing purposes)"),
+                        clEnumValN(OFT_ObjectFile, "obj",
+                                   "Emit a native object ('.o') file")));
 
-static cl::list<std::string>
-IncludeDirs("I", cl::desc("Directory of include files"),
-            cl::value_desc("directory"), cl::Prefix);
-
-static cl::opt<std::string>
-ArchName("arch", cl::desc("Target arch to assemble for, "
-                          "see -version for available targets"));
+static cl::list<std::string> IncludeDirs("I",
+                                         cl::desc("Directory of include files"),
+                                         cl::value_desc("directory"),
+                                         cl::Prefix);
 
 static cl::opt<std::string>
-TripleName("triple", cl::desc("Target triple to assemble for, "
+    ArchName("arch", cl::desc("Target arch to assemble for, "
                               "see -version for available targets"));
 
 static cl::opt<std::string>
-MCPU("mcpu",
-     cl::desc("Target a specific cpu type (-mcpu=help for details)"),
-     cl::value_desc("cpu-name"),
-     cl::init(""));
+    TripleName("triple", cl::desc("Target triple to assemble for, "
+                                  "see -version for available targets"));
+
+static cl::opt<std::string>
+    MCPU("mcpu",
+         cl::desc("Target a specific cpu type (-mcpu=help for details)"),
+         cl::value_desc("cpu-name"), cl::init(""));
 
 static cl::list<std::string>
-MAttrs("mattr",
-  cl::CommaSeparated,
-  cl::desc("Target specific attributes (-mattr=help for details)"),
-  cl::value_desc("a1,+a2,-a3,..."));
+    MAttrs("mattr", cl::CommaSeparated,
+           cl::desc("Target specific attributes (-mattr=help for details)"),
+           cl::value_desc("a1,+a2,-a3,..."));
 
 static cl::opt<bool> PIC("position-independent",
                          cl::desc("Position independent"), cl::init(false));
@@ -142,25 +137,26 @@ static cl::opt<bool>
                             "be more than 2gb away"));
 
 static cl::opt<bool>
-NoInitialTextSection("n", cl::desc("Don't assume assembly file starts "
-                                   "in the text section"));
+    NoInitialTextSection("n", cl::desc("Don't assume assembly file starts "
+                                       "in the text section"));
 
 static cl::opt<bool>
-GenDwarfForAssembly("g", cl::desc("Generate dwarf debugging info for assembly "
-                                  "source files"));
+    GenDwarfForAssembly("g",
+                        cl::desc("Generate dwarf debugging info for assembly "
+                                 "source files"));
 
 static cl::opt<std::string>
-DebugCompilationDir("fdebug-compilation-dir",
-                    cl::desc("Specifies the debug info's compilation dir"));
+    DebugCompilationDir("fdebug-compilation-dir",
+                        cl::desc("Specifies the debug info's compilation dir"));
 
 static cl::list<std::string>
-DebugPrefixMap("fdebug-prefix-map",
-               cl::desc("Map file source paths in debug info"),
-               cl::value_desc("= separated key-value pairs"));
+    DebugPrefixMap("fdebug-prefix-map",
+                   cl::desc("Map file source paths in debug info"),
+                   cl::value_desc("= separated key-value pairs"));
 
-static cl::opt<std::string>
-MainFileName("main-file-name",
-             cl::desc("Specifies the name we should consider the input file"));
+static cl::opt<std::string> MainFileName(
+    "main-file-name",
+    cl::desc("Specifies the name we should consider the input file"));
 
 static cl::opt<bool> SaveTempLabels("save-temp-labels",
                                     cl::desc("Don't discard temporary labels"));
@@ -183,17 +179,15 @@ enum ActionType {
   AC_MDisassemble,
 };
 
-static cl::opt<ActionType>
-Action(cl::desc("Action to perform:"),
-       cl::init(AC_Assemble),
-       cl::values(clEnumValN(AC_AsLex, "as-lex",
-                             "Lex tokens from a .s file"),
-                  clEnumValN(AC_Assemble, "assemble",
-                             "Assemble a .s file (default)"),
-                  clEnumValN(AC_Disassemble, "disassemble",
-                             "Disassemble strings of hex bytes"),
-                  clEnumValN(AC_MDisassemble, "mdis",
-                             "Marked up disassembly of strings of hex bytes")));
+static cl::opt<ActionType> Action(
+    cl::desc("Action to perform:"), cl::init(AC_Assemble),
+    cl::values(clEnumValN(AC_AsLex, "as-lex", "Lex tokens from a .s file"),
+               clEnumValN(AC_Assemble, "assemble",
+                          "Assemble a .s file (default)"),
+               clEnumValN(AC_Disassemble, "disassemble",
+                          "Disassemble strings of hex bytes"),
+               clEnumValN(AC_MDisassemble, "mdis",
+                          "Marked up disassembly of strings of hex bytes")));
 
 static const Target *GetTarget(const char *ProgName) {
   // Figure out the target triple.
@@ -203,8 +197,8 @@ static const Target *GetTarget(const char *ProgName) {
 
   // Get the target specific parser.
   std::string Error;
-  const Target *TheTarget = TargetRegistry::lookupTarget(ArchName, TheTriple,
-                                                         Error);
+  const Target *TheTarget =
+      TargetRegistry::lookupTarget(ArchName, TheTriple, Error);
   if (!TheTarget) {
     WithColor::error(errs(), ProgName) << Error;
     return nullptr;
@@ -215,8 +209,8 @@ static const Target *GetTarget(const char *ProgName) {
   return TheTarget;
 }
 
-static std::unique_ptr<ToolOutputFile> GetOutputStream(StringRef Path,
-    sys::fs::OpenFlags Flags) {
+static std::unique_ptr<ToolOutputFile>
+GetOutputStream(StringRef Path, sys::fs::OpenFlags Flags) {
   std::error_code EC;
   auto Out = std::make_unique<ToolOutputFile>(Path, EC, Flags);
   if (EC) {
@@ -240,13 +234,12 @@ static void setDwarfDebugFlags(int argc, char **argv) {
 
 static std::string DwarfDebugProducer;
 static void setDwarfDebugProducer() {
-  if(!getenv("DEBUG_PRODUCER"))
+  if (!getenv("DEBUG_PRODUCER"))
     return;
   DwarfDebugProducer += getenv("DEBUG_PRODUCER");
 }
 
-static int AsLexInput(SourceMgr &SrcMgr, MCAsmInfo &MAI,
-                      raw_ostream &OS) {
+static int AsLexInput(SourceMgr &SrcMgr, MCAsmInfo &MAI, raw_ostream &OS) {
 
   AsmLexer Lexer(MAI);
   Lexer.setBuffer(SrcMgr.getMemoryBuffer(SrcMgr.getMainFileID())->getBuffer());
@@ -263,7 +256,7 @@ static int AsLexInput(SourceMgr &SrcMgr, MCAsmInfo &MAI,
 }
 
 static int fillCommandLineSymbols(MCAsmParser &Parser) {
-  for (auto &I: DefineSymbol) {
+  for (auto &I : DefineSymbol) {
     auto Pair = StringRef(I).split('=');
     auto Sym = Pair.first;
     auto Val = Pair.second;
@@ -287,8 +280,7 @@ static int AssembleInput(const char *ProgName, const Target *TheTarget,
                          SourceMgr &SrcMgr, MCContext &Ctx, MCStreamer &Str,
                          MCAsmInfo &MAI, MCSubtargetInfo &STI,
                          MCInstrInfo &MCII, MCTargetOptions const &MCOptions) {
-  std::unique_ptr<MCAsmParser> Parser(
-      createMCAsmParser(SrcMgr, Ctx, Str, MAI));
+  std::unique_ptr<MCAsmParser> Parser(createMCAsmParser(SrcMgr, Ctx, Str, MAI));
   std::unique_ptr<MCTargetAsmParser> TAP(
       TheTarget->createMCAsmParser(STI, *Parser, MCII, MCOptions));
 
@@ -299,7 +291,7 @@ static int AssembleInput(const char *ProgName, const Target *TheTarget,
   }
 
   int SymbolResult = fillCommandLineSymbols(*Parser);
-  if(SymbolResult)
+  if (SymbolResult)
     return SymbolResult;
   Parser->setShowParsedOperands(ShowInstOperands);
   Parser->setTargetParser(*TAP);
@@ -447,8 +439,8 @@ int main(int argc, char **argv) {
     FeaturesStr = Features.getString();
   }
 
-  sys::fs::OpenFlags Flags = (FileType == OFT_AssemblyFile) ? sys::fs::OF_Text
-                                                            : sys::fs::OF_None;
+  sys::fs::OpenFlags Flags =
+      (FileType == OFT_AssemblyFile) ? sys::fs::OF_Text : sys::fs::OF_None;
   std::unique_ptr<ToolOutputFile> Out = GetOutputStream(OutputFilename, Flags);
   if (!Out)
     return 1;

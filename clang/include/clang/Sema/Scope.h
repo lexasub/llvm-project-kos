@@ -44,11 +44,11 @@ public:
   enum ScopeFlags {
     /// This indicates that the scope corresponds to a function, which
     /// means that labels are set here.
-    FnScope       = 0x01,
+    FnScope = 0x01,
 
     /// This is a while, do, switch, for, etc that can have break
     /// statements embedded into it.
-    BreakScope    = 0x02,
+    BreakScope = 0x02,
 
     /// This is a while, do, for, which can have continue statements
     /// embedded into it.
@@ -129,7 +129,8 @@ public:
     /// This is a compound statement scope.
     CompoundStmtScope = 0x400000,
 
-    /// We are between inheritance colon and the real class/struct definition scope.
+    /// We are between inheritance colon and the real class/struct definition
+    /// scope.
     ClassInheritanceScope = 0x800000,
 
     /// This is the scope of a C++ catch statement.
@@ -232,28 +233,22 @@ public:
   const Scope *getFnParent() const { return FnParent; }
   Scope *getFnParent() { return FnParent; }
 
-  const Scope *getMSLastManglingParent() const {
-    return MSLastManglingParent;
-  }
+  const Scope *getMSLastManglingParent() const { return MSLastManglingParent; }
   Scope *getMSLastManglingParent() { return MSLastManglingParent; }
 
   /// getContinueParent - Return the closest scope that a continue statement
   /// would be affected by.
-  Scope *getContinueParent() {
-    return ContinueParent;
-  }
+  Scope *getContinueParent() { return ContinueParent; }
 
   const Scope *getContinueParent() const {
-    return const_cast<Scope*>(this)->getContinueParent();
+    return const_cast<Scope *>(this)->getContinueParent();
   }
 
   /// getBreakParent - Return the closest scope that a break statement
   /// would be affected by.
-  Scope *getBreakParent() {
-    return BreakParent;
-  }
+  Scope *getBreakParent() { return BreakParent; }
   const Scope *getBreakParent() const {
-    return const_cast<Scope*>(this)->getBreakParent();
+    return const_cast<Scope *>(this)->getBreakParent();
   }
 
   Scope *getBlockParent() { return BlockParent; }
@@ -267,9 +262,7 @@ public:
 
   /// Returns the number of function prototype scopes in this scope
   /// chain.
-  unsigned getFunctionPrototypeDepth() const {
-    return PrototypeDepth;
-  }
+  unsigned getFunctionPrototypeDepth() const { return PrototypeDepth; }
 
   /// Return the number of parameters declared in this function
   /// prototype, increasing it by one for the next call.
@@ -286,13 +279,9 @@ public:
 
   bool decl_empty() const { return DeclsInScope.empty(); }
 
-  void AddDecl(Decl *D) {
-    DeclsInScope.insert(D);
-  }
+  void AddDecl(Decl *D) { DeclsInScope.insert(D); }
 
-  void RemoveDecl(Decl *D) {
-    DeclsInScope.erase(D);
-  }
+  void RemoveDecl(Decl *D) { DeclsInScope.erase(D); }
 
   void incrementMSManglingNumber() {
     if (Scope *MSLMP = getMSLastManglingParent()) {
@@ -314,9 +303,7 @@ public:
     return 1;
   }
 
-  unsigned getMSCurManglingNumber() const {
-    return MSCurManglingNumber;
-  }
+  unsigned getMSCurManglingNumber() const { return MSCurManglingNumber; }
 
   /// isDeclScope - Return true if this is the scope that the specified decl is
   /// declared in.
@@ -350,9 +337,7 @@ public:
   bool isFunctionScope() const { return (getFlags() & Scope::FnScope); }
 
   /// isClassScope - Return true if this scope is a class/struct/union scope.
-  bool isClassScope() const {
-    return (getFlags() & Scope::ClassScope);
-  }
+  bool isClassScope() const { return (getFlags() & Scope::ClassScope); }
 
   /// isInCXXInlineMethodScope - Return true if this scope is a C++ inline
   /// method scope or is inside one.
@@ -405,19 +390,17 @@ public:
   }
 
   /// isAtCatchScope - Return true if this scope is \@catch.
-  bool isAtCatchScope() const {
-    return getFlags() & Scope::AtCatchScope;
-  }
+  bool isAtCatchScope() const { return getFlags() & Scope::AtCatchScope; }
 
   /// isSwitchScope - Return true if this scope is a switch scope.
   bool isSwitchScope() const {
     for (const Scope *S = this; S; S = S->getParent()) {
       if (S->getFlags() & Scope::SwitchScope)
         return true;
-      else if (S->getFlags() & (Scope::FnScope | Scope::ClassScope |
-                                Scope::BlockScope | Scope::TemplateParamScope |
-                                Scope::FunctionPrototypeScope |
-                                Scope::AtCatchScope | Scope::ObjCMethodScope))
+      else if (S->getFlags() &
+               (Scope::FnScope | Scope::ClassScope | Scope::BlockScope |
+                Scope::TemplateParamScope | Scope::FunctionPrototypeScope |
+                Scope::AtCatchScope | Scope::ObjCMethodScope))
         return false;
     }
     return false;
@@ -470,7 +453,7 @@ public:
   ///
   /// The caller is responsible for calling this only if one of the two scopes
   /// is an ancestor of the other.
-  bool Contains(const Scope& rhs) const { return Depth < rhs.Depth; }
+  bool Contains(const Scope &rhs) const { return Depth < rhs.Depth; }
 
   /// containedInPrototypeScope - Return true if this or a parent scope
   /// is a FunctionPrototypeScope.

@@ -25,9 +25,9 @@ void foo() {}
 
 template <class T>
 struct S {
-  operator T() {return T();}
+  operator T() { return T(); }
   static T TS;
-  #pragma omp threadprivate(TS)
+#pragma omp threadprivate(TS)
 };
 
 // CHECK:      template <class T> struct S {
@@ -51,30 +51,44 @@ T tmain(T argc, T *argv) {
   T arr[C][10], arr1[C];
   T i, j, a[20];
 #pragma omp target parallel
-  h=2;
-#pragma omp target parallel allocate(omp_large_cap_mem_alloc:argv) default(none), private(argc,b) firstprivate(argv) shared (d) if (parallel:argc > 0) num_threads(C) proc_bind(master) reduction(+:c, arr1[argc]) reduction(max:e, arr[:C][0:10]) uses_allocators(omp_large_cap_mem_alloc)
+  h = 2;
+#pragma omp target parallel allocate(omp_large_cap_mem_alloc                                                                                \
+                                     : argv) default(none),                                                                                 \
+    private(argc, b) firstprivate(argv) shared(d) if (parallel                                                                              \
+                                                      : argc > 0) num_threads(C) proc_bind(master) reduction(+                              \
+                                                                                                             : c, arr1[argc]) reduction(max \
+                                                                                                                                        : e, arr[:C] [0:10]) uses_allocators(omp_large_cap_mem_alloc)
   foo();
-#pragma omp target parallel if (C) num_threads(s) proc_bind(close) reduction(^:e, f, arr[0:C][:argc]) reduction(&& : g) allocate(g)
+#pragma omp target parallel if (C) num_threads(s) proc_bind(close) reduction(^                                      \
+                                                                             : e, f, arr [0:C][:argc]) reduction(&& \
+                                                                                                                 : g) allocate(g)
   foo();
-#pragma omp target parallel if (target:argc > 0)
+#pragma omp target parallel if (target \
+                                : argc > 0)
   foo();
-#pragma omp target parallel if (parallel:argc > 0)
+#pragma omp target parallel if (parallel \
+                                : argc > 0)
   foo();
 #pragma omp target parallel if (C)
   foo();
 #pragma omp target parallel map(i)
   foo();
-#pragma omp target parallel map(a[0:10], i)
+#pragma omp target parallel map(a [0:10], i)
   foo();
-#pragma omp target parallel map(to: i) map(from: j)
+#pragma omp target parallel map(to            \
+                                : i) map(from \
+                                         : j)
   foo();
-#pragma omp target parallel map(always,alloc: i)
+#pragma omp target parallel map(always, alloc \
+                                : i)
   foo();
 #pragma omp target parallel nowait
   foo();
-#pragma omp target parallel depend(in : argc, argv[i:argc], a[:])
+#pragma omp target parallel depend(in \
+                                   : argc, argv [i:argc], a[:])
   foo();
-#pragma omp target parallel defaultmap(tofrom: scalar)
+#pragma omp target parallel defaultmap(tofrom \
+                                       : scalar)
   foo();
   return 0;
 }
@@ -177,75 +191,83 @@ T tmain(T argc, T *argv) {
 // CHECK-NEXT: foo()
 
 // CHECK-LABEL: int main(int argc, char **argv) {
-int main (int argc, char **argv) {
+int main(int argc, char **argv) {
   int i, j, a[20];
 // CHECK-NEXT: int i, j, a[20]
 #pragma omp target parallel
-// CHECK-NEXT: #pragma omp target parallel
+  // CHECK-NEXT: #pragma omp target parallel
   foo();
 // CHECK-NEXT: foo();
 #pragma omp target parallel if (argc > 0)
-// CHECK-NEXT: #pragma omp target parallel if(argc > 0)
+  // CHECK-NEXT: #pragma omp target parallel if(argc > 0)
   foo();
-// CHECK-NEXT: foo();
+  // CHECK-NEXT: foo();
 
-#pragma omp target parallel if (target: argc > 0)
-// CHECK-NEXT: #pragma omp target parallel if(target: argc > 0)
+#pragma omp target parallel if (target \
+                                : argc > 0)
+  // CHECK-NEXT: #pragma omp target parallel if(target: argc > 0)
   foo();
-// CHECK-NEXT: foo();
+  // CHECK-NEXT: foo();
 
-#pragma omp target parallel if (parallel: argc > 0)
-// CHECK-NEXT: #pragma omp target parallel if(parallel: argc > 0)
+#pragma omp target parallel if (parallel \
+                                : argc > 0)
+  // CHECK-NEXT: #pragma omp target parallel if(parallel: argc > 0)
   foo();
-// CHECK-NEXT: foo();
+  // CHECK-NEXT: foo();
 
-#pragma omp target parallel map(i) if(argc>0)
-// CHECK-NEXT: #pragma omp target parallel map(tofrom: i) if(argc > 0)
+#pragma omp target parallel map(i) if (argc > 0)
+  // CHECK-NEXT: #pragma omp target parallel map(tofrom: i) if(argc > 0)
   foo();
-// CHECK-NEXT: foo();
+  // CHECK-NEXT: foo();
 
 #pragma omp target parallel map(i)
-// CHECK-NEXT: #pragma omp target parallel map(tofrom: i)
+  // CHECK-NEXT: #pragma omp target parallel map(tofrom: i)
   foo();
-// CHECK-NEXT: foo();
+  // CHECK-NEXT: foo();
 
-#pragma omp target parallel map(a[0:10], i)
-// CHECK-NEXT: #pragma omp target parallel map(tofrom: a[0:10],i)
+#pragma omp target parallel map(a [0:10], i)
+  // CHECK-NEXT: #pragma omp target parallel map(tofrom: a[0:10],i)
   foo();
-// CHECK-NEXT: foo();
+  // CHECK-NEXT: foo();
 
-#pragma omp target parallel map(to: i) map(from: j)
-// CHECK-NEXT: #pragma omp target parallel map(to: i) map(from: j)
+#pragma omp target parallel map(to            \
+                                : i) map(from \
+                                         : j)
+  // CHECK-NEXT: #pragma omp target parallel map(to: i) map(from: j)
   foo();
-// CHECK-NEXT: foo();
+  // CHECK-NEXT: foo();
 
-#pragma omp target parallel map(always,alloc: i)
-// CHECK-NEXT: #pragma omp target parallel map(always,alloc: i)
+#pragma omp target parallel map(always, alloc \
+                                : i)
+  // CHECK-NEXT: #pragma omp target parallel map(always,alloc: i)
   foo();
-// CHECK-NEXT: foo();
+  // CHECK-NEXT: foo();
 
 #pragma omp target parallel nowait
-// CHECK-NEXT: #pragma omp target parallel nowait
+  // CHECK-NEXT: #pragma omp target parallel nowait
   foo();
-// CHECK-NEXT: foo();
+  // CHECK-NEXT: foo();
 
-#pragma omp target parallel depend(in : argc, argv[i:argc], a[:])
-// CHECK-NEXT: #pragma omp target parallel depend(in : argc,argv[i:argc],a[:])
+#pragma omp target parallel depend(in \
+                                   : argc, argv [i:argc], a[:])
+  // CHECK-NEXT: #pragma omp target parallel depend(in : argc,argv[i:argc],a[:])
   foo();
-// CHECK-NEXT: foo();
+  // CHECK-NEXT: foo();
 
-#pragma omp target parallel defaultmap(tofrom: scalar) reduction(task, +:argc)
-// CHECK-NEXT: #pragma omp target parallel defaultmap(tofrom: scalar) reduction(task, +: argc)
+#pragma omp target parallel defaultmap(tofrom                      \
+                                       : scalar) reduction(task, + \
+                                                           : argc)
+  // CHECK-NEXT: #pragma omp target parallel defaultmap(tofrom: scalar) reduction(task, +: argc)
   {
-  foo();
+    foo();
 #pragma omp cancellation point parallel
 #pragma omp cancel parallel
   }
-// CHECK-NEXT: {
-// CHECK-NEXT: foo();
-// CHECK-NEXT: #pragma omp cancellation point parallel
-// CHECK-NEXT: #pragma omp cancel parallel
-// CHECK-NEXT: }
+  // CHECK-NEXT: {
+  // CHECK-NEXT: foo();
+  // CHECK-NEXT: #pragma omp cancellation point parallel
+  // CHECK-NEXT: #pragma omp cancel parallel
+  // CHECK-NEXT: }
 
   return tmain<int, 5>(argc, &argc) + tmain<char, 1>(argv[0][0], argv[0]);
 }

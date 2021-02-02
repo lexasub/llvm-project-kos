@@ -12,7 +12,9 @@ struct [[gnu::packed]] Q {
   double x [[gnu::aligned(4)]];
 };
 
-struct QQ : Q { char x; };
+struct QQ : Q {
+  char x;
+};
 
 int a = sizeof(QQ);
 

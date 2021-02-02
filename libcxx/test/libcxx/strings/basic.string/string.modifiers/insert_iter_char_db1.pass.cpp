@@ -21,16 +21,14 @@
 
 #include "test_macros.h"
 
+int main(int, char**) {
+  {
+    typedef std::string S;
+    S s;
+    S s2;
+    s.insert(s2.begin(), '1');
+    assert(false);
+  }
 
-int main(int, char**)
-{
-    {
-        typedef std::string S;
-        S s;
-        S s2;
-        s.insert(s2.begin(), '1');
-        assert(false);
-    }
-
-    return 0;
+  return 0;
 }

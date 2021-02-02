@@ -35,7 +35,7 @@ struct C7 {
   };
 };
 
-}
+} // namespace std
 
 extern "C++" {
 
@@ -45,8 +45,7 @@ struct C9 {
   virtual void f();
 };
 
-}
-
+} // namespace stdext
 }
 
 namespace other {
@@ -55,7 +54,7 @@ struct C10 {
   virtual void f();
 };
 
-}
+} // namespace other
 
 namespace {
 
@@ -63,7 +62,7 @@ struct C11 {
   virtual void f();
 };
 
-}
+} // namespace
 
 void f(C1 *c1, C2 *c2, C3 *c3, C4 *c4, C5 *c5, C6 *c6, std::C7 *c7,
        std::C7::C8 *c8, stdext::C9 *c9, other::C10 *c10) {

@@ -12,8 +12,8 @@
 #ifndef SANITIZER_SUPPRESSIONS_H
 #define SANITIZER_SUPPRESSIONS_H
 
-#include "sanitizer_common.h"
 #include "sanitizer_atomic.h"
+#include "sanitizer_common.h"
 #include "sanitizer_internal_defs.h"
 
 namespace __sanitizer {

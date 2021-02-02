@@ -1,8 +1,7 @@
-void h(X*);
+void h(X *);
 
 @interface X (Blah) {
 }
 @end
 
-void g(X*);
-
+void g(X *);

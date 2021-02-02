@@ -75,23 +75,22 @@ using namespace llvm;
 #define DEBUG_TYPE "poison-checking"
 
 static cl::opt<bool>
-LocalCheck("poison-checking-function-local",
-           cl::init(false),
-           cl::desc("Check that returns are non-poison (for testing)"));
+    LocalCheck("poison-checking-function-local", cl::init(false),
+               cl::desc("Check that returns are non-poison (for testing)"));
 
-
-static bool isConstantFalse(Value* V) {
+static bool isConstantFalse(Value *V) {
   assert(V->getType()->isIntegerTy(1));
   if (auto *CI = dyn_cast<ConstantInt>(V))
     return CI->isZero();
   return false;
 }
 
-static Value *buildOrChain(IRBuilder<> &B, ArrayRef<Value*> Ops) {
+static Value *buildOrChain(IRBuilder<> &B, ArrayRef<Value *> Ops) {
   if (Ops.size() == 0)
     return B.getFalse();
   unsigned i = 0;
-  for (; i < Ops.size() && isConstantFalse(Ops[i]); i++) {}
+  for (; i < Ops.size() && isConstantFalse(Ops[i]); i++) {
+  }
   if (i == Ops.size())
     return B.getFalse();
   Value *Accum = Ops[i++];
@@ -102,7 +101,7 @@ static Value *buildOrChain(IRBuilder<> &B, ArrayRef<Value*> Ops) {
 }
 
 static void generateCreationChecksForBinOp(Instruction &I,
-                                           SmallVectorImpl<Value*> &Checks) {
+                                           SmallVectorImpl<Value *> &Checks) {
   assert(isa<BinaryOperator>(I));
 
   IRBuilder<> B(&I);
@@ -114,12 +113,12 @@ static void generateCreationChecksForBinOp(Instruction &I,
   case Instruction::Add: {
     if (I.hasNoSignedWrap()) {
       auto *OverflowOp =
-        B.CreateBinaryIntrinsic(Intrinsic::sadd_with_overflow, LHS, RHS);
+          B.CreateBinaryIntrinsic(Intrinsic::sadd_with_overflow, LHS, RHS);
       Checks.push_back(B.CreateExtractValue(OverflowOp, 1));
     }
     if (I.hasNoUnsignedWrap()) {
       auto *OverflowOp =
-        B.CreateBinaryIntrinsic(Intrinsic::uadd_with_overflow, LHS, RHS);
+          B.CreateBinaryIntrinsic(Intrinsic::uadd_with_overflow, LHS, RHS);
       Checks.push_back(B.CreateExtractValue(OverflowOp, 1));
     }
     break;
@@ -127,12 +126,12 @@ static void generateCreationChecksForBinOp(Instruction &I,
   case Instruction::Sub: {
     if (I.hasNoSignedWrap()) {
       auto *OverflowOp =
-        B.CreateBinaryIntrinsic(Intrinsic::ssub_with_overflow, LHS, RHS);
+          B.CreateBinaryIntrinsic(Intrinsic::ssub_with_overflow, LHS, RHS);
       Checks.push_back(B.CreateExtractValue(OverflowOp, 1));
     }
     if (I.hasNoUnsignedWrap()) {
       auto *OverflowOp =
-        B.CreateBinaryIntrinsic(Intrinsic::usub_with_overflow, LHS, RHS);
+          B.CreateBinaryIntrinsic(Intrinsic::usub_with_overflow, LHS, RHS);
       Checks.push_back(B.CreateExtractValue(OverflowOp, 1));
     }
     break;
@@ -140,30 +139,28 @@ static void generateCreationChecksForBinOp(Instruction &I,
   case Instruction::Mul: {
     if (I.hasNoSignedWrap()) {
       auto *OverflowOp =
-        B.CreateBinaryIntrinsic(Intrinsic::smul_with_overflow, LHS, RHS);
+          B.CreateBinaryIntrinsic(Intrinsic::smul_with_overflow, LHS, RHS);
       Checks.push_back(B.CreateExtractValue(OverflowOp, 1));
     }
     if (I.hasNoUnsignedWrap()) {
       auto *OverflowOp =
-        B.CreateBinaryIntrinsic(Intrinsic::umul_with_overflow, LHS, RHS);
+          B.CreateBinaryIntrinsic(Intrinsic::umul_with_overflow, LHS, RHS);
       Checks.push_back(B.CreateExtractValue(OverflowOp, 1));
     }
     break;
   }
   case Instruction::UDiv: {
     if (I.isExact()) {
-      auto *Check =
-        B.CreateICmp(ICmpInst::ICMP_NE, B.CreateURem(LHS, RHS),
-                     ConstantInt::get(LHS->getType(), 0));
+      auto *Check = B.CreateICmp(ICmpInst::ICMP_NE, B.CreateURem(LHS, RHS),
+                                 ConstantInt::get(LHS->getType(), 0));
       Checks.push_back(Check);
     }
     break;
   }
   case Instruction::SDiv: {
     if (I.isExact()) {
-      auto *Check =
-        B.CreateICmp(ICmpInst::ICMP_NE, B.CreateSRem(LHS, RHS),
-                     ConstantInt::get(LHS->getType(), 0));
+      auto *Check = B.CreateICmp(ICmpInst::ICMP_NE, B.CreateSRem(LHS, RHS),
+                                 ConstantInt::get(LHS->getType(), 0));
       Checks.push_back(Check);
     }
     break;
@@ -172,9 +169,9 @@ static void generateCreationChecksForBinOp(Instruction &I,
   case Instruction::LShr:
   case Instruction::Shl: {
     Value *ShiftCheck =
-      B.CreateICmp(ICmpInst::ICMP_UGE, RHS,
-                   ConstantInt::get(RHS->getType(),
-                                    LHS->getType()->getScalarSizeInBits()));
+        B.CreateICmp(ICmpInst::ICMP_UGE, RHS,
+                     ConstantInt::get(RHS->getType(),
+                                      LHS->getType()->getScalarSizeInBits()));
     Checks.push_back(ShiftCheck);
     break;
   }
@@ -185,7 +182,7 @@ static void generateCreationChecksForBinOp(Instruction &I,
 /// (i.e. canCreatePoison returns true), generate runtime checks to produce
 /// boolean indicators of when poison would result.
 static void generateCreationChecks(Instruction &I,
-                                   SmallVectorImpl<Value*> &Checks) {
+                                   SmallVectorImpl<Value *> &Checks) {
   IRBuilder<> B(&I);
   if (isa<BinaryOperator>(I) && !I.getType()->isVectorTy())
     generateCreationChecksForBinOp(I, Checks);
@@ -203,9 +200,8 @@ static void generateCreationChecks(Instruction &I,
       break;
     Value *Idx = I.getOperand(1);
     unsigned NumElts = VecVTy->getNumElements();
-    Value *Check =
-      B.CreateICmp(ICmpInst::ICMP_UGE, Idx,
-                   ConstantInt::get(Idx->getType(), NumElts));
+    Value *Check = B.CreateICmp(ICmpInst::ICMP_UGE, Idx,
+                                ConstantInt::get(Idx->getType(), NumElts));
     Checks.push_back(Check);
     break;
   }
@@ -216,9 +212,8 @@ static void generateCreationChecks(Instruction &I,
       break;
     Value *Idx = I.getOperand(2);
     unsigned NumElts = VecVTy->getNumElements();
-    Value *Check =
-      B.CreateICmp(ICmpInst::ICMP_UGE, Idx,
-                   ConstantInt::get(Idx->getType(), NumElts));
+    Value *Check = B.CreateICmp(ICmpInst::ICMP_UGE, Idx,
+                                ConstantInt::get(Idx->getType(), NumElts));
     Checks.push_back(Check);
     break;
   }
@@ -259,7 +254,7 @@ static void CreateAssertNot(IRBuilder<> &B, Value *Cond) {
 }
 
 static bool rewrite(Function &F) {
-  auto * const Int1Ty = Type::getInt1Ty(F.getContext());
+  auto *const Int1Ty = Type::getInt1Ty(F.getContext());
 
   DenseMap<Value *, Value *> ValToPoison;
 
@@ -276,7 +271,8 @@ static bool rewrite(Function &F) {
 
   for (BasicBlock &BB : F)
     for (Instruction &I : BB) {
-      if (isa<PHINode>(I)) continue;
+      if (isa<PHINode>(I))
+        continue;
 
       IRBuilder<> B(cast<Instruction>(&I));
 
@@ -294,7 +290,7 @@ static bool rewrite(Function &F) {
             CreateAssertNot(B, getPoisonFor(ValToPoison, Op));
           }
 
-      SmallVector<Value*, 4> Checks;
+      SmallVector<Value *, 4> Checks;
       if (propagatesPoison(cast<Operator>(&I)))
         for (Value *V : I.operands())
           Checks.push_back(getPoisonFor(ValToPoison, V));
@@ -317,7 +313,6 @@ static bool rewrite(Function &F) {
     }
   return true;
 }
-
 
 PreservedAnalyses PoisonCheckingPass::run(Module &M,
                                           ModuleAnalysisManager &AM) {

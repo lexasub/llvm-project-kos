@@ -47,11 +47,10 @@ SBStructuredData::SBStructuredData(lldb_private::StructuredDataImpl *impl)
 
 SBStructuredData::~SBStructuredData() = default;
 
-SBStructuredData &SBStructuredData::
-operator=(const lldb::SBStructuredData &rhs) {
-  LLDB_RECORD_METHOD(
-      lldb::SBStructuredData &,
-      SBStructuredData, operator=,(const lldb::SBStructuredData &), rhs);
+SBStructuredData &
+SBStructuredData::operator=(const lldb::SBStructuredData &rhs) {
+  LLDB_RECORD_METHOD(lldb::SBStructuredData &, SBStructuredData, operator=,
+                     (const lldb::SBStructuredData &), rhs);
 
   *m_impl_up = *rhs.m_impl_up;
   return LLDB_RECORD_RESULT(*this);
@@ -142,7 +141,7 @@ bool SBStructuredData::GetKeys(lldb::SBStringList &keys) const {
   StructuredData::Array *key_arr = array_sp->GetAsArray();
   assert(key_arr);
 
-  key_arr->ForEach([&keys] (StructuredData::Object *object) -> bool {
+  key_arr->ForEach([&keys](StructuredData::Object *object) -> bool {
     llvm::StringRef key = object->GetStringValue("");
     keys.AppendString(key.str().c_str());
     return true;
@@ -211,9 +210,8 @@ template <> void RegisterMethods<SBStructuredData>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBStructuredData, (const lldb::EventSP &));
   LLDB_REGISTER_CONSTRUCTOR(SBStructuredData,
                             (lldb_private::StructuredDataImpl *));
-  LLDB_REGISTER_METHOD(
-      lldb::SBStructuredData &,
-      SBStructuredData, operator=,(const lldb::SBStructuredData &));
+  LLDB_REGISTER_METHOD(lldb::SBStructuredData &, SBStructuredData, operator=,
+                       (const lldb::SBStructuredData &));
   LLDB_REGISTER_METHOD(lldb::SBError, SBStructuredData, SetFromJSON,
                        (lldb::SBStream &));
   LLDB_REGISTER_METHOD_CONST(bool, SBStructuredData, IsValid, ());

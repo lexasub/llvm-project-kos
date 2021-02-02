@@ -7,32 +7,27 @@ int subfun(const char *text) {
   return 0;
 }
 
-void fun(const char* text) {
+void fun(const char *text) {
   int count = 0;
   bool check = true;
 
-  if (check)
-    {
-      const char *end = text;
+  if (check) {
+    const char *end = text;
 
-      if (check)
-        {
-          do
-            {
-              if (check)
-                {
-                  count = subfun(end);
-                  goto end;
-                }
-
-              check = !check;
-            }
-          while (check);
+    if (check) {
+      do {
+        if (check) {
+          count = subfun(end);
+          goto end;
         }
-      // also works, after commenting following line of source code
-      int e = subfun(end);
+
+        check = !check;
+      } while (check);
     }
- end:
+    // also works, after commenting following line of source code
+    int e = subfun(end);
+  }
+end:
   if (check)
     ++count;
 }
@@ -40,9 +35,9 @@ void fun(const char* text) {
 const char *text = "some text";
 
 int main() {
-	const char *ptr = text;
+  const char *ptr = text;
 
-	fun(ptr);
+  fun(ptr);
 
-	return 0;
+  return 0;
 }

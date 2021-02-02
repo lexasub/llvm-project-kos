@@ -21,9 +21,7 @@ void backtrace(int lower_bound) {
   }
 }
 
-void test1(int i) {
-  backtrace(i);
-}
+void test1(int i) { backtrace(i); }
 
 void test2(int i, int j) {
   backtrace(i);
@@ -55,7 +53,7 @@ void test_no_info() {
     abort();
 }
 
-int main(int, char**) {
+int main(int, char **) {
   test1(1);
   test2(1, 2);
   test3(1, 2, 3);

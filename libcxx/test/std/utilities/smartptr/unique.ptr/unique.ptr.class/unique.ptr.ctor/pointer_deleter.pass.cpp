@@ -298,12 +298,12 @@ void test_nullptr() {
   }
   {
     NCDeleter<VT> d;
-    std::unique_ptr<VT, NCDeleter<VT>& > u(nullptr, d);
+    std::unique_ptr<VT, NCDeleter<VT>&> u(nullptr, d);
     assert(u.get() == nullptr);
   }
   {
     NCConstDeleter<VT> d;
-    std::unique_ptr<VT, NCConstDeleter<VT> const& > u(nullptr, d);
+    std::unique_ptr<VT, NCConstDeleter<VT> const&> u(nullptr, d);
     assert(u.get() == nullptr);
   }
 #endif

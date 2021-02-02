@@ -2,7 +2,6 @@
 
 using TestContainsErrors = int[sizeof(undef())];
 
-
 // CHECK:  "kind": "TypeAliasDecl",
 // CHECK-NEXT:  "loc": {
 // CHECK-NEXT:   "offset": 130,

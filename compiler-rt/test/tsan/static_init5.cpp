@@ -1,13 +1,13 @@
 // RUN: %clangxx_tsan -O1 %s -o %t && %run %t 2>&1 | FileCheck %s
 #include <pthread.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <sched.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 struct Cache {
   int x;
   explicit Cache(int x)
-    : x(x) {
+      : x(x) {
   }
 };
 
@@ -17,10 +17,10 @@ void *AsyncInit(void *p) {
 
 Cache *CreateCache() {
   pthread_t t;
-  pthread_create(&t, 0, AsyncInit, (void*)(long)rand());
+  pthread_create(&t, 0, AsyncInit, (void *)(long)rand());
   void *res;
   pthread_join(t, &res);
-  return (Cache*)res;
+  return (Cache *)res;
 }
 
 void *Thread1(void *x) {

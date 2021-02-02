@@ -5,13 +5,14 @@ struct X {
   ~X();
 };
 struct Error {
-  Error(const X&) noexcept;
+  Error(const X &) noexcept;
 };
 
 void f() {
   try {
     throw Error(X());
-  } catch (...) { }
+  } catch (...) {
+  }
 }
 
 // CHECK-LABEL: define{{.*}} void @_Z1fv

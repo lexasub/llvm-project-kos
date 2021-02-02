@@ -16,8 +16,8 @@ namespace comments {
 #include "clang/AST/CommentCommandInfo.inc"
 
 CommandTraits::CommandTraits(llvm::BumpPtrAllocator &Allocator,
-                             const CommentOptions &CommentOptions) :
-    NextID(llvm::array_lengthof(Commands)), Allocator(Allocator) {
+                             const CommentOptions &CommentOptions)
+    : NextID(llvm::array_lengthof(Commands)), Allocator(Allocator) {
   registerCommentOptions(CommentOptions);
 }
 
@@ -91,8 +91,8 @@ CommandInfo *CommandTraits::createCommandInfoWithName(StringRef CommandName) {
   Info->Name = Name;
   // We only have a limited number of bits to encode command IDs in the
   // CommandInfo structure, so the ID numbers can potentially wrap around.
-  assert((NextID < (1 << CommandInfo::NumCommandIDBits))
-         && "Too many commands. We have limited bits for the command ID.");
+  assert((NextID < (1 << CommandInfo::NumCommandIDBits)) &&
+         "Too many commands. We have limited bits for the command ID.");
   Info->ID = NextID++;
 
   RegisteredCommands.push_back(Info);
@@ -100,8 +100,8 @@ CommandInfo *CommandTraits::createCommandInfoWithName(StringRef CommandName) {
   return Info;
 }
 
-const CommandInfo *CommandTraits::registerUnknownCommand(
-                                                  StringRef CommandName) {
+const CommandInfo *
+CommandTraits::registerUnknownCommand(StringRef CommandName) {
   CommandInfo *Info = createCommandInfoWithName(CommandName);
   Info->IsUnknownCommand = true;
   return Info;
@@ -113,15 +113,14 @@ const CommandInfo *CommandTraits::registerBlockCommand(StringRef CommandName) {
   return Info;
 }
 
-const CommandInfo *CommandTraits::getBuiltinCommandInfo(
-                                                  unsigned CommandID) {
+const CommandInfo *CommandTraits::getBuiltinCommandInfo(unsigned CommandID) {
   if (CommandID < llvm::array_lengthof(Commands))
     return &Commands[CommandID];
   return nullptr;
 }
 
-const CommandInfo *CommandTraits::getRegisteredCommandInfo(
-                                                  StringRef Name) const {
+const CommandInfo *
+CommandTraits::getRegisteredCommandInfo(StringRef Name) const {
   for (unsigned i = 0, e = RegisteredCommands.size(); i != e; ++i) {
     if (RegisteredCommands[i]->Name == Name)
       return RegisteredCommands[i];
@@ -129,11 +128,10 @@ const CommandInfo *CommandTraits::getRegisteredCommandInfo(
   return nullptr;
 }
 
-const CommandInfo *CommandTraits::getRegisteredCommandInfo(
-                                                  unsigned CommandID) const {
+const CommandInfo *
+CommandTraits::getRegisteredCommandInfo(unsigned CommandID) const {
   return RegisteredCommands[CommandID - llvm::array_lengthof(Commands)];
 }
 
 } // end namespace comments
 } // end namespace clang
-

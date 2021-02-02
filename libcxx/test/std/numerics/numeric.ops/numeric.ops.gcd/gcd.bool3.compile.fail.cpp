@@ -17,10 +17,8 @@
 
 #include <numeric>
 
-
-int main(int, char**)
-{
-    std::gcd<volatile bool, int>(false, 4);
+int main(int, char**) {
+  std::gcd<volatile bool, int>(false, 4);
 
   return 0;
 }

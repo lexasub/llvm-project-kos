@@ -6,9 +6,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-
-
-
 #include "lldb/lldb-enumerations.h"
 #include "lldb/lldb-public.h"
 
@@ -49,8 +46,7 @@ bool TypeFilterImpl::SetExpressionPathAtIndex(size_t i,
   return true;
 }
 
-size_t
-TypeFilterImpl::FrontEnd::GetIndexOfChildWithName(ConstString name) {
+size_t TypeFilterImpl::FrontEnd::GetIndexOfChildWithName(ConstString name) {
   const char *name_cstr = name.GetCString();
   if (name_cstr) {
     for (size_t i = 0; i < filter->GetCount(); i++) {
@@ -183,8 +179,8 @@ bool ScriptedSyntheticChildren::FrontEnd::MightHaveChildren() {
   return m_interpreter->MightHaveChildrenSynthProviderInstance(m_wrapper_sp);
 }
 
-size_t ScriptedSyntheticChildren::FrontEnd::GetIndexOfChildWithName(
-    ConstString name) {
+size_t
+ScriptedSyntheticChildren::FrontEnd::GetIndexOfChildWithName(ConstString name) {
   if (!m_wrapper_sp || m_interpreter == nullptr)
     return UINT32_MAX;
   return m_interpreter->GetIndexOfChildWithName(m_wrapper_sp,

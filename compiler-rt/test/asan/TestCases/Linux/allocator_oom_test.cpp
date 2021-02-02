@@ -34,10 +34,10 @@
 // REQUIRES: shadow-scale-3
 // UNSUPPORTED: s390,android,aarch64,powerpc64le
 
+#include <assert.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
-#include <assert.h>
 
 int main(int argc, char **argv) {
   assert(argc == 2);
@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
   } else if (!strcmp(action, "realloc")) {
     x = realloc(0, size);
   } else if (!strcmp(action, "realloc-after-malloc")) {
-    char *t = (char*)malloc(100);
+    char *t = (char *)malloc(100);
     *t = 42;
     x = realloc(t, size);
     assert(*t == 42);

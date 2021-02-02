@@ -1,4 +1,5 @@
-//===-- ABIWindows_x86_64.h ----------------------------------------*- C++ -*-===//
+//===-- ABIWindows_x86_64.h ----------------------------------------*- C++
+//-*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -42,7 +43,7 @@ public:
 
   // In Windows_x86_64 ABI, stack will always be maintained 16-byte aligned
   bool CallFrameAddressIsValid(lldb::addr_t cfa) override {
-	  if (cfa & (16ull - 1ull))
+    if (cfa & (16ull - 1ull))
       return false; // Not 16 byte aligned
     if (cfa == 0)
       return false; // Zero is not a valid stack address
@@ -65,7 +66,8 @@ public:
 
   static void Terminate();
 
-  static lldb::ABISP CreateInstance(lldb::ProcessSP process_sp, const lldb_private::ArchSpec &arch);
+  static lldb::ABISP CreateInstance(lldb::ProcessSP process_sp,
+                                    const lldb_private::ArchSpec &arch);
 
   static lldb_private::ConstString GetPluginNameStatic();
 

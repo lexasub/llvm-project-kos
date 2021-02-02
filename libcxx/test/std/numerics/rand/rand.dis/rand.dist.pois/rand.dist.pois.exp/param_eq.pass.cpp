@@ -19,22 +19,21 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        typedef std::exponential_distribution<> D;
-        typedef D::param_type param_type;
-        param_type p1(0.75);
-        param_type p2(0.75);
-        assert(p1 == p2);
-    }
-    {
-        typedef std::exponential_distribution<> D;
-        typedef D::param_type param_type;
-        param_type p1(0.75);
-        param_type p2(0.5);
-        assert(p1 != p2);
-    }
+int main(int, char**) {
+  {
+    typedef std::exponential_distribution<> D;
+    typedef D::param_type param_type;
+    param_type p1(0.75);
+    param_type p2(0.75);
+    assert(p1 == p2);
+  }
+  {
+    typedef std::exponential_distribution<> D;
+    typedef D::param_type param_type;
+    param_type p1(0.75);
+    param_type p2(0.5);
+    assert(p1 != p2);
+  }
 
   return 0;
 }

@@ -71,7 +71,7 @@ EnumValueVector getDeclValuesForEnum(const EnumDecl *ED) {
   EnumValueVector DeclValues(
       std::distance(ED->enumerator_begin(), ED->enumerator_end()));
   llvm::transform(ED->enumerators(), DeclValues.begin(),
-                 [](const EnumConstantDecl *D) { return D->getInitVal(); });
+                  [](const EnumConstantDecl *D) { return D->getInitVal(); });
   return DeclValues;
 }
 } // namespace
@@ -129,8 +129,8 @@ void EnumCastOutOfRangeChecker::checkPreStmt(const CastExpr *CE,
 
   EnumValueVector DeclValues = getDeclValuesForEnum(ED);
   // Check if any of the enum values possibly match.
-  bool PossibleValueMatch = llvm::any_of(
-      DeclValues, ConstraintBasedEQEvaluator(C, *ValueToCast));
+  bool PossibleValueMatch =
+      llvm::any_of(DeclValues, ConstraintBasedEQEvaluator(C, *ValueToCast));
 
   // If there is no value that can possibly match any of the enum values, then
   // warn.

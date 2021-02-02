@@ -26,15 +26,27 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    static_assert((std::is_base_of<std::basic_istream<char>, std::basic_iostream<char> >::value), "");
-    static_assert((std::is_base_of<std::basic_ostream<char>, std::basic_iostream<char> >::value), "");
-    static_assert((std::is_same<std::basic_iostream<char>::char_type, char>::value), "");
-    static_assert((std::is_same<std::basic_iostream<char>::traits_type, std::char_traits<char> >::value), "");
-    static_assert((std::is_same<std::basic_iostream<char>::int_type, std::char_traits<char>::int_type>::value), "");
-    static_assert((std::is_same<std::basic_iostream<char>::pos_type, std::char_traits<char>::pos_type>::value), "");
-    static_assert((std::is_same<std::basic_iostream<char>::off_type, std::char_traits<char>::off_type>::value), "");
+int main(int, char**) {
+  static_assert((std::is_base_of<std::basic_istream<char>,
+                                 std::basic_iostream<char> >::value),
+                "");
+  static_assert((std::is_base_of<std::basic_ostream<char>,
+                                 std::basic_iostream<char> >::value),
+                "");
+  static_assert(
+      (std::is_same<std::basic_iostream<char>::char_type, char>::value), "");
+  static_assert((std::is_same<std::basic_iostream<char>::traits_type,
+                              std::char_traits<char> >::value),
+                "");
+  static_assert((std::is_same<std::basic_iostream<char>::int_type,
+                              std::char_traits<char>::int_type>::value),
+                "");
+  static_assert((std::is_same<std::basic_iostream<char>::pos_type,
+                              std::char_traits<char>::pos_type>::value),
+                "");
+  static_assert((std::is_same<std::basic_iostream<char>::off_type,
+                              std::char_traits<char>::off_type>::value),
+                "");
 
   return 0;
 }

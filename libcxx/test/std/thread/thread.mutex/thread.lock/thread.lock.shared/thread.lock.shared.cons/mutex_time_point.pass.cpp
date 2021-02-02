@@ -45,8 +45,7 @@ static constexpr unsigned Threads = 5;
 
 std::atomic<unsigned> CountDown(Threads);
 
-void f1()
-{
+void f1() {
   --CountDown;
   time_point t0 = Clock::now();
   std::shared_lock<std::shared_timed_mutex> lk(m, t0 + LongTime);
@@ -55,8 +54,7 @@ void f1()
   assert(t1 - t0 <= LongTime);
 }
 
-void f2()
-{
+void f2() {
   time_point t0 = Clock::now();
   std::shared_lock<std::shared_timed_mutex> lk(m, t0 + ShortTime);
   time_point t1 = Clock::now();
@@ -64,8 +62,7 @@ void f2()
   assert(t1 - t0 >= ShortTime);
 }
 
-int main(int, char**)
-{
+int main(int, char**) {
   {
     m.lock();
     std::vector<std::thread> v;

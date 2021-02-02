@@ -2,17 +2,17 @@
 
 class __declspec(dllimport) QObjectData {
 public:
-    virtual ~QObjectData() = 0;
-    void *ptr;
+  virtual ~QObjectData() = 0;
+  void *ptr;
 
-    int method() const;
+  int method() const;
 };
 
 class LocalClass : public QObjectData {
 };
 
 void call() {
-    (new LocalClass())->method();
+  (new LocalClass())->method();
 }
 
 // GNU-DAG: @_ZTV11QObjectData = available_externally dllimport

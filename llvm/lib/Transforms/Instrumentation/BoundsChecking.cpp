@@ -69,7 +69,7 @@ static Value *getBoundsCheckCond(Value *Ptr, Value *InstVal,
     return nullptr;
   }
 
-  Value *Size   = SizeOffset.first;
+  Value *Size = SizeOffset.first;
   Value *Offset = SizeOffset.second;
   ConstantInt *SizeCI = dyn_cast<ConstantInt>(Size);
 
@@ -204,14 +204,16 @@ static bool addBoundsChecking(Function &F, TargetLibraryInfo &TLI,
   // Add the checks.
   for (const auto &Entry : TrapInfo) {
     Instruction *Inst = Entry.first;
-    BuilderTy IRB(Inst->getParent(), BasicBlock::iterator(Inst), TargetFolder(DL));
+    BuilderTy IRB(Inst->getParent(), BasicBlock::iterator(Inst),
+                  TargetFolder(DL));
     insertBoundsCheck(Entry.second, IRB, GetTrapBB);
   }
 
   return !TrapInfo.empty();
 }
 
-PreservedAnalyses BoundsCheckingPass::run(Function &F, FunctionAnalysisManager &AM) {
+PreservedAnalyses BoundsCheckingPass::run(Function &F,
+                                          FunctionAnalysisManager &AM) {
   auto &TLI = AM.getResult<TargetLibraryAnalysis>(F);
   auto &SE = AM.getResult<ScalarEvolutionAnalysis>(F);
 

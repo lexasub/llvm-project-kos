@@ -9,10 +9,10 @@
 #ifndef LLDB_TARGET_PATHMAPPINGLIST_H
 #define LLDB_TARGET_PATHMAPPINGLIST_H
 
-#include <map>
-#include <vector>
 #include "lldb/Utility/ConstString.h"
 #include "lldb/Utility/Status.h"
+#include <map>
+#include <vector>
 
 namespace lldb_private {
 
@@ -32,8 +32,7 @@ public:
 
   const PathMappingList &operator=(const PathMappingList &rhs);
 
-  void Append(ConstString path, ConstString replacement,
-              bool notify);
+  void Append(ConstString path, ConstString replacement, bool notify);
 
   void Append(const PathMappingList &rhs, bool notify);
 
@@ -49,18 +48,17 @@ public:
   bool GetPathsAtIndex(uint32_t idx, ConstString &path,
                        ConstString &new_path) const;
 
-  void Insert(ConstString path, ConstString replacement,
-              uint32_t insert_idx, bool notify);
+  void Insert(ConstString path, ConstString replacement, uint32_t insert_idx,
+              bool notify);
 
   bool Remove(size_t index, bool notify);
 
   bool Remove(ConstString path, bool notify);
 
-  bool Replace(ConstString path, ConstString replacement,
-               bool notify);
+  bool Replace(ConstString path, ConstString replacement, bool notify);
 
-  bool Replace(ConstString path, ConstString replacement,
-               uint32_t index, bool notify);
+  bool Replace(ConstString path, ConstString replacement, uint32_t index,
+               bool notify);
   bool RemapPath(ConstString path, ConstString &new_path) const;
 
   /// Remaps a source file given \a path into \a new_path.

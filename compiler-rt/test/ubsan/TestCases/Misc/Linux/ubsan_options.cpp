@@ -15,4 +15,3 @@ int main() {
   // CHECK: ubsan_options.cpp:[[@LINE-1]]:44: runtime error: unsigned integer overflow
   return 0;
 }
-

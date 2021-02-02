@@ -19,10 +19,10 @@
 #ifndef LIB
 
 #include <dlfcn.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <errno.h>
 #include <libgen.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string>
 
 int main(int argc, char **argv) {
@@ -30,21 +30,20 @@ int main(int argc, char **argv) {
   void *h = dlopen(lib.c_str(), RTLD_GLOBAL | RTLD_NOW);
   if (h == 0)
     exit(printf("failed to load the library (%d)\n", errno));
-  void (*f)() = (void(*)())dlsym(h, "libfunc");
+  void (*f)() = (void (*)())dlsym(h, "libfunc");
   if (f == 0)
     exit(printf("failed to find the func (%d)\n", errno));
   f();
 }
 
-#else  // #ifdef LIB
+#else // #ifdef LIB
 
 #include "ignore_lib_lib.h"
 
-#endif  // #ifdef LIB
+#endif // #ifdef LIB
 
 // CHECK-NOSUPP: WARNING: ThreadSanitizer: data race
 // CHECK-NOSUPP: OK
 
 // CHECK-WITHSUPP-NOT: WARNING: ThreadSanitizer: data race
 // CHECK-WITHSUPP: OK
-

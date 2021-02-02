@@ -42,7 +42,7 @@ class AllocaSlices;
 class Partition;
 class SROALegacyPass;
 
-} // end namespace sroa
+} // namespace LLVM_LIBRARY_VISIBILITY
 
 /// An optimization pass providing Scalar Replacement of Aggregates.
 ///

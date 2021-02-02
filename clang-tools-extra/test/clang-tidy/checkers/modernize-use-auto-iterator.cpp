@@ -257,8 +257,7 @@ void construction() {
   std::unordered_map<int, int>::const_iterator constI3(def);
 
   // Explicit conversion
-  std::unordered_map<int, int>::const_iterator constI4
-      = std::unordered_map<int, int>::const_iterator(def);
+  std::unordered_map<int, int>::const_iterator constI4 = std::unordered_map<int, int>::const_iterator(def);
   // CHECK-MESSAGES: :[[@LINE-2]]:3: warning: use auto when declaring iterators
   // CHECK-FIXES: auto constI4
   // CHECK-FIXES-NEXT: = std::unordered_map<int, int>::const_iterator(def);
@@ -295,8 +294,8 @@ void loop() {
 void cv_qualifiers() {
   // Make sure references and cv qualifiers don't get removed (i.e. replaced
   // with just 'auto').
-  const auto & I = Vec.begin();
-  auto && I2 = Vec.begin();
+  const auto &I = Vec.begin();
+  auto &&I2 = Vec.begin();
 }
 
 void cleanup() {

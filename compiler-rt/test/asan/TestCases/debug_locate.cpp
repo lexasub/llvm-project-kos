@@ -28,7 +28,7 @@ int main() {
   assert(region_address == &global_var);
   assert(region_size == sizeof(global_var));
 
-  type = __asan_locate_address((char *)(&global_var)+1, name, 100,
+  type = __asan_locate_address((char *)(&global_var) + 1, name, 100,
                                &region_address, &region_size);
   assert(0 == strcmp(name, "global_var"));
   assert(0 == strcmp(type, "global"));
@@ -42,7 +42,7 @@ int main() {
   assert(region_address == &local_var);
   assert(region_size == sizeof(local_var));
 
-  type = __asan_locate_address((char *)(&local_var)+1, name, 100,
+  type = __asan_locate_address((char *)(&local_var) + 1, name, 100,
                                &region_address, &region_size);
   assert(0 == strcmp(name, "local_var"));
   assert(0 == strcmp(type, "stack"));
@@ -55,7 +55,7 @@ int main() {
   assert(region_address == heap_ptr);
   assert(10 == region_size);
 
-  type = __asan_locate_address(heap_ptr+1, name, 100,
+  type = __asan_locate_address(heap_ptr + 1, name, 100,
                                &region_address, &region_size);
   assert(0 == strcmp(type, "heap"));
   assert(region_address == heap_ptr);
@@ -65,8 +65,7 @@ int main() {
   size_t shadow_offset;
   __asan_get_shadow_mapping(&shadow_scale, &shadow_offset);
 
-  uintptr_t shadow_ptr = (((uintptr_t)heap_ptr) >> shadow_scale)
-                         + shadow_offset;
+  uintptr_t shadow_ptr = (((uintptr_t)heap_ptr) >> shadow_scale) + shadow_offset;
   type = __asan_locate_address((void *)shadow_ptr, NULL, 0, NULL, NULL);
   assert((0 == strcmp(type, "high shadow")) || 0 == strcmp(type, "low shadow"));
 

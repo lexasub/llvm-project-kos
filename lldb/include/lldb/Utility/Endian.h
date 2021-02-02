@@ -27,7 +27,7 @@ inline lldb::ByteOrder InlHostByteOrder() {
 }
 
 //    ByteOrder const InlHostByteOrder = (ByteOrder)endianTest.bytes[0];
-}
-}
+} // namespace endian
+} // namespace lldb_private
 
 #endif // LLDB_UTILITY_ENDIAN_H

@@ -49,5 +49,5 @@ private:
   bool legalizeVectorTrunc(MachineInstr &MI, LegalizerHelper &Helper) const;
   const AArch64Subtarget *ST;
 };
-} // End llvm namespace.
+} // namespace llvm
 #endif

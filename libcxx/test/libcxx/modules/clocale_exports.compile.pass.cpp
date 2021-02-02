@@ -24,7 +24,8 @@
 #include <clocale>
 
 int main(int, char**) {
-  std::lconv l; (void)l;
+  std::lconv l;
+  (void)l;
   using T = decltype(std::setlocale(0, ""));
   using U = decltype(std::localeconv());
 

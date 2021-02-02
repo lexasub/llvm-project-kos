@@ -304,8 +304,8 @@ public:
   void SetUp() override {
     bool Success;
     BQ = std::make_unique<BufferQueue>(sizeof(MetadataRecord) * 5 +
-                                            sizeof(FunctionRecord) * 2,
-                                        kBuffers, Success);
+                                           sizeof(FunctionRecord) * 2,
+                                       kBuffers, Success);
     ASSERT_TRUE(Success);
     ASSERT_EQ(BQ->getBuffer(B), BufferQueue::ErrorCode::Ok);
     W = std::make_unique<FDRLogWriter>(B);

@@ -28,9 +28,7 @@ void PoisonShadow(uptr addr, uptr size, u8 value);
 
 // Poisons the shadow memory for "redzone_size" bytes starting from
 // "addr + size".
-void PoisonShadowPartialRightRedzone(uptr addr,
-                                     uptr size,
-                                     uptr redzone_size,
+void PoisonShadowPartialRightRedzone(uptr addr, uptr size, uptr redzone_size,
                                      u8 value);
 
 // Fast versions of PoisonShadow and PoisonShadowPartialRightRedzone that
@@ -44,8 +42,8 @@ ALWAYS_INLINE void FastPoisonShadow(uptr aligned_beg, uptr aligned_size,
                           common_flags()->clear_shadow_mmap_threshold);
 #else
   uptr shadow_beg = MEM_TO_SHADOW(aligned_beg);
-  uptr shadow_end = MEM_TO_SHADOW(
-      aligned_beg + aligned_size - SHADOW_GRANULARITY) + 1;
+  uptr shadow_end =
+      MEM_TO_SHADOW(aligned_beg + aligned_size - SHADOW_GRANULARITY) + 1;
   // FIXME: Page states are different on Windows, so using the same interface
   // for mapping shadow and zeroing out pages doesn't "just work", so we should
   // probably provide higher-level interface for these operations.
@@ -55,7 +53,7 @@ ALWAYS_INLINE void FastPoisonShadow(uptr aligned_beg, uptr aligned_size,
       // them, so default to memset.
       SANITIZER_RTEMS == 1 ||
       shadow_end - shadow_beg < common_flags()->clear_shadow_mmap_threshold) {
-    REAL(memset)((void*)shadow_beg, value, shadow_end - shadow_beg);
+    REAL(memset)((void *)shadow_beg, value, shadow_end - shadow_beg);
   } else {
     uptr page_size = GetPageSizeCached();
     uptr page_beg = RoundUpTo(shadow_beg, page_size);
@@ -73,14 +71,16 @@ ALWAYS_INLINE void FastPoisonShadow(uptr aligned_beg, uptr aligned_size,
       ReserveShadowMemoryRange(page_beg, page_end - 1, nullptr);
     }
   }
-#endif // SANITIZER_FUCHSIA
+#endif  // SANITIZER_FUCHSIA
 }
 
-ALWAYS_INLINE void FastPoisonShadowPartialRightRedzone(
-    uptr aligned_addr, uptr size, uptr redzone_size, u8 value) {
+ALWAYS_INLINE void FastPoisonShadowPartialRightRedzone(uptr aligned_addr,
+                                                       uptr size,
+                                                       uptr redzone_size,
+                                                       u8 value) {
   DCHECK(CanPoisonMemory());
   bool poison_partial = flags()->poison_partial;
-  u8 *shadow = (u8*)MEM_TO_SHADOW(aligned_addr);
+  u8 *shadow = (u8 *)MEM_TO_SHADOW(aligned_addr);
   for (uptr i = 0; i < redzone_size; i += SHADOW_GRANULARITY, shadow++) {
     if (i + SHADOW_GRANULARITY <= size) {
       *shadow = 0;  // fully addressable

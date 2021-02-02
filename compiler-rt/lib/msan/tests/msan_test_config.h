@@ -1,4 +1,5 @@
-//===-- msan_test_config.h ----------------------------------------*- C++ -*-===//
+//===-- msan_test_config.h ----------------------------------------*- C++
+//-*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -16,4 +17,4 @@
 
 #include "gtest/gtest.h"
 
-#endif // MSAN_TEST_CONFIG_H
+#endif  // MSAN_TEST_CONFIG_H

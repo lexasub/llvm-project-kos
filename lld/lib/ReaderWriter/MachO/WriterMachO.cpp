@@ -56,10 +56,10 @@ public:
     if (_ctx.outputMachOType() != llvm::MachO::MH_OBJECT)
       r.emplace_back(new MachHeaderAliasFile(_ctx));
   }
+
 private:
   const MachOLinkingContext &_ctx;
- };
-
+};
 
 } // namespace mach_o
 

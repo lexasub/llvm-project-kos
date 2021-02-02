@@ -16,8 +16,7 @@ void putstest();
 
 static const char *my_global = "test\n\00abc";
 
-int main()
-{
+int main() {
   fputs(my_global, stderr);
   putstest();
   fprintf(stderr, "Done.\n");
@@ -28,8 +27,7 @@ int main()
 
 static const char *my_other_global = "test\n\00abc";
 
-void putstest()
-{
+void putstest() {
   fputs(my_other_global, stderr);
 }
 

@@ -1,9 +1,9 @@
-// RUN: %clang_cc1 -fsyntax-only -std=c++11 %s -verify 
+// RUN: %clang_cc1 -fsyntax-only -std=c++11 %s -verify
 
 struct A {
-  int &f(int*);
-  float &f(int*) const noexcept;
-  
+  int &f(int *);
+  float &f(int *) const noexcept;
+
   int *ptr;
   auto g1() noexcept(noexcept(f(ptr))) -> decltype(f(this->ptr));
   auto g2() const noexcept(noexcept(f((*this).ptr))) -> decltype(f(ptr));
@@ -18,18 +18,17 @@ void testA(A &a) {
 
 struct B {
   char g();
-  template<class T> auto f(T t) -> decltype(t + g())
-  { return t + g(); }
+  template <class T> auto f(T t) -> decltype(t + g()) { return t + g(); }
 };
 
 template auto B::f(int t) -> decltype(t + g());
 
-template<typename T>
+template <typename T>
 struct C {
-  int &f(T*);
-  float &f(T*) const noexcept;
+  int &f(T *);
+  float &f(T *) const noexcept;
 
-  T* ptr;
+  T *ptr;
   auto g1() noexcept(noexcept(f(ptr))) -> decltype(f(ptr));
   auto g2() const noexcept(noexcept(f(((this))->ptr))) -> decltype(f(ptr));
   auto g3() noexcept(noexcept(f(this->ptr))) -> decltype(f((*this).ptr));
@@ -60,106 +59,102 @@ void test_C(C<int> ci) {
 }
 
 namespace PR14263 {
-  template<typename T> struct X {
-    void f();
-    T f() const;
+template <typename T> struct X {
+  void f();
+  T f() const;
 
-    auto g()       -> decltype(this->f()) { return f(); }
-    auto g() const -> decltype(this->f()) { return f(); }
-  };
-  template struct X<int>;
-}
+  auto g() -> decltype(this->f()) { return f(); }
+  auto g() const -> decltype(this->f()) { return f(); }
+};
+template struct X<int>;
+} // namespace PR14263
 
 namespace PR10036 {
-  template <class I>
-  void
-  iter_swap(I x, I y) noexcept;
+template <class I>
+void iter_swap(I x, I y) noexcept;
 
-  template <class T>
-  class A
-  {
-    T t_;
-  public:
-    void swap(A& a) noexcept(noexcept(iter_swap(&t_, &a.t_)));
-  };
+template <class T>
+class A {
+  T t_;
 
-  void test() {
-    A<int> i, j;
-    i.swap(j);
-  }
+public:
+  void swap(A &a) noexcept(noexcept(iter_swap(&t_, &a.t_)));
+};
+
+void test() {
+  A<int> i, j;
+  i.swap(j);
 }
+} // namespace PR10036
 
 namespace PR15290 {
-  template<typename T>
-  class A {
-    T v_;
-    friend int add_to_v(A &t) noexcept(noexcept(v_ + 42))
-    {
-      return t.v_ + 42;
-    }
-  };
-  void f()
-  {
-    A<int> t;
-    add_to_v(t);
+template <typename T>
+class A {
+  T v_;
+  friend int add_to_v(A &t) noexcept(noexcept(v_ + 42)) {
+    return t.v_ + 42;
   }
+};
+void f() {
+  A<int> t;
+  add_to_v(t);
 }
+} // namespace PR15290
 
 namespace Static {
-  struct X1 {
-    int m;
-    // FIXME: This should be accepted.
-    static auto f() -> decltype(m); // expected-error{{'this' cannot be implicitly used in a static member function declaration}}
-    static auto g() -> decltype(this->m); // expected-error{{'this' cannot be used in a static member function declaration}}
+struct X1 {
+  int m;
+  // FIXME: This should be accepted.
+  static auto f() -> decltype(m);       // expected-error{{'this' cannot be implicitly used in a static member function declaration}}
+  static auto g() -> decltype(this->m); // expected-error{{'this' cannot be used in a static member function declaration}}
 
-    static int h();
-    
-    static int i() noexcept(noexcept(m + 2)); // expected-error{{'this' cannot be implicitly used in a static member function declaration}}
-  };
+  static int h();
 
-  auto X1::h() -> decltype(m) { return 0; } // expected-error{{'this' cannot be implicitly used in a static member function declaration}}
+  static int i() noexcept(noexcept(m + 2)); // expected-error{{'this' cannot be implicitly used in a static member function declaration}}
+};
 
-  template<typename T>
-  struct X2 {
-    int m;
+auto X1::h() -> decltype(m) { return 0; } // expected-error{{'this' cannot be implicitly used in a static member function declaration}}
 
-    T f(T*);
-    static T f(int);
+template <typename T>
+struct X2 {
+  int m;
 
-    auto g(T x) -> decltype(f(x)) { return 0; }
-  };
+  T f(T *);
+  static T f(int);
 
-  void test_X2() {
-    X2<int>().g(0);
-  }
+  auto g(T x) -> decltype(f(x)) { return 0; }
+};
+
+void test_X2() {
+  X2<int>().g(0);
 }
+} // namespace Static
 
 namespace PR12564 {
-  struct Base {
-    void bar(Base&) {}
-  };
+struct Base {
+  void bar(Base &) {}
+};
 
-  struct Derived : Base {
-    void foo(Derived& d) noexcept(noexcept(d.bar(d))) {}
-  };
-}
+struct Derived : Base {
+  void foo(Derived &d) noexcept(noexcept(d.bar(d))) {}
+};
+} // namespace PR12564
 
 namespace rdar13473493 {
-  template <typename F>
-  class wrap
+template <typename F>
+class wrap {
+public:
+  template <typename... Args>
+  auto operator()(Args &&...args) const -> decltype(wrapped(args...)) // expected-note{{candidate template ignored: substitution failure [with Args = <int>]: member 'wrapped' used before its declaration}}
   {
-  public:
-    template <typename... Args>
-    auto operator()(Args&&... args) const -> decltype(wrapped(args...)) // expected-note{{candidate template ignored: substitution failure [with Args = <int>]: member 'wrapped' used before its declaration}}
-    {
-      return wrapped(args...);
-    }
-  
-  private:
-    F wrapped;
-  };
-
-  void test(wrap<int (*)(int)> w) {
-    w(5); // expected-error{{no matching function for call to object of type 'wrap<int (*)(int)>'}}
+    return wrapped(args...);
   }
+
+private:
+  F wrapped;
+};
+
+void test(wrap<int (*)(int)> w) {
+  w(5); // expected-error{{no matching function for call to object of type 'wrap<int (*)(int)>'}}
 }
+} // namespace rdar13473493

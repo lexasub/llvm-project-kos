@@ -31,8 +31,10 @@ main()
 {
     int *first = nullptr, *last = nullptr, *result = nullptr;
 
-    std::exclusive_scan(policy, first, last, result, 0); // expected-error {{no matching function for call to 'exclusive_scan'}}
-    std::exclusive_scan(policy, first, last, result, 0, std::plus<int>()); // expected-error {{no matching function for call to 'exclusive_scan'}}
+    std::exclusive_scan(policy, first, last, result,
+                        0); // expected-error {{no matching function for call to 'exclusive_scan'}}
+    std::exclusive_scan(policy, first, last, result, 0,
+                        std::plus<int>()); // expected-error {{no matching function for call to 'exclusive_scan'}}
 
     return 0;
 }

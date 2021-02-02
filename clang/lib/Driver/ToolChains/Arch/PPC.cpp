@@ -121,7 +121,8 @@ void ppc::getPPCTargetFeatures(const Driver &D, const llvm::Triple &Triple,
     Features.push_back("+secure-plt");
 }
 
-ppc::ReadGOTPtrMode ppc::getPPCReadGOTPtrMode(const Driver &D, const llvm::Triple &Triple,
+ppc::ReadGOTPtrMode ppc::getPPCReadGOTPtrMode(const Driver &D,
+                                              const llvm::Triple &Triple,
                                               const ArgList &Args) {
   if (Args.getLastArg(options::OPT_msecure_plt))
     return ppc::ReadGOTPtrMode::SecurePlt;

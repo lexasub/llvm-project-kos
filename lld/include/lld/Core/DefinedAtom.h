@@ -84,85 +84,85 @@ class File;
 class DefinedAtom : public Atom {
 public:
   enum Interposable {
-    interposeNo,            // linker can directly bind uses of this atom
-    interposeYes,           // linker must indirect (through GOT) uses
+    interposeNo,               // linker can directly bind uses of this atom
+    interposeYes,              // linker must indirect (through GOT) uses
     interposeYesAndRuntimeWeak // must indirect and mark symbol weak in final
                                // linked image
   };
 
   enum Merge {
-    mergeNo,                // Another atom with same name is error
-    mergeAsTentative,       // Is ANSI C tentative definition, can be coalesced
-    mergeAsWeak,            // Is C++ inline definition that was not inlined,
-                            // but address was not taken, so atom can be hidden
-                            // by linker
+    mergeNo,          // Another atom with same name is error
+    mergeAsTentative, // Is ANSI C tentative definition, can be coalesced
+    mergeAsWeak,      // Is C++ inline definition that was not inlined,
+                      // but address was not taken, so atom can be hidden
+                      // by linker
     mergeAsWeakAndAddressUsed, // Is C++ definition inline definition whose
                                // address was taken.
-    mergeSameNameAndSize,   // Another atom with different size is error
-    mergeByLargestSection,  // Choose an atom whose section is the largest.
-    mergeByContent,         // Merge with other constants with same content.
+    mergeSameNameAndSize,      // Another atom with different size is error
+    mergeByLargestSection,     // Choose an atom whose section is the largest.
+    mergeByContent,            // Merge with other constants with same content.
   };
 
   enum ContentType {
-    typeUnknown,            // for use with definitionUndefined
-    typeMachHeader,         // atom representing mach_header [Darwin]
-    typeCode,               // executable code
-    typeResolver,           // function which returns address of target
-    typeBranchIsland,       // linker created for large binaries
-    typeBranchShim,         // linker created to switch thumb mode
-    typeStub,               // linker created for calling external function
-    typeStubHelper,         // linker created for initial stub binding
-    typeConstant,           // a read-only constant
-    typeCString,            // a zero terminated UTF8 C string
-    typeUTF16String,        // a zero terminated UTF16 string
-    typeCFI,                // a FDE or CIE from dwarf unwind info
-    typeLSDA,               // extra unwinding info
-    typeLiteral4,           // a four-btye read-only constant
-    typeLiteral8,           // an eight-btye read-only constant
-    typeLiteral16,          // a sixteen-btye read-only constant
-    typeData,               // read-write data
-    typeDataFast,           // allow data to be quickly accessed
-    typeZeroFill,           // zero-fill data
-    typeZeroFillFast,       // allow zero-fill data to be quicky accessed
-    typeConstData,          // read-only data after dynamic linker is done
-    typeObjC1Class,         // ObjC1 class [Darwin]
-    typeLazyPointer,        // pointer through which a stub jumps
-    typeLazyDylibPointer,   // pointer through which a stub jumps [Darwin]
-    typeNonLazyPointer,     // pointer to external symbol
-    typeCFString,           // NS/CFString object [Darwin]
-    typeGOT,                // pointer to external symbol
-    typeInitializerPtr,     // pointer to initializer function
-    typeTerminatorPtr,      // pointer to terminator function
-    typeCStringPtr,         // pointer to UTF8 C string [Darwin]
-    typeObjCClassPtr,       // pointer to ObjC class [Darwin]
-    typeObjC2CategoryList,  // pointers to ObjC category [Darwin]
-    typeObjCImageInfo,      // pointer to ObjC class [Darwin]
-    typeObjCMethodList,     // pointer to ObjC method list [Darwin]
-    typeDTraceDOF,          // runtime data for Dtrace [Darwin]
-    typeInterposingTuples,  // tuples of interposing info for dyld [Darwin]
-    typeTempLTO,            // temporary atom for bitcode reader
-    typeCompactUnwindInfo,  // runtime data for unwinder [Darwin]
-    typeProcessedUnwindInfo,// compressed compact unwind info [Darwin]
-    typeThunkTLV,           // thunk used to access a TLV [Darwin]
-    typeTLVInitialData,     // initial data for a TLV [Darwin]
-    typeTLVInitialZeroFill, // TLV initial zero fill data [Darwin]
-    typeTLVInitializerPtr,  // pointer to thread local initializer [Darwin]
-    typeDSOHandle,          // atom representing DSO handle [Darwin]
-    typeSectCreate,         // Created via the -sectcreate option [Darwin]
+    typeUnknown,             // for use with definitionUndefined
+    typeMachHeader,          // atom representing mach_header [Darwin]
+    typeCode,                // executable code
+    typeResolver,            // function which returns address of target
+    typeBranchIsland,        // linker created for large binaries
+    typeBranchShim,          // linker created to switch thumb mode
+    typeStub,                // linker created for calling external function
+    typeStubHelper,          // linker created for initial stub binding
+    typeConstant,            // a read-only constant
+    typeCString,             // a zero terminated UTF8 C string
+    typeUTF16String,         // a zero terminated UTF16 string
+    typeCFI,                 // a FDE or CIE from dwarf unwind info
+    typeLSDA,                // extra unwinding info
+    typeLiteral4,            // a four-btye read-only constant
+    typeLiteral8,            // an eight-btye read-only constant
+    typeLiteral16,           // a sixteen-btye read-only constant
+    typeData,                // read-write data
+    typeDataFast,            // allow data to be quickly accessed
+    typeZeroFill,            // zero-fill data
+    typeZeroFillFast,        // allow zero-fill data to be quicky accessed
+    typeConstData,           // read-only data after dynamic linker is done
+    typeObjC1Class,          // ObjC1 class [Darwin]
+    typeLazyPointer,         // pointer through which a stub jumps
+    typeLazyDylibPointer,    // pointer through which a stub jumps [Darwin]
+    typeNonLazyPointer,      // pointer to external symbol
+    typeCFString,            // NS/CFString object [Darwin]
+    typeGOT,                 // pointer to external symbol
+    typeInitializerPtr,      // pointer to initializer function
+    typeTerminatorPtr,       // pointer to terminator function
+    typeCStringPtr,          // pointer to UTF8 C string [Darwin]
+    typeObjCClassPtr,        // pointer to ObjC class [Darwin]
+    typeObjC2CategoryList,   // pointers to ObjC category [Darwin]
+    typeObjCImageInfo,       // pointer to ObjC class [Darwin]
+    typeObjCMethodList,      // pointer to ObjC method list [Darwin]
+    typeDTraceDOF,           // runtime data for Dtrace [Darwin]
+    typeInterposingTuples,   // tuples of interposing info for dyld [Darwin]
+    typeTempLTO,             // temporary atom for bitcode reader
+    typeCompactUnwindInfo,   // runtime data for unwinder [Darwin]
+    typeProcessedUnwindInfo, // compressed compact unwind info [Darwin]
+    typeThunkTLV,            // thunk used to access a TLV [Darwin]
+    typeTLVInitialData,      // initial data for a TLV [Darwin]
+    typeTLVInitialZeroFill,  // TLV initial zero fill data [Darwin]
+    typeTLVInitializerPtr,   // pointer to thread local initializer [Darwin]
+    typeDSOHandle,           // atom representing DSO handle [Darwin]
+    typeSectCreate,          // Created via the -sectcreate option [Darwin]
   };
 
   // Permission bits for atoms and segments. The order of these values are
   // important, because the layout pass may sort atoms by permission if other
   // attributes are the same.
   enum ContentPermissions {
-    perm___  = 0,           // mapped as unaccessible
-    permR__  = 8,           // mapped read-only
-    permRW_  = 8 + 2,       // mapped readable and writable
-    permRW_L = 8 + 2 + 1,   // initially mapped r/w, then made read-only
-                            // loader writable
-    permR_X  = 8 + 4,       // mapped readable and executable
-    permRWX  = 8 + 2 + 4,   // mapped readable and writable and executable
-    permUnknown = 16        // unknown or invalid permissions
+    perm___ = 0,          // mapped as unaccessible
+    permR__ = 8,          // mapped read-only
+    permRW_ = 8 + 2,      // mapped readable and writable
+    permRW_L = 8 + 2 + 1, // initially mapped r/w, then made read-only
+                          // loader writable
+    permR_X = 8 + 4,      // mapped readable and executable
+    permRWX = 8 + 2 + 4,  // mapped readable and writable and executable
+    permUnknown = 16      // unknown or invalid permissions
   };
 
   enum SectionChoice {
@@ -172,9 +172,9 @@ public:
   };
 
   enum DeadStripKind {
-    deadStripNormal,        // linker may dead strip this atom
-    deadStripNever,         // linker must never dead strip this atom
-    deadStripAlways         // linker must remove this atom if unused
+    deadStripNormal, // linker may dead strip this atom
+    deadStripNever,  // linker must never dead strip this atom
+    deadStripAlways  // linker must remove this atom if unused
   };
 
   enum DynamicExport {
@@ -187,17 +187,17 @@ public:
 
   // Attributes describe a code model used by the atom.
   enum CodeModel {
-    codeNA,           // no specific code model
+    codeNA, // no specific code model
     // MIPS code models
     codeMipsPIC,      // PIC function in a PIC / non-PIC mixed file
     codeMipsMicro,    // microMIPS instruction encoding
     codeMipsMicroPIC, // microMIPS instruction encoding + PIC
     codeMips16,       // MIPS-16 instruction encoding
     // ARM code models
-    codeARMThumb,     // ARM Thumb instruction set
-    codeARM_a,        // $a-like mapping symbol (for ARM code)
-    codeARM_d,        // $d-like mapping symbol (for data)
-    codeARM_t,        // $t-like mapping symbol (for Thumb code)
+    codeARMThumb, // ARM Thumb instruction set
+    codeARM_a,    // $a-like mapping symbol (for ARM code)
+    codeARM_d,    // $d-like mapping symbol (for data)
+    codeARM_t,    // $t-like mapping symbol (for Thumb code)
   };
 
   struct Alignment {
@@ -265,9 +265,7 @@ public:
   virtual DeadStripKind deadStrip() const = 0;
 
   /// Under which conditions should this atom be dynamically exported.
-  virtual DynamicExport dynamicExport() const {
-    return dynamicExportNormal;
-  }
+  virtual DynamicExport dynamicExport() const { return dynamicExportNormal; }
 
   /// Code model used by the atom.
   virtual CodeModel codeModel() const { return codeNA; }
@@ -289,15 +287,11 @@ public:
   class reference_iterator {
   public:
     reference_iterator(const DefinedAtom &a, const void *it)
-      : _atom(a), _it(it) { }
+        : _atom(a), _it(it) {}
 
-    const Reference *operator*() const {
-      return _atom.derefIterator(_it);
-    }
+    const Reference *operator*() const { return _atom.derefIterator(_it); }
 
-    const Reference *operator->() const {
-      return _atom.derefIterator(_it);
-    }
+    const Reference *operator->() const { return _atom.derefIterator(_it); }
 
     bool operator==(const reference_iterator &other) const {
       return _it == other._it;
@@ -311,6 +305,7 @@ public:
       _atom.incrementIterator(_it);
       return *this;
     }
+
   private:
     const DefinedAtom &_atom;
     const void *_it;
@@ -356,7 +351,7 @@ public:
 protected:
   // DefinedAtom is an abstract base class. Only subclasses can access
   // constructor.
-  DefinedAtom() : Atom(definitionRegular) { }
+  DefinedAtom() : Atom(definitionRegular) {}
 
   ~DefinedAtom() override = default;
 

@@ -3,11 +3,13 @@
 #if !defined(RUN1)
 #define RUN1
 
-struct CXXRecordDecl { CXXRecordDecl(int); };
+struct CXXRecordDecl {
+  CXXRecordDecl(int);
+};
 
 template <typename T, typename U>
 T cast(U u) {
-  return reinterpret_cast<T&>(u);
+  return reinterpret_cast<T &>(u);
 }
 
 void test1() {

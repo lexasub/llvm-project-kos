@@ -23,7 +23,7 @@ namespace {
 
 struct TBAATestCompiler : public TestCompiler {
   TBAATestCompiler(clang::LangOptions LO, clang::CodeGenOptions CGO)
-    : TestCompiler(LO, CGO) {}
+      : TestCompiler(LO, CGO) {}
   static clang::CodeGenOptions getCommonCodeGenOpts() {
     clang::CodeGenOptions CGOpts;
     CGOpts.StructPathTBAA = 1;
@@ -32,21 +32,13 @@ struct TBAATestCompiler : public TestCompiler {
   }
 };
 
-auto OmnipotentCharC = MMTuple(
-  MMString("omnipotent char"),
-  MMTuple(
-    MMString("Simple C/C++ TBAA")),
-  MConstInt(0, 64)
-);
+auto OmnipotentCharC =
+    MMTuple(MMString("omnipotent char"), MMTuple(MMString("Simple C/C++ TBAA")),
+            MConstInt(0, 64));
 
-
-auto OmnipotentCharCXX = MMTuple(
-  MMString("omnipotent char"),
-  MMTuple(
-    MMString("Simple C++ TBAA")),
-  MConstInt(0, 64)
-);
-
+auto OmnipotentCharCXX =
+    MMTuple(MMString("omnipotent char"), MMTuple(MMString("Simple C++ TBAA")),
+            MConstInt(0, 64));
 
 TEST(TBAAMetadataTest, BasicTypes) {
   const char TestProgram[] = R"**(
@@ -66,73 +58,41 @@ TEST(TBAAMetadataTest, BasicTypes) {
   Compiler.init(TestProgram);
   const BasicBlock *BB = Compiler.compile();
 
-  const Instruction *I = match(BB,
-      MInstruction(Instruction::Store,
-        MConstInt(4, 8),
-        MMTuple(
-          OmnipotentCharC,
-          MSameAs(0),
-          MConstInt(0))));
+  const Instruction *I = match(
+      BB, MInstruction(Instruction::Store, MConstInt(4, 8),
+                       MMTuple(OmnipotentCharC, MSameAs(0), MConstInt(0))));
   ASSERT_TRUE(I);
 
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(11, 16),
-        MMTuple(
-          MMTuple(
-            MMString("short"),
-            OmnipotentCharC,
-            MConstInt(0)),
-          MSameAs(0),
-          MConstInt(0))));
+  I = matchNext(I, MInstruction(Instruction::Store, MConstInt(11, 16),
+                                MMTuple(MMTuple(MMString("short"),
+                                                OmnipotentCharC, MConstInt(0)),
+                                        MSameAs(0), MConstInt(0))));
   ASSERT_TRUE(I);
 
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(601, 32),
-        MMTuple(
-          MMTuple(
-            MMString("int"),
-            OmnipotentCharC,
-            MConstInt(0)),
-          MSameAs(0),
-          MConstInt(0))));
+  I = matchNext(I, MInstruction(Instruction::Store, MConstInt(601, 32),
+                                MMTuple(MMTuple(MMString("int"),
+                                                OmnipotentCharC, MConstInt(0)),
+                                        MSameAs(0), MConstInt(0))));
   ASSERT_TRUE(I);
 
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(604, 64),
-        MMTuple(
-          MMTuple(
-            MMString("long long"),
-            OmnipotentCharC,
-            MConstInt(0)),
-          MSameAs(0),
-          MConstInt(0))));
+  I = matchNext(I, MInstruction(Instruction::Store, MConstInt(604, 64),
+                                MMTuple(MMTuple(MMString("long long"),
+                                                OmnipotentCharC, MConstInt(0)),
+                                        MSameAs(0), MConstInt(0))));
   ASSERT_TRUE(I);
 
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MValType(Type::getInt8PtrTy(Compiler.Context)),
-        MMTuple(
-          MMTuple(
-            MMString("any pointer"),
-            OmnipotentCharC,
-            MConstInt(0)),
-          MSameAs(0),
-          MConstInt(0))));
+  I = matchNext(I, MInstruction(Instruction::Store,
+                                MValType(Type::getInt8PtrTy(Compiler.Context)),
+                                MMTuple(MMTuple(MMString("any pointer"),
+                                                OmnipotentCharC, MConstInt(0)),
+                                        MSameAs(0), MConstInt(0))));
   ASSERT_TRUE(I);
 
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MValType(Type::getInt32PtrTy(Compiler.Context)),
-        MMTuple(
-          MMTuple(
-            MMString("any pointer"),
-            OmnipotentCharC,
-            MConstInt(0)),
-          MSameAs(0),
-          MConstInt(0))));
+  I = matchNext(I, MInstruction(Instruction::Store,
+                                MValType(Type::getInt32PtrTy(Compiler.Context)),
+                                MMTuple(MMTuple(MMString("any pointer"),
+                                                OmnipotentCharC, MConstInt(0)),
+                                        MSameAs(0), MConstInt(0))));
   ASSERT_TRUE(I);
 }
 
@@ -164,99 +124,54 @@ TEST(TBAAMetadataTest, CFields) {
   const BasicBlock *BB = Compiler.compile();
 
   auto StructABC = MMTuple(
-    MMString("ABC"),
-    MMTuple(
-      MMString("short"),
-      OmnipotentCharC,
-      MConstInt(0)),
-    MConstInt(0),
-    MMTuple(
-      MMString("int"),
-      OmnipotentCharC,
-      MConstInt(0)),
-    MConstInt(4),
-    MMTuple(
-      MMString("long long"),
-      OmnipotentCharC,
-      MConstInt(0)),
-    MConstInt(8),
-    MSameAs(1),
-    MConstInt(16),
-    MSameAs(3),
-    MConstInt(20),
-    MSameAs(5),
-    MConstInt(24));
+      MMString("ABC"),
+      MMTuple(MMString("short"), OmnipotentCharC, MConstInt(0)), MConstInt(0),
+      MMTuple(MMString("int"), OmnipotentCharC, MConstInt(0)), MConstInt(4),
+      MMTuple(MMString("long long"), OmnipotentCharC, MConstInt(0)),
+      MConstInt(8), MSameAs(1), MConstInt(16), MSameAs(3), MConstInt(20),
+      MSameAs(5), MConstInt(24));
 
-  const Instruction *I = match(BB,
-      MInstruction(Instruction::Store,
-        MConstInt(4, 32),
-        MMTuple(
-          StructABC,
-          MMTuple(
-            MMString("int"),
-            OmnipotentCharC,
-            MConstInt(0)),
-          MConstInt(4))));
+  const Instruction *I =
+      match(BB, MInstruction(Instruction::Store, MConstInt(4, 32),
+                             MMTuple(StructABC,
+                                     MMTuple(MMString("int"), OmnipotentCharC,
+                                             MConstInt(0)),
+                                     MConstInt(4))));
   ASSERT_TRUE(I);
 
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(11, 16),
-        MMTuple(
-          StructABC,
-          MMTuple(
-            MMString("short"),
-            OmnipotentCharC,
-            MConstInt(0)),
-          MConstInt(0))));
+  I = matchNext(I, MInstruction(Instruction::Store, MConstInt(11, 16),
+                                MMTuple(StructABC,
+                                        MMTuple(MMString("short"),
+                                                OmnipotentCharC, MConstInt(0)),
+                                        MConstInt(0))));
   ASSERT_TRUE(I);
 
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(601, 64),
-        MMTuple(
-          StructABC,
-          MMTuple(
-            MMString("long long"),
-            OmnipotentCharC,
-            MConstInt(0)),
-          MConstInt(8))));
+  I = matchNext(I, MInstruction(Instruction::Store, MConstInt(601, 64),
+                                MMTuple(StructABC,
+                                        MMTuple(MMString("long long"),
+                                                OmnipotentCharC, MConstInt(0)),
+                                        MConstInt(8))));
   ASSERT_TRUE(I);
 
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(22, 16),
-        MMTuple(
-          StructABC,
-          MMTuple(
-            MMString("short"),
-            OmnipotentCharC,
-            MConstInt(0)),
-          MConstInt(16))));
+  I = matchNext(I, MInstruction(Instruction::Store, MConstInt(22, 16),
+                                MMTuple(StructABC,
+                                        MMTuple(MMString("short"),
+                                                OmnipotentCharC, MConstInt(0)),
+                                        MConstInt(16))));
   ASSERT_TRUE(I);
 
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(77, 32),
-        MMTuple(
-          StructABC,
-          MMTuple(
-            MMString("int"),
-            OmnipotentCharC,
-            MConstInt(0)),
-          MConstInt(20))));
+  I = matchNext(I, MInstruction(Instruction::Store, MConstInt(77, 32),
+                                MMTuple(StructABC,
+                                        MMTuple(MMString("int"),
+                                                OmnipotentCharC, MConstInt(0)),
+                                        MConstInt(20))));
   ASSERT_TRUE(I);
 
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(604, 64),
-        MMTuple(
-          StructABC,
-          MMTuple(
-            MMString("long long"),
-            OmnipotentCharC,
-            MConstInt(0)),
-          MConstInt(24))));
+  I = matchNext(I, MInstruction(Instruction::Store, MConstInt(604, 64),
+                                MMTuple(StructABC,
+                                        MMTuple(MMString("long long"),
+                                                OmnipotentCharC, MConstInt(0)),
+                                        MConstInt(24))));
   ASSERT_TRUE(I);
 }
 
@@ -286,71 +201,44 @@ TEST(TBAAMetadataTest, CTypedefFields) {
   const BasicBlock *BB = Compiler.compile();
 
   auto NamelessStruct = MMTuple(
-    MMString(""),
-    MMTuple(
-      MMString("short"),
-      OmnipotentCharC,
-      MConstInt(0)),
-    MConstInt(0),
-    MMTuple(
-      MMString("int"),
-      OmnipotentCharC,
-      MConstInt(0)),
-    MConstInt(4));
+      MMString(""), MMTuple(MMString("short"), OmnipotentCharC, MConstInt(0)),
+      MConstInt(0), MMTuple(MMString("int"), OmnipotentCharC, MConstInt(0)),
+      MConstInt(4));
 
   const Metadata *MetaABC = nullptr;
-  const Instruction *I = match(BB,
-      MInstruction(Instruction::Store,
-        MConstInt(4, 32),
-        MMTuple(
-          MMSave(MetaABC, NamelessStruct),
-          MMTuple(
-            MMString("int"),
-            OmnipotentCharC,
-            MConstInt(0)),
-          MConstInt(4))));
+  const Instruction *I =
+      match(BB, MInstruction(Instruction::Store, MConstInt(4, 32),
+                             MMTuple(MMSave(MetaABC, NamelessStruct),
+                                     MMTuple(MMString("int"), OmnipotentCharC,
+                                             MConstInt(0)),
+                                     MConstInt(4))));
   ASSERT_TRUE(I);
 
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(11, 16),
-        MMTuple(
-          NamelessStruct,
-          MMTuple(
-            MMString("short"),
-            OmnipotentCharC,
-            MConstInt(0)),
-          MConstInt(0))));
+  I = matchNext(I, MInstruction(Instruction::Store, MConstInt(11, 16),
+                                MMTuple(NamelessStruct,
+                                        MMTuple(MMString("short"),
+                                                OmnipotentCharC, MConstInt(0)),
+                                        MConstInt(0))));
   ASSERT_TRUE(I);
 
   const Metadata *MetaCDE = nullptr;
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(44, 32),
-        MMTuple(
-          MMSave(MetaCDE, NamelessStruct),
-          MMTuple(
-            MMString("int"),
-            OmnipotentCharC,
-            MConstInt(0)),
-          MConstInt(4))));
+  I = matchNext(I, MInstruction(Instruction::Store, MConstInt(44, 32),
+                                MMTuple(MMSave(MetaCDE, NamelessStruct),
+                                        MMTuple(MMString("int"),
+                                                OmnipotentCharC, MConstInt(0)),
+                                        MConstInt(4))));
   ASSERT_TRUE(I);
 
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(111, 16),
-        MMTuple(
-          NamelessStruct,
-          MMTuple(
-            MMString("short"),
-            OmnipotentCharC,
-            MConstInt(0)),
-          MConstInt(0))));
+  I = matchNext(I, MInstruction(Instruction::Store, MConstInt(111, 16),
+                                MMTuple(NamelessStruct,
+                                        MMTuple(MMString("short"),
+                                                OmnipotentCharC, MConstInt(0)),
+                                        MConstInt(0))));
   ASSERT_TRUE(I);
 
   // FIXME: Nameless structures used in definitions of 'ABC' and 'CDE' are
   // different structures and must be described by different descriptors.
-  //ASSERT_TRUE(MetaABC != MetaCDE);
+  // ASSERT_TRUE(MetaABC != MetaCDE);
 }
 
 TEST(TBAAMetadataTest, CTypedefFields2) {
@@ -379,72 +267,45 @@ TEST(TBAAMetadataTest, CTypedefFields2) {
   const BasicBlock *BB = Compiler.compile();
 
   auto NamelessStruct = MMTuple(
-    MMString(""),
-    MMTuple(
-      MMString("short"),
-      OmnipotentCharC,
-      MConstInt(0)),
-    MConstInt(0),
-    MMTuple(
-      MMString("int"),
-      OmnipotentCharC,
-      MConstInt(0)),
-    MConstInt(4));
+      MMString(""), MMTuple(MMString("short"), OmnipotentCharC, MConstInt(0)),
+      MConstInt(0), MMTuple(MMString("int"), OmnipotentCharC, MConstInt(0)),
+      MConstInt(4));
 
   const Metadata *MetaABC = nullptr;
-  const Instruction *I = match(BB,
-      MInstruction(Instruction::Store,
-        MConstInt(4, 32),
-        MMTuple(
-          MMSave(MetaABC, NamelessStruct),
-          MMTuple(
-            MMString("int"),
-            OmnipotentCharC,
-            MConstInt(0)),
-          MConstInt(4))));
+  const Instruction *I =
+      match(BB, MInstruction(Instruction::Store, MConstInt(4, 32),
+                             MMTuple(MMSave(MetaABC, NamelessStruct),
+                                     MMTuple(MMString("int"), OmnipotentCharC,
+                                             MConstInt(0)),
+                                     MConstInt(4))));
   ASSERT_TRUE(I);
 
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(11, 16),
-        MMTuple(
-          NamelessStruct,
-          MMTuple(
-            MMString("short"),
-            OmnipotentCharC,
-            MConstInt(0)),
-          MConstInt(0))));
+  I = matchNext(I, MInstruction(Instruction::Store, MConstInt(11, 16),
+                                MMTuple(NamelessStruct,
+                                        MMTuple(MMString("short"),
+                                                OmnipotentCharC, MConstInt(0)),
+                                        MConstInt(0))));
   ASSERT_TRUE(I);
 
   const Metadata *MetaCDE = nullptr;
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(44, 32),
-        MMTuple(
-          MMSave(MetaCDE, NamelessStruct),
-          MMTuple(
-            MMString("int"),
-            OmnipotentCharC,
-            MConstInt(0)),
-          MConstInt(4))));
+  I = matchNext(I, MInstruction(Instruction::Store, MConstInt(44, 32),
+                                MMTuple(MMSave(MetaCDE, NamelessStruct),
+                                        MMTuple(MMString("int"),
+                                                OmnipotentCharC, MConstInt(0)),
+                                        MConstInt(4))));
   ASSERT_TRUE(I);
 
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(111, 16),
-        MMTuple(
-          NamelessStruct,
-          MMTuple(
-            MMString("short"),
-            OmnipotentCharC,
-            MConstInt(0)),
-          MConstInt(0))));
+  I = matchNext(I, MInstruction(Instruction::Store, MConstInt(111, 16),
+                                MMTuple(NamelessStruct,
+                                        MMTuple(MMString("short"),
+                                                OmnipotentCharC, MConstInt(0)),
+                                        MConstInt(0))));
   ASSERT_TRUE(I);
 
   // FIXME: Nameless structures used in definitions of 'ABC' and 'CDE' are
   // different structures, although they have the same field sequence. They must
   // be described by different descriptors.
-  //ASSERT_TRUE(MetaABC != MetaCDE);
+  // ASSERT_TRUE(MetaABC != MetaCDE);
 }
 
 TEST(TBAAMetadataTest, CTypedefFields3) {
@@ -473,77 +334,42 @@ TEST(TBAAMetadataTest, CTypedefFields3) {
   const BasicBlock *BB = Compiler.compile();
 
   auto NamelessStruct1 = MMTuple(
-    MMString(""),
-    MMTuple(
-      MMString("short"),
-      OmnipotentCharC,
-      MConstInt(0)),
-    MConstInt(0),
-    MMTuple(
-      MMString("int"),
-      OmnipotentCharC,
-      MConstInt(0)),
-    MConstInt(4));
+      MMString(""), MMTuple(MMString("short"), OmnipotentCharC, MConstInt(0)),
+      MConstInt(0), MMTuple(MMString("int"), OmnipotentCharC, MConstInt(0)),
+      MConstInt(4));
 
   auto NamelessStruct2 = MMTuple(
-    MMString(""),
-    MMTuple(
-      MMString("int"),
-      OmnipotentCharC,
-      MConstInt(0)),
-    MConstInt(0),
-    MMTuple(
-      MMString("short"),
-      OmnipotentCharC,
-      MConstInt(0)),
-    MConstInt(4));
+      MMString(""), MMTuple(MMString("int"), OmnipotentCharC, MConstInt(0)),
+      MConstInt(0), MMTuple(MMString("short"), OmnipotentCharC, MConstInt(0)),
+      MConstInt(4));
 
-  const Instruction *I = match(BB,
-      MInstruction(Instruction::Store,
-        MConstInt(4, 32),
-        MMTuple(
-          NamelessStruct1,
-          MMTuple(
-            MMString("int"),
-            OmnipotentCharC,
-            MConstInt(0)),
-          MConstInt(4))));
+  const Instruction *I =
+      match(BB, MInstruction(Instruction::Store, MConstInt(4, 32),
+                             MMTuple(NamelessStruct1,
+                                     MMTuple(MMString("int"), OmnipotentCharC,
+                                             MConstInt(0)),
+                                     MConstInt(4))));
   ASSERT_TRUE(I);
 
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(11, 16),
-        MMTuple(
-          NamelessStruct1,
-          MMTuple(
-            MMString("short"),
-            OmnipotentCharC,
-            MConstInt(0)),
-          MConstInt(0))));
+  I = matchNext(I, MInstruction(Instruction::Store, MConstInt(11, 16),
+                                MMTuple(NamelessStruct1,
+                                        MMTuple(MMString("short"),
+                                                OmnipotentCharC, MConstInt(0)),
+                                        MConstInt(0))));
   ASSERT_TRUE(I);
 
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(44, 32),
-        MMTuple(
-          NamelessStruct2,
-          MMTuple(
-            MMString("int"),
-            OmnipotentCharC,
-            MConstInt(0)),
-          MConstInt(0))));
+  I = matchNext(I, MInstruction(Instruction::Store, MConstInt(44, 32),
+                                MMTuple(NamelessStruct2,
+                                        MMTuple(MMString("int"),
+                                                OmnipotentCharC, MConstInt(0)),
+                                        MConstInt(0))));
   ASSERT_TRUE(I);
 
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(111, 16),
-        MMTuple(
-          NamelessStruct2,
-          MMTuple(
-            MMString("short"),
-            OmnipotentCharC,
-            MConstInt(0)),
-          MConstInt(4))));
+  I = matchNext(I, MInstruction(Instruction::Store, MConstInt(111, 16),
+                                MMTuple(NamelessStruct2,
+                                        MMTuple(MMString("short"),
+                                                OmnipotentCharC, MConstInt(0)),
+                                        MConstInt(4))));
   ASSERT_TRUE(I);
 }
 
@@ -576,99 +402,59 @@ TEST(TBAAMetadataTest, CXXFields) {
   const BasicBlock *BB = Compiler.compile();
 
   auto StructABC = MMTuple(
-    MMString("_ZTS3ABC"),
-    MMTuple(
-      MMString("short"),
-      OmnipotentCharCXX,
-      MConstInt(0)),
-    MConstInt(0),
-    MMTuple(
-      MMString("int"),
-      OmnipotentCharCXX,
-      MConstInt(0)),
-    MConstInt(4),
-    MMTuple(
-      MMString("long long"),
-      OmnipotentCharCXX,
-      MConstInt(0)),
-    MConstInt(8),
-    MSameAs(1),
-    MConstInt(16),
-    MSameAs(3),
-    MConstInt(20),
-    MSameAs(5),
-    MConstInt(24));
+      MMString("_ZTS3ABC"),
+      MMTuple(MMString("short"), OmnipotentCharCXX, MConstInt(0)), MConstInt(0),
+      MMTuple(MMString("int"), OmnipotentCharCXX, MConstInt(0)), MConstInt(4),
+      MMTuple(MMString("long long"), OmnipotentCharCXX, MConstInt(0)),
+      MConstInt(8), MSameAs(1), MConstInt(16), MSameAs(3), MConstInt(20),
+      MSameAs(5), MConstInt(24));
 
-  const Instruction *I = match(BB,
-      MInstruction(Instruction::Store,
-        MConstInt(4, 32),
-        MMTuple(
-          StructABC,
-          MMTuple(
-            MMString("int"),
-            OmnipotentCharCXX,
-            MConstInt(0)),
-          MConstInt(4))));
+  const Instruction *I =
+      match(BB, MInstruction(Instruction::Store, MConstInt(4, 32),
+                             MMTuple(StructABC,
+                                     MMTuple(MMString("int"), OmnipotentCharCXX,
+                                             MConstInt(0)),
+                                     MConstInt(4))));
   ASSERT_TRUE(I);
 
   I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(11, 16),
-        MMTuple(
-          StructABC,
-          MMTuple(
-            MMString("short"),
-            OmnipotentCharCXX,
-            MConstInt(0)),
-          MConstInt(0))));
+                MInstruction(Instruction::Store, MConstInt(11, 16),
+                             MMTuple(StructABC,
+                                     MMTuple(MMString("short"),
+                                             OmnipotentCharCXX, MConstInt(0)),
+                                     MConstInt(0))));
   ASSERT_TRUE(I);
 
   I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(601, 64),
-        MMTuple(
-          StructABC,
-          MMTuple(
-            MMString("long long"),
-            OmnipotentCharCXX,
-            MConstInt(0)),
-          MConstInt(8))));
+                MInstruction(Instruction::Store, MConstInt(601, 64),
+                             MMTuple(StructABC,
+                                     MMTuple(MMString("long long"),
+                                             OmnipotentCharCXX, MConstInt(0)),
+                                     MConstInt(8))));
   ASSERT_TRUE(I);
 
   I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(22, 16),
-        MMTuple(
-          StructABC,
-          MMTuple(
-            MMString("short"),
-            OmnipotentCharCXX,
-            MConstInt(0)),
-          MConstInt(16))));
+                MInstruction(Instruction::Store, MConstInt(22, 16),
+                             MMTuple(StructABC,
+                                     MMTuple(MMString("short"),
+                                             OmnipotentCharCXX, MConstInt(0)),
+                                     MConstInt(16))));
+  ASSERT_TRUE(I);
+
+  I = matchNext(
+      I, MInstruction(
+             Instruction::Store, MConstInt(77, 32),
+             MMTuple(StructABC,
+                     MMTuple(MMString("int"), OmnipotentCharCXX, MConstInt(0)),
+                     MConstInt(20))));
   ASSERT_TRUE(I);
 
   I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(77, 32),
-        MMTuple(
-          StructABC,
-          MMTuple(
-            MMString("int"),
-            OmnipotentCharCXX,
-            MConstInt(0)),
-          MConstInt(20))));
-  ASSERT_TRUE(I);
-
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(604, 64),
-        MMTuple(
-          StructABC,
-          MMTuple(
-            MMString("long long"),
-            OmnipotentCharCXX,
-            MConstInt(0)),
-          MConstInt(24))));
+                MInstruction(Instruction::Store, MConstInt(604, 64),
+                             MMTuple(StructABC,
+                                     MMTuple(MMString("long long"),
+                                             OmnipotentCharCXX, MConstInt(0)),
+                                     MConstInt(24))));
   ASSERT_TRUE(I);
 }
 
@@ -699,77 +485,45 @@ TEST(TBAAMetadataTest, CXXTypedefFields) {
   const BasicBlock *BB = Compiler.compile();
 
   auto StructABC = MMTuple(
-    MMString("_ZTS3ABC"),
-    MMTuple(
-      MMString("short"),
-      OmnipotentCharCXX,
-      MConstInt(0)),
-    MConstInt(0),
-    MMTuple(
-      MMString("int"),
-      OmnipotentCharCXX,
-      MConstInt(0)),
-    MConstInt(4));
+      MMString("_ZTS3ABC"),
+      MMTuple(MMString("short"), OmnipotentCharCXX, MConstInt(0)), MConstInt(0),
+      MMTuple(MMString("int"), OmnipotentCharCXX, MConstInt(0)), MConstInt(4));
 
   auto StructCDE = MMTuple(
-    MMString("_ZTS3CDE"),
-    MMTuple(
-      MMString("short"),
-      OmnipotentCharCXX,
-      MConstInt(0)),
-    MConstInt(0),
-    MMTuple(
-      MMString("int"),
-      OmnipotentCharCXX,
-      MConstInt(0)),
-    MConstInt(4));
+      MMString("_ZTS3CDE"),
+      MMTuple(MMString("short"), OmnipotentCharCXX, MConstInt(0)), MConstInt(0),
+      MMTuple(MMString("int"), OmnipotentCharCXX, MConstInt(0)), MConstInt(4));
 
-  const Instruction *I = match(BB,
-      MInstruction(Instruction::Store,
-        MConstInt(4, 32),
-        MMTuple(
-          StructABC,
-          MMTuple(
-            MMString("int"),
-            OmnipotentCharCXX,
-            MConstInt(0)),
-          MConstInt(4))));
+  const Instruction *I =
+      match(BB, MInstruction(Instruction::Store, MConstInt(4, 32),
+                             MMTuple(StructABC,
+                                     MMTuple(MMString("int"), OmnipotentCharCXX,
+                                             MConstInt(0)),
+                                     MConstInt(4))));
   ASSERT_TRUE(I);
 
   I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(11, 16),
-        MMTuple(
-          StructABC,
-          MMTuple(
-            MMString("short"),
-            OmnipotentCharCXX,
-            MConstInt(0)),
-          MConstInt(0))));
+                MInstruction(Instruction::Store, MConstInt(11, 16),
+                             MMTuple(StructABC,
+                                     MMTuple(MMString("short"),
+                                             OmnipotentCharCXX, MConstInt(0)),
+                                     MConstInt(0))));
+  ASSERT_TRUE(I);
+
+  I = matchNext(
+      I, MInstruction(
+             Instruction::Store, MConstInt(44, 32),
+             MMTuple(StructCDE,
+                     MMTuple(MMString("int"), OmnipotentCharCXX, MConstInt(0)),
+                     MConstInt(4))));
   ASSERT_TRUE(I);
 
   I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(44, 32),
-        MMTuple(
-          StructCDE,
-          MMTuple(
-            MMString("int"),
-            OmnipotentCharCXX,
-            MConstInt(0)),
-          MConstInt(4))));
-  ASSERT_TRUE(I);
-
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(111, 16),
-        MMTuple(
-          StructCDE,
-          MMTuple(
-            MMString("short"),
-            OmnipotentCharCXX,
-            MConstInt(0)),
-          MConstInt(0))));
+                MInstruction(Instruction::Store, MConstInt(111, 16),
+                             MMTuple(StructCDE,
+                                     MMTuple(MMString("short"),
+                                             OmnipotentCharCXX, MConstInt(0)),
+                                     MConstInt(0))));
   ASSERT_TRUE(I);
 }
 
@@ -800,59 +554,36 @@ TEST(TBAAMetadataTest, StructureFields) {
   const BasicBlock *BB = Compiler.compile();
 
   auto StructInner = MMTuple(
-    MMString("_ZTS5Inner"),
-    MMTuple(
-      MMString("int"),
-      OmnipotentCharCXX,
-      MConstInt(0)),
-    MConstInt(0));
+      MMString("_ZTS5Inner"),
+      MMTuple(MMString("int"), OmnipotentCharCXX, MConstInt(0)), MConstInt(0));
 
   auto StructOuter = MMTuple(
-    MMString("_ZTS5Outer"),
-    MMTuple(
-      MMString("short"),
-      OmnipotentCharCXX,
-      MConstInt(0)),
-    MConstInt(0),
-    StructInner,
-    MConstInt(4),
-    MSameAs(3),
-    MConstInt(8));
+      MMString("_ZTS5Outer"),
+      MMTuple(MMString("short"), OmnipotentCharCXX, MConstInt(0)), MConstInt(0),
+      StructInner, MConstInt(4), MSameAs(3), MConstInt(8));
 
-  const Instruction *I = match(BB,
-      MInstruction(Instruction::Store,
-        MConstInt(14, 16),
-        MMTuple(
-          StructOuter,
-          MMTuple(
-            MMString("short"),
-            OmnipotentCharCXX,
-            MConstInt(0)),
-          MConstInt(0))));
+  const Instruction *I =
+      match(BB, MInstruction(Instruction::Store, MConstInt(14, 16),
+                             MMTuple(StructOuter,
+                                     MMTuple(MMString("short"),
+                                             OmnipotentCharCXX, MConstInt(0)),
+                                     MConstInt(0))));
   ASSERT_TRUE(I);
 
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(35, 32),
-        MMTuple(
-          StructOuter,
-          MMTuple(
-            MMString("int"),
-            OmnipotentCharCXX,
-            MConstInt(0)),
-          MConstInt(4))));
+  I = matchNext(
+      I, MInstruction(
+             Instruction::Store, MConstInt(35, 32),
+             MMTuple(StructOuter,
+                     MMTuple(MMString("int"), OmnipotentCharCXX, MConstInt(0)),
+                     MConstInt(4))));
   ASSERT_TRUE(I);
 
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(77, 32),
-        MMTuple(
-          StructOuter,
-          MMTuple(
-            MMString("int"),
-            OmnipotentCharCXX,
-            MConstInt(0)),
-          MConstInt(8))));
+  I = matchNext(
+      I, MInstruction(
+             Instruction::Store, MConstInt(77, 32),
+             MMTuple(StructOuter,
+                     MMTuple(MMString("int"), OmnipotentCharCXX, MConstInt(0)),
+                     MConstInt(8))));
   ASSERT_TRUE(I);
 }
 
@@ -882,57 +613,37 @@ TEST(TBAAMetadataTest, ArrayFields) {
   const BasicBlock *BB = Compiler.compile();
 
   auto StructInner = MMTuple(
-    MMString("_ZTS5Inner"),
-    MMTuple(
-      MMString("int"),
-      OmnipotentCharCXX,
-      MConstInt(0)),
-    MConstInt(0));
+      MMString("_ZTS5Inner"),
+      MMTuple(MMString("int"), OmnipotentCharCXX, MConstInt(0)), MConstInt(0));
 
   auto StructOuter = MMTuple(
-    MMString("_ZTS5Outer"),
-    MMTuple(
-      MMString("short"),
-      OmnipotentCharCXX,
-      MConstInt(0)),
-    MConstInt(0),
-    OmnipotentCharCXX,    // FIXME: Info about array field is lost.
-    MConstInt(4));
+      MMString("_ZTS5Outer"),
+      MMTuple(MMString("short"), OmnipotentCharCXX, MConstInt(0)), MConstInt(0),
+      OmnipotentCharCXX, // FIXME: Info about array field is lost.
+      MConstInt(4));
 
-  const Instruction *I = match(BB,
-      MInstruction(Instruction::Store,
-        MConstInt(14, 16),
-        MMTuple(
-          StructOuter,
-          MMTuple(
-            MMString("short"),
-            OmnipotentCharCXX,
-            MConstInt(0)),
-          MConstInt(0))));
+  const Instruction *I =
+      match(BB, MInstruction(Instruction::Store, MConstInt(14, 16),
+                             MMTuple(StructOuter,
+                                     MMTuple(MMString("short"),
+                                             OmnipotentCharCXX, MConstInt(0)),
+                                     MConstInt(0))));
   ASSERT_TRUE(I);
 
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(35, 32),
-        MMTuple(
-          StructInner,
-          MMTuple(
-            MMString("int"),
-            OmnipotentCharCXX,
-            MConstInt(0)),
-          MConstInt(0))));
+  I = matchNext(
+      I, MInstruction(
+             Instruction::Store, MConstInt(35, 32),
+             MMTuple(StructInner,
+                     MMTuple(MMString("int"), OmnipotentCharCXX, MConstInt(0)),
+                     MConstInt(0))));
   ASSERT_TRUE(I);
 
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(77, 32),
-        MMTuple(
-          StructInner,
-          MMTuple(
-            MMString("int"),
-            OmnipotentCharCXX,
-            MConstInt(0)),
-          MConstInt(0))));
+  I = matchNext(
+      I, MInstruction(
+             Instruction::Store, MConstInt(77, 32),
+             MMTuple(StructInner,
+                     MMTuple(MMString("int"), OmnipotentCharCXX, MConstInt(0)),
+                     MConstInt(0))));
   ASSERT_TRUE(I);
 }
 
@@ -961,55 +672,36 @@ TEST(TBAAMetadataTest, BaseClass) {
   const BasicBlock *BB = Compiler.compile();
 
   auto ClassBase = MMTuple(
-    MMString("_ZTS4Base"),
-    MMTuple(
-      MMString("int"),
-      OmnipotentCharCXX,
-      MConstInt(0)),
-    MConstInt(0));
+      MMString("_ZTS4Base"),
+      MMTuple(MMString("int"), OmnipotentCharCXX, MConstInt(0)), MConstInt(0));
 
-  auto ClassDerived = MMTuple(
-    MMString("_ZTS7Derived"),
-    MMTuple(
-      MMString("short"),
-      OmnipotentCharCXX,
-      MConstInt(0)),
-    MConstInt(4));
+  auto ClassDerived =
+      MMTuple(MMString("_ZTS7Derived"),
+              MMTuple(MMString("short"), OmnipotentCharCXX, MConstInt(0)),
+              MConstInt(4));
 
-  const Instruction *I = match(BB,
-      MInstruction(Instruction::Store,
-        MConstInt(14, 32),
-        MMTuple(
-          ClassBase,
-          MMTuple(
-            MMString("int"),
-            OmnipotentCharCXX,
-            MConstInt(0)),
-          MConstInt(0))));
+  const Instruction *I =
+      match(BB, MInstruction(Instruction::Store, MConstInt(14, 32),
+                             MMTuple(ClassBase,
+                                     MMTuple(MMString("int"), OmnipotentCharCXX,
+                                             MConstInt(0)),
+                                     MConstInt(0))));
   ASSERT_TRUE(I);
 
   I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(35, 16),
-        MMTuple(
-          ClassDerived,
-          MMTuple(
-            MMString("short"),
-            OmnipotentCharCXX,
-            MConstInt(0)),
-          MConstInt(4))));
+                MInstruction(Instruction::Store, MConstInt(35, 16),
+                             MMTuple(ClassDerived,
+                                     MMTuple(MMString("short"),
+                                             OmnipotentCharCXX, MConstInt(0)),
+                                     MConstInt(4))));
   ASSERT_TRUE(I);
 
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(77, 32),
-        MMTuple(
-          ClassBase,
-          MMTuple(
-            MMString("int"),
-            OmnipotentCharCXX,
-            MConstInt(0)),
-          MConstInt(0))));
+  I = matchNext(
+      I, MInstruction(
+             Instruction::Store, MConstInt(77, 32),
+             MMTuple(ClassBase,
+                     MMTuple(MMString("int"), OmnipotentCharCXX, MConstInt(0)),
+                     MConstInt(0))));
   ASSERT_TRUE(I);
 }
 
@@ -1039,56 +731,38 @@ TEST(TBAAMetadataTest, PolymorphicClass) {
   Compiler.init(TestProgram);
   const BasicBlock *BB = Compiler.compile();
 
-  auto ClassBase = MMTuple(
-    MMString("_ZTS4Base"),
-    MMTuple(
-      MMString("int"),
-      OmnipotentCharCXX,
-      MConstInt(0)),
-    MConstInt(Compiler.PtrSize));
+  auto ClassBase =
+      MMTuple(MMString("_ZTS4Base"),
+              MMTuple(MMString("int"), OmnipotentCharCXX, MConstInt(0)),
+              MConstInt(Compiler.PtrSize));
 
-  auto ClassDerived = MMTuple(
-    MMString("_ZTS7Derived"),
-    MMTuple(
-      MMString("short"),
-      OmnipotentCharCXX,
-      MConstInt(0)),
-    MConstInt(Compiler.PtrSize + 4));
+  auto ClassDerived =
+      MMTuple(MMString("_ZTS7Derived"),
+              MMTuple(MMString("short"), OmnipotentCharCXX, MConstInt(0)),
+              MConstInt(Compiler.PtrSize + 4));
 
-  const Instruction *I = match(BB,
-      MInstruction(Instruction::Store,
-        MConstInt(14, 32),
-        MMTuple(
-          ClassBase,
-          MMTuple(
-            MMString("int"),
-            OmnipotentCharCXX,
-            MConstInt(0)),
-          MConstInt(Compiler.PtrSize))));
+  const Instruction *I =
+      match(BB, MInstruction(Instruction::Store, MConstInt(14, 32),
+                             MMTuple(ClassBase,
+                                     MMTuple(MMString("int"), OmnipotentCharCXX,
+                                             MConstInt(0)),
+                                     MConstInt(Compiler.PtrSize))));
   ASSERT_TRUE(I);
 
   I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(35, 16),
-        MMTuple(
-          ClassDerived,
-          MMTuple(
-            MMString("short"),
-            OmnipotentCharCXX,
-            MConstInt(0)),
-          MConstInt(Compiler.PtrSize + 4))));
+                MInstruction(Instruction::Store, MConstInt(35, 16),
+                             MMTuple(ClassDerived,
+                                     MMTuple(MMString("short"),
+                                             OmnipotentCharCXX, MConstInt(0)),
+                                     MConstInt(Compiler.PtrSize + 4))));
   ASSERT_TRUE(I);
 
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(77, 32),
-        MMTuple(
-          ClassBase,
-          MMTuple(
-            MMString("int"),
-            OmnipotentCharCXX,
-            MConstInt(0)),
-          MConstInt(Compiler.PtrSize))));
+  I = matchNext(
+      I, MInstruction(
+             Instruction::Store, MConstInt(77, 32),
+             MMTuple(ClassBase,
+                     MMTuple(MMString("int"), OmnipotentCharCXX, MConstInt(0)),
+                     MConstInt(Compiler.PtrSize))));
   ASSERT_TRUE(I);
 }
 
@@ -1117,67 +791,44 @@ TEST(TBAAMetadataTest, VirtualBase) {
   const BasicBlock *BB = Compiler.compile();
 
   auto ClassBase = MMTuple(
-    MMString("_ZTS4Base"),
-    MMTuple(
-      MMString("int"),
-      OmnipotentCharCXX,
-      MConstInt(0)),
-    MConstInt(0));
+      MMString("_ZTS4Base"),
+      MMTuple(MMString("int"), OmnipotentCharCXX, MConstInt(0)), MConstInt(0));
 
-  auto ClassDerived = MMTuple(
-    MMString("_ZTS7Derived"),
-    MMTuple(
-      MMString("short"),
-      OmnipotentCharCXX,
-      MConstInt(0)),
-    MConstInt(Compiler.PtrSize));
+  auto ClassDerived =
+      MMTuple(MMString("_ZTS7Derived"),
+              MMTuple(MMString("short"), OmnipotentCharCXX, MConstInt(0)),
+              MConstInt(Compiler.PtrSize));
 
-  const Instruction *I = match(BB,
-      MInstruction(Instruction::Store,
-        MConstInt(14, 32),
-        MMTuple(
-          ClassBase,
-          MMTuple(
-            MMString("int"),
-            OmnipotentCharCXX,
-            MConstInt(0)),
-          MConstInt(0))));
+  const Instruction *I =
+      match(BB, MInstruction(Instruction::Store, MConstInt(14, 32),
+                             MMTuple(ClassBase,
+                                     MMTuple(MMString("int"), OmnipotentCharCXX,
+                                             MConstInt(0)),
+                                     MConstInt(0))));
   ASSERT_TRUE(I);
 
   I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(35, 16),
-        MMTuple(
-          ClassDerived,
-          MMTuple(
-            MMString("short"),
-            OmnipotentCharCXX,
-            MConstInt(0)),
-          MConstInt(Compiler.PtrSize))));
+                MInstruction(Instruction::Store, MConstInt(35, 16),
+                             MMTuple(ClassDerived,
+                                     MMTuple(MMString("short"),
+                                             OmnipotentCharCXX, MConstInt(0)),
+                                     MConstInt(Compiler.PtrSize))));
   ASSERT_TRUE(I);
 
-  I = matchNext(I,
-      MInstruction(Instruction::Load,
-        MMTuple(
-          MMTuple(
-            MMString("vtable pointer"),
-            MMTuple(
-              MMString("Simple C++ TBAA")),
-            MConstInt(0)),
-          MSameAs(0),
-          MConstInt(0))));
+  I = matchNext(
+      I, MInstruction(Instruction::Load,
+                      MMTuple(MMTuple(MMString("vtable pointer"),
+                                      MMTuple(MMString("Simple C++ TBAA")),
+                                      MConstInt(0)),
+                              MSameAs(0), MConstInt(0))));
   ASSERT_TRUE(I);
 
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(77, 32),
-        MMTuple(
-          ClassBase,
-          MMTuple(
-            MMString("int"),
-            OmnipotentCharCXX,
-            MConstInt(0)),
-          MConstInt(0))));
+  I = matchNext(
+      I, MInstruction(
+             Instruction::Store, MConstInt(77, 32),
+             MMTuple(ClassBase,
+                     MMTuple(MMString("int"), OmnipotentCharCXX, MConstInt(0)),
+                     MConstInt(0))));
   ASSERT_TRUE(I);
 }
 
@@ -1203,40 +854,27 @@ TEST(TBAAMetadataTest, TemplSpec) {
   const BasicBlock *BB = Compiler.compile();
 
   auto SpecABC = MMTuple(
-    MMString("_ZTS3ABCIdiE"),
-    MMTuple(
-      MMString("double"),
-      OmnipotentCharCXX,
-      MConstInt(0)),
-    MConstInt(0),
-    MMTuple(
-      MMString("int"),
-      OmnipotentCharCXX,
-      MConstInt(0)),
-    MConstInt(8));
+      MMString("_ZTS3ABCIdiE"),
+      MMTuple(MMString("double"), OmnipotentCharCXX, MConstInt(0)),
+      MConstInt(0), MMTuple(MMString("int"), OmnipotentCharCXX, MConstInt(0)),
+      MConstInt(8));
 
-  const Instruction *I = match(BB,
-      MInstruction(Instruction::Store,
-        MValType(MType([](const Type &T)->bool { return T.isDoubleTy(); })),
-        MMTuple(
-          SpecABC,
-          MMTuple(
-            MMString("double"),
-            OmnipotentCharCXX,
-            MConstInt(0)),
-          MConstInt(0))));
+  const Instruction *I = match(
+      BB,
+      MInstruction(
+          Instruction::Store,
+          MValType(MType([](const Type &T) -> bool { return T.isDoubleTy(); })),
+          MMTuple(SpecABC,
+                  MMTuple(MMString("double"), OmnipotentCharCXX, MConstInt(0)),
+                  MConstInt(0))));
   ASSERT_TRUE(I);
 
-  I = matchNext(I,
-      MInstruction(Instruction::Store,
-        MConstInt(44, 32),
-        MMTuple(
-          SpecABC,
-          MMTuple(
-            MMString("int"),
-            OmnipotentCharCXX,
-            MConstInt(0)),
-          MConstInt(8))));
+  I = matchNext(
+      I, MInstruction(
+             Instruction::Store, MConstInt(44, 32),
+             MMTuple(SpecABC,
+                     MMTuple(MMString("int"), OmnipotentCharCXX, MConstInt(0)),
+                     MConstInt(8))));
   ASSERT_TRUE(I);
 }
-}
+} // namespace

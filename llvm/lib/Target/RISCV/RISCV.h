@@ -52,6 +52,6 @@ void initializeRISCVCleanupVSETVLIPass(PassRegistry &);
 InstructionSelector *createRISCVInstructionSelector(const RISCVTargetMachine &,
                                                     RISCVSubtarget &,
                                                     RISCVRegisterBankInfo &);
-}
+} // namespace llvm
 
 #endif

@@ -101,8 +101,8 @@ class Scheduler : public HardwareUnit {
   // moved from the PendingSet to the ReadySet must transition to the 'IS_READY'
   // stage.
   //
-  // On every cycle, the Scheduler checks if it can promote instructions from the
-  // PendingSet to the ReadySet.
+  // On every cycle, the Scheduler checks if it can promote instructions from
+  // the PendingSet to the ReadySet.
   //
   // An Instruction is moved from the ReadySet to the `IssuedSet` when it starts
   // exection. This event also causes an instruction state transition (i.e. from
@@ -203,8 +203,7 @@ public:
   void issueInstruction(
       InstRef &IR,
       SmallVectorImpl<std::pair<ResourceRef, ResourceCycles>> &Used,
-      SmallVectorImpl<InstRef> &Pending,
-      SmallVectorImpl<InstRef> &Ready);
+      SmallVectorImpl<InstRef> &Pending, SmallVectorImpl<InstRef> &Ready);
 
   /// Returns true if IR has to be issued immediately, or if IR is a zero
   /// latency instruction.

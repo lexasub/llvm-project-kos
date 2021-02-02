@@ -10,9 +10,8 @@
 // Tests for interception_win.h.
 //
 //===----------------------------------------------------------------------===//
-#include "interception/interception.h"
-
 #include "gtest/gtest.h"
+#include "interception/interception.h"
 
 // Too slow for debug build
 #if !SANITIZER_DEBUG
@@ -31,134 +30,132 @@ enum FunctionPrefixKind {
   FunctionPrefixDetour,
 };
 
-typedef bool (*TestOverrideFunction)(uptr, uptr, uptr*);
+typedef bool (*TestOverrideFunction)(uptr, uptr, uptr *);
 typedef int (*IdentityFunction)(int);
 
 #if SANITIZER_WINDOWS64
 
 const u8 kIdentityCodeWithPrologue[] = {
-    0x55,                   // push        rbp
-    0x48, 0x89, 0xE5,       // mov         rbp,rsp
-    0x8B, 0xC1,             // mov         eax,ecx
-    0x5D,                   // pop         rbp
-    0xC3,                   // ret
+    0x55,              // push        rbp
+    0x48, 0x89, 0xE5,  // mov         rbp,rsp
+    0x8B, 0xC1,        // mov         eax,ecx
+    0x5D,              // pop         rbp
+    0xC3,              // ret
 };
 
 const u8 kIdentityCodeWithPushPop[] = {
-    0x55,                   // push        rbp
-    0x48, 0x89, 0xE5,       // mov         rbp,rsp
-    0x53,                   // push        rbx
-    0x50,                   // push        rax
-    0x58,                   // pop         rax
-    0x8B, 0xC1,             // mov         rax,rcx
-    0x5B,                   // pop         rbx
-    0x5D,                   // pop         rbp
-    0xC3,                   // ret
+    0x55,              // push        rbp
+    0x48, 0x89, 0xE5,  // mov         rbp,rsp
+    0x53,              // push        rbx
+    0x50,              // push        rax
+    0x58,              // pop         rax
+    0x8B, 0xC1,        // mov         rax,rcx
+    0x5B,              // pop         rbx
+    0x5D,              // pop         rbp
+    0xC3,              // ret
 };
 
 const u8 kIdentityTwiceOffset = 16;
 const u8 kIdentityTwice[] = {
-    0x55,                   // push        rbp
-    0x48, 0x89, 0xE5,       // mov         rbp,rsp
-    0x8B, 0xC1,             // mov         eax,ecx
-    0x5D,                   // pop         rbp
-    0xC3,                   // ret
-    0x90, 0x90, 0x90, 0x90,
-    0x90, 0x90, 0x90, 0x90,
-    0x55,                   // push        rbp
-    0x48, 0x89, 0xE5,       // mov         rbp,rsp
-    0x8B, 0xC1,             // mov         eax,ecx
-    0x5D,                   // pop         rbp
-    0xC3,                   // ret
+    0x55,              // push        rbp
+    0x48, 0x89, 0xE5,  // mov         rbp,rsp
+    0x8B, 0xC1,        // mov         eax,ecx
+    0x5D,              // pop         rbp
+    0xC3,              // ret
+    0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90,
+    0x55,              // push        rbp
+    0x48, 0x89, 0xE5,  // mov         rbp,rsp
+    0x8B, 0xC1,        // mov         eax,ecx
+    0x5D,              // pop         rbp
+    0xC3,              // ret
 };
 
 const u8 kIdentityCodeWithMov[] = {
-    0x89, 0xC8,             // mov         eax, ecx
-    0xC3,                   // ret
+    0x89, 0xC8,  // mov         eax, ecx
+    0xC3,        // ret
 };
 
 const u8 kIdentityCodeWithJump[] = {
     0xE9, 0x04, 0x00, 0x00,
-    0x00,                   // jmp + 4
-    0xCC, 0xCC, 0xCC, 0xCC,
-    0x89, 0xC8,             // mov         eax, ecx
-    0xC3,                   // ret
+    0x00,                                // jmp + 4
+    0xCC, 0xCC, 0xCC, 0xCC, 0x89, 0xC8,  // mov         eax, ecx
+    0xC3,                                // ret
 };
 
 #else
 
 const u8 kIdentityCodeWithPrologue[] = {
-    0x55,                   // push        ebp
-    0x8B, 0xEC,             // mov         ebp,esp
-    0x8B, 0x45, 0x08,       // mov         eax,dword ptr [ebp + 8]
-    0x5D,                   // pop         ebp
-    0xC3,                   // ret
+    0x55,              // push        ebp
+    0x8B, 0xEC,        // mov         ebp,esp
+    0x8B, 0x45, 0x08,  // mov         eax,dword ptr [ebp + 8]
+    0x5D,              // pop         ebp
+    0xC3,              // ret
 };
 
 const u8 kIdentityCodeWithPushPop[] = {
-    0x55,                   // push        ebp
-    0x8B, 0xEC,             // mov         ebp,esp
-    0x53,                   // push        ebx
-    0x50,                   // push        eax
-    0x58,                   // pop         eax
-    0x8B, 0x45, 0x08,       // mov         eax,dword ptr [ebp + 8]
-    0x5B,                   // pop         ebx
-    0x5D,                   // pop         ebp
-    0xC3,                   // ret
+    0x55,              // push        ebp
+    0x8B, 0xEC,        // mov         ebp,esp
+    0x53,              // push        ebx
+    0x50,              // push        eax
+    0x58,              // pop         eax
+    0x8B, 0x45, 0x08,  // mov         eax,dword ptr [ebp + 8]
+    0x5B,              // pop         ebx
+    0x5D,              // pop         ebp
+    0xC3,              // ret
 };
 
 const u8 kIdentityTwiceOffset = 8;
 const u8 kIdentityTwice[] = {
-    0x55,                   // push        ebp
-    0x8B, 0xEC,             // mov         ebp,esp
-    0x8B, 0x45, 0x08,       // mov         eax,dword ptr [ebp + 8]
-    0x5D,                   // pop         ebp
-    0xC3,                   // ret
-    0x55,                   // push        ebp
-    0x8B, 0xEC,             // mov         ebp,esp
-    0x8B, 0x45, 0x08,       // mov         eax,dword ptr [ebp + 8]
-    0x5D,                   // pop         ebp
-    0xC3,                   // ret
+    0x55,              // push        ebp
+    0x8B, 0xEC,        // mov         ebp,esp
+    0x8B, 0x45, 0x08,  // mov         eax,dword ptr [ebp + 8]
+    0x5D,              // pop         ebp
+    0xC3,              // ret
+    0x55,              // push        ebp
+    0x8B, 0xEC,        // mov         ebp,esp
+    0x8B, 0x45, 0x08,  // mov         eax,dword ptr [ebp + 8]
+    0x5D,              // pop         ebp
+    0xC3,              // ret
 };
 
 const u8 kIdentityCodeWithMov[] = {
-    0x8B, 0x44, 0x24, 0x04, // mov         eax,dword ptr [esp + 4]
-    0xC3,                   // ret
+    0x8B, 0x44, 0x24, 0x04,  // mov         eax,dword ptr [esp + 4]
+    0xC3,                    // ret
 };
 
 const u8 kIdentityCodeWithJump[] = {
     0xE9, 0x04, 0x00, 0x00,
-    0x00,                   // jmp + 4
+    0x00,  // jmp + 4
     0xCC, 0xCC, 0xCC, 0xCC,
-    0x8B, 0x44, 0x24, 0x04, // mov         eax,dword ptr [esp + 4]
-    0xC3,                   // ret
+    0x8B, 0x44, 0x24, 0x04,  // mov         eax,dword ptr [esp + 4]
+    0xC3,                    // ret
 };
 
 #endif
 
 const u8 kPatchableCode1[] = {
-    0xB8, 0x4B, 0x00, 0x00, 0x00,   // mov eax,4B
-    0x33, 0xC9,                     // xor ecx,ecx
-    0xC3,                           // ret
+    0xB8, 0x4B, 0x00, 0x00, 0x00,  // mov eax,4B
+    0x33, 0xC9,                    // xor ecx,ecx
+    0xC3,                          // ret
 };
 
 const u8 kPatchableCode2[] = {
-    0x55,                           // push ebp
-    0x8B, 0xEC,                     // mov ebp,esp
-    0x33, 0xC0,                     // xor eax,eax
-    0x5D,                           // pop ebp
-    0xC3,                           // ret
+    0x55,        // push ebp
+    0x8B, 0xEC,  // mov ebp,esp
+    0x33, 0xC0,  // xor eax,eax
+    0x5D,        // pop ebp
+    0xC3,        // ret
 };
 
 const u8 kPatchableCode3[] = {
-    0x55,                           // push ebp
-    0x8B, 0xEC,                     // mov ebp,esp
-    0x6A, 0x00,                     // push 0
-    0xE8, 0x3D, 0xFF, 0xFF, 0xFF,   // call <func>
+    0x55,                          // push ebp
+    0x8B, 0xEC,                    // mov ebp,esp
+    0x6A, 0x00,                    // push 0
+    0xE8, 0x3D, 0xFF, 0xFF, 0xFF,  // call <func>
 };
 
 const u8 kPatchableCode4[] = {
-    0xE9, 0xCC, 0xCC, 0xCC, 0xCC,   // jmp <label>
+    0xE9, 0xCC, 0xCC, 0xCC, 0xCC,  // jmp <label>
     0x90, 0x90, 0x90, 0x90,
 };
 
@@ -171,63 +168,63 @@ const u8 kPatchableCode5[] = {
 
 #if SANITIZER_WINDOWS64
 u8 kLoadGlobalCode[] = {
-  0x8B, 0x05, 0x00, 0x00, 0x00, 0x00, // mov    eax [rip + global]
-  0xC3,                               // ret
+    0x8B, 0x05, 0x00, 0x00, 0x00, 0x00,  // mov    eax [rip + global]
+    0xC3,                                // ret
 };
 #endif
 
 const u8 kUnpatchableCode1[] = {
-    0xC3,                           // ret
+    0xC3,  // ret
 };
 
 const u8 kUnpatchableCode2[] = {
-    0x33, 0xC9,                     // xor ecx,ecx
-    0xC3,                           // ret
+    0x33, 0xC9,  // xor ecx,ecx
+    0xC3,        // ret
 };
 
 const u8 kUnpatchableCode3[] = {
-    0x75, 0xCC,                     // jne <label>
-    0x33, 0xC9,                     // xor ecx,ecx
-    0xC3,                           // ret
+    0x75, 0xCC,  // jne <label>
+    0x33, 0xC9,  // xor ecx,ecx
+    0xC3,        // ret
 };
 
 const u8 kUnpatchableCode4[] = {
-    0x74, 0xCC,                     // jne <label>
-    0x33, 0xC9,                     // xor ecx,ecx
-    0xC3,                           // ret
+    0x74, 0xCC,  // jne <label>
+    0x33, 0xC9,  // xor ecx,ecx
+    0xC3,        // ret
 };
 
 const u8 kUnpatchableCode5[] = {
-    0xEB, 0x02,                     // jmp <label>
-    0x33, 0xC9,                     // xor ecx,ecx
-    0xC3,                           // ret
+    0xEB, 0x02,  // jmp <label>
+    0x33, 0xC9,  // xor ecx,ecx
+    0xC3,        // ret
 };
 
 const u8 kUnpatchableCode6[] = {
-    0xE8, 0xCC, 0xCC, 0xCC, 0xCC,   // call <func>
+    0xE8, 0xCC, 0xCC, 0xCC, 0xCC,  // call <func>
     0x90, 0x90, 0x90, 0x90,
 };
 
 const u8 kPatchableCode6[] = {
-    0x48, 0x89, 0x54, 0x24, 0xBB, // mov QWORD PTR [rsp + 0xBB], rdx
-    0x33, 0xC9,                   // xor ecx,ecx
-    0xC3,                         // ret
+    0x48, 0x89, 0x54, 0x24, 0xBB,  // mov QWORD PTR [rsp + 0xBB], rdx
+    0x33, 0xC9,                    // xor ecx,ecx
+    0xC3,                          // ret
 };
 
 const u8 kPatchableCode7[] = {
     0x4c, 0x89, 0x4c, 0x24, 0xBB,  // mov QWORD PTR [rsp + 0xBB], r9
-    0x33, 0xC9,                   // xor ecx,ecx
-    0xC3,                         // ret
+    0x33, 0xC9,                    // xor ecx,ecx
+    0xC3,                          // ret
 };
 
 const u8 kPatchableCode8[] = {
-    0x4c, 0x89, 0x44, 0x24, 0xBB, // mov QWORD PTR [rsp + 0xBB], r8
-    0x33, 0xC9,                   // xor ecx,ecx
-    0xC3,                         // ret
+    0x4c, 0x89, 0x44, 0x24, 0xBB,  // mov QWORD PTR [rsp + 0xBB], r8
+    0x33, 0xC9,                    // xor ecx,ecx
+    0xC3,                          // ret
 };
 
 // A buffer holding the dynamically generated code under test.
-u8* ActiveCode;
+u8 *ActiveCode;
 const size_t ActiveCodeLength = 4096;
 
 int InterceptorFunction(int x);
@@ -237,13 +234,15 @@ u8 *AllocateCode2GBAway(u8 *Base) {
   // Find a 64K aligned location after Base plus 2GB.
   size_t TwoGB = 0x80000000;
   size_t AllocGranularity = 0x10000;
-  Base = (u8 *)((((uptr)Base + TwoGB + AllocGranularity)) & ~(AllocGranularity - 1));
+  Base = (u8 *)((((uptr)Base + TwoGB + AllocGranularity)) &
+                ~(AllocGranularity - 1));
 
   // Check if that location is free, and if not, loop over regions until we find
   // one that is.
   MEMORY_BASIC_INFORMATION mbi = {};
   while (sizeof(mbi) == VirtualQuery(Base, &mbi, sizeof(mbi))) {
-    if (mbi.State & MEM_FREE) break;
+    if (mbi.State & MEM_FREE)
+      break;
     Base += mbi.RegionSize;
   }
 
@@ -252,13 +251,12 @@ u8 *AllocateCode2GBAway(u8 *Base) {
                               PAGE_EXECUTE_READWRITE);
 }
 
-template<class T>
+template <class T>
 static void LoadActiveCode(
-    const T &code,
-    uptr *entry_point,
+    const T &code, uptr *entry_point,
     FunctionPrefixKind prefix_kind = FunctionPrefixNone) {
   if (ActiveCode == nullptr) {
-    ActiveCode = AllocateCode2GBAway((u8*)&InterceptorFunction);
+    ActiveCode = AllocateCode2GBAway((u8 *)&InterceptorFunction);
     ASSERT_NE(ActiveCode, nullptr) << "failed to allocate RWX memory 2GB away";
   }
 
@@ -276,8 +274,7 @@ static void LoadActiveCode(
            prefix_kind == FunctionPrefixHotPatch)
     padding = FIRST_32_SECOND_64(5, 6);
   // Insert |padding| instructions 'nop'.
-  for (size_t i = 0; i < padding; ++i)
-    ActiveCode[position++] = 0x90;
+  for (size_t i = 0; i < padding; ++i) ActiveCode[position++] = 0x90;
 
   // Keep track of the entry point.
   *entry_point = (uptr)&ActiveCode[position];
@@ -295,12 +292,10 @@ static void LoadActiveCode(
     ActiveCode[position++] = 0x8B;
     ActiveCode[position++] = 0xFF;
 #endif
-
   }
 
   // Copy the function body.
-  for (size_t i = 0; i < sizeof(T); ++i)
-    ActiveCode[position++] = code[i];
+  for (size_t i = 0; i < sizeof(T); ++i) ActiveCode[position++] = code[i];
 }
 
 int InterceptorFunctionCalled;
@@ -327,10 +322,9 @@ TEST(Interception, InternalGetProcAddress) {
   EXPECT_NE(DbgPrint_adddress, isdigit_address);
 }
 
-template<class T>
+template <class T>
 static void TestIdentityFunctionPatching(
-    const T &code,
-    TestOverrideFunction override,
+    const T &code, TestOverrideFunction override,
     FunctionPrefixKind prefix_kind = FunctionPrefixNone) {
   uptr identity_address;
   LoadActiveCode(code, &identity_address, prefix_kind);
@@ -344,9 +338,8 @@ static void TestIdentityFunctionPatching(
 
   // Patch the function.
   uptr real_identity_address = 0;
-  bool success = override(identity_address,
-                         (uptr)&InterceptorFunction,
-                         &real_identity_address);
+  bool success = override(identity_address, (uptr)&InterceptorFunction,
+                          &real_identity_address);
   EXPECT_TRUE(success);
   EXPECT_NE(0U, real_identity_address);
   IdentityFunction real_identity = (IdentityFunction)real_identity_address;
@@ -430,25 +423,22 @@ TEST(Interception, OverrideFunction) {
   TestIdentityFunctionPatching(kIdentityCodeWithJump, override, prefix);
 }
 
-template<class T>
+template <class T>
 static void TestIdentityFunctionMultiplePatching(
-    const T &code,
-    TestOverrideFunction override,
+    const T &code, TestOverrideFunction override,
     FunctionPrefixKind prefix_kind = FunctionPrefixNone) {
   uptr identity_address;
   LoadActiveCode(code, &identity_address, prefix_kind);
 
   // Patch the function.
   uptr real_identity_address = 0;
-  bool success = override(identity_address,
-                          (uptr)&InterceptorFunction,
+  bool success = override(identity_address, (uptr)&InterceptorFunction,
                           &real_identity_address);
   EXPECT_TRUE(success);
   EXPECT_NE(0U, real_identity_address);
 
   // Re-patching the function should not work.
-  success = override(identity_address,
-                     (uptr)&InterceptorFunction,
+  success = override(identity_address, (uptr)&InterceptorFunction,
                      &real_identity_address);
   EXPECT_FALSE(success);
 
@@ -480,11 +470,9 @@ TEST(Interception, OverrideFunctionTwice) {
 
   // Patch the two functions.
   uptr real_identity_address = 0;
-  EXPECT_TRUE(OverrideFunction(identity_address1,
-                               (uptr)&InterceptorFunction,
+  EXPECT_TRUE(OverrideFunction(identity_address1, (uptr)&InterceptorFunction,
                                &real_identity_address));
-  EXPECT_TRUE(OverrideFunction(identity_address2,
-                               (uptr)&InterceptorFunction,
+  EXPECT_TRUE(OverrideFunction(identity_address2, (uptr)&InterceptorFunction,
                                &real_identity_address));
   IdentityFunction real_identity = (IdentityFunction)real_identity_address;
   InterceptedRealFunction = real_identity;
@@ -498,16 +486,15 @@ TEST(Interception, OverrideFunctionTwice) {
   TestOnlyReleaseTrampolineRegions();
 }
 
-template<class T>
+template <class T>
 static bool TestFunctionPatching(
-    const T &code,
-    TestOverrideFunction override,
+    const T &code, TestOverrideFunction override,
     FunctionPrefixKind prefix_kind = FunctionPrefixNone) {
   uptr address;
   LoadActiveCode(code, &address, prefix_kind);
   uptr unused_real_address = 0;
-  bool result = override(
-      address, (uptr)&InterceptorFunction, &unused_real_address);
+  bool result =
+      override(address, (uptr)&InterceptorFunction, &unused_real_address);
 
   TestOnlyReleaseTrampolineRegions();
   return result;

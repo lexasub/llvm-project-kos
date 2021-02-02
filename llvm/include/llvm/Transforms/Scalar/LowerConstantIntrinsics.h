@@ -1,4 +1,5 @@
-//===- LowerConstantIntrinsics.h - Lower constant int. pass -*- C++ -*-========//
+//===- LowerConstantIntrinsics.h - Lower constant int. pass -*- C++
+//-*-========//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -20,8 +21,8 @@
 
 namespace llvm {
 
-struct LowerConstantIntrinsicsPass :
-    PassInfoMixin<LowerConstantIntrinsicsPass> {
+struct LowerConstantIntrinsicsPass
+    : PassInfoMixin<LowerConstantIntrinsicsPass> {
 public:
   explicit LowerConstantIntrinsicsPass() {}
 
@@ -36,6 +37,6 @@ public:
   PreservedAnalyses run(Function &F, FunctionAnalysisManager &);
 };
 
-}
+} // namespace llvm
 
 #endif

@@ -102,9 +102,7 @@ public:
     return AttributeSpecs[idx].Form;
   }
 
-  size_t getNumAttributes() const {
-    return AttributeSpecs.size();
-  }
+  size_t getNumAttributes() const { return AttributeSpecs.size(); }
 
   dwarf::Attribute getAttrByIndex(uint32_t idx) const {
     assert(idx < AttributeSpecs.size());
@@ -134,7 +132,7 @@ public:
                                              const dwarf::Attribute Attr,
                                              const DWARFUnit &U) const;
 
-  bool extract(DataExtractor Data, uint64_t* OffsetPtr);
+  bool extract(DataExtractor Data, uint64_t *OffsetPtr);
   void dump(raw_ostream &OS) const;
 
   // Return an optional byte size of all attribute data in this abbreviation

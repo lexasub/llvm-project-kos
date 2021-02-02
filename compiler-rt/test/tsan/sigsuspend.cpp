@@ -6,10 +6,10 @@
 #endif
 
 #include <assert.h>
-#include <stdlib.h>
 #include <signal.h>
-#include <unistd.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 static bool signal_handler_ran = false;
 

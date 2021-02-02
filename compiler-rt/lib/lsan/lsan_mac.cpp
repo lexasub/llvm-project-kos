@@ -14,12 +14,12 @@
 #include "sanitizer_common/sanitizer_platform.h"
 #if SANITIZER_MAC
 
+#include <pthread.h>
+
 #include "interception/interception.h"
 #include "lsan.h"
 #include "lsan_allocator.h"
 #include "lsan_thread.h"
-
-#include <pthread.h>
 
 namespace __lsan {
 // Support for the following functions from libdispatch on Mac OS:

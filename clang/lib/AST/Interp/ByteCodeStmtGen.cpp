@@ -25,7 +25,7 @@ namespace interp {
 /// Scope managing label targets.
 template <class Emitter> class LabelScope {
 public:
-  virtual ~LabelScope() {  }
+  virtual ~LabelScope() {}
 
 protected:
   LabelScope(ByteCodeStmtGen<Emitter> *Ctx) : Ctx(Ctx) {}

@@ -7,4 +7,3 @@
 void testcase(void) {
   vprintf(0, 0);
 }
-

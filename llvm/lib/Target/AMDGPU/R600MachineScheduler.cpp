@@ -21,10 +21,10 @@ using namespace llvm;
 
 void R600SchedStrategy::initialize(ScheduleDAGMI *dag) {
   assert(dag->hasVRegLiveness() && "R600SchedStrategy needs vreg liveness");
-  DAG = static_cast<ScheduleDAGMILive*>(dag);
+  DAG = static_cast<ScheduleDAGMILive *>(dag);
   const R600Subtarget &ST = DAG->MF.getSubtarget<R600Subtarget>();
-  TII = static_cast<const R600InstrInfo*>(DAG->TII);
-  TRI = static_cast<const R600RegisterInfo*>(DAG->TRI);
+  TII = static_cast<const R600InstrInfo *>(DAG->TII);
+  TRI = static_cast<const R600RegisterInfo *>(DAG->TRI);
   VLIW5 = !ST.hasCaymanISA();
   MRI = &DAG->MRI;
   CurInstKind = IDOther;
@@ -38,18 +38,17 @@ void R600SchedStrategy::initialize(ScheduleDAGMI *dag) {
 }
 
 void R600SchedStrategy::MoveUnits(std::vector<SUnit *> &QSrc,
-                                  std::vector<SUnit *> &QDst)
-{
+                                  std::vector<SUnit *> &QDst) {
   llvm::append_range(QDst, QSrc);
   QSrc.clear();
 }
 
 static unsigned getWFCountLimitedByGPR(unsigned GPRCount) {
-  assert (GPRCount && "GPRCount cannot be 0");
+  assert(GPRCount && "GPRCount cannot be 0");
   return 248 / GPRCount;
 }
 
-SUnit* R600SchedStrategy::pickNode(bool &IsTopNode) {
+SUnit *R600SchedStrategy::pickNode(bool &IsTopNode) {
   SUnit *SU = nullptr;
   NextInstKind = IDOther;
 
@@ -57,8 +56,9 @@ SUnit* R600SchedStrategy::pickNode(bool &IsTopNode) {
 
   // check if we might want to switch current clause type
   bool AllowSwitchToAlu = (CurEmitted >= InstKindLimit[CurInstKind]) ||
-      (Available[CurInstKind].empty());
-  bool AllowSwitchFromAlu = (CurEmitted >= InstKindLimit[CurInstKind]) &&
+                          (Available[CurInstKind].empty());
+  bool AllowSwitchFromAlu =
+      (CurEmitted >= InstKindLimit[CurInstKind]) &&
       (!Available[IDFetch].empty() || !Available[IDOther].empty());
 
   if (CurInstKind == IDAlu && !Available[IDFetch].empty()) {
@@ -74,16 +74,14 @@ SUnit* R600SchedStrategy::pickNode(bool &IsTopNode) {
     } else {
       unsigned NeededWF = 62.5f / ALUFetchRationEstimate;
       LLVM_DEBUG(dbgs() << NeededWF << " approx. Wavefronts Required\n");
-      // We assume the local GPR requirements to be "dominated" by the requirement
-      // of the TEX clause (which consumes 128 bits regs) ; ALU inst before and
-      // after TEX are indeed likely to consume or generate values from/for the
-      // TEX clause.
-      // Available[IDFetch].size() * 2 : GPRs required in the Fetch clause
-      // We assume that fetch instructions are either TnXYZW = TEX TnXYZW (need
-      // one GPR) or TmXYZW = TnXYZW (need 2 GPR).
-      // (TODO : use RegisterPressure)
-      // If we are going too use too many GPR, we flush Fetch instruction to lower
-      // register pressure on 128 bits regs.
+      // We assume the local GPR requirements to be "dominated" by the
+      // requirement of the TEX clause (which consumes 128 bits regs) ; ALU inst
+      // before and after TEX are indeed likely to consume or generate values
+      // from/for the TEX clause. Available[IDFetch].size() * 2 : GPRs required
+      // in the Fetch clause We assume that fetch instructions are either TnXYZW
+      // = TEX TnXYZW (need one GPR) or TmXYZW = TnXYZW (need 2 GPR). (TODO :
+      // use RegisterPressure) If we are going too use too many GPR, we flush
+      // Fetch instruction to lower register pressure on 128 bits regs.
       unsigned NearRegisterRequirement = 2 * Available[IDFetch].size();
       if (NeededWF > getWFCountLimitedByGPR(NearRegisterRequirement))
         AllowSwitchFromAlu = true;
@@ -91,7 +89,7 @@ SUnit* R600SchedStrategy::pickNode(bool &IsTopNode) {
   }
 
   if (!SU && ((AllowSwitchToAlu && CurInstKind != IDAlu) ||
-      (!AllowSwitchFromAlu && CurInstKind == IDAlu))) {
+              (!AllowSwitchFromAlu && CurInstKind == IDAlu))) {
     // try to pick ALU
     SU = pickAlu();
     if (!SU && !PhysicalRegCopy.empty()) {
@@ -119,17 +117,18 @@ SUnit* R600SchedStrategy::pickNode(bool &IsTopNode) {
       NextInstKind = IDOther;
   }
 
-  LLVM_DEBUG(if (SU) {
-    dbgs() << " ** Pick node **\n";
-    DAG->dumpNode(*SU);
-  } else {
-    dbgs() << "NO NODE \n";
-    for (unsigned i = 0; i < DAG->SUnits.size(); i++) {
-      const SUnit &S = DAG->SUnits[i];
-      if (!S.isScheduled)
-        DAG->dumpNode(S);
-    }
-  });
+  LLVM_DEBUG(
+      if (SU) {
+        dbgs() << " ** Pick node **\n";
+        DAG->dumpNode(*SU);
+      } else {
+        dbgs() << "NO NODE \n";
+        for (unsigned i = 0; i < DAG->SUnits.size(); i++) {
+          const SUnit &S = DAG->SUnits[i];
+          if (!S.isScheduled)
+            DAG->dumpNode(S);
+        }
+      });
 
   return SU;
 }
@@ -144,7 +143,7 @@ void R600SchedStrategy::schedNode(SUnit *SU, bool IsTopNode) {
   }
 
   if (CurInstKind == IDAlu) {
-    AluInstCount ++;
+    AluInstCount++;
     switch (getAluKind(SU)) {
     case AluT_XYZW:
       CurEmitted += 4;
@@ -154,7 +153,8 @@ void R600SchedStrategy::schedNode(SUnit *SU, bool IsTopNode) {
     default: {
       ++CurEmitted;
       for (MachineInstr::mop_iterator It = SU->getInstr()->operands_begin(),
-          E = SU->getInstr()->operands_end(); It != E; ++It) {
+                                      E = SU->getInstr()->operands_end();
+           It != E; ++It) {
         MachineOperand &MO = *It;
         if (MO.isReg() && MO.getReg() == R600::ALU_LITERAL_X)
           ++CurEmitted;
@@ -173,8 +173,7 @@ void R600SchedStrategy::schedNode(SUnit *SU, bool IsTopNode) {
     FetchInstCount++;
 }
 
-static bool
-isPhysicalRegCopy(MachineInstr *MI) {
+static bool isPhysicalRegCopy(MachineInstr *MI) {
   if (MI->getOpcode() != R600::COPY)
     return false;
 
@@ -199,7 +198,6 @@ void R600SchedStrategy::releaseBottomNode(SUnit *SU) {
     Available[IDOther].push_back(SU);
   else
     Pending[IK].push_back(SU);
-
 }
 
 bool R600SchedStrategy::regBelongsToClass(Register Reg,
@@ -238,10 +236,9 @@ R600SchedStrategy::AluKind R600SchedStrategy::getAluKind(SUnit *SU) const {
   // Does the instruction take a whole IG ?
   // XXX: Is it possible to add a helper function in R600InstrInfo that can
   // be used here and in R600PacketizerList::isSoloInstruction() ?
-  if(TII->isVector(*MI) ||
-     TII->isCubeOp(MI->getOpcode()) ||
-     TII->isReductionOp(MI->getOpcode()) ||
-     MI->getOpcode() == R600::GROUP_BARRIER) {
+  if (TII->isVector(*MI) || TII->isCubeOp(MI->getOpcode()) ||
+      TII->isReductionOp(MI->getOpcode()) ||
+      MI->getOpcode() == R600::GROUP_BARRIER) {
     return AluT_XYZW;
   }
 
@@ -285,7 +282,7 @@ R600SchedStrategy::AluKind R600SchedStrategy::getAluKind(SUnit *SU) const {
   return AluAny;
 }
 
-int R600SchedStrategy::getInstKind(SUnit* SU) {
+int R600SchedStrategy::getInstKind(SUnit *SU) {
   int Opcode = SU->getInstr()->getOpcode();
 
   if (TII->usesTextureCache(Opcode) || TII->usesVertexCache(Opcode))
@@ -313,7 +310,7 @@ SUnit *R600SchedStrategy::PopInst(std::vector<SUnit *> &Q, bool AnyALU) {
   if (Q.empty())
     return nullptr;
   for (std::vector<SUnit *>::reverse_iterator It = Q.rbegin(), E = Q.rend();
-      It != E; ++It) {
+       It != E; ++It) {
     SUnit *SU = *It;
     InstructionsGroupCandidate.push_back(SU->getInstr());
     if (TII->fitsConstReadLimitations(InstructionsGroupCandidate) &&
@@ -339,15 +336,15 @@ void R600SchedStrategy::LoadAlu() {
 
 void R600SchedStrategy::PrepareNextSlot() {
   LLVM_DEBUG(dbgs() << "New Slot\n");
-  assert (OccupedSlotsMask && "Slot wasn't filled");
+  assert(OccupedSlotsMask && "Slot wasn't filled");
   OccupedSlotsMask = 0;
-//  if (HwGen == AMDGPUSubtarget::NORTHERN_ISLANDS)
-//    OccupedSlotsMask |= 16;
+  //  if (HwGen == AMDGPUSubtarget::NORTHERN_ISLANDS)
+  //    OccupedSlotsMask |= 16;
   InstructionsGroupCandidate.clear();
   LoadAlu();
 }
 
-void R600SchedStrategy::AssignSlot(MachineInstr* MI, unsigned Slot) {
+void R600SchedStrategy::AssignSlot(MachineInstr *MI, unsigned Slot) {
   int DstIndex = TII->getOperandIdx(MI->getOpcode(), R600::OpName::dst);
   if (DstIndex == -1) {
     return;
@@ -356,10 +353,10 @@ void R600SchedStrategy::AssignSlot(MachineInstr* MI, unsigned Slot) {
   // PressureRegister crashes if an operand is def and used in the same inst
   // and we try to constraint its regclass
   for (MachineInstr::mop_iterator It = MI->operands_begin(),
-      E = MI->operands_end(); It != E; ++It) {
+                                  E = MI->operands_end();
+       It != E; ++It) {
     MachineOperand &MO = *It;
-    if (MO.isReg() && !MO.isDef() &&
-        MO.getReg() == DestReg)
+    if (MO.isReg() && !MO.isDef() && MO.getReg() == DestReg)
       return;
   }
   // Constrains the regclass of DestReg to assign it to Slot
@@ -392,13 +389,13 @@ SUnit *R600SchedStrategy::AttemptFillSlot(unsigned Slot, bool AnyAlu) {
 
 unsigned R600SchedStrategy::AvailablesAluCount() const {
   return AvailableAlus[AluAny].size() + AvailableAlus[AluT_XYZW].size() +
-      AvailableAlus[AluT_X].size() + AvailableAlus[AluT_Y].size() +
-      AvailableAlus[AluT_Z].size() + AvailableAlus[AluT_W].size() +
-      AvailableAlus[AluTrans].size() + AvailableAlus[AluDiscarded].size() +
-      AvailableAlus[AluPredX].size();
+         AvailableAlus[AluT_X].size() + AvailableAlus[AluT_Y].size() +
+         AvailableAlus[AluT_Z].size() + AvailableAlus[AluT_W].size() +
+         AvailableAlus[AluTrans].size() + AvailableAlus[AluDiscarded].size() +
+         AvailableAlus[AluPredX].size();
 }
 
-SUnit* R600SchedStrategy::pickAlu() {
+SUnit *R600SchedStrategy::pickAlu() {
   while (AvailablesAluCount() || !Pending[IDAlu].empty()) {
     if (!OccupedSlotsMask) {
       // Bottom up scheduling : predX must comes first
@@ -445,7 +442,7 @@ SUnit* R600SchedStrategy::pickAlu() {
   return nullptr;
 }
 
-SUnit* R600SchedStrategy::pickOther(int QID) {
+SUnit *R600SchedStrategy::pickOther(int QID) {
   SUnit *SU = nullptr;
   std::vector<SUnit *> &AQ = Available[QID];
 

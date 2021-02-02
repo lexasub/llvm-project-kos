@@ -79,7 +79,6 @@ using MBBVector = SmallVector<MachineBasicBlock *, 4>;
 STATISTIC(NumLeafFuncWithSpills, "Number of leaf functions with CSRs");
 STATISTIC(NumFuncSeen, "Number of functions seen in PEI");
 
-
 namespace {
 
 class PEI : public MachineFunctionPass {
@@ -139,9 +138,9 @@ char PEI::ID = 0;
 char &llvm::PrologEpilogCodeInserterID = PEI::ID;
 
 static cl::opt<unsigned>
-WarnStackSize("warn-stack-size", cl::Hidden, cl::init((unsigned)-1),
-              cl::desc("Warn for stack size bigger than the given"
-                       " number"));
+    WarnStackSize("warn-stack-size", cl::Hidden, cl::init((unsigned)-1),
+                  cl::desc("Warn for stack size bigger than the given"
+                           " number"));
 
 INITIALIZE_PASS_BEGIN(PEI, DEBUG_TYPE, "Prologue/Epilogue Insertion", false,
                       false)
@@ -321,7 +320,8 @@ void PEI::calculateCallFrameInfo(MachineFunction &MF) {
     for (MachineBasicBlock::iterator I = BB->begin(); I != BB->end(); ++I)
       if (TII.isFrameInstr(*I)) {
         unsigned Size = TII.getFrameSize(*I);
-        if (Size > MaxCallFrameSize) MaxCallFrameSize = Size;
+        if (Size > MaxCallFrameSize)
+          MaxCallFrameSize = Size;
         AdjustsStack = true;
         FrameSDOps.push_back(I);
       } else if (I->isInlineAsm()) {
@@ -338,7 +338,9 @@ void PEI::calculateCallFrameInfo(MachineFunction &MF) {
   MFI.setMaxCallFrameSize(MaxCallFrameSize);
 
   for (std::vector<MachineBasicBlock::iterator>::iterator
-         i = FrameSDOps.begin(), e = FrameSDOps.end(); i != e; ++i) {
+           i = FrameSDOps.begin(),
+           e = FrameSDOps.end();
+       i != e; ++i) {
     MachineBasicBlock::iterator I = *i;
 
     // If call frames are not being included as part of the stack frame, and
@@ -444,8 +446,10 @@ static void assignCalleeSavedSpillSlots(MachineFunction &F,
         // min.
         Alignment = std::min(Alignment, TFI->getStackAlign());
         FrameIdx = MFI.CreateStackObject(Size, Alignment, true);
-        if ((unsigned)FrameIdx < MinCSFrameIndex) MinCSFrameIndex = FrameIdx;
-        if ((unsigned)FrameIdx > MaxCSFrameIndex) MaxCSFrameIndex = FrameIdx;
+        if ((unsigned)FrameIdx < MinCSFrameIndex)
+          MinCSFrameIndex = FrameIdx;
+        if ((unsigned)FrameIdx > MaxCSFrameIndex)
+          MaxCSFrameIndex = FrameIdx;
       } else {
         // Spill it to the stack where we must.
         FrameIdx = MFI.CreateFixedSpillStackObject(Size, FixedSlot->Offset);
@@ -529,7 +533,6 @@ static void updateLiveness(MachineFunction &MF) {
       }
     }
   }
-
 }
 
 /// Insert restore code for the callee-saved registers used in the function.
@@ -547,9 +550,9 @@ static void insertCSRSaves(MachineBasicBlock &SaveBlock,
       unsigned Reg = CS.getReg();
 
       if (CS.isSpilledToReg()) {
-        BuildMI(SaveBlock, I, DebugLoc(),
-                TII.get(TargetOpcode::COPY), CS.getDstReg())
-          .addReg(Reg, getKillRegState(true));
+        BuildMI(SaveBlock, I, DebugLoc(), TII.get(TargetOpcode::COPY),
+                CS.getDstReg())
+            .addReg(Reg, getKillRegState(true));
       } else {
         const TargetRegisterClass *RC = TRI->getMinimalPhysRegClass(Reg);
         TII.storeRegToStackSlot(SaveBlock, I, Reg, true, CS.getFrameIdx(), RC,
@@ -576,10 +579,11 @@ static void insertCSRRestores(MachineBasicBlock &RestoreBlock,
       unsigned Reg = CI.getReg();
       if (CI.isSpilledToReg()) {
         BuildMI(RestoreBlock, I, DebugLoc(), TII.get(TargetOpcode::COPY), Reg)
-          .addReg(CI.getDstReg(), getKillRegState(true));
+            .addReg(CI.getDstReg(), getKillRegState(true));
       } else {
         const TargetRegisterClass *RC = TRI->getMinimalPhysRegClass(Reg);
-        TII.loadRegFromStackSlot(RestoreBlock, I, Reg, CI.getFrameIdx(), RC, TRI);
+        TII.loadRegFromStackSlot(RestoreBlock, I, Reg, CI.getFrameIdx(), RC,
+                                 TRI);
         assert(I != RestoreBlock.begin() &&
                "loadRegFromStackSlot didn't insert any code!");
         // Insert in reverse order.  loadRegFromStackSlot can insert
@@ -773,7 +777,8 @@ static void AssignProtectedObjSet(const StackObjSet &UnassignedObjs,
                                   unsigned Skew) {
 
   for (StackObjSet::const_iterator I = UnassignedObjs.begin(),
-        E = UnassignedObjs.end(); I != E; ++I) {
+                                   E = UnassignedObjs.end();
+       I != E; ++I) {
     int i = *I;
     AdjustStackOffset(MFI, i, StackGrowsDown, Offset, MaxAlign, Skew);
     ProtectedObjs.insert(i);
@@ -786,7 +791,7 @@ void PEI::calculateFrameObjectOffsets(MachineFunction &MF) {
   const TargetFrameLowering &TFI = *MF.getSubtarget().getFrameLowering();
 
   bool StackGrowsDown =
-    TFI.getStackGrowthDirection() == TargetFrameLowering::StackGrowsDown;
+      TFI.getStackGrowthDirection() == TargetFrameLowering::StackGrowsDown;
 
   // Loop over all of the stack objects, assigning sequential addresses...
   MachineFrameInfo &MFI = MF.getFrameInfo();
@@ -797,8 +802,8 @@ void PEI::calculateFrameObjectOffsets(MachineFunction &MF) {
   int LocalAreaOffset = TFI.getOffsetOfLocalArea();
   if (StackGrowsDown)
     LocalAreaOffset = -LocalAreaOffset;
-  assert(LocalAreaOffset >= 0
-         && "Local area offset should be in direction of stack growth");
+  assert(LocalAreaOffset >= 0 &&
+         "Local area offset should be in direction of stack growth");
   int64_t Offset = LocalAreaOffset;
 
   // Skew to be applied to alignment.
@@ -832,7 +837,8 @@ void PEI::calculateFrameObjectOffsets(MachineFunction &MF) {
       // address of the object.
       FixedOff = MFI.getObjectOffset(i) + MFI.getObjectSize(i);
     }
-    if (FixedOff > Offset) Offset = FixedOff;
+    if (FixedOff > Offset)
+      Offset = FixedOff;
   }
 
   // First assign frame offsets to stack objects that are used to spill
@@ -851,7 +857,7 @@ void PEI::calculateFrameObjectOffsets(MachineFunction &MF) {
       Offset = alignTo(Offset, MFI.getObjectAlign(i), Skew);
 
       LLVM_DEBUG(dbgs() << "alloc FI(" << i << ") at SP[" << -Offset << "]\n");
-      MFI.setObjectOffset(i, -Offset);        // Set the computed offset
+      MFI.setObjectOffset(i, -Offset); // Set the computed offset
     }
   } else if (MaxCSFrameIndex >= MinCSFrameIndex) {
     // Be careful about underflow in comparisons agains MinCSFrameIndex.
@@ -881,15 +887,14 @@ void PEI::calculateFrameObjectOffsets(MachineFunction &MF) {
   // incoming stack pointer if a frame pointer is required and is closer
   // to the incoming rather than the final stack pointer.
   const TargetRegisterInfo *RegInfo = MF.getSubtarget().getRegisterInfo();
-  bool EarlyScavengingSlots = (TFI.hasFP(MF) &&
-                               TFI.isFPCloseToIncomingSP() &&
+  bool EarlyScavengingSlots = (TFI.hasFP(MF) && TFI.isFPCloseToIncomingSP() &&
                                RegInfo->useFPForScavengingIndex(MF) &&
                                !RegInfo->needsStackRealignment(MF));
   if (RS && EarlyScavengingSlots) {
     SmallVector<int, 2> SFIs;
     RS->getScavengingFrameIndices(SFIs);
-    for (SmallVectorImpl<int>::iterator I = SFIs.begin(),
-           IE = SFIs.end(); I != IE; ++I)
+    for (SmallVectorImpl<int>::iterator I = SFIs.begin(), IE = SFIs.end();
+         I != IE; ++I)
       AdjustStackOffset(MFI, *I, StackGrowsDown, Offset, MaxAlign, Skew);
   }
 
@@ -1050,8 +1055,8 @@ void PEI::calculateFrameObjectOffsets(MachineFunction &MF) {
   if (RS && !EarlyScavengingSlots) {
     SmallVector<int, 2> SFIs;
     RS->getScavengingFrameIndices(SFIs);
-    for (SmallVectorImpl<int>::iterator I = SFIs.begin(),
-           IE = SFIs.end(); I != IE; ++I)
+    for (SmallVectorImpl<int>::iterator I = SFIs.begin(), IE = SFIs.end();
+         I != IE; ++I)
       AdjustStackOffset(MFI, *I, StackGrowsDown, Offset, MaxAlign, Skew);
   }
 
@@ -1156,16 +1161,18 @@ void PEI::replaceFrameIndices(MachineFunction &MF) {
   const TargetRegisterInfo *TRI = ST.getRegisterInfo();
 
   // Allow the target to determine this after knowing the frame size.
-  FrameIndexEliminationScavenging = (RS && !FrameIndexVirtualScavenging) ||
-    TRI->requiresFrameIndexReplacementScavenging(MF);
+  FrameIndexEliminationScavenging =
+      (RS && !FrameIndexVirtualScavenging) ||
+      TRI->requiresFrameIndexReplacementScavenging(MF);
 
   // Store SPAdj at exit of a basic block.
   SmallVector<int, 8> SPState;
   SPState.resize(MF.getNumBlockIDs());
-  df_iterator_default_set<MachineBasicBlock*> Reachable;
+  df_iterator_default_set<MachineBasicBlock *> Reachable;
 
   // Iterate over the reachable blocks in DFS order.
-  for (auto DFI = df_ext_begin(&MF, Reachable), DFE = df_ext_end(&MF, Reachable);
+  for (auto DFI = df_ext_begin(&MF, Reachable),
+            DFE = df_ext_end(&MF, Reachable);
        DFI != DFE; ++DFI) {
     int SPAdj = 0;
     // Check the exit state of the DFS stack predecessor.
@@ -1203,7 +1210,7 @@ void PEI::replaceFrameIndices(MachineBasicBlock *BB, MachineFunction &MF,
 
   bool InsideCallSequence = false;
 
-  for (MachineBasicBlock::iterator I = BB->begin(); I != BB->end(); ) {
+  for (MachineBasicBlock::iterator I = BB->begin(); I != BB->end();) {
     if (TII.isFrameInstr(*I)) {
       InsideCallSequence = TII.isFrameSetup(*I);
       SPAdj += TII.getSPAdjust(*I);
@@ -1228,8 +1235,7 @@ void PEI::replaceFrameIndices(MachineBasicBlock *BB, MachineFunction &MF,
         unsigned FrameIdx = MI.getOperand(0).getIndex();
         unsigned Size = MF.getFrameInfo().getObjectSize(FrameIdx);
 
-        StackOffset Offset =
-            TFI->getFrameIndexReference(MF, FrameIdx, Reg);
+        StackOffset Offset = TFI->getFrameIndexReference(MF, FrameIdx, Reg);
         MI.getOperand(0).ChangeToRegister(Reg, false /*isDef*/);
         MI.getOperand(0).setIsDebug();
 
@@ -1289,13 +1295,14 @@ void PEI::replaceFrameIndices(MachineBasicBlock *BB, MachineFunction &MF,
       // iterator at the point before insertion so that we can
       // revisit them in full.
       bool AtBeginning = (I == BB->begin());
-      if (!AtBeginning) --I;
+      if (!AtBeginning)
+        --I;
 
       // If this instruction has a FrameIndex operand, we need to
       // use that target machine register info object to eliminate
       // it.
       TRI.eliminateFrameIndex(MI, SPAdj, i,
-                              FrameIndexEliminationScavenging ?  RS : nullptr);
+                              FrameIndexEliminationScavenging ? RS : nullptr);
 
       // Reset the iterator if we were at the beginning of the BB.
       if (AtBeginning) {
@@ -1317,7 +1324,8 @@ void PEI::replaceFrameIndices(MachineBasicBlock *BB, MachineFunction &MF,
     if (DidFinishLoop && InsideCallSequence)
       SPAdj += TII.getSPAdjust(MI);
 
-    if (DoIncr && I != BB->end()) ++I;
+    if (DoIncr && I != BB->end())
+      ++I;
 
     // Update register states.
     if (RS && FrameIndexEliminationScavenging && DidFinishLoop)

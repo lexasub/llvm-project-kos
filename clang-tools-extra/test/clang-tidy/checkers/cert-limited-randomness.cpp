@@ -8,7 +8,7 @@ using ::rand;
 }
 
 namespace nonstd {
-  int rand();
+int rand();
 }
 
 void testFunction1() {
@@ -25,4 +25,3 @@ void testFunction1() {
   int m = rand();
   // CHECK-MESSAGES: :[[@LINE-1]]:11: warning: rand() has limited randomness; use C++11 random library instead [cert-msc50-cpp]
 }
-

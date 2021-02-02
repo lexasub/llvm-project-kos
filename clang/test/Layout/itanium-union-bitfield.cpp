@@ -2,14 +2,14 @@
 // RUN:            | FileCheck %s
 
 union A {
-  int f1: 3;
+  int f1 : 3;
   A();
 };
 
 A::A() {}
 
 union B {
-  char f1: 35;
+  char f1 : 35;
   B();
 };
 

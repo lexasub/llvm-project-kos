@@ -15,11 +15,17 @@
 #include "header3.h"
 // CHECK-NOT: header3.h:{{.*}} warning
 
-class A { A(int); };
+class A {
+  A(int);
+};
 // CHECK: :[[@LINE-1]]:11: warning: single-argument constructors {{.*}}
-class B { B(int); };
+class B {
+  B(int);
+};
 // CHECK-NOT: :[[@LINE-1]]:{{.*}} warning
-class C { C(int); };
+class C {
+  C(int);
+};
 // CHECK: :[[@LINE-1]]:11: warning: single-argument constructors {{.*}}
 
 // CHECK-NOT: warning:

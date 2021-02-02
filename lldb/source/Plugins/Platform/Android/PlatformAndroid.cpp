@@ -326,15 +326,16 @@ Status PlatformAndroid::DownloadSymbolFile(const lldb::ModuleSP &module_sp,
 
   // Create file remover for the temporary directory created on the device
   std::unique_ptr<std::string, std::function<void(std::string *)>>
-  tmpdir_remover(&tmpdir, [&adb](std::string *s) {
-    StreamString command;
-    command.Printf("rm -rf %s", s->c_str());
-    Status error = adb.Shell(command.GetData(), seconds(5), nullptr);
+      tmpdir_remover(&tmpdir, [&adb](std::string *s) {
+        StreamString command;
+        command.Printf("rm -rf %s", s->c_str());
+        Status error = adb.Shell(command.GetData(), seconds(5), nullptr);
 
-    Log *log(GetLogIfAllCategoriesSet(LIBLLDB_LOG_PLATFORM));
-    if (log && error.Fail())
-      LLDB_LOGF(log, "Failed to remove temp directory: %s", error.AsCString());
-  });
+        Log *log(GetLogIfAllCategoriesSet(LIBLLDB_LOG_PLATFORM));
+        if (log && error.Fail())
+          LLDB_LOGF(log, "Failed to remove temp directory: %s",
+                    error.AsCString());
+      });
 
   FileSpec symfile_platform_filespec(tmpdir);
   symfile_platform_filespec.AppendPathComponent("symbolized.oat");
@@ -360,15 +361,15 @@ bool PlatformAndroid::GetRemoteOSVersion() {
 llvm::StringRef
 PlatformAndroid::GetLibdlFunctionDeclarations(lldb_private::Process *process) {
   SymbolContextList matching_symbols;
-  std::vector<const char *> dl_open_names = { "__dl_dlopen", "dlopen" };
+  std::vector<const char *> dl_open_names = {"__dl_dlopen", "dlopen"};
   const char *dl_open_name = nullptr;
   Target &target = process->GetTarget();
-  for (auto name: dl_open_names) {
+  for (auto name : dl_open_names) {
     target.GetImages().FindFunctionSymbols(
         ConstString(name), eFunctionNameTypeFull, matching_symbols);
     if (matching_symbols.GetSize()) {
-       dl_open_name = name;
-       break;
+      dl_open_name = name;
+      break;
     }
   }
   // Older platform versions have the dl function symbols mangled

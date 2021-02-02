@@ -1,9 +1,10 @@
 class ThingInside;
 
 namespace Foo {
-  class MyClass {
+class MyClass {
   ThingInside *thing;
-  public:
-    MyClass() { }
-  };
-}
+
+public:
+  MyClass() {}
+};
+} // namespace Foo

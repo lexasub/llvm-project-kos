@@ -3,15 +3,14 @@
 namespace n1 {
 namespace /* a comment */ n2 /* another comment */ {
 
-
 void f(); // So that the namespace isn't empty.
-
 
 // CHECK-MESSAGES: :[[@LINE+4]]:1: warning: namespace 'n2' not terminated with a closing comment [google-readability-namespace-comments]
 // CHECK-MESSAGES: :[[@LINE-7]]:27: note: namespace 'n2' starts here
 // CHECK-MESSAGES: :[[@LINE+2]]:2: warning: namespace 'n1' not terminated with
 // CHECK-MESSAGES: :[[@LINE-10]]:11: note: namespace 'n1' starts here
-}}
+} // namespace n2
+} // namespace n1
 // CHECK-FIXES: }  // namespace n2
 // CHECK-FIXES: }  // namespace n1
 
@@ -27,7 +26,7 @@ void f(); // So that the namespace isn't empty.
 // 7
 // CHECK-MESSAGES: :[[@LINE+2]]:1: warning: namespace 'MACRO' not terminated with
 // CHECK-MESSAGES: :[[@LINE-10]]:11: note: namespace 'MACRO' starts here
-}
+} // namespace MACRO
 // CHECK-FIXES: }  // namespace MACRO
 
 namespace macro_expansion {
@@ -41,7 +40,7 @@ void ff(); // So that the namespace isn't empty.
 // 7
 // CHECK-MESSAGES: :[[@LINE+2]]:1: warning: namespace 'macro_expansion' not terminated with
 // CHECK-MESSAGES: :[[@LINE-10]]:11: note: namespace 'macro_expansion' starts here
-}
+} // namespace macro_expansion
 // CHECK-FIXES: }  // namespace macro_expansion
 
 namespace [[deprecated("foo")]] namespace_with_attr {
@@ -56,11 +55,11 @@ void g();
 // 7
 // CHECK-MESSAGES: :[[@LINE+2]]:1: warning: namespace 'inline_namespace' not terminated with
 // CHECK-MESSAGES: :[[@LINE-10]]:18: note: namespace 'inline_namespace' starts here
-}
+} // namespace inline_namespace
 // CHECK-FIXES: }  // namespace inline_namespace
 // CHECK-MESSAGES: :[[@LINE+2]]:1: warning: namespace 'namespace_with_attr' not terminated with
 // CHECK-MESSAGES: :[[@LINE-15]]:33: note: namespace 'namespace_with_attr' starts here
-}
+} // namespace namespace_with_attr
 // CHECK-FIXES: }  // namespace namespace_with_attr
 
 namespace [[deprecated]] {
@@ -74,10 +73,10 @@ void h();
 // 7
 // CHECK-MESSAGES: :[[@LINE+2]]:1: warning: anonymous namespace not terminated with
 // CHECK-MESSAGES: :[[@LINE-10]]:26: note: anonymous namespace starts here
-}
+} // namespace ]
 // CHECK-FIXES: }  // namespace{{$}}
 
-namespace [[]] {
+namespace[[]] {
 void hh();
 // 1
 // 2
@@ -88,28 +87,16 @@ void hh();
 // 7
 // CHECK-MESSAGES: :[[@LINE+2]]:1: warning: anonymous namespace not terminated with
 // CHECK-MESSAGES: :[[@LINE-10]]:16: note: anonymous namespace starts here
-}
+} // namespace ]
 // CHECK-FIXES: }  // namespace{{$}}
 
 namespace short1 {
 namespace short2 {
 // Namespaces covering 10 lines or fewer are exempt from this rule.
 
-
-
-
-
 }
-}
+} // namespace short1
 
 namespace n3 {
-
-
-
-
-
-
-
-
 
 }; // namespace n3

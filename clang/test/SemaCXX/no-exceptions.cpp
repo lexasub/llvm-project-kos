@@ -5,20 +5,21 @@
 typedef __SIZE_TYPE__ size_t;
 
 namespace test0 {
-  // rdar://problem/7878149
-  class Foo {
-  public:
-    void* operator new(size_t x);
-  private:
-    void operator delete(void *x);
-  };
+// rdar://problem/7878149
+class Foo {
+public:
+  void *operator new(size_t x);
 
-  void test() {
-    // Under -fexceptions, this does access control for the associated
-    // 'operator delete'.
-    (void) new Foo();
-  }
+private:
+  void operator delete(void *x);
+};
+
+void test() {
+  // Under -fexceptions, this does access control for the associated
+  // 'operator delete'.
+  (void)new Foo();
 }
+} // namespace test0
 
 namespace test1 {
 void f() {
@@ -32,4 +33,4 @@ void g() {
   }
 }
 
-}
+} // namespace test1

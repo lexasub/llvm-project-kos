@@ -11,25 +11,25 @@ struct A {
 #else
   // expected-error@-4 {{only special member functions and comparison operators may be defaulted}}
 #endif
-  A(A) = default; // expected-error {{must pass its first argument by reference}}
+  A(A) = default;      // expected-error {{must pass its first argument by reference}}
   void f(A) = default; // expected-error-re {{only special member functions{{( and comparison operators)?}} may be defaulted}}
 
-  bool operator==(const A&) const = default; // pre20-warning {{defaulted comparison operators are a C++20 extension}}
-  bool operator!=(const A&) const = default; // pre20-warning {{defaulted comparison operators are a C++20 extension}}
-  bool operator<(const A&) const = default; // pre20-error {{only special member functions may be defaulted}}
-  bool operator>(const A&) const = default; // pre20-error {{only special member functions may be defaulted}}
-  bool operator<=(const A&) const = default; // pre20-error {{only special member functions may be defaulted}}
-  bool operator>=(const A&) const = default; // pre20-error {{only special member functions may be defaulted}}
-  bool operator<=>(const A&) const = default; // pre20-error 1+{{}} pre20-warning {{'<=>' is a single token in C++20}}
+  bool operator==(const A &) const = default;  // pre20-warning {{defaulted comparison operators are a C++20 extension}}
+  bool operator!=(const A &) const = default;  // pre20-warning {{defaulted comparison operators are a C++20 extension}}
+  bool operator<(const A &) const = default;   // pre20-error {{only special member functions may be defaulted}}
+  bool operator>(const A &) const = default;   // pre20-error {{only special member functions may be defaulted}}
+  bool operator<=(const A &) const = default;  // pre20-error {{only special member functions may be defaulted}}
+  bool operator>=(const A &) const = default;  // pre20-error {{only special member functions may be defaulted}}
+  bool operator<=>(const A &) const = default; // pre20-error 1+{{}} pre20-warning {{'<=>' is a single token in C++20}}
 
-  A operator+(const A&) const = default; // expected-error-re {{only special member functions{{( and comparison operators)?}} may be defaulted}}
+  A operator+(const A &) const = default; // expected-error-re {{only special member functions{{( and comparison operators)?}} may be defaulted}}
 
   // -- have the same declared function type as if it had been implicitly
   //    declared
   void operator=(const A &) = default; // expected-error {{must return 'A &'}}
   A(...) = default;
   A(const A &, ...) = default;
-  A &operator=(const A&) const = default;
+  A &operator=(const A &) const = default;
   A &operator=(A) const = default; // expected-error {{must be an lvalue refe}}
 #if __cplusplus <= 201703L
   // expected-error@-5 {{cannot be variadic}}
@@ -51,26 +51,26 @@ struct A {
   A &operator=(A &) = default;
 
   // -- not have default arguments
-  A(double = 0.0) = default; // expected-error {{cannot have default arguments}}
+  A(double = 0.0) = default;  // expected-error {{cannot have default arguments}}
   A(const A & = 0) = default; // expected-error {{cannot have default arguments}}
 };
 
 struct A2 {
   A2(...);
   A2(const A2 &, ...);
-  A2 &operator=(const A2&) const;
+  A2 &operator=(const A2 &) const;
 };
-A2::A2(...) = default; // expected-error {{cannot be variadic}}
-A2::A2(const A2&, ...) = default; // expected-error {{cannot be variadic}}
-A2 &A2::operator=(const A2&) const = default; // expected-error {{may not have 'const'}}
+A2::A2(...) = default;                         // expected-error {{cannot be variadic}}
+A2::A2(const A2 &, ...) = default;             // expected-error {{cannot be variadic}}
+A2 &A2::operator=(const A2 &) const = default; // expected-error {{may not have 'const'}}
 
 struct B {
-  B(B&);
-  B &operator=(B&);
+  B(B &);
+  B &operator=(B &);
 };
 struct C : B {
-  C(const C&) = default;
-  C &operator=(const C&) = default;
+  C(const C &) = default;
+  C &operator=(const C &) = default;
 #if __cplusplus <= 201703L
   // expected-error@-3 {{is const, but a member or base requires it to be non-const}}
   // expected-error@-3 {{is const, but a member or base requires it to be non-const}}
@@ -81,8 +81,8 @@ struct C : B {
 };
 
 struct D : B { // expected-note 2{{base class}}
-  D(const D&);
-  D &operator=(const D&);
+  D(const D &);
+  D &operator=(const D &);
 };
-D::D(const D&) = default; // expected-error {{would delete}} expected-error {{is const, but}}
-D &D::operator=(const D&) = default; // expected-error {{would delete}} expected-error {{is const, but}}
+D::D(const D &) = default;            // expected-error {{would delete}} expected-error {{is const, but}}
+D &D::operator=(const D &) = default; // expected-error {{would delete}} expected-error {{is const, but}}

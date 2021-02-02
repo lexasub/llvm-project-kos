@@ -20,19 +20,19 @@
 #include "count_new.h"
 #include "filesystem_test_helper.h"
 
-
 // NOTE: this is tested in path.members/path.modifiers via the member swap.
-int main(int, char**)
-{
+int main(int, char**) {
   using namespace fs;
   const char* value1 = "foo/bar/baz";
-  const char* value2 = "_THIS_IS_LONG_THIS_IS_LONG_THIS_IS_LONG_THIS_IS_LONG_THIS_IS_LONG_THIS_IS_LONG_THIS_IS_LONG";
+  const char* value2 = "_THIS_IS_LONG_THIS_IS_LONG_THIS_IS_LONG_THIS_IS_LONG_"
+                       "THIS_IS_LONG_THIS_IS_LONG_THIS_IS_LONG";
   path p1(value1);
   path p2(value2);
   fs::path::string_type ps1 = p1.native();
   fs::path::string_type ps2 = p2.native();
   {
-    using namespace std; using namespace fs;
+    using namespace std;
+    using namespace fs;
     ASSERT_NOEXCEPT(swap(p1, p2));
     ASSERT_SAME_TYPE(void, decltype(swap(p1, p2)));
   }

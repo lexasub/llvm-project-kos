@@ -19,8 +19,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "Transforms.h"
 #include "Internals.h"
+#include "Transforms.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/Sema/SemaDiagnostic.h"
 
@@ -37,8 +37,7 @@ class UnusedInitRewriter : public RecursiveASTVisitor<UnusedInitRewriter> {
   ExprSet Removables;
 
 public:
-  UnusedInitRewriter(MigrationPass &pass)
-    : Body(nullptr), Pass(pass) { }
+  UnusedInitRewriter(MigrationPass &pass) : Body(nullptr), Pass(pass) {}
 
   void transformBody(Stmt *body, Decl *ParentD) {
     Body = body;
@@ -47,8 +46,7 @@ public:
   }
 
   bool VisitObjCMessageExpr(ObjCMessageExpr *ME) {
-    if (ME->isDelegateInitCall() &&
-        isRemovable(ME) &&
+    if (ME->isDelegateInitCall() && isRemovable(ME) &&
         Pass.TA.hasDiagnostic(diag::err_arc_unused_init_message,
                               ME->getExprLoc())) {
       Transaction Trans(Pass.TA);
@@ -64,9 +62,7 @@ public:
   }
 
 private:
-  bool isRemovable(Expr *E) const {
-    return Removables.count(E);
-  }
+  bool isRemovable(Expr *E) const { return Removables.count(E); }
 };
 
 } // anonymous namespace

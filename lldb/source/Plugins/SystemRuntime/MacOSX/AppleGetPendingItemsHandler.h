@@ -48,11 +48,10 @@ public:
   ~AppleGetPendingItemsHandler();
 
   struct GetPendingItemsReturnInfo {
-    lldb::addr_t items_buffer_ptr; /* the address of the pending items buffer
-                                      from libBacktraceRecording */
-    lldb::addr_t
-        items_buffer_size; /* the size of the pending items buffer from
-                              libBacktraceRecording */
+    lldb::addr_t items_buffer_ptr;  /* the address of the pending items buffer
+                                       from libBacktraceRecording */
+    lldb::addr_t items_buffer_size; /* the size of the pending items buffer from
+                                       libBacktraceRecording */
     uint64_t count; /* the number of pending items included in the buffer */
 
     GetPendingItemsReturnInfo()
@@ -112,6 +111,6 @@ private:
   std::mutex m_get_pending_items_retbuffer_mutex;
 };
 
-} // using namespace lldb_private
+} // namespace lldb_private
 
 #endif // LLDB_SOURCE_PLUGINS_SYSTEMRUNTIME_MACOSX_APPLEGETPENDINGITEMSHANDLER_H

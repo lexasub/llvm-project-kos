@@ -19,14 +19,15 @@
 
 #include "test_macros.h"
 
-double binary_f(int i, short j) {return i - j + .75;}
+double binary_f(int i, short j) { return i - j + .75; }
 
-int main(int, char**)
-{
-    typedef std::pointer_to_binary_function<int, short, double> F;
-    static_assert((std::is_base_of<std::binary_function<int, short, double>, F>::value), "");
-    const F f(binary_f);
-    assert(f(36, 27) == 9.75);
+int main(int, char**) {
+  typedef std::pointer_to_binary_function<int, short, double> F;
+  static_assert(
+      (std::is_base_of<std::binary_function<int, short, double>, F>::value),
+      "");
+  const F f(binary_f);
+  assert(f(36, 27) == 9.75);
 
   return 0;
 }

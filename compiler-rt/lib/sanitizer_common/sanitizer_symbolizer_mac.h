@@ -41,8 +41,8 @@ class AtosSymbolizer final : public SymbolizerTool {
   AtosSymbolizerProcess *process_;
 };
 
-} // namespace __sanitizer
+}  // namespace __sanitizer
 
 #endif  // SANITIZER_MAC
 
-#endif // SANITIZER_SYMBOLIZER_MAC_H
+#endif  // SANITIZER_SYMBOLIZER_MAC_H

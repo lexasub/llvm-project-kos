@@ -6,7 +6,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "lld/Common/ErrorHandler.h"
 #include "lld/ReaderWriter/MachOLinkingContext.h"
 #include "ArchHandler.h"
 #include "File.h"
@@ -15,6 +14,7 @@
 #include "MachOPasses.h"
 #include "SectCreateFile.h"
 #include "lld/Common/Driver.h"
+#include "lld/Common/ErrorHandler.h"
 #include "lld/Core/ArchiveLibraryFile.h"
 #include "lld/Core/PassManager.h"
 #include "lld/Core/Reader.h"
@@ -31,8 +31,8 @@
 #include <algorithm>
 
 using lld::mach_o::ArchHandler;
-using lld::mach_o::MachOFile;
 using lld::mach_o::MachODylibFile;
+using lld::mach_o::MachOFile;
 using namespace llvm::MachO;
 
 namespace lld {
@@ -102,15 +102,14 @@ bool MachOLinkingContext::parsePackedVersion(StringRef str, uint64_t &result) {
 }
 
 MachOLinkingContext::ArchInfo MachOLinkingContext::_s_archInfos[] = {
-  { "x86_64", arch_x86_64, true,  CPU_TYPE_X86_64,  CPU_SUBTYPE_X86_64_ALL },
-  { "i386",   arch_x86,    true,  CPU_TYPE_I386,    CPU_SUBTYPE_X86_ALL },
-  { "ppc",    arch_ppc,    false, CPU_TYPE_POWERPC, CPU_SUBTYPE_POWERPC_ALL },
-  { "armv6",  arch_armv6,  true,  CPU_TYPE_ARM,     CPU_SUBTYPE_ARM_V6 },
-  { "armv7",  arch_armv7,  true,  CPU_TYPE_ARM,     CPU_SUBTYPE_ARM_V7 },
-  { "armv7s", arch_armv7s, true,  CPU_TYPE_ARM,     CPU_SUBTYPE_ARM_V7S },
-  { "arm64",  arch_arm64,  true,  CPU_TYPE_ARM64,   CPU_SUBTYPE_ARM64_ALL },
-  { "",       arch_unknown,false, 0,                0 }
-};
+    {"x86_64", arch_x86_64, true, CPU_TYPE_X86_64, CPU_SUBTYPE_X86_64_ALL},
+    {"i386", arch_x86, true, CPU_TYPE_I386, CPU_SUBTYPE_X86_ALL},
+    {"ppc", arch_ppc, false, CPU_TYPE_POWERPC, CPU_SUBTYPE_POWERPC_ALL},
+    {"armv6", arch_armv6, true, CPU_TYPE_ARM, CPU_SUBTYPE_ARM_V6},
+    {"armv7", arch_armv7, true, CPU_TYPE_ARM, CPU_SUBTYPE_ARM_V7},
+    {"armv7s", arch_armv7s, true, CPU_TYPE_ARM, CPU_SUBTYPE_ARM_V7S},
+    {"arm64", arch_arm64, true, CPU_TYPE_ARM64, CPU_SUBTYPE_ARM64_ALL},
+    {"", arch_unknown, false, 0, 0}};
 
 MachOLinkingContext::Arch
 MachOLinkingContext::archFromCpuType(uint32_t cputype, uint32_t cpusubtype) {
@@ -237,19 +236,19 @@ void MachOLinkingContext::configure(HeaderFileType type, Arch arch, OS os,
 
     // Make PIE by default when targetting newer OSs.
     switch (os) {
-      case OS::macOSX:
-        if (minOSVersion >= 0x000A0700) // MacOSX 10.7
-          _pie = true;
-        break;
-      case OS::iOS:
-        if (minOSVersion >= 0x00040300) // iOS 4.3
-          _pie = true;
-       break;
-       case OS::iOS_simulator:
+    case OS::macOSX:
+      if (minOSVersion >= 0x000A0700) // MacOSX 10.7
         _pie = true;
-       break;
-       case OS::unknown:
-       break;
+      break;
+    case OS::iOS:
+      if (minOSVersion >= 0x00040300) // iOS 4.3
+        _pie = true;
+      break;
+    case OS::iOS_simulator:
+      _pie = true;
+      break;
+    case OS::unknown:
+      break;
     }
     setGlobalsAreDeadStripRoots(exportDynamicSymbols);
     break;
@@ -268,7 +267,7 @@ void MachOLinkingContext::configure(HeaderFileType type, Arch arch, OS os,
 
   // Set default segment page sizes based on arch.
   if (arch == arch_arm64)
-    _pageSize = 4*4096;
+    _pageSize = 4 * 4096;
 }
 
 uint32_t MachOLinkingContext::getCPUType() const {
@@ -303,15 +302,13 @@ bool MachOLinkingContext::isBigEndian(Arch arch) {
   assert(arch != arch_unknown);
   for (ArchInfo *info = _s_archInfos; !info->archName.empty(); ++info) {
     if (info->arch == arch) {
-      return ! info->littleEndian;
+      return !info->littleEndian;
     }
   }
   llvm_unreachable("Unknown arch type");
 }
 
-bool MachOLinkingContext::is64Bit() const {
-  return is64Bit(_arch);
-}
+bool MachOLinkingContext::is64Bit() const { return is64Bit(_arch); }
 
 bool MachOLinkingContext::outputTypeHasEntry() const {
   switch (_outputMachOType) {
@@ -342,11 +339,11 @@ bool MachOLinkingContext::needsGOTPass() const {
     return false;
   // Only some arches use GOT pass.
   switch (_arch) {
-    case arch_x86_64:
-    case arch_arm64:
-      return true;
-    default:
-      return false;
+  case arch_x86_64:
+  case arch_arm64:
+    return true;
+  default:
+    return false;
   }
 }
 
@@ -574,7 +571,7 @@ MachOLinkingContext::searchLibrary(StringRef libName) const {
 }
 
 llvm::Optional<StringRef>
-MachOLinkingContext::findPathForFramework(StringRef fwName) const{
+MachOLinkingContext::findPathForFramework(StringRef fwName) const {
   SmallString<256> fullPath;
   for (StringRef dir : frameworkDirs()) {
     fullPath.assign(dir);
@@ -665,7 +662,7 @@ MachOLinkingContext::getMemoryBuffer(StringRef path) {
   addInputFileDependency(path);
 
   ErrorOr<std::unique_ptr<MemoryBuffer>> mbOrErr =
-    MemoryBuffer::getFileOrSTDIN(path);
+      MemoryBuffer::getFileOrSTDIN(path);
   if (std::error_code ec = mbOrErr.getError())
     return ec;
   std::unique_ptr<MemoryBuffer> mb = std::move(mbOrErr.get());
@@ -679,7 +676,7 @@ MachOLinkingContext::getMemoryBuffer(StringRef path) {
   return std::move(mb);
 }
 
-MachODylibFile* MachOLinkingContext::loadIndirectDylib(StringRef path) {
+MachODylibFile *MachOLinkingContext::loadIndirectDylib(StringRef path) {
   ErrorOr<std::unique_ptr<MemoryBuffer>> mbOrErr = getMemoryBuffer(path);
   if (mbOrErr.getError())
     return nullptr;
@@ -696,7 +693,7 @@ MachODylibFile* MachOLinkingContext::loadIndirectDylib(StringRef path) {
   return result;
 }
 
-MachODylibFile* MachOLinkingContext::findIndirectDylib(StringRef path) {
+MachODylibFile *MachOLinkingContext::findIndirectDylib(StringRef path) {
   // See if already loaded.
   auto pos = _pathToDylibMap.find(path);
   if (pos != _pathToDylibMap.end())
@@ -746,15 +743,16 @@ uint32_t MachOLinkingContext::dylibCompatVersion(StringRef installName) const {
 }
 
 void MachOLinkingContext::createImplicitFiles(
-                            std::vector<std::unique_ptr<File> > &result) {
+    std::vector<std::unique_ptr<File>> &result) {
   // Add indirect dylibs by asking each linked dylib to add its indirects.
   // Iterate until no more dylibs get loaded.
   size_t dylibCount = 0;
   while (dylibCount != _allDylibs.size()) {
     dylibCount = _allDylibs.size();
     for (MachODylibFile *dylib : _allDylibs) {
-      dylib->loadReExportedDylibs([this] (StringRef path) -> MachODylibFile* {
-                                  return findIndirectDylib(path); });
+      dylib->loadReExportedDylibs([this](StringRef path) -> MachODylibFile * {
+        return findIndirectDylib(path);
+      });
     }
   }
 
@@ -799,13 +797,12 @@ ArchHandler &MachOLinkingContext::archHandler() const {
 
 void MachOLinkingContext::addSectionAlignment(StringRef seg, StringRef sect,
                                               uint16_t align) {
-  SectionAlign entry = { seg, sect, align };
+  SectionAlign entry = {seg, sect, align};
   _sectAligns.push_back(entry);
 }
 
 void MachOLinkingContext::addSectCreateSection(
-                                        StringRef seg, StringRef sect,
-                                        std::unique_ptr<MemoryBuffer> content) {
+    StringRef seg, StringRef sect, std::unique_ptr<MemoryBuffer> content) {
 
   if (!_sectCreateFile) {
     auto sectCreateFile = std::make_unique<mach_o::SectCreateFile>();
@@ -891,8 +888,8 @@ std::string MachOLinkingContext::demangle(StringRef symbolName) const {
   return std::string(symbolName);
 }
 
-static void addDependencyInfoHelper(llvm::raw_fd_ostream *DepInfo,
-                                    char Opcode, StringRef Path) {
+static void addDependencyInfoHelper(llvm::raw_fd_ostream *DepInfo, char Opcode,
+                                    StringRef Path) {
   if (!DepInfo)
     return;
 
@@ -938,10 +935,9 @@ void MachOLinkingContext::appendOrderedSymbol(StringRef symbol,
   _orderFiles[symbol].push_back(info);
 }
 
-bool
-MachOLinkingContext::findOrderOrdinal(const std::vector<OrderFileNode> &nodes,
-                                      const DefinedAtom *atom,
-                                      unsigned &ordinal) {
+bool MachOLinkingContext::findOrderOrdinal(
+    const std::vector<OrderFileNode> &nodes, const DefinedAtom *atom,
+    unsigned &ordinal) {
   const File *objFile = &atom->file();
   assert(objFile);
   StringRef objName = objFile->path();
@@ -1039,8 +1035,9 @@ llvm::Error MachOLinkingContext::handleLoadedFile(File &file) {
     _arch = machoFile->arch();
   } else if (machoFile->arch() != arch_unknown && machoFile->arch() != _arch) {
     // Archs are different.
-    return llvm::make_error<GenericError>(file.path() +
-                  Twine(" cannot be linked due to incompatible architecture"));
+    return llvm::make_error<GenericError>(
+        file.path() +
+        Twine(" cannot be linked due to incompatible architecture"));
   }
 
   // Check that the OS of the context matches that of the file.
@@ -1049,43 +1046,46 @@ llvm::Error MachOLinkingContext::handleLoadedFile(File &file) {
     _os = machoFile->OS();
   } else if (machoFile->OS() != OS::unknown && machoFile->OS() != _os) {
     // OSes are different.
-    return llvm::make_error<GenericError>(file.path() +
-              Twine(" cannot be linked due to incompatible operating systems"));
+    return llvm::make_error<GenericError>(
+        file.path() +
+        Twine(" cannot be linked due to incompatible operating systems"));
   }
 
   // Check that if the objc info exists, that it is compatible with the target
   // OS.
   switch (machoFile->objcConstraint()) {
-    case objc_unknown:
-      // The file is not compiled with objc, so skip the checks.
-      break;
-    case objc_gc_only:
-    case objc_supports_gc:
-      llvm_unreachable("GC support should already have thrown an error");
-    case objc_retainReleaseForSimulator:
-      // The file is built with simulator objc, so make sure that the context
-      // is also building with simulator support.
-      if (_os != OS::iOS_simulator)
-        return llvm::make_error<GenericError>(file.path() +
+  case objc_unknown:
+    // The file is not compiled with objc, so skip the checks.
+    break;
+  case objc_gc_only:
+  case objc_supports_gc:
+    llvm_unreachable("GC support should already have thrown an error");
+  case objc_retainReleaseForSimulator:
+    // The file is built with simulator objc, so make sure that the context
+    // is also building with simulator support.
+    if (_os != OS::iOS_simulator)
+      return llvm::make_error<GenericError>(
+          file.path() +
           Twine(" cannot be linked.  It contains ObjC built for the simulator"
                 " while we are linking a non-simulator target"));
-      assert((_objcConstraint == objc_unknown ||
-              _objcConstraint == objc_retainReleaseForSimulator) &&
-             "Must be linking with retain/release for the simulator");
-      _objcConstraint = objc_retainReleaseForSimulator;
-      break;
-    case objc_retainRelease:
-      // The file is built without simulator objc, so make sure that the
-      // context is also building without simulator support.
-      if (_os == OS::iOS_simulator)
-        return llvm::make_error<GenericError>(file.path() +
+    assert((_objcConstraint == objc_unknown ||
+            _objcConstraint == objc_retainReleaseForSimulator) &&
+           "Must be linking with retain/release for the simulator");
+    _objcConstraint = objc_retainReleaseForSimulator;
+    break;
+  case objc_retainRelease:
+    // The file is built without simulator objc, so make sure that the
+    // context is also building without simulator support.
+    if (_os == OS::iOS_simulator)
+      return llvm::make_error<GenericError>(
+          file.path() +
           Twine(" cannot be linked.  It contains ObjC built for a non-simulator"
                 " target while we are linking a simulator target"));
-      assert((_objcConstraint == objc_unknown ||
-              _objcConstraint == objc_retainRelease) &&
-             "Must be linking with retain/release for a non-simulator target");
-      _objcConstraint = objc_retainRelease;
-      break;
+    assert((_objcConstraint == objc_unknown ||
+            _objcConstraint == objc_retainRelease) &&
+           "Must be linking with retain/release for a non-simulator target");
+    _objcConstraint = objc_retainRelease;
+    break;
   }
 
   // Check that the swift version of the context matches that of the file.

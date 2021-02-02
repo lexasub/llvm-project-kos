@@ -4,9 +4,9 @@
 // XFAIL: powerpc64-unknown-linux-gnu
 
 #include "test.h"
+#include <errno.h>
 #include <signal.h>
 #include <sys/types.h>
-#include <errno.h>
 
 pthread_t mainth;
 volatile int done;
@@ -16,7 +16,7 @@ static void MyHandler(int, siginfo_t *s, void *c) {
   done = 1;
 }
 
-static void* sendsignal(void *p) {
+static void *sendsignal(void *p) {
   barrier_wait(&barrier);
   pthread_kill(mainth, SIGPROF);
   return 0;
@@ -25,9 +25,9 @@ static void* sendsignal(void *p) {
 static __attribute__((noinline)) void loop() {
   barrier_wait(&barrier);
   while (done == 0) {
-    volatile char *p = (char*)malloc(1);
+    volatile char *p = (char *)malloc(1);
     p[0] = 0;
-    free((void*)p);
+    free((void *)p);
     sched_yield();
   }
 }
@@ -49,4 +49,3 @@ int main() {
 // CHECK:     #0 MyHandler(int, {{(__)?}}siginfo{{(_t)?}}*, void*) {{.*}}signal_errno.cpp
 // CHECK:     main
 // CHECK: SUMMARY: ThreadSanitizer: signal handler spoils errno{{.*}}MyHandler
-

@@ -2,14 +2,14 @@
 // expected-no-diagnostics
 
 namespace std_example {
-  template<typename T, typename U = int> struct S {
-    T data;
-  };
-  template<typename U> S(U) -> S<typename U::type>;
+template <typename T, typename U = int> struct S {
+  T data;
+};
+template <typename U> S(U) -> S<typename U::type>;
 
-  struct A {
-    using type = short;
-    operator type();
-  };
-  S x{A()};
-}
+struct A {
+  using type = short;
+  operator type();
+};
+S x{A()};
+} // namespace std_example

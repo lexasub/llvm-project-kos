@@ -287,9 +287,8 @@ NonNullParamChecker::genReportNullAttrNonNull(const ExplodedNode *ErrorNode,
 
   llvm::SmallString<256> SBuf;
   llvm::raw_svector_ostream OS(SBuf);
-  OS << "Null pointer passed to "
-     << IdxOfArg << llvm::getOrdinalSuffix(IdxOfArg)
-     << " parameter expecting 'nonnull'";
+  OS << "Null pointer passed to " << IdxOfArg
+     << llvm::getOrdinalSuffix(IdxOfArg) << " parameter expecting 'nonnull'";
 
   auto R =
       std::make_unique<PathSensitiveBugReport>(*BTAttrNonNull, SBuf, ErrorNode);
@@ -314,7 +313,6 @@ NonNullParamChecker::genReportReferenceToNullPointer(
     bugreporter::trackExpressionValue(ErrorNode, ArgEDeref, *R);
   }
   return R;
-
 }
 
 void ento::registerNonNullParamChecker(CheckerManager &mgr) {

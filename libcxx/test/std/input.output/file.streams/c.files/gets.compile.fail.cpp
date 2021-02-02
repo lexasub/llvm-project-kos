@@ -13,9 +13,8 @@
 
 #include <cstdio>
 
-int main(int, char**)
-{
-    (void) std::gets((char *) NULL);
+int main(int, char**) {
+  (void)std::gets((char*)NULL);
 
   return 0;
 }

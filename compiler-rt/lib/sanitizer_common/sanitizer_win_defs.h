@@ -65,16 +65,17 @@
 // So, a workaround is to force linkage with the modules that include weak
 // definitions, with the following macro: WIN_FORCE_LINK()
 
-#define WIN_WEAK_ALIAS(Name, Default)                                          \
-  __pragma(comment(linker, "/alternatename:" WIN_SYM_PREFIX STRINGIFY(Name) "="\
-                                             WIN_SYM_PREFIX STRINGIFY(Default)))
+#define WIN_WEAK_ALIAS(Name, Default)                                  \
+  __pragma(comment(linker, "/alternatename:" WIN_SYM_PREFIX STRINGIFY( \
+                               Name) "=" WIN_SYM_PREFIX STRINGIFY(Default)))
 
-#define WIN_FORCE_LINK(Name)                                                   \
+#define WIN_FORCE_LINK(Name) \
   __pragma(comment(linker, "/include:" WIN_SYM_PREFIX STRINGIFY(Name)))
 
-#define WIN_EXPORT(ExportedName, Name)                                         \
-  __pragma(comment(linker, "/export:" WIN_EXPORT_PREFIX STRINGIFY(ExportedName)\
-                                  "=" WIN_EXPORT_PREFIX STRINGIFY(Name)))
+#define WIN_EXPORT(ExportedName, Name)                     \
+  __pragma(comment(linker,                                 \
+                   "/export:" WIN_EXPORT_PREFIX STRINGIFY( \
+                       ExportedName) "=" WIN_EXPORT_PREFIX STRINGIFY(Name)))
 
 // We cannot define weak functions on Windows, but we can use WIN_WEAK_ALIAS()
 // which defines an alias to a default implementation, and only works when
@@ -86,24 +87,23 @@
 // of name mangling.
 
 // Dummy name for default implementation of weak function.
-# define WEAK_DEFAULT_NAME(Name) Name##__def
+#define WEAK_DEFAULT_NAME(Name) Name##__def
 // Name for exported implementation of weak function.
-# define WEAK_EXPORT_NAME(Name) Name##__dll
+#define WEAK_EXPORT_NAME(Name) Name##__dll
 
 // Use this macro when you need to define and export a weak function from a
 // library. For example:
 //   WIN_WEAK_EXPORT_DEF(bool, compare, int a, int b) { return a > b; }
-# define WIN_WEAK_EXPORT_DEF(ReturnType, Name, ...)                            \
-  WIN_WEAK_ALIAS(Name, WEAK_DEFAULT_NAME(Name))                                \
-  WIN_EXPORT(WEAK_EXPORT_NAME(Name), Name)                                     \
-  extern "C" ReturnType Name(__VA_ARGS__);                                     \
+#define WIN_WEAK_EXPORT_DEF(ReturnType, Name, ...) \
+  WIN_WEAK_ALIAS(Name, WEAK_DEFAULT_NAME(Name))    \
+  WIN_EXPORT(WEAK_EXPORT_NAME(Name), Name)         \
+  extern "C" ReturnType Name(__VA_ARGS__);         \
   extern "C" ReturnType WEAK_DEFAULT_NAME(Name)(__VA_ARGS__)
 
 // Use this macro when you need to import a weak function from a library. It
 // defines a weak alias to the imported function from the dll. For example:
 //   WIN_WEAK_IMPORT_DEF(compare)
-# define WIN_WEAK_IMPORT_DEF(Name)                                             \
-  WIN_WEAK_ALIAS(Name, WEAK_EXPORT_NAME(Name))
+#define WIN_WEAK_IMPORT_DEF(Name) WIN_WEAK_ALIAS(Name, WEAK_EXPORT_NAME(Name))
 
 // So, for Windows we provide something similar to weak symbols in Linux, with
 // some differences:
@@ -161,14 +161,14 @@
 //   }
 //
 
-#else // SANITIZER_GO
+#else  // SANITIZER_GO
 
 // Go neither needs nor wants weak references.
 // The shenanigans above don't work for gcc.
-# define WIN_WEAK_EXPORT_DEF(ReturnType, Name, ...)                            \
+#define WIN_WEAK_EXPORT_DEF(ReturnType, Name, ...) \
   extern "C" ReturnType Name(__VA_ARGS__)
 
-#endif // SANITIZER_GO
+#endif  // SANITIZER_GO
 
-#endif // SANITIZER_WINDOWS
-#endif // SANITIZER_WIN_DEFS_H
+#endif  // SANITIZER_WINDOWS
+#endif  // SANITIZER_WIN_DEFS_H

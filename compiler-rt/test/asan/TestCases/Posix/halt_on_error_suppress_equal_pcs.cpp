@@ -17,12 +17,12 @@
 // RUN: %env_asan_opts=halt_on_error=false:suppress_equal_pcs=false %run %t >%t2.log 2>&1
 // RUN: grep 'ERROR: AddressSanitizer: stack-buffer-overflow' %t2.log | count 30
 
-#define ACCESS_ARRAY_FIVE_ELEMENTS(array, i)     \
-  array[i] = i;                                  \
-  array[i + 1] = i + 1;                          \
-  array[i + 2] = i + 2;                          \
-  array[i + 3] = i + 3;                          \
-  array[i + 4] = i + 4;                          \
+#define ACCESS_ARRAY_FIVE_ELEMENTS(array, i) \
+  array[i] = i;                              \
+  array[i + 1] = i + 1;                      \
+  array[i + 2] = i + 2;                      \
+  array[i + 3] = i + 3;                      \
+  array[i + 4] = i + 4;
 
 volatile int ten = 10;
 unsigned kNumIterations = 10;
@@ -53,4 +53,3 @@ int main(int argc, char **argv) {
   }
   return 0;
 }
-

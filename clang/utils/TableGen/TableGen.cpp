@@ -10,8 +10,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "TableGenBackends.h" // Declares all backends.
 #include "ASTTableGen.h"
+#include "TableGenBackends.h" // Declares all backends.
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/PrettyStackTrace.h"
 #include "llvm/Support/Signals.h"
@@ -241,14 +241,14 @@ cl::opt<ActionType> Action(
                    "attribute for testing purposes")));
 
 cl::opt<std::string>
-ClangComponent("clang-component",
-               cl::desc("Only use warnings from specified component"),
-               cl::value_desc("component"), cl::Hidden);
+    ClangComponent("clang-component",
+                   cl::desc("Only use warnings from specified component"),
+                   cl::value_desc("component"), cl::Hidden);
 
 bool ClangTableGenMain(raw_ostream &OS, RecordKeeper &Records) {
   switch (Action) {
   case PrintRecords:
-    OS << Records;           // No argument, dump all contents
+    OS << Records; // No argument, dump all contents
     break;
   case DumpJSON:
     EmitJSON(Records, OS);
@@ -447,7 +447,7 @@ bool ClangTableGenMain(raw_ostream &OS, RecordKeeper &Records) {
 
   return false;
 }
-}
+} // namespace
 
 int main(int argc, char **argv) {
   sys::PrintStackTraceOnErrorSignal(argv[0]);
@@ -465,5 +465,5 @@ int main(int argc, char **argv) {
 // Disable LeakSanitizer for this binary as it has too many leaks that are not
 // very interesting to fix. See compiler-rt/include/sanitizer/lsan_interface.h .
 int __lsan_is_turned_off() { return 1; }
-#endif  // __has_feature(address_sanitizer)
-#endif  // defined(__has_feature)
+#endif // __has_feature(address_sanitizer)
+#endif // defined(__has_feature)

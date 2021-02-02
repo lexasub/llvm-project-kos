@@ -4,16 +4,16 @@
 
 #include <override-system-header.h>
 
-struct A
-{
+struct A {
   virtual void x();
   END_COM_MAP;
-  IFACEMETHOD(Initialize)();
+  IFACEMETHOD(Initialize)
+  ();
 };
- 
-struct B : A
-{
+
+struct B : A {
   virtual void x() override;
   END_COM_MAP;
-  IFACEMETHOD(Initialize)();
+  IFACEMETHOD(Initialize)
+  ();
 };

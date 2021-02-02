@@ -35,8 +35,7 @@ inline void write<float>(raw_ostream &os, float value, endianness endian) {
 }
 
 template <>
-inline void write<double>(raw_ostream &os, double value,
-                          endianness endian) {
+inline void write<double>(raw_ostream &os, double value, endianness endian) {
   write(os, DoubleToBits(value), endian);
 }
 

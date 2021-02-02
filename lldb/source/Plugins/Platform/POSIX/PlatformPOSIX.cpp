@@ -218,8 +218,9 @@ lldb_private::Status PlatformPOSIX::GetFile(
       permissions = lldb::eFilePermissionsFileDefault;
 
     user_id_t fd_dst = FileCache::GetInstance().OpenFile(
-        destination, File::eOpenOptionCanCreate | File::eOpenOptionWrite |
-                         File::eOpenOptionTruncate,
+        destination,
+        File::eOpenOptionCanCreate | File::eOpenOptionWrite |
+            File::eOpenOptionTruncate,
         permissions, error);
 
     if (fd_dst == UINT64_MAX) {
@@ -463,9 +464,8 @@ PlatformPOSIX::DebugProcess(ProcessLaunchInfo &launch_info, Debugger &debugger,
 
   // Now create the gdb-remote process.
   LLDB_LOG(log, "having target create process with gdb-remote plugin");
-  process_sp =
-      target->CreateProcess(launch_info.GetListener(), "gdb-remote", nullptr,
-                            true);
+  process_sp = target->CreateProcess(launch_info.GetListener(), "gdb-remote",
+                                     nullptr, true);
 
   if (!process_sp) {
     error.SetErrorString("CreateProcess() failed for gdb-remote process");
@@ -651,10 +651,10 @@ PlatformPOSIX::MakeLoadImageUtilityFunction(ExecutionContext &exe_ctx,
   if (!ast)
     return nullptr;
 
-  CompilerType clang_void_pointer_type
-      = ast->GetBasicType(eBasicTypeVoid).GetPointerType();
-  CompilerType clang_char_pointer_type
-        = ast->GetBasicType(eBasicTypeChar).GetPointerType();
+  CompilerType clang_void_pointer_type =
+      ast->GetBasicType(eBasicTypeVoid).GetPointerType();
+  CompilerType clang_char_pointer_type =
+      ast->GetBasicType(eBasicTypeChar).GetPointerType();
 
   // We are passing four arguments, the basename, the list of places to look,
   // a buffer big enough for all the path + name combos, and
@@ -666,21 +666,22 @@ PlatformPOSIX::MakeLoadImageUtilityFunction(ExecutionContext &exe_ctx,
   arguments.PushValue(value);
   arguments.PushValue(value);
   arguments.PushValue(value);
-  
+
   do_dlopen_function = dlopen_utility_func_up->MakeFunctionCaller(
       clang_void_pointer_type, arguments, exe_ctx.GetThreadSP(), utility_error);
   if (utility_error.Fail()) {
     error.SetErrorStringWithFormat("dlopen error: could not make function"
-                                   "caller: %s", utility_error.AsCString());
+                                   "caller: %s",
+                                   utility_error.AsCString());
     return nullptr;
   }
-  
+
   do_dlopen_function = dlopen_utility_func_up->GetFunctionCaller();
   if (!do_dlopen_function) {
     error.SetErrorString("dlopen error: could not get function caller.");
     return nullptr;
   }
-  
+
   // We made a good utility function, so cache it in the process:
   return dlopen_utility_func_up;
 }
@@ -695,15 +696,15 @@ uint32_t PlatformPOSIX::DoLoadImage(lldb_private::Process *process,
 
   std::string path;
   path = remote_file.GetPath();
-  
+
   ThreadSP thread_sp = process->GetThreadList().GetExpressionExecutionThread();
   if (!thread_sp) {
     error.SetErrorString("dlopen error: no thread available to call dlopen.");
     return LLDB_INVALID_IMAGE_TOKEN;
   }
-  
+
   DiagnosticManager diagnostics;
-  
+
   ExecutionContext exe_ctx;
   thread_sp->CalculateExecutionContext(exe_ctx);
 
@@ -721,24 +722,24 @@ uint32_t PlatformPOSIX::DoLoadImage(lldb_private::Process *process,
   // If we couldn't make it, the error will be in error, so we can exit here.
   if (!dlopen_utility_func)
     return LLDB_INVALID_IMAGE_TOKEN;
-    
+
   do_dlopen_function = dlopen_utility_func->GetFunctionCaller();
   if (!do_dlopen_function) {
     error.SetErrorString("dlopen error: could not get function caller.");
     return LLDB_INVALID_IMAGE_TOKEN;
   }
   arguments = do_dlopen_function->GetArgumentValues();
-  
+
   // Now insert the path we are searching for and the result structure into the
   // target.
-  uint32_t permissions = ePermissionsReadable|ePermissionsWritable;
+  uint32_t permissions = ePermissionsReadable | ePermissionsWritable;
   size_t path_len = path.size() + 1;
-  lldb::addr_t path_addr = process->AllocateMemory(path_len, 
-                                                   permissions,
-                                                   utility_error);
+  lldb::addr_t path_addr =
+      process->AllocateMemory(path_len, permissions, utility_error);
   if (path_addr == LLDB_INVALID_ADDRESS) {
     error.SetErrorStringWithFormat("dlopen error: could not allocate memory"
-                                    "for path: %s", utility_error.AsCString());
+                                   "for path: %s",
+                                   utility_error.AsCString());
     return LLDB_INVALID_IMAGE_TOKEN;
   }
 
@@ -751,22 +752,23 @@ uint32_t PlatformPOSIX::DoLoadImage(lldb_private::Process *process,
   process->WriteMemory(path_addr, path.c_str(), path_len, utility_error);
   if (utility_error.Fail()) {
     error.SetErrorStringWithFormat("dlopen error: could not write path string:"
-                                    " %s", utility_error.AsCString());
+                                   " %s",
+                                   utility_error.AsCString());
     return LLDB_INVALID_IMAGE_TOKEN;
   }
-  
+
   // Make space for our return structure.  It is two pointers big: the token
   // and the error string.
   const uint32_t addr_size = process->GetAddressByteSize();
-  lldb::addr_t return_addr = process->CallocateMemory(2*addr_size,
-                                                      permissions,
-                                                      utility_error);
+  lldb::addr_t return_addr =
+      process->CallocateMemory(2 * addr_size, permissions, utility_error);
   if (utility_error.Fail()) {
     error.SetErrorStringWithFormat("dlopen error: could not allocate memory"
-                                    "for path: %s", utility_error.AsCString());
+                                   "for path: %s",
+                                   utility_error.AsCString());
     return LLDB_INVALID_IMAGE_TOKEN;
   }
-  
+
   // Make sure we deallocate the result structure memory
   auto return_cleanup = llvm::make_scope_exit([process, return_addr] {
     // Deallocate the buffer
@@ -780,7 +782,7 @@ uint32_t PlatformPOSIX::DoLoadImage(lldb_private::Process *process,
       path_array_cleanup;
 
   // This is the address to a buffer large enough to hold the largest path
-  // conjoined with the library name we're passing in.  This is a convenience 
+  // conjoined with the library name we're passing in.  This is a convenience
   // to avoid having to call malloc in the dlopen function.
   lldb::addr_t buffer_addr = 0x0;
   llvm::Optional<llvm::detail::scope_exit<std::function<void()>>>
@@ -788,7 +790,7 @@ uint32_t PlatformPOSIX::DoLoadImage(lldb_private::Process *process,
 
   // Set the values into our args and write them to the target:
   if (paths != nullptr) {
-    // First insert the paths into the target.  This is expected to be a 
+    // First insert the paths into the target.  This is expected to be a
     // continuous buffer with the strings laid out null terminated and
     // end to end with an empty string terminating the buffer.
     // We also compute the buffer's required size as we go.
@@ -806,70 +808,67 @@ uint32_t PlatformPOSIX::DoLoadImage(lldb_private::Process *process,
         buffer_size = path_size;
     }
     path_array.push_back('\0');
-    
-    path_array_addr = process->AllocateMemory(path_array.size(), 
-                                              permissions,
-                                              utility_error);
+
+    path_array_addr =
+        process->AllocateMemory(path_array.size(), permissions, utility_error);
     if (path_array_addr == LLDB_INVALID_ADDRESS) {
       error.SetErrorStringWithFormat("dlopen error: could not allocate memory"
-                                      "for path array: %s", 
-                                      utility_error.AsCString());
+                                     "for path array: %s",
+                                     utility_error.AsCString());
       return LLDB_INVALID_IMAGE_TOKEN;
     }
-    
+
     // Make sure we deallocate the paths array.
     path_array_cleanup.emplace([process, path_array_addr]() {
       // Deallocate the path array.
       process->DeallocateMemory(path_array_addr);
     });
 
-    process->WriteMemory(path_array_addr, path_array.data(), 
-                         path_array.size(), utility_error);
+    process->WriteMemory(path_array_addr, path_array.data(), path_array.size(),
+                         utility_error);
 
     if (utility_error.Fail()) {
       error.SetErrorStringWithFormat("dlopen error: could not write path array:"
-                                     " %s", utility_error.AsCString());
+                                     " %s",
+                                     utility_error.AsCString());
       return LLDB_INVALID_IMAGE_TOKEN;
     }
     // Now make spaces in the target for the buffer.  We need to add one for
     // the '/' that the utility function will insert and one for the '\0':
     buffer_size += path.size() + 2;
-    
-    buffer_addr = process->AllocateMemory(buffer_size, 
-                                          permissions,
-                                          utility_error);
+
+    buffer_addr =
+        process->AllocateMemory(buffer_size, permissions, utility_error);
     if (buffer_addr == LLDB_INVALID_ADDRESS) {
       error.SetErrorStringWithFormat("dlopen error: could not allocate memory"
-                                      "for buffer: %s", 
-                                      utility_error.AsCString());
+                                     "for buffer: %s",
+                                     utility_error.AsCString());
       return LLDB_INVALID_IMAGE_TOKEN;
     }
-  
+
     // Make sure we deallocate the buffer memory:
     buffer_cleanup.emplace([process, buffer_addr]() {
       // Deallocate the buffer.
       process->DeallocateMemory(buffer_addr);
     });
   }
-    
+
   arguments.GetValueAtIndex(0)->GetScalar() = path_addr;
   arguments.GetValueAtIndex(1)->GetScalar() = path_array_addr;
   arguments.GetValueAtIndex(2)->GetScalar() = buffer_addr;
   arguments.GetValueAtIndex(3)->GetScalar() = return_addr;
 
   lldb::addr_t func_args_addr = LLDB_INVALID_ADDRESS;
-  
+
   diagnostics.Clear();
-  if (!do_dlopen_function->WriteFunctionArguments(exe_ctx, 
-                                                 func_args_addr,
-                                                 arguments,
-                                                 diagnostics)) {
+  if (!do_dlopen_function->WriteFunctionArguments(exe_ctx, func_args_addr,
+                                                  arguments, diagnostics)) {
     error.SetErrorStringWithFormat("dlopen error: could not write function "
-                                   "arguments: %s", 
+                                   "arguments: %s",
                                    diagnostics.GetString().c_str());
     return LLDB_INVALID_IMAGE_TOKEN;
   }
-  
+
   // Make sure we clean up the args structure.  We can't reuse it because the
   // Platform lives longer than the process and the Platforms don't get a
   // signal to clean up cached data when a process goes away.
@@ -898,33 +897,33 @@ uint32_t PlatformPOSIX::DoLoadImage(lldb_private::Process *process,
     return LLDB_INVALID_IMAGE_TOKEN;
   }
 
-  CompilerType clang_void_pointer_type
-      = ast->GetBasicType(eBasicTypeVoid).GetPointerType();
+  CompilerType clang_void_pointer_type =
+      ast->GetBasicType(eBasicTypeVoid).GetPointerType();
 
   return_value.SetCompilerType(clang_void_pointer_type);
-  
+
   ExpressionResults results = do_dlopen_function->ExecuteFunction(
       exe_ctx, &func_args_addr, options, diagnostics, return_value);
   if (results != eExpressionCompleted) {
     error.SetErrorStringWithFormat("dlopen error: failed executing "
-                                   "dlopen wrapper function: %s", 
+                                   "dlopen wrapper function: %s",
                                    diagnostics.GetString().c_str());
     return LLDB_INVALID_IMAGE_TOKEN;
   }
-  
+
   // Read the dlopen token from the return area:
-  lldb::addr_t token = process->ReadPointerFromMemory(return_addr, 
-                                                      utility_error);
+  lldb::addr_t token =
+      process->ReadPointerFromMemory(return_addr, utility_error);
   if (utility_error.Fail()) {
     error.SetErrorStringWithFormat("dlopen error: could not read the return "
-                                    "struct: %s", utility_error.AsCString());
+                                   "struct: %s",
+                                   utility_error.AsCString());
     return LLDB_INVALID_IMAGE_TOKEN;
   }
-  
+
   // The dlopen succeeded!
   if (token != 0x0) {
-    if (loaded_image && buffer_addr != 0x0)
-    {
+    if (loaded_image && buffer_addr != 0x0) {
       // Capture the image which was loaded.  We leave it in the buffer on
       // exit from the dlopen function, so we can just read it from there:
       std::string name_string;
@@ -934,20 +933,20 @@ uint32_t PlatformPOSIX::DoLoadImage(lldb_private::Process *process,
     }
     return process->AddImageToken(token);
   }
-    
+
   // We got an error, lets read in the error string:
   std::string dlopen_error_str;
-  lldb::addr_t error_addr 
-    = process->ReadPointerFromMemory(return_addr + addr_size, utility_error);
+  lldb::addr_t error_addr =
+      process->ReadPointerFromMemory(return_addr + addr_size, utility_error);
   if (utility_error.Fail()) {
     error.SetErrorStringWithFormat("dlopen error: could not read error string: "
-                                    "%s", utility_error.AsCString());
+                                   "%s",
+                                   utility_error.AsCString());
     return LLDB_INVALID_IMAGE_TOKEN;
   }
-  
-  size_t num_chars = process->ReadCStringFromMemory(error_addr + addr_size, 
-                                                    dlopen_error_str, 
-                                                    utility_error);
+
+  size_t num_chars = process->ReadCStringFromMemory(
+      error_addr + addr_size, dlopen_error_str, utility_error);
   if (utility_error.Success() && num_chars > 0)
     error.SetErrorStringWithFormat("dlopen error: %s",
                                    dlopen_error_str.c_str());

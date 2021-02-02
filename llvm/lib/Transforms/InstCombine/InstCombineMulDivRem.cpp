@@ -52,7 +52,8 @@ static Value *simplifyValueKnownNonZero(Value *V, InstCombinerImpl &IC,
   // If V has multiple uses, then we would have to do more analysis to determine
   // if this is safe.  For example, the use could be in dynamically unreached
   // code.
-  if (!V->hasOneUse()) return nullptr;
+  if (!V->hasOneUse())
+    return nullptr;
 
   bool MadeChange = false;
 
@@ -169,8 +170,8 @@ Instruction *InstCombinerImpl::visitMul(BinaryOperator &I) {
     Value *NewOp;
     Constant *C1, *C2;
     const APInt *IVal;
-    if (match(&I, m_Mul(m_Shl(m_Value(NewOp), m_Constant(C2)),
-                        m_Constant(C1))) &&
+    if (match(&I,
+              m_Mul(m_Shl(m_Value(NewOp), m_Constant(C2)), m_Constant(C1))) &&
         match(C1, m_APInt(IVal))) {
       // ((X << C2)*C1) == (X * (C1 << C2))
       Constant *Shl = ConstantExpr::getShl(C1, C2);
@@ -365,9 +366,9 @@ Instruction *InstCombinerImpl::visitMul(BinaryOperator &I) {
   // ((ashr X, 31) | 1) * X --> abs(X)
   // X * ((ashr X, 31) | 1) --> abs(X)
   if (match(&I, m_c_BinOp(m_Or(m_AShr(m_Value(X),
-                                    m_SpecificIntAllowUndef(BitWidth - 1)),
-                             m_One()),
-                        m_Deferred(X)))) {
+                                      m_SpecificIntAllowUndef(BitWidth - 1)),
+                               m_One()),
+                          m_Deferred(X)))) {
     Value *Abs = Builder.CreateBinaryIntrinsic(
         Intrinsic::abs, X,
         ConstantInt::getBool(I.getContext(), I.hasNoSignedWrap()));
@@ -426,9 +427,9 @@ Instruction *InstCombinerImpl::foldFPSignBitOps(BinaryOperator &I) {
 }
 
 Instruction *InstCombinerImpl::visitFMul(BinaryOperator &I) {
-  if (Value *V = SimplifyFMulInst(I.getOperand(0), I.getOperand(1),
-                                  I.getFastMathFlags(),
-                                  SQ.getWithInstruction(&I)))
+  if (Value *V =
+          SimplifyFMulInst(I.getOperand(0), I.getOperand(1),
+                           I.getFastMathFlags(), SQ.getWithInstruction(&I)))
     return replaceInstUsesWith(I, V);
 
   if (SimplifyAssociativeOrCommutative(I))
@@ -503,8 +504,8 @@ Instruction *InstCombinerImpl::visitFMul(BinaryOperator &I) {
     }
 
     Value *Z;
-    if (match(&I, m_c_FMul(m_OneUse(m_FDiv(m_Value(X), m_Value(Y))),
-                           m_Value(Z)))) {
+    if (match(&I,
+              m_c_FMul(m_OneUse(m_FDiv(m_Value(X), m_Value(Y))), m_Value(Z)))) {
       // Sink division: (X / Y) * Z --> (X * Z) / Y
       Value *NewFMul = Builder.CreateFMulFMF(X, Z, &I);
       return BinaryOperator::CreateFDivFMF(NewFMul, Y, &I);
@@ -542,14 +543,14 @@ Instruction *InstCombinerImpl::visitFMul(BinaryOperator &I) {
         Op0->hasNUses(2)) {
       // Peek through fdiv to find squaring of square root:
       // (X / sqrt(Y)) * (X / sqrt(Y)) --> (X * X) / Y
-      if (match(Op0, m_FDiv(m_Value(X),
-                            m_Intrinsic<Intrinsic::sqrt>(m_Value(Y))))) {
+      if (match(Op0,
+                m_FDiv(m_Value(X), m_Intrinsic<Intrinsic::sqrt>(m_Value(Y))))) {
         Value *XX = Builder.CreateFMulFMF(X, X, &I);
         return BinaryOperator::CreateFDivFMF(XX, Y, &I);
       }
       // (sqrt(Y) / X) * (sqrt(Y) / X) --> Y / (X * X)
-      if (match(Op0, m_FDiv(m_Intrinsic<Intrinsic::sqrt>(m_Value(Y)),
-                            m_Value(X)))) {
+      if (match(Op0,
+                m_FDiv(m_Intrinsic<Intrinsic::sqrt>(m_Value(Y)), m_Value(X)))) {
         Value *XX = Builder.CreateFMulFMF(X, X, &I);
         return BinaryOperator::CreateFDivFMF(Y, XX, &I);
       }
@@ -598,12 +599,12 @@ Instruction *InstCombinerImpl::visitFMul(BinaryOperator &I) {
   if (I.isFast()) {
     IntrinsicInst *Log2 = nullptr;
     if (match(Op0, m_OneUse(m_Intrinsic<Intrinsic::log2>(
-            m_OneUse(m_FMul(m_Value(X), m_SpecificFP(0.5))))))) {
+                       m_OneUse(m_FMul(m_Value(X), m_SpecificFP(0.5))))))) {
       Log2 = cast<IntrinsicInst>(Op0);
       Y = Op1;
     }
     if (match(Op1, m_OneUse(m_Intrinsic<Intrinsic::log2>(
-            m_OneUse(m_FMul(m_Value(X), m_SpecificFP(0.5))))))) {
+                       m_OneUse(m_FMul(m_Value(X), m_SpecificFP(0.5))))))) {
       Log2 = cast<IntrinsicInst>(Op1);
       Y = Op0;
     }
@@ -682,7 +683,6 @@ bool InstCombinerImpl::simplifyDivRemOfSelectWithZeroOp(BinaryOperator &I) {
     // If we ran out of things to eliminate, break out of the loop.
     if (!SelectCond && !SI)
       break;
-
   }
   return true;
 }
@@ -1276,9 +1276,9 @@ static Instruction *foldFDivConstantDividend(BinaryOperator &I) {
 }
 
 Instruction *InstCombinerImpl::visitFDiv(BinaryOperator &I) {
-  if (Value *V = SimplifyFDivInst(I.getOperand(0), I.getOperand(1),
-                                  I.getFastMathFlags(),
-                                  SQ.getWithInstruction(&I)))
+  if (Value *V =
+          SimplifyFDivInst(I.getOperand(0), I.getOperand(1),
+                           I.getFastMathFlags(), SQ.getWithInstruction(&I)))
     return replaceInstUsesWith(I, V);
 
   if (Instruction *X = foldVectorBinop(I))
@@ -1334,12 +1334,12 @@ Instruction *InstCombinerImpl::visitFDiv(BinaryOperator &I) {
     Value *X;
     bool IsTan = match(Op0, m_Intrinsic<Intrinsic::sin>(m_Value(X))) &&
                  match(Op1, m_Intrinsic<Intrinsic::cos>(m_Specific(X)));
-    bool IsCot =
-        !IsTan && match(Op0, m_Intrinsic<Intrinsic::cos>(m_Value(X))) &&
-                  match(Op1, m_Intrinsic<Intrinsic::sin>(m_Specific(X)));
+    bool IsCot = !IsTan &&
+                 match(Op0, m_Intrinsic<Intrinsic::cos>(m_Value(X))) &&
+                 match(Op1, m_Intrinsic<Intrinsic::sin>(m_Specific(X)));
 
-    if ((IsTan || IsCot) &&
-        hasFloatFn(&TLI, I.getType(), LibFunc_tan, LibFunc_tanf, LibFunc_tanl)) {
+    if ((IsTan || IsCot) && hasFloatFn(&TLI, I.getType(), LibFunc_tan,
+                                       LibFunc_tanf, LibFunc_tanl)) {
       IRBuilder<> B(&I);
       IRBuilder<>::FastMathFlagGuard FMFGuard(B);
       B.setFastMathFlags(I.getFastMathFlags());
@@ -1525,7 +1525,7 @@ Instruction *InstCombinerImpl::visitSRem(BinaryOperator &I) {
     if (hasNegative && !hasMissing) {
       SmallVector<Constant *, 16> Elts(VWidth);
       for (unsigned i = 0; i != VWidth; ++i) {
-        Elts[i] = C->getAggregateElement(i);  // Handle undef, etc.
+        Elts[i] = C->getAggregateElement(i); // Handle undef, etc.
         if (ConstantInt *RHS = dyn_cast<ConstantInt>(Elts[i])) {
           if (RHS->isNegative())
             Elts[i] = cast<ConstantInt>(ConstantExpr::getNeg(RHS));
@@ -1533,7 +1533,7 @@ Instruction *InstCombinerImpl::visitSRem(BinaryOperator &I) {
       }
 
       Constant *NewRHSV = ConstantVector::get(Elts);
-      if (NewRHSV != C)  // Don't loop on -MININT
+      if (NewRHSV != C) // Don't loop on -MININT
         return replaceOperand(I, 1, NewRHSV);
     }
   }
@@ -1542,9 +1542,9 @@ Instruction *InstCombinerImpl::visitSRem(BinaryOperator &I) {
 }
 
 Instruction *InstCombinerImpl::visitFRem(BinaryOperator &I) {
-  if (Value *V = SimplifyFRemInst(I.getOperand(0), I.getOperand(1),
-                                  I.getFastMathFlags(),
-                                  SQ.getWithInstruction(&I)))
+  if (Value *V =
+          SimplifyFRemInst(I.getOperand(0), I.getOperand(1),
+                           I.getFastMathFlags(), SQ.getWithInstruction(&I)))
     return replaceInstUsesWith(I, V);
 
   if (Instruction *X = foldVectorBinop(I))

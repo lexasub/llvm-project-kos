@@ -89,7 +89,7 @@ TypeAndOrName ItaniumABILanguageRuntime::GetTypeInfoFromVTableAddress(
             // prefixing it with the root namespace:
             std::string lookup_name("::");
             lookup_name.append(class_name);
-            
+
             type_info.SetName(class_name);
             const bool exact_match = true;
             TypeList class_types;
@@ -422,9 +422,10 @@ BreakpointResolverSP ItaniumABILanguageRuntime::CreateExceptionResolver(
   return CreateExceptionResolver(bkpt, catch_bp, throw_bp, false);
 }
 
-BreakpointResolverSP ItaniumABILanguageRuntime::CreateExceptionResolver(
-    const BreakpointSP &bkpt, bool catch_bp, bool throw_bp,
-    bool for_expressions) {
+BreakpointResolverSP
+ItaniumABILanguageRuntime::CreateExceptionResolver(const BreakpointSP &bkpt,
+                                                   bool catch_bp, bool throw_bp,
+                                                   bool for_expressions) {
   // One complication here is that most users DON'T want to stop at
   // __cxa_allocate_expression, but until we can do anything better with
   // predicting unwinding the expression parser does.  So we have two forms of
@@ -530,8 +531,8 @@ bool ItaniumABILanguageRuntime::ExceptionBreakpointsExplainStop(
       break_site_id, m_cxx_exception_bp_sp->GetID());
 }
 
-ValueObjectSP ItaniumABILanguageRuntime::GetExceptionObjectForThread(
-    ThreadSP thread_sp) {
+ValueObjectSP
+ItaniumABILanguageRuntime::GetExceptionObjectForThread(ThreadSP thread_sp) {
   if (!thread_sp->SafeToCallFunctions())
     return {};
 

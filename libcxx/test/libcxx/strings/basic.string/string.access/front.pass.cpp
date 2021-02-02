@@ -21,9 +21,9 @@
 #include "test_macros.h"
 
 int main(int, char**) {
-    std::string s;
-    (void) s.front();
-    assert(false);
+  std::string s;
+  (void)s.front();
+  assert(false);
 
-    return 0;
+  return 0;
 }

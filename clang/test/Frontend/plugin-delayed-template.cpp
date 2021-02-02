@@ -11,7 +11,7 @@ void TemplateDep();
 // CHECK: late-parsed-decl: "ForcedTemplate"
 template <typename T>
 void ForcedTemplate() {
-  TemplateDep<T>();  // Shouldn't crash.
+  TemplateDep<T>(); // Shouldn't crash.
 
-  "";  // Triggers the warning checked for above.
+  ""; // Triggers the warning checked for above.
 }

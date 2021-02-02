@@ -1,7 +1,6 @@
 @interface B
 @end
 
-
 @interface A {
 @public
   union {

@@ -8,9 +8,9 @@
 //===----------------------------------------------------------------------===//
 
 #include "AMDGPUMCAsmInfo.h"
+#include "MCTargetDesc/AMDGPUMCTargetDesc.h"
 #include "llvm/ADT/Triple.h"
 #include "llvm/MC/MCSubtargetInfo.h"
-#include "MCTargetDesc/AMDGPUMCTargetDesc.h"
 
 using namespace llvm;
 

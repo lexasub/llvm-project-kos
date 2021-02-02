@@ -1,8 +1,9 @@
 // RUN: %check_clang_tidy %s modernize-shrink-to-fit %t
 
 namespace std {
-template <typename T> struct vector { void swap(vector &other); };
-}
+template <typename T>
+struct vector { void swap(vector &other); };
+} // namespace std
 
 void f() {
   std::vector<int> v;
@@ -36,7 +37,8 @@ struct X {
   }
 };
 
-template <typename T> void g() {
+template <typename T>
+void g() {
   std::vector<int> v;
   std::vector<int>(v).swap(v);
   // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: the shrink_to_fit method should
@@ -47,7 +49,8 @@ template <typename T> void g() {
   // CHECK-FIXES: {{^  }}std::vector<T>(v2).swap(v2);{{$}}
 }
 
-template <typename T> void g2() {
+template <typename T>
+void g2() {
   std::vector<int> v;
   std::vector<int>(v).swap(v);
   // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: the shrink_to_fit method should

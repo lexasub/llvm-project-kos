@@ -9,19 +9,17 @@
 // This file is a part of ThreadSanitizer (TSan), a race detector.
 //
 //===----------------------------------------------------------------------===//
-#include "sanitizer_common/sanitizer_placement_new.h"
 #include "tsan_sync.h"
-#include "tsan_rtl.h"
+
+#include "sanitizer_common/sanitizer_placement_new.h"
 #include "tsan_mman.h"
+#include "tsan_rtl.h"
 
 namespace __tsan {
 
 void DDMutexInit(ThreadState *thr, uptr pc, SyncVar *s);
 
-SyncVar::SyncVar()
-    : mtx(MutexTypeSyncVar, StatMtxSyncVar) {
-  Reset(0);
-}
+SyncVar::SyncVar() : mtx(MutexTypeSyncVar, StatMtxSyncVar) { Reset(0); }
 
 void SyncVar::Init(ThreadState *thr, uptr pc, uptr addr, u64 uid) {
   this->addr = addr;
@@ -53,8 +51,7 @@ void SyncVar::Reset(Processor *proc) {
 }
 
 MetaMap::MetaMap()
-    : block_alloc_("heap block allocator")
-    , sync_alloc_("sync allocator") {
+    : block_alloc_("heap block allocator"), sync_alloc_("sync allocator") {
   atomic_store(&uid_gen_, 0, memory_order_relaxed);
 }
 
@@ -71,7 +68,7 @@ void MetaMap::AllocBlock(ThreadState *thr, uptr pc, uptr p, uptr sz) {
 }
 
 uptr MetaMap::FreeBlock(Processor *proc, uptr p) {
-  MBlock* b = GetBlock(p);
+  MBlock *b = GetBlock(p);
   if (b == 0)
     return 0;
   uptr sz = RoundUpTo(b->siz, kMetaShadowCell);
@@ -174,12 +171,12 @@ void MetaMap::ResetRange(Processor *proc, uptr p, uptr sz) {
   // meta objects in java heap).
   uptr metap = (uptr)MemToMeta(p0);
   uptr metasz = sz0 / kMetaRatio;
-  UnmapOrDie((void*)metap, metasz);
+  UnmapOrDie((void *)metap, metasz);
   if (!MmapFixedSuperNoReserve(metap, metasz))
     Die();
 }
 
-MBlock* MetaMap::GetBlock(uptr p) {
+MBlock *MetaMap::GetBlock(uptr p) {
   u32 *meta = MemToMeta(p);
   u32 idx = *meta;
   for (;;) {
@@ -188,22 +185,22 @@ MBlock* MetaMap::GetBlock(uptr p) {
     if (idx & kFlagBlock)
       return block_alloc_.Map(idx & ~kFlagMask);
     DCHECK(idx & kFlagSync);
-    SyncVar * s = sync_alloc_.Map(idx & ~kFlagMask);
+    SyncVar *s = sync_alloc_.Map(idx & ~kFlagMask);
     idx = s->next;
   }
 }
 
-SyncVar* MetaMap::GetOrCreateAndLock(ThreadState *thr, uptr pc,
-                              uptr addr, bool write_lock) {
+SyncVar *MetaMap::GetOrCreateAndLock(ThreadState *thr, uptr pc, uptr addr,
+                                     bool write_lock) {
   return GetAndLock(thr, pc, addr, write_lock, true);
 }
 
-SyncVar* MetaMap::GetIfExistsAndLock(uptr addr, bool write_lock) {
+SyncVar *MetaMap::GetIfExistsAndLock(uptr addr, bool write_lock) {
   return GetAndLock(0, 0, addr, write_lock, false);
 }
 
-SyncVar* MetaMap::GetAndLock(ThreadState *thr, uptr pc,
-                             uptr addr, bool write_lock, bool create) {
+SyncVar *MetaMap::GetAndLock(ThreadState *thr, uptr pc, uptr addr,
+                             bool write_lock, bool create) {
   u32 *meta = MemToMeta(addr);
   u32 idx0 = *meta;
   u32 myidx = 0;
@@ -216,7 +213,7 @@ SyncVar* MetaMap::GetAndLock(ThreadState *thr, uptr pc,
       if (idx & kFlagBlock)
         break;
       DCHECK(idx & kFlagSync);
-      SyncVar * s = sync_alloc_.Map(idx & ~kFlagMask);
+      SyncVar *s = sync_alloc_.Map(idx & ~kFlagMask);
       if (s->addr == addr) {
         if (myidx != 0) {
           mys->Reset(thr->proc());
@@ -244,8 +241,9 @@ SyncVar* MetaMap::GetAndLock(ThreadState *thr, uptr pc,
       mys->Init(thr, pc, addr, uid);
     }
     mys->next = idx0;
-    if (atomic_compare_exchange_strong((atomic_uint32_t*)meta, &idx0,
-        myidx | kFlagSync, memory_order_release)) {
+    if (atomic_compare_exchange_strong((atomic_uint32_t *)meta, &idx0,
+                                       myidx | kFlagSync,
+                                       memory_order_release)) {
       if (write_lock)
         mys->mtx.Lock();
       else

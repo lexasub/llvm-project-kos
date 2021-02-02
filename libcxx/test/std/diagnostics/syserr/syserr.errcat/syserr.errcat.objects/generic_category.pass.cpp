@@ -26,22 +26,19 @@
 #include "test_macros.h"
 
 void test_message_for_bad_value() {
-    errno = E2BIG; // something that message will never generate
-    const std::error_category& e_cat1 = std::generic_category();
-    const std::string msg = e_cat1.message(-1);
-    // Exact message format varies by platform.
-    LIBCPP_ASSERT(msg.rfind("Unknown error", 0) == 0);
-    assert(errno == E2BIG);
+  errno = E2BIG; // something that message will never generate
+  const std::error_category& e_cat1 = std::generic_category();
+  const std::string msg = e_cat1.message(-1);
+  // Exact message format varies by platform.
+  LIBCPP_ASSERT(msg.rfind("Unknown error", 0) == 0);
+  assert(errno == E2BIG);
 }
 
-int main(int, char**)
-{
-    const std::error_category& e_cat1 = std::generic_category();
-    std::string m1 = e_cat1.name();
-    assert(m1 == "generic");
-    {
-        test_message_for_bad_value();
-    }
+int main(int, char**) {
+  const std::error_category& e_cat1 = std::generic_category();
+  std::string m1 = e_cat1.name();
+  assert(m1 == "generic");
+  { test_message_for_bad_value(); }
 
   return 0;
 }

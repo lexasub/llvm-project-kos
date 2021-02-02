@@ -53,9 +53,7 @@ public:
 
   void expect(SMDiagnostic D) { Expected.push_back(D); }
 
-  void diag(const SMDiagnostic &D) {
-    Received.push_back(D);
-  }
+  void diag(const SMDiagnostic &D) { Received.push_back(D); }
 
   static void handler(const SMDiagnostic &D, void *Context) {
     RAIIDiagnosticChecker *Self = static_cast<RAIIDiagnosticChecker *>(Context);
@@ -112,9 +110,10 @@ TEST(CodeExpander, NotAnExpansion) {
   CodeExpander(" $foo", Expansions, SMLoc::getFromPointer(In.data()), false)
       .emit(OS);
   EXPECT_EQ(OS.str(), " $foo");
-  DiagChecker.expect(SMDiagnostic(
-      SrcMgr, SMLoc::getFromPointer(In.data()), "TestBuffer", 1, 0,
-      SourceMgr::DK_Warning, "Assuming missing escape character: \\$", " $foo", {}));
+  DiagChecker.expect(SMDiagnostic(SrcMgr, SMLoc::getFromPointer(In.data()),
+                                  "TestBuffer", 1, 0, SourceMgr::DK_Warning,
+                                  "Assuming missing escape character: \\$",
+                                  " $foo", {}));
 }
 
 // \$foo is not an expansion but shouldn't warn as it's using the escape.
@@ -177,7 +176,7 @@ TEST(CodeExpander, UnterminatedExpansion) {
   CodeExpander(In, Expansions, SMLoc::getFromPointer(In.data()), false)
       .emit(OS);
   EXPECT_EQ(OS.str(), " expansion");
-  DiagChecker.expect(SMDiagnostic(SrcMgr, SMLoc::getFromPointer(In.data()),
-                                  "TestBuffer", 1, 0, SourceMgr::DK_Warning,
-                                  "Unterminated expansion '${bar'", " ${bar", {}));
+  DiagChecker.expect(SMDiagnostic(
+      SrcMgr, SMLoc::getFromPointer(In.data()), "TestBuffer", 1, 0,
+      SourceMgr::DK_Warning, "Unterminated expansion '${bar'", " ${bar", {}));
 }

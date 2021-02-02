@@ -10,17 +10,17 @@
 #ifndef HEADER
 #define HEADER
 
-void test_ds(){
-  #pragma omp target
+void test_ds() {
+#pragma omp target
   {
     int a = 10;
-    #pragma omp parallel
+#pragma omp parallel
     {
       a = 1000;
     }
     int b = 100;
     int c = 1000;
-    #pragma omp parallel private(c)
+#pragma omp parallel private(c)
     {
       int *c1 = &c;
       b = a + 10000;
@@ -116,4 +116,3 @@ void test_ds(){
 // CK1: call void @__omp_outlined__{{.*}}({{.*}}, i32* [[SHARGSTMP8]], i32* [[SHARGSTMP11]])
 
 #endif
-

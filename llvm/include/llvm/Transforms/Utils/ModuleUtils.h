@@ -117,7 +117,7 @@ namespace VFABI {
 /// in \p VariantMappings.
 void setVectorVariantNames(CallInst *CI,
                            const SmallVector<std::string, 8> &VariantMappings);
-} // End VFABI namespace
-} // End llvm namespace
+} // namespace VFABI
+} // namespace llvm
 
 #endif //  LLVM_TRANSFORMS_UTILS_MODULEUTILS_H

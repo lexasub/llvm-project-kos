@@ -46,12 +46,10 @@ static inline void initLLVM() {
 
 // Define a printers to help debugging when things go wrong.
 namespace llvm {
-std::ostream &
-operator<<(std::ostream &OS, const LLT Ty);
+std::ostream &operator<<(std::ostream &OS, const LLT Ty);
 
-std::ostream &
-operator<<(std::ostream &OS, const MachineFunction &MF);
-}
+std::ostream &operator<<(std::ostream &OS, const MachineFunction &MF);
+} // namespace llvm
 
 static std::unique_ptr<Module> parseMIR(LLVMContext &Context,
                                         std::unique_ptr<MIRParser> &MIR,

@@ -224,7 +224,8 @@ public:
   }
 
   llvm::Optional<llvm::DILineInfo> getDILineInfo(InputSectionBase *, uint64_t);
-  llvm::Optional<std::pair<std::string, unsigned>> getVariableLoc(StringRef name);
+  llvm::Optional<std::pair<std::string, unsigned>>
+  getVariableLoc(StringRef name);
 
   // MIPS GP0 value defined by this file. This value represents the gp value
   // used to create the relocatable object and required to support

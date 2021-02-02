@@ -1,3 +1,3 @@
 @protocol BaseProtocol
-- (void) test;
+- (void)test;
 @end

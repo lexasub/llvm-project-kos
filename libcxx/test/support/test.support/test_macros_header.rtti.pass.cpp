@@ -14,15 +14,17 @@
 #include "test_macros.h"
 
 #ifdef TEST_HAS_NO_RTTI
-#  error "TEST_HAS_NO_RTTI should NOT be defined"
+#error "TEST_HAS_NO_RTTI should NOT be defined"
 #endif
 
-struct A { virtual ~A() { } };
-struct B : A { };
+struct A {
+  virtual ~A() {}
+};
+struct B : A {};
 
 int main(int, char**) {
-    A* ptr = new B;
-    (void)dynamic_cast<B*>(ptr);
-    delete ptr;
-    return 0;
+  A* ptr = new B;
+  (void)dynamic_cast<B*>(ptr);
+  delete ptr;
+  return 0;
 }

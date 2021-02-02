@@ -104,7 +104,7 @@ getLexerStartingFromLoc(SourceLocation Loc, const SourceManager &SM,
   const char *TokBegin = File.data() + LocInfo.second;
   // Lex from the start of the given location.
   return std::make_unique<Lexer>(SM.getLocForStartOfFile(LocInfo.first),
-                                  LangOpts, File.begin(), TokBegin, File.end());
+                                 LangOpts, File.begin(), TokBegin, File.end());
 }
 
 // FIXME: get rid of this helper function if this is supported in clang-refactor
@@ -168,8 +168,9 @@ tooling::Replacement createReplacement(SourceLocation Start, SourceLocation End,
     return tooling::Replacement();
   }
   return tooling::Replacement(
-      SM, CharSourceRange::getTokenRange(SM.getSpellingLoc(Start),
-                                         SM.getSpellingLoc(End)),
+      SM,
+      CharSourceRange::getTokenRange(SM.getSpellingLoc(Start),
+                                     SM.getSpellingLoc(End)),
       ReplacementText);
 }
 
@@ -286,7 +287,7 @@ bool conflictInNamespace(const ASTContext &AST, llvm::StringRef QualifiedSymbol,
                          llvm::StringRef Namespace) {
   auto SymbolSplitted = splitSymbolName(QualifiedSymbol.trim(":"));
   assert(!SymbolSplitted.empty());
-  SymbolSplitted.pop_back();  // We are only interested in namespaces.
+  SymbolSplitted.pop_back(); // We are only interested in namespaces.
 
   if (SymbolSplitted.size() >= 1 && !Namespace.empty()) {
     auto SymbolTopNs = SymbolSplitted.front();
@@ -377,8 +378,8 @@ void ChangeNamespaceTool::registerMatchers(ast_matchers::MatchFinder *Finder) {
   auto IsInMovedNs =
       allOf(hasAncestor(namespaceDecl(hasName(FullOldNs)).bind("ns_decl")),
             isExpansionInFileMatching(FilePattern));
-  auto IsVisibleInNewNs = anyOf(
-      IsInMovedNs, unless(hasAncestor(namespaceDecl(hasName(Prefix)))));
+  auto IsVisibleInNewNs =
+      anyOf(IsInMovedNs, unless(hasAncestor(namespaceDecl(hasName(Prefix)))));
   // Match using declarations.
   Finder->addMatcher(
       usingDecl(isExpansionInFileMatching(FilePattern), IsVisibleInNewNs)

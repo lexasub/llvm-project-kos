@@ -7,23 +7,23 @@ typedef unsigned long NSUInteger;
 typedef double CGFloat;
 
 typedef struct BOXABLE _NSRange {
-    NSUInteger location;
-    NSUInteger length;
+  NSUInteger location;
+  NSUInteger length;
 } NSRange;
 
 typedef struct BOXABLE _NSPoint {
-    CGFloat x;
-    CGFloat y;
+  CGFloat x;
+  CGFloat y;
 } NSPoint;
 
 typedef struct BOXABLE _NSSize {
-    CGFloat width;
-    CGFloat height;
+  CGFloat width;
+  CGFloat height;
 } NSSize;
 
 typedef struct BOXABLE _NSRect {
-    NSPoint origin;
-    NSSize size;
+  NSPoint origin;
+  NSSize size;
 } NSRect;
 
 struct CGPoint {

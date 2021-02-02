@@ -122,7 +122,8 @@ VPUser *VPRecipeBase::toVPUser() {
 }
 
 // Get the top-most entry block of \p Start. This is the entry block of the
-// containing VPlan. This function is templated to support both const and non-const blocks
+// containing VPlan. This function is templated to support both const and
+// non-const blocks
 template <typename T> static T *getPlanEntry(T *Start) {
   T *Next = Start;
   T *Current = Start;
@@ -942,8 +943,7 @@ void VPReductionRecipe::print(raw_ostream &O, const Twine &Indent,
   printAsOperand(O, SlotTracker);
   O << " = ";
   getChainOp()->printAsOperand(O, SlotTracker);
-  O << " + reduce." << Instruction::getOpcodeName(RdxDesc->getOpcode())
-    << " (";
+  O << " + reduce." << Instruction::getOpcodeName(RdxDesc->getOpcode()) << " (";
   getVecOp()->printAsOperand(O, SlotTracker);
   if (getCondOp()) {
     O << ", ";

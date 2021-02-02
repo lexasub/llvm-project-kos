@@ -65,14 +65,14 @@ template <class T> struct InvariantValue {
 template <class T> struct DominatingValue : InvariantValue<T> {};
 
 template <class T, bool mightBeInstruction =
-            std::is_base_of<llvm::Value, T>::value &&
-            !std::is_base_of<llvm::Constant, T>::value &&
-            !std::is_base_of<llvm::BasicBlock, T>::value>
+                       std::is_base_of<llvm::Value, T>::value &&
+                       !std::is_base_of<llvm::Constant, T>::value &&
+                       !std::is_base_of<llvm::BasicBlock, T>::value>
 struct DominatingPointer;
-template <class T> struct DominatingPointer<T,false> : InvariantValue<T*> {};
+template <class T> struct DominatingPointer<T, false> : InvariantValue<T *> {};
 // template <class T> struct DominatingPointer<T,true> at end of file
 
-template <class T> struct DominatingValue<T*> : DominatingPointer<T> {};
+template <class T> struct DominatingValue<T *> : DominatingPointer<T> {};
 
 enum CleanupKind : unsigned {
   /// Denotes a cleanup that should run when a scope is exited using exceptional
@@ -261,9 +261,9 @@ private:
   void *pushCleanup(CleanupKind K, size_t DataSize);
 
 public:
-  EHScopeStack() : StartOfBuffer(nullptr), EndOfBuffer(nullptr),
-                   StartOfData(nullptr), InnermostNormalCleanup(stable_end()),
-                   InnermostEHScope(stable_end()) {}
+  EHScopeStack()
+      : StartOfBuffer(nullptr), EndOfBuffer(nullptr), StartOfData(nullptr),
+        InnermostNormalCleanup(stable_end()), InnermostEHScope(stable_end()) {}
   ~EHScopeStack() { delete[] StartOfBuffer; }
 
   /// Push a lazily-created cleanup on the stack.
@@ -272,7 +272,7 @@ public:
                   "Cleanup's alignment is too large.");
     void *Buffer = pushCleanup(Kind, sizeof(T));
     Cleanup *Obj = new (Buffer) T(A...);
-    (void) Obj;
+    (void)Obj;
   }
 
   /// Push a lazily-created cleanup on the stack. Tuple version.
@@ -282,7 +282,7 @@ public:
                   "Cleanup's alignment is too large.");
     void *Buffer = pushCleanup(Kind, sizeof(T));
     Cleanup *Obj = new (Buffer) T(std::move(A));
-    (void) Obj;
+    (void)Obj;
   }
 
   // Feel free to add more variants of the following:
@@ -355,10 +355,7 @@ public:
   }
   stable_iterator getInnermostActiveNormalCleanup() const;
 
-  stable_iterator getInnermostEHScope() const {
-    return InnermostEHScope;
-  }
-
+  stable_iterator getInnermostEHScope() const { return InnermostEHScope; }
 
   /// An unstable reference to a scope-stack depth.  Invalidated by
   /// pushes but not pops.
@@ -378,9 +375,7 @@ public:
   }
 
   /// Create a stable reference to the bottom of the EH stack.
-  static stable_iterator stable_end() {
-    return stable_iterator(0);
-  }
+  static stable_iterator stable_end() { return stable_iterator(0); }
 
   /// Translates an iterator into a stable_iterator.
   stable_iterator stabilize(iterator it) const;

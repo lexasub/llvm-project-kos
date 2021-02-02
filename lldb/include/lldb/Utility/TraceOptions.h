@@ -68,7 +68,7 @@ private:
   /// the lldb-server.
   StructuredData::DictionarySP m_trace_params;
 };
-}
+} // namespace lldb_private
 
 namespace llvm {
 namespace json {

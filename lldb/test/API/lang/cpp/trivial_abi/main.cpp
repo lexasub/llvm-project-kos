@@ -3,11 +3,10 @@ struct __attribute__((trivial_abi)) S_Trivial {
   int ivar = 10;
 };
 
-S_Trivial takeTrivial(S_Trivial inVal)
-{
+S_Trivial takeTrivial(S_Trivial inVal) {
   S_Trivial ret_val = inVal;
   ret_val.ivar = 30;
-  return ret_val;   // Set a breakpoint here
+  return ret_val; // Set a breakpoint here
 }
 
 struct S_NotTrivial {
@@ -15,16 +14,13 @@ struct S_NotTrivial {
   int ivar = 10;
 };
 
-S_NotTrivial takeNotTrivial(S_NotTrivial inVal)
-{
+S_NotTrivial takeNotTrivial(S_NotTrivial inVal) {
   S_NotTrivial ret_val = inVal;
   ret_val.ivar = 30;
-  return ret_val;   // Set a breakpoint here
+  return ret_val; // Set a breakpoint here
 }
 
-int
-main()
-{
+int main() {
   S_Trivial inVal, outVal;
   outVal = takeTrivial(inVal);
 

@@ -10,4 +10,4 @@ struct Bar {};
 template <typename T>
 Foo::Private Bar::ABC; // expected-error {{no member named 'ABC' in 'NoCrashOnDelayedAccessCheck::Bar'}} \
                           expected-error {{'Private' is a private member of}}
-}
+} // namespace NoCrashOnDelayedAccessCheck

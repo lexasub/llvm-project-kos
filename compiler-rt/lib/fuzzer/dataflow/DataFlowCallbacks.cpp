@@ -23,18 +23,19 @@ static inline bool BlockIsEntry(size_t BlockIdx) {
 
 extern "C" {
 
-void __sanitizer_cov_trace_pc_guard_init(uint32_t *start,
-                                         uint32_t *stop) {
+void __sanitizer_cov_trace_pc_guard_init(uint32_t *start, uint32_t *stop) {
   assert(__dft.NumFuncs == 0 && "This tool does not support DSOs");
   assert(start < stop && "The code is not instrumented for coverage");
-  if (start == stop || *start) return;  // Initialize only once.
+  if (start == stop || *start)
+    return; // Initialize only once.
   GuardsBeg = start;
   GuardsEnd = stop;
 }
 
 void __sanitizer_cov_pcs_init(const uintptr_t *pcs_beg,
                               const uintptr_t *pcs_end) {
-  if (__dft.NumGuards) return;  // Initialize only once.
+  if (__dft.NumGuards)
+    return; // Initialize only once.
   __dft.NumGuards = GuardsEnd - GuardsBeg;
   __dft.PCsBeg = pcs_beg;
   __dft.PCsEnd = pcs_end;
@@ -45,19 +46,22 @@ void __sanitizer_cov_pcs_init(const uintptr_t *pcs_beg,
       GuardsBeg[i] = __dft.NumFuncs;
     }
   }
-  __dft.BBExecuted = (bool*)calloc(__dft.NumGuards, sizeof(bool));
-  fprintf(stderr, "INFO: %zd instrumented function(s) observed "
-          "and %zd basic blocks\n", __dft.NumFuncs, __dft.NumGuards);
+  __dft.BBExecuted = (bool *)calloc(__dft.NumGuards, sizeof(bool));
+  fprintf(stderr,
+          "INFO: %zd instrumented function(s) observed "
+          "and %zd basic blocks\n",
+          __dft.NumFuncs, __dft.NumGuards);
 }
 
-void __sanitizer_cov_trace_pc_indir(uint64_t x){}  // unused.
+void __sanitizer_cov_trace_pc_indir(uint64_t x) {} // unused.
 
 void __sanitizer_cov_trace_pc_guard(uint32_t *guard) {
   size_t GuardIdx = guard - GuardsBeg;
   // assert(GuardIdx < __dft.NumGuards);
   __dft.BBExecuted[GuardIdx] = true;
-  if (!*guard) return;  // not a function entry.
-  uint32_t FuncNum = *guard - 1;  // Guards start from 1.
+  if (!*guard)
+    return;                      // not a function entry.
+  uint32_t FuncNum = *guard - 1; // Guards start from 1.
   // assert(FuncNum < __dft.NumFuncs);
   CurrentFunc = FuncNum;
 }
@@ -72,7 +76,7 @@ void __dfsw___sanitizer_cov_trace_switch(uint64_t Val, uint64_t *Cases,
   void Name(Type Arg1, Type Arg2, dfsan_label L1, dfsan_label L2) {            \
     __dft.FuncLabels[CurrentFunc] |= L1 | L2;                                  \
   }
-    //assert(CurrentFunc < __dft.NumFuncs);
+// assert(CurrentFunc < __dft.NumFuncs);
 
 HOOK(__dfsw___sanitizer_cov_trace_const_cmp1, uint8_t)
 HOOK(__dfsw___sanitizer_cov_trace_const_cmp2, uint16_t)

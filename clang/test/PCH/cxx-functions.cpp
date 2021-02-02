@@ -6,7 +6,6 @@
 
 // expected-no-diagnostics
 
-
 void test_foo() {
   foo();
 }

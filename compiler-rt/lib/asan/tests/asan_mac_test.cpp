@@ -10,18 +10,16 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "asan_test_utils.h"
-
 #include "asan_mac_test.h"
 
-#include <malloc/malloc.h>
 #include <AvailabilityMacros.h>  // For MAC_OS_X_VERSION_*
 #include <CoreFoundation/CFString.h>
+#include <malloc/malloc.h>
+
+#include "asan_test_utils.h"
 
 TEST(AddressSanitizerMac, CFAllocatorDefaultDoubleFree) {
-  EXPECT_DEATH(
-      CFAllocatorDefaultDoubleFree(NULL),
-      "attempting double-free");
+  EXPECT_DEATH(CFAllocatorDefaultDoubleFree(NULL), "attempting double-free");
 }
 
 void CFAllocator_DoubleFreeOnPthread() {
@@ -39,12 +37,12 @@ namespace {
 void *GLOB;
 
 void *CFAllocatorAllocateToGlob(void *unused) {
-  GLOB = CFAllocatorAllocate(NULL, 100, /*hint*/0);
+  GLOB = CFAllocatorAllocate(NULL, 100, /*hint*/ 0);
   return NULL;
 }
 
 void *CFAllocatorDeallocateFromGlob(void *unused) {
-  char *p = (char*)GLOB;
+  char *p = (char *)GLOB;
   p[100] = 'A';  // ASan should report an error here.
   CFAllocatorDeallocate(NULL, GLOB);
   return NULL;
@@ -59,8 +57,7 @@ void CFAllocator_PassMemoryToAnotherThread() {
 }
 
 TEST(AddressSanitizerMac, CFAllocator_PassMemoryToAnotherThread) {
-  EXPECT_DEATH(CFAllocator_PassMemoryToAnotherThread(),
-               "heap-buffer-overflow");
+  EXPECT_DEATH(CFAllocator_PassMemoryToAnotherThread(), "heap-buffer-overflow");
 }
 
 }  // namespace
@@ -68,9 +65,7 @@ TEST(AddressSanitizerMac, CFAllocator_PassMemoryToAnotherThread) {
 // TODO(glider): figure out whether we still need these tests. Is it correct
 // to intercept the non-default CFAllocators?
 TEST(AddressSanitizerMac, DISABLED_CFAllocatorSystemDefaultDoubleFree) {
-  EXPECT_DEATH(
-      CFAllocatorSystemDefaultDoubleFree(),
-      "attempting double-free");
+  EXPECT_DEATH(CFAllocatorSystemDefaultDoubleFree(), "attempting double-free");
 }
 
 // We're intercepting malloc, so kCFAllocatorMalloc is routed to ASan.
@@ -96,7 +91,6 @@ TEST(AddressSanitizerMac, GCDDispatchSync) {
   // on a CHECK.
   EXPECT_DEATH(TestGCDDispatchSync(), "Shadow byte legend");
 }
-
 
 TEST(AddressSanitizerMac, GCDReuseWqthreadsAsync) {
   // Make sure the whole ASan report is printed, i.e. that we don't die
@@ -187,7 +181,7 @@ TEST(AddressSanitizerMac, MallocIntrospectionLock) {
 void *TSDAllocWorker(void *test_key) {
   if (test_key) {
     void *mem = malloc(10);
-    pthread_setspecific(*(pthread_key_t*)test_key, mem);
+    pthread_setspecific(*(pthread_key_t *)test_key, mem);
   }
   return NULL;
 }
@@ -216,20 +210,17 @@ TEST(AddressSanitizerMac, NSObjectOOB) {
 // Make sure that correct pointer is passed to free() when deallocating a
 // NSURL object.
 // See https://github.com/google/sanitizers/issues/70.
-TEST(AddressSanitizerMac, NSURLDeallocation) {
-  TestNSURLDeallocation();
-}
+TEST(AddressSanitizerMac, NSURLDeallocation) { TestNSURLDeallocation(); }
 
 // See https://github.com/google/sanitizers/issues/109.
 TEST(AddressSanitizerMac, Mstats) {
   malloc_statistics_t stats1, stats2;
-  malloc_zone_statistics(/*all zones*/NULL, &stats1);
+  malloc_zone_statistics(/*all zones*/ NULL, &stats1);
   const size_t kMallocSize = 100000;
   void *alloc = Ident(malloc(kMallocSize));
-  malloc_zone_statistics(/*all zones*/NULL, &stats2);
+  malloc_zone_statistics(/*all zones*/ NULL, &stats2);
   EXPECT_GT(stats2.blocks_in_use, stats1.blocks_in_use);
   EXPECT_GE(stats2.size_in_use - stats1.size_in_use, kMallocSize);
   free(alloc);
   // Even the default OSX allocator may not change the stats after free().
 }
-

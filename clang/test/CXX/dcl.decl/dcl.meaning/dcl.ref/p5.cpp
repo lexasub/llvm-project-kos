@@ -11,125 +11,105 @@ typedef intref &intrefref;
 
 template <class T> class RefMem { // expected-warning{{class 'RefMem<int &>' does not declare any constructor to initialize its non-modifiable members}}
   T
-    &
-      member; // expected-note{{reference member 'member' will never be initialized}}
+      &
+          member; // expected-note{{reference member 'member' will never be initialized}}
 };
 
 struct RefRef {
   int
       &
-        &             // expected-error {{declared as a reference to a reference}}
-          refref0;
+          & // expected-error {{declared as a reference to a reference}}
+              refref0;
 
   intref
-         &
-           refref1; // collapses
+      &
+          refref1; // collapses
 
   intrefref
-            &
-              refref2; // collapses
+      &
+          refref2; // collapses
 
-  RefMem
-        <
-         int
-            &
-             >
-               refref3; // collapses expected-note{{in instantiation of template class 'RefMem<int &>' requested here}}
+  RefMem<
+      int
+          &>
+      refref3; // collapses expected-note{{in instantiation of template class 'RefMem<int &>' requested here}}
 };
-
 
 template <class T> class PtrMem {
   T
-    *                   // expected-error {{declared as a pointer to a reference}}
-      member;
+      * // expected-error {{declared as a pointer to a reference}}
+          member;
 };
 
 struct RefPtr {
-  typedef
-          int
-              &
-                *       // expected-error {{declared as a pointer to a reference}}
-                  intrefptr;
+  typedef int
+      &
+          * // expected-error {{declared as a pointer to a reference}}
+              intrefptr;
 
-  typedef
-          intref
-                 *      // expected-error {{declared as a pointer to a reference}}
-                   intrefptr2;
+  typedef intref
+      * // expected-error {{declared as a pointer to a reference}}
+          intrefptr2;
 
   int
       &
-        *               // expected-error {{declared as a pointer to a reference}}
-          refptr0;
+          * // expected-error {{declared as a pointer to a reference}}
+              refptr0;
 
   intref
-         *              // expected-error {{declared as a pointer to a reference}}
-           refptr1;
+      * // expected-error {{declared as a pointer to a reference}}
+          refptr1;
 
-  PtrMem
-        <
-         int
-            &
-             >
-               refptr2; // expected-note {{in instantiation}}
+  PtrMem<
+      int
+          &>
+      refptr2; // expected-note {{in instantiation}}
 };
 
 template <class T> class ArrMem {
   T
-    member
-           [ // expected-error {{declared as array of references}}
-            10
-              ];
+      member
+          [ // expected-error {{declared as array of references}}
+              10];
 };
 template <class T, unsigned N> class DepArrMem {
   T
-    member
-           [ // expected-error {{declared as array of references}}
-            N
-             ];
+      member
+          [ // expected-error {{declared as array of references}}
+              N];
 };
 
 struct RefArr {
-  typedef 
-          int
-              &
-                intrefarr
-                         [ // expected-error {{declared as array of references}}
-                          2
-                           ];
+  typedef int
+      &
+          intrefarr
+              [ // expected-error {{declared as array of references}}
+                  2];
 
-  typedef
-          intref
-                 intrefarr
-                          [ // expected-error {{declared as array of references}}
-                           2
-                            ];
+  typedef intref
+      intrefarr
+          [ // expected-error {{declared as array of references}}
+              2];
 
   int
       &
-        refarr0
-               [ // expected-error {{declared as array of references}}
-                2
-                 ];
+          refarr0
+              [ // expected-error {{declared as array of references}}
+                  2];
   intref
-         refarr1
-                [ // expected-error {{declared as array of references}}
-                 2
-                  ];
-  ArrMem
-        <
-         int
-            &
-             >
-               refarr2; // expected-note {{in instantiation}}
-  DepArrMem
-           <
-            int
-               &,
-                  10
-                    >
-                      refarr3; // expected-note {{in instantiation}}
+      refarr1
+          [ // expected-error {{declared as array of references}}
+              2];
+  ArrMem<
+      int
+          &>
+      refarr2; // expected-note {{in instantiation}}
+  DepArrMem<
+      int
+          &,
+      10>
+      refarr3; // expected-note {{in instantiation}}
 };
-
 
 //   The declaration of a reference shall contain an initializer
 //   (8.5.3) except when the declaration contains an explicit extern
@@ -142,4 +122,3 @@ struct RefArr {
 //   the "object" obtained by dereferencing a null pointer, which
 //   causes undefined behavior. As described in 9.6, a reference
 //   cannot be bound directly to a bit-field.
-

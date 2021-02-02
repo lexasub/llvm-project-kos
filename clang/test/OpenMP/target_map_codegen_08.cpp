@@ -40,21 +40,21 @@
 // CK9-DAG: [[TYPES:@.+]] = {{.+}}constant [1 x i64] [i64 547]
 
 // CK9-LABEL: implicit_maps_array{{.*}}(
-void implicit_maps_array (int a){
+void implicit_maps_array(int a) {
   double darr[2] = {(double)a, (double)a};
 
-  // CK9-DAG: call i32 @__tgt_target_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i8* {{.+}}, i32 1, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[SIZES]]{{.+}}, {{.+}}[[TYPES]]{{.+}}, i8** null, i8** null)
-  // CK9-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
-  // CK9-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
-  // CK9-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
-  // CK9-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
-  // CK9-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to [2 x double]**
-  // CK9-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to [2 x double]**
-  // CK9-DAG: store [2 x double]* [[DECL:%[^,]+]], [2 x double]** [[CBP1]]
-  // CK9-DAG: store [2 x double]* [[DECL]], [2 x double]** [[CP1]]
+// CK9-DAG: call i32 @__tgt_target_mapper(%struct.ident_t* @{{.+}}, i64 {{.+}}, i8* {{.+}}, i32 1, i8** [[BPGEP:%[0-9]+]], i8** [[PGEP:%[0-9]+]], {{.+}}[[SIZES]]{{.+}}, {{.+}}[[TYPES]]{{.+}}, i8** null, i8** null)
+// CK9-DAG: [[BPGEP]] = getelementptr inbounds {{.+}}[[BPS:%[^,]+]], i32 0, i32 0
+// CK9-DAG: [[PGEP]] = getelementptr inbounds {{.+}}[[PS:%[^,]+]], i32 0, i32 0
+// CK9-DAG: [[BP1:%.+]] = getelementptr inbounds {{.+}}[[BPS]], i32 0, i32 0
+// CK9-DAG: [[P1:%.+]] = getelementptr inbounds {{.+}}[[PS]], i32 0, i32 0
+// CK9-DAG: [[CBP1:%.+]] = bitcast i8** [[BP1]] to [2 x double]**
+// CK9-DAG: [[CP1:%.+]] = bitcast i8** [[P1]] to [2 x double]**
+// CK9-DAG: store [2 x double]* [[DECL:%[^,]+]], [2 x double]** [[CBP1]]
+// CK9-DAG: store [2 x double]* [[DECL]], [2 x double]** [[CP1]]
 
-  // CK9: call void [[KERNEL:@.+]]([2 x double]* [[DECL]])
-  #pragma omp target
+// CK9: call void [[KERNEL:@.+]]([2 x double]* [[DECL]])
+#pragma omp target
   {
     darr[0] += 1.0;
     darr[1] += 1.0;

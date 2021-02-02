@@ -9,8 +9,8 @@
 #ifndef LLVM_ADT_POINTERSUMTYPE_H
 #define LLVM_ADT_POINTERSUMTYPE_H
 
-#include "llvm/ADT/bit.h"
 #include "llvm/ADT/DenseMapInfo.h"
+#include "llvm/ADT/bit.h"
 #include "llvm/Support/PointerLikeTypeTraits.h"
 #include <cassert>
 #include <cstdint>

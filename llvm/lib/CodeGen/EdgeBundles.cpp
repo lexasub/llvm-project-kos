@@ -23,13 +23,13 @@
 using namespace llvm;
 
 static cl::opt<bool>
-ViewEdgeBundles("view-edge-bundles", cl::Hidden,
-                cl::desc("Pop up a window to show edge bundle graphs"));
+    ViewEdgeBundles("view-edge-bundles", cl::Hidden,
+                    cl::desc("Pop up a window to show edge bundle graphs"));
 
 char EdgeBundles::ID = 0;
 
 INITIALIZE_PASS(EdgeBundles, "edge-bundles", "Bundle Machine CFG Edges",
-                /* cfg = */true, /* is_analysis = */ true)
+                /* cfg = */ true, /* is_analysis = */ true)
 
 char &llvm::EdgeBundlesID = EdgeBundles::ID;
 
@@ -47,7 +47,8 @@ bool EdgeBundles::runOnMachineFunction(MachineFunction &mf) {
     unsigned OutE = 2 * MBB.getNumber() + 1;
     // Join the outgoing bundle with the ingoing bundles of all successors.
     for (MachineBasicBlock::const_succ_iterator SI = MBB.succ_begin(),
-           SE = MBB.succ_end(); SI != SE; ++SI)
+                                                SE = MBB.succ_end();
+         SI != SE; ++SI)
       EC.join(OutE, 2 * (*SI)->getNumber());
   }
   EC.compress();
@@ -72,9 +73,8 @@ bool EdgeBundles::runOnMachineFunction(MachineFunction &mf) {
 /// Specialize WriteGraph, the standard implementation won't work.
 namespace llvm {
 
-template<>
-raw_ostream &WriteGraph<>(raw_ostream &O, const EdgeBundles &G,
-                          bool ShortNames,
+template <>
+raw_ostream &WriteGraph<>(raw_ostream &O, const EdgeBundles &G, bool ShortNames,
                           const Twine &Title) {
   const MachineFunction *MF = G.getMachineFunction();
 
@@ -87,7 +87,8 @@ raw_ostream &WriteGraph<>(raw_ostream &O, const EdgeBundles &G,
       << "\t\"" << printMBBReference(MBB) << "\" -> " << G.getBundle(BB, true)
       << '\n';
     for (MachineBasicBlock::const_succ_iterator SI = MBB.succ_begin(),
-           SE = MBB.succ_end(); SI != SE; ++SI)
+                                                SE = MBB.succ_end();
+         SI != SE; ++SI)
       O << "\t\"" << printMBBReference(MBB) << "\" -> \""
         << printMBBReference(**SI) << "\" [ color=lightgray ]\n";
   }
@@ -98,6 +99,4 @@ raw_ostream &WriteGraph<>(raw_ostream &O, const EdgeBundles &G,
 } // end namespace llvm
 
 /// view - Visualize the annotated bipartite CFG with Graphviz.
-void EdgeBundles::view() const {
-  ViewGraph(*this, "EdgeBundles");
-}
+void EdgeBundles::view() const { ViewGraph(*this, "EdgeBundles"); }

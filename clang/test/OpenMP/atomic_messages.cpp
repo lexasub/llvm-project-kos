@@ -383,13 +383,22 @@ T capture() {
 #pragma omp atomic capture
   // expected-error@+2 {{the statement for 'atomic capture' must be a compound statement of form '{v = x; x binop= expr;}', '{x binop= expr; v = x;}', '{v = x; x = x binop expr;}', '{v = x; x = expr binop x;}', '{x = x binop expr; v = x;}', '{x = expr binop x; v = x;}' or '{v = x; x = expr;}', '{v = x; x++;}', '{v = x; ++x;}', '{++x; v = x;}', '{x++; v = x;}', '{v = x; x--;}', '{v = x; --x;}', '{--x; v = x;}', '{x--; v = x;}' where x is an lvalue expression with scalar type}}
   // expected-note@+1 {{expected in right hand side of the first expression}}
-  {a = b;a = b;}
+  {
+    a = b;
+    a = b;
+  }
 #pragma omp atomic capture
   // expected-error@+2 {{the statement for 'atomic capture' must be a compound statement of form '{v = x; x binop= expr;}', '{x binop= expr; v = x;}', '{v = x; x = x binop expr;}', '{v = x; x = expr binop x;}', '{x = x binop expr; v = x;}', '{x = expr binop x; v = x;}' or '{v = x; x = expr;}', '{v = x; x++;}', '{v = x; ++x;}', '{++x; v = x;}', '{x++; v = x;}', '{v = x; x--;}', '{v = x; --x;}', '{--x; v = x;}', '{x--; v = x;}' where x is an lvalue expression with scalar type}}
   // expected-note@+1 {{expected in right hand side of the first expression}}
-  {a = b; a = b || a;}
+  {
+    a = b;
+    a = b || a;
+  }
 #pragma omp atomic capture
-  {b = a; a = a && b;}
+  {
+    b = a;
+    a = a && b;
+  }
 #pragma omp atomic capture
   // expected-error@+2 {{the statement for 'atomic capture' must be an expression statement of form 'v = ++x;', 'v = --x;', 'v = x++;', 'v = x--;', 'v = x binop= expr;', 'v = x = x binop expr' or 'v = x = expr binop x', where x and v are both lvalue expressions with scalar type}}
   // expected-note@+1 {{expected in right hand side of expression}}
@@ -403,7 +412,7 @@ T capture() {
   // expected-note@+1 {{expected in right hand side of expression}}
   b = a = b + *&a;
 #pragma omp atomic capture
-  c = *&a = *&a +  2;
+  c = *&a = *&a + 2;
 #pragma omp atomic capture
   c = a++;
 #pragma omp atomic capture
@@ -451,61 +460,145 @@ T capture() {
 #pragma omp atomic capture
   c = a = b >> a;
 #pragma omp atomic capture
-  { c = *&a; *&a = *&a +  2;}
+  {
+    c = *&a;
+    *&a = *&a + 2;
+  }
 #pragma omp atomic capture
-  { *&a = *&a +  2; c = *&a;}
+  {
+    *&a = *&a + 2;
+    c = *&a;
+  }
 #pragma omp atomic capture
-  {c = a; a++;}
+  {
+    c = a;
+    a++;
+  }
 #pragma omp atomic capture
-  {c = a; (a)++;}
+  {
+    c = a;
+    (a)++;
+  }
 #pragma omp atomic capture
-  {++a;c = a;}
+  {
+    ++a;
+    c = a;
+  }
 #pragma omp atomic capture
-  {c = a;a--;}
+  {
+    c = a;
+    a--;
+  }
 #pragma omp atomic capture
-  {--a;c = a;}
+  {
+    --a;
+    c = a;
+  }
 #pragma omp atomic capture
-  {c = a; a += b;}
+  {
+    c = a;
+    a += b;
+  }
 #pragma omp atomic capture
-  {c = a; (a) += b;}
+  {
+    c = a;
+    (a) += b;
+  }
 #pragma omp atomic capture
-  {a %= b; c = a;}
+  {
+    a %= b;
+    c = a;
+  }
 #pragma omp atomic capture
-  {c = a; a *= b;}
+  {
+    c = a;
+    a *= b;
+  }
 #pragma omp atomic capture
-  {a -= b;c = a;}
+  {
+    a -= b;
+    c = a;
+  }
 #pragma omp atomic capture
-  {c = a; a /= b;}
+  {
+    c = a;
+    a /= b;
+  }
 #pragma omp atomic capture
-  {a &= b; c = a;}
+  {
+    a &= b;
+    c = a;
+  }
 #pragma omp atomic capture
-  {c = a; a ^= b;}
+  {
+    c = a;
+    a ^= b;
+  }
 #pragma omp atomic capture
-  {a |= b; c = a;}
+  {
+    a |= b;
+    c = a;
+  }
 #pragma omp atomic capture
-  {c = a; a <<= b;}
+  {
+    c = a;
+    a <<= b;
+  }
 #pragma omp atomic capture
-  {a >>= b; c = a;}
+  {
+    a >>= b;
+    c = a;
+  }
 #pragma omp atomic capture
-  {c = a; a = b + a;}
+  {
+    c = a;
+    a = b + a;
+  }
 #pragma omp atomic capture
-  {a = a * b; c = a;}
+  {
+    a = a * b;
+    c = a;
+  }
 #pragma omp atomic capture
-  {c = a; a = b - a;}
+  {
+    c = a;
+    a = b - a;
+  }
 #pragma omp atomic capture
-  {a = a / b; c = a;}
+  {
+    a = a / b;
+    c = a;
+  }
 #pragma omp atomic capture
-  {c = a; a = b & a;}
+  {
+    c = a;
+    a = b & a;
+  }
 #pragma omp atomic capture
-  {a = a ^ b; c = a;}
+  {
+    a = a ^ b;
+    c = a;
+  }
 #pragma omp atomic capture
-  {c = a; a = b | a;}
+  {
+    c = a;
+    a = b | a;
+  }
 #pragma omp atomic capture
-  {a = a << b; c = a;}
+  {
+    a = a << b;
+    c = a;
+  }
 #pragma omp atomic capture
-  {c = a; a = b >> a;}
+  {
+    c = a;
+    a = b >> a;
+  }
 #pragma omp atomic capture
-  {c = a; a = foo();}
+  {
+    c = a;
+    a = foo();
+  }
   // expected-error@+1 {{directive '#pragma omp atomic' cannot contain more than one 'capture' clause}}
 #pragma omp atomic capture capture
   b = a /= b;
@@ -559,13 +652,22 @@ int capture() {
 #pragma omp atomic capture
   // expected-error@+2 {{the statement for 'atomic capture' must be a compound statement of form '{v = x; x binop= expr;}', '{x binop= expr; v = x;}', '{v = x; x = x binop expr;}', '{v = x; x = expr binop x;}', '{x = x binop expr; v = x;}', '{x = expr binop x; v = x;}' or '{v = x; x = expr;}', '{v = x; x++;}', '{v = x; ++x;}', '{++x; v = x;}', '{x++; v = x;}', '{v = x; x--;}', '{v = x; --x;}', '{--x; v = x;}', '{x--; v = x;}' where x is an lvalue expression with scalar type}}
   // expected-note@+1 {{expected in right hand side of the first expression}}
-  {a = b;a = b;}
+  {
+    a = b;
+    a = b;
+  }
 #pragma omp atomic capture
   // expected-error@+2 {{the statement for 'atomic capture' must be a compound statement of form '{v = x; x binop= expr;}', '{x binop= expr; v = x;}', '{v = x; x = x binop expr;}', '{v = x; x = expr binop x;}', '{x = x binop expr; v = x;}', '{x = expr binop x; v = x;}' or '{v = x; x = expr;}', '{v = x; x++;}', '{v = x; ++x;}', '{++x; v = x;}', '{x++; v = x;}', '{v = x; x--;}', '{v = x; --x;}', '{--x; v = x;}', '{x--; v = x;}' where x is an lvalue expression with scalar type}}
   // expected-note@+1 {{expected in right hand side of the first expression}}
-  {a = b; a = b || a;}
+  {
+    a = b;
+    a = b || a;
+  }
 #pragma omp atomic capture
-  {b = a; a = a && b;}
+  {
+    b = a;
+    a = a && b;
+  }
 #pragma omp atomic capture
   // expected-error@+2 {{the statement for 'atomic capture' must be an expression statement of form 'v = ++x;', 'v = --x;', 'v = x++;', 'v = x--;', 'v = x binop= expr;', 'v = x = x binop expr' or 'v = x = expr binop x', where x and v are both lvalue expressions with scalar type}}
   // expected-note@+1 {{expected in right hand side of expression}}
@@ -579,7 +681,7 @@ int capture() {
   // expected-note@+1 {{expected in right hand side of expression}}
   b = a = b + *&a;
 #pragma omp atomic capture
-  c = *&a = *&a +  2;
+  c = *&a = *&a + 2;
 #pragma omp atomic capture
   c = a++;
 #pragma omp atomic capture
@@ -627,57 +729,135 @@ int capture() {
 #pragma omp atomic capture
   c = a = b >> a;
 #pragma omp atomic capture
-  { c = *&a; *&a = *&a +  2;}
+  {
+    c = *&a;
+    *&a = *&a + 2;
+  }
 #pragma omp atomic capture
-  { *&a = *&a +  2; c = *&a;}
+  {
+    *&a = *&a + 2;
+    c = *&a;
+  }
 #pragma omp atomic capture
-  {c = a; a++;}
+  {
+    c = a;
+    a++;
+  }
 #pragma omp atomic capture
-  {++a;c = a;}
+  {
+    ++a;
+    c = a;
+  }
 #pragma omp atomic capture
-  {c = a;a--;}
+  {
+    c = a;
+    a--;
+  }
 #pragma omp atomic capture
-  {--a;c = a;}
+  {
+    --a;
+    c = a;
+  }
 #pragma omp atomic capture
-  {c = a; a += b;}
+  {
+    c = a;
+    a += b;
+  }
 #pragma omp atomic capture
-  {a %= b; c = a;}
+  {
+    a %= b;
+    c = a;
+  }
 #pragma omp atomic capture
-  {c = a; a *= b;}
+  {
+    c = a;
+    a *= b;
+  }
 #pragma omp atomic capture
-  {a -= b;c = a;}
+  {
+    a -= b;
+    c = a;
+  }
 #pragma omp atomic capture
-  {c = a; a /= b;}
+  {
+    c = a;
+    a /= b;
+  }
 #pragma omp atomic capture
-  {a &= b; c = a;}
+  {
+    a &= b;
+    c = a;
+  }
 #pragma omp atomic capture
-  {c = a; a ^= b;}
+  {
+    c = a;
+    a ^= b;
+  }
 #pragma omp atomic capture
-  {a |= b; c = a;}
+  {
+    a |= b;
+    c = a;
+  }
 #pragma omp atomic capture
-  {c = a; a <<= b;}
+  {
+    c = a;
+    a <<= b;
+  }
 #pragma omp atomic capture
-  {a >>= b; c = a;}
+  {
+    a >>= b;
+    c = a;
+  }
 #pragma omp atomic capture
-  {c = a; a = b + a;}
+  {
+    c = a;
+    a = b + a;
+  }
 #pragma omp atomic capture
-  {a = a * b; c = a;}
+  {
+    a = a * b;
+    c = a;
+  }
 #pragma omp atomic capture
-  {c = a; a = b - a;}
+  {
+    c = a;
+    a = b - a;
+  }
 #pragma omp atomic capture
-  {a = a / b; c = a;}
+  {
+    a = a / b;
+    c = a;
+  }
 #pragma omp atomic capture
-  {c = a; a = b & a;}
+  {
+    c = a;
+    a = b & a;
+  }
 #pragma omp atomic capture
-  {a = a ^ b; c = a;}
+  {
+    a = a ^ b;
+    c = a;
+  }
 #pragma omp atomic capture
-  {c = a; a = b | a;}
+  {
+    c = a;
+    a = b | a;
+  }
 #pragma omp atomic capture
-  {a = a << b; c = a;}
+  {
+    a = a << b;
+    c = a;
+  }
 #pragma omp atomic capture
-  {c = a; a = b >> a;}
+  {
+    c = a;
+    a = b >> a;
+  }
 #pragma omp atomic capture
-  {c = a; a = foo();}
+  {
+    c = a;
+    a = foo();
+  }
   // expected-error@+1 {{directive '#pragma omp atomic' cannot contain more than one 'capture' clause}}
 #pragma omp atomic capture capture
   b = a /= b;
@@ -722,7 +902,7 @@ int seq_cst() {
   // expected-note@+1 {{expected an expression statement}}
   ;
 
- return seq_cst<int>();
+  return seq_cst<int>();
 }
 
 template <class T>
@@ -764,7 +944,7 @@ int acq_rel() {
   // expected-note@+1 {{expected an expression statement}}
   ;
 
- return acq_rel<int>(); // omp50-note {{in instantiation of function template specialization 'acq_rel<int>' requested here}}
+  return acq_rel<int>(); // omp50-note {{in instantiation of function template specialization 'acq_rel<int>' requested here}}
 }
 
 template <class T>
@@ -806,7 +986,7 @@ int acquire() {
   // expected-note@+1 {{expected an expression statement}}
   ;
 
- return acquire<int>(); // omp50-note {{in instantiation of function template specialization 'acquire<int>' requested here}}
+  return acquire<int>(); // omp50-note {{in instantiation of function template specialization 'acquire<int>' requested here}}
 }
 
 template <class T>
@@ -848,7 +1028,7 @@ int release() {
   // expected-note@+1 {{expected an expression statement}}
   ;
 
- return release<int>(); // omp50-note {{in instantiation of function template specialization 'release<int>' requested here}}
+  return release<int>(); // omp50-note {{in instantiation of function template specialization 'release<int>' requested here}}
 }
 
 template <class T>
@@ -890,7 +1070,7 @@ int relaxed() {
   // expected-note@+1 {{expected an expression statement}}
   ;
 
- return relaxed<int>(); // omp50-note {{in instantiation of function template specialization 'relaxed<int>' requested here}}
+  return relaxed<int>(); // omp50-note {{in instantiation of function template specialization 'relaxed<int>' requested here}}
 }
 
 template <class T>
@@ -936,4 +1116,3 @@ int mixed() {
   // expected-note@+1 {{in instantiation of function template specialization 'mixed<int>' requested here}}
   return mixed<int>();
 }
-

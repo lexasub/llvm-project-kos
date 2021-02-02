@@ -32,8 +32,10 @@ TEST_CASE(test_basic) {
   {
     const fs::directory_entry e("foo");
     std::error_code ec;
-    static_assert(std::is_same<decltype(e.status()), fs::file_status>::value, "");
-    static_assert(std::is_same<decltype(e.status(ec)), fs::file_status>::value, "");
+    static_assert(std::is_same<decltype(e.status()), fs::file_status>::value,
+                  "");
+    static_assert(std::is_same<decltype(e.status(ec)), fs::file_status>::value,
+                  "");
     static_assert(noexcept(e.status()) == false, "");
     static_assert(noexcept(e.status(ec)) == true, "");
   }

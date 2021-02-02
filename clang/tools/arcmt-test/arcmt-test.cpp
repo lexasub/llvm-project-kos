@@ -23,40 +23,43 @@
 using namespace clang;
 using namespace arcmt;
 
-static llvm::cl::opt<bool>
-CheckOnly("check-only",
-      llvm::cl::desc("Just check for issues that need to be handled manually"));
+static llvm::cl::opt<bool> CheckOnly(
+    "check-only",
+    llvm::cl::desc("Just check for issues that need to be handled manually"));
 
-//static llvm::cl::opt<bool>
-//TestResultForARC("test-result",
-//llvm::cl::desc("Test the result of transformations by parsing it in ARC mode"));
-
-static llvm::cl::opt<bool>
-OutputTransformations("output-transformations",
-                      llvm::cl::desc("Print the source transformations"));
+// static llvm::cl::opt<bool>
+// TestResultForARC("test-result",
+// llvm::cl::desc("Test the result of transformations by parsing it in ARC
+// mode"));
 
 static llvm::cl::opt<bool>
-VerifyDiags("verify",llvm::cl::desc("Verify emitted diagnostics and warnings"));
+    OutputTransformations("output-transformations",
+                          llvm::cl::desc("Print the source transformations"));
 
 static llvm::cl::opt<bool>
-VerboseOpt("v", llvm::cl::desc("Enable verbose output"));
+    VerifyDiags("verify",
+                llvm::cl::desc("Verify emitted diagnostics and warnings"));
 
-static llvm::cl::opt<bool>
-VerifyTransformedFiles("verify-transformed-files",
-llvm::cl::desc("Read pairs of file mappings (typically the output of "
-               "c-arcmt-test) and compare their contents with the filenames "
-               "provided in command-line"));
+static llvm::cl::opt<bool> VerboseOpt("v",
+                                      llvm::cl::desc("Enable verbose output"));
 
-static llvm::cl::opt<std::string>
-RemappingsFile("remappings-file",
-               llvm::cl::desc("Pairs of file mappings (typically the output of "
-               "c-arcmt-test)"));
+static llvm::cl::opt<bool> VerifyTransformedFiles(
+    "verify-transformed-files",
+    llvm::cl::desc(
+        "Read pairs of file mappings (typically the output of "
+        "c-arcmt-test) and compare their contents with the filenames "
+        "provided in command-line"));
 
-static llvm::cl::list<std::string>
-ResultFiles(llvm::cl::Positional, llvm::cl::desc("<filename>..."));
+static llvm::cl::opt<std::string> RemappingsFile(
+    "remappings-file",
+    llvm::cl::desc("Pairs of file mappings (typically the output of "
+                   "c-arcmt-test)"));
 
-static llvm::cl::extrahelp extraHelp(
-  "\nusage with compiler args: arcmt-test [options] --args [compiler flags]\n");
+static llvm::cl::list<std::string> ResultFiles(llvm::cl::Positional,
+                                               llvm::cl::desc("<filename>..."));
+
+static llvm::cl::extrahelp extraHelp("\nusage with compiler args: arcmt-test "
+                                     "[options] --args [compiler flags]\n");
 
 // This function isn't referenced outside its translation unit, but it
 // can't use the "static" keyword because its address is used for
@@ -66,7 +69,7 @@ static llvm::cl::extrahelp extraHelp(
 std::string GetExecutablePath(const char *Argv0) {
   // This just needs to be some symbol in the binary; C++ doesn't
   // allow taking the address of ::main however.
-  void *MainAddr = (void*) (intptr_t) GetExecutablePath;
+  void *MainAddr = (void *)(intptr_t)GetExecutablePath;
   return llvm::sys::fs::getMainExecutable(Argv0, MainAddr);
 }
 
@@ -82,8 +85,7 @@ class PrintTransforms : public MigrationProcess::RewriteListener {
   raw_ostream &OS;
 
 public:
-  PrintTransforms(raw_ostream &OS)
-    : Ctx(nullptr), OS(OS) {}
+  PrintTransforms(raw_ostream &OS) : Ctx(nullptr), OS(OS) {}
 
   void start(ASTContext &ctx) override { Ctx = &ctx; }
   void finish() override { Ctx = nullptr; }
@@ -109,7 +111,7 @@ static bool checkForMigration(StringRef resourcesPath,
                               ArrayRef<const char *> Args) {
   IntrusiveRefCntPtr<DiagnosticOptions> DiagOpts = new DiagnosticOptions();
   DiagnosticConsumer *DiagClient =
-    new TextDiagnosticPrinter(llvm::errs(), &*DiagOpts);
+      new TextDiagnosticPrinter(llvm::errs(), &*DiagOpts);
   IntrusiveRefCntPtr<DiagnosticIDs> DiagID(new DiagnosticIDs());
   IntrusiveRefCntPtr<DiagnosticsEngine> Diags(
       new DiagnosticsEngine(DiagID, &*DiagOpts, DiagClient));
@@ -153,7 +155,7 @@ static bool performTransformations(StringRef resourcesPath,
 
   IntrusiveRefCntPtr<DiagnosticOptions> DiagOpts = new DiagnosticOptions();
   DiagnosticConsumer *DiagClient =
-    new TextDiagnosticPrinter(llvm::errs(), &*DiagOpts);
+      new TextDiagnosticPrinter(llvm::errs(), &*DiagOpts);
   IntrusiveRefCntPtr<DiagnosticIDs> DiagID(new DiagnosticIDs());
   IntrusiveRefCntPtr<DiagnosticsEngine> TopDiags(
       new DiagnosticsEngine(DiagID, &*DiagOpts, &*DiagClient));
@@ -173,24 +175,26 @@ static bool performTransformations(StringRef resourcesPath,
   MigrationProcess migration(origCI, std::make_shared<PCHContainerOperations>(),
                              DiagClient);
 
-  std::vector<TransformFn>
-    transforms = arcmt::getAllTransformations(origCI.getLangOpts()->getGC(),
-                                 origCI.getMigratorOpts().NoFinalizeRemoval);
+  std::vector<TransformFn> transforms =
+      arcmt::getAllTransformations(origCI.getLangOpts()->getGC(),
+                                   origCI.getMigratorOpts().NoFinalizeRemoval);
   assert(!transforms.empty());
 
   std::unique_ptr<PrintTransforms> transformPrinter;
   if (OutputTransformations)
     transformPrinter.reset(new PrintTransforms(llvm::outs()));
 
-  for (unsigned i=0, e = transforms.size(); i != e; ++i) {
+  for (unsigned i = 0, e = transforms.size(); i != e; ++i) {
     bool err = migration.applyTransform(transforms[i], transformPrinter.get());
-    if (err) return true;
+    if (err)
+      return true;
 
     if (VerboseOpt) {
-      if (i == e-1)
+      if (i == e - 1)
         llvm::errs() << "\n##### FINAL RESULT #####\n";
       else
-        llvm::errs() << "\n##### OUTPUT AFTER "<< i+1 <<". TRANSFORMATION #####\n";
+        llvm::errs() << "\n##### OUTPUT AFTER " << i + 1
+                     << ". TRANSFORMATION #####\n";
       printResult(migration.getRemapper(), llvm::errs());
       llvm::errs() << "\n##########################\n\n";
     }
@@ -225,12 +229,13 @@ static bool verifyTransformedFiles(ArrayRef<std::string> resultFiles) {
 
   std::map<StringRef, StringRef> resultMap;
 
-  for (ArrayRef<std::string>::iterator
-         I = resultFiles.begin(), E = resultFiles.end(); I != E; ++I) {
+  for (ArrayRef<std::string>::iterator I = resultFiles.begin(),
+                                       E = resultFiles.end();
+       I != E; ++I) {
     StringRef fname(*I);
     if (!fname.endswith(".result")) {
       errs() << "error: filename '" << fname
-                   << "' does not have '.result' extension\n";
+             << "' does not have '.result' extension\n";
       return true;
     }
     resultMap[sys::path::stem(fname)] = fname;
@@ -261,7 +266,7 @@ static bool verifyTransformedFiles(ArrayRef<std::string> resultFiles) {
 
   for (unsigned i = 0, e = strs.size(); i != e; i += 2) {
     StringRef inputOrigFname = strs[i];
-    StringRef inputResultFname = strs[i+1];
+    StringRef inputResultFname = strs[i + 1];
 
     std::map<StringRef, StringRef>::iterator It;
     It = resultMap.find(sys::path::filename(inputOrigFname));
@@ -290,13 +295,14 @@ static bool verifyTransformedFiles(ArrayRef<std::string> resultFiles) {
   }
 
   if (!resultMap.empty()) {
-    for (std::map<StringRef, StringRef>::iterator
-           I = resultMap.begin(), E = resultMap.end(); I != E; ++I)
+    for (std::map<StringRef, StringRef>::iterator I = resultMap.begin(),
+                                                  E = resultMap.end();
+         I != E; ++I)
       errs() << "error: '" << I->second << "' was not verified!\n";
     return true;
   }
 
-  return false; 
+  return false;
 }
 
 //===----------------------------------------------------------------------===//
@@ -309,8 +315,7 @@ static void printSourceLocation(SourceLocation loc, ASTContext &Ctx,
   PresumedLoc PL = SM.getPresumedLoc(loc);
 
   OS << llvm::sys::path::filename(PL.getFilename());
-  OS << ":" << PL.getLine() << ":"
-            << PL.getColumn();
+  OS << ":" << PL.getLine() << ":" << PL.getColumn();
 }
 
 static void printSourceRange(CharSourceRange range, ASTContext &Ctx,
@@ -321,8 +326,7 @@ static void printSourceRange(CharSourceRange range, ASTContext &Ctx,
   PresumedLoc PL = SM.getPresumedLoc(range.getBegin());
 
   OS << llvm::sys::path::filename(PL.getFilename());
-  OS << " [" << PL.getLine() << ":"
-             << PL.getColumn();
+  OS << " [" << PL.getLine() << ":" << PL.getColumn();
   OS << " - ";
 
   SourceLocation end = range.getEnd();
@@ -339,11 +343,11 @@ static void printSourceRange(CharSourceRange range, ASTContext &Ctx,
 //===----------------------------------------------------------------------===//
 
 int main(int argc, const char **argv) {
-  void *MainAddr = (void*) (intptr_t) GetExecutablePath;
+  void *MainAddr = (void *)(intptr_t)GetExecutablePath;
   llvm::sys::PrintStackTraceOnErrorSignal(argv[0]);
 
-  std::string
-    resourcesPath = CompilerInvocation::GetResourcesPath(argv[0], MainAddr);
+  std::string resourcesPath =
+      CompilerInvocation::GetResourcesPath(argv[0], MainAddr);
 
   int optargc = 0;
   for (; optargc != argc; ++optargc) {
@@ -365,7 +369,7 @@ int main(int argc, const char **argv) {
     return 1;
   }
 
-  ArrayRef<const char*> Args(argv+optargc+1, argc-optargc-1);
+  ArrayRef<const char *> Args(argv + optargc + 1, argc - optargc - 1);
 
   if (CheckOnly)
     return checkForMigration(resourcesPath, Args);

@@ -10,8 +10,8 @@
 #define LLVM_CLANG_UNITTESTS_STATICANALYZER_REUSABLES_H
 
 #include "clang/ASTMatchers/ASTMatchFinder.h"
-#include "clang/Frontend/CompilerInstance.h"
 #include "clang/CrossTU/CrossTranslationUnit.h"
+#include "clang/Frontend/CompilerInstance.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/ExprEngine.h"
 
 namespace clang {
@@ -21,8 +21,8 @@ namespace ento {
 template <typename T, typename MatcherT>
 const T *findNode(const Decl *Where, MatcherT What) {
   using namespace ast_matchers;
-  auto Matches = match(decl(hasDescendant(What.bind("root"))),
-                       *Where, Where->getASTContext());
+  auto Matches = match(decl(hasDescendant(What.bind("root"))), *Where,
+                       Where->getASTContext());
   assert(Matches.size() <= 1 && "Ambiguous match!");
   assert(Matches.size() >= 1 && "Match not found!");
   const T *Node = selectFirst<T>("root", Matches);

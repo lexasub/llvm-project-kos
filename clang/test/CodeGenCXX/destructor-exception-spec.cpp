@@ -4,11 +4,11 @@
 
 // PR13479: don't crash with -fno-exceptions.
 namespace {
-  struct SchedulePostRATDList {
-    virtual ~SchedulePostRATDList();
-  };
+struct SchedulePostRATDList {
+  virtual ~SchedulePostRATDList();
+};
 
-  SchedulePostRATDList::~SchedulePostRATDList() {}
+SchedulePostRATDList::~SchedulePostRATDList() {}
 
-  SchedulePostRATDList Scheduler;
-}
+SchedulePostRATDList Scheduler;
+} // namespace

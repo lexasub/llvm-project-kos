@@ -93,7 +93,7 @@ TEST(PointerIntPairTest, ManyUnusedBits) {
   EXPECT_EQ((uintptr_t)0, pair.getPointer().Value);
   EXPECT_FALSE(pair.getInt());
 
-  pair.setPointerAndInt({ 0x7FFFFFFF }, true );
+  pair.setPointerAndInt({0x7FFFFFFF}, true);
   EXPECT_EQ((uintptr_t)0x7FFFFFFF, pair.getPointer().Value);
   EXPECT_TRUE(pair.getInt());
 

@@ -368,8 +368,9 @@ Status CUDAPlatform::asyncCopyDToH(const void *DeviceSrc,
                                    ptrdiff_t DeviceSrcByteOffset, void *HostDst,
                                    ptrdiff_t ByteCount, void *Stream) {
   return getCUError(
-      cuMemcpyDtoHAsync(HostDst, reinterpret_cast<CUdeviceptr>(offsetVoidPtr(
-                                     DeviceSrc, DeviceSrcByteOffset)),
+      cuMemcpyDtoHAsync(HostDst,
+                        reinterpret_cast<CUdeviceptr>(
+                            offsetVoidPtr(DeviceSrc, DeviceSrcByteOffset)),
                         ByteCount, static_cast<CUstream_st *>(Stream)),
       "cuMemcpyDtoHAsync");
 }

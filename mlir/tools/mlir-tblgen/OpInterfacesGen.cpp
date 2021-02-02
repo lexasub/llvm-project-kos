@@ -425,7 +425,8 @@ bool InterfaceGenerator::emitInterfaceDocs() {
 //===----------------------------------------------------------------------===//
 
 namespace {
-template <typename GeneratorT> struct InterfaceGenRegistration {
+template <typename GeneratorT>
+struct InterfaceGenRegistration {
   InterfaceGenRegistration(StringRef genArg)
       : genDeclArg(("gen-" + genArg + "-interface-decls").str()),
         genDefArg(("gen-" + genArg + "-interface-defs").str()),

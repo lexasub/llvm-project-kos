@@ -16,9 +16,9 @@ void foo_ptr() {
 }
 
 void cstr() {
-  void* p0 = (void*)(const void*)"txt"; // expected-warning {{cast from 'const void *' to 'void *' drops const qualifier}}
-  void* p1 = (void*)"txt"; // FIXME
-  char* p2 = (char*)"txt"; // expected-warning {{cast from 'const char *' to 'char *' drops const qualifier}}
+  void *p0 = (void *)(const void *)"txt"; // expected-warning {{cast from 'const void *' to 'void *' drops const qualifier}}
+  void *p1 = (void *)"txt";               // FIXME
+  char *p2 = (char *)"txt";               // expected-warning {{cast from 'const char *' to 'char *' drops const qualifier}}
 }
 
 void foo_0() {
@@ -76,7 +76,7 @@ void bar_0() {
   // const int **a2 = (int **)((int **)a);
   // const int **a3 = (int **)((const int **)a);
 
-  const int **a4 = (const int **)((int **)a);        // expected-warning {{cast from 'const int *' to 'int *' drops const qualifier}} expected-warning {{cast from 'int **' to 'const int **' must have all intermediate pointers const qualified to be safe}}
+  const int **a4 = (const int **)((int **)a);       // expected-warning {{cast from 'const int *' to 'int *' drops const qualifier}} expected-warning {{cast from 'int **' to 'const int **' must have all intermediate pointers const qualified to be safe}}
   const int **a5 = (const int **)((const int **)a); // no warning
 }
 
@@ -90,7 +90,7 @@ void bar_1() {
   // const int *&a2 = (int *&)((int *&)a);
   // const int *&a3 = (int *&)((const int *&)a);
 
-  const int *&a4 = (const int *&)((int *&)a);        // expected-warning {{cast from 'const int *' to 'int *' drops const qualifier}} expected-warning {{cast from 'int *' to 'const int *&' must have all intermediate pointers const qualified to be safe}}
+  const int *&a4 = (const int *&)((int *&)a);       // expected-warning {{cast from 'const int *' to 'int *' drops const qualifier}} expected-warning {{cast from 'int *' to 'const int *&' must have all intermediate pointers const qualified to be safe}}
   const int *&a5 = (const int *&)((const int *&)a); // no warning
 }
 

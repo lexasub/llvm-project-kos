@@ -16,7 +16,7 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
-namespace llvm{
+namespace llvm {
 namespace exegesis {
 namespace {
 
@@ -82,9 +82,10 @@ TEST_F(AnalysisTest, ComputeIdealizedProcResPressure_1ALUE) {
 }
 
 TEST_F(AnalysisTest, ComputeIdealizedProcResPressure_1ALU1IPAGEN) {
-  const auto Pressure =
-      computeIdealizedProcResPressure(STI->getSchedModel(), {{ALUIdx, 1}, {IPAGENIdx, 1}});
-  EXPECT_THAT(Pressure, UnorderedElementsAre(Pair(ALUIdx, 1.0),Pair(IPAGENIdx, 1)));
+  const auto Pressure = computeIdealizedProcResPressure(
+      STI->getSchedModel(), {{ALUIdx, 1}, {IPAGENIdx, 1}});
+  EXPECT_THAT(Pressure,
+              UnorderedElementsAre(Pair(ALUIdx, 1.0), Pair(IPAGENIdx, 1)));
 }
 } // namespace
 } // namespace exegesis

@@ -3,14 +3,14 @@
 
 void foo();
 
-void bar() { };
+void bar(){};
 
 void wibble();
 
 ;
 
 namespace Blah {
-  void f() { };
-  
-  void g();
-}
+void f(){};
+
+void g();
+} // namespace Blah

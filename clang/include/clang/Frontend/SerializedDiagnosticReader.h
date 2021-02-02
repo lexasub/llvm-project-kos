@@ -10,8 +10,8 @@
 #define LLVM_CLANG_FRONTEND_SERIALIZEDDIAGNOSTICREADER_H
 
 #include "clang/Basic/LLVM.h"
-#include "llvm/Bitstream/BitstreamReader.h"
 #include "llvm/ADT/StringRef.h"
+#include "llvm/Bitstream/BitstreamReader.h"
 #include "llvm/Support/ErrorOr.h"
 #include <system_error>
 

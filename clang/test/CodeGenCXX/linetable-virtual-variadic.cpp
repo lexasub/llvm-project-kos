@@ -10,7 +10,7 @@ class Derived : public virtual Base {
   virtual void VariadicFunction(...);
 };
 
-void Derived::VariadicFunction(...) { }
+void Derived::VariadicFunction(...) {}
 
 // CHECK: define{{.*}} void @_ZN7Derived16VariadicFunctionEz({{.*}} !dbg ![[SP:[0-9]+]]
 // CHECK: ret void, !dbg ![[LOC:[0-9]+]]

@@ -20,19 +20,18 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
+int main(int, char**) {
+  {
     std::chrono::milliseconds ms(1);
     std::chrono::microseconds us = ms;
     assert(us.count() == 1000);
-    }
+  }
 #if TEST_STD_VER >= 11
-    {
+  {
     constexpr std::chrono::milliseconds ms(1);
     constexpr std::chrono::microseconds us = ms;
     static_assert(us.count() == 1000, "");
-    }
+  }
 #endif
 
   return 0;

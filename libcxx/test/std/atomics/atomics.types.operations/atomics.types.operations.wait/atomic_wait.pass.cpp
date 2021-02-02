@@ -41,7 +41,7 @@ struct TestFn {
     std::atomic_init(&t, T(1));
     assert(std::atomic_load(&t) == T(1));
     std::atomic_wait(&t, T(0));
-    std::thread t1 = support::make_test_thread([&](){
+    std::thread t1 = support::make_test_thread([&]() {
       std::atomic_store(&t, T(3));
       std::atomic_notify_one(&t);
     });
@@ -52,7 +52,7 @@ struct TestFn {
     std::atomic_init(&vt, T(2));
     assert(std::atomic_load(&vt) == T(2));
     std::atomic_wait(&vt, T(1));
-    std::thread t2 = support::make_test_thread([&](){
+    std::thread t2 = support::make_test_thread([&]() {
       std::atomic_store(&vt, T(4));
       std::atomic_notify_one(&vt);
     });
@@ -61,9 +61,8 @@ struct TestFn {
   }
 };
 
-int main(int, char**)
-{
-    TestEachAtomicType<TestFn>()();
+int main(int, char**) {
+  TestEachAtomicType<TestFn>()();
 
   return 0;
 }

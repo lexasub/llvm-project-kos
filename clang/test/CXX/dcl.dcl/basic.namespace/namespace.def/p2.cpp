@@ -3,23 +3,23 @@
 
 // PR8430
 namespace N {
-  class A { };
-}
+class A {};
+} // namespace N
 
-namespace M { }
+namespace M {}
 
 using namespace M;
 
 namespace N {
-  namespace M {
-  } 
+namespace M {
 }
+} // namespace N
 
 namespace M {
-  namespace N {
-  }
+namespace N {
 }
+} // namespace M
 
 namespace N {
-  A *getA();
+A *getA();
 }

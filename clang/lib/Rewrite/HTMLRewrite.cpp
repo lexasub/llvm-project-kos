@@ -23,7 +23,6 @@
 #include <memory>
 using namespace clang;
 
-
 /// HighlightRange - Highlight a range in the source code with the specified
 /// start/end tags.  B/E must be in the same file.  This ensures that
 /// start/end tags are placed at the start/end of each line if the range is
@@ -49,15 +48,15 @@ void html::HighlightRange(Rewriter &R, SourceLocation B, SourceLocation E,
   if (Invalid)
     return;
 
-  HighlightRange(R.getEditBuffer(FID), BOffset, EOffset,
-                 BufferStart, StartTag, EndTag);
+  HighlightRange(R.getEditBuffer(FID), BOffset, EOffset, BufferStart, StartTag,
+                 EndTag);
 }
 
 /// HighlightRange - This is the same as the above method, but takes
 /// decomposed file locations.
 void html::HighlightRange(RewriteBuffer &RB, unsigned B, unsigned E,
-                          const char *BufferStart,
-                          const char *StartTag, const char *EndTag) {
+                          const char *BufferStart, const char *StartTag,
+                          const char *EndTag) {
   // Insert the tag at the absolute start/end of the range.
   RB.InsertTextAfter(B, StartTag);
   RB.InsertTextBefore(E, EndTag);
@@ -74,7 +73,7 @@ void html::HighlightRange(RewriteBuffer &RB, unsigned B, unsigned E,
       // Okay, we found a newline in the range.  If we have an open tag, we need
       // to insert a close tag at the first non-whitespace before the newline.
       if (HadOpenTag)
-        RB.InsertTextBefore(LastNonWhiteSpace+1, EndTag);
+        RB.InsertTextBefore(LastNonWhiteSpace + 1, EndTag);
 
       // Instead of inserting an open tag immediately after the newline, we
       // wait until we see a non-whitespace character.  This prevents us from
@@ -104,21 +103,23 @@ void html::HighlightRange(RewriteBuffer &RB, unsigned B, unsigned E,
   }
 }
 
-void html::EscapeText(Rewriter &R, FileID FID,
-                      bool EscapeSpaces, bool ReplaceTabs) {
+void html::EscapeText(Rewriter &R, FileID FID, bool EscapeSpaces,
+                      bool ReplaceTabs) {
 
   llvm::MemoryBufferRef Buf = R.getSourceMgr().getBufferOrFake(FID);
-  const char* C = Buf.getBufferStart();
-  const char* FileEnd = Buf.getBufferEnd();
+  const char *C = Buf.getBufferStart();
+  const char *FileEnd = Buf.getBufferEnd();
 
-  assert (C <= FileEnd);
+  assert(C <= FileEnd);
 
   RewriteBuffer &RB = R.getEditBuffer(FID);
 
   unsigned ColNo = 0;
-  for (unsigned FilePos = 0; C != FileEnd ; ++C, ++FilePos) {
+  for (unsigned FilePos = 0; C != FileEnd; ++C, ++FilePos) {
     switch (*C) {
-    default: ++ColNo; break;
+    default:
+      ++ColNo;
+      break;
     case '\n':
     case '\r':
       ColNo = 0;
@@ -137,11 +138,12 @@ void html::EscapeText(Rewriter &R, FileID FID,
     case '\t': {
       if (!ReplaceTabs)
         break;
-      unsigned NumSpaces = 8-(ColNo&7);
+      unsigned NumSpaces = 8 - (ColNo & 7);
       if (EscapeSpaces)
         RB.ReplaceText(FilePos, 1,
                        StringRef("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-                                       "&nbsp;&nbsp;&nbsp;", 6*NumSpaces));
+                                 "&nbsp;&nbsp;&nbsp;",
+                                 6 * NumSpaces));
       else
         RB.ReplaceText(FilePos, 1, StringRef("        ", NumSpaces));
       ColNo += NumSpaces;
@@ -171,16 +173,19 @@ std::string html::EscapeText(StringRef s, bool EscapeSpaces, bool ReplaceTabs) {
   std::string Str;
   llvm::raw_string_ostream os(Str);
 
-  for (unsigned i = 0 ; i < len; ++i) {
+  for (unsigned i = 0; i < len; ++i) {
 
     char c = s[i];
     switch (c) {
     default:
-      os << c; break;
+      os << c;
+      break;
 
     case ' ':
-      if (EscapeSpaces) os << "&nbsp;";
-      else os << ' ';
+      if (EscapeSpaces)
+        os << "&nbsp;";
+      else
+        os << ' ';
       break;
 
     case '\t':
@@ -191,23 +196,28 @@ std::string html::EscapeText(StringRef s, bool EscapeSpaces, bool ReplaceTabs) {
         else
           for (unsigned i = 0; i < 4; ++i)
             os << " ";
-      }
-      else
+      } else
         os << c;
 
       break;
 
-    case '<': os << "&lt;"; break;
-    case '>': os << "&gt;"; break;
-    case '&': os << "&amp;"; break;
+    case '<':
+      os << "&lt;";
+      break;
+    case '>':
+      os << "&gt;";
+      break;
+    case '&':
+      os << "&amp;";
+      break;
     }
   }
 
   return os.str();
 }
 
-static void AddLineNumber(RewriteBuffer &RB, unsigned LineNo,
-                          unsigned B, unsigned E) {
+static void AddLineNumber(RewriteBuffer &RB, unsigned LineNo, unsigned B,
+                          unsigned E) {
   SmallString<256> Str;
   llvm::raw_svector_ostream OS(Str);
 
@@ -224,15 +234,15 @@ static void AddLineNumber(RewriteBuffer &RB, unsigned LineNo,
   }
 }
 
-void html::AddLineNumbers(Rewriter& R, FileID FID) {
+void html::AddLineNumbers(Rewriter &R, FileID FID) {
 
   llvm::MemoryBufferRef Buf = R.getSourceMgr().getBufferOrFake(FID);
-  const char* FileBeg = Buf.getBufferStart();
-  const char* FileEnd = Buf.getBufferEnd();
-  const char* C = FileBeg;
+  const char *FileBeg = Buf.getBufferStart();
+  const char *FileEnd = Buf.getBufferEnd();
+  const char *C = FileBeg;
   RewriteBuffer &RB = R.getEditBuffer(FID);
 
-  assert (C <= FileEnd);
+  assert(C <= FileEnd);
 
   unsigned LineNo = 0;
   unsigned FilePos = 0;
@@ -243,8 +253,8 @@ void html::AddLineNumbers(Rewriter& R, FileID FID) {
     unsigned LineStartPos = FilePos;
     unsigned LineEndPos = FileEnd - FileBeg;
 
-    assert (FilePos <= LineEndPos);
-    assert (C < FileEnd);
+    assert(FilePos <= LineEndPos);
+    assert(C < FileEnd);
 
     // Scan until the newline (or end-of-file).
 
@@ -275,11 +285,11 @@ void html::AddHeaderFooterInternalBuiltinCSS(Rewriter &R, FileID FID,
                                              StringRef title) {
 
   llvm::MemoryBufferRef Buf = R.getSourceMgr().getBufferOrFake(FID);
-  const char* FileStart = Buf.getBufferStart();
-  const char* FileEnd = Buf.getBufferEnd();
+  const char *FileStart = Buf.getBufferStart();
+  const char *FileEnd = Buf.getBufferEnd();
 
   SourceLocation StartLoc = R.getSourceMgr().getLocForStartOfFile(FID);
-  SourceLocation EndLoc = StartLoc.getLocWithOffset(FileEnd-FileStart);
+  SourceLocation EndLoc = StartLoc.getLocWithOffset(FileEnd - FileStart);
 
   std::string s;
   llvm::raw_string_ostream os(s);
@@ -464,7 +474,8 @@ void html::SyntaxHighlight(Rewriter &R, FileID FID, const Preprocessor &PP) {
     unsigned TokOffs = SM.getFileOffset(Tok.getLocation());
     unsigned TokLen = Tok.getLength();
     switch (Tok.getKind()) {
-    default: break;
+    default:
+      break;
     case tok::identifier:
       llvm_unreachable("tok::identifier in raw lexing mode!");
     case tok::raw_identifier: {
@@ -474,12 +485,12 @@ void html::SyntaxHighlight(Rewriter &R, FileID FID, const Preprocessor &PP) {
 
       // If this is a pp-identifier, for a keyword, highlight it as such.
       if (Tok.isNot(tok::identifier))
-        HighlightRange(RB, TokOffs, TokOffs+TokLen, BufferStart,
+        HighlightRange(RB, TokOffs, TokOffs + TokLen, BufferStart,
                        "<span class='keyword'>", "</span>");
       break;
     }
     case tok::comment:
-      HighlightRange(RB, TokOffs, TokOffs+TokLen, BufferStart,
+      HighlightRange(RB, TokOffs, TokOffs + TokLen, BufferStart,
                      "<span class='comment'>", "</span>");
       break;
     case tok::utf8_string_literal:
@@ -497,7 +508,7 @@ void html::SyntaxHighlight(Rewriter &R, FileID FID, const Preprocessor &PP) {
       LLVM_FALLTHROUGH;
     case tok::string_literal:
       // FIXME: Exclude the optional ud-suffix from the highlighted range.
-      HighlightRange(RB, TokOffs, TokOffs+TokLen, BufferStart,
+      HighlightRange(RB, TokOffs, TokOffs + TokLen, BufferStart,
                      "<span class='string_literal'>", "</span>");
       break;
     case tok::hash: {
@@ -507,10 +518,10 @@ void html::SyntaxHighlight(Rewriter &R, FileID FID, const Preprocessor &PP) {
 
       // Eat all of the tokens until we get to the next one at the start of
       // line.
-      unsigned TokEnd = TokOffs+TokLen;
+      unsigned TokEnd = TokOffs + TokLen;
       L.LexFromRawLexer(Tok);
       while (!Tok.isAtStartOfLine() && Tok.isNot(tok::eof)) {
-        TokEnd = SM.getFileOffset(Tok.getLocation())+Tok.getLength();
+        TokEnd = SM.getFileOffset(Tok.getLocation()) + Tok.getLength();
         L.LexFromRawLexer(Tok);
       }
 
@@ -531,7 +542,7 @@ void html::SyntaxHighlight(Rewriter &R, FileID FID, const Preprocessor &PP) {
 /// file, to re-expand macros and insert (into the HTML) information about the
 /// macro expansions.  This won't be perfectly perfect, but it will be
 /// reasonably close.
-void html::HighlightMacros(Rewriter &R, FileID FID, const Preprocessor& PP) {
+void html::HighlightMacros(Rewriter &R, FileID FID, const Preprocessor &PP) {
   // Re-lex the raw token stream into a token buffer.
   const SourceManager &SM = PP.getSourceManager();
   std::vector<Token> TokenStream;
@@ -564,19 +575,20 @@ void html::HighlightMacros(Rewriter &R, FileID FID, const Preprocessor& PP) {
 
     TokenStream.push_back(Tok);
 
-    if (Tok.is(tok::eof)) break;
+    if (Tok.is(tok::eof))
+      break;
   }
 
   // Temporarily change the diagnostics object so that we ignore any generated
   // diagnostics from this pass.
   DiagnosticsEngine TmpDiags(PP.getDiagnostics().getDiagnosticIDs(),
                              &PP.getDiagnostics().getDiagnosticOptions(),
-                      new IgnoringDiagConsumer);
+                             new IgnoringDiagConsumer);
 
   // FIXME: This is a huge hack; we reuse the input preprocessor because we want
   // its state, but we aren't actually changing it (we hope). This should really
   // construct a copy of the preprocessor.
-  Preprocessor &TmpPP = const_cast<Preprocessor&>(PP);
+  Preprocessor &TmpPP = const_cast<Preprocessor &>(PP);
   DiagnosticsEngine *OldDiags = &TmpPP.getDiagnostics();
   TmpPP.setDiagnostics(TmpDiags);
 

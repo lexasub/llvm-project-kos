@@ -8,10 +8,10 @@
 
 #pragma omp end declare target // expected-error {{unexpected OpenMP directive '#pragma omp end declare target'}}
 
-int a, b, z; // omp5-error {{variable captured in declare target region must appear in a to clause}}
+int a, b, z;    // omp5-error {{variable captured in declare target region must appear in a to clause}}
 __thread int t; // expected-note {{defined as threadprivate or thread local}}
 
-#pragma omp declare target . // expected-error {{expected '(' after 'declare target'}}
+#pragma omp declare target. // expected-error {{expected '(' after 'declare target'}}
 
 #pragma omp declare target
 void f();
@@ -32,7 +32,7 @@ void func() {} // expected-note {{'func' defined here}}
 #pragma omp declare target link(func) allocate(a) // expected-error {{function name is not allowed in 'link' clause}} omp45-error {{unexpected 'allocate' clause, only 'to' or 'link' clauses expected}} omp5-error {{unexpected 'allocate' clause, only 'to', 'link' or 'device_type' clauses expected}}
 
 void bar();
-void baz() {bar();}
+void baz() { bar(); }
 #pragma omp declare target(bar) // omp5-warning {{declaration marked as declare target after first use, it may lead to incorrect results}}
 
 extern int b;
@@ -51,7 +51,7 @@ template <typename T>
 T bla2() { return 0; }
 #pragma omp end declare target
 
-template<>
+template <>
 float bla2() { return 1.0; }
 
 #pragma omp declare target
@@ -70,7 +70,7 @@ void t2() {
 }
 
 #pragma omp declare target
-  void abc();
+void abc();
 #pragma omp end declare target
 void cba();
 #pragma omp end declare target // expected-error {{unexpected OpenMP directive '#pragma omp end declare target'}}
@@ -94,8 +94,12 @@ struct T {
 class VC {
   T member;
   NonT member1;
-  public:
-    virtual int method() { T a; return 0; }
+
+public:
+  virtual int method() {
+    T a;
+    return 0;
+  }
 };
 
 struct C {
@@ -123,7 +127,7 @@ void foo(int p) {
 }
 #pragma omp declare target
 void foo1() {
-  [&](){ (void)(b+z);}(); // omp5-note {{variable 'z' is captured here}}
+  [&]() { (void)(b + z); }(); // omp5-note {{variable 'z' is captured here}}
 }
 #pragma omp end declare target
 
@@ -141,7 +145,7 @@ struct S {
 #pragma omp end declare target
 };
 
-int main (int argc, char **argv) {
+int main(int argc, char **argv) {
 #pragma omp declare target // expected-error {{unexpected OpenMP directive '#pragma omp declare target'}}
   int v;
 #pragma omp end declare target // expected-error {{unexpected OpenMP directive '#pragma omp end declare target'}}
@@ -151,40 +155,40 @@ int main (int argc, char **argv) {
 
 namespace {
 #pragma omp declare target // expected-note {{to match this '#pragma omp declare target'}}
-  int x;
-} //  expected-error {{expected '#pragma omp end declare target'}}
+int x;
+} // namespace
 #pragma omp end declare target // expected-error {{unexpected OpenMP directive '#pragma omp end declare target'}}
 
 #pragma omp declare target link(S) // expected-error {{'S' used in declare target directive is not a variable or a function name}}
 
-#pragma omp declare target (x, x) // expected-error {{'x' appears multiple times in clauses on the same declare target directive}}
+#pragma omp declare target(x, x) // expected-error {{'x' appears multiple times in clauses on the same declare target directive}}
 #pragma omp declare target to(x) to(x) // expected-error {{'x' appears multiple times in clauses on the same declare target directive}}
 #pragma omp declare target link(x) // expected-error {{'x' must not appear in both clauses 'to' and 'link'}}
 
 void bazz() {}
 #pragma omp declare target to(bazz) device_type(nohost) // omp45-error {{unexpected 'device_type' clause, only 'to' or 'link' clauses expected}} host5-note 3{{marked as 'device_type(nohost)' here}}
-void bazzz() {bazz();}
+void bazzz() { bazz(); }
 #pragma omp declare target to(bazzz) device_type(nohost) // omp45-error {{unexpected 'device_type' clause, only 'to' or 'link' clauses expected}}
-void any() {bazz();} // host5-error {{function with 'device_type(nohost)' is not available on host}}
-void host1() {bazz();} // host5-error {{function with 'device_type(nohost)' is not available on host}}
+void any() { bazz(); }                                 // host5-error {{function with 'device_type(nohost)' is not available on host}}
+void host1() { bazz(); }                               // host5-error {{function with 'device_type(nohost)' is not available on host}}
 #pragma omp declare target to(host1) device_type(host) // omp45-error {{unexpected 'device_type' clause, only 'to' or 'link' clauses expected}} dev5-note 3 {{marked as 'device_type(host)' here}}
-void host2() {bazz();} //host5-error {{function with 'device_type(nohost)' is not available on host}}
+void host2() { bazz(); } //host5-error {{function with 'device_type(nohost)' is not available on host}}
 #pragma omp declare target to(host2)
-void device() {host1();} // dev5-error {{function with 'device_type(host)' is not available on device}}
+void device() { host1(); }                                // dev5-error {{function with 'device_type(host)' is not available on device}}
 #pragma omp declare target to(device) device_type(nohost) // omp45-error {{unexpected 'device_type' clause, only 'to' or 'link' clauses expected}} host5-note 2 {{marked as 'device_type(nohost)' here}}
-void host3() {host1();} // dev5-error {{function with 'device_type(host)' is not available on device}}
+void host3() { host1(); } // dev5-error {{function with 'device_type(host)' is not available on device}}
 #pragma omp declare target to(host3)
 
 #pragma omp declare target
-void any1() {any();}
-void any2() {host1();} // dev5-error {{function with 'device_type(host)' is not available on device}}
-void any3() {device();} // host5-error {{function with 'device_type(nohost)' is not available on host}}
-void any4() {any2();}
+void any1() { any(); }
+void any2() { host1(); }  // dev5-error {{function with 'device_type(host)' is not available on device}}
+void any3() { device(); } // host5-error {{function with 'device_type(nohost)' is not available on host}}
+void any4() { any2(); }
 #pragma omp end declare target
 
-void any5() {any();}
-void any6() {host1();}
-void any7() {device();} // host5-error {{function with 'device_type(nohost)' is not available on host}}
-void any8() {any2();}
+void any5() { any(); }
+void any6() { host1(); }
+void any7() { device(); } // host5-error {{function with 'device_type(nohost)' is not available on host}}
+void any8() { any2(); }
 
 #pragma omp declare target // expected-error {{expected '#pragma omp end declare target'}} expected-note {{to match this '#pragma omp declare target'}}

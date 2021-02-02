@@ -16,6 +16,7 @@ private:
   unsigned int __m_col = 0;
   const char *__m_file = nullptr;
   const char *__m_func = nullptr;
+
 public:
   static constexpr source_location current(
       const char *__file = __builtin_FILE(),
@@ -579,12 +580,12 @@ static_assert(is_equal(I.info.file(), "InitGlobal.cpp"));
 
 namespace TestConstexprContext {
 #line 7000 "TestConstexprContext.cpp"
-  constexpr const char* foo() { return __builtin_FILE(); }
+constexpr const char *foo() { return __builtin_FILE(); }
 #line 7100 "Bar.cpp"
-  constexpr const char* bar(const char* x = foo()) { return x; }
-  constexpr bool test() {
-    static_assert(is_equal(bar(), "TestConstexprContext.cpp"));
-    return true;
-  }
-  static_assert(test());
+constexpr const char *bar(const char *x = foo()) { return x; }
+constexpr bool test() {
+  static_assert(is_equal(bar(), "TestConstexprContext.cpp"));
+  return true;
 }
+static_assert(test());
+} // namespace TestConstexprContext

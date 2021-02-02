@@ -9,7 +9,7 @@
 #include <cstring>
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
-  const char *S = (const char*)Data;
+  const char *S = (const char *)Data;
   const char *Needle = "Some long string";
   if (Size >= strlen(Needle) && !memcmp(S, Needle, strlen(Needle))) {
     fprintf(stderr, "BINGO\n");

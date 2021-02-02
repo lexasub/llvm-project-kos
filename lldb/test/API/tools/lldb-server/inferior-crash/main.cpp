@@ -5,7 +5,7 @@
 namespace {
 const char *const SEGFAULT_COMMAND = "segfault";
 const char *const ABORT_COMMAND = "abort";
-}
+} // namespace
 
 int main(int argc, char **argv) {
   if (argc < 2) {

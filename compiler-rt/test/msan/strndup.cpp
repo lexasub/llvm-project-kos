@@ -7,14 +7,14 @@
 // UNSUPPORTED: windows-msvc
 
 #include <assert.h>
+#include <sanitizer/msan_interface.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sanitizer/msan_interface.h>
 
 int main(int argc, char **argv) {
   char kString[4] = "abc";
   __msan_poison(kString + 2, 1);
-  char *copy = strndup(kString, 4); // BOOM
+  char *copy = strndup(kString, 4);         // BOOM
   assert(__msan_test_shadow(copy, 4) == 2); // Poisoning is preserved.
   free(copy);
   return 0;
@@ -25,4 +25,3 @@ int main(int argc, char **argv) {
   // ON: {{.*}}strndup.cpp:[[@LINE-8]]
   // OFF-NOT: MemorySanitizer
 }
-

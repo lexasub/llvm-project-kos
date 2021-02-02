@@ -1,8 +1,9 @@
 // RUN: %check_clang_tidy %s misc-non-copyable-objects %t
 
 namespace std {
-typedef struct FILE {} FILE;
-}
+typedef struct FILE {
+} FILE;
+} // namespace std
 using namespace std;
 
 // CHECK-MESSAGES: :[[@LINE+1]]:18: warning: 'f' declared as type 'FILE', which is unsafe to copy; did you mean 'FILE *'? [misc-non-copyable-objects]

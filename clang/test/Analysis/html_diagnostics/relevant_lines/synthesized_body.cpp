@@ -5,7 +5,7 @@ typedef struct once_flag_s {
 } once_flag;
 
 template <class Callable, class... Args>
-void call_once(once_flag &o, Callable&& func, Args&&... args);
+void call_once(once_flag &o, Callable &&func, Args &&...args);
 } // namespace std
 
 int deref(int *x) {
@@ -17,7 +17,6 @@ void call_deref_once() {
   int *p = nullptr;
   std::call_once(once, &deref, p);
 }
-
 
 // RUN: rm -rf %t.output
 // RUN: %clang_analyze_cc1 -std=c++11 -analyze -analyzer-checker=core -analyzer-output html -o %t.output %s

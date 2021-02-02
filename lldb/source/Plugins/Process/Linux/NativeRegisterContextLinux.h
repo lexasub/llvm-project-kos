@@ -27,7 +27,7 @@ public:
                                        NativeThreadProtocol &native_thread);
 
   // Invalidates cached values in register context data structures
-  virtual void InvalidateAllRegisters(){}
+  virtual void InvalidateAllRegisters() {}
 
   struct SyscallData {
     /// The syscall instruction. If the architecture uses software

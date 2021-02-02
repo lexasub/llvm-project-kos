@@ -54,7 +54,8 @@ constexpr auto test_emplace_exists_imp(long) -> bool {
   return false;
 }
 
-template <class... Args> constexpr bool emplace_exists() {
+template <class... Args>
+constexpr bool emplace_exists() {
   return test_emplace_exists_imp<Args...>(0);
 }
 
@@ -76,16 +77,16 @@ void test_basic() {
   using V = std::variant<int, InitList, InitListArg, TestTypes::NoCtors>;
   V v;
   auto& ref1 = v.emplace<InitList>({1, 2, 3});
-  static_assert(std::is_same_v<InitList&,decltype(ref1)>, "");
+  static_assert(std::is_same_v<InitList&, decltype(ref1)>, "");
   assert(std::get<InitList>(v).size == 3);
   assert(&ref1 == &std::get<InitList>(v));
   auto& ref2 = v.emplace<InitListArg>({1, 2, 3, 4}, 42);
-  static_assert(std::is_same_v<InitListArg&,decltype(ref2)>, "");
+  static_assert(std::is_same_v<InitListArg&, decltype(ref2)>, "");
   assert(std::get<InitListArg>(v).size == 4);
   assert(std::get<InitListArg>(v).value == 42);
   assert(&ref2 == &std::get<InitListArg>(v));
   auto& ref3 = v.emplace<InitList>({1});
-  static_assert(std::is_same_v<InitList&,decltype(ref3)>, "");
+  static_assert(std::is_same_v<InitList&, decltype(ref3)>, "");
   assert(std::get<InitList>(v).size == 1);
   assert(&ref3 == &std::get<InitList>(v));
 }

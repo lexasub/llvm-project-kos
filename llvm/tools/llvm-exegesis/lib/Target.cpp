@@ -101,7 +101,8 @@ std::unique_ptr<SnippetGenerator> ExegesisTarget::createSerialSnippetGenerator(
   return std::make_unique<SerialSnippetGenerator>(State, Opts);
 }
 
-std::unique_ptr<SnippetGenerator> ExegesisTarget::createParallelSnippetGenerator(
+std::unique_ptr<SnippetGenerator>
+ExegesisTarget::createParallelSnippetGenerator(
     const LLVMState &State, const SnippetGenerator::Options &Opts) const {
   return std::make_unique<ParallelSnippetGenerator>(State, Opts);
 }

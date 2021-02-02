@@ -21,15 +21,14 @@ using namespace clang;
 using namespace ento;
 
 namespace {
-class UndefinedAssignmentChecker
-  : public Checker<check::Bind> {
+class UndefinedAssignmentChecker : public Checker<check::Bind> {
   mutable std::unique_ptr<BugType> BT;
 
 public:
   void checkBind(SVal location, SVal val, const Stmt *S,
                  CheckerContext &C) const;
 };
-}
+} // namespace
 
 void UndefinedAssignmentChecker::checkBind(SVal location, SVal val,
                                            const Stmt *StoreE,
@@ -41,7 +40,7 @@ void UndefinedAssignmentChecker::checkBind(SVal location, SVal val,
   // This should allow to swap partially uninitialized structs
   // (radar://14129997)
   if (const FunctionDecl *EnclosingFunctionDecl =
-      dyn_cast<FunctionDecl>(C.getStackFrame()->getDecl()))
+          dyn_cast<FunctionDecl>(C.getStackFrame()->getDecl()))
     if (C.getCalleeName(EnclosingFunctionDecl) == "swap")
       return;
 

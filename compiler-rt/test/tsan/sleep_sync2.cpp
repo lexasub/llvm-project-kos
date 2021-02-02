@@ -12,7 +12,7 @@ void *Thread(void *p) {
 int main() {
   barrier_init(&barrier, 2);
   pthread_t t;
-  sleep(1);  // must not appear in the report
+  sleep(1); // must not appear in the report
   pthread_create(&t, 0, Thread, 0);
   barrier_wait(&barrier);
   X = 43;

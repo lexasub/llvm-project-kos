@@ -5,11 +5,11 @@
 // RUN: %env_lsan_opts=$LSAN_BASE:"use_poisoned=0" not %run %t 2>&1 | FileCheck %s
 // RUN: %env_lsan_opts=$LSAN_BASE:"use_poisoned=1" %run %t 2>&1
 
+#include "sanitizer_common/print_address.h"
+#include <assert.h>
+#include <sanitizer/asan_interface.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sanitizer/asan_interface.h>
-#include <assert.h>
-#include "sanitizer_common/print_address.h"
 
 void **p;
 

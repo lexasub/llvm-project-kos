@@ -24,7 +24,7 @@ struct GloballyHashedType;
 namespace pdb {
 class NativeSession;
 class TpiStream;
-}
+} // namespace pdb
 } // namespace llvm
 
 namespace lld {

@@ -17,12 +17,13 @@
 #define SANITIZER_QUARANTINE_H
 
 #include "sanitizer_internal_defs.h"
-#include "sanitizer_mutex.h"
 #include "sanitizer_list.h"
+#include "sanitizer_mutex.h"
 
 namespace __sanitizer {
 
-template<typename Node> class QuarantineCache;
+template <typename Node>
+class QuarantineCache;
 
 struct QuarantineBatch {
   static const uptr kSize = 1021;
@@ -38,9 +39,7 @@ struct QuarantineBatch {
   }
 
   // The total size of quarantined nodes recorded in this batch.
-  uptr quarantined_size() const {
-    return size - sizeof(QuarantineBatch);
-  }
+  uptr quarantined_size() const { return size - sizeof(QuarantineBatch); }
 
   void push_back(void *ptr, uptr size) {
     CHECK_LT(count, kSize);
@@ -48,16 +47,15 @@ struct QuarantineBatch {
     this->size += size;
   }
 
-  bool can_merge(const QuarantineBatch* const from) const {
+  bool can_merge(const QuarantineBatch *const from) const {
     return count + from->count <= kSize;
   }
 
-  void merge(QuarantineBatch* const from) {
+  void merge(QuarantineBatch *const from) {
     CHECK_LE(count + from->count, kSize);
     CHECK_GE(size, sizeof(QuarantineBatch));
 
-    for (uptr i = 0; i < from->count; ++i)
-      batch[count + i] = from->batch[i];
+    for (uptr i = 0; i < from->count; ++i) batch[count + i] = from->batch[i];
     count += from->count;
     size += from->quarantined_size();
 
@@ -72,14 +70,12 @@ COMPILER_CHECK(sizeof(QuarantineBatch) <= (1 << 13));  // 8Kb.
 // void Callback::Recycle(Node *ptr);
 // void *cb.Allocate(uptr size);
 // void cb.Deallocate(void *ptr);
-template<typename Callback, typename Node>
+template <typename Callback, typename Node>
 class Quarantine {
  public:
   typedef QuarantineCache<Callback> Cache;
 
-  explicit Quarantine(LinkerInitialized)
-      : cache_(LINKER_INITIALIZED) {
-  }
+  explicit Quarantine(LinkerInitialized) : cache_(LINKER_INITIALIZED) {}
 
   void Init(uptr size, uptr cache_size) {
     // Thread local quarantine size can be zero only when global quarantine size
@@ -95,9 +91,7 @@ class Quarantine {
   }
 
   uptr GetSize() const { return atomic_load_relaxed(&max_size_); }
-  uptr GetCacheSize() const {
-    return atomic_load_relaxed(&max_cache_size_);
-  }
+  uptr GetCacheSize() const { return atomic_load_relaxed(&max_cache_size_); }
 
   void Put(Cache *c, Callback cb, Node *ptr, uptr size) {
     uptr cache_size = GetCacheSize();
@@ -184,12 +178,11 @@ class Quarantine {
     while (QuarantineBatch *b = c->DequeueBatch()) {
       const uptr kPrefetch = 16;
       CHECK(kPrefetch <= ARRAY_SIZE(b->batch));
-      for (uptr i = 0; i < kPrefetch; i++)
-        PREFETCH(b->batch[i]);
+      for (uptr i = 0; i < kPrefetch; i++) PREFETCH(b->batch[i]);
       for (uptr i = 0, count = b->count; i < count; i++) {
         if (i + kPrefetch < count)
           PREFETCH(b->batch[i + kPrefetch]);
-        cb.Recycle((Node*)b->batch[i]);
+        cb.Recycle((Node *)b->batch[i]);
       }
       cb.Deallocate(b);
     }
@@ -197,26 +190,18 @@ class Quarantine {
 };
 
 // Per-thread cache of memory blocks.
-template<typename Callback>
+template <typename Callback>
 class QuarantineCache {
  public:
-  explicit QuarantineCache(LinkerInitialized) {
-  }
+  explicit QuarantineCache(LinkerInitialized) {}
 
-  QuarantineCache()
-      : size_() {
-    list_.clear();
-  }
+  QuarantineCache() : size_() { list_.clear(); }
 
   // Total memory used, including internal accounting.
-  uptr Size() const {
-    return atomic_load_relaxed(&size_);
-  }
+  uptr Size() const { return atomic_load_relaxed(&size_); }
 
   // Memory used for internal accounting.
-  uptr OverheadSize() const {
-    return list_.size() * sizeof(QuarantineBatch);
-  }
+  uptr OverheadSize() const { return list_.size() * sizeof(QuarantineBatch); }
 
   void Enqueue(Callback cb, void *ptr, uptr size) {
     if (list_.empty() || list_.back()->count == QuarantineBatch::kSize) {
@@ -285,17 +270,22 @@ class QuarantineCache {
       total_quarantine_chunks += (*it).count;
     }
     uptr quarantine_chunks_capacity = batch_count * QuarantineBatch::kSize;
-    int chunks_usage_percent = quarantine_chunks_capacity == 0 ?
-        0 : total_quarantine_chunks * 100 / quarantine_chunks_capacity;
+    int chunks_usage_percent =
+        quarantine_chunks_capacity == 0
+            ? 0
+            : total_quarantine_chunks * 100 / quarantine_chunks_capacity;
     uptr total_quarantined_bytes = total_bytes - total_overhead_bytes;
-    int memory_overhead_percent = total_quarantined_bytes == 0 ?
-        0 : total_overhead_bytes * 100 / total_quarantined_bytes;
-    Printf("Global quarantine stats: batches: %zd; bytes: %zd (user: %zd); "
-           "chunks: %zd (capacity: %zd); %d%% chunks used; %d%% memory overhead"
-           "\n",
-           batch_count, total_bytes, total_quarantined_bytes,
-           total_quarantine_chunks, quarantine_chunks_capacity,
-           chunks_usage_percent, memory_overhead_percent);
+    int memory_overhead_percent =
+        total_quarantined_bytes == 0
+            ? 0
+            : total_overhead_bytes * 100 / total_quarantined_bytes;
+    Printf(
+        "Global quarantine stats: batches: %zd; bytes: %zd (user: %zd); "
+        "chunks: %zd (capacity: %zd); %d%% chunks used; %d%% memory overhead"
+        "\n",
+        batch_count, total_bytes, total_quarantined_bytes,
+        total_quarantine_chunks, quarantine_chunks_capacity,
+        chunks_usage_percent, memory_overhead_percent);
   }
 
  private:
@@ -304,14 +294,10 @@ class QuarantineCache {
   List list_;
   atomic_uintptr_t size_;
 
-  void SizeAdd(uptr add) {
-    atomic_store_relaxed(&size_, Size() + add);
-  }
-  void SizeSub(uptr sub) {
-    atomic_store_relaxed(&size_, Size() - sub);
-  }
+  void SizeAdd(uptr add) { atomic_store_relaxed(&size_, Size() + add); }
+  void SizeSub(uptr sub) { atomic_store_relaxed(&size_, Size() - sub); }
 };
 
-} // namespace __sanitizer
+}  // namespace __sanitizer
 
-#endif // SANITIZER_QUARANTINE_H
+#endif  // SANITIZER_QUARANTINE_H

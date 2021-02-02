@@ -28,38 +28,35 @@ struct RemoveFilenameTestcase {
   const char* expect;
 };
 
-const RemoveFilenameTestcase TestCases[] =
-  {
-      {"", ""}
-    , {"/", "/"}
-    , {"//", "//"}
-    , {"///", "///"}
-    , {"\\", ""}
-    , {".", ""}
-    , {"..", ""}
-    , {"/foo", "/"}
-    , {"foo/bar", "foo/"}
-    , {"foo/", "foo/"}
-    , {"//foo", "//"}
-    , {"//foo/", "//foo/"}
-    , {"//foo///", "//foo///"}
-    , {"///foo", "///"}
-    , {"///foo/", "///foo/"}
-    , {"/foo/", "/foo/"}
-    , {"/foo/.", "/foo/"}
-    , {"/foo/..", "/foo/"}
-    , {"/foo/////", "/foo/////"}
-    , {"/foo\\\\", "/"}
-    , {"/foo//\\/", "/foo//\\/"}
-    , {"///foo", "///"}
-    , {"file.txt", ""}
-    , {"bar/../baz/./file.txt", "bar/../baz/./"}
-  };
+const RemoveFilenameTestcase TestCases[] = {
+    {"", ""},
+    {"/", "/"},
+    {"//", "//"},
+    {"///", "///"},
+    {"\\", ""},
+    {".", ""},
+    {"..", ""},
+    {"/foo", "/"},
+    {"foo/bar", "foo/"},
+    {"foo/", "foo/"},
+    {"//foo", "//"},
+    {"//foo/", "//foo/"},
+    {"//foo///", "//foo///"},
+    {"///foo", "///"},
+    {"///foo/", "///foo/"},
+    {"/foo/", "/foo/"},
+    {"/foo/.", "/foo/"},
+    {"/foo/..", "/foo/"},
+    {"/foo/////", "/foo/////"},
+    {"/foo\\\\", "/"},
+    {"/foo//\\/", "/foo//\\/"},
+    {"///foo", "///"},
+    {"file.txt", ""},
+    {"bar/../baz/./file.txt", "bar/../baz/./"}};
 
-int main(int, char**)
-{
+int main(int, char**) {
   using namespace fs;
-  for (auto const & TC : TestCases) {
+  for (auto const& TC : TestCases) {
     path const p_orig(TC.value);
     path p(p_orig);
     assert(p == TC.value);

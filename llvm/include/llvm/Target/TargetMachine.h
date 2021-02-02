@@ -159,7 +159,7 @@ public:
   /// TargetSubtargetInfo.  In debug builds, it verifies that the object being
   /// returned is of the correct type.
   template <typename STC> const STC &getSubtarget(const Function &F) const {
-    return *static_cast<const STC*>(getSubtargetImpl(F));
+    return *static_cast<const STC *>(getSubtargetImpl(F));
   }
 
   /// Create a DataLayout.
@@ -177,9 +177,7 @@ public:
   /// Get the pointer size for this target.
   ///
   /// This is the only time the DataLayout in the TargetMachine is used.
-  unsigned getPointerSize(unsigned AS) const {
-    return DL.getPointerSize(AS);
-  }
+  unsigned getPointerSize(unsigned AS) const { return DL.getPointerSize(AS); }
 
   unsigned getPointerSizeInBits(unsigned AS) const {
     return DL.getPointerSizeInBits(AS);
@@ -267,15 +265,11 @@ public:
 
   /// Return true if data objects should be emitted into their own section,
   /// corresponds to -fdata-sections.
-  bool getDataSections() const {
-    return Options.DataSections;
-  }
+  bool getDataSections() const { return Options.DataSections; }
 
   /// Return true if functions should be emitted into their own section,
   /// corresponding to -ffunction-sections.
-  bool getFunctionSections() const {
-    return Options.FunctionSections;
-  }
+  bool getFunctionSections() const { return Options.FunctionSections; }
 
   /// Return true if visibility attribute should not be emitted in XCOFF,
   /// corresponding to -mignore-xcoff-visibility.
@@ -462,9 +456,7 @@ public:
 
   /// True if the target wants to use interprocedural register allocation by
   /// default. The -enable-ipra flag can be used to override this.
-  virtual bool useIPRA() const {
-    return false;
-  }
+  virtual bool useIPRA() const { return false; }
 };
 
 /// Helper method for getting the code model, returning Default if

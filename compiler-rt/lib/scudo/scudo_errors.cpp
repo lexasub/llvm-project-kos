@@ -18,24 +18,27 @@ namespace __scudo {
 
 void NORETURN reportCallocOverflow(uptr Count, uptr Size) {
   dieWithMessage("calloc parameters overflow: count * size (%zd * %zd) cannot "
-      "be represented with type size_t\n", Count, Size);
+                 "be represented with type size_t\n",
+                 Count, Size);
 }
 
 void NORETURN reportPvallocOverflow(uptr Size) {
   dieWithMessage("pvalloc parameters overflow: size 0x%zx rounded up to system "
-      "page size 0x%zx cannot be represented in type size_t\n", Size,
-      GetPageSizeCached());
+                 "page size 0x%zx cannot be represented in type size_t\n",
+                 Size, GetPageSizeCached());
 }
 
 void NORETURN reportAllocationAlignmentTooBig(uptr Alignment,
                                               uptr MaxAlignment) {
   dieWithMessage("invalid allocation alignment: %zd exceeds maximum supported "
-      "allocation of %zd\n", Alignment, MaxAlignment);
+                 "allocation of %zd\n",
+                 Alignment, MaxAlignment);
 }
 
 void NORETURN reportAllocationAlignmentNotPowerOfTwo(uptr Alignment) {
   dieWithMessage("invalid allocation alignment: %zd, alignment must be a power "
-      "of two\n", Alignment);
+                 "of two\n",
+                 Alignment);
 }
 
 void NORETURN reportInvalidPosixMemalignAlignment(uptr Alignment) {
@@ -47,26 +50,29 @@ void NORETURN reportInvalidPosixMemalignAlignment(uptr Alignment) {
 
 void NORETURN reportInvalidAlignedAllocAlignment(uptr Size, uptr Alignment) {
 #if SANITIZER_POSIX
-  dieWithMessage("invalid alignment requested in aligned_alloc: %zd, alignment "
+  dieWithMessage(
+      "invalid alignment requested in aligned_alloc: %zd, alignment "
       "must be a power of two and the requested size 0x%zx must be a multiple "
-      "of alignment\n", Alignment, Size);
+      "of alignment\n",
+      Alignment, Size);
 #else
   dieWithMessage("invalid alignment requested in aligned_alloc: %zd, the "
-      "requested size 0x%zx must be a multiple of alignment\n", Alignment,
-      Size);
+                 "requested size 0x%zx must be a multiple of alignment\n",
+                 Alignment, Size);
 #endif
 }
 
 void NORETURN reportAllocationSizeTooBig(uptr UserSize, uptr TotalSize,
                                          uptr MaxSize) {
   dieWithMessage("requested allocation size 0x%zx (0x%zx after adjustments) "
-      "exceeds maximum supported size of 0x%zx\n", UserSize, TotalSize,
-      MaxSize);
+                 "exceeds maximum supported size of 0x%zx\n",
+                 UserSize, TotalSize, MaxSize);
 }
 
 void NORETURN reportRssLimitExceeded() {
   dieWithMessage("specified RSS limit exceeded, currently set to "
-      "soft_rss_limit_mb=%zd\n", common_flags()->soft_rss_limit_mb);
+                 "soft_rss_limit_mb=%zd\n",
+                 common_flags()->soft_rss_limit_mb);
 }
 
 void NORETURN reportOutOfMemory(uptr RequestedSize) {
@@ -74,4 +80,4 @@ void NORETURN reportOutOfMemory(uptr RequestedSize) {
                  RequestedSize);
 }
 
-}  // namespace __scudo
+} // namespace __scudo

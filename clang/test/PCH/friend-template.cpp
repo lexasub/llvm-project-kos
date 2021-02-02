@@ -3,7 +3,7 @@
 
 // Test with pch.
 // RUN: %clang_cc1 -emit-pch -o %t %s
-// RUN: %clang_cc1 -include-pch %t -fsyntax-only -verify %s 
+// RUN: %clang_cc1 -include-pch %t -fsyntax-only -verify %s
 
 // RUN: %clang_cc1 -emit-pch -fpch-instantiate-templates -o %t %s
 // RUN: %clang_cc1 -include-pch %t -fsyntax-only -verify %s
@@ -17,33 +17,30 @@
 namespace rdar12627738 {
 
 class RecyclerTag {
-    template <typename T> friend class Recycler;
+  template <typename T> friend class Recycler;
 };
 
-}
+} // namespace rdar12627738
 
 #else
 
 namespace rdar12627738 {
 
-template<typename TTag>
+template <typename TTag>
 class CRN {
-    template <typename T> friend class Recycler;
+  template <typename T> friend class Recycler;
 };
 
-
-template<typename T>
+template <typename T>
 class Recycler {
 public:
-    Recycler ();
+  Recycler();
 };
 
-
-template<typename T>
-Recycler<T>::Recycler ()
-{
+template <typename T>
+Recycler<T>::Recycler() {
 }
 
-}
+} // namespace rdar12627738
 
 #endif

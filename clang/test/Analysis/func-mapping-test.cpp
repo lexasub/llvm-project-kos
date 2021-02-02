@@ -32,7 +32,7 @@ struct SStatic {
 const int SStatic::a;
 // CHECK-DAG: c:@S@SStatic@a
 
-extern int const arr[5] = { 0, 1 };
+extern int const arr[5] = {0, 1};
 // CHECK-DAG: c:@arr
 
 union U {

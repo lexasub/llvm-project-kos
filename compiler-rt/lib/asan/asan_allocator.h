@@ -98,9 +98,9 @@ AsanChunkView FindHeapChunkByAddress(uptr address);
 AsanChunkView FindHeapChunkByAllocBeg(uptr address);
 
 // List of AsanChunks with total size.
-class AsanChunkFifoList: public IntrusiveList<AsanChunk> {
+class AsanChunkFifoList : public IntrusiveList<AsanChunk> {
  public:
-  explicit AsanChunkFifoList(LinkerInitialized) { }
+  explicit AsanChunkFifoList(LinkerInitialized) {}
   AsanChunkFifoList() { clear(); }
   void Push(AsanChunk *n);
   void PushList(AsanChunkFifoList *q);
@@ -110,6 +110,7 @@ class AsanChunkFifoList: public IntrusiveList<AsanChunk> {
     IntrusiveList<AsanChunk>::clear();
     size_ = 0;
   }
+
  private:
   uptr size_;
 };
@@ -120,42 +121,42 @@ struct AsanMapUnmapCallback {
 };
 
 #if SANITIZER_CAN_USE_ALLOCATOR64
-# if SANITIZER_FUCHSIA
+#if SANITIZER_FUCHSIA
 const uptr kAllocatorSpace = ~(uptr)0;
-const uptr kAllocatorSize  =  0x40000000000ULL;  // 4T.
+const uptr kAllocatorSize = 0x40000000000ULL;  // 4T.
 typedef DefaultSizeClassMap SizeClassMap;
-# elif defined(__powerpc64__)
+#elif defined(__powerpc64__)
 const uptr kAllocatorSpace = ~(uptr)0;
-const uptr kAllocatorSize  =  0x20000000000ULL;  // 2T.
+const uptr kAllocatorSize = 0x20000000000ULL;  // 2T.
 typedef DefaultSizeClassMap SizeClassMap;
-# elif defined(__aarch64__) && SANITIZER_ANDROID
+#elif defined(__aarch64__) && SANITIZER_ANDROID
 // Android needs to support 39, 42 and 48 bit VMA.
-const uptr kAllocatorSpace =  ~(uptr)0;
-const uptr kAllocatorSize  =  0x2000000000ULL;  // 128G.
+const uptr kAllocatorSpace = ~(uptr)0;
+const uptr kAllocatorSize = 0x2000000000ULL;  // 128G.
 typedef VeryCompactSizeClassMap SizeClassMap;
 #elif SANITIZER_RISCV64
 const uptr kAllocatorSpace = ~(uptr)0;
 const uptr kAllocatorSize = 0x2000000000ULL;  // 128G.
 typedef VeryDenseSizeClassMap SizeClassMap;
-# elif defined(__aarch64__)
+#elif defined(__aarch64__)
 // AArch64/SANITIZER_CAN_USE_ALLOCATOR64 is only for 42-bit VMA
 // so no need to different values for different VMA.
-const uptr kAllocatorSpace =  0x10000000000ULL;
-const uptr kAllocatorSize  =  0x10000000000ULL;  // 3T.
+const uptr kAllocatorSpace = 0x10000000000ULL;
+const uptr kAllocatorSize = 0x10000000000ULL;  // 3T.
 typedef DefaultSizeClassMap SizeClassMap;
 #elif defined(__sparc__)
 const uptr kAllocatorSpace = ~(uptr)0;
 const uptr kAllocatorSize = 0x20000000000ULL;  // 2T.
 typedef DefaultSizeClassMap SizeClassMap;
-# elif SANITIZER_WINDOWS
+#elif SANITIZER_WINDOWS
 const uptr kAllocatorSpace = ~(uptr)0;
-const uptr kAllocatorSize  =  0x8000000000ULL;  // 500G
+const uptr kAllocatorSize = 0x8000000000ULL;  // 500G
 typedef DefaultSizeClassMap SizeClassMap;
-# else
+#else
 const uptr kAllocatorSpace = 0x600000000000ULL;
-const uptr kAllocatorSize  =  0x40000000000ULL;  // 4T.
+const uptr kAllocatorSize = 0x40000000000ULL;  // 4T.
 typedef DefaultSizeClassMap SizeClassMap;
-# endif
+#endif
 template <typename AddressSpaceViewTy>
 struct AP64 {  // Allocator64 parameters. Deliberately using a short name.
   static const uptr kSpaceBeg = kAllocatorSpace;
@@ -184,7 +185,7 @@ struct AP32 {
   static const uptr kFlags = 0;
 };
 template <typename AddressSpaceView>
-using PrimaryAllocatorASVT = SizeClassAllocator32<AP32<AddressSpaceView> >;
+using PrimaryAllocatorASVT = SizeClassAllocator32<AP32<AddressSpaceView>>;
 using PrimaryAllocator = PrimaryAllocatorASVT<LocalAddressSpaceView>;
 #endif  // SANITIZER_CAN_USE_ALLOCATOR64
 
@@ -200,6 +201,7 @@ struct AsanThreadLocalMallocStorage {
   uptr quarantine_cache[16];
   AllocatorCache allocator_cache;
   void CommitBack();
+
  private:
   // These objects are allocated via mmap() and are zero-initialized.
   AsanThreadLocalMallocStorage() {}

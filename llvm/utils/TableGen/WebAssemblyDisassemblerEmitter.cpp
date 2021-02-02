@@ -129,7 +129,8 @@ void emitWebAssemblyDisassemblerTables(
                ++J) {
             size_t K = 0;
             for (; K < CurOperandList.size(); ++K) {
-              if (OperandTable[J + K] != CurOperandList[K]) break;
+              if (OperandTable[J + K] != CurOperandList[K])
+                break;
             }
             if (K == CurOperandList.size()) {
               OperandStart = J;

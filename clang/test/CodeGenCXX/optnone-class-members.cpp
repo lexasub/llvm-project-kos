@@ -9,23 +9,20 @@
 
 struct A {
   // Definition of an optnone static method.
-  __attribute__((optnone))
-  static int static_optnone_method(int a) {
+  __attribute__((optnone)) static int static_optnone_method(int a) {
     return a + a;
   }
   // CHECK: @_ZN1A21static_optnone_methodEi({{.*}}) [[OPTNONE:#[0-9]+]]
 
   // Definition of an optnone normal method.
-  __attribute__((optnone))
-  int optnone_method(int a) {
+  __attribute__((optnone)) int optnone_method(int a) {
     return a + a + a + a;
   }
   // CHECK: @_ZN1A14optnone_methodEi({{.*}}) [[OPTNONE]]
 
   // Declaration of an optnone method with out-of-line definition
   // that doesn't say optnone.
-  __attribute__((optnone))
-  int optnone_decl_method(int a);
+  __attribute__((optnone)) int optnone_decl_method(int a);
 
   // Methods declared without attribute optnone; the definitions will
   // have attribute optnone, and we verify optnone wins.
@@ -57,32 +54,27 @@ int A::optnone_decl_method(int a) {
 // forceinline is instead translated as 'always_inline'.
 // However 'noinline' wins over 'always_inline' and therefore
 // the resulting attributes for this method are: noinline + optnone
-__attribute__((optnone))
-int A::static_forceinline_method(int a) {
+__attribute__((optnone)) int A::static_forceinline_method(int a) {
   return a + a + a + a;
 }
 // CHECK: @_ZN1A25static_forceinline_methodEi({{.*}}) [[OPTNONE]]
 
-__attribute__((optnone))
-int A::alwaysinline_method(int a) {
+__attribute__((optnone)) int A::alwaysinline_method(int a) {
   return a + a + a + a;
 }
 // CHECK: @_ZN1A19alwaysinline_methodEi({{.*}}) [[OPTNONE]]
 
 // 'noinline' + 'noinline and optnone' = 'noinline and optnone'
-__attribute__((optnone))
-int A::noinline_method(int a) {
+__attribute__((optnone)) int A::noinline_method(int a) {
   return a + a + a + a;
 }
 // CHECK: @_ZN1A15noinline_methodEi({{.*}}) [[OPTNONE]]
 
 // 'optnone' wins over 'minsize'
-__attribute__((optnone))
-int A::minsize_method(int a) {
+__attribute__((optnone)) int A::minsize_method(int a) {
   return a + a + a + a;
 }
 // CHECK: @_ZN1A14minsize_methodEi({{.*}}) [[OPTNONE]]
-
 
 // Test attribute 'optnone' on methods:
 //  -- pure virtual functions
@@ -95,27 +87,23 @@ int A::minsize_method(int a) {
 
 struct B {
   virtual int pure_virtual(int a) = 0;
-  __attribute__((optnone))
-  virtual int pure_virtual_with_optnone(int a) = 0;
+  __attribute__((optnone)) virtual int pure_virtual_with_optnone(int a) = 0;
 
   virtual int base(int a) {
     return a + a + a + a;
   }
 
-  __attribute__((optnone))
-  virtual int optnone_base(int a) {
+  __attribute__((optnone)) virtual int optnone_base(int a) {
     return a + a + a + a;
   }
 
-  __attribute__((optnone))
-  virtual int only_base_virtual(int a) {
+  __attribute__((optnone)) virtual int only_base_virtual(int a) {
     return a + a;
   }
 };
 
 struct C : public B {
-  __attribute__((optnone))
-  virtual int pure_virtual(int a) {
+  __attribute__((optnone)) virtual int pure_virtual(int a) {
     return a + a + a + a;
   }
 
@@ -123,8 +111,7 @@ struct C : public B {
     return a + a + a + a;
   }
 
-  __attribute__((optnone))
-  virtual int base(int a) {
+  __attribute__((optnone)) virtual int base(int a) {
     return a + a;
   }
 
@@ -156,7 +143,6 @@ int bar() {
 // CHECK: @_ZN1B4baseEi({{.*}}) {{.*}} [[NORMAL]]
 // CHECK: @_ZN1B12optnone_baseEi({{.*}}) {{.*}} [[OPTNONE]]
 // CHECK: @_ZN1B17only_base_virtualEi({{.*}}) {{.*}} [[OPTNONE]]
-
 
 // CHECK: attributes [[NORMAL]] =
 // CHECK-NOT: noinline

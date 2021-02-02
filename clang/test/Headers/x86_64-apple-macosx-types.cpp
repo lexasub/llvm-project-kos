@@ -9,8 +9,8 @@ struct false_type {
   static constexpr const bool value = false;
 };
 
-template <class _Tp, class _Up> struct is_same           : public false_type {};
-template <class _Tp>            struct is_same<_Tp, _Tp> : public true_type {};
+template <class _Tp, class _Up> struct is_same : public false_type {};
+template <class _Tp> struct is_same<_Tp, _Tp> : public true_type {};
 
 // Check that our 'is_same' works.
 static_assert(is_same<char, char>::value, "is_same is broken");
@@ -19,7 +19,7 @@ static_assert(!is_same<char, char *>::value, "is_same is broken");
 template <class _Tp, unsigned _AlignOf, unsigned _SizeOf>
 struct check_type {
   static constexpr const bool value =
-    (alignof(_Tp) == _AlignOf) && (sizeof(_Tp) == _SizeOf);
+      (alignof(_Tp) == _AlignOf) && (sizeof(_Tp) == _SizeOf);
 };
 
 //===----------------------------------------------------------------------===//
@@ -80,4 +80,3 @@ static_assert(is_same<long double, ::max_align_t>::value, "::max_align_t is wron
 #include <stddef.h>
 
 static_assert(is_same<int, ::wint_t>::value, "::wint_t is wrong");
-

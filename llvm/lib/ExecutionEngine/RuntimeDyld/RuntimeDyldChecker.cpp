@@ -390,8 +390,8 @@ private:
 
     uint64_t StubAddr;
     std::string ErrorMsg;
-    std::tie(StubAddr, ErrorMsg) = Checker.getSectionAddr(
-        FileName, SectionName, PCtx.IsInsideLoad);
+    std::tie(StubAddr, ErrorMsg) =
+        Checker.getSectionAddr(FileName, SectionName, PCtx.IsInsideLoad);
 
     if (ErrorMsg != "")
       return std::make_pair(EvalResult(ErrorMsg), "");
@@ -563,7 +563,8 @@ private:
     else
       return std::make_pair(
           unexpectedToken(Expr, Expr,
-                          "expected '(', '*', identifier, or number"), "");
+                          "expected '(', '*', identifier, or number"),
+          "");
 
     if (SubExprResult.hasError())
       return std::make_pair(SubExprResult, RemainingExpr);
@@ -673,7 +674,7 @@ private:
     return (S == MCDisassembler::Success);
   }
 };
-}
+} // namespace llvm
 
 RuntimeDyldCheckerImpl::RuntimeDyldCheckerImpl(
     IsSymbolValidFunction IsSymbolValid, GetSymbolInfoFunction GetSymbolInfo,
@@ -773,7 +774,7 @@ uint64_t RuntimeDyldCheckerImpl::readMemoryAtAddr(uint64_t SrcAddr,
                                                   unsigned Size) const {
   uintptr_t PtrSizedAddr = static_cast<uintptr_t>(SrcAddr);
   assert(PtrSizedAddr == SrcAddr && "Linker memory pointer out-of-range.");
-  void *Ptr = reinterpret_cast<void*>(PtrSizedAddr);
+  void *Ptr = reinterpret_cast<void *>(PtrSizedAddr);
 
   switch (Size) {
   case 1:

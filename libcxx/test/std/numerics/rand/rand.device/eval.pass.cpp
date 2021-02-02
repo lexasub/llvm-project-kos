@@ -26,24 +26,20 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        std::random_device r;
-        std::random_device::result_type e = r();
-        ((void)e); // Prevent unused warning
-    }
+int main(int, char**) {
+  {
+    std::random_device r;
+    std::random_device::result_type e = r();
+    ((void)e); // Prevent unused warning
+  }
 
 #ifndef TEST_HAS_NO_EXCEPTIONS
-    try
-    {
-        std::random_device r("/dev/null");
-        (void)r();
-        LIBCPP_ASSERT(false);
-    }
-    catch (const std::system_error&)
-    {
-    }
+  try {
+    std::random_device r("/dev/null");
+    (void)r();
+    LIBCPP_ASSERT(false);
+  } catch (const std::system_error&) {
+  }
 #endif
 
   return 0;

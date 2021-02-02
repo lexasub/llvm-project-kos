@@ -5,7 +5,6 @@ int pch();
 #pragma hdrstop
 
 //expected-no-diagnostics
-int main()
-{
+int main() {
   return pch() + through1(0) + through2(-1) + bar() - 42;
 }

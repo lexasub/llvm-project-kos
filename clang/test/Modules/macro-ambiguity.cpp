@@ -85,12 +85,12 @@
 #include <e_system.h>
 
 #include "a_quote.h"
-#include <a_system.h>
 #include "b_quote.h"
-#include <b_system.h>
 #include "c_quote.h"
-#include <c_system.h>
 #include "d_quote.h"
+#include <a_system.h>
+#include <b_system.h>
+#include <c_system.h>
 #include <d_system.h>
 
 int test(int x) {

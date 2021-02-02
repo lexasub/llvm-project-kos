@@ -11,8 +11,8 @@
 // This means we're basically looking whether `abs(x - y)` is less
 // than `0.00..001` for some number of digits.
 inline bool is_about(double x, double y, int significant_digits) {
-    double epsilon = std::pow(1.0 / 10.0, significant_digits);
-    return std::abs(x - y) < epsilon;
+  double epsilon = std::pow(1.0 / 10.0, significant_digits);
+  return std::abs(x - y) < epsilon;
 }
 
 #endif /* LIBCPP_TEST_VALARRAY_HELPER */

@@ -21,42 +21,57 @@
 //
 //  68) If p is an expression of pointer type, then *p, (*p), *(p),
 //      ((*p)), *((p)), and so on all meet this requirement.
-bool bad_typeid_test () {
-    class A { virtual void f() {}};
-    class B { virtual void g() {}};
+bool bad_typeid_test() {
+  class A {
+    virtual void f() {}
+  };
+  class B {
+    virtual void g() {}
+  };
 
-    B *bp = NULL;
-    try {bool b = typeid(*bp) == typeid (A); ((void)b); }
-    catch ( const std::bad_typeid &) { return true; }
-    return false;
+  B* bp = NULL;
+  try {
+    bool b = typeid(*bp) == typeid(A);
+    ((void)b);
+  } catch (const std::bad_typeid&) {
+    return true;
+  }
+  return false;
 }
-
 
 //  The value of a failed cast to pointer type is the null pointer value of
 //  the required result type. A failed cast to reference type throws
 //  std::bad_cast (18.7.2).
-bool bad_cast_test () {
-    class A { virtual void f() {}};
-    class B { virtual void g() {}};
-    class D : public virtual A, private B {};
+bool bad_cast_test() {
+  class A {
+    virtual void f() {}
+  };
+  class B {
+    virtual void g() {}
+  };
+  class D : public virtual A, private B {};
 
-    D d;
-    B *bp = (B*)&d;     // cast needed to break protection
-    try { D &dr = dynamic_cast<D&> (*bp); ((void)dr); }
-    catch ( const std::bad_cast & ) { return true; }
-    return false;
+  D d;
+  B* bp = (B*)&d; // cast needed to break protection
+  try {
+    D& dr = dynamic_cast<D&>(*bp);
+    ((void)dr);
+  } catch (const std::bad_cast&) {
+    return true;
+  }
+  return false;
 }
 
-int main ( ) {
-    int ret_val = 0;
+int main() {
+  int ret_val = 0;
 
-    if ( !bad_typeid_test ()) {
-        ret_val = 1;
-    }
+  if (!bad_typeid_test()) {
+    ret_val = 1;
+  }
 
-    if ( !bad_cast_test ()) {
-        ret_val = 2;
-    }
+  if (!bad_cast_test()) {
+    ret_val = 2;
+  }
 
-    return ret_val;
+  return ret_val;
 }

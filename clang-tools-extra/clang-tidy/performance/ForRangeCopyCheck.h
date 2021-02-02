@@ -22,7 +22,7 @@ namespace performance {
 class ForRangeCopyCheck : public ClangTidyCheck {
 public:
   ForRangeCopyCheck(StringRef Name, ClangTidyContext *Context);
-  bool isLanguageVersionSupported(const LangOptions &LangOpts) const override{
+  bool isLanguageVersionSupported(const LangOptions &LangOpts) const override {
     return LangOpts.CPlusPlus11;
   }
   void storeOptions(ClangTidyOptions::OptionMap &Opts) override;

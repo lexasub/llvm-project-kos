@@ -21,20 +21,19 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        typedef std::weibull_distribution<> D;
-        D d1(2.5, 4);
-        D d2(2.5, 4);
-        assert(d1 == d2);
-    }
-    {
-        typedef std::weibull_distribution<> D;
-        D d1(2.5, 4);
-        D d2(2.5, 4.5);
-        assert(d1 != d2);
-    }
+int main(int, char**) {
+  {
+    typedef std::weibull_distribution<> D;
+    D d1(2.5, 4);
+    D d2(2.5, 4);
+    assert(d1 == d2);
+  }
+  {
+    typedef std::weibull_distribution<> D;
+    D d1(2.5, 4);
+    D d2(2.5, 4.5);
+    assert(d1 != d2);
+  }
 
   return 0;
 }

@@ -86,9 +86,7 @@ struct ParsedAttrInfo {
     return true;
   }
   /// Check if this attribute is allowed when compiling for the given target.
-  virtual bool existsInTarget(const TargetInfo &Target) const {
-    return true;
-  }
+  virtual bool existsInTarget(const TargetInfo &Target) const { return true; }
   /// Convert the spelling index of Attr to a semantic spelling enum value.
   virtual unsigned
   spellingIndexToSemanticSpelling(const ParsedAttr &Attr) const {
@@ -97,13 +95,8 @@ struct ParsedAttrInfo {
   /// Populate Rules with the match rules of this attribute.
   virtual void getPragmaAttributeMatchRules(
       llvm::SmallVectorImpl<std::pair<attr::SubjectMatchRule, bool>> &Rules,
-      const LangOptions &LangOpts) const {
-  }
-  enum AttrHandling {
-    NotHandled,
-    AttributeApplied,
-    AttributeNotApplied
-  };
+      const LangOptions &LangOpts) const {}
+  enum AttrHandling { NotHandled, AttributeApplied, AttributeNotApplied };
   /// If this ParsedAttrInfo knows how to handle this ParsedAttr applied to this
   /// Decl then do so and return either AttributeApplied if it was applied or
   /// AttributeNotApplied if it wasn't. Otherwise return NotHandled.
@@ -136,7 +129,10 @@ struct AvailabilityChange {
 
 namespace detail {
 enum AvailabilitySlot {
-  IntroducedSlot, DeprecatedSlot, ObsoletedSlot, NumAvailabilitySlots
+  IntroducedSlot,
+  DeprecatedSlot,
+  ObsoletedSlot,
+  NumAvailabilitySlots
 };
 
 /// Describes the trailing object for Availability attribute in ParsedAttr.
@@ -147,9 +143,9 @@ struct AvailabilityData {
 
   AvailabilityData(const AvailabilityChange &Introduced,
                    const AvailabilityChange &Deprecated,
-                   const AvailabilityChange &Obsoleted,
-                   SourceLocation Strict, const Expr *ReplaceExpr)
-    : StrictLoc(Strict), Replacement(ReplaceExpr) {
+                   const AvailabilityChange &Obsoleted, SourceLocation Strict,
+                   const Expr *ReplaceExpr)
+      : StrictLoc(Strict), Replacement(ReplaceExpr) {
     Changes[IntroducedSlot] = Introduced;
     Changes[DeprecatedSlot] = Deprecated;
     Changes[ObsoletedSlot] = Obsoleted;
@@ -168,7 +164,7 @@ struct PropertyData {
       : GetterId(getterId), SetterId(setterId) {}
 };
 
-} // namespace
+} // namespace detail
 
 /// Wraps an identifier and optional source location for the identifier.
 struct IdentifierLoc {
@@ -205,7 +201,7 @@ class ParsedAttr final
     return IsAvailability;
   }
   size_t
-      numTrailingObjects(OverloadToken<detail::TypeTagForDatatypeData>) const {
+  numTrailingObjects(OverloadToken<detail::TypeTagForDatatypeData>) const {
     return IsTypeTagForDatatype;
   }
   size_t numTrailingObjects(OverloadToken<ParsedType>) const {
@@ -420,9 +416,7 @@ public:
   bool hasParsedType() const { return HasParsedType; }
 
   /// Is this the Microsoft __declspec(property) attribute?
-  bool isDeclspecPropertyAttribute() const  {
-    return IsProperty;
-  }
+  bool isDeclspecPropertyAttribute() const { return IsProperty; }
 
   bool isInvalid() const { return Invalid; }
   void setInvalid(bool b = true) const { Invalid = b; }
@@ -460,19 +454,17 @@ public:
   }
 
   bool isArgExpr(unsigned Arg) const {
-    return Arg < NumArgs && getArg(Arg).is<Expr*>();
+    return Arg < NumArgs && getArg(Arg).is<Expr *>();
   }
 
-  Expr *getArgAsExpr(unsigned Arg) const {
-    return getArg(Arg).get<Expr*>();
-  }
+  Expr *getArgAsExpr(unsigned Arg) const { return getArg(Arg).get<Expr *>(); }
 
   bool isArgIdent(unsigned Arg) const {
-    return Arg < NumArgs && getArg(Arg).is<IdentifierLoc*>();
+    return Arg < NumArgs && getArg(Arg).is<IdentifierLoc *>();
   }
 
   IdentifierLoc *getArgAsIdent(unsigned Arg) const {
-    return getArg(Arg).get<IdentifierLoc*>();
+    return getArg(Arg).get<IdentifierLoc *>();
   }
 
   const AvailabilityChange &getAvailabilityIntroduced() const {
@@ -505,7 +497,7 @@ public:
     return UnavailableLoc;
   }
 
-  const Expr * getMessageExpr() const {
+  const Expr *getMessageExpr() const {
     assert(getParsedKind() == AT_Availability &&
            "Not an availability attribute");
     return MessageExpr;
@@ -693,9 +685,7 @@ class AttributePool {
   AttributeFactory &Factory;
   llvm::TinyPtrVector<ParsedAttr *> Attrs;
 
-  void *allocate(size_t size) {
-    return Factory.allocate(size);
-  }
+  void *allocate(size_t size) { return Factory.allocate(size); }
 
   ParsedAttr *add(ParsedAttr *attr) {
     Attrs.push_back(attr);
@@ -1068,7 +1058,7 @@ template <typename ACI,
           typename std::enable_if_t<
               std::is_same<ACI, AttributeCommonInfo>::value, int> = 0>
 inline const StreamingDiagnostic &operator<<(const StreamingDiagnostic &DB,
-                                           const ACI &CI) {
+                                             const ACI &CI) {
   DB.AddTaggedVal(reinterpret_cast<intptr_t>(CI.getAttrName()),
                   DiagnosticsEngine::ak_identifierinfo);
   return DB;
@@ -1078,7 +1068,7 @@ template <typename ACI,
           typename std::enable_if_t<
               std::is_same<ACI, AttributeCommonInfo>::value, int> = 0>
 inline const StreamingDiagnostic &operator<<(const StreamingDiagnostic &DB,
-                                           const ACI* CI) {
+                                             const ACI *CI) {
   DB.AddTaggedVal(reinterpret_cast<intptr_t>(CI->getAttrName()),
                   DiagnosticsEngine::ak_identifierinfo);
   return DB;

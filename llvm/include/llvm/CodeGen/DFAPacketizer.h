@@ -63,16 +63,12 @@ public:
   }
 
   // Reset the current state to make all resources available.
-  void clearResources() {
-    A.reset();
-  }
+  void clearResources() { A.reset(); }
 
   // Set whether this packetizer should track not just whether instructions
   // can be packetized, but also which functional units each instruction ends up
   // using after packetization.
-  void setTrackResources(bool Track) {
-    A.enableTranscription(Track);
-  }
+  void setTrackResources(bool Track) { A.enableTranscription(Track); }
 
   // Check if the resources occupied by a MCInstrDesc are available in
   // the current state.
@@ -118,16 +114,15 @@ protected:
   // The VLIW Scheduler.
   DefaultVLIWScheduler *VLIWScheduler;
   // Vector of instructions assigned to the current packet.
-  std::vector<MachineInstr*> CurrentPacketMIs;
+  std::vector<MachineInstr *> CurrentPacketMIs;
   // DFA resource tracker.
   DFAPacketizer *ResourceTracker;
   // Map: MI -> SU.
-  std::map<MachineInstr*, SUnit*> MIToSUnit;
+  std::map<MachineInstr *, SUnit *> MIToSUnit;
 
 public:
   // The AAResults parameter can be nullptr.
-  VLIWPacketizerList(MachineFunction &MF, MachineLoopInfo &MLI,
-                     AAResults *AA);
+  VLIWPacketizerList(MachineFunction &MF, MachineLoopInfo &MLI, AAResults *AA);
 
   virtual ~VLIWPacketizerList();
 
@@ -137,7 +132,7 @@ public:
                     MachineBasicBlock::iterator EndItr);
 
   // Return the ResourceTracker.
-  DFAPacketizer *getResourceTracker() {return ResourceTracker;}
+  DFAPacketizer *getResourceTracker() { return ResourceTracker; }
 
   // addToPacket - Add MI to the current packet.
   virtual MachineBasicBlock::iterator addToPacket(MachineInstr &MI) {

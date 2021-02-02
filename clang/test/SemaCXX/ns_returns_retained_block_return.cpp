@@ -3,15 +3,17 @@
 // expected-no-diagnostics
 // rdar://17259812
 
-typedef void (^BT) ();
+typedef void (^BT)();
 
 class S {
   BT br() __attribute__((ns_returns_retained)) {
-    return ^{};
+    return ^{
+    };
   }
- BT br1() __attribute__((ns_returns_retained));
+  BT br1() __attribute__((ns_returns_retained));
 };
 
 BT S::br1() {
-    return ^{};
+  return ^{
+  };
 }

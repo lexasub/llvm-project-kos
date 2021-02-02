@@ -1,4 +1,5 @@
-//===--- Kolibri.h - Kolibri ToolChain Implementations --------------*- C++ -*-===//
+//===--- Kolibri.h - Kolibri ToolChain Implementations --------------*- C++
+//-*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -19,16 +20,16 @@ namespace toolchains {
 class LLVM_LIBRARY_VISIBILITY Kolibri : public Generic_ELF {
 public:
   Kolibri(const Driver &D, const llvm::Triple &Triple,
-        const llvm::opt::ArgList &Args);
+          const llvm::opt::ArgList &Args);
 
   bool HasNativeLLVMSupport() const override;
 
   void
   AddClangSystemIncludeArgs(const llvm::opt::ArgList &DriverArgs,
                             llvm::opt::ArgStringList &CC1Args) const override;
-  void addLibStdCxxIncludePaths(
-      const llvm::opt::ArgList &DriverArgs,
-      llvm::opt::ArgStringList &CC1Args) const override;
+  void
+  addLibStdCxxIncludePaths(const llvm::opt::ArgList &DriverArgs,
+                           llvm::opt::ArgStringList &CC1Args) const override;
   void AddCudaIncludeArgs(const llvm::opt::ArgList &DriverArgs,
                           llvm::opt::ArgStringList &CC1Args) const override;
   void AddHIPIncludeArgs(const llvm::opt::ArgList &DriverArgs,

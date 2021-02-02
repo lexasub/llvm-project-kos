@@ -18,18 +18,15 @@
 #include "min_allocator.h"
 
 template <class S>
-void
-test(S s1, const S& s2)
-{
-    s1 = s2;
-    LIBCPP_ASSERT(s1.__invariants());
-    assert(s1 == s2);
-    assert(s1.capacity() >= s1.size());
+void test(S s1, const S& s2) {
+  s1 = s2;
+  LIBCPP_ASSERT(s1.__invariants());
+  assert(s1 == s2);
+  assert(s1.capacity() >= s1.size());
 }
 
-int main(int, char**)
-{
-    {
+int main(int, char**) {
+  {
     typedef std::string S;
     test(S(), S());
     test(S("1"), S());
@@ -37,44 +34,56 @@ int main(int, char**)
     test(S("1"), S("2"));
     test(S("1"), S("2"));
 
-    test(S(),
-         S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"));
-    test(S("123456789"),
-         S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"));
-    test(S("1234567890123456789012345678901234567890123456789012345678901234567890"),
-         S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"));
-    test(S("1234567890123456789012345678901234567890123456789012345678901234567890"
-           "1234567890123456789012345678901234567890123456789012345678901234567890"),
-         S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"));
-    }
+    test(S(), S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghij"
+                "klmnopqrstuvwxyz"));
+    test(S("123456789"), S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy"
+                           "zabcdefghijklmnopqrstuvwxyz"));
+    test(S("1234567890123456789012345678901234567890123456789012345678901234567"
+           "890"),
+         S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno"
+           "pqrstuvwxyz"));
+    test(S("1234567890123456789012345678901234567890123456789012345678901234567"
+           "890"
+           "1234567890123456789012345678901234567890123456789012345678901234567"
+           "890"),
+         S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno"
+           "pqrstuvwxyz"));
+  }
 #if TEST_STD_VER >= 11
-    {
-    typedef std::basic_string<char, std::char_traits<char>, min_allocator<char>> S;
+  {
+    typedef std::basic_string<char, std::char_traits<char>,
+                              min_allocator<char> >
+        S;
     test(S(), S());
     test(S("1"), S());
     test(S(), S("1"));
     test(S("1"), S("2"));
     test(S("1"), S("2"));
 
-    test(S(),
-         S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"));
-    test(S("123456789"),
-         S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"));
-    test(S("1234567890123456789012345678901234567890123456789012345678901234567890"),
-         S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"));
-    test(S("1234567890123456789012345678901234567890123456789012345678901234567890"
-           "1234567890123456789012345678901234567890123456789012345678901234567890"),
-         S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"));
-    }
+    test(S(), S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghij"
+                "klmnopqrstuvwxyz"));
+    test(S("123456789"), S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxy"
+                           "zabcdefghijklmnopqrstuvwxyz"));
+    test(S("1234567890123456789012345678901234567890123456789012345678901234567"
+           "890"),
+         S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno"
+           "pqrstuvwxyz"));
+    test(S("1234567890123456789012345678901234567890123456789012345678901234567"
+           "890"
+           "1234567890123456789012345678901234567890123456789012345678901234567"
+           "890"),
+         S("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmno"
+           "pqrstuvwxyz"));
+  }
 #endif
 
 #if TEST_STD_VER > 3
-    {   // LWG 2946
+  { // LWG 2946
     std::string s;
     s = {"abc", 1};
     assert(s.size() == 1);
     assert(s == "a");
-    }
+  }
 #endif
 
   return 0;

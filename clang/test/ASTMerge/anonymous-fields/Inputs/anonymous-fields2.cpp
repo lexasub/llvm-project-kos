@@ -1,7 +1,11 @@
 class A {
 public:
-  struct { int foo; } f;
-  struct { int foo; } g;
+  struct {
+    int foo;
+  } f;
+  struct {
+    int foo;
+  } g;
 };
 
 inline int useA(A &a) {

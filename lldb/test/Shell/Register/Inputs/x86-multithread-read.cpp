@@ -17,26 +17,24 @@ struct test_data {
 void t_func(std::mutex &t_mutex, const test_data &t_data) {
   std::lock_guard<std::mutex> t_lock(t_mutex);
 
-  asm volatile(
-    "finit\t\n"
-    "fldt %2\t\n"
-    "int3\n\t"
-    :
-    : "a"(t_data.eax), "b"(t_data.ebx), "m"(t_data.st0)
-    : "st"
-  );
+  asm volatile("finit\t\n"
+               "fldt %2\t\n"
+               "int3\n\t"
+               :
+               : "a"(t_data.eax), "b"(t_data.ebx), "m"(t_data.st0)
+               : "st");
 }
 
 int main() {
   test_data t1_data = {
-    .eax = 0x05060708,
-    .ebx = 0x15161718,
-    .st0 = {0x8070605040302010, 0x4000},
+      .eax = 0x05060708,
+      .ebx = 0x15161718,
+      .st0 = {0x8070605040302010, 0x4000},
   };
   test_data t2_data = {
-    .eax = 0x25262728,
-    .ebx = 0x35363738,
-    .st0 = {0x8171615141312111, 0xc000},
+      .eax = 0x25262728,
+      .ebx = 0x35363738,
+      .st0 = {0x8171615141312111, 0xc000},
   };
 
   // block both threads from proceeding

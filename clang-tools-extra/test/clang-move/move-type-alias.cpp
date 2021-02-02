@@ -14,7 +14,6 @@
 
 // CHECK-OLD-TEST-H-CASE1-NOT: typedef int Int1;
 
-
 // -----------------------------------------------------------------------------
 // Test moving type alias declarations.
 // -----------------------------------------------------------------------------
@@ -28,7 +27,6 @@
 
 // CHECK-OLD-TEST-H-CASE2-NOT: using Int2 = int;
 
-
 // -----------------------------------------------------------------------------
 // Test moving template type alias declarations.
 // -----------------------------------------------------------------------------
@@ -39,7 +37,6 @@
 
 // CHECK-NEW-TEST-H-CASE3: template<class T> using B = A<T>;
 // CHECK-OLD-TEST-H-CASE3-NOT: template<class T> using B = A<T>;
-
 
 // -----------------------------------------------------------------------------
 // Test not moving class-insided typedef declarations.

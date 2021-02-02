@@ -13,7 +13,7 @@ struct X2 {
   X x;
 };
 
-template<typename T>
+template <typename T>
 void call() {
   Y().get();
 }
@@ -22,9 +22,9 @@ void call() {
 // CHECK: call void @_ZN1Y3getEv
 // CHECK-NEXT: call void @_ZN1XD1Ev
 // CHECK-NEXT: ret void
-template void call<int>();  
+template void call<int>();
 
-template<typename T>
+template <typename T>
 void compound_literal() {
   (X2){};
 }
@@ -33,5 +33,4 @@ void compound_literal() {
 // CHECK: call void @_ZN1XC1Ev
 // CHECK-NEXT: call void @_ZN2X2D1Ev
 // CHECK-NEXT: ret void
-template void compound_literal<int>();  
-
+template void compound_literal<int>();

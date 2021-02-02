@@ -21,16 +21,19 @@ using namespace lldb_private;
 TEST(XcodeSDKTest, ParseTest) {
   EXPECT_EQ(XcodeSDK::GetAnyMacOS().GetType(), XcodeSDK::MacOSX);
   EXPECT_EQ(XcodeSDK("MacOSX.sdk").GetType(), XcodeSDK::MacOSX);
-  EXPECT_EQ(XcodeSDK("iPhoneSimulator.sdk").GetType(), XcodeSDK::iPhoneSimulator);
+  EXPECT_EQ(XcodeSDK("iPhoneSimulator.sdk").GetType(),
+            XcodeSDK::iPhoneSimulator);
   EXPECT_EQ(XcodeSDK("iPhoneOS.sdk").GetType(), XcodeSDK::iPhoneOS);
-  EXPECT_EQ(XcodeSDK("AppleTVSimulator.sdk").GetType(), XcodeSDK::AppleTVSimulator);
+  EXPECT_EQ(XcodeSDK("AppleTVSimulator.sdk").GetType(),
+            XcodeSDK::AppleTVSimulator);
   EXPECT_EQ(XcodeSDK("AppleTVOS.sdk").GetType(), XcodeSDK::AppleTVOS);
   EXPECT_EQ(XcodeSDK("WatchSimulator.sdk").GetType(), XcodeSDK::WatchSimulator);
   EXPECT_EQ(XcodeSDK("WatchOS.sdk").GetType(), XcodeSDK::watchOS);
   EXPECT_EQ(XcodeSDK("Linux.sdk").GetType(), XcodeSDK::Linux);
   EXPECT_EQ(XcodeSDK("MacOSX.sdk").GetVersion(), llvm::VersionTuple());
   EXPECT_EQ(XcodeSDK("MacOSX10.9.sdk").GetVersion(), llvm::VersionTuple(10, 9));
-  EXPECT_EQ(XcodeSDK("MacOSX10.15.4.sdk").GetVersion(), llvm::VersionTuple(10, 15));
+  EXPECT_EQ(XcodeSDK("MacOSX10.15.4.sdk").GetVersion(),
+            llvm::VersionTuple(10, 15));
   EXPECT_EQ(XcodeSDK("MacOSX.sdk").IsAppleInternalSDK(), false);
   EXPECT_EQ(XcodeSDK("MacOSX10.15.Internal.sdk").GetType(), XcodeSDK::MacOSX);
   EXPECT_EQ(XcodeSDK("MacOSX10.15.Internal.sdk").GetVersion(),

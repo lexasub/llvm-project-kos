@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
   for (int i = 4; i < 12; i++)
     argv[0][i] = argv[0][i] - argv[0][i - 4];
 // expected-error@+1 {{'ordered' clause with a parameter can not be specified in '#pragma omp target parallel for simd' directive}}
-#pragma omp target parallel for simd ordered(2 + 2))      // expected-warning {{extra tokens at the end of '#pragma omp target parallel for simd' are ignored}}
+#pragma omp target parallel for simd ordered(2 + 2)) // expected-warning {{extra tokens at the end of '#pragma omp target parallel for simd' are ignored}}
   for (int i = 4; i < 12; i++)
     argv[0][i] = argv[0][i] - argv[0][i - 4];
 
@@ -113,11 +113,10 @@ int main(int argc, char **argv) {
   for (int i = 4; i < 12; i++)
     argv[0][i] = argv[0][i] - argv[0][i - 4];
 // expected-error@+2 {{statement after '#pragma omp target parallel for simd' must be a for loop}}
-#pragma omp target parallel for simd ordered(ordered(tmain < int, char, -1, -2 > (argc, argv) // expected-error 2 {{expected ')'}} expected-note 2 {{to match this '('}}
+#pragma omp target parallel for simd ordered(ordered(tmain <int, char, -1, -2>(argc, argv) // expected-error 2 {{expected ')'}} expected-note 2 {{to match this '('}}
   foo();
 // expected-error@+1 {{'ordered' clause with a parameter can not be specified in '#pragma omp target parallel for simd' directive}}
 #pragma omp target parallel for simd ordered(2)
   foo();
   return tmain<int, char, 1, 0>(argc, argv);
 }
-

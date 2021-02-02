@@ -6,7 +6,7 @@ struct A {
 
 // PR10696
 void testOverlappingInsertions(int b) {
-  A var = { b };
+  A var = {b};
   // CHECK:  A var = { b };
   // CHECK:            ^
   // CHECK:            static_cast<unsigned int>( )

@@ -15,11 +15,10 @@
 #include <condition_variable>
 #include <cassert>
 
-int main(int, char**)
-{
-    std::condition_variable cv0;
-    std::condition_variable cv1;
-    cv1 = cv0;
+int main(int, char**) {
+  std::condition_variable cv0;
+  std::condition_variable cv1;
+  cv1 = cv0;
 
   return 0;
 }

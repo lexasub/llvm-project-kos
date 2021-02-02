@@ -6,7 +6,6 @@
 //
 //===---------------------------------------------------------------------===//
 
-
 #include <stddef.h>
 #include <vector>
 
@@ -125,8 +124,7 @@ RegisterContextLinux_mips64::GetRegisterSet(size_t set) const {
   return nullptr;
 }
 
-size_t
-RegisterContextLinux_mips64::GetRegisterSetCount() const {
+size_t RegisterContextLinux_mips64::GetRegisterSetCount() const {
   return k_num_register_sets;
 }
 
@@ -204,4 +202,3 @@ uint32_t RegisterContextLinux_mips64::GetRegisterCount() const {
 uint32_t RegisterContextLinux_mips64::GetUserRegisterCount() const {
   return m_user_register_count;
 }
-

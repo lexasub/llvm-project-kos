@@ -13,7 +13,7 @@
 #include "test_macros.h"
 
 struct Bomb;
-template <int N, class T = Bomb >
+template <int N, class T = Bomb>
 struct BOOM {
   using Explode = typename T::BOOMBOOM;
 };
@@ -41,7 +41,8 @@ void test_or() {
   static_assert(std::_Or<True, std::_Not<BOOM<3> > >::value, "");
   static_assert(!std::_Or<False, False>::value, "");
   static_assert(std::_Or<True, BOOM<1> >::value, "");
-  static_assert(std::_Or<False, False, False, False, True, BOOM<2> >::value, "");
+  static_assert(std::_Or<False, False, False, False, True, BOOM<2> >::value,
+                "");
 }
 
 void test_combined() {
@@ -75,8 +76,10 @@ void test_is_valid_trait() {
   static_assert(!std::_IsValidExpansion<HasFooType, MemberTest>::value, "");
   static_assert(!std::_IsValidExpansion<HasFooData, MemberTest2>::value, "");
   static_assert(std::_IsValidExpansion<HasFooType, MemberTest2>::value, "");
-  static_assert(std::_IsValidExpansion<FuncCallable, MemberTest, int>::value, "");
-  static_assert(!std::_IsValidExpansion<FuncCallable, MemberTest, void*>::value, "");
+  static_assert(std::_IsValidExpansion<FuncCallable, MemberTest, int>::value,
+                "");
+  static_assert(!std::_IsValidExpansion<FuncCallable, MemberTest, void*>::value,
+                "");
 }
 
 void test_first_and_second_type() {
@@ -86,6 +89,4 @@ void test_first_and_second_type() {
   ASSERT_SAME_TYPE(std::_SecondType<long long, int, void*>, int);
 }
 
-int main(int, char**) {
-  return 0;
-}
+int main(int, char**) { return 0; }

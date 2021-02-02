@@ -2,7 +2,7 @@
 // expected-no-diagnostics
 
 struct mystruct {
-  int  member;
+  int member;
 };
 
 template <int i>
@@ -27,12 +27,12 @@ bool closure = sanitize<int>();
 
 // PR16206
 typedef struct {
-	char x[4];
+  char x[4];
 } chars;
 
 chars getChars();
 void use(char *);
 
 void test() {
-	use(getChars().x);
+  use(getChars().x);
 }

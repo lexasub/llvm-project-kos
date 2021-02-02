@@ -14,59 +14,51 @@
 #include "test_macros.h"
 
 template <class T>
-void test_is_move_assignable()
-{
-    static_assert(( std::is_move_assignable<T>::value), "");
+void test_is_move_assignable() {
+  static_assert((std::is_move_assignable<T>::value), "");
 #if TEST_STD_VER > 14
-    static_assert(( std::is_move_assignable_v<T>), "");
+  static_assert((std::is_move_assignable_v<T>), "");
 #endif
 }
 
 template <class T>
-void test_is_not_move_assignable()
-{
-    static_assert((!std::is_move_assignable<T>::value), "");
+void test_is_not_move_assignable() {
+  static_assert((!std::is_move_assignable<T>::value), "");
 #if TEST_STD_VER > 14
-    static_assert((!std::is_move_assignable_v<T>), "");
+  static_assert((!std::is_move_assignable_v<T>), "");
 #endif
 }
 
-class Empty
-{
-};
+class Empty {};
 
-class NotEmpty
-{
+class NotEmpty {
 public:
-    virtual ~NotEmpty();
+  virtual ~NotEmpty();
 };
 
 union Union {};
 
-struct bit_zero
-{
-    int :  0;
+struct bit_zero {
+  int : 0;
 };
 
-struct A
-{
-    A();
+struct A {
+  A();
 };
 
-int main(int, char**)
-{
-    test_is_move_assignable<int> ();
-    test_is_move_assignable<A> ();
-    test_is_move_assignable<bit_zero> ();
-    test_is_move_assignable<Union> ();
-    test_is_move_assignable<NotEmpty> ();
-    test_is_move_assignable<Empty> ();
+int main(int, char**) {
+  test_is_move_assignable<int>();
+  test_is_move_assignable<A>();
+  test_is_move_assignable<bit_zero>();
+  test_is_move_assignable<Union>();
+  test_is_move_assignable<NotEmpty>();
+  test_is_move_assignable<Empty>();
 
-    test_is_not_move_assignable<const int> ();
-    test_is_not_move_assignable<int[]> ();
-    test_is_not_move_assignable<int[3]> ();
+  test_is_not_move_assignable<const int>();
+  test_is_not_move_assignable<int[]>();
+  test_is_not_move_assignable<int[3]>();
 
-    test_is_not_move_assignable<void> ();
+  test_is_not_move_assignable<void>();
 
   return 0;
 }

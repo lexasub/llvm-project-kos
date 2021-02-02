@@ -21,7 +21,7 @@ struct ConvertibleToConstA {
 };
 
 struct B {
-  B& operator=(B&);  // expected-note 4 {{candidate function}}
+  B &operator=(B &); // expected-note 4 {{candidate function}}
 };
 
 struct ConvertibleToB {
@@ -29,7 +29,7 @@ struct ConvertibleToB {
 };
 
 struct ConvertibleToBref {
-  operator B&();
+  operator B &();
 };
 
 struct ConvertibleToConstB {
@@ -37,18 +37,18 @@ struct ConvertibleToConstB {
 };
 
 struct ConvertibleToConstBref {
-  operator const B&();
+  operator const B &();
 };
 
 struct C {
-  int operator=(int); // expected-note{{candidate function}}
+  int operator=(int);   // expected-note{{candidate function}}
   long operator=(long); // expected-note{{candidate function}}
-  int operator+=(int); // expected-note{{candidate function}}
+  int operator+=(int);  // expected-note{{candidate function}}
   int operator+=(long); // expected-note{{candidate function}}
 };
 
 struct D {
-  D& operator+=(const D &);
+  D &operator+=(const D &);
 };
 
 struct ConvertibleToInt {
@@ -86,10 +86,10 @@ void test() {
   na += a; // expected-error{{no viable overloaded '+='}}
 
   nb = b;
-  nb = constB;  // expected-error{{no viable overloaded '='}}
+  nb = constB;         // expected-error{{no viable overloaded '='}}
   nb = convertibleToB; // expected-error{{no viable overloaded '='}}
   nb = convertibleToBref;
-  nb = convertibleToConstB; // expected-error{{no viable overloaded '='}}
+  nb = convertibleToConstB;    // expected-error{{no viable overloaded '='}}
   nb = convertibleToConstBref; // expected-error{{no viable overloaded '='}}
 
   nc = c;
@@ -112,12 +112,12 @@ void test() {
 
 // <rdar://problem/8315440>: Don't crash
 namespace test1 {
-  template<typename T> class A : public unknown::X { // expected-error {{undeclared identifier 'unknown'}} expected-error {{expected class name}}
-    A(UndeclaredType n) : X(n) {} // expected-error {{unknown type name 'UndeclaredType'}}
-  };
-  template<typename T> class B : public A<T>     {
-    virtual void foo() {}
-  };
-  extern template class A<char>;
-  extern template class B<char>;
-}
+template <typename T> class A : public unknown::X { // expected-error {{undeclared identifier 'unknown'}} expected-error {{expected class name}}
+  A(UndeclaredType n) : X(n) {}                     // expected-error {{unknown type name 'UndeclaredType'}}
+};
+template <typename T> class B : public A<T> {
+  virtual void foo() {}
+};
+extern template class A<char>;
+extern template class B<char>;
+} // namespace test1

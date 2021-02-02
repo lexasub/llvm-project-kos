@@ -22,10 +22,10 @@ void f();
 void pf();
 
 namespace ns {
-  void g();
+void g();
 
-  void pg();
-}
+void pg();
+} // namespace ns
 
 template <typename T>
 struct S { typedef int G; };
@@ -37,8 +37,8 @@ struct S<T *> { typedef int H; };
 template <typename T> struct TS2;
 typedef TS2<int> TS2int;
 
-template <typename T> struct TestBaseSpecifiers { };
-template<typename T> struct TestBaseSpecifiers2 : TestBaseSpecifiers<T> { };
+template <typename T> struct TestBaseSpecifiers {};
+template <typename T> struct TestBaseSpecifiers2 : TestBaseSpecifiers<T> {};
 
 template <typename T>
 struct TS3 {
@@ -73,12 +73,12 @@ void f2();
 
 // Reopen namespace
 namespace ns {
-  // Overload function from primary
-  void g(int);
+// Overload function from primary
+void g(int);
 
-  // Add different name
-  void g2();
-}
+// Add different name
+void g2();
+} // namespace ns
 
 // Specialize template from primary
 template <>
@@ -96,13 +96,13 @@ struct S<int *> { typedef int K; };
 template <>
 struct S<int &> { typedef int L; };
 
-template <typename T> struct TS2 { };
+template <typename T> struct TS2 {};
 
-struct TestBaseSpecifiers3 { };
-struct TestBaseSpecifiers4 : TestBaseSpecifiers3 { };
+struct TestBaseSpecifiers3 {};
+struct TestBaseSpecifiers4 : TestBaseSpecifiers3 {};
 
-struct A { };
-struct B : A { };
+struct A {};
+struct B : A {};
 
 // Instantiate TS3's members.
 static const int ts3m1 = TS3<int>::value;

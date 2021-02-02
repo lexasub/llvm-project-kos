@@ -167,8 +167,7 @@ std::string URI::toString() const {
     return Result;
   // If authority if empty, we only print body if it starts with "/"; otherwise,
   // the URI is invalid.
-  if (!Authority.empty() || llvm::StringRef(Body).startswith("/"))
-  {
+  if (!Authority.empty() || llvm::StringRef(Body).startswith("/")) {
     Result.append("//");
     percentEncode(Authority, Result);
   }

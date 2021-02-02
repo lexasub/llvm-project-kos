@@ -137,10 +137,10 @@ class SizeClassMap {
   static const uptr kLargestClassID = kNumClasses - 2;
   static const uptr kBatchClassID = kNumClasses - 1;
   COMPILER_CHECK(kNumClasses >= 16 && kNumClasses <= 256);
-  static const uptr kNumClassesRounded =
-      kNumClasses <= 32  ? 32 :
-      kNumClasses <= 64  ? 64 :
-      kNumClasses <= 128 ? 128 : 256;
+  static const uptr kNumClassesRounded = kNumClasses <= 32    ? 32
+                                         : kNumClasses <= 64  ? 64
+                                         : kNumClasses <= 128 ? 128
+                                                              : 256;
 
   static uptr Size(uptr class_id) {
     // Estimate the result for kBatchClassID because this class does not know
@@ -193,9 +193,10 @@ class SizeClassMap {
       uptr cached = MaxCachedHint(s) * s;
       if (i == kBatchClassID)
         d = p = l = 0;
-      Printf("c%02zd => s: %zd diff: +%zd %02zd%% l %zd "
-             "cached: %zd %zd; id %zd\n",
-             i, Size(i), d, p, l, MaxCachedHint(s), cached, ClassID(s));
+      Printf(
+          "c%02zd => s: %zd diff: +%zd %02zd%% l %zd "
+          "cached: %zd %zd; id %zd\n",
+          i, Size(i), d, p, l, MaxCachedHint(s), cached, ClassID(s));
       total_cached += cached;
       prev_s = s;
     }

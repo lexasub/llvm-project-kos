@@ -11,19 +11,19 @@
 /**
  * \brief Aaa
 */
-template<typename T> struct A {
-/**
+template <typename T> struct A {
+  /**
  * \brief Bbb
 */
   A();
-/**
+  /**
  * \brief Ccc
 */
   ~A();
-/**
+  /**
  * \brief Ddd
 */
-  void f() { }
+  void f() {}
 };
 // CHECK: <Declaration>template &lt;typename T&gt; struct A {}</Declaration>
 // CHECK: <Declaration>A&lt;T&gt;()</Declaration>
@@ -33,24 +33,24 @@ template<typename T> struct A {
  * \Brief Eee
 */
 template <typename T> struct D : A<T> {
-/**
+  /**
  * \brief
 */
   using A<T>::f;
-  
+
   void f();
 };
 // CHECK: <Declaration>template &lt;typename T&gt; struct D :  A&lt;T&gt; {}</Declaration>
 // CHECK: <Declaration>using A&lt;T&gt;::f</Declaration>
 
 struct Base {
-    int foo;
+  int foo;
 };
 /**
  * \brief
 */
-template<typename T> struct E : Base {
-/**
+template <typename T> struct E : Base {
+  /**
  * \brief
 */
   using Base::foo;
@@ -60,11 +60,11 @@ template<typename T> struct E : Base {
 
 /// \tparam
 /// \param AAA Blah blah
-template<typename T>
+template <typename T>
 void func_template_1(T AAA);
 // CHECK: <Declaration>template &lt;typename T&gt; void func_template_1(T AAA)</Declaration>
 
-template<template<template<typename CCC> class DDD, class BBB> class AAA>
+template <template <template <typename CCC> class DDD, class BBB> class AAA>
 void func_template_2();
 // FIXME: There is not Declaration field in the generated output.
 
@@ -81,4 +81,4 @@ class OpaquePtr {};
 typedef OpaquePtr<int> DeclGroupPtrTy;
 
 DeclGroupPtrTy blah;
-}
+} // namespace rdar16128173

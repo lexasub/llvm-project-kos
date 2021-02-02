@@ -2,13 +2,14 @@
 // RUN: %clang_cc1 -fsyntax-only -fblocks -Wformat -verify %s -Wno-error=non-pod-varargs -std=c++98
 // RUN: %clang_cc1 -fsyntax-only -fblocks -Wformat -verify %s -Wno-error=non-pod-varargs -std=c++11
 
-int (^block) (int, const char *,...) __attribute__((__format__(__printf__,2,3))) = ^ __attribute__((__format__(__printf__,2,3))) (int arg, const char *format,...) {return 5;};
+int (^block)(int, const char *, ...) __attribute__((__format__(__printf__, 2, 3))) = ^__attribute__((__format__(__printf__, 2, 3)))(int arg, const char *format, ...) { return 5; };
 
 class HasNoCStr {
   const char *str;
- public:
-  HasNoCStr(const char *s): str(s) { }
-  const char *not_c_str() {return str;}
+
+public:
+  HasNoCStr(const char *s) : str(s) {}
+  const char *not_c_str() { return str; }
 };
 
 void test_block() {

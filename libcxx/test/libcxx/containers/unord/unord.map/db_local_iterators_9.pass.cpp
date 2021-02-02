@@ -25,13 +25,15 @@
 #include "min_allocator.h"
 
 int main(int, char**) {
-    typedef std::unordered_map<int, std::string, std::hash<int>, std::equal_to<int>,
-                        min_allocator<std::pair<const int, std::string>>> C;
-    C c(1);
-    C::local_iterator i = c.begin(0);
-    ++i;
-    ++i;
-    assert(false);
+  typedef std::unordered_map<int, std::string, std::hash<int>,
+                             std::equal_to<int>,
+                             min_allocator<std::pair<const int, std::string> > >
+      C;
+  C c(1);
+  C::local_iterator i = c.begin(0);
+  ++i;
+  ++i;
+  assert(false);
 
-    return 0;
+  return 0;
 }

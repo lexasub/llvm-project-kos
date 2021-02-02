@@ -607,9 +607,8 @@ void WebAssemblyCFGStackify::placeTryMarker(MachineBasicBlock &MBB) {
 
   // Mark the end of the TRY.
   InsertPos = getEarliestInsertPos(Cont, BeforeSet, AfterSet);
-  MachineInstr *End =
-      BuildMI(*Cont, InsertPos, Bottom->findBranchDebugLoc(),
-              TII.get(WebAssembly::END_TRY));
+  MachineInstr *End = BuildMI(*Cont, InsertPos, Bottom->findBranchDebugLoc(),
+                              TII.get(WebAssembly::END_TRY));
   registerTryScope(Begin, End, &MBB);
 
   // Track the farthest-spanning scope that ends at this point. We create two

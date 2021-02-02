@@ -35,30 +35,30 @@ struct UnorderedContainerChecks : BasicContainerChecks<Container, CT> {
   using category = typename traits::iterator_category;
 
   using Base::makeContainer;
-public:
-  static void run() {
-    Base::run();
-  }
-private:
 
+public:
+  static void run() { Base::run(); }
+
+private:
 };
 
-int main(int, char**)
-{
+int main(int, char**) {
   using SetAlloc = test_allocator<int>;
-  using MapAlloc = test_allocator<std::pair<const int, int>>;
+  using MapAlloc = test_allocator<std::pair<const int, int> >;
   {
-    UnorderedContainerChecks<
-        std::unordered_map<int, int, std::hash<int>, std::equal_to<int>, MapAlloc>,
-        CT_UnorderedMap>::run();
+    UnorderedContainerChecks<std::unordered_map<int, int, std::hash<int>,
+                                                std::equal_to<int>, MapAlloc>,
+                             CT_UnorderedMap>::run();
     UnorderedContainerChecks<
         std::unordered_set<int, std::hash<int>, std::equal_to<int>, SetAlloc>,
         CT_UnorderedSet>::run();
     UnorderedContainerChecks<
-        std::unordered_multimap<int, int, std::hash<int>, std::equal_to<int>, MapAlloc>,
+        std::unordered_multimap<int, int, std::hash<int>, std::equal_to<int>,
+                                MapAlloc>,
         CT_UnorderedMultiMap>::run();
     UnorderedContainerChecks<
-        std::unordered_multiset<int, std::hash<int>, std::equal_to<int>, SetAlloc>,
+        std::unordered_multiset<int, std::hash<int>, std::equal_to<int>,
+                                SetAlloc>,
         CT_UnorderedMultiSet>::run();
   }
 

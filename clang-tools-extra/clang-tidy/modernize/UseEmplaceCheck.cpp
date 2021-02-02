@@ -106,8 +106,8 @@ void UseEmplaceCheck::registerMatchers(MatchFinder *Finder) {
           SmallVector<StringRef, 2>(TupleTypes.begin(), TupleTypes.end())))))));
 
   auto SoughtParam = materializeTemporaryExpr(
-      anyOf(has(MakeTuple), has(MakeTupleCtor),
-            HasConstructExpr, has(cxxFunctionalCastExpr(HasConstructExpr))));
+      anyOf(has(MakeTuple), has(MakeTupleCtor), HasConstructExpr,
+            has(cxxFunctionalCastExpr(HasConstructExpr))));
 
   Finder->addMatcher(
       traverse(TK_AsIs, cxxMemberCallExpr(CallPushBack, has(SoughtParam),
@@ -155,7 +155,7 @@ void UseEmplaceCheck::check(const MatchFinder::MatchResult &Result) {
 
   Diag << FixItHint::CreateRemoval(ParamCallSourceRange)
        << FixItHint::CreateRemoval(CharSourceRange::getTokenRange(
-           CallParensRange.getEnd(), CallParensRange.getEnd()));
+              CallParensRange.getEnd(), CallParensRange.getEnd()));
 }
 
 void UseEmplaceCheck::storeOptions(ClangTidyOptions::OptionMap &Opts) {

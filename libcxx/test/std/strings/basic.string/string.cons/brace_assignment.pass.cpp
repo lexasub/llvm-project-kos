@@ -18,8 +18,7 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
+int main(int, char**) {
   // Test that assignment from {} and {ptr, len} are allowed and are not
   // ambiguous.
   {

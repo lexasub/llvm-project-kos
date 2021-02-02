@@ -18,7 +18,8 @@
 namespace llvm {
 
 /// MSP430MachineFunctionInfo - This class is derived from MachineFunction and
-/// contains private MSP430 target-specific information for each MachineFunction.
+/// contains private MSP430 target-specific information for each
+/// MachineFunction.
 class MSP430MachineFunctionInfo : public MachineFunctionInfo {
   virtual void anchor();
 
@@ -41,7 +42,7 @@ public:
   MSP430MachineFunctionInfo() = default;
 
   explicit MSP430MachineFunctionInfo(MachineFunction &MF)
-    : CalleeSavedFrameSize(0), ReturnAddrIndex(0), SRetReturnReg(0) {}
+      : CalleeSavedFrameSize(0), ReturnAddrIndex(0), SRetReturnReg(0) {}
 
   unsigned getCalleeSavedFrameSize() const { return CalleeSavedFrameSize; }
   void setCalleeSavedFrameSize(unsigned bytes) { CalleeSavedFrameSize = bytes; }
@@ -52,10 +53,10 @@ public:
   int getRAIndex() const { return ReturnAddrIndex; }
   void setRAIndex(int Index) { ReturnAddrIndex = Index; }
 
-  int getVarArgsFrameIndex() const { return VarArgsFrameIndex;}
+  int getVarArgsFrameIndex() const { return VarArgsFrameIndex; }
   void setVarArgsFrameIndex(int Index) { VarArgsFrameIndex = Index; }
 };
 
-} // End llvm namespace
+} // namespace llvm
 
 #endif

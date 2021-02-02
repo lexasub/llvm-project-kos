@@ -7,7 +7,7 @@
 static int my_global;
 
 int main(void) {
-  int *uninit = (int*)malloc(sizeof(int));
+  int *uninit = (int *)malloc(sizeof(int));
   my_global = *uninit;
   void *p = dlopen(0, RTLD_NOW);
   assert(p && "failed to get handle to executable");

@@ -1,19 +1,19 @@
 // Merge success
 namespace N1 {
-  int x;
+int x;
 }
 
 // Merge multiple namespaces
 namespace N2 {
-  extern int x;
+extern int x;
 }
 namespace N2 {
-  extern float y;
+extern float y;
 }
 
 // Merge namespace with conflict
 namespace N3 {
-  extern float z;
+extern float z;
 }
 
 namespace AliasWithSameName = N3;
@@ -24,4 +24,4 @@ public:
   typedef T foo;
   void bar();
 };
-}
+} // namespace TestUnresolvedTypenameAndValueDecls

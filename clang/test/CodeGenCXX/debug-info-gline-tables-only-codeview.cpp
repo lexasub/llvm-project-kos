@@ -7,19 +7,21 @@ namespace NS {
 struct C {
   void m() {}
   // Test externally visible lambda.
-  void lambda2() { []() {}(); }
- 
+  void lambda2() {
+    []() {}();
+  }
+
   // Test naming for function parameters.
-  void lambda_params(int x = [](){ return 0; }(), int y = [](){ return 1; }()) {}
+  void lambda_params(
+      int x = []() { return 0; }(), int y = []() { return 1; }()) {}
 };
 void f() {}
-}
+} // namespace NS
 
 // Test non- externally visible lambda.
 auto lambda1 = []() { return 1; };
 
 NS::C c;
-
 
 void test() {
   // CHECK: !DISubprogram(name: "f", scope: ![[NS:[0-9]+]],

@@ -17,7 +17,7 @@ namespace N1 {
 struct S1 {};
 class C1 {};
 union U1 {};
-}
+} // namespace N1
 
 TEST(TypeNameTest, Names) {
   struct S2 {};

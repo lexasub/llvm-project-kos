@@ -27,8 +27,7 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
+int main(int, char**) {
   std::latch l(1);
 
   l.count_down();

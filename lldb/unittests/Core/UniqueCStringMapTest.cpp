@@ -22,8 +22,7 @@ struct NoDefault {
     return lhs.x == rhs.x;
   }
 
-  friend llvm::raw_ostream &operator<<(llvm::raw_ostream &OS,
-                                       NoDefault x) {
+  friend llvm::raw_ostream &operator<<(llvm::raw_ostream &OS, NoDefault x) {
     return OS << "NoDefault{" << x.x << "}";
   }
 };

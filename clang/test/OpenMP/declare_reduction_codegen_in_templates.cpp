@@ -30,8 +30,11 @@ public:
 } // namespace std
 template <class g, class h> void foo(g, h) {
   std::d<a, double> i;
-#pragma omp declare reduction(j : std::d <a, double> : []{}())
-#pragma omp parallel reduction(j : i)
+#pragma omp declare reduction(j                    \
+                              : std::d <a, double> \
+                              : []{}())
+#pragma omp parallel reduction(j \
+                               : i)
   ;
 }
 void k() {

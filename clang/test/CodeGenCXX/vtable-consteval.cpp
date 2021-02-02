@@ -29,7 +29,7 @@ B b;
 // MSABI-DAG: @[[C_VFTABLE:.*]] = {{.*}} constant { [2 x i8*] } {{.*}} @"??_R4C@@6B@" {{.*}} @"??_GC@@UEAAPEAXI@Z"
 struct C {
   virtual ~C() = default;
-  virtual consteval C &operator=(const C&) = default;
+  virtual consteval C &operator=(const C &) = default;
 };
 // ITANIUM-DAG: @c = {{.*}}global { i8** } { {{.*}} @_ZTV1C,
 // MSABI-DAG: @"?c@@3UC@@A" = {{.*}}global { i8** } { i8** @"??_7C@@6B@" }
@@ -44,14 +44,18 @@ D d;
 
 // ITANIUM-DAG: @_ZTV1E = {{.*}} constant { [3 x i8*] } {{.*}} null, {{.*}} @_ZTI1E {{.*}} @_ZN1E1fEv
 // MSABI-DAG: @[[E_VFTABLE:.*]] = {{.*}} constant { [2 x i8*] } {{.*}} @"??_R4E@@6B@" {{.*}} @"?f@E@@UEAAXXZ"
-struct E { virtual void f() {} };
+struct E {
+  virtual void f() {}
+};
 // ITANIUM-DAG: @e = {{.*}}global { i8** } { {{.*}} @_ZTV1E,
 // MSABI-DAG: @"?e@@3UE@@A" = {{.*}}global { i8** } { i8** @"??_7E@@6B@" }
 E e;
 
 // ITANIUM-DAG: @_ZTV1F = {{.*}} constant { [3 x i8*] } {{.*}} null, {{.*}} @_ZTI1F {{.*}} @_ZN1E1fEv
 // MSABI-DAG: @[[F_VFTABLE:.*]] = {{.*}} constant { [2 x i8*] } {{.*}} @"??_R4F@@6B@" {{.*}} @"?f@E@@UEAAXXZ"
-struct F : E { virtual consteval void DoNotEmit_g(); };
+struct F : E {
+  virtual consteval void DoNotEmit_g();
+};
 // ITANIUM-DAG: @f = {{.*}}global { i8** } { {{.*}} @_ZTV1F,
 // MSABI-DAG: @"?f@@3UF@@A" = {{.*}}global { i8** } { i8** @"??_7F@@6B@" }
 F f;

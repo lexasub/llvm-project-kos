@@ -40,9 +40,9 @@ int main() {
   __msan_poison(&oldact, sizeof(oldact));
   __sanitizer_syscall_post_rt_sigaction(0, SIGUSR1, &act, &oldact, 5);
 #if defined(__mips__)
-  assert(__msan_test_shadow(&oldact, sizeof(oldact)) == sizeof(long)*2 + 5);
+  assert(__msan_test_shadow(&oldact, sizeof(oldact)) == sizeof(long) * 2 + 5);
 #else
-  assert(__msan_test_shadow(&oldact, sizeof(oldact)) == sizeof(long)*3 + 5);
+  assert(__msan_test_shadow(&oldact, sizeof(oldact)) == sizeof(long) * 3 + 5);
 #endif
 #endif
 }

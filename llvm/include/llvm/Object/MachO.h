@@ -133,9 +133,9 @@ public:
   BindRebaseSegInfo(const MachOObjectFile *Obj);
 
   // Used to check a Mach-O Bind or Rebase entry for errors when iterating.
-  const char* checkSegAndOffsets(int32_t SegIndex, uint64_t SegOffset,
-                                 uint8_t PointerSize, uint32_t Count=1,
-                                 uint32_t Skip=0);
+  const char *checkSegAndOffsets(int32_t SegIndex, uint64_t SegOffset,
+                                 uint8_t PointerSize, uint32_t Count = 1,
+                                 uint32_t Skip = 0);
   // Used with valid SegIndex/SegOffset values from checked entries.
   StringRef segmentName(int32_t SegIndex);
   StringRef sectionName(int32_t SegIndex, uint64_t SegOffset);
@@ -161,7 +161,8 @@ private:
 /// rebasing opcodes. This allows you to iterate through the compressed table of
 /// rebasing using:
 ///    Error Err = Error::success();
-///    for (const llvm::object::MachORebaseEntry &Entry : Obj->rebaseTable(&Err)) {
+///    for (const llvm::object::MachORebaseEntry &Entry :
+///    Obj->rebaseTable(&Err)) {
 ///    }
 ///    if (Err) { report error ...
 class MachORebaseEntry {
@@ -195,9 +196,9 @@ private:
   int32_t SegmentIndex = -1;
   uint64_t RemainingLoopCount = 0;
   uint64_t AdvanceAmount = 0;
-  uint8_t  RebaseType = 0;
-  uint8_t  PointerSize;
-  bool     Done = false;
+  uint8_t RebaseType = 0;
+  uint8_t PointerSize;
+  bool Done = false;
 };
 using rebase_iterator = content_iterator<MachORebaseEntry>;
 
@@ -244,25 +245,25 @@ private:
   ArrayRef<uint8_t> Opcodes;
   const uint8_t *Ptr;
   uint64_t SegmentOffset = 0;
-  int32_t  SegmentIndex = -1;
+  int32_t SegmentIndex = -1;
   StringRef SymbolName;
-  bool     LibraryOrdinalSet = false;
-  int      Ordinal = 0;
+  bool LibraryOrdinalSet = false;
+  int Ordinal = 0;
   uint32_t Flags = 0;
-  int64_t  Addend = 0;
+  int64_t Addend = 0;
   uint64_t RemainingLoopCount = 0;
   uint64_t AdvanceAmount = 0;
-  uint8_t  BindType = 0;
-  uint8_t  PointerSize;
-  Kind     TableKind;
-  bool     Done = false;
+  uint8_t BindType = 0;
+  uint8_t PointerSize;
+  Kind TableKind;
+  bool Done = false;
 };
 using bind_iterator = content_iterator<MachOBindEntry>;
 
 class MachOObjectFile : public ObjectFile {
 public:
   struct LoadCommandInfo {
-    const char *Ptr;      // Where in memory the load command is.
+    const char *Ptr;       // Where in memory the load command is.
     MachO::load_command C; // The command itself.
   };
   using LoadCommandList = SmallVector<LoadCommandInfo, 4>;
@@ -381,10 +382,9 @@ public:
   iterator_range<export_iterator> exports(Error &Err) const;
 
   /// For use examining a trie not in a MachOObjectFile.
-  static iterator_range<export_iterator> exports(Error &Err,
-                                                 ArrayRef<uint8_t> Trie,
-                                                 const MachOObjectFile *O =
-                                                                      nullptr);
+  static iterator_range<export_iterator>
+  exports(Error &Err, ArrayRef<uint8_t> Trie,
+          const MachOObjectFile *O = nullptr);
 
   /// For use iterating over all rebase table entries.
   iterator_range<rebase_iterator> rebaseTable(Error &Err);
@@ -405,8 +405,7 @@ public:
   iterator_range<bind_iterator> weakBindTable(Error &Err);
 
   /// For use examining bind opcodes in a MachOObjectFile.
-  static iterator_range<bind_iterator> bindTable(Error &Err,
-                                                 MachOObjectFile *O,
+  static iterator_range<bind_iterator> bindTable(Error &Err, MachOObjectFile *O,
                                                  ArrayRef<uint8_t> Opcodes,
                                                  bool is64,
                                                  MachOBindEntry::Kind);
@@ -418,10 +417,11 @@ public:
   //
   // This is used by MachOBindEntry::moveNext() to validate a MachOBindEntry.
   const char *BindEntryCheckSegAndOffsets(int32_t SegIndex, uint64_t SegOffset,
-                                         uint8_t PointerSize, uint32_t Count=1,
-                                          uint32_t Skip=0) const {
+                                          uint8_t PointerSize,
+                                          uint32_t Count = 1,
+                                          uint32_t Skip = 0) const {
     return BindRebaseSectionTable->checkSegAndOffsets(SegIndex, SegOffset,
-                                                     PointerSize, Count, Skip);
+                                                      PointerSize, Count, Skip);
   }
 
   // Given a SegIndex, SegOffset, and PointerSize, verify a valid section exists
@@ -433,8 +433,8 @@ public:
   const char *RebaseEntryCheckSegAndOffsets(int32_t SegIndex,
                                             uint64_t SegOffset,
                                             uint8_t PointerSize,
-                                            uint32_t Count=1,
-                                            uint32_t Skip=0) const {
+                                            uint32_t Count = 1,
+                                            uint32_t Skip = 0) const {
     return BindRebaseSectionTable->checkSegAndOffsets(SegIndex, SegOffset,
                                                       PointerSize, Count, Skip);
   }
@@ -469,55 +469,50 @@ public:
 
   // MachO specific Info about relocations.
   bool isRelocationScattered(const MachO::any_relocation_info &RE) const;
-  unsigned getPlainRelocationSymbolNum(
-                                    const MachO::any_relocation_info &RE) const;
+  unsigned
+  getPlainRelocationSymbolNum(const MachO::any_relocation_info &RE) const;
   bool getPlainRelocationExternal(const MachO::any_relocation_info &RE) const;
-  bool getScatteredRelocationScattered(
-                                    const MachO::any_relocation_info &RE) const;
-  uint32_t getScatteredRelocationValue(
-                                    const MachO::any_relocation_info &RE) const;
-  uint32_t getScatteredRelocationType(
-                                    const MachO::any_relocation_info &RE) const;
+  bool
+  getScatteredRelocationScattered(const MachO::any_relocation_info &RE) const;
+  uint32_t
+  getScatteredRelocationValue(const MachO::any_relocation_info &RE) const;
+  uint32_t
+  getScatteredRelocationType(const MachO::any_relocation_info &RE) const;
   unsigned getAnyRelocationAddress(const MachO::any_relocation_info &RE) const;
   unsigned getAnyRelocationPCRel(const MachO::any_relocation_info &RE) const;
   unsigned getAnyRelocationLength(const MachO::any_relocation_info &RE) const;
   unsigned getAnyRelocationType(const MachO::any_relocation_info &RE) const;
-  SectionRef getAnyRelocationSection(const MachO::any_relocation_info &RE) const;
+  SectionRef
+  getAnyRelocationSection(const MachO::any_relocation_info &RE) const;
 
   // MachO specific structures.
   MachO::section getSection(DataRefImpl DRI) const;
   MachO::section_64 getSection64(DataRefImpl DRI) const;
   MachO::section getSection(const LoadCommandInfo &L, unsigned Index) const;
-  MachO::section_64 getSection64(const LoadCommandInfo &L,unsigned Index) const;
+  MachO::section_64 getSection64(const LoadCommandInfo &L,
+                                 unsigned Index) const;
   MachO::nlist getSymbolTableEntry(DataRefImpl DRI) const;
   MachO::nlist_64 getSymbol64TableEntry(DataRefImpl DRI) const;
 
   MachO::linkedit_data_command
   getLinkeditDataLoadCommand(const LoadCommandInfo &L) const;
-  MachO::segment_command
-  getSegmentLoadCommand(const LoadCommandInfo &L) const;
+  MachO::segment_command getSegmentLoadCommand(const LoadCommandInfo &L) const;
   MachO::segment_command_64
   getSegment64LoadCommand(const LoadCommandInfo &L) const;
   MachO::linker_option_command
   getLinkerOptionLoadCommand(const LoadCommandInfo &L) const;
   MachO::version_min_command
   getVersionMinLoadCommand(const LoadCommandInfo &L) const;
-  MachO::note_command
-  getNoteLoadCommand(const LoadCommandInfo &L) const;
+  MachO::note_command getNoteLoadCommand(const LoadCommandInfo &L) const;
   MachO::build_version_command
   getBuildVersionLoadCommand(const LoadCommandInfo &L) const;
-  MachO::build_tool_version
-  getBuildToolVersion(unsigned index) const;
-  MachO::dylib_command
-  getDylibIDLoadCommand(const LoadCommandInfo &L) const;
+  MachO::build_tool_version getBuildToolVersion(unsigned index) const;
+  MachO::dylib_command getDylibIDLoadCommand(const LoadCommandInfo &L) const;
   MachO::dyld_info_command
   getDyldInfoLoadCommand(const LoadCommandInfo &L) const;
-  MachO::dylinker_command
-  getDylinkerCommand(const LoadCommandInfo &L) const;
-  MachO::uuid_command
-  getUuidCommand(const LoadCommandInfo &L) const;
-  MachO::rpath_command
-  getRpathCommand(const LoadCommandInfo &L) const;
+  MachO::dylinker_command getDylinkerCommand(const LoadCommandInfo &L) const;
+  MachO::uuid_command getUuidCommand(const LoadCommandInfo &L) const;
+  MachO::rpath_command getRpathCommand(const LoadCommandInfo &L) const;
   MachO::source_version_command
   getSourceVersionCommand(const LoadCommandInfo &L) const;
   MachO::entry_point_command
@@ -532,22 +527,18 @@ public:
   getSubUmbrellaCommand(const LoadCommandInfo &L) const;
   MachO::sub_library_command
   getSubLibraryCommand(const LoadCommandInfo &L) const;
-  MachO::sub_client_command
-  getSubClientCommand(const LoadCommandInfo &L) const;
-  MachO::routines_command
-  getRoutinesCommand(const LoadCommandInfo &L) const;
+  MachO::sub_client_command getSubClientCommand(const LoadCommandInfo &L) const;
+  MachO::routines_command getRoutinesCommand(const LoadCommandInfo &L) const;
   MachO::routines_command_64
   getRoutinesCommand64(const LoadCommandInfo &L) const;
-  MachO::thread_command
-  getThreadCommand(const LoadCommandInfo &L) const;
+  MachO::thread_command getThreadCommand(const LoadCommandInfo &L) const;
 
   MachO::any_relocation_info getRelocation(DataRefImpl Rel) const;
   MachO::data_in_code_entry getDice(DataRefImpl Rel) const;
   const MachO::mach_header &getHeader() const;
   const MachO::mach_header_64 &getHeader64() const;
-  uint32_t
-  getIndirectSymbolTableEntry(const MachO::dysymtab_command &DLC,
-                              unsigned Index) const;
+  uint32_t getIndirectSymbolTableEntry(const MachO::dysymtab_command &DLC,
+                                       unsigned Index) const;
   MachO::data_in_code_entry getDataInCodeTableEntry(uint32_t DataOffset,
                                                     unsigned Index) const;
   MachO::symtab_command getSymtabLoadCommand() const;
@@ -582,40 +573,45 @@ public:
 
   bool hasPageZeroSegment() const { return HasPageZeroSegment; }
 
-  static bool classof(const Binary *v) {
-    return v->isMachO();
-  }
+  static bool classof(const Binary *v) { return v->isMachO(); }
 
-  static uint32_t
-  getVersionMinMajor(MachO::version_min_command &C, bool SDK) {
+  static uint32_t getVersionMinMajor(MachO::version_min_command &C, bool SDK) {
     uint32_t VersionOrSDK = (SDK) ? C.sdk : C.version;
     return (VersionOrSDK >> 16) & 0xffff;
   }
 
-  static uint32_t
-  getVersionMinMinor(MachO::version_min_command &C, bool SDK) {
+  static uint32_t getVersionMinMinor(MachO::version_min_command &C, bool SDK) {
     uint32_t VersionOrSDK = (SDK) ? C.sdk : C.version;
     return (VersionOrSDK >> 8) & 0xff;
   }
 
-  static uint32_t
-  getVersionMinUpdate(MachO::version_min_command &C, bool SDK) {
+  static uint32_t getVersionMinUpdate(MachO::version_min_command &C, bool SDK) {
     uint32_t VersionOrSDK = (SDK) ? C.sdk : C.version;
     return VersionOrSDK & 0xff;
   }
 
   static std::string getBuildPlatform(uint32_t platform) {
     switch (platform) {
-    case MachO::PLATFORM_MACOS: return "macos";
-    case MachO::PLATFORM_IOS: return "ios";
-    case MachO::PLATFORM_TVOS: return "tvos";
-    case MachO::PLATFORM_WATCHOS: return "watchos";
-    case MachO::PLATFORM_BRIDGEOS: return "bridgeos";
-    case MachO::PLATFORM_MACCATALYST: return "macCatalyst";
-    case MachO::PLATFORM_IOSSIMULATOR: return "iossimulator";
-    case MachO::PLATFORM_TVOSSIMULATOR: return "tvossimulator";
-    case MachO::PLATFORM_WATCHOSSIMULATOR: return "watchossimulator";
-    case MachO::PLATFORM_DRIVERKIT: return "driverkit";
+    case MachO::PLATFORM_MACOS:
+      return "macos";
+    case MachO::PLATFORM_IOS:
+      return "ios";
+    case MachO::PLATFORM_TVOS:
+      return "tvos";
+    case MachO::PLATFORM_WATCHOS:
+      return "watchos";
+    case MachO::PLATFORM_BRIDGEOS:
+      return "bridgeos";
+    case MachO::PLATFORM_MACCATALYST:
+      return "macCatalyst";
+    case MachO::PLATFORM_IOSSIMULATOR:
+      return "iossimulator";
+    case MachO::PLATFORM_TVOSSIMULATOR:
+      return "tvossimulator";
+    case MachO::PLATFORM_WATCHOSSIMULATOR:
+      return "watchossimulator";
+    case MachO::PLATFORM_DRIVERKIT:
+      return "driverkit";
     default:
       std::string ret;
       raw_string_ostream ss(ret);
@@ -626,9 +622,12 @@ public:
 
   static std::string getBuildTool(uint32_t tools) {
     switch (tools) {
-    case MachO::TOOL_CLANG: return "clang";
-    case MachO::TOOL_SWIFT: return "swift";
-    case MachO::TOOL_LD: return "ld";
+    case MachO::TOOL_CLANG:
+      return "clang";
+    case MachO::TOOL_SWIFT:
+      return "swift";
+    case MachO::TOOL_LD:
+      return "ld";
     default:
       std::string ret;
       raw_string_ostream ss(ret);
@@ -660,13 +659,13 @@ private:
     MachO::mach_header_64 Header64;
     MachO::mach_header Header;
   };
-  using SectionList = SmallVector<const char*, 1>;
+  using SectionList = SmallVector<const char *, 1>;
   SectionList Sections;
-  using LibraryList = SmallVector<const char*, 1>;
+  using LibraryList = SmallVector<const char *, 1>;
   LibraryList Libraries;
   LoadCommandList LoadCommands;
   using LibraryShortName = SmallVector<StringRef, 1>;
-  using BuildToolList = SmallVector<const char*, 1>;
+  using BuildToolList = SmallVector<const char *, 1>;
   BuildToolList BuildTools;
   mutable LibraryShortName LibrariesShortNames;
   std::unique_ptr<BindRebaseSegInfo> BindRebaseSectionTable;
@@ -681,7 +680,7 @@ private:
 
 /// DiceRef
 inline DiceRef::DiceRef(DataRefImpl DiceP, const ObjectFile *Owner)
-  : DicePimpl(DiceP) , OwningObject(Owner) {}
+    : DicePimpl(DiceP), OwningObject(Owner) {}
 
 inline bool DiceRef::operator==(const DiceRef &Other) const {
   return DicePimpl == Other.DicePimpl;
@@ -693,7 +692,7 @@ inline bool DiceRef::operator<(const DiceRef &Other) const {
 
 inline void DiceRef::moveNext() {
   const MachO::data_in_code_entry *P =
-    reinterpret_cast<const MachO::data_in_code_entry *>(DicePimpl.p);
+      reinterpret_cast<const MachO::data_in_code_entry *>(DicePimpl.p);
   DicePimpl.p = reinterpret_cast<uintptr_t>(P + 1);
 }
 
@@ -703,7 +702,7 @@ inline void DiceRef::moveNext() {
 
 inline std::error_code DiceRef::getOffset(uint32_t &Result) const {
   const MachOObjectFile *MachOOF =
-    static_cast<const MachOObjectFile *>(OwningObject);
+      static_cast<const MachOObjectFile *>(OwningObject);
   MachO::data_in_code_entry Dice = MachOOF->getDice(DicePimpl);
   Result = Dice.offset;
   return std::error_code();
@@ -711,7 +710,7 @@ inline std::error_code DiceRef::getOffset(uint32_t &Result) const {
 
 inline std::error_code DiceRef::getLength(uint16_t &Result) const {
   const MachOObjectFile *MachOOF =
-    static_cast<const MachOObjectFile *>(OwningObject);
+      static_cast<const MachOObjectFile *>(OwningObject);
   MachO::data_in_code_entry Dice = MachOOF->getDice(DicePimpl);
   Result = Dice.length;
   return std::error_code();
@@ -719,19 +718,15 @@ inline std::error_code DiceRef::getLength(uint16_t &Result) const {
 
 inline std::error_code DiceRef::getKind(uint16_t &Result) const {
   const MachOObjectFile *MachOOF =
-    static_cast<const MachOObjectFile *>(OwningObject);
+      static_cast<const MachOObjectFile *>(OwningObject);
   MachO::data_in_code_entry Dice = MachOOF->getDice(DicePimpl);
   Result = Dice.kind;
   return std::error_code();
 }
 
-inline DataRefImpl DiceRef::getRawDataRefImpl() const {
-  return DicePimpl;
-}
+inline DataRefImpl DiceRef::getRawDataRefImpl() const { return DicePimpl; }
 
-inline const ObjectFile *DiceRef::getObjectFile() const {
-  return OwningObject;
-}
+inline const ObjectFile *DiceRef::getObjectFile() const { return OwningObject; }
 
 } // end namespace object
 } // end namespace llvm

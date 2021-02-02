@@ -44,9 +44,7 @@ public:
 
   StringRef getTargetTriple() const;
 
-  static bool classof(const Binary *v) {
-    return v->isIR();
-  }
+  static bool classof(const Binary *v) { return v->isIR(); }
 
   using module_iterator =
       pointee_iterator<std::vector<std::unique_ptr<Module>>::const_iterator,
@@ -84,8 +82,8 @@ struct IRSymtabFile {
 /// Reads a bitcode file, creating its irsymtab if necessary.
 Expected<IRSymtabFile> readIRSymtab(MemoryBufferRef MBRef);
 
-}
+} // namespace object
 
-}
+} // namespace llvm
 
 #endif

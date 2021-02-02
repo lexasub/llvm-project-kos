@@ -12,14 +12,14 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "clang/StaticAnalyzer/Checkers/BuiltinCheckerRegistration.h"
-#include "clang/Analysis/PathDiagnostic.h"
 #include "clang/AST/Attr.h"
 #include "clang/AST/DeclObjC.h"
 #include "clang/AST/Expr.h"
 #include "clang/AST/ExprObjC.h"
+#include "clang/Analysis/PathDiagnostic.h"
 #include "clang/Basic/LangOptions.h"
 #include "clang/Basic/SourceManager.h"
+#include "clang/StaticAnalyzer/Checkers/BuiltinCheckerRegistration.h"
 #include "clang/StaticAnalyzer/Core/BugReporter/BugReporter.h"
 #include "clang/StaticAnalyzer/Core/Checker.h"
 
@@ -27,9 +27,9 @@ using namespace clang;
 using namespace ento;
 
 enum IVarState { Unused, Used };
-typedef llvm::DenseMap<const ObjCIvarDecl*,IVarState> IvarUsageMap;
+typedef llvm::DenseMap<const ObjCIvarDecl *, IVarState> IvarUsageMap;
 
-static void Scan(IvarUsageMap& M, const Stmt *S) {
+static void Scan(IvarUsageMap &M, const Stmt *S) {
   if (!S)
     return;
 
@@ -48,8 +48,9 @@ static void Scan(IvarUsageMap& M, const Stmt *S) {
   }
 
   if (const PseudoObjectExpr *POE = dyn_cast<PseudoObjectExpr>(S))
-    for (PseudoObjectExpr::const_semantics_iterator
-        i = POE->semantics_begin(), e = POE->semantics_end(); i != e; ++i) {
+    for (PseudoObjectExpr::const_semantics_iterator i = POE->semantics_begin(),
+                                                    e = POE->semantics_end();
+         i != e; ++i) {
       const Expr *sub = *i;
       if (const OpaqueValueExpr *OVE = dyn_cast<OpaqueValueExpr>(sub))
         sub = OVE->getSourceExpr();
@@ -60,7 +61,7 @@ static void Scan(IvarUsageMap& M, const Stmt *S) {
     Scan(M, SubStmt);
 }
 
-static void Scan(IvarUsageMap& M, const ObjCPropertyImplDecl *D) {
+static void Scan(IvarUsageMap &M, const ObjCPropertyImplDecl *D) {
   if (!D)
     return;
 
@@ -74,7 +75,7 @@ static void Scan(IvarUsageMap& M, const ObjCPropertyImplDecl *D) {
     I->second = Used;
 }
 
-static void Scan(IvarUsageMap& M, const ObjCContainerDecl *D) {
+static void Scan(IvarUsageMap &M, const ObjCContainerDecl *D) {
   // Scan the methods for accesses.
   for (const auto *I : D->instance_methods())
     Scan(M, I->getBody());
@@ -104,8 +105,7 @@ static void Scan(IvarUsageMap &M, const DeclContext *C, const FileID FID,
 }
 
 static void checkObjCUnusedIvar(const ObjCImplementationDecl *D,
-                                BugReporter &BR,
-                                const CheckerBase *Checker) {
+                                BugReporter &BR, const CheckerBase *Checker) {
 
   const ObjCInterfaceDecl *ID = D->getClassInterface();
   IvarUsageMap M;
@@ -119,8 +119,7 @@ static void checkObjCUnusedIvar(const ObjCImplementationDecl *D,
     // (d) are unnamed bitfields
     if (Ivar->getAccessControl() != ObjCIvarDecl::Private ||
         Ivar->hasAttr<UnusedAttr>() || Ivar->hasAttr<IBOutletAttr>() ||
-        Ivar->hasAttr<IBOutletCollectionAttr>() ||
-        Ivar->isUnnamedBitfield())
+        Ivar->hasAttr<IBOutletCollectionAttr>() || Ivar->isUnnamedBitfield())
       continue;
 
     M[Ivar] = Unused;
@@ -134,7 +133,7 @@ static void checkObjCUnusedIvar(const ObjCImplementationDecl *D,
 
   // Any potentially unused ivars?
   bool hasUnused = false;
-  for (IvarUsageMap::iterator I = M.begin(), E = M.end(); I!=E; ++I)
+  for (IvarUsageMap::iterator I = M.begin(), E = M.end(); I != E; ++I)
     if (I->second == Unused) {
       hasUnused = true;
       break;
@@ -152,7 +151,7 @@ static void checkObjCUnusedIvar(const ObjCImplementationDecl *D,
   Scan(M, D->getDeclContext(), SM.getFileID(D->getLocation()), SM);
 
   // Find ivars that are unused.
-  for (IvarUsageMap::iterator I = M.begin(), E = M.end(); I!=E; ++I)
+  for (IvarUsageMap::iterator I = M.begin(), E = M.end(); I != E; ++I)
     if (I->second == Unused) {
       std::string sbuf;
       llvm::raw_string_ostream os(sbuf);
@@ -161,7 +160,7 @@ static void checkObjCUnusedIvar(const ObjCImplementationDecl *D,
             "(although it may be used by category methods).";
 
       PathDiagnosticLocation L =
-        PathDiagnosticLocation::create(I->first, BR.getSourceManager());
+          PathDiagnosticLocation::create(I->first, BR.getSourceManager());
       BR.EmitBasicReport(D, Checker, "Unused instance variable", "Optimization",
                          os.str(), L);
     }
@@ -172,15 +171,15 @@ static void checkObjCUnusedIvar(const ObjCImplementationDecl *D,
 //===----------------------------------------------------------------------===//
 
 namespace {
-class ObjCUnusedIvarsChecker : public Checker<
-                                      check::ASTDecl<ObjCImplementationDecl> > {
+class ObjCUnusedIvarsChecker
+    : public Checker<check::ASTDecl<ObjCImplementationDecl>> {
 public:
-  void checkASTDecl(const ObjCImplementationDecl *D, AnalysisManager& mgr,
+  void checkASTDecl(const ObjCImplementationDecl *D, AnalysisManager &mgr,
                     BugReporter &BR) const {
     checkObjCUnusedIvar(D, BR, this);
   }
 };
-}
+} // namespace
 
 void ento::registerObjCUnusedIvarsChecker(CheckerManager &mgr) {
   mgr.registerChecker<ObjCUnusedIvarsChecker>();

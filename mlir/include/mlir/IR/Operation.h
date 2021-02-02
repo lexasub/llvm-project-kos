@@ -117,7 +117,8 @@ public:
   Operation *getParentOp();
 
   /// Return the closest surrounding parent operation that is of type 'OpTy'.
-  template <typename OpTy> OpTy getParentOfType() {
+  template <typename OpTy>
+  OpTy getParentOfType() {
     auto *op = this;
     while ((op = op->getParentOp()))
       if (auto parentOp = dyn_cast<OpTy>(op))
@@ -322,10 +323,12 @@ public:
   Attribute getAttr(Identifier name) { return attrs.get(name); }
   Attribute getAttr(StringRef name) { return attrs.get(name); }
 
-  template <typename AttrClass> AttrClass getAttrOfType(Identifier name) {
+  template <typename AttrClass>
+  AttrClass getAttrOfType(Identifier name) {
     return getAttr(name).dyn_cast_or_null<AttrClass>();
   }
-  template <typename AttrClass> AttrClass getAttrOfType(StringRef name) {
+  template <typename AttrClass>
+  AttrClass getAttrOfType(StringRef name) {
     return getAttr(name).dyn_cast_or_null<AttrClass>();
   }
 
@@ -505,7 +508,8 @@ public:
 
   /// Returns true if the operation was registered with a particular trait, e.g.
   /// hasTrait<OperandsAreSignlessIntegerLike>().
-  template <template <typename T> class Trait> bool hasTrait() {
+  template <template <typename T> class Trait>
+  bool hasTrait() {
     auto *absOp = getAbstractOperation();
     return absOp ? absOp->hasTrait<Trait>() : false;
   }
@@ -770,7 +774,8 @@ inline raw_ostream &operator<<(raw_ostream &os, Operation &op) {
 
 namespace llvm {
 /// Provide isa functionality for operation casts.
-template <typename T> struct isa_impl<T, ::mlir::Operation> {
+template <typename T>
+struct isa_impl<T, ::mlir::Operation> {
   static inline bool doit(const ::mlir::Operation &op) {
     return T::classof(const_cast<::mlir::Operation *>(&op));
   }
@@ -778,10 +783,12 @@ template <typename T> struct isa_impl<T, ::mlir::Operation> {
 
 /// Provide specializations for operation casts as the resulting T is value
 /// typed.
-template <typename T> struct cast_retty_impl<T, ::mlir::Operation *> {
+template <typename T>
+struct cast_retty_impl<T, ::mlir::Operation *> {
   using ret_type = T;
 };
-template <typename T> struct cast_retty_impl<T, ::mlir::Operation> {
+template <typename T>
+struct cast_retty_impl<T, ::mlir::Operation> {
   using ret_type = T;
 };
 template <class T>

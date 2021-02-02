@@ -28,8 +28,7 @@ void test_pr26961() {
 }
 #endif
 
-int main(int, char**)
-{
+int main(int, char**) {
 #ifndef TEST_IS_UNSUPPORTED
   {
     // Test that std::pointer_safety is still offered in C++03 under the old ABI.
@@ -38,9 +37,7 @@ int main(int, char**)
            r == std::pointer_safety::preferred ||
            r == std::pointer_safety::strict);
   }
-  {
-    test_pr26961();
-  }
+  { test_pr26961(); }
 #endif
 
   return 0;

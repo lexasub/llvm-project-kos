@@ -45,7 +45,7 @@ void bar() { BAR b; }
 #pragma omp begin assumes ext_1234
 void baz();
 
-template<typename T>
+template <typename T>
 class BAZ {
 public:
   BAZ() {}

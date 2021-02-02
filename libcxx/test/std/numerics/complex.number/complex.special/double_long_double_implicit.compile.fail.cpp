@@ -17,12 +17,11 @@
 #include <complex>
 #include <cassert>
 
-int main(int, char**)
-{
-    const std::complex<long double> cd(2.5, 3.5);
-    std::complex<double> cf = cd;
-    assert(cf.real() == cd.real());
-    assert(cf.imag() == cd.imag());
+int main(int, char**) {
+  const std::complex<long double> cd(2.5, 3.5);
+  std::complex<double> cf = cd;
+  assert(cf.real() == cd.real());
+  assert(cf.imag() == cd.imag());
 
   return 0;
 }

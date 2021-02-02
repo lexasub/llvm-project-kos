@@ -87,7 +87,7 @@ public:
   }
 };
 #endif
-}
+} // namespace
 
 #ifndef _WIN32
 // Watch for signals
@@ -130,9 +130,8 @@ void handle_attach(GDBRemoteCommunicationServerLLGS &gdb_server,
   const long int pid = strtol(attach_target.c_str(), &end_p, 10);
 
   // We'll call it a match if the entire argument is consumed.
-  if (end_p &&
-      static_cast<size_t>(end_p - attach_target.c_str()) ==
-          attach_target.size())
+  if (end_p && static_cast<size_t>(end_p - attach_target.c_str()) ==
+                   attach_target.size())
     handle_attach_to_pid(gdb_server, static_cast<lldb::pid_t>(pid));
   else
     handle_attach_to_process_name(gdb_server, attach_target);
@@ -210,8 +209,9 @@ void ConnectToRemote(MainLoop &mainloop,
     connection_up.reset(new ConnectionFileDescriptor);
     auto connection_result = connection_up->Connect(connection_url, &error);
     if (connection_result != eConnectionStatusSuccess) {
-      fprintf(stderr, "error: failed to connect to client at '%s' "
-                      "(connection status: %d)\n",
+      fprintf(stderr,
+              "error: failed to connect to client at '%s' "
+              "(connection status: %d)\n",
               connection_url, static_cast<int>(connection_result));
       exit(-1);
     }
@@ -241,7 +241,6 @@ void ConnectToRemote(MainLoop &mainloop,
       connection_portno = StringConvert::ToUInt32(connection_port.c_str(), 0);
     }
 
-
     if (reverse_connect) {
       // llgs will connect to the gdb-remote client.
 
@@ -261,8 +260,9 @@ void ConnectToRemote(MainLoop &mainloop,
       connection_up.reset(new ConnectionFileDescriptor);
       auto connection_result = connection_up->Connect(connection_url, &error);
       if (connection_result != eConnectionStatusSuccess) {
-        fprintf(stderr, "error: failed to connect to client at '%s' "
-                        "(connection status: %d)\n",
+        fprintf(stderr,
+                "error: failed to connect to client at '%s' "
+                "(connection status: %d)\n",
                 connection_url, static_cast<int>(connection_result));
         exit(-1);
       }
@@ -316,8 +316,7 @@ void ConnectToRemote(MainLoop &mainloop,
   }
   error = gdb_server.InitializeConnection(std::move(connection_up));
   if (error.Fail()) {
-    fprintf(stderr, "Failed to initialize connection: %s\n",
-            error.AsCString());
+    fprintf(stderr, "Failed to initialize connection: %s\n", error.AsCString());
     exit(-1);
   }
   printf("Connection established.\n");
@@ -508,8 +507,8 @@ int main_gdbserver(int argc, char *argv[]) {
   printf("%s-%s\n", LLGS_PROGRAM_NAME, LLGS_VERSION_STR);
 
   ConnectToRemote(mainloop, gdb_server, reverse_connect, host_and_port,
-                  progname, subcommand, named_pipe_path.c_str(),
-                  unnamed_pipe, connection_fd);
+                  progname, subcommand, named_pipe_path.c_str(), unnamed_pipe,
+                  connection_fd);
 
   if (!gdb_server.IsConnected()) {
     fprintf(stderr, "no connection information provided, unable to run\n");

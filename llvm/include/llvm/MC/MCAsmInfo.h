@@ -536,7 +536,8 @@ public:
 
   /// Returns the maximum possible encoded instruction size in bytes. If \p STI
   /// is null, this should be the maximum size for any subtarget.
-  virtual unsigned getMaxInstLength(const MCSubtargetInfo *STI = nullptr) const {
+  virtual unsigned
+  getMaxInstLength(const MCSubtargetInfo *STI = nullptr) const {
     return MaxInstLength;
   }
 
@@ -580,9 +581,7 @@ public:
     return UseDataRegionDirectives;
   }
 
-  bool useDotAlignForAlignment() const {
-    return UseDotAlignForAlignment;
-  }
+  bool useDotAlignForAlignment() const { return UseDotAlignForAlignment; }
 
   bool hasLEB128Directives() const { return HasLEB128Directives; }
 
@@ -645,9 +644,7 @@ public:
   ExceptionHandling getExceptionHandlingType() const { return ExceptionsType; }
   WinEH::EncodingType getWinEHEncodingType() const { return WinEHEncodingType; }
 
-  void setExceptionsType(ExceptionHandling EH) {
-    ExceptionsType = EH;
-  }
+  void setExceptionsType(ExceptionHandling EH) { ExceptionsType = EH; }
 
   /// Returns true if the exception handling method for the platform uses call
   /// frame information to unwind.

@@ -18,8 +18,7 @@ namespace {
 
 // Check that DiagnosticErrorTrap works with SuppressAllDiagnostics.
 TEST(DiagnosticTest, suppressAndTrap) {
-  DiagnosticsEngine Diags(new DiagnosticIDs(),
-                          new DiagnosticOptions,
+  DiagnosticsEngine Diags(new DiagnosticIDs(), new DiagnosticOptions,
                           new IgnoringDiagConsumer());
   Diags.setSuppressAllDiagnostics(true);
 
@@ -30,7 +29,8 @@ TEST(DiagnosticTest, suppressAndTrap) {
     Diags.Report(diag::err_target_unknown_triple) << "unknown";
 
     // Diag that would set UnrecoverableErrorOccurred and ErrorOccurred.
-    Diags.Report(diag::err_cannot_open_file) << "file" << "error";
+    Diags.Report(diag::err_cannot_open_file) << "file"
+                                             << "error";
 
     // Diag that would set FatalErrorOccurred
     // (via non-note following a fatal error).
@@ -49,13 +49,13 @@ TEST(DiagnosticTest, suppressAndTrap) {
 // Check that FatalsAsError works as intended
 TEST(DiagnosticTest, fatalsAsError) {
   for (unsigned FatalsAsError = 0; FatalsAsError != 2; ++FatalsAsError) {
-    DiagnosticsEngine Diags(new DiagnosticIDs(),
-                            new DiagnosticOptions,
+    DiagnosticsEngine Diags(new DiagnosticIDs(), new DiagnosticOptions,
                             new IgnoringDiagConsumer());
     Diags.setFatalsAsError(FatalsAsError);
 
     // Diag that would set UnrecoverableErrorOccurred and ErrorOccurred.
-    Diags.Report(diag::err_cannot_open_file) << "file" << "error";
+    Diags.Report(diag::err_cannot_open_file) << "file"
+                                             << "error";
 
     // Diag that would set FatalErrorOccurred
     // (via non-note following a fatal error).
@@ -92,4 +92,4 @@ TEST(DiagnosticTest, diagnosticError) {
   EXPECT_EQ(*Value, std::make_pair(20, 1));
   EXPECT_EQ(Value->first, 20);
 }
-}
+} // namespace

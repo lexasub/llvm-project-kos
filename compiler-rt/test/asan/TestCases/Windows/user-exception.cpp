@@ -13,8 +13,8 @@
 // ASAN: in main
 // ASAN: ERROR: AddressSanitizer: access-violation
 
-#include <windows.h>
 #include <stdio.h>
+#include <windows.h>
 
 static long WINAPI SEHHandler(EXCEPTION_POINTERS *info) {
   DWORD exception_code = info->ExceptionRecord->ExceptionCode;

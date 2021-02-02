@@ -114,8 +114,8 @@ bool SBTypeFormat::GetDescription(lldb::SBStream &description,
 }
 
 lldb::SBTypeFormat &SBTypeFormat::operator=(const lldb::SBTypeFormat &rhs) {
-  LLDB_RECORD_METHOD(lldb::SBTypeFormat &,
-                     SBTypeFormat, operator=,(const lldb::SBTypeFormat &), rhs);
+  LLDB_RECORD_METHOD(lldb::SBTypeFormat &, SBTypeFormat, operator=,
+                     (const lldb::SBTypeFormat &), rhs);
 
   if (this != &rhs) {
     m_opaque_sp = rhs.m_opaque_sp;
@@ -124,7 +124,7 @@ lldb::SBTypeFormat &SBTypeFormat::operator=(const lldb::SBTypeFormat &rhs) {
 }
 
 bool SBTypeFormat::operator==(lldb::SBTypeFormat &rhs) {
-  LLDB_RECORD_METHOD(bool, SBTypeFormat, operator==,(lldb::SBTypeFormat &),
+  LLDB_RECORD_METHOD(bool, SBTypeFormat, operator==, (lldb::SBTypeFormat &),
                      rhs);
 
   if (!IsValid())
@@ -146,7 +146,7 @@ bool SBTypeFormat::IsEqualTo(lldb::SBTypeFormat &rhs) {
 }
 
 bool SBTypeFormat::operator!=(lldb::SBTypeFormat &rhs) {
-  LLDB_RECORD_METHOD(bool, SBTypeFormat, operator!=,(lldb::SBTypeFormat &),
+  LLDB_RECORD_METHOD(bool, SBTypeFormat, operator!=, (lldb::SBTypeFormat &),
                      rhs);
 
   if (!IsValid())
@@ -195,8 +195,7 @@ bool SBTypeFormat::CopyOnWrite_Impl(Type type) {
 namespace lldb_private {
 namespace repro {
 
-template <>
-void RegisterMethods<SBTypeFormat>(Registry &R) {
+template <> void RegisterMethods<SBTypeFormat>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBTypeFormat, ());
   LLDB_REGISTER_CONSTRUCTOR(SBTypeFormat, (lldb::Format, uint32_t));
   LLDB_REGISTER_CONSTRUCTOR(SBTypeFormat, (const char *, uint32_t));
@@ -211,12 +210,12 @@ void RegisterMethods<SBTypeFormat>(Registry &R) {
   LLDB_REGISTER_METHOD(void, SBTypeFormat, SetOptions, (uint32_t));
   LLDB_REGISTER_METHOD(bool, SBTypeFormat, GetDescription,
                        (lldb::SBStream &, lldb::DescriptionLevel));
-  LLDB_REGISTER_METHOD(lldb::SBTypeFormat &,
-                       SBTypeFormat, operator=,(const lldb::SBTypeFormat &));
-  LLDB_REGISTER_METHOD(bool, SBTypeFormat, operator==,(lldb::SBTypeFormat &));
+  LLDB_REGISTER_METHOD(lldb::SBTypeFormat &, SBTypeFormat, operator=,
+                       (const lldb::SBTypeFormat &));
+  LLDB_REGISTER_METHOD(bool, SBTypeFormat, operator==, (lldb::SBTypeFormat &));
   LLDB_REGISTER_METHOD(bool, SBTypeFormat, IsEqualTo, (lldb::SBTypeFormat &));
-  LLDB_REGISTER_METHOD(bool, SBTypeFormat, operator!=,(lldb::SBTypeFormat &));
+  LLDB_REGISTER_METHOD(bool, SBTypeFormat, operator!=, (lldb::SBTypeFormat &));
 }
 
-}
-}
+} // namespace repro
+} // namespace lldb_private

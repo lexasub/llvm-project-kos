@@ -248,7 +248,8 @@ public:
   uint32_t size() override { return 16; }
   void writeTo(uint8_t *buf) override;
   void addSymbols(ThunkSection &isec) override;
-  bool isCompatibleWith(const InputSection &isec, const Relocation &rel) const override;
+  bool isCompatibleWith(const InputSection &isec,
+                        const Relocation &rel) const override;
 
 private:
   // Records the call site of the call stub.
@@ -432,10 +433,10 @@ static uint64_t getAArch64ThunkDestVA(const Symbol &s, int64_t a) {
 
 void AArch64ABSLongThunk::writeTo(uint8_t *buf) {
   const uint8_t data[] = {
-    0x50, 0x00, 0x00, 0x58, //     ldr x16, L0
-    0x00, 0x02, 0x1f, 0xd6, //     br  x16
-    0x00, 0x00, 0x00, 0x00, // L0: .xword S
-    0x00, 0x00, 0x00, 0x00,
+      0x50, 0x00, 0x00, 0x58, //     ldr x16, L0
+      0x00, 0x02, 0x1f, 0xd6, //     br  x16
+      0x00, 0x00, 0x00, 0x00, // L0: .xword S
+      0x00, 0x00, 0x00, 0x00,
   };
   uint64_t s = getAArch64ThunkDestVA(destination, addend);
   memcpy(buf, data, sizeof(data));
@@ -506,7 +507,7 @@ void ARMThunk::writeTo(uint8_t *buf) {
   uint64_t p = getThunkTargetSym()->getVA();
   int64_t offset = s - p - 8;
   const uint8_t data[] = {
-    0x00, 0x00, 0x00, 0xea, // b S
+      0x00, 0x00, 0x00, 0xea, // b S
   };
   memcpy(buf, data, sizeof(data));
   target->relocateNoSym(buf, R_ARM_JUMP24, offset);
@@ -553,7 +554,8 @@ void ThumbThunk::writeTo(uint8_t *buf) {
 bool ThumbThunk::isCompatibleWith(const InputSection &isec,
                                   const Relocation &rel) const {
   // ARM branch relocations can't use BLX
-  return rel.type != R_ARM_JUMP24 && rel.type != R_ARM_PC24 && rel.type != R_ARM_PLT32;
+  return rel.type != R_ARM_JUMP24 && rel.type != R_ARM_PC24 &&
+         rel.type != R_ARM_PLT32;
 }
 
 void ARMV7ABSLongThunk::writeLong(uint8_t *buf) {
@@ -735,10 +737,10 @@ void ThumbV6MPILongThunk::addSymbols(ThunkSection &isec) {
 // Write MIPS LA25 thunk code to call PIC function from the non-PIC one.
 void MipsThunk::writeTo(uint8_t *buf) {
   uint64_t s = destination.getVA();
-  write32(buf, 0x3c190000); // lui   $25, %hi(func)
+  write32(buf, 0x3c190000);                // lui   $25, %hi(func)
   write32(buf + 4, 0x08000000 | (s >> 2)); // j     func
-  write32(buf + 8, 0x27390000); // addiu $25, $25, %lo(func)
-  write32(buf + 12, 0x00000000); // nop
+  write32(buf + 8, 0x27390000);            // addiu $25, $25, %lo(func)
+  write32(buf + 12, 0x00000000);           // nop
   target->relocateNoSym(buf, R_MIPS_HI16, s);
   target->relocateNoSym(buf + 8, R_MIPS_LO16, s);
 }
@@ -757,18 +759,19 @@ InputSection *MipsThunk::getTargetInputSection() const {
 // to call PIC function from the non-PIC one.
 void MicroMipsThunk::writeTo(uint8_t *buf) {
   uint64_t s = destination.getVA();
-  write16(buf, 0x41b9);       // lui   $25, %hi(func)
-  write16(buf + 4, 0xd400);   // j     func
-  write16(buf + 8, 0x3339);   // addiu $25, $25, %lo(func)
-  write16(buf + 12, 0x0c00);  // nop
+  write16(buf, 0x41b9);      // lui   $25, %hi(func)
+  write16(buf + 4, 0xd400);  // j     func
+  write16(buf + 8, 0x3339);  // addiu $25, $25, %lo(func)
+  write16(buf + 12, 0x0c00); // nop
   target->relocateNoSym(buf, R_MICROMIPS_HI16, s);
   target->relocateNoSym(buf + 4, R_MICROMIPS_26_S1, s);
   target->relocateNoSym(buf + 8, R_MICROMIPS_LO16, s);
 }
 
 void MicroMipsThunk::addSymbols(ThunkSection &isec) {
-  Defined *d = addSymbol(
-      saver.save("__microLA25Thunk_" + destination.getName()), STT_FUNC, 0, isec);
+  Defined *d =
+      addSymbol(saver.save("__microLA25Thunk_" + destination.getName()),
+                STT_FUNC, 0, isec);
   d->stOther |= STO_MIPS_MICROMIPS;
 }
 
@@ -782,17 +785,18 @@ InputSection *MicroMipsThunk::getTargetInputSection() const {
 void MicroMipsR6Thunk::writeTo(uint8_t *buf) {
   uint64_t s = destination.getVA();
   uint64_t p = getThunkTargetSym()->getVA();
-  write16(buf, 0x1320);       // lui   $25, %hi(func)
-  write16(buf + 4, 0x3339);   // addiu $25, $25, %lo(func)
-  write16(buf + 8, 0x9400);   // bc    func
+  write16(buf, 0x1320);     // lui   $25, %hi(func)
+  write16(buf + 4, 0x3339); // addiu $25, $25, %lo(func)
+  write16(buf + 8, 0x9400); // bc    func
   target->relocateNoSym(buf, R_MICROMIPS_HI16, s);
   target->relocateNoSym(buf + 4, R_MICROMIPS_LO16, s);
   target->relocateNoSym(buf + 8, R_MICROMIPS_PC26_S1, s - p - 12);
 }
 
 void MicroMipsR6Thunk::addSymbols(ThunkSection &isec) {
-  Defined *d = addSymbol(
-      saver.save("__microLA25Thunk_" + destination.getName()), STT_FUNC, 0, isec);
+  Defined *d =
+      addSymbol(saver.save("__microLA25Thunk_" + destination.getName()),
+                STT_FUNC, 0, isec);
   d->stOther |= STO_MIPS_MICROMIPS;
 }
 
@@ -878,12 +882,12 @@ void PPC32LongThunk::writeTo(uint8_t *buf) {
     write32(buf + 20, 0x7c0803a6);           // mtlr r0
     buf += 24;
   } else {
-    write32(buf + 0, 0x3d800000 | ha(d));    // lis r12,d@ha
-    write32(buf + 4, 0x398c0000 | lo(d));    // addi r12,r12,d@l
+    write32(buf + 0, 0x3d800000 | ha(d)); // lis r12,d@ha
+    write32(buf + 4, 0x398c0000 | lo(d)); // addi r12,r12,d@l
     buf += 8;
   }
-  write32(buf + 0, 0x7d8903a6);              // mtctr r12
-  write32(buf + 4, 0x4e800420);              // bctr
+  write32(buf + 0, 0x7d8903a6); // mtctr r12
+  write32(buf + 4, 0x4e800420); // bctr
 }
 
 void elf::writePPC64LoadAndBranch(uint8_t *buf, int64_t offset) {
@@ -917,7 +921,7 @@ bool PPC64PltCallStub::isCompatibleWith(const InputSection &isec,
 
 void PPC64R2SaveStub::writeTo(uint8_t *buf) {
   const int64_t offset = computeOffset();
-  write32(buf + 0, 0xf8410018);                         // std  r2,24(r1)
+  write32(buf + 0, 0xf8410018); // std  r2,24(r1)
   // The branch offset needs to fit in 26 bits.
   if (getMayUseShortThunk()) {
     write32(buf + 4, 0x48000000 | (offset & 0x03fffffc)); // b    <offset>

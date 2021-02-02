@@ -7,6 +7,6 @@ class S {
   void f(struct Test);
 };
 #else
-::Tesy *p;  // expected-error {{did you mean 'Test'}}
-            // expected-note@-4 {{'Test' declared here}}
+::Tesy *p; // expected-error {{did you mean 'Test'}}
+           // expected-note@-4 {{'Test' declared here}}
 #endif

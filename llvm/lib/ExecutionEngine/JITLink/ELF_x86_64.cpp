@@ -285,7 +285,7 @@ private:
         continue;
 
       auto Symbols = Obj.symbols(&SecRef);
-      // TODO: Currently I use this function to test things 
+      // TODO: Currently I use this function to test things
       // I also want to leave it to see if its common between MACH and elf
       // so for now I just want to continue even if there is an error
       if (errorToBool(Symbols.takeError()))
@@ -312,8 +312,8 @@ private:
                  << ", binding = " << formatv("{0:x2}", SymRef.getBinding())
                  << ", size = "
                  << formatv("{0:x16}", static_cast<uint64_t>(SymRef.st_size))
-                 << ", info = " << formatv("{0:x2}", SymRef.st_info)
-                 << " :" << (Name ? *Name : "<anonymous symbol>") << "\n";
+                 << ", info = " << formatv("{0:x2}", SymRef.st_info) << " :"
+                 << (Name ? *Name : "<anonymous symbol>") << "\n";
         });
       }
     }
@@ -458,8 +458,9 @@ private:
         if (!TargetSymbol) {
           return make_error<llvm::StringError>(
               "Could not find symbol at given index, did you add it to "
-              "JITSymbolTable? index: " + std::to_string(SymbolIndex)
-              + ", shndx: " + std::to_string((*Symbol)->st_shndx) +
+              "JITSymbolTable? index: " +
+                  std::to_string(SymbolIndex) +
+                  ", shndx: " + std::to_string((*Symbol)->st_shndx) +
                   " Size of table: " + std::to_string(JITSymbolTable.size()),
               llvm::inconvertibleErrorCode());
         }
@@ -523,7 +524,7 @@ private:
       auto Section = G->findSectionByName(*Name);
       if (!Section)
         return make_error<llvm::StringError>("Could not find a section " +
-                                             *Name,
+                                                 *Name,
                                              llvm::inconvertibleErrorCode());
       // we only have one for now
       auto blocks = Section->blocks();
@@ -624,7 +625,9 @@ private:
                 "Section has no block", llvm::inconvertibleErrorCode());
 
           auto *B = *bs.begin();
-          LLVM_DEBUG({ dbgs() << "  " << *Name << " at index " << SymbolIndex << "\n"; });
+          LLVM_DEBUG({
+            dbgs() << "  " << *Name << " at index " << SymbolIndex << "\n";
+          });
           if (SymRef.getType() == ELF::STT_SECTION)
             *Name = *sectName;
           auto &Sym = G->addDefinedSymbol(
@@ -636,10 +639,10 @@ private:
           JITSymbolTable[SymbolIndex] = &Sym;
         } else
           LLVM_DEBUG({
-              dbgs()
+            dbgs()
                 << "Not creating graph symbol for normalized symbol at index "
                 << SymbolIndex << ", \"" << *Name << "\"\n";
-            });
+          });
 
         // TODO: The following has to be implmented.
         // leaving commented out to save time for future patchs

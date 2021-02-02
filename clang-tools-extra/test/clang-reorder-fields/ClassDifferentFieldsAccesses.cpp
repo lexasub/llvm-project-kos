@@ -3,11 +3,11 @@
 // The order of fields should not change.
 class Foo {
 public:
-  int x;  // CHECK:       {{^  int x;}}
+  int x; // CHECK:       {{^  int x;}}
 
 private:
-  int y;  // CHECK:       {{^  int y;}}
-  int z;  // CHECK-NEXT:  {{^  int z;}}
+  int y; // CHECK:       {{^  int y;}}
+  int z; // CHECK-NEXT:  {{^  int z;}}
 };
 
 int main() {

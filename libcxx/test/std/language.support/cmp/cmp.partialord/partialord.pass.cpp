@@ -12,7 +12,6 @@
 
 // class partial_ordering
 
-
 #include <compare>
 #include <type_traits>
 #include <cassert>
@@ -44,27 +43,26 @@ void test_signatures() {
   ASSERT_NOEXCEPT(0 >= Eq);
   ASSERT_NOEXCEPT(Eq >= 0);
 #ifndef TEST_HAS_NO_SPACESHIP_OPERATOR
-  ASSERT_NOEXCEPT(0 <=> Eq);
-  ASSERT_NOEXCEPT(Eq <=> 0);
-  ASSERT_SAME_TYPE(decltype(Eq <=> 0), std::partial_ordering);
-  ASSERT_SAME_TYPE(decltype(0 <=> Eq), std::partial_ordering);
+  ASSERT_NOEXCEPT(0 <= > Eq);
+  ASSERT_NOEXCEPT(Eq <= > 0);
+  ASSERT_SAME_TYPE(decltype(Eq <= > 0), std::partial_ordering);
+  ASSERT_SAME_TYPE(decltype(0 <= > Eq), std::partial_ordering);
 #endif
 }
 
 constexpr bool test_conversion() {
-  static_assert(std::is_convertible<const std::partial_ordering, std::weak_equality>::value, "");
+  static_assert(std::is_convertible<const std::partial_ordering,
+                                    std::weak_equality>::value,
+                "");
   { // value == 0
     auto V = std::partial_ordering::equivalent;
     std::weak_equality WV = V;
     assert(WV == 0);
   }
-  std::partial_ordering TestCases[] = {
-      std::partial_ordering::less,
-      std::partial_ordering::greater,
-      std::partial_ordering::unordered
-  };
-  for (auto V : TestCases)
-  { // value != 0
+  std::partial_ordering TestCases[] = {std::partial_ordering::less,
+                                       std::partial_ordering::greater,
+                                       std::partial_ordering::unordered};
+  for (auto V : TestCases) { // value != 0
     std::weak_equality WV = V;
     assert(WV != 0);
   }
@@ -82,12 +80,10 @@ constexpr bool test_constexpr() {
     bool ExpectNeq;
     bool ExpectLess;
     bool ExpectGreater;
-  } TestCases[] = {
-      {Eq, true, false, false, false},
-      {Less, false, true, true, false},
-      {Greater, false, true, false, true},
-      {Unord, false, true, false, false}
-  };
+  } TestCases[] = {{Eq, true, false, false, false},
+                   {Less, false, true, true, false},
+                   {Greater, false, true, false, true},
+                   {Unord, false, true, false, false}};
   for (auto TC : TestCases) {
     auto V = TC.Value;
     assert((V == 0) == TC.ExpectEq);
@@ -107,29 +103,21 @@ constexpr bool test_constexpr() {
   }
 #ifndef TEST_HAS_NO_SPACESHIP_OPERATOR
   {
-    std::partial_ordering res = (Eq <=> 0);
+    std::partial_ordering res = (Eq <= > 0);
     ((void)res);
-    res = (0 <=> Eq);
+    res = (0 <= > Eq);
     ((void)res);
   }
-  enum ExpectRes {
-    ER_Greater,
-    ER_Less,
-    ER_Equiv,
-    ER_Unord
-  };
+  enum ExpectRes { ER_Greater, ER_Less, ER_Equiv, ER_Unord };
   struct {
     std::partial_ordering Value;
     ExpectRes Expect;
-  } SpaceshipTestCases[] = {
-      {std::partial_ordering::equivalent, ER_Equiv},
-      {std::partial_ordering::less, ER_Less},
-      {std::partial_ordering::greater, ER_Greater},
-      {std::partial_ordering::unordered, ER_Unord}
-  };
-  for (auto TC : SpaceshipTestCases)
-  {
-    std::partial_ordering Res = (TC.Value <=> 0);
+  } SpaceshipTestCases[] = {{std::partial_ordering::equivalent, ER_Equiv},
+                            {std::partial_ordering::less, ER_Less},
+                            {std::partial_ordering::greater, ER_Greater},
+                            {std::partial_ordering::unordered, ER_Unord}};
+  for (auto TC : SpaceshipTestCases) {
+    std::partial_ordering Res = (TC.Value <= > 0);
     switch (TC.Expect) {
     case ER_Equiv:
       assert(Res == 0);

@@ -14,8 +14,15 @@
 #include "sanitizer_common/sanitizer_platform.h"
 #if SANITIZER_POSIX
 
-#include "asan_internal.h"
+#include <pthread.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <sys/resource.h>
+#include <sys/time.h>
+#include <unistd.h>
+
 #include "asan_interceptors.h"
+#include "asan_internal.h"
 #include "asan_mapping.h"
 #include "asan_poisoning.h"
 #include "asan_report.h"
@@ -23,13 +30,6 @@
 #include "sanitizer_common/sanitizer_libc.h"
 #include "sanitizer_common/sanitizer_posix.h"
 #include "sanitizer_common/sanitizer_procmaps.h"
-
-#include <pthread.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <sys/time.h>
-#include <sys/resource.h>
-#include <unistd.h>
 
 namespace __asan {
 
@@ -131,7 +131,7 @@ void AsanTSDSet(void *tsd) {
 }
 
 void PlatformTSDDtor(void *tsd) {
-  AsanThreadContext *context = (AsanThreadContext*)tsd;
+  AsanThreadContext *context = (AsanThreadContext *)tsd;
   if (context->destructor_iterations > 1) {
     context->destructor_iterations--;
     CHECK_EQ(0, pthread_setspecific(tsd_key, tsd));

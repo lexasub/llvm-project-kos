@@ -17,30 +17,32 @@
 #include "test_macros.h"
 #include "../../rep.h"
 
-int main(int, char**)
-{
-    assert(std::chrono::duration_values<int>::min() ==
-           std::numeric_limits<int>::lowest());
-    assert(std::chrono::duration_values<double>::min() ==
-           std::numeric_limits<double>::lowest());
-    assert(std::chrono::duration_values<Rep>::min() ==
-           std::numeric_limits<Rep>::lowest());
+int main(int, char**) {
+  assert(std::chrono::duration_values<int>::min() ==
+         std::numeric_limits<int>::lowest());
+  assert(std::chrono::duration_values<double>::min() ==
+         std::numeric_limits<double>::lowest());
+  assert(std::chrono::duration_values<Rep>::min() ==
+         std::numeric_limits<Rep>::lowest());
 #if TEST_STD_VER >= 11
-    static_assert(std::chrono::duration_values<int>::min() ==
-           std::numeric_limits<int>::lowest(), "");
-    static_assert(std::chrono::duration_values<double>::min() ==
-           std::numeric_limits<double>::lowest(), "");
-    static_assert(std::chrono::duration_values<Rep>::min() ==
-           std::numeric_limits<Rep>::lowest(), "");
+  static_assert(std::chrono::duration_values<int>::min() ==
+                    std::numeric_limits<int>::lowest(),
+                "");
+  static_assert(std::chrono::duration_values<double>::min() ==
+                    std::numeric_limits<double>::lowest(),
+                "");
+  static_assert(std::chrono::duration_values<Rep>::min() ==
+                    std::numeric_limits<Rep>::lowest(),
+                "");
 #endif
 
-    LIBCPP_ASSERT_NOEXCEPT(std::chrono::duration_values<int>::min());
-    LIBCPP_ASSERT_NOEXCEPT(std::chrono::duration_values<double>::min());
-    LIBCPP_ASSERT_NOEXCEPT(std::chrono::duration_values<Rep>::min());
+  LIBCPP_ASSERT_NOEXCEPT(std::chrono::duration_values<int>::min());
+  LIBCPP_ASSERT_NOEXCEPT(std::chrono::duration_values<double>::min());
+  LIBCPP_ASSERT_NOEXCEPT(std::chrono::duration_values<Rep>::min());
 #if TEST_STD_VER > 17
-    ASSERT_NOEXCEPT(std::chrono::duration_values<int>::min());
-    ASSERT_NOEXCEPT(std::chrono::duration_values<double>::min());
-    ASSERT_NOEXCEPT(std::chrono::duration_values<Rep>::min());
+  ASSERT_NOEXCEPT(std::chrono::duration_values<int>::min());
+  ASSERT_NOEXCEPT(std::chrono::duration_values<double>::min());
+  ASSERT_NOEXCEPT(std::chrono::duration_values<Rep>::min());
 #endif
 
   return 0;

@@ -2,42 +2,42 @@
 // RUN: llvm-cov show %S/Inputs/templateInstantiations.covmapping -instr-profile %S/Inputs/templateInstantiations.profdata -path-equivalence=/tmp,%S -name=_Z4funcIbEiT_ %s | FileCheck -check-prefixes=SHARED,FILTER %s
 
 // before coverage   // ALL:         [[@LINE]]|  |// before
-                     // FILTER-NOT:[[@LINE-1]]|  |// before
-template<typename T> // ALL:         [[@LINE]]|  |template<typename T>
-int func(T x) {      // ALL-NEXT:    [[@LINE]]| 2|int func(T x) {
-  if(x)              // ALL-NEXT:    [[@LINE]]| 2|  if(x)
-    return 0;        // ALL-NEXT:    [[@LINE]]| 1|    return 0;
-  else               // ALL-NEXT:    [[@LINE]]| 1|  else
-    return 1;        // ALL-NEXT:    [[@LINE]]| 1|    return 1;
-  int j = 1;         // ALL-NEXT:    [[@LINE]]| 0|  int j = 1;
-}                    // ALL-NEXT:    [[@LINE]]| 0|}
+// FILTER-NOT:[[@LINE-1]]|  |// before
+template <typename T> // ALL:         [[@LINE]]|  |template<typename T>
+int func(T x) {       // ALL-NEXT:    [[@LINE]]| 2|int func(T x) {
+  if (x)              // ALL-NEXT:    [[@LINE]]| 2|  if(x)
+    return 0;         // ALL-NEXT:    [[@LINE]]| 1|    return 0;
+  else                // ALL-NEXT:    [[@LINE]]| 1|  else
+    return 1;         // ALL-NEXT:    [[@LINE]]| 1|    return 1;
+  int j = 1;          // ALL-NEXT:    [[@LINE]]| 0|  int j = 1;
+} // ALL-NEXT:    [[@LINE]]| 0|}
 
-                     // ALL:         _Z4{{[a-z]+}}IiEiT_:
-                     // FILTER-NOT:  _Z4{{[a-z]+}}IiEiT_:
-                     // ALL:         [[@LINE-10]]| 1|int func(T x) {
-                     // ALL-NEXT:    [[@LINE-10]]| 1|  if(x)
-                     // ALL-NEXT:    [[@LINE-10]]| 0|    return 0;
-                     // ALL-NEXT:    [[@LINE-10]]| 1|  else
-                     // ALL-NEXT:    [[@LINE-10]]| 1|    return 1;
-                     // ALL-NEXT:    [[@LINE-10]]| 0|  int j = 1;
-                     // ALL-NEXT:    [[@LINE-10]]| 0|}
+// ALL:         _Z4{{[a-z]+}}IiEiT_:
+// FILTER-NOT:  _Z4{{[a-z]+}}IiEiT_:
+// ALL:         [[@LINE-10]]| 1|int func(T x) {
+// ALL-NEXT:    [[@LINE-10]]| 1|  if(x)
+// ALL-NEXT:    [[@LINE-10]]| 0|    return 0;
+// ALL-NEXT:    [[@LINE-10]]| 1|  else
+// ALL-NEXT:    [[@LINE-10]]| 1|    return 1;
+// ALL-NEXT:    [[@LINE-10]]| 0|  int j = 1;
+// ALL-NEXT:    [[@LINE-10]]| 0|}
 
-                     // SHARED:       {{^ *(\| )?}}_Z4funcIbEiT_:
-                     // SHARED:       [[@LINE-19]]| 1|int func(T x) {
-                     // SHARED-NEXT:  [[@LINE-19]]| 1|  if(x)
-                     // SHARED-NEXT:  [[@LINE-19]]| 1|    return 0;
-                     // SHARED-NEXT:  [[@LINE-19]]| 0|  else
-                     // SHARED-NEXT:  [[@LINE-19]]| 0|    return 1;
-                     // SHARED-NEXT:  [[@LINE-19]]| 0|  int j = 1;
-                     // SHARED-NEXT:  [[@LINE-19]]| 0|}
+// SHARED:       {{^ *(\| )?}}_Z4funcIbEiT_:
+// SHARED:       [[@LINE-19]]| 1|int func(T x) {
+// SHARED-NEXT:  [[@LINE-19]]| 1|  if(x)
+// SHARED-NEXT:  [[@LINE-19]]| 1|    return 0;
+// SHARED-NEXT:  [[@LINE-19]]| 0|  else
+// SHARED-NEXT:  [[@LINE-19]]| 0|    return 1;
+// SHARED-NEXT:  [[@LINE-19]]| 0|  int j = 1;
+// SHARED-NEXT:  [[@LINE-19]]| 0|}
 
-int main() {         // ALL:         [[@LINE]]| 1|int main() {
-  func<int>(0);      // ALL-NEXT:    [[@LINE]]| 1|  func<int>(0);
-  func<bool>(true);  // ALL-NEXT:    [[@LINE]]| 1|  func<bool>(true);
-  return 0;          // ALL-NEXT:    [[@LINE]]| 1|  return 0;
-}                    // ALL-NEXT:    [[@LINE]]| 1|}
+int main() {        // ALL:         [[@LINE]]| 1|int main() {
+  func<int>(0);     // ALL-NEXT:    [[@LINE]]| 1|  func<int>(0);
+  func<bool>(true); // ALL-NEXT:    [[@LINE]]| 1|  func<bool>(true);
+  return 0;         // ALL-NEXT:    [[@LINE]]| 1|  return 0;
+} // ALL-NEXT:    [[@LINE]]| 1|}
 // after coverage    // ALL-NEXT:    [[@LINE]]|  |// after
-                     // FILTER-NOT:[[@LINE-1]]|  |// after
+// FILTER-NOT:[[@LINE-1]]|  |// after
 
 // Test html output.
 // RUN: llvm-cov show %S/Inputs/templateInstantiations.covmapping -instr-profile %S/Inputs/templateInstantiations.profdata -path-equivalence=/tmp,%S %s -format html -o %t.html.dir

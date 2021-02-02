@@ -27,27 +27,26 @@ std::locale::id id0;
 std::locale::id id2;
 std::locale::id id1;
 
-int main(int, char**)
-{
-    long id = id0.__get();
-    assert(id0.__get() == id+0);
-    assert(id0.__get() == id+0);
-    assert(id0.__get() == id+0);
-    assert(id1.__get() == id+1);
-    assert(id1.__get() == id+1);
-    assert(id1.__get() == id+1);
-    assert(id2.__get() == id+2);
-    assert(id2.__get() == id+2);
-    assert(id2.__get() == id+2);
-    assert(id0.__get() == id+0);
-    assert(id0.__get() == id+0);
-    assert(id0.__get() == id+0);
-    assert(id1.__get() == id+1);
-    assert(id1.__get() == id+1);
-    assert(id1.__get() == id+1);
-    assert(id2.__get() == id+2);
-    assert(id2.__get() == id+2);
-    assert(id2.__get() == id+2);
+int main(int, char**) {
+  long id = id0.__get();
+  assert(id0.__get() == id + 0);
+  assert(id0.__get() == id + 0);
+  assert(id0.__get() == id + 0);
+  assert(id1.__get() == id + 1);
+  assert(id1.__get() == id + 1);
+  assert(id1.__get() == id + 1);
+  assert(id2.__get() == id + 2);
+  assert(id2.__get() == id + 2);
+  assert(id2.__get() == id + 2);
+  assert(id0.__get() == id + 0);
+  assert(id0.__get() == id + 0);
+  assert(id0.__get() == id + 0);
+  assert(id1.__get() == id + 1);
+  assert(id1.__get() == id + 1);
+  assert(id1.__get() == id + 1);
+  assert(id2.__get() == id + 2);
+  assert(id2.__get() == id + 2);
+  assert(id2.__get() == id + 2);
 
   return 0;
 }

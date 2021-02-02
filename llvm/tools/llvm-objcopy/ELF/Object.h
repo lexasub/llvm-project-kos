@@ -984,7 +984,7 @@ class IHexReader : public Reader {
                                  std::move(E));
   }
   template <typename... Ts>
-  Error parseError(size_t LineNo, char const *Fmt, const Ts &... Vals) const {
+  Error parseError(size_t LineNo, char const *Fmt, const Ts &...Vals) const {
     Error E = createStringError(errc::invalid_argument, Fmt, Vals...);
     return parseError(LineNo, std::move(E));
   }
@@ -1076,7 +1076,7 @@ public:
   Error removeSections(bool AllowBrokenLinks,
                        std::function<bool(const SectionBase &)> ToRemove);
   Error removeSymbols(function_ref<bool(const Symbol &)> ToRemove);
-  template <class T, class... Ts> T &addSection(Ts &&... Args) {
+  template <class T, class... Ts> T &addSection(Ts &&...Args) {
     auto Sec = std::make_unique<T>(std::forward<Ts>(Args)...);
     auto Ptr = Sec.get();
     MustBeRelocatable |= isa<RelocationSection>(*Ptr);

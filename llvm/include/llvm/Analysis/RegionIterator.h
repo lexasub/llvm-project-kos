@@ -87,13 +87,13 @@ class RNSuccIterator
   }
 
   // getRegionSucc - Return the successor basic block of a SubRegion RegionNode.
-  inline BlockT* getRegionSucc() const {
+  inline BlockT *getRegionSucc() const {
     assert(Node.getInt() == ItRgBegin && "Cannot get the region successor!");
     return getNode()->template getNodeAs<RegionT>()->getExit();
   }
 
   // isExit - Is this the exit BB of the Region?
-  inline bool isExit(BlockT* BB) const {
+  inline bool isExit(BlockT *BB) const {
     return getNode()->getParent()->getExit() == BB;
   }
 
@@ -107,7 +107,8 @@ public:
         BItor(BlockTraits::child_begin(node->getEntry())) {
     // Skip the exit block
     if (!isRegionMode())
-      while (BlockTraits::child_end(node->getEntry()) != BItor && isExit(*BItor))
+      while (BlockTraits::child_end(node->getEntry()) != BItor &&
+             isExit(*BItor))
         ++BItor;
 
     if (isRegionMode() && isExit(getRegionSucc()))
@@ -119,7 +120,7 @@ public:
       : Node(node, node->isSubRegion() ? ItRgEnd : ItBB),
         BItor(BlockTraits::child_end(node->getEntry())) {}
 
-  inline bool operator==(const Self& x) const {
+  inline bool operator==(const Self &x) const {
     assert(isRegionMode() == x.isRegionMode() && "Broken iterator!");
     if (isRegionMode())
       return Node.getInt() == x.Node.getInt();
@@ -127,7 +128,7 @@ public:
       return BItor == x.BItor;
   }
 
-  inline bool operator!=(const Self& x) const { return !operator==(x); }
+  inline bool operator!=(const Self &x) const { return !operator==(x); }
 
   inline value_type operator*() const {
     BlockT *BB = isRegionMode() ? getRegionSucc() : *BItor;
@@ -135,16 +136,16 @@ public:
     return getISucc(BB);
   }
 
-  inline Self& operator++() {
-    if(isRegionMode()) {
+  inline Self &operator++() {
+    if (isRegionMode()) {
       // The Region only has 1 successor.
       advanceRegionSucc();
     } else {
       // Skip the exit.
       do
         ++BItor;
-      while (BItor != BlockTraits::child_end(getNode()->getEntry())
-          && isExit(*BItor));
+      while (BItor != BlockTraits::child_end(getNode()->getEntry()) &&
+             isExit(*BItor));
     }
     return *this;
   }
@@ -199,14 +200,14 @@ public:
            "Subregion node not allowed in flat iterating mode!");
   }
 
-  inline bool operator==(const Self& x) const {
-    assert(Node->getParent() == x.Node->getParent()
-           && "Cannot compare iterators of different regions!");
+  inline bool operator==(const Self &x) const {
+    assert(Node->getParent() == x.Node->getParent() &&
+           "Cannot compare iterators of different regions!");
 
     return Itor == x.Itor && Node == x.Node;
   }
 
-  inline bool operator!=(const Self& x) const { return !operator==(x); }
+  inline bool operator!=(const Self &x) const { return !operator==(x); }
 
   inline value_type operator*() const {
     BlockT *BB = *Itor;
@@ -221,12 +222,12 @@ public:
     return Parent->getBBNode(BB);
   }
 
-  inline Self& operator++() {
+  inline Self &operator++() {
     // Skip the exit block of the iterating region.
     do
       ++Itor;
-    while (Itor != succ_end(Node->getEntry())
-        && Node->getParent()->getExit() == *Itor);
+    while (Itor != succ_end(Node->getEntry()) &&
+           Node->getParent()->getExit() == *Itor);
 
     return *this;
   }
@@ -316,17 +317,16 @@ RegionNodeGraphTraits(const RegionNode, BasicBlock, Region);
 RegionGraphTraits(Region, RegionNode);
 RegionGraphTraits(const Region, const RegionNode);
 
-template <> struct GraphTraits<RegionInfo*>
-  : public GraphTraits<FlatIt<RegionNode*>> {
-  using nodes_iterator =
-      df_iterator<NodeRef, df_iterator_default_set<NodeRef>, false,
-                  GraphTraits<FlatIt<NodeRef>>>;
+template <>
+struct GraphTraits<RegionInfo *> : public GraphTraits<FlatIt<RegionNode *>> {
+  using nodes_iterator = df_iterator<NodeRef, df_iterator_default_set<NodeRef>,
+                                     false, GraphTraits<FlatIt<NodeRef>>>;
 
   static NodeRef getEntryNode(RegionInfo *RI) {
-    return GraphTraits<FlatIt<Region*>>::getEntryNode(RI->getTopLevelRegion());
+    return GraphTraits<FlatIt<Region *>>::getEntryNode(RI->getTopLevelRegion());
   }
 
-  static nodes_iterator nodes_begin(RegionInfo* RI) {
+  static nodes_iterator nodes_begin(RegionInfo *RI) {
     return nodes_iterator::begin(getEntryNode(RI));
   }
 
@@ -335,22 +335,21 @@ template <> struct GraphTraits<RegionInfo*>
   }
 };
 
-template <> struct GraphTraits<RegionInfoPass*>
-  : public GraphTraits<RegionInfo *> {
-  using nodes_iterator =
-      df_iterator<NodeRef, df_iterator_default_set<NodeRef>, false,
-                  GraphTraits<FlatIt<NodeRef>>>;
+template <>
+struct GraphTraits<RegionInfoPass *> : public GraphTraits<RegionInfo *> {
+  using nodes_iterator = df_iterator<NodeRef, df_iterator_default_set<NodeRef>,
+                                     false, GraphTraits<FlatIt<NodeRef>>>;
 
   static NodeRef getEntryNode(RegionInfoPass *RI) {
-    return GraphTraits<RegionInfo*>::getEntryNode(&RI->getRegionInfo());
+    return GraphTraits<RegionInfo *>::getEntryNode(&RI->getRegionInfo());
   }
 
-  static nodes_iterator nodes_begin(RegionInfoPass* RI) {
-    return GraphTraits<RegionInfo*>::nodes_begin(&RI->getRegionInfo());
+  static nodes_iterator nodes_begin(RegionInfoPass *RI) {
+    return GraphTraits<RegionInfo *>::nodes_begin(&RI->getRegionInfo());
   }
 
   static nodes_iterator nodes_end(RegionInfoPass *RI) {
-    return GraphTraits<RegionInfo*>::nodes_end(&RI->getRegionInfo());
+    return GraphTraits<RegionInfo *>::nodes_end(&RI->getRegionInfo());
   }
 };
 

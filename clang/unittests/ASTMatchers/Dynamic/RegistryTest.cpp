@@ -1,4 +1,5 @@
-//===- unittest/ASTMatchers/Dynamic/RegistryTest.cpp - Registry unit tests -===//
+//===- unittest/ASTMatchers/Dynamic/RegistryTest.cpp - Registry unit tests
+//-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -6,8 +7,8 @@
 //
 //===-----------------------------------------------------------------------===//
 
-#include "../ASTMatchersTest.h"
 #include "clang/ASTMatchers/Dynamic/Registry.h"
+#include "../ASTMatchersTest.h"
 #include "gtest/gtest.h"
 #include <vector>
 
@@ -41,7 +42,8 @@ public:
   VariantMatcher constructMatcher(StringRef MatcherName,
                                   Diagnostics *Error = nullptr) {
     Diagnostics DummyError;
-    if (!Error) Error = &DummyError;
+    if (!Error)
+      Error = &DummyError;
     llvm::Optional<MatcherCtor> Ctor = lookupMatcherCtor(MatcherName);
     VariantMatcher Out;
     if (Ctor)
@@ -54,7 +56,8 @@ public:
                                   const VariantValue &Arg1,
                                   Diagnostics *Error = nullptr) {
     Diagnostics DummyError;
-    if (!Error) Error = &DummyError;
+    if (!Error)
+      Error = &DummyError;
     llvm::Optional<MatcherCtor> Ctor = lookupMatcherCtor(MatcherName);
     VariantMatcher Out;
     if (Ctor)
@@ -68,7 +71,8 @@ public:
                                   const VariantValue &Arg2,
                                   Diagnostics *Error = nullptr) {
     Diagnostics DummyError;
-    if (!Error) Error = &DummyError;
+    if (!Error)
+      Error = &DummyError;
     llvm::Optional<MatcherCtor> Ctor = lookupMatcherCtor(MatcherName);
     VariantMatcher Out;
     if (Ctor)
@@ -81,13 +85,13 @@ public:
   typedef std::vector<MatcherCompletion> CompVector;
 
   CompVector getCompletions() {
-    std::vector<std::pair<MatcherCtor, unsigned> > Context;
+    std::vector<std::pair<MatcherCtor, unsigned>> Context;
     return Registry::getMatcherCompletions(
         Registry::getAcceptedCompletionTypes(Context));
   }
 
   CompVector getCompletions(StringRef MatcherName1, unsigned ArgNo1) {
-    std::vector<std::pair<MatcherCtor, unsigned> > Context;
+    std::vector<std::pair<MatcherCtor, unsigned>> Context;
     llvm::Optional<MatcherCtor> Ctor = lookupMatcherCtor(MatcherName1);
     if (!Ctor)
       return CompVector();
@@ -98,7 +102,7 @@ public:
 
   CompVector getCompletions(StringRef MatcherName1, unsigned ArgNo1,
                             StringRef MatcherName2, unsigned ArgNo2) {
-    std::vector<std::pair<MatcherCtor, unsigned> > Context;
+    std::vector<std::pair<MatcherCtor, unsigned>> Context;
     llvm::Optional<MatcherCtor> Ctor = lookupMatcherCtor(MatcherName1);
     if (!Ctor)
       return CompVector();
@@ -125,8 +129,9 @@ public:
 };
 
 TEST_F(RegistryTest, CanConstructNoArgs) {
-  Matcher<Stmt> IsArrowValue = constructMatcher(
-      "memberExpr", constructMatcher("isArrow")).getTypedMatcher<Stmt>();
+  Matcher<Stmt> IsArrowValue =
+      constructMatcher("memberExpr", constructMatcher("isArrow"))
+          .getTypedMatcher<Stmt>();
   Matcher<Stmt> BoolValue =
       constructMatcher("cxxBoolLiteral").getTypedMatcher<Stmt>();
 
@@ -142,26 +147,28 @@ TEST_F(RegistryTest, CanConstructNoArgs) {
 }
 
 TEST_F(RegistryTest, ConstructWithSimpleArgs) {
-  Matcher<Decl> Value = constructMatcher(
-      "namedDecl", constructMatcher("hasName", StringRef("X")))
-      .getTypedMatcher<Decl>();
+  Matcher<Decl> Value =
+      constructMatcher("namedDecl", constructMatcher("hasName", StringRef("X")))
+          .getTypedMatcher<Decl>();
   EXPECT_TRUE(matches("class X {};", Value));
   EXPECT_FALSE(matches("int x;", Value));
 
-  Value = functionDecl(constructMatcher("parameterCountIs", 2)
-                           .getTypedMatcher<FunctionDecl>());
+  Value = functionDecl(
+      constructMatcher("parameterCountIs", 2).getTypedMatcher<FunctionDecl>());
   EXPECT_TRUE(matches("void foo(int,int);", Value));
   EXPECT_FALSE(matches("void foo(int);", Value));
 }
 
 TEST_F(RegistryTest, ConstructWithMatcherArgs) {
-  Matcher<Decl> HasInitializerSimple = constructMatcher(
-      "varDecl", constructMatcher("hasInitializer", constructMatcher("stmt")))
-      .getTypedMatcher<Decl>();
-  Matcher<Decl> HasInitializerComplex = constructMatcher(
-      "varDecl",
-      constructMatcher("hasInitializer", constructMatcher("callExpr")))
-      .getTypedMatcher<Decl>();
+  Matcher<Decl> HasInitializerSimple =
+      constructMatcher("varDecl", constructMatcher("hasInitializer",
+                                                   constructMatcher("stmt")))
+          .getTypedMatcher<Decl>();
+  Matcher<Decl> HasInitializerComplex =
+      constructMatcher(
+          "varDecl",
+          constructMatcher("hasInitializer", constructMatcher("callExpr")))
+          .getTypedMatcher<Decl>();
 
   std::string code = "int i;";
   EXPECT_FALSE(matches(code, HasInitializerSimple));
@@ -176,27 +183,30 @@ TEST_F(RegistryTest, ConstructWithMatcherArgs) {
   EXPECT_TRUE(matches(code, HasInitializerComplex));
 
   Matcher<Decl> HasParameter =
-      functionDecl(constructMatcher(
-          "hasParameter", 1, constructMatcher("hasName", StringRef("x")))
+      functionDecl(constructMatcher("hasParameter", 1,
+                                    constructMatcher("hasName", StringRef("x")))
                        .getTypedMatcher<FunctionDecl>());
   EXPECT_TRUE(matches("void f(int a, int x);", HasParameter));
   EXPECT_FALSE(matches("void f(int x, int a);", HasParameter));
 }
 
 TEST_F(RegistryTest, OverloadedMatchers) {
-  Matcher<Stmt> CallExpr0 = constructMatcher(
-      "callExpr",
-      constructMatcher("callee", constructMatcher("memberExpr",
-                                                  constructMatcher("isArrow"))))
-      .getTypedMatcher<Stmt>();
-
-  Matcher<Stmt> CallExpr1 = constructMatcher(
-      "callExpr",
+  Matcher<Stmt> CallExpr0 =
       constructMatcher(
-          "callee",
-          constructMatcher("cxxMethodDecl",
-                           constructMatcher("hasName", StringRef("x")))))
-      .getTypedMatcher<Stmt>();
+          "callExpr",
+          constructMatcher(
+              "callee",
+              constructMatcher("memberExpr", constructMatcher("isArrow"))))
+          .getTypedMatcher<Stmt>();
+
+  Matcher<Stmt> CallExpr1 =
+      constructMatcher(
+          "callExpr",
+          constructMatcher(
+              "callee",
+              constructMatcher("cxxMethodDecl",
+                               constructMatcher("hasName", StringRef("x")))))
+          .getTypedMatcher<Stmt>();
 
   std::string Code = "class Y { public: void x(); }; void z() { Y y; y.x(); }";
   EXPECT_FALSE(matches(Code, CallExpr0));
@@ -242,9 +252,11 @@ TEST_F(RegistryTest, PolymorphicMatchers) {
   EXPECT_FALSE(matches("void f();", Func));
 
   Matcher<Decl> Anything = constructMatcher("anything").getTypedMatcher<Decl>();
-  Matcher<Decl> RecordDecl = constructMatcher(
-      "recordDecl", constructMatcher("hasName", StringRef("Foo")),
-      VariantMatcher::SingleMatcher(Anything)).getTypedMatcher<Decl>();
+  Matcher<Decl> RecordDecl =
+      constructMatcher("recordDecl",
+                       constructMatcher("hasName", StringRef("Foo")),
+                       VariantMatcher::SingleMatcher(Anything))
+          .getTypedMatcher<Decl>();
 
   EXPECT_TRUE(matches("int Foo;", Anything));
   EXPECT_TRUE(matches("class Foo {};", Anything));
@@ -253,28 +265,31 @@ TEST_F(RegistryTest, PolymorphicMatchers) {
   EXPECT_TRUE(matches("class Foo {};", RecordDecl));
   EXPECT_FALSE(matches("void Foo(){};", RecordDecl));
 
-  Matcher<Stmt> ConstructExpr = constructMatcher(
-      "cxxConstructExpr",
+  Matcher<Stmt> ConstructExpr =
       constructMatcher(
-          "hasDeclaration",
+          "cxxConstructExpr",
           constructMatcher(
-              "cxxMethodDecl",
+              "hasDeclaration",
               constructMatcher(
-                  "ofClass", constructMatcher("hasName", StringRef("Foo"))))))
-                                    .getTypedMatcher<Stmt>();
+                  "cxxMethodDecl",
+                  constructMatcher(
+                      "ofClass",
+                      constructMatcher("hasName", StringRef("Foo"))))))
+          .getTypedMatcher<Stmt>();
   EXPECT_FALSE(matches("class Foo { public: Foo(); };", ConstructExpr));
   EXPECT_TRUE(
       matches("class Foo { public: Foo(); }; Foo foo = Foo();", ConstructExpr));
 }
 
 TEST_F(RegistryTest, TemplateArgument) {
-  Matcher<Decl> HasTemplateArgument = constructMatcher(
-      "classTemplateSpecializationDecl",
+  Matcher<Decl> HasTemplateArgument =
       constructMatcher(
-          "hasAnyTemplateArgument",
-          constructMatcher("refersToType",
-                           constructMatcher("asString", StringRef("int")))))
-      .getTypedMatcher<Decl>();
+          "classTemplateSpecializationDecl",
+          constructMatcher(
+              "hasAnyTemplateArgument",
+              constructMatcher("refersToType",
+                               constructMatcher("asString", StringRef("int")))))
+          .getTypedMatcher<Decl>();
   EXPECT_TRUE(matches("template<typename T> class A {}; A<int> a;",
                       HasTemplateArgument));
   EXPECT_FALSE(matches("template<typename T> class A {}; A<char> a;",
@@ -282,86 +297,93 @@ TEST_F(RegistryTest, TemplateArgument) {
 }
 
 TEST_F(RegistryTest, TypeTraversal) {
-  Matcher<Type> M = constructMatcher(
-      "pointerType",
-      constructMatcher("pointee", constructMatcher("isConstQualified"),
-                       constructMatcher("isInteger"))).getTypedMatcher<Type>();
+  Matcher<Type> M =
+      constructMatcher("pointerType",
+                       constructMatcher("pointee",
+                                        constructMatcher("isConstQualified"),
+                                        constructMatcher("isInteger")))
+          .getTypedMatcher<Type>();
   EXPECT_FALSE(matches("int *a;", M));
   EXPECT_TRUE(matches("int const *b;", M));
 
   M = constructMatcher(
-      "arrayType",
-      constructMatcher("hasElementType", constructMatcher("builtinType")))
-      .getTypedMatcher<Type>();
+          "arrayType",
+          constructMatcher("hasElementType", constructMatcher("builtinType")))
+          .getTypedMatcher<Type>();
   EXPECT_FALSE(matches("struct A{}; A a[7];;", M));
   EXPECT_TRUE(matches("int b[7];", M));
 }
 
 TEST_F(RegistryTest, CXXCtorInitializer) {
-  Matcher<Decl> CtorDecl = constructMatcher(
-      "cxxConstructorDecl",
+  Matcher<Decl> CtorDecl =
       constructMatcher(
-          "hasAnyConstructorInitializer",
-          constructMatcher("forField",
-                           constructMatcher("hasName", StringRef("foo")))))
-      .getTypedMatcher<Decl>();
+          "cxxConstructorDecl",
+          constructMatcher(
+              "hasAnyConstructorInitializer",
+              constructMatcher("forField",
+                               constructMatcher("hasName", StringRef("foo")))))
+          .getTypedMatcher<Decl>();
   EXPECT_TRUE(matches("struct Foo { Foo() : foo(1) {} int foo; };", CtorDecl));
   EXPECT_FALSE(matches("struct Foo { Foo() {} int foo; };", CtorDecl));
   EXPECT_FALSE(matches("struct Foo { Foo() : bar(1) {} int bar; };", CtorDecl));
 }
 
 TEST_F(RegistryTest, Adaptative) {
-  Matcher<Decl> D = constructMatcher(
-      "recordDecl",
+  Matcher<Decl> D =
       constructMatcher(
-          "has",
-          constructMatcher("recordDecl",
-                           constructMatcher("hasName", StringRef("X")))))
-      .getTypedMatcher<Decl>();
+          "recordDecl",
+          constructMatcher(
+              "has",
+              constructMatcher("recordDecl",
+                               constructMatcher("hasName", StringRef("X")))))
+          .getTypedMatcher<Decl>();
   EXPECT_TRUE(matches("class X {};", D));
   EXPECT_TRUE(matches("class Y { class X {}; };", D));
   EXPECT_FALSE(matches("class Y { class Z {}; };", D));
 
-  Matcher<Stmt> S = constructMatcher(
-      "forStmt",
+  Matcher<Stmt> S =
       constructMatcher(
-          "hasDescendant",
-          constructMatcher("varDecl",
-                           constructMatcher("hasName", StringRef("X")))))
-      .getTypedMatcher<Stmt>();
+          "forStmt",
+          constructMatcher(
+              "hasDescendant",
+              constructMatcher("varDecl",
+                               constructMatcher("hasName", StringRef("X")))))
+          .getTypedMatcher<Stmt>();
   EXPECT_TRUE(matches("void foo() { for(int X;;); }", S));
   EXPECT_TRUE(matches("void foo() { for(;;) { int X; } }", S));
   EXPECT_FALSE(matches("void foo() { for(;;); }", S));
   EXPECT_FALSE(matches("void foo() { if (int X = 0){} }", S));
 
   S = constructMatcher(
-      "compoundStmt", constructMatcher("hasParent", constructMatcher("ifStmt")))
-      .getTypedMatcher<Stmt>();
+          "compoundStmt",
+          constructMatcher("hasParent", constructMatcher("ifStmt")))
+          .getTypedMatcher<Stmt>();
   EXPECT_TRUE(matches("void foo() { if (true) { int x = 42; } }", S));
   EXPECT_FALSE(matches("void foo() { if (true) return; }", S));
 }
 
 TEST_F(RegistryTest, VariadicOp) {
-  Matcher<Decl> D = constructMatcher(
-      "anyOf",
-      constructMatcher("recordDecl",
-                       constructMatcher("hasName", StringRef("Foo"))),
-      constructMatcher("functionDecl",
-                       constructMatcher("hasName", StringRef("foo"))))
-      .getTypedMatcher<Decl>();
+  Matcher<Decl> D =
+      constructMatcher(
+          "anyOf",
+          constructMatcher("recordDecl",
+                           constructMatcher("hasName", StringRef("Foo"))),
+          constructMatcher("functionDecl",
+                           constructMatcher("hasName", StringRef("foo"))))
+          .getTypedMatcher<Decl>();
 
   EXPECT_TRUE(matches("void foo(){}", D));
   EXPECT_TRUE(matches("struct Foo{};", D));
   EXPECT_FALSE(matches("int i = 0;", D));
 
   D = constructMatcher(
-      "allOf", constructMatcher("recordDecl"),
-      constructMatcher(
-          "namedDecl",
-          constructMatcher("anyOf",
-                           constructMatcher("hasName", StringRef("Foo")),
-                           constructMatcher("hasName", StringRef("Bar")))))
-      .getTypedMatcher<Decl>();
+          "allOf", constructMatcher("recordDecl"),
+          constructMatcher(
+              "namedDecl",
+              constructMatcher("anyOf",
+                               constructMatcher("hasName", StringRef("Foo")),
+                               constructMatcher("hasName", StringRef("Bar")))))
+          .getTypedMatcher<Decl>();
 
   EXPECT_FALSE(matches("void foo(){}", D));
   EXPECT_TRUE(matches("struct Foo{};", D));
@@ -403,8 +425,8 @@ TEST_F(RegistryTest, Errors) {
   EXPECT_EQ("Incorrect argument count. (Expected = (2, )) != (Actual = 0)",
             Error->toString());
   Error.reset(new Diagnostics());
-  EXPECT_TRUE(constructMatcher("unless", StringRef(), StringRef(),
-                               Error.get()).isNull());
+  EXPECT_TRUE(constructMatcher("unless", StringRef(), StringRef(), Error.get())
+                  .isNull());
   EXPECT_EQ("Incorrect argument count. (Expected = (1, 1)) != (Actual = 2)",
             Error->toString());
 
@@ -425,18 +447,20 @@ TEST_F(RegistryTest, Errors) {
 
   // Bad argument type with variadic.
   Error.reset(new Diagnostics());
-  EXPECT_TRUE(constructMatcher("anyOf", StringRef(), StringRef(),
-                               Error.get()).isNull());
+  EXPECT_TRUE(constructMatcher("anyOf", StringRef(), StringRef(), Error.get())
+                  .isNull());
   EXPECT_EQ(
       "Incorrect type for arg 1. (Expected = Matcher<>) != (Actual = String)",
       Error->toString());
   Error.reset(new Diagnostics());
-  EXPECT_TRUE(constructMatcher(
-      "cxxRecordDecl",
-      constructMatcher("allOf",
-                       constructMatcher("isDerivedFrom", StringRef("FOO")),
-                       constructMatcher("isArrow")),
-      Error.get()).isNull());
+  EXPECT_TRUE(
+      constructMatcher(
+          "cxxRecordDecl",
+          constructMatcher("allOf",
+                           constructMatcher("isDerivedFrom", StringRef("FOO")),
+                           constructMatcher("isArrow")),
+          Error.get())
+          .isNull());
   EXPECT_EQ("Incorrect type for arg 1. "
             "(Expected = Matcher<CXXRecordDecl>) != "
             "(Actual = Matcher<CXXRecordDecl|ObjCInterfaceDecl>&Matcher"
@@ -474,14 +498,12 @@ TEST_F(RegistryTest, Completion) {
   EXPECT_FALSE(hasCompletion(WhileComps, "whileStmt("));
   EXPECT_FALSE(hasCompletion(WhileComps, "ifStmt("));
 
-  CompVector AllOfWhileComps =
-      getCompletions("allOf", 0, "whileStmt", 0);
+  CompVector AllOfWhileComps = getCompletions("allOf", 0, "whileStmt", 0);
   ASSERT_EQ(AllOfWhileComps.size(), WhileComps.size());
   EXPECT_TRUE(std::equal(WhileComps.begin(), WhileComps.end(),
                          AllOfWhileComps.begin()));
 
-  CompVector DeclWhileComps =
-      getCompletions("decl", 0, "whileStmt", 0);
+  CompVector DeclWhileComps = getCompletions("decl", 0, "whileStmt", 0);
   EXPECT_EQ(0u, DeclWhileComps.size());
 
   CompVector NamedDeclComps = getCompletions("namedDecl", 0);
@@ -498,9 +520,10 @@ TEST_F(RegistryTest, Completion) {
 }
 
 TEST_F(RegistryTest, HasArgs) {
-  Matcher<Decl> Value = constructMatcher(
-      "decl", constructMatcher("hasAttr", StringRef("attr::WarnUnused")))
-      .getTypedMatcher<Decl>();
+  Matcher<Decl> Value =
+      constructMatcher(
+          "decl", constructMatcher("hasAttr", StringRef("attr::WarnUnused")))
+          .getTypedMatcher<Decl>();
   EXPECT_TRUE(matches("struct __attribute__((warn_unused)) X {};", Value));
   EXPECT_FALSE(matches("struct X {};", Value));
 }
@@ -512,23 +535,25 @@ TEST_F(RegistryTest, ParenExpr) {
 }
 
 TEST_F(RegistryTest, EqualsMatcher) {
-  Matcher<Stmt> BooleanStmt = constructMatcher(
-      "cxxBoolLiteral", constructMatcher("equals", VariantValue(true)))
-      .getTypedMatcher<Stmt>();
+  Matcher<Stmt> BooleanStmt =
+      constructMatcher("cxxBoolLiteral",
+                       constructMatcher("equals", VariantValue(true)))
+          .getTypedMatcher<Stmt>();
   EXPECT_TRUE(matches("bool x = true;", BooleanStmt));
   EXPECT_FALSE(matches("bool x = false;", BooleanStmt));
   EXPECT_FALSE(matches("bool x = 0;", BooleanStmt));
 
-  BooleanStmt = constructMatcher(
-      "cxxBoolLiteral", constructMatcher("equals", VariantValue(0)))
-      .getTypedMatcher<Stmt>();
+  BooleanStmt = constructMatcher("cxxBoolLiteral",
+                                 constructMatcher("equals", VariantValue(0)))
+                    .getTypedMatcher<Stmt>();
   EXPECT_TRUE(matches("bool x = false;", BooleanStmt));
   EXPECT_FALSE(matches("bool x = true;", BooleanStmt));
   EXPECT_FALSE(matches("bool x = 0;", BooleanStmt));
 
-  Matcher<Stmt> DoubleStmt = constructMatcher(
-      "floatLiteral", constructMatcher("equals", VariantValue(1.2)))
-      .getTypedMatcher<Stmt>();
+  Matcher<Stmt> DoubleStmt =
+      constructMatcher("floatLiteral",
+                       constructMatcher("equals", VariantValue(1.2)))
+          .getTypedMatcher<Stmt>();
   EXPECT_TRUE(matches("double x = 1.2;", DoubleStmt));
 #if 0
   // FIXME floatLiteral matching should work regardless of suffix.
@@ -538,15 +563,17 @@ TEST_F(RegistryTest, EqualsMatcher) {
   EXPECT_TRUE(matches("double x = 12e-1;", DoubleStmt));
   EXPECT_FALSE(matches("double x = 1.23;", DoubleStmt));
 
-  Matcher<Stmt> IntegerStmt = constructMatcher(
-      "integerLiteral", constructMatcher("equals", VariantValue(42)))
-      .getTypedMatcher<Stmt>();
+  Matcher<Stmt> IntegerStmt =
+      constructMatcher("integerLiteral",
+                       constructMatcher("equals", VariantValue(42)))
+          .getTypedMatcher<Stmt>();
   EXPECT_TRUE(matches("int x = 42;", IntegerStmt));
   EXPECT_FALSE(matches("int x = 1;", IntegerStmt));
 
-  Matcher<Stmt> CharStmt = constructMatcher(
-      "characterLiteral", constructMatcher("equals", VariantValue('x')))
-      .getTypedMatcher<Stmt>();
+  Matcher<Stmt> CharStmt =
+      constructMatcher("characterLiteral",
+                       constructMatcher("equals", VariantValue('x')))
+          .getTypedMatcher<Stmt>();
   EXPECT_TRUE(matches("int x = 'x';", CharStmt));
   EXPECT_TRUE(matches("int x = L'x';", CharStmt));
   EXPECT_TRUE(matches("int x = u'x';", CharStmt));

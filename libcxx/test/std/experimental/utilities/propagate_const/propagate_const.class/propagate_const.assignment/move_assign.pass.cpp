@@ -26,9 +26,9 @@ int main(int, char**) {
   P p1(1);
   P p2(2);
 
-  p2=std::move(p1);
+  p2 = std::move(p1);
 
-  assert(*p2==1);
+  assert(*p2 == 1);
 
   return 0;
 }

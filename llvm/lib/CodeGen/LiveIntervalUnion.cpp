@@ -78,8 +78,8 @@ void LiveIntervalUnion::extract(LiveInterval &VirtReg, const LiveRange &Range) {
   }
 }
 
-void
-LiveIntervalUnion::print(raw_ostream &OS, const TargetRegisterInfo *TRI) const {
+void LiveIntervalUnion::print(raw_ostream &OS,
+                              const TargetRegisterInfo *TRI) const {
   if (empty()) {
     OS << " empty\n";
     return;
@@ -93,11 +93,11 @@ LiveIntervalUnion::print(raw_ostream &OS, const TargetRegisterInfo *TRI) const {
 
 #ifndef NDEBUG
 // Verify the live intervals in this union and add them to the visited set.
-void LiveIntervalUnion::verify(LiveVirtRegBitSet& VisitedVRegs) {
+void LiveIntervalUnion::verify(LiveVirtRegBitSet &VisitedVRegs) {
   for (SegmentIter SI = Segments.begin(); SI.valid(); ++SI)
     VisitedVRegs.set(SI.value()->reg());
 }
-#endif //!NDEBUG
+#endif //! NDEBUG
 
 LiveInterval *LiveIntervalUnion::getOneVReg() const {
   if (empty())
@@ -124,8 +124,8 @@ bool LiveIntervalUnion::Query::isSeenInterference(LiveInterval *VirtReg) const {
 // 2. SeenAllInterferences == true: InterferingVRegs complete, iterators unused.
 // 3. Iterators left at the last seen intersection.
 //
-unsigned LiveIntervalUnion::Query::
-collectInterferingVRegs(unsigned MaxInterferingRegs) {
+unsigned
+LiveIntervalUnion::Query::collectInterferingVRegs(unsigned MaxInterferingRegs) {
   // Fast path return if we already have the desired information.
   if (SeenAllInterferences || InterferingVRegs.size() >= MaxInterferingRegs)
     return InterferingVRegs.size();
@@ -195,10 +195,10 @@ void LiveIntervalUnion::Array::init(LiveIntervalUnion::Allocator &Alloc,
     return;
   clear();
   Size = NSize;
-  LIUs = static_cast<LiveIntervalUnion*>(
-      safe_malloc(sizeof(LiveIntervalUnion)*NSize));
+  LIUs = static_cast<LiveIntervalUnion *>(
+      safe_malloc(sizeof(LiveIntervalUnion) * NSize));
   for (unsigned i = 0; i != Size; ++i)
-    new(LIUs + i) LiveIntervalUnion(Alloc);
+    new (LIUs + i) LiveIntervalUnion(Alloc);
 }
 
 void LiveIntervalUnion::Array::clear() {
@@ -207,6 +207,6 @@ void LiveIntervalUnion::Array::clear() {
   for (unsigned i = 0; i != Size; ++i)
     LIUs[i].~LiveIntervalUnion();
   free(LIUs);
-  Size =  0;
+  Size = 0;
   LIUs = nullptr;
 }

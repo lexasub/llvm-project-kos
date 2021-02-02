@@ -16,10 +16,10 @@
 template <typename T>
 struct S {
   int a;
-// CHECK: template <typename T> struct S {
-// CHECK:     void foo() __attribute__((assume("global_assumption")))     {
+  // CHECK: template <typename T> struct S {
+  // CHECK:     void foo() __attribute__((assume("global_assumption")))     {
   void foo() {
-    #pragma omp parallel
+#pragma omp parallel
     {}
   }
 };
@@ -53,11 +53,11 @@ void S_without_assumes() {
 // Same as the struct S above but the order in which we instantiate P is different, first outside of an assumes.
 template <typename T>
 struct P {
-// CHECK: template <typename T> struct P {
-// CHECK:     void foo() __attribute__((assume("global_assumption")))     {
+  // CHECK: template <typename T> struct P {
+  // CHECK:     void foo() __attribute__((assume("global_assumption")))     {
   int a;
   void foo() {
-    #pragma omp parallel
+#pragma omp parallel
     {}
   }
 };

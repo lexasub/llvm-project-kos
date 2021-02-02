@@ -20,16 +20,13 @@
 #include <iterator>
 
 template <class It>
-void
-test(It i)
-{
-    std::move_iterator<It> r = i;
+void test(It i) {
+  std::move_iterator<It> r = i;
 }
 
-int main(int, char**)
-{
-    char s[] = "123";
-    test(s);
+int main(int, char**) {
+  char s[] = "123";
+  test(s);
 
   return 0;
 }

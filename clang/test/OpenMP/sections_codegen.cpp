@@ -12,9 +12,15 @@
 // CHECK-DAG: [[IMPLICIT_BARRIER_SECTIONS_LOC:@.+]] = private unnamed_addr constant %{{.+}} { i32 0, i32 194, i32 0, i32 0, i8*
 // CHECK-DAG: [[SECTIONS_LOC:@.+]] = private unnamed_addr constant %{{.+}} { i32 0, i32 1026, i32 0, i32 0, i8*
 // CHECK-LABEL: foo
-void foo() { extern void mayThrow(); mayThrow(); };
+void foo() {
+  extern void mayThrow();
+  mayThrow();
+};
 // CHECK-LABEL: bar
-void bar() { extern void mayThrow(); mayThrow(); };
+void bar() {
+  extern void mayThrow();
+  mayThrow();
+};
 
 template <class T>
 T tmain() {
@@ -58,22 +64,22 @@ int main() {
 // CHECK-NEXT: i32 0, label %[[SECTIONS_CASE0:.+]]
 // CHECK-NEXT: i32 1, label %[[SECTIONS_CASE1:.+]]
 #pragma omp section
-// CHECK:      [[SECTIONS_CASE0]]
-// CHECK-NEXT: invoke void @{{.*}}foo{{.*}}()
-// CHECK:      br label %[[SECTIONS_EXIT]]
+    // CHECK:      [[SECTIONS_CASE0]]
+    // CHECK-NEXT: invoke void @{{.*}}foo{{.*}}()
+    // CHECK:      br label %[[SECTIONS_EXIT]]
     foo();
 #pragma omp section
-// CHECK:      [[SECTIONS_CASE1]]
-// CHECK-NEXT: invoke void @{{.*}}bar{{.*}}()
-// CHECK:      br label %[[SECTIONS_EXIT]]
+    // CHECK:      [[SECTIONS_CASE1]]
+    // CHECK-NEXT: invoke void @{{.*}}bar{{.*}}()
+    // CHECK:      br label %[[SECTIONS_EXIT]]
     bar();
-// CHECK:      [[SECTIONS_EXIT]]
-// <<++IV;>>
-// CHECK:      [[IV:%.+]] = load i32, i32* [[IV_PTR]]
-// CHECK-NEXT: [[INC:%.+]] = add nsw i32 [[IV]], 1
-// CHECK-NEXT: store i32 [[INC]], i32* [[IV_PTR]]
-// CHECK-NEXT: br label %[[INNER_FOR_COND]]
-// CHECK:      [[INNER_LOOP_END]]
+    // CHECK:      [[SECTIONS_EXIT]]
+    // <<++IV;>>
+    // CHECK:      [[IV:%.+]] = load i32, i32* [[IV_PTR]]
+    // CHECK-NEXT: [[INC:%.+]] = add nsw i32 [[IV]], 1
+    // CHECK-NEXT: store i32 [[INC]], i32* [[IV_PTR]]
+    // CHECK-NEXT: br label %[[INNER_FOR_COND]]
+    // CHECK:      [[INNER_LOOP_END]]
   }
 // CHECK:      call void @__kmpc_for_static_fini(%{{.+}}* [[SECTIONS_LOC]], i32 [[GTID]])
 // CHECK:      call void @__kmpc_barrier(%{{.+}}* [[IMPLICIT_BARRIER_SECTIONS_LOC]],
@@ -83,7 +89,7 @@ int main() {
 #pragma omp section
     bar();
   }
-// CHECK-NOT:  __kmpc_cancel_barrier
+  // CHECK-NOT:  __kmpc_cancel_barrier
   return tmain<int>();
 }
 

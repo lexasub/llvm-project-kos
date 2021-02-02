@@ -9,4 +9,3 @@ struct FBox {
 namespace {
 FBox InvalidBoundingBox(0);
 }
-

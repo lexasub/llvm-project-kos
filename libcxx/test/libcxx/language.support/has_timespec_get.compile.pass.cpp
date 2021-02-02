@@ -15,5 +15,5 @@
 #include "test_macros.h"
 
 #if defined(TEST_HAS_TIMESPEC_GET) != defined(_LIBCPP_HAS_TIMESPEC_GET)
-#   error "TEST_HAS_TIMESPEC_GET and _LIBCPP_HAS_TIMESPEC_GET are out of sync"
+#error "TEST_HAS_TIMESPEC_GET and _LIBCPP_HAS_TIMESPEC_GET are out of sync"
 #endif

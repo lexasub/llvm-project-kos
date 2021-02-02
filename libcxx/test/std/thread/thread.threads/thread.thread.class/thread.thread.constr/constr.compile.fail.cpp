@@ -14,12 +14,10 @@
 //  This constructor shall not participate in overload resolution
 //       if decay<F>::type is the same type as std::thread.
 
-
 #include <thread>
 
-int main(int, char**)
-{
-    volatile std::thread t1;
-    std::thread t2 ( t1, 1, 2.0 );
-    return 0;
+int main(int, char**) {
+  volatile std::thread t1;
+  std::thread t2(t1, 1, 2.0);
+  return 0;
 }

@@ -14,30 +14,36 @@ int begin(Range); // expected-note {{not viable}}
 int end(Range);
 
 namespace NS {
-  struct ADL {};
-  struct iter {
-    int operator*();
-    bool operator!=(iter);
-    void operator++();
-  };
-  iter begin(ADL); // expected-note {{not viable}}
-  iter end(ADL);
+struct ADL {};
+struct iter {
+  int operator*();
+  bool operator!=(iter);
+  void operator++();
+};
+iter begin(ADL); // expected-note {{not viable}}
+iter end(ADL);
 
-  struct NoADL {};
-}
+struct NoADL {};
+} // namespace NS
 NS::iter begin(NS::NoADL); // expected-note {{not viable}}
 NS::iter end(NS::NoADL);
 
 void f() {
   int a[] = {1, 2, 3};
-  for (auto b : S()) {} // ok
-  for (auto b : T()) {} // expected-error {{invalid range expression of type 'T'}}
-  for (auto b : a) {} // ok
-  for (int b : NS::ADL()) {} // ok
-  for (int b : NS::NoADL()) {} // expected-error {{invalid range expression of type 'NS::NoADL'}}
+  for (auto b : S()) {
+  } // ok
+  for (auto b : T()) {
+  } // expected-error {{invalid range expression of type 'T'}}
+  for (auto b : a) {
+  } // ok
+  for (int b : NS::ADL()) {
+  } // ok
+  for (int b : NS::NoADL()) {
+  } // expected-error {{invalid range expression of type 'NS::NoADL'}}
 }
 
 void PR11601() {
   void (*vv[])() = {PR11601, PR11601, PR11601};
-  for (void (*i)() : vv) i();
+  for (void (*i)() : vv)
+    i();
 }

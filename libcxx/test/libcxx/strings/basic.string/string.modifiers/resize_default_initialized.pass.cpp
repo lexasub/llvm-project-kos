@@ -15,15 +15,14 @@
 
 #include "test_macros.h"
 
-void write_c_str(char *buf, int size) {
-  for (int i=0; i < size; ++i) {
+void write_c_str(char* buf, int size) {
+  for (int i = 0; i < size; ++i) {
     buf[i] = 'a';
   }
   buf[size] = '\0';
 }
 
-void test_buffer_usage()
-{
+void test_buffer_usage() {
   {
     unsigned buff_size = 125;
     unsigned used_size = buff_size - 16;
@@ -35,7 +34,7 @@ void test_buffer_usage()
     s.__resize_default_init(used_size);
     assert(s.size() == used_size);
     assert(s.data()[used_size] == '\0');
-    for (unsigned i=0; i < used_size; ++i) {
+    for (unsigned i = 0; i < used_size; ++i) {
       assert(s[i] == 'a');
     }
   }
@@ -47,7 +46,7 @@ void test_basic() {
     s.__resize_default_init(3);
     assert(s.size() == 3);
     assert(s.data()[3] == '\0');
-    for (int i=0; i < 3; ++i)
+    for (int i = 0; i < 3; ++i)
       s[i] = 'a' + i;
     s.__resize_default_init(1);
     assert(s[0] == 'a');

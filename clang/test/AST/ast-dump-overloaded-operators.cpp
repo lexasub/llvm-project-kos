@@ -8,13 +8,13 @@
 // RUN: | FileCheck -strict-whitespace %s
 
 enum E {};
-void operator+(E,E);
-void operator,(E,E);
+void operator+(E, E);
+void operator,(E, E);
 
 void test() {
   E e;
   e + e;
-  e , e;
+  e, e;
 }
 // CHECK: TranslationUnitDecl {{.*}} <<invalid sloc>> <invalid sloc>{{( <undeserialized declarations>)?}}
 // CHECK: |-EnumDecl {{.*}} <{{.*}}ast-dump-overloaded-operators.cpp:10:1, col:9> col:6{{( imported)?}} referenced E

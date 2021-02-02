@@ -3,14 +3,14 @@
 template <class> auto fn0 = [] {};
 template <typename> void foo0() { fn0<char>(); }
 
-template<typename T> auto fn1 = [](auto a) { return a + T(1); };
-template<typename T> auto v1 = [](int a = T()) { return a; }();
+template <typename T> auto fn1 = [](auto a) { return a + T(1); };
+template <typename T> auto v1 = [](int a = T()) { return a; }();
 // expected-error@-1{{cannot initialize a parameter of type 'int' with an rvalue of type 'int *'}}
 // expected-note@-2{{passing argument to parameter 'a' here}}
 
 struct S {
-  template<class T>
-  static constexpr T t = [](int f = T(7)){return f;}(); // expected-error{{constexpr variable 't<int>' must be initialized by a constant expression}} expected-note{{cannot be used in a constant expression}}
+  template <class T>
+  static constexpr T t = [](int f = T(7)) { return f; }(); // expected-error{{constexpr variable 't<int>' must be initialized by a constant expression}} expected-note{{cannot be used in a constant expression}}
 };
 
 template <typename X>
@@ -23,14 +23,14 @@ int foo2() {
   return 0;
 }
 
-template<class C>
+template <class C>
 int foo3() {
   C::m1(); // expected-error{{type 'long long' cannot be used prior to '::' because it has no members}}
   return 1;
 }
 
-template<class C>
-auto v2 = [](int a = foo3<C>()){};  // expected-note{{in instantiation of function template specialization 'foo3<long long>' requested here}}
+template <class C>
+auto v2 = [](int a = foo3<C>()) {}; // expected-note{{in instantiation of function template specialization 'foo3<long long>' requested here}}
 
 int main() {
   v2<long long>();  // This line causes foo3<long long> to be instantiated.

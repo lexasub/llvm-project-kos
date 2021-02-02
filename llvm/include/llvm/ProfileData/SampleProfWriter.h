@@ -187,6 +187,7 @@ const std::array<SmallVector<SecHdrTableEntry, 8>, NumOfLayout>
 
 class SampleProfileWriterExtBinaryBase : public SampleProfileWriterBinary {
   using SampleProfileWriterBinary::SampleProfileWriterBinary;
+
 public:
   virtual std::error_code
   write(const StringMap<FunctionSamples> &ProfileMap) override;

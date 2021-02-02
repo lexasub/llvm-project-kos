@@ -24,24 +24,25 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    using month_weekday   = std::chrono::month_weekday;
-    using month           = std::chrono::month;
-    using weekday         = std::chrono::weekday;
-    using weekday_indexed = std::chrono::weekday_indexed;
+int main(int, char**) {
+  using month_weekday = std::chrono::month_weekday;
+  using month = std::chrono::month;
+  using weekday = std::chrono::weekday;
+  using weekday_indexed = std::chrono::weekday_indexed;
 
-    ASSERT_NOEXCEPT(month_weekday{month{1}, weekday_indexed{weekday{}, 1}});
+  ASSERT_NOEXCEPT(month_weekday{month{1}, weekday_indexed{weekday{}, 1}});
 
-    constexpr month_weekday md0{month{}, weekday_indexed{}};
-    static_assert( md0.month()           == month{},           "");
-    static_assert( md0.weekday_indexed() == weekday_indexed{}, "");
-    static_assert(!md0.ok(),                                   "");
+  constexpr month_weekday md0{month{}, weekday_indexed{}};
+  static_assert(md0.month() == month{}, "");
+  static_assert(md0.weekday_indexed() == weekday_indexed{}, "");
+  static_assert(!md0.ok(), "");
 
-    constexpr month_weekday md1{std::chrono::January, weekday_indexed{std::chrono::Friday, 4}};
-    static_assert( md1.month() == std::chrono::January,                              "");
-    static_assert( md1.weekday_indexed() == weekday_indexed{std::chrono::Friday, 4}, "");
-    static_assert( md1.ok(),                                                         "");
+  constexpr month_weekday md1{std::chrono::January,
+                              weekday_indexed{std::chrono::Friday, 4}};
+  static_assert(md1.month() == std::chrono::January, "");
+  static_assert(
+      md1.weekday_indexed() == weekday_indexed{std::chrono::Friday, 4}, "");
+  static_assert(md1.ok(), "");
 
   return 0;
 }

@@ -31,7 +31,7 @@ public:
   std::string getSourceFileName() const;
   std::string getSourceFileFullPath() const;
 };
-}
-}
+} // namespace pdb
+} // namespace llvm
 
 #endif // LLVM_DEBUGINFO_PDB_PDBSYMBOLCOMPILAND_H

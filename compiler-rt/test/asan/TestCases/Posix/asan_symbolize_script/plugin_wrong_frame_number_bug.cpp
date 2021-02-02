@@ -10,7 +10,7 @@
 
 #include <stdlib.h>
 
-int* p;
+int *p;
 extern "C" {
 
 void bug() {
@@ -32,8 +32,8 @@ void do_access() {
   do_access_impl();
 }
 
-int main(int argc, char** argv) {
-  p = (int*) malloc(sizeof(p));
+int main(int argc, char **argv) {
+  p = (int *)malloc(sizeof(p));
   foo(argc > 1);
   do_access();
   free(p);

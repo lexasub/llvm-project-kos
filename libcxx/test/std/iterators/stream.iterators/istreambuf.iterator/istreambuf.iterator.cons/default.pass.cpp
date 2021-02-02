@@ -21,26 +21,25 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        typedef std::istreambuf_iterator<char> T;
-        T it;
-        assert(it == T());
+int main(int, char**) {
+  {
+    typedef std::istreambuf_iterator<char> T;
+    T it;
+    assert(it == T());
 #if TEST_STD_VER >= 11
-        constexpr T it2;
-        (void)it2;
+    constexpr T it2;
+    (void)it2;
 #endif
-    }
-    {
-        typedef std::istreambuf_iterator<wchar_t> T;
-        T it;
-        assert(it == T());
+  }
+  {
+    typedef std::istreambuf_iterator<wchar_t> T;
+    T it;
+    assert(it == T());
 #if TEST_STD_VER >= 11
-        constexpr T it2;
-        (void)it2;
+    constexpr T it2;
+    (void)it2;
 #endif
-    }
+  }
 
   return 0;
 }

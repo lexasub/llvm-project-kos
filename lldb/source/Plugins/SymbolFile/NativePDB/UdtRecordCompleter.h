@@ -26,7 +26,7 @@ namespace llvm {
 namespace pdb {
 class TpiStream;
 class GlobalsStream;
-}
+} // namespace pdb
 } // namespace llvm
 
 namespace lldb_private {

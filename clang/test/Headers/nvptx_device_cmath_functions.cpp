@@ -10,7 +10,7 @@
 #include <cstdlib>
 
 void test_sqrt(double a1) {
-  #pragma omp target
+#pragma omp target
   {
     // CHECK-YES: call double @__nv_sqrt(double
     double l1 = sqrt(a1);

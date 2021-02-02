@@ -186,4 +186,4 @@ TEST(SparseBitVectorTest, Find) {
 
   Vec.clear();
 }
-}
+} // namespace

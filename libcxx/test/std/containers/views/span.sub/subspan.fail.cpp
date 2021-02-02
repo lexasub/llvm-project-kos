@@ -30,22 +30,30 @@ int main(int, char**) {
 
   //  Offset too large templatized
   {
-    [[maybe_unused]] auto s1 = sp.subspan<5>(); // expected-error-re@span:* {{static_assert failed{{( due to requirement '.*')?}} "Offset out of range in span::subspan()"}}
+    [[maybe_unused]] auto s1 = sp.subspan<
+        5>(); // expected-error-re@span:* {{static_assert failed{{( due to requirement '.*')?}} "Offset out of range in span::subspan()"}}
   }
 
   //  Count too large templatized
   {
-    [[maybe_unused]] auto s1 = sp.subspan<0, 5>(); // expected-error-re@span:* {{static_assert failed{{( due to requirement '.*')?}} "Offset + count out of range in span::subspan()"}}
+    [[maybe_unused]] auto s1 = sp.subspan<
+        0,
+        5>(); // expected-error-re@span:* {{static_assert failed{{( due to requirement '.*')?}} "Offset + count out of range in span::subspan()"}}
   }
 
   //  Offset + Count too large templatized
   {
-    [[maybe_unused]] auto s1 = sp.subspan<2, 3>(); // expected-error-re@span:* {{static_assert failed{{( due to requirement '.*')?}} "Offset + count out of range in span::subspan()"}}
+    [[maybe_unused]] auto s1 = sp.subspan<
+        2,
+        3>(); // expected-error-re@span:* {{static_assert failed{{( due to requirement '.*')?}} "Offset + count out of range in span::subspan()"}}
   }
 
   //  Offset + Count overflow templatized
   {
-    [[maybe_unused]] auto s1 = sp.subspan<3, std::size_t(-2)>(); // expected-error-re@span:* {{static_assert failed{{( due to requirement '.*')?}} "Offset + count out of range in span::subspan()"}}, expected-error-re@span:* {{array is too large{{(.* elements)}}}}
+    [[maybe_unused]] auto s1 = sp.subspan<
+        3,
+        std::size_t(
+            -2)>(); // expected-error-re@span:* {{static_assert failed{{( due to requirement '.*')?}} "Offset + count out of range in span::subspan()"}}, expected-error-re@span:* {{array is too large{{(.* elements)}}}}
   }
 
   return 0;

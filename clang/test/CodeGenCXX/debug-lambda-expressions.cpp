@@ -1,18 +1,31 @@
 // RUN: %clang_cc1 -triple x86_64-apple-darwin10.0.0 -emit-llvm -o - %s -fexceptions -std=c++11 -debug-info-kind=limited | FileCheck %s
 
-auto var = [](int i) { return i+1; };
+auto var = [](int i) { return i + 1; };
 void *use = &var;
 
-extern "C" auto cvar = []{};
+extern "C" auto cvar = [] {};
 
-int a() { return []{ return 1; }(); }
+int a() {
+  return [] { return 1; }();
+}
 
-int b(int x) { return [x]{return x;}(); }
+int b(int x) {
+  return [x] { return x; }();
+}
 
-int c(int x) { return [&x]{return x;}(); }
+int c(int x) {
+  return [&x] { return x; }();
+}
 
-struct D { D(); D(const D&); int x; };
-int d(int x) { D y[10]; return [x,y] { return y[x].x; }(); }
+struct D {
+  D();
+  D(const D &);
+  int x;
+};
+int d(int x) {
+  D y[10];
+  return [x, y] { return y[x].x; }();
+}
 
 // Randomness for file. -- 6
 

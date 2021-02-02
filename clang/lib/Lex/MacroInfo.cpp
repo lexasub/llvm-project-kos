@@ -51,10 +51,9 @@ unsigned MacroInfo::getDefinitionLengthSlow(const SourceManager &SM) const {
          "Macro defined in macro?");
   assert((macroEnd.isFileID() || lastToken.is(tok::comment)) &&
          "Macro defined in macro?");
-  std::pair<FileID, unsigned>
-      startInfo = SM.getDecomposedExpansionLoc(macroStart);
-  std::pair<FileID, unsigned>
-      endInfo = SM.getDecomposedExpansionLoc(macroEnd);
+  std::pair<FileID, unsigned> startInfo =
+      SM.getDecomposedExpansionLoc(macroStart);
+  std::pair<FileID, unsigned> endInfo = SM.getDecomposedExpansionLoc(macroEnd);
   assert(startInfo.first == endInfo.first &&
          "Macro definition spanning multiple FileIDs ?");
   assert(startInfo.second <= endInfo.second);
@@ -88,7 +87,8 @@ bool MacroInfo::isIdenticalTo(const MacroInfo &Other, Preprocessor &PP,
     for (param_iterator I = param_begin(), OI = Other.param_begin(),
                         E = param_end();
          I != E; ++I, ++OI)
-      if (*I != *OI) return false;
+      if (*I != *OI)
+        return false;
   }
 
   // Check all the tokens.
@@ -100,9 +100,8 @@ bool MacroInfo::isIdenticalTo(const MacroInfo &Other, Preprocessor &PP,
 
     // If this isn't the first first token, check that the whitespace and
     // start-of-line characteristics match.
-    if (i != 0 &&
-        (A.isAtStartOfLine() != B.isAtStartOfLine() ||
-         A.hasLeadingSpace() != B.hasLeadingSpace()))
+    if (i != 0 && (A.isAtStartOfLine() != B.isAtStartOfLine() ||
+                   A.hasLeadingSpace() != B.hasLeadingSpace()))
       return false;
 
     // If this is an identifier, it is easy.
@@ -134,23 +133,30 @@ LLVM_DUMP_METHOD void MacroInfo::dump() const {
 
   // FIXME: Dump locations.
   Out << "MacroInfo " << this;
-  if (IsBuiltinMacro) Out << " builtin";
-  if (IsDisabled) Out << " disabled";
-  if (IsUsed) Out << " used";
+  if (IsBuiltinMacro)
+    Out << " builtin";
+  if (IsDisabled)
+    Out << " disabled";
+  if (IsUsed)
+    Out << " used";
   if (IsAllowRedefinitionsWithoutWarning)
     Out << " allow_redefinitions_without_warning";
-  if (IsWarnIfUnused) Out << " warn_if_unused";
-  if (UsedForHeaderGuard) Out << " header_guard";
+  if (IsWarnIfUnused)
+    Out << " warn_if_unused";
+  if (UsedForHeaderGuard)
+    Out << " header_guard";
 
   Out << "\n    #define <macro>";
   if (IsFunctionLike) {
     Out << "(";
     for (unsigned I = 0; I != NumParameters; ++I) {
-      if (I) Out << ", ";
+      if (I)
+        Out << ", ";
       Out << ParameterList[I]->getName();
     }
     if (IsC99Varargs || IsGNUVarargs) {
-      if (NumParameters && IsC99Varargs) Out << ", ";
+      if (NumParameters && IsC99Varargs)
+        Out << ", ";
       Out << "...";
     }
     Out << ")";
@@ -203,11 +209,13 @@ MacroDirective::findDirectiveAtLoc(SourceLocation L,
                                    const SourceManager &SM) const {
   assert(L.isValid() && "SourceLocation is invalid.");
   for (DefInfo Def = getDefinition(); Def; Def = Def.getPreviousDefinition()) {
-    if (Def.getLocation().isInvalid() ||  // For macros defined on the command line.
+    if (Def.getLocation()
+            .isInvalid() || // For macros defined on the command line.
         SM.isBeforeInTranslationUnit(Def.getLocation(), L))
       return (!Def.isUndefined() ||
               SM.isBeforeInTranslationUnit(L, Def.getUndefLocation()))
-                  ? Def : DefInfo();
+                 ? Def
+                 : DefInfo();
   }
   return DefInfo();
 }
@@ -216,15 +224,22 @@ LLVM_DUMP_METHOD void MacroDirective::dump() const {
   llvm::raw_ostream &Out = llvm::errs();
 
   switch (getKind()) {
-  case MD_Define: Out << "DefMacroDirective"; break;
-  case MD_Undefine: Out << "UndefMacroDirective"; break;
-  case MD_Visibility: Out << "VisibilityMacroDirective"; break;
+  case MD_Define:
+    Out << "DefMacroDirective";
+    break;
+  case MD_Undefine:
+    Out << "UndefMacroDirective";
+    break;
+  case MD_Visibility:
+    Out << "VisibilityMacroDirective";
+    break;
   }
   Out << " " << this;
   // FIXME: Dump SourceLocation.
   if (auto *Prev = getPrevious())
     Out << " prev " << Prev;
-  if (IsFromPCH) Out << " from_pch";
+  if (IsFromPCH)
+    Out << " from_pch";
 
   if (isa<VisibilityMacroDirective>(this))
     Out << (IsPublic ? " public" : " private");

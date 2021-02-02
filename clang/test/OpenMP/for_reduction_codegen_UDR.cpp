@@ -38,18 +38,24 @@ struct S : public BaseS, public BaseS1 {
   T f;
   S(T a) : f(a + g) {}
   S() : f(g) {}
-  S& operator=(const S&);
+  S &operator=(const S &);
   ~S() {}
 };
-void red(BaseS1&, const BaseS1&);
-void red_plus(BaseS1&, const BaseS1&);
-void init(BaseS1&, const BaseS1&);
-void init1(BaseS1&, const BaseS1&);
-void init2(BaseS1&, const BaseS1&);
-void init_plus(BaseS1&, const BaseS1&);
-#pragma omp declare reduction(operator& : BaseS1 : red(omp_out, omp_in)) initializer(init(omp_priv, omp_orig))
-#pragma omp declare reduction(+ : BaseS1 : red_plus(omp_out, omp_in)) initializer(init_plus(omp_priv, omp_orig))
-#pragma omp declare reduction(&& : S<float>, S<int> : omp_out.f *= omp_in.f) initializer(init1(omp_priv, omp_orig))
+void red(BaseS1 &, const BaseS1 &);
+void red_plus(BaseS1 &, const BaseS1 &);
+void init(BaseS1 &, const BaseS1 &);
+void init1(BaseS1 &, const BaseS1 &);
+void init2(BaseS1 &, const BaseS1 &);
+void init_plus(BaseS1 &, const BaseS1 &);
+#pragma omp declare reduction(operator& \
+                              : BaseS1  \
+                              : red(omp_out, omp_in)) initializer(init(omp_priv, omp_orig))
+#pragma omp declare reduction(+        \
+                              : BaseS1 \
+                              : red_plus(omp_out, omp_in)) initializer(init_plus(omp_priv, omp_orig))
+#pragma omp declare reduction(&&                   \
+                              : S <float>, S <int> \
+                              : omp_out.f *= omp_in.f) initializer(init1(omp_priv, omp_orig))
 
 // CHECK-DAG: [[S_FLOAT_TY:%.+]] = type { %{{[^,]+}}, %{{[^,]+}}, float }
 // CHECK-DAG: [[S_INT_TY:%.+]] = type { %{{[^,]+}}, %{{[^,]+}}, i{{[0-9]+}} }
@@ -57,7 +63,9 @@ void init_plus(BaseS1&, const BaseS1&);
 // CHECK-DAG: [[REDUCTION_LOC:@.+]] = private unnamed_addr constant %struct.ident_t { i32 0, i32 18, i32 0, i32 0, i8*
 // CHECK-DAG: [[REDUCTION_LOCK:@.+]] = common global [8 x i32] zeroinitializer
 
-#pragma omp declare reduction(operator* : S<int> : omp_out.f = 17 * omp_in.f) initializer(omp_priv = S<int>())
+#pragma omp declare reduction(operator* \
+                              : S <int> \
+                              : omp_out.f = 17 * omp_in.f) initializer(omp_priv = S <int>())
 // CHECK-LABEL: bazz
 void bazz() {
   S<int> s;
@@ -67,7 +75,8 @@ void bazz() {
 // CHECK: call {{.*}} [[S_INT_TY_DESTR:@.+]]([[S_INT_TY]]*
 // CHECK: ret void
 #pragma omp parallel
-#pragma omp simd reduction(*: s)
+#pragma omp simd reduction(* \
+                           : s)
   for (int I = 0; I < 10; ++I)
     ;
 }
@@ -85,7 +94,9 @@ void bazz() {
 // CHECK: call void [[S_INT_TY_CONSTR]]([[S_INT_TY]]* {{[^,]*}} [[S_PRIV_ADDR]])
 // CHECK-NEXT: ret void
 
-#pragma omp declare reduction(operator&& : int : omp_out = 111 & omp_in)
+#pragma omp declare reduction(operator&& \
+                              : int      \
+                              : omp_out = 111 & omp_in)
 template <typename T, int length>
 T tmain() {
   T t;
@@ -96,25 +107,40 @@ T tmain() {
   S<T> &var = test;
   S<T> var1;
   S<T> arr[length];
-#pragma omp declare reduction(operator& : T : omp_out = 15 + omp_in)
-#pragma omp declare reduction(operator+ : T : omp_out = 1513 + omp_in) initializer(omp_priv = 321)
-#pragma omp declare reduction(min : T : omp_out = 47 - omp_in) initializer(omp_priv = 432 / omp_orig)
-#pragma omp declare reduction(operator&& : S<T> : omp_out.f = 17 * omp_in.f) initializer(init2(omp_priv, omp_orig))
-#pragma omp declare reduction(operator&& : T : omp_out = 17 * omp_in)
+#pragma omp declare reduction(operator& \
+                              : T       \
+                              : omp_out = 15 + omp_in)
+#pragma omp declare reduction(operator+ \
+                              : T       \
+                              : omp_out = 1513 + omp_in) initializer(omp_priv = 321)
+#pragma omp declare reduction(min:T \
+                              : omp_out = 47 - omp_in) initializer(omp_priv = 432 / omp_orig)
+#pragma omp declare reduction(operator&& \
+                              : S <T>    \
+                              : omp_out.f = 17 * omp_in.f) initializer(init2(omp_priv, omp_orig))
+#pragma omp declare reduction(operator&& \
+                              : T        \
+                              : omp_out = 17 * omp_in)
 #pragma omp parallel
-#pragma omp for reduction(+ : t_var) reduction(& : var) reduction(&& : var1) reduction(min : t_var1) nowait
+#pragma omp for reduction(+                                                         \
+                          : t_var) reduction(&                                      \
+                                             : var) reduction(&&                    \
+                                                              : var1) reduction(min \
+                                                                                : t_var1) nowait
   for (int i = 0; i < 2; ++i) {
     vec[i] = t_var;
     s_arr[i] = var;
   }
 #pragma omp parallel
-#pragma omp for reduction(&& : t_var)
+#pragma omp for reduction(&& \
+                          : t_var)
   for (int i = 0; i < 2; ++i) {
     vec[i] = t_var;
     s_arr[i] = var;
   }
 #pragma omp parallel
-#pragma omp for reduction(+ : arr[1:length-2])
+#pragma omp for reduction(+ \
+                          : arr [1:length - 2])
   for (int i = 0; i < 2; ++i) {
     vec[i] = t_var;
     s_arr[i] = var;
@@ -124,10 +150,16 @@ T tmain() {
 
 extern S<float> **foo();
 
-#pragma omp declare reduction(operator- : float, double : omp_out = 333 + omp_in)
-#pragma omp declare reduction(min : float, double : omp_out = 555 + omp_in)
+#pragma omp declare reduction(operator-       \
+                              : float, double \
+                              : omp_out = 333 + omp_in)
+#pragma omp declare reduction(min             \
+                              : float, double \
+                              : omp_out = 555 + omp_in)
 int main() {
-#pragma omp declare reduction(operator+ : float, double : omp_out = 222 - omp_in) initializer(omp_priv = -1)
+#pragma omp declare reduction(operator+       \
+                              : float, double \
+                              : omp_out = 222 - omp_in) initializer(omp_priv = -1)
   S<float> test;
   float t_var = 0, t_var1;
   int vec[] = {1, 2};
@@ -137,35 +169,50 @@ int main() {
   S<float> **var2 = foo();
   S<float> vvar2[5];
   S<float>(&var3)[4] = s_arr;
-#pragma omp declare reduction(operator+ : int : omp_out = 555 * omp_in) initializer(omp_priv = 888)
+#pragma omp declare reduction(operator+ \
+                              : int     \
+                              : omp_out = 555 * omp_in) initializer(omp_priv = 888)
 #pragma omp parallel
-#pragma omp for reduction(+ : t_var) reduction(& : var) reduction(&& : var1) reduction(min : t_var1)
+#pragma omp for reduction(+                                                         \
+                          : t_var) reduction(&                                      \
+                                             : var) reduction(&&                    \
+                                                              : var1) reduction(min \
+                                                                                : t_var1)
   for (int i = 0; i < 2; ++i) {
     vec[i] = t_var;
     s_arr[i] = var;
   }
   int arr[10][vec[1]];
-#pragma omp parallel for reduction(+ : arr[1][ : vec[1]]) reduction(& : arrs[1 : vec[1]][1 : 2])
+#pragma omp parallel for reduction(+                              \
+                                   : arr[1][:vec[1]]) reduction(& \
+                                                                : arrs [1:vec[1]] [1:2])
   for (int i = 0; i < 10; ++i)
     ++arr[1][i];
 #pragma omp parallel
-#pragma omp for reduction(+ : arr) reduction(& : arrs)
+#pragma omp for reduction(+                  \
+                          : arr) reduction(& \
+                                           : arrs)
   for (int i = 0; i < 10; ++i)
     ++arr[1][i];
 #pragma omp parallel
-#pragma omp for reduction(& : var2[0 : 5][1 : 6])
+#pragma omp for reduction(& \
+                          : var2 [0:5] [1:6])
   for (int i = 0; i < 10; ++i)
     ;
 #pragma omp parallel
-#pragma omp for reduction(& : vvar2[0 : 5])
+#pragma omp for reduction(& \
+                          : vvar2 [0:5])
   for (int i = 0; i < 10; ++i)
     ;
 #pragma omp parallel
-#pragma omp for reduction(& : var3[1 : 2])
+#pragma omp for reduction(& \
+                          : var3 [1:2])
   for (int i = 0; i < 10; ++i)
     ;
 #pragma omp parallel
-#pragma omp for reduction(& : var3) allocate(omp_cgroup_mem_alloc: var3)
+#pragma omp for reduction(&                                     \
+                          : var3) allocate(omp_cgroup_mem_alloc \
+                                           : var3)
   for (int i = 0; i < 10; ++i)
     ;
   return tmain<int, 42>();
@@ -1103,4 +1150,3 @@ int main() {
 // CHECK: ret void
 
 #endif
-

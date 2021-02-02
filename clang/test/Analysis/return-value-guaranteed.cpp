@@ -2,7 +2,9 @@
 // RUN:  -analyzer-checker=core,apiModeling.llvm.ReturnValue \
 // RUN:  -analyzer-output=text -verify=class %s
 
-struct Foo { int Field; };
+struct Foo {
+  int Field;
+};
 bool problem();
 void doSomething();
 
@@ -51,7 +53,6 @@ bool parseFile() {
 }
 } // namespace test_classes
 
-
 // We predefined 'MCAsmParser::Error' as returning true, but now it returns
 // false, which breaks our invariant. Test the notes.
 namespace test_break {
@@ -91,4 +92,4 @@ bool parseFile() {
   // class-note@-2 {{Division by zero}}
   return false;
 }
-} // namespace test_classes
+} // namespace test_break

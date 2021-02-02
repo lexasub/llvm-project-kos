@@ -119,5 +119,5 @@ template <> struct BPIPassTrait<LazyBranchProbabilityInfoPass> {
     return P->getBPI();
   }
 };
-}
+} // namespace llvm
 #endif

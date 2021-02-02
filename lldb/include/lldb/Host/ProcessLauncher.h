@@ -21,6 +21,6 @@ public:
   virtual HostProcess LaunchProcess(const ProcessLaunchInfo &launch_info,
                                     Status &error) = 0;
 };
-}
+} // namespace lldb_private
 
 #endif

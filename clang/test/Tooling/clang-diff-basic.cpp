@@ -9,13 +9,15 @@ void foo() {
   // CHECK: Match IntegerLiteral: 321{{.*}} to IntegerLiteral: 322
   int x = 322;
 }
-}
+} // namespace inner
 
 // CHECK: Match DeclRefExpr: :foo{{.*}} to DeclRefExpr: :inner::foo
 void main() { inner::foo(); }
 
 // CHECK: Match StringLiteral: foo{{.*}} to StringLiteral: foo
-const char *b = "f" "o" "o";
+const char *b = "f"
+                "o"
+                "o";
 
 // unsigned is canonicalized to unsigned int
 // CHECK: Match TypedefDecl: :nat;unsigned int;{{.*}} to TypedefDecl: :nat;unsigned int;
@@ -38,20 +40,28 @@ class X {
       return "foo";
     return 0;
   }
-  X(){}
+  X() {}
 };
-}
+} // namespace dst
 
 // CHECK: Move CompoundStmt{{.*}} into CompoundStmt
-void m() { { int x = 0 + 0 + 0; } }
+void m() {
+  { int x = 0 + 0 + 0; }
+}
 // CHECK: Update and Move IntegerLiteral: 7{{.*}} into BinaryOperator: +({{.*}}) at 1
 int um = 1 + 7;
 
 namespace {
 // match with parents of different type
 // CHECK: Match FunctionDecl: f1{{.*}} to FunctionDecl: (anonymous namespace)::f1
-void f1() {{ (void) __func__;;; }}
+void f1() {
+  {
+    (void)__func__;
+    ;
+    ;
+  }
 }
+} // namespace
 
 // CHECK: Delete AccessSpecDecl: public
 // CHECK: Delete CXXMethodDecl

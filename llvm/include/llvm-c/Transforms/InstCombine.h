@@ -37,4 +37,3 @@ void LLVMAddInstructionCombiningPass(LLVMPassManagerRef PM);
 LLVM_C_EXTERN_C_END
 
 #endif
-

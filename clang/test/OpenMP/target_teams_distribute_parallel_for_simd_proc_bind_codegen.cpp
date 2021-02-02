@@ -31,16 +31,19 @@ struct S {
 template <typename T>
 T tmain() {
 #pragma omp target teams distribute parallel for simd proc_bind(master)
-  for(int i = 0; i < 1000; i++) {}
+  for (int i = 0; i < 1000; i++) {
+  }
   return T();
 }
 
 int main() {
   // CHECK-LABEL: @main
 #pragma omp target teams distribute parallel for simd proc_bind(spread)
-  for(int i = 0; i < 1000; i++) {}
+  for (int i = 0; i < 1000; i++) {
+  }
 #pragma omp target teams distribute parallel for simd proc_bind(close)
-  for(int i = 0; i < 1000; i++) {}
+  for (int i = 0; i < 1000; i++) {
+  }
   return tmain<int>();
 }
 

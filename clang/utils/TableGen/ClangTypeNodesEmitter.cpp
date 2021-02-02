@@ -65,7 +65,8 @@ using namespace clang::tblgen;
 #define AbstractTypeMacroName "ABSTRACT_TYPE"
 #define DependentTypeMacroName "DEPENDENT_TYPE"
 #define NonCanonicalTypeMacroName "NON_CANONICAL_TYPE"
-#define NonCanonicalUnlessDependentTypeMacroName "NON_CANONICAL_UNLESS_DEPENDENT_TYPE"
+#define NonCanonicalUnlessDependentTypeMacroName                               \
+  "NON_CANONICAL_UNLESS_DEPENDENT_TYPE"
 #define TypeMacroArgs "(Class, Base)"
 #define LastTypeMacroName "LAST_TYPE"
 #define LeafTypeMacroName "LEAF_TYPE"
@@ -76,14 +77,13 @@ namespace {
 class TypeNodeEmitter {
   RecordKeeper &Records;
   raw_ostream &Out;
-  const std::vector<Record*> Types;
+  const std::vector<Record *> Types;
   std::vector<StringRef> MacrosToUndef;
 
 public:
   TypeNodeEmitter(RecordKeeper &records, raw_ostream &out)
-    : Records(records), Out(out),
-      Types(Records.getAllDerivedDefinitions(TypeNodeClassName)) {
-  }
+      : Records(records), Out(out),
+        Types(Records.getAllDerivedDefinitions(TypeNodeClassName)) {}
 
   void emit();
 
@@ -98,7 +98,7 @@ private:
   void addMacroToUndef(StringRef macroName);
   void emitUndefs();
 };
-}
+} // namespace
 
 void TypeNodeEmitter::emit() {
   if (Types.empty())
@@ -112,7 +112,7 @@ void TypeNodeEmitter::emit() {
   emitFallbackDefine(AbstractTypeMacroName, TypeMacroName, TypeMacroArgs);
   emitFallbackDefine(NonCanonicalTypeMacroName, TypeMacroName, TypeMacroArgs);
   emitFallbackDefine(DependentTypeMacroName, TypeMacroName, TypeMacroArgs);
-  emitFallbackDefine(NonCanonicalUnlessDependentTypeMacroName, TypeMacroName, 
+  emitFallbackDefine(NonCanonicalUnlessDependentTypeMacroName, TypeMacroName,
                      TypeMacroArgs);
 
   // Invocations.
@@ -127,8 +127,8 @@ void TypeNodeEmitter::emitFallbackDefine(StringRef macroName,
                                          StringRef fallbackMacroName,
                                          StringRef args) {
   Out << "#ifndef " << macroName << "\n";
-  Out << "#  define " << macroName << args
-      << " " << fallbackMacroName << args << "\n";
+  Out << "#  define " << macroName << args << " " << fallbackMacroName << args
+      << "\n";
   Out << "#endif\n";
 
   addMacroToUndef(macroName);
@@ -140,7 +140,8 @@ void TypeNodeEmitter::emitNodeInvocations() {
   visitASTNodeHierarchy<TypeNode>(Records, [&](TypeNode type, TypeNode base) {
     // If this is the Type node itself, skip it; it can't be handled
     // uniformly by metaprograms because it doesn't have a base.
-    if (!base) return;
+    if (!base)
+      return;
 
     // Figure out which macro to use.
     StringRef macroName;
@@ -148,8 +149,8 @@ void TypeNodeEmitter::emitNodeInvocations() {
       if (!macroName.empty())
         PrintFatalError(type.getLoc(),
                         Twine("conflict when computing macro name for "
-                              "Type node: trying to use both \"")
-                          + macroName + "\" and \"" + newName + "\"");
+                              "Type node: trying to use both \"") +
+                            macroName + "\" and \"" + newName + "\"");
       macroName = newName;
     };
     if (type.isSubClassOf(AlwaysDependentClassName))
@@ -164,8 +165,8 @@ void TypeNodeEmitter::emitNodeInvocations() {
       macroName = TypeMacroName;
 
     // Generate the invocation line.
-    Out << macroName << "(" << type.getId() << ", "
-        << base.getClassName() << ")\n";
+    Out << macroName << "(" << type.getId() << ", " << base.getClassName()
+        << ")\n";
 
     lastType = type;
   });
@@ -175,8 +176,8 @@ void TypeNodeEmitter::emitNodeInvocations() {
 
 void TypeNodeEmitter::emitLastNodeInvocation(TypeNode type) {
   // We check that this is non-empty earlier.
-  Out << "#ifdef " LastTypeMacroName "\n"
-         LastTypeMacroName "(" << type.getId() << ")\n"
+  Out << "#ifdef " LastTypeMacroName "\n" LastTypeMacroName "(" << type.getId()
+      << ")\n"
          "#undef " LastTypeMacroName "\n"
          "#endif\n";
 }
@@ -185,7 +186,8 @@ void TypeNodeEmitter::emitLeafNodeInvocations() {
   Out << "#ifdef " LeafTypeMacroName "\n";
 
   for (TypeNode type : Types) {
-    if (!type.isSubClassOf(LeafTypeClassName)) continue;
+    if (!type.isSubClassOf(LeafTypeClassName))
+      continue;
     Out << LeafTypeMacroName "(" << type.getId() << ")\n";
   }
 

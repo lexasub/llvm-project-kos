@@ -21,4 +21,3 @@ int main() {
   delete[] buf;
   return result;
 }
-

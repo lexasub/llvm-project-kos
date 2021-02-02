@@ -78,7 +78,6 @@ public:
 
 private:
   TargetTransformInfoWrapperPass *TTIWP;
-
 };
 
 } // end anonymous namespace
@@ -100,8 +99,7 @@ Pass *llvm::createFunctionInliningPass(int Threshold) {
   return new SimpleInliner(llvm::getInlineParams(Threshold));
 }
 
-Pass *llvm::createFunctionInliningPass(unsigned OptLevel,
-                                       unsigned SizeOptLevel,
+Pass *llvm::createFunctionInliningPass(unsigned OptLevel, unsigned SizeOptLevel,
                                        bool DisableInlineHotCallSite) {
   auto Param = llvm::getInlineParams(OptLevel, SizeOptLevel);
   if (DisableInlineHotCallSite)

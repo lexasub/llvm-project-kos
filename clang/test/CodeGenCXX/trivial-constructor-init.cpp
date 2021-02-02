@@ -17,7 +17,7 @@ A a;
 
 struct B {
   B() = default;
-  B(const B&);
+  B(const B &);
 };
 
 // CHECK-NOT: _ZL1b
@@ -37,7 +37,7 @@ namespace PR22793 {
 template <typename>
 struct foo {
 protected:
-// CHECK-NOT: _ZN7PR227933fooIiED2Ev
+  // CHECK-NOT: _ZN7PR227933fooIiED2Ev
   ~foo() = default;
   friend void func();
 };
@@ -45,4 +45,4 @@ protected:
 void func() { foo<int> f; }
 
 template struct foo<int>;
-}
+} // namespace PR22793

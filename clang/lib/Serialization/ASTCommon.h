@@ -93,8 +93,8 @@ bool needsAnonymousDeclarationNumber(const NamedDecl *D);
 
 /// Visit each declaration within \c DC that needs an anonymous
 /// declaration number and call \p Visit with the declaration and its number.
-template<typename Fn> void numberAnonymousDeclsWithin(const DeclContext *DC,
-                                                      Fn Visit) {
+template <typename Fn>
+void numberAnonymousDeclsWithin(const DeclContext *DC, Fn Visit) {
   unsigned Index = 0;
   for (Decl *LexicalD : DC->decls()) {
     // For a friend decl, we care about the declaration within it, if any.

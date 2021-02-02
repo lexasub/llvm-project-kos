@@ -10,17 +10,17 @@ constexpr bool alloc_from_user_code() {
 static_assert(alloc_from_user_code()); // expected-error {{constant expression}} expected-note {{in call}}
 
 namespace std {
-  using size_t = decltype(sizeof(0));
-  // FIXME: It would be preferable to point these notes at the location of the call to allocator<...>::[de]allocate instead
-  template<typename T> struct allocator {
-    constexpr T *allocate(size_t N) {
-      return (T*)NEW(sizeof(T) * N); // expected-note 3{{heap allocation}} expected-note {{not deallocated}}
-    }
-    constexpr void deallocate(void *p) {
-      DELETE(p); // expected-note 2{{'std::allocator<...>::deallocate' used to delete pointer to object allocated with 'new'}}
-    }
-  };
-}
+using size_t = decltype(sizeof(0));
+// FIXME: It would be preferable to point these notes at the location of the call to allocator<...>::[de]allocate instead
+template <typename T> struct allocator {
+  constexpr T *allocate(size_t N) {
+    return (T *)NEW(sizeof(T) * N); // expected-note 3{{heap allocation}} expected-note {{not deallocated}}
+  }
+  constexpr void deallocate(void *p) {
+    DELETE(p); // expected-note 2{{'std::allocator<...>::deallocate' used to delete pointer to object allocated with 'new'}}
+  }
+};
+} // namespace std
 
 constexpr bool alloc_via_std_allocator() {
   std::allocator<int> alloc;
@@ -30,20 +30,22 @@ constexpr bool alloc_via_std_allocator() {
 }
 static_assert(alloc_via_std_allocator());
 
-template<> struct std::allocator<void()> {
+template <> struct std::allocator<void()> {
   constexpr void *allocate() { return NEW(8); } // expected-note {{cannot allocate memory of function type 'void ()'}}
 };
 constexpr void *fn = std::allocator<void()>().allocate(); // expected-error {{constant expression}} expected-note {{in call}}
 
 struct Incomplete;
-template<> struct std::allocator<Incomplete> {
+template <> struct std::allocator<Incomplete> {
   constexpr void *allocate() { return NEW(8); } // expected-note {{cannot allocate memory of incomplete type 'Incomplete'}}
 };
 constexpr void *incomplete = std::allocator<Incomplete>().allocate(); // expected-error {{constant expression}} expected-note {{in call}}
 
-struct WrongSize { char x[5]; };
+struct WrongSize {
+  char x[5];
+};
 static_assert(sizeof(WrongSize) == 5);
-template<> struct std::allocator<WrongSize> {
+template <> struct std::allocator<WrongSize> {
   constexpr void *allocate() { return NEW(7); } // expected-note {{allocated size 7 is not a multiple of size 5 of element type 'WrongSize'}}
 };
 constexpr void *wrong_size = std::allocator<WrongSize>().allocate(); // expected-error {{constant expression}} expected-note {{in call}}
@@ -80,8 +82,8 @@ static_assert(mismatched(2, 0)); // expected-error {{constant expression}} expec
 static_assert(mismatched(2, 1)); // expected-error {{constant expression}} expected-note {{in call}}
 static_assert(mismatched(2, 2));
 
-constexpr int *escape = std::allocator<int>().allocate(3); // expected-error {{constant expression}} expected-note {{pointer to subobject of heap-allocated}}
-constexpr int leak = (std::allocator<int>().allocate(3), 0); // expected-error {{constant expression}}
+constexpr int *escape = std::allocator<int>().allocate(3);                  // expected-error {{constant expression}} expected-note {{pointer to subobject of heap-allocated}}
+constexpr int leak = (std::allocator<int>().allocate(3), 0);                // expected-error {{constant expression}}
 constexpr int no_lifetime_start = (*std::allocator<int>().allocate(1) = 1); // expected-error {{constant expression}} expected-note {{assignment to object outside its lifetime}}
 
 void *operator new(std::size_t, void *p) { return p; }
@@ -92,20 +94,20 @@ constexpr bool no_placement_new_in_user_code() { // expected-error {{never produ
 }
 
 namespace std {
-  constexpr bool placement_new_in_stdlib() {
-    int a;
-    new (&a) int(42);
-    return a == 42;
-  }
+constexpr bool placement_new_in_stdlib() {
+  int a;
+  new (&a) int(42);
+  return a == 42;
 }
+} // namespace std
 static_assert(std::placement_new_in_stdlib());
 
 namespace std {
-  template<typename T, typename ...Args>
-  constexpr void construct_at(void *p, Args &&...args) {
-    new (p) T((Args&&)args...); // #new
-  }
+template <typename T, typename... Args>
+constexpr void construct_at(void *p, Args &&...args) {
+  new (p) T((Args &&) args...); // #new
 }
+} // namespace std
 
 constexpr bool call_std_construct_at() {
   int *p = std::allocator<int>().allocate(3);
@@ -127,7 +129,9 @@ constexpr bool bad_construct_at_type() {
 static_assert(bad_construct_at_type()); // expected-error{{}} expected-note {{in call}}
 
 constexpr bool bad_construct_at_subobject() {
-  struct X { int a, b; };
+  struct X {
+    int a, b;
+  };
   union A {
     int a;
     X x;
@@ -168,7 +172,10 @@ constexpr bool construct_after_lifetime() {
 static_assert(construct_after_lifetime()); // expected-error {{}} expected-note {{in call}}
 
 constexpr bool construct_after_lifetime_2() {
-  struct A { struct B {} b; };
+  struct A {
+    struct B {
+    } b;
+  };
   A a;
   a.~A();
   std::construct_at<A::B>(&a.b); // expected-note {{in call}}

@@ -12,7 +12,7 @@ enum Kind {
 };
 
 void f() {
-  switch(Kind{}) {
+  switch (Kind{}) {
   case A:
     break;
   }

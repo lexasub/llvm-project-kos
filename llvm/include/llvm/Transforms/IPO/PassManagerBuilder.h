@@ -30,7 +30,7 @@ class TargetMachine;
 namespace legacy {
 class FunctionPassManager;
 class PassManagerBase;
-}
+} // namespace legacy
 
 /// PassManagerBuilder - This class is used to set up a standard optimization
 /// sequence for languages like C and C++, allowing some APIs to customize the
@@ -253,7 +253,7 @@ public:
 };
 
 inline PassManagerBuilder *unwrap(LLVMPassManagerBuilderRef P) {
-    return reinterpret_cast<PassManagerBuilder*>(P);
+  return reinterpret_cast<PassManagerBuilder *>(P);
 }
 
 inline LLVMPassManagerBuilderRef wrap(PassManagerBuilder *P) {

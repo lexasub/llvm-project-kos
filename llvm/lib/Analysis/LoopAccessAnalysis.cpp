@@ -70,17 +70,16 @@ using namespace llvm;
 #define DEBUG_TYPE "loop-accesses"
 
 static cl::opt<unsigned, true>
-VectorizationFactor("force-vector-width", cl::Hidden,
-                    cl::desc("Sets the SIMD width. Zero is autoselect."),
-                    cl::location(VectorizerParams::VectorizationFactor));
+    VectorizationFactor("force-vector-width", cl::Hidden,
+                        cl::desc("Sets the SIMD width. Zero is autoselect."),
+                        cl::location(VectorizerParams::VectorizationFactor));
 unsigned VectorizerParams::VectorizationFactor;
 
-static cl::opt<unsigned, true>
-VectorizationInterleave("force-vector-interleave", cl::Hidden,
-                        cl::desc("Sets the vectorization interleave count. "
-                                 "Zero is autoselect."),
-                        cl::location(
-                            VectorizerParams::VectorizationInterleave));
+static cl::opt<unsigned, true> VectorizationInterleave(
+    "force-vector-interleave", cl::Hidden,
+    cl::desc("Sets the vectorization interleave count. "
+             "Zero is autoselect."),
+    cl::location(VectorizerParams::VectorizationInterleave));
 unsigned VectorizerParams::VectorizationInterleave;
 
 static cl::opt<unsigned, true> RuntimeMemoryCheckThreshold(
@@ -158,13 +157,13 @@ const SCEV *llvm::replaceSymbolicStrideSCEV(PredicatedScalarEvolution &PSE,
   ScalarEvolution *SE = PSE.getSE();
   const auto *U = cast<SCEVUnknown>(SE->getSCEV(StrideVal));
   const auto *CT =
-    static_cast<const SCEVConstant *>(SE->getOne(StrideVal->getType()));
+      static_cast<const SCEVConstant *>(SE->getOne(StrideVal->getType()));
 
   PSE.addPredicate(*SE->getEqualPredicate(U, CT));
   auto *Expr = PSE.getSCEV(Ptr);
 
-  LLVM_DEBUG(dbgs() << "LAA: Replacing SCEV: " << *OrigSCEV
-	     << " by: " << *Expr << "\n");
+  LLVM_DEBUG(dbgs() << "LAA: Replacing SCEV: " << *OrigSCEV << " by: " << *Expr
+                    << "\n");
   return Expr;
 }
 
@@ -513,7 +512,7 @@ public:
 
   /// Register a load  and whether it is only read from.
   void addLoad(MemoryLocation &Loc, bool IsReadOnly) {
-    Value *Ptr = const_cast<Value*>(Loc.Ptr);
+    Value *Ptr = const_cast<Value *>(Loc.Ptr);
     AST.add(Ptr, LocationSize::beforeOrAfterPointer(), Loc.AATags);
     Accesses.insert(MemAccessInfo(Ptr, false));
     if (IsReadOnly)
@@ -522,7 +521,7 @@ public:
 
   /// Register a store.
   void addStore(MemoryLocation &Loc) {
-    Value *Ptr = const_cast<Value*>(Loc.Ptr);
+    Value *Ptr = const_cast<Value *>(Loc.Ptr);
     AST.add(Ptr, LocationSize::beforeOrAfterPointer(), Loc.AATags);
     Accesses.insert(MemAccessInfo(Ptr, true));
   }
@@ -539,8 +538,7 @@ public:
                             const ValueToValueMap &Strides,
                             DenseMap<Value *, unsigned> &DepSetId,
                             Loop *TheLoop, unsigned &RunningDepId,
-                            unsigned ASId, bool ShouldCheckStride,
-                            bool Assume);
+                            unsigned ASId, bool ShouldCheckStride, bool Assume);
 
   /// Check whether we can check the pointers at runtime for
   /// non-intersection.
@@ -553,9 +551,7 @@ public:
 
   /// Goes over all memory accesses, checks whether a RT check is needed
   /// and builds sets of dependent accesses.
-  void buildDependenceSets() {
-    processMemAccesses();
-  }
+  void buildDependenceSets() { processMemAccesses(); }
 
   /// Initial processing of memory accesses determined that we need to
   /// perform dependency checking.
@@ -589,10 +585,10 @@ private:
   MemAccessInfoList CheckDeps;
 
   /// Set of pointers that are read only.
-  SmallPtrSet<Value*, 16> ReadOnlyPtr;
+  SmallPtrSet<Value *, 16> ReadOnlyPtr;
 
   /// An alias set tracker to partition the access set by underlying object and
-  //intrinsic property (such as TBAA metadata).
+  // intrinsic property (such as TBAA metadata).
   AliasSetTracker AST;
 
   LoopInfo *LI;
@@ -693,7 +689,7 @@ bool AccessAnalysis::createCheckForAccess(RuntimePointerChecking &RtCheck,
   LLVM_DEBUG(dbgs() << "LAA: Found a runtime check ptr:" << *Ptr << '\n');
 
   return true;
- }
+}
 
 bool AccessAnalysis::canCheckPtrAtRT(RuntimePointerChecking &RtCheck,
                                      ScalarEvolution *SE, Loop *TheLoop,
@@ -704,7 +700,8 @@ bool AccessAnalysis::canCheckPtrAtRT(RuntimePointerChecking &RtCheck,
   bool CanDoRT = true;
 
   bool MayNeedRTCheck = false;
-  if (!IsRTCheckAnalysisNeeded) return true;
+  if (!IsRTCheckAnalysisNeeded)
+    return true;
 
   bool IsDepCheckNeeded = isDependencyCheckNeeded();
 
@@ -783,8 +780,8 @@ bool AccessAnalysis::canCheckPtrAtRT(RuntimePointerChecking &RtCheck,
       CanDoAliasSetRT = true;
       for (auto Access : Retries)
         if (!createCheckForAccess(RtCheck, Access, StridesMap, DepSetId,
-                                  TheLoop, RunningDepId, ASId,
-                                  ShouldCheckWrap, /*Assume=*/true)) {
+                                  TheLoop, RunningDepId, ASId, ShouldCheckWrap,
+                                  /*Assume=*/true)) {
           CanDoAliasSetRT = false;
           break;
         }
@@ -806,7 +803,7 @@ bool AccessAnalysis::canCheckPtrAtRT(RuntimePointerChecking &RtCheck,
       // Only need to check pointers between two different dependency sets.
       if (RtCheck.Pointers[i].DependencySetId ==
           RtCheck.Pointers[j].DependencySetId)
-       continue;
+        continue;
       // Only need to check pointers in the same alias set.
       if (RtCheck.Pointers[i].AliasSetId != RtCheck.Pointers[j].AliasSetId)
         continue;
@@ -852,9 +849,11 @@ void AccessAnalysis::processMemAccesses() {
   LLVM_DEBUG(dbgs() << "LAA:   Accesses(" << Accesses.size() << "):\n");
   LLVM_DEBUG({
     for (auto A : Accesses)
-      dbgs() << "\t" << *A.getPointer() << " (" <<
-                (A.getInt() ? "write" : (ReadOnlyPtr.count(A.getPointer()) ?
-                                         "read-only" : "read")) << ")\n";
+      dbgs() << "\t" << *A.getPointer() << " ("
+             << (A.getInt() ? "write"
+                            : (ReadOnlyPtr.count(A.getPointer()) ? "read-only"
+                                                                 : "read"))
+             << ")\n";
   });
 
   // The AliasSetTracker has nicely partitioned our pointers by metadata
@@ -869,7 +868,7 @@ void AccessAnalysis::processMemAccesses() {
     bool SetHasWrite = false;
 
     // Map of pointers to last access encountered.
-    typedef DenseMap<const Value*, MemAccessInfo> UnderlyingObjToAccessMap;
+    typedef DenseMap<const Value *, MemAccessInfo> UnderlyingObjToAccessMap;
     UnderlyingObjToAccessMap ObjToLastAccess;
 
     // Set of access to check after all writes have been processed.
@@ -1055,9 +1054,10 @@ int64_t llvm::getPtrStride(PredicatedScalarEvolution &PSE, Value *Ptr,
   // to access the pointer value "0" which is undefined behavior in address
   // space 0, therefore we can also vectorize this case.
   bool IsInBoundsGEP = isInBoundsGep(Ptr);
-  bool IsNoWrapAddRec = !ShouldCheckWrap ||
-    PSE.hasNoOverflow(Ptr, SCEVWrapPredicate::IncrementNUSW) ||
-    isNoWrapAddRec(Ptr, AR, PSE, Lp);
+  bool IsNoWrapAddRec =
+      !ShouldCheckWrap ||
+      PSE.hasNoOverflow(Ptr, SCEVWrapPredicate::IncrementNUSW) ||
+      isNoWrapAddRec(Ptr, AR, PSE, Lp);
   if (!IsNoWrapAddRec && !IsInBoundsGEP &&
       NullPointerIsDefined(Lp->getHeader()->getParent(),
                            PtrTy->getAddressSpace())) {
@@ -1469,7 +1469,7 @@ MemoryDepChecker::Dependence::DepType
 MemoryDepChecker::isDependent(const MemAccessInfo &A, unsigned AIdx,
                               const MemAccessInfo &B, unsigned BIdx,
                               const ValueToValueMap &Strides) {
-  assert (AIdx < BIdx && "Must pass arguments in program order");
+  assert(AIdx < BIdx && "Must pass arguments in program order");
 
   Value *APtr = A.getPointer();
   Value *BPtr = B.getPointer();
@@ -1511,7 +1511,7 @@ MemoryDepChecker::isDependent(const MemAccessInfo &A, unsigned AIdx,
   // Need accesses with constant stride. We don't want to vectorize
   // "A[B[i]] += ..." and similar code or pointer arithmetic that could wrap in
   // the address space.
-  if (!StrideAPtr || !StrideBPtr || StrideAPtr != StrideBPtr){
+  if (!StrideAPtr || !StrideBPtr || StrideAPtr != StrideBPtr) {
     LLVM_DEBUG(dbgs() << "Pointer access with non-constant stride\n");
     return Dependence::Unknown;
   }
@@ -1578,10 +1578,12 @@ MemoryDepChecker::isDependent(const MemAccessInfo &A, unsigned AIdx,
   }
 
   // Bail out early if passed-in parameters make vectorization not feasible.
-  unsigned ForcedFactor = (VectorizerParams::VectorizationFactor ?
-                           VectorizerParams::VectorizationFactor : 1);
-  unsigned ForcedUnroll = (VectorizerParams::VectorizationInterleave ?
-                           VectorizerParams::VectorizationInterleave : 1);
+  unsigned ForcedFactor = (VectorizerParams::VectorizationFactor
+                               ? VectorizerParams::VectorizationFactor
+                               : 1);
+  unsigned ForcedUnroll = (VectorizerParams::VectorizationInterleave
+                               ? VectorizerParams::VectorizationInterleave
+                               : 1);
   // The minimum number of iterations for a vectorized/unrolled version.
   unsigned MinNumIter = std::max(ForcedFactor * ForcedUnroll, 2U);
 
@@ -1670,7 +1672,7 @@ bool MemoryDepChecker::areDepsSafe(DepCandidates &AccessSets,
 
     // Get the relevant memory access set.
     EquivalenceClasses<MemAccessInfo>::iterator I =
-      AccessSets.findValue(AccessSets.getLeaderValue(CurAccess));
+        AccessSets.findValue(AccessSets.getLeaderValue(CurAccess));
 
     // Check accesses within this set.
     EquivalenceClasses<MemAccessInfo>::member_iterator AI =
@@ -1689,7 +1691,8 @@ bool MemoryDepChecker::areDepsSafe(DepCandidates &AccessSets,
       while (OI != AE) {
         // Check every accessing instruction pair in program order.
         for (std::vector<unsigned>::iterator I1 = Accesses[*AI].begin(),
-             I1E = Accesses[*AI].end(); I1 != I1E; ++I1)
+                                             I1E = Accesses[*AI].end();
+             I1 != I1E; ++I1)
           // Scan all accesses of another equivalence class, but only the next
           // accesses of the same equivalent class.
           for (std::vector<unsigned>::iterator
@@ -1741,15 +1744,19 @@ MemoryDepChecker::getInstructionsForAccess(Value *Ptr, bool isWrite) const {
   auto &IndexVector = Accesses.find(Access)->second;
 
   SmallVector<Instruction *, 4> Insts;
-  transform(IndexVector,
-                 std::back_inserter(Insts),
-                 [&](unsigned Idx) { return this->InstMap[Idx]; });
+  transform(IndexVector, std::back_inserter(Insts),
+            [&](unsigned Idx) { return this->InstMap[Idx]; });
   return Insts;
 }
 
 const char *MemoryDepChecker::Dependence::DepName[] = {
-    "NoDep", "Unknown", "Forward", "ForwardButPreventsForwarding", "Backward",
-    "BackwardVectorizable", "BackwardVectorizableButPreventsForwarding"};
+    "NoDep",
+    "Unknown",
+    "Forward",
+    "ForwardButPreventsForwarding",
+    "Backward",
+    "BackwardVectorizable",
+    "BackwardVectorizableButPreventsForwarding"};
 
 void MemoryDepChecker::Dependence::print(
     raw_ostream &OS, unsigned Depth,
@@ -1796,7 +1803,7 @@ bool LoopAccessInfo::canAnalyzeLoop() {
 void LoopAccessInfo::analyzeLoop(AAResults *AA, LoopInfo *LI,
                                  const TargetLibraryInfo *TLI,
                                  DominatorTree *DT) {
-  typedef SmallPtrSet<Value*, 16> ValueSet;
+  typedef SmallPtrSet<Value *, 16> ValueSet;
 
   // Holds the Load and Store instructions.
   SmallVector<LoadInst *, 16> Loads;
@@ -1861,7 +1868,7 @@ void LoopAccessInfo::analyzeLoop(AAResults *AA, LoopInfo *LI,
         auto *Ld = dyn_cast<LoadInst>(&I);
         if (!Ld) {
           recordAnalysis("CantVectorizeInstruction", Ld)
-            << "instruction cannot be vectorized";
+              << "instruction cannot be vectorized";
           HasComplexMemInst = true;
           continue;
         }
@@ -1903,7 +1910,7 @@ void LoopAccessInfo::analyzeLoop(AAResults *AA, LoopInfo *LI,
           collectStridedAccess(St);
       }
     } // Next instr.
-  } // Next block.
+  }   // Next block.
 
   if (HasComplexMemInst) {
     CanVecMem = false;
@@ -1983,8 +1990,8 @@ void LoopAccessInfo::analyzeLoop(AAResults *AA, LoopInfo *LI,
       IsReadOnlyPtr = true;
     }
 
-    // See if there is an unsafe dependency between a load to a uniform address and
-    // store to the same uniform address.
+    // See if there is an unsafe dependency between a load to a uniform address
+    // and store to the same uniform address.
     if (UniformStores.count(Ptr)) {
       LLVM_DEBUG(dbgs() << "LAA: Found an unsafe dependency between a uniform "
                            "load and uniform store to the same address!\n");
@@ -2026,7 +2033,8 @@ void LoopAccessInfo::analyzeLoop(AAResults *AA, LoopInfo *LI,
   }
 
   LLVM_DEBUG(
-    dbgs() << "LAA: May be able to perform a memory runtime check if needed.\n");
+      dbgs()
+      << "LAA: May be able to perform a memory runtime check if needed.\n");
 
   CanVecMem = true;
   if (Accesses.isDependencyCheckNeeded()) {
@@ -2063,7 +2071,7 @@ void LoopAccessInfo::analyzeLoop(AAResults *AA, LoopInfo *LI,
 
   if (HasConvergentOp) {
     recordAnalysis("CantInsertRuntimeCheckWithConvergent")
-      << "cannot add control dependency to convergent operation";
+        << "cannot add control dependency to convergent operation";
     LLVM_DEBUG(dbgs() << "LAA: We can't vectorize because a runtime check "
                          "would be needed with a convergent operation\n");
     CanVecMem = false;
@@ -2086,11 +2094,11 @@ void LoopAccessInfo::analyzeLoop(AAResults *AA, LoopInfo *LI,
 }
 
 bool LoopAccessInfo::blockNeedsPredication(BasicBlock *BB, Loop *TheLoop,
-                                           DominatorTree *DT)  {
+                                           DominatorTree *DT) {
   assert(TheLoop->contains(BB) && "Unknown block used");
 
   // Blocks that do not dominate the latch need predication.
-  BasicBlock* Latch = TheLoop->getLoopLatch();
+  BasicBlock *Latch = TheLoop->getLoopLatch();
   return !DT->dominates(BB, Latch);
 }
 
@@ -2109,8 +2117,8 @@ OptimizationRemarkAnalysis &LoopAccessInfo::recordAnalysis(StringRef RemarkName,
       DL = I->getDebugLoc();
   }
 
-  Report = std::make_unique<OptimizationRemarkAnalysis>(DEBUG_TYPE, RemarkName, DL,
-                                                   CodeRegion);
+  Report = std::make_unique<OptimizationRemarkAnalysis>(DEBUG_TYPE, RemarkName,
+                                                        DL, CodeRegion);
   return *Report;
 }
 
@@ -2167,7 +2175,8 @@ void LoopAccessInfo::collectStridedAccess(Value *MemAccess) {
     CastedStride = SE->getNoopOrSignExtend(StrideExpr, BETakenCount->getType());
   else
     CastedBECount = SE->getZeroExtendExpr(BETakenCount, StrideExpr->getType());
-  const SCEV *StrideMinusBETaken = SE->getMinusSCEV(CastedStride, CastedBECount);
+  const SCEV *StrideMinusBETaken =
+      SE->getMinusSCEV(CastedStride, CastedBECount);
   // Since TripCount == BackEdgeTakenCount + 1, checking:
   // "Stride >= TripCount" is equivalent to checking:
   // Stride - BETakenCount > 0
@@ -2276,12 +2285,12 @@ bool LoopAccessLegacyAnalysis::runOnFunction(Function &F) {
 }
 
 void LoopAccessLegacyAnalysis::getAnalysisUsage(AnalysisUsage &AU) const {
-    AU.addRequired<ScalarEvolutionWrapperPass>();
-    AU.addRequired<AAResultsWrapperPass>();
-    AU.addRequired<DominatorTreeWrapperPass>();
-    AU.addRequired<LoopInfoWrapperPass>();
+  AU.addRequired<ScalarEvolutionWrapperPass>();
+  AU.addRequired<AAResultsWrapperPass>();
+  AU.addRequired<DominatorTreeWrapperPass>();
+  AU.addRequired<LoopInfoWrapperPass>();
 
-    AU.setPreservesAll();
+  AU.setPreservesAll();
 }
 
 char LoopAccessLegacyAnalysis::ID = 0;
@@ -2304,8 +2313,6 @@ LoopAccessInfo LoopAccessAnalysis::run(Loop &L, LoopAnalysisManager &AM,
 
 namespace llvm {
 
-  Pass *createLAAPass() {
-    return new LoopAccessLegacyAnalysis();
-  }
+Pass *createLAAPass() { return new LoopAccessLegacyAnalysis(); }
 
 } // end namespace llvm

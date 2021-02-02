@@ -8,9 +8,9 @@ export
 #else
 // expected-note@+2 {{add 'export' here}}
 #endif
-module M;
+    module M;
 
 #ifndef EXPORT
 // expected-error@+2 {{private module fragment in module implementation unit}}
 #endif
-module :private;
+module : private;

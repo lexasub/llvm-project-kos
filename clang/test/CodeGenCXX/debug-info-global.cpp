@@ -19,4 +19,3 @@ int f1() {
 // CHECK: [[CNSTV]] = distinct !DIGlobalVariable(name: "cnst",
 // CHECK-SAME:                                   scope: [[NS:![0-9]*]]
 // CHECK: [[NS]] = !DINamespace(name: "ns"
-

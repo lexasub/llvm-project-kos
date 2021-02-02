@@ -21,32 +21,29 @@
 #include "llvm/Support/Casting.h"
 
 namespace llvm {
-  class raw_ostream;
+class raw_ostream;
 }
 
 namespace clang {
-  class ASTContext;
-  class BlockDecl;
-  class CXXConstructorDecl;
-  class CXXDestructorDecl;
-  class CXXMethodDecl;
-  class FunctionDecl;
-  struct MethodVFTableLocation;
-  class NamedDecl;
-  class ObjCMethodDecl;
-  class StringLiteral;
-  struct ThisAdjustment;
-  struct ThunkInfo;
-  class VarDecl;
+class ASTContext;
+class BlockDecl;
+class CXXConstructorDecl;
+class CXXDestructorDecl;
+class CXXMethodDecl;
+class FunctionDecl;
+struct MethodVFTableLocation;
+class NamedDecl;
+class ObjCMethodDecl;
+class StringLiteral;
+struct ThisAdjustment;
+struct ThunkInfo;
+class VarDecl;
 
 /// MangleContext - Context for tracking state which persists across multiple
 /// calls to the C++ name mangler.
 class MangleContext {
 public:
-  enum ManglerKind {
-    MK_Itanium,
-    MK_Microsoft
-  };
+  enum ManglerKind { MK_Itanium, MK_Microsoft };
 
 private:
   virtual void anchor();
@@ -55,19 +52,18 @@ private:
   DiagnosticsEngine &Diags;
   const ManglerKind Kind;
 
-  llvm::DenseMap<const BlockDecl*, unsigned> GlobalBlockIds;
-  llvm::DenseMap<const BlockDecl*, unsigned> LocalBlockIds;
-  llvm::DenseMap<const NamedDecl*, uint64_t> AnonStructIds;
+  llvm::DenseMap<const BlockDecl *, unsigned> GlobalBlockIds;
+  llvm::DenseMap<const BlockDecl *, unsigned> LocalBlockIds;
+  llvm::DenseMap<const NamedDecl *, uint64_t> AnonStructIds;
 
 public:
   ManglerKind getKind() const { return Kind; }
 
-  explicit MangleContext(ASTContext &Context,
-                         DiagnosticsEngine &Diags,
+  explicit MangleContext(ASTContext &Context, DiagnosticsEngine &Diags,
                          ManglerKind Kind)
       : Context(Context), Diags(Diags), Kind(Kind) {}
 
-  virtual ~MangleContext() { }
+  virtual ~MangleContext() {}
 
   ASTContext &getASTContext() const { return Context; }
 
@@ -76,10 +72,10 @@ public:
   virtual void startNewFunction() { LocalBlockIds.clear(); }
 
   unsigned getBlockId(const BlockDecl *BD, bool Local) {
-    llvm::DenseMap<const BlockDecl *, unsigned> &BlockIds
-      = Local? LocalBlockIds : GlobalBlockIds;
+    llvm::DenseMap<const BlockDecl *, unsigned> &BlockIds =
+        Local ? LocalBlockIds : GlobalBlockIds;
     std::pair<llvm::DenseMap<const BlockDecl *, unsigned>::iterator, bool>
-      Result = BlockIds.insert(std::make_pair(BD, BlockIds.size()));
+        Result = BlockIds.insert(std::make_pair(BD, BlockIds.size()));
     return Result.first->second;
   }
 
@@ -110,9 +106,8 @@ public:
   // FIXME: consider replacing raw_ostream & with something like SmallString &.
   void mangleName(GlobalDecl GD, raw_ostream &);
   virtual void mangleCXXName(GlobalDecl GD, raw_ostream &) = 0;
-  virtual void mangleThunk(const CXXMethodDecl *MD,
-                          const ThunkInfo &Thunk,
-                          raw_ostream &) = 0;
+  virtual void mangleThunk(const CXXMethodDecl *MD, const ThunkInfo &Thunk,
+                           raw_ostream &) = 0;
   virtual void mangleCXXDtorThunk(const CXXDestructorDecl *DD, CXXDtorType Type,
                                   const ThisAdjustment &ThisAdjustment,
                                   raw_ostream &) = 0;
@@ -122,10 +117,9 @@ public:
   virtual void mangleCXXRTTI(QualType T, raw_ostream &) = 0;
   virtual void mangleCXXRTTIName(QualType T, raw_ostream &) = 0;
   virtual void mangleStringLiteral(const StringLiteral *SL, raw_ostream &) = 0;
-  virtual void mangleMSGuidDecl(const MSGuidDecl *GD, raw_ostream&);
+  virtual void mangleMSGuidDecl(const MSGuidDecl *GD, raw_ostream &);
 
-  void mangleGlobalBlock(const BlockDecl *BD,
-                         const NamedDecl *ID,
+  void mangleGlobalBlock(const BlockDecl *BD, const NamedDecl *ID,
                          raw_ostream &Out);
   void mangleCtorBlock(const CXXConstructorDecl *CD, CXXCtorType CT,
                        const BlockDecl *BD, raw_ostream &Out);
@@ -280,6 +274,6 @@ private:
   class Implementation;
   std::unique_ptr<Implementation> Impl;
 };
-}
+} // namespace clang
 
 #endif

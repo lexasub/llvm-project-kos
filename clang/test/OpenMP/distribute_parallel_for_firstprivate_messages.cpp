@@ -10,7 +10,7 @@ bool foobool(int argc) {
 }
 
 void xxx(int argc) {
-  int fp; // expected-note {{initialize the variable 'fp' to silence this warning}}
+  int fp;                                            // expected-note {{initialize the variable 'fp' to silence this warning}}
 #pragma omp distribute parallel for firstprivate(fp) // expected-warning {{variable 'fp' is uninitialized when used here}}
   for (int i = 0; i < 10; ++i)
     ;
@@ -109,7 +109,10 @@ int foomain(int argc, char **argv) {
     ++k;
 #pragma omp target
 #pragma omp teams
-#pragma omp distribute parallel for firstprivate(argc) allocate , allocate(, allocate(omp_default , allocate(omp_default_mem_alloc, allocate(omp_default_mem_alloc:, allocate(omp_default_mem_alloc: argc, allocate(omp_default_mem_alloc: argv), allocate(argv) // expected-error {{expected '(' after 'allocate'}} expected-error 2 {{expected expression}} expected-error 2 {{expected ')'}} expected-error {{use of undeclared identifier 'omp_default'}} expected-note 2 {{to match this '('}}
+#pragma omp distribute parallel for firstprivate(argc) allocate, allocate(, allocate(omp_default, allocate(omp_default_mem_alloc, allocate(omp_default_mem_alloc:, allocate(omp_default_mem_alloc                  \
+                                                                                                                                                                            : argc, allocate(omp_default_mem_alloc \
+                                                                                                                                                                                             : argv),              \
+                                                                                                                                                                              allocate(argv) // expected-error {{expected '(' after 'allocate'}} expected-error 2 {{expected expression}} expected-error 2 {{expected ')'}} expected-error {{use of undeclared identifier 'omp_default'}} expected-note 2 {{to match this '('}}
   for (int k = 0; k < argc; ++k)
     ++k;
 #pragma omp target
@@ -173,7 +176,8 @@ int foomain(int argc, char **argv) {
 #pragma omp distribute parallel for firstprivate(i) // expected-note 2 {{defined as firstprivate}}
   for (i = 0; i < argc; ++i) // expected-error 2 {{loop iteration variable in the associated loop of 'omp distribute parallel for' directive may not be firstprivate, predetermined as private}}
     foo();
-#pragma omp parallel reduction(+ : i)
+#pragma omp parallel reduction(+ \
+                               : i)
 #pragma omp target
 #pragma omp teams
 #pragma omp distribute parallel for firstprivate(i) // expected-note 2 {{defined as firstprivate}}
@@ -185,7 +189,7 @@ int foomain(int argc, char **argv) {
 namespace A {
 double x;
 #pragma omp threadprivate(x) // expected-note {{defined as threadprivate or thread local}}
-}
+} // namespace A
 namespace B {
 using A::x;
 }
@@ -313,7 +317,7 @@ int main(int argc, char **argv) {
 #pragma omp target
 #pragma omp teams
 #pragma omp distribute parallel for firstprivate(i) // expected-note {{defined as firstprivate}}
-  for (i = 0; i < argc; ++i)    // expected-error {{loop iteration variable in the associated loop of 'omp distribute parallel for' directive may not be firstprivate, predetermined as private}}
+  for (i = 0; i < argc; ++i) // expected-error {{loop iteration variable in the associated loop of 'omp distribute parallel for' directive may not be firstprivate, predetermined as private}}
     foo();
 #pragma omp parallel shared(xa)
 #pragma omp target
@@ -356,7 +360,8 @@ int main(int argc, char **argv) {
 #pragma omp distribute parallel for firstprivate(i) // expected-note {{defined as firstprivate}}
   for (i = 0; i < argc; ++i) // expected-error {{loop iteration variable in the associated loop of 'omp distribute parallel for' directive may not be firstprivate, predetermined as private}}
     foo();
-#pragma omp parallel reduction(+ : i)
+#pragma omp parallel reduction(+ \
+                               : i)
 #pragma omp target
 #pragma omp teams
 #pragma omp distribute parallel for firstprivate(i) // expected-note {{defined as firstprivate}}

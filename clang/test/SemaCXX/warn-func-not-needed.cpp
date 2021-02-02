@@ -7,7 +7,7 @@ template <typename T>
 void foo() {
   f();
 }
-}
+} // namespace test1
 
 namespace test1_template {
 template <typename T> static void f() {}
@@ -20,44 +20,44 @@ void foo() {
 } // namespace test1_template
 
 namespace test2 {
-  static void f() {}
-  static void f();
-  static void g() { f(); }
-  void h() { g(); }
-}
+static void f() {}
+static void f();
+static void g() { f(); }
+void h() { g(); }
+} // namespace test2
 
 namespace test3 {
-  static void f();
-  template<typename T>
-  static void g() {
-    f();
-  }
-  static void f() {
-  }
-  void h() {
-    g<int>();
-  }
+static void f();
+template <typename T>
+static void g() {
+  f();
 }
+static void f() {
+}
+void h() {
+  g<int>();
+}
+} // namespace test3
 
 namespace test4 {
-  static void f();
-  static void f();
-  template<typename T>
-  static void g() {
-    f();
-  }
-  static void f() {
-  }
-  void h() {
-    g<int>();
-  }
+static void f();
+static void f();
+template <typename T>
+static void g() {
+  f();
 }
+static void f() {
+}
+void h() {
+  g<int>();
+}
+} // namespace test4
 
 namespace test4 {
-  static void func();
-  void bar() {
-    void func();
-    func();
-  }
-  static void func() {}
+static void func();
+void bar() {
+  void func();
+  func();
 }
+static void func() {}
+} // namespace test4

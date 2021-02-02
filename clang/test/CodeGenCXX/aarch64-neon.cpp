@@ -8,7 +8,7 @@
 
 #include "arm_neon.h"
 
-poly64x1_t test_vld1_p64(poly64_t const * ptr) {
+poly64x1_t test_vld1_p64(poly64_t const *ptr) {
   // CHECK: test_vld1_p64
   return vld1_p64(ptr);
   // CHECK:  {{ld1 { v[0-9]+.1d }|ldr d[0-9]+}}, [{{x[0-9]+|sp}}]

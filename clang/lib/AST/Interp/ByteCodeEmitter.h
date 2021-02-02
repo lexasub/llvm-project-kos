@@ -1,4 +1,5 @@
-//===--- ByteCodeEmitter.h - Instruction emitter for the VM ---------*- C++ -*-===//
+//===--- ByteCodeEmitter.h - Instruction emitter for the VM ---------*- C++
+//-*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -98,7 +99,7 @@ private:
 
   /// Emits an opcode.
   template <typename... Tys>
-  bool emitOp(Opcode Op, const Tys &... Args, const SourceInfo &L);
+  bool emitOp(Opcode Op, const Tys &...Args, const SourceInfo &L);
 
 protected:
 #define GET_LINK_PROTO

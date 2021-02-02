@@ -1,7 +1,7 @@
 // RUN: %check_clang_tidy -std=c++14-or-later %s modernize-use-transparent-functors %t
 
 namespace std {
-template<class T>
+template <class T>
 struct remove_reference;
 
 template <class T>
@@ -18,8 +18,7 @@ struct plus {
 template <>
 struct plus<void> {
   template <typename T, typename U>
-  constexpr auto operator()(T &&Lhs, U &&Rhs) const ->
-    decltype(forward<T>(Lhs) + forward<U>(Rhs));
+  constexpr auto operator()(T &&Lhs, U &&Rhs) const -> decltype(forward<T>(Lhs) + forward<U>(Rhs));
 };
 
 template <typename T = void>
@@ -68,11 +67,11 @@ void sort(RandomIt first, RandomIt last, Compare comp);
 
 class iterator {};
 class string {};
-}
+} // namespace std
 
 int main() {
-  using std::set;
   using std::less;
+  using std::set;
   std::set<int, std::less<int>> s;
   // CHECK-MESSAGES: :[[@LINE-1]]:17: warning: prefer transparent functors 'less<>' [modernize-use-transparent-functors]
   // CHECK-FIXES: {{^}}  std::set<int, std::less<>> s;{{$}}
@@ -97,7 +96,7 @@ int main() {
   using my_set = std::set<int, std::less<int>>;
   // CHECK-MESSAGES: :[[@LINE-1]]:32: warning: prefer transparent functors
   // CHECK-FIXES: {{^}}  using my_set = std::set<int, std::less<>>;{{$}}
-  using my_set2 = std::set<char*, std::less<std::string>>;
+  using my_set2 = std::set<char *, std::less<std::string>>;
   using my_less = std::less<std::string>;
   find_if(begin, end, my_less());
   // CHECK-MESSAGES: :[[@LINE-1]]:23: warning: prefer transparent functors

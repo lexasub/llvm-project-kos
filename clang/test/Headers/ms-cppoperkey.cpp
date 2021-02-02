@@ -5,12 +5,10 @@
 // expected-no-diagnostics
 # 1 "t.cpp"
 # 1 "query.h" 1 3
-// MS header <query.h> uses operator keyword as field name.  
+// MS header <query.h> uses operator keyword as field name.
 // Compile without syntax errors.
-struct tagRESTRICTION
-  {
-   union _URes 
-     {
-       int or; // Note use of cpp operator token
-     } res;
-  };
+struct tagRESTRICTION {
+  union _URes {
+    int or ; // Note use of cpp operator token
+  } res;
+};

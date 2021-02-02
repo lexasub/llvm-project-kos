@@ -37,7 +37,9 @@ __DEVICE__ unsigned long long __brevll(unsigned long long __a) {
 __DEVICE__ void __brkpt() { asm volatile("brkpt;"); }
 __DEVICE__ void __brkpt(int __a) { __brkpt(); }
 #else
-__DEVICE__ void __attribute__((overloadable)) __brkpt(void) { asm volatile("brkpt;"); }
+__DEVICE__ void __attribute__((overloadable)) __brkpt(void) {
+  asm volatile("brkpt;");
+}
 __DEVICE__ void __attribute__((overloadable)) __brkpt(int __a) { __brkpt(); }
 #endif
 __DEVICE__ unsigned int __byte_perm(unsigned int __a, unsigned int __b,

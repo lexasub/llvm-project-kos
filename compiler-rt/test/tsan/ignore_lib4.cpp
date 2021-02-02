@@ -17,10 +17,10 @@
 // It used to crash since we jumped out of ScopedInterceptor scope.
 
 #include "test.h"
-#include <setjmp.h>
-#include <string.h>
 #include <errno.h>
 #include <libgen.h>
+#include <setjmp.h>
+#include <string.h>
 #include <string>
 
 #ifdef LIB
@@ -38,7 +38,7 @@ extern "C" void myfunc() {
 int main(int argc, char **argv) {
   std::string lib = std::string(dirname(argv[0])) + "/libignore_lib4.so";
   void *h = dlopen(lib.c_str(), RTLD_GLOBAL | RTLD_NOW);
-  void (*func)() = (void(*)())dlsym(h, "myfunc");
+  void (*func)() = (void (*)())dlsym(h, "myfunc");
   func();
   fprintf(stderr, "DONE\n");
   return 0;

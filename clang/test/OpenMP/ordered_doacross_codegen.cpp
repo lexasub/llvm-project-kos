@@ -18,16 +18,16 @@ void foo();
 
 // CHECK-LABEL:bar
 void bar() {
-  int i,j;
+  int i, j;
 // CHECK: call void @__kmpc_doacross_init(
 // CHECK: call void @__kmpc_doacross_fini(
 #pragma omp parallel for ordered(2)
   for (i = 0; i < n; ++i)
-  for (j = 0; j < n; ++j)
-    a[i] = b[i] + 1;
-// CHECK: call void @__kmpc_doacross_init(
-// CHECK: call void @__kmpc_doacross_fini(
- #pragma omp for collapse(2) ordered(2)
+    for (j = 0; j < n; ++j)
+      a[i] = b[i] + 1;
+      // CHECK: call void @__kmpc_doacross_init(
+      // CHECK: call void @__kmpc_doacross_fini(
+#pragma omp for collapse(2) ordered(2)
   for (int i = 0; i < n; i++)
     for (int j = 0; j < n; j++)
       ;
@@ -77,7 +77,8 @@ int main() {
 // CHECK-NEXT: store i64 %{{.+}}, i64* [[TMP]],
 // CHECK-NEXT: [[TMP:%.+]] = getelementptr inbounds [1 x i64], [1 x i64]* [[CNT]], i64 0, i64 0
 // CHECK-NEXT: call void @__kmpc_doacross_wait([[IDENT]], i32 [[GTID]], i64* [[TMP]])
-#pragma omp ordered depend(sink : i - 2)
+#pragma omp ordered depend(sink \
+                           : i - 2)
     d[i] = a[i - 2];
   }
   // CHECK: landingpad
@@ -135,7 +136,8 @@ int main1() {
 // CHECK-NEXT: store i64 %{{.+}}, i64* [[TMP]],
 // CHECK-NEXT: [[TMP:%.+]] = getelementptr inbounds [1 x i64], [1 x i64]* [[CNT]], i64 0, i64 0
 // CHECK-NEXT: call void @__kmpc_doacross_wait([[IDENT]], i32 [[GTID]], i64* [[TMP]])
-#pragma omp ordered depend(sink : i - 2)
+#pragma omp ordered depend(sink \
+                           : i - 2)
     d[i] = a[i - 2];
   }
   // CHECK: landingpad
@@ -218,7 +220,9 @@ struct TestStruct {
 // CHECK-NEXT: store i64 %{{.+}}, i64* [[TMP]],
 // CHECK-NEXT: [[TMP:%.+]] = getelementptr inbounds [2 x i64], [2 x i64]* [[CNT]], i64 0, i64 0
 // CHECK-NEXT: call void @__kmpc_doacross_wait([[IDENT]], i32 [[GTID]], i64* [[TMP]])
-#pragma omp ordered depend(sink : j, i - 2) depend(sink : j - 1, i)
+#pragma omp ordered depend(sink                    \
+                           : j, i - 2) depend(sink \
+                                              : j - 1, i)
         b[i][j] = bar(a[i][j], b[i - 1][j], b[i][j - 1]);
 // CHECK: invoke {{.+TestStruct.+bar}}
 // CHECK: load i32*, i32** %

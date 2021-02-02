@@ -14,8 +14,8 @@
 #include <assert.h>
 #include <errno.h>
 #include <malloc.h>
-#include <stdio.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
   if (!strcmp(action, "m1")) {
     p = pvalloc((uintptr_t)-1);
   } else if (!strcmp(action, "psm1")) {
-    p = pvalloc((uintptr_t)-(page_size - 1));
+    p = pvalloc((uintptr_t) - (page_size - 1));
   } else {
     assert(0);
   }

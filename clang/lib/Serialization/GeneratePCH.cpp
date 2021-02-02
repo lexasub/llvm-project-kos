@@ -35,8 +35,7 @@ PCHGenerator::PCHGenerator(
   this->Buffer->IsComplete = false;
 }
 
-PCHGenerator::~PCHGenerator() {
-}
+PCHGenerator::~PCHGenerator() {}
 
 void PCHGenerator::HandleTranslationUnit(ASTContext &Ctx) {
   // Don't create a PCH if there were fatal failures during module loading.
@@ -74,9 +73,7 @@ void PCHGenerator::HandleTranslationUnit(ASTContext &Ctx) {
   Buffer->IsComplete = true;
 }
 
-ASTMutationListener *PCHGenerator::GetASTMutationListener() {
-  return &Writer;
-}
+ASTMutationListener *PCHGenerator::GetASTMutationListener() { return &Writer; }
 
 ASTDeserializationListener *PCHGenerator::GetASTDeserializationListener() {
   return &Writer;

@@ -21,12 +21,11 @@ volatile int counter = 0;
 volatile int lib_constructor_call = 0;
 volatile int tsan_init_call = 0;
 
-__attribute__ ((constructor))
-void LibConstructor() {
+__attribute__((constructor)) void LibConstructor() {
   lib_constructor_call = ++counter;
 };
 
-#else  // BUILD_SO
+#else // BUILD_SO
 
 extern int counter;
 extern int lib_constructor_call;
@@ -34,8 +33,7 @@ extern int tsan_init_call;
 
 volatile int bin_constructor_call = 0;
 
-__attribute__ ((constructor))
-void BinConstructor() {
+__attribute__((constructor)) void BinConstructor() {
   bin_constructor_call = ++counter;
 };
 
@@ -45,7 +43,7 @@ void OnInitialize() {
   tsan_init_call = ++counter;
 }
 
-}
+} // namespace __tsan
 
 int main() {
   // CHECK: TSAN_INIT 1
@@ -57,4 +55,4 @@ int main() {
   return 0;
 }
 
-#endif  // BUILD_SO
+#endif // BUILD_SO

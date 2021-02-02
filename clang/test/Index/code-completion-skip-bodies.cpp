@@ -4,7 +4,9 @@ void func_to_skip() {
   undeclared1 = 0;
 }
 
-struct S { int x; };
+struct S {
+  int x;
+};
 
 void func(S *s) {
   undeclared2 = 0;

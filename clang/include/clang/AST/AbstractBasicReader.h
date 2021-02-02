@@ -14,13 +14,11 @@
 namespace clang {
 namespace serialization {
 
-template <class T>
-inline T makeNullableFromOptional(const Optional<T> &value) {
+template <class T> inline T makeNullableFromOptional(const Optional<T> &value) {
   return (value ? *value : T());
 }
 
-template <class T>
-inline T *makePointerFromOptional(Optional<T *> value) {
+template <class T> inline T *makePointerFromOptional(Optional<T *> value) {
   return (value ? *value : nullptr);
 }
 
@@ -130,14 +128,9 @@ public:
 
   /// Implement property-find by ignoring it.  We rely on properties being
   /// serialized and deserialized in a reliable order instead.
-  Impl &find(const char *propertyName) {
-    return asImpl();
-  }
+  Impl &find(const char *propertyName) { return asImpl(); }
 
-  template <class T>
-  T readEnum() {
-    return T(asImpl().readUInt32());
-  }
+  template <class T> T readEnum() { return T(asImpl().readUInt32()); }
 
   // Implement object reading by forwarding to this, collapsing the
   // structure into a single data stream.
@@ -159,7 +152,7 @@ public:
   template <class T, class... Args>
   llvm::Optional<T> readOptional(Args &&...args) {
     return UnpackOptionalValue<T>::unpack(
-             ReadDispatcher<T>::read(asImpl(), std::forward<Args>(args)...));
+        ReadDispatcher<T>::read(asImpl(), std::forward<Args>(args)...));
   }
 
   llvm::APSInt readAPSInt() {
@@ -236,9 +229,10 @@ public:
   }
 
   FunctionProtoType::ExtParameterInfo readExtParameterInfo() {
-    static_assert(sizeof(FunctionProtoType::ExtParameterInfo().getOpaqueValue())
-                    <= sizeof(uint32_t),
-                  "opaque value doesn't fit into uint32_t");
+    static_assert(
+        sizeof(FunctionProtoType::ExtParameterInfo().getOpaqueValue()) <=
+            sizeof(uint32_t),
+        "opaque value doesn't fit into uint32_t");
     uint32_t value = asImpl().readUInt32();
     return FunctionProtoType::ExtParameterInfo::getFromOpaqueValue(value);
   }
@@ -254,8 +248,7 @@ public:
       auto kind = asImpl().readNestedNameSpecifierKind();
       switch (kind) {
       case NestedNameSpecifier::Identifier:
-        cur = NestedNameSpecifier::Create(ctx, cur,
-                                          asImpl().readIdentifier());
+        cur = NestedNameSpecifier::Create(ctx, cur, asImpl().readIdentifier());
         continue;
 
       case NestedNameSpecifier::Namespace:
@@ -265,14 +258,14 @@ public:
 
       case NestedNameSpecifier::NamespaceAlias:
         cur = NestedNameSpecifier::Create(ctx, cur,
-                                     asImpl().readNamespaceAliasDeclRef());
+                                          asImpl().readNamespaceAliasDeclRef());
         continue;
 
       case NestedNameSpecifier::TypeSpec:
       case NestedNameSpecifier::TypeSpecWithTemplate:
-        cur = NestedNameSpecifier::Create(ctx, cur,
-                          kind == NestedNameSpecifier::TypeSpecWithTemplate,
-                          asImpl().readQualType().getTypePtr());
+        cur = NestedNameSpecifier::Create(
+            ctx, cur, kind == NestedNameSpecifier::TypeSpecWithTemplate,
+            asImpl().readQualType().getTypePtr());
         continue;
 
       case NestedNameSpecifier::Global:
@@ -280,8 +273,8 @@ public:
         continue;
 
       case NestedNameSpecifier::Super:
-        cur = NestedNameSpecifier::SuperSpecifier(ctx,
-                                            asImpl().readCXXRecordDeclRef());
+        cur = NestedNameSpecifier::SuperSpecifier(
+            ctx, asImpl().readCXXRecordDeclRef());
         continue;
       }
       llvm_unreachable("bad nested name specifier kind");

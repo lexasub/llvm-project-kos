@@ -14,19 +14,18 @@
 
 struct A {};
 
-template<typename T, bool CanCatchNullptr>
+template <typename T, bool CanCatchNullptr>
 static void catch_nullptr_test() {
   try {
     throw nullptr;
-  } catch (T &p) {
+  } catch (T& p) {
     assert(CanCatchNullptr && !static_cast<bool>(p));
   } catch (...) {
     assert(!CanCatchNullptr);
   }
 }
 
-int main(int, char**)
-{
+int main(int, char**) {
   using nullptr_t = decltype(nullptr);
 
   // A reference to nullptr_t can catch nullptr.

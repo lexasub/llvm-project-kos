@@ -158,19 +158,18 @@ void DWARFDebugLine::Prologue::dump(raw_ostream &OS,
     uint32_t FileBase = getVersion() >= 5 ? 0 : 1;
     for (uint32_t I = 0; I != FileNames.size(); ++I) {
       const FileNameEntry &FileEntry = FileNames[I];
-      OS <<   format("file_names[%3u]:\n", I + FileBase);
-      OS <<          "           name: ";
+      OS << format("file_names[%3u]:\n", I + FileBase);
+      OS << "           name: ";
       FileEntry.Name.dump(OS, DumpOptions);
-      OS << '\n'
-         <<   format("      dir_index: %" PRIu64 "\n", FileEntry.DirIdx);
+      OS << '\n' << format("      dir_index: %" PRIu64 "\n", FileEntry.DirIdx);
       if (ContentTypes.HasMD5)
-        OS <<        "   md5_checksum: " << FileEntry.Checksum.digest() << '\n';
+        OS << "   md5_checksum: " << FileEntry.Checksum.digest() << '\n';
       if (ContentTypes.HasModTime)
         OS << format("       mod_time: 0x%8.8" PRIx64 "\n", FileEntry.ModTime);
       if (ContentTypes.HasLength)
         OS << format("         length: 0x%8.8" PRIx64 "\n", FileEntry.Length);
       if (ContentTypes.HasSource) {
-        OS <<        "         source: ";
+        OS << "         source: ";
         FileEntry.Source.dump(OS, DumpOptions);
         OS << '\n';
       }
@@ -581,9 +580,10 @@ Expected<const DWARFDebugLine::LineTable *> DWARFDebugLine::getOrParseLineTable(
     DWARFDataExtractor &DebugLineData, uint64_t Offset, const DWARFContext &Ctx,
     const DWARFUnit *U, function_ref<void(Error)> RecoverableErrorHandler) {
   if (!DebugLineData.isValidOffset(Offset))
-    return createStringError(errc::invalid_argument, "offset 0x%8.8" PRIx64
-                       " is not a valid debug line section offset",
-                       Offset);
+    return createStringError(errc::invalid_argument,
+                             "offset 0x%8.8" PRIx64
+                             " is not a valid debug line section offset",
+                             Offset);
 
   std::pair<LineTableIter, bool> Pos =
       LineTableMap.insert(LineTableMapTy::value_type(Offset, LineTable()));
@@ -899,7 +899,8 @@ Error DWARFDebugLine::LineTable::parse(
 
           if (Cursor && Verbose) {
             *OS << " (";
-            DWARFFormValue::dumpAddress(*OS, OpcodeAddressSize, State.Row.Address.Address);
+            DWARFFormValue::dumpAddress(*OS, OpcodeAddressSize,
+                                        State.Row.Address.Address);
             *OS << ')';
           }
         }
@@ -1088,8 +1089,7 @@ Error DWARFDebugLine::LineTable::parse(
         // requires the use of DW_LNS_advance_pc. Such assemblers, however,
         // can use DW_LNS_fixed_advance_pc instead, sacrificing compression.
         {
-          uint16_t PCOffset =
-              TableData.getRelocatedValue(Cursor, 2);
+          uint16_t PCOffset = TableData.getRelocatedValue(Cursor, 2);
           if (Cursor) {
             State.Row.Address.Address += PCOffset;
             if (Verbose)
@@ -1326,8 +1326,9 @@ bool DWARFDebugLine::LineTable::lookupAddressRangeImpl(
   return true;
 }
 
-Optional<StringRef> DWARFDebugLine::LineTable::getSourceByIndex(uint64_t FileIndex,
-                                                                FileLineInfoKind Kind) const {
+Optional<StringRef>
+DWARFDebugLine::LineTable::getSourceByIndex(uint64_t FileIndex,
+                                            FileLineInfoKind Kind) const {
   if (Kind == FileLineInfoKind::None || !Prologue.hasFileAtIndex(FileIndex))
     return None;
   const FileNameEntry &Entry = Prologue.getFileNameEntry(FileIndex);

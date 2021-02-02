@@ -35,7 +35,7 @@ namespace {
 struct W {
   virtual ~W() {}
 } w;
-}
+} // namespace
 // RTTI-DAG: [[VTABLE_W:@.*]] = private unnamed_addr constant { [2 x i8*] } { [2 x i8*] [i8* bitcast ({{.*}} @"??_R4W@?A0x{{[^@]*}}@@6B@" to i8*), i8* bitcast ({{.*}} @"??_GW@?A0x{{[^@]*}}@@UAEPAXI@Z" to i8*)] }
 // RTTI-DAG: @"??_7W@?A0x{{[^@]*}}@@6B@" = internal unnamed_addr alias i8*, getelementptr inbounds ({ [2 x i8*] }, { [2 x i8*] }* [[VTABLE_W]], i32 0, i32 0, i32 1)
 

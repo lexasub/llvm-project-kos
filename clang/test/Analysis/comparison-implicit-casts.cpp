@@ -30,7 +30,8 @@ void PR12206(int x) {
   value += 1;
 
   // Constrain the value of x.
-  if (x != value) return;
+  if (x != value)
+    return;
 
   // Constant-folding will turn (local+1) back into the symbol for x.
   // The point of this dance is to make SValBuilder be responsible for
@@ -50,7 +51,8 @@ void PR12206_truncation(signed char x) {
   signed char local = x - 1;
 
   // Constrain the value of x.
-  if (x != 1) return;
+  if (x != 1)
+    return;
 
   // Constant-folding will turn (local+1) back into the symbol for x.
   // The point of this dance is to make SValBuilder be responsible for
@@ -84,7 +86,8 @@ void PR12206_strlen(const char *x) {
   value += 1;
 
   // Constrain the length of x.
-  if (strlen(x) != value) return;
+  if (strlen(x) != value)
+    return;
 
   // Test relational operators.
   clang_analyzer_eval(strlen(x) >= 2); // expected-warning{{TRUE}}

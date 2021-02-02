@@ -12,10 +12,10 @@
 
 #include "ubsan_platform.h"
 #if CAN_SANITIZE_UB
-#include "ubsan_flags.h"
 #include "sanitizer_common/sanitizer_common.h"
-#include "sanitizer_common/sanitizer_flags.h"
 #include "sanitizer_common/sanitizer_flag_parser.h"
+#include "sanitizer_common/sanitizer_flags.h"
+#include "ubsan_flags.h"
 
 #include <stdlib.h>
 
@@ -39,7 +39,7 @@ void Flags::SetDefaults() {
 }
 
 void RegisterUbsanFlags(FlagParser *parser, Flags *f) {
-#define UBSAN_FLAG(Type, Name, DefaultValue, Description) \
+#define UBSAN_FLAG(Type, Name, DefaultValue, Description)                      \
   RegisterFlag(parser, #Name, Description, &f->Name);
 #include "ubsan_flags.inc"
 #undef UBSAN_FLAG
@@ -66,15 +66,17 @@ void InitializeFlags() {
   // Override from environment variable.
   parser.ParseStringFromEnv("UBSAN_OPTIONS");
   InitializeCommonFlags();
-  if (Verbosity()) ReportUnrecognizedFlags();
+  if (Verbosity())
+    ReportUnrecognizedFlags();
 
-  if (common_flags()->help) parser.PrintFlagDescriptions();
+  if (common_flags()->help)
+    parser.PrintFlagDescriptions();
 }
 
-}  // namespace __ubsan
+} // namespace __ubsan
 
 SANITIZER_INTERFACE_WEAK_DEF(const char *, __ubsan_default_options, void) {
   return "";
 }
 
-#endif  // CAN_SANITIZE_UB
+#endif // CAN_SANITIZE_UB

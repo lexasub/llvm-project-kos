@@ -5,9 +5,13 @@
 module;
 
 #if IMPORT_ERROR != 2
-struct import { struct inner {}; };
+struct import {
+  struct inner {};
+};
 #endif
-struct module { struct inner {}; };
+struct module {
+  struct inner {};
+};
 
 constexpr int n = 123;
 
@@ -19,14 +23,15 @@ import x = {}; // expected-error {{module 'x' not found}}
 
 #elif IMPORT_ERROR == 2
 struct X;
-template<int> struct import;
-template<> struct import<n> {
+template <int> struct import;
+template <> struct import<n> {
   static X y;
 };
 
 // This is not valid because the 'import <n>' is a pp-import, even though it
 // grammatically can't possibly be an import declaration.
-struct X {} import<n>::y; // expected-error {{'n' file not found}}
+struct X {
+} import<n>::y; // expected-error {{'n' file not found}}
 
 #else
 module y = {}; // expected-error {{multiple module declarations}} expected-error 2{{}}
@@ -39,15 +44,16 @@ import::inner xi = {};
 module::inner yi = {};
 
 namespace N {
-  module a;
-  import b;
-}
+module a;
+import b;
+} // namespace N
 
 extern "C++" module cxxm;
 extern "C++" import cxxi;
 
-template<typename T> module module_var_template;
+template <typename T> module module_var_template;
 
 // This is a variable named 'import' that shadows the type 'import' above.
-struct X {} import;
+struct X {
+} import;
 #endif

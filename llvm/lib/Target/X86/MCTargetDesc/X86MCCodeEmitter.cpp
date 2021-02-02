@@ -120,8 +120,7 @@ static void emitConstant(uint64_t Val, unsigned Size, raw_ostream &OS) {
 static bool isDispOrCDisp8(uint64_t TSFlags, int Value, int &ImmOffset) {
   bool HasEVEX = (TSFlags & X86II::EncodingMask) == X86II::EVEX;
 
-  int CD8_Scale =
-      (TSFlags & X86II::CD8_Scale_Mask) >> X86II::CD8_Scale_Shift;
+  int CD8_Scale = (TSFlags & X86II::CD8_Scale_Mask) >> X86II::CD8_Scale_Shift;
   if (!HasEVEX || CD8_Scale == 0)
     return isInt<8>(Value);
 
@@ -531,8 +530,8 @@ void X86MCCodeEmitter::emitMemModRMByte(const MCInst &MI, unsigned Op,
   bool AllowDisp8 = !UseDisp32;
 
   // Determine whether a SIB byte is needed.
-  if (// The SIB byte must be used if there is an index register or the
-      // encoding requires a SIB byte.
+  if ( // The SIB byte must be used if there is an index register or the
+       // encoding requires a SIB byte.
       !ForceSIB && IndexReg.getReg() == 0 &&
       // The SIB byte must be used if the base is ESP/RSP/R12, all of which
       // encode to an R/M value of 4, which indicates that a SIB byte is
@@ -1678,7 +1677,7 @@ void X86MCCodeEmitter::encodeInstruction(const MCInst &MI, raw_ostream &OS,
     break;
   case X86II::MRMr0:
     emitByte(BaseOpcode, OS);
-    emitByte(modRMByte(3, getX86RegNum(MI.getOperand(CurOp++)),0), OS);
+    emitByte(modRMByte(3, getX86RegNum(MI.getOperand(CurOp++)), 0), OS);
     break;
 
   case X86II::MRMXmCC: {

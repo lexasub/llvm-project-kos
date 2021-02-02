@@ -16,8 +16,7 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
+int main(int, char**) {
   static_assert(std::latch::max() > 0, "");
   return 0;
 }

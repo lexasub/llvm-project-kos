@@ -10,6 +10,7 @@
 //
 //===----------------------------------------------------------------------===//
 #include "sanitizer_common/sanitizer_list.h"
+
 #include "gtest/gtest.h"
 
 namespace __sanitizer {
@@ -22,12 +23,15 @@ typedef IntrusiveList<ListItem> List;
 
 static List static_list;
 
-static void SetList(List *l, ListItem *x = 0,
-                    ListItem *y = 0, ListItem *z = 0) {
+static void SetList(List *l, ListItem *x = 0, ListItem *y = 0,
+                    ListItem *z = 0) {
   l->clear();
-  if (x) l->push_back(x);
-  if (y) l->push_back(y);
-  if (z) l->push_back(z);
+  if (x)
+    l->push_back(x);
+  if (y)
+    l->push_back(y);
+  if (z)
+    l->push_back(z);
 }
 
 static void CheckList(List *l, ListItem *i1, ListItem *i2 = 0, ListItem *i3 = 0,

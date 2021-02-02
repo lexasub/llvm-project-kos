@@ -23,10 +23,10 @@ size_t scs_strlen(const char *p) {
 
 __attribute__((noinline)) void scs_fputs_stdout(const char *p) {
   __asm__ __volatile__(
-      "mov x0, #1\n"  // stdout
+      "mov x0, #1\n" // stdout
       "mov x1, %0\n"
       "mov x2, %1\n"
-      "mov x8, #64\n"  // write
+      "mov x8, #64\n" // write
       "svc #0\n" ::"r"(p),
       "r"(scs_strlen(p))
       : "x0", "x1", "x2", "x8");

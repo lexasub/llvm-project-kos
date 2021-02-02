@@ -15,20 +15,19 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    std::locale l;
-    assert(!std::isxdigit(' ', l));
-    assert(!std::isxdigit('<', l));
-    assert(!std::isxdigit('\x8', l));
-    assert( std::isxdigit('A', l));
-    assert( std::isxdigit('a', l));
-    assert(!std::isxdigit('z', l));
-    assert( std::isxdigit('3', l));
-    assert(!std::isxdigit('.', l));
-    assert( std::isxdigit('f', l));
-    assert( std::isxdigit('9', l));
-    assert(!std::isxdigit('+', l));
+int main(int, char**) {
+  std::locale l;
+  assert(!std::isxdigit(' ', l));
+  assert(!std::isxdigit('<', l));
+  assert(!std::isxdigit('\x8', l));
+  assert(std::isxdigit('A', l));
+  assert(std::isxdigit('a', l));
+  assert(!std::isxdigit('z', l));
+  assert(std::isxdigit('3', l));
+  assert(!std::isxdigit('.', l));
+  assert(std::isxdigit('f', l));
+  assert(std::isxdigit('9', l));
+  assert(!std::isxdigit('+', l));
 
   return 0;
 }

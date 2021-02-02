@@ -21,8 +21,7 @@
 #include <memory>
 #include "test_macros.h"
 
-int main(int, char**)
-{
+int main(int, char**) {
   int x = 0;
   std::allocator<int> a;
 

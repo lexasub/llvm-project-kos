@@ -1,6 +1,6 @@
 // RUN: %clang_cc1 -std=c++11 -fsyntax-only -verify %s
 
-template<class ...Types> struct Tuple;
+template <class... Types> struct Tuple;
 
 Tuple<> *t0;
 Tuple<int> *t1;

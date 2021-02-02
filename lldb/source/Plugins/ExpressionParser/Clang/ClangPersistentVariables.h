@@ -44,10 +44,11 @@ public:
   lldb::ExpressionVariableSP
   CreatePersistentVariable(const lldb::ValueObjectSP &valobj_sp) override;
 
-  lldb::ExpressionVariableSP CreatePersistentVariable(
-      ExecutionContextScope *exe_scope, ConstString name,
-      const CompilerType &compiler_type, lldb::ByteOrder byte_order,
-      uint32_t addr_byte_size) override;
+  lldb::ExpressionVariableSP
+  CreatePersistentVariable(ExecutionContextScope *exe_scope, ConstString name,
+                           const CompilerType &compiler_type,
+                           lldb::ByteOrder byte_order,
+                           uint32_t addr_byte_size) override;
 
   void RemovePersistentVariable(lldb::ExpressionVariableSP variable) override;
 
@@ -103,7 +104,7 @@ private:
 
   ClangModulesDeclVendor::ModuleVector
       m_hand_loaded_clang_modules; ///< These are Clang modules we hand-loaded;
-                                   ///these are the highest-
+                                   /// these are the highest-
                                    ///< priority source for macros.
   std::shared_ptr<ClangASTImporter> m_ast_importer_sp;
 };

@@ -86,11 +86,12 @@ class BasicBitVector {
   // }
   class Iterator {
    public:
-    Iterator() { }
+    Iterator() {}
     explicit Iterator(const BasicBitVector &bv) : bv_(bv) {}
     bool hasNext() const { return !bv_.empty(); }
     uptr next() { return bv_.getAndClearFirstOne(); }
     void clear() { bv_.clear(); }
+
    private:
     BasicBitVector bv_;
   };
@@ -120,15 +121,13 @@ class TwoLevelBitVector {
   uptr size() const { return kSize; }
 
   void clear() {
-    for (uptr i = 0; i < kLevel1Size; i++)
-      l1_[i].clear();
+    for (uptr i = 0; i < kLevel1Size; i++) l1_[i].clear();
   }
 
   void setAll() {
     for (uptr i0 = 0; i0 < kLevel1Size; i0++) {
       l1_[i0].setAll();
-      for (uptr i1 = 0; i1 < BV::kSize; i1++)
-        l2_[i0][i1].setAll();
+      for (uptr i1 = 0; i1 < BV::kSize; i1++) l2_[i0][i1].setAll();
     }
   }
 
@@ -180,7 +179,8 @@ class TwoLevelBitVector {
 
   uptr getAndClearFirstOne() {
     for (uptr i0 = 0; i0 < kLevel1Size; i0++) {
-      if (l1_[i0].empty()) continue;
+      if (l1_[i0].empty())
+        continue;
       uptr i1 = l1_[i0].getAndClearFirstOne();
       uptr i2 = l2_[i0][i1].getAndClearFirstOne();
       if (!l2_[i0][i1].empty())
@@ -258,7 +258,8 @@ class TwoLevelBitVector {
       t.setIntersection(v.l1_[i0]);
       while (!t.empty()) {
         uptr i1 = t.getAndClearFirstOne();
-        if (!v.l1_[i0].getBit(i1)) continue;
+        if (!v.l1_[i0].getBit(i1))
+          continue;
         if (l2_[i0][i1].intersectsWith(v.l2_[i0][i1]))
           return true;
       }
@@ -272,16 +273,18 @@ class TwoLevelBitVector {
   // }
   class Iterator {
    public:
-    Iterator() { }
+    Iterator() {}
     explicit Iterator(const TwoLevelBitVector &bv) : bv_(bv), i0_(0), i1_(0) {
       it1_.clear();
       it2_.clear();
     }
 
     bool hasNext() const {
-      if (it1_.hasNext()) return true;
+      if (it1_.hasNext())
+        return true;
       for (uptr i = i0_; i < kLevel1Size; i++)
-        if (!bv_.l1_[i].empty()) return true;
+        if (!bv_.l1_[i].empty())
+          return true;
       return false;
     }
 
@@ -290,7 +293,8 @@ class TwoLevelBitVector {
       //       it2_.hasNext(), kSize);
       if (!it1_.hasNext() && !it2_.hasNext()) {
         for (; i0_ < kLevel1Size; i0_++) {
-          if (bv_.l1_[i0_].empty()) continue;
+          if (bv_.l1_[i0_].empty())
+            continue;
           it1_ = typename BV::Iterator(bv_.l1_[i0_]);
           // Printf("+i0: %zd %zd; %d %d; size %zd\n", i0_, i1_, it1_.hasNext(),
           //   it2_.hasNext(), kSize);
@@ -345,6 +349,6 @@ class TwoLevelBitVector {
   BV l2_[kLevel1Size][BV::kSize];
 };
 
-} // namespace __sanitizer
+}  // namespace __sanitizer
 
-#endif // SANITIZER_BITVECTOR_H
+#endif  // SANITIZER_BITVECTOR_H

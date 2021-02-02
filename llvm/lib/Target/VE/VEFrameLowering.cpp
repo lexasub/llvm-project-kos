@@ -122,8 +122,8 @@
 #include "llvm/IR/DataLayout.h"
 #include "llvm/IR/Function.h"
 #include "llvm/Support/CommandLine.h"
-#include "llvm/Target/TargetOptions.h"
 #include "llvm/Support/MathExtras.h"
+#include "llvm/Target/TargetOptions.h"
 
 using namespace llvm;
 

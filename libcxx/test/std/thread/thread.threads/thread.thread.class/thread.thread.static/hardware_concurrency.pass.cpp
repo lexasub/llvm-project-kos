@@ -19,9 +19,8 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    assert(std::thread::hardware_concurrency() > 0);
+int main(int, char**) {
+  assert(std::thread::hardware_concurrency() > 0);
 
   return 0;
 }

@@ -7,8 +7,12 @@
 // optimizers can get upset.
 
 namespace num_params {
-struct A { virtual void a(int); };
-struct B { virtual void b(int, int); };
+struct A {
+  virtual void a(int);
+};
+struct B {
+  virtual void b(int, int);
+};
 struct C : A, B {
   virtual void a(int);
   virtual void b(int, int);
@@ -17,7 +21,7 @@ void f(C *c) {
   (c->*(&C::a))(0);
   (c->*(&C::b))(0, 0);
 }
-}
+} // namespace num_params
 
 // CHECK-LABEL: define dso_local void @"?f@num_params@@YAXPAUC@1@@Z"(%"struct.num_params::C"* %c)
 // CHECK: call x86_thiscallcc void bitcast (void (%"struct.num_params::C"*, ...)* @"??_9C@num_params@@$BA@AE" to void (%"struct.num_params::C"*, i32)*)(%"struct.num_params::C"* {{[^,]*}} %{{.*}}, i32 0)
@@ -28,8 +32,12 @@ void f(C *c) {
 // CHECK-NEXT: ret void
 
 namespace i64_return {
-struct A { virtual int a(); };
-struct B { virtual long long b(); };
+struct A {
+  virtual int a();
+};
+struct B {
+  virtual long long b();
+};
 struct C : A, B {
   virtual int a();
   virtual long long b();
@@ -39,7 +47,7 @@ long long f(C *c) {
   long long y = (c->*(&C::b))();
   return x + y;
 }
-}
+} // namespace i64_return
 
 // CHECK-LABEL: define dso_local i64 @"?f@i64_return@@YA_JPAUC@1@@Z"(%"struct.i64_return::C"* %c)
 // CHECK: call x86_thiscallcc i32 bitcast (void (%"struct.i64_return::C"*, ...)* @"??_9C@i64_return@@$BA@AE" to i32 (%"struct.i64_return::C"*)*)(%"struct.i64_return::C"* {{[^,]*}} %{{.*}})
@@ -50,9 +58,15 @@ long long f(C *c) {
 // CHECK-NEXT: ret void
 
 namespace sret {
-struct Big { int big[32]; };
-struct A { virtual int a(); };
-struct B { virtual Big b(); };
+struct Big {
+  int big[32];
+};
+struct A {
+  virtual int a();
+};
+struct B {
+  virtual Big b();
+};
 struct C : A, B {
   virtual int a();
   virtual Big b();
@@ -61,7 +75,7 @@ void f(C *c) {
   (c->*(&C::a))();
   Big b((c->*(&C::b))());
 }
-}
+} // namespace sret
 
 // CHECK-LABEL: define dso_local void @"?f@sret@@YAXPAUC@1@@Z"(%"struct.sret::C"* %c)
 // CHECK: call x86_thiscallcc i32 bitcast (void (%"struct.sret::C"*, ...)* @"??_9C@sret@@$BA@AE" to i32 (%"struct.sret::C"*)*)(%"struct.sret::C"* {{[^,]*}} %{{.*}})
@@ -79,8 +93,12 @@ struct Big {
   ~Big();
   int big[32];
 };
-struct A { virtual void __cdecl a(); };
-struct B { virtual void __cdecl b(Big); };
+struct A {
+  virtual void __cdecl a();
+};
+struct B {
+  virtual void __cdecl b(Big);
+};
 struct C : A, B {
   virtual void __cdecl a();
   virtual void __cdecl b(Big);
@@ -90,7 +108,7 @@ void f(C *c) {
   (c->*(&C::a))();
   ((c->*(&C::b))(b));
 }
-}
+} // namespace cdecl_inalloca
 
 // CHECK-LABEL: define dso_local void @"?f@cdecl_inalloca@@YAXPAUC@1@@Z"(%"struct.cdecl_inalloca::C"* %c)
 // CHECK: call void bitcast (void (%"struct.cdecl_inalloca::C"*, ...)* @"??_9C@cdecl_inalloca@@$BA@AA" to void (%"struct.cdecl_inalloca::C"*)*)(%"struct.cdecl_inalloca::C"* {{[^,]*}} %{{.*}})

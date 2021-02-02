@@ -147,7 +147,7 @@ DynamicLibrary DynamicLibrary::getPermanentLibrary(const char *FileName,
                                                    std::string *Err) {
   // Force OpenedHandles to be added into the ManagedStatic list before any
   // ManagedStatic can be added from static constructors in HandleSet::DLOpen.
-  HandleSet& HS = *OpenedHandles;
+  HandleSet &HS = *OpenedHandles;
 
   void *Handle = HandleSet::DLOpen(FileName, Err);
   if (Handle != &Invalid) {
@@ -162,7 +162,8 @@ DynamicLibrary DynamicLibrary::addPermanentLibrary(void *Handle,
                                                    std::string *Err) {
   SmartScopedLock<true> Lock(*SymbolsMutex);
   // If we've already loaded this library, tell the caller.
-  if (!OpenedHandles->AddLibrary(Handle, /*IsProcess*/false, /*CanClose*/false))
+  if (!OpenedHandles->AddLibrary(Handle, /*IsProcess*/ false,
+                                 /*CanClose*/ false))
     *Err = "Library already loaded";
 
   return DynamicLibrary(Handle);

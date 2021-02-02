@@ -70,8 +70,7 @@ static bool GetNetBSDProcessArgs(const ProcessInstanceInfoMatch *match_info_ptr,
   if (!cstr)
     return false;
 
-  process_info.GetExecutableFile().SetFile(cstr,
-                                           FileSpec::Style::native);
+  process_info.GetExecutableFile().SetFile(cstr, FileSpec::Style::native);
 
   if (!(match_info_ptr == NULL ||
         NameMatches(process_info.GetExecutableFile().GetFilename().GetCString(),

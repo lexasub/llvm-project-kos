@@ -30,9 +30,8 @@ LanguageCategory::LanguageCategory(lldb::LanguageType lang_type)
   Enable();
 }
 
-template<typename ImplSP>
-bool LanguageCategory::Get(FormattersMatchData &match_data,
-                           ImplSP &retval_sp) {
+template <typename ImplSP>
+bool LanguageCategory::Get(FormattersMatchData &match_data, ImplSP &retval_sp) {
   if (!m_category_sp)
     return false;
 

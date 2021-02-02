@@ -494,7 +494,7 @@ GenericTaintChecker::TaintPropagationRule::getTaintPropagationRule(
 
   // Process all other functions which could be defined as builtins.
   if (Rule.isNull()) {
-    const auto OneOf = [FDecl](const auto &... Name) {
+    const auto OneOf = [FDecl](const auto &...Name) {
       // FIXME: use fold expression in C++17
       using unused = int[];
       bool ret = false;

@@ -20,7 +20,8 @@ namespace __llvm_libc {
 // will call fprintf(stderr, ...).
 static void writeToStderr(const char *s) {
   size_t length = 0;
-  for (const char *curr = s; *curr; ++curr, ++length);
+  for (const char *curr = s; *curr; ++curr, ++length)
+    ;
   __llvm_libc::syscall(SYS_write, 2, s, length);
 }
 

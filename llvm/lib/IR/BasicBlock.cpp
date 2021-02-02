@@ -29,9 +29,7 @@ ValueSymbolTable *BasicBlock::getValueSymbolTable() {
   return nullptr;
 }
 
-LLVMContext &BasicBlock::getContext() const {
-  return getType()->getContext();
-}
+LLVMContext &BasicBlock::getContext() const { return getType()->getContext(); }
 
 template <> void llvm::invalidateParentIListOrdering(BasicBlock *BB) {
   BB->invalidateOrders();
@@ -43,7 +41,7 @@ template class llvm::SymbolTableListTraits<Instruction>;
 
 BasicBlock::BasicBlock(LLVMContext &C, const Twine &Name, Function *NewParent,
                        BasicBlock *InsertBefore)
-  : Value(Type::getLabelTy(C), Value::BasicBlockVal), Parent(nullptr) {
+    : Value(Type::getLabelTy(C), Value::BasicBlockVal), Parent(nullptr) {
 
   if (NewParent)
     insertInto(NewParent, InsertBefore);
@@ -76,11 +74,11 @@ BasicBlock::~BasicBlock() {
   if (hasAddressTaken()) {
     assert(!use_empty() && "There should be at least one blockaddress!");
     Constant *Replacement =
-      ConstantInt::get(llvm::Type::getInt32Ty(getContext()), 1);
+        ConstantInt::get(llvm::Type::getInt32Ty(getContext()), 1);
     while (!use_empty()) {
       BlockAddress *BA = cast<BlockAddress>(user_back());
-      BA->replaceAllUsesWith(ConstantExpr::getIntToPtr(Replacement,
-                                                       BA->getType()));
+      BA->replaceAllUsesWith(
+          ConstantExpr::getIntToPtr(Replacement, BA->getType()));
       BA->destroyConstant();
     }
   }
@@ -141,9 +139,7 @@ void BasicBlock::moveAfter(BasicBlock *MovePos) {
       getIterator());
 }
 
-const Module *BasicBlock::getModule() const {
-  return getParent()->getParent();
-}
+const Module *BasicBlock::getModule() const { return getParent()->getParent(); }
 
 const Instruction *BasicBlock::getTerminator() const {
   if (InstList.empty() || !InstList.back().isTerminator())
@@ -198,7 +194,7 @@ const CallInst *BasicBlock::getTerminatingDeoptimizeCall() const {
 }
 
 const CallInst *BasicBlock::getPostdominatingDeoptimizeCall() const {
-  const BasicBlock* BB = this;
+  const BasicBlock *BB = this;
   SmallPtrSet<const BasicBlock *, 8> Visited;
   Visited.insert(BB);
   while (auto *Succ = BB->getUniqueSuccessor()) {
@@ -209,7 +205,7 @@ const CallInst *BasicBlock::getPostdominatingDeoptimizeCall() const {
   return BB->getTerminatingDeoptimizeCall();
 }
 
-const Instruction* BasicBlock::getFirstNonPHI() const {
+const Instruction *BasicBlock::getFirstNonPHI() const {
   for (const Instruction &I : *this)
     if (!isa<PHINode>(I))
       return &I;
@@ -252,7 +248,8 @@ BasicBlock::const_iterator BasicBlock::getFirstInsertionPt() const {
     return end();
 
   const_iterator InsertPt = FirstNonPHI->getIterator();
-  if (InsertPt->isEHPad()) ++InsertPt;
+  if (InsertPt->isEHPad())
+    ++InsertPt;
   return InsertPt;
 }
 
@@ -263,7 +260,8 @@ void BasicBlock::dropAllReferences() {
 
 const BasicBlock *BasicBlock::getSinglePredecessor() const {
   const_pred_iterator PI = pred_begin(this), E = pred_end(this);
-  if (PI == E) return nullptr;         // No preds.
+  if (PI == E)
+    return nullptr; // No preds.
   const BasicBlock *ThePred = *PI;
   ++PI;
   return (PI == E) ? ThePred : nullptr /*multiple preds*/;
@@ -271,10 +269,11 @@ const BasicBlock *BasicBlock::getSinglePredecessor() const {
 
 const BasicBlock *BasicBlock::getUniquePredecessor() const {
   const_pred_iterator PI = pred_begin(this), E = pred_end(this);
-  if (PI == E) return nullptr; // No preds.
+  if (PI == E)
+    return nullptr; // No preds.
   const BasicBlock *PredBB = *PI;
   ++PI;
-  for (;PI != E; ++PI) {
+  for (; PI != E; ++PI) {
     if (*PI != PredBB)
       return nullptr;
     // The same predecessor appears multiple times in the predecessor list.
@@ -293,7 +292,8 @@ bool BasicBlock::hasNPredecessorsOrMore(unsigned N) const {
 
 const BasicBlock *BasicBlock::getSingleSuccessor() const {
   const_succ_iterator SI = succ_begin(this), E = succ_end(this);
-  if (SI == E) return nullptr; // no successors
+  if (SI == E)
+    return nullptr; // no successors
   const BasicBlock *TheSucc = *SI;
   ++SI;
   return (SI == E) ? TheSucc : nullptr /* multiple successors */;
@@ -301,10 +301,11 @@ const BasicBlock *BasicBlock::getSingleSuccessor() const {
 
 const BasicBlock *BasicBlock::getUniqueSuccessor() const {
   const_succ_iterator SI = succ_begin(this), E = succ_end(this);
-  if (SI == E) return nullptr; // No successors
+  if (SI == E)
+    return nullptr; // No successors
   const BasicBlock *SuccBB = *SI;
   ++SI;
-  for (;SI != E; ++SI) {
+  for (; SI != E; ++SI) {
     if (*SI != SuccBB)
       return nullptr;
     // The same successor appears multiple times in the successor list.
@@ -318,8 +319,7 @@ iterator_range<BasicBlock::phi_iterator> BasicBlock::phis() {
   return make_range<phi_iterator>(P, nullptr);
 }
 
-void BasicBlock::removePredecessor(BasicBlock *Pred,
-                                   bool KeepOneInputPHIs) {
+void BasicBlock::removePredecessor(BasicBlock *Pred, bool KeepOneInputPHIs) {
   // Use hasNUsesOrMore to bound the cost of this assertion for complex CFGs.
   assert((hasNUsesOrMore(16) || llvm::is_contained(predecessors(this), Pred)) &&
          "Pred is not a predecessor!");
@@ -474,8 +474,7 @@ const LandingPadInst *BasicBlock::getLandingPadInst() const {
 
 Optional<uint64_t> BasicBlock::getIrrLoopHeaderWeight() const {
   const Instruction *TI = getTerminator();
-  if (MDNode *MDIrrLoopHeader =
-      TI->getMetadata(LLVMContext::MD_irr_loop)) {
+  if (MDNode *MDIrrLoopHeader = TI->getMetadata(LLVMContext::MD_irr_loop)) {
     MDString *MDName = cast<MDString>(MDIrrLoopHeader->getOperand(0));
     if (MDName->getString().equals("loop_header_weight")) {
       auto *CI = mdconst::extract<ConstantInt>(MDIrrLoopHeader->getOperand(1));

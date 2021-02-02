@@ -8,9 +8,9 @@
  * on_stack indicates whether the node is currently on the stack.
  */
 struct isl_tarjan_node {
-	int index;
-	int min_index;
-	int on_stack;
+  int index;
+  int min_index;
+  int on_stack;
 };
 
 /* Structure for representing the graph being traversed
@@ -24,19 +24,23 @@ struct isl_tarjan_node {
  * op represents the current position in order
  */
 struct isl_tarjan_graph {
-	int len;
-	struct isl_tarjan_node *node;
-	int *stack;
-	int sp;
-	int index;
-	int *order;
-	int op;
+  int len;
+  struct isl_tarjan_node *node;
+  int *stack;
+  int sp;
+  int index;
+  int *order;
+  int op;
 };
 
 struct isl_tarjan_graph *isl_tarjan_graph_init(isl_ctx *ctx, int len,
-	isl_bool (*follows)(int i, int j, void *user), void *user);
-struct isl_tarjan_graph *isl_tarjan_graph_component(isl_ctx *ctx, int len,
-	int node, isl_bool (*follows)(int i, int j, void *user), void *user);
+                                               isl_bool (*follows)(int i, int j,
+                                                                   void *user),
+                                               void *user);
+struct isl_tarjan_graph *
+isl_tarjan_graph_component(isl_ctx *ctx, int len, int node,
+                           isl_bool (*follows)(int i, int j, void *user),
+                           void *user);
 struct isl_tarjan_graph *isl_tarjan_graph_free(struct isl_tarjan_graph *g);
 
 #endif

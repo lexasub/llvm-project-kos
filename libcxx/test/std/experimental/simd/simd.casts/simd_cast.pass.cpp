@@ -23,27 +23,25 @@ namespace ex = std::experimental::parallelism_v2;
 
 static_assert(
     std::is_same<decltype(ex::simd_cast<int32_t>(ex::native_simd<int32_t>())),
-                 ex::native_simd<int32_t>>::value,
+                 ex::native_simd<int32_t> >::value,
     "");
 
 static_assert(std::is_same<decltype(ex::simd_cast<int64_t>(
                                ex::fixed_size_simd<int32_t, 4>())),
-                           ex::fixed_size_simd<int64_t, 4>>::value,
+                           ex::fixed_size_simd<int64_t, 4> >::value,
               "");
 
 static_assert(
-    std::is_same<decltype(ex::simd_cast<ex::fixed_size_simd<int64_t, 1>>(
+    std::is_same<decltype(ex::simd_cast<ex::fixed_size_simd<int64_t, 1> >(
                      ex::simd<int32_t, ex::simd_abi::scalar>())),
-                 ex::fixed_size_simd<int64_t, 1>>::value,
+                 ex::fixed_size_simd<int64_t, 1> >::value,
     "");
 
 static_assert(
     std::is_same<
-        decltype(ex::simd_cast<ex::simd<int64_t, ex::simd_abi::scalar>>(
+        decltype(ex::simd_cast<ex::simd<int64_t, ex::simd_abi::scalar> >(
             ex::fixed_size_simd<int32_t, 1>())),
-        ex::simd<int64_t, ex::simd_abi::scalar>>::value,
+        ex::simd<int64_t, ex::simd_abi::scalar> >::value,
     "");
 
-int main(int, char**) {
-  return 0;
-}
+int main(int, char**) { return 0; }

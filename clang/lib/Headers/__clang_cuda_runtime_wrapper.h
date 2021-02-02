@@ -140,9 +140,7 @@
 // ends up not being there because of the games we play here.  Just define it
 // ourselves; it's simple enough.
 #ifdef __APPLE__
-inline __host__ double __signbitd(double x) {
-  return std::signbit(x);
-}
+inline __host__ double __signbitd(double x) { return std::signbit(x); }
 #endif
 
 // CUDA 9.1 no longer provides declarations for libdevice functions, so we need
@@ -266,8 +264,8 @@ static inline __device__ void __brkpt(int __c) { __brkpt(); }
 #undef __DEVICE_FUNCTIONS_HPP__
 #include "device_atomic_functions.hpp"
 #if CUDA_VERSION >= 9000
-#include "crt/device_functions.hpp"
 #include "crt/device_double_functions.hpp"
+#include "crt/device_functions.hpp"
 #else
 #include "device_functions.hpp"
 #define __CUDABE__
@@ -410,8 +408,8 @@ __device__ inline __cuda_builtin_gridDim_t::operator uint3() const {
 }
 
 #include <__clang_cuda_cmath.h>
-#include <__clang_cuda_intrinsics.h>
 #include <__clang_cuda_complex_builtins.h>
+#include <__clang_cuda_intrinsics.h>
 
 // curand_mtgp32_kernel helpfully redeclares blockDim and threadIdx in host
 // mode, giving them their "proper" types of dim3 and uint3.  This is

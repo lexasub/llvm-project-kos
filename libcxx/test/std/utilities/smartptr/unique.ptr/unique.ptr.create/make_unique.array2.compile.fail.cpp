@@ -10,9 +10,8 @@
 #include <string>
 #include <cassert>
 
-int main(int, char**)
-{
-    auto up2 = std::make_unique<int[]>(10, 20, 30, 40);
+int main(int, char**) {
+  auto up2 = std::make_unique<int[]>(10, 20, 30, 40);
 
   return 0;
 }

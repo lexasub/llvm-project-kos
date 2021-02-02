@@ -47,8 +47,8 @@ public:
               std::unique_ptr<ExprAST> Body)
       : Proto(std::move(Proto)), Body(std::move(Body)) {}
 
-  const PrototypeAST& getProto() const;
-  const std::string& getName() const;
+  const PrototypeAST &getProto() const;
+  const std::string &getName() const;
   llvm::Function *codegen();
 };
 

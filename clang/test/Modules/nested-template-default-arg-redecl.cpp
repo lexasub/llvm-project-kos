@@ -6,9 +6,9 @@
 // expected-no-diagnostics
 
 #include "alias2.h"
-#include "var2.h"
-#include "strct2.h"
 #include "func2.h"
+#include "strct2.h"
+#include "var2.h"
 
 auto var = &var_outer::var<>;
 auto func = &func_outer::func<>;

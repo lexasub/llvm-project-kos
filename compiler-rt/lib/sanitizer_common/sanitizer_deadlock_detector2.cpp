@@ -10,11 +10,11 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "sanitizer_deadlock_detector_interface.h"
-#include "sanitizer_common.h"
 #include "sanitizer_allocator_internal.h"
-#include "sanitizer_placement_new.h"
+#include "sanitizer_common.h"
+#include "sanitizer_deadlock_detector_interface.h"
 #include "sanitizer_mutex.h"
+#include "sanitizer_placement_new.h"
 
 #if SANITIZER_DEADLOCK_DETECTOR_VERSION == 2
 
@@ -32,10 +32,7 @@ struct Id {
   u32 id;
   u32 seq;
 
-  explicit Id(u32 id = 0, u32 seq = 0)
-      : id(id)
-      , seq(seq) {
-  }
+  explicit Id(u32 id = 0, u32 seq = 0) : id(id), seq(seq) {}
 };
 
 struct Link {
@@ -46,12 +43,7 @@ struct Link {
   u32 stk1;
 
   explicit Link(u32 id = 0, u32 seq = 0, u32 tid = 0, u32 s0 = 0, u32 s1 = 0)
-      : id(id)
-      , seq(seq)
-      , tid(tid)
-      , stk0(s0)
-      , stk1(s1) {
-  }
+      : id(id), seq(seq), tid(tid), stk0(s0), stk1(s1) {}
 };
 
 struct DDPhysicalThread {
@@ -68,9 +60,9 @@ struct ThreadMutex {
 };
 
 struct DDLogicalThread {
-  u64         ctx;
+  u64 ctx;
   ThreadMutex locked[kMaxNesting];
-  int         nlocked;
+  int nlocked;
 };
 
 struct Mutex {
@@ -83,16 +75,15 @@ struct Mutex {
 struct DD final : public DDetector {
   explicit DD(const DDFlags *flags);
 
-  DDPhysicalThread* CreatePhysicalThread();
+  DDPhysicalThread *CreatePhysicalThread();
   void DestroyPhysicalThread(DDPhysicalThread *pt);
 
-  DDLogicalThread* CreateLogicalThread(u64 ctx);
+  DDLogicalThread *CreateLogicalThread(u64 ctx);
   void DestroyLogicalThread(DDLogicalThread *lt);
 
   void MutexInit(DDCallback *cb, DDMutex *m);
   void MutexBeforeLock(DDCallback *cb, DDMutex *m, bool wlock);
-  void MutexAfterLock(DDCallback *cb, DDMutex *m, bool wlock,
-      bool trylock);
+  void MutexAfterLock(DDCallback *cb, DDMutex *m, bool wlock, bool trylock);
   void MutexBeforeUnlock(DDCallback *cb, DDMutex *m, bool wlock);
   void MutexDestroy(DDCallback *cb, DDMutex *m);
 
@@ -106,7 +97,7 @@ struct DD final : public DDetector {
 
   DDFlags flags;
 
-  Mutex* mutex[kL1Size];
+  Mutex *mutex[kL1Size];
 
   SpinMutex mtx;
   InternalMmapVector<u32> free_id;
@@ -116,14 +107,14 @@ struct DD final : public DDetector {
 DDetector *DDetector::Create(const DDFlags *flags) {
   (void)flags;
   void *mem = MmapOrDie(sizeof(DD), "deadlock detector");
-  return new(mem) DD(flags);
+  return new (mem) DD(flags);
 }
 
 DD::DD(const DDFlags *flags) : flags(*flags) { free_id.reserve(1024); }
 
-DDPhysicalThread* DD::CreatePhysicalThread() {
-  DDPhysicalThread *pt = (DDPhysicalThread*)MmapOrDie(sizeof(DDPhysicalThread),
-      "deadlock detector (physical thread)");
+DDPhysicalThread *DD::CreatePhysicalThread() {
+  DDPhysicalThread *pt = (DDPhysicalThread *)MmapOrDie(
+      sizeof(DDPhysicalThread), "deadlock detector (physical thread)");
   return pt;
 }
 
@@ -132,9 +123,9 @@ void DD::DestroyPhysicalThread(DDPhysicalThread *pt) {
   UnmapOrDie(pt, sizeof(DDPhysicalThread));
 }
 
-DDLogicalThread* DD::CreateLogicalThread(u64 ctx) {
-  DDLogicalThread *lt = (DDLogicalThread*)InternalAlloc(
-      sizeof(DDLogicalThread));
+DDLogicalThread *DD::CreateLogicalThread(u64 ctx) {
+  DDLogicalThread *lt =
+      (DDLogicalThread *)InternalAlloc(sizeof(DDLogicalThread));
   lt->ctx = ctx;
   lt->nlocked = 0;
   return lt;
@@ -152,9 +143,7 @@ void DD::MutexInit(DDCallback *cb, DDMutex *m) {
   atomic_store(&m->owner, 0, memory_order_relaxed);
 }
 
-Mutex *DD::getMutex(u32 id) {
-  return &mutex[id / kL2Size][id % kL2Size];
-}
+Mutex *DD::getMutex(u32 id) { return &mutex[id / kL2Size][id % kL2Size]; }
 
 u32 DD::getMutexId(Mutex *m) {
   for (int i = 0; i < kL1Size; i++) {
@@ -176,8 +165,8 @@ u32 DD::allocateId(DDCallback *cb) {
   } else {
     CHECK_LT(id_gen, kMaxMutex);
     if ((id_gen % kL2Size) == 0) {
-      mutex[id_gen / kL2Size] = (Mutex*)MmapOrDie(kL2Size * sizeof(Mutex),
-          "deadlock detector (mutex table)");
+      mutex[id_gen / kL2Size] = (Mutex *)MmapOrDie(
+          kL2Size * sizeof(Mutex), "deadlock detector (mutex table)");
     }
     id = id_gen++;
   }
@@ -188,14 +177,13 @@ u32 DD::allocateId(DDCallback *cb) {
 
 void DD::MutexBeforeLock(DDCallback *cb, DDMutex *m, bool wlock) {
   VPrintf(2, "#%llu: DD::MutexBeforeLock(%p, wlock=%d) nlocked=%d\n",
-      cb->lt->ctx, m, wlock, cb->lt->nlocked);
+          cb->lt->ctx, m, wlock, cb->lt->nlocked);
   DDPhysicalThread *pt = cb->pt;
   DDLogicalThread *lt = cb->lt;
 
   uptr owner = atomic_load(&m->owner, memory_order_relaxed);
   if (owner == (uptr)cb->lt) {
-    VPrintf(3, "#%llu: DD::MutexBeforeLock recursive\n",
-        cb->lt->ctx);
+    VPrintf(3, "#%llu: DD::MutexBeforeLock recursive\n", cb->lt->ctx);
     return;
   }
 
@@ -210,8 +198,7 @@ void DD::MutexBeforeLock(DDCallback *cb, DDMutex *m, bool wlock) {
   if (flags.second_deadlock_stack)
     tm->stk = cb->Unwind();
   if (lt->nlocked == 1) {
-    VPrintf(3, "#%llu: DD::MutexBeforeLock first mutex\n",
-        cb->lt->ctx);
+    VPrintf(3, "#%llu: DD::MutexBeforeLock first mutex\n", cb->lt->ctx);
     return;
   }
 
@@ -237,7 +224,7 @@ void DD::MutexBeforeLock(DDCallback *cb, DDMutex *m, bool wlock) {
           link->stk1 = cb->Unwind();
           added = true;
           VPrintf(3, "#%llu: DD::MutexBeforeLock added %d->%d link\n",
-              cb->lt->ctx, getMutexId(mtx1), m->id);
+                  cb->lt->ctx, getMutexId(mtx1), m->id);
         }
         break;
       }
@@ -251,24 +238,22 @@ void DD::MutexBeforeLock(DDCallback *cb, DDMutex *m, bool wlock) {
       link->stk0 = stk1;
       link->stk1 = cb->Unwind();
       added = true;
-      VPrintf(3, "#%llu: DD::MutexBeforeLock added %d->%d link\n",
-          cb->lt->ctx, getMutexId(mtx1), m->id);
+      VPrintf(3, "#%llu: DD::MutexBeforeLock added %d->%d link\n", cb->lt->ctx,
+              getMutexId(mtx1), m->id);
     }
   }
 
   if (!added || mtx->nlink == 0) {
-    VPrintf(3, "#%llu: DD::MutexBeforeLock don't check\n",
-        cb->lt->ctx);
+    VPrintf(3, "#%llu: DD::MutexBeforeLock don't check\n", cb->lt->ctx);
     return;
   }
 
   CycleCheck(pt, lt, m);
 }
 
-void DD::MutexAfterLock(DDCallback *cb, DDMutex *m, bool wlock,
-    bool trylock) {
+void DD::MutexAfterLock(DDCallback *cb, DDMutex *m, bool wlock, bool trylock) {
   VPrintf(2, "#%llu: DD::MutexAfterLock(%p, wlock=%d, try=%d) nlocked=%d\n",
-      cb->lt->ctx, m, wlock, trylock, cb->lt->nlocked);
+          cb->lt->ctx, m, wlock, trylock, cb->lt->nlocked);
   DDLogicalThread *lt = cb->lt;
 
   uptr owner = atomic_load(&m->owner, memory_order_relaxed);
@@ -300,7 +285,7 @@ void DD::MutexAfterLock(DDCallback *cb, DDMutex *m, bool wlock,
 
 void DD::MutexBeforeUnlock(DDCallback *cb, DDMutex *m, bool wlock) {
   VPrintf(2, "#%llu: DD::MutexBeforeUnlock(%p, wlock=%d) nlocked=%d\n",
-      cb->lt->ctx, m, wlock, cb->lt->nlocked);
+          cb->lt->ctx, m, wlock, cb->lt->nlocked);
   DDLogicalThread *lt = cb->lt;
 
   uptr owner = atomic_load(&m->owner, memory_order_relaxed);
@@ -323,8 +308,7 @@ void DD::MutexBeforeUnlock(DDCallback *cb, DDMutex *m, bool wlock) {
 }
 
 void DD::MutexDestroy(DDCallback *cb, DDMutex *m) {
-  VPrintf(2, "#%llu: DD::MutexDestroy(%p)\n",
-      cb->lt->ctx, m);
+  VPrintf(2, "#%llu: DD::MutexDestroy(%p)\n", cb->lt->ctx, m);
   DDLogicalThread *lt = cb->lt;
 
   if (m->id == kNoId)
@@ -355,8 +339,7 @@ void DD::MutexDestroy(DDCallback *cb, DDMutex *m) {
   }
 }
 
-void DD::CycleCheck(DDPhysicalThread *pt, DDLogicalThread *lt,
-    DDMutex *m) {
+void DD::CycleCheck(DDPhysicalThread *pt, DDLogicalThread *lt, DDMutex *m) {
   internal_memset(pt->visited, 0, sizeof(pt->visited));
   int npath = 0;
   int npending = 0;

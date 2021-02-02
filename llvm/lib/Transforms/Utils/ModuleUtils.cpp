@@ -63,15 +63,18 @@ static void appendToGlobalArray(const char *Array, Module &M, Function *F,
                            GlobalValue::AppendingLinkage, NewInit, Array);
 }
 
-void llvm::appendToGlobalCtors(Module &M, Function *F, int Priority, Constant *Data) {
+void llvm::appendToGlobalCtors(Module &M, Function *F, int Priority,
+                               Constant *Data) {
   appendToGlobalArray("llvm.global_ctors", M, F, Priority, Data);
 }
 
-void llvm::appendToGlobalDtors(Module &M, Function *F, int Priority, Constant *Data) {
+void llvm::appendToGlobalDtors(Module &M, Function *F, int Priority,
+                               Constant *Data) {
   appendToGlobalArray("llvm.global_dtors", M, F, Priority, Data);
 }
 
-static void appendToUsedList(Module &M, StringRef Name, ArrayRef<GlobalValue *> Values) {
+static void appendToUsedList(Module &M, StringRef Name,
+                             ArrayRef<GlobalValue *> Values) {
   GlobalVariable *GV = M.getGlobalVariable(Name);
   SmallPtrSet<Constant *, 16> InitAsSet;
   SmallVector<Constant *, 16> Init;

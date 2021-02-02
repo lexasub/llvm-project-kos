@@ -92,21 +92,11 @@ class ToolChain {
 public:
   using path_list = SmallVector<std::string, 16>;
 
-  enum CXXStdlibType {
-    CST_Libcxx,
-    CST_Libstdcxx
-  };
+  enum CXXStdlibType { CST_Libcxx, CST_Libstdcxx };
 
-  enum RuntimeLibType {
-    RLT_CompilerRT,
-    RLT_Libgcc
-  };
+  enum RuntimeLibType { RLT_CompilerRT, RLT_Libgcc };
 
-  enum UnwindLibType {
-    UNW_None,
-    UNW_CompilerRT,
-    UNW_Libgcc
-  };
+  enum UnwindLibType { UNW_None, UNW_CompilerRT, UNW_Libgcc };
 
   enum RTTIMode {
     RM_Enabled,
@@ -189,9 +179,9 @@ protected:
                                       llvm::opt::ArgStringList &CC1Args,
                                       const Twine &Path);
   static void
-      addExternCSystemIncludeIfExists(const llvm::opt::ArgList &DriverArgs,
-                                      llvm::opt::ArgStringList &CC1Args,
-                                      const Twine &Path);
+  addExternCSystemIncludeIfExists(const llvm::opt::ArgList &DriverArgs,
+                                  llvm::opt::ArgStringList &CC1Args,
+                                  const Twine &Path);
   static void addSystemIncludes(const llvm::opt::ArgList &DriverArgs,
                                 llvm::opt::ArgStringList &CC1Args,
                                 ArrayRef<StringRef> Paths);
@@ -227,9 +217,7 @@ public:
   /// this toolchain.
   StringRef getDefaultUniversalArchName() const;
 
-  std::string getTripleString() const {
-    return Triple.getTriple();
-  }
+  std::string getTripleString() const { return Triple.getTriple(); }
 
   /// Get the toolchain's effective clang triple.
   const llvm::Triple &getEffectiveTriple() const {
@@ -250,9 +238,9 @@ public:
 
   const Multilib &getMultilib() const { return SelectedMultilib; }
 
-  const SanitizerArgs& getSanitizerArgs() const;
+  const SanitizerArgs &getSanitizerArgs() const;
 
-  const XRayArgs& getXRayArgs() const;
+  const XRayArgs &getXRayArgs() const;
 
   // Returns the Arg * that explicitly turned on/off rtti, or nullptr.
   const llvm::opt::Arg *getRTTIArg() const { return CachedRTTIArg; }
@@ -545,9 +533,9 @@ public:
   /// example, on Darwin the -mmacosx-version-min= command line argument (which
   /// sets the deployment target) determines the version in the triple passed to
   /// Clang.
-  virtual std::string ComputeEffectiveClangTriple(
-      const llvm::opt::ArgList &Args,
-      types::ID InputType = types::TY_INVALID) const;
+  virtual std::string
+  ComputeEffectiveClangTriple(const llvm::opt::ArgList &Args,
+                              types::ID InputType = types::TY_INVALID) const;
 
   /// getDefaultObjCRuntime - Return the default Objective-C runtime
   /// for this platform.
@@ -575,9 +563,10 @@ public:
                             llvm::opt::ArgStringList &CC1Args) const;
 
   /// Add options that need to be passed to cc1 for this target.
-  virtual void addClangTargetOptions(const llvm::opt::ArgList &DriverArgs,
-                                     llvm::opt::ArgStringList &CC1Args,
-                                     Action::OffloadKind DeviceOffloadKind) const;
+  virtual void
+  addClangTargetOptions(const llvm::opt::ArgList &DriverArgs,
+                        llvm::opt::ArgStringList &CC1Args,
+                        Action::OffloadKind DeviceOffloadKind) const;
 
   /// Add warning options that need to be passed to cc1 for this target.
   virtual void addClangWarningOptions(llvm::opt::ArgStringList &CC1Args) const;
@@ -627,16 +616,18 @@ public:
   /// If a runtime library exists that sets global flags for unsafe floating
   /// point math, return true.
   ///
-  /// This checks for presence of the -Ofast, -ffast-math or -funsafe-math flags.
-  virtual bool isFastMathRuntimeAvailable(
-    const llvm::opt::ArgList &Args, std::string &Path) const;
+  /// This checks for presence of the -Ofast, -ffast-math or -funsafe-math
+  /// flags.
+  virtual bool isFastMathRuntimeAvailable(const llvm::opt::ArgList &Args,
+                                          std::string &Path) const;
 
   /// AddFastMathRuntimeIfAvailable - If a runtime library exists that sets
   /// global flags for unsafe floating point math, add it and return true.
   ///
-  /// This checks for presence of the -Ofast, -ffast-math or -funsafe-math flags.
-  bool addFastMathRuntimeIfAvailable(
-    const llvm::opt::ArgList &Args, llvm::opt::ArgStringList &CmdArgs) const;
+  /// This checks for presence of the -Ofast, -ffast-math or -funsafe-math
+  /// flags.
+  bool addFastMathRuntimeIfAvailable(const llvm::opt::ArgList &Args,
+                                     llvm::opt::ArgStringList &CmdArgs) const;
 
   /// addProfileRTLibs - When -fprofile-instr-profile is specified, try to pass
   /// a suitable profile runtime library to the linker.
@@ -663,9 +654,7 @@ public:
   virtual SanitizerMask getSupportedSanitizers() const;
 
   /// Return sanitizers which are enabled by default.
-  virtual SanitizerMask getDefaultSanitizers() const {
-    return SanitizerMask();
-  }
+  virtual SanitizerMask getDefaultSanitizers() const { return SanitizerMask(); }
 
   /// Returns true when it's possible to split LTO unit to use whole
   /// program devirtualization and CFI santiizers.

@@ -12,8 +12,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "sanitizer_common/sanitizer_platform.h"
 #include "lsan_common.h"
+#include "sanitizer_common/sanitizer_platform.h"
 
 #if CAN_SANITIZE_LEAKS && (SANITIZER_LINUX || SANITIZER_NETBSD)
 #include <link.h>
@@ -31,7 +31,7 @@ static const char kLinkerName[] = "ld";
 static char linker_placeholder[sizeof(LoadedModule)] ALIGNED(64);
 static LoadedModule *linker = nullptr;
 
-static bool IsLinker(const LoadedModule& module) {
+static bool IsLinker(const LoadedModule &module) {
 #if SANITIZER_USE_GETAUXVAL
   return module.base_address() == getauxval(AT_BASE);
 #else
@@ -39,8 +39,7 @@ static bool IsLinker(const LoadedModule& module) {
 #endif  // SANITIZER_USE_GETAUXVAL
 }
 
-__attribute__((tls_model("initial-exec")))
-THREADLOCAL int disable_counter;
+__attribute__((tls_model("initial-exec"))) THREADLOCAL int disable_counter;
 bool DisabledInThisThread() { return disable_counter > 0; }
 void DisableInThisThread() { disable_counter++; }
 void EnableInThisThread() {
@@ -61,18 +60,21 @@ void InitializePlatformSpecificModules() {
       *linker = module;
       module = LoadedModule();
     } else {
-      VReport(1, "LeakSanitizer: Multiple modules match \"%s\". "
+      VReport(1,
+              "LeakSanitizer: Multiple modules match \"%s\". "
               "TLS and other allocations originating from linker might be "
-              "falsely reported as leaks.\n", kLinkerName);
+              "falsely reported as leaks.\n",
+              kLinkerName);
       linker->clear();
       linker = nullptr;
       return;
     }
   }
   if (linker == nullptr) {
-    VReport(1, "LeakSanitizer: Dynamic linker not found. TLS and other "
-               "allocations originating from linker might be falsely reported "
-                "as leaks.\n");
+    VReport(1,
+            "LeakSanitizer: Dynamic linker not found. TLS and other "
+            "allocations originating from linker might be falsely reported "
+            "as leaks.\n");
   }
 }
 
@@ -100,7 +102,8 @@ extern "C" __attribute__((weak)) int dl_iterate_phdr(
 
 // Scans global variables for heap pointers.
 void ProcessGlobalRegions(Frontier *frontier) {
-  if (!flags()->use_globals) return;
+  if (!flags()->use_globals)
+    return;
   dl_iterate_phdr(ProcessGlobalRegionsCallback, frontier);
 }
 
@@ -117,7 +120,8 @@ struct DoStopTheWorldParam {
 // cause race conditions, it isn't possible to intercept exit on linux,
 // so we have no choice but to call Die() from the atexit handler.
 void HandleLeaks() {
-  if (common_flags()->exitcode) Die();
+  if (common_flags()->exitcode)
+    Die();
 }
 
 static int LockStuffAndStopTheWorldCallback(struct dl_phdr_info *info,
@@ -145,6 +149,6 @@ void LockStuffAndStopTheWorld(StopTheWorldCallback callback,
   dl_iterate_phdr(LockStuffAndStopTheWorldCallback, &param);
 }
 
-} // namespace __lsan
+}  // namespace __lsan
 
 #endif

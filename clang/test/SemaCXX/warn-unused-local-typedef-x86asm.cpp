@@ -8,7 +8,7 @@ void use_in_asm() {
   } A;
   __asm mov eax, [eax].A.b
 
-  using Alias = struct {
+                 using Alias = struct {
     int a;
     int b;
   };

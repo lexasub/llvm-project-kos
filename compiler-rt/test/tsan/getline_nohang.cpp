@@ -6,7 +6,7 @@
 // Make sure TSan doesn't deadlock on a file stream lock at program shutdown.
 // See https://github.com/google/sanitizers/issues/454
 #ifdef __FreeBSD__
-#define _WITH_GETLINE  // to declare getline()
+#define _WITH_GETLINE // to declare getline()
 #endif
 
 #include <pthread.h>

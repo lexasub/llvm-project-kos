@@ -31,8 +31,7 @@ void test_null_argument() {
   }
 }
 
-int main(int, char**)
-{
+int main(int, char**) {
   test_null_argument();
 
   return 0;

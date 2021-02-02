@@ -375,8 +375,8 @@ public:
                    size_t data_byte_size);
 
   /// Dump to stdout.
-  void DumpTypeDescription(lldb::DescriptionLevel level =
-                           lldb::eDescriptionLevelFull) const;
+  void DumpTypeDescription(
+      lldb::DescriptionLevel level = lldb::eDescriptionLevelFull) const;
 
   /// Print a description of the type to a stream. The exact implementation
   /// varies, but the expectation is that eDescriptionLevelFull returns a

@@ -23,20 +23,29 @@
 
 #include <utility>
 
-
 struct ImplicitlyDefaultConstructible {
-    ImplicitlyDefaultConstructible() = default;
+  ImplicitlyDefaultConstructible() = default;
 };
 
 struct ExplicitlyDefaultConstructible {
-    explicit ExplicitlyDefaultConstructible() = default;
+  explicit ExplicitlyDefaultConstructible() = default;
 };
 
-std::pair<ImplicitlyDefaultConstructible, ExplicitlyDefaultConstructible> test1() { return {}; } // expected-error 1 {{chosen constructor is explicit in copy-initialization}}
-std::pair<ExplicitlyDefaultConstructible, ImplicitlyDefaultConstructible> test2() { return {}; } // expected-error 1 {{chosen constructor is explicit in copy-initialization}}
-std::pair<ExplicitlyDefaultConstructible, ExplicitlyDefaultConstructible> test3() { return {}; } // expected-error 1 {{chosen constructor is explicit in copy-initialization}}
-std::pair<ImplicitlyDefaultConstructible, ImplicitlyDefaultConstructible> test4() { return {}; }
-
-int main(int, char**) {
-    return 0;
+std::pair<ImplicitlyDefaultConstructible, ExplicitlyDefaultConstructible>
+test1() {
+  return {};
+} // expected-error 1 {{chosen constructor is explicit in copy-initialization}}
+std::pair<ExplicitlyDefaultConstructible, ImplicitlyDefaultConstructible>
+test2() {
+  return {};
+} // expected-error 1 {{chosen constructor is explicit in copy-initialization}}
+std::pair<ExplicitlyDefaultConstructible, ExplicitlyDefaultConstructible>
+test3() {
+  return {};
+} // expected-error 1 {{chosen constructor is explicit in copy-initialization}}
+std::pair<ImplicitlyDefaultConstructible, ImplicitlyDefaultConstructible>
+test4() {
+  return {};
 }
+
+int main(int, char**) { return 0; }

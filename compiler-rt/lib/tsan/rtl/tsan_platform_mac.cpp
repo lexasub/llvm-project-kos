@@ -14,6 +14,23 @@
 #include "sanitizer_common/sanitizer_platform.h"
 #if SANITIZER_MAC
 
+#include <errno.h>
+#include <mach/mach.h>
+#include <pthread.h>
+#include <sched.h>
+#include <signal.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/mman.h>
+#include <sys/resource.h>
+#include <sys/stat.h>
+#include <sys/syscall.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+
 #include "sanitizer_common/sanitizer_atomic.h"
 #include "sanitizer_common/sanitizer_common.h"
 #include "sanitizer_common/sanitizer_libc.h"
@@ -21,26 +38,9 @@
 #include "sanitizer_common/sanitizer_procmaps.h"
 #include "sanitizer_common/sanitizer_ptrauth.h"
 #include "sanitizer_common/sanitizer_stackdepot.h"
+#include "tsan_flags.h"
 #include "tsan_platform.h"
 #include "tsan_rtl.h"
-#include "tsan_flags.h"
-
-#include <mach/mach.h>
-#include <pthread.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdarg.h>
-#include <sys/mman.h>
-#include <sys/syscall.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <sys/resource.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <errno.h>
-#include <sched.h>
 
 namespace __tsan {
 
@@ -89,13 +89,11 @@ static ThreadState **cur_thread_location() {
 }
 
 ThreadState *cur_thread() {
-  return (ThreadState *)SignalSafeGetOrAllocate(
-      (uptr *)cur_thread_location(), sizeof(ThreadState));
+  return (ThreadState *)SignalSafeGetOrAllocate((uptr *)cur_thread_location(),
+                                                sizeof(ThreadState));
 }
 
-void set_cur_thread(ThreadState *thr) {
-  *cur_thread_location() = thr;
-}
+void set_cur_thread(ThreadState *thr) { *cur_thread_location() = thr; }
 
 // TODO(kuba.brecka): This is not async-signal-safe. In particular, we call
 // munmap first and then clear `fake_tls`; if we receive a signal in between,
@@ -112,8 +110,7 @@ void cur_thread_finalize() {
 }
 #endif
 
-void FlushShadowMemory() {
-}
+void FlushShadowMemory() {}
 
 static void RegionMemUsage(uptr start, uptr end, uptr *res, uptr *dirty) {
   vm_address_t address = start;
@@ -128,7 +125,8 @@ static void RegionMemUsage(uptr start, uptr end, uptr *res, uptr *dirty) {
     kern_return_t ret = vm_region_64(
         mach_task_self(), &address, &vm_region_size, VM_REGION_EXTENDED_INFO,
         (vm_region_info_t)&vm_region_info, &count, &object_name);
-    if (ret != KERN_SUCCESS) break;
+    if (ret != KERN_SUCCESS)
+      break;
 
     resident_pages += vm_region_info.pages_resident;
     dirty_pages += vm_region_info.pages_dirtied;
@@ -160,36 +158,36 @@ void WriteMemoryProfile(char *buf, uptr buf_size, uptr nthread, uptr nlive) {
 #endif
 
   StackDepotStats *stacks = StackDepotGetStats();
-  internal_snprintf(buf, buf_size,
-    "shadow   (0x%016zx-0x%016zx): resident %zd kB, dirty %zd kB\n"
-    "meta     (0x%016zx-0x%016zx): resident %zd kB, dirty %zd kB\n"
-    "traces   (0x%016zx-0x%016zx): resident %zd kB, dirty %zd kB\n"
+  internal_snprintf(
+      buf, buf_size,
+      "shadow   (0x%016zx-0x%016zx): resident %zd kB, dirty %zd kB\n"
+      "meta     (0x%016zx-0x%016zx): resident %zd kB, dirty %zd kB\n"
+      "traces   (0x%016zx-0x%016zx): resident %zd kB, dirty %zd kB\n"
 #if !SANITIZER_GO
-    "low app  (0x%016zx-0x%016zx): resident %zd kB, dirty %zd kB\n"
-    "high app (0x%016zx-0x%016zx): resident %zd kB, dirty %zd kB\n"
-    "heap     (0x%016zx-0x%016zx): resident %zd kB, dirty %zd kB\n"
+      "low app  (0x%016zx-0x%016zx): resident %zd kB, dirty %zd kB\n"
+      "high app (0x%016zx-0x%016zx): resident %zd kB, dirty %zd kB\n"
+      "heap     (0x%016zx-0x%016zx): resident %zd kB, dirty %zd kB\n"
 #else  // !SANITIZER_GO
-    "app      (0x%016zx-0x%016zx): resident %zd kB, dirty %zd kB\n"
+      "app      (0x%016zx-0x%016zx): resident %zd kB, dirty %zd kB\n"
 #endif
-    "stacks: %zd unique IDs, %zd kB allocated\n"
-    "threads: %zd total, %zd live\n"
-    "------------------------------\n",
-    ShadowBeg(), ShadowEnd(), shadow_res / 1024, shadow_dirty / 1024,
-    MetaShadowBeg(), MetaShadowEnd(), meta_res / 1024, meta_dirty / 1024,
-    TraceMemBeg(), TraceMemEnd(), trace_res / 1024, trace_dirty / 1024,
+      "stacks: %zd unique IDs, %zd kB allocated\n"
+      "threads: %zd total, %zd live\n"
+      "------------------------------\n",
+      ShadowBeg(), ShadowEnd(), shadow_res / 1024, shadow_dirty / 1024,
+      MetaShadowBeg(), MetaShadowEnd(), meta_res / 1024, meta_dirty / 1024,
+      TraceMemBeg(), TraceMemEnd(), trace_res / 1024, trace_dirty / 1024,
 #if !SANITIZER_GO
-    LoAppMemBeg(), LoAppMemEnd(), low_res / 1024, low_dirty / 1024,
-    HiAppMemBeg(), HiAppMemEnd(), high_res / 1024, high_dirty / 1024,
-    HeapMemBeg(), HeapMemEnd(), heap_res / 1024, heap_dirty / 1024,
+      LoAppMemBeg(), LoAppMemEnd(), low_res / 1024, low_dirty / 1024,
+      HiAppMemBeg(), HiAppMemEnd(), high_res / 1024, high_dirty / 1024,
+      HeapMemBeg(), HeapMemEnd(), heap_res / 1024, heap_dirty / 1024,
 #else  // !SANITIZER_GO
-    AppMemBeg(), AppMemEnd(), app_res / 1024, app_dirty / 1024,
+      AppMemBeg(), AppMemEnd(), app_res / 1024, app_dirty / 1024,
 #endif
-    stacks->n_uniq_ids, stacks->allocated / 1024,
-    nthread, nlive);
+      stacks->n_uniq_ids, stacks->allocated / 1024, nthread, nlive);
 }
 
 #if !SANITIZER_GO
-void InitializeShadowMemoryPlatform() { }
+void InitializeShadowMemoryPlatform() {}
 
 // On OS X, GCD worker threads are created without a call to pthread_create. We
 // need to properly register these threads with ThreadCreate and ThreadStart.
@@ -266,10 +264,10 @@ void InitializePlatform() {
 }
 
 #ifdef __aarch64__
-# define LONG_JMP_SP_ENV_SLOT \
-    ((GetMacosAlignedVersion() >= MacosVersion(10, 14)) ? 12 : 13)
+#define LONG_JMP_SP_ENV_SLOT \
+  ((GetMacosAlignedVersion() >= MacosVersion(10, 14)) ? 12 : 13)
 #else
-# define LONG_JMP_SP_ENV_SLOT 2
+#define LONG_JMP_SP_ENV_SLOT 2
 #endif
 
 uptr ExtractLongJmpSp(uptr *env) {

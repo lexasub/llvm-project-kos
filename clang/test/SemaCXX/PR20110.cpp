@@ -12,4 +12,3 @@ template <int p>
 class B {
   char const *get_p() { return p; }
 };
-

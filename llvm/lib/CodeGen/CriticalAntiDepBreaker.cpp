@@ -66,7 +66,8 @@ void CriticalAntiDepBreaker::StartBlock(MachineBasicBlock *BB) {
 
   // Examine the live-in regs of all successors.
   for (MachineBasicBlock::succ_iterator SI = BB->succ_begin(),
-         SE = BB->succ_end(); SI != SE; ++SI)
+                                        SE = BB->succ_end();
+       SI != SE; ++SI)
     for (const auto &LI : (*SI)->liveins()) {
       for (MCRegAliasIterator AI(LI.PhysReg, TRI, true); AI.isValid(); ++AI) {
         unsigned Reg = *AI;
@@ -81,8 +82,7 @@ void CriticalAntiDepBreaker::StartBlock(MachineBasicBlock *BB) {
   // callee-saved register that is not saved in the prolog.
   const MachineFrameInfo &MFI = MF.getFrameInfo();
   BitVector Pristine = MFI.getPristineRegs(MF);
-  for (const MCPhysReg *I = MF.getRegInfo().getCalleeSavedRegs(); *I;
-       ++I) {
+  for (const MCPhysReg *I = MF.getRegInfo().getCalleeSavedRegs(); *I; ++I) {
     unsigned Reg = *I;
     if (!IsReturnBlock && !Pristine.test(Reg))
       continue;
@@ -183,9 +183,11 @@ void CriticalAntiDepBreaker::PrescanInstruction(MachineInstr &MI) {
   // Classes and RegRefs.
   for (unsigned i = 0, e = MI.getNumOperands(); i != e; ++i) {
     MachineOperand &MO = MI.getOperand(i);
-    if (!MO.isReg()) continue;
+    if (!MO.isReg())
+      continue;
     Register Reg = MO.getReg();
-    if (Reg == 0) continue;
+    if (Reg == 0)
+      continue;
     const TargetRegisterClass *NewRC = nullptr;
 
     if (i < MI.getDesc().getNumOperands())
@@ -230,8 +232,8 @@ void CriticalAntiDepBreaker::PrescanInstruction(MachineInstr &MI) {
            SubRegs.isValid(); ++SubRegs) {
         KeepRegs.set(*SubRegs);
       }
-      for (MCSuperRegIterator SuperRegs(Reg, TRI);
-           SuperRegs.isValid(); ++SuperRegs) {
+      for (MCSuperRegIterator SuperRegs(Reg, TRI); SuperRegs.isValid();
+           ++SuperRegs) {
         KeepRegs.set(*SuperRegs);
       }
     }
@@ -278,10 +280,13 @@ void CriticalAntiDepBreaker::ScanInstruction(MachineInstr &MI, unsigned Count) {
         }
       }
 
-      if (!MO.isReg()) continue;
+      if (!MO.isReg())
+        continue;
       Register Reg = MO.getReg();
-      if (Reg == 0) continue;
-      if (!MO.isDef()) continue;
+      if (Reg == 0)
+        continue;
+      if (!MO.isDef())
+        continue;
 
       // Ignore two-addr defs.
       if (MI.isRegTiedToUseOperand(i))
@@ -309,10 +314,13 @@ void CriticalAntiDepBreaker::ScanInstruction(MachineInstr &MI, unsigned Count) {
   }
   for (unsigned i = 0, e = MI.getNumOperands(); i != e; ++i) {
     MachineOperand &MO = MI.getOperand(i);
-    if (!MO.isReg()) continue;
+    if (!MO.isReg())
+      continue;
     Register Reg = MO.getReg();
-    if (Reg == 0) continue;
-    if (!MO.isUse()) continue;
+    if (Reg == 0)
+      continue;
+    if (!MO.isUse())
+      continue;
 
     const TargetRegisterClass *NewRC = nullptr;
     if (i < MI.getDesc().getNumOperands())
@@ -350,11 +358,10 @@ void CriticalAntiDepBreaker::ScanInstruction(MachineInstr &MI, unsigned Count) {
 // RegRefs because the def is inserted by PrescanInstruction and not erased
 // during ScanInstruction. So checking for an instruction with definitions of
 // both NewReg and AntiDepReg covers it.
-bool
-CriticalAntiDepBreaker::isNewRegClobberedByRefs(RegRefIter RegRefBegin,
-                                                RegRefIter RegRefEnd,
-                                                unsigned NewReg) {
-  for (RegRefIter I = RegRefBegin; I != RegRefEnd; ++I ) {
+bool CriticalAntiDepBreaker::isNewRegClobberedByRefs(RegRefIter RegRefBegin,
+                                                     RegRefIter RegRefEnd,
+                                                     unsigned NewReg) {
+  for (RegRefIter I = RegRefBegin; I != RegRefEnd; ++I) {
     MachineOperand *RefOper = I->second;
 
     // Don't allow the instruction defining AntiDepReg to earlyclobber its
@@ -394,32 +401,33 @@ CriticalAntiDepBreaker::isNewRegClobberedByRefs(RegRefIter RegRefBegin,
   return false;
 }
 
-unsigned CriticalAntiDepBreaker::
-findSuitableFreeRegister(RegRefIter RegRefBegin,
-                         RegRefIter RegRefEnd,
-                         unsigned AntiDepReg,
-                         unsigned LastNewReg,
-                         const TargetRegisterClass *RC,
-                         SmallVectorImpl<unsigned> &Forbid) {
+unsigned CriticalAntiDepBreaker::findSuitableFreeRegister(
+    RegRefIter RegRefBegin, RegRefIter RegRefEnd, unsigned AntiDepReg,
+    unsigned LastNewReg, const TargetRegisterClass *RC,
+    SmallVectorImpl<unsigned> &Forbid) {
   ArrayRef<MCPhysReg> Order = RegClassInfo.getOrder(RC);
   for (unsigned i = 0; i != Order.size(); ++i) {
     unsigned NewReg = Order[i];
     // Don't replace a register with itself.
-    if (NewReg == AntiDepReg) continue;
+    if (NewReg == AntiDepReg)
+      continue;
     // Don't replace a register with one that was recently used to repair
     // an anti-dependence with this AntiDepReg, because that would
     // re-introduce that anti-dependence.
-    if (NewReg == LastNewReg) continue;
+    if (NewReg == LastNewReg)
+      continue;
     // If any instructions that define AntiDepReg also define the NewReg, it's
     // not suitable.  For example, Instruction with multiple definitions can
     // result in this condition.
-    if (isNewRegClobberedByRefs(RegRefBegin, RegRefEnd, NewReg)) continue;
+    if (isNewRegClobberedByRefs(RegRefBegin, RegRefEnd, NewReg))
+      continue;
     // If NewReg is dead and NewReg's most recent def is not before
     // AntiDepReg's kill, it's safe to replace AntiDepReg with NewReg.
-    assert(((KillIndices[AntiDepReg] == ~0u) != (DefIndices[AntiDepReg] == ~0u))
-           && "Kill and Def maps aren't consistent for AntiDepReg!");
-    assert(((KillIndices[NewReg] == ~0u) != (DefIndices[NewReg] == ~0u))
-           && "Kill and Def maps aren't consistent for NewReg!");
+    assert(
+        ((KillIndices[AntiDepReg] == ~0u) != (DefIndices[AntiDepReg] == ~0u)) &&
+        "Kill and Def maps aren't consistent for AntiDepReg!");
+    assert(((KillIndices[NewReg] == ~0u) != (DefIndices[NewReg] == ~0u)) &&
+           "Kill and Def maps aren't consistent for NewReg!");
     if (KillIndices[NewReg] != ~0u ||
         Classes[NewReg] == reinterpret_cast<TargetRegisterClass *>(-1) ||
         KillIndices[AntiDepReg] > DefIndices[NewReg])
@@ -427,12 +435,14 @@ findSuitableFreeRegister(RegRefIter RegRefBegin,
     // If NewReg overlaps any of the forbidden registers, we can't use it.
     bool Forbidden = false;
     for (SmallVectorImpl<unsigned>::iterator it = Forbid.begin(),
-           ite = Forbid.end(); it != ite; ++it)
+                                             ite = Forbid.end();
+         it != ite; ++it)
       if (TRI->regsOverlap(NewReg, *it)) {
         Forbidden = true;
         break;
       }
-    if (Forbidden) continue;
+    if (Forbidden)
+      continue;
     return NewReg;
   }
 
@@ -440,15 +450,14 @@ findSuitableFreeRegister(RegRefIter RegRefBegin,
   return 0;
 }
 
-unsigned CriticalAntiDepBreaker::
-BreakAntiDependencies(const std::vector<SUnit> &SUnits,
-                      MachineBasicBlock::iterator Begin,
-                      MachineBasicBlock::iterator End,
-                      unsigned InsertPosIndex,
-                      DbgValueVector &DbgValues) {
+unsigned CriticalAntiDepBreaker::BreakAntiDependencies(
+    const std::vector<SUnit> &SUnits, MachineBasicBlock::iterator Begin,
+    MachineBasicBlock::iterator End, unsigned InsertPosIndex,
+    DbgValueVector &DbgValues) {
   // The code below assumes that there is at least one instruction,
   // so just duck out immediately if the block is empty.
-  if (SUnits.empty()) return 0;
+  if (SUnits.empty())
+    return 0;
 
   // Keep a map of the MachineInstr*'s back to the SUnit representing them.
   // This is used for updating debug information.
@@ -583,10 +592,12 @@ BreakAntiDependencies(const std::vector<SUnit> &SUnits,
             // same register as the anti-dependency, don't attempt to
             // break it.
             for (SUnit::const_pred_iterator P = CriticalPathSU->Preds.begin(),
-                 PE = CriticalPathSU->Preds.end(); P != PE; ++P)
-              if (P->getSUnit() == NextSU ?
-                    (P->getKind() != SDep::Anti || P->getReg() != AntiDepReg) :
-                    (P->getKind() == SDep::Data && P->getReg() == AntiDepReg)) {
+                                            PE = CriticalPathSU->Preds.end();
+                 P != PE; ++P)
+              if (P->getSUnit() == NextSU ? (P->getKind() != SDep::Anti ||
+                                             P->getReg() != AntiDepReg)
+                                          : (P->getKind() == SDep::Data &&
+                                             P->getReg() == AntiDepReg)) {
                 AntiDepReg = 0;
                 break;
               }
@@ -619,9 +630,11 @@ BreakAntiDependencies(const std::vector<SUnit> &SUnits,
       // that overlaps any of them.
       for (unsigned i = 0, e = MI.getNumOperands(); i != e; ++i) {
         MachineOperand &MO = MI.getOperand(i);
-        if (!MO.isReg()) continue;
+        if (!MO.isReg())
+          continue;
         Register Reg = MO.getReg();
-        if (Reg == 0) continue;
+        if (Reg == 0)
+          continue;
         if (MO.isUse() && TRI->regsOverlap(AntiDepReg, Reg)) {
           AntiDepReg = 0;
           break;
@@ -633,8 +646,8 @@ BreakAntiDependencies(const std::vector<SUnit> &SUnits,
 
     // Determine AntiDepReg's register class, if it is live and is
     // consistently used within a single class.
-    const TargetRegisterClass *RC = AntiDepReg != 0 ? Classes[AntiDepReg]
-                                                    : nullptr;
+    const TargetRegisterClass *RC =
+        AntiDepReg != 0 ? Classes[AntiDepReg] : nullptr;
     assert((AntiDepReg == 0 || RC != nullptr) &&
            "Register should be live if it's causing an anti-dependence!");
     if (RC == reinterpret_cast<TargetRegisterClass *>(-1))
@@ -647,11 +660,10 @@ BreakAntiDependencies(const std::vector<SUnit> &SUnits,
     if (AntiDepReg != 0) {
       std::pair<std::multimap<unsigned, MachineOperand *>::iterator,
                 std::multimap<unsigned, MachineOperand *>::iterator>
-        Range = RegRefs.equal_range(AntiDepReg);
-      if (unsigned NewReg = findSuitableFreeRegister(Range.first, Range.second,
-                                                     AntiDepReg,
-                                                     LastNewReg[AntiDepReg],
-                                                     RC, ForbidRegs)) {
+          Range = RegRefs.equal_range(AntiDepReg);
+      if (unsigned NewReg = findSuitableFreeRegister(
+              Range.first, Range.second, AntiDepReg, LastNewReg[AntiDepReg], RC,
+              ForbidRegs)) {
         LLVM_DEBUG(dbgs() << "Breaking anti-dependence edge on "
                           << printReg(AntiDepReg, TRI) << " with "
                           << RegRefs.count(AntiDepReg) << " references"
@@ -660,15 +672,18 @@ BreakAntiDependencies(const std::vector<SUnit> &SUnits,
         // Update the references to the old register to refer to the new
         // register.
         for (std::multimap<unsigned, MachineOperand *>::iterator
-             Q = Range.first, QE = Range.second; Q != QE; ++Q) {
+                 Q = Range.first,
+                 QE = Range.second;
+             Q != QE; ++Q) {
           Q->second->setReg(NewReg);
           // If the SU for the instruction being updated has debug information
           // related to the anti-dependency register, make sure to update that
           // as well.
           const SUnit *SU = MISUnitMap[Q->second->getParent()];
-          if (!SU) continue;
-          UpdateDbgValues(DbgValues, Q->second->getParent(),
-                          AntiDepReg, NewReg);
+          if (!SU)
+            continue;
+          UpdateDbgValues(DbgValues, Q->second->getParent(), AntiDepReg,
+                          NewReg);
         }
 
         // We just went back in time and modified history; the
@@ -677,16 +692,15 @@ BreakAntiDependencies(const std::vector<SUnit> &SUnits,
         Classes[NewReg] = Classes[AntiDepReg];
         DefIndices[NewReg] = DefIndices[AntiDepReg];
         KillIndices[NewReg] = KillIndices[AntiDepReg];
-        assert(((KillIndices[NewReg] == ~0u) !=
-                (DefIndices[NewReg] == ~0u)) &&
-             "Kill and Def maps aren't consistent for NewReg!");
+        assert(((KillIndices[NewReg] == ~0u) != (DefIndices[NewReg] == ~0u)) &&
+               "Kill and Def maps aren't consistent for NewReg!");
 
         Classes[AntiDepReg] = nullptr;
         DefIndices[AntiDepReg] = KillIndices[AntiDepReg];
         KillIndices[AntiDepReg] = ~0u;
         assert(((KillIndices[AntiDepReg] == ~0u) !=
                 (DefIndices[AntiDepReg] == ~0u)) &&
-             "Kill and Def maps aren't consistent for AntiDepReg!");
+               "Kill and Def maps aren't consistent for AntiDepReg!");
 
         RegRefs.erase(AntiDepReg);
         LastNewReg[AntiDepReg] = NewReg;

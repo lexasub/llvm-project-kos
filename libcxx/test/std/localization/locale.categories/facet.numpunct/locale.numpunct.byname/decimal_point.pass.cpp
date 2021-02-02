@@ -21,47 +21,46 @@
 #include "test_macros.h"
 #include "platform_support.h" // locale name macros
 
-int main(int, char**)
-{
+int main(int, char**) {
+  {
+    std::locale l("C");
     {
-        std::locale l("C");
-        {
-            typedef char C;
-            const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
-            assert(np.decimal_point() == '.');
-        }
-        {
-            typedef wchar_t C;
-            const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
-            assert(np.decimal_point() == L'.');
-        }
+      typedef char C;
+      const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
+      assert(np.decimal_point() == '.');
     }
     {
-        std::locale l(LOCALE_en_US_UTF_8);
-        {
-            typedef char C;
-            const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
-            assert(np.decimal_point() == '.');
-        }
-        {
-            typedef wchar_t C;
-            const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
-            assert(np.decimal_point() == L'.');
-        }
+      typedef wchar_t C;
+      const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
+      assert(np.decimal_point() == L'.');
+    }
+  }
+  {
+    std::locale l(LOCALE_en_US_UTF_8);
+    {
+      typedef char C;
+      const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
+      assert(np.decimal_point() == '.');
     }
     {
-        std::locale l(LOCALE_fr_FR_UTF_8);
-        {
-            typedef char C;
-            const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
-            assert(np.decimal_point() == ',');
-        }
-        {
-            typedef wchar_t C;
-            const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
-            assert(np.decimal_point() == L',');
-        }
+      typedef wchar_t C;
+      const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
+      assert(np.decimal_point() == L'.');
     }
+  }
+  {
+    std::locale l(LOCALE_fr_FR_UTF_8);
+    {
+      typedef char C;
+      const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
+      assert(np.decimal_point() == ',');
+    }
+    {
+      typedef wchar_t C;
+      const std::numpunct<C>& np = std::use_facet<std::numpunct<C> >(l);
+      assert(np.decimal_point() == L',');
+    }
+  }
 
   return 0;
 }

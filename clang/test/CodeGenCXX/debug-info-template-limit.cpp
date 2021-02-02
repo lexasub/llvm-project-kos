@@ -4,7 +4,7 @@
 // CHECK: ![[LINE:[0-9]+]] = distinct !DICompositeType(tag: DW_TAG_class_type, name: "TC<int>"{{.*}}, identifier: "_ZTS2TCIiE")
 // CHECK: !DIDerivedType(tag: DW_TAG_pointer_type, baseType: ![[LINE]]
 
-template<typename T>
+template <typename T>
 class TC {
 public:
   TC(const TC &) {}

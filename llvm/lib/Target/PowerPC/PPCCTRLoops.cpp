@@ -48,26 +48,26 @@ using namespace llvm;
 
 namespace {
 
-  struct PPCCTRLoopsVerify : public MachineFunctionPass {
-  public:
-    static char ID;
+struct PPCCTRLoopsVerify : public MachineFunctionPass {
+public:
+  static char ID;
 
-    PPCCTRLoopsVerify() : MachineFunctionPass(ID) {
-      initializePPCCTRLoopsVerifyPass(*PassRegistry::getPassRegistry());
-    }
+  PPCCTRLoopsVerify() : MachineFunctionPass(ID) {
+    initializePPCCTRLoopsVerifyPass(*PassRegistry::getPassRegistry());
+  }
 
-    void getAnalysisUsage(AnalysisUsage &AU) const override {
-      AU.addRequired<MachineDominatorTree>();
-      MachineFunctionPass::getAnalysisUsage(AU);
-    }
+  void getAnalysisUsage(AnalysisUsage &AU) const override {
+    AU.addRequired<MachineDominatorTree>();
+    MachineFunctionPass::getAnalysisUsage(AU);
+  }
 
-    bool runOnMachineFunction(MachineFunction &MF) override;
+  bool runOnMachineFunction(MachineFunction &MF) override;
 
-  private:
-    MachineDominatorTree *MDT;
-  };
+private:
+  MachineDominatorTree *MDT;
+};
 
-  char PPCCTRLoopsVerify::ID = 0;
+char PPCCTRLoopsVerify::ID = 0;
 } // end anonymous namespace
 
 INITIALIZE_PASS_BEGIN(PPCCTRLoopsVerify, "ppc-ctr-loops-verify",
@@ -98,7 +98,7 @@ static bool clobbersCTR(const MachineInstr &MI) {
 static bool verifyCTRBranch(MachineBasicBlock *MBB,
                             MachineBasicBlock::iterator I) {
   MachineBasicBlock::iterator BI = I;
-  SmallSet<MachineBasicBlock *, 16>   Visited;
+  SmallSet<MachineBasicBlock *, 16> Visited;
   SmallVector<MachineBasicBlock *, 8> Preds;
   bool CheckPreds;
 
@@ -139,7 +139,7 @@ check_block:
     return true;
 
   if (CheckPreds) {
-queue_preds:
+  queue_preds:
     if (MachineFunction::iterator(MBB) == MBB->getParent()->begin()) {
       LLVM_DEBUG(dbgs() << "Unable to find a MTCTR instruction for "
                         << printMBBReference(*BI->getParent()) << " ("
@@ -167,17 +167,17 @@ bool PPCCTRLoopsVerify::runOnMachineFunction(MachineFunction &MF) {
 
   // Verify that all bdnz/bdz instructions are dominated by a loop mtctr before
   // any other instructions that might clobber the ctr register.
-  for (MachineFunction::iterator I = MF.begin(), IE = MF.end();
-       I != IE; ++I) {
+  for (MachineFunction::iterator I = MF.begin(), IE = MF.end(); I != IE; ++I) {
     MachineBasicBlock *MBB = &*I;
     if (!MDT->isReachableFromEntry(MBB))
       continue;
 
     for (MachineBasicBlock::iterator MII = MBB->getFirstTerminator(),
-      MIIE = MBB->end(); MII != MIIE; ++MII) {
+                                     MIIE = MBB->end();
+         MII != MIIE; ++MII) {
       unsigned Opc = MII->getOpcode();
-      if (Opc == PPC::BDNZ8 || Opc == PPC::BDNZ ||
-          Opc == PPC::BDZ8  || Opc == PPC::BDZ)
+      if (Opc == PPC::BDNZ8 || Opc == PPC::BDNZ || Opc == PPC::BDZ8 ||
+          Opc == PPC::BDZ)
         if (!verifyCTRBranch(MBB, MII))
           llvm_unreachable("Invalid PPC CTR loop!");
     }

@@ -1,3 +1,1 @@
-int b_function(int input) {
-    return input * 2;
-}
+int b_function(int input) { return input * 2; }

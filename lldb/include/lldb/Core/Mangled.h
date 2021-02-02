@@ -272,7 +272,7 @@ private:
   /// Mangled member variables.
   ConstString m_mangled;           ///< The mangled version of the name
   mutable ConstString m_demangled; ///< Mutable so we can get it on demand with
-                                   ///a const version of this object
+                                   /// a const version of this object
 };
 
 Stream &operator<<(Stream &s, const Mangled &obj);

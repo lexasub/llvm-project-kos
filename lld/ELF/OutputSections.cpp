@@ -121,9 +121,9 @@ void OutputSection::commitSection(InputSection *isec) {
   } else {
     // Otherwise, check if new type or flags are compatible with existing ones.
     if ((flags ^ isec->flags) & SHF_TLS)
-      error("incompatible section flags for " + name + "\n>>> " + toString(isec) +
-            ": 0x" + utohexstr(isec->flags) + "\n>>> output section " + name +
-            ": 0x" + utohexstr(flags));
+      error("incompatible section flags for " + name + "\n>>> " +
+            toString(isec) + ": 0x" + utohexstr(isec->flags) +
+            "\n>>> output section " + name + ": 0x" + utohexstr(flags));
 
     if (type != isec->type) {
       if (!canMergeToProgbits(type) || !canMergeToProgbits(isec->type))
@@ -372,8 +372,7 @@ template <class ELFT> void OutputSection::writeTo(uint8_t *buf) {
       writeInt(buf + data->offset, data->expression().getValue(), data->size);
 }
 
-static void finalizeShtGroup(OutputSection *os,
-                             InputSection *section) {
+static void finalizeShtGroup(OutputSection *os, InputSection *section) {
   assert(config->relocatable);
 
   // sh_link field for SHT_GROUP sections should contain the section index of

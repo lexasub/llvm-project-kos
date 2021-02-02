@@ -21,6 +21,6 @@ int main() {
     Derived dd2(90);
   }
   if (g != 0)
-    return 1;          // CHECK:  [[@LINE]]|  0|   return 1;
+    return 1; // CHECK:  [[@LINE]]|  0|   return 1;
   return 0;
 }

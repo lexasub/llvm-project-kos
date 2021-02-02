@@ -194,10 +194,10 @@ TEST(ArchSpecTest, MergeFrom) {
   }
   {
     ArchSpec A, B;
-    A.SetArchitecture(eArchTypeELF, llvm::ELF::EM_ARM,
-                      LLDB_INVALID_CPUTYPE, llvm::ELF::ELFOSABI_NONE);
-    B.SetArchitecture(eArchTypeELF, llvm::ELF::EM_ARM,
-                      LLDB_INVALID_CPUTYPE, llvm::ELF::ELFOSABI_LINUX);
+    A.SetArchitecture(eArchTypeELF, llvm::ELF::EM_ARM, LLDB_INVALID_CPUTYPE,
+                      llvm::ELF::ELFOSABI_NONE);
+    B.SetArchitecture(eArchTypeELF, llvm::ELF::EM_ARM, LLDB_INVALID_CPUTYPE,
+                      llvm::ELF::ELFOSABI_LINUX);
 
     EXPECT_TRUE(A.IsValid());
     EXPECT_TRUE(B.IsValid());

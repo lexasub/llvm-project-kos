@@ -43,7 +43,6 @@ public:
   void reset() override { Enumerator->reset(); }
 
 private:
-
   std::unique_ptr<IPDBEnumSymbols> Enumerator;
 };
 

@@ -66,7 +66,7 @@ __attribute__((noinline)) void nested_try2() {
 }
 
 class ClassWithDestructor {
- public:
+public:
   ClassWithDestructor() {
     fprintf(stderr, "ClassWithDestructor\n");
   }
@@ -142,12 +142,12 @@ __attribute__((noinline)) void longjmp_unwind_multiple_frames() {
   }
 }
 
-#define CHECK_SHADOW_STACK(val)                                                \
-  fprintf(stderr, (val == __tsan_testonly_shadow_stack_current_size()          \
-                       ? "OK.\n"                                               \
+#define CHECK_SHADOW_STACK(val)                                       \
+  fprintf(stderr, (val == __tsan_testonly_shadow_stack_current_size() \
+                       ? "OK.\n"                                      \
                        : "Shadow stack leak!\n"));
 
-int main(int argc, const char * argv[]) {
+int main(int argc, const char *argv[]) {
   fprintf(stderr, "Hello, World!\n");
   unsigned long shadow_stack_size = __tsan_testonly_shadow_stack_current_size();
 

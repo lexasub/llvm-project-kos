@@ -28,16 +28,14 @@ SBFileSpecList::SBFileSpecList() : m_opaque_up(new FileSpecList()) {
 SBFileSpecList::SBFileSpecList(const SBFileSpecList &rhs) : m_opaque_up() {
   LLDB_RECORD_CONSTRUCTOR(SBFileSpecList, (const lldb::SBFileSpecList &), rhs);
 
-
   m_opaque_up = clone(rhs.m_opaque_up);
 }
 
 SBFileSpecList::~SBFileSpecList() = default;
 
 const SBFileSpecList &SBFileSpecList::operator=(const SBFileSpecList &rhs) {
-  LLDB_RECORD_METHOD(const lldb::SBFileSpecList &,
-                     SBFileSpecList, operator=,(const lldb::SBFileSpecList &),
-                     rhs);
+  LLDB_RECORD_METHOD(const lldb::SBFileSpecList &, SBFileSpecList, operator=,
+                     (const lldb::SBFileSpecList &), rhs);
 
   if (this != &rhs)
     m_opaque_up = clone(rhs.m_opaque_up);
@@ -127,13 +125,11 @@ bool SBFileSpecList::GetDescription(SBStream &description) const {
 namespace lldb_private {
 namespace repro {
 
-template <>
-void RegisterMethods<SBFileSpecList>(Registry &R) {
+template <> void RegisterMethods<SBFileSpecList>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBFileSpecList, ());
   LLDB_REGISTER_CONSTRUCTOR(SBFileSpecList, (const lldb::SBFileSpecList &));
-  LLDB_REGISTER_METHOD(
-      const lldb::SBFileSpecList &,
-      SBFileSpecList, operator=,(const lldb::SBFileSpecList &));
+  LLDB_REGISTER_METHOD(const lldb::SBFileSpecList &, SBFileSpecList, operator=,
+                       (const lldb::SBFileSpecList &));
   LLDB_REGISTER_METHOD_CONST(uint32_t, SBFileSpecList, GetSize, ());
   LLDB_REGISTER_METHOD(void, SBFileSpecList, Append,
                        (const lldb::SBFileSpec &));
@@ -148,5 +144,5 @@ void RegisterMethods<SBFileSpecList>(Registry &R) {
                              (lldb::SBStream &));
 }
 
-}
-}
+} // namespace repro
+} // namespace lldb_private

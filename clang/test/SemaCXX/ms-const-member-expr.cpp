@@ -6,14 +6,14 @@ struct S {
 };
 
 void f(S *s) {
-  char array[s->E] = { 0 };
+  char array[s->E] = {0};
 }
 
 extern S *s;
 constexpr int e1 = s->E;
 
-S *side_effect();  // expected-note{{declared here}}
-constexpr int e2 = // expected-error{{must be initialized by a constant expression}}
+S *side_effect();     // expected-note{{declared here}}
+constexpr int e2 =    // expected-error{{must be initialized by a constant expression}}
     side_effect()->E; // expected-note{{cannot be used in a constant expression}}
 
 constexpr int e4 = s->sdm;

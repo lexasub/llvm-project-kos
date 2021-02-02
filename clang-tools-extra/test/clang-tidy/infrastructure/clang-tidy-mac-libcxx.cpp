@@ -14,4 +14,4 @@
 // CHECK: mock_vector:{{[0-9]+}}:{{[0-9]+}}: warning: use 'using' instead of 'typedef'
 
 #include <mock_vector>
-typedef vector* vec_ptr;
+typedef vector *vec_ptr;

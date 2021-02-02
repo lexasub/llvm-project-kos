@@ -17,7 +17,7 @@ Record::Record(const RecordDecl *Decl, BaseList &&SrcBases,
     : Decl(Decl), Bases(std::move(SrcBases)), Fields(std::move(SrcFields)),
       BaseSize(BaseSize), VirtualSize(VirtualSize) {
   for (Base &V : SrcVirtualBases)
-    VirtualBases.push_back({ V.Decl, V.Offset + BaseSize, V.Desc, V.R });
+    VirtualBases.push_back({V.Decl, V.Offset + BaseSize, V.Desc, V.R});
 
   for (Base &B : Bases)
     BaseMap[B.Decl] = &B;

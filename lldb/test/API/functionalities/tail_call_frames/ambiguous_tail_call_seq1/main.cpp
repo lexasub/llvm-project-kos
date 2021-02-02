@@ -17,8 +17,8 @@ void __attribute__((noinline)) func1() {
 }
 
 int __attribute__((disable_tail_calls)) main(int argc, char **) {
-  // The sequences `main -> func1 -> f{2,3}_amb -> sink` are both plausible. Test
-  // that lldb doesn't attempt to guess which one occurred.
+  // The sequences `main -> func1 -> f{2,3}_amb -> sink` are both plausible.
+  // Test that lldb doesn't attempt to guess which one occurred.
   func1();
   return 0;
 }

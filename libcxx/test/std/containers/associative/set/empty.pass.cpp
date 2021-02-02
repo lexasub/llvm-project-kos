@@ -18,9 +18,8 @@
 #include "test_macros.h"
 #include "min_allocator.h"
 
-int main(int, char**)
-{
-    {
+int main(int, char**) {
+  {
     typedef std::set<int> M;
     M m;
     assert(m.empty());
@@ -28,17 +27,17 @@ int main(int, char**)
     assert(!m.empty());
     m.clear();
     assert(m.empty());
-    }
+  }
 #if TEST_STD_VER >= 11
-    {
-    typedef std::set<int, std::less<int>, min_allocator<int>> M;
+  {
+    typedef std::set<int, std::less<int>, min_allocator<int> > M;
     M m;
     assert(m.empty());
     m.insert(M::value_type(1));
     assert(!m.empty());
     m.clear();
     assert(m.empty());
-    }
+  }
 #endif
 
   return 0;

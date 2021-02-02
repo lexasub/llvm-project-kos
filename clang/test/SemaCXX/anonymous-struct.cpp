@@ -42,34 +42,34 @@ typedef struct { // expected-error {{anonymous non-C-compatible type given name 
 } A; // expected-note {{type is given name 'A' for linkage purposes by this typedef declaration}}
 
 typedef struct { // expected-warning {{anonymous non-C-compatible type given name for linkage purposes by typedef declaration; add a tag name here}}
-  int x = 0; // expected-note {{type is not C-compatible due to this default member initializer}} expected-warning 0-1{{extension}}
-} B; // expected-note {{type is given name 'B' for linkage purposes by this typedef declaration}}
+  int x = 0;     // expected-note {{type is not C-compatible due to this default member initializer}} expected-warning 0-1{{extension}}
+} B;             // expected-note {{type is given name 'B' for linkage purposes by this typedef declaration}}
 
 typedef struct // expected-warning {{anonymous non-C-compatible type given name for linkage purposes by typedef declaration; add a tag name here}}
-: B { // expected-note {{type is not C-compatible due to this base class}}
-} C; // expected-note {{type is given name 'C' for linkage purposes by this typedef declaration}}
+    : B {      // expected-note {{type is not C-compatible due to this base class}}
+} C;           // expected-note {{type is given name 'C' for linkage purposes by this typedef declaration}}
 
 #if __cplusplus > 201703L
-typedef struct { // expected-warning {{anonymous non-C-compatible type given name for linkage purposes by typedef declaration; add a tag name here}}
-  static_assert([]{ return true; }()); // expected-note {{type is not C-compatible due to this lambda expression}}
-} Lambda1; // expected-note {{type is given name 'Lambda1' for linkage purposes by this typedef declaration}}
+typedef struct {                        // expected-warning {{anonymous non-C-compatible type given name for linkage purposes by typedef declaration; add a tag name here}}
+  static_assert([] { return true; }()); // expected-note {{type is not C-compatible due to this lambda expression}}
+} Lambda1;                              // expected-note {{type is given name 'Lambda1' for linkage purposes by this typedef declaration}}
 
-template<int> struct X {};
-typedef struct { // expected-warning {{anonymous non-C-compatible type given name for linkage purposes by typedef declaration; add a tag name here}}
-  X<[]{ return 0; }()> x; // expected-note {{type is not C-compatible due to this lambda expression}}
+template <int> struct X {};
+typedef struct {           // expected-warning {{anonymous non-C-compatible type given name for linkage purposes by typedef declaration; add a tag name here}}
+  X<[] { return 0; }()> x; // expected-note {{type is not C-compatible due to this lambda expression}}
   // FIXME: expected-error@-1 {{lambda expression cannot appear}}
 } Lambda2; // expected-note {{type is given name 'Lambda2' for linkage purposes by this typedef declaration}}
 
 typedef struct { // expected-warning {{anonymous non-C-compatible type given name for linkage purposes by typedef declaration; add a tag name here}}
   enum E {
-    a = []{ return 1; }() // expected-note {{type is not C-compatible due to this lambda expression}}
+    a = [] { return 1; }() // expected-note {{type is not C-compatible due to this lambda expression}}
   };
 } Lambda3; // expected-note {{type is given name 'Lambda3' for linkage purposes by this typedef declaration}}
 #endif
 
-typedef struct { // expected-warning {{anonymous non-C-compatible type given name for linkage purposes by typedef declaration; add a tag name here}}
-  template<int> void f() {} // expected-note {{type is not C-compatible due to this member declaration}}
-} Template; // expected-note {{type is given name 'Template' for linkage purposes by this typedef declaration}}
+typedef struct {             // expected-warning {{anonymous non-C-compatible type given name for linkage purposes by typedef declaration; add a tag name here}}
+  template <int> void f() {} // expected-note {{type is not C-compatible due to this member declaration}}
+} Template;                  // expected-note {{type is given name 'Template' for linkage purposes by this typedef declaration}}
 
 typedef struct { // expected-warning {{anonymous non-C-compatible type given name for linkage purposes by typedef declaration; add a tag name here}}
   struct U {
@@ -77,13 +77,13 @@ typedef struct { // expected-warning {{anonymous non-C-compatible type given nam
   };
 } Nested; // expected-note {{type is given name 'Nested' for linkage purposes by this typedef declaration}}
 
-typedef struct { // expected-warning {{anonymous non-C-compatible type given name for linkage purposes by typedef declaration; add a tag name here}}
+typedef struct {     // expected-warning {{anonymous non-C-compatible type given name for linkage purposes by typedef declaration; add a tag name here}}
   friend void f() {} // expected-note {{type is not C-compatible due to this friend declaration}}
-} Friend; // expected-note {{type is given name 'Friend' for linkage purposes by this typedef declaration}}
+} Friend;            // expected-note {{type is given name 'Friend' for linkage purposes by this typedef declaration}}
 
-typedef struct { // expected-warning {{anonymous non-C-compatible type given name for linkage purposes by typedef declaration; add a tag name here}}
-  template<typename T> friend void f() {} // expected-note {{type is not C-compatible due to this friend declaration}}
-} FriendTemplate; // expected-note {{type is given name 'FriendTemplate' for linkage purposes by this typedef declaration}}
+typedef struct {                           // expected-warning {{anonymous non-C-compatible type given name for linkage purposes by typedef declaration; add a tag name here}}
+  template <typename T> friend void f() {} // expected-note {{type is not C-compatible due to this friend declaration}}
+} FriendTemplate;                          // expected-note {{type is given name 'FriendTemplate' for linkage purposes by this typedef declaration}}
 
 // Check that we don't diagnose the permitted cases:
 typedef struct {
@@ -95,47 +95,51 @@ typedef struct {
   // non-static data members
   int a;
   // member enumerations
-  enum E { x, y, z };
+  enum E { x,
+           y,
+           z };
   // member classes
   struct S {};
 
   // recursively
-  struct T { int a; };
+  struct T {
+    int a;
+  };
 } OK;
 
 // There are still some known permitted cases that require an early linkage
 // computation. Ensure we diagnose those too.
 namespace ValidButUnsupported {
 #if __cplusplus >= 201402L
-  template<typename T> auto compute_linkage() {
-    static int n;
-    return &n;
-  }
-
-  typedef struct { // expected-error {{unsupported: anonymous type given name for linkage purposes by typedef declaration after its linkage was computed; add a tag name here to establish linkage}}
-    struct X {};
-    decltype(compute_linkage<X>()) a;
-  } A; // expected-note {{by this typedef declaration}}
-#endif
-
-  // This fails in some language modes but not others.
-  template<typename T> struct Y {
-    static const int value = 10;
-  };
-  typedef struct { // expected-error 0-1{{unsupported}}
-    enum X {};
-    int arr[Y<X>::value];
-  } B; // expected-note 0-1{{by this typedef}}
-
-  template<typename T> void f() {}
-  typedef struct { // expected-error {{unsupported}}
-    enum X {};
-    int arr[&f<X> ? 1 : 2];
-#if __cplusplus < 201103L
-    // expected-warning@-2 {{folded to constant}}
-#endif
-  } C; // expected-note {{by this typedef}}
+template <typename T> auto compute_linkage() {
+  static int n;
+  return &n;
 }
+
+typedef struct { // expected-error {{unsupported: anonymous type given name for linkage purposes by typedef declaration after its linkage was computed; add a tag name here to establish linkage}}
+  struct X {};
+  decltype(compute_linkage<X>()) a;
+} A; // expected-note {{by this typedef declaration}}
+#endif
+
+// This fails in some language modes but not others.
+template <typename T> struct Y {
+  static const int value = 10;
+};
+typedef struct { // expected-error 0-1{{unsupported}}
+  enum X {};
+  int arr[Y<X>::value];
+} B; // expected-note 0-1{{by this typedef}}
+
+template <typename T> void f() {}
+typedef struct { // expected-error {{unsupported}}
+  enum X {};
+  int arr[&f<X> ? 1 : 2];
+#if __cplusplus < 201103L
+  // expected-warning@-2 {{folded to constant}}
+#endif
+} C; // expected-note {{by this typedef}}
+} // namespace ValidButUnsupported
 
 namespace ImplicitDecls {
 struct Destructor {
@@ -178,8 +182,8 @@ union {
 // Ensure we don't compute the linkage of a member function just because it
 // happens to have the same name as a builtin.
 namespace BuiltinName {
-  // Note that this is not an error: we didn't trigger linkage computation in this example.
-  typedef struct { // expected-warning {{anonymous non-C-compatible type}}
-    void memcpy(); // expected-note {{due to this member}}
-  } A; // expected-note {{given name 'A' for linkage purposes by this typedef}}
-}
+// Note that this is not an error: we didn't trigger linkage computation in this example.
+typedef struct { // expected-warning {{anonymous non-C-compatible type}}
+  void memcpy(); // expected-note {{due to this member}}
+} A;             // expected-note {{given name 'A' for linkage purposes by this typedef}}
+} // namespace BuiltinName

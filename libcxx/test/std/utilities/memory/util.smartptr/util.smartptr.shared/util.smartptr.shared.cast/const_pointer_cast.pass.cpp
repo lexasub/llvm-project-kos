@@ -18,51 +18,47 @@
 
 #include "test_macros.h"
 
-struct B
-{
-    static int count;
+struct B {
+  static int count;
 
-    B() {++count;}
-    B(const B&) {++count;}
-    virtual ~B() {--count;}
+  B() { ++count; }
+  B(const B&) { ++count; }
+  virtual ~B() { --count; }
 };
 
 int B::count = 0;
 
-struct A
-    : public B
-{
-    static int count;
+struct A : public B {
+  static int count;
 
-    A() {++count;}
-    A(const A& other) : B(other) {++count;}
-    ~A() {--count;}
+  A() { ++count; }
+  A(const A& other) : B(other) { ++count; }
+  ~A() { --count; }
 };
 
 int A::count = 0;
 
-int main(int, char**)
-{
-    {
-        const std::shared_ptr<const A> pA(new A);
-        std::shared_ptr<A> pB = std::const_pointer_cast<A>(pA);
-        assert(pB.get() == pA.get());
-        assert(!pB.owner_before(pA) && !pA.owner_before(pB));
-    }
-    {
-        const std::shared_ptr<const A> pA;
-        std::shared_ptr<A> pB = std::const_pointer_cast<A>(pA);
-        assert(pB.get() == pA.get());
-        assert(!pB.owner_before(pA) && !pA.owner_before(pB));
-    }
+int main(int, char**) {
+  {
+    const std::shared_ptr<const A> pA(new A);
+    std::shared_ptr<A> pB = std::const_pointer_cast<A>(pA);
+    assert(pB.get() == pA.get());
+    assert(!pB.owner_before(pA) && !pA.owner_before(pB));
+  }
+  {
+    const std::shared_ptr<const A> pA;
+    std::shared_ptr<A> pB = std::const_pointer_cast<A>(pA);
+    assert(pB.get() == pA.get());
+    assert(!pB.owner_before(pA) && !pA.owner_before(pB));
+  }
 #if TEST_STD_VER > 14
-    {
-      const std::shared_ptr<const A[8]> pA;
-      std::shared_ptr<A[8]> pB = std::const_pointer_cast<A[8]>(pA);
-      assert(pB.get() == pA.get());
-      assert(!pB.owner_before(pA) && !pA.owner_before(pB));
-    }
+  {
+    const std::shared_ptr<const A[8]> pA;
+    std::shared_ptr<A[8]> pB = std::const_pointer_cast<A[8]>(pA);
+    assert(pB.get() == pA.get());
+    assert(!pB.owner_before(pA) && !pA.owner_before(pB));
+  }
 #endif // TEST_STD_VER > 14
 
-    return 0;
+  return 0;
 }

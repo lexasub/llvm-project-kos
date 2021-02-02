@@ -206,8 +206,8 @@ bool ClangExpressionDeclMap::AddPersistentVariable(const NamedDecl *decl,
   // Check if we already declared a persistent variable with the same name.
   if (lldb::ExpressionVariableSP conflicting_var =
           m_parser_vars->m_persistent_vars->GetVariable(name)) {
-    std::string msg = llvm::formatv("redefinition of persistent variable '{0}'",
-                                    name).str();
+    std::string msg =
+        llvm::formatv("redefinition of persistent variable '{0}'", name).str();
     m_parser_vars->m_diagnostics->AddDiagnostic(
         msg, DiagnosticSeverity::eDiagnosticSeverityError,
         DiagnosticOrigin::eDiagnosticOriginLLDB);
@@ -1435,18 +1435,16 @@ void ClangExpressionDeclMap::FindExternalVisibleDecls(
         m_parser_vars->m_sym_ctx.FindBestGlobalDataSymbol(name, error);
 
     if (!error.Success()) {
-      const unsigned diag_id =
-          m_ast_context->getDiagnostics().getCustomDiagID(
-              clang::DiagnosticsEngine::Level::Error, "%0");
+      const unsigned diag_id = m_ast_context->getDiagnostics().getCustomDiagID(
+          clang::DiagnosticsEngine::Level::Error, "%0");
       m_ast_context->getDiagnostics().Report(diag_id) << error.AsCString();
     }
 
     if (data_symbol) {
       std::string warning("got name from symbols: ");
       warning.append(name.AsCString());
-      const unsigned diag_id =
-          m_ast_context->getDiagnostics().getCustomDiagID(
-              clang::DiagnosticsEngine::Level::Warning, "%0");
+      const unsigned diag_id = m_ast_context->getDiagnostics().getCustomDiagID(
+          clang::DiagnosticsEngine::Level::Warning, "%0");
       m_ast_context->getDiagnostics().Report(diag_id) << warning.c_str();
       AddOneGenericVariable(context, *data_symbol);
       context.m_found_variable = true;

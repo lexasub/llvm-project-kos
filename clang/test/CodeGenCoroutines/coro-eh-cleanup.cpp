@@ -14,11 +14,11 @@ template <> struct coroutine_handle<void> {
   template <class PromiseType>
   coroutine_handle(coroutine_handle<PromiseType>) noexcept;
 };
-template <class Promise> struct coroutine_handle: coroutine_handle<void> {
+template <class Promise> struct coroutine_handle : coroutine_handle<void> {
   coroutine_handle() = default;
   static coroutine_handle from_address(void *) noexcept;
 };
-}
+} // namespace std::experimental
 
 struct suspend_always {
   bool await_ready() noexcept;
@@ -36,7 +36,9 @@ struct coro_t {
   };
 };
 
-struct Cleanup { ~Cleanup(); };
+struct Cleanup {
+  ~Cleanup();
+};
 void may_throw();
 
 coro_t f() {

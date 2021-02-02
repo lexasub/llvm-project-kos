@@ -18,7 +18,7 @@ int another1() { return 1001; }
 // Member functions
 
 struct __declspec(code_seg("foo_four")) Foo {
-  int bar3() {return 0;}
+  int bar3() { return 0; }
   int bar4();
   int __declspec(code_seg("foo_six")) bar6() { return 6; }
   int bar7() { return 7; }
@@ -33,7 +33,8 @@ struct __declspec(code_seg("foo_four")) FooTwo : Foo {
 };
 
 int caller1() {
-  Foo f; return f.bar3();
+  Foo f;
+  return f.bar3();
 }
 
 //CHECK: define {{.*}}bar3@Foo{{.*}} section "foo_four"
@@ -58,7 +59,7 @@ int caller2() {
 // Check that code_seg active at class declaration is not used on member
 // declared outside class when it is not active.
 
-#pragma code_seg(push,"AnotherSeg")
+#pragma code_seg(push, "AnotherSeg")
 
 struct FooThree {
   int bar8();
@@ -67,11 +68,9 @@ struct FooThree {
 
 #pragma code_seg(pop)
 
+int FooThree::bar8() { return 0; }
 
-int FooThree::bar8() {return 0;}
-
-int caller3()
-{
+int caller3() {
   FooThree f;
   return f.bar8() + f.bar9();
 }
@@ -81,7 +80,7 @@ int caller3()
 
 struct NonTrivialCopy {
   NonTrivialCopy();
-  NonTrivialCopy(const NonTrivialCopy&);
+  NonTrivialCopy(const NonTrivialCopy &);
   ~NonTrivialCopy();
 };
 
@@ -105,30 +104,28 @@ struct FooFive {
 //CHECK: define {{.*}}0FooFive@@QAE@ABU0@@Z{{.*}} section "someother"
 
 #pragma code_seg("YetAnother")
-int caller4()
-{
+int caller4() {
   FooFour z1;
   FooFour z2 = z1;
   FooFive y1;
   FooFive y2 = y1;
- return z2.bar10(0) + y2.bar11(1);
+  return z2.bar10(0) + y2.bar11(1);
 }
 
 //CHECK: define {{.*}}bar10@FooFour{{.*}} section "foo_eight"
 //CHECK: define {{.*}}bar11@FooFive{{.*}} section "foo_nine"
 
 struct FooSix {
-  #pragma code_seg("foo_ten")
+#pragma code_seg("foo_ten")
   int bar12() { return 12; }
-  #pragma code_seg("foo_eleven")
+#pragma code_seg("foo_eleven")
   int bar13() { return 13; }
 };
 
 int bar14() { return 14; }
 //CHECK: define {{.*}}bar14{{.*}} section "foo_eleven"
 
-int caller5()
-{
+int caller5() {
   FooSix fsix;
   return fsix.bar12() + fsix.bar13();
 }
@@ -136,4 +133,3 @@ int caller5()
 //CHECK: define {{.*}}bar12@FooSix{{.*}} section "foo_ten"
 //CHECK: define {{.*}}bar13@FooSix{{.*}} section "foo_eleven"
 //CHECK: define {{.*}}baz1@FooTwo{{.*}} section "foo_four"
-

@@ -32,16 +32,16 @@
 // DEBUG: @{{[0-9]+}} = private unnamed_addr constant [{{[0-9]+}} x i8] c";s.s;{{.*}}.cpp;{{[0-9]+}};{{[0-9]+}};;\00"
 
 struct S1 {
-    int i;
-    float f[50];
+  int i;
+  float f[50];
 };
 
 struct S2 {
-    int i;
-    float f[50];
-    S1 s;
-    double *p;
-    struct S2 *ps;
+  int i;
+  float f[50];
+  S1 s;
+  double *p;
+  struct S2 *ps;
 };
 
 void foo() {
@@ -53,61 +53,76 @@ void foo() {
   S2 *ps;
 
 #pragma omp target map(d)
-  { }
+  {}
 #pragma omp target map(i)
-  { }
-#pragma omp target map(i[1:23])
-  { }
+  {}
+#pragma omp target map(i [1:23])
+  {}
 #pragma omp target map(p)
-  { }
-#pragma omp target map(p[1:24])
-  { }
+  {}
+#pragma omp target map(p [1:24])
+  {}
 #pragma omp target map(s)
-  { }
+  {}
 #pragma omp target map(s.i)
-  { }
+  {}
 #pragma omp target map(s.s.f)
-  { }
+  {}
 #pragma omp target map(s.p)
-  { }
-#pragma omp target map(to: s.p[:22])
-  { }
+  {}
+#pragma omp target map(to \
+                       : s.p[:22])
+  {}
 #pragma omp target map(s.ps)
-  { }
-#pragma omp target map(from: s.ps->s.i)
-  { }
-#pragma omp target map(to: s.ps->ps)
-  { }
+  {}
+#pragma omp target map(from \
+                       : s.ps->s.i)
+  {}
+#pragma omp target map(to \
+                       : s.ps->ps)
+  {}
 #pragma omp target map(s.ps->ps->ps)
-  { }
-#pragma omp target map(to: s.ps->ps->s.f[:22])
-  { }
+  {}
+#pragma omp target map(to \
+                       : s.ps->ps->s.f[:22])
+  {}
 #pragma omp target map(ps)
-  { }
+  {}
 #pragma omp target map(ps->i)
-  { }
+  {}
 #pragma omp target map(ps->s.f)
-  { }
-#pragma omp target map(from: ps->p)
-  { }
-#pragma omp target map(to: ps->p[:22])
-  { }
+  {}
+#pragma omp target map(from \
+                       : ps->p)
+  {}
+#pragma omp target map(to \
+                       : ps->p[:22])
+  {}
 #pragma omp target map(ps->ps)
-  { }
-#pragma omp target map(from: ps->ps->s.i)
-  { }
-#pragma omp target map(from: ps->ps->ps)
-  { }
+  {}
+#pragma omp target map(from \
+                       : ps->ps->s.i)
+  {}
+#pragma omp target map(from \
+                       : ps->ps->ps)
+  {}
 #pragma omp target map(ps->ps->ps->ps)
-  { }
-#pragma omp target map(to: ps->ps->ps->s.f[:22])
-  { }
-#pragma omp target map(to: s.f[:22]) map(from: s.p[:33])
-  { }
-#pragma omp target map(from: s.f[:22]) map(to: ps->p[:33])
-  { }
-#pragma omp target map(from: s.f[:22], s.s) map(to: ps->p[:33])
-  { }
+  {}
+#pragma omp target map(to \
+                       : ps->ps->ps->s.f[:22])
+  {}
+#pragma omp target map(to                   \
+                       : s.f[:22]) map(from \
+                                       : s.p[:33])
+  {}
+#pragma omp target map(from               \
+                       : s.f[:22]) map(to \
+                                       : ps->p[:33])
+  {}
+#pragma omp target map(from                    \
+                       : s.f[:22], s.s) map(to \
+                                            : ps->p[:33])
+  {}
 }
 
 // DEBUG: @{{[0-9]+}} = private unnamed_addr constant [{{[0-9]+}} x i8] c";B;{{.*}}.cpp;{{[0-9]+}};{{[0-9]+}};;\00"
@@ -140,23 +155,32 @@ double t;
 #pragma omp end declare target
 
 void baz() {
-#pragma omp target map(to:t)
-  { }
-#pragma omp target map(to:t) nowait
-  { }
-#pragma omp target teams map(to:t)
-  { }
-#pragma omp target teams map(to:t) nowait
-  { }
-#pragma omp target data map(to:t)
-  { }
-#pragma omp target enter data map(to:t)
+#pragma omp target map(to \
+                       : t)
+  {}
+#pragma omp target map(to \
+                       : t) nowait
+  {}
+#pragma omp target teams map(to \
+                             : t)
+  {}
+#pragma omp target teams map(to \
+                             : t) nowait
+  {}
+#pragma omp target data map(to \
+                            : t)
+  {}
+#pragma omp target enter data map(to \
+                                  : t)
 
-#pragma omp target enter data map(to:t) nowait
+#pragma omp target enter data map(to \
+                                  : t) nowait
 
-#pragma omp target exit data map(from:t)
+#pragma omp target exit data map(from \
+                                 : t)
 
-#pragma omp target exit data map(from:t) nowait
+#pragma omp target exit data map(from \
+                                 : t) nowait
 
 #pragma omp target update from(t)
 
@@ -171,12 +195,14 @@ struct S3 {
   double Z[64];
 };
 
-#pragma omp declare mapper(id: S3 s) map(s.Z[0:64])
+#pragma omp declare mapper(id \
+                           : S3 s) map(s.Z [0:64])
 
 void qux() {
   S3 s;
-#pragma omp target map(mapper(id), to:s)
-  { }
+#pragma omp target map(mapper(id), to \
+                       : s)
+  {}
 }
 
 // DEBUG: @{{[0-9]+}} = private unnamed_addr constant [{{[0-9]+}} x i8] c";s.Z[0:64];{{.*}}.cpp;{{[0-9]+}};{{[0-9]+}};;\00"

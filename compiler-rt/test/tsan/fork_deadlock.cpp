@@ -18,15 +18,16 @@ int main() {
   pthread_create(&th1, 0, incrementer, 0);
   for (int i = 0; i < 10; i++) {
     switch (fork()) {
-    default:  // parent
-      while (wait(0) < 0) {}
+    default: // parent
+      while (wait(0) < 0) {
+      }
       fprintf(stderr, ".");
       break;
-    case 0:  // child
+    case 0: // child
       __sync_fetch_and_add(&counter, 1);
       exit(0);
       break;
-    case -1:  // error
+    case -1: // error
       fprintf(stderr, "failed to fork (%d)\n", errno);
       exit(1);
     }
@@ -35,4 +36,3 @@ int main() {
 }
 
 // CHECK: OK
-

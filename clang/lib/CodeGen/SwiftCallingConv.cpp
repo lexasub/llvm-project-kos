@@ -11,9 +11,9 @@
 //===----------------------------------------------------------------------===//
 
 #include "clang/CodeGen/SwiftCallingConv.h"
-#include "clang/Basic/TargetInfo.h"
 #include "CodeGenModule.h"
 #include "TargetInfo.h"
+#include "clang/Basic/TargetInfo.h"
 
 using namespace clang;
 using namespace CodeGen;
@@ -23,9 +23,7 @@ static const SwiftABIInfo &getSwiftABIInfo(CodeGenModule &CGM) {
   return cast<SwiftABIInfo>(CGM.getTargetCodeGenInfo().getABIInfo());
 }
 
-static bool isPowerOf2(unsigned n) {
-  return n == (n & -n);
-}
+static bool isPowerOf2(unsigned n) { return n == (n & -n); }
 
 /// Given two types with the same size, try to find a common type.
 static llvm::Type *getCommonType(llvm::Type *first, llvm::Type *second) {
@@ -33,13 +31,16 @@ static llvm::Type *getCommonType(llvm::Type *first, llvm::Type *second) {
 
   // Allow pointers to merge with integers, but prefer the integer type.
   if (first->isIntegerTy()) {
-    if (second->isPointerTy()) return first;
+    if (second->isPointerTy())
+      return first;
   } else if (first->isPointerTy()) {
-    if (second->isIntegerTy()) return second;
-    if (second->isPointerTy()) return first;
+    if (second->isIntegerTy())
+      return second;
+    if (second->isPointerTy())
+      return first;
 
-  // Allow two vectors to be merged (given that they have the same size).
-  // This assumes that we never have two different vector register sets.
+    // Allow two vectors to be merged (given that they have the same size).
+    // This assumes that we never have two different vector register sets.
   } else if (auto firstVecTy = dyn_cast<llvm::VectorType>(first)) {
     if (auto secondVecTy = dyn_cast<llvm::VectorType>(second)) {
       if (auto commonTy = getCommonType(firstVecTy->getElementType(),
@@ -67,12 +68,13 @@ void SwiftAggLowering::addTypedData(QualType type, CharUnits begin) {
   if (auto recType = type->getAs<RecordType>()) {
     addTypedData(recType->getDecl(), begin);
 
-  // Array types.
+    // Array types.
   } else if (type->isArrayType()) {
     // Incomplete array types (flexible array members?) don't provide
     // data to lay out, and the other cases shouldn't be possible.
     auto arrayType = CGM.getContext().getAsConstantArrayType(type);
-    if (!arrayType) return;
+    if (!arrayType)
+      return;
 
     QualType eltType = arrayType->getElementType();
     auto eltSize = CGM.getContext().getTypeSizeInChars(eltType);
@@ -80,7 +82,7 @@ void SwiftAggLowering::addTypedData(QualType type, CharUnits begin) {
       addTypedData(eltType, begin + i * eltSize);
     }
 
-  // Complex types.
+    // Complex types.
   } else if (auto complexType = type->getAs<ComplexType>()) {
     auto eltType = complexType->getElementType();
     auto eltSize = CGM.getContext().getTypeSizeInChars(eltType);
@@ -88,7 +90,7 @@ void SwiftAggLowering::addTypedData(QualType type, CharUnits begin) {
     addTypedData(eltLLVMType, begin, begin + eltSize);
     addTypedData(eltLLVMType, begin + eltSize, begin + 2 * eltSize);
 
-  // Member pointer types.
+    // Member pointer types.
   } else if (type->getAs<MemberPointerType>()) {
     // Just add it all as opaque.
     addOpaqueData(begin, begin + CGM.getContext().getTypeSizeInChars(type));
@@ -147,7 +149,8 @@ void SwiftAggLowering::addTypedData(const RecordDecl *record, CharUnits begin,
 
     //   - non-virtual bases
     for (auto &baseSpecifier : cxxRecord->bases()) {
-      if (baseSpecifier.isVirtual()) continue;
+      if (baseSpecifier.isVirtual())
+        continue;
 
       auto baseRecord = baseSpecifier.getType()->getAsCXXRecordDecl();
       addTypedData(baseRecord, begin + layout.getBaseClassOffset(baseRecord));
@@ -166,7 +169,8 @@ void SwiftAggLowering::addTypedData(const RecordDecl *record, CharUnits begin,
       addBitFieldData(field, begin, fieldOffsetInBits);
     } else {
       addTypedData(field->getType(),
-              begin + CGM.getContext().toCharUnitsFromBits(fieldOffsetInBits));
+                   begin +
+                       CGM.getContext().toCharUnitsFromBits(fieldOffsetInBits));
     }
   }
 
@@ -188,7 +192,8 @@ void SwiftAggLowering::addBitFieldData(const FieldDecl *bitfield,
   auto width = bitfield->getBitWidthValue(ctx);
 
   // We can ignore zero-width bit-fields.
-  if (width == 0) return;
+  if (width == 0)
+    return;
 
   // toCharUnitsFromBits rounds down.
   CharUnits bitfieldByteBegin = ctx.toCharUnitsFromBits(bitfieldBitBegin);
@@ -198,9 +203,8 @@ void SwiftAggLowering::addBitFieldData(const FieldDecl *bitfield,
   // next byte.
   uint64_t bitfieldBitLast = bitfieldBitBegin + width - 1;
   CharUnits bitfieldByteEnd =
-    ctx.toCharUnitsFromBits(bitfieldBitLast) + CharUnits::One();
-  addOpaqueData(recordBegin + bitfieldByteBegin,
-                recordBegin + bitfieldByteEnd);
+      ctx.toCharUnitsFromBits(bitfieldBitLast) + CharUnits::One();
+  addOpaqueData(recordBegin + bitfieldByteBegin, recordBegin + bitfieldByteEnd);
 }
 
 void SwiftAggLowering::addTypedData(llvm::Type *type, CharUnits begin) {
@@ -208,14 +212,14 @@ void SwiftAggLowering::addTypedData(llvm::Type *type, CharUnits begin) {
   addTypedData(type, begin, begin + getTypeStoreSize(CGM, type));
 }
 
-void SwiftAggLowering::addTypedData(llvm::Type *type,
-                                    CharUnits begin, CharUnits end) {
+void SwiftAggLowering::addTypedData(llvm::Type *type, CharUnits begin,
+                                    CharUnits end) {
   assert(type && "didn't provide type for typed data");
   assert(getTypeStoreSize(CGM, type) == end - begin);
 
   // Legalize vector types.
   if (auto vecTy = dyn_cast<llvm::VectorType>(type)) {
-    SmallVector<llvm::Type*, 4> componentTys;
+    SmallVector<llvm::Type *, 4> componentTys;
     legalizeVectorType(CGM, end - begin, vecTy, componentTys);
     assert(componentTys.size() >= 1);
 
@@ -241,8 +245,8 @@ void SwiftAggLowering::addTypedData(llvm::Type *type,
   return addLegalTypedData(type, begin, end);
 }
 
-void SwiftAggLowering::addLegalTypedData(llvm::Type *type,
-                                         CharUnits begin, CharUnits end) {
+void SwiftAggLowering::addLegalTypedData(llvm::Type *type, CharUnits begin,
+                                         CharUnits end) {
   // Require the type to be naturally aligned.
   if (!begin.isZero() && !begin.isMultipleOf(getNaturalAlignment(CGM, type))) {
 
@@ -268,8 +272,8 @@ void SwiftAggLowering::addLegalTypedData(llvm::Type *type,
   addEntry(type, begin, end);
 }
 
-void SwiftAggLowering::addEntry(llvm::Type *type,
-                                CharUnits begin, CharUnits end) {
+void SwiftAggLowering::addEntry(llvm::Type *type, CharUnits begin,
+                                CharUnits end) {
   assert((!type ||
           (!isa<llvm::StructType>(type) && !isa<llvm::ArrayType>(type))) &&
          "cannot add aggregate-typed data");
@@ -285,7 +289,8 @@ void SwiftAggLowering::addEntry(llvm::Type *type,
   // TODO: do a binary search if Entries is big enough for it to matter.
   size_t index = Entries.size() - 1;
   while (index != 0) {
-    if (Entries[index - 1].End <= begin) break;
+    if (Entries[index - 1].End <= begin)
+      break;
     --index;
   }
 
@@ -306,7 +311,8 @@ restartAfterSplit:
   // Simplest case: an exact overlap.
   if (Entries[index].Begin == begin && Entries[index].End == end) {
     // If the types match exactly, great.
-    if (Entries[index].Type == type) return;
+    if (Entries[index].Type == type)
+      return;
 
     // If either type is opaque, make the entry opaque and return.
     if (Entries[index].Type == nullptr) {
@@ -384,8 +390,7 @@ restartAfterSplit:
       continue;
 
     // Split vector entries unless we completely subsume them.
-    if (Entries[index].Type->isVectorTy() &&
-        end < Entries[index].End) {
+    if (Entries[index].Type->isVectorTy() && end < Entries[index].End) {
       splitVectorEntry(index);
     }
 
@@ -426,13 +431,14 @@ static CharUnits getOffsetAtStartOfUnit(CharUnits offset, CharUnits unitSize) {
 
 static bool areBytesInSameUnit(CharUnits first, CharUnits second,
                                CharUnits chunkSize) {
-  return getOffsetAtStartOfUnit(first, chunkSize)
-      == getOffsetAtStartOfUnit(second, chunkSize);
+  return getOffsetAtStartOfUnit(first, chunkSize) ==
+         getOffsetAtStartOfUnit(second, chunkSize);
 }
 
 static bool isMergeableEntryType(llvm::Type *type) {
   // Opaquely-typed memory is always mergeable.
-  if (type == nullptr) return true;
+  if (type == nullptr)
+    return true;
 
   // Pointers and integers are always mergeable.  In theory we should not
   // merge pointers, but (1) it doesn't currently matter in practice because
@@ -513,8 +519,7 @@ void SwiftAggLowering::finish() {
     // the same aligned chunk.
     auto begin = orig[i].Begin;
     auto end = orig[i].End;
-    while (i + 1 != e &&
-           orig[i + 1].Type == nullptr &&
+    while (i + 1 != e && orig[i + 1].Type == nullptr &&
            end == orig[i + 1].Begin) {
       end = orig[i + 1].End;
       i++;
@@ -533,17 +538,17 @@ void SwiftAggLowering::finish() {
       // Just do a simple loop over ever-increasing unit sizes.
       CharUnits unitSize = CharUnits::One();
       CharUnits unitBegin, unitEnd;
-      for (; ; unitSize *= 2) {
+      for (;; unitSize *= 2) {
         assert(unitSize <= chunkSize);
         unitBegin = getOffsetAtStartOfUnit(localBegin, unitSize);
         unitEnd = unitBegin + unitSize;
-        if (unitEnd >= localEnd) break;
+        if (unitEnd >= localEnd)
+          break;
       }
 
       // Add an entry for this unit.
-      auto entryTy =
-        llvm::IntegerType::get(CGM.getLLVMContext(),
-                               CGM.getContext().toBits(unitSize));
+      auto entryTy = llvm::IntegerType::get(CGM.getLLVMContext(),
+                                            CGM.getContext().toBits(unitSize));
       Entries.push_back({unitBegin, unitEnd, entryTy});
 
       // The next chunk starts where this chunk left off.
@@ -563,7 +568,7 @@ void SwiftAggLowering::enumerateComponents(EnumerationCallback callback) const {
   }
 }
 
-std::pair<llvm::StructType*, llvm::Type*>
+std::pair<llvm::StructType *, llvm::Type *>
 SwiftAggLowering::getCoerceAndExpandTypes() const {
   assert(Finished && "haven't yet finished lowering");
 
@@ -571,10 +576,10 @@ SwiftAggLowering::getCoerceAndExpandTypes() const {
 
   if (Entries.empty()) {
     auto type = llvm::StructType::get(ctx);
-    return { type, type };
+    return {type, type};
   }
 
-  SmallVector<llvm::Type*, 8> elts;
+  SmallVector<llvm::Type *, 8> elts;
   CharUnits lastEnd = CharUnits::Zero();
   bool hasPadding = false;
   bool packed = false;
@@ -589,9 +594,8 @@ SwiftAggLowering::getCoerceAndExpandTypes() const {
       hasPadding = true;
     }
 
-    if (!packed && !entry.Begin.isMultipleOf(
-          CharUnits::fromQuantity(
-            CGM.getDataLayout().getABITypeAlignment(entry.Type))))
+    if (!packed && !entry.Begin.isMultipleOf(CharUnits::fromQuantity(
+                       CGM.getDataLayout().getABITypeAlignment(entry.Type))))
       packed = true;
 
     elts.push_back(entry.Type);
@@ -619,23 +623,23 @@ SwiftAggLowering::getCoerceAndExpandTypes() const {
     unpaddedType = Entries[0].Type;
   }
 
-  return { coercionType, unpaddedType };
+  return {coercionType, unpaddedType};
 }
 
 bool SwiftAggLowering::shouldPassIndirectly(bool asReturnValue) const {
   assert(Finished && "haven't yet finished lowering");
 
   // Empty types don't need to be passed indirectly.
-  if (Entries.empty()) return false;
+  if (Entries.empty())
+    return false;
 
   // Avoid copying the array of types when there's just a single element.
   if (Entries.size() == 1) {
     return getSwiftABIInfo(CGM).shouldPassIndirectlyForSwift(
-                                                           Entries.back().Type,
-                                                             asReturnValue);
+        Entries.back().Type, asReturnValue);
   }
 
-  SmallVector<llvm::Type*, 8> componentTys;
+  SmallVector<llvm::Type *, 8> componentTys;
   componentTys.reserve(Entries.size());
   for (auto &entry : Entries) {
     componentTys.push_back(entry.Type);
@@ -645,7 +649,7 @@ bool SwiftAggLowering::shouldPassIndirectly(bool asReturnValue) const {
 }
 
 bool swiftcall::shouldPassIndirectly(CodeGenModule &CGM,
-                                     ArrayRef<llvm::Type*> componentTys,
+                                     ArrayRef<llvm::Type *> componentTys,
                                      bool asReturnValue) {
   return getSwiftABIInfo(CGM).shouldPassIndirectlyForSwift(componentTys,
                                                            asReturnValue);
@@ -654,13 +658,13 @@ bool swiftcall::shouldPassIndirectly(CodeGenModule &CGM,
 CharUnits swiftcall::getMaximumVoluntaryIntegerSize(CodeGenModule &CGM) {
   // Currently always the size of an ordinary pointer.
   return CGM.getContext().toCharUnitsFromBits(
-           CGM.getContext().getTargetInfo().getPointerWidth(0));
+      CGM.getContext().getTargetInfo().getPointerWidth(0));
 }
 
 CharUnits swiftcall::getNaturalAlignment(CodeGenModule &CGM, llvm::Type *type) {
   // For Swift's purposes, this is always just the store size of the type
   // rounded up to a power of 2.
-  auto size = (unsigned long long) getTypeStoreSize(CGM, type).getQuantity();
+  auto size = (unsigned long long)getTypeStoreSize(CGM, type).getQuantity();
   if (!isPowerOf2(size)) {
     size = 1ULL << (llvm::findLastSet(size, llvm::ZB_Undefined) + 1);
   }
@@ -698,11 +702,11 @@ bool swiftcall::isLegalVectorType(CodeGenModule &CGM, CharUnits vectorSize,
 bool swiftcall::isLegalVectorType(CodeGenModule &CGM, CharUnits vectorSize,
                                   llvm::Type *eltTy, unsigned numElts) {
   assert(numElts > 1 && "illegal vector length");
-  return getSwiftABIInfo(CGM)
-           .isLegalVectorTypeForSwift(vectorSize, eltTy, numElts);
+  return getSwiftABIInfo(CGM).isLegalVectorTypeForSwift(vectorSize, eltTy,
+                                                        numElts);
 }
 
-std::pair<llvm::Type*, unsigned>
+std::pair<llvm::Type *, unsigned>
 swiftcall::splitLegalVectorType(CodeGenModule &CGM, CharUnits vectorSize,
                                 llvm::VectorType *vectorTy) {
   auto numElts = cast<llvm::FixedVectorType>(vectorTy)->getNumElements();
@@ -717,9 +721,10 @@ swiftcall::splitLegalVectorType(CodeGenModule &CGM, CharUnits vectorSize,
   return {eltTy, numElts};
 }
 
-void swiftcall::legalizeVectorType(CodeGenModule &CGM, CharUnits origVectorSize,
-                                   llvm::VectorType *origVectorTy,
-                             llvm::SmallVectorImpl<llvm::Type*> &components) {
+void swiftcall::legalizeVectorType(
+    CodeGenModule &CGM, CharUnits origVectorSize,
+    llvm::VectorType *origVectorTy,
+    llvm::SmallVectorImpl<llvm::Type *> &components) {
   // If it's already a legal vector type, use it.
   if (isLegalVectorType(CGM, origVectorSize, origVectorTy)) {
     components.push_back(origVectorTy);
@@ -768,7 +773,8 @@ void swiftcall::legalizeVectorType(CodeGenModule &CGM, CharUnits origVectorSize,
                       llvm::FixedVectorType::get(eltTy, candidateNumElts));
     numElts -= (numVecs << logCandidateNumElts);
 
-    if (numElts == 0) return;
+    if (numElts == 0)
+      return;
 
     // It's possible that the number of elements remaining will be legal.
     // This can happen with e.g. <7 x float> when <3 x float> is legal.

@@ -1,6 +1,6 @@
 #include <pthread.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 const int N = 1000;
 void *x[N];
@@ -22,8 +22,7 @@ void *Thread2(void *unused) {
 }
 
 int main() {
-  for (int i = 0; i < N; i++)
-    x[i] = malloc(128);
+  for (int i = 0; i < N; i++) x[i] = malloc(128);
   pthread_t t[2];
   pthread_create(&t[0], 0, Thread1, 0);
   pthread_create(&t[1], 0, Thread2, 0);

@@ -1,5 +1,5 @@
 namespace std {
-  class STD {};
-}
+class STD {};
+} // namespace std
 
 using namespace std;

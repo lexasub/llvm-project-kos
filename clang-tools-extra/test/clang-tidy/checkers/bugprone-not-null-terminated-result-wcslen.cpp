@@ -31,7 +31,6 @@ void good_wmemchr_2(wchar_t *pos) {
   pos = wcschr(L"foobar", L'\0');
 }
 
-
 void bad_wmemmove(const wchar_t *src) {
   wchar_t dest[13];
   wmemmove(dest, src, wcslen(src));

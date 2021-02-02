@@ -509,9 +509,9 @@ static bool writeCOFF(COFFParser &CP, raw_ostream &OS) {
     assert(S.Header.SizeOfRawData >= S.SectionData.binary_size());
     OS.write_zeros(S.Header.SizeOfRawData - S.SectionData.binary_size());
     if (S.Header.Characteristics & COFF::IMAGE_SCN_LNK_NRELOC_OVFL)
-      OS << binary_le<uint32_t>(/*VirtualAddress=*/ S.Relocations.size() + 1)
-         << binary_le<uint32_t>(/*SymbolTableIndex=*/ 0)
-         << binary_le<uint16_t>(/*Type=*/ 0);
+      OS << binary_le<uint32_t>(/*VirtualAddress=*/S.Relocations.size() + 1)
+         << binary_le<uint32_t>(/*SymbolTableIndex=*/0)
+         << binary_le<uint16_t>(/*Type=*/0);
     for (const COFFYAML::Relocation &R : S.Relocations) {
       uint32_t SymbolTableIndex;
       if (R.SymbolTableIndex) {

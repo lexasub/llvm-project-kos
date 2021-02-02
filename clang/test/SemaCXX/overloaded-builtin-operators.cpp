@@ -13,18 +13,17 @@ struct Long {
   operator long();
 };
 
-enum E1 { };
+enum E1 {};
 struct Enum1 {
   operator E1();
 };
 
-enum E2 { };
+enum E2 {};
 struct Enum2 {
   operator E2();
 };
 
-
-struct X { 
+struct X {
   void f();
 };
 
@@ -33,9 +32,9 @@ struct Xpmf {
   operator pmf();
 };
 
-yes& islong(long);
-yes& islong(unsigned long); // FIXME: shouldn't be needed
-no& islong(int);
+yes &islong(long);
+yes &islong(unsigned long); // FIXME: shouldn't be needed
+no &islong(int);
 
 void f(Short s, Long l, Enum1 e1, Enum2 e2, Xpmf pmf) {
   // C++ [over.built]p8
@@ -47,49 +46,49 @@ void f(Short s, Long l, Enum1 e1, Enum2 e2, Xpmf pmf) {
   bool b1 = !s;
 
   // C++ [over.built]p12
-  (void)static_cast<yes&>(islong(s + l));
-  (void)static_cast<no&>(islong(s + s));
+  (void)static_cast<yes &>(islong(s + l));
+  (void)static_cast<no &>(islong(s + s));
 
   // C++ [over.built]p16
   (void)(pmf == &X::f);
   (void)(pmf == 0);
-  
+
   // C++ [over.built]p17
-  (void)static_cast<yes&>(islong(s % l));
-  (void)static_cast<yes&>(islong(l << s));
-  (void)static_cast<no&>(islong(s << l));
-  (void)static_cast<yes&>(islong(e1 % l));
+  (void)static_cast<yes &>(islong(s % l));
+  (void)static_cast<yes &>(islong(l << s));
+  (void)static_cast<no &>(islong(s << l));
+  (void)static_cast<yes &>(islong(e1 % l));
   // FIXME: should pass (void)static_cast<no&>(islong(e1 % e2));
 }
 
 struct BoolRef {
-  operator bool&();
+  operator bool &();
 };
 
-struct ShortRef { // expected-note{{candidate function (the implicit copy assignment operator) not viable}}
+struct ShortRef {          // expected-note{{candidate function (the implicit copy assignment operator) not viable}}
 #if __cplusplus >= 201103L // C++11 or later
 // expected-note@-2 {{candidate function (the implicit move assignment operator) not viable}}
 #endif
-  operator short&();
+  operator short &();
 };
 
 struct LongRef {
-  operator volatile long&();
+  operator volatile long &();
 };
 
 struct FloatRef {
-  operator float&();
+  operator float &();
 };
 
-struct XpmfRef { // expected-note{{candidate function (the implicit copy assignment operator) not viable}}
+struct XpmfRef {           // expected-note{{candidate function (the implicit copy assignment operator) not viable}}
 #if __cplusplus >= 201103L // C++11 or later
 // expected-note@-2 {{candidate function (the implicit move assignment operator) not viable}}
 #endif
-  operator pmf&();
+  operator pmf &();
 };
 
 struct E2Ref {
-  operator E2&();
+  operator E2 &();
 };
 
 void g(BoolRef br, ShortRef sr, LongRef lr, FloatRef fr, E2Ref e2_ref, XpmfRef pmf_ref) {
@@ -106,20 +105,20 @@ void g(BoolRef br, ShortRef sr, LongRef lr, FloatRef fr, E2Ref e2_ref, XpmfRef p
   bool b2 = br--; // expected-error{{cannot decrement value of type 'BoolRef'}}
 
   // C++ [over.built]p18
-  short& sr1 = (sr *= lr);
-  volatile long& lr1 = (lr *= sr);
+  short &sr1 = (sr *= lr);
+  volatile long &lr1 = (lr *= sr);
 
   // C++ [over.built]p20:
   E2 e2r2;
   e2r2 = e2_ref;
-  
+
   pmf &pmr = (pmf_ref = &X::f); // expected-error{{no viable overloaded '='}}
   pmf pmr2;
   pmr2 = pmf_ref;
-               
+
   // C++ [over.built]p22
-  short& sr2 = (sr %= lr);
-  volatile long& lr2 = (lr <<= sr);
+  short &sr2 = (sr %= lr);
+  volatile long &lr2 = (lr <<= sr);
 
   bool b1 = (sr && lr) || (sr || lr);
 }
@@ -142,10 +141,10 @@ struct ConstIntPtrRef {
 
 void test_with_ptrs(VolatileIntPtr vip, ConstIntPtr cip, ShortRef sr,
                     VolatileIntPtrRef vipr, ConstIntPtrRef cipr) {
-  const int& cir1 = cip[sr];
-  const int& cir2 = sr[cip];
-  volatile int& vir1 = vip[sr];
-  volatile int& vir2 = sr[vip];
+  const int &cir1 = cip[sr];
+  const int &cir2 = sr[cip];
+  volatile int &vir1 = vip[sr];
+  volatile int &vir2 = sr[vip];
   bool b1 = (vip == cip);
   long p1 = vip - cip;
 
@@ -165,32 +164,32 @@ void test_with_ptrs(VolatileIntPtr vip, ConstIntPtr cip, ShortRef sr,
 
   // C++ [over.built]p13:
   int volatile &ivr2 = vip[17];
-  int const &icr2 = 17[cip];
+  int const &icr2 = 17 [cip];
 }
 
 // C++ [over.match.open]p4
 
-void test_assign_restrictions(ShortRef& sr) {
+void test_assign_restrictions(ShortRef &sr) {
   sr = (short)0; // expected-error{{no viable overloaded '='}}
 }
 
-struct Base { };
-struct Derived1 : Base { };
-struct Derived2 : Base { };
+struct Base {};
+struct Derived1 : Base {};
+struct Derived2 : Base {};
 
-template<typename T>
+template <typename T>
 struct ConvertibleToPtrOf {
-  operator T*();
+  operator T *();
 };
 
-bool test_with_base_ptrs(ConvertibleToPtrOf<Derived1> d1, 
+bool test_with_base_ptrs(ConvertibleToPtrOf<Derived1> d1,
                          ConvertibleToPtrOf<Derived2> d2) {
   return d1 == d2; // expected-error{{invalid operands}}
 }
 
 // DR425
 struct A {
-  template< typename T > operator T() const;
+  template <typename T> operator T() const;
 };
 
 void test_dr425(A a) {
@@ -200,7 +199,7 @@ void test_dr425(A a) {
 }
 
 // pr5432
-enum e {X};
+enum e { X };
 
 const int a[][2] = {{1}};
 
@@ -213,81 +212,88 @@ void f() {
 }
 
 namespace PR7319 {
-  typedef enum { Enum1, Enum2, Enum3 } MyEnum;
+typedef enum { Enum1,
+               Enum2,
+               Enum3 } MyEnum;
 
-  template<typename X> bool operator>(const X &inX1, const X &inX2);
+template <typename X> bool operator>(const X &inX1, const X &inX2);
 
-  void f() {
-    MyEnum e1, e2;
-    if (e1 > e2) {}
+void f() {
+  MyEnum e1, e2;
+  if (e1 > e2) {
   }
 }
+} // namespace PR7319
 
 namespace PR8477 {
-  struct Foo {
-    operator bool();
-    operator const char *();
-  };
+struct Foo {
+  operator bool();
+  operator const char *();
+};
 
-  bool doit() {
-    Foo foo;
-    long long zero = 0;
-    (void)(foo + zero);
-    (void)(foo - zero);
-    (void)(zero + foo);
-    (void)(zero[foo]);
-    // FIXME: It would be nice to report fewer candidates here.
-    (void)(foo - foo); // expected-error{{use of overloaded operator '-' is ambiguous}} \
+bool doit() {
+  Foo foo;
+  long long zero = 0;
+  (void)(foo + zero);
+  (void)(foo - zero);
+  (void)(zero + foo);
+  (void)(zero[foo]);
+  // FIXME: It would be nice to report fewer candidates here.
+  (void)(foo - foo); // expected-error{{use of overloaded operator '-' is ambiguous}} \
     // expected-note 4{{built-in candidate operator-}} \
     // expected-note{{142 candidates omitted}}
-    return foo[zero] == zero;
-  }
+  return foo[zero] == zero;
 }
+} // namespace PR8477
 
 namespace PR7851 {
-  struct X {
-    operator const void *() const;
-    operator void *();
+struct X {
+  operator const void *() const;
+  operator void *();
 
-    operator const unsigned *() const;
-    operator unsigned *();
-  };
+  operator const unsigned *() const;
+  operator unsigned *();
+};
 
-  void f() {
-    X x;
-    x[0] = 1;
-    *x = 0;
-    (void)(x - x);
-  }
+void f() {
+  X x;
+  x[0] = 1;
+  *x = 0;
+  (void)(x - x);
 }
+} // namespace PR7851
 
 namespace PR12854 {
-  enum { size = 1 };
-  void plus_equals() {
-    int* __restrict py;
-    py += size;
-  }
-
-  struct RestrictInt {
-    operator int* __restrict &();
-  };
-
-  void user_conversions(RestrictInt ri) {
-    ++ri;
-    --ri;
-    ri++;
-    ri--;
-  }
+enum { size = 1 };
+void plus_equals() {
+  int *__restrict py;
+  py += size;
 }
+
+struct RestrictInt {
+  operator int * __restrict &();
+};
+
+void user_conversions(RestrictInt ri) {
+  ++ri;
+  --ri;
+  ri++;
+  ri--;
+}
+} // namespace PR12854
 
 namespace PR12964 {
-  struct X { operator  __int128() const; } x;
-  bool a = x == __int128(0);
-  bool b = x == 0;
+struct X {
+  operator __int128() const;
+} x;
+bool a = x == __int128(0);
+bool b = x == 0;
 
-  struct Y { operator unsigned __int128() const; } y;
-  bool c = y == __int128(0);
-  bool d = y == 0;
+struct Y {
+  operator unsigned __int128() const;
+} y;
+bool c = y == __int128(0);
+bool d = y == 0;
 
-  bool e = x == y;
-}
+bool e = x == y;
+} // namespace PR12964

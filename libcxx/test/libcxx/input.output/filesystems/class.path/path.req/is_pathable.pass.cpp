@@ -19,7 +19,6 @@
 // * InputIterator with a value_type of _ECharT
 // * A character array, which points to a NTCTS after array-to-pointer decay.
 
-
 #include "filesystem_include.h"
 #include <type_traits>
 #include <cassert>
@@ -32,33 +31,37 @@
 using fs::__is_pathable;
 
 template <class Tp>
-struct Identity { typedef Tp type; };
+struct Identity {
+  typedef Tp type;
+};
 
 template <class Source>
 Identity<Source> CheckSourceType(Source const&);
 
 template <class Tp>
-using GetSourceType = typename decltype(CheckSourceType(std::declval<Tp>()))::type;
+using GetSourceType =
+    typename decltype(CheckSourceType(std::declval<Tp>()))::type;
 
 template <class Tp, class Exp,
           class ExpQual = typename std::remove_const<Exp>::type>
-using CheckPass = std::is_same<ExpQual, GetSourceType<Tp>>;
+using CheckPass = std::is_same<ExpQual, GetSourceType<Tp> >;
 
 template <class Source>
-using CheckPassSource = std::integral_constant<bool,
-        CheckPass<Source&,        Source>::value &&
-        CheckPass<Source const&,  Source>::value &&
-        CheckPass<Source&&,       Source>::value &&
-        CheckPass<Source const&&, Source>::value
-  >;
+using CheckPassSource =
+    std::integral_constant<bool, CheckPass<Source&, Source>::value &&
+                                     CheckPass<Source const&, Source>::value &&
+                                     CheckPass<Source&&, Source>::value &&
+                                     CheckPass<Source const&&, Source>::value>;
 
 template <class CharT>
 struct MakeTestType {
   using value_type = CharT;
   using string_type = std::basic_string<CharT>;
-  using string_type2 = std::basic_string<CharT, std::char_traits<CharT>, min_allocator<CharT>>;
+  using string_type2 =
+      std::basic_string<CharT, std::char_traits<CharT>, min_allocator<CharT> >;
   using string_view_type = std::basic_string_view<CharT>;
-  using string_view_type2 = std::basic_string_view<CharT, constexpr_char_traits<CharT>>;
+  using string_view_type2 =
+      std::basic_string_view<CharT, constexpr_char_traits<CharT> >;
   using cstr_type = CharT* const;
   using const_cstr_type = const CharT*;
   using array_type = CharT[25];
@@ -69,7 +72,8 @@ struct MakeTestType {
   template <class TestT>
   static void AssertPathable() {
     static_assert(__is_pathable<TestT>::value, "");
-    static_assert(CheckPassSource<TestT>::value, "cannot pass as Source const&");
+    static_assert(CheckPassSource<TestT>::value,
+                  "cannot pass as Source const&");
     ASSERT_SAME_TYPE(CharT, typename __is_pathable<TestT>::__char_type);
   }
 

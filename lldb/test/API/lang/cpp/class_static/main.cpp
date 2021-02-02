@@ -10,35 +10,24 @@
 
 #include <stdio.h>
 
-typedef struct PointType
-{
-    int x, y;
+typedef struct PointType {
+  int x, y;
 } PointType;
 
-class A
-{
+class A {
 public:
-    static PointType g_points[];
+  static PointType g_points[];
 };
 
-PointType A::g_points[] = 
-{
-    {    1,    2 },
-    {   11,   22 }
-};
+PointType A::g_points[] = {{1, 2}, {11, 22}};
 
-static PointType g_points[] = 
-{
-    {    3,    4 },
-    {   33,   44 }
-};
+static PointType g_points[] = {{3, 4}, {33, 44}};
 
-int
-main (int argc, char const *argv[])
-{
-    const char *hello_world = "Hello, world!";
-    printf ("A::g_points[1].x = %i\n", A::g_points[1].x); // Set break point at this line.
-    printf ("::g_points[1].x = %i\n", g_points[1].x);
-    printf ("%s\n", hello_world);
-    return 0;
+int main(int argc, char const *argv[]) {
+  const char *hello_world = "Hello, world!";
+  printf("A::g_points[1].x = %i\n",
+         A::g_points[1].x); // Set break point at this line.
+  printf("::g_points[1].x = %i\n", g_points[1].x);
+  printf("%s\n", hello_world);
+  return 0;
 }

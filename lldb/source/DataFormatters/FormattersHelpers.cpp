@@ -6,9 +6,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-
-
-
 #include "lldb/DataFormatters/FormattersHelpers.h"
 
 #include "lldb/Target/StackFrame.h"

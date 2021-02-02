@@ -21,7 +21,8 @@
 // OMP45: add
 void add(short &out, short &in) {}
 
-#pragma omp declare reduction(my_add : short : add(omp_out, omp_in))
+#pragma omp declare reduction(my_add:short \
+                              : add(omp_out, omp_in))
 
 // OMP45: define internal void @.
 // OMP45: call void @{{.+}}add{{.+}}(
@@ -31,14 +32,17 @@ void add(short &out, short &in) {}
 void foo_reduction_array() {
   short y[1];
   // OMP45: call void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(
-#pragma omp parallel for reduction(my_add : y)
+#pragma omp parallel for reduction(my_add \
+                                   : y)
   for (int i = 0; i < 1; i++) {
   }
 }
 
 // OMP45: define internal void @
 
-#pragma omp declare reduction(+ : int, char : omp_out *= omp_in)
+#pragma omp declare reduction(+           \
+                              : int, char \
+                              : omp_out *= omp_in)
 // CHECK: define internal {{.*}}void @{{[^(]+}}(i32* noalias %0, i32* noalias %1)
 // CHECK: [[MUL:%.+]] = mul nsw i32
 // CHECK-NEXT: store i32 [[MUL]], i32*
@@ -72,8 +76,10 @@ template <class T>
 struct SSS {
   T a;
   SSS() : a() {}
-#pragma omp declare reduction(fun : T : omp_out ^= omp_in) initializer(omp_priv = 24 + omp_orig)
-#pragma omp declare reduction(sssss : T : ssssss(omp_in)) initializer(omp_priv = 18 + omp_orig)
+#pragma omp declare reduction(fun:T \
+                              : omp_out ^= omp_in) initializer(omp_priv = 24 + omp_orig)
+#pragma omp declare reduction(sssss:T \
+                              : ssssss(omp_in)) initializer(omp_priv = 18 + omp_orig)
   static void ssssss(T &x);
 };
 
@@ -105,7 +111,9 @@ SSS<int> d;
 template <typename T>
 void init(T &lhs, T &rhs) {}
 
-#pragma omp declare reduction(fun : SSS < int > : omp_out = omp_in) initializer(init(omp_priv, omp_orig))
+#pragma omp declare reduction(fun         \
+                              : SSS <int> \
+                              : omp_out = omp_in) initializer(init(omp_priv, omp_orig))
 // CHECK: define internal {{.*}}void @{{[^(]+}}([[SSS_INT]]* noalias %0, [[SSS_INT]]* noalias %1)
 // CHECK: call void @llvm.memcpy
 // CHECK-NEXT: ret void
@@ -129,42 +137,51 @@ void init(T &lhs, T &rhs) {}
 
 template <typename T>
 T foo(T a) {
-#pragma omp declare reduction(fun : T : omp_out += omp_in) initializer(omp_priv = 15 * omp_orig)
+#pragma omp declare reduction(fun:T \
+                              : omp_out += omp_in) initializer(omp_priv = 15 * omp_orig)
   {
-#pragma omp declare reduction(fun : T : omp_out /= omp_in) initializer(omp_priv = 11 - omp_orig)
+#pragma omp declare reduction(fun:T \
+                              : omp_out /= omp_in) initializer(omp_priv = 11 - omp_orig)
   }
   return a;
 }
 
 struct Summary {
-  void merge(const Summary& other) {}
+  void merge(const Summary &other) {}
 };
 
 template <typename K>
 void work() {
   Summary global_summary;
-#pragma omp declare reduction(+ : Summary : omp_out.merge(omp_in))
-#pragma omp parallel for reduction(+ : global_summary)
+#pragma omp declare reduction(+         \
+                              : Summary \
+                              : omp_out.merge(omp_in))
+#pragma omp parallel for reduction(+ \
+                                   : global_summary)
   for (int k = 1; k <= 100; ++k) {
   }
 }
 
 struct A {};
 
-
 // CHECK-LABEL: @main
 int main() {
   int i = 0;
   SSS<int> sss;
-#pragma omp parallel reduction(SSS < int > ::fun : i)
+#pragma omp parallel reduction(SSS <int>::fun \
+                               : i)
   {
     i += 1;
   }
-#pragma omp parallel reduction(::fun : sss)
+#pragma omp parallel reduction(::fun \
+                               : sss)
   {
   }
-#pragma omp declare reduction(fun : SSS < int > : init(omp_out, omp_in))
-#pragma omp parallel reduction(fun : sss)
+#pragma omp declare reduction(fun         \
+                              : SSS <int> \
+                              : init(omp_out, omp_in))
+#pragma omp parallel reduction(fun \
+                               : sss)
   {
   }
   // CHECK: call {{.*}}void (%struct.ident_t*, i32, void (i32*, i32*, ...)*, ...) @__kmpc_fork_call(

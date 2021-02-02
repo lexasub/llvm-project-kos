@@ -2,42 +2,41 @@
 // RUN: %clang_cc1 -std=c++1z %s -verify -emit-llvm-only
 
 namespace variadic_expansion {
-  int f(int &, char &) { return 0; }
-  template<class ... Ts> char fv(Ts ... ts) { return 0; }
-  // FIXME: why do we get 2 error messages
-  template <typename ... T> void g(T &... t) { //expected-note3{{declared here}}
-    f([&a(t)]()->decltype(auto) {
+int f(int &, char &) { return 0; }
+template <class... Ts> char fv(Ts... ts) { return 0; }
+// FIXME: why do we get 2 error messages
+template <typename... T> void g(T &...t) { //expected-note3{{declared here}}
+  f([&a(t)]() -> decltype(auto) {
+    return a;
+  }()...);
+
+  auto L = [x = f([&a(t)]() -> decltype(auto) { return a; }()...)]() { return x; };
+  const int y = 10;
+  auto M = [x = y,
+            &z = y](T &...t) {};
+  auto N = [x = y,
+            &z = y, n = f(t...),
+            o = f([&a(t)](T &...t) -> decltype(auto) { return a; }(t...)...), t...](T &...s) {
+    fv([&a(t)]() -> decltype(auto) {
       return a;
-    }() ...);
-    
-    auto L = [x = f([&a(t)]()->decltype(auto) { return a; }()...)]() { return x; };
-    const int y = 10;
-    auto M = [x = y, 
-                &z = y](T& ... t) { }; 
-    auto N = [x = y, 
-                &z = y, n = f(t...), 
-                o = f([&a(t)](T& ... t)->decltype(auto) { return a; }(t...)...), t...](T& ... s) { 
-                  fv([&a(t)]()->decltype(auto) { 
-                    return a;
-                  }() ...);
-                };                 
-    auto N2 = [x = y,                     //expected-note3{{begins here}}
-                &z = y, n = f(t...), 
-                o = f([&a(t)](T& ... t)->decltype(auto) { return a; }(t...)...)](T& ... s) { 
-                  fv([&a(t)]()->decltype(auto) { //expected-error 3{{captured}}
-                    return a;
-                  }() ...);
-                };                 
-
-  }
-
-  void h(int i, char c) { g(i, c); } //expected-note{{in instantiation}}
+    }()...);
+  };
+  auto N2 = [x = y, //expected-note3{{begins here}}
+                 &z = y, n = f(t...),
+             o = f([&a(t)](T &...t) -> decltype(auto) { return a; }(t...)...)](T &...s) {
+    fv([&a(t)]() -> decltype(auto) { //expected-error 3{{captured}}
+      return a;
+    }()...);
+  };
 }
+
+void h(int i, char c) { g(i, c); } //expected-note{{in instantiation}}
+} // namespace variadic_expansion
 
 namespace odr_use_within_init_capture {
 
 int test() {
-  
+
   { // no captures
     const int x = 10;
     auto L = [z = x + 2](int a) {
@@ -46,19 +45,18 @@ int test() {
       };
       return M;
     };
-        
   }
   { // should not capture
     const int x = 10;
     auto L = [&z = x](int a) {
-      return a;;
+      return a;
+      ;
     };
-        
   }
   {
     const int x = 10;
-    auto L = [k = x](char a) { //expected-note {{declared}}
-      return [](int b) { //expected-note {{begins}}
+    auto L = [k = x](char a) {  //expected-note {{declared}}
+      return [](int b) {        //expected-note {{begins}}
         return [j = k](int c) { //expected-error {{cannot be implicitly captured}}
           return c;
         };
@@ -67,9 +65,9 @@ int test() {
   }
   {
     const int x = 10;
-    auto L = [k = x](char a) { 
-      return [=](int b) { 
-        return [j = k](int c) { 
+    auto L = [k = x](char a) {
+      return [=](int b) {
+        return [j = k](int c) {
           return c;
         };
       };
@@ -77,9 +75,9 @@ int test() {
   }
   {
     const int x = 10;
-    auto L = [k = x](char a) { 
-      return [k](int b) { 
-        return [j = k](int c) { 
+    auto L = [k = x](char a) {
+      return [k](int b) {
+        return [j = k](int c) {
           return c;
         };
       };
@@ -91,11 +89,11 @@ int test() {
 
 int run = test();
 
-}
+} // namespace odr_use_within_init_capture
 
 namespace odr_use_within_init_capture_template {
 
-template<class T = int>
+template <class T = int>
 int test(T t = T{}) {
 
   { // no captures
@@ -106,46 +104,43 @@ int test(T t = T{}) {
       };
       return M;
     };
-        
   }
   { // should not capture
     const T x = 10;
     auto L = [&z = x](T a) {
-      return a;;
+      return a;
+      ;
     };
-        
   }
-  { // will need to capture x in outer lambda
-    const T x = 10; //expected-note {{declared}}
+  {                            // will need to capture x in outer lambda
+    const T x = 10;            //expected-note {{declared}}
     auto L = [z = x](char a) { //expected-note {{begins}}
       auto M = [&y = x](T b) { //expected-error {{cannot be implicitly captured}}
         return y;
       };
       return M;
     };
-        
   }
   { // will need to capture x in outer lambda
-    const T x = 10; 
-    auto L = [=,z = x](char a) { 
-      auto M = [&y = x](T b) { 
-        return y;
-      };
-      return M;
-    };
-        
-  }
-  { // will need to capture x in outer lambda
-    const T x = 10; 
-    auto L = [x, z = x](char a) { 
-      auto M = [&y = x](T b) { 
+    const T x = 10;
+    auto L = [=, z = x](char a) {
+      auto M = [&y = x](T b) {
         return y;
       };
       return M;
     };
   }
   { // will need to capture x in outer lambda
-    const int x = 10; //expected-note {{declared}}
+    const T x = 10;
+    auto L = [x, z = x](char a) {
+      auto M = [&y = x](T b) {
+        return y;
+      };
+      return M;
+    };
+  }
+  {                            // will need to capture x in outer lambda
+    const int x = 10;          //expected-note {{declared}}
     auto L = [z = x](char a) { //expected-note {{begins}}
       auto M = [&y = x](T b) { //expected-error {{cannot be implicitly captured}}
         return y;
@@ -156,31 +151,29 @@ int test(T t = T{}) {
   {
     // no captures
     const T x = 10;
-    auto L = [z = 
-                  [z = x, &y = x](char a) { return z + y; }('a')](char a) 
-      { return z; };
-  
+    auto L = [z =
+                  [z = x, &y = x](char a) { return z + y; }('a')](char a) { return z; };
   }
-  
+
   return 0;
 }
 
 int run = test(); //expected-note {{instantiation}}
 
-}
+} // namespace odr_use_within_init_capture_template
 
 namespace classification_of_captures_of_init_captures {
 
 template <typename T>
 void f() {
-  [a = 24] () mutable {
+  [a = 24]() mutable {
     [&a] { a = 3; }();
   }();
 }
 
 template <typename T>
 void h() {
-  [a = 24] (auto param) mutable {
+  [a = 24](auto param) mutable {
     [&a] { a = 3; }();
   }(42);
 }
@@ -190,13 +183,17 @@ int run() {
   h<int>();
 }
 
-}
+} // namespace classification_of_captures_of_init_captures
 
 namespace N3922 {
-  struct X { X(); explicit X(const X&); int n; };
-  auto a = [x{X()}] { return x.n; }; // ok
-  auto b = [x = {X()}] {}; // expected-error{{<initializer_list>}}
-}
+struct X {
+  X();
+  explicit X(const X &);
+  int n;
+};
+auto a = [x{X()}] { return x.n; }; // ok
+auto b = [x = {X()}] {};           // expected-error{{<initializer_list>}}
+} // namespace N3922
 
 namespace init_capture_non_mutable {
 void test(double weight) {
@@ -206,26 +203,26 @@ void test(double weight) {
   };
   find(weight); // expected-note {{in instantiation of function template specialization}}
 }
-}
+} // namespace init_capture_non_mutable
 
 namespace init_capture_undeclared_identifier {
-  auto a = [x = y]{}; // expected-error{{use of undeclared identifier 'y'}}
+auto a = [x = y] {}; // expected-error{{use of undeclared identifier 'y'}}
 
-  int typo_foo; // expected-note 2 {{'typo_foo' declared here}}
-  auto b = [x = typo_boo]{}; // expected-error{{use of undeclared identifier 'typo_boo'; did you mean 'typo_foo'}}
-  auto c = [x(typo_boo)]{}; // expected-error{{use of undeclared identifier 'typo_boo'; did you mean 'typo_foo'}}
-}
+int typo_foo;               // expected-note 2 {{'typo_foo' declared here}}
+auto b = [x = typo_boo] {}; // expected-error{{use of undeclared identifier 'typo_boo'; did you mean 'typo_foo'}}
+auto c = [x(typo_boo)] {};  // expected-error{{use of undeclared identifier 'typo_boo'; did you mean 'typo_foo'}}
+} // namespace init_capture_undeclared_identifier
 
 namespace copy_evasion {
-  struct A {
-    A();
-    A(const A&) = delete;
-  };
-  auto x = [a{A()}] {};
+struct A {
+  A();
+  A(const A &) = delete;
+};
+auto x = [a{A()}] {};
 #if __cplusplus >= 201702L
-  // ok, does not copy an 'A'
+// ok, does not copy an 'A'
 #else
-  // expected-error@-4 {{call to deleted}}
-  // expected-note@-7 {{deleted}}
+// expected-error@-4 {{call to deleted}}
+// expected-note@-7 {{deleted}}
 #endif
-}
+} // namespace copy_evasion

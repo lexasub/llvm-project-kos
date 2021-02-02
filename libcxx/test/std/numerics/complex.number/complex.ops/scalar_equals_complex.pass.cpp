@@ -18,67 +18,62 @@
 #include "test_macros.h"
 
 template <class T>
-void
-test_constexpr()
-{
+void test_constexpr() {
 #if TEST_STD_VER > 11
-    {
+  {
     constexpr T lhs(-2.5);
-    constexpr std::complex<T> rhs(1.5,  2.5);
+    constexpr std::complex<T> rhs(1.5, 2.5);
     static_assert(!(lhs == rhs), "");
-    }
-    {
+  }
+  {
     constexpr T lhs(-2.5);
-    constexpr std::complex<T> rhs(1.5,  0);
+    constexpr std::complex<T> rhs(1.5, 0);
     static_assert(!(lhs == rhs), "");
-    }
-    {
+  }
+  {
     constexpr T lhs(1.5);
     constexpr std::complex<T> rhs(1.5, 2.5);
     static_assert(!(lhs == rhs), "");
-    }
-    {
+  }
+  {
     constexpr T lhs(1.5);
     constexpr std::complex<T> rhs(1.5, 0);
     static_assert(lhs == rhs, "");
-    }
+  }
 #endif
 }
 
 template <class T>
-void
-test()
-{
-    {
+void test() {
+  {
     T lhs(-2.5);
-    std::complex<T> rhs(1.5,  2.5);
+    std::complex<T> rhs(1.5, 2.5);
     assert(!(lhs == rhs));
-    }
-    {
+  }
+  {
     T lhs(-2.5);
-    std::complex<T> rhs(1.5,  0);
+    std::complex<T> rhs(1.5, 0);
     assert(!(lhs == rhs));
-    }
-    {
+  }
+  {
     T lhs(1.5);
     std::complex<T> rhs(1.5, 2.5);
     assert(!(lhs == rhs));
-    }
-    {
+  }
+  {
     T lhs(1.5);
     std::complex<T> rhs(1.5, 0);
     assert(lhs == rhs);
-    }
+  }
 
-    test_constexpr<T> ();
+  test_constexpr<T>();
 }
 
-int main(int, char**)
-{
-    test<float>();
-    test<double>();
-    test<long double>();
-//     test_constexpr<int>();
+int main(int, char**) {
+  test<float>();
+  test<double>();
+  test<long double>();
+  //     test_constexpr<int>();
 
   return 0;
 }

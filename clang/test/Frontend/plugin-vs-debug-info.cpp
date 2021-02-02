@@ -27,6 +27,6 @@ constexpr nullopt_t nullopt(0);
 
 #else
 
-void func() { }
+void func() {}
 
 #endif

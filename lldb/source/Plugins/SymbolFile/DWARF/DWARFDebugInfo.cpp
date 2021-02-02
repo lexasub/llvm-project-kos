@@ -157,9 +157,8 @@ DWARFUnit *DWARFDebugInfo::GetUnit(const DIERef &die_ref) {
   return GetUnitContainingDIEOffset(die_ref.section(), die_ref.die_offset());
 }
 
-DWARFUnit *
-DWARFDebugInfo::GetUnitContainingDIEOffset(DIERef::Section section,
-                                           dw_offset_t die_offset) {
+DWARFUnit *DWARFDebugInfo::GetUnitContainingDIEOffset(DIERef::Section section,
+                                                      dw_offset_t die_offset) {
   uint32_t idx = FindUnitIndex(section, die_offset);
   DWARFUnit *result = GetUnitAtIndex(idx);
   if (result && !result->ContainsDIEOffset(die_offset))

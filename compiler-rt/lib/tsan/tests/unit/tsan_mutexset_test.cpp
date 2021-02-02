@@ -10,12 +10,13 @@
 //
 //===----------------------------------------------------------------------===//
 #include "tsan_mutexset.h"
+
 #include "gtest/gtest.h"
 
 namespace __tsan {
 
 static void Expect(const MutexSet &mset, uptr i, u64 id, bool write, u64 epoch,
-    int count) {
+                   int count) {
   MutexSet::Desc d = mset.Get(i);
   EXPECT_EQ(id, d.id);
   EXPECT_EQ(write, d.write);
@@ -114,8 +115,7 @@ TEST(MutexSet, Overflow) {
   EXPECT_EQ(mset.Size(), MutexSet::kMaxSize);
   for (uptr i = 0; i < MutexSet::kMaxSize; i++) {
     if (i == 0)
-      Expect(mset, i, MutexSet::kMaxSize - 1,
-             true, MutexSet::kMaxSize, 2);
+      Expect(mset, i, MutexSet::kMaxSize - 1, true, MutexSet::kMaxSize, 2);
     else if (i == MutexSet::kMaxSize - 1)
       Expect(mset, i, 100, true, 200, 1);
     else

@@ -2,17 +2,17 @@
 // RUN: %clang_cc1 -fsyntax-only -verify -std=c++98 %s
 // RUN: %clang_cc1 -fsyntax-only -verify -std=c++11 %s
 
-class Z { };
+class Z {};
 
-class Y { 
+class Y {
 public:
-  Y(const Z&);
+  Y(const Z &);
 };
 
 class X {
 public:
   X(int);
-  X(const Y&);
+  X(const Y &);
 };
 
 void f(X); // expected-note{{candidate function}}
@@ -24,14 +24,13 @@ void g(short s, Y y, Z z) {
   f(z); // expected-error{{no matching function}}
 }
 
-
 class FromShort {
 public:
   FromShort(short s);
 };
 
 class FromShortExplicitly { // expected-note{{candidate constructor (the implicit copy constructor)}}
-#if __cplusplus >= 201103L // C++11 or later
+#if __cplusplus >= 201103L  // C++11 or later
 // expected-note@-2 {{candidate constructor (the implicit move constructor) not viable}}
 #endif
 
@@ -47,7 +46,9 @@ void explicit_constructor(short s) {
 }
 
 // PR5519
-struct X1 { X1(const char&); };
+struct X1 {
+  X1(const char &);
+};
 void x1(X1);
 void y1() {
   x1(1);

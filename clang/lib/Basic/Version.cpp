@@ -85,9 +85,7 @@ std::string getClangFullRepositoryVersion() {
   return OS.str();
 }
 
-std::string getClangFullVersion() {
-  return getClangToolFullVersion("clang");
-}
+std::string getClangFullVersion() { return getClangToolFullVersion("clang"); }
 
 std::string getClangToolFullVersion(StringRef ToolName) {
   std::string buf;

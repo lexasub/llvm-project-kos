@@ -27,11 +27,11 @@ using namespace llvm;
 extern "C" LLVMContextRef LLVMGetGlobalContext(void);
 
 inline TargetLibraryInfoImpl *unwrap(LLVMTargetLibraryInfoRef P) {
-  return reinterpret_cast<TargetLibraryInfoImpl*>(P);
+  return reinterpret_cast<TargetLibraryInfoImpl *>(P);
 }
 
 inline LLVMTargetLibraryInfoRef wrap(const TargetLibraryInfoImpl *P) {
-  TargetLibraryInfoImpl *X = const_cast<TargetLibraryInfoImpl*>(P);
+  TargetLibraryInfoImpl *X = const_cast<TargetLibraryInfoImpl *>(P);
   return reinterpret_cast<LLVMTargetLibraryInfoRef>(X);
 }
 
@@ -56,9 +56,7 @@ LLVMTargetDataRef LLVMCreateTargetData(const char *StringRep) {
   return wrap(new DataLayout(StringRep));
 }
 
-void LLVMDisposeTargetData(LLVMTargetDataRef TD) {
-  delete unwrap(TD);
-}
+void LLVMDisposeTargetData(LLVMTargetDataRef TD) { delete unwrap(TD); }
 
 void LLVMAddTargetLibraryInfo(LLVMTargetLibraryInfoRef TLI,
                               LLVMPassManagerRef PM) {
@@ -94,7 +92,8 @@ LLVMTypeRef LLVMIntPtrTypeInContext(LLVMContextRef C, LLVMTargetDataRef TD) {
   return wrap(unwrap(TD)->getIntPtrType(*unwrap(C)));
 }
 
-LLVMTypeRef LLVMIntPtrTypeForASInContext(LLVMContextRef C, LLVMTargetDataRef TD, unsigned AS) {
+LLVMTypeRef LLVMIntPtrTypeForASInContext(LLVMContextRef C, LLVMTargetDataRef TD,
+                                         unsigned AS) {
   return wrap(unwrap(TD)->getIntPtrType(*unwrap(C), AS));
 }
 
@@ -135,8 +134,8 @@ unsigned LLVMElementAtOffset(LLVMTargetDataRef TD, LLVMTypeRef StructTy,
   return unwrap(TD)->getStructLayout(STy)->getElementContainingOffset(Offset);
 }
 
-unsigned long long LLVMOffsetOfElement(LLVMTargetDataRef TD, LLVMTypeRef StructTy,
-                                       unsigned Element) {
+unsigned long long LLVMOffsetOfElement(LLVMTargetDataRef TD,
+                                       LLVMTypeRef StructTy, unsigned Element) {
   StructType *STy = unwrap<StructType>(StructTy);
   return unwrap(TD)->getStructLayout(STy)->getElementOffset(Element);
 }

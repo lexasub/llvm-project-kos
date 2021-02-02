@@ -14,10 +14,9 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    std::error_category* p = 0;
-    ((void)p);
+int main(int, char**) {
+  std::error_category* p = 0;
+  ((void)p);
 
   return 0;
 }

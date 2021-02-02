@@ -36,20 +36,21 @@
 // Parts of the test are too platform-specific:
 // REQUIRES: x86_64-target-arch
 // REQUIRES: shell
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <algorithm>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <sanitizer/asan_interface.h>
 
-enum ReadOrWrite { Read = 0, Write = 1 };
+enum ReadOrWrite { Read = 0,
+                   Write = 1 };
 
 struct S32 {
   char x[32];
 };
 
-template<class T>
+template <class T>
 void HeapBuferOverflow(int Idx, ReadOrWrite w) {
   T *t = new T[100];
   static T sink;
@@ -57,22 +58,22 @@ void HeapBuferOverflow(int Idx, ReadOrWrite w) {
     t[100 + Idx] = T();
   else
     sink = t[100 + Idx];
-  delete [] t;
+  delete[] t;
 }
 
-template<class T>
+template <class T>
 void HeapUseAfterFree(int Idx, ReadOrWrite w) {
   T *t = new T[100];
   static T sink;
   sink = t[0];
-  delete [] t;
+  delete[] t;
   if (w)
     t[Idx] = T();
   else
     sink = t[Idx];
 }
 
-template<class T>
+template <class T>
 void StackBufferOverflow(int Idx, ReadOrWrite w) {
   T t[100];
   static T sink;
@@ -83,15 +84,15 @@ void StackBufferOverflow(int Idx, ReadOrWrite w) {
     sink = t[100 + Idx];
 }
 
-template<class T>
+template <class T>
 T *LeakStack() {
   T t[100];
   static volatile T *x;
   x = &t[0];
-  return (T*)x;
+  return (T *)x;
 }
 
-template<class T>
+template <class T>
 void StackUseAfterReturn(int Idx, ReadOrWrite w) {
   static T sink;
   T *t = LeakStack<T>();
@@ -101,11 +102,11 @@ void StackUseAfterReturn(int Idx, ReadOrWrite w) {
     sink = t[100 + Idx];
 }
 
-char    g1[100];
-short   g2[100];
-int     g4[100];
+char g1[100];
+short g2[100];
+int g4[100];
 int64_t g8[100];
-S32     gm[100];
+S32 gm[100];
 
 void DoubleFree() {
   int *x = new int;
@@ -138,49 +139,101 @@ int main(int argc, char **argv) {
   char arr[100];
   static volatile int zero = 0;
   static volatile int *zero_ptr = 0;
-  static volatile int *wild_addr = (int*)0x10000000; // System-dependent.
-  if (argc != 2) return 1;
+  static volatile int *wild_addr = (int *)0x10000000; // System-dependent.
+  if (argc != 2)
+    return 1;
   int kind = atoi(argv[1]);
   switch (kind) {
-    case 1: HeapBuferOverflow<char>(0, Read); break;
-    case 2: HeapBuferOverflow<int>(0, Read); break;
-    case 3: HeapBuferOverflow<short>(0, Write); break;
-    case 4: HeapBuferOverflow<int64_t>(
-        2 * std::max(1, (int)(grain / sizeof(int64_t))), Write); break;
-    case 5: HeapBuferOverflow<S32>(4, Write); break;
-    case 6: HeapUseAfterFree<char>(0, Read); break;
-    case 7: HeapUseAfterFree<int>(0, Write); break;
-    case 8: HeapUseAfterFree<int64_t>(0, Read); break;
-    case 9: HeapUseAfterFree<S32>(0, Write); break;
-    case 10: StackBufferOverflow<char>(0, Write); break;
-    case 11: StackBufferOverflow<int64_t>(0, Read); break;
-    case 12:
-      if (scale <= 3) {
-        StackBufferOverflow<int>(16, Write);
-      } else {
-        // At large shadow granularity, there is not enough redzone
-        // between stack elements to detect far-from-bounds.  Pretend
-        // that this test passes.
-        fprintf(stderr, "SCARINESS: 61 "
-                "(4-byte-write-stack-buffer-overflow-far-from-bounds)\n");
-        return 1;
-      }
-      break;
-    case 13: StackUseAfterReturn<char>(0, Read); break;
-    case 14: StackUseAfterReturn<S32>(0, Write); break;
-    case 15: g1[zero + 100] = 0; break;
-    case 16: gm[0] = gm[zero + 100 + 1]; break;
-    case 17: DoubleFree(); break;
-    case 18: StackOverflow(1000000); break;
-    case 19: *zero_ptr = 0; break;
-    case 20: *wild_addr = 0; break;
-    case 21: zero = *wild_addr; break;
-    case 22: ((void (*)(void))wild_addr)(); break;
-    case 23: delete (new int[10]); break;
-    case 24: free((char*)malloc(100) + 10); break;
-    case 25: memcpy(arr, arr+10, 20);  break;
-    case 26: UseAfterPoison(); break;
-    case 27: abort();
+  case 1:
+    HeapBuferOverflow<char>(0, Read);
+    break;
+  case 2:
+    HeapBuferOverflow<int>(0, Read);
+    break;
+  case 3:
+    HeapBuferOverflow<short>(0, Write);
+    break;
+  case 4:
+    HeapBuferOverflow<int64_t>(
+        2 * std::max(1, (int)(grain / sizeof(int64_t))), Write);
+    break;
+  case 5:
+    HeapBuferOverflow<S32>(4, Write);
+    break;
+  case 6:
+    HeapUseAfterFree<char>(0, Read);
+    break;
+  case 7:
+    HeapUseAfterFree<int>(0, Write);
+    break;
+  case 8:
+    HeapUseAfterFree<int64_t>(0, Read);
+    break;
+  case 9:
+    HeapUseAfterFree<S32>(0, Write);
+    break;
+  case 10:
+    StackBufferOverflow<char>(0, Write);
+    break;
+  case 11:
+    StackBufferOverflow<int64_t>(0, Read);
+    break;
+  case 12:
+    if (scale <= 3) {
+      StackBufferOverflow<int>(16, Write);
+    } else {
+      // At large shadow granularity, there is not enough redzone
+      // between stack elements to detect far-from-bounds.  Pretend
+      // that this test passes.
+      fprintf(stderr, "SCARINESS: 61 "
+                      "(4-byte-write-stack-buffer-overflow-far-from-bounds)\n");
+      return 1;
+    }
+    break;
+  case 13:
+    StackUseAfterReturn<char>(0, Read);
+    break;
+  case 14:
+    StackUseAfterReturn<S32>(0, Write);
+    break;
+  case 15:
+    g1[zero + 100] = 0;
+    break;
+  case 16:
+    gm[0] = gm[zero + 100 + 1];
+    break;
+  case 17:
+    DoubleFree();
+    break;
+  case 18:
+    StackOverflow(1000000);
+    break;
+  case 19:
+    *zero_ptr = 0;
+    break;
+  case 20:
+    *wild_addr = 0;
+    break;
+  case 21:
+    zero = *wild_addr;
+    break;
+  case 22:
+    ((void (*)(void))wild_addr)();
+    break;
+  case 23:
+    delete (new int[10]);
+    break;
+  case 24:
+    free((char *)malloc(100) + 10);
+    break;
+  case 25:
+    memcpy(arr, arr + 10, 20);
+    break;
+  case 26:
+    UseAfterPoison();
+    break;
+  case 27:
+    abort();
     // CHECK1: SCARINESS: 12 (1-byte-read-heap-buffer-overflow)
     // CHECK2: SCARINESS: 17 (4-byte-read-heap-buffer-overflow)
     // CHECK3: SCARINESS: 33 (2-byte-write-heap-buffer-overflow)

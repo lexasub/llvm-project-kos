@@ -1,4 +1,5 @@
-//===- ClangExtDefMapGen.cpp -----------------------------------------------===//
+//===- ClangExtDefMapGen.cpp
+//-----------------------------------------------===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -29,7 +30,8 @@ using namespace clang;
 using namespace clang::cross_tu;
 using namespace clang::tooling;
 
-static cl::OptionCategory ClangExtDefMapGenCategory("clang-extdefmapgen options");
+static cl::OptionCategory
+    ClangExtDefMapGenCategory("clang-extdefmapgen options");
 
 class MapExtDefNamesConsumer : public ASTConsumer {
 public:

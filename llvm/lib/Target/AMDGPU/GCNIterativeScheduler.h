@@ -37,13 +37,11 @@ public:
     SCHEDULE_ILP
   };
 
-  GCNIterativeScheduler(MachineSchedContext *C,
-                        StrategyKind S);
+  GCNIterativeScheduler(MachineSchedContext *C, StrategyKind S);
 
   void schedule() override;
 
-  void enterRegion(MachineBasicBlock *BB,
-                   MachineBasicBlock::iterator Begin,
+  void enterRegion(MachineBasicBlock *BB, MachineBasicBlock::iterator Begin,
                    MachineBasicBlock::iterator End,
                    unsigned RegionInstrs) override;
 
@@ -71,7 +69,7 @@ protected:
   };
 
   SpecificBumpPtrAllocator<Region> Alloc;
-  std::vector<Region*> Regions;
+  std::vector<Region *> Regions;
 
   MachineSchedContext *Context;
   const StrategyKind Strategy;
@@ -81,8 +79,7 @@ protected:
   class OverrideLegacyStrategy;
 
   template <typename Range>
-  GCNRegPressure getSchedulePressure(const Region &R,
-                                     Range &&Schedule) const;
+  GCNRegPressure getSchedulePressure(const Region &R, Range &&Schedule) const;
 
   GCNRegPressure getRegionPressure(MachineBasicBlock::iterator Begin,
                                    MachineBasicBlock::iterator End) const;
@@ -91,13 +88,12 @@ protected:
     return getRegionPressure(R.Begin, R.End);
   }
 
-  void setBestSchedule(Region &R,
-                       ScheduleRef Schedule,
+  void setBestSchedule(Region &R, ScheduleRef Schedule,
                        const GCNRegPressure &MaxRP = GCNRegPressure());
 
   void scheduleBest(Region &R);
 
-  std::vector<MachineInstr*> detachSchedule(ScheduleRef Schedule) const;
+  std::vector<MachineInstr *> detachSchedule(ScheduleRef Schedule) const;
 
   void sortRegionsByPressure(unsigned TargetOcc);
 
@@ -105,19 +101,17 @@ protected:
   void scheduleRegion(Region &R, Range &&Schedule,
                       const GCNRegPressure &MaxRP = GCNRegPressure());
 
-  unsigned tryMaximizeOccupancy(unsigned TargetOcc =
-                                std::numeric_limits<unsigned>::max());
+  unsigned tryMaximizeOccupancy(
+      unsigned TargetOcc = std::numeric_limits<unsigned>::max());
 
   void scheduleLegacyMaxOccupancy(bool TryMaximizeOccupancy = true);
   void scheduleMinReg(bool force = false);
   void scheduleILP(bool TryMaximizeOccupancy = true);
 
   void printRegions(raw_ostream &OS) const;
-  void printSchedResult(raw_ostream &OS,
-                        const Region *R,
+  void printSchedResult(raw_ostream &OS, const Region *R,
                         const GCNRegPressure &RP) const;
-  void printSchedRP(raw_ostream &OS,
-                    const GCNRegPressure &Before,
+  void printSchedRP(raw_ostream &OS, const GCNRegPressure &Before,
                     const GCNRegPressure &After) const;
 };
 

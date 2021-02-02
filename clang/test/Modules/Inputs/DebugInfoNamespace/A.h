@@ -1,3 +1,3 @@
 namespace N {
-  struct A {};
-}
+struct A {};
+} // namespace N

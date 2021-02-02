@@ -173,8 +173,7 @@ public:
   /// files for each offloading kind. By default, no prefix is used for
   /// non-device kinds, except if \a CreatePrefixForHost is set.
   static std::string
-  GetOffloadingFileNamePrefix(OffloadKind Kind,
-                              StringRef NormalizedTriple,
+  GetOffloadingFileNamePrefix(OffloadKind Kind, StringRef NormalizedTriple,
                               bool CreatePrefixForHost = false);
 
   /// Return a string containing a offload kind name.
@@ -222,9 +221,7 @@ public:
 
   const llvm::opt::Arg &getInputArg() const { return Input; }
 
-  static bool classof(const Action *A) {
-    return A->getKind() == InputClass;
-  }
+  static bool classof(const Action *A) { return A->getKind() == InputClass; }
 };
 
 class BindArchAction : public Action {
@@ -239,9 +236,7 @@ public:
 
   StringRef getArchName() const { return ArchName; }
 
-  static bool classof(const Action *A) {
-    return A->getKind() == BindArchClass;
-  }
+  static bool classof(const Action *A) { return A->getKind() == BindArchClass; }
 };
 
 /// An offload action combines host or/and device actions according to the
@@ -382,8 +377,7 @@ protected:
 
 public:
   static bool classof(const Action *A) {
-    return (A->getKind() >= JobClassFirst &&
-            A->getKind() <= JobClassLast);
+    return (A->getKind() >= JobClassFirst && A->getKind() <= JobClassLast);
   }
 };
 
@@ -426,9 +420,7 @@ public:
     return A->getKind() == HeaderModulePrecompileJobClass;
   }
 
-  void addModuleHeaderInput(Action *Input) {
-    getInputs().push_back(Input);
-  }
+  void addModuleHeaderInput(Action *Input) { getInputs().push_back(Input); }
 
   const char *getModuleName() const { return ModuleName; }
 };
@@ -505,9 +497,7 @@ class LinkJobAction : public JobAction {
 public:
   LinkJobAction(ActionList &Inputs, types::ID Type);
 
-  static bool classof(const Action *A) {
-    return A->getKind() == LinkJobClass;
-  }
+  static bool classof(const Action *A) { return A->getKind() == LinkJobClass; }
 };
 
 class LipoJobAction : public JobAction {
@@ -516,9 +506,7 @@ class LipoJobAction : public JobAction {
 public:
   LipoJobAction(ActionList &Inputs, types::ID Type);
 
-  static bool classof(const Action *A) {
-    return A->getKind() == LipoJobClass;
-  }
+  static bool classof(const Action *A) { return A->getKind() == LipoJobClass; }
 };
 
 class DsymutilJobAction : public JobAction {

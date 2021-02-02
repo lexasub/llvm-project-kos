@@ -9,15 +9,15 @@
 
 #pragma GCC system_header
 namespace std {
-  template<typename T> T &&declval();
+template <typename T> T &&declval();
 
-  template<typename...Ts> struct common_type {};
-  template<typename A, typename B> struct common_type<A, B> {
-    // Under the rules in the standard, this always produces a
-    // reference type.
-    typedef decltype(true ? declval<A>() : declval<B>()) type;
-  };
-}
+template <typename... Ts> struct common_type {};
+template <typename A, typename B> struct common_type<A, B> {
+  // Under the rules in the standard, this always produces a
+  // reference type.
+  typedef decltype(true ? declval<A>() : declval<B>()) type;
+};
+} // namespace std
 
 #else
 
@@ -27,7 +27,7 @@ namespace std {
 using T = int;
 using T = std::common_type<int, int>::type;
 
-using U = int; // expected-note {{here}}
+using U = int;                                                        // expected-note {{here}}
 using U = decltype(true ? std::declval<int>() : std::declval<int>()); // expected-error {{different types}}
 
 #endif

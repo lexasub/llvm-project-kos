@@ -2,10 +2,9 @@
 
 template <typename T>
 struct HasStaticInit {
-static const int index;
+  static const int index;
 };
-extern "C"
-int the_count = 0;
+extern "C" int the_count = 0;
 template <typename T>
 const int HasStaticInit<T>::index = the_count++;
 

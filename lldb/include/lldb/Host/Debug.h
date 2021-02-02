@@ -146,6 +146,6 @@ struct ThreadStopInfo {
     } exception;
   } details;
 };
-}
+} // namespace lldb_private
 
 #endif // LLDB_HOST_DEBUG_H

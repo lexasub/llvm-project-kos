@@ -9,40 +9,46 @@ __declspec(align(4096)) char buffer[4096];
 struct AT {};
 
 struct V : AT {
-	char c;
-	V() {
-		printf("V   - this: %d\n", (int)((char*)this - buffer));
-	}
+  char c;
+  V() {
+    printf("V   - this: %d\n", (int)((char *)this - buffer));
+  }
 };
 
 struct AT0 {
-	union { struct { int a; AT t; } y; int b; } x;
-	char c;
-	AT0() {
-		printf("AT0 - this: %d\n", (int)((char*)this - buffer));
-	}
+  union {
+    struct {
+      int a;
+      AT t;
+    } y;
+    int b;
+  } x;
+  char c;
+  AT0() {
+    printf("AT0 - this: %d\n", (int)((char *)this - buffer));
+  }
 };
 
 struct AT1 : V {
-	int a;
-	AT1() {
-		printf("AT1 - this: %d\n", (int)((char*)this - buffer));
-	}
+  int a;
+  AT1() {
+    printf("AT1 - this: %d\n", (int)((char *)this - buffer));
+  }
 };
 
 struct AT2 {
-	AT0 t;
-	char AT2FieldName0;
-	AT2() {
-		printf("AT2 - this: %d\n", (int)((char*)this - buffer));
-		printf("AT2 - Fiel: %d\n", (int)((char*)&AT2FieldName0 - buffer));
-	}
+  AT0 t;
+  char AT2FieldName0;
+  AT2() {
+    printf("AT2 - this: %d\n", (int)((char *)this - buffer));
+    printf("AT2 - Fiel: %d\n", (int)((char *)&AT2FieldName0 - buffer));
+  }
 };
 
 struct AT3 : AT2, AT1 {
-	AT3() {
-		printf("AT3 - this: %d\n", (int)((char*)this - buffer));
-	}
+  AT3() {
+    printf("AT3 - this: %d\n", (int)((char *)this - buffer));
+  }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -97,23 +103,23 @@ struct AT3 : AT2, AT1 {
 // CHECK-X64-NEXT:      |  nvsize=28, nvalign=4]
 
 struct BT0 {
-	BT0() {
-		printf("BT0 - this: %d\n", (int)((char*)this - buffer));
-	}
+  BT0() {
+    printf("BT0 - this: %d\n", (int)((char *)this - buffer));
+  }
 };
 
 struct BT2 : BT0 {
-	char BT2FieldName0;
-	BT2() {
-		printf("BT2 - this: %d\n", (int)((char*)this - buffer));
-		printf("BT2 - Fiel: %d\n", (int)((char*)&BT2FieldName0 - buffer));
-	}
+  char BT2FieldName0;
+  BT2() {
+    printf("BT2 - this: %d\n", (int)((char *)this - buffer));
+    printf("BT2 - Fiel: %d\n", (int)((char *)&BT2FieldName0 - buffer));
+  }
 };
 
 struct BT3 : BT0, BT2 {
-	BT3() {
-		printf("BT3 - this: %d\n", (int)((char*)this - buffer));
-	}
+  BT3() {
+    printf("BT3 - this: %d\n", (int)((char *)this - buffer));
+  }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -138,31 +144,31 @@ struct BT3 : BT0, BT2 {
 // CHECK-X64-NEXT:      |  nvsize=2, nvalign=1]
 
 struct T0 : AT {
-	T0() {
-		printf("T0 (this) : %d\n", (int)((char*)this - buffer));
-	}
+  T0() {
+    printf("T0 (this) : %d\n", (int)((char *)this - buffer));
+  }
 };
 
 struct T1 : T0 {
-	char a;
-	T1() {
-		printf("T1 (this) : %d\n", (int)((char*)this - buffer));
-		printf("T1 (fiel) : %d\n", (int)((char*)&a - buffer));
-	}
+  char a;
+  T1() {
+    printf("T1 (this) : %d\n", (int)((char *)this - buffer));
+    printf("T1 (fiel) : %d\n", (int)((char *)&a - buffer));
+  }
 };
 
 struct T2 : AT {
-	char a;
-	T2() {
-		printf("T2 (this) : %d\n", (int)((char*)this - buffer));
-		printf("T2 (fiel) : %d\n", (int)((char*)&a - buffer));
-	}
+  char a;
+  T2() {
+    printf("T2 (this) : %d\n", (int)((char *)this - buffer));
+    printf("T2 (fiel) : %d\n", (int)((char *)&a - buffer));
+  }
 };
 
 struct __declspec(align(1)) T3 : virtual T1, virtual T2 {
-	T3() {
-		printf("T3 (this) : %d\n", (int)((char*)this - buffer));
-	}
+  T3() {
+    printf("T3 (this) : %d\n", (int)((char *)this - buffer));
+  }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -197,8 +203,12 @@ struct __declspec(align(1)) T3 : virtual T1, virtual T2 {
 // CHECK-X64-NEXT:      |  nvsize=8, nvalign=8]
 
 struct B {};
-struct C { int a; };
-struct D : B, virtual C { B b; };
+struct C {
+  int a;
+};
+struct D : B, virtual C {
+  B b;
+};
 struct E : D, B {};
 // CHECK: *** Dumping AST Record Layout
 // CHECK: *** Dumping AST Record Layout
@@ -256,17 +266,17 @@ struct F : virtual D, virtual B {};
 // CHECK-X64-NEXT:      |  nvsize=8, nvalign=8]
 
 struct JC0 {
-	JC0() { printf("JC0 : %d\n", (int)((char*)this - buffer)); }
+  JC0() { printf("JC0 : %d\n", (int)((char *)this - buffer)); }
 };
 struct JC1 : JC0 {
-	virtual void f() {}
-	JC1() { printf("JC1 : %d\n", (int)((char*)this - buffer)); }
+  virtual void f() {}
+  JC1() { printf("JC1 : %d\n", (int)((char *)this - buffer)); }
 };
 struct JC2 : JC1 {
-	JC2() { printf("JC2 : %d\n", (int)((char*)this - buffer)); }
+  JC2() { printf("JC2 : %d\n", (int)((char *)this - buffer)); }
 };
 struct JC4 : JC1, JC2 {
-	JC4() { printf("JC4 : %d\n", (int)((char*)this - buffer)); }
+  JC4() { printf("JC4 : %d\n", (int)((char *)this - buffer)); }
 };
 
 // CHECK: *** Dumping AST Record Layout
@@ -299,18 +309,38 @@ struct JC4 : JC1, JC2 {
 // CHECK-X64-NEXT:      |  nvsize=24, nvalign=8]
 
 struct RA {};
-struct RB { char c; };
+struct RB {
+  char c;
+};
 struct RV {};
-struct RW { char c; };
-struct RY { RY() { printf("%Id\n", (char*)this - buffer); } };
+struct RW {
+  char c;
+};
+struct RY {
+  RY() { printf("%Id\n", (char *)this - buffer); }
+};
 struct RX0 : RB, RA {};
 struct RX1 : RA, RB {};
-struct RX2 : RA { char a; };
-struct RX3 : RA { RB a; };
-struct RX4 { RA a; char b; };
-struct RX5 { RA a; RB b; };
-struct RX6 : virtual RV { RB a; };
-struct RX7 : virtual RW { RA a; };
+struct RX2 : RA {
+  char a;
+};
+struct RX3 : RA {
+  RB a;
+};
+struct RX4 {
+  RA a;
+  char b;
+};
+struct RX5 {
+  RA a;
+  RB b;
+};
+struct RX6 : virtual RV {
+  RB a;
+};
+struct RX7 : virtual RW {
+  RA a;
+};
 struct RX8 : RA, virtual RW {};
 
 struct RZ0 : RX0, RY {};
@@ -525,8 +555,13 @@ struct RZ8 : RX8, RY {};
 
 struct JA {};
 struct JB {};
-struct JC : JA { virtual void f() {} };
-struct JD : virtual JB, virtual JC { virtual void f() {} JD() {} };
+struct JC : JA {
+  virtual void f() {}
+};
+struct JD : virtual JB, virtual JC {
+  virtual void f() {}
+  JD() {}
+};
 
 // CHECK: *** Dumping AST Record Layout
 // CHECK: *** Dumping AST Record Layout
@@ -555,21 +590,20 @@ struct JD : virtual JB, virtual JC { virtual void f() {} JD() {} };
 // CHECK-X64-NEXT:      | [sizeof=24, align=8
 // CHECK-X64-NEXT:      |  nvsize=8, nvalign=8]
 
-int a[
-sizeof(AT3) +
-sizeof(BT3) +
-sizeof(T3) +
-sizeof(E) +
-sizeof(F) +
-sizeof(JC4) +
-sizeof(RZ0) +
-sizeof(RZ1) +
-sizeof(RZ2) +
-sizeof(RZ3) +
-sizeof(RZ4) +
-sizeof(RZ5) +
-sizeof(RZ6) +
-sizeof(RZ7) +
-sizeof(RZ8) +
-sizeof(JD) +
-0];
+int a[sizeof(AT3) +
+      sizeof(BT3) +
+      sizeof(T3) +
+      sizeof(E) +
+      sizeof(F) +
+      sizeof(JC4) +
+      sizeof(RZ0) +
+      sizeof(RZ1) +
+      sizeof(RZ2) +
+      sizeof(RZ3) +
+      sizeof(RZ4) +
+      sizeof(RZ5) +
+      sizeof(RZ6) +
+      sizeof(RZ7) +
+      sizeof(RZ8) +
+      sizeof(JD) +
+      0];

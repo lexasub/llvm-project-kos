@@ -1,11 +1,11 @@
 // RUN: %clang_cc1 -std=c++2a -verify -ast-dump -ast-dump-decl-types -ast-dump-filter "deduction guide" %s | FileCheck %s --strict-whitespace
 
-template<auto ...> struct X {};
-template<template<typename X, X> typename> struct Y {};
-template<typename ...> struct Z {};
+template <auto...> struct X {};
+template <template <typename X, X> typename> struct Y {};
+template <typename...> struct Z {};
 
-template<typename T, typename ...Ts> struct A {
-  template<Ts ...Ns, T *...Ps> A(X<Ps...>, Ts (*...qs)[Ns]);
+template <typename T, typename... Ts> struct A {
+  template <Ts... Ns, T *...Ps> A(X<Ps...>, Ts (*...qs)[Ns]);
 };
 int arr1[3], arr2[3];
 short arr3[4];
@@ -55,8 +55,8 @@ using AT = A<int[3], int, int, short>;
 // CHECK:         | `-TemplateTypeParm {{.*}} 'Ts'
 // CHECK:         `-DeclRefExpr {{.*}} 'Ts' NonTypeTemplateParm {{.*}} 'Ns' 'Ts...'
 
-template<typename T, T V> struct B {
-  template<typename U, U W> B(X<W, V>);
+template <typename T, T V> struct B {
+  template <typename U, U W> B(X<W, V>);
 };
 B b(X<nullptr, 'x'>{});
 using BT = decltype(b);
@@ -84,8 +84,8 @@ using BT = B<char, 'x'>;
 // CHECK:   `-TemplateArgument expr
 // CHECK:     `-DeclRefExpr {{.*}} 'T' NonTypeTemplateParm {{.*}} 'V' 'T'
 
-template<typename A> struct C {
-  template<template<typename X, X> typename T, typename U, U V = 0> C(A, Y<T>, U);
+template <typename A> struct C {
+  template <template <typename X, X> typename T, typename U, U V = 0> C(A, Y<T>, U);
 };
 C c(1, Y<B>{}, 2);
 using CT = decltype(c);
@@ -118,12 +118,12 @@ using CT = C<int>;
 // CHECK: |-TemplateTypeParmType {{.*}} 'A' dependent depth 0 index 0
 // CHECK: | `-TemplateTypeParm {{.*}} 'A'
 // CHECK: |-TemplateSpecializationType {{.*}} 'Y<>' dependent Y
-// CHECK: | `-TemplateArgument template 
+// CHECK: | `-TemplateArgument template
 // CHECK: `-TemplateTypeParmType {{.*}} 'type-parameter-0-2' dependent depth 0 index 2
 
-template<typename ...T> struct D { // expected-note {{candidate}}
-  template<typename... U> using B = int(int (*...p)(T, U));
-  template<typename U1, typename U2> D(B<U1, U2>*); // expected-note {{candidate}}
+template <typename... T> struct D { // expected-note {{candidate}}
+  template <typename... U> using B = int(int (*...p)(T, U));
+  template <typename U1, typename U2> D(B<U1, U2> *); // expected-note {{candidate}}
 };
 int f(int(int, int), int(int, int));
 // FIXME: We can't deduce this because we can't deduce through a
@@ -137,7 +137,7 @@ using DT = D<int, int>;
 // CHECK: |-TemplateTypeParmDecl {{.*}} typename depth 0 index 0 ... T
 // CHECK: |-TemplateTypeParmDecl {{.*}} typename depth 0 index 1 U1
 // CHECK: |-TemplateTypeParmDecl {{.*}} typename depth 0 index 2 U2
-// CHECK: `-CXXDeductionGuideDecl {{.*}} 'auto (B<type-parameter-0-1, type-parameter-0-2> *) -> D<T...>'  
+// CHECK: `-CXXDeductionGuideDecl {{.*}} 'auto (B<type-parameter-0-1, type-parameter-0-2> *) -> D<T...>'
 // CHECK:   `-ParmVarDecl {{.*}} 'B<type-parameter-0-1, type-parameter-0-2> *'
 // CHECK: FunctionProtoType {{.*}} 'auto (B<type-parameter-0-1, type-parameter-0-2> *) -> D<T...>' dependent trailing_return
 // CHECK: |-InjectedClassNameType {{.*}} 'D<T...>' dependent
@@ -165,9 +165,9 @@ using DT = D<int, int>;
 // CHECK-NOT: Subst
 // CHECK:                     `-TemplateTypeParmType
 
-template<int ...N> struct E { // expected-note {{candidate}}
-  template<int ...M> using B = Z<X<N, M>...>;
-  template<int M1, int M2> E(B<M1, M2>); // expected-note {{candidate}}
+template <int... N> struct E { // expected-note {{candidate}}
+  template <int... M> using B = Z<X<N, M>...>;
+  template <int M1, int M2> E(B<M1, M2>); // expected-note {{candidate}}
 };
 // FIXME: We can't deduce this because we can't deduce through a
 // SubstNonTypeTemplateParmPackExpr.

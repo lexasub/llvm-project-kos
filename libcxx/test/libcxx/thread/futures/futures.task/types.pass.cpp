@@ -26,9 +26,10 @@
 
 struct A {};
 
-int main(int, char**)
-{
-    static_assert((std::is_same<std::packaged_task<A(int, char)>::result_type, A>::value), "");
+int main(int, char**) {
+  static_assert(
+      (std::is_same<std::packaged_task<A(int, char)>::result_type, A>::value),
+      "");
 
   return 0;
 }

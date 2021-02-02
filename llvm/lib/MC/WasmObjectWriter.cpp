@@ -559,7 +559,8 @@ WasmObjectWriter::getProvisionalValue(const WasmRelocationEntry &RelEntry,
   if ((RelEntry.Type == wasm::R_WASM_GLOBAL_INDEX_LEB ||
        RelEntry.Type == wasm::R_WASM_GLOBAL_INDEX_I32) &&
       !RelEntry.Symbol->isGlobal()) {
-    assert(GOTIndices.count(RelEntry.Symbol) > 0 && "symbol not found in GOT index space");
+    assert(GOTIndices.count(RelEntry.Symbol) > 0 &&
+           "symbol not found in GOT index space");
     return GOTIndices[RelEntry.Symbol];
   }
 
@@ -587,7 +588,8 @@ WasmObjectWriter::getProvisionalValue(const WasmRelocationEntry &RelEntry,
   case wasm::R_WASM_EVENT_INDEX_LEB:
   case wasm::R_WASM_TABLE_NUMBER_LEB:
     // Provisional value is function/global/event Wasm index
-    assert(WasmIndices.count(RelEntry.Symbol) > 0 && "symbol not found in wasm index space");
+    assert(WasmIndices.count(RelEntry.Symbol) > 0 &&
+           "symbol not found in wasm index space");
     return WasmIndices[RelEntry.Symbol];
   case wasm::R_WASM_FUNCTION_OFFSET_I32:
   case wasm::R_WASM_FUNCTION_OFFSET_I64:
@@ -1223,8 +1225,8 @@ void WasmObjectWriter::prepareImports(
   MemImport.Module = "env";
   MemImport.Field = "__linear_memory";
   MemImport.Kind = wasm::WASM_EXTERNAL_MEMORY;
-  MemImport.Memory.Flags = is64Bit() ? wasm::WASM_LIMITS_FLAG_IS_64
-                                     : wasm::WASM_LIMITS_FLAG_NONE;
+  MemImport.Memory.Flags =
+      is64Bit() ? wasm::WASM_LIMITS_FLAG_IS_64 : wasm::WASM_LIMITS_FLAG_NONE;
   Imports.push_back(MemImport);
 
   // Populate SignatureIndices, and Imports and WasmIndices for undefined
@@ -1802,8 +1804,7 @@ uint64_t WasmObjectWriter::writeOneObject(MCAssembler &Asm,
         report_fatal_error("symbols in .init_array should exist in symtab");
       if (!TargetSym.isFunction())
         report_fatal_error("symbols in .init_array should be for functions");
-      InitFuncs.push_back(
-          std::make_pair(Priority, TargetSym.getIndex()));
+      InitFuncs.push_back(std::make_pair(Priority, TargetSym.getIndex()));
     }
   }
 

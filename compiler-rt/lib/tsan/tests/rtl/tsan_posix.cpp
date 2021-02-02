@@ -9,11 +9,12 @@
 // This file is a part of ThreadSanitizer (TSan), a race detector.
 //
 //===----------------------------------------------------------------------===//
+#include <pthread.h>
+
+#include "gtest/gtest.h"
 #include "tsan_interface.h"
 #include "tsan_posix_util.h"
 #include "tsan_test_util.h"
-#include "gtest/gtest.h"
-#include <pthread.h>
 
 struct thread_key {
   pthread_key_t key;
@@ -21,11 +22,7 @@ struct thread_key {
   int val;
   int *cnt;
   thread_key(pthread_key_t key, pthread_mutex_t *mtx, int val, int *cnt)
-    : key(key)
-    , mtx(mtx)
-    , val(val)
-    , cnt(cnt) {
-  }
+      : key(key), mtx(mtx), val(val), cnt(cnt) {}
 };
 
 static void thread_secific_dtor(void *v) {
@@ -97,7 +94,7 @@ TEST(Posix, ThreadLocalAccesses) {
 // using malloc and free, which causes false data race reports.  On rare
 // occasions on powerpc64le this test also fails.
 #if !defined(__aarch64__) && !defined(__APPLE__) && !defined(powerpc64le)
-  local_thread((void*)2);
+  local_thread((void *)2);
 #endif
 }
 
@@ -108,7 +105,7 @@ struct CondContext {
 };
 
 static void *cond_thread(void *p) {
-  CondContext &ctx = *static_cast<CondContext*>(p);
+  CondContext &ctx = *static_cast<CondContext *>(p);
 
   EXPECT_EQ(__interceptor_pthread_mutex_lock(&ctx.m), 0);
   EXPECT_EQ(ctx.data, 0);

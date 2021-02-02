@@ -165,8 +165,8 @@ class COFFMasmParser : public MCAsmParserExtension {
     // Simplified segment directives
     addDirectiveHandler<&COFFMasmParser::ParseSectionDirectiveCode>(".code");
     // .const
-    addDirectiveHandler<
-        &COFFMasmParser::ParseSectionDirectiveInitializedData>(".data");
+    addDirectiveHandler<&COFFMasmParser::ParseSectionDirectiveInitializedData>(
+        ".data");
     addDirectiveHandler<
         &COFFMasmParser::ParseSectionDirectiveUninitializedData>(".data?");
     // .exit
@@ -189,25 +189,25 @@ class COFFMasmParser : public MCAsmParserExtension {
 
   bool ParseSectionDirectiveCode(StringRef, SMLoc) {
     return ParseSectionSwitch(".text",
-                              COFF::IMAGE_SCN_CNT_CODE
-                            | COFF::IMAGE_SCN_MEM_EXECUTE
-                            | COFF::IMAGE_SCN_MEM_READ,
+                              COFF::IMAGE_SCN_CNT_CODE |
+                                  COFF::IMAGE_SCN_MEM_EXECUTE |
+                                  COFF::IMAGE_SCN_MEM_READ,
                               SectionKind::getText());
   }
 
   bool ParseSectionDirectiveInitializedData(StringRef, SMLoc) {
     return ParseSectionSwitch(".data",
-                              COFF::IMAGE_SCN_CNT_INITIALIZED_DATA
-                            | COFF::IMAGE_SCN_MEM_READ
-                            | COFF::IMAGE_SCN_MEM_WRITE,
+                              COFF::IMAGE_SCN_CNT_INITIALIZED_DATA |
+                                  COFF::IMAGE_SCN_MEM_READ |
+                                  COFF::IMAGE_SCN_MEM_WRITE,
                               SectionKind::getData());
   }
 
   bool ParseSectionDirectiveUninitializedData(StringRef, SMLoc) {
     return ParseSectionSwitch(".bss",
-                              COFF::IMAGE_SCN_CNT_UNINITIALIZED_DATA
-                            | COFF::IMAGE_SCN_MEM_READ
-                            | COFF::IMAGE_SCN_MEM_WRITE,
+                              COFF::IMAGE_SCN_CNT_UNINITIALIZED_DATA |
+                                  COFF::IMAGE_SCN_MEM_READ |
+                                  COFF::IMAGE_SCN_MEM_WRITE,
                               SectionKind::getBSS());
   }
 

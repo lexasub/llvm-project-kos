@@ -23,11 +23,10 @@
 
 template <class Tp>
 struct ConvertsTo {
-  using RawTp = typename std::remove_cv< typename std::remove_reference<Tp>::type>::type;
+  using RawTp =
+      typename std::remove_cv<typename std::remove_reference<Tp>::type>::type;
 
-  operator Tp() const {
-    return static_cast<Tp>(value);
-  }
+  operator Tp() const { return static_cast<Tp>(value); }
 
   mutable RawTp value;
 };
@@ -35,13 +34,13 @@ struct ConvertsTo {
 struct Base {};
 struct Derived : Base {};
 
-template <class T> struct CannotDeduce {
- using type = T;
+template <class T>
+struct CannotDeduce {
+  using type = T;
 };
 
-template <class ...Args>
-void F(typename CannotDeduce<std::tuple<Args...>>::type const&) {}
-
+template <class... Args>
+void F(typename CannotDeduce<std::tuple<Args...> >::type const&) {}
 
 int main(int, char**) {
 #if TEST_HAS_BUILTIN_IDENTIFIER(__reference_binds_to_temporary)
@@ -52,13 +51,16 @@ int main(int, char**) {
   // expected-error@tuple:* 0+ {{reference member '__value_' binds to a temporary object whose lifetime would be shorter than the lifetime of the constructed object}}
 
   {
-    F<int, const std::string&>(std::make_tuple(1, "abc")); // expected-note 1 {{requested here}}
+    F<int, const std::string&>(
+        std::make_tuple(1, "abc")); // expected-note 1 {{requested here}}
   }
   {
-    std::tuple<int, const std::string&> t(1, "a"); // expected-note 1 {{requested here}}
+    std::tuple<int, const std::string&> t(
+        1, "a"); // expected-note 1 {{requested here}}
   }
   {
-    F<int, const std::string&>(std::tuple<int, const std::string&>(1, "abc")); // expected-note 1 {{requested here}}
+    F<int, const std::string&>(std::tuple<int, const std::string&>(
+        1, "abc")); // expected-note 1 {{requested here}}
   }
   {
     ConvertsTo<int&> ct;
@@ -66,7 +68,8 @@ int main(int, char**) {
   }
   {
     ConvertsTo<int> ct;
-    std::tuple<int const&, void*> t(ct, nullptr); // expected-note {{requested here}}
+    std::tuple<int const&, void*> t(
+        ct, nullptr); // expected-note {{requested here}}
   }
   {
     ConvertsTo<Derived> ct;
@@ -74,8 +77,9 @@ int main(int, char**) {
   }
   {
     std::allocator<int> alloc;
-    std::tuple<std::string &&> t2("hello"); // expected-note {{requested here}}
-    std::tuple<std::string &&> t3(std::allocator_arg, alloc, "hello"); // expected-note {{requested here}}
+    std::tuple<std::string&&> t2("hello"); // expected-note {{requested here}}
+    std::tuple<std::string&&> t3(std::allocator_arg, alloc,
+                                 "hello"); // expected-note {{requested here}}
   }
 #else
 #error force failure

@@ -24,8 +24,10 @@ struct BadCompare {
 };
 
 int main(int, char**) {
-  static_assert(!std::__invokable<BadCompare const&, int const&, int const&>::value, "");
-  static_assert(std::__invokable<BadCompare&, int const&, int const&>::value, "");
+  static_assert(
+      !std::__invokable<BadCompare const&, int const&, int const&>::value, "");
+  static_assert(std::__invokable<BadCompare&, int const&, int const&>::value,
+                "");
 
   // expected-warning@set:* 2 {{the specified comparator type does not provide a viable const call operator}}
   // expected-warning@map:* 2 {{the specified comparator type does not provide a viable const call operator}}

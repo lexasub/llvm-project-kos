@@ -9,13 +9,17 @@
 #define HEADER
 
 struct A {
-  struct { int a; } a;
-  struct { int b; } b;
+  struct {
+    int a;
+  } a;
+  struct {
+    int b;
+  } b;
 };
 
 #else
 
-template<typename T> void f(T) {}
+template <typename T> void f(T) {}
 
 // CHECK-LABEL: define {{.*}}void @_Z1g1A(
 void g(A a) {

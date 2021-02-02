@@ -33,31 +33,38 @@ namespace llvm {
 ///
 enum class RoundingMode : int8_t {
   // Rounding mode defined in IEEE-754.
-  TowardZero        = 0,    ///< roundTowardZero.
-  NearestTiesToEven = 1,    ///< roundTiesToEven.
-  TowardPositive    = 2,    ///< roundTowardPositive.
-  TowardNegative    = 3,    ///< roundTowardNegative.
-  NearestTiesToAway = 4,    ///< roundTiesToAway.
+  TowardZero = 0,        ///< roundTowardZero.
+  NearestTiesToEven = 1, ///< roundTiesToEven.
+  TowardPositive = 2,    ///< roundTowardPositive.
+  TowardNegative = 3,    ///< roundTowardNegative.
+  NearestTiesToAway = 4, ///< roundTiesToAway.
 
   // Special values.
-  Dynamic = 7,    ///< Denotes mode unknown at compile time.
-  Invalid = -1    ///< Denotes invalid value.
+  Dynamic = 7, ///< Denotes mode unknown at compile time.
+  Invalid = -1 ///< Denotes invalid value.
 };
 
 /// Returns text representation of the given rounding mode.
 inline StringRef spell(RoundingMode RM) {
   switch (RM) {
-  case RoundingMode::TowardZero: return "towardzero";
-  case RoundingMode::NearestTiesToEven: return "tonearest";
-  case RoundingMode::TowardPositive: return "upward";
-  case RoundingMode::TowardNegative: return "downward";
-  case RoundingMode::NearestTiesToAway: return "tonearestaway";
-  case RoundingMode::Dynamic: return "dynamic";
-  default: return "invalid";
+  case RoundingMode::TowardZero:
+    return "towardzero";
+  case RoundingMode::NearestTiesToEven:
+    return "tonearest";
+  case RoundingMode::TowardPositive:
+    return "upward";
+  case RoundingMode::TowardNegative:
+    return "downward";
+  case RoundingMode::NearestTiesToAway:
+    return "tonearestaway";
+  case RoundingMode::Dynamic:
+    return "dynamic";
+  default:
+    return "invalid";
   }
 }
 
-inline raw_ostream &operator << (raw_ostream &OS, RoundingMode RM) {
+inline raw_ostream &operator<<(raw_ostream &OS, RoundingMode RM) {
   OS << spell(RM);
   return OS;
 }
@@ -90,9 +97,8 @@ struct DenormalMode {
   DenormalModeKind Input = DenormalModeKind::Invalid;
 
   constexpr DenormalMode() = default;
-  constexpr DenormalMode(DenormalModeKind Out, DenormalModeKind In) :
-    Output(Out), Input(In) {}
-
+  constexpr DenormalMode(DenormalModeKind Out, DenormalModeKind In)
+      : Output(Out), Input(In) {}
 
   static constexpr DenormalMode getInvalid() {
     return DenormalMode(DenormalModeKind::Invalid, DenormalModeKind::Invalid);
@@ -116,13 +122,9 @@ struct DenormalMode {
     return Output == Other.Output && Input == Other.Input;
   }
 
-  bool operator!=(DenormalMode Other) const {
-    return !(*this == Other);
-  }
+  bool operator!=(DenormalMode Other) const { return !(*this == Other); }
 
-  bool isSimple() const {
-    return Input == Output;
-  }
+  bool isSimple() const { return Input == Output; }
 
   bool isValid() const {
     return Output != DenormalModeKind::Invalid &&
@@ -139,7 +141,7 @@ struct DenormalMode {
   }
 };
 
-inline raw_ostream& operator<<(raw_ostream &OS, DenormalMode Mode) {
+inline raw_ostream &operator<<(raw_ostream &OS, DenormalMode Mode) {
   Mode.print(OS);
   return OS;
 }
@@ -149,10 +151,10 @@ inline DenormalMode::DenormalModeKind
 parseDenormalFPAttributeComponent(StringRef Str) {
   // Assume ieee on unspecified attribute.
   return StringSwitch<DenormalMode::DenormalModeKind>(Str)
-    .Cases("", "ieee", DenormalMode::IEEE)
-    .Case("preserve-sign", DenormalMode::PreserveSign)
-    .Case("positive-zero", DenormalMode::PositiveZero)
-    .Default(DenormalMode::Invalid);
+      .Cases("", "ieee", DenormalMode::IEEE)
+      .Case("preserve-sign", DenormalMode::PreserveSign)
+      .Case("positive-zero", DenormalMode::PositiveZero)
+      .Default(DenormalMode::Invalid);
 }
 
 /// Return the name used for the denormal handling mode used by the the
@@ -180,8 +182,8 @@ inline DenormalMode parseDenormalFPAttribute(StringRef Str) {
 
   // Maintain compatability with old form of the attribute which only specified
   // one component.
-  Mode.Input = InputStr.empty() ? Mode.Output  :
-               parseDenormalFPAttributeComponent(InputStr);
+  Mode.Input = InputStr.empty() ? Mode.Output
+                                : parseDenormalFPAttributeComponent(InputStr);
 
   return Mode;
 }
@@ -190,6 +192,6 @@ void DenormalMode::print(raw_ostream &OS) const {
   OS << denormalModeKindName(Output) << ',' << denormalModeKindName(Input);
 }
 
-}
+} // namespace llvm
 
 #endif // LLVM_FLOATINGPOINTMODE_H

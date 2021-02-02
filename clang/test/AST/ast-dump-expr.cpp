@@ -15,19 +15,19 @@ using size_t = decltype(sizeof(0));
 class type_info {
 public:
   virtual ~type_info();
-  bool operator==(const type_info& rhs) const noexcept;
-  bool operator!=(const type_info& rhs) const noexcept;
-  type_info(const type_info& rhs) = delete; // cannot be copied
-  type_info& operator=(const type_info& rhs) = delete; // cannot be copied
+  bool operator==(const type_info &rhs) const noexcept;
+  bool operator!=(const type_info &rhs) const noexcept;
+  type_info(const type_info &rhs) = delete;            // cannot be copied
+  type_info &operator=(const type_info &rhs) = delete; // cannot be copied
 };
 
 class bad_typeid {
 public:
   bad_typeid() noexcept;
-  bad_typeid(const bad_typeid&) noexcept;
+  bad_typeid(const bad_typeid &) noexcept;
   virtual ~bad_typeid();
-  bad_typeid& operator=(const bad_typeid&) noexcept;
-  const char* what() const noexcept;
+  bad_typeid &operator=(const bad_typeid &) noexcept;
+  const char *what() const noexcept;
 };
 } // namespace std
 void *operator new(std::size_t, void *ptr);
@@ -56,7 +56,7 @@ void Throw() {
   // CHECK: CXXThrowExpr 0x{{[^ ]*}} <line:[[@LINE-1]]:3> 'void'
 }
 
-void PointerToMember(S obj1, S *obj2, int S::* data, void (S::*call)(int)) {
+void PointerToMember(S obj1, S *obj2, int S::*data, void (S::*call)(int)) {
   obj1.*data;
   // CHECK: BinaryOperator 0x{{[^ ]*}} <line:[[@LINE-1]]:3, col:9> 'int' lvalue '.*'
   // CHECK-NEXT: DeclRefExpr 0x{{[^ ]*}} <col:3> 'S' lvalue ParmVar 0x{{[^ ]*}} 'obj1' 'S'
@@ -170,7 +170,7 @@ void UnaryExpressions(int *p) {
   // CHECK-NEXT: ImplicitCastExpr
   // CHECK-NEXT: DeclRefExpr 0x{{[^ ]*}} <col:12> 'int *' lvalue ParmVar 0x{{[^ ]*}} 'p' 'int *'
 
-  delete [] p;
+  delete[] p;
   // CHECK: CXXDeleteExpr 0x{{[^ ]*}} <line:[[@LINE-1]]:3, col:13> 'void' array Function 0x{{[^ ]*}} 'operator delete[]' 'void (void *) noexcept'
   // CHECK-NEXT: ImplicitCastExpr
   // CHECK-NEXT: DeclRefExpr 0x{{[^ ]*}} <col:13> 'int *' lvalue ParmVar 0x{{[^ ]*}} 'p' 'int *'
@@ -251,7 +251,7 @@ void PrimaryExpressions(Ts... a) {
     void f() {
       this;
       // CHECK: CXXThisExpr 0x{{[^ ]*}} <line:[[@LINE-1]]:7> 'V *' this
-      [this]{};
+      [this] {};
       // CHECK: LambdaExpr 0x{{[^ ]*}} <line:[[@LINE-1]]:7, col:14>
       // CHECK-NEXT: CXXRecordDecl 0x{{[^ ]*}} <col:7> col:7 implicit class definition
       // CHECK-NEXT: DefinitionData lambda
@@ -267,7 +267,7 @@ void PrimaryExpressions(Ts... a) {
       // CHECK-NEXT: ParenListExpr
       // CHECK-NEXT: CXXThisExpr 0x{{[^ ]*}} <col:8> 'V *' this
 
-      [*this]{};
+      [*this] {};
       // CHECK: LambdaExpr 0x{{[^ ]*}} <line:[[@LINE-1]]:7, col:15>
       // CHECK-NEXT: CXXRecordDecl 0x{{[^ ]*}} <col:7> col:7 implicit class definition
       // CHECK-NEXT: DefinitionData lambda
@@ -288,7 +288,7 @@ void PrimaryExpressions(Ts... a) {
 
   int b, c;
 
-  [](){};
+  []() {};
   // CHECK: LambdaExpr 0x{{[^ ]*}} <line:[[@LINE-1]]:3, col:8> '(lambda at {{.*}}:[[@LINE-1]]:3)'
   // CHECK-NEXT: CXXRecordDecl 0x{{[^ ]*}} <col:3> col:3 implicit class definition
   // CHECK-NEXT: DefinitionData lambda
@@ -304,7 +304,7 @@ void PrimaryExpressions(Ts... a) {
   // CHECK-NEXT: CXXMethodDecl 0x{{[^ ]*}} <col:3, col:8> col:3 implicit __invoke 'auto ()' static inline
   // CHECK-NEXT: CompoundStmt 0x{{[^ ]*}} <col:7, col:8>
 
-  [](int a, ...){};
+  [](int a, ...) {};
   // CHECK: LambdaExpr 0x{{[^ ]*}} <line:[[@LINE-1]]:3, col:18> '(lambda at {{.*}}:[[@LINE-1]]:3)'
   // CHECK-NEXT: CXXRecordDecl 0x{{[^ ]*}} <col:3> col:3 implicit class definition
   // CHECK-NEXT: DefinitionData lambda
@@ -322,7 +322,7 @@ void PrimaryExpressions(Ts... a) {
   // CHECK-NEXT: ParmVarDecl 0x{{[^ ]*}} <col:6, col:10> col:10 a 'int'
   // CHECK-NEXT: CompoundStmt 0x{{[^ ]*}} <col:17, col:18>
 
-  [a...]{};
+  [a...] {};
   // CHECK: LambdaExpr 0x{{[^ ]*}} <line:[[@LINE-1]]:3, col:10> '(lambda at {{.*}}:[[@LINE-1]]:3)'
   // CHECK-NEXT: CXXRecordDecl 0x{{[^ ]*}} <col:3> col:3 implicit class definition
   // CHECK-NEXT: DefinitionData lambda
@@ -339,7 +339,7 @@ void PrimaryExpressions(Ts... a) {
   // CHECK-NEXT: DeclRefExpr 0x{{[^ ]*}} <col:4> 'Ts' lvalue ParmVar 0x{{[^ ]*}} 'a' 'Ts...'
   // CHECK-NEXT: CompoundStmt 0x{{[^ ]*}} <col:9, col:10>
 
-  [=]{};
+  [=] {};
   // CHECK: LambdaExpr 0x{{[^ ]*}} <line:[[@LINE-1]]:3, col:7> '(lambda at {{.*}}:[[@LINE-1]]:3)'
   // CHECK-NEXT: CXXRecordDecl 0x{{[^ ]*}} <col:3> col:3 implicit class definition
   // CHECK-NEXT: DefinitionData lambda
@@ -371,7 +371,7 @@ void PrimaryExpressions(Ts... a) {
   // CHECK-NEXT: ReturnStmt 0x{{[^ ]*}} <col:9, col:16>
   // CHECK-NEXT: DeclRefExpr 0x{{[^ ]*}} <col:16> 'const int' lvalue Var 0x{{[^ ]*}} 'b' 'int'
 
-  [&]{};
+  [&] {};
   // CHECK: LambdaExpr 0x{{[^ ]*}} <line:[[@LINE-1]]:3, col:7> '(lambda at {{.*}}:[[@LINE-1]]:3)'
   // CHECK-NEXT: CXXRecordDecl 0x{{[^ ]*}} <col:3> col:3 implicit class definition
   // CHECK-NEXT: DefinitionData lambda
@@ -403,7 +403,7 @@ void PrimaryExpressions(Ts... a) {
   // CHECK-NEXT: ReturnStmt 0x{{[^ ]*}} <col:9, col:16>
   // CHECK-NEXT: DeclRefExpr 0x{{[^ ]*}} <col:16> 'int' lvalue Var 0x{{[^ ]*}} 'c' 'int'
 
-  [b, &c]{ return b + c; };
+  [b, &c] { return b + c; };
   // CHECK: LambdaExpr 0x{{[^ ]*}} <line:[[@LINE-1]]:3, col:26> '(lambda at {{.*}}:[[@LINE-1]]:3)'
   // CHECK-NEXT: CXXRecordDecl 0x{{[^ ]*}} <col:3> col:3 implicit class definition
   // CHECK-NEXT: DefinitionData lambda
@@ -434,7 +434,7 @@ void PrimaryExpressions(Ts... a) {
   // CHECK-NEXT: ImplicitCastExpr
   // CHECK-NEXT: DeclRefExpr 0x{{[^ ]*}} <col:23> 'int' lvalue Var 0x{{[^ ]*}} 'c' 'int'
 
-  [a..., x = 12]{};
+  [a..., x = 12] {};
   // CHECK: LambdaExpr 0x{{[^ ]*}} <line:[[@LINE-1]]:3, col:18> '(lambda at {{.*}}:[[@LINE-1]]:3)'
   // CHECK-NEXT: CXXRecordDecl 0x{{[^ ]*}} <col:3> col:3 implicit class definition
   // CHECK-NEXT: DefinitionData lambda
@@ -539,7 +539,6 @@ void PrimaryExpressions(Ts... a) {
   // CHECK-NEXT: DeclRefExpr 0x{{[^ ]*}} <col:4> 'Ts' lvalue ParmVar 0x{{[^ ]*}} 'a' 'Ts...'
   // CHECK-NEXT: DeclRefExpr 0x{{[^ ]*}} <col:14> 'int' lvalue Var 0x{{[^ ]*}} 'b' 'int'
 }
-
 
 namespace NS {
 struct X {};

@@ -30,7 +30,7 @@ class SystemZLDCleanup : public MachineFunctionPass {
 public:
   static char ID;
   SystemZLDCleanup(const SystemZTargetMachine &tm)
-    : MachineFunctionPass(ID), TII(nullptr), MF(nullptr) {}
+      : MachineFunctionPass(ID), TII(nullptr), MF(nullptr) {}
 
   StringRef getPassName() const override {
     return "SystemZ Local Dynamic TLS Access Clean-up";
@@ -69,7 +69,7 @@ bool SystemZLDCleanup::runOnMachineFunction(MachineFunction &F) {
   TII = static_cast<const SystemZInstrInfo *>(F.getSubtarget().getInstrInfo());
   MF = &F;
 
-  SystemZMachineFunctionInfo* MFI = F.getInfo<SystemZMachineFunctionInfo>();
+  SystemZMachineFunctionInfo *MFI = F.getInfo<SystemZMachineFunctionInfo>();
   if (MFI->getNumLocalDynamicTLSAccesses() < 2) {
     // No point folding accesses if there isn't at least two.
     return false;
@@ -92,15 +92,15 @@ bool SystemZLDCleanup::VisitNode(MachineDomTreeNode *Node,
   // Traverse the current block.
   for (auto I = BB->begin(), E = BB->end(); I != E; ++I) {
     switch (I->getOpcode()) {
-      case SystemZ::TLS_LDCALL:
-        if (TLSBaseAddrReg)
-          I = ReplaceTLSCall(&*I, TLSBaseAddrReg);
-        else
-          I = SetRegister(&*I, &TLSBaseAddrReg);
-        Changed = true;
-        break;
-      default:
-        break;
+    case SystemZ::TLS_LDCALL:
+      if (TLSBaseAddrReg)
+        I = ReplaceTLSCall(&*I, TLSBaseAddrReg);
+      else
+        I = SetRegister(&*I, &TLSBaseAddrReg);
+      Changed = true;
+      break;
+    default:
+      break;
     }
   }
 
@@ -118,7 +118,7 @@ MachineInstr *SystemZLDCleanup::ReplaceTLSCall(MachineInstr *I,
   // Insert a Copy from TLSBaseAddrReg to R2.
   MachineInstr *Copy = BuildMI(*I->getParent(), I, I->getDebugLoc(),
                                TII->get(TargetOpcode::COPY), SystemZ::R2D)
-                               .addReg(TLSBaseAddrReg);
+                           .addReg(TLSBaseAddrReg);
 
   // Erase the TLS_LDCALL instruction.
   I->eraseFromParent();
@@ -138,8 +138,7 @@ MachineInstr *SystemZLDCleanup::SetRegister(MachineInstr *I,
   MachineInstr *Next = I->getNextNode();
   MachineInstr *Copy = BuildMI(*I->getParent(), Next, I->getDebugLoc(),
                                TII->get(TargetOpcode::COPY), *TLSBaseAddrReg)
-                               .addReg(SystemZ::R2D);
+                           .addReg(SystemZ::R2D);
 
   return Copy;
 }
-

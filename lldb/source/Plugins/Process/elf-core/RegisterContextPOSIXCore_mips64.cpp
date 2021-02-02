@@ -50,12 +50,13 @@ bool RegisterContextCorePOSIX_mips64::WriteFPR() {
 
 bool RegisterContextCorePOSIX_mips64::ReadRegister(const RegisterInfo *reg_info,
                                                    RegisterValue &value) {
-  
+
   lldb::offset_t offset = reg_info->byte_offset;
   lldb_private::ArchSpec arch = m_register_info_up->GetTargetArchitecture();
   uint64_t v;
   if (IsGPR(reg_info->kinds[lldb::eRegisterKindLLDB])) {
-    if (reg_info->byte_size == 4 && !(arch.GetMachine() == llvm::Triple::mips64el))
+    if (reg_info->byte_size == 4 &&
+        !(arch.GetMachine() == llvm::Triple::mips64el))
       // In case of 32bit core file, the register data are placed at 4 byte
       // offset.
       offset = offset / 2;
@@ -64,10 +65,10 @@ bool RegisterContextCorePOSIX_mips64::ReadRegister(const RegisterInfo *reg_info,
     return true;
   } else if (IsFPR(reg_info->kinds[lldb::eRegisterKindLLDB])) {
     offset = offset - sizeof(GPR_linux_mips);
-    v =m_fpr.GetMaxU64(&offset, reg_info->byte_size);
+    v = m_fpr.GetMaxU64(&offset, reg_info->byte_size);
     value = v;
     return true;
-    }
+  }
   return false;
 }
 

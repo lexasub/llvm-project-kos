@@ -1,6 +1,6 @@
 // RUN: %clang_cc1 -fsyntax-only -verify %s
 
-int w = z.;  // expected-error {{use of undeclared identifier 'z'}} \
+int w = z.; // expected-error {{use of undeclared identifier 'z'}} \
              // expected-error {{expected unqualified-id}}
 
 int x = { y[  // expected-error {{use of undeclared identifier 'y'}} \

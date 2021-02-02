@@ -60,7 +60,7 @@ template <typename T> FixItHint createRemoval(const T &Node) {
 // Returns a FixItHint to replace \p Destination by \p Source.
 template <typename D, typename S>
 FixItHint createReplacement(const D &Destination, const S &Source,
-                                   const ASTContext &Context) {
+                            const ASTContext &Context) {
   return FixItHint::CreateReplacement(internal::getSourceRange(Destination),
                                       getText(Source, Context));
 }

@@ -4,7 +4,7 @@
 void *Thread(void *p) {
   barrier_wait(&barrier);
   __tsan_java_finalize();
-  *(int*)p = 42;
+  *(int *)p = 42;
   return 0;
 }
 
@@ -16,8 +16,8 @@ int main() {
   const int kBlockSize = 16;
   __tsan_java_alloc(jheap, kBlockSize);
   pthread_t th;
-  pthread_create(&th, 0, Thread, (void*)jheap);
-  *(int*)jheap = 43;
+  pthread_create(&th, 0, Thread, (void *)jheap);
+  *(int *)jheap = 43;
   barrier_wait(&barrier);
   pthread_join(th, 0);
   __tsan_java_free(jheap, kBlockSize);

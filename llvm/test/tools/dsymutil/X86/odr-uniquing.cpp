@@ -33,7 +33,7 @@ struct S {
 
 namespace N {
 class C {};
-}
+} // namespace N
 
 // CHECK: DW_TAG_namespace
 // CHECK-NEXT: DW_AT_name{{.*}}"N"
@@ -43,8 +43,10 @@ class C {};
 // CHECK: NULL
 
 union U {
-  class C {} C;
-  struct S {} S;
+  class C {
+  } C;
+  struct S {
+  } S;
 };
 
 // CHECK:  0x[[U:[0-9a-f]*]]:{{.*}}DW_TAG_union_type
@@ -63,7 +65,7 @@ typedef S AliasForS;
 
 namespace {
 class AnonC {};
-}
+} // namespace
 
 // CHECK: DW_TAG_namespace
 // CHECK-NOT: {{DW_AT_name|NULL|DW_TAG}}
@@ -184,4 +186,3 @@ void foo() {
 // NOODR-NOT: {{DW_AT_name|NULL|DW_TAG}}
 // NOODR: 0x[[DUP_ANONC]]:{{.*}}DW_TAG_class_type
 // NOODR-NEXT: DW_AT_name{{.*}}"AnonC"
-

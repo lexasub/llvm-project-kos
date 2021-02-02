@@ -9,15 +9,16 @@
 // This file is a part of ThreadSanitizer/AddressSanitizer runtime.
 //
 //===----------------------------------------------------------------------===//
-#include "sanitizer_common/sanitizer_common.h"
 #include "sanitizer_common/sanitizer_flags.h"
-#include "sanitizer_common/sanitizer_flag_parser.h"
-#include "sanitizer_common/sanitizer_libc.h"
-#include "sanitizer_common/sanitizer_allocator_internal.h"
-#include "gtest/gtest.h"
 
 #include <stdint.h>
 #include <string.h>
+
+#include "gtest/gtest.h"
+#include "sanitizer_common/sanitizer_allocator_internal.h"
+#include "sanitizer_common/sanitizer_common.h"
+#include "sanitizer_common/sanitizer_flag_parser.h"
+#include "sanitizer_common/sanitizer_libc.h"
 
 namespace __sanitizer {
 
@@ -41,7 +42,7 @@ static void TestFlag(T start_value, const char *env, T final_value) {
 
 template <>
 void TestFlag(const char *start_value, const char *env,
-                     const char *final_value) {
+              const char *final_value) {
   const char *flag = start_value;
 
   FlagParser parser;

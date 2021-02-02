@@ -29,12 +29,12 @@ void test_object_cvquals(void (X0::*pm)(),
   (pc->*pmv)(); // expected-error-re{{call to pointer to member function of type 'void (){{( __attribute__\(\(thiscall\)\))?}} volatile' drops 'const' qualifier}}
   (pc->*pmcv)();
 
-  (pv->*pm)(); // expected-error-re{{call to pointer to member function of type 'void (){{( __attribute__\(\(thiscall\)\))?}}' drops 'volatile' qualifier}}
+  (pv->*pm)();  // expected-error-re{{call to pointer to member function of type 'void (){{( __attribute__\(\(thiscall\)\))?}}' drops 'volatile' qualifier}}
   (pv->*pmc)(); // expected-error-re{{call to pointer to member function of type 'void (){{( __attribute__\(\(thiscall\)\))?}} const' drops 'volatile' qualifier}}
   (pv->*pmv)();
   (pv->*pmcv)();
 
-  (pcv->*pm)(); // expected-error-re{{call to pointer to member function of type 'void (){{( __attribute__\(\(thiscall\)\))?}}' drops 'const volatile' qualifiers}}
+  (pcv->*pm)();  // expected-error-re{{call to pointer to member function of type 'void (){{( __attribute__\(\(thiscall\)\))?}}' drops 'const volatile' qualifiers}}
   (pcv->*pmc)(); // expected-error-re{{call to pointer to member function of type 'void (){{( __attribute__\(\(thiscall\)\))?}} const' drops 'volatile' qualifier}}
   (pcv->*pmv)(); // expected-error-re{{call to pointer to member function of type 'void (){{( __attribute__\(\(thiscall\)\))?}} volatile' drops 'const' qualifier}}
   (pcv->*pmcv)();
@@ -49,12 +49,12 @@ void test_object_cvquals(void (X0::*pm)(),
   (oc.*pmv)(); // expected-error-re{{call to pointer to member function of type 'void (){{( __attribute__\(\(thiscall\)\))?}} volatile' drops 'const' qualifier}}
   (oc.*pmcv)();
 
-  (ov.*pm)(); // expected-error-re{{call to pointer to member function of type 'void (){{( __attribute__\(\(thiscall\)\))?}}' drops 'volatile' qualifier}}
+  (ov.*pm)();  // expected-error-re{{call to pointer to member function of type 'void (){{( __attribute__\(\(thiscall\)\))?}}' drops 'volatile' qualifier}}
   (ov.*pmc)(); // expected-error-re{{call to pointer to member function of type 'void (){{( __attribute__\(\(thiscall\)\))?}} const' drops 'volatile' qualifier}}
   (ov.*pmv)();
   (ov.*pmcv)();
 
-  (ocv.*pm)(); // expected-error-re{{call to pointer to member function of type 'void (){{( __attribute__\(\(thiscall\)\))?}}' drops 'const volatile' qualifiers}}
+  (ocv.*pm)();  // expected-error-re{{call to pointer to member function of type 'void (){{( __attribute__\(\(thiscall\)\))?}}' drops 'const volatile' qualifiers}}
   (ocv.*pmc)(); // expected-error-re{{call to pointer to member function of type 'void (){{( __attribute__\(\(thiscall\)\))?}} const' drops 'volatile' qualifier}}
   (ocv.*pmv)(); // expected-error-re{{call to pointer to member function of type 'void (){{( __attribute__\(\(thiscall\)\))?}} volatile' drops 'const' qualifier}}
   (ocv.*pmcv)();

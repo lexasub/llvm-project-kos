@@ -16,25 +16,21 @@
 #include "test_macros.h"
 #include "min_allocator.h"
 
-int sign(int x)
-{
-    if (x == 0)
-        return 0;
-    if (x < 0)
-        return -1;
-    return 1;
+int sign(int x) {
+  if (x == 0)
+    return 0;
+  if (x < 0)
+    return -1;
+  return 1;
 }
 
 template <class S>
-void
-test(const S& s, const S& str, int x)
-{
-    assert(sign(s.compare(str)) == sign(x));
+void test(const S& s, const S& str, int x) {
+  assert(sign(s.compare(str)) == sign(x));
 }
 
-int main(int, char**)
-{
-    {
+int main(int, char**) {
+  {
     typedef std::string S;
     test(S(""), S(""), 0);
     test(S(""), S("abcde"), -5);
@@ -52,10 +48,12 @@ int main(int, char**)
     test(S("abcdefghijklmnopqrst"), S("abcde"), 15);
     test(S("abcdefghijklmnopqrst"), S("abcdefghij"), 10);
     test(S("abcdefghijklmnopqrst"), S("abcdefghijklmnopqrst"), 0);
-    }
+  }
 #if TEST_STD_VER >= 11
-    {
-    typedef std::basic_string<char, std::char_traits<char>, min_allocator<char>> S;
+  {
+    typedef std::basic_string<char, std::char_traits<char>,
+                              min_allocator<char> >
+        S;
     test(S(""), S(""), 0);
     test(S(""), S("abcde"), -5);
     test(S(""), S("abcdefghij"), -10);
@@ -72,14 +70,14 @@ int main(int, char**)
     test(S("abcdefghijklmnopqrst"), S("abcde"), 15);
     test(S("abcdefghijklmnopqrst"), S("abcdefghij"), 10);
     test(S("abcdefghijklmnopqrst"), S("abcdefghijklmnopqrst"), 0);
-    }
+  }
 #endif
 
 #if TEST_STD_VER > 3
-    {   // LWG 2946
+  { // LWG 2946
     std::string s = " !";
     assert(s.compare({"abc", 1}) < 0);
-    }
+  }
 #endif
 
   return 0;

@@ -22,7 +22,7 @@ using namespace clang;
 using namespace arcmt;
 using namespace trans;
 
-ASTTraverser::~ASTTraverser() { }
+ASTTraverser::~ASTTraverser() {}
 
 bool MigrationPass::CFBridgingFunctionsDefined() {
   if (!EnableCFBridgeFns.hasValue())
@@ -77,21 +77,18 @@ bool trans::isPlusOne(const Expr *E) {
   if (const FullExpr *FE = dyn_cast<FullExpr>(E))
     E = FE->getSubExpr();
 
-  if (const ObjCMessageExpr *
-        ME = dyn_cast<ObjCMessageExpr>(E->IgnoreParenCasts()))
+  if (const ObjCMessageExpr *ME =
+          dyn_cast<ObjCMessageExpr>(E->IgnoreParenCasts()))
     if (ME->getMethodFamily() == OMF_retain)
       return true;
 
-  if (const CallExpr *
-        callE = dyn_cast<CallExpr>(E->IgnoreParenCasts())) {
+  if (const CallExpr *callE = dyn_cast<CallExpr>(E->IgnoreParenCasts())) {
     if (const FunctionDecl *FD = callE->getDirectCallee()) {
       if (FD->hasAttr<CFReturnsRetainedAttr>())
         return true;
 
-      if (FD->isGlobal() &&
-          FD->getIdentifier() &&
-          FD->getParent()->isTranslationUnit() &&
-          FD->isExternallyVisible() &&
+      if (FD->isGlobal() && FD->getIdentifier() &&
+          FD->getParent()->isTranslationUnit() && FD->isExternallyVisible() &&
           ento::cocoa::isRefType(callE->getType(), "CF",
                                  FD->getIdentifier()->getName())) {
         StringRef fname = FD->getIdentifier()->getName();
@@ -105,7 +102,7 @@ bool trans::isPlusOne(const Expr *E) {
   }
 
   const ImplicitCastExpr *implCE = dyn_cast<ImplicitCastExpr>(E);
-  while (implCE && implCE->getCastKind() ==  CK_BitCast)
+  while (implCE && implCE->getCastKind() == CK_BitCast)
     implCE = dyn_cast<ImplicitCastExpr>(implCE->getSubExpr());
 
   return implCE && implCE->getCastKind() == CK_ARCConsumeObject;
@@ -115,8 +112,8 @@ bool trans::isPlusOne(const Expr *E) {
 /// immediately after the semicolon following the statement.
 /// If no semicolon is found or the location is inside a macro, the returned
 /// source location will be invalid.
-SourceLocation trans::findLocationAfterSemi(SourceLocation loc,
-                                            ASTContext &Ctx, bool IsDecl) {
+SourceLocation trans::findLocationAfterSemi(SourceLocation loc, ASTContext &Ctx,
+                                            bool IsDecl) {
   SourceLocation SemiLoc = findSemiAfterLocation(loc, Ctx, IsDecl);
   if (SemiLoc.isInvalid())
     return SourceLocation();
@@ -127,8 +124,7 @@ SourceLocation trans::findLocationAfterSemi(SourceLocation loc,
 /// of the semicolon following the statement.
 /// If no semicolon is found or the location is inside a macro, the returned
 /// source location will be invalid.
-SourceLocation trans::findSemiAfterLocation(SourceLocation loc,
-                                            ASTContext &Ctx,
+SourceLocation trans::findSemiAfterLocation(SourceLocation loc, ASTContext &Ctx,
                                             bool IsDecl) {
   SourceManager &SM = Ctx.getSourceManager();
   if (loc.isMacroID()) {
@@ -149,8 +145,7 @@ SourceLocation trans::findSemiAfterLocation(SourceLocation loc,
   const char *tokenBegin = file.data() + locInfo.second;
 
   // Lex from the start of the given location.
-  Lexer lexer(SM.getLocForStartOfFile(locInfo.first),
-              Ctx.getLangOpts(),
+  Lexer lexer(SM.getLocForStartOfFile(locInfo.first), Ctx.getLangOpts(),
               file.begin(), tokenBegin, file.end());
   Token tok;
   lexer.LexFromRawLexer(tok);
@@ -159,7 +154,7 @@ SourceLocation trans::findSemiAfterLocation(SourceLocation loc,
       return SourceLocation();
     // Declaration may be followed with other tokens; such as an __attribute,
     // before ending with a semicolon.
-    return findSemiAfterLocation(tok.getLocation(), Ctx, /*IsDecl*/true);
+    return findSemiAfterLocation(tok.getLocation(), Ctx, /*IsDecl*/ true);
   }
 
   return tok.getLocation();
@@ -214,9 +209,13 @@ namespace {
 
 class ReferenceClear : public RecursiveASTVisitor<ReferenceClear> {
   ExprSet &Refs;
+
 public:
-  ReferenceClear(ExprSet &refs) : Refs(refs) { }
-  bool VisitDeclRefExpr(DeclRefExpr *E) { Refs.erase(E); return true; }
+  ReferenceClear(ExprSet &refs) : Refs(refs) {}
+  bool VisitDeclRefExpr(DeclRefExpr *E) {
+    Refs.erase(E);
+    return true;
+  }
 };
 
 class ReferenceCollector : public RecursiveASTVisitor<ReferenceCollector> {
@@ -224,8 +223,7 @@ class ReferenceCollector : public RecursiveASTVisitor<ReferenceCollector> {
   ExprSet &Refs;
 
 public:
-  ReferenceCollector(ValueDecl *D, ExprSet &refs)
-    : Dcl(D), Refs(refs) { }
+  ReferenceCollector(ValueDecl *D, ExprSet &refs) : Dcl(D), Refs(refs) {}
 
   bool VisitDeclRefExpr(DeclRefExpr *E) {
     if (E->getDecl() == Dcl)
@@ -238,15 +236,14 @@ class RemovablesCollector : public RecursiveASTVisitor<RemovablesCollector> {
   ExprSet &Removables;
 
 public:
-  RemovablesCollector(ExprSet &removables)
-  : Removables(removables) { }
+  RemovablesCollector(ExprSet &removables) : Removables(removables) {}
 
   bool shouldWalkTypesOfTypeLocs() const { return false; }
 
   bool TraverseStmtExpr(StmtExpr *E) {
     CompoundStmt *S = E->getSubStmt();
-    for (CompoundStmt::body_iterator
-        I = S->body_begin(), E = S->body_end(); I != E; ++I) {
+    for (CompoundStmt::body_iterator I = S->body_begin(), E = S->body_end();
+         I != E; ++I) {
       if (I != E - 1)
         mark(*I);
       TraverseStmt(*I);
@@ -285,7 +282,8 @@ public:
 
 private:
   void mark(Stmt *S) {
-    if (!S) return;
+    if (!S)
+      return;
 
     while (auto *Label = dyn_cast<LabelStmt>(S))
       S = Label->getSubStmt();
@@ -321,15 +319,15 @@ class ASTTransform : public RecursiveASTVisitor<ASTTransform> {
   typedef RecursiveASTVisitor<ASTTransform> base;
 
 public:
-  ASTTransform(MigrationContext &MigrateCtx) : MigrateCtx(MigrateCtx) { }
+  ASTTransform(MigrationContext &MigrateCtx) : MigrateCtx(MigrateCtx) {}
 
   bool shouldWalkTypesOfTypeLocs() const { return false; }
 
   bool TraverseObjCImplementationDecl(ObjCImplementationDecl *D) {
     ObjCImplementationContext ImplCtx(MigrateCtx, D);
-    for (MigrationContext::traverser_iterator
-           I = MigrateCtx.traversers_begin(),
-           E = MigrateCtx.traversers_end(); I != E; ++I)
+    for (MigrationContext::traverser_iterator I = MigrateCtx.traversers_begin(),
+                                              E = MigrateCtx.traversers_end();
+         I != E; ++I)
       (*I)->traverseObjCImplementation(ImplCtx);
 
     return base::TraverseObjCImplementationDecl(D);
@@ -340,20 +338,20 @@ public:
       return true;
 
     BodyContext BodyCtx(MigrateCtx, rootS);
-    for (MigrationContext::traverser_iterator
-           I = MigrateCtx.traversers_begin(),
-           E = MigrateCtx.traversers_end(); I != E; ++I)
+    for (MigrationContext::traverser_iterator I = MigrateCtx.traversers_begin(),
+                                              E = MigrateCtx.traversers_end();
+         I != E; ++I)
       (*I)->traverseBody(BodyCtx);
 
     return true;
   }
 };
 
-}
+} // namespace
 
 MigrationContext::~MigrationContext() {
-  for (traverser_iterator
-         I = traversers_begin(), E = traversers_end(); I != E; ++I)
+  for (traverser_iterator I = traversers_begin(), E = traversers_end(); I != E;
+       ++I)
     delete *I;
 }
 
@@ -397,18 +395,20 @@ bool MigrationContext::rewritePropertyAttribute(StringRef fromAttr,
   const char *tokenBegin = file.data() + locInfo.second;
 
   // Lex from the start of the given location.
-  Lexer lexer(SM.getLocForStartOfFile(locInfo.first),
-              Pass.Ctx.getLangOpts(),
+  Lexer lexer(SM.getLocForStartOfFile(locInfo.first), Pass.Ctx.getLangOpts(),
               file.begin(), tokenBegin, file.end());
   Token tok;
   lexer.LexFromRawLexer(tok);
-  if (tok.isNot(tok::at)) return false;
+  if (tok.isNot(tok::at))
+    return false;
   lexer.LexFromRawLexer(tok);
-  if (tok.isNot(tok::raw_identifier)) return false;
+  if (tok.isNot(tok::raw_identifier))
+    return false;
   if (tok.getRawIdentifier() != "property")
     return false;
   lexer.LexFromRawLexer(tok);
-  if (tok.isNot(tok::l_paren)) return false;
+  if (tok.isNot(tok::l_paren))
+    return false;
 
   Token BeforeTok = tok;
   Token AfterTok;
@@ -420,7 +420,8 @@ bool MigrationContext::rewritePropertyAttribute(StringRef fromAttr,
     return false;
 
   while (1) {
-    if (tok.isNot(tok::raw_identifier)) return false;
+    if (tok.isNot(tok::raw_identifier))
+      return false;
     if (tok.getRawIdentifier() == fromAttr) {
       if (!toAttr.empty()) {
         Pass.TA.replaceText(tok.getLocation(), fromAttr, toAttr);
@@ -445,8 +446,8 @@ bool MigrationContext::rewritePropertyAttribute(StringRef fromAttr,
   if (toAttr.empty() && AttrLoc.isValid() && AfterTok.isNot(tok::unknown)) {
     // We want to remove the attribute.
     if (BeforeTok.is(tok::l_paren) && AfterTok.is(tok::r_paren)) {
-      Pass.TA.remove(SourceRange(BeforeTok.getLocation(),
-                                 AfterTok.getLocation()));
+      Pass.TA.remove(
+          SourceRange(BeforeTok.getLocation(), AfterTok.getLocation()));
     } else if (BeforeTok.is(tok::l_paren) && AfterTok.is(tok::comma)) {
       Pass.TA.remove(SourceRange(AttrLoc, AfterTok.getLocation()));
     } else {
@@ -478,14 +479,15 @@ bool MigrationContext::addPropertyAttribute(StringRef attr,
   const char *tokenBegin = file.data() + locInfo.second;
 
   // Lex from the start of the given location.
-  Lexer lexer(SM.getLocForStartOfFile(locInfo.first),
-              Pass.Ctx.getLangOpts(),
+  Lexer lexer(SM.getLocForStartOfFile(locInfo.first), Pass.Ctx.getLangOpts(),
               file.begin(), tokenBegin, file.end());
   Token tok;
   lexer.LexFromRawLexer(tok);
-  if (tok.isNot(tok::at)) return false;
+  if (tok.isNot(tok::at))
+    return false;
   lexer.LexFromRawLexer(tok);
-  if (tok.isNot(tok::raw_identifier)) return false;
+  if (tok.isNot(tok::raw_identifier))
+    return false;
   if (tok.getRawIdentifier() != "property")
     return false;
   lexer.LexFromRawLexer(tok);
@@ -501,15 +503,16 @@ bool MigrationContext::addPropertyAttribute(StringRef attr,
     return true;
   }
 
-  if (tok.isNot(tok::raw_identifier)) return false;
+  if (tok.isNot(tok::raw_identifier))
+    return false;
 
   Pass.TA.insert(tok.getLocation(), std::string(attr) + ", ");
   return true;
 }
 
 void MigrationContext::traverse(TranslationUnitDecl *TU) {
-  for (traverser_iterator
-         I = traversers_begin(), E = traversers_end(); I != E; ++I)
+  for (traverser_iterator I = traversers_begin(), E = traversers_end(); I != E;
+       ++I)
     (*I)->traverseTU(*this);
 
   ASTTransform(*this).TraverseDecl(TU);
@@ -520,12 +523,13 @@ static void GCRewriteFinalize(MigrationPass &pass) {
   TransformActions &TA = pass.TA;
   DeclContext *DC = Ctx.getTranslationUnitDecl();
   Selector FinalizeSel =
-   Ctx.Selectors.getNullarySelector(&pass.Ctx.Idents.get("finalize"));
+      Ctx.Selectors.getNullarySelector(&pass.Ctx.Idents.get("finalize"));
 
   typedef DeclContext::specific_decl_iterator<ObjCImplementationDecl>
-  impl_iterator;
+      impl_iterator;
   for (impl_iterator I = impl_iterator(DC->decls_begin()),
-       E = impl_iterator(DC->decls_end()); I != E; ++I) {
+                     E = impl_iterator(DC->decls_end());
+       I != E; ++I) {
     for (const auto *MD : I->instance_methods()) {
       if (!MD->hasBody())
         continue;
@@ -541,8 +545,8 @@ static void GCRewriteFinalize(MigrationPass &pass) {
         bool Invalid;
         std::string str = "\n#endif\n";
         str += Lexer::getSourceText(
-                  CharSourceRange::getTokenRange(FinalizeM->getSourceRange()),
-                                    SM, LangOpts, &Invalid);
+            CharSourceRange::getTokenRange(FinalizeM->getSourceRange()), SM,
+            LangOpts, &Invalid);
         TA.insertAfterToken(FinalizeM->getSourceRange().getEnd(), str);
 
         break;
@@ -580,12 +584,12 @@ static void independentTransforms(MigrationPass &pass) {
   traverseAST(pass);
 }
 
-std::vector<TransformFn> arcmt::getAllTransformations(
-                                               LangOptions::GCMode OrigGCMode,
-                                               bool NoFinalizeRemoval) {
+std::vector<TransformFn>
+arcmt::getAllTransformations(LangOptions::GCMode OrigGCMode,
+                             bool NoFinalizeRemoval) {
   std::vector<TransformFn> transforms;
 
-  if (OrigGCMode ==  LangOptions::GCOnly && NoFinalizeRemoval)
+  if (OrigGCMode == LangOptions::GCOnly && NoFinalizeRemoval)
     transforms.push_back(GCRewriteFinalize);
   transforms.push_back(independentTransforms);
   // This depends on previous transformations removing various expressions.

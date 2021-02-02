@@ -11,19 +11,20 @@
 // This test file should be compiled w/o asan instrumentation.
 //===----------------------------------------------------------------------===//
 
+#include <assert.h>
+#include <sanitizer/allocator_interface.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>  // for memset()
+
+#include <algorithm>
+#include <limits>
+#include <vector>
+
 #include "asan_allocator.h"
 #include "asan_internal.h"
 #include "asan_mapping.h"
 #include "asan_test_utils.h"
-#include <sanitizer/allocator_interface.h>
-
-#include <assert.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>  // for memset()
-#include <algorithm>
-#include <vector>
-#include <limits>
 
 using namespace __sanitizer;
 
@@ -34,15 +35,11 @@ using namespace __sanitizer;
 
 // Make sure __asan_init is called before any test case is run.
 struct AsanInitCaller {
-  AsanInitCaller() {
-    __asan_init();
-  }
+  AsanInitCaller() { __asan_init(); }
 };
 static AsanInitCaller asan_init_caller;
 
-TEST(AddressSanitizer, InternalSimpleDeathTest) {
-  EXPECT_DEATH(exit(1), "");
-}
+TEST(AddressSanitizer, InternalSimpleDeathTest) { EXPECT_DEATH(exit(1), ""); }
 
 static void MallocStress(size_t n) {
   u32 seed = my_rand();
@@ -64,7 +61,8 @@ static void MallocStress(size_t n) {
   std::vector<void *> vec;
   for (size_t i = 0; i < n; i++) {
     if ((i % 3) == 0) {
-      if (vec.empty()) continue;
+      if (vec.empty())
+        continue;
       size_t idx = my_rand_r(&seed) % vec.size();
       void *ptr = vec[idx];
       vec[idx] = vec.back();
@@ -73,24 +71,29 @@ static void MallocStress(size_t n) {
     } else {
       size_t size = my_rand_r(&seed) % 1000 + 1;
       switch ((my_rand_r(&seed) % 128)) {
-        case 0: size += 1024; break;
-        case 1: size += 2048; break;
-        case 2: size += 4096; break;
+        case 0:
+          size += 1024;
+          break;
+        case 1:
+          size += 2048;
+          break;
+        case 2:
+          size += 4096;
+          break;
       }
       size_t alignment = 1 << (my_rand_r(&seed) % 10 + 1);
-      char *ptr = (char*)__asan::asan_memalign(alignment, size,
-                                               &stack2, __asan::FROM_MALLOC);
+      char *ptr = (char *)__asan::asan_memalign(alignment, size, &stack2,
+                                                __asan::FROM_MALLOC);
       EXPECT_EQ(size, __asan::asan_malloc_usable_size(ptr, 0, 0));
       vec.push_back(ptr);
       ptr[0] = 0;
-      ptr[size-1] = 0;
-      ptr[size/2] = 0;
+      ptr[size - 1] = 0;
+      ptr[size / 2] = 0;
     }
   }
   for (size_t i = 0; i < vec.size(); i++)
     __asan::asan_free(vec[i], &stack3, __asan::FROM_MALLOC);
 }
-
 
 TEST(AddressSanitizer, NoInstMallocTest) {
   MallocStress(ASAN_LOW_MEMORY ? 300000 : 1000000);
@@ -101,8 +104,8 @@ TEST(AddressSanitizer, ThreadedMallocStressTest) {
   const int kNumIterations = (ASAN_LOW_MEMORY) ? 10000 : 100000;
   pthread_t t[kNumThreads];
   for (int i = 0; i < kNumThreads; i++) {
-    PTHREAD_CREATE(&t[i], 0, (void* (*)(void *x))MallocStress,
-        (void*)kNumIterations);
+    PTHREAD_CREATE(&t[i], 0, (void *(*)(void *x))MallocStress,
+                   (void *)kNumIterations);
   }
   for (int i = 0; i < kNumThreads; i++) {
     PTHREAD_JOIN(t[i], 0);
@@ -118,7 +121,7 @@ static void PrintShadow(const char *tag, uptr ptr, size_t size) {
       fprintf(stderr, ".");
     if (shadow != prev_shadow) {
       prev_shadow = shadow;
-      fprintf(stderr, "%02x", (int)*(u8*)shadow);
+      fprintf(stderr, "%02x", (int)*(u8 *)shadow);
     }
   }
   fprintf(stderr, "\n");
@@ -128,7 +131,7 @@ TEST(AddressSanitizer, DISABLED_InternalPrintShadow) {
   for (size_t size = 1; size <= 513; size++) {
     char *ptr = new char[size];
     PrintShadow("m", (uptr)ptr, size);
-    delete [] ptr;
+    delete[] ptr;
     PrintShadow("f", (uptr)ptr, size);
   }
 }
@@ -146,7 +149,8 @@ TEST(AddressSanitizer, QuarantineTest) {
   for (i = 0; i < max_i; i++) {
     void *p1 = __asan::asan_malloc(size, &stack);
     __asan::asan_free(p1, &stack, __asan::FROM_MALLOC);
-    if (p1 == p) break;
+    if (p1 == p)
+      break;
   }
   EXPECT_GE(i, 10000U);
   EXPECT_LT(i, max_i);
@@ -232,14 +236,20 @@ TEST(AddressSanitizer, ShadowRegionIsPoisonedTest) {
 // Test __asan_load1 & friends.
 TEST(AddressSanitizer, LoadStoreCallbacks) {
   typedef void (*CB)(uptr p);
-  CB cb[2][5] = {
-      {
-        __asan_load1, __asan_load2, __asan_load4, __asan_load8, __asan_load16,
-      }, {
-        __asan_store1, __asan_store2, __asan_store4, __asan_store8,
-        __asan_store16,
-      }
-  };
+  CB cb[2][5] = {{
+                     __asan_load1,
+                     __asan_load2,
+                     __asan_load4,
+                     __asan_load8,
+                     __asan_load16,
+                 },
+                 {
+                     __asan_store1,
+                     __asan_store2,
+                     __asan_store4,
+                     __asan_store8,
+                     __asan_store16,
+                 }};
 
   uptr buggy_ptr;
 
@@ -249,7 +259,7 @@ TEST(AddressSanitizer, LoadStoreCallbacks) {
   stack.size = 1;
 
   for (uptr len = 16; len <= 32; len++) {
-    char *ptr = (char*) __asan::asan_malloc(len, &stack);
+    char *ptr = (char *)__asan::asan_malloc(len, &stack);
     uptr p = reinterpret_cast<uptr>(ptr);
     for (uptr is_write = 0; is_write <= 1; is_write++) {
       for (uptr size_log = 0; size_log <= 4; size_log++) {

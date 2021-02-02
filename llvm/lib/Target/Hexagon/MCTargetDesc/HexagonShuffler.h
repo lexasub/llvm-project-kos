@@ -47,9 +47,7 @@ public:
     setWeight(s);
   }
 
-  void setAllUnits() {
-    setUnits(((1u << HEXAGON_PACKET_SIZE) - 1));
-  }
+  void setAllUnits() { setUnits(((1u << HEXAGON_PACKET_SIZE) - 1)); }
   unsigned setWeight(unsigned s);
 
   unsigned getUnits() const { return (Slots); }
@@ -94,8 +92,7 @@ private:
   void setStore(bool f = true) { Store = f; }
 
 public:
-  HexagonCVIResource(MCInstrInfo const &MCII,
-                     MCSubtargetInfo const &STI,
+  HexagonCVIResource(MCInstrInfo const &MCII, MCSubtargetInfo const &STI,
                      unsigned s, MCInst const *id);
 
   bool isValid() const { return Valid; }
@@ -114,9 +111,8 @@ class HexagonInstr {
   HexagonCVIResource CVI;
 
 public:
-  HexagonInstr(MCInstrInfo const &MCII,
-               MCSubtargetInfo const &STI, MCInst const *id,
-               MCInst const *Extender, unsigned s)
+  HexagonInstr(MCInstrInfo const &MCII, MCSubtargetInfo const &STI,
+               MCInst const *id, MCInst const *Extender, unsigned s)
       : ID(id), Extender(Extender), Core(s), CVI(MCII, STI, s, id){};
 
   MCInst const &getDesc() const { return *ID; }

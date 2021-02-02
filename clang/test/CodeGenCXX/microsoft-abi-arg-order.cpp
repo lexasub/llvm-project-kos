@@ -30,7 +30,6 @@ void foo(A a, A b, A c) {
 // X64: call void @"??1A@@QEAA@XZ"(%struct.A* {{[^,]*}} %[[c]])
 // X64: ret void
 
-
 void call_foo() {
   foo(A(1), A(2), A(3));
 }

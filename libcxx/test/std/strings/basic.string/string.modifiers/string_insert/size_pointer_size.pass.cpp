@@ -19,38 +19,30 @@
 #include "min_allocator.h"
 
 template <class S>
-void
-test(S s, typename S::size_type pos, const typename S::value_type* str,
-     typename S::size_type n, S expected)
-{
-    const typename S::size_type old_size = s.size();
-    S s0 = s;
-    if (pos <= old_size)
-    {
-        s.insert(pos, str, n);
-        LIBCPP_ASSERT(s.__invariants());
-        assert(s == expected);
-    }
+void test(S s, typename S::size_type pos, const typename S::value_type* str,
+          typename S::size_type n, S expected) {
+  const typename S::size_type old_size = s.size();
+  S s0 = s;
+  if (pos <= old_size) {
+    s.insert(pos, str, n);
+    LIBCPP_ASSERT(s.__invariants());
+    assert(s == expected);
+  }
 #ifndef TEST_HAS_NO_EXCEPTIONS
-    else
-    {
-        try
-        {
-            s.insert(pos, str, n);
-            assert(false);
-        }
-        catch (std::out_of_range&)
-        {
-            assert(pos > old_size);
-            assert(s == s0);
-        }
+  else {
+    try {
+      s.insert(pos, str, n);
+      assert(false);
+    } catch (std::out_of_range&) {
+      assert(pos > old_size);
+      assert(s == s0);
     }
+  }
 #endif
 }
 
-int main(int, char**)
-{
-    {
+int main(int, char**) {
+  {
     typedef std::string S;
     test(S(""), 0, "", 0, S(""));
     test(S(""), 0, "12345", 0, S(""));
@@ -98,8 +90,10 @@ int main(int, char**)
     test(S("abcde"), 0, "12345678901234567890", 0, S("abcde"));
     test(S("abcde"), 0, "12345678901234567890", 1, S("1abcde"));
     test(S("abcde"), 0, "12345678901234567890", 10, S("1234567890abcde"));
-    test(S("abcde"), 0, "12345678901234567890", 19, S("1234567890123456789abcde"));
-    test(S("abcde"), 0, "12345678901234567890", 20, S("12345678901234567890abcde"));
+    test(S("abcde"), 0, "12345678901234567890", 19,
+         S("1234567890123456789abcde"));
+    test(S("abcde"), 0, "12345678901234567890", 20,
+         S("12345678901234567890abcde"));
     test(S("abcde"), 1, "", 0, S("abcde"));
     test(S("abcde"), 1, "12345", 0, S("abcde"));
     test(S("abcde"), 1, "12345", 1, S("a1bcde"));
@@ -114,8 +108,10 @@ int main(int, char**)
     test(S("abcde"), 1, "12345678901234567890", 0, S("abcde"));
     test(S("abcde"), 1, "12345678901234567890", 1, S("a1bcde"));
     test(S("abcde"), 1, "12345678901234567890", 10, S("a1234567890bcde"));
-    test(S("abcde"), 1, "12345678901234567890", 19, S("a1234567890123456789bcde"));
-    test(S("abcde"), 1, "12345678901234567890", 20, S("a12345678901234567890bcde"));
+    test(S("abcde"), 1, "12345678901234567890", 19,
+         S("a1234567890123456789bcde"));
+    test(S("abcde"), 1, "12345678901234567890", 20,
+         S("a12345678901234567890bcde"));
     test(S("abcde"), 2, "", 0, S("abcde"));
     test(S("abcde"), 2, "12345", 0, S("abcde"));
     test(S("abcde"), 2, "12345", 1, S("ab1cde"));
@@ -130,8 +126,10 @@ int main(int, char**)
     test(S("abcde"), 2, "12345678901234567890", 0, S("abcde"));
     test(S("abcde"), 2, "12345678901234567890", 1, S("ab1cde"));
     test(S("abcde"), 2, "12345678901234567890", 10, S("ab1234567890cde"));
-    test(S("abcde"), 2, "12345678901234567890", 19, S("ab1234567890123456789cde"));
-    test(S("abcde"), 2, "12345678901234567890", 20, S("ab12345678901234567890cde"));
+    test(S("abcde"), 2, "12345678901234567890", 19,
+         S("ab1234567890123456789cde"));
+    test(S("abcde"), 2, "12345678901234567890", 20,
+         S("ab12345678901234567890cde"));
     test(S("abcde"), 4, "", 0, S("abcde"));
     test(S("abcde"), 4, "12345", 0, S("abcde"));
     test(S("abcde"), 4, "12345", 1, S("abcd1e"));
@@ -146,8 +144,10 @@ int main(int, char**)
     test(S("abcde"), 4, "12345678901234567890", 0, S("abcde"));
     test(S("abcde"), 4, "12345678901234567890", 1, S("abcd1e"));
     test(S("abcde"), 4, "12345678901234567890", 10, S("abcd1234567890e"));
-    test(S("abcde"), 4, "12345678901234567890", 19, S("abcd1234567890123456789e"));
-    test(S("abcde"), 4, "12345678901234567890", 20, S("abcd12345678901234567890e"));
+    test(S("abcde"), 4, "12345678901234567890", 19,
+         S("abcd1234567890123456789e"));
+    test(S("abcde"), 4, "12345678901234567890", 20,
+         S("abcd12345678901234567890e"));
     test(S("abcde"), 5, "", 0, S("abcde"));
     test(S("abcde"), 5, "12345", 0, S("abcde"));
     test(S("abcde"), 5, "12345", 1, S("abcde1"));
@@ -162,8 +162,10 @@ int main(int, char**)
     test(S("abcde"), 5, "12345678901234567890", 0, S("abcde"));
     test(S("abcde"), 5, "12345678901234567890", 1, S("abcde1"));
     test(S("abcde"), 5, "12345678901234567890", 10, S("abcde1234567890"));
-    test(S("abcde"), 5, "12345678901234567890", 19, S("abcde1234567890123456789"));
-    test(S("abcde"), 5, "12345678901234567890", 20, S("abcde12345678901234567890"));
+    test(S("abcde"), 5, "12345678901234567890", 19,
+         S("abcde1234567890123456789"));
+    test(S("abcde"), 5, "12345678901234567890", 20,
+         S("abcde12345678901234567890"));
     test(S("abcde"), 6, "", 0, S("can't happen"));
     test(S("abcde"), 6, "12345", 0, S("can't happen"));
     test(S("abcde"), 6, "12345", 1, S("can't happen"));
@@ -193,9 +195,12 @@ int main(int, char**)
     test(S("abcdefghij"), 0, "1234567890", 10, S("1234567890abcdefghij"));
     test(S("abcdefghij"), 0, "12345678901234567890", 0, S("abcdefghij"));
     test(S("abcdefghij"), 0, "12345678901234567890", 1, S("1abcdefghij"));
-    test(S("abcdefghij"), 0, "12345678901234567890", 10, S("1234567890abcdefghij"));
-    test(S("abcdefghij"), 0, "12345678901234567890", 19, S("1234567890123456789abcdefghij"));
-    test(S("abcdefghij"), 0, "12345678901234567890", 20, S("12345678901234567890abcdefghij"));
+    test(S("abcdefghij"), 0, "12345678901234567890", 10,
+         S("1234567890abcdefghij"));
+    test(S("abcdefghij"), 0, "12345678901234567890", 19,
+         S("1234567890123456789abcdefghij"));
+    test(S("abcdefghij"), 0, "12345678901234567890", 20,
+         S("12345678901234567890abcdefghij"));
     test(S("abcdefghij"), 1, "", 0, S("abcdefghij"));
     test(S("abcdefghij"), 1, "12345", 0, S("abcdefghij"));
     test(S("abcdefghij"), 1, "12345", 1, S("a1bcdefghij"));
@@ -209,9 +214,12 @@ int main(int, char**)
     test(S("abcdefghij"), 1, "1234567890", 10, S("a1234567890bcdefghij"));
     test(S("abcdefghij"), 1, "12345678901234567890", 0, S("abcdefghij"));
     test(S("abcdefghij"), 1, "12345678901234567890", 1, S("a1bcdefghij"));
-    test(S("abcdefghij"), 1, "12345678901234567890", 10, S("a1234567890bcdefghij"));
-    test(S("abcdefghij"), 1, "12345678901234567890", 19, S("a1234567890123456789bcdefghij"));
-    test(S("abcdefghij"), 1, "12345678901234567890", 20, S("a12345678901234567890bcdefghij"));
+    test(S("abcdefghij"), 1, "12345678901234567890", 10,
+         S("a1234567890bcdefghij"));
+    test(S("abcdefghij"), 1, "12345678901234567890", 19,
+         S("a1234567890123456789bcdefghij"));
+    test(S("abcdefghij"), 1, "12345678901234567890", 20,
+         S("a12345678901234567890bcdefghij"));
     test(S("abcdefghij"), 5, "", 0, S("abcdefghij"));
     test(S("abcdefghij"), 5, "12345", 0, S("abcdefghij"));
     test(S("abcdefghij"), 5, "12345", 1, S("abcde1fghij"));
@@ -225,9 +233,12 @@ int main(int, char**)
     test(S("abcdefghij"), 5, "1234567890", 10, S("abcde1234567890fghij"));
     test(S("abcdefghij"), 5, "12345678901234567890", 0, S("abcdefghij"));
     test(S("abcdefghij"), 5, "12345678901234567890", 1, S("abcde1fghij"));
-    test(S("abcdefghij"), 5, "12345678901234567890", 10, S("abcde1234567890fghij"));
-    test(S("abcdefghij"), 5, "12345678901234567890", 19, S("abcde1234567890123456789fghij"));
-    test(S("abcdefghij"), 5, "12345678901234567890", 20, S("abcde12345678901234567890fghij"));
+    test(S("abcdefghij"), 5, "12345678901234567890", 10,
+         S("abcde1234567890fghij"));
+    test(S("abcdefghij"), 5, "12345678901234567890", 19,
+         S("abcde1234567890123456789fghij"));
+    test(S("abcdefghij"), 5, "12345678901234567890", 20,
+         S("abcde12345678901234567890fghij"));
     test(S("abcdefghij"), 9, "", 0, S("abcdefghij"));
     test(S("abcdefghij"), 9, "12345", 0, S("abcdefghij"));
     test(S("abcdefghij"), 9, "12345", 1, S("abcdefghi1j"));
@@ -241,9 +252,12 @@ int main(int, char**)
     test(S("abcdefghij"), 9, "1234567890", 10, S("abcdefghi1234567890j"));
     test(S("abcdefghij"), 9, "12345678901234567890", 0, S("abcdefghij"));
     test(S("abcdefghij"), 9, "12345678901234567890", 1, S("abcdefghi1j"));
-    test(S("abcdefghij"), 9, "12345678901234567890", 10, S("abcdefghi1234567890j"));
-    test(S("abcdefghij"), 9, "12345678901234567890", 19, S("abcdefghi1234567890123456789j"));
-    test(S("abcdefghij"), 9, "12345678901234567890", 20, S("abcdefghi12345678901234567890j"));
+    test(S("abcdefghij"), 9, "12345678901234567890", 10,
+         S("abcdefghi1234567890j"));
+    test(S("abcdefghij"), 9, "12345678901234567890", 19,
+         S("abcdefghi1234567890123456789j"));
+    test(S("abcdefghij"), 9, "12345678901234567890", 20,
+         S("abcdefghi12345678901234567890j"));
     test(S("abcdefghij"), 10, "", 0, S("abcdefghij"));
     test(S("abcdefghij"), 10, "12345", 0, S("abcdefghij"));
     test(S("abcdefghij"), 10, "12345", 1, S("abcdefghij1"));
@@ -257,9 +271,12 @@ int main(int, char**)
     test(S("abcdefghij"), 10, "1234567890", 10, S("abcdefghij1234567890"));
     test(S("abcdefghij"), 10, "12345678901234567890", 0, S("abcdefghij"));
     test(S("abcdefghij"), 10, "12345678901234567890", 1, S("abcdefghij1"));
-    test(S("abcdefghij"), 10, "12345678901234567890", 10, S("abcdefghij1234567890"));
-    test(S("abcdefghij"), 10, "12345678901234567890", 19, S("abcdefghij1234567890123456789"));
-    test(S("abcdefghij"), 10, "12345678901234567890", 20, S("abcdefghij12345678901234567890"));
+    test(S("abcdefghij"), 10, "12345678901234567890", 10,
+         S("abcdefghij1234567890"));
+    test(S("abcdefghij"), 10, "12345678901234567890", 19,
+         S("abcdefghij1234567890123456789"));
+    test(S("abcdefghij"), 10, "12345678901234567890", 20,
+         S("abcdefghij12345678901234567890"));
     test(S("abcdefghij"), 11, "", 0, S("can't happen"));
     test(S("abcdefghij"), 11, "12345", 0, S("can't happen"));
     test(S("abcdefghij"), 11, "12345", 1, S("can't happen"));
@@ -280,82 +297,145 @@ int main(int, char**)
     test(S("abcdefghijklmnopqrst"), 0, "12345", 0, S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 0, "12345", 1, S("1abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 0, "12345", 2, S("12abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, "12345", 4, S("1234abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, "12345", 5, S("12345abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, "1234567890", 0, S("abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, "1234567890", 1, S("1abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, "1234567890", 5, S("12345abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, "1234567890", 9, S("123456789abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, "1234567890", 10, S("1234567890abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, "12345678901234567890", 0, S("abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, "12345678901234567890", 1, S("1abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, "12345678901234567890", 10, S("1234567890abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, "12345678901234567890", 19, S("1234567890123456789abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, "12345678901234567890", 20, S("12345678901234567890abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, "12345", 4,
+         S("1234abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, "12345", 5,
+         S("12345abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, "1234567890", 0,
+         S("abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, "1234567890", 1,
+         S("1abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, "1234567890", 5,
+         S("12345abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, "1234567890", 9,
+         S("123456789abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, "1234567890", 10,
+         S("1234567890abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, "12345678901234567890", 0,
+         S("abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, "12345678901234567890", 1,
+         S("1abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, "12345678901234567890", 10,
+         S("1234567890abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, "12345678901234567890", 19,
+         S("1234567890123456789abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, "12345678901234567890", 20,
+         S("12345678901234567890abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 1, "", 0, S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 1, "12345", 0, S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 1, "12345", 1, S("a1bcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 1, "12345", 2, S("a12bcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, "12345", 4, S("a1234bcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, "12345", 5, S("a12345bcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, "1234567890", 0, S("abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, "1234567890", 1, S("a1bcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, "1234567890", 5, S("a12345bcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, "1234567890", 9, S("a123456789bcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, "1234567890", 10, S("a1234567890bcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, "12345678901234567890", 0, S("abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, "12345678901234567890", 1, S("a1bcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, "12345678901234567890", 10, S("a1234567890bcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, "12345678901234567890", 19, S("a1234567890123456789bcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, "12345678901234567890", 20, S("a12345678901234567890bcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, "12345", 4,
+         S("a1234bcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, "12345", 5,
+         S("a12345bcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, "1234567890", 0,
+         S("abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, "1234567890", 1,
+         S("a1bcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, "1234567890", 5,
+         S("a12345bcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, "1234567890", 9,
+         S("a123456789bcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, "1234567890", 10,
+         S("a1234567890bcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, "12345678901234567890", 0,
+         S("abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, "12345678901234567890", 1,
+         S("a1bcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, "12345678901234567890", 10,
+         S("a1234567890bcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, "12345678901234567890", 19,
+         S("a1234567890123456789bcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, "12345678901234567890", 20,
+         S("a12345678901234567890bcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 10, "", 0, S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 10, "12345", 0, S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 10, "12345", 1, S("abcdefghij1klmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, "12345", 2, S("abcdefghij12klmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, "12345", 4, S("abcdefghij1234klmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, "12345", 5, S("abcdefghij12345klmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, "1234567890", 0, S("abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, "1234567890", 1, S("abcdefghij1klmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, "1234567890", 5, S("abcdefghij12345klmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, "1234567890", 9, S("abcdefghij123456789klmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, "1234567890", 10, S("abcdefghij1234567890klmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, "12345678901234567890", 0, S("abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, "12345678901234567890", 1, S("abcdefghij1klmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, "12345678901234567890", 10, S("abcdefghij1234567890klmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, "12345678901234567890", 19, S("abcdefghij1234567890123456789klmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, "12345678901234567890", 20, S("abcdefghij12345678901234567890klmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, "12345", 2,
+         S("abcdefghij12klmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, "12345", 4,
+         S("abcdefghij1234klmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, "12345", 5,
+         S("abcdefghij12345klmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, "1234567890", 0,
+         S("abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, "1234567890", 1,
+         S("abcdefghij1klmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, "1234567890", 5,
+         S("abcdefghij12345klmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, "1234567890", 9,
+         S("abcdefghij123456789klmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, "1234567890", 10,
+         S("abcdefghij1234567890klmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, "12345678901234567890", 0,
+         S("abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, "12345678901234567890", 1,
+         S("abcdefghij1klmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, "12345678901234567890", 10,
+         S("abcdefghij1234567890klmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, "12345678901234567890", 19,
+         S("abcdefghij1234567890123456789klmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, "12345678901234567890", 20,
+         S("abcdefghij12345678901234567890klmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 19, "", 0, S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 19, "12345", 0, S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 19, "12345", 1, S("abcdefghijklmnopqrs1t"));
-    test(S("abcdefghijklmnopqrst"), 19, "12345", 2, S("abcdefghijklmnopqrs12t"));
-    test(S("abcdefghijklmnopqrst"), 19, "12345", 4, S("abcdefghijklmnopqrs1234t"));
-    test(S("abcdefghijklmnopqrst"), 19, "12345", 5, S("abcdefghijklmnopqrs12345t"));
-    test(S("abcdefghijklmnopqrst"), 19, "1234567890", 0, S("abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 19, "1234567890", 1, S("abcdefghijklmnopqrs1t"));
-    test(S("abcdefghijklmnopqrst"), 19, "1234567890", 5, S("abcdefghijklmnopqrs12345t"));
-    test(S("abcdefghijklmnopqrst"), 19, "1234567890", 9, S("abcdefghijklmnopqrs123456789t"));
-    test(S("abcdefghijklmnopqrst"), 19, "1234567890", 10, S("abcdefghijklmnopqrs1234567890t"));
-    test(S("abcdefghijklmnopqrst"), 19, "12345678901234567890", 0, S("abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 19, "12345678901234567890", 1, S("abcdefghijklmnopqrs1t"));
-    test(S("abcdefghijklmnopqrst"), 19, "12345678901234567890", 10, S("abcdefghijklmnopqrs1234567890t"));
-    test(S("abcdefghijklmnopqrst"), 19, "12345678901234567890", 19, S("abcdefghijklmnopqrs1234567890123456789t"));
-    test(S("abcdefghijklmnopqrst"), 19, "12345678901234567890", 20, S("abcdefghijklmnopqrs12345678901234567890t"));
+    test(S("abcdefghijklmnopqrst"), 19, "12345", 2,
+         S("abcdefghijklmnopqrs12t"));
+    test(S("abcdefghijklmnopqrst"), 19, "12345", 4,
+         S("abcdefghijklmnopqrs1234t"));
+    test(S("abcdefghijklmnopqrst"), 19, "12345", 5,
+         S("abcdefghijklmnopqrs12345t"));
+    test(S("abcdefghijklmnopqrst"), 19, "1234567890", 0,
+         S("abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 19, "1234567890", 1,
+         S("abcdefghijklmnopqrs1t"));
+    test(S("abcdefghijklmnopqrst"), 19, "1234567890", 5,
+         S("abcdefghijklmnopqrs12345t"));
+    test(S("abcdefghijklmnopqrst"), 19, "1234567890", 9,
+         S("abcdefghijklmnopqrs123456789t"));
+    test(S("abcdefghijklmnopqrst"), 19, "1234567890", 10,
+         S("abcdefghijklmnopqrs1234567890t"));
+    test(S("abcdefghijklmnopqrst"), 19, "12345678901234567890", 0,
+         S("abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 19, "12345678901234567890", 1,
+         S("abcdefghijklmnopqrs1t"));
+    test(S("abcdefghijklmnopqrst"), 19, "12345678901234567890", 10,
+         S("abcdefghijklmnopqrs1234567890t"));
+    test(S("abcdefghijklmnopqrst"), 19, "12345678901234567890", 19,
+         S("abcdefghijklmnopqrs1234567890123456789t"));
+    test(S("abcdefghijklmnopqrst"), 19, "12345678901234567890", 20,
+         S("abcdefghijklmnopqrs12345678901234567890t"));
     test(S("abcdefghijklmnopqrst"), 20, "", 0, S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 20, "12345", 0, S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 20, "12345", 1, S("abcdefghijklmnopqrst1"));
-    test(S("abcdefghijklmnopqrst"), 20, "12345", 2, S("abcdefghijklmnopqrst12"));
-    test(S("abcdefghijklmnopqrst"), 20, "12345", 4, S("abcdefghijklmnopqrst1234"));
-    test(S("abcdefghijklmnopqrst"), 20, "12345", 5, S("abcdefghijklmnopqrst12345"));
-    test(S("abcdefghijklmnopqrst"), 20, "1234567890", 0, S("abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 20, "1234567890", 1, S("abcdefghijklmnopqrst1"));
-    test(S("abcdefghijklmnopqrst"), 20, "1234567890", 5, S("abcdefghijklmnopqrst12345"));
-    test(S("abcdefghijklmnopqrst"), 20, "1234567890", 9, S("abcdefghijklmnopqrst123456789"));
-    test(S("abcdefghijklmnopqrst"), 20, "1234567890", 10, S("abcdefghijklmnopqrst1234567890"));
-    test(S("abcdefghijklmnopqrst"), 20, "12345678901234567890", 0, S("abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 20, "12345678901234567890", 1, S("abcdefghijklmnopqrst1"));
-    test(S("abcdefghijklmnopqrst"), 20, "12345678901234567890", 10, S("abcdefghijklmnopqrst1234567890"));
-    test(S("abcdefghijklmnopqrst"), 20, "12345678901234567890", 19, S("abcdefghijklmnopqrst1234567890123456789"));
-    test(S("abcdefghijklmnopqrst"), 20, "12345678901234567890", 20, S("abcdefghijklmnopqrst12345678901234567890"));
+    test(S("abcdefghijklmnopqrst"), 20, "12345", 2,
+         S("abcdefghijklmnopqrst12"));
+    test(S("abcdefghijklmnopqrst"), 20, "12345", 4,
+         S("abcdefghijklmnopqrst1234"));
+    test(S("abcdefghijklmnopqrst"), 20, "12345", 5,
+         S("abcdefghijklmnopqrst12345"));
+    test(S("abcdefghijklmnopqrst"), 20, "1234567890", 0,
+         S("abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 20, "1234567890", 1,
+         S("abcdefghijklmnopqrst1"));
+    test(S("abcdefghijklmnopqrst"), 20, "1234567890", 5,
+         S("abcdefghijklmnopqrst12345"));
+    test(S("abcdefghijklmnopqrst"), 20, "1234567890", 9,
+         S("abcdefghijklmnopqrst123456789"));
+    test(S("abcdefghijklmnopqrst"), 20, "1234567890", 10,
+         S("abcdefghijklmnopqrst1234567890"));
+    test(S("abcdefghijklmnopqrst"), 20, "12345678901234567890", 0,
+         S("abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 20, "12345678901234567890", 1,
+         S("abcdefghijklmnopqrst1"));
+    test(S("abcdefghijklmnopqrst"), 20, "12345678901234567890", 10,
+         S("abcdefghijklmnopqrst1234567890"));
+    test(S("abcdefghijklmnopqrst"), 20, "12345678901234567890", 19,
+         S("abcdefghijklmnopqrst1234567890123456789"));
+    test(S("abcdefghijklmnopqrst"), 20, "12345678901234567890", 20,
+         S("abcdefghijklmnopqrst12345678901234567890"));
     test(S("abcdefghijklmnopqrst"), 21, "", 0, S("can't happen"));
     test(S("abcdefghijklmnopqrst"), 21, "12345", 0, S("can't happen"));
     test(S("abcdefghijklmnopqrst"), 21, "12345", 1, S("can't happen"));
@@ -367,15 +447,22 @@ int main(int, char**)
     test(S("abcdefghijklmnopqrst"), 21, "1234567890", 5, S("can't happen"));
     test(S("abcdefghijklmnopqrst"), 21, "1234567890", 9, S("can't happen"));
     test(S("abcdefghijklmnopqrst"), 21, "1234567890", 10, S("can't happen"));
-    test(S("abcdefghijklmnopqrst"), 21, "12345678901234567890", 0, S("can't happen"));
-    test(S("abcdefghijklmnopqrst"), 21, "12345678901234567890", 1, S("can't happen"));
-    test(S("abcdefghijklmnopqrst"), 21, "12345678901234567890", 10, S("can't happen"));
-    test(S("abcdefghijklmnopqrst"), 21, "12345678901234567890", 19, S("can't happen"));
-    test(S("abcdefghijklmnopqrst"), 21, "12345678901234567890", 20, S("can't happen"));
-    }
+    test(S("abcdefghijklmnopqrst"), 21, "12345678901234567890", 0,
+         S("can't happen"));
+    test(S("abcdefghijklmnopqrst"), 21, "12345678901234567890", 1,
+         S("can't happen"));
+    test(S("abcdefghijklmnopqrst"), 21, "12345678901234567890", 10,
+         S("can't happen"));
+    test(S("abcdefghijklmnopqrst"), 21, "12345678901234567890", 19,
+         S("can't happen"));
+    test(S("abcdefghijklmnopqrst"), 21, "12345678901234567890", 20,
+         S("can't happen"));
+  }
 #if TEST_STD_VER >= 11
-    {
-    typedef std::basic_string<char, std::char_traits<char>, min_allocator<char>> S;
+  {
+    typedef std::basic_string<char, std::char_traits<char>,
+                              min_allocator<char> >
+        S;
     test(S(""), 0, "", 0, S(""));
     test(S(""), 0, "12345", 0, S(""));
     test(S(""), 0, "12345", 1, S("1"));
@@ -422,8 +509,10 @@ int main(int, char**)
     test(S("abcde"), 0, "12345678901234567890", 0, S("abcde"));
     test(S("abcde"), 0, "12345678901234567890", 1, S("1abcde"));
     test(S("abcde"), 0, "12345678901234567890", 10, S("1234567890abcde"));
-    test(S("abcde"), 0, "12345678901234567890", 19, S("1234567890123456789abcde"));
-    test(S("abcde"), 0, "12345678901234567890", 20, S("12345678901234567890abcde"));
+    test(S("abcde"), 0, "12345678901234567890", 19,
+         S("1234567890123456789abcde"));
+    test(S("abcde"), 0, "12345678901234567890", 20,
+         S("12345678901234567890abcde"));
     test(S("abcde"), 1, "", 0, S("abcde"));
     test(S("abcde"), 1, "12345", 0, S("abcde"));
     test(S("abcde"), 1, "12345", 1, S("a1bcde"));
@@ -438,8 +527,10 @@ int main(int, char**)
     test(S("abcde"), 1, "12345678901234567890", 0, S("abcde"));
     test(S("abcde"), 1, "12345678901234567890", 1, S("a1bcde"));
     test(S("abcde"), 1, "12345678901234567890", 10, S("a1234567890bcde"));
-    test(S("abcde"), 1, "12345678901234567890", 19, S("a1234567890123456789bcde"));
-    test(S("abcde"), 1, "12345678901234567890", 20, S("a12345678901234567890bcde"));
+    test(S("abcde"), 1, "12345678901234567890", 19,
+         S("a1234567890123456789bcde"));
+    test(S("abcde"), 1, "12345678901234567890", 20,
+         S("a12345678901234567890bcde"));
     test(S("abcde"), 2, "", 0, S("abcde"));
     test(S("abcde"), 2, "12345", 0, S("abcde"));
     test(S("abcde"), 2, "12345", 1, S("ab1cde"));
@@ -454,8 +545,10 @@ int main(int, char**)
     test(S("abcde"), 2, "12345678901234567890", 0, S("abcde"));
     test(S("abcde"), 2, "12345678901234567890", 1, S("ab1cde"));
     test(S("abcde"), 2, "12345678901234567890", 10, S("ab1234567890cde"));
-    test(S("abcde"), 2, "12345678901234567890", 19, S("ab1234567890123456789cde"));
-    test(S("abcde"), 2, "12345678901234567890", 20, S("ab12345678901234567890cde"));
+    test(S("abcde"), 2, "12345678901234567890", 19,
+         S("ab1234567890123456789cde"));
+    test(S("abcde"), 2, "12345678901234567890", 20,
+         S("ab12345678901234567890cde"));
     test(S("abcde"), 4, "", 0, S("abcde"));
     test(S("abcde"), 4, "12345", 0, S("abcde"));
     test(S("abcde"), 4, "12345", 1, S("abcd1e"));
@@ -470,8 +563,10 @@ int main(int, char**)
     test(S("abcde"), 4, "12345678901234567890", 0, S("abcde"));
     test(S("abcde"), 4, "12345678901234567890", 1, S("abcd1e"));
     test(S("abcde"), 4, "12345678901234567890", 10, S("abcd1234567890e"));
-    test(S("abcde"), 4, "12345678901234567890", 19, S("abcd1234567890123456789e"));
-    test(S("abcde"), 4, "12345678901234567890", 20, S("abcd12345678901234567890e"));
+    test(S("abcde"), 4, "12345678901234567890", 19,
+         S("abcd1234567890123456789e"));
+    test(S("abcde"), 4, "12345678901234567890", 20,
+         S("abcd12345678901234567890e"));
     test(S("abcde"), 5, "", 0, S("abcde"));
     test(S("abcde"), 5, "12345", 0, S("abcde"));
     test(S("abcde"), 5, "12345", 1, S("abcde1"));
@@ -486,8 +581,10 @@ int main(int, char**)
     test(S("abcde"), 5, "12345678901234567890", 0, S("abcde"));
     test(S("abcde"), 5, "12345678901234567890", 1, S("abcde1"));
     test(S("abcde"), 5, "12345678901234567890", 10, S("abcde1234567890"));
-    test(S("abcde"), 5, "12345678901234567890", 19, S("abcde1234567890123456789"));
-    test(S("abcde"), 5, "12345678901234567890", 20, S("abcde12345678901234567890"));
+    test(S("abcde"), 5, "12345678901234567890", 19,
+         S("abcde1234567890123456789"));
+    test(S("abcde"), 5, "12345678901234567890", 20,
+         S("abcde12345678901234567890"));
     test(S("abcde"), 6, "", 0, S("can't happen"));
     test(S("abcde"), 6, "12345", 0, S("can't happen"));
     test(S("abcde"), 6, "12345", 1, S("can't happen"));
@@ -517,9 +614,12 @@ int main(int, char**)
     test(S("abcdefghij"), 0, "1234567890", 10, S("1234567890abcdefghij"));
     test(S("abcdefghij"), 0, "12345678901234567890", 0, S("abcdefghij"));
     test(S("abcdefghij"), 0, "12345678901234567890", 1, S("1abcdefghij"));
-    test(S("abcdefghij"), 0, "12345678901234567890", 10, S("1234567890abcdefghij"));
-    test(S("abcdefghij"), 0, "12345678901234567890", 19, S("1234567890123456789abcdefghij"));
-    test(S("abcdefghij"), 0, "12345678901234567890", 20, S("12345678901234567890abcdefghij"));
+    test(S("abcdefghij"), 0, "12345678901234567890", 10,
+         S("1234567890abcdefghij"));
+    test(S("abcdefghij"), 0, "12345678901234567890", 19,
+         S("1234567890123456789abcdefghij"));
+    test(S("abcdefghij"), 0, "12345678901234567890", 20,
+         S("12345678901234567890abcdefghij"));
     test(S("abcdefghij"), 1, "", 0, S("abcdefghij"));
     test(S("abcdefghij"), 1, "12345", 0, S("abcdefghij"));
     test(S("abcdefghij"), 1, "12345", 1, S("a1bcdefghij"));
@@ -533,9 +633,12 @@ int main(int, char**)
     test(S("abcdefghij"), 1, "1234567890", 10, S("a1234567890bcdefghij"));
     test(S("abcdefghij"), 1, "12345678901234567890", 0, S("abcdefghij"));
     test(S("abcdefghij"), 1, "12345678901234567890", 1, S("a1bcdefghij"));
-    test(S("abcdefghij"), 1, "12345678901234567890", 10, S("a1234567890bcdefghij"));
-    test(S("abcdefghij"), 1, "12345678901234567890", 19, S("a1234567890123456789bcdefghij"));
-    test(S("abcdefghij"), 1, "12345678901234567890", 20, S("a12345678901234567890bcdefghij"));
+    test(S("abcdefghij"), 1, "12345678901234567890", 10,
+         S("a1234567890bcdefghij"));
+    test(S("abcdefghij"), 1, "12345678901234567890", 19,
+         S("a1234567890123456789bcdefghij"));
+    test(S("abcdefghij"), 1, "12345678901234567890", 20,
+         S("a12345678901234567890bcdefghij"));
     test(S("abcdefghij"), 5, "", 0, S("abcdefghij"));
     test(S("abcdefghij"), 5, "12345", 0, S("abcdefghij"));
     test(S("abcdefghij"), 5, "12345", 1, S("abcde1fghij"));
@@ -549,9 +652,12 @@ int main(int, char**)
     test(S("abcdefghij"), 5, "1234567890", 10, S("abcde1234567890fghij"));
     test(S("abcdefghij"), 5, "12345678901234567890", 0, S("abcdefghij"));
     test(S("abcdefghij"), 5, "12345678901234567890", 1, S("abcde1fghij"));
-    test(S("abcdefghij"), 5, "12345678901234567890", 10, S("abcde1234567890fghij"));
-    test(S("abcdefghij"), 5, "12345678901234567890", 19, S("abcde1234567890123456789fghij"));
-    test(S("abcdefghij"), 5, "12345678901234567890", 20, S("abcde12345678901234567890fghij"));
+    test(S("abcdefghij"), 5, "12345678901234567890", 10,
+         S("abcde1234567890fghij"));
+    test(S("abcdefghij"), 5, "12345678901234567890", 19,
+         S("abcde1234567890123456789fghij"));
+    test(S("abcdefghij"), 5, "12345678901234567890", 20,
+         S("abcde12345678901234567890fghij"));
     test(S("abcdefghij"), 9, "", 0, S("abcdefghij"));
     test(S("abcdefghij"), 9, "12345", 0, S("abcdefghij"));
     test(S("abcdefghij"), 9, "12345", 1, S("abcdefghi1j"));
@@ -565,9 +671,12 @@ int main(int, char**)
     test(S("abcdefghij"), 9, "1234567890", 10, S("abcdefghi1234567890j"));
     test(S("abcdefghij"), 9, "12345678901234567890", 0, S("abcdefghij"));
     test(S("abcdefghij"), 9, "12345678901234567890", 1, S("abcdefghi1j"));
-    test(S("abcdefghij"), 9, "12345678901234567890", 10, S("abcdefghi1234567890j"));
-    test(S("abcdefghij"), 9, "12345678901234567890", 19, S("abcdefghi1234567890123456789j"));
-    test(S("abcdefghij"), 9, "12345678901234567890", 20, S("abcdefghi12345678901234567890j"));
+    test(S("abcdefghij"), 9, "12345678901234567890", 10,
+         S("abcdefghi1234567890j"));
+    test(S("abcdefghij"), 9, "12345678901234567890", 19,
+         S("abcdefghi1234567890123456789j"));
+    test(S("abcdefghij"), 9, "12345678901234567890", 20,
+         S("abcdefghi12345678901234567890j"));
     test(S("abcdefghij"), 10, "", 0, S("abcdefghij"));
     test(S("abcdefghij"), 10, "12345", 0, S("abcdefghij"));
     test(S("abcdefghij"), 10, "12345", 1, S("abcdefghij1"));
@@ -581,9 +690,12 @@ int main(int, char**)
     test(S("abcdefghij"), 10, "1234567890", 10, S("abcdefghij1234567890"));
     test(S("abcdefghij"), 10, "12345678901234567890", 0, S("abcdefghij"));
     test(S("abcdefghij"), 10, "12345678901234567890", 1, S("abcdefghij1"));
-    test(S("abcdefghij"), 10, "12345678901234567890", 10, S("abcdefghij1234567890"));
-    test(S("abcdefghij"), 10, "12345678901234567890", 19, S("abcdefghij1234567890123456789"));
-    test(S("abcdefghij"), 10, "12345678901234567890", 20, S("abcdefghij12345678901234567890"));
+    test(S("abcdefghij"), 10, "12345678901234567890", 10,
+         S("abcdefghij1234567890"));
+    test(S("abcdefghij"), 10, "12345678901234567890", 19,
+         S("abcdefghij1234567890123456789"));
+    test(S("abcdefghij"), 10, "12345678901234567890", 20,
+         S("abcdefghij12345678901234567890"));
     test(S("abcdefghij"), 11, "", 0, S("can't happen"));
     test(S("abcdefghij"), 11, "12345", 0, S("can't happen"));
     test(S("abcdefghij"), 11, "12345", 1, S("can't happen"));
@@ -604,82 +716,145 @@ int main(int, char**)
     test(S("abcdefghijklmnopqrst"), 0, "12345", 0, S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 0, "12345", 1, S("1abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 0, "12345", 2, S("12abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, "12345", 4, S("1234abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, "12345", 5, S("12345abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, "1234567890", 0, S("abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, "1234567890", 1, S("1abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, "1234567890", 5, S("12345abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, "1234567890", 9, S("123456789abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, "1234567890", 10, S("1234567890abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, "12345678901234567890", 0, S("abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, "12345678901234567890", 1, S("1abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, "12345678901234567890", 10, S("1234567890abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, "12345678901234567890", 19, S("1234567890123456789abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 0, "12345678901234567890", 20, S("12345678901234567890abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, "12345", 4,
+         S("1234abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, "12345", 5,
+         S("12345abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, "1234567890", 0,
+         S("abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, "1234567890", 1,
+         S("1abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, "1234567890", 5,
+         S("12345abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, "1234567890", 9,
+         S("123456789abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, "1234567890", 10,
+         S("1234567890abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, "12345678901234567890", 0,
+         S("abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, "12345678901234567890", 1,
+         S("1abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, "12345678901234567890", 10,
+         S("1234567890abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, "12345678901234567890", 19,
+         S("1234567890123456789abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 0, "12345678901234567890", 20,
+         S("12345678901234567890abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 1, "", 0, S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 1, "12345", 0, S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 1, "12345", 1, S("a1bcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 1, "12345", 2, S("a12bcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, "12345", 4, S("a1234bcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, "12345", 5, S("a12345bcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, "1234567890", 0, S("abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, "1234567890", 1, S("a1bcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, "1234567890", 5, S("a12345bcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, "1234567890", 9, S("a123456789bcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, "1234567890", 10, S("a1234567890bcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, "12345678901234567890", 0, S("abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, "12345678901234567890", 1, S("a1bcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, "12345678901234567890", 10, S("a1234567890bcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, "12345678901234567890", 19, S("a1234567890123456789bcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 1, "12345678901234567890", 20, S("a12345678901234567890bcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, "12345", 4,
+         S("a1234bcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, "12345", 5,
+         S("a12345bcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, "1234567890", 0,
+         S("abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, "1234567890", 1,
+         S("a1bcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, "1234567890", 5,
+         S("a12345bcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, "1234567890", 9,
+         S("a123456789bcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, "1234567890", 10,
+         S("a1234567890bcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, "12345678901234567890", 0,
+         S("abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, "12345678901234567890", 1,
+         S("a1bcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, "12345678901234567890", 10,
+         S("a1234567890bcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, "12345678901234567890", 19,
+         S("a1234567890123456789bcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 1, "12345678901234567890", 20,
+         S("a12345678901234567890bcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 10, "", 0, S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 10, "12345", 0, S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 10, "12345", 1, S("abcdefghij1klmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, "12345", 2, S("abcdefghij12klmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, "12345", 4, S("abcdefghij1234klmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, "12345", 5, S("abcdefghij12345klmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, "1234567890", 0, S("abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, "1234567890", 1, S("abcdefghij1klmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, "1234567890", 5, S("abcdefghij12345klmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, "1234567890", 9, S("abcdefghij123456789klmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, "1234567890", 10, S("abcdefghij1234567890klmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, "12345678901234567890", 0, S("abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, "12345678901234567890", 1, S("abcdefghij1klmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, "12345678901234567890", 10, S("abcdefghij1234567890klmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, "12345678901234567890", 19, S("abcdefghij1234567890123456789klmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 10, "12345678901234567890", 20, S("abcdefghij12345678901234567890klmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, "12345", 2,
+         S("abcdefghij12klmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, "12345", 4,
+         S("abcdefghij1234klmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, "12345", 5,
+         S("abcdefghij12345klmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, "1234567890", 0,
+         S("abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, "1234567890", 1,
+         S("abcdefghij1klmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, "1234567890", 5,
+         S("abcdefghij12345klmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, "1234567890", 9,
+         S("abcdefghij123456789klmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, "1234567890", 10,
+         S("abcdefghij1234567890klmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, "12345678901234567890", 0,
+         S("abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, "12345678901234567890", 1,
+         S("abcdefghij1klmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, "12345678901234567890", 10,
+         S("abcdefghij1234567890klmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, "12345678901234567890", 19,
+         S("abcdefghij1234567890123456789klmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 10, "12345678901234567890", 20,
+         S("abcdefghij12345678901234567890klmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 19, "", 0, S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 19, "12345", 0, S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 19, "12345", 1, S("abcdefghijklmnopqrs1t"));
-    test(S("abcdefghijklmnopqrst"), 19, "12345", 2, S("abcdefghijklmnopqrs12t"));
-    test(S("abcdefghijklmnopqrst"), 19, "12345", 4, S("abcdefghijklmnopqrs1234t"));
-    test(S("abcdefghijklmnopqrst"), 19, "12345", 5, S("abcdefghijklmnopqrs12345t"));
-    test(S("abcdefghijklmnopqrst"), 19, "1234567890", 0, S("abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 19, "1234567890", 1, S("abcdefghijklmnopqrs1t"));
-    test(S("abcdefghijklmnopqrst"), 19, "1234567890", 5, S("abcdefghijklmnopqrs12345t"));
-    test(S("abcdefghijklmnopqrst"), 19, "1234567890", 9, S("abcdefghijklmnopqrs123456789t"));
-    test(S("abcdefghijklmnopqrst"), 19, "1234567890", 10, S("abcdefghijklmnopqrs1234567890t"));
-    test(S("abcdefghijklmnopqrst"), 19, "12345678901234567890", 0, S("abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 19, "12345678901234567890", 1, S("abcdefghijklmnopqrs1t"));
-    test(S("abcdefghijklmnopqrst"), 19, "12345678901234567890", 10, S("abcdefghijklmnopqrs1234567890t"));
-    test(S("abcdefghijklmnopqrst"), 19, "12345678901234567890", 19, S("abcdefghijklmnopqrs1234567890123456789t"));
-    test(S("abcdefghijklmnopqrst"), 19, "12345678901234567890", 20, S("abcdefghijklmnopqrs12345678901234567890t"));
+    test(S("abcdefghijklmnopqrst"), 19, "12345", 2,
+         S("abcdefghijklmnopqrs12t"));
+    test(S("abcdefghijklmnopqrst"), 19, "12345", 4,
+         S("abcdefghijklmnopqrs1234t"));
+    test(S("abcdefghijklmnopqrst"), 19, "12345", 5,
+         S("abcdefghijklmnopqrs12345t"));
+    test(S("abcdefghijklmnopqrst"), 19, "1234567890", 0,
+         S("abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 19, "1234567890", 1,
+         S("abcdefghijklmnopqrs1t"));
+    test(S("abcdefghijklmnopqrst"), 19, "1234567890", 5,
+         S("abcdefghijklmnopqrs12345t"));
+    test(S("abcdefghijklmnopqrst"), 19, "1234567890", 9,
+         S("abcdefghijklmnopqrs123456789t"));
+    test(S("abcdefghijklmnopqrst"), 19, "1234567890", 10,
+         S("abcdefghijklmnopqrs1234567890t"));
+    test(S("abcdefghijklmnopqrst"), 19, "12345678901234567890", 0,
+         S("abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 19, "12345678901234567890", 1,
+         S("abcdefghijklmnopqrs1t"));
+    test(S("abcdefghijklmnopqrst"), 19, "12345678901234567890", 10,
+         S("abcdefghijklmnopqrs1234567890t"));
+    test(S("abcdefghijklmnopqrst"), 19, "12345678901234567890", 19,
+         S("abcdefghijklmnopqrs1234567890123456789t"));
+    test(S("abcdefghijklmnopqrst"), 19, "12345678901234567890", 20,
+         S("abcdefghijklmnopqrs12345678901234567890t"));
     test(S("abcdefghijklmnopqrst"), 20, "", 0, S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 20, "12345", 0, S("abcdefghijklmnopqrst"));
     test(S("abcdefghijklmnopqrst"), 20, "12345", 1, S("abcdefghijklmnopqrst1"));
-    test(S("abcdefghijklmnopqrst"), 20, "12345", 2, S("abcdefghijklmnopqrst12"));
-    test(S("abcdefghijklmnopqrst"), 20, "12345", 4, S("abcdefghijklmnopqrst1234"));
-    test(S("abcdefghijklmnopqrst"), 20, "12345", 5, S("abcdefghijklmnopqrst12345"));
-    test(S("abcdefghijklmnopqrst"), 20, "1234567890", 0, S("abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 20, "1234567890", 1, S("abcdefghijklmnopqrst1"));
-    test(S("abcdefghijklmnopqrst"), 20, "1234567890", 5, S("abcdefghijklmnopqrst12345"));
-    test(S("abcdefghijklmnopqrst"), 20, "1234567890", 9, S("abcdefghijklmnopqrst123456789"));
-    test(S("abcdefghijklmnopqrst"), 20, "1234567890", 10, S("abcdefghijklmnopqrst1234567890"));
-    test(S("abcdefghijklmnopqrst"), 20, "12345678901234567890", 0, S("abcdefghijklmnopqrst"));
-    test(S("abcdefghijklmnopqrst"), 20, "12345678901234567890", 1, S("abcdefghijklmnopqrst1"));
-    test(S("abcdefghijklmnopqrst"), 20, "12345678901234567890", 10, S("abcdefghijklmnopqrst1234567890"));
-    test(S("abcdefghijklmnopqrst"), 20, "12345678901234567890", 19, S("abcdefghijklmnopqrst1234567890123456789"));
-    test(S("abcdefghijklmnopqrst"), 20, "12345678901234567890", 20, S("abcdefghijklmnopqrst12345678901234567890"));
+    test(S("abcdefghijklmnopqrst"), 20, "12345", 2,
+         S("abcdefghijklmnopqrst12"));
+    test(S("abcdefghijklmnopqrst"), 20, "12345", 4,
+         S("abcdefghijklmnopqrst1234"));
+    test(S("abcdefghijklmnopqrst"), 20, "12345", 5,
+         S("abcdefghijklmnopqrst12345"));
+    test(S("abcdefghijklmnopqrst"), 20, "1234567890", 0,
+         S("abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 20, "1234567890", 1,
+         S("abcdefghijklmnopqrst1"));
+    test(S("abcdefghijklmnopqrst"), 20, "1234567890", 5,
+         S("abcdefghijklmnopqrst12345"));
+    test(S("abcdefghijklmnopqrst"), 20, "1234567890", 9,
+         S("abcdefghijklmnopqrst123456789"));
+    test(S("abcdefghijklmnopqrst"), 20, "1234567890", 10,
+         S("abcdefghijklmnopqrst1234567890"));
+    test(S("abcdefghijklmnopqrst"), 20, "12345678901234567890", 0,
+         S("abcdefghijklmnopqrst"));
+    test(S("abcdefghijklmnopqrst"), 20, "12345678901234567890", 1,
+         S("abcdefghijklmnopqrst1"));
+    test(S("abcdefghijklmnopqrst"), 20, "12345678901234567890", 10,
+         S("abcdefghijklmnopqrst1234567890"));
+    test(S("abcdefghijklmnopqrst"), 20, "12345678901234567890", 19,
+         S("abcdefghijklmnopqrst1234567890123456789"));
+    test(S("abcdefghijklmnopqrst"), 20, "12345678901234567890", 20,
+         S("abcdefghijklmnopqrst12345678901234567890"));
     test(S("abcdefghijklmnopqrst"), 21, "", 0, S("can't happen"));
     test(S("abcdefghijklmnopqrst"), 21, "12345", 0, S("can't happen"));
     test(S("abcdefghijklmnopqrst"), 21, "12345", 1, S("can't happen"));
@@ -691,18 +866,23 @@ int main(int, char**)
     test(S("abcdefghijklmnopqrst"), 21, "1234567890", 5, S("can't happen"));
     test(S("abcdefghijklmnopqrst"), 21, "1234567890", 9, S("can't happen"));
     test(S("abcdefghijklmnopqrst"), 21, "1234567890", 10, S("can't happen"));
-    test(S("abcdefghijklmnopqrst"), 21, "12345678901234567890", 0, S("can't happen"));
-    test(S("abcdefghijklmnopqrst"), 21, "12345678901234567890", 1, S("can't happen"));
-    test(S("abcdefghijklmnopqrst"), 21, "12345678901234567890", 10, S("can't happen"));
-    test(S("abcdefghijklmnopqrst"), 21, "12345678901234567890", 19, S("can't happen"));
-    test(S("abcdefghijklmnopqrst"), 21, "12345678901234567890", 20, S("can't happen"));
-    }
+    test(S("abcdefghijklmnopqrst"), 21, "12345678901234567890", 0,
+         S("can't happen"));
+    test(S("abcdefghijklmnopqrst"), 21, "12345678901234567890", 1,
+         S("can't happen"));
+    test(S("abcdefghijklmnopqrst"), 21, "12345678901234567890", 10,
+         S("can't happen"));
+    test(S("abcdefghijklmnopqrst"), 21, "12345678901234567890", 19,
+         S("can't happen"));
+    test(S("abcdefghijklmnopqrst"), 21, "12345678901234567890", 20,
+         S("can't happen"));
+  }
 #endif
 
-    { // test inserting into self
+  { // test inserting into self
     typedef std::string S;
     S s_short = "123/";
-    S s_long  = "Lorem ipsum dolor sit amet, consectetur/";
+    S s_long = "Lorem ipsum dolor sit amet, consectetur/";
 
     s_short.insert(0, s_short.data(), s_short.size());
     assert(s_short == "123/123/");
@@ -712,8 +892,9 @@ int main(int, char**)
     assert(s_short == "123/123/123/123/123/123/123/123/");
 
     s_long.insert(0, s_long.data(), s_long.size());
-    assert(s_long == "Lorem ipsum dolor sit amet, consectetur/Lorem ipsum dolor sit amet, consectetur/");
-    }
+    assert(s_long == "Lorem ipsum dolor sit amet, consectetur/Lorem ipsum "
+                     "dolor sit amet, consectetur/");
+  }
 
   return 0;
 }

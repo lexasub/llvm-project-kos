@@ -51,35 +51,27 @@ namespace mach_o {
 class GOTEntryAtom : public SimpleDefinedAtom {
 public:
   GOTEntryAtom(const File &file, bool is64, StringRef name)
-    : SimpleDefinedAtom(file), _is64(is64), _name(name) { }
+      : SimpleDefinedAtom(file), _is64(is64), _name(name) {}
 
   ~GOTEntryAtom() override = default;
 
-  ContentType contentType() const override {
-    return DefinedAtom::typeGOT;
-  }
+  ContentType contentType() const override { return DefinedAtom::typeGOT; }
 
-  Alignment alignment() const override {
-    return _is64 ? 8 : 4;
-  }
+  Alignment alignment() const override { return _is64 ? 8 : 4; }
 
-  uint64_t size() const override {
-    return _is64 ? 8 : 4;
-  }
+  uint64_t size() const override { return _is64 ? 8 : 4; }
 
   ContentPermissions permissions() const override {
     return DefinedAtom::permRW_;
   }
 
   ArrayRef<uint8_t> rawContent() const override {
-    static const uint8_t zeros[] =
-        { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+    static const uint8_t zeros[] = {0x00, 0x00, 0x00, 0x00,
+                                    0x00, 0x00, 0x00, 0x00};
     return llvm::makeArrayRef(zeros, size());
   }
 
-  StringRef slotName() const {
-    return _name;
-  }
+  StringRef slotName() const { return _name; }
 
 private:
   const bool _is64;
@@ -128,8 +120,8 @@ private:
       entries.push_back(it.second);
     std::sort(entries.begin(), entries.end(),
               [](const GOTEntryAtom *left, const GOTEntryAtom *right) {
-      return (left->slotName().compare(right->slotName()) < 0);
-    });
+                return (left->slotName().compare(right->slotName()) < 0);
+              });
     for (const GOTEntryAtom *slot : entries)
       mergedFile.addAtom(*slot);
 
@@ -159,8 +151,8 @@ private:
       auto *gotEntry = new (_file.allocator())
           GOTEntryAtom(_file, _ctx.is64Bit(), target->name());
       _targetToGOT[target] = gotEntry;
-      const ArchHandler::ReferenceInfo &nlInfo = _archHandler.stubInfo().
-                                                nonLazyPointerReferenceToBinder;
+      const ArchHandler::ReferenceInfo &nlInfo =
+          _archHandler.stubInfo().nonLazyPointerReferenceToBinder;
       gotEntry->addReference(Reference::KindNamespace::mach_o, nlInfo.arch,
                              nlInfo.kind, 0, target, 0);
       return gotEntry;
@@ -169,9 +161,9 @@ private:
   }
 
   const MachOLinkingContext &_ctx;
-  mach_o::ArchHandler                             &_archHandler;
-  MachOFile                                       &_file;
-  llvm::DenseMap<const Atom*, const GOTEntryAtom*> _targetToGOT;
+  mach_o::ArchHandler &_archHandler;
+  MachOFile &_file;
+  llvm::DenseMap<const Atom *, const GOTEntryAtom *> _targetToGOT;
 };
 
 void addGOTPass(PassManager &pm, const MachOLinkingContext &ctx) {

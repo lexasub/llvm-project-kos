@@ -17,7 +17,7 @@ inline namespace __attribute__((__abi_tag__)) {}
 
 inline namespace N __attribute__((__abi_tag__)) {}
 
-} // namespcace N2
+} // namespace N2
 
 __attribute__((abi_tag("B", "A"))) extern int a1;
 
@@ -29,5 +29,5 @@ __attribute__((abi_tag("A", "C"))) extern int a1;
 
 extern int a2;
 // expected-note@-1 {{previous declaration is here}}
-__attribute__((abi_tag("A")))extern int a2;
+__attribute__((abi_tag("A"))) extern int a2;
 // expected-error@-1 {{cannot add 'abi_tag' attribute in a redeclaration}}

@@ -12,7 +12,7 @@ template <> struct coroutine_handle<void> {
   template <class PromiseType>
   coroutine_handle(coroutine_handle<PromiseType>) noexcept;
 };
-}
+} // namespace std::experimental
 
 struct suspend_always {
   bool await_ready() noexcept;
@@ -31,7 +31,8 @@ template <> struct std::experimental::coroutine_traits<void> {
 };
 
 void SEH_used() {
-  __try { // expected-error {{cannot use SEH '__try' in a coroutine when C++ exceptions are enabled}}
+  __try {      // expected-error {{cannot use SEH '__try' in a coroutine when C++ exceptions are enabled}}
     co_return; // expected-note {{function is a coroutine due to use of 'co_return' here}}
-  } __except(0) {}
+  } __except (0) {
+  }
 }

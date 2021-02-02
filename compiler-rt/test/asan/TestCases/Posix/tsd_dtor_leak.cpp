@@ -3,11 +3,11 @@
 // RUN: %clangxx_asan -O1 %s -pthread -o %t
 // RUN: %env_asan_opts=quarantine_size_mb=0 %run %t
 // XFAIL: x86_64-netbsd
+#include <assert.h>
 #include <pthread.h>
+#include <sanitizer/allocator_interface.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
-#include <sanitizer/allocator_interface.h>
 
 static pthread_key_t tsd_key;
 
@@ -21,7 +21,7 @@ static volatile void *v;
 void Dtor(void *tsd) {
   v = malloc(10000);
   free(tsd);
-  free((void*)v);  // The bug was that this was leaking.
+  free((void *)v); // The bug was that this was leaking.
 }
 
 int main() {

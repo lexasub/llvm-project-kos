@@ -20,7 +20,7 @@ union U {
 };
 
 class B {
-  // 'A' here should refer to the declaration above.  
+  // 'A' here should refer to the declaration above.
   friend class A;
 
   friend C;
@@ -48,10 +48,7 @@ class E {
   friend void bar() {} // expected-error {{redefinition of 'bar'}}
 };
 
-
-
-
 template <typename t1, typename t2> class some_template;
-friend   // expected-error {{'friend' used outside of class}}
-some_template<foo, bar>&  // expected-error {{use of undeclared identifier 'foo'}}
-  ;  // expected-error {{expected unqualified-id}}
+friend                        // expected-error {{'friend' used outside of class}}
+    some_template<foo, bar> & // expected-error {{use of undeclared identifier 'foo'}}
+    ;                         // expected-error {{expected unqualified-id}}

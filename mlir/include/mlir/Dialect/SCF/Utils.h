@@ -59,8 +59,9 @@ scf::ForOp cloneWithNewYields(OpBuilder &b, scf::ForOp loop,
 void outlineIfOp(OpBuilder &b, scf::IfOp ifOp, FuncOp *thenFn,
                  StringRef thenFnName, FuncOp *elseFn, StringRef elseFnName);
 
-/// Get a list of innermost parallel loops contained in `rootOp`. Innermost parallel
-/// loops are those that do not contain further parallel loops themselves.
+/// Get a list of innermost parallel loops contained in `rootOp`. Innermost
+/// parallel loops are those that do not contain further parallel loops
+/// themselves.
 bool getInnermostParallelLoops(Operation *rootOp,
                                SmallVectorImpl<scf::ParallelOp> &result);
 

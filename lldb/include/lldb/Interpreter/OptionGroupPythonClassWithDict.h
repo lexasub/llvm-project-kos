@@ -1,4 +1,5 @@
-//===-- OptionGroupPythonClassWithDict.h -------------------------------------*- C++ -*-===//
+//===-- OptionGroupPythonClassWithDict.h -------------------------------------*-
+//C++ -*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -9,26 +10,24 @@
 #ifndef LLDB_INTERPRETER_OPTIONGROUPPYTHONCLASSWITHDICT_H
 #define LLDB_INTERPRETER_OPTIONGROUPPYTHONCLASSWITHDICT_H
 
-#include "lldb/lldb-types.h"
 #include "lldb/Interpreter/Options.h"
 #include "lldb/Utility/StructuredData.h"
+#include "lldb/lldb-types.h"
 
 namespace lldb_private {
 
 // Use this Option group if you have a python class that implements some
-// Python extension point, and you pass a SBStructuredData to the class 
-// __init__ method.  
+// Python extension point, and you pass a SBStructuredData to the class
+// __init__ method.
 // class_option specifies the class name
-// the key and value options are read in in pairs, and a 
+// the key and value options are read in in pairs, and a
 // StructuredData::Dictionary is constructed with those pairs.
 class OptionGroupPythonClassWithDict : public OptionGroup {
 public:
-  OptionGroupPythonClassWithDict(const char *class_use,
-                                 bool is_class = true,
-                                 int class_option = 'C',
-                                 int key_option = 'k', 
+  OptionGroupPythonClassWithDict(const char *class_use, bool is_class = true,
+                                 int class_option = 'C', int key_option = 'k',
                                  int value_option = 'v');
-                      
+
   ~OptionGroupPythonClassWithDict() override;
 
   llvm::ArrayRef<OptionDefinition> GetDefinitions() override {
@@ -41,13 +40,9 @@ public:
 
   void OptionParsingStarting(ExecutionContext *execution_context) override;
   Status OptionParsingFinished(ExecutionContext *execution_context) override;
-  
-  const StructuredData::DictionarySP GetStructuredData() {
-    return m_dict_sp;
-  }
-  const std::string &GetName() {
-    return m_name;
-  }
+
+  const StructuredData::DictionarySP GetStructuredData() { return m_dict_sp; }
+  const std::string &GetName() { return m_name; }
 
 protected:
   std::string m_name;

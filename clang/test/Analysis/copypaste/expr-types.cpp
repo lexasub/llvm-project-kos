@@ -2,7 +2,6 @@
 
 // expected-no-diagnostics
 
-
 int foo1(int a, int b) {
   if (a > b)
     return a;

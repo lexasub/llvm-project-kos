@@ -1,1 +1,1 @@
-template<unsigned> class SmallString {};
+template <unsigned> class SmallString {};

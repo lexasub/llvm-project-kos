@@ -18,16 +18,15 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        std::filebuf f;
-        assert(!f.is_open());
-    }
-    {
-        std::wfilebuf f;
-        assert(!f.is_open());
-    }
+int main(int, char**) {
+  {
+    std::filebuf f;
+    assert(!f.is_open());
+  }
+  {
+    std::wfilebuf f;
+    assert(!f.is_open());
+  }
 
   return 0;
 }

@@ -3,10 +3,10 @@
 #define P(X) _Pragma(#X)
 #define V(X) X
 
-#define X \
-  P(clang diagnostic push) \
+#define X                                    \
+  P(clang diagnostic push)                   \
   P(clang diagnostic ignored "-Wconversion") \
-  ) = 1.2; \
+  ) = 1.2;                                   \
   P(clang diagnostic pop)
 
 void f() {

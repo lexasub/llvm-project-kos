@@ -20,5 +20,5 @@ struct C : A, B {
   int c;
   virtual C *clone(A); // expected-error {{cannot compile this non-trivial argument copy for return-adjusting thunk yet}}
 };
-B::B() {}  // force emission
-C::C() {}  // force emission
+B::B() {} // force emission
+C::C() {} // force emission

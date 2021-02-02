@@ -49,11 +49,11 @@ int main(int argc, char **argv) {
 #pragma omp flush acquire
 #pragma omp flush release
 #pragma omp flush(a)
-// CHECK-NEXT: #pragma omp flush
-// CHECK-NEXT: #pragma omp flush acq_rel
-// CHECK-NEXT: #pragma omp flush acquire{{$}}
-// CHECK-NEXT: #pragma omp flush release
-// CHECK-NEXT: #pragma omp flush (a)
+  // CHECK-NEXT: #pragma omp flush
+  // CHECK-NEXT: #pragma omp flush acq_rel
+  // CHECK-NEXT: #pragma omp flush acquire{{$}}
+  // CHECK-NEXT: #pragma omp flush release
+  // CHECK-NEXT: #pragma omp flush (a)
   return tmain(argc) + tmain(argv[0][0]) + a;
 }
 

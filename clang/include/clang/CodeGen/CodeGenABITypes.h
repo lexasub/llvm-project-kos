@@ -37,7 +37,7 @@ class Module;
 class Function;
 class FunctionType;
 class Type;
-}
+} // namespace llvm
 
 namespace clang {
 class ASTContext;
@@ -109,8 +109,8 @@ llvm::Type *convertTypeForMemory(CodeGenModule &CGM, QualType T);
 /// the struct's converted type.  The returned index refers to a field number in
 /// the complete object type which is returned by convertTypeForMemory.  FD must
 /// be a field in RD directly (i.e. not an inherited field).
-unsigned getLLVMFieldNumber(CodeGenModule &CGM,
-                            const RecordDecl *RD, const FieldDecl *FD);
+unsigned getLLVMFieldNumber(CodeGenModule &CGM, const RecordDecl *RD,
+                            const FieldDecl *FD);
 
 /// Given the language and code-generation options that Clang was configured
 /// with, set the default LLVM IR attributes for a function definition.
@@ -191,7 +191,7 @@ llvm::Function *getNonTrivialCStructDestructor(CodeGenModule &CGM,
 /// object.
 llvm::Constant *emitObjCProtocolObject(CodeGenModule &CGM,
                                        const ObjCProtocolDecl *p);
-}  // end namespace CodeGen
-}  // end namespace clang
+} // end namespace CodeGen
+} // end namespace clang
 
 #endif

@@ -1253,7 +1253,8 @@ void Writer::createInitTLSFunction() {
       writeU8(os, WASM_OPCODE_GLOBAL_SET, "global.set");
       writeUleb128(os, WasmSym::tlsBase->getGlobalIndex(), "global index");
 
-      // FIXME(wvo): this local needs to be I64 in wasm64, or we need an extend op.
+      // FIXME(wvo): this local needs to be I64 in wasm64, or we need an extend
+      // op.
       writeU8(os, WASM_OPCODE_LOCAL_GET, "local.get");
       writeUleb128(os, 0, "local index");
 

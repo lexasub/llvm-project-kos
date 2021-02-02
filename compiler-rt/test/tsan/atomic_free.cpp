@@ -11,7 +11,7 @@
 #include "test.h"
 
 void *Thread(void *a) {
-  __atomic_fetch_add((int*)a, 1, __ATOMIC_SEQ_CST);
+  __atomic_fetch_add((int *)a, 1, __ATOMIC_SEQ_CST);
   barrier_wait(&barrier);
   return 0;
 }

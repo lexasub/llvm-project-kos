@@ -33,10 +33,10 @@ struct GPR {
 };
 
 struct FPR_i386 {
-  uint16_t fctrl;     // FPU Control Word (fcw)
-  uint16_t fstat;     // FPU Status Word (fsw)
-  uint16_t ftag;      // FPU Tag Word (ftw)
-  uint16_t fop;       // Last Instruction Opcode (fop)
+  uint16_t fctrl; // FPU Control Word (fcw)
+  uint16_t fstat; // FPU Status Word (fsw)
+  uint16_t ftag;  // FPU Tag Word (ftw)
+  uint16_t fop;   // Last Instruction Opcode (fop)
   union {
     struct {
       uint64_t fip; // Instruction Pointer

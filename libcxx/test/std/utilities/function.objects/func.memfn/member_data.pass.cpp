@@ -15,16 +15,13 @@
 
 #include "test_macros.h"
 
-struct A
-{
-    double data_;
+struct A {
+  double data_;
 };
 
 template <class F>
-TEST_CONSTEXPR_CXX20 bool
-test(F f)
-{
-    {
+TEST_CONSTEXPR_CXX20 bool test(F f) {
+  {
     A a = {0.0};
     f(a) = 5;
     assert(a.data_ == 5);
@@ -35,17 +32,16 @@ test(F f)
     assert(f(cap) == f(ap));
     const F& cf = f;
     assert(cf(ap) == f(ap));
-    }
-    return true;
+  }
+  return true;
 }
 
-int main(int, char**)
-{
-    test(std::mem_fn(&A::data_));
+int main(int, char**) {
+  test(std::mem_fn(&A::data_));
 
 #if TEST_STD_VER >= 20
-    static_assert(test(std::mem_fn(&A::data_)));
+  static_assert(test(std::mem_fn(&A::data_)));
 #endif
 
-    return 0;
+  return 0;
 }

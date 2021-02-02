@@ -63,7 +63,7 @@ enum class DisableValidationForModuleKind {
 /// used in preprocessor initialization to InitializePreprocessor().
 class PreprocessorOptions {
 public:
-  std::vector<std::pair<std::string, bool/*isUndef*/>> Macros;
+  std::vector<std::pair<std::string, bool /*isUndef*/>> Macros;
   std::vector<std::string> Includes;
   std::vector<std::string> MacroIncludes;
 
@@ -178,13 +178,9 @@ public:
     llvm::StringSet<> Failed;
 
   public:
-    bool hasAlreadyFailed(StringRef module) {
-      return Failed.count(module) > 0;
-    }
+    bool hasAlreadyFailed(StringRef module) { return Failed.count(module) > 0; }
 
-    void addFailed(StringRef module) {
-      Failed.insert(module);
-    }
+    void addFailed(StringRef module) { Failed.insert(module); }
   };
 
   /// The set of modules that failed to build.

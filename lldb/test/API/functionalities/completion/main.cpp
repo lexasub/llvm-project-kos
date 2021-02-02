@@ -1,17 +1,17 @@
 #include <iostream>
 
-class Foo
-{
+class Foo {
 public:
-    int Bar(int x, int y)
-    {
-        return x + y;
-    }
+  int Bar(int x, int y) { return x + y; }
 };
 
-namespace { int Quux (void) { return 0; } }
+namespace {
+int Quux(void) { return 0; }
+} // namespace
 
-struct Container { int MemberVar; };
+struct Container {
+  int MemberVar;
+};
 
 int main(int argc, char *argv[]) {
   if (argc > 1 && std::string(argv[1]) == "-x")

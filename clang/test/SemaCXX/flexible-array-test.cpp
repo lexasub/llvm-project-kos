@@ -1,16 +1,13 @@
-// RUN: %clang_cc1 -fsyntax-only -verify %s 
+// RUN: %clang_cc1 -fsyntax-only -verify %s
 // pr7029
 
-template <class Key, class T> struct QMap
-{
+template <class Key, class T> struct QMap {
   void insert(const Key &, const T &);
   T v;
 };
 
-
 template <class Key, class T>
-void QMap<Key, T>::insert(const Key &, const T &avalue)
-{
+void QMap<Key, T>::insert(const Key &, const T &avalue) {
   v = avalue;
 }
 
@@ -21,24 +18,21 @@ struct Rec {
   int x;
 } rec;
 
-struct inotify_event
-{
+struct inotify_event {
   int wd;
- 
-  // clang doesn't like '[]': 
+
+  // clang doesn't like '[]':
   // cannot initialize a parameter of type 'void *' with an rvalue of type 'char (*)[]'
-  char name [];	
+  char name[];
 };
 
-
-void foo()
-{
-    inotify_event event;
-    inotify_event* ptr = &event;
-    inotify_event event1 = *ptr;
-    *ptr = event;
-    QMap<int, inotify_event> eventForId;
-    eventForId.insert(ptr->wd, *ptr);
+void foo() {
+  inotify_event event;
+  inotify_event *ptr = &event;
+  inotify_event event1 = *ptr;
+  *ptr = event;
+  QMap<int, inotify_event> eventForId;
+  eventForId.insert(ptr->wd, *ptr);
 }
 
 struct S {
@@ -46,8 +40,8 @@ struct S {
 };
 
 struct X {
-   int blah;
-   S strings[];
+  int blah;
+  S strings[];
 };
 
 S a, b = a;
@@ -68,7 +62,7 @@ union B {
 
 class C {
   char c[]; // expected-error {{flexible array member 'c' with type 'char []' is not at the end of class}}
-  int s; // expected-note {{next field declaration is here}}
+  int s;    // expected-note {{next field declaration is here}}
 };
 
 namespace rdar9065507 {
@@ -87,15 +81,17 @@ struct VirtStorage : virtual StorageBase {
   int data[]; // expected-error {{flexible array member 'data' not allowed in struct which has a virtual base class}}
 };
 
-}
+} // namespace rdar9065507
 
-struct NonTrivDtor { ~NonTrivDtor(); };
+struct NonTrivDtor {
+  ~NonTrivDtor();
+};
 // FIXME: It's not clear whether we should disallow examples like this. GCC accepts.
 struct FlexNonTrivDtor {
   int n;
   NonTrivDtor ntd[]; // expected-error {{flexible array member 'ntd' of type 'NonTrivDtor []' with non-trivial destruction}}
   ~FlexNonTrivDtor() {
     for (int i = n; i != 0; --i)
-      ntd[i-1].~NonTrivDtor();
+      ntd[i - 1].~NonTrivDtor();
   }
 };

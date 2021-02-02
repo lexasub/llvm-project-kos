@@ -21,7 +21,7 @@ struct A {
 struct B : A {
   virtual void F() {
   }
-  virtual ~B() { }
+  virtual ~B() {}
 };
 
 static A *obj = new B;

@@ -18,14 +18,13 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        typedef std::student_t_distribution<> D;
-        typedef D::param_type param_type;
-        typedef param_type::distribution_type distribution_type;
-        static_assert((std::is_same<D, distribution_type>::value), "");
-    }
+int main(int, char**) {
+  {
+    typedef std::student_t_distribution<> D;
+    typedef D::param_type param_type;
+    typedef param_type::distribution_type distribution_type;
+    static_assert((std::is_same<D, distribution_type>::value), "");
+  }
 
   return 0;
 }

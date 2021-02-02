@@ -3,7 +3,8 @@
 #define JOIN2(x, y) x##y
 #define JOIN(x, y) JOIN2(x, y)
 #define UNIQ(name) JOIN(name, __LINE__)
-#define USEMEMFUNC(class, func) void (class::*UNIQ(use)())() { return &class::func; }
+#define USEMEMFUNC(class, func) \
+  void (class ::*UNIQ(use)())() { return &class ::func; }
 
 template <class T>
 class c {

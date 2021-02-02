@@ -55,8 +55,7 @@ void ReportNewDeleteTypeMismatch(uptr addr, uptr delete_size,
 void ReportDoubleFree(uptr addr, BufferedStackTrace *free_stack);
 void ReportFreeNotMalloced(uptr addr, BufferedStackTrace *free_stack);
 void ReportAllocTypeMismatch(uptr addr, BufferedStackTrace *free_stack,
-                             AllocType alloc_type,
-                             AllocType dealloc_type);
+                             AllocType alloc_type, AllocType dealloc_type);
 void ReportMallocUsableSizeNotOwned(uptr addr, BufferedStackTrace *stack);
 void ReportSanitizerGetAllocatedSizeNotOwned(uptr addr,
                                              BufferedStackTrace *stack);
@@ -88,11 +87,9 @@ void ReportODRViolation(const __asan_global *g1, u32 stack_id1,
                         const __asan_global *g2, u32 stack_id2);
 
 // Mac-specific errors and warnings.
-void ReportMacMzReallocUnknown(uptr addr, uptr zone_ptr,
-                               const char *zone_name,
+void ReportMacMzReallocUnknown(uptr addr, uptr zone_ptr, const char *zone_name,
                                BufferedStackTrace *stack);
-void ReportMacCfReallocUnknown(uptr addr, uptr zone_ptr,
-                               const char *zone_name,
+void ReportMacCfReallocUnknown(uptr addr, uptr zone_ptr, const char *zone_name,
                                BufferedStackTrace *stack);
 
 }  // namespace __asan

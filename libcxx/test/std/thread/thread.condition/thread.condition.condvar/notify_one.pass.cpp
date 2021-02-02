@@ -14,7 +14,6 @@
 
 // void notify_one();
 
-
 // NOTE: `notify_one` is just a wrapper around pthread_cond_signal, but
 // POSIX does not guarantee that one and only one thread will be woken:
 //
@@ -26,14 +25,11 @@
 //     pthread_cond_signal() to avoid the unblocking of more than one thread
 //     blocked on a condition variable. For example...
 
-
-
 // NOTE: In previous versions of this test, `notify_one` was called WITHOUT
 // holding the lock but POSIX says (in the aforementioned URL) that:
 //     ...if predictable scheduling behavior is required, then that mutex shall
 //     be locked by the thread calling pthread_cond_broadcast() or
 //     pthread_cond_signal().
-
 
 #include <condition_variable>
 #include <atomic>
@@ -44,7 +40,6 @@
 #include "make_test_thread.h"
 #include "test_macros.h"
 
-
 std::condition_variable cv;
 std::mutex mut;
 
@@ -53,8 +48,7 @@ std::atomic_int test2(0);
 std::atomic_int ready(2);
 std::atomic_int which(0);
 
-void f1()
-{
+void f1() {
   std::unique_lock<std::mutex> lk(mut);
   assert(test1 == 0);
   --ready;
@@ -65,8 +59,7 @@ void f1()
   test1 = 2;
 }
 
-void f2()
-{
+void f2() {
   std::unique_lock<std::mutex> lk(mut);
   assert(test2 == 0);
   --ready;
@@ -77,8 +70,7 @@ void f2()
   test2 = 2;
 }
 
-int main(int, char**)
-{
+int main(int, char**) {
   std::thread t1 = support::make_test_thread(f1);
   std::thread t2 = support::make_test_thread(f2);
   {

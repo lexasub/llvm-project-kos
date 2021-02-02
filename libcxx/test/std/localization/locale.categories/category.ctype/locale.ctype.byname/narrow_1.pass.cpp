@@ -21,38 +21,37 @@
 #include "test_macros.h"
 #include "platform_support.h" // locale name macros
 
-int main(int, char**)
-{
+int main(int, char**) {
+  {
+    std::locale l(std::string(LOCALE_fr_CA_ISO8859_1));
     {
-        std::locale l(std::string(LOCALE_fr_CA_ISO8859_1));
-        {
-            typedef std::ctype<wchar_t> F;
-            const F& f = std::use_facet<F>(l);
+      typedef std::ctype<wchar_t> F;
+      const F& f = std::use_facet<F>(l);
 
-            assert(f.narrow(L' ', '*') == ' ');
-            assert(f.narrow(L'A', '*') == 'A');
-            assert(f.narrow(L'\x07', '*') == '\x07');
-            assert(f.narrow(L'.', '*') == '.');
-            assert(f.narrow(L'a', '*') == 'a');
-            assert(f.narrow(L'1', '*') == '1');
-            assert(f.narrow(L'\xDA', '*') == '\xDA');
-        }
+      assert(f.narrow(L' ', '*') == ' ');
+      assert(f.narrow(L'A', '*') == 'A');
+      assert(f.narrow(L'\x07', '*') == '\x07');
+      assert(f.narrow(L'.', '*') == '.');
+      assert(f.narrow(L'a', '*') == 'a');
+      assert(f.narrow(L'1', '*') == '1');
+      assert(f.narrow(L'\xDA', '*') == '\xDA');
     }
+  }
+  {
+    std::locale l(LOCALE_en_US_UTF_8);
     {
-        std::locale l(LOCALE_en_US_UTF_8);
-        {
-            typedef std::ctype<wchar_t> F;
-            const F& f = std::use_facet<F>(l);
+      typedef std::ctype<wchar_t> F;
+      const F& f = std::use_facet<F>(l);
 
-            assert(f.narrow(L' ', '*') == ' ');
-            assert(f.narrow(L'A', '*') == 'A');
-            assert(f.narrow(L'\x07', '*') == '\x07');
-            assert(f.narrow(L'.', '*') == '.');
-            assert(f.narrow(L'a', '*') == 'a');
-            assert(f.narrow(L'1', '*') == '1');
-            assert(f.narrow(L'\xDA', '*') == '*');
-        }
+      assert(f.narrow(L' ', '*') == ' ');
+      assert(f.narrow(L'A', '*') == 'A');
+      assert(f.narrow(L'\x07', '*') == '\x07');
+      assert(f.narrow(L'.', '*') == '.');
+      assert(f.narrow(L'a', '*') == 'a');
+      assert(f.narrow(L'1', '*') == '1');
+      assert(f.narrow(L'\xDA', '*') == '*');
     }
+  }
 
   return 0;
 }

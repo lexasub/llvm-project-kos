@@ -7,7 +7,7 @@
 #include <stdlib.h>
 int main() {
   double x = 3.14;
-  int *exp = (int*)malloc(sizeof(int));
+  int *exp = (int *)malloc(sizeof(int));
   free(exp);
   double y = frexp(x, exp);
   // CHECK: use-after-free

@@ -2,14 +2,14 @@
 
 // CHECK-LABEL:  void xxx(int argc)
 void xxx(int argc) {
-// CHECK:        [B1]
-// CHECK-NEXT:   1: int x;
-// CHECK-NEXT:   2: int cond;
-// CHECK-NEXT:   3: int fp;
-// CHECK-NEXT:   4: int rd;
-// CHECK-NEXT:   5: int lin;
-// CHECK-NEXT:   6: int step;
-// CHECK-NEXT:   7: int map;
+  // CHECK:        [B1]
+  // CHECK-NEXT:   1: int x;
+  // CHECK-NEXT:   2: int cond;
+  // CHECK-NEXT:   3: int fp;
+  // CHECK-NEXT:   4: int rd;
+  // CHECK-NEXT:   5: int lin;
+  // CHECK-NEXT:   6: int step;
+  // CHECK-NEXT:   7: int map;
   int x, cond, fp, rd, lin, step, map;
 // CHECK-NEXT:   [[#ATOM:]]: x
 // CHECK-NEXT:   [[#ATOM+1]]: [B1.[[#ATOM]]] (ImplicitCastExpr, LValueToRValue, int)
@@ -46,7 +46,8 @@ void xxx(int argc) {
 // CHECK-NEXT:  [[#PAR+8]]: rd
 // CHECK-NEXT:  [[#PAR+9]]: #pragma omp parallel if(cond) firstprivate(fp) reduction(min: rd)
 // CHECK-NEXT:    [B1.[[#PAR+3]]];
-#pragma omp parallel if(cond) firstprivate(fp) reduction(min:rd)
+#pragma omp parallel if (cond) firstprivate(fp) reduction(min \
+                                                          : rd)
   argc = x;
 // CHECK-NEXT:  [[#PSECT:]]: x
 // CHECK-NEXT:  [[#PSECT+1]]: [B1.[[#PSECT]]] (ImplicitCastExpr, LValueToRValue, int)
@@ -61,7 +62,8 @@ void xxx(int argc) {
 // CHECK-NEXT:    {
 // CHECK-NEXT:        [B1.[[#PSECT+3]]];
 // CHECK-NEXT:    }
-#pragma omp parallel sections if(cond) firstprivate(fp) reduction(&&:rd)
+#pragma omp parallel sections if (cond) firstprivate(fp) reduction(&& \
+                                                                   : rd)
   {
     argc = x;
   }
@@ -87,8 +89,9 @@ void xxx(int argc) {
 // CHECK-NEXT:  [[#TARGET+10]]: x
 // CHECK-NEXT:  [[#TARGET+11]]: #pragma omp target depend(in : argc) if(cond) firstprivate(fp) reduction(-: rd)
 // CHECK-NEXT:    [B1.[[#TARGET+3]]];
-#pragma omp target depend(in \
-                          : argc) if(cond) firstprivate(fp) reduction(-:rd)
+#pragma omp target depend(in                                             \
+                          : argc) if (cond) firstprivate(fp) reduction(- \
+                                                                       : rd)
   argc = x;
 // CHECK-NEXT:  [[#TP:]]:
 // CHECK-SAME:  [B1.[[#TP+11]]]
@@ -105,7 +108,9 @@ void xxx(int argc) {
 // CHECK-NEXT:  [[#TP+11]]: x
 // CHECK-NEXT:  [[#TP+12]]: #pragma omp target parallel if(cond) firstprivate(fp) reduction(+: rd) map(to: map)
 // CHECK-NEXT:    [B1.[[#TP+3]]];
-#pragma omp target parallel if(cond) firstprivate(fp) reduction(+:rd) map(to:map)
+#pragma omp target parallel if (cond) firstprivate(fp) reduction(+            \
+                                                                 : rd) map(to \
+                                                                           : map)
   argc = x;
 // CHECK-NEXT:  [[#TT:]]:
 // CHECK-SAME:  [B1.[[#TT+11]]]
@@ -122,13 +127,16 @@ void xxx(int argc) {
 // CHECK-NEXT:  [[#TT+11]]: x
 // CHECK-NEXT:  [[#TT+12]]: #pragma omp target teams if(cond) firstprivate(fp) reduction(+: rd) map(tofrom: map)
 // CHECK-NEXT:    [B1.[[#TT+3]]];
-#pragma omp target teams if(cond) firstprivate(fp) reduction(+:rd) map(tofrom:map)
+#pragma omp target teams if (cond) firstprivate(fp) reduction(+                \
+                                                              : rd) map(tofrom \
+                                                                        : map)
   argc = x;
 // CHECK-NEXT: [[#TU:]]: cond
 // CHECK-NEXT: [[#TU+1]]: [B1.[[#TU]]] (ImplicitCastExpr, LValueToRValue, int)
 // CHECK-NEXT: [[#TU+2]]: [B1.[[#TU+1]]] (ImplicitCastExpr, IntegralToBoolean, _Bool)
 // CHECK-NEXT: [[#TU+3]]: #pragma omp target update to(x) if(target update: cond)
-#pragma omp target update to(x) if(target update:cond)
+#pragma omp target update to(x) if (target update \
+                                    : cond)
 // CHECK-NEXT:  [[#TASK:]]:
 // CHECK-SAME:  [B1.[[#TASK+9]]]
 // CHECK-NEXT:  [[#TASK+1]]: [B1.[[#TASK+9]]] (ImplicitCastExpr, LValueToRValue, int)
@@ -142,7 +150,7 @@ void xxx(int argc) {
 // CHECK-NEXT:  [[#TASK+9]]: x
 // CHECK-NEXT:  [[#TASK+10]]: #pragma omp task if(cond) firstprivate(fp)
 // CHECK-NEXT:    [B1.[[#TASK+3]]];
-#pragma omp task if(cond) firstprivate(fp)
+#pragma omp task if (cond) firstprivate(fp)
   argc = x;
 // CHECK-NEXT:  [[#TG:]]: x
 // CHECK-NEXT:  [[#TG+1]]: [B1.[[#TG]]] (ImplicitCastExpr, LValueToRValue, int)
@@ -166,9 +174,10 @@ void xxx(int argc) {
 // CHECK-NEXT:  [[#TEAMS+10]]: x
 // CHECK-NEXT:  [[#TEAMS+11]]: #pragma omp target
 #pragma omp target
-#pragma omp teams firstprivate(fp) reduction(+:rd)
+#pragma omp teams firstprivate(fp) reduction(+ \
+                                             : rd)
   argc = x;
-// CHECK-NEXT:  [B1.[[#TEAMS+6]]]   Preds
+  // CHECK-NEXT:  [B1.[[#TEAMS+6]]]   Preds
 }
 
 // CHECK-LABEL:  void dpf(int argc)
@@ -188,7 +197,9 @@ void dpf(int argc) {
 // CHECK-DAG:  [[#DPF+5]]: #pragma omp distribute parallel for if(parallel: cond) firstprivate(fp) reduction(+: rd)
 // CHECK-DAG:    for (int i = 0;
 // CHECK-DAG:        [B3.[[#DPFB+3]]];
-#pragma omp distribute parallel for if(parallel:cond) firstprivate(fp) reduction(+:rd)
+#pragma omp distribute parallel for if (parallel                             \
+                                        : cond) firstprivate(fp) reduction(+ \
+                                                                           : rd)
   for (int i = 0; i < 10; ++i)
     argc = x;
 }
@@ -210,7 +221,8 @@ void dpfs(int argc) {
 // CHECK-DAG:  [[#DPFS+5]]: #pragma omp distribute parallel for simd if(cond) firstprivate(fp) reduction(-: rd)
 // CHECK-DAG:    for (int i = 0;
 // CHECK-DAG:        [B3.[[#DPFSB+3]]];
-#pragma omp distribute parallel for simd if(cond)  firstprivate(fp) reduction(-:rd)
+#pragma omp distribute parallel for simd if (cond) firstprivate(fp) reduction(- \
+                                                                              : rd)
   for (int i = 0; i < 10; ++i)
     argc = x;
 }
@@ -247,7 +259,8 @@ void for_fn(int argc) {
 // CHECK-DAG:  [[#FOR+3]]: #pragma omp for linear(lin: step)
 // CHECK-DAG:    for (int i = 0;
 // CHECK-DAG:        [B3.[[#FORB+3]]];
-#pragma omp for linear(lin : step)
+#pragma omp for linear(lin \
+                       : step)
   for (int i = 0; i < 10; ++i)
     argc = x;
 }
@@ -267,7 +280,8 @@ void fs(int argc) {
 // CHECK-DAG:  [[#FS+3]]: #pragma omp for simd linear(lin: step)
 // CHECK-DAG:    for (int i = 0;
 // CHECK-DAG:        [B3.[[#FSB+3]]];
-#pragma omp for simd linear(lin: step)
+#pragma omp for simd linear(lin \
+                            : step)
   for (int i = 0; i < 10; ++i)
     argc = x;
 }
@@ -313,7 +327,9 @@ void pf(int argc) {
 // CHECK-DAG:  [[#PF+8]]: #pragma omp parallel for if(cond) firstprivate(fp) reduction(&: rd) linear(lin: step)
 // CHECK-DAG:    for (int i = 0;
 // CHECK-DAG:        [B3.[[#PFB+3]]];
-#pragma omp parallel for if(cond) firstprivate(fp) reduction(&:rd) linear(lin: step)
+#pragma omp parallel for if (cond) firstprivate(fp) reduction(&                \
+                                                              : rd) linear(lin \
+                                                                           : step)
   for (int i = 0; i < 10; ++i)
     argc = x;
 }
@@ -338,7 +354,9 @@ void pfs(int argc) {
 // CHECK-DAG:  [[#PFS+8]]: #pragma omp parallel for simd if(cond) firstprivate(fp) reduction(|: rd) linear(lin: step)
 // CHECK-DAG:    for (int i = 0;
 // CHECK-DAG:        [B3.[[#PFSB+3]]];
-#pragma omp parallel for simd if(cond) firstprivate(fp) reduction(|:rd) linear(lin: step)
+#pragma omp parallel for simd if (cond) firstprivate(fp) reduction(|                \
+                                                                   : rd) linear(lin \
+                                                                                : step)
   for (int i = 0; i < 10; ++i)
     argc = x;
 }
@@ -358,7 +376,8 @@ void simd(int argc) {
 // CHECK-DAG:  [[#SIMD+3]]: #pragma omp simd linear(lin: step)
 // CHECK-DAG:    for (int i = 0;
 // CHECK-DAG:        [B3.[[#SIMDB+3]]];
-#pragma omp simd linear(lin: step)
+#pragma omp simd linear(lin \
+                        : step)
   for (int i = 0; i < 10; ++i)
     argc = x;
 }
@@ -386,7 +405,10 @@ void tpf(int argc) {
 // CHECK-DAG:  [[#TPF+11]]: #pragma omp target parallel for if(parallel: cond) firstprivate(fp) reduction(max: rd) linear(lin: step) map(tofrom: map)
 // CHECK-DAG:    for (int i = 0;
 // CHECK-DAG:        [B3.[[#TPFB+3]]];
-#pragma omp target parallel for if(parallel:cond) firstprivate(fp) reduction(max:rd) linear(lin: step) map(map)
+#pragma omp target parallel for if (parallel                                            \
+                                    : cond) firstprivate(fp) reduction(max              \
+                                                                       : rd) linear(lin \
+                                                                                    : step) map(map)
   for (int i = 0; i < 10; ++i)
     argc = x;
 }
@@ -414,7 +436,11 @@ void tpfs(int argc) {
 // CHECK-DAG:  [[#TPFS+11]]: #pragma omp target parallel for simd if(target: cond) firstprivate(fp) reduction(*: rd) linear(lin: step) map(tofrom: map)
 // CHECK-DAG:    for (int i = 0;
 // CHECK-DAG:        [B3.[[#TPFSB+3]]];
-#pragma omp target parallel for simd if(target:cond) firstprivate(fp) reduction(*:rd) linear(lin: step) map(tofrom:map)
+#pragma omp target parallel for simd if (target                                                             \
+                                         : cond) firstprivate(fp) reduction(*                               \
+                                                                            : rd) linear(lin                \
+                                                                                         : step) map(tofrom \
+                                                                                                     : map)
   for (int i = 0; i < 10; ++i)
     argc = x;
 }
@@ -441,7 +467,10 @@ void ts(int argc) {
 // CHECK-DAG:  [[#TS+10]]: #pragma omp target simd if(cond) firstprivate(fp) reduction(+: rd) linear(lin: step) map(alloc: map)
 // CHECK-DAG:    for (int i = 0;
 // CHECK-DAG:        [B3.[[#TSB+3]]];
-#pragma omp target simd if(cond) firstprivate(fp) reduction(+:rd) linear(lin: step) map(alloc:map)
+#pragma omp target simd if (cond) firstprivate(fp) reduction(+                              \
+                                                             : rd) linear(lin               \
+                                                                          : step) map(alloc \
+                                                                                      : map)
   for (int i = 0; i < 10; ++i)
     argc = x;
 }
@@ -465,7 +494,9 @@ void ttd(int argc) {
 // CHECK-DAG:  [[#TTD+7]]: #pragma omp target teams distribute if(cond) firstprivate(fp) reduction(+: rd) map(alloc: map)
 // CHECK-DAG:    for (int i = 0;
 // CHECK-DAG:        [B3.[[#TTDB+3]]];
-#pragma omp target teams distribute if(cond) firstprivate(fp) reduction(+:rd) map(alloc:map)
+#pragma omp target teams distribute if (cond) firstprivate(fp) reduction(+               \
+                                                                         : rd) map(alloc \
+                                                                                   : map)
   for (int i = 0; i < 10; ++i)
     argc = x;
 }
@@ -489,7 +520,9 @@ void ttdpf(int argc) {
 // CHECK-DAG:  [[#TTDPF+7]]: #pragma omp target teams distribute parallel for if(cond) firstprivate(fp) reduction(+: rd) map(alloc: map)
 // CHECK-DAG:    for (int i = 0;
 // CHECK-DAG:        [B3.[[#TTDPFB+3]]];
-#pragma omp target teams distribute parallel for if(cond) firstprivate(fp) reduction(+:rd) map(alloc:map)
+#pragma omp target teams distribute parallel for if (cond) firstprivate(fp) reduction(+               \
+                                                                                      : rd) map(alloc \
+                                                                                                : map)
   for (int i = 0; i < 10; ++i)
     argc = x;
 }
@@ -513,7 +546,10 @@ void ttdpfs(int argc) {
 // CHECK-DAG:  [[#TTDPFS+7]]: #pragma omp target teams distribute parallel for simd if(parallel: cond) firstprivate(fp) reduction(+: rd) map(from: map)
 // CHECK-DAG:    for (int i = 0;
 // CHECK-DAG:        [B3.[[#TTDPFSB+3]]];
-#pragma omp target teams distribute parallel for simd if(parallel:cond) firstprivate(fp) reduction(+:rd) map(from:map)
+#pragma omp target teams distribute parallel for simd if (parallel                                          \
+                                                          : cond) firstprivate(fp) reduction(+              \
+                                                                                             : rd) map(from \
+                                                                                                       : map)
   for (int i = 0; i < 10; ++i)
     argc = x;
 }
@@ -538,7 +574,8 @@ void ttds(int argc) {
 // CHECK-DAG:  [[#TTDS+8]]: #pragma omp target teams distribute simd if(cond) firstprivate(fp) reduction(+: rd) map(tofrom: map)
 // CHECK-DAG:    for (int i = 0;
 // CHECK-DAG:        [B3.[[#TTDPFSB+3]]];
-#pragma omp target teams distribute simd if(cond) firstprivate(fp) reduction(+:rd) map(map)
+#pragma omp target teams distribute simd if (cond) firstprivate(fp) reduction(+ \
+                                                                              : rd) map(map)
   for (int i = 0; i < 10; ++i)
     argc = x;
 }
@@ -562,7 +599,8 @@ void tl(int argc) {
 // CHECK-DAG:  [[#TL+7]]: #pragma omp taskloop if(cond) firstprivate(fp) reduction(+: rd)
 // CHECK-DAG:    for (int i = 0;
 // CHECK-DAG:        [B3.[[#TLB+3]]];
-#pragma omp taskloop if(cond) firstprivate(fp) reduction(+:rd)
+#pragma omp taskloop if (cond) firstprivate(fp) reduction(+ \
+                                                          : rd)
   for (int i = 0; i < 10; ++i)
     argc = x;
 }
@@ -589,7 +627,9 @@ void tls(int argc) {
 // CHECK-DAG:  [[#TLS+10]]: #pragma omp taskloop simd if(cond) firstprivate(fp) reduction(+: rd) linear(lin: step)
 // CHECK-DAG:    for (int i = 0;
 // CHECK-DAG:        [B3.[[#TLSB+3]]];
-#pragma omp taskloop simd if(cond) firstprivate(fp) reduction(+:rd) linear(lin: step)
+#pragma omp taskloop simd if (cond) firstprivate(fp) reduction(+                \
+                                                               : rd) linear(lin \
+                                                                            : step)
   for (int i = 0; i < 10; ++i)
     argc = x;
 }
@@ -618,7 +658,8 @@ void tdpf(int argc) {
 // CHECK-DAG:  [[#TDPFB-1]]: argc
 // CHECK-DAG:  [[#TDPFB]]: [B3.[[#TDPFB-1]]] = [B3.[[#TDPFB-2]]]
 #pragma omp target
-#pragma omp teams distribute parallel for if(cond) firstprivate(fp) reduction(+:rd)
+#pragma omp teams distribute parallel for if (cond) firstprivate(fp) reduction(+ \
+                                                                               : rd)
   for (int i = 0; i < 10; ++i)
     argc = x;
 }
@@ -647,7 +688,8 @@ void tdpfs(int argc) {
 // CHECK-DAG:  [[#TDPFSB-1]]: argc
 // CHECK-DAG:  [[#TDPFSB]]: [B3.[[#TDPFSB-1]]] = [B3.[[#TDPFSB-2]]]
 #pragma omp target
-#pragma omp teams distribute parallel for simd if(cond) firstprivate(fp) reduction(+:rd)
+#pragma omp teams distribute parallel for simd if (cond) firstprivate(fp) reduction(+ \
+                                                                                    : rd)
   for (int i = 0; i < 10; ++i)
     argc = x;
 }
@@ -672,7 +714,8 @@ void tds(int argc) {
 // CHECK-DAG:  [[#TDSB-1]]: argc
 // CHECK-DAG:  [[#TDSB]]: [B3.[[#TDSB-1]]] = [B3.[[#TDSB-2]]]
 #pragma omp target
-#pragma omp teams distribute simd firstprivate(fp) reduction(+:rd)
+#pragma omp teams distribute simd firstprivate(fp) reduction(+ \
+                                                             : rd)
   for (int i = 0; i < 10; ++i)
     argc = x;
 }

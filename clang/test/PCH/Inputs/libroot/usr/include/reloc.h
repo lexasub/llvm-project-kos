@@ -3,12 +3,6 @@
 
 #include <reloc2.h>
 
-
-
-
-
-
-
 // Line number 13 below is important
 int x = 2;
 

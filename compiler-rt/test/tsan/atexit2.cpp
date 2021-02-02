@@ -23,4 +23,3 @@ int main() {
 // CHECK-NOT: FATAL: ThreadSanitizer
 // CHECK-NOT: WARNING: ThreadSanitizer
 // CHECK: run count: 10000
-

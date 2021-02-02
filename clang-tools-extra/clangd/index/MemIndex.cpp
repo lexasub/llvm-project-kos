@@ -22,7 +22,7 @@ std::unique_ptr<SymbolIndex> MemIndex::build(SymbolSlab Slab, RefSlab Refs,
   const auto BackingDataSize = Slab.bytes() + Refs.bytes();
   auto Data = std::make_pair(std::move(Slab), std::move(Refs));
   return std::make_unique<MemIndex>(Data.first, Data.second, Relations,
-                                     std::move(Data), BackingDataSize);
+                                    std::move(Data), BackingDataSize);
 }
 
 bool MemIndex::fuzzyFind(

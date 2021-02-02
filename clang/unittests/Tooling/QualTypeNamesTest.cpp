@@ -18,7 +18,7 @@ struct TypeNameVisitor : TestVisitor<TypeNameVisitor> {
   // ValueDecls are the least-derived decl with both a qualtype and a
   // name.
   bool TraverseDecl(Decl *D) {
-    return true;  // Always continue
+    return true; // Always continue
   }
 
   bool VisitValueDecl(const ValueDecl *VD) {
@@ -165,25 +165,23 @@ TEST(QualTypeNameTest, getFullyQualifiedName) {
       "  enum AnEnum { ZERO, ONE };\n"
       "};\n"
       "EnumScopeClass::AnEnum AnEnumVar;\n",
-      TypeNameVisitor::Lang_CXX11
-);
+      TypeNameVisitor::Lang_CXX11);
 
   TypeNameVisitor Complex;
   Complex.ExpectedQualTypeNames["CheckTX"] = "B::TX";
-  Complex.runOver(
-      "namespace A {"
-      "  struct X {};"
-      "}"
-      "using A::X;"
-      "namespace fake_std {"
-      "  template<class... Types > class tuple {};"
-      "}"
-      "namespace B {"
-      "  using fake_std::tuple;"
-      "  typedef tuple<X> TX;"
-      "  TX CheckTX;"
-      "  struct A { typedef int X; };"
-      "}");
+  Complex.runOver("namespace A {"
+                  "  struct X {};"
+                  "}"
+                  "using A::X;"
+                  "namespace fake_std {"
+                  "  template<class... Types > class tuple {};"
+                  "}"
+                  "namespace B {"
+                  "  using fake_std::tuple;"
+                  "  typedef tuple<X> TX;"
+                  "  TX CheckTX;"
+                  "  struct A { typedef int X; };"
+                  "}");
 
   TypeNameVisitor GlobalNsPrefix;
   GlobalNsPrefix.WithGlobalNsPrefix = true;
@@ -195,33 +193,31 @@ TEST(QualTypeNameTest, getFullyQualifiedName) {
   GlobalNsPrefix.ExpectedQualTypeNames["GlobalZVal"] = "::Z";
   GlobalNsPrefix.ExpectedQualTypeNames["CheckK"] = "D::aStruct";
   GlobalNsPrefix.ExpectedQualTypeNames["YZMPtr"] = "::A::B::X ::A::B::Y::Z::*";
-  GlobalNsPrefix.runOver(
-      "namespace A {\n"
-      "  namespace B {\n"
-      "    int IntVal;\n"
-      "    bool BoolVal;\n"
-      "    struct X {};\n"
-      "    X XVal;\n"
-      "    template <typename T> class CCC { };\n"
-      "    template <typename T>\n"
-      "    using Alias = CCC<T>;\n"
-      "    Alias<int> IntAliasVal;\n"
-      "    struct Y { struct Z { X YZIPtr; }; };\n"
-      "    Y::Z ZVal;\n"
-      "    X Y::Z::*YZMPtr;\n"
-      "  }\n"
-      "}\n"
-      "struct Z {};\n"
-      "Z GlobalZVal;\n"
-      "namespace {\n"
-      "  namespace D {\n"
-      "    namespace {\n"
-      "      class aStruct {};\n"
-      "      aStruct CheckK;\n"
-      "    }\n"
-      "  }\n"
-      "}\n"
-  );
+  GlobalNsPrefix.runOver("namespace A {\n"
+                         "  namespace B {\n"
+                         "    int IntVal;\n"
+                         "    bool BoolVal;\n"
+                         "    struct X {};\n"
+                         "    X XVal;\n"
+                         "    template <typename T> class CCC { };\n"
+                         "    template <typename T>\n"
+                         "    using Alias = CCC<T>;\n"
+                         "    Alias<int> IntAliasVal;\n"
+                         "    struct Y { struct Z { X YZIPtr; }; };\n"
+                         "    Y::Z ZVal;\n"
+                         "    X Y::Z::*YZMPtr;\n"
+                         "  }\n"
+                         "}\n"
+                         "struct Z {};\n"
+                         "Z GlobalZVal;\n"
+                         "namespace {\n"
+                         "  namespace D {\n"
+                         "    namespace {\n"
+                         "      class aStruct {};\n"
+                         "      aStruct CheckK;\n"
+                         "    }\n"
+                         "  }\n"
+                         "}\n");
 
   TypeNameVisitor InlineNamespace;
   InlineNamespace.ExpectedQualTypeNames["c"] = "B::C";
@@ -255,4 +251,4 @@ TEST(QualTypeNameTest, getFullyQualifiedName) {
                         } anon_st;)");
 }
 
-}  // end anonymous namespace
+} // end anonymous namespace

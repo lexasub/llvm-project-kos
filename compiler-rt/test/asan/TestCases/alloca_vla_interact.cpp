@@ -5,14 +5,14 @@
 
 // This testcase checks correct interaction between VLAs and allocas.
 
+#include "sanitizer/asan_interface.h"
 #include <assert.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include "sanitizer/asan_interface.h"
 
 // MSVC provides _alloca instead of alloca.
 #if defined(_MSC_VER) && !defined(alloca)
-# define alloca _alloca
+#define alloca _alloca
 #endif
 
 #if defined(__sun__) && defined(__svr4__)
@@ -30,7 +30,8 @@ __attribute__((noinline)) void foo(int len) {
   top = alloca1 - RZ;
   for (int i = 0; i < 32; ++i) {
     // Check that previous alloca was unpoisoned at the end of iteration.
-    if (i) assert(!__asan_region_is_poisoned(bot, 96));
+    if (i)
+      assert(!__asan_region_is_poisoned(bot, 96));
     // VLA is unpoisoned at the end of iteration.
     volatile char array[i];
     assert(!(reinterpret_cast<uintptr_t>(array) & 31L));

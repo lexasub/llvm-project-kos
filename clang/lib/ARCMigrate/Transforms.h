@@ -15,18 +15,18 @@
 #include "llvm/Support/SaveAndRestore.h"
 
 namespace clang {
-  class Decl;
-  class Stmt;
-  class BlockDecl;
-  class ObjCMethodDecl;
-  class FunctionDecl;
+class Decl;
+class Stmt;
+class BlockDecl;
+class ObjCMethodDecl;
+class FunctionDecl;
 
 namespace arcmt {
-  class MigrationPass;
+class MigrationPass;
 
 namespace trans {
 
-  class MigrationContext;
+class MigrationContext;
 
 //===----------------------------------------------------------------------===//
 // Transformations.
@@ -49,7 +49,7 @@ class BodyContext {
 
 public:
   BodyContext(MigrationContext &MigrateCtx, Stmt *S)
-    : MigrateCtx(MigrateCtx), PMap(S), TopStmt(S) {}
+      : MigrateCtx(MigrateCtx), PMap(S), TopStmt(S) {}
 
   MigrationContext &getMigrationContext() { return MigrateCtx; }
   ParentMap &getParentMap() { return PMap; }
@@ -63,7 +63,7 @@ class ObjCImplementationContext {
 public:
   ObjCImplementationContext(MigrationContext &MigrateCtx,
                             ObjCImplementationDecl *D)
-    : MigrateCtx(MigrateCtx), ImpD(D) {}
+      : MigrateCtx(MigrateCtx), ImpD(D) {}
 
   MigrationContext &getMigrationContext() { return MigrateCtx; }
   ObjCImplementationDecl *getImplementationDecl() { return ImpD; }
@@ -72,8 +72,8 @@ public:
 class ASTTraverser {
 public:
   virtual ~ASTTraverser();
-  virtual void traverseTU(MigrationContext &MigrateCtx) { }
-  virtual void traverseBody(BodyContext &BodyCtx) { }
+  virtual void traverseTU(MigrationContext &MigrateCtx) {}
+  virtual void traverseBody(BodyContext &BodyCtx) {}
   virtual void traverseObjCImplementation(ObjCImplementationContext &ImplCtx) {}
 };
 
@@ -182,13 +182,14 @@ bool isGlobalVar(Expr *E);
 StringRef getNilString(MigrationPass &Pass);
 
 template <typename BODY_TRANS>
-class BodyTransform : public RecursiveASTVisitor<BodyTransform<BODY_TRANS> > {
+class BodyTransform : public RecursiveASTVisitor<BodyTransform<BODY_TRANS>> {
   MigrationPass &Pass;
   Decl *ParentD;
 
-  typedef RecursiveASTVisitor<BodyTransform<BODY_TRANS> > base;
+  typedef RecursiveASTVisitor<BodyTransform<BODY_TRANS>> base;
+
 public:
-  BodyTransform(MigrationPass &pass) : Pass(pass), ParentD(nullptr) { }
+  BodyTransform(MigrationPass &pass) : Pass(pass), ParentD(nullptr) {}
 
   bool TraverseStmt(Stmt *rootS) {
     if (rootS)

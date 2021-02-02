@@ -10,12 +10,12 @@ namespace foo1::foo2::foo3 {
 #else
 // expected-warning@-4 {{nested namespace definition is incompatible with C++ standards before C++17}}
 #endif
-  int foo(int x) { return x; }
-}
+int foo(int x) { return x; }
+} // namespace foo1::foo2::foo3
 
 #ifndef FIXIT
 inline namespace goo::bar { // expected-error {{nested namespace definition cannot be 'inline'}} expected-warning 0-1{{C++11 feature}}
-  int n;
+int n;
 }
 
 int m = goo::bar::n;
@@ -26,12 +26,12 @@ int foo(int x) {
 }
 
 namespace bar1 {
-  namespace bar2 {
-    namespace bar3 {
-      int bar(int x) { return x; }
-    }
-  }
-}
+namespace bar2 {
+namespace bar3 {
+int bar(int x) { return x; }
+} // namespace bar3
+} // namespace bar2
+} // namespace bar1
 
 int bar(int x) {
   return bar1::bar2::bar3::bar(x);

@@ -18,7 +18,7 @@
 namespace llvm {
 class DIMacroFile;
 class DIMacroNode;
-}
+} // namespace llvm
 namespace clang {
 class Preprocessor;
 class MacroInfo;
@@ -39,11 +39,11 @@ class MacroPPCallbacks : public PPCallbacks {
   int EnteredCommandLineIncludeFiles = 0;
 
   enum FileScopeStatus {
-    NoScope = 0,              // Scope is not initialized yet.
-    InitializedScope,         // Main file scope is initialized but not set yet.
-    BuiltinScope,             // <built-in> and <command line> file scopes.
-    CommandLineIncludeScope,  // Included file, from <command line> file, scope.
-    MainFileScope             // Main file scope.
+    NoScope = 0,             // Scope is not initialized yet.
+    InitializedScope,        // Main file scope is initialized but not set yet.
+    BuiltinScope,            // <built-in> and <command line> file scopes.
+    CommandLineIncludeScope, // Included file, from <command line> file, scope.
+    MainFileScope            // Main file scope.
   };
   FileScopeStatus Status;
 

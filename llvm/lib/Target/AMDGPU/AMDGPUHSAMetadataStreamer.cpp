@@ -38,12 +38,10 @@ static std::pair<Type *, Align> getArgumentTypeAlign(const Argument &Arg,
 
 namespace llvm {
 
-static cl::opt<bool> DumpHSAMetadata(
-    "amdgpu-dump-hsa-metadata",
-    cl::desc("Dump AMDGPU HSA Metadata"));
-static cl::opt<bool> VerifyHSAMetadata(
-    "amdgpu-verify-hsa-metadata",
-    cl::desc("Verify AMDGPU HSA Metadata"));
+static cl::opt<bool> DumpHSAMetadata("amdgpu-dump-hsa-metadata",
+                                     cl::desc("Dump AMDGPU HSA Metadata"));
+static cl::opt<bool> VerifyHSAMetadata("amdgpu-verify-hsa-metadata",
+                                       cl::desc("Verify AMDGPU HSA Metadata"));
 
 namespace AMDGPU {
 namespace HSAMD {
@@ -84,15 +82,14 @@ MetadataStreamerV2::getAccessQualifier(StringRef AccQual) const {
     return AccessQualifier::Unknown;
 
   return StringSwitch<AccessQualifier>(AccQual)
-             .Case("read_only",  AccessQualifier::ReadOnly)
-             .Case("write_only", AccessQualifier::WriteOnly)
-             .Case("read_write", AccessQualifier::ReadWrite)
-             .Default(AccessQualifier::Default);
+      .Case("read_only", AccessQualifier::ReadOnly)
+      .Case("write_only", AccessQualifier::WriteOnly)
+      .Case("read_write", AccessQualifier::ReadWrite)
+      .Default(AccessQualifier::Default);
 }
 
 AddressSpaceQualifier
-MetadataStreamerV2::getAddressSpaceQualifier(
-    unsigned AddressSpace) const {
+MetadataStreamerV2::getAddressSpaceQualifier(unsigned AddressSpace) const {
   switch (AddressSpace) {
   case AMDGPUAS::PRIVATE_ADDRESS:
     return AddressSpaceQualifier::Private;
@@ -117,26 +114,25 @@ ValueKind MetadataStreamerV2::getValueKind(Type *Ty, StringRef TypeQual,
     return ValueKind::Pipe;
 
   return StringSwitch<ValueKind>(BaseTypeName)
-             .Case("image1d_t", ValueKind::Image)
-             .Case("image1d_array_t", ValueKind::Image)
-             .Case("image1d_buffer_t", ValueKind::Image)
-             .Case("image2d_t", ValueKind::Image)
-             .Case("image2d_array_t", ValueKind::Image)
-             .Case("image2d_array_depth_t", ValueKind::Image)
-             .Case("image2d_array_msaa_t", ValueKind::Image)
-             .Case("image2d_array_msaa_depth_t", ValueKind::Image)
-             .Case("image2d_depth_t", ValueKind::Image)
-             .Case("image2d_msaa_t", ValueKind::Image)
-             .Case("image2d_msaa_depth_t", ValueKind::Image)
-             .Case("image3d_t", ValueKind::Image)
-             .Case("sampler_t", ValueKind::Sampler)
-             .Case("queue_t", ValueKind::Queue)
-             .Default(isa<PointerType>(Ty) ?
-                          (Ty->getPointerAddressSpace() ==
-                           AMDGPUAS::LOCAL_ADDRESS ?
-                           ValueKind::DynamicSharedPointer :
-                           ValueKind::GlobalBuffer) :
-                      ValueKind::ByValue);
+      .Case("image1d_t", ValueKind::Image)
+      .Case("image1d_array_t", ValueKind::Image)
+      .Case("image1d_buffer_t", ValueKind::Image)
+      .Case("image2d_t", ValueKind::Image)
+      .Case("image2d_array_t", ValueKind::Image)
+      .Case("image2d_array_depth_t", ValueKind::Image)
+      .Case("image2d_array_msaa_t", ValueKind::Image)
+      .Case("image2d_array_msaa_depth_t", ValueKind::Image)
+      .Case("image2d_depth_t", ValueKind::Image)
+      .Case("image2d_msaa_t", ValueKind::Image)
+      .Case("image2d_msaa_depth_t", ValueKind::Image)
+      .Case("image3d_t", ValueKind::Image)
+      .Case("sampler_t", ValueKind::Sampler)
+      .Case("queue_t", ValueKind::Queue)
+      .Default(isa<PointerType>(Ty)
+                   ? (Ty->getPointerAddressSpace() == AMDGPUAS::LOCAL_ADDRESS
+                          ? ValueKind::DynamicSharedPointer
+                          : ValueKind::GlobalBuffer)
+                   : ValueKind::ByValue);
 }
 
 std::string MetadataStreamerV2::getTypeName(Type *Ty, bool Signed) const {
@@ -199,8 +195,8 @@ MetadataStreamerV2::getHSACodeProps(const MachineFunction &MF,
          F.getCallingConv() == CallingConv::SPIR_KERNEL);
 
   Align MaxKernArgAlign;
-  HSACodeProps.mKernargSegmentSize = STM.getKernArgSegmentSize(F,
-                                                               MaxKernArgAlign);
+  HSACodeProps.mKernargSegmentSize =
+      STM.getKernArgSegmentSize(F, MaxKernArgAlign);
   HSACodeProps.mGroupSegmentFixedSize = ProgramInfo.LDSSize;
   HSACodeProps.mPrivateSegmentFixedSize = ProgramInfo.ScratchSize;
   HSACodeProps.mKernargSegmentAlign =
@@ -369,11 +365,11 @@ void MetadataStreamerV2::emitKernelArg(const DataLayout &DL, Type *Ty,
   SmallVector<StringRef, 1> SplitTypeQuals;
   TypeQual.split(SplitTypeQuals, " ", -1, false);
   for (StringRef Key : SplitTypeQuals) {
-    auto P = StringSwitch<bool*>(Key)
-                 .Case("const",    &Arg.mIsConst)
+    auto P = StringSwitch<bool *>(Key)
+                 .Case("const", &Arg.mIsConst)
                  .Case("restrict", &Arg.mIsRestrict)
                  .Case("volatile", &Arg.mIsVolatile)
-                 .Case("pipe",     &Arg.mIsPipe)
+                 .Case("pipe", &Arg.mIsPipe)
                  .Default(nullptr);
     if (P)
       *P = true;
@@ -397,8 +393,8 @@ void MetadataStreamerV2::emitHiddenKernelArgs(const Function &Func) {
   if (HiddenArgNumBytes >= 24)
     emitKernelArg(DL, Int64Ty, Align(8), ValueKind::HiddenGlobalOffsetZ);
 
-  auto Int8PtrTy = Type::getInt8PtrTy(Func.getContext(),
-                                      AMDGPUAS::GLOBAL_ADDRESS);
+  auto Int8PtrTy =
+      Type::getInt8PtrTy(Func.getContext(), AMDGPUAS::GLOBAL_ADDRESS);
 
   // Emit "printf buffer" argument if printf is used, otherwise emit dummy
   // "none" argument.
@@ -761,7 +757,8 @@ void MetadataStreamerV3::emitKernelArg(
 
   if (auto PtrTy = dyn_cast<PointerType>(Ty))
     if (auto Qualifier = getAddressSpaceQualifier(PtrTy->getAddressSpace()))
-      Arg[".address_space"] = Arg.getDocument()->getNode(*Qualifier, /*Copy=*/true);
+      Arg[".address_space"] =
+          Arg.getDocument()->getNode(*Qualifier, /*Copy=*/true);
 
   if (auto AQ = getAccessQualifier(AccQual))
     Arg[".access"] = Arg.getDocument()->getNode(*AQ, /*Copy=*/true);
@@ -863,8 +860,7 @@ MetadataStreamerV3::getHSAKernelProps(const MachineFunction &MF,
       Kern.getDocument()->getNode(ProgramInfo.ScratchSize);
   Kern[".kernarg_segment_align"] =
       Kern.getDocument()->getNode(std::max(Align(4), MaxKernArgAlign).value());
-  Kern[".wavefront_size"] =
-      Kern.getDocument()->getNode(STM.getWavefrontSize());
+  Kern[".wavefront_size"] = Kern.getDocument()->getNode(STM.getWavefrontSize());
   Kern[".sgpr_count"] = Kern.getDocument()->getNode(ProgramInfo.NumSGPR);
   Kern[".vgpr_count"] = Kern.getDocument()->getNode(ProgramInfo.NumVGPR);
   Kern[".max_flat_workgroup_size"] =
@@ -906,8 +902,7 @@ void MetadataStreamerV3::emitKernel(const MachineFunction &MF,
   assert(Func.getCallingConv() == CallingConv::AMDGPU_KERNEL ||
          Func.getCallingConv() == CallingConv::SPIR_KERNEL);
 
-  auto Kernels =
-      getRootMetadata("amdhsa.kernels").getArray(/*Convert=*/true);
+  auto Kernels = getRootMetadata("amdhsa.kernels").getArray(/*Convert=*/true);
 
   {
     Kern[".name"] = Kern.getDocument()->getNode(Func.getName());

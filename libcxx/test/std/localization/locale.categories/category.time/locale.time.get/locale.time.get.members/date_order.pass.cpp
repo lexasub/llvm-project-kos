@@ -19,18 +19,14 @@
 
 typedef std::time_get<char, input_iterator<const char*> > F;
 
-class my_facet
-    : public F
-{
+class my_facet : public F {
 public:
-    explicit my_facet(std::size_t refs = 0)
-        : F(refs) {}
+  explicit my_facet(std::size_t refs = 0) : F(refs) {}
 };
 
-int main(int, char**)
-{
-    const my_facet f(1);
-    assert(f.date_order() == std::time_base::mdy);
+int main(int, char**) {
+  const my_facet f(1);
+  assert(f.date_order() == std::time_base::mdy);
 
   return 0;
 }

@@ -229,9 +229,10 @@ void CoverageReport::render(const FileCoverageSummary &File,
 
   OS << format("%*u", FileReportColumns[10],
                (unsigned)File.LineCoverage.getNumLines());
-  Options.colored_ostream(OS, LineCoverageColor) << format(
-      "%*u", FileReportColumns[11], (unsigned)(File.LineCoverage.getNumLines() -
-                                               File.LineCoverage.getCovered()));
+  Options.colored_ostream(OS, LineCoverageColor)
+      << format("%*u", FileReportColumns[11],
+                (unsigned)(File.LineCoverage.getNumLines() -
+                           File.LineCoverage.getCovered()));
   if (File.LineCoverage.getNumLines())
     Options.colored_ostream(OS, LineCoverageColor)
         << format("%*.2f", FileReportColumns[12] - 1,
@@ -260,8 +261,7 @@ void CoverageReport::render(const FileCoverageSummary &File,
 }
 
 void CoverageReport::render(const FunctionCoverageSummary &Function,
-                            const DemangleCache &DC,
-                            raw_ostream &OS) const {
+                            const DemangleCache &DC, raw_ostream &OS) const {
   auto FuncCoverageColor =
       determineCoveragePercentageColor(Function.RegionCoverage);
   auto LineCoverageColor =
@@ -355,8 +355,8 @@ void CoverageReport::renderFunctionReports(ArrayRef<std::string> Files,
   }
 }
 
-void CoverageReport::prepareSingleFileReport(const StringRef Filename,
-    const coverage::CoverageMapping *Coverage,
+void CoverageReport::prepareSingleFileReport(
+    const StringRef Filename, const coverage::CoverageMapping *Coverage,
     const CoverageViewOptions &Options, const unsigned LCP,
     FileCoverageSummary *FileReport, const CoverageFilter *Filters) {
   for (const auto &Group : Coverage->getInstantiationGroups(Filename)) {
@@ -402,8 +402,8 @@ std::vector<FileCoverageSummary> CoverageReport::prepareFileReports(
 
   for (StringRef Filename : Files) {
     FileReports.emplace_back(Filename.drop_front(LCP));
-    Pool.async(&CoverageReport::prepareSingleFileReport, Filename,
-               &Coverage, Options, LCP, &FileReports.back(), &Filters);
+    Pool.async(&CoverageReport::prepareSingleFileReport, Filename, &Coverage,
+               Options, LCP, &FileReports.back(), &Filters);
   }
   Pool.wait();
 
@@ -424,8 +424,8 @@ void CoverageReport::renderFileReports(
   renderFileReports(OS, UniqueSourceFiles);
 }
 
-void CoverageReport::renderFileReports(
-    raw_ostream &OS, ArrayRef<std::string> Files) const {
+void CoverageReport::renderFileReports(raw_ostream &OS,
+                                       ArrayRef<std::string> Files) const {
   renderFileReports(OS, Files, CoverageFiltersMatchAll());
 }
 

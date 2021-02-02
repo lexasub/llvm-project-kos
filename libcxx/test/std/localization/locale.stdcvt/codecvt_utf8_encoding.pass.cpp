@@ -23,26 +23,25 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        typedef std::codecvt_utf8<wchar_t> C;
-        C c;
-        int r = c.encoding();
-        assert(r == 0);
-    }
-    {
-        typedef std::codecvt_utf8<char16_t> C;
-        C c;
-        int r = c.encoding();
-        assert(r == 0);
-    }
-    {
-        typedef std::codecvt_utf8<char32_t> C;
-        C c;
-        int r = c.encoding();
-        assert(r == 0);
-    }
+int main(int, char**) {
+  {
+    typedef std::codecvt_utf8<wchar_t> C;
+    C c;
+    int r = c.encoding();
+    assert(r == 0);
+  }
+  {
+    typedef std::codecvt_utf8<char16_t> C;
+    C c;
+    int r = c.encoding();
+    assert(r == 0);
+  }
+  {
+    typedef std::codecvt_utf8<char32_t> C;
+    C c;
+    int r = c.encoding();
+    assert(r == 0);
+  }
 
   return 0;
 }

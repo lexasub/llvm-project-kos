@@ -25,7 +25,8 @@
 #define HEADER
 
 #ifdef OMP5
-#define CONDITIONAL conditional :
+#define CONDITIONAL \
+  conditional:
 #else
 #define CONDITIONAL
 #endif //OMP5
@@ -83,67 +84,67 @@ int main() {
   // LAMBDA: call void {{.+}} @__kmpc_fork_call({{.+}}, i32 1, {{.+}}* [[OMP_REGION:@.+]] to {{.+}})
 #pragma omp parallel
 #pragma omp sections lastprivate(g, sivar)
-  {
-    // LAMBDA: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias [[GTID:%.+]], i32* noalias %{{.+}}, i32* nonnull align 4 dereferenceable(4) [[SIVAR_REF:%.+]])
-    // LAMBDA: alloca i{{[0-9]+}},
-    // LAMBDA: alloca i{{[0-9]+}},
-    // LAMBDA: alloca i{{[0-9]+}},
-    // LAMBDA: alloca i{{[0-9]+}},
-    // LAMBDA: alloca i{{[0-9]+}},
-    // LAMBDA: [[G_PRIVATE_ADDR:%.+]] = alloca i{{[0-9]+}},
-    // LAMBDA: [[SIVAR1_PRIVATE_ADDR:%.+]] = alloca i{{[0-9]+}},
-
-    // LAMBDA: store i{{[0-9]+}}* [[SIVAR_REF]], i{{[0-9]+}}** %{{.+}},
-    // LAMBDA: [[SIVAR_REF_ADDR:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** %{{.+}},
-
-    // LAMBDA: [[GTID_ADDR:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** %{{.+}}, align 8
-    // LAMBDA: [[GTID_ADDR_REF:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[GTID_ADDR]], align 4
-
-    // LAMBDA: call {{.+}} @__kmpc_for_static_init_4(%{{.+}}* @{{.+}}, i32 [[GTID_ADDR_REF]], i32 34, i32* [[IS_LAST_ADDR:%.+]], i32* %{{.+}}, i32* %{{.+}}, i32* %{{.+}}, i32 1, i32 1)
-    // LAMBDA: store i{{[0-9]+}} 1, i{{[0-9]+}}* [[G_PRIVATE_ADDR]],
-    // LAMBDA: store i{{[0-9]+}} 13, i{{[0-9]+}}* [[SIVAR1_PRIVATE_ADDR]],
-    // LAMBDA: [[G_PRIVATE_ADDR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG:%.+]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
-    // LAMBDA: store i{{[0-9]+}}* [[G_PRIVATE_ADDR]], i{{[0-9]+}}** [[G_PRIVATE_ADDR_REF]]
-    // LAMBDA: [[SIVAR_PRIVATE_ADDR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG:%.+]], i{{[0-9]+}} 0, i{{[0-9]+}} 1
-    // LAMBDA: store i{{[0-9]+}}* [[SIVAR1_PRIVATE_ADDR]], i{{[0-9]+}}** [[SIVAR_PRIVATE_ADDR_REF]]
-    // LAMBDA: call void [[INNER_LAMBDA:@.+]](%{{.+}}* {{[^,]*}} [[ARG]])
-    // LAMBDA: call void @__kmpc_for_static_fini(%{{.+}}* @{{.+}}, i32 [[GTID_ADDR_REF]])
     {
-      g = 1;
-      sivar = 13;
-    }
-    // Check for final copying of private values back to original vars.
-    // LAMBDA: [[IS_LAST_VAL:%.+]] = load i32, i32* [[IS_LAST_ADDR]],
-    // LAMBDA: [[IS_LAST_ITER:%.+]] = icmp ne i32 [[IS_LAST_VAL]], 0
-    // LAMBDA: br i1 [[IS_LAST_ITER:%.+]], label %[[LAST_THEN:.+]], label %[[LAST_DONE:.+]]
-    // LAMBDA: [[LAST_THEN]]
-    // Actual copying.
+      // LAMBDA: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias [[GTID:%.+]], i32* noalias %{{.+}}, i32* nonnull align 4 dereferenceable(4) [[SIVAR_REF:%.+]])
+      // LAMBDA: alloca i{{[0-9]+}},
+      // LAMBDA: alloca i{{[0-9]+}},
+      // LAMBDA: alloca i{{[0-9]+}},
+      // LAMBDA: alloca i{{[0-9]+}},
+      // LAMBDA: alloca i{{[0-9]+}},
+      // LAMBDA: [[G_PRIVATE_ADDR:%.+]] = alloca i{{[0-9]+}},
+      // LAMBDA: [[SIVAR1_PRIVATE_ADDR:%.+]] = alloca i{{[0-9]+}},
 
-    // original g=private_g;
-    // LAMBDA: [[G_VAL:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[G_PRIVATE_ADDR]],
-    // LAMBDA: store volatile i{{[0-9]+}} [[G_VAL]], i{{[0-9]+}}* [[G]],
+      // LAMBDA: store i{{[0-9]+}}* [[SIVAR_REF]], i{{[0-9]+}}** %{{.+}},
+      // LAMBDA: [[SIVAR_REF_ADDR:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** %{{.+}},
 
-    // original sivar = private sivar;
-    // LAMBDA: [[SIVAR1_VAL:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[SIVAR1_PRIVATE_ADDR]],
-    // LAMBDA: store i{{[0-9]+}} [[SIVAR1_VAL]], i{{[0-9]+}}* [[SIVAR_REF_ADDR]],
-    // LAMBDA: br label %[[LAST_DONE]]
-    // LAMBDA: [[LAST_DONE]]
-    // LAMBDA: call void @__kmpc_barrier(%{{.+}}* @{{.+}}, i{{[0-9]+}} [[GTID_ADDR_REF]])
+      // LAMBDA: [[GTID_ADDR:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** %{{.+}}, align 8
+      // LAMBDA: [[GTID_ADDR_REF:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[GTID_ADDR]], align 4
+
+      // LAMBDA: call {{.+}} @__kmpc_for_static_init_4(%{{.+}}* @{{.+}}, i32 [[GTID_ADDR_REF]], i32 34, i32* [[IS_LAST_ADDR:%.+]], i32* %{{.+}}, i32* %{{.+}}, i32* %{{.+}}, i32 1, i32 1)
+      // LAMBDA: store i{{[0-9]+}} 1, i{{[0-9]+}}* [[G_PRIVATE_ADDR]],
+      // LAMBDA: store i{{[0-9]+}} 13, i{{[0-9]+}}* [[SIVAR1_PRIVATE_ADDR]],
+      // LAMBDA: [[G_PRIVATE_ADDR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG:%.+]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
+      // LAMBDA: store i{{[0-9]+}}* [[G_PRIVATE_ADDR]], i{{[0-9]+}}** [[G_PRIVATE_ADDR_REF]]
+      // LAMBDA: [[SIVAR_PRIVATE_ADDR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG:%.+]], i{{[0-9]+}} 0, i{{[0-9]+}} 1
+      // LAMBDA: store i{{[0-9]+}}* [[SIVAR1_PRIVATE_ADDR]], i{{[0-9]+}}** [[SIVAR_PRIVATE_ADDR_REF]]
+      // LAMBDA: call void [[INNER_LAMBDA:@.+]](%{{.+}}* {{[^,]*}} [[ARG]])
+      // LAMBDA: call void @__kmpc_for_static_fini(%{{.+}}* @{{.+}}, i32 [[GTID_ADDR_REF]])
+      {
+        g = 1;
+        sivar = 13;
+      }
+      // Check for final copying of private values back to original vars.
+      // LAMBDA: [[IS_LAST_VAL:%.+]] = load i32, i32* [[IS_LAST_ADDR]],
+      // LAMBDA: [[IS_LAST_ITER:%.+]] = icmp ne i32 [[IS_LAST_VAL]], 0
+      // LAMBDA: br i1 [[IS_LAST_ITER:%.+]], label %[[LAST_THEN:.+]], label %[[LAST_DONE:.+]]
+      // LAMBDA: [[LAST_THEN]]
+      // Actual copying.
+
+      // original g=private_g;
+      // LAMBDA: [[G_VAL:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[G_PRIVATE_ADDR]],
+      // LAMBDA: store volatile i{{[0-9]+}} [[G_VAL]], i{{[0-9]+}}* [[G]],
+
+      // original sivar = private sivar;
+      // LAMBDA: [[SIVAR1_VAL:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[SIVAR1_PRIVATE_ADDR]],
+      // LAMBDA: store i{{[0-9]+}} [[SIVAR1_VAL]], i{{[0-9]+}}* [[SIVAR_REF_ADDR]],
+      // LAMBDA: br label %[[LAST_DONE]]
+      // LAMBDA: [[LAST_DONE]]
+      // LAMBDA: call void @__kmpc_barrier(%{{.+}}* @{{.+}}, i{{[0-9]+}} [[GTID_ADDR_REF]])
 #pragma omp section
-    [&]() {
-      // LAMBDA: define {{.+}} void [[INNER_LAMBDA]](%{{.+}}* {{[^,]*}} [[ARG_PTR:%.+]])
-      // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
-      g = 2;
-      sivar = 23;
-      // LAMBDA: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
-      // LAMBDA: [[G_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
-      // LAMBDA: [[G_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[G_PTR_REF]]
-      // LAMBDA: store i{{[0-9]+}} 2, i{{[0-9]+}}* [[G_REF]]
-      // LAMBDA: [[SIVAR_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 1
-      // LAMBDA: [[SIVAR_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[SIVAR_PTR_REF]]
-      // LAMBDA: store i{{[0-9]+}} 23, i{{[0-9]+}}* [[SIVAR_REF]]
-    }();
-  }
+      [&]() {
+        // LAMBDA: define {{.+}} void [[INNER_LAMBDA]](%{{.+}}* {{[^,]*}} [[ARG_PTR:%.+]])
+        // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
+        g = 2;
+        sivar = 23;
+        // LAMBDA: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
+        // LAMBDA: [[G_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
+        // LAMBDA: [[G_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[G_PTR_REF]]
+        // LAMBDA: store i{{[0-9]+}} 2, i{{[0-9]+}}* [[G_REF]]
+        // LAMBDA: [[SIVAR_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 1
+        // LAMBDA: [[SIVAR_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[SIVAR_PTR_REF]]
+        // LAMBDA: store i{{[0-9]+}} 23, i{{[0-9]+}}* [[SIVAR_REF]]
+      }();
+    }
   }();
   return 0;
 #elif defined(BLOCKS)
@@ -155,67 +156,67 @@ int main() {
   // BLOCKS: call void {{.+}} @__kmpc_fork_call({{.+}}, i32 1, {{.+}}* [[OMP_REGION:@.+]] to {{.+}})
 #pragma omp parallel
 #pragma omp sections lastprivate(g, sivar)
-  {
-    // BLOCKS: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias [[GTID:%.+]], i32* noalias %{{.+}}, i32* nonnull align 4 dereferenceable(4) [[SIVAR:%.+]])
-    // BLOCKS: alloca i{{[0-9]+}},
-    // BLOCKS: alloca i{{[0-9]+}},
-    // BLOCKS: alloca i{{[0-9]+}},
-    // BLOCKS: alloca i{{[0-9]+}},
-    // BLOCKS: alloca i{{[0-9]+}},
-    // BLOCKS: [[G_PRIVATE_ADDR:%.+]] = alloca i{{[0-9]+}},
-    // BLOCKS: [[SIVAR1_PRIVATE_ADDR:%.+]] = alloca i{{[0-9]+}},
-
-    // BLOCKS: store i{{[0-9]+}}* [[SIVAR]], i{{[0-9]+}}** [[SIVAR_ADDR:%.+]],
-    // BLOCKS: [[SIVAR_REF_ADDR:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[SIVAR_ADDR]],
-
-    // BLOCKS: [[GTID_ADDR:%.+]] = load i32*, i32** [[GTID:%.+]], align 8
-    // BLOCKS: [[GTID_ADDR_REF:%.+]] = load i32, i32* [[GTID_ADDR]], align 4
-    // BLOCKS: call {{.+}} @__kmpc_for_static_init_4(%{{.+}}* @{{.+}}, i32 [[GTID_ADDR_REF]], i32 34, i32* [[IS_LAST_ADDR:%.+]], i32* %{{.+}}, i32* %{{.+}}, i32* %{{.+}}, i32 1, i32 1)
-    // BLOCKS: store i{{[0-9]+}} 1, i{{[0-9]+}}* [[G_PRIVATE_ADDR]],
-    // BLOCKS: store i{{[0-9]+}} 17, i{{[0-9]+}}* [[SIVAR1_PRIVATE_ADDR]],
-    // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-    // BLOCKS: i{{[0-9]+}}* [[G_PRIVATE_ADDR]]
-    // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-    // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
-    // BLOCKS: i{{[0-9]+}}* [[SIVAR1_PRIVATE_ADDR]]
-    // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
-    // BLOCKS: call void {{%.+}}(i8
-    // BLOCKS: call void @__kmpc_for_static_fini(%{{.+}}* @{{.+}}, i32 [[GTID_ADDR_REF]])
     {
-      g = 1;
-      sivar = 17;
-    }
-    // Check for final copying of private values back to original vars.
-    // BLOCKS: [[IS_LAST_VAL:%.+]] = load i32, i32* [[IS_LAST_ADDR]],
-    // BLOCKS: [[IS_LAST_ITER:%.+]] = icmp ne i32 [[IS_LAST_VAL]], 0
-    // BLOCKS: br i1 [[IS_LAST_ITER:%.+]], label %[[LAST_THEN:.+]], label %[[LAST_DONE:.+]]
-    // BLOCKS: [[LAST_THEN]]
-    // Actual copying.
+      // BLOCKS: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias [[GTID:%.+]], i32* noalias %{{.+}}, i32* nonnull align 4 dereferenceable(4) [[SIVAR:%.+]])
+      // BLOCKS: alloca i{{[0-9]+}},
+      // BLOCKS: alloca i{{[0-9]+}},
+      // BLOCKS: alloca i{{[0-9]+}},
+      // BLOCKS: alloca i{{[0-9]+}},
+      // BLOCKS: alloca i{{[0-9]+}},
+      // BLOCKS: [[G_PRIVATE_ADDR:%.+]] = alloca i{{[0-9]+}},
+      // BLOCKS: [[SIVAR1_PRIVATE_ADDR:%.+]] = alloca i{{[0-9]+}},
 
-    // original g=private_g;
-    // BLOCKS: [[G_VAL:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[G_PRIVATE_ADDR]],
-    // BLOCKS: store volatile i{{[0-9]+}} [[G_VAL]], i{{[0-9]+}}* [[G]],
+      // BLOCKS: store i{{[0-9]+}}* [[SIVAR]], i{{[0-9]+}}** [[SIVAR_ADDR:%.+]],
+      // BLOCKS: [[SIVAR_REF_ADDR:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[SIVAR_ADDR]],
 
-    // original sivar = private sivar;
-    // BLOCKS: [[SIVAR1_VAL:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[SIVAR1_PRIVATE_ADDR]],
-    // BLOCKS: store i{{[0-9]+}} [[SIVAR1_VAL]], i{{[0-9]+}}* [[SIVAR_REF_ADDR]],
-    // BLOCKS: br label %[[LAST_DONE]]
-    // BLOCKS: [[LAST_DONE]]
-    // BLOCKS: call void @__kmpc_barrier(%{{.+}}* @{{.+}}, i{{[0-9]+}} [[GTID_ADDR_REF]])
+      // BLOCKS: [[GTID_ADDR:%.+]] = load i32*, i32** [[GTID:%.+]], align 8
+      // BLOCKS: [[GTID_ADDR_REF:%.+]] = load i32, i32* [[GTID_ADDR]], align 4
+      // BLOCKS: call {{.+}} @__kmpc_for_static_init_4(%{{.+}}* @{{.+}}, i32 [[GTID_ADDR_REF]], i32 34, i32* [[IS_LAST_ADDR:%.+]], i32* %{{.+}}, i32* %{{.+}}, i32* %{{.+}}, i32 1, i32 1)
+      // BLOCKS: store i{{[0-9]+}} 1, i{{[0-9]+}}* [[G_PRIVATE_ADDR]],
+      // BLOCKS: store i{{[0-9]+}} 17, i{{[0-9]+}}* [[SIVAR1_PRIVATE_ADDR]],
+      // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
+      // BLOCKS: i{{[0-9]+}}* [[G_PRIVATE_ADDR]]
+      // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
+      // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
+      // BLOCKS: i{{[0-9]+}}* [[SIVAR1_PRIVATE_ADDR]]
+      // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
+      // BLOCKS: call void {{%.+}}(i8
+      // BLOCKS: call void @__kmpc_for_static_fini(%{{.+}}* @{{.+}}, i32 [[GTID_ADDR_REF]])
+      {
+        g = 1;
+        sivar = 17;
+      }
+      // Check for final copying of private values back to original vars.
+      // BLOCKS: [[IS_LAST_VAL:%.+]] = load i32, i32* [[IS_LAST_ADDR]],
+      // BLOCKS: [[IS_LAST_ITER:%.+]] = icmp ne i32 [[IS_LAST_VAL]], 0
+      // BLOCKS: br i1 [[IS_LAST_ITER:%.+]], label %[[LAST_THEN:.+]], label %[[LAST_DONE:.+]]
+      // BLOCKS: [[LAST_THEN]]
+      // Actual copying.
+
+      // original g=private_g;
+      // BLOCKS: [[G_VAL:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[G_PRIVATE_ADDR]],
+      // BLOCKS: store volatile i{{[0-9]+}} [[G_VAL]], i{{[0-9]+}}* [[G]],
+
+      // original sivar = private sivar;
+      // BLOCKS: [[SIVAR1_VAL:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[SIVAR1_PRIVATE_ADDR]],
+      // BLOCKS: store i{{[0-9]+}} [[SIVAR1_VAL]], i{{[0-9]+}}* [[SIVAR_REF_ADDR]],
+      // BLOCKS: br label %[[LAST_DONE]]
+      // BLOCKS: [[LAST_DONE]]
+      // BLOCKS: call void @__kmpc_barrier(%{{.+}}* @{{.+}}, i{{[0-9]+}} [[GTID_ADDR_REF]])
 #pragma omp section
-    ^{
-      // BLOCKS: define {{.+}} void {{@.+}}(i8*
-      g = 2;
-      sivar = 29;
-      // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-      // BLOCKS: store i{{[0-9]+}} 2, i{{[0-9]+}}*
-      // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
-      // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
-      // BLOCKS: store i{{[0-9]+}} 29, i{{[0-9]+}}*
-      // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
-      // BLOCKS: ret
-    }();
-  }
+      ^{
+        // BLOCKS: define {{.+}} void {{@.+}}(i8*
+        g = 2;
+        sivar = 29;
+        // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
+        // BLOCKS: store i{{[0-9]+}} 2, i{{[0-9]+}}*
+        // BLOCKS-NOT: [[G]]{{[[^:word:]]}}
+        // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
+        // BLOCKS: store i{{[0-9]+}} 29, i{{[0-9]+}}*
+        // BLOCKS-NOT: [[SIVAR]]{{[[^:word:]]}}
+        // BLOCKS: ret
+      }();
+    }
   }();
   return 0;
 #else
@@ -228,9 +229,9 @@ int main() {
 #pragma omp sections lastprivate(t_var, vec, s_arr, var, sivar)
   {
     {
-    vec[0] = t_var;
-    s_arr[0] = var;
-    sivar = 31;
+      vec[0] = t_var;
+      s_arr[0] = var;
+      sivar = 31;
     }
   }
 #pragma omp parallel
@@ -407,4 +408,3 @@ int main() {
 // CHECK: call void @__kmpc_barrier(%{{.+}}* [[SECTIONS_BARRIER_LOC]], i{{[0-9]+}} [[GTID]])
 // CHECK: ret void
 #endif
-

@@ -58,9 +58,7 @@ public:
         NumExecuted(0), CriticalPredecessor(), CriticalMemoryInstruction() {}
   MemoryGroup(MemoryGroup &&) = default;
 
-  size_t getNumSuccessors() const {
-    return OrderSucc.size() + DataSucc.size();
-  }
+  size_t getNumSuccessors() const { return OrderSucc.size() + DataSucc.size(); }
   unsigned getNumPredecessors() const { return NumPredecessors; }
   unsigned getNumExecutingPredecessors() const {
     return NumExecutingPredecessors;
@@ -307,8 +305,7 @@ public:
   }
 
   unsigned createMemoryGroup() {
-    Groups.insert(
-        std::make_pair(NextGroupID, std::make_unique<MemoryGroup>()));
+    Groups.insert(std::make_pair(NextGroupID, std::make_unique<MemoryGroup>()));
     return NextGroupID++;
   }
 

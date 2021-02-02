@@ -19,32 +19,29 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    using weekday         = std::chrono::weekday;
-    using weekday_indexed = std::chrono::weekday_indexed;
+int main(int, char**) {
+  using weekday = std::chrono::weekday;
+  using weekday_indexed = std::chrono::weekday_indexed;
 
-    ASSERT_NOEXCEPT(                std::declval<const weekday_indexed>().ok());
-    ASSERT_SAME_TYPE(bool, decltype(std::declval<const weekday_indexed>().ok()));
+  ASSERT_NOEXCEPT(std::declval<const weekday_indexed>().ok());
+  ASSERT_SAME_TYPE(bool, decltype(std::declval<const weekday_indexed>().ok()));
 
-    static_assert(!weekday_indexed{}.ok(),                       "");
-    static_assert( weekday_indexed{std::chrono::Sunday, 2}.ok(), "");
+  static_assert(!weekday_indexed{}.ok(), "");
+  static_assert(weekday_indexed{std::chrono::Sunday, 2}.ok(), "");
 
-    assert(!(weekday_indexed(std::chrono::Tuesday, 0).ok()));
-    for (unsigned i = 1; i <= 5; ++i)
-    {
-        weekday_indexed wdi(std::chrono::Tuesday, i);
-        assert( wdi.ok());
-    }
+  assert(!(weekday_indexed(std::chrono::Tuesday, 0).ok()));
+  for (unsigned i = 1; i <= 5; ++i) {
+    weekday_indexed wdi(std::chrono::Tuesday, i);
+    assert(wdi.ok());
+  }
 
-    for (unsigned i = 6; i <= 20; ++i)
-    {
-        weekday_indexed wdi(std::chrono::Tuesday, i);
-        assert(!wdi.ok());
-    }
+  for (unsigned i = 6; i <= 20; ++i) {
+    weekday_indexed wdi(std::chrono::Tuesday, i);
+    assert(!wdi.ok());
+  }
 
-//  Not a valid weekday
-    assert(!(weekday_indexed(weekday{9U}, 1).ok()));
+  //  Not a valid weekday
+  assert(!(weekday_indexed(weekday{9U}, 1).ok()));
 
   return 0;
 }

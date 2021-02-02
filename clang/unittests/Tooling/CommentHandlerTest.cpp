@@ -13,7 +13,7 @@ namespace clang {
 
 struct Comment {
   Comment(const std::string &Message, unsigned Line, unsigned Col)
-    : Message(Message), Line(Line), Col(Col) { }
+      : Message(Message), Line(Line), Col(Col) {}
 
   std::string Message;
   unsigned Line, Col;
@@ -67,11 +67,11 @@ private:
   class CommentHandlerAction : public base::TestAction {
   public:
     CommentHandlerAction(CommentHandlerVisitor *Visitor)
-        : TestAction(Visitor) { }
+        : TestAction(Visitor) {}
 
     bool BeginSourceFileAction(CompilerInstance &CI) override {
       CommentHandlerVisitor *V =
-          static_cast<CommentHandlerVisitor*>(this->Visitor);
+          static_cast<CommentHandlerVisitor *>(this->Visitor);
       V->PP = &CI.getPreprocessor();
       V->PP->addCommentHandler(V);
       return true;
@@ -79,7 +79,7 @@ private:
 
     void EndSourceFileAction() override {
       CommentHandlerVisitor *V =
-          static_cast<CommentHandlerVisitor*>(this->Visitor);
+          static_cast<CommentHandlerVisitor *>(this->Visitor);
       V->PP->removeCommentHandler(V);
     }
   };
@@ -92,31 +92,31 @@ class CommentVerifier {
 
 public:
   CommentVerifier(const CommentList &Comments, Preprocessor *PP)
-      : Current(Comments.begin()), End(Comments.end()), PP(PP)
-    { }
+      : Current(Comments.begin()), End(Comments.end()), PP(PP) {}
 
-  CommentVerifier(CommentVerifier &&C) : Current(C.Current), End(C.End), PP(C.PP) {
+  CommentVerifier(CommentVerifier &&C)
+      : Current(C.Current), End(C.End), PP(C.PP) {
     C.Current = C.End;
   }
 
   ~CommentVerifier() {
     if (Current != End) {
-      EXPECT_TRUE(Current == End) << "Unexpected comment \""
-        << Current->Message << "\" at line " << Current->Line << ", column "
-        << Current->Col;
+      EXPECT_TRUE(Current == End)
+          << "Unexpected comment \"" << Current->Message << "\" at line "
+          << Current->Line << ", column " << Current->Col;
     }
   }
 
   void Match(const char *Message, unsigned Line, unsigned Col) {
     EXPECT_TRUE(Current != End) << "Comment " << Message << " not found";
-    if (Current == End) return;
+    if (Current == End)
+      return;
 
     const Comment &C = *Current;
     EXPECT_TRUE(C.Message == Message && C.Line == Line && C.Col == Col)
-      <<   "Expected comment \"" << Message
-      << "\" at line " << Line   << ", column " << Col
-      << "\nActual comment   \"" << C.Message
-      << "\" at line " << C.Line << ", column " << C.Col;
+        << "Expected comment \"" << Message << "\" at line " << Line
+        << ", column " << Col << "\nActual comment   \"" << C.Message
+        << "\" at line " << C.Line << ", column " << C.Col;
 
     ++Current;
   }
@@ -127,7 +127,6 @@ CommentVerifier CommentHandlerVisitor::GetVerifier() {
   return CommentVerifier(Comments, PP);
 }
 
-
 TEST(CommentHandlerTest, BasicTest1) {
   CommentHandlerVisitor Visitor;
   EXPECT_TRUE(Visitor.runOver("class X {}; int main() { return 0; }"));
@@ -136,20 +135,19 @@ TEST(CommentHandlerTest, BasicTest1) {
 
 TEST(CommentHandlerTest, BasicTest2) {
   CommentHandlerVisitor Visitor;
-  EXPECT_TRUE(Visitor.runOver(
-        "class X {}; int main() { /* comment */ return 0; }"));
+  EXPECT_TRUE(
+      Visitor.runOver("class X {}; int main() { /* comment */ return 0; }"));
   CommentVerifier Verifier = Visitor.GetVerifier();
   Verifier.Match("/* comment */", 1, 26);
 }
 
 TEST(CommentHandlerTest, BasicTest3) {
   CommentHandlerVisitor Visitor;
-  EXPECT_TRUE(Visitor.runOver(
-        "class X {}; // comment 1\n"
-        "int main() {\n"
-        "  // comment 2\n"
-        "  return 0;\n"
-        "}"));
+  EXPECT_TRUE(Visitor.runOver("class X {}; // comment 1\n"
+                              "int main() {\n"
+                              "  // comment 2\n"
+                              "  return 0;\n"
+                              "}"));
   CommentVerifier Verifier = Visitor.GetVerifier();
   Verifier.Match("// comment 1", 1, 13);
   Verifier.Match("// comment 2", 3, 3);
@@ -157,32 +155,30 @@ TEST(CommentHandlerTest, BasicTest3) {
 
 TEST(CommentHandlerTest, IfBlock1) {
   CommentHandlerVisitor Visitor;
-  EXPECT_TRUE(Visitor.runOver(
-        "#if 0\n"
-        "// ignored comment\n"
-        "#endif\n"
-        "// visible comment\n"));
+  EXPECT_TRUE(Visitor.runOver("#if 0\n"
+                              "// ignored comment\n"
+                              "#endif\n"
+                              "// visible comment\n"));
   CommentVerifier Verifier = Visitor.GetVerifier();
   Verifier.Match("// visible comment", 4, 1);
 }
 
 TEST(CommentHandlerTest, IfBlock2) {
   CommentHandlerVisitor Visitor;
-  EXPECT_TRUE(Visitor.runOver(
-        "#define TEST        // visible_1\n"
-        "#ifndef TEST        // visible_2\n"
-        "                    // ignored_3\n"
-        "# ifdef UNDEFINED   // ignored_4\n"
-        "# endif             // ignored_5\n"
-        "#elif defined(TEST) // visible_6\n"
-        "# if 1              // visible_7\n"
-        "                    // visible_8\n"
-        "# else              // visible_9\n"
-        "                    // ignored_10\n"
-        "#  ifndef TEST      // ignored_11\n"
-        "#  endif            // ignored_12\n"
-        "# endif             // visible_13\n"
-        "#endif              // visible_14\n"));
+  EXPECT_TRUE(Visitor.runOver("#define TEST        // visible_1\n"
+                              "#ifndef TEST        // visible_2\n"
+                              "                    // ignored_3\n"
+                              "# ifdef UNDEFINED   // ignored_4\n"
+                              "# endif             // ignored_5\n"
+                              "#elif defined(TEST) // visible_6\n"
+                              "# if 1              // visible_7\n"
+                              "                    // visible_8\n"
+                              "# else              // visible_9\n"
+                              "                    // ignored_10\n"
+                              "#  ifndef TEST      // ignored_11\n"
+                              "#  endif            // ignored_12\n"
+                              "# endif             // visible_13\n"
+                              "#endif              // visible_14\n"));
 
   CommentVerifier Verifier = Visitor.GetVerifier();
   Verifier.Match("// visible_1", 1, 21);
@@ -196,11 +192,10 @@ TEST(CommentHandlerTest, IfBlock2) {
 }
 
 TEST(CommentHandlerTest, IfBlock3) {
-  const char *Source =
-        "/* commented out ...\n"
-        "#if 0\n"
-        "// enclosed\n"
-        "#endif */";
+  const char *Source = "/* commented out ...\n"
+                       "#if 0\n"
+                       "// enclosed\n"
+                       "#endif */";
 
   CommentHandlerVisitor Visitor;
   EXPECT_TRUE(Visitor.runOver(Source));
@@ -211,9 +206,9 @@ TEST(CommentHandlerTest, IfBlock3) {
 TEST(CommentHandlerTest, PPDirectives) {
   CommentHandlerVisitor Visitor;
   EXPECT_TRUE(Visitor.runOver(
-        "#warning Y   // ignored_1\n" // #warning takes whole line as message
-        "#undef MACRO // visible_2\n"
-        "#line 1      // visible_3\n"));
+      "#warning Y   // ignored_1\n" // #warning takes whole line as message
+      "#undef MACRO // visible_2\n"
+      "#line 1      // visible_3\n"));
 
   CommentVerifier Verifier = Visitor.GetVerifier();
   Verifier.Match("// visible_2", 2, 14);

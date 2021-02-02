@@ -566,10 +566,10 @@ public:
   ZhangShashaMatcher(const ASTDiff::Impl &DiffImpl, const SyntaxTree::Impl &T1,
                      const SyntaxTree::Impl &T2, NodeId Id1, NodeId Id2)
       : DiffImpl(DiffImpl), S1(T1, Id1), S2(T2, Id2) {
-    TreeDist = std::make_unique<std::unique_ptr<double[]>[]>(
-        size_t(S1.getSize()) + 1);
-    ForestDist = std::make_unique<std::unique_ptr<double[]>[]>(
-        size_t(S1.getSize()) + 1);
+    TreeDist =
+        std::make_unique<std::unique_ptr<double[]>[]>(size_t(S1.getSize()) + 1);
+    ForestDist =
+        std::make_unique<std::unique_ptr<double[]>[]>(size_t(S1.getSize()) + 1);
     for (int I = 0, E = S1.getSize() + 1; I < E; ++I) {
       TreeDist[I] = std::make_unique<double[]>(size_t(S2.getSize()) + 1);
       ForestDist[I] = std::make_unique<double[]>(size_t(S2.getSize()) + 1);

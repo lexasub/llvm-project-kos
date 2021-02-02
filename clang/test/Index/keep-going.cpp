@@ -1,13 +1,13 @@
 #include "missing1.h"
 
-template<class T>
+template <class T>
 class A { T a; };
 
-class B : public A<int> { };
+class B : public A<int> {};
 
 #include "missing2.h"
 
-class C : public A<float> { };
+class C : public A<float> {};
 
 // Not found includes shouldn't affect subsequent correct includes.
 #include "foo.h"

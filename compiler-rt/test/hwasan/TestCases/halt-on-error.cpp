@@ -16,12 +16,12 @@
 
 // REQUIRES: stable-runtime
 
-#include <stdlib.h>
 #include <sanitizer/hwasan_interface.h>
+#include <stdlib.h>
 
 int main() {
   __hwasan_enable_allocator_tagging();
-  int* volatile x = (int*)malloc(16);
+  int *volatile x = (int *)malloc(16);
   free(x);
   __hwasan_disable_allocator_tagging();
   return x[2] + ((char *)x)[6] + ((char *)x)[9];

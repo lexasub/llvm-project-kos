@@ -1,1 +1,5 @@
-namespace N { struct S { friend struct foo; }; }
+namespace N {
+struct S {
+  friend struct foo;
+};
+} // namespace N

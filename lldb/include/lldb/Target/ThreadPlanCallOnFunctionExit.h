@@ -48,6 +48,6 @@ private:
   Callback m_callback;
   lldb::ThreadPlanSP m_step_out_threadplan_sp;
 };
-}
+} // namespace lldb_private
 
 #endif // LLDB_TARGET_THREADPLANCALLONFUNCTIONEXIT_H

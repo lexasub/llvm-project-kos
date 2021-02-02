@@ -11,10 +11,10 @@
 //===----------------------------------------------------------------------===//
 
 #include "sanitizer_allocator_internal.h"
-#include "sanitizer_platform.h"
 #include "sanitizer_internal_defs.h"
 #include "sanitizer_libc.h"
 #include "sanitizer_placement_new.h"
+#include "sanitizer_platform.h"
 #include "sanitizer_symbolizer_internal.h"
 
 namespace __sanitizer {
@@ -43,7 +43,7 @@ SymbolizedStack::SymbolizedStack() : next(nullptr), info() {}
 
 SymbolizedStack *SymbolizedStack::New(uptr addr) {
   void *mem = InternalAlloc(sizeof(SymbolizedStack));
-  SymbolizedStack *res = new(mem) SymbolizedStack();
+  SymbolizedStack *res = new (mem) SymbolizedStack();
   res->info.address = addr;
   return res;
 }
@@ -55,9 +55,7 @@ void SymbolizedStack::ClearAll() {
   InternalFree(this);
 }
 
-DataInfo::DataInfo() {
-  internal_memset(this, 0, sizeof(DataInfo));
-}
+DataInfo::DataInfo() { internal_memset(this, 0, sizeof(DataInfo)); }
 
 void DataInfo::Clear() {
   InternalFree(module);
@@ -80,9 +78,7 @@ Symbolizer *Symbolizer::symbolizer_;
 StaticSpinMutex Symbolizer::init_mu_;
 LowLevelAllocator Symbolizer::symbolizer_allocator_;
 
-void Symbolizer::InvalidateModuleList() {
-  modules_fresh_ = false;
-}
+void Symbolizer::InvalidateModuleList() { modules_fresh_ = false; }
 
 void Symbolizer::AddHooks(Symbolizer::StartSymbolizationHook start_hook,
                           Symbolizer::EndSymbolizationHook end_hook) {
@@ -112,8 +108,12 @@ const char *Symbolizer::ModuleNameOwner::GetOwnedCopy(const char *str) {
 }
 
 Symbolizer::Symbolizer(IntrusiveList<SymbolizerTool> tools)
-    : module_names_(&mu_), modules_(), modules_fresh_(false), tools_(tools),
-      start_hook_(0), end_hook_(0) {}
+    : module_names_(&mu_),
+      modules_(),
+      modules_fresh_(false),
+      tools_(tools),
+      start_hook_(0),
+      end_hook_(0) {}
 
 Symbolizer::SymbolizerScope::SymbolizerScope(const Symbolizer *sym)
     : sym_(sym) {

@@ -19,6 +19,6 @@
 #include <iostream>
 
 int main(int, char**) {
-    std::wcout << L"1234";
-    return 0;
+  std::wcout << L"1234";
+  return 0;
 }

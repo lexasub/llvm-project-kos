@@ -10,7 +10,7 @@ typedef auto PR25449(); // expected-error {{'auto' not allowed in typedef}}
 thread_local auto x; // expected-error {{requires an initializer}}
 
 void g() {
-  [](auto){}(0);
+  [](auto) {}(0);
 #if __cplusplus == 201103L
   // expected-error@-2 {{'auto' not allowed in lambda parameter}}
 #endif
@@ -18,7 +18,7 @@ void g() {
 
 void rdar47689465() {
   int x = 0;
-  [](auto __attribute__((noderef)) *){}(&x);
+  [](auto __attribute__((noderef)) *) {}(&x);
 #if __cplusplus == 201103L
   // expected-error@-2 {{'auto' not allowed in lambda parameter}}
 #endif

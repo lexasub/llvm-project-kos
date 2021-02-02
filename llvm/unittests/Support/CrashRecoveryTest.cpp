@@ -124,9 +124,7 @@ TEST(CrashRecoveryTest, RaiseException) {
   EXPECT_FALSE(CrashRecoveryContext().RunSafely(raiseIt));
 }
 
-static void outputString() {
-  OutputDebugStringA("output for debugger\n");
-}
+static void outputString() { OutputDebugStringA("output for debugger\n"); }
 
 TEST(CrashRecoveryTest, CallOutputDebugString) {
   llvm::CrashRecoveryContext::Enable();
@@ -171,8 +169,8 @@ TEST(CrashRecoveryTest, UnixCRCReturnCode) {
 
   std::string Executable =
       sys::fs::getMainExecutable(TestMainArgv0, &CrashTestStringArg1);
-  StringRef argv[] = {
-      Executable, "--gtest_filter=CrashRecoveryTest.UnixCRCReturnCode"};
+  StringRef argv[] = {Executable,
+                      "--gtest_filter=CrashRecoveryTest.UnixCRCReturnCode"};
 
   // Add LLVM_CRC_UNIXCRCRETURNCODE to the environment of the child process.
   int Res = setenv("LLVM_CRC_UNIXCRCRETURNCODE", "1", 0);
@@ -180,8 +178,8 @@ TEST(CrashRecoveryTest, UnixCRCReturnCode) {
 
   std::string Error;
   bool ExecutionFailed;
-  int RetCode = ExecuteAndWait(Executable, argv, {}, {}, 0, 0, &Error,
-                               &ExecutionFailed);
+  int RetCode =
+      ExecuteAndWait(Executable, argv, {}, {}, 0, 0, &Error, &ExecutionFailed);
   ASSERT_EQ(-2, RetCode);
 }
 #endif

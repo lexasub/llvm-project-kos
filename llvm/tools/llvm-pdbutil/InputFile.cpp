@@ -120,7 +120,7 @@ static std::string formatChecksumKind(FileChecksumKind Kind) {
 }
 
 template <typename... Args>
-static void formatInternal(LinePrinter &Printer, bool Append, Args &&... args) {
+static void formatInternal(LinePrinter &Printer, bool Append, Args &&...args) {
   if (Append)
     Printer.format(std::forward<Args>(args)...);
   else

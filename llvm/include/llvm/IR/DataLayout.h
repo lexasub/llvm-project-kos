@@ -25,10 +25,10 @@
 #include "llvm/ADT/StringRef.h"
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/Type.h"
+#include "llvm/Support/Alignment.h"
 #include "llvm/Support/Casting.h"
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/MathExtras.h"
-#include "llvm/Support/Alignment.h"
 #include "llvm/Support/TypeSize.h"
 #include <cassert>
 #include <cstdint>
@@ -116,6 +116,7 @@ public:
     /// The function pointer alignment is a multiple of the function alignment.
     MultipleOfFunctionAlign,
   };
+
 private:
   /// Defaults to false.
   bool BigEndian;
@@ -152,8 +153,8 @@ private:
                                                                    BitWidth);
   }
 
-  AlignmentsTy::iterator
-  findAlignmentLowerBound(AlignTypeEnum AlignType, uint32_t BitWidth);
+  AlignmentsTy::iterator findAlignmentLowerBound(AlignTypeEnum AlignType,
+                                                 uint32_t BitWidth);
 
   /// The string representation used to create this DataLayout
   std::string StringRepresentation;
@@ -195,9 +196,7 @@ private:
 
 public:
   /// Constructs a DataLayout from a specification string. See reset().
-  explicit DataLayout(StringRef LayoutDescription) {
-    reset(LayoutDescription);
-  }
+  explicit DataLayout(StringRef LayoutDescription) { reset(LayoutDescription); }
 
   /// Initialize target data from properties stored in the module.
   explicit DataLayout(const Module *M);
@@ -408,9 +407,7 @@ public:
   }
 
   /// Returns the maximum pointer size over all address spaces.
-  unsigned getMaxPointerSizeInBits() const {
-    return getMaxPointerSize() * 8;
-  }
+  unsigned getMaxPointerSizeInBits() const { return getMaxPointerSize() * 8; }
 
   /// Size in bits of index used for address calculation in getelementptr.
   unsigned getIndexSizeInBits(unsigned AS) const {
@@ -467,7 +464,7 @@ public:
   /// For example, returns 5 for i36 and 10 for x86_fp80.
   TypeSize getTypeStoreSize(Type *Ty) const {
     TypeSize BaseSize = getTypeSizeInBits(Ty);
-    return { (BaseSize.getKnownMinSize() + 7) / 8, BaseSize.isScalable() };
+    return {(BaseSize.getKnownMinSize() + 7) / 8, BaseSize.isScalable()};
   }
 
   /// Returns the maximum number of bits that may be overwritten by
@@ -676,7 +673,7 @@ inline TypeSize DataLayout::getTypeSizeInBits(Type *Ty) const {
   case Type::StructTyID:
     // Get the layout annotation... which is lazily created on demand.
     return TypeSize::Fixed(
-                        getStructLayout(cast<StructType>(Ty))->getSizeInBits());
+        getStructLayout(cast<StructType>(Ty))->getSizeInBits());
   case Type::IntegerTyID:
     return TypeSize::Fixed(Ty->getIntegerBitWidth());
   case Type::HalfTyID:

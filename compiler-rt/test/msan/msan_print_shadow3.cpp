@@ -1,8 +1,8 @@
 // RUN: %clangxx_msan -O0 -g %s -o %t && %run %t >%t.out 2>&1
 // RUN: FileCheck %s < %t.out
 
-#include <stdint.h>
 #include <sanitizer/msan_interface.h>
+#include <stdint.h>
 
 int main(void) {
   unsigned long long x = 0; // For 8-byte alignment.

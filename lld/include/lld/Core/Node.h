@@ -45,9 +45,7 @@ public:
 
   int getSize() const { return _size; }
 
-  static bool classof(const Node *a) {
-    return a->kind() == Kind::GroupEnd;
-  }
+  static bool classof(const Node *a) { return a->kind() == Kind::GroupEnd; }
 
 private:
   int _size;
@@ -59,9 +57,7 @@ public:
   explicit FileNode(std::unique_ptr<File> f)
       : Node(Node::Kind::File), _file(std::move(f)) {}
 
-  static bool classof(const Node *a) {
-    return a->kind() == Node::Kind::File;
-  }
+  static bool classof(const Node *a) { return a->kind() == Node::Kind::File; }
 
   File *getFile() { return _file.get(); }
 

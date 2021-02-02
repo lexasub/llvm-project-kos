@@ -376,19 +376,47 @@ static constexpr OptionDefinition g_enable_option_table[] = {
     // Source stream include/exclude options (the first-level filter). This one
     // should be made as small as possible as everything that goes through here
     // must be processed by the process monitor.
-    {LLDB_OPT_SET_ALL, false, "any-process", 'a', OptionParser::eNoArgument,
-     nullptr, {}, 0, eArgTypeNone,
+    {LLDB_OPT_SET_ALL,
+     false,
+     "any-process",
+     'a',
+     OptionParser::eNoArgument,
+     nullptr,
+     {},
+     0,
+     eArgTypeNone,
      "Specifies log messages from other related processes should be "
      "included."},
-    {LLDB_OPT_SET_ALL, false, "debug", 'd', OptionParser::eNoArgument, nullptr,
-     {}, 0, eArgTypeNone,
+    {LLDB_OPT_SET_ALL,
+     false,
+     "debug",
+     'd',
+     OptionParser::eNoArgument,
+     nullptr,
+     {},
+     0,
+     eArgTypeNone,
      "Specifies debug-level log messages should be included.  Specifying"
      " --debug implies --info."},
-    {LLDB_OPT_SET_ALL, false, "info", 'i', OptionParser::eNoArgument, nullptr,
-     {}, 0, eArgTypeNone,
+    {LLDB_OPT_SET_ALL,
+     false,
+     "info",
+     'i',
+     OptionParser::eNoArgument,
+     nullptr,
+     {},
+     0,
+     eArgTypeNone,
      "Specifies info-level log messages should be included."},
-    {LLDB_OPT_SET_ALL, false, "filter", 'f', OptionParser::eRequiredArgument,
-     nullptr, {}, 0, eArgRawInput,
+    {LLDB_OPT_SET_ALL,
+     false,
+     "filter",
+     'f',
+     OptionParser::eRequiredArgument,
+     nullptr,
+     {},
+     0,
+     eArgRawInput,
      // There doesn't appear to be a great way for me to have these multi-line,
      // formatted tables in help.  This looks mostly right but there are extra
      // linefeeds added at seemingly random spots, and indentation isn't
@@ -421,53 +449,116 @@ static constexpr OptionDefinition g_enable_option_table[] = {
      "The regex flavor used is the C++ std::regex ECMAScript format.  "
      "Prefer character classes like [[:digit:]] to \\d and the like, as "
      "getting the backslashes escaped through properly is error-prone."},
-    {LLDB_OPT_SET_ALL, false, "live-stream", 'l',
-     OptionParser::eRequiredArgument, nullptr, {}, 0, eArgTypeBoolean,
+    {LLDB_OPT_SET_ALL,
+     false,
+     "live-stream",
+     'l',
+     OptionParser::eRequiredArgument,
+     nullptr,
+     {},
+     0,
+     eArgTypeBoolean,
      "Specify whether logging events are live-streamed or buffered.  "
      "True indicates live streaming, false indicates buffered.  The "
      "default is true (live streaming).  Live streaming will deliver "
      "log messages with less delay, but buffered capture mode has less "
      "of an observer effect."},
-    {LLDB_OPT_SET_ALL, false, "no-match-accepts", 'n',
-     OptionParser::eRequiredArgument, nullptr, {}, 0, eArgTypeBoolean,
+    {LLDB_OPT_SET_ALL,
+     false,
+     "no-match-accepts",
+     'n',
+     OptionParser::eRequiredArgument,
+     nullptr,
+     {},
+     0,
+     eArgTypeBoolean,
      "Specify whether a log message that doesn't match any filter rule "
      "is accepted or rejected, where true indicates accept.  The "
      "default is true."},
-    {LLDB_OPT_SET_ALL, false, "echo-to-stderr", 'e',
-     OptionParser::eRequiredArgument, nullptr, {}, 0, eArgTypeBoolean,
+    {LLDB_OPT_SET_ALL,
+     false,
+     "echo-to-stderr",
+     'e',
+     OptionParser::eRequiredArgument,
+     nullptr,
+     {},
+     0,
+     eArgTypeBoolean,
      "Specify whether os_log()/NSLog() messages are echoed to the "
      "target program's stderr.  When DarwinLog is enabled, we shut off "
      "the mirroring of os_log()/NSLog() to the program's stderr.  "
      "Setting this flag to true will restore the stderr mirroring."
      "The default is false."},
-    {LLDB_OPT_SET_ALL, false, "broadcast-events", 'b',
-     OptionParser::eRequiredArgument, nullptr, {}, 0, eArgTypeBoolean,
+    {LLDB_OPT_SET_ALL,
+     false,
+     "broadcast-events",
+     'b',
+     OptionParser::eRequiredArgument,
+     nullptr,
+     {},
+     0,
+     eArgTypeBoolean,
      "Specify if the plugin should broadcast events.  Broadcasting "
      "log events is a requirement for displaying the log entries in "
      "LLDB command-line.  It is also required if LLDB clients want to "
      "process log events.  The default is true."},
     // Message formatting options
-    {LLDB_OPT_SET_ALL, false, "timestamp-relative", 'r',
-     OptionParser::eNoArgument, nullptr, {}, 0, eArgTypeNone,
+    {LLDB_OPT_SET_ALL,
+     false,
+     "timestamp-relative",
+     'r',
+     OptionParser::eNoArgument,
+     nullptr,
+     {},
+     0,
+     eArgTypeNone,
      "Include timestamp in the message header when printing a log "
      "message.  The timestamp is relative to the first displayed "
      "message."},
-    {LLDB_OPT_SET_ALL, false, "subsystem", 's', OptionParser::eNoArgument,
-     nullptr, {}, 0, eArgTypeNone,
+    {LLDB_OPT_SET_ALL,
+     false,
+     "subsystem",
+     's',
+     OptionParser::eNoArgument,
+     nullptr,
+     {},
+     0,
+     eArgTypeNone,
      "Include the subsystem in the message header when displaying "
      "a log message."},
-    {LLDB_OPT_SET_ALL, false, "category", 'c', OptionParser::eNoArgument,
-     nullptr, {}, 0, eArgTypeNone,
+    {LLDB_OPT_SET_ALL,
+     false,
+     "category",
+     'c',
+     OptionParser::eNoArgument,
+     nullptr,
+     {},
+     0,
+     eArgTypeNone,
      "Include the category in the message header when displaying "
      "a log message."},
-    {LLDB_OPT_SET_ALL, false, "activity-chain", 'C', OptionParser::eNoArgument,
-     nullptr, {}, 0, eArgTypeNone,
+    {LLDB_OPT_SET_ALL,
+     false,
+     "activity-chain",
+     'C',
+     OptionParser::eNoArgument,
+     nullptr,
+     {},
+     0,
+     eArgTypeNone,
      "Include the activity parent-child chain in the message header "
      "when displaying a log message.  The activity hierarchy is "
      "displayed as {grandparent-activity}:"
      "{parent-activity}:{activity}[:...]."},
-    {LLDB_OPT_SET_ALL, false, "all-fields", 'A', OptionParser::eNoArgument,
-     nullptr, {}, 0, eArgTypeNone,
+    {LLDB_OPT_SET_ALL,
+     false,
+     "all-fields",
+     'A',
+     OptionParser::eNoArgument,
+     nullptr,
+     {},
+     0,
+     eArgTypeNone,
      "Shortcut to specify that all header fields should be displayed."}};
 
 class EnableOptions : public Options {
@@ -985,8 +1076,9 @@ EnableOptionsSP ParseAutoEnableOptions(Status &error, Debugger &debugger) {
 
   // Parse the arguments.
   auto options_property_sp =
-      debugger.GetPropertyValue(nullptr, "plugin.structured-data.darwin-log."
-                                         "auto-enable-options",
+      debugger.GetPropertyValue(nullptr,
+                                "plugin.structured-data.darwin-log."
+                                "auto-enable-options",
                                 false, error);
   if (!error.Success())
     return EnableOptionsSP();
@@ -1041,7 +1133,7 @@ bool RunEnableCommand(CommandInterpreter &interpreter) {
                             return_object);
   return return_object.Succeeded();
 }
-}
+} // namespace sddarwinlog_private
 using namespace sddarwinlog_private;
 
 #pragma mark -
@@ -1160,8 +1252,9 @@ Status StructuredDataDarwinLog::GetDescription(
   // Log message payload objects will be dictionaries.
   const StructuredData::Dictionary *dictionary = object_sp->GetAsDictionary();
   if (!dictionary) {
-    SetErrorWithJSON(error, "Structured data should have been a dictionary "
-                            "but wasn't",
+    SetErrorWithJSON(error,
+                     "Structured data should have been a dictionary "
+                     "but wasn't",
                      *object_sp);
     return error;
   }
@@ -1169,8 +1262,9 @@ Status StructuredDataDarwinLog::GetDescription(
   // Validate this is really a message for our plugin.
   ConstString type_name;
   if (!dictionary->GetValueForKeyAsString("type", type_name)) {
-    SetErrorWithJSON(error, "Structured data doesn't contain mandatory "
-                            "type field",
+    SetErrorWithJSON(error,
+                     "Structured data doesn't contain mandatory "
+                     "type field",
                      *object_sp);
     return error;
   }
@@ -1186,8 +1280,9 @@ Status StructuredDataDarwinLog::GetDescription(
   // in an array with key name "events".
   StructuredData::Array *events = nullptr;
   if (!dictionary->GetValueForKeyAsArray("events", events) || !events) {
-    SetErrorWithJSON(error, "Log structured data is missing mandatory "
-                            "'events' field, expected to be an array",
+    SetErrorWithJSON(error,
+                     "Log structured data is missing mandatory "
+                     "'events' field, expected to be an array",
                      *object_sp);
     return error;
   }

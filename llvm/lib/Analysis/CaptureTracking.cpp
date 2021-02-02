@@ -32,9 +32,9 @@ using namespace llvm;
 
 #define DEBUG_TYPE "capture-tracking"
 
-STATISTIC(NumCaptured,          "Number of pointers maybe captured");
-STATISTIC(NumNotCaptured,       "Number of pointers not captured");
-STATISTIC(NumCapturedBefore,    "Number of pointers maybe captured before");
+STATISTIC(NumCaptured, "Number of pointers maybe captured");
+STATISTIC(NumNotCaptured, "Number of pointers not captured");
+STATISTIC(NumCapturedBefore, "Number of pointers maybe captured before");
 STATISTIC(NumNotCapturedBefore, "Number of pointers not captured before");
 
 /// The default value for MaxUsesToExplore argument. It's relatively small to
@@ -44,9 +44,9 @@ STATISTIC(NumNotCapturedBefore, "Number of pointers not captured before");
 /// use it where possible. The caching version can use much higher limit or
 /// don't have this cap at all.
 static cl::opt<unsigned>
-DefaultMaxUsesToExplore("capture-tracking-max-uses-to-explore", cl::Hidden,
-                        cl::desc("Maximal number of uses to explore."),
-                        cl::init(20));
+    DefaultMaxUsesToExplore("capture-tracking-max-uses-to-explore", cl::Hidden,
+                            cl::desc("Maximal number of uses to explore."),
+                            cl::init(20));
 
 unsigned llvm::getDefaultMaxUsesToExploreForCaptureTracking() {
   return DefaultMaxUsesToExplore;
@@ -73,113 +73,113 @@ bool CaptureTracker::isDereferenceableOrNull(Value *O, const DataLayout &DL) {
 }
 
 namespace {
-  struct SimpleCaptureTracker : public CaptureTracker {
-    explicit SimpleCaptureTracker(bool ReturnCaptures)
+struct SimpleCaptureTracker : public CaptureTracker {
+  explicit SimpleCaptureTracker(bool ReturnCaptures)
       : ReturnCaptures(ReturnCaptures), Captured(false) {}
 
-    void tooManyUses() override { Captured = true; }
+  void tooManyUses() override { Captured = true; }
 
-    bool captured(const Use *U) override {
-      if (isa<ReturnInst>(U->getUser()) && !ReturnCaptures)
-        return false;
-
-      Captured = true;
-      return true;
-    }
-
-    bool ReturnCaptures;
-
-    bool Captured;
-  };
-
-  /// Only find pointer captures which happen before the given instruction. Uses
-  /// the dominator tree to determine whether one instruction is before another.
-  /// Only support the case where the Value is defined in the same basic block
-  /// as the given instruction and the use.
-  struct CapturesBefore : public CaptureTracker {
-
-    CapturesBefore(bool ReturnCaptures, const Instruction *I, const DominatorTree *DT,
-                   bool IncludeI)
-      : BeforeHere(I), DT(DT),
-        ReturnCaptures(ReturnCaptures), IncludeI(IncludeI), Captured(false) {}
-
-    void tooManyUses() override { Captured = true; }
-
-    bool isSafeToPrune(Instruction *I) {
-      BasicBlock *BB = I->getParent();
-      // We explore this usage only if the usage can reach "BeforeHere".
-      // If use is not reachable from entry, there is no need to explore.
-      if (BeforeHere != I && !DT->isReachableFromEntry(BB))
-        return true;
-
-      // Compute the case where both instructions are inside the same basic
-      // block.
-      if (BB == BeforeHere->getParent()) {
-        // 'I' dominates 'BeforeHere' => not safe to prune.
-        //
-        // The value defined by an invoke dominates an instruction only
-        // if it dominates every instruction in UseBB. A PHI is dominated only
-        // if the instruction dominates every possible use in the UseBB. Since
-        // UseBB == BB, avoid pruning.
-        if (isa<InvokeInst>(BeforeHere) || isa<PHINode>(I) || I == BeforeHere)
-          return false;
-        if (!BeforeHere->comesBefore(I))
-          return false;
-
-        // 'BeforeHere' comes before 'I', it's safe to prune if we also
-        // guarantee that 'I' never reaches 'BeforeHere' through a back-edge or
-        // by its successors, i.e, prune if:
-        //
-        //  (1) BB is an entry block or have no successors.
-        //  (2) There's no path coming back through BB successors.
-        if (BB == &BB->getParent()->getEntryBlock() ||
-            !BB->getTerminator()->getNumSuccessors())
-          return true;
-
-        SmallVector<BasicBlock*, 32> Worklist;
-        Worklist.append(succ_begin(BB), succ_end(BB));
-        return !isPotentiallyReachableFromMany(Worklist, BB, nullptr, DT);
-      }
-
-      // If the value is defined in the same basic block as use and BeforeHere,
-      // there is no need to explore the use if BeforeHere dominates use.
-      // Check whether there is a path from I to BeforeHere.
-      if (BeforeHere != I && DT->dominates(BeforeHere, I) &&
-          !isPotentiallyReachable(I, BeforeHere, nullptr, DT))
-        return true;
-
+  bool captured(const Use *U) override {
+    if (isa<ReturnInst>(U->getUser()) && !ReturnCaptures)
       return false;
-    }
 
-    bool shouldExplore(const Use *U) override {
-      Instruction *I = cast<Instruction>(U->getUser());
+    Captured = true;
+    return true;
+  }
 
-      if (BeforeHere == I && !IncludeI)
-        return false;
+  bool ReturnCaptures;
 
-      if (isSafeToPrune(I))
-        return false;
+  bool Captured;
+};
 
+/// Only find pointer captures which happen before the given instruction. Uses
+/// the dominator tree to determine whether one instruction is before another.
+/// Only support the case where the Value is defined in the same basic block
+/// as the given instruction and the use.
+struct CapturesBefore : public CaptureTracker {
+
+  CapturesBefore(bool ReturnCaptures, const Instruction *I,
+                 const DominatorTree *DT, bool IncludeI)
+      : BeforeHere(I), DT(DT), ReturnCaptures(ReturnCaptures),
+        IncludeI(IncludeI), Captured(false) {}
+
+  void tooManyUses() override { Captured = true; }
+
+  bool isSafeToPrune(Instruction *I) {
+    BasicBlock *BB = I->getParent();
+    // We explore this usage only if the usage can reach "BeforeHere".
+    // If use is not reachable from entry, there is no need to explore.
+    if (BeforeHere != I && !DT->isReachableFromEntry(BB))
       return true;
-    }
 
-    bool captured(const Use *U) override {
-      if (isa<ReturnInst>(U->getUser()) && !ReturnCaptures)
+    // Compute the case where both instructions are inside the same basic
+    // block.
+    if (BB == BeforeHere->getParent()) {
+      // 'I' dominates 'BeforeHere' => not safe to prune.
+      //
+      // The value defined by an invoke dominates an instruction only
+      // if it dominates every instruction in UseBB. A PHI is dominated only
+      // if the instruction dominates every possible use in the UseBB. Since
+      // UseBB == BB, avoid pruning.
+      if (isa<InvokeInst>(BeforeHere) || isa<PHINode>(I) || I == BeforeHere)
+        return false;
+      if (!BeforeHere->comesBefore(I))
         return false;
 
-      Captured = true;
-      return true;
+      // 'BeforeHere' comes before 'I', it's safe to prune if we also
+      // guarantee that 'I' never reaches 'BeforeHere' through a back-edge or
+      // by its successors, i.e, prune if:
+      //
+      //  (1) BB is an entry block or have no successors.
+      //  (2) There's no path coming back through BB successors.
+      if (BB == &BB->getParent()->getEntryBlock() ||
+          !BB->getTerminator()->getNumSuccessors())
+        return true;
+
+      SmallVector<BasicBlock *, 32> Worklist;
+      Worklist.append(succ_begin(BB), succ_end(BB));
+      return !isPotentiallyReachableFromMany(Worklist, BB, nullptr, DT);
     }
 
-    const Instruction *BeforeHere;
-    const DominatorTree *DT;
+    // If the value is defined in the same basic block as use and BeforeHere,
+    // there is no need to explore the use if BeforeHere dominates use.
+    // Check whether there is a path from I to BeforeHere.
+    if (BeforeHere != I && DT->dominates(BeforeHere, I) &&
+        !isPotentiallyReachable(I, BeforeHere, nullptr, DT))
+      return true;
 
-    bool ReturnCaptures;
-    bool IncludeI;
+    return false;
+  }
 
-    bool Captured;
-  };
-}
+  bool shouldExplore(const Use *U) override {
+    Instruction *I = cast<Instruction>(U->getUser());
+
+    if (BeforeHere == I && !IncludeI)
+      return false;
+
+    if (isSafeToPrune(I))
+      return false;
+
+    return true;
+  }
+
+  bool captured(const Use *U) override {
+    if (isa<ReturnInst>(U->getUser()) && !ReturnCaptures)
+      return false;
+
+    Captured = true;
+    return true;
+  }
+
+  const Instruction *BeforeHere;
+  const DominatorTree *DT;
+
+  bool ReturnCaptures;
+  bool IncludeI;
+
+  bool Captured;
+};
+} // namespace
 
 /// PointerMayBeCaptured - Return true if this pointer value may be captured
 /// by the enclosing function (which is required to exist).  This routine can
@@ -188,9 +188,8 @@ namespace {
 /// counts as capturing it or not.  The boolean StoreCaptures specified whether
 /// storing the value (or part of it) into memory anywhere automatically
 /// counts as capturing it or not.
-bool llvm::PointerMayBeCaptured(const Value *V,
-                                bool ReturnCaptures, bool StoreCaptures,
-                                unsigned MaxUsesToExplore) {
+bool llvm::PointerMayBeCaptured(const Value *V, bool ReturnCaptures,
+                                bool StoreCaptures, unsigned MaxUsesToExplore) {
   assert(!isa<GlobalValue>(V) &&
          "It doesn't make sense to ask whether a global is captured.");
 
@@ -385,7 +384,8 @@ void llvm::PointerMayBeCaptured(const Value *V, CaptureTracker *Tracker,
           // Comparing a dereferenceable_or_null pointer against null cannot
           // lead to pointer escapes, because if it is not null it must be a
           // valid (in-bounds) pointer.
-          if (Tracker->isDereferenceableOrNull(O, I->getModule()->getDataLayout()))
+          if (Tracker->isDereferenceableOrNull(O,
+                                               I->getModule()->getDataLayout()))
             break;
         }
       }

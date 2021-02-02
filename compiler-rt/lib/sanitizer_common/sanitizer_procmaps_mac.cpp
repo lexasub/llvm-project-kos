@@ -11,26 +11,26 @@
 
 #include "sanitizer_platform.h"
 #if SANITIZER_MAC
-#include "sanitizer_common.h"
-#include "sanitizer_placement_new.h"
-#include "sanitizer_procmaps.h"
-
 #include <mach-o/dyld.h>
 #include <mach-o/loader.h>
 #include <mach/mach.h>
 
+#include "sanitizer_common.h"
+#include "sanitizer_placement_new.h"
+#include "sanitizer_procmaps.h"
+
 // These are not available in older macOS SDKs.
 #ifndef CPU_SUBTYPE_X86_64_H
-#define CPU_SUBTYPE_X86_64_H  ((cpu_subtype_t)8)   /* Haswell */
+#define CPU_SUBTYPE_X86_64_H ((cpu_subtype_t)8) /* Haswell */
 #endif
 #ifndef CPU_SUBTYPE_ARM_V7S
-#define CPU_SUBTYPE_ARM_V7S   ((cpu_subtype_t)11)  /* Swift */
+#define CPU_SUBTYPE_ARM_V7S ((cpu_subtype_t)11) /* Swift */
 #endif
 #ifndef CPU_SUBTYPE_ARM_V7K
-#define CPU_SUBTYPE_ARM_V7K   ((cpu_subtype_t)12)
+#define CPU_SUBTYPE_ARM_V7K ((cpu_subtype_t)12)
 #endif
 #ifndef CPU_TYPE_ARM64
-#define CPU_TYPE_ARM64        (CPU_TYPE_ARM | CPU_ARCH_ABI64)
+#define CPU_TYPE_ARM64 (CPU_TYPE_ARM | CPU_ARCH_ABI64)
 #endif
 
 namespace __sanitizer {
@@ -80,16 +80,11 @@ void MemoryMappedSegment::AddAddressRanges(LoadedModule *module) {
   } while (--data_->nsects);
 }
 
-MemoryMappingLayout::MemoryMappingLayout(bool cache_enabled) {
-  Reset();
-}
+MemoryMappingLayout::MemoryMappingLayout(bool cache_enabled) { Reset(); }
 
-MemoryMappingLayout::~MemoryMappingLayout() {
-}
+MemoryMappingLayout::~MemoryMappingLayout() {}
 
-bool MemoryMappingLayout::Error() const {
-  return false;
-}
+bool MemoryMappingLayout::Error() const { return false; }
 
 // More information about Mach-O headers can be found in mach-o/loader.h
 // Each Mach-O image has a header (mach_header or mach_header_64) starting with
@@ -153,7 +148,8 @@ static mach_header *get_dyld_image_header() {
     struct vm_region_submap_info_64 info;
     err = vm_region_recurse_64(mach_task_self(), &address, &size, &depth,
                                (vm_region_info_t)&info, &count);
-    if (err != KERN_SUCCESS) return nullptr;
+    if (err != KERN_SUCCESS)
+      return nullptr;
 
     if (size >= sizeof(mach_header) && info.protection & kProtectionRead) {
       mach_header *hdr = (mach_header *)address;
@@ -167,7 +163,8 @@ static mach_header *get_dyld_image_header() {
 }
 
 const mach_header *get_dyld_hdr() {
-  if (!dyld_hdr) dyld_hdr = get_dyld_image_header();
+  if (!dyld_hdr)
+    dyld_hdr = get_dyld_image_header();
 
   return dyld_hdr;
 }
@@ -186,7 +183,7 @@ static bool NextSegmentLoad(MemoryMappedSegment *segment,
   const char *lc = layout_data->current_load_cmd_addr;
   layout_data->current_load_cmd_addr += ((const load_command *)lc)->cmdsize;
   if (((const load_command *)lc)->cmd == kLCSegment) {
-    const SegmentCommand* sc = (const SegmentCommand *)lc;
+    const SegmentCommand *sc = (const SegmentCommand *)lc;
     uptr base_virt_addr, addr_mask;
     if (layout_data->current_image == kDyldImageIdx) {
       base_virt_addr = (uptr)get_dyld_hdr();
@@ -214,8 +211,7 @@ static bool NextSegmentLoad(MemoryMappedSegment *segment,
       seg_data->lc_type = kLCSegment;
       seg_data->base_virt_addr = base_virt_addr;
       seg_data->addr_mask = addr_mask;
-      internal_strncpy(seg_data->name, sc->segname,
-                       ARRAY_SIZE(seg_data->name));
+      internal_strncpy(seg_data->name, sc->segname, ARRAY_SIZE(seg_data->name));
     }
 
     // Return the initial protection.
@@ -243,15 +239,21 @@ ModuleArch ModuleArchFromCpuType(cpu_type_t cputype, cpu_subtype_t cpusubtype) {
     case CPU_TYPE_I386:
       return kModuleArchI386;
     case CPU_TYPE_X86_64:
-      if (cpusubtype == CPU_SUBTYPE_X86_64_ALL) return kModuleArchX86_64;
-      if (cpusubtype == CPU_SUBTYPE_X86_64_H) return kModuleArchX86_64H;
+      if (cpusubtype == CPU_SUBTYPE_X86_64_ALL)
+        return kModuleArchX86_64;
+      if (cpusubtype == CPU_SUBTYPE_X86_64_H)
+        return kModuleArchX86_64H;
       CHECK(0 && "Invalid subtype of x86_64");
       return kModuleArchUnknown;
     case CPU_TYPE_ARM:
-      if (cpusubtype == CPU_SUBTYPE_ARM_V6) return kModuleArchARMV6;
-      if (cpusubtype == CPU_SUBTYPE_ARM_V7) return kModuleArchARMV7;
-      if (cpusubtype == CPU_SUBTYPE_ARM_V7S) return kModuleArchARMV7S;
-      if (cpusubtype == CPU_SUBTYPE_ARM_V7K) return kModuleArchARMV7K;
+      if (cpusubtype == CPU_SUBTYPE_ARM_V6)
+        return kModuleArchARMV6;
+      if (cpusubtype == CPU_SUBTYPE_ARM_V7)
+        return kModuleArchARMV7;
+      if (cpusubtype == CPU_SUBTYPE_ARM_V7S)
+        return kModuleArchARMV7S;
+      if (cpusubtype == CPU_SUBTYPE_ARM_V7K)
+        return kModuleArchARMV7K;
       CHECK(0 && "Invalid subtype of ARM");
       return kModuleArchUnknown;
     case CPU_TYPE_ARM64:
@@ -268,7 +270,8 @@ static const load_command *NextCommand(const load_command *lc) {
 
 static void FindUUID(const load_command *first_lc, u8 *uuid_output) {
   for (const load_command *lc = first_lc; lc->cmd != 0; lc = NextCommand(lc)) {
-    if (lc->cmd != LC_UUID) continue;
+    if (lc->cmd != LC_UUID)
+      continue;
 
     const uuid_command *uuid_lc = (const uuid_command *)lc;
     const uint8_t *uuid = &uuid_lc->uuid[0];
@@ -279,7 +282,8 @@ static void FindUUID(const load_command *first_lc, u8 *uuid_output) {
 
 static bool IsModuleInstrumented(const load_command *first_lc) {
   for (const load_command *lc = first_lc; lc->cmd != 0; lc = NextCommand(lc)) {
-    if (lc->cmd != LC_LOAD_DYLIB) continue;
+    if (lc->cmd != LC_LOAD_DYLIB)
+      continue;
 
     const dylib_command *dylib_lc = (const dylib_command *)lc;
     uint32_t dylib_name_offset = dylib_lc->dylib.name.offset;
@@ -297,7 +301,8 @@ bool MemoryMappingLayout::Next(MemoryMappedSegment *segment) {
     const mach_header *hdr = (data_.current_image == kDyldImageIdx)
                                  ? get_dyld_hdr()
                                  : _dyld_get_image_header(data_.current_image);
-    if (!hdr) continue;
+    if (!hdr)
+      continue;
     if (data_.current_load_cmd_count < 0) {
       // Set up for this image;
       data_.current_load_cmd_count = hdr->ncmds;
@@ -359,7 +364,8 @@ void MemoryMappingLayout::DumpListOfModules(
   MemoryMappedSegmentData data;
   segment.data_ = &data;
   while (Next(&segment)) {
-    if (segment.filename[0] == '\0') continue;
+    if (segment.filename[0] == '\0')
+      continue;
     LoadedModule *cur_module = nullptr;
     if (!modules->empty() &&
         0 == internal_strcmp(segment.filename, modules->back().full_name())) {

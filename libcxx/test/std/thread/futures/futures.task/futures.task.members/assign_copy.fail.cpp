@@ -17,12 +17,11 @@
 
 #include <future>
 
-int main(int, char**)
-{
-    {
-        std::packaged_task<double(int, char)> p0, p;
-        p = p0; // expected-error {{overload resolution selected deleted operator '='}}
-    }
+int main(int, char**) {
+  {
+    std::packaged_task<double(int, char)> p0, p;
+    p = p0; // expected-error {{overload resolution selected deleted operator '='}}
+  }
 
   return 0;
 }

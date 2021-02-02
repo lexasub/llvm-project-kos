@@ -298,12 +298,12 @@ struct DOTGraphTraits<DOTFuncInfo *> : public DefaultDOTGraphTraits {
   bool isNodeHidden(const BasicBlock *Node, const DOTFuncInfo *CFGInfo);
   void computeHiddenNodes(const Function *F);
 };
-} // End llvm namespace
+} // namespace llvm
 
 namespace llvm {
 class FunctionPass;
 FunctionPass *createCFGPrinterLegacyPassPass();
 FunctionPass *createCFGOnlyPrinterLegacyPassPass();
-} // End llvm namespace
+} // namespace llvm
 
 #endif

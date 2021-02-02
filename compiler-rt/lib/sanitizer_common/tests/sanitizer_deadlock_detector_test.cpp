@@ -12,13 +12,12 @@
 //===----------------------------------------------------------------------===//
 #include "sanitizer_common/sanitizer_deadlock_detector.h"
 
-#include "sanitizer_test_utils.h"
+#include <algorithm>
+#include <set>
+#include <vector>
 
 #include "gtest/gtest.h"
-
-#include <algorithm>
-#include <vector>
-#include <set>
+#include "sanitizer_test_utils.h"
 
 using namespace __sanitizer;
 using namespace std;
@@ -29,7 +28,7 @@ typedef TwoLevelBitVector<> BV3;
 typedef TwoLevelBitVector<3, BasicBitVector<u8> > BV4;
 
 // Poor man's unique_ptr.
-template<class BV>
+template <class BV>
 struct ScopedDD {
   ScopedDD() {
     dp = new DeadlockDetector<BV>;
@@ -198,25 +197,29 @@ void RunRemoveNodeTest() {
     locks.insert(lt);
     uptr a, b;
     // l0 => lt?
-    a = l0; b = lt;
+    a = l0;
+    b = lt;
     EXPECT_FALSE(d.onLock(&dtls, a));
     EXPECT_FALSE(d.onLock(&dtls, b));
     d.onUnlock(&dtls, a);
     d.onUnlock(&dtls, b);
     // l1 => lt?
-    a = l1; b = lt;
+    a = l1;
+    b = lt;
     EXPECT_FALSE(d.onLock(&dtls, a));
     EXPECT_FALSE(d.onLock(&dtls, b));
     d.onUnlock(&dtls, a);
     d.onUnlock(&dtls, b);
     // lt => l4?
-    a = lt; b = l4;
+    a = lt;
+    b = l4;
     EXPECT_FALSE(d.onLock(&dtls, a));
     EXPECT_FALSE(d.onLock(&dtls, b));
     d.onUnlock(&dtls, a);
     d.onUnlock(&dtls, b);
     // lt => l5?
-    a = lt; b = l5;
+    a = lt;
+    b = l5;
     EXPECT_FALSE(d.onLock(&dtls, a));
     EXPECT_FALSE(d.onLock(&dtls, b));
     d.onUnlock(&dtls, a);
@@ -290,8 +293,7 @@ void RunCorrectEpochFlush() {
   DeadlockDetector<BV> &d = *sdd.dp;
   DeadlockDetectorTLS<BV> &dtls = sdd.dtls;
   vector<uptr> locks1;
-  for (uptr i = 0; i < d.size(); i++)
-    locks1.push_back(d.newNode(i));
+  for (uptr i = 0; i < d.size(); i++) locks1.push_back(d.newNode(i));
   EXPECT_EQ(d.testOnlyGetEpoch(), d.size());
   d.onLock(&dtls, locks1[3]);
   d.onLock(&dtls, locks1[4]);
@@ -355,7 +357,7 @@ void RunOnFirstLockTest() {
   d.onLock(&dtls, l0);
   d.onUnlock(&dtls, l0);
 
-  EXPECT_TRUE(d.onFirstLock(&dtls, l0));  // Ok, same ecpoch, first lock.
+  EXPECT_TRUE(d.onFirstLock(&dtls, l0));   // Ok, same ecpoch, first lock.
   EXPECT_FALSE(d.onFirstLock(&dtls, l1));  // Second lock.
   d.onLock(&dtls, l1);
   d.onUnlock(&dtls, l1);
@@ -365,8 +367,7 @@ void RunOnFirstLockTest() {
   d.onUnlock(&dtls, l0);
 
   vector<uptr> locks1;
-  for (uptr i = 0; i < d.size(); i++)
-    locks1.push_back(d.newNode(i));
+  for (uptr i = 0; i < d.size(); i++) locks1.push_back(d.newNode(i));
 
   EXPECT_TRUE(d.onFirstLock(&dtls, l0));  // Epoch has changed, but not in dtls.
 
@@ -377,9 +378,7 @@ void RunOnFirstLockTest() {
   EXPECT_FALSE(d.onFirstLock(&dtls, l0));  // Epoch has changed in dtls.
 }
 
-TEST(DeadlockDetector, onFirstLockTest) {
-  RunOnFirstLockTest<BV2>();
-}
+TEST(DeadlockDetector, onFirstLockTest) { RunOnFirstLockTest<BV2>(); }
 
 template <class BV>
 void RunRecusriveLockTest() {
@@ -407,9 +406,7 @@ void RunRecusriveLockTest() {
   EXPECT_TRUE(d.testOnlyHasEdge(l0, l3));
 }
 
-TEST(DeadlockDetector, RecusriveLockTest) {
-  RunRecusriveLockTest<BV2>();
-}
+TEST(DeadlockDetector, RecusriveLockTest) { RunRecusriveLockTest<BV2>(); }
 
 template <class BV>
 void RunLockContextTest() {
@@ -445,9 +442,7 @@ void RunLockContextTest() {
   EXPECT_EQ(14U, d.findLockContext(&dtls, l4));
 }
 
-TEST(DeadlockDetector, LockContextTest) {
-  RunLockContextTest<BV2>();
-}
+TEST(DeadlockDetector, LockContextTest) { RunLockContextTest<BV2>(); }
 
 template <class BV>
 void RunRemoveEdgesTest() {
@@ -457,8 +452,7 @@ void RunRemoveEdgesTest() {
   vector<uptr> node(BV::kSize);
   u32 stk_from = 0, stk_to = 0;
   int unique_tid = 0;
-  for (size_t i = 0; i < BV::kSize; i++)
-    node[i] = d.newNode(0);
+  for (size_t i = 0; i < BV::kSize; i++) node[i] = d.newNode(0);
 
   for (size_t i = 0; i < BV::kSize; i++)
     EXPECT_FALSE(d.onLock(&dtls, node[i], i + 1));
@@ -472,10 +466,8 @@ void RunRemoveEdgesTest() {
   }
   EXPECT_EQ(d.testOnlyGetEpoch(), d.size());
   // Remove and re-create half of the nodes.
-  for (uptr i = 1; i < BV::kSize; i += 2)
-    d.removeNode(node[i]);
-  for (uptr i = 1; i < BV::kSize; i += 2)
-    node[i] = d.newNode(0);
+  for (uptr i = 1; i < BV::kSize; i += 2) d.removeNode(node[i]);
+  for (uptr i = 1; i < BV::kSize; i += 2) node[i] = d.newNode(0);
   EXPECT_EQ(d.testOnlyGetEpoch(), d.size());
   // The edges from or to the removed nodes should be gone.
   for (size_t i = 0; i < BV::kSize; i++) {
@@ -490,6 +482,4 @@ void RunRemoveEdgesTest() {
   }
 }
 
-TEST(DeadlockDetector, RemoveEdgesTest) {
-  RunRemoveEdgesTest<BV1>();
-}
+TEST(DeadlockDetector, RemoveEdgesTest) { RunRemoveEdgesTest<BV1>(); }

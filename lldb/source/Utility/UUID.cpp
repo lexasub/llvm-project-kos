@@ -115,7 +115,7 @@ bool UUID::SetFromOptionalStringRef(llvm::StringRef str) {
   bool result = SetFromStringRef(str);
   if (result) {
     if (llvm::all_of(m_bytes, [](uint8_t b) { return b == 0; }))
-        Clear();
+      Clear();
   }
 
   return result;

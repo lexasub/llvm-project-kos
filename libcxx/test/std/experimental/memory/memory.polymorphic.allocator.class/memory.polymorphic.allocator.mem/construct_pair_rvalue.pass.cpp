@@ -30,110 +30,104 @@
 
 namespace ex = std::experimental::pmr;
 
-
-
 template <class UA1, class UA2, class TT, class UU>
 bool doTest(UsesAllocatorType TExpect, UsesAllocatorType UExpect,
-            std::pair<TT, UU>&& p)
-{
-    using P = std::pair<UA1, UA2>;
-    TestResource R;
-    ex::memory_resource * M = &R;
-    ex::polymorphic_allocator<P> A(M);
-    P * ptr  = A.allocate(2);
-    P * ptr2 = ptr + 1;
+            std::pair<TT, UU>&& p) {
+  using P = std::pair<UA1, UA2>;
+  TestResource R;
+  ex::memory_resource* M = &R;
+  ex::polymorphic_allocator<P> A(M);
+  P* ptr = A.allocate(2);
+  P* ptr2 = ptr + 1;
 
-    // UNDER TEST //
-    A.construct(ptr, std::move(p));
+  // UNDER TEST //
+  A.construct(ptr, std::move(p));
 
-    A.construct(ptr2, std::piecewise_construct,
-                std::forward_as_tuple(std::forward<TT>(p.first)),
-                std::forward_as_tuple(std::forward<UU>(p.second)));
-    // ------- //
+  A.construct(ptr2, std::piecewise_construct,
+              std::forward_as_tuple(std::forward<TT>(p.first)),
+              std::forward_as_tuple(std::forward<UU>(p.second)));
+  // ------- //
 
-    bool tres = checkConstruct<TT&&>(ptr->first, TExpect, M) &&
-                checkConstructionEquiv(ptr->first, ptr2->first);
+  bool tres = checkConstruct<TT&&>(ptr->first, TExpect, M) &&
+              checkConstructionEquiv(ptr->first, ptr2->first);
 
-    bool ures = checkConstruct<UU&&>(ptr->second, UExpect, M) &&
-                checkConstructionEquiv(ptr->second, ptr2->second);
+  bool ures = checkConstruct<UU&&>(ptr->second, UExpect, M) &&
+              checkConstructionEquiv(ptr->second, ptr2->second);
 
-    A.destroy(ptr);
-    A.destroy(ptr2);
-    A.deallocate(ptr, 2);
-    return tres && ures;
+  A.destroy(ptr);
+  A.destroy(ptr2);
+  A.deallocate(ptr, 2);
+  return tres && ures;
 }
 
 template <class Alloc, class TT, class UU>
-void test_pmr_uses_allocator(std::pair<TT, UU>&& p)
-{
-    {
-        using T = NotUsesAllocator<Alloc, 1>;
-        using U = NotUsesAllocator<Alloc, 1>;
-        assert((doTest<T, U>(UA_None, UA_None, std::move(p))));
-    }
-    {
-        using T = UsesAllocatorV1<Alloc, 1>;
-        using U = UsesAllocatorV2<Alloc, 1>;
-        assert((doTest<T, U>(UA_AllocArg, UA_AllocLast, std::move(p))));
-    }
-    {
-        using T = UsesAllocatorV2<Alloc, 1>;
-        using U = UsesAllocatorV3<Alloc, 1>;
-        assert((doTest<T, U>(UA_AllocLast, UA_AllocArg, std::move(p))));
-    }
-    {
-        using T = UsesAllocatorV3<Alloc, 1>;
-        using U = NotUsesAllocator<Alloc, 1>;
-        assert((doTest<T, U>(UA_AllocArg, UA_None, std::move(p))));
-    }
+void test_pmr_uses_allocator(std::pair<TT, UU>&& p) {
+  {
+    using T = NotUsesAllocator<Alloc, 1>;
+    using U = NotUsesAllocator<Alloc, 1>;
+    assert((doTest<T, U>(UA_None, UA_None, std::move(p))));
+  }
+  {
+    using T = UsesAllocatorV1<Alloc, 1>;
+    using U = UsesAllocatorV2<Alloc, 1>;
+    assert((doTest<T, U>(UA_AllocArg, UA_AllocLast, std::move(p))));
+  }
+  {
+    using T = UsesAllocatorV2<Alloc, 1>;
+    using U = UsesAllocatorV3<Alloc, 1>;
+    assert((doTest<T, U>(UA_AllocLast, UA_AllocArg, std::move(p))));
+  }
+  {
+    using T = UsesAllocatorV3<Alloc, 1>;
+    using U = NotUsesAllocator<Alloc, 1>;
+    assert((doTest<T, U>(UA_AllocArg, UA_None, std::move(p))));
+  }
 }
 
 template <class Alloc, class TT, class UU>
-void test_pmr_not_uses_allocator(std::pair<TT, UU>&& p)
-{
-    {
-        using T = NotUsesAllocator<Alloc, 1>;
-        using U = NotUsesAllocator<Alloc, 1>;
-        assert((doTest<T, U>(UA_None, UA_None, std::move(p))));
-    }
-    {
-        using T = UsesAllocatorV1<Alloc, 1>;
-        using U = UsesAllocatorV2<Alloc, 1>;
-        assert((doTest<T, U>(UA_None, UA_None, std::move(p))));
-    }
-    {
-        using T = UsesAllocatorV2<Alloc, 1>;
-        using U = UsesAllocatorV3<Alloc, 1>;
-        assert((doTest<T, U>(UA_None, UA_None, std::move(p))));
-    }
-    {
-        using T = UsesAllocatorV3<Alloc, 1>;
-        using U = NotUsesAllocator<Alloc, 1>;
-        assert((doTest<T, U>(UA_None, UA_None, std::move(p))));
-    }
+void test_pmr_not_uses_allocator(std::pair<TT, UU>&& p) {
+  {
+    using T = NotUsesAllocator<Alloc, 1>;
+    using U = NotUsesAllocator<Alloc, 1>;
+    assert((doTest<T, U>(UA_None, UA_None, std::move(p))));
+  }
+  {
+    using T = UsesAllocatorV1<Alloc, 1>;
+    using U = UsesAllocatorV2<Alloc, 1>;
+    assert((doTest<T, U>(UA_None, UA_None, std::move(p))));
+  }
+  {
+    using T = UsesAllocatorV2<Alloc, 1>;
+    using U = UsesAllocatorV3<Alloc, 1>;
+    assert((doTest<T, U>(UA_None, UA_None, std::move(p))));
+  }
+  {
+    using T = UsesAllocatorV3<Alloc, 1>;
+    using U = NotUsesAllocator<Alloc, 1>;
+    assert((doTest<T, U>(UA_None, UA_None, std::move(p))));
+  }
 }
 
-int main(int, char**)
-{
-    using ERT = std::experimental::erased_type;
-    using PMR = ex::memory_resource*;
-    using PMA = ex::polymorphic_allocator<char>;
-    {
-        int x = 42;
-        int y = 42;
-        std::pair<int&, int&&> p(x, std::move(y));
-        test_pmr_uses_allocator<ERT>(std::move(p));
-        test_pmr_not_uses_allocator<PMR>(std::move(p));
-        test_pmr_uses_allocator<PMA>(std::move(p));
-    }
-    {
-        int x = 42;
-        int y = 42;
-        std::pair<int&&, int&> p(std::move(x), y);
-        test_pmr_uses_allocator<ERT>(std::move(p));
-        test_pmr_not_uses_allocator<PMR>(std::move(p));
-        test_pmr_uses_allocator<PMA>(std::move(p));
-    }
+int main(int, char**) {
+  using ERT = std::experimental::erased_type;
+  using PMR = ex::memory_resource*;
+  using PMA = ex::polymorphic_allocator<char>;
+  {
+    int x = 42;
+    int y = 42;
+    std::pair<int&, int&&> p(x, std::move(y));
+    test_pmr_uses_allocator<ERT>(std::move(p));
+    test_pmr_not_uses_allocator<PMR>(std::move(p));
+    test_pmr_uses_allocator<PMA>(std::move(p));
+  }
+  {
+    int x = 42;
+    int y = 42;
+    std::pair<int&&, int&> p(std::move(x), y);
+    test_pmr_uses_allocator<ERT>(std::move(p));
+    test_pmr_not_uses_allocator<PMR>(std::move(p));
+    test_pmr_uses_allocator<PMA>(std::move(p));
+  }
 
   return 0;
 }

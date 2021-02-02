@@ -4,12 +4,12 @@ int readBadGlobal() { return badGlobal; }
 
 namespace badNamespace {
 class BadClass {
- public:
+public:
   BadClass() { value = 0; }
   int value;
 };
 // Global object with non-trivial constructor.
 BadClass bad_object;
-}  // namespace badNamespace
+} // namespace badNamespace
 
 int accessBadObject() { return badNamespace::bad_object.value; }

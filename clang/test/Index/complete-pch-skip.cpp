@@ -34,4 +34,3 @@ int main3() { PREAMBLE_ }
 // Verify that we still get member results from the preamble.
 // RUN: env CINDEXTEST_COMPLETION_SKIP_PREAMBLE=1 c-index-test -code-completion-at=%s:6:32 -include %t.h %s | FileCheck -check-prefix=MEMBER %s
 // MEMBER: {TypedText baz}
-

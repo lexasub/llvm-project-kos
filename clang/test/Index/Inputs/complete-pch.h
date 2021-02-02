@@ -7,4 +7,3 @@
 - (int)instanceMethod2:(int)x;
 + (int)classMethod2:(float)f;
 @end
-

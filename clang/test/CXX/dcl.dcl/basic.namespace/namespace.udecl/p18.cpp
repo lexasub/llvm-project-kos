@@ -1,8 +1,11 @@
 // RUN: %clang_cc1 -std=c++11 -verify %s
 
-struct Public {} public_;
-struct Protected {} protected_;
-struct Private {} private_;
+struct Public {
+} public_;
+struct Protected {
+} protected_;
+struct Private {
+} private_;
 
 class A {
 public:
@@ -14,7 +17,7 @@ protected:
   void f(Protected);
 
 private:
-  A(Private); // expected-note 4{{private here}}
+  A(Private);      // expected-note 4{{private here}}
   void f(Private); // expected-note {{private here}}
 
   friend void Friend();
@@ -53,25 +56,27 @@ void Friend() {
 void NonFriend() {
   B a(public_);
   B b(protected_); // expected-error {{protected}}
-  B c(private_); // expected-error {{private}}
+  B c(private_);   // expected-error {{private}}
 }
 
 namespace ProtectedAccessFromMember {
 namespace a {
-  struct ES {
-  private:
-    ES(const ES &) = delete;
-  protected:
-    ES(const char *);
-  };
-}
+struct ES {
+private:
+  ES(const ES &) = delete;
+
+protected:
+  ES(const char *);
+};
+} // namespace a
 namespace b {
-  struct DES : a::ES {
-    DES *f();
-  private:
-    using a::ES::ES;
-  };
-}
+struct DES : a::ES {
+  DES *f();
+
+private:
+  using a::ES::ES;
+};
+} // namespace b
 b::DES *b::DES::f() { return new b::DES("foo"); }
 
-}
+} // namespace ProtectedAccessFromMember

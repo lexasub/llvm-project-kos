@@ -82,8 +82,8 @@ static void showCycleDetectedError(const Registry &registry,
                                           ref->kindValue(), kindValStr)) {
         kindValStr = "<unknown>";
       }
-      llvm::dbgs() << "    " << kindValStr
-                   << ": " << atomToDebugString(ref->target()) << "\n";
+      llvm::dbgs() << "    " << kindValStr << ": "
+                   << atomToDebugString(ref->target()) << "\n";
     }
     atom = followOnNexts[atom];
   } while (atom != start);
@@ -110,7 +110,8 @@ static void checkNoCycleInFollowonChain(const Registry &registry,
 
 static void checkReachabilityFromRoot(AtomToAtomT &followOnRoots,
                                       const DefinedAtom *atom) {
-  if (!atom) return;
+  if (!atom)
+    return;
   auto i = followOnRoots.find(atom);
   if (i == followOnRoots.end()) {
     llvm_unreachable(((Twine("Atom <") + atomToDebugString(atom) +
@@ -136,11 +137,9 @@ static void checkReachabilityFromRoot(AtomToAtomT &followOnRoots,
 static void printDefinedAtoms(const File::AtomRange<DefinedAtom> &atomRange) {
   for (const DefinedAtom *atom : atomRange) {
     llvm::dbgs() << "  file=" << atom->file().path()
-                 << ", name=" << atom->name()
-                 << ", size=" << atom->size()
+                 << ", name=" << atom->name() << ", size=" << atom->size()
                  << ", type=" << atom->contentType()
-                 << ", ordinal=" << atom->ordinal()
-                 << "\n";
+                 << ", ordinal=" << atom->ordinal() << "\n";
   }
 }
 
@@ -253,9 +252,8 @@ static bool compareAtoms(const LayoutPass::SortKey &lc,
   bool result = compareAtomsSub(lc, rc, customSorter, reason);
   LLVM_DEBUG({
     StringRef comp = result ? "<" : ">=";
-    llvm::dbgs() << "Layout: '" << lc._atom.get()->name()
-                 << "' " << comp << " '"
-                 << rc._atom.get()->name() << "' (" << reason << ")\n";
+    llvm::dbgs() << "Layout: '" << lc._atom.get()->name() << "' " << comp
+                 << " '" << rc._atom.get()->name() << "' (" << reason << ")\n";
   });
   return result;
 }
@@ -265,8 +263,8 @@ LayoutPass::LayoutPass(const Registry &registry, SortOverride sorter)
 
 // Returns the atom immediately followed by the given atom in the followon
 // chain.
-const DefinedAtom *LayoutPass::findAtomFollowedBy(
-    const DefinedAtom *targetAtom) {
+const DefinedAtom *
+LayoutPass::findAtomFollowedBy(const DefinedAtom *targetAtom) {
   // Start from the beginning of the chain and follow the chain until
   // we find the targetChain.
   const DefinedAtom *atom = _followOnRoots[targetAtom];
@@ -399,8 +397,8 @@ void LayoutPass::buildFollowOnTable(const File::AtomRange<DefinedAtom> &range) {
 /// assigning ordinals to each atom, if the atoms have their ordinals
 /// already assigned skip the atom and move to the next. This is the
 /// main map thats used to sort the atoms while comparing two atoms together
-void
-LayoutPass::buildOrdinalOverrideMap(const File::AtomRange<DefinedAtom> &range) {
+void LayoutPass::buildOrdinalOverrideMap(
+    const File::AtomRange<DefinedAtom> &range) {
   ScopedTask task(getDefaultDomain(), "LayoutPass::buildOrdinalOverrideMap");
   uint64_t index = 0;
   for (const DefinedAtom *ai : range) {
@@ -480,10 +478,11 @@ llvm::Error LayoutPass::perform(SimpleFile &mergedFile) {
 
 void addLayoutPass(PassManager &pm, const MachOLinkingContext &ctx) {
   pm.add(std::make_unique<LayoutPass>(
-      ctx.registry(), [&](const DefinedAtom * left, const DefinedAtom * right,
-                          bool & leftBeforeRight) ->bool {
-    return ctx.customAtomOrderer(left, right, leftBeforeRight);
-  }));
+      ctx.registry(),
+      [&](const DefinedAtom *left, const DefinedAtom *right,
+          bool &leftBeforeRight) -> bool {
+        return ctx.customAtomOrderer(left, right, leftBeforeRight);
+      }));
 }
 
 } // namespace mach_o

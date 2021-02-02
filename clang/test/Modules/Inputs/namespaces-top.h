@@ -1,25 +1,25 @@
-namespace N1 { 
-  int& f(int);
+namespace N1 {
+int &f(int);
 }
 
-namespace N2 { 
-  int& f(int);
+namespace N2 {
+int &f(int);
 }
 
-namespace N3 { 
-  int& f(int);
+namespace N3 {
+int &f(int);
 }
 
-namespace N12 { }
+namespace N12 {}
 
 namespace N13 {
-  void f();
-  int f(int);
-  void (*p)() = &f;
-}
+void f();
+int f(int);
+void (*p)() = &f;
+} // namespace N13
 
 namespace AddAndReexportBeforeImport {
-  int S;
+int S;
 }
 
 namespace Empty {}

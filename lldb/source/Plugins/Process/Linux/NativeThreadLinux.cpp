@@ -82,7 +82,7 @@ void LogThreadStopInfo(Log &log, const ThreadStopInfo &stop_info,
                static_cast<uint32_t>(stop_info.reason));
   }
 }
-}
+} // namespace
 
 NativeThreadLinux::NativeThreadLinux(NativeProcessLinux &process,
                                      lldb::tid_t tid)
@@ -251,7 +251,7 @@ Status NativeThreadLinux::SingleStep(uint32_t signo) {
   m_state = new_state;
   m_stop_info.reason = StopReason::eStopReasonNone;
 
-  if(!m_step_workaround) {
+  if (!m_step_workaround) {
     // If we already hava a workaround inplace, don't reset it. Otherwise, the
     // destructor of the existing instance will run after the new instance has
     // fetched the cpu mask, and the thread will end up with the wrong mask.
@@ -365,7 +365,7 @@ void NativeThreadLinux::SetStoppedByWatchpoint(uint32_t wp_index) {
    * find the base address of the load/store instruction and append it in the
    * stop-info
    * packet.
-  */
+   */
   ostr << " " << m_reg_context_up->GetWatchpointHitAddress(wp_index);
 
   m_stop_description = ostr.str();

@@ -20,7 +20,7 @@ char *load_from_ac_struct(struct ac_struct *x) {
   return x->a;
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
   char *ptr = (char *)malloc(2);
 
   struct ac_struct x;

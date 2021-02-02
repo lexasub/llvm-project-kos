@@ -131,22 +131,21 @@ TEST(UserTest, replaceUseOfWith) {
   Function *F = M->getFunction("f");
   EXPECT_TRUE(F);
   EXPECT_TRUE(F->arg_begin() != F->arg_end());
-  BasicBlock& entryBB = F->front();
-  Instruction& I0 = *(entryBB.begin());
-  Instruction& I1 = *(++(entryBB.begin()));
+  BasicBlock &entryBB = F->front();
+  Instruction &I0 = *(entryBB.begin());
+  Instruction &I1 = *(++(entryBB.begin()));
 
   Argument &X = *F->arg_begin();
   EXPECT_EQ("x", X.getName());
-  EXPECT_NE(X.user_begin() ,X.user_end());
-  EXPECT_EQ(I0.user_begin() ,I0.user_end());
-
+  EXPECT_NE(X.user_begin(), X.user_end());
+  EXPECT_EQ(I0.user_begin(), I0.user_end());
 
   auto XUser = find(X.users(), &(I1));
   EXPECT_NE(XUser, X.user_end());
- 
+
   XUser->replaceUsesOfWith(&X, &I0);
-  EXPECT_EQ(X.user_begin() ,X.user_end());
-  EXPECT_NE(I0.user_begin() ,I0.user_end());
+  EXPECT_EQ(X.user_begin(), X.user_end());
+  EXPECT_NE(I0.user_begin(), I0.user_end());
 }
 
 TEST(UserTest, PersonalityUser) {

@@ -11,12 +11,14 @@ module compare {
 #pragma clang module end
 #pragma clang module endbuild
 
-struct CC { CC(...); };
+struct CC {
+  CC(...);
+};
 
 void a() { void(0 <=> 0); } // expected-error {{include <compare>}}
 
 struct A {
-  CC operator<=>(const A&) const = default; // expected-error {{include <compare>}}
+  CC operator<=>(const A &) const = default; // expected-error {{include <compare>}}
 };
 auto va = A() <=> A(); // expected-note {{required here}}
 
@@ -27,7 +29,7 @@ auto va = A() <=> A(); // expected-note {{required here}}
 void b() { void(0 <=> 0); } // expected-error 1+{{missing '#include "std-compare.h"'; 'strong_ordering' must be defined}}
 
 struct B {
-  CC operator<=>(const B&) const = default; // expected-error 1+{{missing '#include "std-compare.h"'; 'strong_ordering' must be defined}}
+  CC operator<=>(const B &) const = default; // expected-error 1+{{missing '#include "std-compare.h"'; 'strong_ordering' must be defined}}
 };
 auto vb = B() <=> B(); // expected-note {{required here}}
 
@@ -36,10 +38,9 @@ auto vb = B() <=> B(); // expected-note {{required here}}
 void c() { void(0 <=> 0); }
 
 struct C {
-  CC operator<=>(const C&) const = default;
+  CC operator<=>(const C &) const = default;
 };
 auto vc = C() <=> C();
-
 
 #pragma clang module build compare2
 module compare2 {}

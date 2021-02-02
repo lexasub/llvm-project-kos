@@ -156,14 +156,12 @@ TEST(Support, Path) {
 
   for (SmallVector<StringRef, 40>::const_iterator i = paths.begin(),
                                                   e = paths.end();
-                                                  i != e;
-                                                  ++i) {
+       i != e; ++i) {
     SCOPED_TRACE(*i);
     SmallVector<StringRef, 5> ComponentStack;
     for (sys::path::const_iterator ci = sys::path::begin(*i),
                                    ce = sys::path::end(*i);
-                                   ci != ce;
-                                   ++ci) {
+         ci != ce; ++ci) {
       EXPECT_FALSE(ci->empty());
       ComponentStack.push_back(*ci);
     }
@@ -171,8 +169,7 @@ TEST(Support, Path) {
     SmallVector<StringRef, 5> ReverseComponentStack;
     for (sys::path::reverse_iterator ci = sys::path::rbegin(*i),
                                      ce = sys::path::rend(*i);
-                                     ci != ce;
-                                     ++ci) {
+         ci != ce; ++ci) {
       EXPECT_FALSE(ci->empty());
       ReverseComponentStack.push_back(*ci);
     }
@@ -209,7 +206,7 @@ TEST(Support, Path) {
     path::replace_extension(temp_store, "ext");
     StringRef filename(temp_store.begin(), temp_store.size()), stem, ext;
     stem = path::stem(filename);
-    ext  = path::extension(filename);
+    ext = path::extension(filename);
     EXPECT_EQ(*sys::path::rbegin(filename), (stem + ext).str());
 
     path::native(*i, temp_store);
@@ -285,13 +282,13 @@ TEST(Support, PathRoot) {
   paths.push_back("c:/foo\\bar");
 
   for (StringRef p : paths) {
-    ASSERT_EQ(
-      path::root_name(p, path::Style::posix).str() + path::root_directory(p, path::Style::posix).str(),
-      path::root_path(p, path::Style::posix).str());
+    ASSERT_EQ(path::root_name(p, path::Style::posix).str() +
+                  path::root_directory(p, path::Style::posix).str(),
+              path::root_path(p, path::Style::posix).str());
 
-    ASSERT_EQ(
-      path::root_name(p, path::Style::windows).str() + path::root_directory(p, path::Style::windows).str(),
-      path::root_path(p, path::Style::windows).str());
+    ASSERT_EQ(path::root_name(p, path::Style::windows).str() +
+                  path::root_directory(p, path::Style::windows).str(),
+              path::root_path(p, path::Style::windows).str());
   }
 }
 
@@ -369,7 +366,8 @@ TEST(Support, PathIterator) {
 }
 
 TEST(Support, AbsolutePathIteratorEnd) {
-  // Trailing slashes are converted to '.' unless they are part of the root path.
+  // Trailing slashes are converted to '.' unless they are part of the root
+  // path.
   SmallVector<std::pair<StringRef, path::Style>, 4> Paths;
   Paths.emplace_back("/foo/", path::Style::native);
   Paths.emplace_back("/foo//", path::Style::native);
@@ -457,7 +455,8 @@ TEST(Support, HomeDirectoryWithNoEnv) {
 
   // Don't run the test if we have nothing to compare against.
   struct passwd *pw = getpwuid(getuid());
-  if (!pw || !pw->pw_dir) return;
+  if (!pw || !pw->pw_dir)
+    return;
   std::string PwDir = pw->pw_dir;
 
   SmallString<128> HomeDir;
@@ -594,12 +593,12 @@ TEST(SupportDeathTest, TempDirectoryOnWindows) {
 
   // All related env vars empty
   EXPECT_TEMP_DIR(
-  {
-    _wputenv_s(L"TMP", L"");
-    _wputenv_s(L"TEMP", L"");
-    _wputenv_s(L"USERPROFILE", L"");
-  },
-    "C:\\Temp");
+      {
+        _wputenv_s(L"TMP", L"");
+        _wputenv_s(L"TEMP", L"");
+        _wputenv_s(L"USERPROFILE", L"");
+      },
+      "C:\\Temp");
 
   // Test evn var / path with 260 chars.
   SmallString<270> Expected{"C:\\Temp\\AB\\123456789"};
@@ -669,15 +668,13 @@ TEST_F(FileSystemTest, Unique) {
   ::close(FileDescriptor);
 
   SmallString<128> Dir1;
-  ASSERT_NO_ERROR(
-     fs::createUniqueDirectory("dir1", Dir1));
+  ASSERT_NO_ERROR(fs::createUniqueDirectory("dir1", Dir1));
   ASSERT_NO_ERROR(fs::getUniqueID(Dir1.c_str(), F1));
   ASSERT_NO_ERROR(fs::getUniqueID(Dir1.c_str(), F2));
   ASSERT_EQ(F1, F2);
 
   SmallString<128> Dir2;
-  ASSERT_NO_ERROR(
-     fs::createUniqueDirectory("dir2", Dir2));
+  ASSERT_NO_ERROR(fs::createUniqueDirectory("dir2", Dir2));
   ASSERT_NO_ERROR(fs::getUniqueID(Dir2.c_str(), F2));
   ASSERT_NE(F1, F2);
   ASSERT_NO_ERROR(fs::remove(Dir1));
@@ -752,20 +749,18 @@ TEST_F(FileSystemTest, ExpandTilde) {
 TEST_F(FileSystemTest, RealPathNoReadPerm) {
   SmallString<64> Expanded;
 
-  ASSERT_NO_ERROR(
-    fs::create_directories(Twine(TestDirectory) + "/noreadperm"));
+  ASSERT_NO_ERROR(fs::create_directories(Twine(TestDirectory) + "/noreadperm"));
   ASSERT_TRUE(fs::exists(Twine(TestDirectory) + "/noreadperm"));
 
   fs::setPermissions(Twine(TestDirectory) + "/noreadperm", fs::no_perms);
   fs::setPermissions(Twine(TestDirectory) + "/noreadperm", fs::all_exe);
 
-  ASSERT_NO_ERROR(fs::real_path(Twine(TestDirectory) + "/noreadperm", Expanded,
-                                false));
+  ASSERT_NO_ERROR(
+      fs::real_path(Twine(TestDirectory) + "/noreadperm", Expanded, false));
 
   ASSERT_NO_ERROR(fs::remove_directories(Twine(TestDirectory) + "/noreadperm"));
 }
 #endif
-
 
 TEST_F(FileSystemTest, TempFileKeepDiscard) {
   // We can keep then discard.
@@ -856,19 +851,19 @@ TEST_F(FileSystemTest, TempFiles) {
 #ifdef _WIN32
   // Path name > 260 chars should get an error.
   const char *Path270 =
-    "abcdefghijklmnopqrstuvwxyz9abcdefghijklmnopqrstuvwxyz8"
-    "abcdefghijklmnopqrstuvwxyz7abcdefghijklmnopqrstuvwxyz6"
-    "abcdefghijklmnopqrstuvwxyz5abcdefghijklmnopqrstuvwxyz4"
-    "abcdefghijklmnopqrstuvwxyz3abcdefghijklmnopqrstuvwxyz2"
-    "abcdefghijklmnopqrstuvwxyz1abcdefghijklmnopqrstuvwxyz0";
+      "abcdefghijklmnopqrstuvwxyz9abcdefghijklmnopqrstuvwxyz8"
+      "abcdefghijklmnopqrstuvwxyz7abcdefghijklmnopqrstuvwxyz6"
+      "abcdefghijklmnopqrstuvwxyz5abcdefghijklmnopqrstuvwxyz4"
+      "abcdefghijklmnopqrstuvwxyz3abcdefghijklmnopqrstuvwxyz2"
+      "abcdefghijklmnopqrstuvwxyz1abcdefghijklmnopqrstuvwxyz0";
   EXPECT_EQ(fs::createUniqueFile(Path270, FileDescriptor, TempPath),
             errc::invalid_argument);
   // Relative path < 247 chars, no problem.
   const char *Path216 =
-    "abcdefghijklmnopqrstuvwxyz7abcdefghijklmnopqrstuvwxyz6"
-    "abcdefghijklmnopqrstuvwxyz5abcdefghijklmnopqrstuvwxyz4"
-    "abcdefghijklmnopqrstuvwxyz3abcdefghijklmnopqrstuvwxyz2"
-    "abcdefghijklmnopqrstuvwxyz1abcdefghijklmnopqrstuvwxyz0";
+      "abcdefghijklmnopqrstuvwxyz7abcdefghijklmnopqrstuvwxyz6"
+      "abcdefghijklmnopqrstuvwxyz5abcdefghijklmnopqrstuvwxyz4"
+      "abcdefghijklmnopqrstuvwxyz3abcdefghijklmnopqrstuvwxyz2"
+      "abcdefghijklmnopqrstuvwxyz1abcdefghijklmnopqrstuvwxyz0";
   ASSERT_NO_ERROR(fs::createTemporaryFile(Path216, "", TempPath));
   ASSERT_NO_ERROR(fs::remove(Twine(TempPath)));
 #endif
@@ -906,7 +901,8 @@ TEST_F(FileSystemTest, TempFileCollisions) {
   // (1 - 1/16) ** 2191 or 3.88e-62.
   int Successes = 0;
   for (int i = 0; i < 32; ++i)
-    if (TryCreateTempFile()) ++Successes;
+    if (TryCreateTempFile())
+      ++Successes;
   EXPECT_EQ(Successes, 16);
 
   for (fs::TempFile &T : TempFiles)
@@ -955,8 +951,7 @@ TEST_F(FileSystemTest, CreateDir) {
     LongDir.append(OneDir);
   ASSERT_NO_ERROR(fs::create_directories(Twine(LongDir)));
   ASSERT_NO_ERROR(fs::create_directories(Twine(LongDir)));
-  ASSERT_EQ(fs::create_directories(Twine(LongDir), false),
-            errc::file_exists);
+  ASSERT_EQ(fs::create_directories(Twine(LongDir), false), errc::file_exists);
   // Tidy up, "recursively" removing the directories.
   StringRef ThisDir(LongDir);
   for (size_t J = 0; J < NLevels; ++J) {
@@ -972,12 +967,11 @@ TEST_F(FileSystemTest, CreateDir) {
     LongPathWithUnixSeparators.append("/DirNameWith19Charss");
   } while (LongPathWithUnixSeparators.size() < 260);
   std::replace(LongPathWithUnixSeparators.begin(),
-               LongPathWithUnixSeparators.end(),
-               '\\', '/');
+               LongPathWithUnixSeparators.end(), '\\', '/');
   ASSERT_NO_ERROR(fs::create_directories(Twine(LongPathWithUnixSeparators)));
   // cleanup
-  ASSERT_NO_ERROR(fs::remove_directories(Twine(TestDirectory) +
-                                         "/DirNameWith19Charss"));
+  ASSERT_NO_ERROR(
+      fs::remove_directories(Twine(TestDirectory) + "/DirNameWith19Charss"));
 
   // Similarly for a relative pathname.  Need to set the current directory to
   // TestDirectory so that the one we create ends up in the right place.
@@ -999,7 +993,7 @@ TEST_F(FileSystemTest, CreateDir) {
   // And clean up.
   ASSERT_NO_ERROR(fs::remove("b"));
   ASSERT_NO_ERROR(fs::remove(
-    Twine(LongDir.substr(0, LongDir.size() - strlen(DotDotDirs)))));
+      Twine(LongDir.substr(0, LongDir.size() - strlen(DotDotDirs)))));
   ASSERT_NE(::SetCurrentDirectoryA(PreviousDir), 0);
 #endif
 }
@@ -1022,13 +1016,16 @@ TEST_F(FileSystemTest, DirectoryIteration) {
       fs::create_directories(Twine(TestDirectory) + "/recursive/pop/p1"));
   typedef std::vector<std::string> v_t;
   v_t visited;
-  for (fs::recursive_directory_iterator i(Twine(TestDirectory)
-         + "/recursive", ec), e; i != e; i.increment(ec)){
+  for (fs::recursive_directory_iterator
+           i(Twine(TestDirectory) + "/recursive", ec),
+       e;
+       i != e; i.increment(ec)) {
     ASSERT_NO_ERROR(ec);
     if (path::filename(i->path()) == "p1") {
       i.pop();
       // FIXME: recursive_directory_iterator should be more robust.
-      if (i == e) break;
+      if (i == e)
+        break;
     }
     if (path::filename(i->path()) == "dontlookhere")
       i.no_push();
@@ -1134,8 +1131,10 @@ TEST_F(FileSystemTest, BrokenSymlinkDirectoryIteration) {
   VisitedBrokenSymlinks.clear();
 
   // Broken symbol links are expected to throw an error.
-  for (fs::recursive_directory_iterator i(
-      Twine(TestDirectory) + "/symlink", ec), e; i != e; i.increment(ec)) {
+  for (fs::recursive_directory_iterator
+           i(Twine(TestDirectory) + "/symlink", ec),
+       e;
+       i != e; i.increment(ec)) {
     ASSERT_NO_ERROR(ec);
     if (i->status().getError() ==
         std::make_error_code(std::errc::no_such_file_or_directory)) {
@@ -1152,8 +1151,9 @@ TEST_F(FileSystemTest, BrokenSymlinkDirectoryIteration) {
               UnorderedElementsAre("a", "ba", "bc", "c", "e"));
   VisitedBrokenSymlinks.clear();
 
-  for (fs::recursive_directory_iterator i(
-      Twine(TestDirectory) + "/symlink", ec, /*follow_symlinks=*/false), e;
+  for (fs::recursive_directory_iterator
+           i(Twine(TestDirectory) + "/symlink", ec, /*follow_symlinks=*/false),
+       e;
        i != e; i.increment(ec)) {
     ASSERT_NO_ERROR(ec);
     if (i->status().getError() ==
@@ -1289,7 +1289,8 @@ TEST_F(FileSystemTest, MD5) {
   SmallString<64> TempPath;
   ASSERT_NO_ERROR(fs::createTemporaryFile("prefix", "temp", FD, TempPath));
   StringRef Data("abcdefghijklmnopqrstuvwxyz");
-  ASSERT_EQ(write(FD, Data.data(), Data.size()), static_cast<ssize_t>(Data.size()));
+  ASSERT_EQ(write(FD, Data.data(), Data.size()),
+            static_cast<ssize_t>(Data.size()));
   lseek(FD, 0, SEEK_SET);
   auto Hash = fs::md5_contents(FD);
   ::close(FD);
@@ -1426,8 +1427,7 @@ TEST(Support, RemoveDots) {
 
   // FIXME: These leading forward slashes are emergent behavior. VFS depends on
   // this behavior now.
-  EXPECT_EQ("C:/bar",
-            remove_dots("C:/foo/../bar", true, path::Style::windows));
+  EXPECT_EQ("C:/bar", remove_dots("C:/foo/../bar", true, path::Style::windows));
   EXPECT_EQ("C:/foo\\bar",
             remove_dots("C:/foo/bar", true, path::Style::windows));
   EXPECT_EQ("C:/foo\\bar",
@@ -1440,11 +1440,11 @@ TEST(Support, RemoveDots) {
   // the specification.
   EXPECT_EQ("C:\\foo\\bar",
             remove_dots("C:\\foo\\bar\\", true, path::Style::windows));
-  EXPECT_EQ("/foo/bar",
-            remove_dots("/foo/bar/", true, path::Style::posix));
+  EXPECT_EQ("/foo/bar", remove_dots("/foo/bar/", true, path::Style::posix));
 
   // A double separator is rewritten.
-  EXPECT_EQ("C:/foo\\bar", remove_dots("C:/foo//bar", true, path::Style::windows));
+  EXPECT_EQ("C:/foo\\bar",
+            remove_dots("C:/foo//bar", true, path::Style::windows));
 
   SmallString<64> Path1(".\\.\\c");
   EXPECT_TRUE(path::remove_dots(Path1, true, path::Style::windows));
@@ -1466,8 +1466,7 @@ TEST(Support, RemoveDots) {
   EXPECT_EQ("/", remove_dots("/", true, path::Style::posix));
 
   // FIXME: Leaving behind this double leading slash seems like a bug.
-  EXPECT_EQ("//foo/bar",
-            remove_dots("//foo/bar/", true, path::Style::posix));
+  EXPECT_EQ("//foo/bar", remove_dots("//foo/bar/", true, path::Style::posix));
 
   SmallString<64> Path2("././c");
   EXPECT_TRUE(path::remove_dots(Path2, true, path::Style::posix));
@@ -2130,7 +2129,7 @@ TEST_F(FileSystemTest, permissions) {
 #endif // !FreeBSD && !NetBSD && !OpenBSD && !AIX
 
   EXPECT_EQ(fs::setPermissions(TempPath, fs::all_perms & ~fs::sticky_bit),
-                               NoError);
+            NoError);
   EXPECT_TRUE(CheckPermissions(fs::all_perms & ~fs::sticky_bit));
 #endif
 }

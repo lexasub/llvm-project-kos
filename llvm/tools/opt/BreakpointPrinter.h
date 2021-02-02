@@ -19,6 +19,6 @@ class ModulePass;
 class raw_ostream;
 
 ModulePass *createBreakpointPrinter(raw_ostream &out);
-}
+} // namespace llvm
 
 #endif // LLVM_TOOLS_OPT_BREAKPOINTPRINTER_H

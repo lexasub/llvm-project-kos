@@ -196,7 +196,7 @@ public:
 
   void finish();
 };
-}
+} // namespace
 
 // Visual Studio's debugger requires absolute paths in various places in the
 // PDB to work without additional configuration:
@@ -789,7 +789,8 @@ void DebugSHandler::finish() {
   // subsections. The new checksum table must have the exact same layout and
   // size as the original. Otherwise, the file references in the line and
   // inlinee line tables will be incorrect.
-  auto newChecksums = std::make_unique<DebugChecksumsSubsection>(linker.pdbStrTab);
+  auto newChecksums =
+      std::make_unique<DebugChecksumsSubsection>(linker.pdbStrTab);
   for (FileChecksumEntry &fc : checksums) {
     SmallString<128> filename =
         exitOnErr(cvStrTab.getString(fc.FileNameOffset));
@@ -1278,7 +1279,7 @@ void PDBLinker::addImportFilesToPDB(ArrayRef<OutputSection *> outputSections) {
       continue;
 
     if (!file->thunkLive)
-        continue;
+      continue;
 
     std::string dll = StringRef(file->dllName).lower();
     llvm::pdb::DbiModuleDescriptorBuilder *&mod = dllToModuleDbi[dll];
@@ -1351,9 +1352,9 @@ void PDBLinker::addImportFilesToPDB(ArrayRef<OutputSection *> outputSections) {
 
 // Creates a PDB file.
 void lld::kos::createPDB(SymbolTable *symtab,
-                          ArrayRef<OutputSection *> outputSections,
-                          ArrayRef<uint8_t> sectionTable,
-                          llvm::codeview::DebugInfo *buildId) {
+                         ArrayRef<OutputSection *> outputSections,
+                         ArrayRef<uint8_t> sectionTable,
+                         llvm::codeview::DebugInfo *buildId) {
   ScopedTimer t1(totalPdbLinkTimer);
   PDBLinker pdb(symtab);
 

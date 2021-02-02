@@ -6,44 +6,44 @@
 
 /* This is a test of the various code modification hints that only
    apply in C++2a. */
-template<typename ...T> void init_capture_pack(T ...a) {
-  [x... = a]{}; // expected-error {{must appear before the name}}
-  [x = a...]{}; // expected-error {{must appear before the name}}
-  [...&x = a]{}; // expected-error {{must appear before the name}}
-  [...a]{}; // expected-error {{must appear after the name}}
-  [&...a]{}; // expected-error {{must appear after the name}}
-  [...&a]{}; // expected-error {{must appear after the name}}
+template <typename... T> void init_capture_pack(T... a) {
+  [x... = a] {};   // expected-error {{must appear before the name}}
+  [x = a...] {};   // expected-error {{must appear before the name}}
+  [... &x = a] {}; // expected-error {{must appear before the name}}
+  [... a] {};      // expected-error {{must appear after the name}}
+  [&...a] {};      // expected-error {{must appear after the name}}
+  [... & a] {};    // expected-error {{must appear after the name}}
 }
 
 namespace constinit_mismatch {
-  extern thread_local constinit int a; // expected-note {{declared constinit here}}
-  thread_local int a = 123; // expected-error {{'constinit' specifier missing on initializing declaration of 'a'}}
-  // CHECK: {{^}}  constinit thread_local int a = 123;
+extern thread_local constinit int a; // expected-note {{declared constinit here}}
+thread_local int a = 123;            // expected-error {{'constinit' specifier missing on initializing declaration of 'a'}}
+// CHECK: {{^}}  constinit thread_local int a = 123;
 
-  int b = 123; // expected-note {{add the 'constinit' specifier}}
-  extern constinit int b; // expected-error {{'constinit' specifier added after initialization of variable}}
-  // CHECK: {{^}}  extern int b;
+int b = 123;            // expected-note {{add the 'constinit' specifier}}
+extern constinit int b; // expected-error {{'constinit' specifier added after initialization of variable}}
+// CHECK: {{^}}  extern int b;
 
-  template<typename> struct X {
-    template<int> static constinit int n; // expected-note {{constinit}}
-  };
-  template<typename T> template<int N>
-  int X<T>::n = 123; // expected-error {{missing}}
-  // CHECK: {{^}}  constinit int X<T>::n = 123;
+template <typename> struct X {
+  template <int> static constinit int n; // expected-note {{constinit}}
+};
+template <typename T> template <int N>
+int X<T>::n = 123; // expected-error {{missing}}
+// CHECK: {{^}}  constinit int X<T>::n = 123;
 
 #define ABSL_CONST_INIT [[clang::require_constant_initialization]]
-  extern constinit int c; // expected-note {{constinit}}
-  int c; // expected-error {{missing}}
-  // CHECK: {{^}}  ABSL_CONST_INIT int c;
+extern constinit int c; // expected-note {{constinit}}
+int c;                  // expected-error {{missing}}
+// CHECK: {{^}}  ABSL_CONST_INIT int c;
 
 #define MY_CONST_INIT constinit
-  extern constinit int d; // expected-note {{constinit}}
-  int d; // expected-error {{missing}}
-  // CHECK: {{^}}  MY_CONST_INIT int d;
+extern constinit int d; // expected-note {{constinit}}
+int d;                  // expected-error {{missing}}
+// CHECK: {{^}}  MY_CONST_INIT int d;
 #undef MY_CONST_INIT
 
-  extern constinit int e; // expected-note {{constinit}}
-  int e; // expected-error {{missing}}
-  // CHECK: {{^}}  ABSL_CONST_INIT int e;
+extern constinit int e; // expected-note {{constinit}}
+int e;                  // expected-error {{missing}}
+// CHECK: {{^}}  ABSL_CONST_INIT int e;
 #undef ABSL_CONST_INIT
-}
+} // namespace constinit_mismatch

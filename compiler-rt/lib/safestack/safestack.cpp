@@ -13,13 +13,12 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "safestack_platform.h"
-#include "safestack_util.h"
-
 #include <errno.h>
 #include <sys/resource.h>
 
 #include "interception/interception.h"
+#include "safestack_platform.h"
+#include "safestack_util.h"
 
 using namespace safestack;
 
@@ -205,9 +204,8 @@ void thread_cleanup_handler(void *_iter) {
 void EnsureInterceptorsInitialized();
 
 /// Intercept thread creation operation to allocate and setup the unsafe stack
-INTERCEPTOR(int, pthread_create, pthread_t *thread,
-            const pthread_attr_t *attr,
-            void *(*start_routine)(void*), void *arg) {
+INTERCEPTOR(int, pthread_create, pthread_t *thread, const pthread_attr_t *attr,
+            void *(*start_routine)(void *), void *arg) {
   EnsureInterceptorsInitialized();
   size_t size = 0;
   size_t guard = 0;
@@ -257,12 +255,15 @@ void EnsureInterceptorsInitialized() {
 
 }  // namespace
 
-extern "C" __attribute__((visibility("default")))
+extern "C"
+    __attribute__((visibility("default")))
 #if !SANITIZER_CAN_USE_PREINIT_ARRAY
-// On ELF platforms, the constructor is invoked using .preinit_array (see below)
-__attribute__((constructor(0)))
+    // On ELF platforms, the constructor is invoked using .preinit_array (see
+    // below)
+    __attribute__((constructor(0)))
 #endif
-void __safestack_init() {
+    void
+    __safestack_init() {
   // Determine the stack size for the main thread.
   size_t size = kDefaultUnsafeStackSize;
   size_t guard = 4096;
@@ -289,22 +290,22 @@ __attribute__((section(".preinit_array"),
 }
 #endif
 
-extern "C"
-    __attribute__((visibility("default"))) void *__get_unsafe_stack_bottom() {
+extern "C" __attribute__((visibility("default"))) void *
+__get_unsafe_stack_bottom() {
   return unsafe_stack_start;
 }
 
-extern "C"
-    __attribute__((visibility("default"))) void *__get_unsafe_stack_top() {
-  return (char*)unsafe_stack_start + unsafe_stack_size;
+extern "C" __attribute__((visibility("default"))) void *
+__get_unsafe_stack_top() {
+  return (char *)unsafe_stack_start + unsafe_stack_size;
 }
 
-extern "C"
-    __attribute__((visibility("default"))) void *__get_unsafe_stack_start() {
+extern "C" __attribute__((visibility("default"))) void *
+__get_unsafe_stack_start() {
   return unsafe_stack_start;
 }
 
-extern "C"
-    __attribute__((visibility("default"))) void *__get_unsafe_stack_ptr() {
+extern "C" __attribute__((visibility("default"))) void *
+__get_unsafe_stack_ptr() {
   return __safestack_unsafe_stack_ptr;
 }

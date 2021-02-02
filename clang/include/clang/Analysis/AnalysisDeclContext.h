@@ -325,7 +325,7 @@ public:
   unsigned getIndex() const { return Index; }
 
   CFGElement getCallSiteCFGElement() const { return (*Block)[Index]; }
-  
+
   void Profile(llvm::FoldingSetNodeID &ID) override;
 
   static void Profile(llvm::FoldingSetNodeID &ID, AnalysisDeclContext *ADC,

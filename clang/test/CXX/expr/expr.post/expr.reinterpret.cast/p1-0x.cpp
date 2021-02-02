@@ -6,11 +6,11 @@
 
 unsigned int f(int);
 
-template<typename T> T&& xvalue();
+template <typename T> T &&xvalue();
 void test_classification(char *ptr) {
-  int (&fr0)(int) = reinterpret_cast<int (&&)(int)>(f);
+  int (&fr0)(int) = reinterpret_cast<int(&&)(int)>(f);
   int &&ir0 = reinterpret_cast<int &&>(*ptr);
-  int &&ir1 = reinterpret_cast<int &&>(0); // expected-error {{rvalue to reference type}}
+  int &&ir1 = reinterpret_cast<int &&>(0);   // expected-error {{rvalue to reference type}}
   int &&ir2 = reinterpret_cast<int &&>('a'); // expected-error {{rvalue to reference type}}
   int &&ir3 = reinterpret_cast<int &&>(xvalue<char>());
   // Per DR1268, reinterpret_cast can convert between lvalues and xvalues.

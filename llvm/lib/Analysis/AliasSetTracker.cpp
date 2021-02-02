@@ -52,7 +52,7 @@ void AliasSet::mergeSetIn(AliasSet &AS, AliasSetTracker &AST) {
   bool WasMustAlias = (Alias == SetMustAlias);
   // Update the alias and access types of this set...
   Access |= AS.Access;
-  Alias  |= AS.Alias;
+  Alias |= AS.Alias;
 
   if (Alias == SetMustAlias) {
     // Check that these two merged sets really are must aliases.  Since both
@@ -77,7 +77,7 @@ void AliasSet::mergeSetIn(AliasSet &AS, AliasSetTracker &AST) {
   }
 
   bool ASHadUnknownInsts = !AS.UnknownInsts.empty();
-  if (UnknownInsts.empty()) {            // Merge call sites...
+  if (UnknownInsts.empty()) { // Merge call sites...
     if (ASHadUnknownInsts) {
       std::swap(UnknownInsts, AS.UnknownInsts);
       addRef();
@@ -112,7 +112,7 @@ void AliasSetTracker::removeAliasSet(AliasSet *AS) {
     AS->Forward = nullptr;
   } else // Update TotalMayAliasSetSize only if not forwarding.
       if (AS->Alias == AliasSet::SetMayAlias)
-        TotalMayAliasSetSize -= AS->size();
+    TotalMayAliasSetSize -= AS->size();
 
   AliasSets.erase(AS);
   // If we've removed the saturated alias set, set saturated marker back to
@@ -174,8 +174,9 @@ void AliasSet::addUnknownInst(Instruction *I, AliasAnalysis &AA) {
   // Guards are marked as modifying memory for control flow modelling purposes,
   // but don't actually modify any specific memory location.
   using namespace PatternMatch;
-  bool MayWriteMemory = I->mayWriteToMemory() && !isGuard(I) &&
-    !(I->use_empty() && match(I, m_Intrinsic<Intrinsic::invariant_start>()));
+  bool MayWriteMemory =
+      I->mayWriteToMemory() && !isGuard(I) &&
+      !(I->use_empty() && match(I, m_Intrinsic<Intrinsic::invariant_start>()));
   if (!MayWriteMemory) {
     Alias = SetMayAlias;
     Access |= RefAccess;
@@ -256,7 +257,7 @@ bool AliasSet::aliasesUnknownInst(const Instruction *Inst,
   return false;
 }
 
-Instruction* AliasSet::getUniqueInstruction() {
+Instruction *AliasSet::getUniqueInstruction() {
   if (AliasAny)
     // May have collapses alias set
     return nullptr;
@@ -347,7 +348,7 @@ AliasSet *AliasSetTracker::findAliasSetForUnknownInst(Instruction *Inst) {
 
 AliasSet &AliasSetTracker::getAliasSetFor(const MemoryLocation &MemLoc) {
 
-  Value * const Pointer = const_cast<Value*>(MemLoc.Ptr);
+  Value *const Pointer = const_cast<Value *>(MemLoc.Ptr);
   const LocationSize Size = MemLoc.Size;
   const AAMDNodes &AAInfo = MemLoc.AATags;
 
@@ -556,7 +557,8 @@ void AliasSetTracker::addAllInstructionsInLoopUsingMSSA() {
 void AliasSetTracker::deleteValue(Value *PtrVal) {
   // First, look up the PointerRec for this pointer.
   PointerMapType::iterator I = PointerMap.find_as(PtrVal);
-  if (I == PointerMap.end()) return;  // Noop
+  if (I == PointerMap.end())
+    return; // Noop
 
   // If we found one, remove the pointer from the alias set it is in.
   AliasSet::PointerRec *PtrValEnt = I->second;
@@ -585,11 +587,12 @@ void AliasSetTracker::copyValue(Value *From, Value *To) {
   // First, look up the PointerRec for this pointer.
   PointerMapType::iterator I = PointerMap.find_as(From);
   if (I == PointerMap.end())
-    return;  // Noop
+    return; // Noop
   assert(I->second->hasAliasSet() && "Dead entry?");
 
   AliasSet::PointerRec &Entry = getEntryFor(To);
-  if (Entry.hasAliasSet()) return;    // Already in the tracker!
+  if (Entry.hasAliasSet())
+    return; // Already in the tracker!
 
   // getEntryFor above may invalidate iterator \c I, so reinitialize it.
   I = PointerMap.find_as(From);
@@ -655,22 +658,32 @@ AliasSet &AliasSetTracker::addPointer(MemoryLocation Loc,
 //===----------------------------------------------------------------------===//
 
 void AliasSet::print(raw_ostream &OS) const {
-  OS << "  AliasSet[" << (const void*)this << ", " << RefCount << "] ";
+  OS << "  AliasSet[" << (const void *)this << ", " << RefCount << "] ";
   OS << (Alias == SetMustAlias ? "must" : "may") << " alias, ";
   switch (Access) {
-  case NoAccess:     OS << "No access "; break;
-  case RefAccess:    OS << "Ref       "; break;
-  case ModAccess:    OS << "Mod       "; break;
-  case ModRefAccess: OS << "Mod/Ref   "; break;
-  default: llvm_unreachable("Bad value for Access!");
+  case NoAccess:
+    OS << "No access ";
+    break;
+  case RefAccess:
+    OS << "Ref       ";
+    break;
+  case ModAccess:
+    OS << "Mod       ";
+    break;
+  case ModRefAccess:
+    OS << "Mod/Ref   ";
+    break;
+  default:
+    llvm_unreachable("Bad value for Access!");
   }
   if (Forward)
-    OS << " forwarding to " << (void*)Forward;
+    OS << " forwarding to " << (void *)Forward;
 
   if (!empty()) {
     OS << "Pointers: ";
     for (iterator I = begin(), E = end(); I != E; ++I) {
-      if (I != begin()) OS << ", ";
+      if (I != begin())
+        OS << ", ";
       I.getPointer()->printAsOperand(OS << "(");
       if (I.getSize() == LocationSize::afterPointer())
         OS << ", unknown after)";
@@ -683,7 +696,8 @@ void AliasSet::print(raw_ostream &OS) const {
   if (!UnknownInsts.empty()) {
     OS << "\n    " << UnknownInsts.size() << " Unknown instructions: ";
     for (unsigned i = 0, e = UnknownInsts.size(); i != e; ++i) {
-      if (i) OS << ", ";
+      if (i)
+        OS << ", ";
       if (auto *I = getUnknownInst(i)) {
         if (I->hasName())
           I->printAsOperand(OS);
@@ -725,7 +739,7 @@ void AliasSetTracker::ASTCallbackVH::allUsesReplacedWith(Value *V) {
 }
 
 AliasSetTracker::ASTCallbackVH::ASTCallbackVH(Value *V, AliasSetTracker *ast)
-  : CallbackVH(V), AST(ast) {}
+    : CallbackVH(V), AST(ast) {}
 
 AliasSetTracker::ASTCallbackVH &
 AliasSetTracker::ASTCallbackVH::operator=(Value *V) {
@@ -738,39 +752,39 @@ AliasSetTracker::ASTCallbackVH::operator=(Value *V) {
 
 namespace {
 
-  class AliasSetPrinter : public FunctionPass {
-  public:
-    static char ID; // Pass identification, replacement for typeid
+class AliasSetPrinter : public FunctionPass {
+public:
+  static char ID; // Pass identification, replacement for typeid
 
-    AliasSetPrinter() : FunctionPass(ID) {
-      initializeAliasSetPrinterPass(*PassRegistry::getPassRegistry());
-    }
+  AliasSetPrinter() : FunctionPass(ID) {
+    initializeAliasSetPrinterPass(*PassRegistry::getPassRegistry());
+  }
 
-    void getAnalysisUsage(AnalysisUsage &AU) const override {
-      AU.setPreservesAll();
-      AU.addRequired<AAResultsWrapperPass>();
-    }
+  void getAnalysisUsage(AnalysisUsage &AU) const override {
+    AU.setPreservesAll();
+    AU.addRequired<AAResultsWrapperPass>();
+  }
 
-    bool runOnFunction(Function &F) override {
-      auto &AAWP = getAnalysis<AAResultsWrapperPass>();
-      AliasSetTracker Tracker(AAWP.getAAResults());
-      errs() << "Alias sets for function '" << F.getName() << "':\n";
-      for (inst_iterator I = inst_begin(F), E = inst_end(F); I != E; ++I)
-        Tracker.add(&*I);
-      Tracker.print(errs());
-      return false;
-    }
-  };
+  bool runOnFunction(Function &F) override {
+    auto &AAWP = getAnalysis<AAResultsWrapperPass>();
+    AliasSetTracker Tracker(AAWP.getAAResults());
+    errs() << "Alias sets for function '" << F.getName() << "':\n";
+    for (inst_iterator I = inst_begin(F), E = inst_end(F); I != E; ++I)
+      Tracker.add(&*I);
+    Tracker.print(errs());
+    return false;
+  }
+};
 
 } // end anonymous namespace
 
 char AliasSetPrinter::ID = 0;
 
-INITIALIZE_PASS_BEGIN(AliasSetPrinter, "print-alias-sets",
-                "Alias Set Printer", false, true)
+INITIALIZE_PASS_BEGIN(AliasSetPrinter, "print-alias-sets", "Alias Set Printer",
+                      false, true)
 INITIALIZE_PASS_DEPENDENCY(AAResultsWrapperPass)
-INITIALIZE_PASS_END(AliasSetPrinter, "print-alias-sets",
-                "Alias Set Printer", false, true)
+INITIALIZE_PASS_END(AliasSetPrinter, "print-alias-sets", "Alias Set Printer",
+                    false, true)
 
 AliasSetsPrinterPass::AliasSetsPrinterPass(raw_ostream &OS) : OS(OS) {}
 

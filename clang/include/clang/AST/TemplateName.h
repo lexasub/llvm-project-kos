@@ -75,28 +75,28 @@ protected:
 public:
   unsigned size() const { return Bits.Size; }
 
-  OverloadedTemplateStorage *getAsOverloadedStorage()  {
+  OverloadedTemplateStorage *getAsOverloadedStorage() {
     return Bits.Kind == Overloaded
-             ? reinterpret_cast<OverloadedTemplateStorage *>(this)
-             : nullptr;
+               ? reinterpret_cast<OverloadedTemplateStorage *>(this)
+               : nullptr;
   }
 
-  AssumedTemplateStorage *getAsAssumedTemplateName()  {
+  AssumedTemplateStorage *getAsAssumedTemplateName() {
     return Bits.Kind == Assumed
-             ? reinterpret_cast<AssumedTemplateStorage *>(this)
-             : nullptr;
+               ? reinterpret_cast<AssumedTemplateStorage *>(this)
+               : nullptr;
   }
 
   SubstTemplateTemplateParmStorage *getAsSubstTemplateTemplateParm() {
     return Bits.Kind == SubstTemplateTemplateParm
-             ? reinterpret_cast<SubstTemplateTemplateParmStorage *>(this)
-             : nullptr;
+               ? reinterpret_cast<SubstTemplateTemplateParmStorage *>(this)
+               : nullptr;
   }
 
   SubstTemplateTemplateParmPackStorage *getAsSubstTemplateTemplateParmPack() {
     return Bits.Kind == SubstTemplateTemplateParmPack
-             ? reinterpret_cast<SubstTemplateTemplateParmPackStorage *>(this)
-             : nullptr;
+               ? reinterpret_cast<SubstTemplateTemplateParmPackStorage *>(this)
+               : nullptr;
   }
 };
 
@@ -108,10 +108,8 @@ class OverloadedTemplateStorage : public UncommonTemplateNameStorage {
   OverloadedTemplateStorage(unsigned size)
       : UncommonTemplateNameStorage(Overloaded, size) {}
 
-  NamedDecl **getStorage() {
-    return reinterpret_cast<NamedDecl **>(this + 1);
-  }
-  NamedDecl * const *getStorage() const {
+  NamedDecl **getStorage() { return reinterpret_cast<NamedDecl **>(this + 1); }
+  NamedDecl *const *getStorage() const {
     return reinterpret_cast<NamedDecl *const *>(this + 1);
   }
 
@@ -121,7 +119,7 @@ public:
   iterator begin() const { return getStorage(); }
   iterator end() const { return getStorage() + size(); }
 
-  llvm::ArrayRef<NamedDecl*> decls() const {
+  llvm::ArrayRef<NamedDecl *> decls() const {
     return llvm::makeArrayRef(begin(), end());
   }
 };
@@ -132,9 +130,8 @@ public:
 /// This kind of template names occurs when the parameter pack has been
 /// provided with a template template argument pack in a context where its
 /// enclosing pack expansion could not be fully expanded.
-class SubstTemplateTemplateParmPackStorage
-  : public UncommonTemplateNameStorage, public llvm::FoldingSetNode
-{
+class SubstTemplateTemplateParmPackStorage : public UncommonTemplateNameStorage,
+                                             public llvm::FoldingSetNode {
   TemplateTemplateParmDecl *Parameter;
   const TemplateArgument *Arguments;
 
@@ -146,9 +143,7 @@ public:
         Parameter(Parameter), Arguments(Arguments) {}
 
   /// Retrieve the template template parameter pack being substituted.
-  TemplateTemplateParmDecl *getParameterPack() const {
-    return Parameter;
-  }
+  TemplateTemplateParmDecl *getParameterPack() const { return Parameter; }
 
   /// Retrieve the template template argument pack with which this
   /// parameter was substituted.
@@ -156,8 +151,7 @@ public:
 
   void Profile(llvm::FoldingSetNodeID &ID, ASTContext &Context);
 
-  static void Profile(llvm::FoldingSetNodeID &ID,
-                      ASTContext &Context,
+  static void Profile(llvm::FoldingSetNodeID &ID, ASTContext &Context,
                       TemplateTemplateParmDecl *Parameter,
                       const TemplateArgument &ArgPack);
 };
@@ -347,8 +341,8 @@ const StreamingDiagnostic &operator<<(const StreamingDiagnostic &DB,
 
 /// A structure for storing the information associated with a
 /// substituted template template parameter.
-class SubstTemplateTemplateParmStorage
-  : public UncommonTemplateNameStorage, public llvm::FoldingSetNode {
+class SubstTemplateTemplateParmStorage : public UncommonTemplateNameStorage,
+                                         public llvm::FoldingSetNode {
   friend class ASTContext;
 
   TemplateTemplateParmDecl *Parameter;
@@ -371,8 +365,8 @@ public:
 };
 
 inline TemplateName TemplateName::getUnderlying() const {
-  if (SubstTemplateTemplateParmStorage *subst
-        = getAsSubstTemplateTemplateParm())
+  if (SubstTemplateTemplateParmStorage *subst =
+          getAsSubstTemplateTemplateParm())
     return subst->getReplacement().getUnderlying();
   return *this;
 }
@@ -406,7 +400,7 @@ class QualifiedTemplateName : public llvm::FoldingSetNode {
 
   QualifiedTemplateName(NestedNameSpecifier *NNS, bool TemplateKeyword,
                         TemplateDecl *Template)
-      : Qualifier(NNS, TemplateKeyword? 1 : 0), Template(Template) {}
+      : Qualifier(NNS, TemplateKeyword ? 1 : 0), Template(Template) {}
 
 public:
   /// Return the nested name specifier that qualifies this name.
@@ -482,8 +476,7 @@ class DependentTemplateName : public llvm::FoldingSetNode {
         CanonicalTemplateName(this) {}
 
   DependentTemplateName(NestedNameSpecifier *Qualifier,
-                        const IdentifierInfo *Identifier,
-                        TemplateName Canon)
+                        const IdentifierInfo *Identifier, TemplateName Canon)
       : Qualifier(Qualifier, false), Identifier(Identifier),
         CanonicalTemplateName(Canon) {}
 
@@ -493,10 +486,9 @@ class DependentTemplateName : public llvm::FoldingSetNode {
         CanonicalTemplateName(this) {}
 
   DependentTemplateName(NestedNameSpecifier *Qualifier,
-                        OverloadedOperatorKind Operator,
-                        TemplateName Canon)
-       : Qualifier(Qualifier, true), Operator(Operator),
-         CanonicalTemplateName(Canon) {}
+                        OverloadedOperatorKind Operator, TemplateName Canon)
+      : Qualifier(Qualifier, true), Operator(Operator),
+        CanonicalTemplateName(Canon) {}
 
 public:
   /// Return the nested name specifier that qualifies this name.
@@ -549,8 +541,7 @@ public:
 namespace llvm {
 
 /// The clang::TemplateName class is effectively a pointer.
-template<>
-struct PointerLikeTypeTraits<clang::TemplateName> {
+template <> struct PointerLikeTypeTraits<clang::TemplateName> {
   static inline void *getAsVoidPointer(clang::TemplateName TN) {
     return TN.getAsVoidPointer();
   }

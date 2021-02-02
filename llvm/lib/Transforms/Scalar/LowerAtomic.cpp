@@ -49,7 +49,8 @@ static bool LowerAtomicRMWInst(AtomicRMWInst *RMWI) {
   Value *Res = nullptr;
 
   switch (RMWI->getOperation()) {
-  default: llvm_unreachable("Unexpected RMW operation");
+  default:
+    llvm_unreachable("Unexpected RMW operation");
   case AtomicRMWInst::Xchg:
     Res = Val;
     break;
@@ -72,20 +73,16 @@ static bool LowerAtomicRMWInst(AtomicRMWInst *RMWI) {
     Res = Builder.CreateXor(Orig, Val);
     break;
   case AtomicRMWInst::Max:
-    Res = Builder.CreateSelect(Builder.CreateICmpSLT(Orig, Val),
-                               Val, Orig);
+    Res = Builder.CreateSelect(Builder.CreateICmpSLT(Orig, Val), Val, Orig);
     break;
   case AtomicRMWInst::Min:
-    Res = Builder.CreateSelect(Builder.CreateICmpSLT(Orig, Val),
-                               Orig, Val);
+    Res = Builder.CreateSelect(Builder.CreateICmpSLT(Orig, Val), Orig, Val);
     break;
   case AtomicRMWInst::UMax:
-    Res = Builder.CreateSelect(Builder.CreateICmpULT(Orig, Val),
-                               Val, Orig);
+    Res = Builder.CreateSelect(Builder.CreateICmpULT(Orig, Val), Val, Orig);
     break;
   case AtomicRMWInst::UMin:
-    Res = Builder.CreateSelect(Builder.CreateICmpULT(Orig, Val),
-                               Orig, Val);
+    Res = Builder.CreateSelect(Builder.CreateICmpULT(Orig, Val), Orig, Val);
     break;
   case AtomicRMWInst::FAdd:
     Res = Builder.CreateFAdd(Orig, Val);
@@ -167,8 +164,8 @@ public:
 
 private:
   LowerAtomicPass Impl;
-  };
-}
+};
+} // namespace
 
 char LowerAtomicLegacyPass::ID = 0;
 INITIALIZE_PASS(LowerAtomicLegacyPass, "loweratomic",

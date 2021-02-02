@@ -137,10 +137,9 @@ public:
   /// Return true if this is the identifier for the specified string.
   ///
   /// This is intended to be used for string literals only: II->isStr("foo").
-  template <std::size_t StrLen>
-  bool isStr(const char (&Str)[StrLen]) const {
-    return getLength() == StrLen-1 &&
-           memcmp(getNameStart(), Str, StrLen-1) == 0;
+  template <std::size_t StrLen> bool isStr(const char (&Str)[StrLen]) const {
+    return getLength() == StrLen - 1 &&
+           memcmp(getNameStart(), Str, StrLen - 1) == 0;
   }
 
   /// Return true if this is the identifier for the specified StringRef.
@@ -157,17 +156,14 @@ public:
   unsigned getLength() const { return Entry->getKeyLength(); }
 
   /// Return the actual identifier string.
-  StringRef getName() const {
-    return StringRef(getNameStart(), getLength());
-  }
+  StringRef getName() const { return StringRef(getNameStart(), getLength()); }
 
   /// Return true if this identifier is \#defined to some other value.
   /// \note The current definition may be in a module and not currently visible.
-  bool hasMacroDefinition() const {
-    return HasMacro;
-  }
+  bool hasMacroDefinition() const { return HasMacro; }
   void setHasMacroDefinition(bool Val) {
-    if (HasMacro == Val) return;
+    if (HasMacro == Val)
+      return;
 
     HasMacro = Val;
     if (Val) {
@@ -180,9 +176,7 @@ public:
   /// Returns true if this identifier was \#defined to some value at any
   /// moment. In this case there should be an entry for the identifier in the
   /// macro history table in Preprocessor.
-  bool hadMacroDefinition() const {
-    return HadMacro;
-  }
+  bool hadMacroDefinition() const { return HadMacro; }
 
   /// If this is a source-language token (e.g. 'for'), this API
   /// can be used to cause the lexer to map identifiers to source-language
@@ -236,8 +230,8 @@ public:
   }
   void setBuiltinID(unsigned ID) {
     ObjCOrBuiltinID = ID + tok::NUM_OBJC_KEYWORDS;
-    assert(ObjCOrBuiltinID - unsigned(tok::NUM_OBJC_KEYWORDS) == ID
-           && "ID too large for field!");
+    assert(ObjCOrBuiltinID - unsigned(tok::NUM_OBJC_KEYWORDS) == ID &&
+           "ID too large for field!");
   }
 
   unsigned getObjCOrBuiltinID() const { return ObjCOrBuiltinID; }
@@ -316,15 +310,11 @@ public:
 
   /// Determine whether this identifier has changed since it was loaded
   /// from an AST file.
-  bool hasChangedSinceDeserialization() const {
-    return ChangedAfterLoad;
-  }
+  bool hasChangedSinceDeserialization() const { return ChangedAfterLoad; }
 
   /// Note that this identifier has changed since it was loaded from
   /// an AST file.
-  void setChangedSinceDeserialization() {
-    ChangedAfterLoad = true;
-  }
+  void setChangedSinceDeserialization() { ChangedAfterLoad = true; }
 
   /// Determine whether the frontend token information for this
   /// identifier has changed since it was loaded from an AST file.
@@ -423,13 +413,13 @@ class PoisonIdentifierRAIIObject {
 
 public:
   PoisonIdentifierRAIIObject(IdentifierInfo *II, bool NewValue)
-    : II(II), OldValue(II ? II->isPoisoned() : false) {
-    if(II)
+      : II(II), OldValue(II ? II->isPoisoned() : false) {
+    if (II)
       II->setIsPoisoned(NewValue);
   }
 
   ~PoisonIdentifierRAIIObject() {
-    if(II)
+    if (II)
       II->setIsPoisoned(OldValue);
   }
 };
@@ -472,7 +462,7 @@ public:
   /// Unlike the version in IdentifierTable, this returns a pointer instead
   /// of a reference.  If the pointer is null then the IdentifierInfo cannot
   /// be found.
-  virtual IdentifierInfo* get(StringRef Name) = 0;
+  virtual IdentifierInfo *get(StringRef Name) = 0;
 
   /// Retrieve an iterator into the set of all identifiers
   /// known to this identifier lookup source.
@@ -498,7 +488,7 @@ class IdentifierTable {
   using HashTableTy = llvm::StringMap<IdentifierInfo *, llvm::BumpPtrAllocator>;
   HashTableTy HashTable;
 
-  IdentifierInfoLookup* ExternalLookup;
+  IdentifierInfoLookup *ExternalLookup;
 
 public:
   /// Create the identifier table.
@@ -519,9 +509,7 @@ public:
     return ExternalLookup;
   }
 
-  llvm::BumpPtrAllocator& getAllocator() {
-    return HashTable.getAllocator();
-  }
+  llvm::BumpPtrAllocator &getAllocator() { return HashTable.getAllocator(); }
 
   /// Return the identifier token info for the specified named
   /// identifier.
@@ -529,7 +517,8 @@ public:
     auto &Entry = *HashTable.insert(std::make_pair(Name, nullptr)).first;
 
     IdentifierInfo *&II = Entry.second;
-    if (II) return *II;
+    if (II)
+      return *II;
 
     // No entry; if we have an external lookup, look there first.
     if (ExternalLookup) {
@@ -552,7 +541,7 @@ public:
   IdentifierInfo &get(StringRef Name, tok::TokenKind TokenCode) {
     IdentifierInfo &II = get(Name);
     II.TokenID = TokenCode;
-    assert(II.TokenID == (unsigned) TokenCode && "TokenCode too large");
+    assert(II.TokenID == (unsigned)TokenCode && "TokenCode too large");
     return II;
   }
 
@@ -588,8 +577,8 @@ public:
   using const_iterator = HashTableTy::const_iterator;
 
   iterator begin() const { return HashTable.begin(); }
-  iterator end() const   { return HashTable.end(); }
-  unsigned size() const  { return HashTable.size(); }
+  iterator end() const { return HashTable.end(); }
+  unsigned size() const { return HashTable.size(); }
 
   iterator find(StringRef Name) const { return HashTable.find(Name); }
 
@@ -668,11 +657,7 @@ enum ObjCInstanceTypeFamily {
   OIT_ReturnsSelf
 };
 
-enum ObjCStringFormatFamily {
-  SFF_None,
-  SFF_NSString,
-  SFF_CFString
-};
+enum ObjCStringFormatFamily { SFF_None, SFF_NSString, SFF_CFString };
 
 /// Smart pointer class that efficiently represents Objective-C method
 /// names.
@@ -683,14 +668,14 @@ enum ObjCStringFormatFamily {
 /// accounts for 78% of all selectors in Cocoa.h.
 class Selector {
   friend class Diagnostic;
-  friend class SelectorTable; // only the SelectorTable can create these
+  friend class SelectorTable;   // only the SelectorTable can create these
   friend class DeclarationName; // and the AST's DeclarationName.
 
   enum IdentifierInfoFlag {
     // Empty selector = 0. Note that these enumeration values must
     // correspond to the enumeration values of DeclarationName::StoredNameKind
-    ZeroArg  = 0x01,
-    OneArg   = 0x02,
+    ZeroArg = 0x01,
+    OneArg = 0x02,
     MultiArg = 0x07,
     ArgFlags = 0x07
   };
@@ -703,14 +688,16 @@ class Selector {
 
   Selector(IdentifierInfo *II, unsigned nArgs) {
     InfoPtr = reinterpret_cast<uintptr_t>(II);
-    assert((InfoPtr & ArgFlags) == 0 &&"Insufficiently aligned IdentifierInfo");
+    assert((InfoPtr & ArgFlags) == 0 &&
+           "Insufficiently aligned IdentifierInfo");
     assert(nArgs < 2 && "nArgs not equal to 0/1");
-    InfoPtr |= nArgs+1;
+    InfoPtr |= nArgs + 1;
   }
 
   Selector(MultiKeywordSelector *SI) {
     InfoPtr = reinterpret_cast<uintptr_t>(SI);
-    assert((InfoPtr & ArgFlags) == 0 &&"Insufficiently aligned IdentifierInfo");
+    assert((InfoPtr & ArgFlags) == 0 &&
+           "Insufficiently aligned IdentifierInfo");
     InfoPtr |= MultiArg;
   }
 
@@ -724,9 +711,7 @@ class Selector {
     return reinterpret_cast<MultiKeywordSelector *>(InfoPtr & ~ArgFlags);
   }
 
-  unsigned getIdentifierInfoFlag() const {
-    return InfoPtr & ArgFlags;
-  }
+  unsigned getIdentifierInfoFlag() const { return InfoPtr & ArgFlags; }
 
   static ObjCMethodFamily getMethodFamilyImpl(Selector sel);
 
@@ -739,28 +724,18 @@ public:
   explicit Selector(uintptr_t V) : InfoPtr(V) {}
 
   /// operator==/!= - Indicate whether the specified selectors are identical.
-  bool operator==(Selector RHS) const {
-    return InfoPtr == RHS.InfoPtr;
-  }
-  bool operator!=(Selector RHS) const {
-    return InfoPtr != RHS.InfoPtr;
-  }
+  bool operator==(Selector RHS) const { return InfoPtr == RHS.InfoPtr; }
+  bool operator!=(Selector RHS) const { return InfoPtr != RHS.InfoPtr; }
 
-  void *getAsOpaquePtr() const {
-    return reinterpret_cast<void*>(InfoPtr);
-  }
+  void *getAsOpaquePtr() const { return reinterpret_cast<void *>(InfoPtr); }
 
   /// Determine whether this is the empty selector.
   bool isNull() const { return InfoPtr == 0; }
 
   // Predicates to identify the selector type.
-  bool isKeywordSelector() const {
-    return getIdentifierInfoFlag() != ZeroArg;
-  }
+  bool isKeywordSelector() const { return getIdentifierInfoFlag() != ZeroArg; }
 
-  bool isUnarySelector() const {
-    return getIdentifierInfoFlag() == ZeroArg;
-  }
+  bool isUnarySelector() const { return getIdentifierInfoFlag() == ZeroArg; }
 
   /// If this selector is the specific keyword selector described by Names.
   bool isKeywordSelector(ArrayRef<StringRef> Names) const;
@@ -813,13 +788,9 @@ public:
     return getStringFormatFamilyImpl(*this);
   }
 
-  static Selector getEmptyMarker() {
-    return Selector(uintptr_t(-1));
-  }
+  static Selector getEmptyMarker() { return Selector(uintptr_t(-1)); }
 
-  static Selector getTombstoneMarker() {
-    return Selector(uintptr_t(-2));
-  }
+  static Selector getTombstoneMarker() { return Selector(uintptr_t(-2)); }
 
   static ObjCInstanceTypeFamily getInstTypeMethodFamily(Selector sel);
 };
@@ -842,13 +813,9 @@ public:
   /// single argument selector "foo:" or multi-argument "foo:bar:".
   Selector getSelector(unsigned NumArgs, IdentifierInfo **IIV);
 
-  Selector getUnarySelector(IdentifierInfo *ID) {
-    return Selector(ID, 1);
-  }
+  Selector getUnarySelector(IdentifierInfo *ID) { return Selector(ID, 1); }
 
-  Selector getNullarySelector(IdentifierInfo *ID) {
-    return Selector(ID, 0);
-  }
+  Selector getNullarySelector(IdentifierInfo *ID) { return Selector(ID, 0); }
 
   /// Return the total amount of memory allocated for managing selectors.
   size_t getTotalMemory() const;
@@ -933,14 +900,13 @@ protected:
 
 } // namespace detail
 
-}  // namespace clang
+} // namespace clang
 
 namespace llvm {
 
 /// Define DenseMapInfo so that Selectors can be used as keys in DenseMap and
 /// DenseSets.
-template <>
-struct DenseMapInfo<clang::Selector> {
+template <> struct DenseMapInfo<clang::Selector> {
   static clang::Selector getEmptyKey() {
     return clang::Selector::getEmptyMarker();
   }
@@ -956,8 +922,7 @@ struct DenseMapInfo<clang::Selector> {
   }
 };
 
-template<>
-struct PointerLikeTypeTraits<clang::Selector> {
+template <> struct PointerLikeTypeTraits<clang::Selector> {
   static const void *getAsVoidPointer(clang::Selector P) {
     return P.getAsOpaquePtr();
   }
@@ -971,27 +936,23 @@ struct PointerLikeTypeTraits<clang::Selector> {
 
 // Provide PointerLikeTypeTraits for IdentifierInfo pointers, which
 // are not guaranteed to be 8-byte aligned.
-template<>
-struct PointerLikeTypeTraits<clang::IdentifierInfo*> {
-  static void *getAsVoidPointer(clang::IdentifierInfo* P) {
-    return P;
-  }
+template <> struct PointerLikeTypeTraits<clang::IdentifierInfo *> {
+  static void *getAsVoidPointer(clang::IdentifierInfo *P) { return P; }
 
   static clang::IdentifierInfo *getFromVoidPointer(void *P) {
-    return static_cast<clang::IdentifierInfo*>(P);
+    return static_cast<clang::IdentifierInfo *>(P);
   }
 
   static constexpr int NumLowBitsAvailable = 1;
 };
 
-template<>
-struct PointerLikeTypeTraits<const clang::IdentifierInfo*> {
-  static const void *getAsVoidPointer(const clang::IdentifierInfo* P) {
+template <> struct PointerLikeTypeTraits<const clang::IdentifierInfo *> {
+  static const void *getAsVoidPointer(const clang::IdentifierInfo *P) {
     return P;
   }
 
   static const clang::IdentifierInfo *getFromVoidPointer(const void *P) {
-    return static_cast<const clang::IdentifierInfo*>(P);
+    return static_cast<const clang::IdentifierInfo *>(P);
   }
 
   static constexpr int NumLowBitsAvailable = 1;

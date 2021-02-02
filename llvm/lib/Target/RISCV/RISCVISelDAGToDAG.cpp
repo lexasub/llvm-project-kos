@@ -25,9 +25,7 @@ using namespace llvm;
 
 #define DEBUG_TYPE "riscv-isel"
 
-void RISCVDAGToDAGISel::PostprocessISelDAG() {
-  doPeepholeLoadStoreADDI();
-}
+void RISCVDAGToDAGISel::PostprocessISelDAG() { doPeepholeLoadStoreADDI(); }
 
 static SDNode *selectImm(SelectionDAG *CurDAG, const SDLoc &DL, int64_t Imm,
                          MVT XLenVT) {

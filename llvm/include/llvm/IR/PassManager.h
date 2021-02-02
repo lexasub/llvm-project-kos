@@ -165,8 +165,7 @@ public:
   }
 
   /// Construct a preserved analyses object with a single preserved set.
-  template <typename AnalysisSetT>
-  static PreservedAnalyses allInSet() {
+  template <typename AnalysisSetT> static PreservedAnalyses allInSet() {
     PreservedAnalyses PA;
     PA.preserveSet<AnalysisSetT>();
     return PA;
@@ -291,9 +290,7 @@ public:
     /// Return true if the checker's analysis was not abandoned, i.e. it was not
     /// explicitly invalidated. Even if the analysis is not explicitly
     /// preserved, if the analysis is known stateless, then it is preserved.
-    bool preservedWhenStateless() {
-      return !IsAbandoned;
-    }
+    bool preservedWhenStateless() { return !IsAbandoned; }
 
     /// Returns true if the checker's analysis was not abandoned and either
     ///  - \p AnalysisSetT is explicitly preserved or
@@ -469,7 +466,8 @@ public:
   /// Construct a pass manager.
   ///
   /// If \p DebugLogging is true, we'll log our progress to llvm::dbgs().
-  explicit PassManager(bool DebugLogging = false) : DebugLogging(DebugLogging) {}
+  explicit PassManager(bool DebugLogging = false)
+      : DebugLogging(DebugLogging) {}
 
   // FIXME: These are equivalent to the default move constructor/move
   // assignment. However, using = default triggers linker errors due to the
@@ -533,7 +531,7 @@ public:
       // yield function here. We don't have a generic way to acquire the
       // context and it isn't yet clear what the right pattern is for yielding
       // in the new pass manager so it is currently omitted.
-      //IR.getContext().yield();
+      // IR.getContext().yield();
     }
 
     // Invalidation was handled after each pass in the above loop for the
@@ -551,9 +549,8 @@ public:
   template <typename PassT>
   std::enable_if_t<!std::is_same<PassT, PassManager>::value>
   addPass(PassT Pass) {
-    using PassModelT =
-        detail::PassModel<IRUnitT, PassT, PreservedAnalyses, AnalysisManagerT,
-                          ExtraArgTs...>;
+    using PassModelT = detail::PassModel<IRUnitT, PassT, PreservedAnalyses,
+                                         AnalysisManagerT, ExtraArgTs...>;
 
     Passes.emplace_back(new PassModelT(std::move(Pass)));
   }
@@ -634,9 +631,8 @@ private:
   // Now that we've defined our invalidator, we can define the concept types.
   using ResultConceptT =
       detail::AnalysisResultConcept<IRUnitT, PreservedAnalyses, Invalidator>;
-  using PassConceptT =
-      detail::AnalysisPassConcept<IRUnitT, PreservedAnalyses, Invalidator,
-                                  ExtraArgTs...>;
+  using PassConceptT = detail::AnalysisPassConcept<IRUnitT, PreservedAnalyses,
+                                                   Invalidator, ExtraArgTs...>;
 
   /// List of analysis pass IDs and associated concept pointers.
   ///
@@ -653,9 +649,8 @@ private:
   /// Map type from a pair of analysis ID and IRUnitT pointer to an
   /// iterator into a particular result list (which is where the actual analysis
   /// result is stored).
-  using AnalysisResultMapT =
-      DenseMap<std::pair<AnalysisKey *, IRUnitT *>,
-               typename AnalysisResultListT::iterator>;
+  using AnalysisResultMapT = DenseMap<std::pair<AnalysisKey *, IRUnitT *>,
+                                      typename AnalysisResultListT::iterator>;
 
 public:
   /// API to communicate dependencies between analyses during invalidation.
@@ -906,8 +901,7 @@ private:
 
   /// Invalidate a pass result for a IR unit.
   void invalidateImpl(AnalysisKey *ID, IRUnitT &IR) {
-    typename AnalysisResultMapT::iterator RI =
-        AnalysisResults.find({ID, &IR});
+    typename AnalysisResultMapT::iterator RI = AnalysisResults.find({ID, &IR});
     if (RI == AnalysisResults.end())
       return;
 
@@ -1280,7 +1274,7 @@ struct RequireAnalysisPass
   /// created, these methods can be instantiated to satisfy whatever the
   /// context requires.
   PreservedAnalyses run(IRUnitT &Arg, AnalysisManagerT &AM,
-                        ExtraArgTs &&... Args) {
+                        ExtraArgTs &&...Args) {
     (void)AM.template getResult<AnalysisT>(Arg,
                                            std::forward<ExtraArgTs>(Args)...);
 
@@ -1330,7 +1324,7 @@ public:
   RepeatedPass(int Count, PassT P) : Count(Count), P(std::move(P)) {}
 
   template <typename IRUnitT, typename AnalysisManagerT, typename... Ts>
-  PreservedAnalyses run(IRUnitT &IR, AnalysisManagerT &AM, Ts &&... Args) {
+  PreservedAnalyses run(IRUnitT &IR, AnalysisManagerT &AM, Ts &&...Args) {
 
     // Request PassInstrumentation from analysis manager, will use it to run
     // instrumenting callbacks for the passes later.

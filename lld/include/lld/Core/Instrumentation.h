@@ -18,7 +18,7 @@
 #include <utility>
 
 #ifdef LLD_HAS_VTUNE
-# include <ittnotify.h>
+#include <ittnotify.h>
 #endif
 
 namespace lld {
@@ -72,9 +72,7 @@ public:
     __itt_task_begin(d, __itt_null, __itt_null, s);
   }
 
-  ScopedTask(ScopedTask &&other) {
-    *this = std::move(other);
-  }
+  ScopedTask(ScopedTask &&other) { *this = std::move(other); }
 
   ScopedTask &operator=(ScopedTask &&other) {
     _domain = other._domain;

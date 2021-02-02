@@ -10,9 +10,9 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "llvm/TextAPI/MachO/Platform.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/Triple.h"
-#include "llvm/TextAPI/MachO/Platform.h"
 
 namespace llvm {
 namespace MachO {

@@ -116,21 +116,20 @@ static int GetOperation(HistoryOperation op) {
   //  - The H_FIRST returns the most recent entry in the history.
   //
   // The naming of the enum entries match the semantic meaning.
-  switch(op) {
-    case HistoryOperation::Oldest:
-      return H_LAST;
-    case HistoryOperation::Older:
-      return H_NEXT;
-    case HistoryOperation::Current:
-      return H_CURR;
-    case HistoryOperation::Newer:
-      return H_PREV;
-    case HistoryOperation::Newest:
-      return H_FIRST;
+  switch (op) {
+  case HistoryOperation::Oldest:
+    return H_LAST;
+  case HistoryOperation::Older:
+    return H_NEXT;
+  case HistoryOperation::Current:
+    return H_CURR;
+  case HistoryOperation::Newer:
+    return H_PREV;
+  case HistoryOperation::Newest:
+    return H_FIRST;
   }
   llvm_unreachable("Fully covered switch!");
 }
-
 
 EditLineStringType CombineLines(const std::vector<EditLineStringType> &lines) {
   EditLineStringStreamType combined_stream;
@@ -298,8 +297,8 @@ protected:
                         // to use when loading/saving history
   std::string m_path;   // Path to the history file
 };
-}
-}
+} // namespace line_editor
+} // namespace lldb_private
 
 // Editline private methods
 
@@ -417,9 +416,10 @@ void Editline::DisplayInput(int firstIndex) {
   const char *unfaint = m_color_prompts ? ANSI_UNFAINT : "";
 
   for (int index = firstIndex; index < line_count; index++) {
-    fprintf(m_output_file, "%s"
-                           "%s"
-                           "%s" EditLineStringFormatSpec " ",
+    fprintf(m_output_file,
+            "%s"
+            "%s"
+            "%s" EditLineStringFormatSpec " ",
             faint, PromptForIndex(index).c_str(), unfaint,
             m_input_lines[index].c_str());
     if (index < line_count - 1)
@@ -534,9 +534,10 @@ int Editline::GetCharacter(EditLineGetCharType *c) {
   // (will only be requested if colors are supported)
   if (m_needs_prompt_repaint) {
     MoveCursor(CursorLocation::EditingCursor, CursorLocation::EditingPrompt);
-    fprintf(m_output_file, "%s"
-                           "%s"
-                           "%s",
+    fprintf(m_output_file,
+            "%s"
+            "%s"
+            "%s",
             ANSI_FAINT, Prompt(), ANSI_UNFAINT);
     MoveCursor(CursorLocation::EditingPrompt, CursorLocation::EditingCursor);
     m_needs_prompt_repaint = false;
@@ -1009,7 +1010,8 @@ unsigned char Editline::TabCommand(int ch) {
         to_add.push_back(request.GetParsedArg().GetQuoteChar());
       to_add.push_back(' ');
       el_insertstr(m_editline, to_add.c_str());
-      // Clear all the autosuggestion parts if the only single space can be completed.
+      // Clear all the autosuggestion parts if the only single space can be
+      // completed.
       if (to_add == " ")
         return CC_REDISPLAY;
       return CC_REFRESH;
@@ -1111,7 +1113,7 @@ void Editline::ConfigureEditor(bool multiline) {
 
   if (m_history_sp && m_history_sp->IsValid()) {
     if (!m_history_sp->Load()) {
-        fputs("Could not load history file\n.", m_output_file);
+      fputs("Could not load history file\n.", m_output_file);
     }
     el_wset(m_editline, EL_HIST, history, m_history_sp->GetHistoryPtr());
   }
@@ -1123,10 +1125,11 @@ void Editline::ConfigureEditor(bool multiline) {
            return Editline::InstanceFor(editline)->Prompt();
          }));
 
-  el_wset(m_editline, EL_GETCFN, (EditlineGetCharCallbackType)([](
-                                     EditLine *editline, EditLineGetCharType *c) {
-            return Editline::InstanceFor(editline)->GetCharacter(c);
-          }));
+  el_wset(m_editline, EL_GETCFN,
+          (EditlineGetCharCallbackType)(
+              [](EditLine *editline, EditLineGetCharType *c) {
+                return Editline::InstanceFor(editline)->GetCharacter(c);
+              }));
 
   // Commands used for multiline support, registered whether or not they're
   // used

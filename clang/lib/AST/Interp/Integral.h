@@ -13,8 +13,8 @@
 #ifndef LLVM_CLANG_AST_INTERP_INTEGRAL_H
 #define LLVM_CLANG_AST_INTERP_INTEGRAL_H
 
-#include "clang/AST/ComparisonCategories.h"
 #include "clang/AST/APValue.h"
+#include "clang/AST/ComparisonCategories.h"
 #include "llvm/ADT/APSInt.h"
 #include "llvm/Support/MathExtras.h"
 #include "llvm/Support/raw_ostream.h"
@@ -28,8 +28,7 @@ using APInt = llvm::APInt;
 using APSInt = llvm::APSInt;
 
 /// Helper to compare two comparable types.
-template <typename T>
-ComparisonCategoryResult Compare(const T &X, const T &Y) {
+template <typename T> ComparisonCategoryResult Compare(const T &X, const T &Y) {
   if (X < Y)
     return ComparisonCategoryResult::Less;
   if (X > Y)
@@ -148,12 +147,8 @@ public:
 
   void print(llvm::raw_ostream &OS) const { OS << V; }
 
-  static Integral min(unsigned NumBits) {
-    return Integral(Min);
-  }
-  static Integral max(unsigned NumBits) {
-    return Integral(Max);
-  }
+  static Integral min(unsigned NumBits) { return Integral(Min); }
+  static Integral max(unsigned NumBits) { return Integral(Max); }
 
   template <typename T>
   static std::enable_if_t<std::is_integral<T>::value, Integral> from(T Value) {

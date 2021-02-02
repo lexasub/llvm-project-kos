@@ -67,13 +67,12 @@ DWARFAbbreviationDeclarationSet::GetAbbreviationDeclaration(
   return nullptr;
 }
 
-
 // DWARFAbbreviationDeclarationSet::GetUnsupportedForms()
 void DWARFAbbreviationDeclarationSet::GetUnsupportedForms(
     std::set<dw_form_t> &invalid_forms) const {
   for (const auto &abbr_decl : m_decls) {
     const size_t num_attrs = abbr_decl.NumAttributes();
-    for (size_t i=0; i<num_attrs; ++i) {
+    for (size_t i = 0; i < num_attrs; ++i) {
       dw_form_t form = abbr_decl.GetFormByIndex(i);
       if (!DWARFFormValue::FormIsSupported(form))
         invalid_forms.insert(form);

@@ -188,8 +188,7 @@ private:
   void registerCategory();
 
 public:
-  OptionCategory(StringRef const Name,
-                 StringRef const Description = "")
+  OptionCategory(StringRef const Name, StringRef const Description = "")
       : Name(Name), Description(Description) {
     registerCategory();
   }
@@ -216,7 +215,7 @@ protected:
 public:
   SubCommand(StringRef Name, StringRef Description = "")
       : Name(Name), Description(Description) {
-        registerSubCommand();
+    registerSubCommand();
   }
   SubCommand() = default;
 
@@ -313,9 +312,8 @@ public:
   }
 
   bool isInAllSubCommands() const {
-    return any_of(Subs, [](const SubCommand *SC) {
-      return SC == &*AllSubCommands;
-    });
+    return any_of(Subs,
+                  [](const SubCommand *SC) { return SC == &*AllSubCommands; });
   }
 
   //-------------------------------------------------------------------------===
@@ -380,7 +378,8 @@ public:
                              bool MultiArg = false);
 
   // Prints option name followed by message.  Always returns true.
-  bool error(const Twine &Message, StringRef ArgName = StringRef(), raw_ostream &Errs = llvm::errs());
+  bool error(const Twine &Message, StringRef ArgName = StringRef(),
+             raw_ostream &Errs = llvm::errs());
   bool error(const Twine &Message, raw_ostream &Errs) {
     return error(Message, StringRef(), Errs);
   }
@@ -481,7 +480,8 @@ template <typename R, typename C, typename... Args>
 struct callback_traits<R (C::*)(Args...) const> {
   using result_type = R;
   using arg_type = std::tuple_element_t<0, std::tuple<Args...>>;
-  static_assert(sizeof...(Args) == 1, "callback function must have one and only one parameter");
+  static_assert(sizeof...(Args) == 1,
+                "callback function must have one and only one parameter");
   static_assert(std::is_same<result_type, void>::value,
                 "callback return type must be void");
   static_assert(std::is_lvalue_reference<arg_type>::value &&
@@ -508,7 +508,7 @@ struct GenericOptionValue {
 
 protected:
   GenericOptionValue() = default;
-  GenericOptionValue(const GenericOptionValue&) = default;
+  GenericOptionValue(const GenericOptionValue &) = default;
   GenericOptionValue &operator=(const GenericOptionValue &) = default;
   ~GenericOptionValue() = default;
 
@@ -548,7 +548,7 @@ template <class DataType> class OptionValueCopy : public GenericOptionValue {
   bool Valid = false;
 
 protected:
-  OptionValueCopy(const OptionValueCopy&) = default;
+  OptionValueCopy(const OptionValueCopy &) = default;
   OptionValueCopy &operator=(const OptionValueCopy &) = default;
   ~OptionValueCopy() = default;
 
@@ -585,7 +585,7 @@ struct OptionValueBase<DataType, false> : OptionValueCopy<DataType> {
 
 protected:
   OptionValueBase() = default;
-  OptionValueBase(const OptionValueBase&) = default;
+  OptionValueBase(const OptionValueBase &) = default;
   OptionValueBase &operator=(const OptionValueBase &) = default;
   ~OptionValueBase() = default;
 };
@@ -1255,7 +1255,7 @@ template <unsigned n> struct applicator<const char[n]> {
     O.setArgStr(Str);
   }
 };
-template <> struct applicator<StringRef > {
+template <> struct applicator<StringRef> {
   template <class Opt> static void opt(StringRef Str, Opt &O) {
     O.setArgStr(Str);
   }
@@ -1289,7 +1289,7 @@ template <> struct applicator<MiscFlags> {
 
 // apply method - Apply modifiers to an option in a type safe way.
 template <class Opt, class Mod, class... Mods>
-void apply(Opt *O, const Mod &M, const Mods &... Ms) {
+void apply(Opt *O, const Mod &M, const Mods &...Ms) {
   applicator<Mod>::opt(M, *O);
   apply(O, Ms...);
 }
@@ -1480,7 +1480,7 @@ public:
   }
 
   template <class... Mods>
-  explicit opt(const Mods &... Ms)
+  explicit opt(const Mods &...Ms)
       : Option(llvm::cl::Optional, NotHidden), Parser(*this) {
     apply(this, Ms...);
     done();
@@ -1567,9 +1567,7 @@ public:
   reference operator[](size_type pos) { return Storage[pos]; }
   const_reference operator[](size_type pos) const { return Storage[pos]; }
 
-  void clear() {
-    Storage.clear();
-  }
+  void clear() { Storage.clear(); }
 
   iterator erase(const_iterator pos) { return Storage.erase(pos); }
   iterator erase(const_iterator first, const_iterator last) {
@@ -1674,7 +1672,7 @@ public:
   void setNumAdditionalVals(unsigned n) { Option::setNumAdditionalVals(n); }
 
   template <class... Mods>
-  explicit list(const Mods &... Ms)
+  explicit list(const Mods &...Ms)
       : Option(ZeroOrMore, NotHidden), Parser(*this) {
     apply(this, Ms...);
     done();
@@ -1824,7 +1822,7 @@ public:
   }
 
   template <class... Mods>
-  explicit bits(const Mods &... Ms)
+  explicit bits(const Mods &...Ms)
       : Option(ZeroOrMore, NotHidden), Parser(*this) {
     apply(this, Ms...);
     done();
@@ -1876,7 +1874,8 @@ class alias : public Option {
     if (!AliasFor)
       error("cl::alias must have an cl::aliasopt(option) specified!");
     if (!Subs.empty())
-      error("cl::alias must not have cl::sub(), aliased option's cl::sub() will be used!");
+      error("cl::alias must not have cl::sub(), aliased option's cl::sub() "
+            "will be used!");
     Subs = AliasFor->Subs;
     Categories = AliasFor->Categories;
     addArgument();
@@ -1894,7 +1893,7 @@ public:
   }
 
   template <class... Mods>
-  explicit alias(const Mods &... Ms)
+  explicit alias(const Mods &...Ms)
       : Option(Optional, Hidden), AliasFor(nullptr) {
     apply(this, Ms...);
     done();
@@ -1960,7 +1959,8 @@ void PrintHelpMessage(bool Hidden = false, bool Categorized = false);
 /// Hopefully this API can be deprecated soon. Any situation where options need
 /// to be modified by tools or libraries should be handled by sane APIs rather
 /// than just handing around a global list.
-StringMap<Option *> &getRegisteredOptions(SubCommand &Sub = *TopLevelSubCommand);
+StringMap<Option *> &
+getRegisteredOptions(SubCommand &Sub = *TopLevelSubCommand);
 
 /// Use this to get all registered SubCommands from the provided parser.
 ///

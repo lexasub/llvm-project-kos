@@ -19,9 +19,9 @@ LD_PRELOAD=`pwd`/teststoptheworld.so /your/app
 #if SANITIZER_LINUX
 
 #include <dlfcn.h>
+#include <pthread.h>
 #include <stddef.h>
 #include <stdio.h>
-#include <pthread.h>
 #include <unistd.h>
 
 #include "sanitizer_common/sanitizer_stoptheworld.h"

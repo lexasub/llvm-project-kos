@@ -8,7 +8,9 @@
 #include "d.h"
 
 const int n = 0;
-namespace M { using ::n; }
+namespace M {
+using ::n;
+}
 
 #include "c.h"
 
@@ -18,4 +20,6 @@ N::clstring y = b;
 N::clstrinh s; // expected-error {{did you mean 'clstring'}}
 // expected-note@a.h:3 {{here}}
 
-namespace M { using N::n; }
+namespace M {
+using N::n;
+}

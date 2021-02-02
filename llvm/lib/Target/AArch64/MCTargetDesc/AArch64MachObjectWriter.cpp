@@ -33,8 +33,8 @@ namespace {
 
 class AArch64MachObjectWriter : public MCMachObjectTargetWriter {
   bool getAArch64FixupKindMachOInfo(const MCFixup &Fixup, unsigned &RelocType,
-                                  const MCSymbolRefExpr *Sym,
-                                  unsigned &Log2Size, const MCAssembler &Asm);
+                                    const MCSymbolRefExpr *Sym,
+                                    unsigned &Log2Size, const MCAssembler &Asm);
 
 public:
   AArch64MachObjectWriter(uint32_t CPUType, uint32_t CPUSubtype, bool IsILP32)
@@ -282,11 +282,13 @@ void AArch64MachObjectWriter::recordRelocation(
     }
 
     Value += (!A->getFragment() ? 0 : Writer->getSymbolAddress(*A, Layout)) -
-             (!A_Base || !A_Base->getFragment() ? 0 : Writer->getSymbolAddress(
-                                                          *A_Base, Layout));
+             (!A_Base || !A_Base->getFragment()
+                  ? 0
+                  : Writer->getSymbolAddress(*A_Base, Layout));
     Value -= (!B->getFragment() ? 0 : Writer->getSymbolAddress(*B, Layout)) -
-             (!B_Base || !B_Base->getFragment() ? 0 : Writer->getSymbolAddress(
-                                                          *B_Base, Layout));
+             (!B_Base || !B_Base->getFragment()
+                  ? 0
+                  : Writer->getSymbolAddress(*B_Base, Layout));
 
     Type = MachO::ARM64_RELOC_UNSIGNED;
 

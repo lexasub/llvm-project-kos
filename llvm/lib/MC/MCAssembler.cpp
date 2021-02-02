@@ -54,14 +54,12 @@ namespace stats {
 STATISTIC(EmittedFragments, "Number of emitted assembler fragments - total");
 STATISTIC(EmittedRelaxableFragments,
           "Number of emitted assembler fragments - relaxable");
-STATISTIC(EmittedDataFragments,
-          "Number of emitted assembler fragments - data");
+STATISTIC(EmittedDataFragments, "Number of emitted assembler fragments - data");
 STATISTIC(EmittedCompactEncodedInstFragments,
           "Number of emitted assembler fragments - compact encoded inst");
 STATISTIC(EmittedAlignFragments,
           "Number of emitted assembler fragments - align");
-STATISTIC(EmittedFillFragments,
-          "Number of emitted assembler fragments - fill");
+STATISTIC(EmittedFillFragments, "Number of emitted assembler fragments - fill");
 STATISTIC(EmittedNopsFragments, "Number of emitted assembler fragments - nops");
 STATISTIC(EmittedOrgFragments, "Number of emitted assembler fragments - org");
 STATISTIC(evaluateFixup, "Number of evaluated fixups");
@@ -189,10 +187,9 @@ const MCSymbol *MCAssembler::getAtom(const MCSymbol &S) const {
   return S.getFragment()->getAtom();
 }
 
-bool MCAssembler::evaluateFixup(const MCAsmLayout &Layout,
-                                const MCFixup &Fixup, const MCFragment *DF,
-                                MCValue &Target, uint64_t &Value,
-                                bool &WasForced) const {
+bool MCAssembler::evaluateFixup(const MCAsmLayout &Layout, const MCFixup &Fixup,
+                                const MCFragment *DF, MCValue &Target,
+                                uint64_t &Value, bool &WasForced) const {
   ++stats::evaluateFixup;
 
   // FIXME: This code has some duplication with recordRelocation. We should
@@ -225,7 +222,8 @@ bool MCAssembler::evaluateFixup(const MCAsmLayout &Layout,
     return getBackend().evaluateTargetFixup(*this, Layout, Fixup, DF, Target,
                                             Value, WasForced);
 
-  unsigned FixupFlags = getBackendPtr()->getFixupKindInfo(Fixup.getKind()).Flags;
+  unsigned FixupFlags =
+      getBackendPtr()->getFixupKindInfo(Fixup.getKind()).Flags;
   bool IsPCRel = getBackendPtr()->getFixupKindInfo(Fixup.getKind()).Flags &
                  MCFixupKindInfo::FKF_IsPCRel;
 
@@ -266,14 +264,15 @@ bool MCAssembler::evaluateFixup(const MCAsmLayout &Layout,
   bool ShouldAlignPC = getBackend().getFixupKindInfo(Fixup.getKind()).Flags &
                        MCFixupKindInfo::FKF_IsAlignedDownTo32Bits;
   assert((ShouldAlignPC ? IsPCRel : true) &&
-    "FKF_IsAlignedDownTo32Bits is only allowed on PC-relative fixups!");
+         "FKF_IsAlignedDownTo32Bits is only allowed on PC-relative fixups!");
 
   if (IsPCRel) {
     uint32_t Offset = Layout.getFragmentOffset(DF) + Fixup.getOffset();
 
     // A number of ARM fixups in Thumb mode require that the effective PC
     // address be determined as the 32-bit aligned version of the actual offset.
-    if (ShouldAlignPC) Offset &= ~0x3;
+    if (ShouldAlignPC)
+      Offset &= ~0x3;
     Value -= Offset;
   }
 
@@ -352,7 +351,7 @@ uint64_t MCAssembler::computeFragmentSize(const MCAsmLayout &Layout,
     if (!OF.getOffset().evaluateAsValue(Value, Layout)) {
       getContext().reportError(OF.getLoc(),
                                "expected assembly-time absolute expression");
-        return 0;
+      return 0;
     }
 
     uint64_t FragmentOffset = Layout.getFragmentOffset(&OF);
@@ -518,7 +517,7 @@ static void writeFragment(raw_ostream &OS, const MCAssembler &Asm,
   // This variable (and its dummy usage) is to participate in the assert at
   // the end of the function.
   uint64_t Start = OS.tell();
-  (void) Start;
+  (void)Start;
 
   ++stats::EmittedFragments;
 
@@ -535,9 +534,9 @@ static void writeFragment(raw_ostream &OS, const MCAssembler &Asm,
     // severe enough that we want to report it. How to handle this?
     if (Count * AF.getValueSize() != FragmentSize)
       report_fatal_error("undefined .align directive, value size '" +
-                        Twine(AF.getValueSize()) +
-                        "' is not a divisor of padding size '" +
-                        Twine(FragmentSize) + "'");
+                         Twine(AF.getValueSize()) +
+                         "' is not a divisor of padding size '" +
+                         Twine(FragmentSize) + "'");
 
     // See if we are aligning with nops, and if so do that first to try to fill
     // the Count bytes.  Then if that did not fill any bytes or there are any
@@ -545,16 +544,19 @@ static void writeFragment(raw_ostream &OS, const MCAssembler &Asm,
     // If we are aligning with nops, ask that target to emit the right data.
     if (AF.hasEmitNops()) {
       if (!Asm.getBackend().writeNopData(OS, Count))
-        report_fatal_error("unable to write nop sequence of " +
-                          Twine(Count) + " bytes");
+        report_fatal_error("unable to write nop sequence of " + Twine(Count) +
+                           " bytes");
       break;
     }
 
     // Otherwise, write out in multiples of the value size.
     for (uint64_t i = 0; i != Count; ++i) {
       switch (AF.getValueSize()) {
-      default: llvm_unreachable("Invalid size!");
-      case 1: OS << char(AF.getValue()); break;
+      default:
+        llvm_unreachable("Invalid size!");
+      case 1:
+        OS << char(AF.getValue());
+        break;
       case 2:
         support::endian::write<uint16_t>(OS, AF.getValue(), Endian);
         break;
@@ -730,7 +732,8 @@ void MCAssembler::writeSectionData(raw_ostream &OS, const MCSection *Sec,
     // Check that contents are only things legal inside a virtual section.
     for (const MCFragment &F : *Sec) {
       switch (F.getKind()) {
-      default: llvm_unreachable("Invalid fragment in virtual section!");
+      default:
+        llvm_unreachable("Invalid fragment in virtual section!");
       case MCFragment::FT_Data: {
         // Check that we aren't trying to write a non-zero contents (or fixups)
         // into a virtual section. This is to support clients which use standard
@@ -786,8 +789,8 @@ MCAssembler::handleFixup(const MCAsmLayout &Layout, MCFragment &F,
   MCValue Target;
   uint64_t FixedValue;
   bool WasForced;
-  bool IsResolved = evaluateFixup(Layout, Fixup, &F, Target, FixedValue,
-                                  WasForced);
+  bool IsResolved =
+      evaluateFixup(Layout, Fixup, &F, Target, FixedValue, WasForced);
   if (!IsResolved) {
     // The fixup was unresolved, we need a relocation. Inform the object
     // writer of the relocation, and give it an opportunity to adjust the
@@ -819,8 +822,9 @@ MCAssembler::handleFixup(const MCAsmLayout &Layout, MCFragment &F,
 void MCAssembler::layout(MCAsmLayout &Layout) {
   assert(getBackendPtr() && "Expected assembler backend");
   DEBUG_WITH_TYPE("mc-dump", {
-      errs() << "assembler backend - pre-layout\n--\n";
-      dump(); });
+    errs() << "assembler backend - pre-layout\n--\n";
+    dump();
+  });
 
   // Create dummy fragments and assign section ordinals.
   unsigned SectionIndex = 0;
@@ -855,15 +859,17 @@ void MCAssembler::layout(MCAsmLayout &Layout) {
   }
 
   DEBUG_WITH_TYPE("mc-dump", {
-      errs() << "assembler backend - post-relaxation\n--\n";
-      dump(); });
+    errs() << "assembler backend - post-relaxation\n--\n";
+    dump();
+  });
 
   // Finalize the layout, including fragment lowering.
   finishLayout(Layout);
 
   DEBUG_WITH_TYPE("mc-dump", {
-      errs() << "assembler backend - final-layout\n--\n";
-      dump(); });
+    errs() << "assembler backend - final-layout\n--\n";
+    dump();
+  });
 
   // Allow the object writer a chance to perform post-layout binding (for
   // example, to set the index fields in the symbol data).
@@ -1130,9 +1136,8 @@ bool MCAssembler::relaxDwarfLineAddr(MCAsmLayout &Layout,
       const MCBinaryExpr *ABE = cast<MCBinaryExpr>(&DF.getAddrDelta());
       FixupExpr = ABE->getLHS();
     }
-    DF.getFixups().push_back(
-        MCFixup::create(Offset, FixupExpr,
-                        MCFixup::getKindForSize(Size, false /*isPCRel*/)));
+    DF.getFixups().push_back(MCFixup::create(
+        Offset, FixupExpr, MCFixup::getKindForSize(Size, false /*isPCRel*/)));
   }
 
   return OldSize != Data.size();
@@ -1145,7 +1150,7 @@ bool MCAssembler::relaxDwarfCallFrameFragment(MCAsmLayout &Layout,
   int64_t AddrDelta;
   bool Abs = DF.getAddrDelta().evaluateKnownAbsolute(AddrDelta, Layout);
   assert(Abs && "We created call frame with an invalid expression");
-  (void) Abs;
+  (void)Abs;
   SmallVectorImpl<char> &Data = DF.getContents();
   Data.clear();
   raw_svector_ostream OSE(Data);
@@ -1204,7 +1209,7 @@ bool MCAssembler::relaxPseudoProbeAddr(MCAsmLayout &Layout,
 }
 
 bool MCAssembler::relaxFragment(MCAsmLayout &Layout, MCFragment &F) {
-  switch(F.getKind()) {
+  switch (F.getKind()) {
   default:
     return false;
   case MCFragment::FT_Relaxable:
@@ -1274,20 +1279,23 @@ void MCAssembler::finishLayout(MCAsmLayout &Layout) {
 }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
-LLVM_DUMP_METHOD void MCAssembler::dump() const{
+LLVM_DUMP_METHOD void MCAssembler::dump() const {
   raw_ostream &OS = errs();
 
   OS << "<MCAssembler\n";
   OS << "  Sections:[\n    ";
   for (const_iterator it = begin(), ie = end(); it != ie; ++it) {
-    if (it != begin()) OS << ",\n    ";
+    if (it != begin())
+      OS << ",\n    ";
     it->dump();
   }
   OS << "],\n";
   OS << "  Symbols:[";
 
-  for (const_symbol_iterator it = symbol_begin(), ie = symbol_end(); it != ie; ++it) {
-    if (it != symbol_begin()) OS << ",\n           ";
+  for (const_symbol_iterator it = symbol_begin(), ie = symbol_end(); it != ie;
+       ++it) {
+    if (it != symbol_begin())
+      OS << ",\n           ";
     OS << "(";
     it->dump();
     OS << ", Index:" << it->getIndex() << ", ";

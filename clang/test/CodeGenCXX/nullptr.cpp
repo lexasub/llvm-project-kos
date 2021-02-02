@@ -3,23 +3,23 @@
 #include <typeinfo>
 
 // CHECK: @_ZTIDn = external constant i8*
-int* a = nullptr;
+int *a = nullptr;
 
 void f() {
-  int* a = nullptr;
+  int *a = nullptr;
 }
 
 typedef decltype(nullptr) nullptr_t;
 
 nullptr_t get_nullptr();
 
-struct X { };
+struct X {};
 void g() {
   // CHECK: call i8* @_Z11get_nullptrv()
   int (X::*pmf)(int) = get_nullptr();
 }
 
-const std::type_info& f2() {
+const std::type_info &f2() {
   return typeid(nullptr_t);
 }
 
@@ -41,8 +41,12 @@ bool pr23833_a(U &u) { return bool(u.b); }
 // CHECK: ret i8* null
 nullptr_t pr23833_b(nullptr_t &n) { return n; }
 
-struct X1 { operator int*(); };
-struct X2 { operator const nullptr_t&(); };
+struct X1 {
+  operator int *();
+};
+struct X2 {
+  operator const nullptr_t &();
+};
 
 // CHECK-LABEL: define {{.*}}pr23833_c
 // CHECK: call {{.*}}X1
@@ -65,7 +69,7 @@ int *pr23833_d() {
 }
 
 namespace PR39528 {
-  constexpr nullptr_t null = nullptr;
-  void f(nullptr_t);
-  void g() { f(null); }
-}
+constexpr nullptr_t null = nullptr;
+void f(nullptr_t);
+void g() { f(null); }
+} // namespace PR39528

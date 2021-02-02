@@ -83,73 +83,69 @@ using namespace llvm;
 #define DEBUG_TYPE "ppc-toc-reg-deps"
 
 namespace {
-  // PPCTOCRegDeps pass - For simple functions without epilogue code, move
-  // returns up, and create conditional returns, to avoid unnecessary
-  // branch-to-blr sequences.
-  struct PPCTOCRegDeps : public MachineFunctionPass {
-    static char ID;
-    PPCTOCRegDeps() : MachineFunctionPass(ID) {
-      initializePPCTOCRegDepsPass(*PassRegistry::getPassRegistry());
-    }
+// PPCTOCRegDeps pass - For simple functions without epilogue code, move
+// returns up, and create conditional returns, to avoid unnecessary
+// branch-to-blr sequences.
+struct PPCTOCRegDeps : public MachineFunctionPass {
+  static char ID;
+  PPCTOCRegDeps() : MachineFunctionPass(ID) {
+    initializePPCTOCRegDepsPass(*PassRegistry::getPassRegistry());
+  }
 
 protected:
-    bool hasTOCLoReloc(const MachineInstr &MI) {
-      if (MI.getOpcode() == PPC::LDtocL ||
-          MI.getOpcode() == PPC::ADDItocL ||
-          MI.getOpcode() == PPC::LWZtocL)
+  bool hasTOCLoReloc(const MachineInstr &MI) {
+    if (MI.getOpcode() == PPC::LDtocL || MI.getOpcode() == PPC::ADDItocL ||
+        MI.getOpcode() == PPC::LWZtocL)
+      return true;
+
+    for (const MachineOperand &MO : MI.operands()) {
+      if ((MO.getTargetFlags() & PPCII::MO_ACCESS_MASK) == PPCII::MO_TOC_LO)
         return true;
-
-      for (const MachineOperand &MO : MI.operands()) {
-        if ((MO.getTargetFlags() & PPCII::MO_ACCESS_MASK) == PPCII::MO_TOC_LO)
-          return true;
-      }
-
-      return false;
     }
 
-    bool processBlock(MachineBasicBlock &MBB) {
-      bool Changed = false;
+    return false;
+  }
 
-      const bool isPPC64 =
-          MBB.getParent()->getSubtarget<PPCSubtarget>().isPPC64();
-      const unsigned TOCReg = isPPC64 ? PPC::X2 : PPC::R2;
+  bool processBlock(MachineBasicBlock &MBB) {
+    bool Changed = false;
 
-      for (auto &MI : MBB) {
-        if (!hasTOCLoReloc(MI))
-          continue;
+    const bool isPPC64 =
+        MBB.getParent()->getSubtarget<PPCSubtarget>().isPPC64();
+    const unsigned TOCReg = isPPC64 ? PPC::X2 : PPC::R2;
 
-        MI.addOperand(MachineOperand::CreateReg(TOCReg,
-                                                false  /*IsDef*/,
-                                                true  /*IsImp*/));
-        Changed = true;
-      }
+    for (auto &MI : MBB) {
+      if (!hasTOCLoReloc(MI))
+        continue;
 
-      return Changed;
+      MI.addOperand(
+          MachineOperand::CreateReg(TOCReg, false /*IsDef*/, true /*IsImp*/));
+      Changed = true;
     }
+
+    return Changed;
+  }
 
 public:
-    bool runOnMachineFunction(MachineFunction &MF) override {
-      bool Changed = false;
+  bool runOnMachineFunction(MachineFunction &MF) override {
+    bool Changed = false;
 
-      for (MachineFunction::iterator I = MF.begin(); I != MF.end();) {
-        MachineBasicBlock &B = *I++;
-        if (processBlock(B))
-          Changed = true;
-      }
-
-      return Changed;
+    for (MachineFunction::iterator I = MF.begin(); I != MF.end();) {
+      MachineBasicBlock &B = *I++;
+      if (processBlock(B))
+        Changed = true;
     }
 
-    void getAnalysisUsage(AnalysisUsage &AU) const override {
-      MachineFunctionPass::getAnalysisUsage(AU);
-    }
-  };
-}
+    return Changed;
+  }
 
-INITIALIZE_PASS(PPCTOCRegDeps, DEBUG_TYPE,
-                "PowerPC TOC Register Dependencies", false, false)
+  void getAnalysisUsage(AnalysisUsage &AU) const override {
+    MachineFunctionPass::getAnalysisUsage(AU);
+  }
+};
+} // namespace
+
+INITIALIZE_PASS(PPCTOCRegDeps, DEBUG_TYPE, "PowerPC TOC Register Dependencies",
+                false, false)
 
 char PPCTOCRegDeps::ID = 0;
-FunctionPass*
-llvm::createPPCTOCRegDepsPass() { return new PPCTOCRegDeps(); }
-
+FunctionPass *llvm::createPPCTOCRegDepsPass() { return new PPCTOCRegDeps(); }

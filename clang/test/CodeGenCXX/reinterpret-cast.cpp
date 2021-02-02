@@ -13,7 +13,7 @@ unsigned long f3(void *p) {
   return reinterpret_cast<unsigned long>(p);
 }
 
-void f4(int*&);
-void f5(void*& u) {
-  f4(reinterpret_cast<int*&>(u));
+void f4(int *&);
+void f5(void *&u) {
+  f4(reinterpret_cast<int *&>(u));
 }

@@ -4,11 +4,11 @@
 
 struct foo;
 struct bar {
-  bar(foo&);
+  bar(foo &);
 };
 struct foo {
   bar b;
   foo()
-    : b(b) // expected-warning{{field 'b' is uninitialized}}
+      : b(b) // expected-warning{{field 'b' is uninitialized}}
   {}
 };

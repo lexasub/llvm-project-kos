@@ -12,6 +12,6 @@ float global;
 
 void function() {
 }
-}
+} // namespace USER_NS
 
 #endif // USER_HEADER_H

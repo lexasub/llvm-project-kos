@@ -24,7 +24,7 @@ class BasicBlock;
 class Value;
 class ConstantInt;
 class AllocaInst;
-}
+} // namespace llvm
 
 namespace clang {
 class FunctionDecl;
@@ -105,16 +105,14 @@ public:
   enum Kind { Cleanup, Catch, Terminate, Filter };
 
   EHScope(Kind kind, EHScopeStack::stable_iterator enclosingEHScope)
-    : CachedLandingPad(nullptr), CachedEHDispatchBlock(nullptr),
-      EnclosingEHScope(enclosingEHScope) {
+      : CachedLandingPad(nullptr), CachedEHDispatchBlock(nullptr),
+        EnclosingEHScope(enclosingEHScope) {
     CommonBits.Kind = kind;
   }
 
   Kind getKind() const { return static_cast<Kind>(CommonBits.Kind); }
 
-  llvm::BasicBlock *getCachedLandingPad() const {
-    return CachedLandingPad;
-  }
+  llvm::BasicBlock *getCachedLandingPad() const { return CachedLandingPad; }
 
   void setCachedLandingPad(llvm::BasicBlock *block) {
     CachedLandingPad = block;
@@ -165,12 +163,10 @@ public:
 private:
   friend class EHScopeStack;
 
-  Handler *getHandlers() {
-    return reinterpret_cast<Handler*>(this+1);
-  }
+  Handler *getHandlers() { return reinterpret_cast<Handler *>(this + 1); }
 
   const Handler *getHandlers() const {
-    return reinterpret_cast<const Handler*>(this+1);
+    return reinterpret_cast<const Handler *>(this + 1);
   }
 
 public:
@@ -180,14 +176,12 @@ public:
 
   EHCatchScope(unsigned numHandlers,
                EHScopeStack::stable_iterator enclosingEHScope)
-    : EHScope(Catch, enclosingEHScope) {
+      : EHScope(Catch, enclosingEHScope) {
     CatchBits.NumHandlers = numHandlers;
     assert(CatchBits.NumHandlers == numHandlers && "NumHandlers overflow?");
   }
 
-  unsigned getNumHandlers() const {
-    return CatchBits.NumHandlers;
-  }
+  unsigned getNumHandlers() const { return CatchBits.NumHandlers; }
 
   void setCatchAllHandler(unsigned I, llvm::BasicBlock *Block) {
     setHandler(I, CatchTypeInfo{nullptr, 0}, Block);
@@ -250,11 +244,11 @@ class alignas(8) EHCleanupScope : public EHScope {
   /// movable.
   struct ExtInfo {
     /// The destinations of normal branch-afters and branch-throughs.
-    llvm::SmallPtrSet<llvm::BasicBlock*, 4> Branches;
+    llvm::SmallPtrSet<llvm::BasicBlock *, 4> Branches;
 
     /// Normal branch-afters.
-    SmallVector<std::pair<llvm::BasicBlock*,llvm::ConstantInt*>, 4>
-      BranchAfters;
+    SmallVector<std::pair<llvm::BasicBlock *, llvm::ConstantInt *>, 4>
+        BranchAfters;
   };
   mutable struct ExtInfo *ExtInfo;
 
@@ -264,12 +258,14 @@ class alignas(8) EHCleanupScope : public EHScope {
   unsigned FixupDepth;
 
   struct ExtInfo &getExtInfo() {
-    if (!ExtInfo) ExtInfo = new struct ExtInfo();
+    if (!ExtInfo)
+      ExtInfo = new struct ExtInfo();
     return *ExtInfo;
   }
 
   const struct ExtInfo &getExtInfo() const {
-    if (!ExtInfo) ExtInfo = new struct ExtInfo();
+    if (!ExtInfo)
+      ExtInfo = new struct ExtInfo();
     return *ExtInfo;
   }
 
@@ -302,9 +298,7 @@ public:
     assert(CleanupBits.CleanupSize == cleanupSize && "cleanup size overflow");
   }
 
-  void Destroy() {
-    delete ExtInfo;
-  }
+  void Destroy() { delete ExtInfo; }
   // Objects of EHCleanupScope are not destructed. Use Destroy().
   ~EHCleanupScope() = delete;
 
@@ -336,9 +330,7 @@ public:
     return CleanupBits.TestFlagInNormalCleanup;
   }
 
-  void setTestFlagInEHCleanup() {
-    CleanupBits.TestFlagInEHCleanup = true;
-  }
+  void setTestFlagInEHCleanup() { CleanupBits.TestFlagInEHCleanup = true; }
   bool shouldTestFlagInEHCleanup() const {
     return CleanupBits.TestFlagInEHCleanup;
   }
@@ -352,7 +344,7 @@ public:
   void *getCleanupBuffer() { return this + 1; }
 
   EHScopeStack::Cleanup *getCleanup() {
-    return reinterpret_cast<EHScopeStack::Cleanup*>(getCleanupBuffer());
+    return reinterpret_cast<EHScopeStack::Cleanup *>(getCleanupBuffer());
   }
 
   /// True if this cleanup scope has any branch-afters or branch-throughs.
@@ -369,8 +361,7 @@ public:
   /// cleanup, guaranteed distinct from anything else threaded through
   /// it.  Therefore branch-afters usually force a switch after the
   /// cleanup.
-  void addBranchAfter(llvm::ConstantInt *Index,
-                      llvm::BasicBlock *Block) {
+  void addBranchAfter(llvm::ConstantInt *Index, llvm::BasicBlock *Block) {
     struct ExtInfo &ExtInfo = getExtInfo();
     if (ExtInfo.Branches.insert(Block).second)
       ExtInfo.BranchAfters.push_back(std::make_pair(Block, Index));
@@ -412,7 +403,8 @@ public:
 
   /// Determines if this cleanup scope has any branch throughs.
   bool hasBranchThroughs() const {
-    if (!ExtInfo) return false;
+    if (!ExtInfo)
+      return false;
     return (ExtInfo->BranchAfters.size() != ExtInfo->Branches.size());
   }
 
@@ -439,22 +431,22 @@ class EHFilterScope : public EHScope {
   // llvm::Value *FilterTypes[0];
 
   llvm::Value **getFilters() {
-    return reinterpret_cast<llvm::Value**>(this+1);
+    return reinterpret_cast<llvm::Value **>(this + 1);
   }
 
-  llvm::Value * const *getFilters() const {
-    return reinterpret_cast<llvm::Value* const *>(this+1);
+  llvm::Value *const *getFilters() const {
+    return reinterpret_cast<llvm::Value *const *>(this + 1);
   }
 
 public:
   EHFilterScope(unsigned numFilters)
-    : EHScope(Filter, EHScopeStack::stable_end()) {
+      : EHScope(Filter, EHScopeStack::stable_end()) {
     FilterBits.NumFilters = numFilters;
     assert(FilterBits.NumFilters == numFilters && "NumFilters overflow");
   }
 
   static size_t getSizeForNumFilters(unsigned numFilters) {
-    return sizeof(EHFilterScope) + numFilters * sizeof(llvm::Value*);
+    return sizeof(EHFilterScope) + numFilters * sizeof(llvm::Value *);
   }
 
   unsigned getNumFilters() const { return FilterBits.NumFilters; }
@@ -479,7 +471,7 @@ public:
 class EHTerminateScope : public EHScope {
 public:
   EHTerminateScope(EHScopeStack::stable_iterator enclosingEHScope)
-    : EHScope(Terminate, enclosingEHScope) {}
+      : EHScope(Terminate, enclosingEHScope) {}
   static size_t getSize() { return sizeof(EHTerminateScope); }
 
   static bool classof(const EHScope *scope) {
@@ -497,9 +489,7 @@ class EHScopeStack::iterator {
 public:
   iterator() : Ptr(nullptr) {}
 
-  EHScope *get() const {
-    return reinterpret_cast<EHScope*>(Ptr);
-  }
+  EHScope *get() const { return reinterpret_cast<EHScope *>(Ptr); }
 
   EHScope *operator->() const { return get(); }
   EHScope &operator*() const { return *get(); }
@@ -629,7 +619,7 @@ struct EHPersonality {
 
   bool isMSVCXXPersonality() const { return this == &MSVC_CxxFrameHandler3; }
 };
-}
-}
+} // namespace CodeGen
+} // namespace clang
 
 #endif

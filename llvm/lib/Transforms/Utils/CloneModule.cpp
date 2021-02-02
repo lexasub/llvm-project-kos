@@ -60,13 +60,10 @@ std::unique_ptr<Module> llvm::CloneModule(
   //
   for (Module::const_global_iterator I = M.global_begin(), E = M.global_end();
        I != E; ++I) {
-    GlobalVariable *GV = new GlobalVariable(*New,
-                                            I->getValueType(),
-                                            I->isConstant(), I->getLinkage(),
-                                            (Constant*) nullptr, I->getName(),
-                                            (GlobalVariable*) nullptr,
-                                            I->getThreadLocalMode(),
-                                            I->getType()->getAddressSpace());
+    GlobalVariable *GV = new GlobalVariable(
+        *New, I->getValueType(), I->isConstant(), I->getLinkage(),
+        (Constant *)nullptr, I->getName(), (GlobalVariable *)nullptr,
+        I->getThreadLocalMode(), I->getType()->getAddressSpace());
     GV->copyAttributesFrom(&*I);
     VMap[&*I] = GV;
   }
@@ -94,10 +91,10 @@ std::unique_ptr<Module> llvm::CloneModule(
                               GlobalValue::ExternalLinkage,
                               I->getAddressSpace(), I->getName(), New.get());
       else
-        GV = new GlobalVariable(
-            *New, I->getValueType(), false, GlobalValue::ExternalLinkage,
-            nullptr, I->getName(), nullptr,
-            I->getThreadLocalMode(), I->getType()->getAddressSpace());
+        GV = new GlobalVariable(*New, I->getValueType(), false,
+                                GlobalValue::ExternalLinkage, nullptr,
+                                I->getName(), nullptr, I->getThreadLocalMode(),
+                                I->getType()->getAddressSpace());
       VMap[&*I] = GV;
       // We do not copy attributes (mainly because copying between different
       // kinds of globals is forbidden), but this is generally not required for
@@ -182,7 +179,7 @@ std::unique_ptr<Module> llvm::CloneModule(
   }
 
   // And named metadata....
-  const auto* LLVM_DBG_CU = M.getNamedMetadata("llvm.dbg.cu");
+  const auto *LLVM_DBG_CU = M.getNamedMetadata("llvm.dbg.cu");
   for (Module::const_named_metadata_iterator I = M.named_metadata_begin(),
                                              E = M.named_metadata_end();
        I != E; ++I) {
@@ -190,11 +187,11 @@ std::unique_ptr<Module> llvm::CloneModule(
     NamedMDNode *NewNMD = New->getOrInsertNamedMetadata(NMD.getName());
     if (&NMD == LLVM_DBG_CU) {
       // Do not insert duplicate operands.
-      SmallPtrSet<const void*, 8> Visited;
-      for (const auto* Operand : NewNMD->operands())
+      SmallPtrSet<const void *, 8> Visited;
+      for (const auto *Operand : NewNMD->operands())
         Visited.insert(Operand);
-      for (const auto* Operand : NMD.operands()) {
-        auto* MappedOperand = MapMetadata(Operand, VMap);
+      for (const auto *Operand : NMD.operands()) {
+        auto *MappedOperand = MapMetadata(Operand, VMap);
         if (Visited.insert(MappedOperand).second)
           NewNMD->addOperand(MappedOperand);
       }
@@ -211,5 +208,4 @@ extern "C" {
 LLVMModuleRef LLVMCloneModule(LLVMModuleRef M) {
   return wrap(CloneModule(*unwrap(M)).release());
 }
-
 }

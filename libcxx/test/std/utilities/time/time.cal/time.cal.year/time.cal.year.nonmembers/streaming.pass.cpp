@@ -38,7 +38,6 @@
 //     If %z (or a modified variant) is used and successfully parsed, that value will be
 //     assigned to *offset if offset is non-null.
 
-
 #include <chrono>
 #include <type_traits>
 #include <cassert>
@@ -46,11 +45,10 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-   using year = std::chrono::year;
+int main(int, char**) {
+  using year = std::chrono::year;
 
-   std::cout << year{2018};
+  std::cout << year{2018};
 
   return 0;
 }

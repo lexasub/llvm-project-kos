@@ -9,9 +9,9 @@
 #ifndef LLVM_CLANG_LIB_DRIVER_TOOLCHAINS_FLANG_H
 #define LLVM_CLANG_LIB_DRIVER_TOOLCHAINS_FLANG_H
 
-#include "clang/Driver/Tool.h"
 #include "clang/Driver/Action.h"
 #include "clang/Driver/Compilation.h"
+#include "clang/Driver/Tool.h"
 #include "clang/Driver/ToolChain.h"
 #include "llvm/Option/ArgList.h"
 #include "llvm/Support/Compiler.h"

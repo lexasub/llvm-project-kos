@@ -36,4 +36,3 @@ void comment_custom_block_command_1();
 // CHECK-NEXT:           (CXComment_Text Text=[ Aaa.]))))]
 
 #endif
-

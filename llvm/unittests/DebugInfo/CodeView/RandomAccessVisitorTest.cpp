@@ -50,15 +50,15 @@ inline bool operator==(const CVType &R1, const CVType &R2) {
 inline bool operator!=(const CVType &R1, const CVType &R2) {
   return !(R1 == R2);
 }
-}
-}
+} // namespace codeview
+} // namespace llvm
 
 namespace llvm {
 template <> struct BinaryItemTraits<CVType> {
   static size_t length(const CVType &Item) { return Item.length(); }
   static ArrayRef<uint8_t> bytes(const CVType &Item) { return Item.data(); }
 };
-}
+} // namespace llvm
 
 namespace {
 
@@ -120,9 +120,7 @@ public:
 
   static void TearDownTestCase() { GlobalState.reset(); }
 
-  void SetUp() override {
-    TestState = std::make_unique<PerTestState>();
-  }
+  void SetUp() override { TestState = std::make_unique<PerTestState>(); }
 
   void TearDown() override { TestState.reset(); }
 
@@ -200,7 +198,7 @@ protected:
 
 std::unique_ptr<RandomAccessVisitorTest::GlobalTestState>
     RandomAccessVisitorTest::GlobalState;
-}
+} // namespace
 
 TEST_F(RandomAccessVisitorTest, MultipleVisits) {
   TestState->Offsets = createPartialOffsets(GlobalState->Stream, {0, 8});

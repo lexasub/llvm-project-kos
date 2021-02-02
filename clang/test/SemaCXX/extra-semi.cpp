@@ -10,8 +10,7 @@
 
 void F();
 
-void F(){}
-;
+void F(){};
 #if __cplusplus < 201103L
 // expected-warning@-2{{extra ';' outside of a function is a C++11 extension}}
 #else
@@ -22,8 +21,6 @@ namespace ns {
 class C {
   void F() const;
 };
-}
-; // expected-warning {{extra ';' outside of a function is}}
+}; // namespace ns
 
-void ns::C::F() const {}
-; // expected-warning {{extra ';' outside of a function is}}
+void ns::C::F() const {}; // expected-warning {{extra ';' outside of a function is}}

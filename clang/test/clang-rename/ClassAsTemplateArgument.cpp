@@ -1,4 +1,4 @@
-class Foo /* Test 1 */ {};    // CHECK: class Bar /* Test 1 */ {};
+class Foo /* Test 1 */ {}; // CHECK: class Bar /* Test 1 */ {};
 
 template <typename T>
 void func() {}
@@ -7,8 +7,8 @@ template <typename T>
 class Baz {};
 
 int main() {
-  func<Foo>();                // CHECK: func<Bar>();
-  Baz<Foo> /* Test 2 */ obj;  // CHECK: Baz<Bar> /* Test 2 */ obj;
+  func<Foo>();               // CHECK: func<Bar>();
+  Baz<Foo> /* Test 2 */ obj; // CHECK: Baz<Bar> /* Test 2 */ obj;
   return 0;
 }
 

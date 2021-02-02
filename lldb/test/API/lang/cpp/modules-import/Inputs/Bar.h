@@ -1,1 +1,3 @@
-struct Bar { int success; };
+struct Bar {
+  int success;
+};

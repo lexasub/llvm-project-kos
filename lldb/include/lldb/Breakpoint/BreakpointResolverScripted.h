@@ -1,4 +1,5 @@
-//===-- BreakpointResolverScripted.h -----------------------------*- C++ -*-===//
+//===-- BreakpointResolverScripted.h -----------------------------*- C++
+//-*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -9,10 +10,9 @@
 #ifndef LLDB_BREAKPOINT_BREAKPOINTRESOLVERSCRIPTED_H
 #define LLDB_BREAKPOINT_BREAKPOINTRESOLVERSCRIPTED_H
 
-#include "lldb/lldb-forward.h"
 #include "lldb/Breakpoint/BreakpointResolver.h"
 #include "lldb/Core/ModuleSpec.h"
-
+#include "lldb/lldb-forward.h"
 
 namespace lldb_private {
 
@@ -48,7 +48,9 @@ public:
   void Dump(Stream *s) const override;
 
   /// Methods for support type inquiry through isa, cast, and dyn_cast:
-  static inline bool classof(const BreakpointResolverScripted *) { return true; }
+  static inline bool classof(const BreakpointResolverScripted *) {
+    return true;
+  }
   static inline bool classof(const BreakpointResolver *V) {
     return V->getResolverID() == BreakpointResolver::PythonResolver;
   }
@@ -58,10 +60,11 @@ public:
 
 protected:
   void NotifyBreakpointSet() override;
+
 private:
   void CreateImplementationIfNeeded(lldb::BreakpointSP bkpt);
   ScriptInterpreter *GetScriptInterpreter();
-  
+
   std::string m_class_name;
   lldb::SearchDepth m_depth;
   StructuredDataImpl *m_args_ptr; // We own this, but the implementation

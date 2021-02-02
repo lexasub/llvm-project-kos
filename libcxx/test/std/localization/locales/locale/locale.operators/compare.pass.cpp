@@ -17,21 +17,20 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
+int main(int, char**) {
+  {
+    std::locale l;
     {
-        std::locale l;
-        {
-            std::string s2("aaaaaaA");
-            std::string s3("BaaaaaA");
-            assert(l(s3, s2));
-        }
-        {
-            std::wstring s2(L"aaaaaaA");
-            std::wstring s3(L"BaaaaaA");
-            assert(l(s3, s2));
-        }
+      std::string s2("aaaaaaA");
+      std::string s3("BaaaaaA");
+      assert(l(s3, s2));
     }
+    {
+      std::wstring s2(L"aaaaaaA");
+      std::wstring s3(L"BaaaaaA");
+      assert(l(s3, s2));
+    }
+  }
 
   return 0;
 }

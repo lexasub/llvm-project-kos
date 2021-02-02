@@ -430,7 +430,7 @@ SourceLocation transformer::detail::getRuleMatchLoc(const MatchResult &Result) {
 // `MatchResult`.
 const RewriteRule::Case &
 transformer::detail::findSelectedCase(const MatchResult &Result,
-                                  const RewriteRule &Rule) {
+                                      const RewriteRule &Rule) {
   if (Rule.Cases.size() == 1)
     return Rule.Cases[0];
 

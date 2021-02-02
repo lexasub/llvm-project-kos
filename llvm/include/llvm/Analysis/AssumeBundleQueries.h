@@ -14,9 +14,9 @@
 #ifndef LLVM_TRANSFORMS_UTILS_ASSUMEBUNDLEQUERIES_H
 #define LLVM_TRANSFORMS_UTILS_ASSUMEBUNDLEQUERIES_H
 
+#include "llvm/ADT/DenseMap.h"
 #include "llvm/IR/Attributes.h"
 #include "llvm/IR/Instructions.h"
-#include "llvm/ADT/DenseMap.h"
 
 namespace llvm {
 class IntrinsicInst;
@@ -48,10 +48,8 @@ inline bool hasAttributeInAssume(CallInst &AssumeCI, Value *IsOn,
                               Attribute::getNameFromAttrKind(Kind), ArgVal);
 }
 
-template<> struct DenseMapInfo<Attribute::AttrKind> {
-  static Attribute::AttrKind getEmptyKey() {
-    return Attribute::EmptyKey;
-  }
+template <> struct DenseMapInfo<Attribute::AttrKind> {
+  static Attribute::AttrKind getEmptyKey() { return Attribute::EmptyKey; }
   static Attribute::AttrKind getTombstoneKey() {
     return Attribute::TombstoneKey;
   }
@@ -146,7 +144,7 @@ RetainedKnowledge getKnowledgeForValue(
     const Value *V, ArrayRef<Attribute::AttrKind> AttrKinds,
     AssumptionCache *AC = nullptr,
     function_ref<bool(RetainedKnowledge, Instruction *,
-                            const CallBase::BundleOpInfo *)>
+                      const CallBase::BundleOpInfo *)>
         Filter = [](auto...) { return true; });
 
 /// Return a valid Knowledge associated to the Value V if its Attribute kind is

@@ -2,11 +2,11 @@
 typedef __SIZE_TYPE__ size_t;
 
 // Overloaded operator delete with two arguments
-template<int I>
+template <int I>
 struct X0 {
   X0();
-  static void* operator new(size_t);
-  static void operator delete(void*, size_t) {
+  static void *operator new(size_t);
+  static void operator delete(void *, size_t) {
     int *ip = I; // expected-error{{cannot initialize}}
   }
 };
@@ -16,12 +16,12 @@ void test_X0() {
 }
 
 // Overloaded operator delete with one argument
-template<int I>
+template <int I>
 struct X1 {
   X1();
 
-  static void* operator new(size_t);
-  static void operator delete(void*) {
+  static void *operator new(size_t);
+  static void operator delete(void *) {
     int *ip = I; // expected-error{{cannot initialize}}
   }
 };
@@ -31,18 +31,18 @@ void test_X1() {
 }
 
 // Overloaded operator delete for placement new
-template<int I>
+template <int I>
 struct X2 {
   X2();
 
-  static void* operator new(size_t, double, double);
-  static void* operator new(size_t, int, int);
+  static void *operator new(size_t, double, double);
+  static void *operator new(size_t, int, int);
 
-  static void operator delete(void*, const int, int) {
+  static void operator delete(void *, const int, int) {
     int *ip = I; // expected-error{{cannot initialize}}
   }
 
-  static void operator delete(void*, double, double);
+  static void operator delete(void *, double, double);
 };
 
 void test_X2() {
@@ -53,10 +53,10 @@ void test_X2() {
 struct X3 {
   X3();
 
-  static void* operator new(size_t, double, double);
+  static void *operator new(size_t, double, double);
 
-  template<typename T>
-  static void operator delete(void*, T x, T) {
+  template <typename T>
+  static void operator delete(void *, T x, T) {
     double *dp = &x;
     int *ip = &x; // expected-error{{cannot initialize}}
   }
@@ -69,11 +69,11 @@ void test_X3() {
 // Operator delete template for placement new in global scope.
 struct X4 {
   X4();
-  static void* operator new(size_t, double, double);
+  static void *operator new(size_t, double, double);
 };
 
-template<typename T>
-void operator delete(void*, T x, T) {
+template <typename T>
+void operator delete(void *, T x, T) {
   double *dp = &x;
   int *ip = &x; // expected-error{{cannot initialize}}
 }
@@ -85,8 +85,8 @@ void test_X4() {
 // Useless operator delete hides global operator delete template.
 struct X5 {
   X5();
-  static void* operator new(size_t, double, double);
-  void operator delete(void*, double*, double*);
+  static void *operator new(size_t, double, double);
+  void operator delete(void *, double *, double *);
 };
 
 void test_X5() {
@@ -94,15 +94,15 @@ void test_X5() {
 }
 
 // Operator delete template for placement new
-template<int I>
+template <int I>
 struct X6 {
   X6();
 
-  static void* operator new(size_t) {
+  static void *operator new(size_t) {
     return I; // expected-error{{cannot initialize}}
   }
 
-  static void operator delete(void*) {
+  static void operator delete(void *) {
     int *ip = I; // expected-error{{cannot initialize}}
   }
 };
@@ -113,8 +113,8 @@ void test_X6() {
 
 void *operator new(size_t, double, double, double);
 
-template<typename T>
-void operator delete(void*, T x, T, T) {
+template <typename T>
+void operator delete(void *, T x, T, T) {
   double *dp = &x;
   int *ip = &x; // expected-error{{cannot initialize}}
 }
@@ -138,4 +138,3 @@ void test_X7() {
   new X7<1>;
 }
 #endif
-

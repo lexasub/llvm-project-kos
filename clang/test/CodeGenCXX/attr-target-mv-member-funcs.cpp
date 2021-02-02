@@ -51,7 +51,7 @@ int __attribute__((target("sse4.2"))) S2::foo(int) { return 0; }
 int __attribute__((target("arch=ivybridge"))) S2::foo(int) { return 1; }
 int __attribute__((target("default"))) S2::foo(int) { return 2; }
 
-template<typename T>
+template <typename T>
 struct templ {
   int __attribute__((target("sse4.2"))) foo(int) { return 0; }
   int __attribute__((target("arch=sandybridge"))) foo(int);

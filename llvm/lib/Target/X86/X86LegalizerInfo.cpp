@@ -71,16 +71,16 @@ X86LegalizerInfo::X86LegalizerInfo(const X86Subtarget &STI,
   setLegalizerInfoAVX512BW();
 
   getActionDefinitionsBuilder(G_INTRINSIC_ROUNDEVEN)
-    .scalarize(0)
-    .minScalar(0, LLT::scalar(32))
-    .libcall();
+      .scalarize(0)
+      .minScalar(0, LLT::scalar(32))
+      .libcall();
 
   setLegalizeScalarToDifferentSizeStrategy(G_PHI, 0, widen_1);
   for (unsigned BinOp : {G_SUB, G_MUL, G_AND, G_OR, G_XOR})
     setLegalizeScalarToDifferentSizeStrategy(BinOp, 0, widen_1);
   for (unsigned MemOp : {G_LOAD, G_STORE})
     setLegalizeScalarToDifferentSizeStrategy(MemOp, 0,
-       narrowToSmallerAndWidenToSmallest);
+                                             narrowToSmallerAndWidenToSmallest);
   setLegalizeScalarToDifferentSizeStrategy(
       G_PTR_ADD, 1, widenToLargerTypesUnsupportedOtherwise);
   setLegalizeScalarToDifferentSizeStrategy(
@@ -145,16 +145,14 @@ void X86LegalizerInfo::setLegalizerInfo32bit() {
     getActionDefinitionsBuilder(G_INTTOPTR).legalFor({{p0, s32}});
 
     // Shifts and SDIV
-    getActionDefinitionsBuilder(
-        {G_SDIV, G_SREM, G_UDIV, G_UREM})
-      .legalFor({s8, s16, s32})
-      .clampScalar(0, s8, s32);
+    getActionDefinitionsBuilder({G_SDIV, G_SREM, G_UDIV, G_UREM})
+        .legalFor({s8, s16, s32})
+        .clampScalar(0, s8, s32);
 
-    getActionDefinitionsBuilder(
-        {G_SHL, G_LSHR, G_ASHR})
-      .legalFor({{s8, s8}, {s16, s8}, {s32, s8}})
-      .clampScalar(0, s8, s32)
-      .clampScalar(1, s8, s8);
+    getActionDefinitionsBuilder({G_SHL, G_LSHR, G_ASHR})
+        .legalFor({{s8, s8}, {s16, s8}, {s32, s8}})
+        .clampScalar(0, s8, s32)
+        .clampScalar(1, s8, s8);
 
     // Comparison
     getActionDefinitionsBuilder(G_ICMP)
@@ -232,7 +230,7 @@ void X86LegalizerInfo::setLegalizerInfo64bit() {
   }
 
   getActionDefinitionsBuilder(G_SITOFP)
-    .legalForCartesianProduct({s32, s64})
+      .legalForCartesianProduct({s32, s64})
       .clampScalar(1, s32, s64)
       .widenScalarToNextPow2(1)
       .clampScalar(0, s32, s64)
@@ -257,17 +255,15 @@ void X86LegalizerInfo::setLegalizerInfo64bit() {
       .widenScalarToNextPow2(1);
 
   // Divisions
-  getActionDefinitionsBuilder(
-      {G_SDIV, G_SREM, G_UDIV, G_UREM})
+  getActionDefinitionsBuilder({G_SDIV, G_SREM, G_UDIV, G_UREM})
       .legalFor({s8, s16, s32, s64})
       .clampScalar(0, s8, s64);
 
   // Shifts
-  getActionDefinitionsBuilder(
-    {G_SHL, G_LSHR, G_ASHR})
-    .legalFor({{s8, s8}, {s16, s8}, {s32, s8}, {s64, s8}})
-    .clampScalar(0, s8, s64)
-    .clampScalar(1, s8, s8);
+  getActionDefinitionsBuilder({G_SHL, G_LSHR, G_ASHR})
+      .legalFor({{s8, s8}, {s16, s8}, {s32, s8}, {s64, s8}})
+      .clampScalar(0, s8, s64)
+      .clampScalar(1, s8, s8);
 
   // Merge/Unmerge
   setAction({G_MERGE_VALUES, s128}, Legal);

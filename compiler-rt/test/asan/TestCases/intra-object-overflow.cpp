@@ -9,15 +9,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 class Foo {
- public:
+public:
   Foo() : pre1(1), pre2(2), post1(3), post2(4) {
   }
   virtual ~Foo() {
   }
   void set(int i, int val) { a[i] = val; }
-// CHECK: ERROR: AddressSanitizer: intra-object-overflow
-// CHECK: #0 {{.*}}Foo::set{{.*}}intra-object-overflow.cpp:[[@LINE-2]]
- private:
+  // CHECK: ERROR: AddressSanitizer: intra-object-overflow
+  // CHECK: #0 {{.*}}Foo::set{{.*}}intra-object-overflow.cpp:[[@LINE-2]]
+private:
   int pre1, pre2;
   int a[11];
   int post1, post2;
@@ -27,7 +27,7 @@ int main(int argc, char **argv) {
   int idx = argc == 2 ? atoi(argv[1]) : 0;
   Foo *foo = new Foo;
   foo->set(idx, 42);
-// CHECK: #1 {{.*}}main{{.*}}intra-object-overflow.cpp:[[@LINE-1]]
-// CHECK: is located 84 bytes inside of 128-byte region
+  // CHECK: #1 {{.*}}main{{.*}}intra-object-overflow.cpp:[[@LINE-1]]
+  // CHECK: is located 84 bytes inside of 128-byte region
   delete foo;
 }

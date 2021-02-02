@@ -16,7 +16,7 @@
 #if __has_extension(gnu_asm)
 
 /* Define the default attributes for the functions in this file. */
-#define __DEFAULT_FN_ATTRS \
+#define __DEFAULT_FN_ATTRS                                                     \
   __attribute__((__always_inline__, __nodebug__, __target__("hreset")))
 
 /// Provides a hint to the processor to selectively reset the prediction
@@ -36,10 +36,8 @@
 ///      ENDFOR
 ///    FI
 /// \endoperation
-static __inline void __DEFAULT_FN_ATTRS
-_hreset(int __eax)
-{
-  __asm__ ("hreset $0" :: "a"(__eax));
+static __inline void __DEFAULT_FN_ATTRS _hreset(int __eax) {
+  __asm__("hreset $0" ::"a"(__eax));
 }
 
 #undef __DEFAULT_FN_ATTRS

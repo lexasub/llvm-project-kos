@@ -22,7 +22,7 @@ int no_analyze_testfn(int y) {
 }
 
 class NoAnalyzeFoo {
- private:
+private:
   int test_field NO_SANITIZE_ADDRESS; // \
     // expected-error {{'no_sanitize_address' attribute only applies to functions}}
   void test_method() NO_SANITIZE_ADDRESS;

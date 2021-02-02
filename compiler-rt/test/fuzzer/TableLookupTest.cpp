@@ -29,11 +29,12 @@ static uint8_t Counters[N];
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
   static std::set<uint16_t> SeenIdx;
-  if (Size != 4) return 0;
+  if (Size != 4)
+    return 0;
   uint32_t Idx;
   memcpy(&Idx, Data, 4);
   Idx %= N;
-  assert(Counters[Idx] == 0);  // libFuzzer should reset these between the runs.
+  assert(Counters[Idx] == 0); // libFuzzer should reset these between the runs.
   // Or Counters[Idx]=1 if we don't care how many times this happened.
   Counters[Idx]++;
   SeenIdx.insert(Idx);

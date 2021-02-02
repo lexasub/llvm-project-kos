@@ -23,8 +23,4 @@ using namespace std::filesystem;
 // expected-error@-5 {{expected namespace name}}
 #endif
 
-int main(int, char**) {
-
-
-  return 0;
-}
+int main(int, char**) { return 0; }

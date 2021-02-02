@@ -25,23 +25,25 @@ class SourceManager;
 namespace cxloc {
 
 /// Translate a Clang source location into a CIndex source location.
-static inline CXSourceLocation 
+static inline CXSourceLocation
 translateSourceLocation(const SourceManager &SM, const LangOptions &LangOpts,
                         SourceLocation Loc) {
   if (Loc.isInvalid())
     clang_getNullLocation();
 
-  CXSourceLocation Result = { { &SM, &LangOpts, },
-                              Loc.getRawEncoding() };
+  CXSourceLocation Result = {{
+                                 &SM,
+                                 &LangOpts,
+                             },
+                             Loc.getRawEncoding()};
   return Result;
 }
-  
+
 /// Translate a Clang source location into a CIndex source location.
 static inline CXSourceLocation translateSourceLocation(ASTContext &Context,
                                                        SourceLocation Loc) {
   return translateSourceLocation(Context.getSourceManager(),
-                                 Context.getLangOpts(),
-                                 Loc);
+                                 Context.getLangOpts(), Loc);
 }
 
 /// Translate a Clang source range into a CIndex source range.
@@ -50,15 +52,14 @@ static inline CXSourceLocation translateSourceLocation(ASTContext &Context,
 /// start of the token at the end. However, for external clients it is more
 /// useful to have a CXSourceRange be a proper half-open interval. This routine
 /// does the appropriate translation.
-CXSourceRange translateSourceRange(const SourceManager &SM, 
+CXSourceRange translateSourceRange(const SourceManager &SM,
                                    const LangOptions &LangOpts,
                                    const CharSourceRange &R);
-  
+
 /// Translate a Clang source range into a CIndex source range.
 static inline CXSourceRange translateSourceRange(ASTContext &Context,
                                                  SourceRange R) {
-  return translateSourceRange(Context.getSourceManager(),
-                              Context.getLangOpts(),
+  return translateSourceRange(Context.getSourceManager(), Context.getLangOpts(),
                               CharSourceRange::getTokenRange(R));
 }
 
@@ -76,6 +77,7 @@ static inline SourceRange translateCXSourceRange(CXSourceRange R) {
 /// R.begin_int_data is first character of the range.
 /// R.end_int_data is one character past the end of the range.
 CharSourceRange translateCXRangeToCharRange(CXSourceRange R);
-}} // end namespace: clang::cxloc
+} // namespace cxloc
+} // namespace clang
 
 #endif

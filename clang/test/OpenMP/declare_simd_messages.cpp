@@ -22,7 +22,7 @@ int var;
 // expected-error@+1 {{function declaration is expected after 'declare simd' directive}}
 #pragma omp declare simd
 #pragma omp declare simd
-#pragma options align=packed
+#pragma options align = packed
 int main();
 
 // expected-error@+3 {{function declaration is expected after 'declare simd' directive}}
@@ -81,7 +81,7 @@ void foo();
 // expected-error@+2 {{invalid use of 'this' outside of a non-static member function}}
 // expected-error@+1 {{argument to 'simdlen' clause must be a strictly positive integer value}}
 #pragma omp declare simd simdlen(N) uniform(this, var) aligned(var)
-template<int N>
+template <int N>
 void foo() {}
 
 void test() {
@@ -104,9 +104,9 @@ void test() {
 // expected-note@+3 {{to match this '('}}
 // expected-error@+2 {{expected ')'}}
 // expected-error@+1 {{invalid use of 'this' outside of a non-static member function}}
-#pragma omp declare simd uniform(this,a
+#pragma omp declare simd uniform(this, a
 // expected-error@+1 {{expected expression}}
-#pragma omp declare simd uniform(,a)
+#pragma omp declare simd uniform(, a)
 // expected-error@+1 {{expected '(' after 'aligned'}}
 #pragma omp declare simd aligned
 // expected-note@+3 {{to match this '('}}
@@ -118,7 +118,8 @@ void test() {
 // expected-note@+3 {{to match this '('}}
 // expected-error@+2 {{expected ')'}}
 // expected-error@+1 {{expected expression}}
-#pragma omp declare simd aligned(a:
+#pragma omp declare simd aligned(a \
+                                 :
 // expected-error@+1 {{expected expression}}
 #pragma omp declare simd aligned(a:)
 // expected-warning@+2 {{extra tokens at the end of '#pragma omp declare simd' are ignored}}
@@ -131,21 +132,22 @@ void test() {
 // expected-note@+3 {{to match this '('}}
 // expected-error@+2 {{expected ')'}}
 // expected-error@+1 {{invalid use of 'this' outside of a non-static member function}}
-#pragma omp declare simd aligned(this,b
+#pragma omp declare simd aligned(this, b
 // expected-error@+1 {{expected expression}}
 #pragma omp declare simd aligned(, b)
 // expected-note@+4 {{defined as aligned}}
 // expected-error@+3 {{a parameter cannot appear in more than one aligned clause}}
 // expected-error@+2 {{expected expression}}
 // expected-error@+1 {{expected ',' or ')' in 'aligned' clause}}
-#pragma omp declare simd aligned(b) aligned(b ; 64)
+#pragma omp declare simd aligned(b) aligned(b; 64)
 // expected-note@+2 {{defined as aligned}}
 // expected-error@+1 {{a parameter cannot appear in more than one aligned clause}}
-#pragma omp declare simd aligned(b) aligned(b: 64)
+#pragma omp declare simd aligned(b) aligned(b : 64)
 // expected-error@+1 {{argument to 'aligned' clause must be a strictly positive integer value}}
-#pragma omp declare simd aligned(b: -1)
+#pragma omp declare simd aligned(b \
+                                 : -1)
 // expected-warning@+1 {{aligned clause will be ignored because the requested alignment is not a power of 2}}
-#pragma omp declare simd aligned(b: 3)
+#pragma omp declare simd aligned(b : 3)
 // expected-error@+1 {{expected '(' after 'linear'}}
 #pragma omp declare simd linear
 // expected-note@+3 {{to match this '('}}
@@ -157,7 +159,8 @@ void test() {
 // expected-note@+3 {{to match this '('}}
 // expected-error@+2 {{expected ')'}}
 // expected-error@+1 {{expected expression}}
-#pragma omp declare simd linear(a:
+#pragma omp declare simd linear(a \
+                                :
 // expected-error@+1 {{expected expression}}
 #pragma omp declare simd linear(a:)
 // expected-warning@+2 {{extra tokens at the end of '#pragma omp declare simd' are ignored}}
@@ -170,27 +173,29 @@ void test() {
 // expected-note@+3 {{to match this '('}}
 // expected-error@+2 {{expected ')'}}
 // expected-error@+1 {{invalid use of 'this' outside of a non-static member function}}
-#pragma omp declare simd linear(this,b
+#pragma omp declare simd linear(this, b
 // expected-error@+1 {{expected expression}}
 #pragma omp declare simd linear(, b)
 // expected-note@+4 {{defined as linear}}
 // expected-error@+3 {{linear variable cannot be linear}}
 // expected-error@+2 {{expected expression}}
 // expected-error@+1 {{expected ',' or ')' in 'linear' clause}}
-#pragma omp declare simd linear(b) linear(b ; 64)
+#pragma omp declare simd linear(b) linear(b; 64)
 // expected-note@+2 {{defined as linear}}
 // expected-error@+1 {{linear variable cannot be linear}}
-#pragma omp declare simd linear(b) linear(b: 64)
-#pragma omp declare simd linear(b: -1)
-#pragma omp declare simd linear(b: 3)
+#pragma omp declare simd linear(b) linear(b : 64)
+#pragma omp declare simd linear(b \
+                                : -1)
+#pragma omp declare simd linear(b : 3)
 // expected-error@+1 {{expected a reference to a parameter specified in a 'uniform' clause}}
-#pragma omp declare simd linear(b: a)
+#pragma omp declare simd linear(b \
+                                : a)
 // expected-note@+2 {{defined as uniform}}
 // expected-error@+1 {{linear variable cannot be uniform}}
-#pragma omp declare simd uniform(a), linear(a: 4)
+#pragma omp declare simd uniform(a), linear(a : 4)
 // expected-note@+2 {{defined as uniform}}
 // expected-error@+1 {{linear variable cannot be uniform}}
-#pragma omp declare simd linear(a: 4) uniform(a)
+#pragma omp declare simd linear(a : 4) uniform(a)
 // expected-error@+1 {{variable of non-reference type 'int *' can be used only with 'val' modifier, but used with 'uval'}}
 #pragma omp declare simd linear(uval(b))
 // expected-error@+1 {{variable of non-reference type 'int *' can be used only with 'val' modifier, but used with 'ref'}}
@@ -213,7 +218,9 @@ struct St {
 // expected-error@+3 {{argument to 'aligned' clause must be a strictly positive integer value}}
 // expected-error@+2 {{'this' cannot appear in more than one aligned clause}}
 // expected-error@+1 {{use of undeclared identifier 't'}}
-#pragma omp declare simd uniform(this, t) aligned(this: 4) aligned(this: -4) linear(this: hp)
+#pragma omp declare simd uniform(this, t) aligned(this : 4) aligned(this              \
+                                                                    : -4) linear(this \
+                                                                                 : hp)
   void h(T *hp) {
 // expected-error@+1 {{unexpected OpenMP directive '#pragma omp declare simd'}}
 #pragma omp declare simd
@@ -225,9 +232,9 @@ private:
 };
 
 namespace N {
-  // expected-error@+1 {{function declaration is expected after 'declare simd' directive}}
-  #pragma omp declare simd
-}
+// expected-error@+1 {{function declaration is expected after 'declare simd' directive}}
+#pragma omp declare simd
+} // namespace N
 // expected-error@+1 {{function declaration is expected after 'declare simd' directive}}
 #pragma omp declare simd
 // expected-error@+1 {{function declaration is expected after 'declare simd' directive}}

@@ -255,7 +255,6 @@ bool PlatformRemoteDarwinDevice::UpdateSDKDirectoryInfosIfNeeded() {
           }
         }
       }
-
     }
   }
   return !m_sdk_directory_infos.empty();
@@ -355,7 +354,8 @@ const char *PlatformRemoteDarwinDevice::GetDeviceSupportDirectory() {
   return nullptr;
 }
 
-const char *PlatformRemoteDarwinDevice::GetDeviceSupportDirectoryForOSVersion() {
+const char *
+PlatformRemoteDarwinDevice::GetDeviceSupportDirectoryForOSVersion() {
   if (m_sdk_sysroot)
     return m_sdk_sysroot.GetCString();
 
@@ -385,7 +385,8 @@ const char *PlatformRemoteDarwinDevice::GetDeviceSupportDirectoryForOSVersion() 
   return nullptr;
 }
 
-uint32_t PlatformRemoteDarwinDevice::FindFileInAllSDKs(const char *platform_file_path,
+uint32_t
+PlatformRemoteDarwinDevice::FindFileInAllSDKs(const char *platform_file_path,
                                               FileSpecList &file_list) {
   Log *log = lldb_private::GetLogIfAllCategoriesSet(LIBLLDB_LOG_HOST);
   if (platform_file_path && platform_file_path[0] &&
@@ -404,9 +405,9 @@ uint32_t PlatformRemoteDarwinDevice::FindFileInAllSDKs(const char *platform_file
   return file_list.GetSize();
 }
 
-bool PlatformRemoteDarwinDevice::GetFileInSDK(const char *platform_file_path,
-                                     uint32_t sdk_idx,
-                                     lldb_private::FileSpec &local_file) {
+bool PlatformRemoteDarwinDevice::GetFileInSDK(
+    const char *platform_file_path, uint32_t sdk_idx,
+    lldb_private::FileSpec &local_file) {
   Log *log = lldb_private::GetLogIfAllCategoriesSet(LIBLLDB_LOG_HOST);
   if (sdk_idx < m_sdk_directory_infos.size()) {
     std::string sdkroot_path =

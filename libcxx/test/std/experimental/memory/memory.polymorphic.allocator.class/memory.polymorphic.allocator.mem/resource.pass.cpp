@@ -23,37 +23,34 @@
 
 namespace ex = std::experimental::pmr;
 
-int main(int, char**)
-{
-    typedef ex::polymorphic_allocator<void> A;
-    {
-        A const a;
-        static_assert(
-            std::is_same<decltype(a.resource()), ex::memory_resource*>::value
-          , ""
-          );
-    }
-    {
-        ex::memory_resource * mptr = (ex::memory_resource*)42;
-        A const a(mptr);
-        assert(a.resource() == mptr);
-    }
-    {
-        A const a(nullptr);
-        assert(a.resource() == nullptr);
-        assert(a.resource() == nullptr);
-    }
-    {
-        A const a;
-        assert(a.resource() == ex::get_default_resource());
-    }
-    {
-        ex::memory_resource * mptr = (ex::memory_resource*)42;
-        ex::set_default_resource(mptr);
-        A const a;
-        assert(a.resource() == mptr);
-        assert(a.resource() == ex::get_default_resource());
-    }
+int main(int, char**) {
+  typedef ex::polymorphic_allocator<void> A;
+  {
+    A const a;
+    static_assert(
+        std::is_same<decltype(a.resource()), ex::memory_resource*>::value, "");
+  }
+  {
+    ex::memory_resource* mptr = (ex::memory_resource*)42;
+    A const a(mptr);
+    assert(a.resource() == mptr);
+  }
+  {
+    A const a(nullptr);
+    assert(a.resource() == nullptr);
+    assert(a.resource() == nullptr);
+  }
+  {
+    A const a;
+    assert(a.resource() == ex::get_default_resource());
+  }
+  {
+    ex::memory_resource* mptr = (ex::memory_resource*)42;
+    ex::set_default_resource(mptr);
+    A const a;
+    assert(a.resource() == mptr);
+    assert(a.resource() == ex::get_default_resource());
+  }
 
   return 0;
 }

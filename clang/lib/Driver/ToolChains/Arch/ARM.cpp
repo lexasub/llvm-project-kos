@@ -12,8 +12,8 @@
 #include "clang/Driver/Options.h"
 #include "llvm/ADT/StringSwitch.h"
 #include "llvm/Option/ArgList.h"
-#include "llvm/Support/TargetParser.h"
 #include "llvm/Support/Host.h"
+#include "llvm/Support/TargetParser.h"
 
 using namespace clang::driver;
 using namespace clang::driver::tools;
@@ -129,7 +129,7 @@ static void checkARMCPUName(const Driver &D, const Arg *A, const ArgList &Args,
 
   std::string CPU = arm::getARMTargetCPU(CPUName, ArchName, Triple);
   llvm::ARM::ArchKind ArchKind =
-    arm::getLLVMArchKindForARM(CPU, ArchName, Triple);
+      arm::getLLVMArchKindForARM(CPU, ArchName, Triple);
   if (ArchKind == llvm::ARM::ArchKind::INVALID ||
       (Split.second.size() &&
        !DecodeARMFeatures(D, Split.second, CPU, ArchKind, Features, ArgFPUID)))
@@ -399,8 +399,8 @@ void arm::getARMTargetFeatures(const Driver &D, const llvm::Triple &Triple,
     if (FPUArg)
       D.Diag(clang::diag::warn_drv_unused_argument)
           << FPUArg->getAsString(Args);
-    (void)getARMFPUFeatures(D, WaFPU, Args, StringRef(WaFPU->getValue()).substr(6),
-                            Features);
+    (void)getARMFPUFeatures(D, WaFPU, Args,
+                            StringRef(WaFPU->getValue()).substr(6), Features);
   } else if (FPUArg) {
     FPUID = getARMFPUFeatures(D, FPUArg, Args, FPUArg->getValue(), Features);
   } else if (Triple.isAndroid() && getARMSubArchVersionNumber(Triple) >= 7) {
@@ -414,8 +414,8 @@ void arm::getARMTargetFeatures(const Driver &D, const llvm::Triple &Triple,
   // Now we've finished accumulating features from arch, cpu and fpu,
   // we can append the ones for architecture extensions that we
   // collected separately.
-  Features.insert(std::end(Features),
-                  std::begin(ExtensionFeatures), std::end(ExtensionFeatures));
+  Features.insert(std::end(Features), std::begin(ExtensionFeatures),
+                  std::end(ExtensionFeatures));
 
   // Honor -mhwdiv=. ClangAs gives preference to -Wa,-mhwdiv=.
   const Arg *HDivArg = Args.getLastArg(options::OPT_mhwdiv_EQ);
@@ -432,23 +432,26 @@ void arm::getARMTargetFeatures(const Driver &D, const llvm::Triple &Triple,
   // Must happen before any features are disabled due to soft-float.
   // FIXME: this fp16fml option handling will be reimplemented after the
   // TargetParser rewrite.
-  const auto ItRNoFullFP16 = std::find(Features.rbegin(), Features.rend(), "-fullfp16");
-  const auto ItRFP16FML = std::find(Features.rbegin(), Features.rend(), "+fp16fml");
+  const auto ItRNoFullFP16 =
+      std::find(Features.rbegin(), Features.rend(), "-fullfp16");
+  const auto ItRFP16FML =
+      std::find(Features.rbegin(), Features.rend(), "+fp16fml");
   if (Triple.getSubArch() == llvm::Triple::SubArchType::ARMSubArch_v8_4a) {
-    const auto ItRFullFP16  = std::find(Features.rbegin(), Features.rend(), "+fullfp16");
+    const auto ItRFullFP16 =
+        std::find(Features.rbegin(), Features.rend(), "+fullfp16");
     if (ItRFullFP16 < ItRNoFullFP16 && ItRFullFP16 < ItRFP16FML) {
-      // Only entangled feature that can be to the right of this +fullfp16 is -fp16fml.
-      // Only append the +fp16fml if there is no -fp16fml after the +fullfp16.
+      // Only entangled feature that can be to the right of this +fullfp16 is
+      // -fp16fml. Only append the +fp16fml if there is no -fp16fml after the
+      // +fullfp16.
       if (std::find(Features.rbegin(), ItRFullFP16, "-fp16fml") == ItRFullFP16)
         Features.push_back("+fp16fml");
-    }
-    else
+    } else
       goto fp16_fml_fallthrough;
-  }
-  else {
-fp16_fml_fallthrough:
-    // In both of these cases, putting the 'other' feature on the end of the vector will
-    // result in the same effect as placing it immediately after the current feature.
+  } else {
+  fp16_fml_fallthrough:
+    // In both of these cases, putting the 'other' feature on the end of the
+    // vector will result in the same effect as placing it immediately after the
+    // current feature.
     if (ItRNoFullFP16 < ItRFP16FML)
       Features.push_back("-fp16fml");
     else if (ItRNoFullFP16 > ItRFP16FML)
@@ -509,10 +512,11 @@ fp16_fml_fallthrough:
         D.Diag(clang::diag::warn_target_unsupported_extension)
             << "crypto"
             << llvm::ARM::getArchName(llvm::ARM::parseArch(ArchSuffix));
-        // With -fno-integrated-as -mfpu=crypto-neon-fp-armv8 some assemblers such as the GNU assembler
-        // will permit the use of crypto instructions as the fpu will override the architecture.
-        // We keep the crypto feature in this case to preserve compatibility.
-        // In all other cases we remove the crypto feature.
+        // With -fno-integrated-as -mfpu=crypto-neon-fp-armv8 some assemblers
+        // such as the GNU assembler will permit the use of crypto instructions
+        // as the fpu will override the architecture. We keep the crypto feature
+        // in this case to preserve compatibility. In all other cases we remove
+        // the crypto feature.
         if (!Args.hasArg(options::OPT_fno_integrated_as))
           Features.push_back("-crypto");
       }
@@ -532,7 +536,7 @@ fp16_fml_fallthrough:
       Features.push_back("+long-calls");
   } else if (KernelOrKext && (!Triple.isiOS() || Triple.isOSVersionLT(6)) &&
              !Triple.isWatchOS()) {
-      Features.push_back("+long-calls");
+    Features.push_back("+long-calls");
   }
 
   // Generate execute-only output (no data access to code sections).
@@ -540,19 +544,25 @@ fp16_fml_fallthrough:
   if (!ForAS) {
     // Supported only on ARMv6T2 and ARMv7 and above.
     // Cannot be combined with -mno-movt or -mlong-calls
-    if (Arg *A = Args.getLastArg(options::OPT_mexecute_only, options::OPT_mno_execute_only)) {
+    if (Arg *A = Args.getLastArg(options::OPT_mexecute_only,
+                                 options::OPT_mno_execute_only)) {
       if (A->getOption().matches(options::OPT_mexecute_only)) {
         if (getARMSubArchVersionNumber(Triple) < 7 &&
-            llvm::ARM::parseArch(Triple.getArchName()) != llvm::ARM::ArchKind::ARMV6T2)
-              D.Diag(diag::err_target_unsupported_execute_only) << Triple.getArchName();
+            llvm::ARM::parseArch(Triple.getArchName()) !=
+                llvm::ARM::ArchKind::ARMV6T2)
+          D.Diag(diag::err_target_unsupported_execute_only)
+              << Triple.getArchName();
         else if (Arg *B = Args.getLastArg(options::OPT_mno_movt))
-          D.Diag(diag::err_opt_not_valid_with_opt) << A->getAsString(Args) << B->getAsString(Args);
-        // Long calls create constant pool entries and have not yet been fixed up
-        // to play nicely with execute-only. Hence, they cannot be used in
+          D.Diag(diag::err_opt_not_valid_with_opt)
+              << A->getAsString(Args) << B->getAsString(Args);
+        // Long calls create constant pool entries and have not yet been fixed
+        // up to play nicely with execute-only. Hence, they cannot be used in
         // execute-only code for now
-        else if (Arg *B = Args.getLastArg(options::OPT_mlong_calls, options::OPT_mno_long_calls)) {
+        else if (Arg *B = Args.getLastArg(options::OPT_mlong_calls,
+                                          options::OPT_mno_long_calls)) {
           if (B->getOption().matches(options::OPT_mlong_calls))
-            D.Diag(diag::err_opt_not_valid_with_opt) << A->getAsString(Args) << B->getAsString(Args);
+            D.Diag(diag::err_opt_not_valid_with_opt)
+                << A->getAsString(Args) << B->getAsString(Args);
         }
         Features.push_back("+execute-only");
       }
@@ -570,7 +580,8 @@ fp16_fml_fallthrough:
         D.Diag(diag::err_target_unsupported_unaligned) << "v6m";
       // v8M Baseline follows on from v6M, so doesn't support unaligned memory
       // access either.
-      else if (Triple.getSubArch() == llvm::Triple::SubArchType::ARMSubArch_v8m_baseline)
+      else if (Triple.getSubArch() ==
+               llvm::Triple::SubArchType::ARMSubArch_v8m_baseline)
         D.Diag(diag::err_target_unsupported_unaligned) << "v8m.base";
     } else
       Features.push_back("+strict-align");
@@ -650,7 +661,6 @@ fp16_fml_fallthrough:
     if (EnableBlr)
       Features.push_back("+harden-sls-blr");
   }
-
 }
 
 const std::string arm::getARMArch(StringRef Arch, const llvm::Triple &Triple) {
@@ -727,8 +737,8 @@ llvm::ARM::ArchKind arm::getLLVMArchKindForARM(StringRef CPU, StringRef Arch,
     // FIXME: horrible hack to get around the fact that Cortex-A7 is only an
     // armv7k triple if it's actually been specified via "-arch armv7k".
     ArchKind = (Arch == "armv7k" || Arch == "thumbv7k")
-                          ? llvm::ARM::ArchKind::ARMV7K
-                          : llvm::ARM::parseCPUArch(CPU);
+                   ? llvm::ARM::ArchKind::ARMV7K
+                   : llvm::ARM::parseCPUArch(CPU);
   }
   return ArchKind;
 }
@@ -751,6 +761,7 @@ void arm::appendBE8LinkFlag(const ArgList &Args, ArgStringList &CmdArgs,
 
   // ARMv7 (and later) and ARMv6-M do not support BE-32, so instruct the linker
   // to generate BE-8 executables.
-  if (arm::getARMSubArchVersionNumber(Triple) >= 7 || arm::isARMMProfile(Triple))
+  if (arm::getARMSubArchVersionNumber(Triple) >= 7 ||
+      arm::isARMMProfile(Triple))
     CmdArgs.push_back("--be8");
 }

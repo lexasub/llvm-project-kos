@@ -15,7 +15,8 @@
 #define __CLWBINTRIN_H
 
 /* Define the default attributes for the functions in this file. */
-#define __DEFAULT_FN_ATTRS __attribute__((__always_inline__, __nodebug__,  __target__("clwb")))
+#define __DEFAULT_FN_ATTRS                                                     \
+  __attribute__((__always_inline__, __nodebug__, __target__("clwb")))
 
 /// Writes back to memory the cache line (if modified) that contains the
 /// linear address specified in \a __p from any level of the cache hierarchy in
@@ -28,8 +29,7 @@
 /// \param __p
 ///    A pointer to the memory location used to identify the cache line to be
 ///    written back.
-static __inline__ void __DEFAULT_FN_ATTRS
-_mm_clwb(void const *__p) {
+static __inline__ void __DEFAULT_FN_ATTRS _mm_clwb(void const *__p) {
   __builtin_ia32_clwb(__p);
 }
 

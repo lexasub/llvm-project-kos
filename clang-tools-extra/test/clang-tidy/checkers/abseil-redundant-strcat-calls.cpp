@@ -9,7 +9,7 @@ struct __sso_string_base {};
 namespace __gnu_cxx {
 template <typename A, typename B, typename C, typename D = __sso_string_base>
 class __versa_string {
- public:
+public:
   const char *c_str() const;
   const char *data() const;
   int size() const;
@@ -21,19 +21,19 @@ class __versa_string {
   void resize(int);
   int compare(const __versa_string &) const;
 };
-}  // namespace __gnu_cxx
+} // namespace __gnu_cxx
 
 namespace std {
 template <typename T>
 class char_traits {};
 template <typename T>
 class allocator {};
-}  // namespace std
+} // namespace std
 
 template <typename A, typename B = std::char_traits<A>,
           typename C = std::allocator<A>>
 class basic_string : public __gnu_cxx::__versa_string<A, B, C> {
- public:
+public:
   basic_string();
   basic_string(const basic_string &);
   basic_string(const char *, C = C());
@@ -69,7 +69,7 @@ class basic_string;
 
 template <typename _CharT, typename _Traits, typename _Alloc>
 class basic_string {
- public:
+public:
   basic_string();
   basic_string(const basic_string &);
   basic_string(const char *, const _Alloc & = _Alloc());
@@ -85,12 +85,12 @@ class basic_string {
 };
 
 typedef basic_string<char> string;
-}  // namespace std
+} // namespace std
 
 namespace absl {
 
 class string_view {
- public:
+public:
   typedef std::char_traits<char> traits_type;
 
   string_view();
@@ -116,7 +116,7 @@ struct AlphaNum {
   AlphaNum(const string &str);
   AlphaNum(const string_view &pc);
 
- private:
+private:
   AlphaNum(const AlphaNum &);
   AlphaNum &operator=(const AlphaNum &);
 };
@@ -131,7 +131,7 @@ string StrCat(const AlphaNum &A, const AlphaNum &B, const AlphaNum &C,
 // Support 5 or more arguments
 template <typename... AV>
 string StrCat(const AlphaNum &A, const AlphaNum &B, const AlphaNum &C,
-              const AlphaNum &D, const AlphaNum &E, const AV &... args);
+              const AlphaNum &D, const AlphaNum &E, const AV &...args);
 
 void StrAppend(string *Dest, const AlphaNum &A);
 void StrAppend(string *Dest, const AlphaNum &A, const AlphaNum &B);
@@ -144,9 +144,9 @@ void StrAppend(string *Dest, const AlphaNum &A, const AlphaNum &B,
 template <typename... AV>
 void StrAppend(string *Dest, const AlphaNum &A, const AlphaNum &B,
                const AlphaNum &C, const AlphaNum &D, const AlphaNum &E,
-               const AV &... args);
+               const AV &...args);
 
-}  // namespace absl
+} // namespace absl
 
 using absl::AlphaNum;
 using absl::StrAppend;

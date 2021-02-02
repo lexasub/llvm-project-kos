@@ -48,9 +48,9 @@ protected:
 class CodeGenOptions : public CodeGenOptionsBase {
 public:
   enum InliningMethod {
-    NormalInlining,     // Use the standard function inlining pass.
-    OnlyHintInlining,   // Inline only (implicitly) hinted functions.
-    OnlyAlwaysInlining  // Only run the always inlining pass.
+    NormalInlining,    // Use the standard function inlining pass.
+    OnlyHintInlining,  // Inline only (implicitly) hinted functions.
+    OnlyAlwaysInlining // Only run the always inlining pass.
   };
 
   enum VectorLibrary {
@@ -61,11 +61,7 @@ public:
     SVML        // Intel short vector math library.
   };
 
-  enum ObjCDispatchMethodKind {
-    Legacy = 0,
-    NonLegacy = 1,
-    Mixed = 2
-  };
+  enum ObjCDispatchMethodKind { Legacy = 0, NonLegacy = 1, Mixed = 2 };
 
   enum TLSModel {
     GeneralDynamicTLSModel,
@@ -92,9 +88,9 @@ public:
   };
 
   enum StructReturnConventionKind {
-    SRCK_Default,  // No special option was passed.
-    SRCK_OnStack,  // Small structs on the stack (-fpcc-struct-return).
-    SRCK_InRegs    // Small structs in registers (-freg-struct-return).
+    SRCK_Default, // No special option was passed.
+    SRCK_OnStack, // Small structs on the stack (-fpcc-struct-return).
+    SRCK_InRegs   // Small structs in registers (-freg-struct-return).
   };
 
   enum ProfileInstrKind {
@@ -106,10 +102,10 @@ public:
   };
 
   enum EmbedBitcodeKind {
-    Embed_Off,      // No embedded bitcode.
-    Embed_All,      // Embed both bitcode and commandline in the output.
-    Embed_Bitcode,  // Embed just the bitcode in the output.
-    Embed_Marker    // Embed a marker as a placeholder for bitcode.
+    Embed_Off,     // No embedded bitcode.
+    Embed_All,     // Embed both bitcode and commandline in the output.
+    Embed_Bitcode, // Embed just the bitcode in the output.
+    Embed_Marker   // Embed a marker as a placeholder for bitcode.
   };
 
   // This field stores one of the allowed values for the option
@@ -135,9 +131,9 @@ public:
   std::string BinutilsVersion;
 
   enum class FramePointerKind {
-    None,        // Omit all frame pointers.
-    NonLeaf,     // Keep non-leaf frame pointers.
-    All,         // Keep all frame pointers.
+    None,    // Omit all frame pointers.
+    NonLeaf, // Keep non-leaf frame pointers.
+    All,     // Keep all frame pointers.
   };
 
   /// The code model to use (-mcmodel).
@@ -373,8 +369,8 @@ public:
 public:
   // Define accessors/mutators for code generation options of enumeration type.
 #define CODEGENOPT(Name, Bits, Default)
-#define ENUM_CODEGENOPT(Name, Type, Bits, Default) \
-  Type get##Name() const { return static_cast<Type>(Name); } \
+#define ENUM_CODEGENOPT(Name, Type, Bits, Default)                             \
+  Type get##Name() const { return static_cast<Type>(Name); }                   \
   void set##Name(Type Value) { Name = static_cast<unsigned>(Value); }
 #include "clang/Basic/CodeGenOptions.def"
 
@@ -394,9 +390,7 @@ public:
   }
 
   /// Check if IR level profile instrumentation is on.
-  bool hasProfileIRInstr() const {
-    return getProfileInstr() == ProfileIRInstr;
-  }
+  bool hasProfileIRInstr() const { return getProfileInstr() == ProfileIRInstr; }
 
   /// Check if CS IR level profile instrumentation is on.
   bool hasProfileCSIRInstr() const {
@@ -428,6 +422,6 @@ public:
   }
 };
 
-}  // end namespace clang
+} // end namespace clang
 
 #endif

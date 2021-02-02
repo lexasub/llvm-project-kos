@@ -26,18 +26,18 @@ using namespace llvm;
 #define DEBUG_TYPE "finalize-isel"
 
 namespace {
-  class FinalizeISel : public MachineFunctionPass {
-  public:
-    static char ID; // Pass identification, replacement for typeid
-    FinalizeISel() : MachineFunctionPass(ID) {}
+class FinalizeISel : public MachineFunctionPass {
+public:
+  static char ID; // Pass identification, replacement for typeid
+  FinalizeISel() : MachineFunctionPass(ID) {}
 
-  private:
-    bool runOnMachineFunction(MachineFunction &MF) override;
+private:
+  bool runOnMachineFunction(MachineFunction &MF) override;
 
-    void getAnalysisUsage(AnalysisUsage &AU) const override {
-      MachineFunctionPass::getAnalysisUsage(AU);
-    }
-  };
+  void getAnalysisUsage(AnalysisUsage &AU) const override {
+    MachineFunctionPass::getAnalysisUsage(AU);
+  }
+};
 } // end anonymous namespace
 
 char FinalizeISel::ID = 0;
@@ -53,7 +53,7 @@ bool FinalizeISel::runOnMachineFunction(MachineFunction &MF) {
   for (MachineFunction::iterator I = MF.begin(), E = MF.end(); I != E; ++I) {
     MachineBasicBlock *MBB = &*I;
     for (MachineBasicBlock::iterator MBBI = MBB->begin(), MBBE = MBB->end();
-         MBBI != MBBE; ) {
+         MBBI != MBBE;) {
       MachineInstr &MI = *MBBI++;
 
       // If MI is a pseudo, expand it.

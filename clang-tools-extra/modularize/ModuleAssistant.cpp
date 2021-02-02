@@ -62,7 +62,7 @@ public:
 
 // Constructors.
 Module::Module(llvm::StringRef Name, bool Problem)
-  : Name(Name), IsProblem(Problem) {}
+    : Name(Name), IsProblem(Problem) {}
 
 // Destructor.
 Module::~Module() {
@@ -130,9 +130,9 @@ Module *Module::findSubModule(llvm::StringRef SubName) {
 // Keep in sync with keywords in module map parser in Lex/ModuleMap.cpp,
 // such as in ModuleMapParser::consumeToken().
 static const char *const ReservedNames[] = {
-  "config_macros", "export",   "module", "conflict", "framework",
-  "requires",      "exclude",  "header", "private",  "explicit",
-  "link",          "umbrella", "extern", "use",      nullptr // Flag end.
+    "config_macros", "export",   "module", "conflict", "framework",
+    "requires",      "exclude",  "header", "private",  "explicit",
+    "link",          "umbrella", "extern", "use",      nullptr // Flag end.
 };
 
 // Convert module name to a non-keyword.
@@ -151,8 +151,7 @@ ensureNoCollisionWithReservedName(llvm::StringRef MightBeReservedName) {
 
 // Convert module name to a non-keyword.
 // Prepends a '_' to the name if and only if the name is a keyword.
-static std::string
-ensureVaidModuleName(llvm::StringRef MightBeInvalidName) {
+static std::string ensureVaidModuleName(llvm::StringRef MightBeInvalidName) {
   std::string SafeName(MightBeInvalidName);
   std::replace(SafeName.begin(), SafeName.end(), '-', '_');
   std::replace(SafeName.begin(), SafeName.end(), '.', '_');
@@ -215,8 +214,8 @@ static bool addModuleDescription(Module *RootModule,
 // Create the internal module tree representation.
 static Module *loadModuleDescriptions(
     llvm::StringRef RootModuleName, llvm::ArrayRef<std::string> HeaderFileNames,
-    llvm::ArrayRef<std::string> ProblemFileNames,
-    DependencyMap &Dependencies, llvm::StringRef HeaderPrefix) {
+    llvm::ArrayRef<std::string> ProblemFileNames, DependencyMap &Dependencies,
+    llvm::StringRef HeaderPrefix) {
 
   // Create root module.
   auto *RootModule = new Module(RootModuleName, false);
@@ -241,7 +240,8 @@ static Module *loadModuleDescriptions(
       }
     }
     // Add as a module.
-    if (!addModuleDescription(RootModule, Header, HeaderPrefix, Dependencies, IsProblemFile))
+    if (!addModuleDescription(RootModule, Header, HeaderPrefix, Dependencies,
+                              IsProblemFile))
       return nullptr;
   }
 
@@ -302,9 +302,8 @@ bool createModuleMap(llvm::StringRef ModuleMapPath,
                      llvm::StringRef RootModuleName) {
   // Load internal representation of modules.
   std::unique_ptr<Module> RootModule(
-    loadModuleDescriptions(
-      RootModuleName, HeaderFileNames, ProblemFileNames, Dependencies,
-      HeaderPrefix));
+      loadModuleDescriptions(RootModuleName, HeaderFileNames, ProblemFileNames,
+                             Dependencies, HeaderPrefix));
   if (!RootModule.get())
     return false;
 

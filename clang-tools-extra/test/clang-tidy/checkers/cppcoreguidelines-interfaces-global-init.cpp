@@ -53,7 +53,6 @@ extern int ExternGlobal2;
 int ExternGlobal2 = 123;
 static int GlobalScopeGoodInit1 = ExternGlobal2;
 
-
 // Defined global variables are fine:
 static int GlobalScope = makesInt();
 static int GlobalScopeGoodInit2 = takesInt(GlobalScope);
@@ -81,4 +80,3 @@ class B2 {
 };
 const int B2::I;
 const int B2::J;
-

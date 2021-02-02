@@ -4,15 +4,15 @@
 #pragma clang system_header
 
 typedef struct {
-	void	*foo;
+  void *foo;
 } pthread_mutex_t;
 
 typedef struct {
-	void	*foo;
+  void *foo;
 } pthread_mutexattr_t;
 
 typedef struct {
-	void	*foo;
+  void *foo;
 } lck_grp_t;
 
 typedef struct {
@@ -28,7 +28,7 @@ extern int pthread_mutex_lock(pthread_mutex_t *);
 extern int pthread_mutex_unlock(pthread_mutex_t *);
 extern int pthread_mutex_trylock(pthread_mutex_t *);
 extern int pthread_mutex_destroy(pthread_mutex_t *);
-extern int pthread_mutex_init(pthread_mutex_t  *mutex, const pthread_mutexattr_t *mutexattr);
+extern int pthread_mutex_init(pthread_mutex_t *mutex, const pthread_mutexattr_t *mutexattr);
 
 typedef int boolean_t;
 extern void lck_mtx_lock(lck_mtx_t *);

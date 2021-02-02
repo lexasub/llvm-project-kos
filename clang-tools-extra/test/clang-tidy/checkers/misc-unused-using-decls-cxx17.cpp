@@ -2,19 +2,23 @@
 
 namespace ns {
 
-template <typename T> class Foo {
+template <typename T>
+class Foo {
 public:
   Foo(T);
 };
 // Deduction guide (CTAD)
-template <typename T> Foo(T t) -> Foo<T>;
+template <typename T>
+Foo(T t) -> Foo<T>;
 
-template <typename T> class Bar {
+template <typename T>
+class Bar {
 public:
   Bar(T);
 };
 
-template <typename T> class Unused {};
+template <typename T>
+class Unused {};
 
 } // namespace ns
 

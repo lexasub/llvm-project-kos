@@ -31,7 +31,7 @@
 #include <inttypes.h>
 #include <limits.h>
 #ifndef _LIBCPP_HAS_NO_LOCALIZATION
-#   include <locale.h>
+#include <locale.h>
 #endif
 #include <math.h>
 #include <setjmp.h>
@@ -45,7 +45,7 @@
 #include <wchar.h>
 #include <wctype.h>
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   (void)argc;
   (void)argv;
   return 0;

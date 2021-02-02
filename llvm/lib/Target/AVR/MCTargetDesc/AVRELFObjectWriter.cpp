@@ -26,21 +26,18 @@ public:
 
   virtual ~AVRELFObjectWriter() {}
 
-  unsigned getRelocType(MCContext &Ctx,
-                        const MCValue &Target,
-                        const MCFixup &Fixup,
-                        bool IsPCRel) const override;
+  unsigned getRelocType(MCContext &Ctx, const MCValue &Target,
+                        const MCFixup &Fixup, bool IsPCRel) const override;
 };
 
 AVRELFObjectWriter::AVRELFObjectWriter(uint8_t OSABI)
     : MCELFObjectTargetWriter(false, OSABI, ELF::EM_AVR, true) {}
 
-unsigned AVRELFObjectWriter::getRelocType(MCContext &Ctx,
-                                          const MCValue &Target,
+unsigned AVRELFObjectWriter::getRelocType(MCContext &Ctx, const MCValue &Target,
                                           const MCFixup &Fixup,
                                           bool IsPCRel) const {
   MCSymbolRefExpr::VariantKind Modifier = Target.getAccessVariant();
-  switch ((unsigned) Fixup.getKind()) {
+  switch ((unsigned)Fixup.getKind()) {
   case FK_Data_1:
     switch (Modifier) {
     default:
@@ -156,4 +153,3 @@ std::unique_ptr<MCObjectTargetWriter> createAVRELFObjectWriter(uint8_t OSABI) {
 }
 
 } // end of namespace llvm
-

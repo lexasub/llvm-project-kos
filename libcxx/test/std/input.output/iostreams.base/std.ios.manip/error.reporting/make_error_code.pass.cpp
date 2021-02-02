@@ -15,13 +15,12 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        std::error_code ec = make_error_code(std::io_errc::stream);
-        assert(ec.value() == static_cast<int>(std::io_errc::stream));
-        assert(ec.category() == std::iostream_category());
-    }
+int main(int, char**) {
+  {
+    std::error_code ec = make_error_code(std::io_errc::stream);
+    assert(ec.value() == static_cast<int>(std::io_errc::stream));
+    assert(ec.category() == std::iostream_category());
+  }
 
   return 0;
 }

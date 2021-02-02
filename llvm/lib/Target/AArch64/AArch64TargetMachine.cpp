@@ -106,9 +106,9 @@ static cl::opt<bool> EnableAtomicTidy(
     cl::init(true));
 
 static cl::opt<bool>
-EnableEarlyIfConversion("aarch64-enable-early-ifcvt", cl::Hidden,
-                        cl::desc("Run early if-conversion"),
-                        cl::init(true));
+    EnableEarlyIfConversion("aarch64-enable-early-ifcvt", cl::Hidden,
+                            cl::desc("Run early if-conversion"),
+                            cl::init(true));
 
 static cl::opt<bool>
     EnableCondOpt("aarch64-enable-condopt",
@@ -116,9 +116,9 @@ static cl::opt<bool>
                   cl::init(true), cl::Hidden);
 
 static cl::opt<bool>
-EnableA53Fix835769("aarch64-fix-cortex-a53-835769", cl::Hidden,
-                cl::desc("Work around Cortex-A53 erratum 835769"),
-                cl::init(false));
+    EnableA53Fix835769("aarch64-fix-cortex-a53-835769", cl::Hidden,
+                       cl::desc("Work around Cortex-A53 erratum 835769"),
+                       cl::init(false));
 
 static cl::opt<bool>
     EnableGEPOpt("aarch64-enable-gep-opt", cl::Hidden,
@@ -352,12 +352,12 @@ AArch64TargetMachine::getSubtargetImpl(const Function &F) const {
     // function that reside in TargetOptions.
     resetTargetOptions(F);
     I = std::make_unique<AArch64Subtarget>(TargetTriple, CPU, FS, *this,
-                                            isLittle);
+                                           isLittle);
   }
   return I.get();
 }
 
-void AArch64leTargetMachine::anchor() { }
+void AArch64leTargetMachine::anchor() {}
 
 AArch64leTargetMachine::AArch64leTargetMachine(
     const Target &T, const Triple &TT, StringRef CPU, StringRef FS,
@@ -365,7 +365,7 @@ AArch64leTargetMachine::AArch64leTargetMachine(
     Optional<CodeModel::Model> CM, CodeGenOpt::Level OL, bool JIT)
     : AArch64TargetMachine(T, TT, CPU, FS, Options, RM, CM, OL, JIT, true) {}
 
-void AArch64beTargetMachine::anchor() { }
+void AArch64beTargetMachine::anchor() {}
 
 AArch64beTargetMachine::AArch64beTargetMachine(
     const Target &T, const Triple &TT, StringRef CPU, StringRef FS,
@@ -413,7 +413,7 @@ public:
     return nullptr;
   }
 
-  void addIRPasses()  override;
+  void addIRPasses() override;
   bool addPreISel() override;
   bool addInstSelector() override;
   bool addIRTranslator() override;

@@ -8,45 +8,26 @@
 
 #include <typeinfo>
 
-namespace std
-{
+namespace std {
 
 // type_info
 
-type_info::~type_info()
-{
-}
+type_info::~type_info() {}
 
 // bad_cast
 
-bad_cast::bad_cast() _NOEXCEPT
-{
-}
+bad_cast::bad_cast() _NOEXCEPT {}
 
-bad_cast::~bad_cast() _NOEXCEPT
-{
-}
+bad_cast::~bad_cast() _NOEXCEPT {}
 
-const char*
-bad_cast::what() const _NOEXCEPT
-{
-  return "std::bad_cast";
-}
+const char* bad_cast::what() const _NOEXCEPT { return "std::bad_cast"; }
 
 // bad_typeid
 
-bad_typeid::bad_typeid() _NOEXCEPT
-{
-}
+bad_typeid::bad_typeid() _NOEXCEPT {}
 
-bad_typeid::~bad_typeid() _NOEXCEPT
-{
-}
+bad_typeid::~bad_typeid() _NOEXCEPT {}
 
-const char*
-bad_typeid::what() const _NOEXCEPT
-{
-  return "std::bad_typeid";
-}
+const char* bad_typeid::what() const _NOEXCEPT { return "std::bad_typeid"; }
 
-}  // std
+} // namespace std

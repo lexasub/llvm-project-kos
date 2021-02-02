@@ -6,8 +6,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include <string>
 #include <cstdlib>
+#include <string>
 
 int main() {
   const char *value = std::getenv("LLDB_TEST_MAGIC_VARIABLE");

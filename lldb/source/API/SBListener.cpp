@@ -35,8 +35,8 @@ SBListener::SBListener(const SBListener &rhs)
 }
 
 const lldb::SBListener &SBListener::operator=(const lldb::SBListener &rhs) {
-  LLDB_RECORD_METHOD(const lldb::SBListener &,
-                     SBListener, operator=,(const lldb::SBListener &), rhs);
+  LLDB_RECORD_METHOD(const lldb::SBListener &, SBListener, operator=,
+                     (const lldb::SBListener &), rhs);
 
   if (this != &rhs) {
     m_opaque_sp = rhs.m_opaque_sp;
@@ -326,13 +326,12 @@ void SBListener::reset(ListenerSP listener_sp) {
 namespace lldb_private {
 namespace repro {
 
-template <>
-void RegisterMethods<SBListener>(Registry &R) {
+template <> void RegisterMethods<SBListener>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBListener, ());
   LLDB_REGISTER_CONSTRUCTOR(SBListener, (const char *));
   LLDB_REGISTER_CONSTRUCTOR(SBListener, (const lldb::SBListener &));
-  LLDB_REGISTER_METHOD(const lldb::SBListener &,
-                       SBListener, operator=,(const lldb::SBListener &));
+  LLDB_REGISTER_METHOD(const lldb::SBListener &, SBListener, operator=,
+                       (const lldb::SBListener &));
   LLDB_REGISTER_METHOD_CONST(bool, SBListener, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBListener, operator bool, ());
   LLDB_REGISTER_METHOD(void, SBListener, AddEvent, (const lldb::SBEvent &));
@@ -369,5 +368,5 @@ void RegisterMethods<SBListener>(Registry &R) {
                        (const lldb::SBEvent &));
 }
 
-}
-}
+} // namespace repro
+} // namespace lldb_private

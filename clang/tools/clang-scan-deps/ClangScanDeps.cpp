@@ -468,8 +468,7 @@ int main(int argc, const char **argv) {
         AdjustedArgs.push_back("-Wno-error");
 
         if (!HasResourceDir) {
-          StringRef ResourceDir =
-              ResourceDirCache.findResourceDir(Args);
+          StringRef ResourceDir = ResourceDirCache.findResourceDir(Args);
           if (!ResourceDir.empty()) {
             AdjustedArgs.push_back("-resource-dir");
             AdjustedArgs.push_back(std::string(ResourceDir));

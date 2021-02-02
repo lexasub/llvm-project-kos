@@ -35,7 +35,7 @@ struct C : B {
   void bar();
 };
 
-}
+} // namespace
 
 // CHECK-LABEL: define{{.*}} void @_Z21testInternallyVisibleb(
 void testInternallyVisible(bool p) {

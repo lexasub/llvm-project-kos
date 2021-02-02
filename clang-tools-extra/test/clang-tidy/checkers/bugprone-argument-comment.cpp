@@ -37,11 +37,11 @@ void h() {
   (void)NewPermanentCallback(&ffff, /*xxxx=*/11, /*yyyy=*/22);
 }
 
-template<typename... Args>
-void variadic(Args&&... args);
+template <typename... Args>
+void variadic(Args &&...args);
 
-template<typename... Args>
-void variadic2(int zzz, Args&&... args);
+template <typename... Args>
+void variadic2(int zzz, Args &&...args);
 
 void templates() {
   variadic(/*xxx=*/0, /*yyy=*/1);
@@ -91,7 +91,7 @@ void g() { f4(/*xyz=*/0); }
 // CHECK-NOTES: [[@LINE-1]]:15: warning: argument name 'xyz' in comment does not match parameter name 'xxx'
 // CHECK-NOTES: [[@LINE-3]]:13: note: 'xxx' declared here
 // CHECK-FIXES: void g() { f4(/*xyz=*/0); }
-}
+} // namespace ThisEditDistanceAboveThreshold
 
 namespace OtherEditDistanceAboveThreshold {
 void f5(int xxx, int yyy);
@@ -106,7 +106,7 @@ C2 c2(/*Zxx=*/0, 0);
 // CHECK-NOTES: [[@LINE-1]]:7: warning: argument name 'Zxx' in comment does not match parameter name 'xxx'
 // CHECK-NOTES: [[@LINE-4]]:10: note: 'xxx' declared here
 // CHECK-FIXES: C2 c2(/*xxx=*/0, 0);
-}
+} // namespace OtherEditDistanceAboveThreshold
 
 namespace OtherEditDistanceBelowThreshold {
 void f6(int xxx, int yyy);
@@ -114,8 +114,7 @@ void g() { f6(/*xxy=*/0, 0); }
 // CHECK-NOTES: [[@LINE-1]]:15: warning: argument name 'xxy' in comment does not match parameter name 'xxx'
 // CHECK-NOTES: [[@LINE-3]]:13: note: 'xxx' declared here
 // CHECK-FIXES: void g() { f6(/*xxy=*/0, 0); }
-}
-
+} // namespace OtherEditDistanceBelowThreshold
 
 namespace std {
 template <typename T>
@@ -123,8 +122,8 @@ class vector {
 public:
   void assign(int __n, const T &__val);
 };
-template<typename T>
-void swap(T& __a, T& __b);
+template <typename T>
+void swap(T &__a, T &__b);
 } // namespace std
 namespace ignore_std_functions {
 void test(int a, int b) {

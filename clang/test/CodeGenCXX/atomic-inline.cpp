@@ -66,4 +66,3 @@ bool cmpxchg16() {
   // CORE2: cmpxchg i128* {{.*}} monotonic
   return __atomic_compare_exchange(&m16, &s16, &am, 0, 0, 0);
 }
-

@@ -17,10 +17,10 @@ void f() {
   bar(x);
 }
 
-template<typename T> void droid();
+template <typename T> void droid();
 struct X {
-  template<typename T> friend void ::droid();
-  template<int N> friend void ::droid(); // expected-error {{does not match}}
+  template <typename T> friend void ::droid();
+  template <int N> friend void ::droid(); // expected-error {{does not match}}
   // FIXME: We should produce a note for the above candidate explaining why
   // it's not the droid we're looking for.
 };

@@ -5,8 +5,8 @@
 // Simple test for a fuzzer. The fuzzer must find the string "Hi!".
 #include <cstddef>
 #include <cstdint>
-#include <cstdlib>
 #include <cstdio>
+#include <cstdlib>
 
 static volatile int Sink;
 static volatile int *Null = 0;
@@ -24,4 +24,3 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size) {
   }
   return 0;
 }
-

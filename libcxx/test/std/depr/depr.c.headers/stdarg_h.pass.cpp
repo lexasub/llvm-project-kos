@@ -17,9 +17,9 @@
 #endif
 
 #if TEST_STD_VER >= 11
-#  ifndef va_copy
-#    error va_copy is not defined when c++ >= 11
-#  endif
+#ifndef va_copy
+#error va_copy is not defined when c++ >= 11
+#endif
 #endif
 
 #ifndef va_end
@@ -30,10 +30,9 @@
 #error va_start not defined
 #endif
 
-int main(int, char**)
-{
-    va_list va;
-    ((void)va);
+int main(int, char**) {
+  va_list va;
+  ((void)va);
 
   return 0;
 }

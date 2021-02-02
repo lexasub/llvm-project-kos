@@ -18,81 +18,83 @@
 //   the nested-name-specifier names the class of the member function.
 
 namespace test0 {
-  class A {
-    int data_member;
-    int instance_method();
-    static int static_method();
+class A {
+  int data_member;
+  int instance_method();
+  static int static_method();
 
-    bool test() {
-      return data_member + instance_method() < static_method();
-    }
-  };
-}
+  bool test() {
+    return data_member + instance_method() < static_method();
+  }
+};
+} // namespace test0
 
 namespace test1 {
-  struct Opaque1 {}; struct Opaque2 {}; struct Opaque3 {};
+struct Opaque1 {};
+struct Opaque2 {};
+struct Opaque3 {};
 
-  struct A {
-    void foo(Opaque1); // expected-note {{candidate}}
-    void foo(Opaque2); // expected-note {{candidate}}
-  };
+struct A {
+  void foo(Opaque1); // expected-note {{candidate}}
+  void foo(Opaque2); // expected-note {{candidate}}
+};
 
-  struct B : A {
-    void test();
-  };
+struct B : A {
+  void test();
+};
 
-  struct C1 : A { };
-  struct C2 : B { };
+struct C1 : A {};
+struct C2 : B {};
 
-  void B::test() {
-    A::foo(Opaque1());
-    A::foo(Opaque2());
-    A::foo(Opaque3()); // expected-error {{no matching member function}}
+void B::test() {
+  A::foo(Opaque1());
+  A::foo(Opaque2());
+  A::foo(Opaque3()); // expected-error {{no matching member function}}
 
-    C1::foo(Opaque1()); // expected-error {{call to non-static member function without an object argument}}
-    C2::foo(Opaque1()); // expected-error {{call to non-static member function without an object argument}}
-  }
+  C1::foo(Opaque1()); // expected-error {{call to non-static member function without an object argument}}
+  C2::foo(Opaque1()); // expected-error {{call to non-static member function without an object argument}}
 }
+} // namespace test1
 
 namespace test2 {
-  struct Unrelated {
-    void foo();
-  };
+struct Unrelated {
+  void foo();
+};
 
-  template <class T> struct B;
-  template <class T> struct C;
+template <class T> struct B;
+template <class T> struct C;
 
-  template <class T> struct A {
-    void foo();
+template <class T> struct A {
+  void foo();
 
-    void test0() {
-      Unrelated::foo(); // expected-error {{call to non-static member function without an object argument}}
-    }
-
-    void test1() {
-      B<T>::foo();
-    }
-
-    static void test2() {
-      B<T>::foo(); // expected-error {{call to non-static member function without an object argument}}
-    }
-
-    void test3() {
-      C<T>::foo(); // expected-error {{no member named 'foo'}}
-    }
-  };
-
-  template <class T> struct B : A<T> {
-  };
-
-  template <class T> struct C {
-  };
-
-  int test() {
-    A<int> a;
-    a.test0(); // no instantiation note here, decl is ill-formed
-    a.test1();
-    a.test2(); // expected-note {{in instantiation}}
-    a.test3(); // expected-note {{in instantiation}}
+  void test0() {
+    Unrelated::foo(); // expected-error {{call to non-static member function without an object argument}}
   }
+
+  void test1() {
+    B<T>::foo();
+  }
+
+  static void test2() {
+    B<T>::foo(); // expected-error {{call to non-static member function without an object argument}}
+  }
+
+  void test3() {
+    C<T>::foo(); // expected-error {{no member named 'foo'}}
+  }
+};
+
+template <class T> struct B : A<T> {
+};
+
+template <class T> struct C {
+};
+
+int test() {
+  A<int> a;
+  a.test0(); // no instantiation note here, decl is ill-formed
+  a.test1();
+  a.test2(); // expected-note {{in instantiation}}
+  a.test3(); // expected-note {{in instantiation}}
 }
+} // namespace test2

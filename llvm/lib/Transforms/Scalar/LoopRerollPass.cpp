@@ -70,11 +70,10 @@ using namespace llvm;
 
 STATISTIC(NumRerolledLoops, "Number of rerolled loops");
 
-static cl::opt<unsigned>
-NumToleratedFailedMatches("reroll-num-tolerated-failed-matches", cl::init(400),
-                          cl::Hidden,
-                          cl::desc("The maximum number of failures to tolerate"
-                                   " during fuzzy matching. (default: 400)"));
+static cl::opt<unsigned> NumToleratedFailedMatches(
+    "reroll-num-tolerated-failed-matches", cl::init(400), cl::Hidden,
+    cl::desc("The maximum number of failures to tolerate"
+             " during fuzzy matching. (default: 400)"));
 
 // This loop re-rolling transformation aims to transform loops like this:
 //
@@ -153,344 +152,339 @@ NumToleratedFailedMatches("reroll-num-tolerated-failed-matches", cl::init(400),
 
 namespace {
 
-  enum IterationLimits {
-    /// The maximum number of iterations that we'll try and reroll.
-    IL_MaxRerollIterations = 32,
-    /// The bitvector index used by loop induction variables and other
-    /// instructions that belong to all iterations.
-    IL_All,
-    IL_End
-  };
+enum IterationLimits {
+  /// The maximum number of iterations that we'll try and reroll.
+  IL_MaxRerollIterations = 32,
+  /// The bitvector index used by loop induction variables and other
+  /// instructions that belong to all iterations.
+  IL_All,
+  IL_End
+};
 
-  class LoopRerollLegacyPass : public LoopPass {
-  public:
-    static char ID; // Pass ID, replacement for typeid
+class LoopRerollLegacyPass : public LoopPass {
+public:
+  static char ID; // Pass ID, replacement for typeid
 
-    LoopRerollLegacyPass() : LoopPass(ID) {
-      initializeLoopRerollLegacyPassPass(*PassRegistry::getPassRegistry());
+  LoopRerollLegacyPass() : LoopPass(ID) {
+    initializeLoopRerollLegacyPassPass(*PassRegistry::getPassRegistry());
+  }
+
+  bool runOnLoop(Loop *L, LPPassManager &LPM) override;
+
+  void getAnalysisUsage(AnalysisUsage &AU) const override {
+    AU.addRequired<TargetLibraryInfoWrapperPass>();
+    getLoopAnalysisUsage(AU);
+  }
+};
+
+class LoopReroll {
+public:
+  LoopReroll(AliasAnalysis *AA, LoopInfo *LI, ScalarEvolution *SE,
+             TargetLibraryInfo *TLI, DominatorTree *DT, bool PreserveLCSSA)
+      : AA(AA), LI(LI), SE(SE), TLI(TLI), DT(DT), PreserveLCSSA(PreserveLCSSA) {
+  }
+  bool runOnLoop(Loop *L);
+
+protected:
+  AliasAnalysis *AA;
+  LoopInfo *LI;
+  ScalarEvolution *SE;
+  TargetLibraryInfo *TLI;
+  DominatorTree *DT;
+  bool PreserveLCSSA;
+
+  using SmallInstructionVector = SmallVector<Instruction *, 16>;
+  using SmallInstructionSet = SmallPtrSet<Instruction *, 16>;
+
+  // Map between induction variable and its increment
+  DenseMap<Instruction *, int64_t> IVToIncMap;
+
+  // For loop with multiple induction variable, remember the one used only to
+  // control the loop.
+  Instruction *LoopControlIV;
+
+  // A chain of isomorphic instructions, identified by a single-use PHI
+  // representing a reduction. Only the last value may be used outside the
+  // loop.
+  struct SimpleLoopReduction {
+    SimpleLoopReduction(Instruction *P, Loop *L) : Instructions(1, P) {
+      assert(isa<PHINode>(P) && "First reduction instruction must be a PHI");
+      add(L);
     }
 
-    bool runOnLoop(Loop *L, LPPassManager &LPM) override;
+    bool valid() const { return Valid; }
 
-    void getAnalysisUsage(AnalysisUsage &AU) const override {
-      AU.addRequired<TargetLibraryInfoWrapperPass>();
-      getLoopAnalysisUsage(AU);
+    Instruction *getPHI() const {
+      assert(Valid && "Using invalid reduction");
+      return Instructions.front();
     }
-  };
 
-  class LoopReroll {
-  public:
-    LoopReroll(AliasAnalysis *AA, LoopInfo *LI, ScalarEvolution *SE,
-               TargetLibraryInfo *TLI, DominatorTree *DT, bool PreserveLCSSA)
-        : AA(AA), LI(LI), SE(SE), TLI(TLI), DT(DT),
-          PreserveLCSSA(PreserveLCSSA) {}
-    bool runOnLoop(Loop *L);
+    Instruction *getReducedValue() const {
+      assert(Valid && "Using invalid reduction");
+      return Instructions.back();
+    }
+
+    Instruction *get(size_t i) const {
+      assert(Valid && "Using invalid reduction");
+      return Instructions[i + 1];
+    }
+
+    Instruction *operator[](size_t i) const { return get(i); }
+
+    // The size, ignoring the initial PHI.
+    size_t size() const {
+      assert(Valid && "Using invalid reduction");
+      return Instructions.size() - 1;
+    }
+
+    using iterator = SmallInstructionVector::iterator;
+    using const_iterator = SmallInstructionVector::const_iterator;
+
+    iterator begin() {
+      assert(Valid && "Using invalid reduction");
+      return std::next(Instructions.begin());
+    }
+
+    const_iterator begin() const {
+      assert(Valid && "Using invalid reduction");
+      return std::next(Instructions.begin());
+    }
+
+    iterator end() { return Instructions.end(); }
+    const_iterator end() const { return Instructions.end(); }
 
   protected:
-    AliasAnalysis *AA;
-    LoopInfo *LI;
+    bool Valid = false;
+    SmallInstructionVector Instructions;
+
+    void add(Loop *L);
+  };
+
+  // The set of all reductions, and state tracking of possible reductions
+  // during loop instruction processing.
+  struct ReductionTracker {
+    using SmallReductionVector = SmallVector<SimpleLoopReduction, 16>;
+
+    // Add a new possible reduction.
+    void addSLR(SimpleLoopReduction &SLR) { PossibleReds.push_back(SLR); }
+
+    // Setup to track possible reductions corresponding to the provided
+    // rerolling scale. Only reductions with a number of non-PHI instructions
+    // that is divisible by the scale are considered. Three instructions sets
+    // are filled in:
+    //   - A set of all possible instructions in eligible reductions.
+    //   - A set of all PHIs in eligible reductions
+    //   - A set of all reduced values (last instructions) in eligible
+    //     reductions.
+    void restrictToScale(uint64_t Scale, SmallInstructionSet &PossibleRedSet,
+                         SmallInstructionSet &PossibleRedPHISet,
+                         SmallInstructionSet &PossibleRedLastSet) {
+      PossibleRedIdx.clear();
+      PossibleRedIter.clear();
+      Reds.clear();
+
+      for (unsigned i = 0, e = PossibleReds.size(); i != e; ++i)
+        if (PossibleReds[i].size() % Scale == 0) {
+          PossibleRedLastSet.insert(PossibleReds[i].getReducedValue());
+          PossibleRedPHISet.insert(PossibleReds[i].getPHI());
+
+          PossibleRedSet.insert(PossibleReds[i].getPHI());
+          PossibleRedIdx[PossibleReds[i].getPHI()] = i;
+          for (Instruction *J : PossibleReds[i]) {
+            PossibleRedSet.insert(J);
+            PossibleRedIdx[J] = i;
+          }
+        }
+    }
+
+    // The functions below are used while processing the loop instructions.
+
+    // Are the two instructions both from reductions, and furthermore, from
+    // the same reduction?
+    bool isPairInSame(Instruction *J1, Instruction *J2) {
+      DenseMap<Instruction *, int>::iterator J1I = PossibleRedIdx.find(J1);
+      if (J1I != PossibleRedIdx.end()) {
+        DenseMap<Instruction *, int>::iterator J2I = PossibleRedIdx.find(J2);
+        if (J2I != PossibleRedIdx.end() && J1I->second == J2I->second)
+          return true;
+      }
+
+      return false;
+    }
+
+    // The two provided instructions, the first from the base iteration, and
+    // the second from iteration i, form a matched pair. If these are part of
+    // a reduction, record that fact.
+    void recordPair(Instruction *J1, Instruction *J2, unsigned i) {
+      if (PossibleRedIdx.count(J1)) {
+        assert(PossibleRedIdx.count(J2) &&
+               "Recording reduction vs. non-reduction instruction?");
+
+        PossibleRedIter[J1] = 0;
+        PossibleRedIter[J2] = i;
+
+        int Idx = PossibleRedIdx[J1];
+        assert(Idx == PossibleRedIdx[J2] &&
+               "Recording pair from different reductions?");
+        Reds.insert(Idx);
+      }
+    }
+
+    // The functions below can be called after we've finished processing all
+    // instructions in the loop, and we know which reductions were selected.
+
+    bool validateSelected();
+    void replaceSelected();
+
+  protected:
+    // The vector of all possible reductions (for any scale).
+    SmallReductionVector PossibleReds;
+
+    DenseMap<Instruction *, int> PossibleRedIdx;
+    DenseMap<Instruction *, int> PossibleRedIter;
+    DenseSet<int> Reds;
+  };
+
+  // A DAGRootSet models an induction variable being used in a rerollable
+  // loop. For example,
+  //
+  //   x[i*3+0] = y1
+  //   x[i*3+1] = y2
+  //   x[i*3+2] = y3
+  //
+  //   Base instruction -> i*3
+  //                    +---+----+
+  //                   /    |     \
+    //               ST[y1]  +1     +2  <-- Roots
+  //                        |      |
+  //                      ST[y2] ST[y3]
+  //
+  // There may be multiple DAGRoots, for example:
+  //
+  //   x[i*2+0] = ...   (1)
+  //   x[i*2+1] = ...   (1)
+  //   x[i*2+4] = ...   (2)
+  //   x[i*2+5] = ...   (2)
+  //   x[(i+1234)*2+5678] = ... (3)
+  //   x[(i+1234)*2+5679] = ... (3)
+  //
+  // The loop will be rerolled by adding a new loop induction variable,
+  // one for the Base instruction in each DAGRootSet.
+  //
+  struct DAGRootSet {
+    Instruction *BaseInst;
+    SmallInstructionVector Roots;
+
+    // The instructions between IV and BaseInst (but not including BaseInst).
+    SmallInstructionSet SubsumedInsts;
+  };
+
+  // The set of all DAG roots, and state tracking of all roots
+  // for a particular induction variable.
+  struct DAGRootTracker {
+    DAGRootTracker(LoopReroll *Parent, Loop *L, Instruction *IV,
+                   ScalarEvolution *SE, AliasAnalysis *AA,
+                   TargetLibraryInfo *TLI, DominatorTree *DT, LoopInfo *LI,
+                   bool PreserveLCSSA,
+                   DenseMap<Instruction *, int64_t> &IncrMap,
+                   Instruction *LoopCtrlIV)
+        : Parent(Parent), L(L), SE(SE), AA(AA), TLI(TLI), DT(DT), LI(LI),
+          PreserveLCSSA(PreserveLCSSA), IV(IV), IVToIncMap(IncrMap),
+          LoopControlIV(LoopCtrlIV) {}
+
+    /// Stage 1: Find all the DAG roots for the induction variable.
+    bool findRoots();
+
+    /// Stage 2: Validate if the found roots are valid.
+    bool validate(ReductionTracker &Reductions);
+
+    /// Stage 3: Assuming validate() returned true, perform the
+    /// replacement.
+    /// @param BackedgeTakenCount The backedge-taken count of L.
+    void replace(const SCEV *BackedgeTakenCount);
+
+  protected:
+    using UsesTy = MapVector<Instruction *, BitVector>;
+
+    void findRootsRecursive(Instruction *IVU,
+                            SmallInstructionSet SubsumedInsts);
+    bool findRootsBase(Instruction *IVU, SmallInstructionSet SubsumedInsts);
+    bool collectPossibleRoots(Instruction *Base,
+                              std::map<int64_t, Instruction *> &Roots);
+    bool validateRootSet(DAGRootSet &DRS);
+
+    bool collectUsedInstructions(SmallInstructionSet &PossibleRedSet);
+    void collectInLoopUserSet(const SmallInstructionVector &Roots,
+                              const SmallInstructionSet &Exclude,
+                              const SmallInstructionSet &Final,
+                              DenseSet<Instruction *> &Users);
+    void collectInLoopUserSet(Instruction *Root,
+                              const SmallInstructionSet &Exclude,
+                              const SmallInstructionSet &Final,
+                              DenseSet<Instruction *> &Users);
+
+    UsesTy::iterator nextInstr(int Val, UsesTy &In,
+                               const SmallInstructionSet &Exclude,
+                               UsesTy::iterator *StartI = nullptr);
+    bool isBaseInst(Instruction *I);
+    bool isRootInst(Instruction *I);
+    bool instrDependsOn(Instruction *I, UsesTy::iterator Start,
+                        UsesTy::iterator End);
+    void replaceIV(DAGRootSet &DRS, const SCEV *Start, const SCEV *IncrExpr);
+
+    LoopReroll *Parent;
+
+    // Members of Parent, replicated here for brevity.
+    Loop *L;
     ScalarEvolution *SE;
+    AliasAnalysis *AA;
     TargetLibraryInfo *TLI;
     DominatorTree *DT;
+    LoopInfo *LI;
     bool PreserveLCSSA;
 
-    using SmallInstructionVector = SmallVector<Instruction *, 16>;
-    using SmallInstructionSet = SmallPtrSet<Instruction *, 16>;
+    // The loop induction variable.
+    Instruction *IV;
+
+    // Loop step amount.
+    int64_t Inc;
+
+    // Loop reroll count; if Inc == 1, this records the scaling applied
+    // to the indvar: a[i*2+0] = ...; a[i*2+1] = ... ;
+    // If Inc is not 1, Scale = Inc.
+    uint64_t Scale;
+
+    // The roots themselves.
+    SmallVector<DAGRootSet, 16> RootSets;
+
+    // All increment instructions for IV.
+    SmallInstructionVector LoopIncs;
+
+    // Map of all instructions in the loop (in order) to the iterations
+    // they are used in (or specially, IL_All for instructions
+    // used in the loop increment mechanism).
+    UsesTy Uses;
 
     // Map between induction variable and its increment
-    DenseMap<Instruction *, int64_t> IVToIncMap;
+    DenseMap<Instruction *, int64_t> &IVToIncMap;
 
-    // For loop with multiple induction variable, remember the one used only to
-    // control the loop.
     Instruction *LoopControlIV;
-
-    // A chain of isomorphic instructions, identified by a single-use PHI
-    // representing a reduction. Only the last value may be used outside the
-    // loop.
-    struct SimpleLoopReduction {
-      SimpleLoopReduction(Instruction *P, Loop *L) : Instructions(1, P) {
-        assert(isa<PHINode>(P) && "First reduction instruction must be a PHI");
-        add(L);
-      }
-
-      bool valid() const {
-        return Valid;
-      }
-
-      Instruction *getPHI() const {
-        assert(Valid && "Using invalid reduction");
-        return Instructions.front();
-      }
-
-      Instruction *getReducedValue() const {
-        assert(Valid && "Using invalid reduction");
-        return Instructions.back();
-      }
-
-      Instruction *get(size_t i) const {
-        assert(Valid && "Using invalid reduction");
-        return Instructions[i+1];
-      }
-
-      Instruction *operator [] (size_t i) const { return get(i); }
-
-      // The size, ignoring the initial PHI.
-      size_t size() const {
-        assert(Valid && "Using invalid reduction");
-        return Instructions.size()-1;
-      }
-
-      using iterator = SmallInstructionVector::iterator;
-      using const_iterator = SmallInstructionVector::const_iterator;
-
-      iterator begin() {
-        assert(Valid && "Using invalid reduction");
-        return std::next(Instructions.begin());
-      }
-
-      const_iterator begin() const {
-        assert(Valid && "Using invalid reduction");
-        return std::next(Instructions.begin());
-      }
-
-      iterator end() { return Instructions.end(); }
-      const_iterator end() const { return Instructions.end(); }
-
-    protected:
-      bool Valid = false;
-      SmallInstructionVector Instructions;
-
-      void add(Loop *L);
-    };
-
-    // The set of all reductions, and state tracking of possible reductions
-    // during loop instruction processing.
-    struct ReductionTracker {
-      using SmallReductionVector = SmallVector<SimpleLoopReduction, 16>;
-
-      // Add a new possible reduction.
-      void addSLR(SimpleLoopReduction &SLR) { PossibleReds.push_back(SLR); }
-
-      // Setup to track possible reductions corresponding to the provided
-      // rerolling scale. Only reductions with a number of non-PHI instructions
-      // that is divisible by the scale are considered. Three instructions sets
-      // are filled in:
-      //   - A set of all possible instructions in eligible reductions.
-      //   - A set of all PHIs in eligible reductions
-      //   - A set of all reduced values (last instructions) in eligible
-      //     reductions.
-      void restrictToScale(uint64_t Scale,
-                           SmallInstructionSet &PossibleRedSet,
-                           SmallInstructionSet &PossibleRedPHISet,
-                           SmallInstructionSet &PossibleRedLastSet) {
-        PossibleRedIdx.clear();
-        PossibleRedIter.clear();
-        Reds.clear();
-
-        for (unsigned i = 0, e = PossibleReds.size(); i != e; ++i)
-          if (PossibleReds[i].size() % Scale == 0) {
-            PossibleRedLastSet.insert(PossibleReds[i].getReducedValue());
-            PossibleRedPHISet.insert(PossibleReds[i].getPHI());
-
-            PossibleRedSet.insert(PossibleReds[i].getPHI());
-            PossibleRedIdx[PossibleReds[i].getPHI()] = i;
-            for (Instruction *J : PossibleReds[i]) {
-              PossibleRedSet.insert(J);
-              PossibleRedIdx[J] = i;
-            }
-          }
-      }
-
-      // The functions below are used while processing the loop instructions.
-
-      // Are the two instructions both from reductions, and furthermore, from
-      // the same reduction?
-      bool isPairInSame(Instruction *J1, Instruction *J2) {
-        DenseMap<Instruction *, int>::iterator J1I = PossibleRedIdx.find(J1);
-        if (J1I != PossibleRedIdx.end()) {
-          DenseMap<Instruction *, int>::iterator J2I = PossibleRedIdx.find(J2);
-          if (J2I != PossibleRedIdx.end() && J1I->second == J2I->second)
-            return true;
-        }
-
-        return false;
-      }
-
-      // The two provided instructions, the first from the base iteration, and
-      // the second from iteration i, form a matched pair. If these are part of
-      // a reduction, record that fact.
-      void recordPair(Instruction *J1, Instruction *J2, unsigned i) {
-        if (PossibleRedIdx.count(J1)) {
-          assert(PossibleRedIdx.count(J2) &&
-                 "Recording reduction vs. non-reduction instruction?");
-
-          PossibleRedIter[J1] = 0;
-          PossibleRedIter[J2] = i;
-
-          int Idx = PossibleRedIdx[J1];
-          assert(Idx == PossibleRedIdx[J2] &&
-                 "Recording pair from different reductions?");
-          Reds.insert(Idx);
-        }
-      }
-
-      // The functions below can be called after we've finished processing all
-      // instructions in the loop, and we know which reductions were selected.
-
-      bool validateSelected();
-      void replaceSelected();
-
-    protected:
-      // The vector of all possible reductions (for any scale).
-      SmallReductionVector PossibleReds;
-
-      DenseMap<Instruction *, int> PossibleRedIdx;
-      DenseMap<Instruction *, int> PossibleRedIter;
-      DenseSet<int> Reds;
-    };
-
-    // A DAGRootSet models an induction variable being used in a rerollable
-    // loop. For example,
-    //
-    //   x[i*3+0] = y1
-    //   x[i*3+1] = y2
-    //   x[i*3+2] = y3
-    //
-    //   Base instruction -> i*3
-    //                    +---+----+
-    //                   /    |     \
-    //               ST[y1]  +1     +2  <-- Roots
-    //                        |      |
-    //                      ST[y2] ST[y3]
-    //
-    // There may be multiple DAGRoots, for example:
-    //
-    //   x[i*2+0] = ...   (1)
-    //   x[i*2+1] = ...   (1)
-    //   x[i*2+4] = ...   (2)
-    //   x[i*2+5] = ...   (2)
-    //   x[(i+1234)*2+5678] = ... (3)
-    //   x[(i+1234)*2+5679] = ... (3)
-    //
-    // The loop will be rerolled by adding a new loop induction variable,
-    // one for the Base instruction in each DAGRootSet.
-    //
-    struct DAGRootSet {
-      Instruction *BaseInst;
-      SmallInstructionVector Roots;
-
-      // The instructions between IV and BaseInst (but not including BaseInst).
-      SmallInstructionSet SubsumedInsts;
-    };
-
-    // The set of all DAG roots, and state tracking of all roots
-    // for a particular induction variable.
-    struct DAGRootTracker {
-      DAGRootTracker(LoopReroll *Parent, Loop *L, Instruction *IV,
-                     ScalarEvolution *SE, AliasAnalysis *AA,
-                     TargetLibraryInfo *TLI, DominatorTree *DT, LoopInfo *LI,
-                     bool PreserveLCSSA,
-                     DenseMap<Instruction *, int64_t> &IncrMap,
-                     Instruction *LoopCtrlIV)
-          : Parent(Parent), L(L), SE(SE), AA(AA), TLI(TLI), DT(DT), LI(LI),
-            PreserveLCSSA(PreserveLCSSA), IV(IV), IVToIncMap(IncrMap),
-            LoopControlIV(LoopCtrlIV) {}
-
-      /// Stage 1: Find all the DAG roots for the induction variable.
-      bool findRoots();
-
-      /// Stage 2: Validate if the found roots are valid.
-      bool validate(ReductionTracker &Reductions);
-
-      /// Stage 3: Assuming validate() returned true, perform the
-      /// replacement.
-      /// @param BackedgeTakenCount The backedge-taken count of L.
-      void replace(const SCEV *BackedgeTakenCount);
-
-    protected:
-      using UsesTy = MapVector<Instruction *, BitVector>;
-
-      void findRootsRecursive(Instruction *IVU,
-                              SmallInstructionSet SubsumedInsts);
-      bool findRootsBase(Instruction *IVU, SmallInstructionSet SubsumedInsts);
-      bool collectPossibleRoots(Instruction *Base,
-                                std::map<int64_t,Instruction*> &Roots);
-      bool validateRootSet(DAGRootSet &DRS);
-
-      bool collectUsedInstructions(SmallInstructionSet &PossibleRedSet);
-      void collectInLoopUserSet(const SmallInstructionVector &Roots,
-                                const SmallInstructionSet &Exclude,
-                                const SmallInstructionSet &Final,
-                                DenseSet<Instruction *> &Users);
-      void collectInLoopUserSet(Instruction *Root,
-                                const SmallInstructionSet &Exclude,
-                                const SmallInstructionSet &Final,
-                                DenseSet<Instruction *> &Users);
-
-      UsesTy::iterator nextInstr(int Val, UsesTy &In,
-                                 const SmallInstructionSet &Exclude,
-                                 UsesTy::iterator *StartI=nullptr);
-      bool isBaseInst(Instruction *I);
-      bool isRootInst(Instruction *I);
-      bool instrDependsOn(Instruction *I,
-                          UsesTy::iterator Start,
-                          UsesTy::iterator End);
-      void replaceIV(DAGRootSet &DRS, const SCEV *Start, const SCEV *IncrExpr);
-
-      LoopReroll *Parent;
-
-      // Members of Parent, replicated here for brevity.
-      Loop *L;
-      ScalarEvolution *SE;
-      AliasAnalysis *AA;
-      TargetLibraryInfo *TLI;
-      DominatorTree *DT;
-      LoopInfo *LI;
-      bool PreserveLCSSA;
-
-      // The loop induction variable.
-      Instruction *IV;
-
-      // Loop step amount.
-      int64_t Inc;
-
-      // Loop reroll count; if Inc == 1, this records the scaling applied
-      // to the indvar: a[i*2+0] = ...; a[i*2+1] = ... ;
-      // If Inc is not 1, Scale = Inc.
-      uint64_t Scale;
-
-      // The roots themselves.
-      SmallVector<DAGRootSet,16> RootSets;
-
-      // All increment instructions for IV.
-      SmallInstructionVector LoopIncs;
-
-      // Map of all instructions in the loop (in order) to the iterations
-      // they are used in (or specially, IL_All for instructions
-      // used in the loop increment mechanism).
-      UsesTy Uses;
-
-      // Map between induction variable and its increment
-      DenseMap<Instruction *, int64_t> &IVToIncMap;
-
-      Instruction *LoopControlIV;
-    };
-
-    // Check if it is a compare-like instruction whose user is a branch
-    bool isCompareUsedByBranch(Instruction *I) {
-      auto *TI = I->getParent()->getTerminator();
-      if (!isa<BranchInst>(TI) || !isa<CmpInst>(I))
-        return false;
-      return I->hasOneUse() && TI->getOperand(0) == I;
-    };
-
-    bool isLoopControlIV(Loop *L, Instruction *IV);
-    void collectPossibleIVs(Loop *L, SmallInstructionVector &PossibleIVs);
-    void collectPossibleReductions(Loop *L,
-           ReductionTracker &Reductions);
-    bool reroll(Instruction *IV, Loop *L, BasicBlock *Header,
-                const SCEV *BackedgeTakenCount, ReductionTracker &Reductions);
   };
+
+  // Check if it is a compare-like instruction whose user is a branch
+  bool isCompareUsedByBranch(Instruction *I) {
+    auto *TI = I->getParent()->getTerminator();
+    if (!isa<BranchInst>(TI) || !isa<CmpInst>(I))
+      return false;
+    return I->hasOneUse() && TI->getOperand(0) == I;
+  };
+
+  bool isLoopControlIV(Loop *L, Instruction *IV);
+  void collectPossibleIVs(Loop *L, SmallInstructionVector &PossibleIVs);
+  void collectPossibleReductions(Loop *L, ReductionTracker &Reductions);
+  bool reroll(Instruction *IV, Loop *L, BasicBlock *Header,
+              const SCEV *BackedgeTakenCount, ReductionTracker &Reductions);
+};
 
 } // end anonymous namespace
 
@@ -584,7 +578,8 @@ void LoopReroll::collectPossibleIVs(Loop *L,
                                     SmallInstructionVector &PossibleIVs) {
   BasicBlock *Header = L->getHeader();
   for (BasicBlock::iterator I = Header->begin(),
-       IE = Header->getFirstInsertionPt(); I != IE; ++I) {
+                            IE = Header->getFirstInsertionPt();
+       I != IE; ++I) {
     if (!isa<PHINode>(I))
       continue;
     if (!I->getType()->isIntegerTy() && !I->getType()->isPointerTy())
@@ -641,8 +636,7 @@ void LoopReroll::SimpleLoopReduction::add(Loop *L) {
     }
   } while (C->hasOneUse());
 
-  if (Instructions.size() < 2 ||
-      !C->isSameOperationAs(Instructions.back()) ||
+  if (Instructions.size() < 2 || !C->isSameOperationAs(Instructions.back()) ||
       C->use_empty())
     return;
 
@@ -660,10 +654,11 @@ void LoopReroll::SimpleLoopReduction::add(Loop *L) {
 
 // Collect the vector of possible reduction variables.
 void LoopReroll::collectPossibleReductions(Loop *L,
-  ReductionTracker &Reductions) {
+                                           ReductionTracker &Reductions) {
   BasicBlock *Header = L->getHeader();
   for (BasicBlock::iterator I = Header->begin(),
-       IE = Header->getFirstInsertionPt(); I != IE; ++I) {
+                            IE = Header->getFirstInsertionPt();
+       I != IE; ++I) {
     if (!isa<PHINode>(I))
       continue;
     if (!I->getType()->isSingleValueType())
@@ -692,9 +687,8 @@ void LoopReroll::collectPossibleReductions(Loop *L,
 //   example, to prevent a reduction update from forcing all later reduction
 //   updates into the use set.
 void LoopReroll::DAGRootTracker::collectInLoopUserSet(
-  Instruction *Root, const SmallInstructionSet &Exclude,
-  const SmallInstructionSet &Final,
-  DenseSet<Instruction *> &Users) {
+    Instruction *Root, const SmallInstructionSet &Exclude,
+    const SmallInstructionSet &Final, DenseSet<Instruction *> &Users) {
   SmallInstructionVector Queue(1, Root);
   while (!Queue.empty()) {
     Instruction *I = Queue.pop_back_val();
@@ -716,8 +710,8 @@ void LoopReroll::DAGRootTracker::collectInLoopUserSet(
       }
 
     // We also want to collect single-user "feeder" values.
-    for (User::op_iterator OI = I->op_begin(),
-         OIE = I->op_end(); OI != OIE; ++OI) {
+    for (User::op_iterator OI = I->op_begin(), OIE = I->op_end(); OI != OIE;
+         ++OI) {
       if (Instruction *Op = dyn_cast<Instruction>(*OI))
         if (Op->hasOneUse() && L->contains(Op) && !Exclude.count(Op) &&
             !Final.count(Op))
@@ -729,10 +723,8 @@ void LoopReroll::DAGRootTracker::collectInLoopUserSet(
 // Collect all of the users of all of the provided root instructions (combined
 // into a single set).
 void LoopReroll::DAGRootTracker::collectInLoopUserSet(
-  const SmallInstructionVector &Roots,
-  const SmallInstructionSet &Exclude,
-  const SmallInstructionSet &Final,
-  DenseSet<Instruction *> &Users) {
+    const SmallInstructionVector &Roots, const SmallInstructionSet &Exclude,
+    const SmallInstructionSet &Final, DenseSet<Instruction *> &Users) {
   for (Instruction *Root : Roots)
     collectInLoopUserSet(Root, Exclude, Final, Users);
 }
@@ -753,7 +745,8 @@ static bool isUnorderedLoadStore(Instruction *I) {
 static bool isSimpleArithmeticOp(User *IVU) {
   if (Instruction *I = dyn_cast<Instruction>(IVU)) {
     switch (I->getOpcode()) {
-    default: return false;
+    default:
+      return false;
     case Instruction::Add:
     case Instruction::Sub:
     case Instruction::Mul:
@@ -785,8 +778,8 @@ static bool isLoopIncrement(User *U, Instruction *IV) {
   return false;
 }
 
-bool LoopReroll::DAGRootTracker::
-collectPossibleRoots(Instruction *Base, std::map<int64_t,Instruction*> &Roots) {
+bool LoopReroll::DAGRootTracker::collectPossibleRoots(
+    Instruction *Base, std::map<int64_t, Instruction *> &Roots) {
   SmallInstructionVector BaseUsers;
 
   for (auto *I : Base->users()) {
@@ -803,7 +796,7 @@ collectPossibleRoots(Instruction *Base, std::map<int64_t,Instruction*> &Roots) {
           BO->getOpcode() == Instruction::Or)
         CI = dyn_cast<ConstantInt>(BO->getOperand(1));
     } else if (auto *GEP = dyn_cast<GetElementPtrInst>(I)) {
-      Value *LastOperand = GEP->getOperand(GEP->getNumOperands()-1);
+      Value *LastOperand = GEP->getOperand(GEP->getNumOperands() - 1);
       CI = dyn_cast<ConstantInt>(LastOperand);
     }
 
@@ -861,8 +854,8 @@ collectPossibleRoots(Instruction *Base, std::map<int64_t,Instruction*> &Roots) {
   return true;
 }
 
-void LoopReroll::DAGRootTracker::
-findRootsRecursive(Instruction *I, SmallInstructionSet SubsumedInsts) {
+void LoopReroll::DAGRootTracker::findRootsRecursive(
+    Instruction *I, SmallInstructionSet SubsumedInsts) {
   // Does the user look like it could be part of a root set?
   // All its users must be simple arithmetic ops.
   if (I->hasNUsesOrMore(IL_MaxRerollIterations + 1))
@@ -919,7 +912,7 @@ bool LoopReroll::DAGRootTracker::validateRootSet(DAGRootSet &DRS) {
   // Check that the remainling roots are evenly spaced.
   for (unsigned i = 1; i < N - 1; ++i) {
     const SCEV *NewStepSCEV = SE->getMinusSCEV(SE->getSCEV(DRS.Roots[i]),
-                                               SE->getSCEV(DRS.Roots[i-1]));
+                                               SE->getSCEV(DRS.Roots[i - 1]));
     if (NewStepSCEV != StepSCEV)
       return false;
   }
@@ -927,14 +920,14 @@ bool LoopReroll::DAGRootTracker::validateRootSet(DAGRootSet &DRS) {
   return true;
 }
 
-bool LoopReroll::DAGRootTracker::
-findRootsBase(Instruction *IVU, SmallInstructionSet SubsumedInsts) {
+bool LoopReroll::DAGRootTracker::findRootsBase(
+    Instruction *IVU, SmallInstructionSet SubsumedInsts) {
   // The base of a RootSet must be an AddRec, so it can be erased.
   const auto *IVU_ADR = dyn_cast<SCEVAddRecExpr>(SE->getSCEV(IVU));
   if (!IVU_ADR || IVU_ADR->getLoop() != L)
     return false;
 
-  std::map<int64_t, Instruction*> V;
+  std::map<int64_t, Instruction *> V;
   if (!collectPossibleRoots(IVU, V))
     return false;
 
@@ -1024,7 +1017,8 @@ bool LoopReroll::DAGRootTracker::findRoots() {
   return true;
 }
 
-bool LoopReroll::DAGRootTracker::collectUsedInstructions(SmallInstructionSet &PossibleRedSet) {
+bool LoopReroll::DAGRootTracker::collectUsedInstructions(
+    SmallInstructionSet &PossibleRedSet) {
   // Populate the MapVector with all instructions in the block, in order first,
   // so we can iterate over the contents later in perfect order.
   for (auto &I : *L->getHeader()) {
@@ -1040,7 +1034,7 @@ bool LoopReroll::DAGRootTracker::collectUsedInstructions(SmallInstructionSet &Po
   Exclude.insert(LoopIncs.begin(), LoopIncs.end());
 
   for (auto &DRS : RootSets) {
-    DenseSet<Instruction*> VBase;
+    DenseSet<Instruction *> VBase;
     collectInLoopUserSet(DRS.BaseInst, Exclude, PossibleRedSet, VBase);
     for (auto *I : VBase) {
       Uses[I].set(0);
@@ -1048,7 +1042,7 @@ bool LoopReroll::DAGRootTracker::collectUsedInstructions(SmallInstructionSet &Po
 
     unsigned Idx = 1;
     for (auto *Root : DRS.Roots) {
-      DenseSet<Instruction*> V;
+      DenseSet<Instruction *> V;
       collectInLoopUserSet(Root, Exclude, PossibleRedSet, V);
 
       // While we're here, check the use sets are the same size.
@@ -1078,7 +1072,7 @@ bool LoopReroll::DAGRootTracker::collectUsedInstructions(SmallInstructionSet &Po
     Exclude.insert(DRS.BaseInst);
   }
 
-  DenseSet<Instruction*> V;
+  DenseSet<Instruction *> V;
   collectInLoopUserSet(LoopIncs, Exclude, PossibleRedSet, V);
   for (auto *I : V) {
     Uses[I].set(IL_All);
@@ -1095,8 +1089,8 @@ LoopReroll::DAGRootTracker::nextInstr(int Val, UsesTy &In,
                                       const SmallInstructionSet &Exclude,
                                       UsesTy::iterator *StartI) {
   UsesTy::iterator I = StartI ? *StartI : In.begin();
-  while (I != In.end() && (I->second.test(Val) == 0 ||
-                           Exclude.contains(I->first)))
+  while (I != In.end() &&
+         (I->second.test(Val) == 0 || Exclude.contains(I->first)))
     ++I;
   return I;
 }
@@ -1133,18 +1127,18 @@ bool LoopReroll::DAGRootTracker::instrDependsOn(Instruction *I,
 static bool isIgnorableInst(const Instruction *I) {
   if (isa<DbgInfoIntrinsic>(I))
     return true;
-  const IntrinsicInst* II = dyn_cast<IntrinsicInst>(I);
+  const IntrinsicInst *II = dyn_cast<IntrinsicInst>(I);
   if (!II)
     return false;
   switch (II->getIntrinsicID()) {
-    default:
-      return false;
-    case Intrinsic::annotation:
-    case Intrinsic::ptr_annotation:
-    case Intrinsic::var_annotation:
+  default:
+    return false;
+  case Intrinsic::annotation:
+  case Intrinsic::ptr_annotation:
+  case Intrinsic::var_annotation:
     // TODO: the following intrinsics may also be allowed:
     //   lifetime_start, lifetime_end, invariant_start, invariant_end
-      return true;
+    return true;
   }
   return false;
 }
@@ -1167,8 +1161,8 @@ bool LoopReroll::DAGRootTracker::validate(ReductionTracker &Reductions) {
   SmallInstructionSet PossibleRedSet;
   SmallInstructionSet PossibleRedLastSet;
   SmallInstructionSet PossibleRedPHISet;
-  Reductions.restrictToScale(Scale, PossibleRedSet,
-                             PossibleRedPHISet, PossibleRedLastSet);
+  Reductions.restrictToScale(Scale, PossibleRedSet, PossibleRedPHISet,
+                             PossibleRedLastSet);
 
   // Populate "Uses" with where each instruction is used.
   if (!collectUsedInstructions(PossibleRedSet))
@@ -1255,7 +1249,8 @@ bool LoopReroll::DAGRootTracker::validate(ReductionTracker &Reductions) {
         RootIt = nextInstr(Iter, Uses, Visited);
         Continue = true;
       }
-      if (Continue) continue;
+      if (Continue)
+        continue;
 
       if (!BaseInst->isSameOperationAs(RootInst)) {
         // Last chance saloon. We don't try and solve the full isomorphism
@@ -1271,8 +1266,7 @@ bool LoopReroll::DAGRootTracker::validate(ReductionTracker &Reductions) {
         auto TryIt = RootIt;
         unsigned N = NumToleratedFailedMatches;
         while (TryIt != Uses.end() &&
-               !BaseInst->isSameOperationAs(TryIt->first) &&
-               N--) {
+               !BaseInst->isSameOperationAs(TryIt->first) && N--) {
           ++TryIt;
           TryIt = nextInstr(Iter, Uses, Visited, &TryIt);
         }
@@ -1378,7 +1372,7 @@ bool LoopReroll::DAGRootTracker::validate(ReductionTracker &Reductions) {
             Op2 = BMI->second;
           } else {
             for (auto &DRS : RootSets) {
-              if (DRS.Roots[Iter-1] == (Instruction*) Op2) {
+              if (DRS.Roots[Iter - 1] == (Instruction *)Op2) {
                 Op2 = DRS.BaseInst;
                 break;
               }
@@ -1496,8 +1490,7 @@ void LoopReroll::DAGRootTracker::replace(const SCEV *BackedgeTakenCount) {
   DeleteDeadPHIs(Header, TLI);
 }
 
-void LoopReroll::DAGRootTracker::replaceIV(DAGRootSet &DRS,
-                                           const SCEV *Start,
+void LoopReroll::DAGRootTracker::replaceIV(DAGRootSet &DRS, const SCEV *Start,
                                            const SCEV *IncrExpr) {
   BasicBlock *Header = L->getHeader();
   Instruction *Inst = DRS.BaseInst;
@@ -1616,9 +1609,9 @@ void LoopReroll::ReductionTracker::replaceSelected() {
 //   - Ensure that both matched instructions don't have any external users
 //     (with the exception of last-in-chain reduction instructions).
 //   - Track the (aliasing) write set, and other side effects, of all
-//     instructions that belong to future iterations that come before the matched
-//     instructions. If the matched instructions read from that write set, then
-//     f(%iv) or f(%iv.(i+1)) has some dependency on instructions in
+//     instructions that belong to future iterations that come before the
+//     matched instructions. If the matched instructions read from that write
+//     set, then f(%iv) or f(%iv.(i+1)) has some dependency on instructions in
 //     f(%iv.(j+1)) for some j > i, and we cannot reroll the loop. Similarly,
 //     if any of these future instructions had side effects (could not be
 //     speculatively executed), and so do the matched instructions, when we
@@ -1670,7 +1663,7 @@ bool LoopReroll::runOnLoop(Loop *L) {
   const SCEV *BackedgeTakenCount = SE->getBackedgeTakenCount(L);
   LLVM_DEBUG(dbgs() << "\n Before Reroll:\n" << *(L->getHeader()) << "\n");
   LLVM_DEBUG(dbgs() << "LRR: backedge-taken count = " << *BackedgeTakenCount
-               << "\n");
+                    << "\n");
 
   // First, we need to find the induction variable with respect to which we can
   // reroll (there may be several possible options).

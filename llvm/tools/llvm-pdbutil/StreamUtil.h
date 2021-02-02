@@ -57,7 +57,7 @@ private:
 
 void discoverStreamPurposes(PDBFile &File,
                             SmallVectorImpl<StreamInfo> &Streams);
-}
-}
+} // namespace pdb
+} // namespace llvm
 
 #endif

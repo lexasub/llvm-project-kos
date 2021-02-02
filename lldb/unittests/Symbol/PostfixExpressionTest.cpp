@@ -46,7 +46,9 @@ protected:
                       Dispatch(binary.Left()), Dispatch(binary.Right())));
   }
 
-  std::string Visit(InitialValueNode &, Node *&) override { return "InitialValue"; }
+  std::string Visit(InitialValueNode &, Node *&) override {
+    return "InitialValue";
+  }
 
   std::string Visit(IntegerNode &integer, Node *&) override {
     return std::string(llvm::formatv("int({0})", integer.GetValue()));

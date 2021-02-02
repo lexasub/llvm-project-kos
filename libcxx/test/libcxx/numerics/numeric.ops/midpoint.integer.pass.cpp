@@ -24,43 +24,41 @@
 //  In some cases midpoint<int>(0,0) might get deduced as the pointer overload.
 
 template <typename T>
-void test()
-{
-    ASSERT_SAME_TYPE(T, decltype(std::midpoint<T>(0, 0)));
+void test() {
+  ASSERT_SAME_TYPE(T, decltype(std::midpoint<T>(0, 0)));
 }
 
-int main(int, char**)
-{
-    test<signed char>();
-    test<short>();
-    test<int>();
-    test<long>();
-    test<long long>();
+int main(int, char**) {
+  test<signed char>();
+  test<short>();
+  test<int>();
+  test<long>();
+  test<long long>();
 
-    test<int8_t>();
-    test<int16_t>();
-    test<int32_t>();
-    test<int64_t>();
+  test<int8_t>();
+  test<int16_t>();
+  test<int32_t>();
+  test<int64_t>();
 
-    test<unsigned char>();
-    test<unsigned short>();
-    test<unsigned int>();
-    test<unsigned long>();
-    test<unsigned long long>();
+  test<unsigned char>();
+  test<unsigned short>();
+  test<unsigned int>();
+  test<unsigned long>();
+  test<unsigned long long>();
 
-    test<uint8_t>();
-    test<uint16_t>();
-    test<uint32_t>();
-    test<uint64_t>();
+  test<uint8_t>();
+  test<uint16_t>();
+  test<uint32_t>();
+  test<uint64_t>();
 
 #ifndef _LIBCPP_HAS_NO_INT128
-    test<__int128_t>();
-    test<__uint128_t>();
+  test<__int128_t>();
+  test<__uint128_t>();
 #endif
 
-    test<char>();
-    test<ptrdiff_t>();
-    test<size_t>();
+  test<char>();
+  test<ptrdiff_t>();
+  test<size_t>();
 
-    return 0;
+  return 0;
 }

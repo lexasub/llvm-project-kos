@@ -220,9 +220,8 @@ UserExpression::Evaluate(ExecutionContext &exe_ctx,
   }
 
   lldb::UserExpressionSP user_expression_sp(
-      target->GetUserExpressionForLanguage(expr, full_prefix, language,
-                                           desired_type, options, ctx_obj,
-                                           error));
+      target->GetUserExpressionForLanguage(
+          expr, full_prefix, language, desired_type, options, ctx_obj, error));
   if (error.Fail()) {
     LLDB_LOG(log, "== [UserExpression::Evaluate] Getting expression: {0} ==",
              error.AsCString());

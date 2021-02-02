@@ -31,14 +31,14 @@ namespace {
 /// differentiate between uses of types as virtual bases
 /// vs. non-virtual bases.
 class InheritanceHierarchyWriter {
-  ASTContext& Context;
+  ASTContext &Context;
   raw_ostream &Out;
   std::map<QualType, int, QualTypeOrdering> DirectBaseCount;
   std::set<QualType, QualTypeOrdering> KnownVirtualBases;
 
 public:
-  InheritanceHierarchyWriter(ASTContext& Context, raw_ostream& Out)
-    : Context(Context), Out(Out) { }
+  InheritanceHierarchyWriter(ASTContext &Context, raw_ostream &Out)
+      : Context(Context), Out(Out) {}
 
   void WriteGraph(QualType Type) {
     Out << "digraph \"" << llvm::DOT::EscapeString(Type.getAsString())
@@ -55,7 +55,7 @@ protected:
   /// WriteNodeReference - Write out a reference to the given node,
   /// using a unique identifier for each direct base and for the
   /// (only) virtual base.
-  raw_ostream& WriteNodeReference(QualType Type, bool FromVirtual);
+  raw_ostream &WriteNodeReference(QualType Type, bool FromVirtual);
 };
 } // namespace
 
@@ -120,9 +120,8 @@ void InheritanceHierarchyWriter::WriteNode(QualType Type, bool FromVirtual) {
 /// WriteNodeReference - Write out a reference to the given node,
 /// using a unique identifier for each direct base and for the
 /// (only) virtual base.
-raw_ostream&
-InheritanceHierarchyWriter::WriteNodeReference(QualType Type,
-                                               bool FromVirtual) {
+raw_ostream &InheritanceHierarchyWriter::WriteNodeReference(QualType Type,
+                                                            bool FromVirtual) {
   QualType CanonType = Context.getCanonicalType(Type);
 
   Out << "Class_" << CanonType.getAsOpaquePtr();
@@ -133,7 +132,7 @@ InheritanceHierarchyWriter::WriteNodeReference(QualType Type,
 
 /// viewInheritance - Display the inheritance hierarchy of this C++
 /// class using GraphViz.
-void CXXRecordDecl::viewInheritance(ASTContext& Context) const {
+void CXXRecordDecl::viewInheritance(ASTContext &Context) const {
   QualType Self = Context.getTypeDeclType(this);
 
   int FD;

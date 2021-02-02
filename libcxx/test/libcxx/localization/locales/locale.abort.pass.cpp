@@ -23,14 +23,11 @@
 
 #include "test_macros.h"
 
-
-void exit_success(int) {
-    std::_Exit(EXIT_SUCCESS);
-}
+void exit_success(int) { std::_Exit(EXIT_SUCCESS); }
 
 int main(int, char**) {
-    std::signal(SIGABRT, exit_success);
-    std::locale loc(NULL);
-    (void)loc;
-    return EXIT_FAILURE;
+  std::signal(SIGABRT, exit_success);
+  std::locale loc(NULL);
+  (void)loc;
+  return EXIT_FAILURE;
 }

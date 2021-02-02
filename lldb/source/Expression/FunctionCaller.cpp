@@ -6,7 +6,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-
 #include "lldb/Expression/FunctionCaller.h"
 #include "lldb/Core/Module.h"
 #include "lldb/Core/ValueObject.h"
@@ -100,8 +99,7 @@ bool FunctionCaller::WriteFunctionWrapper(
       jit_file.GetFilename() = const_func_name;
       jit_module_sp->SetFileSpecAndObjectName(jit_file, ConstString());
       m_jit_module_wp = jit_module_sp;
-      process->GetTarget().GetImages().Append(jit_module_sp, 
-                                              true /* notify */);
+      process->GetTarget().GetImages().Append(jit_module_sp, true /* notify */);
     }
   }
   if (process && m_jit_start_addr)

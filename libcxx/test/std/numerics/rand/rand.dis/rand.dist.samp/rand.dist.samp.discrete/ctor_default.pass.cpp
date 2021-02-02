@@ -18,15 +18,14 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        typedef std::discrete_distribution<> D;
-        D d;
-        std::vector<double> p = d.probabilities();
-        assert(p.size() == 1);
-        assert(p[0] == 1);
-    }
+int main(int, char**) {
+  {
+    typedef std::discrete_distribution<> D;
+    D d;
+    std::vector<double> p = d.probabilities();
+    assert(p.size() == 1);
+    assert(p[0] == 1);
+  }
 
   return 0;
 }

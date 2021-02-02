@@ -18,7 +18,7 @@
 
 namespace lldb_private {
 
-  class Stream;
+class Stream;
 
 class UUID {
 public:

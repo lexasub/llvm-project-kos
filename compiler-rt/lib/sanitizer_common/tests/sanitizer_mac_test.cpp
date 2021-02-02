@@ -13,12 +13,11 @@
 #include "sanitizer_common/sanitizer_platform.h"
 #if SANITIZER_MAC
 
-#include "sanitizer_common/sanitizer_mac.h"
+#include <mach/kern_return.h>  // KERN_SUCCESS
+#include <sys/sysctl.h>        // sysctlbyname
 
 #include "gtest/gtest.h"
-
-#include <sys/sysctl.h>  // sysctlbyname
-#include <mach/kern_return.h>  // KERN_SUCCESS
+#include "sanitizer_common/sanitizer_mac.h"
 
 namespace __sanitizer {
 

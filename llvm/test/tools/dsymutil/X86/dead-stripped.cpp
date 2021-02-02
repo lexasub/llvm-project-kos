@@ -28,10 +28,10 @@ __attribute__((always_inline)) int foo() { return blah; }
 // CHECK: DW_TAG_subprogram
 
 int bar(unsigned i) {
-	int val = foo();
-	if (i)
-		return val + bar(i-1);
-	return foo();
+  int val = foo();
+  if (i)
+    return val + bar(i - 1);
+  return foo();
 }
 // CHECK: DW_TAG_subprogram
 // CHECK-NOT: DW_AT_low_pc
@@ -41,7 +41,7 @@ int bar(unsigned i) {
 // CHECK-NOT: DW_AT_low_pc
 // CHECK-NOT: DW_AT_high_pc
 
-}
+} // namespace N
 // CHECK: TAG_imported_module
 using namespace N;
 

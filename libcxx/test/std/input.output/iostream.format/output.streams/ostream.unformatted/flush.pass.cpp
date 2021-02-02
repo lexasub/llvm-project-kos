@@ -21,37 +21,29 @@
 int sync_called = 0;
 
 template <class CharT>
-class testbuf
-    : public std::basic_streambuf<CharT>
-{
+class testbuf : public std::basic_streambuf<CharT> {
 public:
-    testbuf()
-    {
-    }
+  testbuf() {}
 
 protected:
-
-    virtual int
-        sync()
-        {
-            if (sync_called++ == 1)
-                return -1;
-            return 0;
-        }
+  virtual int sync() {
+    if (sync_called++ == 1)
+      return -1;
+    return 0;
+  }
 };
 
-int main(int, char**)
-{
-    {
-        testbuf<char> sb;
-        std::ostream os(&sb);
-        os.flush();
-        assert(os.good());
-        assert(sync_called == 1);
-        os.flush();
-        assert(os.bad());
-        assert(sync_called == 2);
-    }
+int main(int, char**) {
+  {
+    testbuf<char> sb;
+    std::ostream os(&sb);
+    os.flush();
+    assert(os.good());
+    assert(sync_called == 1);
+    os.flush();
+    assert(os.bad());
+    assert(sync_called == 2);
+  }
 
   return 0;
 }

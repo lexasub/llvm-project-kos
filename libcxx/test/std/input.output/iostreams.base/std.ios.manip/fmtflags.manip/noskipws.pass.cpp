@@ -20,14 +20,13 @@
 
 struct testbuf : public std::streambuf {};
 
-int main(int, char**)
-{
-    testbuf sb;
-    std::ios ios(&sb);
-    std::skipws(ios);
-    std::ios_base& r = std::noskipws(ios);
-    assert(&r == &ios);
-    assert(!(ios.flags() & std::ios::skipws));
+int main(int, char**) {
+  testbuf sb;
+  std::ios ios(&sb);
+  std::skipws(ios);
+  std::ios_base& r = std::noskipws(ios);
+  assert(&r == &ios);
+  assert(!(ios.flags() & std::ios::skipws));
 
   return 0;
 }

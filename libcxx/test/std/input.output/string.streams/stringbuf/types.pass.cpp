@@ -25,15 +25,27 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    static_assert((std::is_base_of<std::basic_streambuf<char>, std::basic_stringbuf<char> >::value), "");
-    static_assert((std::is_same<std::basic_stringbuf<char>::char_type, char>::value), "");
-    static_assert((std::is_same<std::basic_stringbuf<char>::traits_type, std::char_traits<char> >::value), "");
-    static_assert((std::is_same<std::basic_stringbuf<char>::int_type, std::char_traits<char>::int_type>::value), "");
-    static_assert((std::is_same<std::basic_stringbuf<char>::pos_type, std::char_traits<char>::pos_type>::value), "");
-    static_assert((std::is_same<std::basic_stringbuf<char>::off_type, std::char_traits<char>::off_type>::value), "");
-    static_assert((std::is_same<std::basic_stringbuf<char>::allocator_type, std::allocator<char> >::value), "");
+int main(int, char**) {
+  static_assert((std::is_base_of<std::basic_streambuf<char>,
+                                 std::basic_stringbuf<char> >::value),
+                "");
+  static_assert(
+      (std::is_same<std::basic_stringbuf<char>::char_type, char>::value), "");
+  static_assert((std::is_same<std::basic_stringbuf<char>::traits_type,
+                              std::char_traits<char> >::value),
+                "");
+  static_assert((std::is_same<std::basic_stringbuf<char>::int_type,
+                              std::char_traits<char>::int_type>::value),
+                "");
+  static_assert((std::is_same<std::basic_stringbuf<char>::pos_type,
+                              std::char_traits<char>::pos_type>::value),
+                "");
+  static_assert((std::is_same<std::basic_stringbuf<char>::off_type,
+                              std::char_traits<char>::off_type>::value),
+                "");
+  static_assert((std::is_same<std::basic_stringbuf<char>::allocator_type,
+                              std::allocator<char> >::value),
+                "");
 
   return 0;
 }

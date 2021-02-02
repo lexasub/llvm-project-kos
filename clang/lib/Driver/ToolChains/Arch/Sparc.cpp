@@ -78,8 +78,7 @@ const char *sparc::getSparcAsmModeForCPU(StringRef Name,
   }
 }
 
-sparc::FloatABI sparc::getSparcFloatABI(const Driver &D,
-                                        const ArgList &Args) {
+sparc::FloatABI sparc::getSparcFloatABI(const Driver &D, const ArgList &Args) {
   sparc::FloatABI ABI = sparc::FloatABI::Invalid;
   if (Arg *A = Args.getLastArg(clang::driver::options::OPT_msoft_float,
                                options::OPT_mhard_float,

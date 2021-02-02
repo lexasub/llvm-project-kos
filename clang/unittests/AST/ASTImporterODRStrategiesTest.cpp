@@ -1,4 +1,5 @@
-//===- unittest/AST/ASTImporterODRStrategiesTest.cpp -----------------------===//
+//===- unittest/AST/ASTImporterODRStrategiesTest.cpp
+//-----------------------===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -122,7 +123,8 @@ struct FunctionTemplate {
       template <class T>
       void X(T a) {};
       )";
-  // This is actually not a conflicting definition, but another primary template.
+  // This is actually not a conflicting definition, but another primary
+  // template.
   static constexpr auto *Definition1 =
       R"(
       template <class T>
@@ -296,7 +298,7 @@ struct ODRViolation : ASTImporterOptionSpecificTestBase {
 
   // Check that a Decl was not imported because lookup found the same decl.
   static void CheckImportFoundExisting(llvm::Expected<Decl *> &Result,
-                                      Decl *ToTU, Decl *ToD) {
+                                       Decl *ToTU, Decl *ToD) {
     ASSERT_TRUE(isSuccess(Result));
     EXPECT_EQ(DeclCounter<DeclTy>().match(ToTU, getPattern()), 1u);
   }

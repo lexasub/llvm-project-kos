@@ -547,7 +547,7 @@ size_t ObjectFile::ReadSectionData(Section *section,
   // The object file now contains a full mmap'ed copy of the object file
   // data, so just use this
   return GetData(section->GetFileOffset(), section->GetFileSize(),
-                  section_data);
+                 section_data);
 }
 
 bool ObjectFile::SplitArchivePathWithObject(llvm::StringRef path_with_object,
@@ -557,10 +557,12 @@ bool ObjectFile::SplitArchivePathWithObject(llvm::StringRef path_with_object,
   size_t len = path_with_object.size();
   if (len < 2 || path_with_object.back() != ')')
     return false;
-  llvm::StringRef archive = path_with_object.substr(0, path_with_object.rfind('('));
+  llvm::StringRef archive =
+      path_with_object.substr(0, path_with_object.rfind('('));
   if (archive.empty())
     return false;
-  llvm::StringRef object = path_with_object.substr(archive.size() + 1).drop_back();
+  llvm::StringRef object =
+      path_with_object.substr(archive.size() + 1).drop_back();
   archive_file.SetFile(archive, FileSpec::Style::native);
   if (must_exist && !FileSystem::Instance().Exists(archive_file))
     return false;
@@ -651,13 +653,9 @@ ObjectFile::GetLoadableData(Target &target) {
   return loadables;
 }
 
-std::unique_ptr<CallFrameInfo> ObjectFile::CreateCallFrameInfo() {
-  return {};
-}
+std::unique_ptr<CallFrameInfo> ObjectFile::CreateCallFrameInfo() { return {}; }
 
-void ObjectFile::RelocateSection(lldb_private::Section *section)
-{
-}
+void ObjectFile::RelocateSection(lldb_private::Section *section) {}
 
 DataBufferSP ObjectFile::MapFileData(const FileSpec &file, uint64_t Size,
                                      uint64_t Offset) {

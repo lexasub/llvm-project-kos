@@ -28,23 +28,17 @@
 _LIBCPP_BEGIN_NAMESPACE_STD
 
 #ifdef NEEDS_MUTEX_DESTRUCTOR
-class _LIBCPP_TYPE_VIS mutex
-{
-    __libcpp_mutex_t __m_ = _LIBCPP_MUTEX_INITIALIZER;
+class _LIBCPP_TYPE_VIS mutex {
+  __libcpp_mutex_t __m_ = _LIBCPP_MUTEX_INITIALIZER;
 
 public:
-    _LIBCPP_ALWAYS_INLINE _LIBCPP_INLINE_VISIBILITY
-    constexpr mutex() = default;
-    mutex(const mutex&) = delete;
-    mutex& operator=(const mutex&) = delete;
-    ~mutex() noexcept;
+  _LIBCPP_ALWAYS_INLINE _LIBCPP_INLINE_VISIBILITY constexpr mutex() = default;
+  mutex(const mutex&) = delete;
+  mutex& operator=(const mutex&) = delete;
+  ~mutex() noexcept;
 };
 
-
-mutex::~mutex() _NOEXCEPT
-{
-    __libcpp_mutex_destroy(&__m_);
-}
+mutex::~mutex() _NOEXCEPT { __libcpp_mutex_destroy(&__m_); }
 
 #endif // !_LIBCPP_HAS_NO_THREADS
 _LIBCPP_END_NAMESPACE_STD

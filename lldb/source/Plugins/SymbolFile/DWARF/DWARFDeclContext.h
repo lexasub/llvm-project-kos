@@ -9,10 +9,10 @@
 #ifndef LLDB_SOURCE_PLUGINS_SYMBOLFILE_DWARF_DWARFDECLCONTEXT_H
 #define LLDB_SOURCE_PLUGINS_SYMBOLFILE_DWARF_DWARFDECLCONTEXT_H
 
+#include "DWARFDefines.h"
+#include "lldb/Utility/ConstString.h"
 #include <string>
 #include <vector>
-#include "lldb/Utility/ConstString.h"
-#include "DWARFDefines.h"
 
 // DWARFDeclContext
 //

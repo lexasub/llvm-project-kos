@@ -67,7 +67,7 @@ void bar(typename T::x);
 
 template <typename T>
 void N::bar(typename T::x) {}
-}
+} // namespace PR6184
 
 // This PR occurred only in template parsing mode.
 namespace PR17637 {
@@ -86,7 +86,7 @@ template <typename U>
 void L<k>::O<T>::Fun(U) {}
 
 void Instantiate() { L<0>::O<int>::Fun(0); }
-}
+} // namespace PR17637
 
 namespace explicit_partial_specializations {
 typedef char (&oneT)[1];
@@ -134,7 +134,7 @@ void Instantiate() {
   sassert(sizeof(L<0>::O<int>::Fun(0)) == sizeof(one));
   sassert(sizeof(L<0>::O<char>::Fun(0)) == sizeof(one));
 }
-}
+} // namespace explicit_partial_specializations
 
 template <class>
 struct Foo {

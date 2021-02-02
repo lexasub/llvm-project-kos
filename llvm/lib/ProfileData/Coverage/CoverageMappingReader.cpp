@@ -20,10 +20,10 @@
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/Triple.h"
 #include "llvm/Object/Binary.h"
+#include "llvm/Object/COFF.h"
 #include "llvm/Object/Error.h"
 #include "llvm/Object/MachOUniversal.h"
 #include "llvm/Object/ObjectFile.h"
-#include "llvm/Object/COFF.h"
 #include "llvm/ProfileData/InstrProf.h"
 #include "llvm/Support/Casting.h"
 #include "llvm/Support/Compression.h"
@@ -760,8 +760,7 @@ static Error readCoverageMappingData(
   using namespace coverage;
 
   // Read the records in the coverage data section.
-  auto CovHeader =
-      reinterpret_cast<const CovMapHeader *>(CovMap.data());
+  auto CovHeader = reinterpret_cast<const CovMapHeader *>(CovMap.data());
   CovMapVersion Version = (CovMapVersion)CovHeader->getVersion<Endian>();
   if (Version > CovMapVersion::CurrentVersion)
     return make_error<CoverageMapError>(coveragemap_error::unsupported_version);
@@ -800,8 +799,9 @@ static const char *TestingFormatMagic = "llvmcovmtestdata";
 
 Expected<std::unique_ptr<BinaryCoverageReader>>
 BinaryCoverageReader::createCoverageReaderFromBuffer(
-    StringRef Coverage, std::string &&FuncRecords, InstrProfSymtab &&ProfileNames,
-    uint8_t BytesInAddress, support::endianness Endian) {
+    StringRef Coverage, std::string &&FuncRecords,
+    InstrProfSymtab &&ProfileNames, uint8_t BytesInAddress,
+    support::endianness Endian) {
   std::unique_ptr<BinaryCoverageReader> Reader(
       new BinaryCoverageReader(std::move(FuncRecords)));
   Reader->ProfileNames = std::move(ProfileNames);
@@ -928,7 +928,7 @@ loadBinaryFormat(std::unique_ptr<Binary> Bin, StringRef Arch) {
   auto ObjFormat = OF->getTripleObjectFormat();
   auto NamesSection =
       lookupSections(*OF, getInstrProfSectionName(IPSK_name, ObjFormat,
-                                                 /*AddSegmentInfo=*/false));
+                                                  /*AddSegmentInfo=*/false));
   if (auto E = NamesSection.takeError())
     return std::move(E);
   auto CoverageSection =

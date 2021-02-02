@@ -40,9 +40,8 @@ struct TestFn {
   }
 };
 
-int main(int, char**)
-{
-    TestEachAtomicType<TestFn>()();
+int main(int, char**) {
+  TestEachAtomicType<TestFn>()();
 
   return 0;
 }

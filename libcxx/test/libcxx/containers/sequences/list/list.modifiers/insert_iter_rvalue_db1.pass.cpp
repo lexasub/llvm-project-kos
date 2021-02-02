@@ -21,12 +21,11 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    std::list<int> v1(3);
-    std::list<int> v2(3);
-    v1.insert(v2.begin(), 4);
-    assert(false);
+int main(int, char**) {
+  std::list<int> v1(3);
+  std::list<int> v2(3);
+  v1.insert(v2.begin(), 4);
+  assert(false);
 
   return 0;
 }

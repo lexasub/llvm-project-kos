@@ -9,10 +9,10 @@
 // RUN: not %run %t --reenable-checks 3 2>&1 | FileCheck --check-prefix=CASE-3 %s
 
 #include <assert.h>
+#include <sanitizer/msan_interface.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sanitizer/msan_interface.h>
 
 int main(int argc, char *argv[]) {
   assert(argc == 3);
@@ -22,31 +22,31 @@ int main(int argc, char *argv[]) {
 
   char uninit[7];
   switch (argv[2][0]) {
-    case '0': {
-      char *copy = strndup(uninit, sizeof(uninit));  // BOOM
-      free(copy);
-      break;
-      // CASE-0: Uninitialized bytes in __interceptor_strndup
-    }
-    case '1': {
-      puts(uninit);  // BOOM
-      puts(uninit);  // Ensure previous call did not enable interceptor checks.
-      break;
-      // CASE-1: Uninitialized bytes in __interceptor_puts
-    }
-    case '2': {
-      int cmp = memcmp(uninit, uninit, sizeof(uninit));  // BOOM
-      break;
-      // CASE-2: Uninitialized bytes in MemcmpInterceptorCommon
-    }
-    case '3': {
-      size_t len = strlen(uninit);  // BOOM
-      break;
-      // CASE-3: Uninitialized bytes in __interceptor_strlen
-    }
-    default: assert(0);
+  case '0': {
+    char *copy = strndup(uninit, sizeof(uninit)); // BOOM
+    free(copy);
+    break;
+    // CASE-0: Uninitialized bytes in __interceptor_strndup
+  }
+  case '1': {
+    puts(uninit); // BOOM
+    puts(uninit); // Ensure previous call did not enable interceptor checks.
+    break;
+    // CASE-1: Uninitialized bytes in __interceptor_puts
+  }
+  case '2': {
+    int cmp = memcmp(uninit, uninit, sizeof(uninit)); // BOOM
+    break;
+    // CASE-2: Uninitialized bytes in MemcmpInterceptorCommon
+  }
+  case '3': {
+    size_t len = strlen(uninit); // BOOM
+    break;
+    // CASE-3: Uninitialized bytes in __interceptor_strlen
+  }
+  default:
+    assert(0);
   }
   // DISABLED-NOT: Uninitialized bytes
   return 0;
 }
-

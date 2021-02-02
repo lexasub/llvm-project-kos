@@ -45,6 +45,6 @@ enum ObjCBridgeCastKind {
   OBC_BridgeRetained
 };
 
-}  // end namespace clang
+} // end namespace clang
 
 #endif

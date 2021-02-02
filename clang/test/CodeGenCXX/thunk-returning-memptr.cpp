@@ -1,6 +1,5 @@
 // RUN: %clang_cc1 -triple=i686 -emit-llvm -o - %s | FileCheck %s
 
-
 struct X;
 typedef void (X::*memptr)();
 

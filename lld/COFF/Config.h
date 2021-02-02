@@ -22,9 +22,9 @@
 namespace lld {
 namespace coff {
 
+using llvm::StringRef;
 using llvm::COFF::IMAGE_FILE_MACHINE_UNKNOWN;
 using llvm::COFF::WindowsSubsystem;
-using llvm::StringRef;
 class DefinedAbsolute;
 class DefinedRelative;
 class StringChunk;
@@ -40,8 +40,8 @@ static const auto I386 = llvm::COFF::IMAGE_FILE_MACHINE_I386;
 
 // Represents an /export option.
 struct Export {
-  StringRef name;       // N in /export:N or /export:E=N
-  StringRef extName;    // E in /export:E=N
+  StringRef name;    // N in /export:N or /export:E=N
+  StringRef extName; // E in /export:E=N
   Symbol *sym = nullptr;
   uint16_t ordinal = 0;
   bool noname = false;
@@ -61,17 +61,16 @@ struct Export {
   StringRef exportName; // Name in DLL
 
   bool operator==(const Export &e) {
-    return (name == e.name && extName == e.extName &&
-            ordinal == e.ordinal && noname == e.noname &&
-            data == e.data && isPrivate == e.isPrivate);
+    return (name == e.name && extName == e.extName && ordinal == e.ordinal &&
+            noname == e.noname && data == e.data && isPrivate == e.isPrivate);
   }
 };
 
 enum class DebugType {
-  None  = 0x0,
-  CV    = 0x1,  /// CodeView
-  PData = 0x2,  /// Procedure Data
-  Fixup = 0x4,  /// Relocation Table
+  None = 0x0,
+  CV = 0x1,    /// CodeView
+  PData = 0x2, /// Procedure Data
+  Fixup = 0x4, /// Relocation Table
 };
 
 enum class GuardCFLevel {

@@ -43,8 +43,8 @@ public:
 
 } // End anonymous namespace.
 
-INITIALIZE_PASS(SIPreEmitPeephole, DEBUG_TYPE,
-                "SI peephole optimizations", false, false)
+INITIALIZE_PASS(SIPreEmitPeephole, DEBUG_TYPE, "SI peephole optimizations",
+                false, false)
 
 char SIPreEmitPeephole::ID = 0;
 
@@ -220,7 +220,8 @@ bool SIPreEmitPeephole::optimizeSetGPR(MachineInstr &First,
 
   // Scan back to find an identical S_SET_GPR_IDX_ON
   for (MachineBasicBlock::iterator I = std::next(First.getIterator()),
-       E = MI.getIterator(); I != E; ++I) {
+                                   E = MI.getIterator();
+       I != E; ++I) {
     switch (I->getOpcode()) {
     case AMDGPU::S_SET_GPR_IDX_MODE:
       return false;
@@ -233,17 +234,14 @@ bool SIPreEmitPeephole::optimizeSetGPR(MachineInstr &First,
         return false;
       if (IdxReg && I->modifiesRegister(IdxReg, TRI))
         return false;
-      if (llvm::any_of(I->operands(),
-                       [&MRI, this](const MachineOperand &MO) {
-                         return MO.isReg() &&
-                                TRI->isVectorRegister(MRI, MO.getReg());
-                       })) {
+      if (llvm::any_of(I->operands(), [&MRI, this](const MachineOperand &MO) {
+            return MO.isReg() && TRI->isVectorRegister(MRI, MO.getReg());
+          })) {
         // The only exception allowed here is another indirect vector move
         // with the same mode.
-        if (!IdxOn ||
-            !((I->getOpcode() == AMDGPU::V_MOV_B32_e32 &&
-               I->hasRegisterImplicitUseOperand(AMDGPU::M0)) ||
-              I->getOpcode() == AMDGPU::V_MOV_B32_indirect))
+        if (!IdxOn || !((I->getOpcode() == AMDGPU::V_MOV_B32_e32 &&
+                         I->hasRegisterImplicitUseOperand(AMDGPU::M0)) ||
+                        I->getOpcode() == AMDGPU::V_MOV_B32_indirect))
           return false;
       }
     }
@@ -315,7 +313,7 @@ bool SIPreEmitPeephole::runOnMachineFunction(MachineFunction &MF) {
     // Scan the block for two S_SET_GPR_IDX_ON instructions to see if a
     // second is not needed. Do expensive checks in the optimizeSetGPR()
     // and limit the distance to 20 instructions for compile time purposes.
-    for (MachineBasicBlock::iterator MBBI = MBB.begin(); MBBI != MBBE; ) {
+    for (MachineBasicBlock::iterator MBBI = MBB.begin(); MBBI != MBBE;) {
       MachineInstr &MI = *MBBI;
       ++MBBI;
 

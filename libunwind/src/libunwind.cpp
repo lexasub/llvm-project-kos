@@ -11,11 +11,10 @@
 
 #include <libunwind.h>
 
-#include "libunwind_ext.h"
 #include "config.h"
+#include "libunwind_ext.h"
 
 #include <stdlib.h>
-
 
 #if !defined(__USING_SJLJ_EXCEPTIONS__)
 #include "AddressSpace.hpp"
@@ -37,38 +36,39 @@ _LIBUNWIND_HIDDEN int __unw_init_local(unw_cursor_t *cursor,
                        static_cast<void *>(cursor),
                        static_cast<void *>(context));
 #if defined(__i386__)
-# define REGISTER_KIND Registers_x86
+#define REGISTER_KIND Registers_x86
 #elif defined(__x86_64__)
-# define REGISTER_KIND Registers_x86_64
+#define REGISTER_KIND Registers_x86_64
 #elif defined(__powerpc64__)
-# define REGISTER_KIND Registers_ppc64
+#define REGISTER_KIND Registers_ppc64
 #elif defined(__ppc__)
-# define REGISTER_KIND Registers_ppc
+#define REGISTER_KIND Registers_ppc
 #elif defined(__aarch64__)
-# define REGISTER_KIND Registers_arm64
+#define REGISTER_KIND Registers_arm64
 #elif defined(__arm__)
-# define REGISTER_KIND Registers_arm
+#define REGISTER_KIND Registers_arm
 #elif defined(__or1k__)
-# define REGISTER_KIND Registers_or1k
+#define REGISTER_KIND Registers_or1k
 #elif defined(__hexagon__)
-# define REGISTER_KIND Registers_hexagon
+#define REGISTER_KIND Registers_hexagon
 #elif defined(__mips__) && defined(_ABIO32) && _MIPS_SIM == _ABIO32
-# define REGISTER_KIND Registers_mips_o32
+#define REGISTER_KIND Registers_mips_o32
 #elif defined(__mips64)
-# define REGISTER_KIND Registers_mips_newabi
+#define REGISTER_KIND Registers_mips_newabi
 #elif defined(__mips__)
-# warning The MIPS architecture is not supported with this ABI and environment!
+#warning The MIPS architecture is not supported with this ABI and environment!
 #elif defined(__sparc__)
-# define REGISTER_KIND Registers_sparc
+#define REGISTER_KIND Registers_sparc
 #elif defined(__riscv) && __riscv_xlen == 64
-# define REGISTER_KIND Registers_riscv
+#define REGISTER_KIND Registers_riscv
 #elif defined(__ve__)
-# define REGISTER_KIND Registers_ve
+#define REGISTER_KIND Registers_ve
 #else
-# error Architecture not supported
+#error Architecture not supported
 #endif
   // Use "placement new" to allocate UnwindCursor in the cursor buffer.
-  new (reinterpret_cast<UnwindCursor<LocalAddressSpace, REGISTER_KIND> *>(cursor))
+  new (reinterpret_cast<UnwindCursor<LocalAddressSpace, REGISTER_KIND> *>(
+      cursor))
       UnwindCursor<LocalAddressSpace, REGISTER_KIND>(
           context, LocalAddressSpace::sThisAddressSpace);
 #undef REGISTER_KIND
@@ -243,7 +243,6 @@ _LIBUNWIND_HIDDEN void __unw_save_vfp_as_X(unw_cursor_t *cursor) {
 _LIBUNWIND_WEAK_ALIAS(__unw_save_vfp_as_X, unw_save_vfp_as_X)
 #endif
 
-
 #if defined(_LIBUNWIND_SUPPORT_DWARF_UNWIND)
 /// SPI: walks cached DWARF entries
 _LIBUNWIND_HIDDEN void __unw_iterate_dwarf_unwind_cache(void (*func)(
@@ -260,8 +259,8 @@ void __unw_add_dynamic_fde(unw_word_t fde) {
   CFI_Parser<LocalAddressSpace>::FDE_Info fdeInfo;
   CFI_Parser<LocalAddressSpace>::CIE_Info cieInfo;
   const char *message = CFI_Parser<LocalAddressSpace>::decodeFDE(
-                           LocalAddressSpace::sThisAddressSpace,
-                          (LocalAddressSpace::pint_t) fde, &fdeInfo, &cieInfo);
+      LocalAddressSpace::sThisAddressSpace, (LocalAddressSpace::pint_t)fde,
+      &fdeInfo, &cieInfo);
   if (message == NULL) {
     // dynamically registered FDEs don't have a mach_header group they are in.
     // Use fde as mh_group
@@ -281,8 +280,6 @@ void __unw_remove_dynamic_fde(unw_word_t fde) {
 }
 #endif // defined(_LIBUNWIND_SUPPORT_DWARF_UNWIND)
 #endif // !defined(__USING_SJLJ_EXCEPTIONS__)
-
-
 
 // Add logging hooks in Debug builds only
 #ifndef NDEBUG
@@ -325,4 +322,3 @@ bool logDWARF() {
 }
 
 #endif // NDEBUG
-

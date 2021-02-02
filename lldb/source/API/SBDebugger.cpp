@@ -140,8 +140,8 @@ SBDebugger::SBDebugger(const SBDebugger &rhs) : m_opaque_sp(rhs.m_opaque_sp) {
 SBDebugger::~SBDebugger() = default;
 
 SBDebugger &SBDebugger::operator=(const SBDebugger &rhs) {
-  LLDB_RECORD_METHOD(lldb::SBDebugger &,
-                     SBDebugger, operator=,(const lldb::SBDebugger &), rhs);
+  LLDB_RECORD_METHOD(lldb::SBDebugger &, SBDebugger, operator=,
+                     (const lldb::SBDebugger &), rhs);
 
   if (this != &rhs) {
     m_opaque_sp = rhs.m_opaque_sp;
@@ -808,23 +808,25 @@ SBTarget SBDebugger::CreateTargetWithFileAndArch(const char *filename,
       // The version of CreateTarget that takes an ArchSpec won't accept an
       // empty ArchSpec, so when the arch hasn't been specified, we need to
       // call the target triple version.
-      error = m_opaque_sp->GetTargetList().CreateTarget(*m_opaque_sp, filename, 
-          arch_cstr, eLoadDependentsYes, nullptr, target_sp);
+      error = m_opaque_sp->GetTargetList().CreateTarget(
+          *m_opaque_sp, filename, arch_cstr, eLoadDependentsYes, nullptr,
+          target_sp);
     } else {
-      PlatformSP platform_sp = m_opaque_sp->GetPlatformList()
-          .GetSelectedPlatform();
-      ArchSpec arch = Platform::GetAugmentedArchSpec(platform_sp.get(), 
-          arch_cstr);
+      PlatformSP platform_sp =
+          m_opaque_sp->GetPlatformList().GetSelectedPlatform();
+      ArchSpec arch =
+          Platform::GetAugmentedArchSpec(platform_sp.get(), arch_cstr);
       if (arch.IsValid())
-        error = m_opaque_sp->GetTargetList().CreateTarget(*m_opaque_sp, filename, 
-            arch, eLoadDependentsYes, platform_sp, target_sp);
+        error = m_opaque_sp->GetTargetList().CreateTarget(
+            *m_opaque_sp, filename, arch, eLoadDependentsYes, platform_sp,
+            target_sp);
       else
         error.SetErrorStringWithFormat("invalid arch_cstr: %s", arch_cstr);
     }
     if (error.Success())
       sb_target.SetSP(target_sp);
   }
-  
+
   LLDB_LOGF(log,
             "SBDebugger(%p)::CreateTargetWithFileAndArch (filename=\"%s\", "
             "arch=%s) => SBTarget(%p)",
@@ -1700,8 +1702,8 @@ template <> void RegisterMethods<SBDebugger>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBDebugger, ());
   LLDB_REGISTER_CONSTRUCTOR(SBDebugger, (const lldb::DebuggerSP &));
   LLDB_REGISTER_CONSTRUCTOR(SBDebugger, (const lldb::SBDebugger &));
-  LLDB_REGISTER_METHOD(lldb::SBDebugger &,
-                       SBDebugger, operator=,(const lldb::SBDebugger &));
+  LLDB_REGISTER_METHOD(lldb::SBDebugger &, SBDebugger, operator=,
+                       (const lldb::SBDebugger &));
   LLDB_REGISTER_STATIC_METHOD(void, SBDebugger, Initialize, ());
   LLDB_REGISTER_STATIC_METHOD(lldb::SBError, SBDebugger,
                               InitializeWithErrorHandling, ());
@@ -1712,7 +1714,7 @@ template <> void RegisterMethods<SBDebugger>(Registry &R) {
   LLDB_REGISTER_STATIC_METHOD(void, SBDebugger, Destroy, (lldb::SBDebugger &));
   LLDB_REGISTER_STATIC_METHOD(void, SBDebugger, MemoryPressureDetected, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBDebugger, IsValid, ());
-  LLDB_REGISTER_METHOD_CONST(bool, SBDebugger, operator bool,());
+  LLDB_REGISTER_METHOD_CONST(bool, SBDebugger, operator bool, ());
   LLDB_REGISTER_METHOD(void, SBDebugger, SetAsync, (bool));
   LLDB_REGISTER_METHOD(bool, SBDebugger, GetAsync, ());
   LLDB_REGISTER_METHOD(void, SBDebugger, SkipLLDBInitFiles, (bool));

@@ -60,6 +60,6 @@ namespace llvm {
 struct TailCallElimPass : PassInfoMixin<TailCallElimPass> {
   PreservedAnalyses run(Function &F, FunctionAnalysisManager &AM);
 };
-}
+} // namespace llvm
 
 #endif // LLVM_TRANSFORMS_SCALAR_TAILRECURSIONELIMINATION_H

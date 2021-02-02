@@ -11,9 +11,9 @@
 #include <stdlib.h>
 
 class MyClass {
- public:
+public:
   int my_function(int n) {
-    char *x = (char*)malloc(n * sizeof(char));
+    char *x = (char *)malloc(n * sizeof(char));
     free(x);
     return x[5];
     // CHECK-DLADDR: Using dladdr symbolizer

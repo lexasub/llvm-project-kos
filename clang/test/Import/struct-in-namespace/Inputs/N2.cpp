@@ -1,5 +1,5 @@
 namespace N {
-  struct U {
-    int c;
-  };
-}
+struct U {
+  int c;
+};
+} // namespace N

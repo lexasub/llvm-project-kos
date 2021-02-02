@@ -516,7 +516,7 @@ Stream::create(const Directory &StreamDesc, const object::MinidumpFile &File) {
   }
   case StreamKind::RawContent:
     return std::make_unique<RawContentStream>(StreamDesc.Type,
-                                               File.getRawStream(StreamDesc));
+                                              File.getRawStream(StreamDesc));
   case StreamKind::SystemInfo: {
     auto ExpectedInfo = File.getSystemInfo();
     if (!ExpectedInfo)
@@ -525,7 +525,7 @@ Stream::create(const Directory &StreamDesc, const object::MinidumpFile &File) {
     if (!ExpectedCSDVersion)
       return ExpectedInfo.takeError();
     return std::make_unique<SystemInfoStream>(*ExpectedInfo,
-                                               std::move(*ExpectedCSDVersion));
+                                              std::move(*ExpectedCSDVersion));
   }
   case StreamKind::TextContent:
     return std::make_unique<TextContentStream>(

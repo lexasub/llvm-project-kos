@@ -9,8 +9,9 @@
 // This file is a part of ThreadSanitizer (TSan), a race detector.
 //
 //===----------------------------------------------------------------------===//
-#include "sanitizer_common/sanitizer_libc.h"
 #include "tsan_mutex.h"
+
+#include "sanitizer_common/sanitizer_libc.h"
 #include "tsan_platform.h"
 #include "tsan_rtl.h"
 
@@ -27,22 +28,22 @@ namespace __tsan {
 #if SANITIZER_DEBUG && !SANITIZER_GO
 const MutexType MutexTypeLeaf = (MutexType)-1;
 static MutexType CanLockTab[MutexTypeCount][MutexTypeCount] = {
-  /*0  MutexTypeInvalid*/     {},
-  /*1  MutexTypeTrace*/       {MutexTypeLeaf},
-  /*2  MutexTypeThreads*/     {MutexTypeReport},
-  /*3  MutexTypeReport*/      {MutexTypeSyncVar,
-                               MutexTypeMBlock, MutexTypeJavaMBlock},
-  /*4  MutexTypeSyncVar*/     {MutexTypeDDetector},
-  /*5  MutexTypeSyncTab*/     {},  // unused
-  /*6  MutexTypeSlab*/        {MutexTypeLeaf},
-  /*7  MutexTypeAnnotations*/ {},
-  /*8  MutexTypeAtExit*/      {MutexTypeSyncVar},
-  /*9  MutexTypeMBlock*/      {MutexTypeSyncVar},
-  /*10 MutexTypeJavaMBlock*/  {MutexTypeSyncVar},
-  /*11 MutexTypeDDetector*/   {},
-  /*12 MutexTypeFired*/       {MutexTypeLeaf},
-  /*13 MutexTypeRacy*/        {MutexTypeLeaf},
-  /*14 MutexTypeGlobalProc*/  {},
+    /*0  MutexTypeInvalid*/ {},
+    /*1  MutexTypeTrace*/ {MutexTypeLeaf},
+    /*2  MutexTypeThreads*/ {MutexTypeReport},
+    /*3  MutexTypeReport*/
+    {MutexTypeSyncVar, MutexTypeMBlock, MutexTypeJavaMBlock},
+    /*4  MutexTypeSyncVar*/ {MutexTypeDDetector},
+    /*5  MutexTypeSyncTab*/ {},  // unused
+    /*6  MutexTypeSlab*/ {MutexTypeLeaf},
+    /*7  MutexTypeAnnotations*/ {},
+    /*8  MutexTypeAtExit*/ {MutexTypeSyncVar},
+    /*9  MutexTypeMBlock*/ {MutexTypeSyncVar},
+    /*10 MutexTypeJavaMBlock*/ {MutexTypeSyncVar},
+    /*11 MutexTypeDDetector*/ {},
+    /*12 MutexTypeFired*/ {MutexTypeLeaf},
+    /*13 MutexTypeRacy*/ {MutexTypeLeaf},
+    /*14 MutexTypeGlobalProc*/ {},
 };
 
 static bool CanLockAdj[MutexTypeCount][MutexTypeCount];
@@ -152,8 +153,8 @@ void InternalDeadlockDetector::Lock(MutexType t) {
   // Printf("  last %d @%zu\n", max_idx, max_seq);
   if (!CanLockAdj[max_idx][t]) {
     Printf("ThreadSanitizer: internal deadlock detected\n");
-    Printf("ThreadSanitizer: can't lock %d while under %zu\n",
-               t, (uptr)max_idx);
+    Printf("ThreadSanitizer: can't lock %d while under %zu\n", t,
+           (uptr)max_idx);
     CHECK(0);
   }
 }
@@ -183,9 +184,7 @@ const uptr kReadLock = 2;
 
 class Backoff {
  public:
-  Backoff()
-    : iter_() {
-  }
+  Backoff() : iter_() {}
 
   bool Do() {
     if (iter_++ < kActiveSpinIters)

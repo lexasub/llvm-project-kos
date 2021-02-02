@@ -21,36 +21,34 @@
 namespace llvm {
 
 /// Graph<N> - A graph with N nodes.  Note that N can be at most 8.
-template <unsigned N>
-class Graph {
+template <unsigned N> class Graph {
 private:
   // Disable copying.
-  Graph(const Graph&);
-  Graph& operator=(const Graph&);
+  Graph(const Graph &);
+  Graph &operator=(const Graph &);
 
   static void ValidateIndex(unsigned Idx) {
     assert(Idx < N && "Invalid node index!");
   }
-public:
 
+public:
   /// NodeSubset - A subset of the graph's nodes.
   class NodeSubset {
     typedef unsigned char BitVector; // Where the limitation N <= 8 comes from.
     BitVector Elements;
     NodeSubset(BitVector e) : Elements(e) {}
+
   public:
     /// NodeSubset - Default constructor, creates an empty subset.
     NodeSubset() : Elements(0) {
-      assert(N <= sizeof(BitVector)*CHAR_BIT && "Graph too big!");
+      assert(N <= sizeof(BitVector) * CHAR_BIT && "Graph too big!");
     }
 
     /// Comparison operators.
     bool operator==(const NodeSubset &other) const {
       return other.Elements == this->Elements;
     }
-    bool operator!=(const NodeSubset &other) const {
-      return !(*this == other);
-    }
+    bool operator!=(const NodeSubset &other) const { return !(*this == other); }
 
     /// AddNode - Add the node with the given index to the subset.
     void AddNode(unsigned Idx) {
@@ -71,9 +69,7 @@ public:
     }
 
     /// isEmpty - Return true if this is the empty set.
-    bool isEmpty() const {
-      return Elements == 0;
-    }
+    bool isEmpty() const { return Elements == 0; }
 
     /// isSubsetOf - Return true if this set is a subset of the given one.
     bool isSubsetOf(const NodeSubset &other) const {
@@ -102,8 +98,8 @@ public:
 private:
   /// Nodes - The list of nodes for this graph.
   NodeType Nodes[N];
-public:
 
+public:
   /// Graph - Default constructor.  Creates an empty graph.
   Graph() {
     // Let each node know which node it is.  This allows us to find the start of
@@ -181,14 +177,14 @@ public:
     /// Comparison operators.
     bool operator==(const ChildIterator &other) const {
       return other.FirstNode == this->FirstNode &&
-        other.Children == this->Children;
+             other.Children == this->Children;
     }
     bool operator!=(const ChildIterator &other) const {
       return !(*this == other);
     }
 
     /// Prefix increment operator.
-    ChildIterator& operator++() {
+    ChildIterator &operator++() {
       // Find the next unvisited child node.
       for (unsigned i = 0; i != N; ++i)
         if (Children.count(i)) {
@@ -231,8 +227,7 @@ public:
   }
 };
 
-template <unsigned N>
-struct GraphTraits<Graph<N> > {
+template <unsigned N> struct GraphTraits<Graph<N>> {
   typedef typename Graph<N>::NodeType *NodeRef;
   typedef typename Graph<N>::ChildIterator ChildIteratorType;
 

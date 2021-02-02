@@ -18,8 +18,8 @@
 #include <sys/link_elf.h>
 #endif
 #include <link.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/mman.h>
 
 #if SANITIZER_LINUX
@@ -40,8 +40,8 @@ typedef ElfW(Dyn) Elf_Dyn;
 
 #include "interception/interception.h"
 #include "sanitizer_common/sanitizer_flag_parser.h"
-#include "ubsan/ubsan_init.h"
 #include "ubsan/ubsan_flags.h"
+#include "ubsan/ubsan_init.h"
 
 #ifdef CFI_ENABLE_DIAG
 #include "ubsan/ubsan_handlers.h"
@@ -70,22 +70,14 @@ static constexpr uint16_t kInvalidShadow = 0;
 static constexpr uint16_t kUncheckedShadow = 0xFFFFU;
 
 // Get the start address of the CFI shadow region.
-uptr GetShadow() {
-  return cfi_shadow_limits_storage.limits.start;
-}
+uptr GetShadow() { return cfi_shadow_limits_storage.limits.start; }
 
-uptr GetShadowSize() {
-  return cfi_shadow_limits_storage.limits.size;
-}
+uptr GetShadowSize() { return cfi_shadow_limits_storage.limits.size; }
 
 // This will only work while the shadow is not allocated.
-void SetShadowSize(uptr size) {
-  cfi_shadow_limits_storage.limits.size = size;
-}
+void SetShadowSize(uptr size) { cfi_shadow_limits_storage.limits.size = size; }
 
-uptr MemToShadowOffset(uptr x) {
-  return (x >> kShadowGranularity) << 1;
-}
+uptr MemToShadowOffset(uptr x) { return (x >> kShadowGranularity) << 1; }
 
 uint16_t *MemToShadow(uptr x, uptr shadow_base) {
   return (uint16_t *)(shadow_base + MemToShadowOffset(x));
@@ -213,12 +205,12 @@ uptr find_cfi_check_in_dso(dl_phdr_info *info) {
   const Elf_Dyn *dynamic = nullptr;
   for (int i = 0; i < info->dlpi_phnum; ++i) {
     if (info->dlpi_phdr[i].p_type == PT_DYNAMIC) {
-      dynamic =
-          (const Elf_Dyn *)(info->dlpi_addr + info->dlpi_phdr[i].p_vaddr);
+      dynamic = (const Elf_Dyn *)(info->dlpi_addr + info->dlpi_phdr[i].p_vaddr);
       break;
     }
   }
-  if (!dynamic) return 0;
+  if (!dynamic)
+    return 0;
   uptr strtab = 0, symtab = 0, strsz = 0;
   for (const Elf_Dyn *p = dynamic; p->d_tag != PT_NULL; ++p) {
     if (p->d_tag == DT_SYMTAB)
@@ -254,13 +246,13 @@ uptr find_cfi_check_in_dso(dl_phdr_info *info) {
     return 0;
   }
 
-  for (const Elf_Sym *p = (const Elf_Sym *)symtab; (Elf_Addr)p < strtab;
-       ++p) {
+  for (const Elf_Sym *p = (const Elf_Sym *)symtab; (Elf_Addr)p < strtab; ++p) {
     // There is no reliable way to find the end of the symbol table. In
     // lld-produces files, there are other sections between symtab and strtab.
     // Stop looking when the symbol name is not inside strtab.
-    if (p->st_name >= strsz) break;
-    char *name = (char*)(strtab + p->st_name);
+    if (p->st_name >= strsz)
+      break;
+    char *name = (char *)(strtab + p->st_name);
     if (strcmp(name, "__cfi_check") == 0) {
       assert(p->st_info == ELF32_ST_INFO(STB_GLOBAL, STT_FUNC) ||
              p->st_info == ELF32_ST_INFO(STB_WEAK, STT_FUNC));
@@ -398,8 +390,8 @@ void InitializeFlags() {
 
 using namespace __cfi;
 
-extern "C" SANITIZER_INTERFACE_ATTRIBUTE void
-__cfi_slowpath(u64 CallSiteTypeId, void *Ptr) {
+extern "C" SANITIZER_INTERFACE_ATTRIBUTE void __cfi_slowpath(u64 CallSiteTypeId,
+                                                             void *Ptr) {
   CfiSlowPathCommon(CallSiteTypeId, Ptr, nullptr);
 }
 
@@ -420,7 +412,7 @@ static void EnsureInterceptorsInitialized();
 // Maybe a seccomp-bpf filter?
 // We could insert a high-priority constructor into the library, but that would
 // not help with the uninstrumented libraries.
-INTERCEPTOR(void*, dlopen, const char *filename, int flag) {
+INTERCEPTOR(void *, dlopen, const char *filename, int flag) {
   EnsureInterceptorsInitialized();
   EnterLoader();
   void *handle = REAL(dlopen)(filename, flag);
@@ -452,10 +444,12 @@ static void EnsureInterceptorsInitialized() {
 
 extern "C" SANITIZER_INTERFACE_ATTRIBUTE
 #if !SANITIZER_CAN_USE_PREINIT_ARRAY
-// On ELF platforms, the constructor is invoked using .preinit_array (see below)
-__attribute__((constructor(0)))
+    // On ELF platforms, the constructor is invoked using .preinit_array (see
+    // below)
+    __attribute__((constructor(0)))
 #endif
-void __cfi_init() {
+    void
+    __cfi_init() {
   SanitizerToolName = "CFI";
   InitializeFlags();
   InitShadow();

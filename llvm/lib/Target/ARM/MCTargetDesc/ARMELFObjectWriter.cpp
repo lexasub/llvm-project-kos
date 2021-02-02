@@ -24,32 +24,31 @@ using namespace llvm;
 
 namespace {
 
-  class ARMELFObjectWriter : public MCELFObjectTargetWriter {
-    enum { DefaultEABIVersion = 0x05000000U };
+class ARMELFObjectWriter : public MCELFObjectTargetWriter {
+  enum { DefaultEABIVersion = 0x05000000U };
 
-    unsigned GetRelocTypeInner(const MCValue &Target, const MCFixup &Fixup,
-                               bool IsPCRel, MCContext &Ctx) const;
+  unsigned GetRelocTypeInner(const MCValue &Target, const MCFixup &Fixup,
+                             bool IsPCRel, MCContext &Ctx) const;
 
-  public:
-    ARMELFObjectWriter(uint8_t OSABI);
+public:
+  ARMELFObjectWriter(uint8_t OSABI);
 
-    ~ARMELFObjectWriter() override = default;
+  ~ARMELFObjectWriter() override = default;
 
-    unsigned getRelocType(MCContext &Ctx, const MCValue &Target,
-                          const MCFixup &Fixup, bool IsPCRel) const override;
+  unsigned getRelocType(MCContext &Ctx, const MCValue &Target,
+                        const MCFixup &Fixup, bool IsPCRel) const override;
 
-    bool needsRelocateWithSymbol(const MCSymbol &Sym,
-                                 unsigned Type) const override;
+  bool needsRelocateWithSymbol(const MCSymbol &Sym,
+                               unsigned Type) const override;
 
-    void addTargetSectionFlags(MCContext &Ctx, MCSectionELF &Sec) override;
-  };
+  void addTargetSectionFlags(MCContext &Ctx, MCSectionELF &Sec) override;
+};
 
 } // end anonymous namespace
 
 ARMELFObjectWriter::ARMELFObjectWriter(uint8_t OSABI)
-  : MCELFObjectTargetWriter(/*Is64Bit*/ false, OSABI,
-                            ELF::EM_ARM,
-                            /*HasRelocationAddend*/ false) {}
+    : MCELFObjectTargetWriter(/*Is64Bit*/ false, OSABI, ELF::EM_ARM,
+                              /*HasRelocationAddend*/ false) {}
 
 bool ARMELFObjectWriter::needsRelocateWithSymbol(const MCSymbol &Sym,
                                                  unsigned Type) const {

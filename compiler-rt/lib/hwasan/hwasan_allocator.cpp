@@ -11,16 +11,17 @@
 // HWAddressSanitizer allocator.
 //===----------------------------------------------------------------------===//
 
+#include "hwasan_allocator.h"
+
+#include "hwasan.h"
+#include "hwasan_checks.h"
+#include "hwasan_malloc_bisect.h"
+#include "hwasan_mapping.h"
+#include "hwasan_report.h"
+#include "hwasan_thread.h"
 #include "sanitizer_common/sanitizer_atomic.h"
 #include "sanitizer_common/sanitizer_errno.h"
 #include "sanitizer_common/sanitizer_stackdepot.h"
-#include "hwasan.h"
-#include "hwasan_allocator.h"
-#include "hwasan_checks.h"
-#include "hwasan_mapping.h"
-#include "hwasan_malloc_bisect.h"
-#include "hwasan_thread.h"
-#include "hwasan_report.h"
 
 namespace __hwasan {
 
@@ -49,7 +50,8 @@ bool HwasanChunkView::IsAllocated() const {
 // Aligns the 'addr' right to the granule boundary.
 static uptr AlignRight(uptr addr, uptr requested_size) {
   uptr tail_size = requested_size % kShadowAlignment;
-  if (!tail_size) return addr;
+  if (!tail_size)
+    return addr;
   return addr + kShadowAlignment - tail_size;
 }
 
@@ -58,9 +60,7 @@ uptr HwasanChunkView::Beg() const {
     return AlignRight(block_, metadata_->get_requested_size());
   return block_;
 }
-uptr HwasanChunkView::End() const {
-  return Beg() + UsedSize();
-}
+uptr HwasanChunkView::End() const { return Beg() + UsedSize(); }
 uptr HwasanChunkView::UsedSize() const {
   return metadata_->get_requested_size();
 }
@@ -76,9 +76,7 @@ bool HwasanChunkView::FromSmallHeap() const {
   return allocator.FromPrimary(reinterpret_cast<void *>(block_));
 }
 
-void GetAllocatorStats(AllocatorStatCounters s) {
-  allocator.GetStats(s);
-}
+void GetAllocatorStats(AllocatorStatCounters s) { allocator.GetStats(s); }
 
 void HwasanAllocatorInit() {
   atomic_store_relaxed(&hwasan_allocator_tagging_enabled,
@@ -94,7 +92,8 @@ void AllocatorSwallowThreadLocalCache(AllocatorCache *cache) {
 }
 
 static uptr TaggedSize(uptr size) {
-  if (!size) size = 1;
+  if (!size)
+    size = 1;
   uptr new_size = RoundUpTo(size, kShadowAlignment);
   CHECK_GE(new_size, size);
   return new_size;
@@ -243,7 +242,7 @@ static void *HwasanReallocate(StackTrace *stack, void *tagged_ptr_old,
   void *tagged_ptr_new =
       HwasanAllocate(stack, new_size, alignment, false /*zeroise*/);
   if (tagged_ptr_old && tagged_ptr_new) {
-    void *untagged_ptr_old =  UntagPtr(tagged_ptr_old);
+    void *untagged_ptr_old = UntagPtr(tagged_ptr_old);
     Metadata *meta =
         reinterpret_cast<Metadata *>(allocator.GetMetaData(untagged_ptr_old));
     internal_memcpy(
@@ -264,17 +263,18 @@ static void *HwasanCalloc(StackTrace *stack, uptr nmemb, uptr size) {
 }
 
 HwasanChunkView FindHeapChunkByAddress(uptr address) {
-  void *block = allocator.GetBlockBegin(reinterpret_cast<void*>(address));
+  void *block = allocator.GetBlockBegin(reinterpret_cast<void *>(address));
   if (!block)
     return HwasanChunkView();
   Metadata *metadata =
-      reinterpret_cast<Metadata*>(allocator.GetMetaData(block));
+      reinterpret_cast<Metadata *>(allocator.GetMetaData(block));
   return HwasanChunkView(reinterpret_cast<uptr>(block), metadata);
 }
 
 static uptr AllocationSize(const void *tagged_ptr) {
   const void *untagged_ptr = UntagPtr(tagged_ptr);
-  if (!untagged_ptr) return 0;
+  if (!untagged_ptr)
+    return 0;
   const void *beg = allocator.GetBlockBegin(untagged_ptr);
   Metadata *b = (Metadata *)allocator.GetMetaData(untagged_ptr);
   if (b->right_aligned) {
@@ -282,7 +282,8 @@ static uptr AllocationSize(const void *tagged_ptr) {
                    reinterpret_cast<uptr>(untagged_ptr), kShadowAlignment)))
       return 0;
   } else {
-    if (beg != untagged_ptr) return 0;
+    if (beg != untagged_ptr)
+      return 0;
   }
   return b->get_requested_size();
 }
@@ -354,7 +355,7 @@ void *hwasan_memalign(uptr alignment, uptr size, StackTrace *stack) {
 }
 
 int hwasan_posix_memalign(void **memptr, uptr alignment, uptr size,
-                        StackTrace *stack) {
+                          StackTrace *stack) {
   if (UNLIKELY(!CheckPosixMemalignAlignment(alignment))) {
     if (AllocatorMayReturnNull())
       return errno_EINVAL;

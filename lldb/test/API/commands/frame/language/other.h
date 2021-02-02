@@ -1,7 +1,5 @@
-class Other
-{
- public:
+class Other {
+public:
   static void DoSomething();
   static void DoSomethingElse();
 };
-

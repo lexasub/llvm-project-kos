@@ -22,7 +22,7 @@ static void SuppressDiagnosticsOutput(const SMDiagnostic &, void *) {
 
 // Assumes Ctx is an SMDiagnostic where Diag can be stored.
 static void CollectDiagnosticsOutput(const SMDiagnostic &Diag, void *Ctx) {
-  SMDiagnostic* DiagOut = static_cast<SMDiagnostic*>(Ctx);
+  SMDiagnostic *DiagOut = static_cast<SMDiagnostic *>(Ctx);
   *DiagOut = Diag;
 }
 
@@ -43,9 +43,7 @@ static void ExpectParseSuccess(StringRef Message, StringRef Input) {
   EXPECT_TRUE(Stream.validate()) << Message << ": " << Input;
 }
 
-TEST(YAMLParser, ParsesEmptyArray) {
-  ExpectParseSuccess("Empty array", "[]");
-}
+TEST(YAMLParser, ParsesEmptyArray) { ExpectParseSuccess("Empty array", "[]"); }
 
 TEST(YAMLParser, FailsIfNotClosingArray) {
   ExpectParseError("Not closing array", "[");
@@ -96,32 +94,27 @@ TEST(YAMLParser, ParsesEmptyString) {
 }
 
 TEST(YAMLParser, ParsesMultipleObjects) {
-  ExpectParseSuccess(
-      "Multiple objects in array",
-      "["
-      " { \"a\" : \"b\" },"
-      " { \"a\" : \"b\" },"
-      " { \"a\" : \"b\" }"
-      "]");
+  ExpectParseSuccess("Multiple objects in array", "["
+                                                  " { \"a\" : \"b\" },"
+                                                  " { \"a\" : \"b\" },"
+                                                  " { \"a\" : \"b\" }"
+                                                  "]");
 }
 
 TEST(YAMLParser, FailsOnMissingComma) {
-  ExpectParseError(
-      "Missing comma",
-      "["
-      " { \"a\" : \"b\" }"
-      " { \"a\" : \"b\" }"
-      "]");
+  ExpectParseError("Missing comma", "["
+                                    " { \"a\" : \"b\" }"
+                                    " { \"a\" : \"b\" }"
+                                    "]");
 }
 
 TEST(YAMLParser, ParsesSpacesInBetweenTokens) {
-  ExpectParseSuccess(
-      "Various whitespace between tokens",
-      " \t \n\n \r [ \t \n\n \r"
-      " \t \n\n \r { \t \n\n \r\"a\"\t \n\n \r :"
-      " \t \n\n \r \"b\"\t \n\n \r } \t \n\n \r,\t \n\n \r"
-      " \t \n\n \r { \t \n\n \r\"a\"\t \n\n \r :"
-      " \t \n\n \r \"b\"\t \n\n \r } \t \n\n \r]\t \n\n \r");
+  ExpectParseSuccess("Various whitespace between tokens",
+                     " \t \n\n \r [ \t \n\n \r"
+                     " \t \n\n \r { \t \n\n \r\"a\"\t \n\n \r :"
+                     " \t \n\n \r \"b\"\t \n\n \r } \t \n\n \r,\t \n\n \r"
+                     " \t \n\n \r { \t \n\n \r\"a\"\t \n\n \r :"
+                     " \t \n\n \r \"b\"\t \n\n \r } \t \n\n \r]\t \n\n \r");
 }
 
 TEST(YAMLParser, ParsesArrayOfArrays) {
@@ -189,11 +182,12 @@ static void ExpectCanParseString(StringRef String) {
   std::string StringInArray = (llvm::Twine("[\"") + String + "\"]").str();
   SourceMgr SM;
   yaml::Stream Stream(StringInArray, SM);
-  yaml::SequenceNode *ParsedSequence
-    = dyn_cast<yaml::SequenceNode>(Stream.begin()->getRoot());
-  StringRef ParsedString
-    = dyn_cast<yaml::ScalarNode>(
-      static_cast<yaml::Node*>(ParsedSequence->begin()))->getRawValue();
+  yaml::SequenceNode *ParsedSequence =
+      dyn_cast<yaml::SequenceNode>(Stream.begin()->getRoot());
+  StringRef ParsedString =
+      dyn_cast<yaml::ScalarNode>(
+          static_cast<yaml::Node *>(ParsedSequence->begin()))
+          ->getRawValue();
   ParsedString = ParsedString.substr(1, ParsedString.size() - 2);
   EXPECT_EQ(String, ParsedString.str());
 }
@@ -226,8 +220,8 @@ TEST(YAMLParser, ParsesStrings) {
 TEST(YAMLParser, WorksWithIteratorAlgorithms) {
   SourceMgr SM;
   yaml::Stream Stream("[\"1\", \"2\", \"3\", \"4\", \"5\", \"6\"]", SM);
-  yaml::SequenceNode *Array
-    = dyn_cast<yaml::SequenceNode>(Stream.begin()->getRoot());
+  yaml::SequenceNode *Array =
+      dyn_cast<yaml::SequenceNode>(Stream.begin()->getRoot());
   EXPECT_EQ(6, std::distance(Array->begin(), Array->end()));
 }
 
@@ -263,8 +257,8 @@ TEST(YAMLParser, SameNodeIteratorOperatorNotEquals) {
   SourceMgr SM;
   yaml::Stream Stream("[\"1\", \"2\"]", SM);
 
-  yaml::SequenceNode *Node = dyn_cast<yaml::SequenceNode>(
-                                              Stream.begin()->getRoot());
+  yaml::SequenceNode *Node =
+      dyn_cast<yaml::SequenceNode>(Stream.begin()->getRoot());
 
   auto Begin = Node->begin();
   auto End = Node->end();
@@ -278,8 +272,8 @@ TEST(YAMLParser, SameNodeIteratorOperatorEquals) {
   SourceMgr SM;
   yaml::Stream Stream("[\"1\", \"2\"]", SM);
 
-  yaml::SequenceNode *Node = dyn_cast<yaml::SequenceNode>(
-                                              Stream.begin()->getRoot());
+  yaml::SequenceNode *Node =
+      dyn_cast<yaml::SequenceNode>(Stream.begin()->getRoot());
 
   auto Begin = Node->begin();
   auto End = Node->end();
@@ -294,10 +288,10 @@ TEST(YAMLParser, DifferentNodesIteratorOperatorNotEquals) {
   yaml::Stream Stream("[\"1\", \"2\"]", SM);
   yaml::Stream AnotherStream("[\"1\", \"2\"]", SM);
 
-  yaml::SequenceNode *Node = dyn_cast<yaml::SequenceNode>(
-                                                  Stream.begin()->getRoot());
-  yaml::SequenceNode *AnotherNode = dyn_cast<yaml::SequenceNode>(
-                                              AnotherStream.begin()->getRoot());
+  yaml::SequenceNode *Node =
+      dyn_cast<yaml::SequenceNode>(Stream.begin()->getRoot());
+  yaml::SequenceNode *AnotherNode =
+      dyn_cast<yaml::SequenceNode>(AnotherStream.begin()->getRoot());
 
   auto Begin = Node->begin();
   auto End = Node->end();
@@ -315,10 +309,10 @@ TEST(YAMLParser, DifferentNodesIteratorOperatorEquals) {
   yaml::Stream Stream("[\"1\", \"2\"]", SM);
   yaml::Stream AnotherStream("[\"1\", \"2\"]", SM);
 
-  yaml::SequenceNode *Node = dyn_cast<yaml::SequenceNode>(
-                                                    Stream.begin()->getRoot());
-  yaml::SequenceNode *AnotherNode = dyn_cast<yaml::SequenceNode>(
-                                             AnotherStream.begin()->getRoot());
+  yaml::SequenceNode *Node =
+      dyn_cast<yaml::SequenceNode>(Stream.begin()->getRoot());
+  yaml::SequenceNode *AnotherNode =
+      dyn_cast<yaml::SequenceNode>(AnotherStream.begin()->getRoot());
 
   auto Begin = Node->begin();
   auto End = Node->end();

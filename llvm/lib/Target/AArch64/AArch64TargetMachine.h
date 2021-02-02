@@ -45,7 +45,7 @@ public:
 
   TargetTransformInfo getTargetTransformInfo(const Function &F) override;
 
-  TargetLoweringObjectFile* getObjFileLowering() const override {
+  TargetLoweringObjectFile *getObjFileLowering() const override {
     return TLOF.get();
   }
 
@@ -71,6 +71,7 @@ private:
 //
 class AArch64leTargetMachine : public AArch64TargetMachine {
   virtual void anchor();
+
 public:
   AArch64leTargetMachine(const Target &T, const Triple &TT, StringRef CPU,
                          StringRef FS, const TargetOptions &Options,
@@ -83,6 +84,7 @@ public:
 //
 class AArch64beTargetMachine : public AArch64TargetMachine {
   virtual void anchor();
+
 public:
   AArch64beTargetMachine(const Target &T, const Triple &TT, StringRef CPU,
                          StringRef FS, const TargetOptions &Options,

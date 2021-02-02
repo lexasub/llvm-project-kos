@@ -9,7 +9,7 @@ namespace RP47219 {
 typedef int MyInt;
 template <typename T>
 class Some {
- public:
+public:
   explicit Some(T, MyInt) {}
 };
 
@@ -17,7 +17,7 @@ struct Foo {};
 void ParseNatural() {
   Some(Foo(), 1);
 }
-}
+} // namespace RP47219
 
 #else
 

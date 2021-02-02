@@ -47,233 +47,232 @@
 #include "test_macros.h"
 
 struct NonCopyable {
-    constexpr NonCopyable() {}
+  constexpr NonCopyable() {}
+
 private:
-    NonCopyable(NonCopyable const&) = delete;
-    NonCopyable& operator=(NonCopyable const&) = delete;
+  NonCopyable(NonCopyable const&) = delete;
+  NonCopyable& operator=(NonCopyable const&) = delete;
 };
 
 struct TestClass {
-    constexpr explicit TestClass(int x) : data(x) {}
+  constexpr explicit TestClass(int x) : data(x) {}
 
-    constexpr int& operator()(NonCopyable&&) & { return data; }
-    constexpr int const& operator()(NonCopyable&&) const & { return data; }
+  constexpr int& operator()(NonCopyable&&) & { return data; }
+  constexpr int const& operator()(NonCopyable&&) const& { return data; }
 
-    constexpr int&& operator()(NonCopyable&&) && { return std::move(data); }
-    constexpr int const&& operator()(NonCopyable&&) const && { return std::move(data); }
+  constexpr int&& operator()(NonCopyable&&) && { return std::move(data); }
+  constexpr int const&& operator()(NonCopyable&&) const&& {
+    return std::move(data);
+  }
 
-    int data;
+  int data;
+
 private:
-    TestClass(TestClass const&) = delete;
-    TestClass& operator=(TestClass const&) = delete;
+  TestClass(TestClass const&) = delete;
+  TestClass& operator=(TestClass const&) = delete;
 };
 
 struct DerivedFromTestClass : public TestClass {
-    constexpr explicit DerivedFromTestClass(int x) : TestClass(x) {}
+  constexpr explicit DerivedFromTestClass(int x) : TestClass(x) {}
 };
 
 static constexpr int data = 42;
-constexpr const int& foo(NonCopyable&&) {
-    return data;
-}
+constexpr const int& foo(NonCopyable&&) { return data; }
 
-template <class Signature,  class Expect, class Functor>
+template <class Signature, class Expect, class Functor>
 constexpr void test_b12(Functor&& f) {
-    // Create the callable object.
-    typedef Signature TestClass::*ClassFunc;
-    ClassFunc func_ptr = &TestClass::operator();
+  // Create the callable object.
+  typedef Signature TestClass::*ClassFunc;
+  ClassFunc func_ptr = &TestClass::operator();
 
-    // Create the dummy arg.
-    NonCopyable arg;
+  // Create the dummy arg.
+  NonCopyable arg;
 
-    // Check that the deduced return type of invoke is what is expected.
-    typedef decltype(
-        std::invoke(func_ptr, std::forward<Functor>(f), std::move(arg))
-    ) DeducedReturnType;
-    static_assert((std::is_same<DeducedReturnType, Expect>::value), "");
+  // Check that the deduced return type of invoke is what is expected.
+  typedef decltype(std::invoke(func_ptr, std::forward<Functor>(f),
+                               std::move(arg))) DeducedReturnType;
+  static_assert((std::is_same<DeducedReturnType, Expect>::value), "");
 
-    // Check that result_of_t matches Expect.
-    typedef typename std::result_of<ClassFunc&&(Functor&&, NonCopyable&&)>::type
-      ResultOfReturnType;
-    static_assert((std::is_same<ResultOfReturnType, Expect>::value), "");
+  // Check that result_of_t matches Expect.
+  typedef
+      typename std::result_of<ClassFunc && (Functor&&, NonCopyable &&)>::type
+          ResultOfReturnType;
+  static_assert((std::is_same<ResultOfReturnType, Expect>::value), "");
 
-    // Run invoke and check the return value.
-    DeducedReturnType ret =
-            std::invoke(func_ptr, std::forward<Functor>(f), std::move(arg));
-    assert(ret == 42);
+  // Run invoke and check the return value.
+  DeducedReturnType ret =
+      std::invoke(func_ptr, std::forward<Functor>(f), std::move(arg));
+  assert(ret == 42);
 }
 
 template <class Expect, class Functor>
 constexpr void test_b34(Functor&& f) {
-    // Create the callable object.
-    typedef int TestClass::*ClassFunc;
-    ClassFunc func_ptr = &TestClass::data;
+  // Create the callable object.
+  typedef int TestClass::*ClassFunc;
+  ClassFunc func_ptr = &TestClass::data;
 
-    // Check that the deduced return type of invoke is what is expected.
-    typedef decltype(
-        std::invoke(func_ptr, std::forward<Functor>(f))
-    ) DeducedReturnType;
-    static_assert((std::is_same<DeducedReturnType, Expect>::value), "");
+  // Check that the deduced return type of invoke is what is expected.
+  typedef decltype(std::invoke(func_ptr, std::forward<Functor>(f)))
+      DeducedReturnType;
+  static_assert((std::is_same<DeducedReturnType, Expect>::value), "");
 
-    // Check that result_of_t matches Expect.
-    typedef typename std::result_of<ClassFunc&&(Functor&&)>::type
-            ResultOfReturnType;
-    static_assert((std::is_same<ResultOfReturnType, Expect>::value), "");
+  // Check that result_of_t matches Expect.
+  typedef typename std::result_of<ClassFunc && (Functor &&)>::type
+      ResultOfReturnType;
+  static_assert((std::is_same<ResultOfReturnType, Expect>::value), "");
 
-    // Run invoke and check the return value.
-    DeducedReturnType ret =
-            std::invoke(func_ptr, std::forward<Functor>(f));
-    assert(ret == 42);
+  // Run invoke and check the return value.
+  DeducedReturnType ret = std::invoke(func_ptr, std::forward<Functor>(f));
+  assert(ret == 42);
 }
 
 template <class Expect, class Functor>
 constexpr void test_b5(Functor&& f) {
-    NonCopyable arg;
+  NonCopyable arg;
 
-    // Check that the deduced return type of invoke is what is expected.
-    typedef decltype(
-        std::invoke(std::forward<Functor>(f), std::move(arg))
-    ) DeducedReturnType;
-    static_assert((std::is_same<DeducedReturnType, Expect>::value), "");
+  // Check that the deduced return type of invoke is what is expected.
+  typedef decltype(std::invoke(std::forward<Functor>(f), std::move(arg)))
+      DeducedReturnType;
+  static_assert((std::is_same<DeducedReturnType, Expect>::value), "");
 
-    // Check that result_of_t matches Expect.
-    typedef typename std::result_of<Functor&&(NonCopyable&&)>::type
-            ResultOfReturnType;
-    static_assert((std::is_same<ResultOfReturnType, Expect>::value), "");
+  // Check that result_of_t matches Expect.
+  typedef typename std::result_of<Functor && (NonCopyable &&)>::type
+      ResultOfReturnType;
+  static_assert((std::is_same<ResultOfReturnType, Expect>::value), "");
 
-    // Run invoke and check the return value.
-    DeducedReturnType ret = std::invoke(std::forward<Functor>(f), std::move(arg));
-    assert(ret == 42);
+  // Run invoke and check the return value.
+  DeducedReturnType ret = std::invoke(std::forward<Functor>(f), std::move(arg));
+  assert(ret == 42);
 }
 
 constexpr bool bullet_one_two_tests() {
-    {
-        TestClass cl(42);
-        test_b12<int&(NonCopyable&&) &, int&>(cl);
-        test_b12<int const&(NonCopyable&&) const &, int const&>(cl);
+  {
+    TestClass cl(42);
+    test_b12<int&(NonCopyable &&)&, int&>(cl);
+    test_b12<int const&(NonCopyable &&) const&, int const&>(cl);
 
-        test_b12<int&&(NonCopyable&&) &&, int&&>(std::move(cl));
-        test_b12<int const&&(NonCopyable&&) const &&, int const&&>(std::move(cl));
-    }
-    {
-        DerivedFromTestClass cl(42);
-        test_b12<int&(NonCopyable&&) &, int&>(cl);
-        test_b12<int const&(NonCopyable&&) const &, int const&>(cl);
+    test_b12<int && (NonCopyable &&)&&, int&&>(std::move(cl));
+    test_b12<int const && (NonCopyable &&) const&&, int const&&>(std::move(cl));
+  }
+  {
+    DerivedFromTestClass cl(42);
+    test_b12<int&(NonCopyable &&)&, int&>(cl);
+    test_b12<int const&(NonCopyable &&) const&, int const&>(cl);
 
-        test_b12<int&&(NonCopyable&&) &&, int&&>(std::move(cl));
-        test_b12<int const&&(NonCopyable&&) const &&, int const&&>(std::move(cl));
-    }
-    {
-        TestClass cl_obj(42);
-        std::reference_wrapper<TestClass> cl(cl_obj);
-        test_b12<int&(NonCopyable&&) &, int&>(cl);
-        test_b12<int const&(NonCopyable&&) const &, int const&>(cl);
+    test_b12<int && (NonCopyable &&)&&, int&&>(std::move(cl));
+    test_b12<int const && (NonCopyable &&) const&&, int const&&>(std::move(cl));
+  }
+  {
+    TestClass cl_obj(42);
+    std::reference_wrapper<TestClass> cl(cl_obj);
+    test_b12<int&(NonCopyable &&)&, int&>(cl);
+    test_b12<int const&(NonCopyable &&) const&, int const&>(cl);
 
-        test_b12<int&(NonCopyable&&) &, int&>(std::move(cl));
-        test_b12<int const&(NonCopyable&&) const &, int const&>(std::move(cl));
-    }
-    {
-        DerivedFromTestClass cl_obj(42);
-        std::reference_wrapper<DerivedFromTestClass> cl(cl_obj);
-        test_b12<int&(NonCopyable&&) &, int&>(cl);
-        test_b12<int const&(NonCopyable&&) const &, int const&>(cl);
+    test_b12<int&(NonCopyable &&)&, int&>(std::move(cl));
+    test_b12<int const&(NonCopyable &&) const&, int const&>(std::move(cl));
+  }
+  {
+    DerivedFromTestClass cl_obj(42);
+    std::reference_wrapper<DerivedFromTestClass> cl(cl_obj);
+    test_b12<int&(NonCopyable &&)&, int&>(cl);
+    test_b12<int const&(NonCopyable &&) const&, int const&>(cl);
 
-        test_b12<int&(NonCopyable&&) &, int&>(std::move(cl));
-        test_b12<int const&(NonCopyable&&) const &, int const&>(std::move(cl));
-    }
-    {
-        TestClass cl_obj(42);
-        TestClass *cl = &cl_obj;
-        test_b12<int&(NonCopyable&&) &, int&>(cl);
-        test_b12<int const&(NonCopyable&&) const &, int const&>(cl);
-    }
-    {
-        DerivedFromTestClass cl_obj(42);
-        DerivedFromTestClass *cl = &cl_obj;
-        test_b12<int&(NonCopyable&&) &, int&>(cl);
-        test_b12<int const&(NonCopyable&&) const &, int const&>(cl);
-    }
-    return true;
+    test_b12<int&(NonCopyable &&)&, int&>(std::move(cl));
+    test_b12<int const&(NonCopyable &&) const&, int const&>(std::move(cl));
+  }
+  {
+    TestClass cl_obj(42);
+    TestClass* cl = &cl_obj;
+    test_b12<int&(NonCopyable &&)&, int&>(cl);
+    test_b12<int const&(NonCopyable &&) const&, int const&>(cl);
+  }
+  {
+    DerivedFromTestClass cl_obj(42);
+    DerivedFromTestClass* cl = &cl_obj;
+    test_b12<int&(NonCopyable &&)&, int&>(cl);
+    test_b12<int const&(NonCopyable &&) const&, int const&>(cl);
+  }
+  return true;
 }
 
 constexpr bool bullet_three_four_tests() {
-    {
-        typedef TestClass Fn;
-        Fn cl(42);
-        test_b34<int&>(cl);
-        test_b34<int const&>(static_cast<Fn const&>(cl));
+  {
+    typedef TestClass Fn;
+    Fn cl(42);
+    test_b34<int&>(cl);
+    test_b34<int const&>(static_cast<Fn const&>(cl));
 
-        test_b34<int&&>(static_cast<Fn &&>(cl));
-        test_b34<int const&&>(static_cast<Fn const&&>(cl));
-    }
-    {
-        typedef DerivedFromTestClass Fn;
-        Fn cl(42);
-        test_b34<int&>(cl);
-        test_b34<int const&>(static_cast<Fn const&>(cl));
+    test_b34<int&&>(static_cast<Fn&&>(cl));
+    test_b34<int const&&>(static_cast<Fn const&&>(cl));
+  }
+  {
+    typedef DerivedFromTestClass Fn;
+    Fn cl(42);
+    test_b34<int&>(cl);
+    test_b34<int const&>(static_cast<Fn const&>(cl));
 
-        test_b34<int&&>(static_cast<Fn &&>(cl));
-        test_b34<int const&&>(static_cast<Fn const&&>(cl));
-    }
-    {
-        typedef TestClass Fn;
-        Fn cl(42);
-        test_b34<int&>(std::reference_wrapper<Fn>(cl));
-        test_b34<int const&>(std::reference_wrapper<Fn const>(cl));
-    }
-    {
-        typedef DerivedFromTestClass Fn;
-        Fn cl(42);
-        test_b34<int&>(std::reference_wrapper<Fn>(cl));
-        test_b34<int const&>(std::reference_wrapper<Fn const>(cl));
-    }
-    {
-        typedef TestClass Fn;
-        Fn cl_obj(42);
-        Fn* cl = &cl_obj;
-        test_b34<int&>(cl);
-        test_b34<int const&>(static_cast<Fn const*>(cl));
-    }
-    {
-        typedef DerivedFromTestClass Fn;
-        Fn cl_obj(42);
-        Fn* cl = &cl_obj;
-        test_b34<int&>(cl);
-        test_b34<int const&>(static_cast<Fn const*>(cl));
-    }
-    return true;
+    test_b34<int&&>(static_cast<Fn&&>(cl));
+    test_b34<int const&&>(static_cast<Fn const&&>(cl));
+  }
+  {
+    typedef TestClass Fn;
+    Fn cl(42);
+    test_b34<int&>(std::reference_wrapper<Fn>(cl));
+    test_b34<int const&>(std::reference_wrapper<Fn const>(cl));
+  }
+  {
+    typedef DerivedFromTestClass Fn;
+    Fn cl(42);
+    test_b34<int&>(std::reference_wrapper<Fn>(cl));
+    test_b34<int const&>(std::reference_wrapper<Fn const>(cl));
+  }
+  {
+    typedef TestClass Fn;
+    Fn cl_obj(42);
+    Fn* cl = &cl_obj;
+    test_b34<int&>(cl);
+    test_b34<int const&>(static_cast<Fn const*>(cl));
+  }
+  {
+    typedef DerivedFromTestClass Fn;
+    Fn cl_obj(42);
+    Fn* cl = &cl_obj;
+    test_b34<int&>(cl);
+    test_b34<int const&>(static_cast<Fn const*>(cl));
+  }
+  return true;
 }
 
 constexpr bool bullet_five_tests() {
-    using FooType = const int&(NonCopyable&&);
-    {
-        FooType& fn = foo;
-        test_b5<const int &>(fn);
-    }
-    {
-        FooType* fn = foo;
-        test_b5<const int &>(fn);
-    }
-    {
-        typedef TestClass Fn;
-        Fn cl(42);
-        test_b5<int&>(cl);
-        test_b5<int const&>(static_cast<Fn const&>(cl));
+  using FooType = const int&(NonCopyable &&);
+  {
+    FooType& fn = foo;
+    test_b5<const int&>(fn);
+  }
+  {
+    FooType* fn = foo;
+    test_b5<const int&>(fn);
+  }
+  {
+    typedef TestClass Fn;
+    Fn cl(42);
+    test_b5<int&>(cl);
+    test_b5<int const&>(static_cast<Fn const&>(cl));
 
-        test_b5<int&&>(static_cast<Fn &&>(cl));
-        test_b5<int const&&>(static_cast<Fn const&&>(cl));
-    }
-    return true;
+    test_b5<int&&>(static_cast<Fn&&>(cl));
+    test_b5<int const&&>(static_cast<Fn const&&>(cl));
+  }
+  return true;
 }
 
 int main(int, char**) {
-    bullet_one_two_tests();
-    bullet_three_four_tests();
-    bullet_five_tests();
+  bullet_one_two_tests();
+  bullet_three_four_tests();
+  bullet_five_tests();
 
-    static_assert(bullet_one_two_tests());
-    static_assert(bullet_three_four_tests());
-    static_assert(bullet_five_tests());
+  static_assert(bullet_one_two_tests());
+  static_assert(bullet_three_four_tests());
+  static_assert(bullet_five_tests());
 
-    return 0;
+  return 0;
 }

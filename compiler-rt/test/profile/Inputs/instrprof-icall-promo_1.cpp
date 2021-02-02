@@ -2,6 +2,6 @@
 
 A a;
 
-A* ap = &a;
+A *ap = &a;
 
-int ref(A* ap) { return ap->A::foo(); }
+int ref(A *ap) { return ap->A::foo(); }

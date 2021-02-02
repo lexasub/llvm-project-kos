@@ -276,4 +276,4 @@ TEST_F(InstrOrderInvalidationTest, EraseNoInvalidation) {
 }
 
 } // End anonymous namespace.
-} // End llvm namespace.
+} // namespace llvm

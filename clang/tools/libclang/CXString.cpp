@@ -89,7 +89,7 @@ CXString createRef(StringRef String) {
 
   CXString Result;
   Result.data = String.data();
-  Result.private_flags = (unsigned) CXS_Unmanaged;
+  Result.private_flags = (unsigned)CXS_Unmanaged;
   return Result;
 }
 
@@ -99,14 +99,14 @@ CXString createDup(StringRef String) {
   memmove(Spelling, String.data(), String.size());
   Spelling[String.size()] = 0;
   Result.data = Spelling;
-  Result.private_flags = (unsigned) CXS_Malloc;
+  Result.private_flags = (unsigned)CXS_Malloc;
   return Result;
 }
 
 CXString createCXString(CXStringBuf *buf) {
   CXString Str;
   Str.data = buf;
-  Str.private_flags = (unsigned) CXS_StringBuf;
+  Str.private_flags = (unsigned)CXS_StringBuf;
   return Str;
 }
 
@@ -118,7 +118,6 @@ CXStringSet *createSet(const std::vector<std::string> &Strings) {
     Set->Strings[SI] = createDup(Strings[SI]);
   return Set;
 }
-
 
 //===----------------------------------------------------------------------===//
 // String pools.
@@ -145,12 +144,10 @@ CXStringBuf *getCXStringBuf(CXTranslationUnit TU) {
   return TU->StringPool->getCXStringBuf(TU);
 }
 
-void CXStringBuf::dispose() {
-  TU->StringPool->Pool.push_back(this);
-}
+void CXStringBuf::dispose() { TU->StringPool->Pool.push_back(this); }
 
 bool isManagedByPool(CXString str) {
-  return ((CXStringFlag) str.private_flags) == CXS_StringBuf;
+  return ((CXStringFlag)str.private_flags) == CXS_StringBuf;
 }
 
 } // end namespace cxstring
@@ -161,24 +158,24 @@ bool isManagedByPool(CXString str) {
 //===----------------------------------------------------------------------===//
 
 const char *clang_getCString(CXString string) {
-  if (string.private_flags == (unsigned) CXS_StringBuf) {
+  if (string.private_flags == (unsigned)CXS_StringBuf) {
     return static_cast<const cxstring::CXStringBuf *>(string.data)->Data.data();
   }
   return static_cast<const char *>(string.data);
 }
 
 void clang_disposeString(CXString string) {
-  switch ((CXStringFlag) string.private_flags) {
-    case CXS_Unmanaged:
-      break;
-    case CXS_Malloc:
-      if (string.data)
-        free(const_cast<void *>(string.data));
-      break;
-    case CXS_StringBuf:
-      static_cast<cxstring::CXStringBuf *>(
-          const_cast<void *>(string.data))->dispose();
-      break;
+  switch ((CXStringFlag)string.private_flags) {
+  case CXS_Unmanaged:
+    break;
+  case CXS_Malloc:
+    if (string.data)
+      free(const_cast<void *>(string.data));
+    break;
+  case CXS_StringBuf:
+    static_cast<cxstring::CXStringBuf *>(const_cast<void *>(string.data))
+        ->dispose();
+    break;
   }
 }
 
@@ -188,4 +185,3 @@ void clang_disposeStringSet(CXStringSet *set) {
   delete[] set->Strings;
   delete set;
 }
-

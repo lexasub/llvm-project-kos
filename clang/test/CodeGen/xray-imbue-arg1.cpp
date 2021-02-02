@@ -10,7 +10,7 @@
 
 void foo() {}
 
-void arg1(void*) {}
+void arg1(void *) {}
 
 // CHECK: define{{.*}} void @_Z3foov() #[[FOO:[0-9]+]] {
 // CHECK: define{{.*}} void {{.*}}arg1{{.*}} #[[ALWAYSARG1:[0-9]+]] {

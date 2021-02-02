@@ -36,9 +36,8 @@ public:
   // Returns the number of instructions between the start and end address. If
   // canSetBreakpoint is true then the count will be the number of
   // instructions on which a breakpoint can be set.
-  size_t GetInstructionsCount(const SBAddress &start,
-                              const SBAddress &end,
-                              bool canSetBreakpoint = false);                                   
+  size_t GetInstructionsCount(const SBAddress &start, const SBAddress &end,
+                              bool canSetBreakpoint = false);
 
   void Clear();
 
@@ -61,7 +60,6 @@ protected:
 
   void SetDisassembler(const lldb::DisassemblerSP &opaque_sp);
   bool GetDescription(lldb_private::Stream &description);
-
 
 private:
   lldb::DisassemblerSP m_opaque_sp;

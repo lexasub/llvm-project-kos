@@ -1,36 +1,34 @@
 // RUN: %check_clang_tidy %s google-explicit-constructor %t
 
 namespace std {
-  typedef decltype(sizeof(int)) size_t;
+typedef decltype(sizeof(int)) size_t;
 
-  // libc++'s implementation
-  template <class _E>
-  class initializer_list
-  {
-    const _E* __begin_;
-    size_t    __size_;
+// libc++'s implementation
+template <class _E>
+class initializer_list {
+  const _E *__begin_;
+  size_t __size_;
 
-    initializer_list(const _E* __b, size_t __s)
+  initializer_list(const _E *__b, size_t __s)
       : __begin_(__b),
-        __size_(__s)
-    {}
+        __size_(__s) {}
 
-  public:
-    typedef _E        value_type;
-    typedef const _E& reference;
-    typedef const _E& const_reference;
-    typedef size_t    size_type;
+public:
+  typedef _E value_type;
+  typedef const _E &reference;
+  typedef const _E &const_reference;
+  typedef size_t size_type;
 
-    typedef const _E* iterator;
-    typedef const _E* const_iterator;
+  typedef const _E *iterator;
+  typedef const _E *const_iterator;
 
-    initializer_list() : __begin_(nullptr), __size_(0) {}
+  initializer_list() : __begin_(nullptr), __size_(0) {}
 
-    size_t    size()  const {return __size_;}
-    const _E* begin() const {return __begin_;}
-    const _E* end()   const {return __begin_ + __size_;}
-  };
-}
+  size_t size() const { return __size_; }
+  const _E *begin() const { return __begin_; }
+  const _E *end() const { return __begin_ + __size_; }
+};
+} // namespace std
 
 struct A {
   A() {}
@@ -42,7 +40,7 @@ struct A {
 
   operator double() const = delete;
 
-  explicit A(const A& a) {}
+  explicit A(const A &a) {}
   // CHECK-MESSAGES: :[[@LINE-1]]:12: warning: copy constructor should not be declared explicit [google-explicit-constructor]
   // CHECK-FIXES: {{^  }}A(const A& a) {}
 
@@ -55,7 +53,7 @@ struct A {
   // CHECK-FIXES: {{^  }}explicit A(double x2, double y = 3.14) {}
 
   template <typename... T>
-  A(T&&... args);
+  A(T &&...args);
   // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: constructors that are callable with a single argument
   // CHECK-FIXES: {{^  }}explicit A(T&&... args);
 };
@@ -116,8 +114,8 @@ struct C2 {
 template <typename T>
 struct C3 {
   C3(initializer_list<T> list1) {}
-  C3(const std::initializer_list<T*> &list2) {}
-  C3(::std::initializer_list<T**> &&list3) {}
+  C3(const std::initializer_list<T *> &list2) {}
+  C3(::std::initializer_list<T **> &&list3) {}
 
   template <typename U>
   C3(initializer_list<U> list3) {}
@@ -152,7 +150,7 @@ void f(std::initializer_list<int> list) {
 template <typename T>
 struct F {};
 
-template<typename T>
+template <typename T>
 struct G {
   operator bool() const;
   // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: 'operator bool' must be marked
@@ -160,24 +158,26 @@ struct G {
   operator F<T>() const;
   // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: 'operator F<type-parameter-0-0>' must be marked
   // CHECK-FIXES: {{^}}  explicit operator F<T>() const;
-  template<typename U>
-  operator F<U>*() const;
+  template <typename U>
+  operator F<U> *() const;
   // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: 'operator F<type-parameter-1-0> *' must be marked
   // CHECK-FIXES: {{^}}  explicit operator F<U>*() const;
 };
 
 void f2() {
   G<int> a;
-  (void)(F<int>)a;
-  if (a) {}
-  (void)(F<int>*)a;
-  (void)(F<int*>*)a;
+  (void)(F<int>) a;
+  if (a) {
+  }
+  (void)(F<int> *) a;
+  (void)(F<int *> *) a;
 
   G<double> b;
-  (void)(F<double>)b;
-  if (b) {}
-  (void)(F<double>*)b;
-  (void)(F<double*>*)b;
+  (void)(F<double>) b;
+  if (b) {
+  }
+  (void)(F<double> *) b;
+  (void)(F<double *> *) b;
 }
 
 #define DEFINE_STRUCT_WITH_OPERATOR_BOOL(name) \

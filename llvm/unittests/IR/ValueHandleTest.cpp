@@ -117,11 +117,10 @@ TEST_F(ValueHandle, WeakTrackingVH_NullOnDeletion) {
   EXPECT_EQ(null_value, WVH_Recreated);
 }
 
-
 TEST_F(ValueHandle, AssertingVH_BasicOperation) {
   AssertingVH<CastInst> AVH(BitcastV.get());
   CastInst *implicit_to_exact_type = AVH;
-  (void)implicit_to_exact_type;  // Avoid warning.
+  (void)implicit_to_exact_type; // Avoid warning.
 
   AssertingVH<Value> GenericAVH(BitcastV.get());
   EXPECT_EQ(BitcastV.get(), GenericAVH);
@@ -138,7 +137,7 @@ TEST_F(ValueHandle, AssertingVH_Const) {
   const CastInst *ConstBitcast = BitcastV.get();
   AssertingVH<const CastInst> AVH(ConstBitcast);
   const CastInst *implicit_to_exact_type = AVH;
-  (void)implicit_to_exact_type;  // Avoid warning.
+  (void)implicit_to_exact_type; // Avoid warning.
 }
 
 TEST_F(ValueHandle, AssertingVH_Comparisons) {
@@ -192,19 +191,19 @@ TEST_F(ValueHandle, AssertingVH_ReducesToPointer) {
 
 TEST_F(ValueHandle, AssertingVH_Asserts) {
   AssertingVH<Value> AVH(BitcastV.get());
-  EXPECT_DEATH({BitcastV.reset();},
+  EXPECT_DEATH({ BitcastV.reset(); },
                "An asserting value handle still pointed to this value!");
   AssertingVH<Value> Copy(AVH);
   AVH = nullptr;
-  EXPECT_DEATH({BitcastV.reset();},
+  EXPECT_DEATH({ BitcastV.reset(); },
                "An asserting value handle still pointed to this value!");
   Copy = nullptr;
   BitcastV.reset();
 }
 
-#endif  // GTEST_HAS_DEATH_TEST
+#endif // GTEST_HAS_DEATH_TEST
 
-#endif  // NDEBUG
+#endif // NDEBUG
 
 TEST_F(ValueHandle, CallbackVH_BasicOperation) {
   ConcreteCallbackVH CVH(BitcastV.get());
@@ -285,7 +284,7 @@ TEST_F(ValueHandle, CallbackVH_CallbackOnRAUW) {
 
     RecordingVH() : DeletedCalls(0), AURWArgument(nullptr) {}
     RecordingVH(Value *V)
-      : CallbackVH(V), DeletedCalls(0), AURWArgument(nullptr) {}
+        : CallbackVH(V), DeletedCalls(0), AURWArgument(nullptr) {}
 
   private:
     void deleted() override {
@@ -342,7 +341,7 @@ TEST_F(ValueHandle, CallbackVH_DeletionCanRAUW) {
   std::unique_ptr<BinaryOperator> BitcastUser(BinaryOperator::CreateAdd(
       RVH, Constant::getNullValue(Type::getInt32Ty(Context))));
   EXPECT_EQ(BitcastV.get(), BitcastUser->getOperand(0));
-  BitcastV.reset();  // Would crash without the ValueHandler.
+  BitcastV.reset(); // Would crash without the ValueHandler.
   EXPECT_EQ(Constant::getNullValue(Type::getInt32Ty(Context)),
             RVH.AURWArgument);
   EXPECT_EQ(Constant::getNullValue(Type::getInt32Ty(Context)),
@@ -383,8 +382,8 @@ TEST_F(ValueHandle, DestroyingOtherVHOnSameValueDoesntBreakIteration) {
     WeakTrackingVH ShouldBeVisited2(BitcastV.get());
 
     BitcastV->replaceAllUsesWith(ConstantV);
-    EXPECT_EQ(ConstantV, static_cast<Value*>(ShouldBeVisited1));
-    EXPECT_EQ(ConstantV, static_cast<Value*>(ShouldBeVisited2));
+    EXPECT_EQ(ConstantV, static_cast<Value *>(ShouldBeVisited1));
+    EXPECT_EQ(ConstantV, static_cast<Value *>(ShouldBeVisited2));
   }
 
   {
@@ -393,8 +392,8 @@ TEST_F(ValueHandle, DestroyingOtherVHOnSameValueDoesntBreakIteration) {
     WeakTrackingVH ShouldBeVisited2(BitcastV.get());
 
     BitcastV.reset();
-    EXPECT_EQ(nullptr, static_cast<Value*>(ShouldBeVisited1));
-    EXPECT_EQ(nullptr, static_cast<Value*>(ShouldBeVisited2));
+    EXPECT_EQ(nullptr, static_cast<Value *>(ShouldBeVisited1));
+    EXPECT_EQ(nullptr, static_cast<Value *>(ShouldBeVisited2));
   }
 }
 
@@ -406,9 +405,8 @@ TEST_F(ValueHandle, AssertingVHCheckedLast) {
   class ClearingVH final : public CallbackVH {
   public:
     AssertingVH<Value> *ToClear[2];
-    ClearingVH(Value *V,
-               AssertingVH<Value> &A0, AssertingVH<Value> &A1)
-      : CallbackVH(V) {
+    ClearingVH(Value *V, AssertingVH<Value> &A0, AssertingVH<Value> &A1)
+        : CallbackVH(V) {
       ToClear[0] = &A0;
       ToClear[1] = &A1;
     }
@@ -575,4 +573,4 @@ TEST_F(ValueHandle, TrackingVH_Asserts) {
 #endif // GTEST_HAS_DEATH_TEST
 
 #endif // NDEBUG
-}
+} // namespace

@@ -20,40 +20,35 @@
 
 #include "test_macros.h"
 
-void
-test1()
-{
-    typedef std::mt19937 E;
-    E e1;
-    (void)e1();
-    E e2 = e1;
-    assert(e1 == e2);
-    assert(e1() == e2());
-    E::result_type k = e1();
-    assert(e1 != e2);
-    assert(e2() == k);
-    assert(e1 == e2);
+void test1() {
+  typedef std::mt19937 E;
+  E e1;
+  (void)e1();
+  E e2 = e1;
+  assert(e1 == e2);
+  assert(e1() == e2());
+  E::result_type k = e1();
+  assert(e1 != e2);
+  assert(e2() == k);
+  assert(e1 == e2);
 }
 
-void
-test2()
-{
-    typedef std::mt19937_64 E;
-    E e1;
-    (void)e1();
-    E e2(e1);
-    assert(e1 == e2);
-    assert(e1() == e2());
-    E::result_type k = e1();
-    assert(e1 != e2);
-    assert(e2() == k);
-    assert(e1 == e2);
+void test2() {
+  typedef std::mt19937_64 E;
+  E e1;
+  (void)e1();
+  E e2(e1);
+  assert(e1 == e2);
+  assert(e1() == e2());
+  E::result_type k = e1();
+  assert(e1 != e2);
+  assert(e2() == k);
+  assert(e1 == e2);
 }
 
-int main(int, char**)
-{
-    test1();
-    test2();
+int main(int, char**) {
+  test1();
+  test2();
 
   return 0;
 }

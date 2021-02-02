@@ -3,7 +3,7 @@
 #include "test.h"
 
 int Global;
-__thread int huge[1024*1024];
+__thread int huge[1024 * 1024];
 
 void *Thread1(void *x) {
   barrier_wait(&barrier);
@@ -38,4 +38,3 @@ int main() {
 // CHECK:                                      (mutexes: write [[M1:M[0-9]+]]):
 // CHECK: Mutex [[M1]] is already destroyed
 // CHECK-NOT: Mutex {{.*}} created at
-

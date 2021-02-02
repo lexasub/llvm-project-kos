@@ -14,129 +14,135 @@
 // works sufficiently differently there that it needs a separate test.
 
 namespace test0 {
-  namespace NonClass {
-    typedef int type;
-    struct hiding {};
-    int hiding;
-    static union { double union_member; };
-    enum tagname { enumerator };
-  }
+namespace NonClass {
+typedef int type;
+struct hiding {};
+int hiding;
+static union { double union_member; };
+enum tagname { enumerator };
+} // namespace NonClass
 
-  class Test0 {
-    using NonClass::type; // expected-error {{not a class}}
-    using NonClass::hiding; // expected-error {{not a class}}
-    using NonClass::union_member; // expected-error {{not a class}}
-    using NonClass::enumerator; // expected-error {{not a class}}
-  };
-}
+class Test0 {
+  using NonClass::enumerator;   // expected-error {{not a class}}
+  using NonClass::hiding;       // expected-error {{not a class}}
+  using NonClass::type;         // expected-error {{not a class}}
+  using NonClass::union_member; // expected-error {{not a class}}
+};
+} // namespace test0
 
 struct Opaque0 {};
 
 namespace test1 {
-  struct A {
-    typedef int type;
-    struct hiding {}; // expected-note {{previous use is here}}
-    Opaque0 hiding;
-    union { double union_member; };
-    enum tagname { enumerator };
+struct A {
+  typedef int type;
+  struct hiding {}; // expected-note {{previous use is here}}
+  Opaque0 hiding;
+  union {
+    double union_member;
   };
+  enum tagname { enumerator };
+};
 
-  struct B : A {
-    using A::type;
-    using A::hiding;
-    using A::union_member;
-    using A::enumerator;
-    using A::tagname;
+struct B : A {
+  using A::enumerator;
+  using A::hiding;
+  using A::tagname;
+  using A::type;
+  using A::union_member;
 
-    void test0() {
-      type t = 0;
-    }
+  void test0() {
+    type t = 0;
+  }
 
-    void test1() {
-      typedef struct A::hiding local;
-      struct hiding _ = local();
-    }
+  void test1() {
+    typedef struct A::hiding local;
+    struct hiding _ = local();
+  }
 
-    void test2() {
-      union hiding _; // expected-error {{tag type that does not match previous}}
-    }
+  void test2() {
+    union hiding _; // expected-error {{tag type that does not match previous}}
+  }
 
-    void test3() {
-      char array[sizeof(union_member) == sizeof(double) ? 1 : -1];
-    }
+  void test3() {
+    char array[sizeof(union_member) == sizeof(double) ? 1 : -1];
+  }
 
-    void test4() {
-      enum tagname _ = enumerator;
-    }
+  void test4() {
+    enum tagname _ = enumerator;
+  }
 
-    void test5() {
-      Opaque0 _ = hiding;
-    }
-  };
-}
+  void test5() {
+    Opaque0 _ = hiding;
+  }
+};
+} // namespace test1
 
 namespace test2 {
-  struct A {
-    typedef int type;
-    struct hiding {}; // expected-note {{previous use is here}}
-    int hiding;
-    union { double union_member; };
-    enum tagname { enumerator };
+struct A {
+  typedef int type;
+  struct hiding {}; // expected-note {{previous use is here}}
+  int hiding;
+  union {
+    double union_member;
   };
+  enum tagname { enumerator };
+};
 
-  template <class T> struct B : A {
-    using A::type;
-    using A::hiding;
-    using A::union_member;
-    using A::enumerator;
-    using A::tagname;
+template <class T> struct B : A {
+  using A::enumerator;
+  using A::hiding;
+  using A::tagname;
+  using A::type;
+  using A::union_member;
 
-    void test0() {
-      type t = 0;
-    }
+  void test0() {
+    type t = 0;
+  }
 
-    void test1() {
-      typedef struct A::hiding local;
-      struct hiding _ = local();
-    }
+  void test1() {
+    typedef struct A::hiding local;
+    struct hiding _ = local();
+  }
 
-    void test2() {
-      union hiding _; // expected-error {{tag type that does not match previous}}
-    }
+  void test2() {
+    union hiding _; // expected-error {{tag type that does not match previous}}
+  }
 
-    void test3() {
-      char array[sizeof(union_member) == sizeof(double) ? 1 : -1];
-    }
+  void test3() {
+    char array[sizeof(union_member) == sizeof(double) ? 1 : -1];
+  }
 
-    void test4() {
-      enum tagname _ = enumerator;
-    }
+  void test4() {
+    enum tagname _ = enumerator;
+  }
 
-    void test5() {
-      Opaque0 _ = hiding;
-    }
-  };
-}
+  void test5() {
+    Opaque0 _ = hiding;
+  }
+};
+} // namespace test2
 
 namespace test3 {
+struct hiding {};
+
+template <class T> struct A {
+  typedef int type; // expected-note {{target of using declaration}}
   struct hiding {};
+  Opaque0 hiding; // expected-note {{target of using declaration}}
+  union {
+    double union_member;
+  };                           // expected-note {{target of using declaration}}
+  enum tagname { enumerator }; // expected-note 2 {{target of using declaration}}
+};
 
-  template <class T> struct A {
-    typedef int type; // expected-note {{target of using declaration}}
-    struct hiding {};
-    Opaque0 hiding; // expected-note {{target of using declaration}}
-    union { double union_member; }; // expected-note {{target of using declaration}}
-    enum tagname { enumerator }; // expected-note 2 {{target of using declaration}}
-  };
+template <class T> struct B : A<T> {
+  using A<T>::type; // expected-error {{dependent using declaration resolved to type without 'typename'}}
+  using A<T>::hiding;
+  using A<T>::union_member;
+  using A<T>::enumerator;
+  using A<T>::tagname; // expected-error {{dependent using declaration resolved to type without 'typename'}}
 
-  template <class T> struct B : A<T> {
-    using A<T>::type; // expected-error {{dependent using declaration resolved to type without 'typename'}}
-    using A<T>::hiding;
-    using A<T>::union_member;
-    using A<T>::enumerator;
-    using A<T>::tagname; // expected-error {{dependent using declaration resolved to type without 'typename'}}
-
-    // FIXME: re-enable these when the various bugs involving tags are fixed
+  // FIXME: re-enable these when the various bugs involving tags are fixed
 #if 0
     void test1() {
       typedef struct A<T>::hiding local;
@@ -149,9 +155,9 @@ namespace test3 {
     }
 #endif
 
-    void test3() {
-      char array[sizeof(union_member) == sizeof(double) ? 1 : -1];
-    }
+  void test3() {
+    char array[sizeof(union_member) == sizeof(double) ? 1 : -1];
+  }
 
 #if 0
     void test4() {
@@ -159,82 +165,82 @@ namespace test3 {
     }
 #endif
 
-    void test5() {
-      Opaque0 _ = hiding;
-    }
-  };
+  void test5() {
+    Opaque0 _ = hiding;
+  }
+};
 
-  template struct B<int>; // expected-note {{in instantiation}}
+template struct B<int>; // expected-note {{in instantiation}}
 
-  template <class T> struct C : A<T> {
-    using typename A<T>::type;
-    using typename A<T>::hiding; // expected-note {{declared here}} \
+template <class T> struct C : A<T> {
+  using typename A<T>::type;
+  using typename A<T>::hiding;       // expected-note {{declared here}} \
                                  // expected-error {{'typename' keyword used on a non-type}}
-    using typename A<T>::union_member; // expected-error {{'typename' keyword used on a non-type}}
-    using typename A<T>::enumerator; // expected-error {{'typename' keyword used on a non-type}}
+  using typename A<T>::union_member; // expected-error {{'typename' keyword used on a non-type}}
+  using typename A<T>::enumerator;   // expected-error {{'typename' keyword used on a non-type}}
 
-    void test6() {
-      type t = 0;
-    }
+  void test6() {
+    type t = 0;
+  }
 
-    void test7() {
-      Opaque0 _ = hiding; // expected-error {{does not refer to a value}}
-    }
-  };
+  void test7() {
+    Opaque0 _ = hiding; // expected-error {{does not refer to a value}}
+  }
+};
 
-  template struct C<int>; // expected-note {{in instantiation}}
-}
+template struct C<int>; // expected-note {{in instantiation}}
+} // namespace test3
 
 namespace test4 {
-  struct Base {
-    int foo();
-  };
+struct Base {
+  int foo();
+};
 
-  struct Unrelated {
-    int foo();
-  };
+struct Unrelated {
+  int foo();
+};
 
-  struct Subclass : Base {
-  };
+struct Subclass : Base {
+};
 
-  namespace InnerNS {
-    int foo();
-  }
-
-  // We should be able to diagnose these without instantiation.
-  template <class T> struct C : Base {
-    using InnerNS::foo; // expected-error {{not a class}}
-    using Base::bar; // expected-error {{no member named 'bar'}}
-    using Unrelated::foo; // expected-error {{not a base class}}
-    using C::foo; // legal in C++03
-    using Subclass::foo; // legal in C++03
-#if __cplusplus >= 201103L
-    // expected-error@-3 {{refers to its own class}}
-    // expected-error@-3 {{refers into 'Subclass::', which is not a base class}}
-#endif
-
-    int bar();
-#if __cplusplus < 201103L
-    // expected-note@-2 {{target of using declaration}}
-#endif
-    using C::bar; // expected-error {{refers to its own class}}
-  };
+namespace InnerNS {
+int foo();
 }
+
+// We should be able to diagnose these without instantiation.
+template <class T> struct C : Base {
+  using Base::bar;      // expected-error {{no member named 'bar'}}
+  using C::foo;         // legal in C++03
+  using InnerNS::foo;   // expected-error {{not a class}}
+  using Subclass::foo;  // legal in C++03
+  using Unrelated::foo; // expected-error {{not a base class}}
+#if __cplusplus >= 201103L
+  // expected-error@-3 {{refers to its own class}}
+  // expected-error@-3 {{refers into 'Subclass::', which is not a base class}}
+#endif
+
+  int bar();
+#if __cplusplus < 201103L
+  // expected-note@-2 {{target of using declaration}}
+#endif
+  using C::bar; // expected-error {{refers to its own class}}
+};
+} // namespace test4
 
 namespace test5 {
-  struct B;
-  struct A {
-    A(const B&);
-    B &operator=(const B&);
-  };
-  struct B : A {
+struct B;
+struct A {
+  A(const B &);
+  B &operator=(const B &);
+};
+struct B : A {
 #if __cplusplus >= 201103L
-    using A::A;
+  using A::A;
 #endif
-    using A::operator=;
-  };
-  void test(B b) {
-    B b2(b);
-    b2 = b;
-  }
+  using A::operator=;
+};
+void test(B b) {
+  B b2(b);
+  b2 = b;
 }
+} // namespace test5

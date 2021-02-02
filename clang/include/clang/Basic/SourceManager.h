@@ -316,9 +316,7 @@ public:
     return X;
   }
 
-  SourceLocation getIncludeLoc() const {
-    return IncludeLoc;
-  }
+  SourceLocation getIncludeLoc() const { return IncludeLoc; }
 
   const ContentCache &getContentCache() const {
     return *ContentAndKind.getPointer();
@@ -366,9 +364,7 @@ public:
     return SpellingLoc.isInvalid() ? getExpansionLocStart() : SpellingLoc;
   }
 
-  SourceLocation getExpansionLocStart() const {
-    return ExpansionLocStart;
-  }
+  SourceLocation getExpansionLocStart() const { return ExpansionLocStart; }
 
   SourceLocation getExpansionLocEnd() const {
     return ExpansionLocEnd.isInvalid() ? getExpansionLocStart()
@@ -569,8 +565,10 @@ public:
   bool getCachedResult(unsigned LOffset, unsigned ROffset) const {
     // If one of the query files is the common file, use the offset.  Otherwise,
     // use the #include loc in the common file.
-    if (LQueryFID != CommonFID) LOffset = LCommonOffset;
-    if (RQueryFID != CommonFID) ROffset = RCommonOffset;
+    if (LQueryFID != CommonFID)
+      LOffset = LCommonOffset;
+    if (RQueryFID != CommonFID)
+      ROffset = RCommonOffset;
 
     // It is common for multiple macro expansions to be "included" from the same
     // location (expansion location), in which case use the order of the FileIDs
@@ -635,7 +633,7 @@ class SourceManager : public RefCountedBase<SourceManager> {
   /// This map allows us to merge ContentCache entries based
   /// on their FileEntry*.  All ContentCache objects will thus have unique,
   /// non-null, FileEntry pointers.
-  llvm::DenseMap<const FileEntry*, SrcMgr::ContentCache*> FileInfos;
+  llvm::DenseMap<const FileEntry *, SrcMgr::ContentCache *> FileInfos;
 
   /// True if the ContentCache for files that are overridden by other
   /// files, should report the original file name. Defaults to true.
@@ -673,7 +671,7 @@ class SourceManager : public RefCountedBase<SourceManager> {
   ///
   /// All FileEntry* within the stored ContentCache objects are NULL,
   /// as they do not refer to a file.
-  std::vector<SrcMgr::ContentCache*> MemBufferInfos;
+  std::vector<SrcMgr::ContentCache *> MemBufferInfos;
 
   /// The table of SLocEntries that are local to this module.
   ///
@@ -826,7 +824,8 @@ public:
 
   /// Push an entry to the module build stack.
   void pushModuleBuildStack(StringRef moduleName, FullSourceLoc importLoc) {
-    StoredModuleBuildStack.push_back(std::make_pair(moduleName.str(),importLoc));
+    StoredModuleBuildStack.push_back(
+        std::make_pair(moduleName.str(), importLoc));
   }
 
   //===--------------------------------------------------------------------===//
@@ -837,9 +836,7 @@ public:
   FileID getMainFileID() const { return MainFileID; }
 
   /// Set the file ID for the main source file.
-  void setMainFileID(FileID FID) {
-    MainFileID = FID;
-  }
+  void setMainFileID(FileID FID) { MainFileID = FID; }
 
   /// Returns true when the given FileEntry corresponds to the main file.
   ///
@@ -905,13 +902,11 @@ public:
   /// Return a new SourceLocation that encodes the fact
   /// that a token from SpellingLoc should actually be referenced from
   /// ExpansionLoc.
-  SourceLocation createExpansionLoc(SourceLocation Loc,
-                                    SourceLocation ExpansionLocStart,
-                                    SourceLocation ExpansionLocEnd,
-                                    unsigned TokLength,
-                                    bool ExpansionIsTokenRange = true,
-                                    int LoadedID = 0,
-                                    unsigned LoadedOffset = 0);
+  SourceLocation
+  createExpansionLoc(SourceLocation Loc, SourceLocation ExpansionLocStart,
+                     SourceLocation ExpansionLocEnd, unsigned TokLength,
+                     bool ExpansionIsTokenRange = true, int LoadedID = 0,
+                     unsigned LoadedOffset = 0);
 
   /// Return a new SourceLocation that encodes that the token starting
   /// at \p TokenStart ends prematurely at \p TokenEnd.
@@ -1044,8 +1039,8 @@ public:
   Optional<StringRef> getNonBuiltinFilenameForID(FileID FID) const;
 
   /// Returns the FileEntry record for the provided SLocEntry.
-  const FileEntry *getFileEntryForSLocEntry(const SrcMgr::SLocEntry &sloc) const
-  {
+  const FileEntry *
+  getFileEntryForSLocEntry(const SrcMgr::SLocEntry &sloc) const {
     return sloc.getFile().getContentCache().OrigEntry;
   }
 
@@ -1155,7 +1150,8 @@ public:
   SourceLocation getExpansionLoc(SourceLocation Loc) const {
     // Handle the non-mapped case inline, defer to out of line code to handle
     // expansions.
-    if (Loc.isFileID()) return Loc;
+    if (Loc.isFileID())
+      return Loc;
     return getExpansionLocSlowCase(Loc);
   }
 
@@ -1163,7 +1159,8 @@ public:
   /// location or the spelling location, depending on if it comes from a
   /// macro argument or not.
   SourceLocation getFileLoc(SourceLocation Loc) const {
-    if (Loc.isFileID()) return Loc;
+    if (Loc.isFileID())
+      return Loc;
     return getFileLocSlowCase(Loc);
   }
 
@@ -1203,7 +1200,8 @@ public:
   SourceLocation getSpellingLoc(SourceLocation Loc) const {
     // Handle the non-mapped case inline, defer to out of line code to handle
     // expansions.
-    if (Loc.isFileID()) return Loc;
+    if (Loc.isFileID())
+      return Loc;
     return getSpellingLocSlowCase(Loc);
   }
 
@@ -1249,7 +1247,7 @@ public:
     if (!E)
       return std::make_pair(FileID(), 0);
 
-    unsigned Offset = Loc.getOffset()-E->getOffset();
+    unsigned Offset = Loc.getOffset() - E->getOffset();
     if (Loc.isFileID())
       return std::make_pair(FID, Offset);
 
@@ -1267,7 +1265,7 @@ public:
     if (!E)
       return std::make_pair(FileID(), 0);
 
-    unsigned Offset = Loc.getOffset()-E->getOffset();
+    unsigned Offset = Loc.getOffset() - E->getOffset();
     if (Loc.isFileID())
       return std::make_pair(FID, Offset);
     return getDecomposedSpellingLocSlowCase(E, Offset);
@@ -1309,8 +1307,8 @@ public:
   ///
   /// \param MacroBegin If non-null and function returns true, it is set to the
   /// begin location of the immediate macro expansion.
-  bool isAtStartOfImmediateMacroExpansion(SourceLocation Loc,
-                                    SourceLocation *MacroBegin = nullptr) const;
+  bool isAtStartOfImmediateMacroExpansion(
+      SourceLocation Loc, SourceLocation *MacroBegin = nullptr) const;
 
   /// Returns true if the given MacroID location points at the character
   /// end of the immediate macro expansion.
@@ -1326,13 +1324,13 @@ public:
   ///
   /// If it's true and \p RelativeOffset is non-null, it will be set to the
   /// relative offset of \p Loc inside the chunk.
-  bool isInSLocAddrSpace(SourceLocation Loc,
-                         SourceLocation Start, unsigned Length,
+  bool isInSLocAddrSpace(SourceLocation Loc, SourceLocation Start,
+                         unsigned Length,
                          unsigned *RelativeOffset = nullptr) const {
     assert(((Start.getOffset() < NextLocalOffset &&
-               Start.getOffset()+Length <= NextLocalOffset) ||
+             Start.getOffset() + Length <= NextLocalOffset) ||
             (Start.getOffset() >= CurrentLoadedOffset &&
-                Start.getOffset()+Length < MaxLoadedOffset)) &&
+             Start.getOffset() + Length < MaxLoadedOffset)) &&
            "Chunk is not valid SLoc address space");
     unsigned LocOffs = Loc.getOffset();
     unsigned BeginOffs = Start.getOffset();
@@ -1398,10 +1396,14 @@ public:
   /// This requires building and caching a table of line offsets for the
   /// MemoryBuffer, so this is not cheap: use only when about to emit a
   /// diagnostic.
-  unsigned getLineNumber(FileID FID, unsigned FilePos, bool *Invalid = nullptr) const;
-  unsigned getSpellingLineNumber(SourceLocation Loc, bool *Invalid = nullptr) const;
-  unsigned getExpansionLineNumber(SourceLocation Loc, bool *Invalid = nullptr) const;
-  unsigned getPresumedLineNumber(SourceLocation Loc, bool *Invalid = nullptr) const;
+  unsigned getLineNumber(FileID FID, unsigned FilePos,
+                         bool *Invalid = nullptr) const;
+  unsigned getSpellingLineNumber(SourceLocation Loc,
+                                 bool *Invalid = nullptr) const;
+  unsigned getExpansionLineNumber(SourceLocation Loc,
+                                  bool *Invalid = nullptr) const;
+  unsigned getPresumedLineNumber(SourceLocation Loc,
+                                 bool *Invalid = nullptr) const;
 
   /// Return the filename or buffer identifier of the buffer the
   /// location is in.
@@ -1563,7 +1565,7 @@ public:
     const size_t mmap_bytes;
 
     MemoryBufferSizes(size_t malloc_bytes, size_t mmap_bytes)
-      : malloc_bytes(malloc_bytes), mmap_bytes(mmap_bytes) {}
+        : malloc_bytes(malloc_bytes), mmap_bytes(mmap_bytes) {}
   };
 
   /// Return the amount of memory used by memory buffers, breaking down
@@ -1596,8 +1598,8 @@ public:
 
   /// Get the source location in \p FID for the given line:col.
   /// Returns null location if \p FID is not a file SLocEntry.
-  SourceLocation translateLineCol(FileID FID,
-                                  unsigned Line, unsigned Col) const;
+  SourceLocation translateLineCol(FileID FID, unsigned Line,
+                                  unsigned Col) const;
 
   /// If \p Loc points inside a function macro argument, the returned
   /// location will be the macro location in which the argument was expanded.
@@ -1656,7 +1658,7 @@ public:
 
   // Iterators over FileInfos.
   using fileinfo_iterator =
-      llvm::DenseMap<const FileEntry*, SrcMgr::ContentCache*>::const_iterator;
+      llvm::DenseMap<const FileEntry *, SrcMgr::ContentCache *>::const_iterator;
 
   fileinfo_iterator fileinfo_begin() const { return FileInfos.begin(); }
   fileinfo_iterator fileinfo_end() const { return FileInfos.end(); }
@@ -1679,7 +1681,9 @@ public:
   }
 
   /// Get the number of loaded SLocEntries we have.
-  unsigned loaded_sloc_entry_size() const { return LoadedSLocEntryTable.size();}
+  unsigned loaded_sloc_entry_size() const {
+    return LoadedSLocEntryTable.size();
+  }
 
   /// Get a loaded SLocEntry. This is exposed for indexing.
   const SrcMgr::SLocEntry &getLoadedSLocEntry(unsigned Index,
@@ -1693,7 +1697,8 @@ public:
   const SrcMgr::SLocEntry &getSLocEntry(FileID FID,
                                         bool *Invalid = nullptr) const {
     if (FID.ID == 0 || FID.ID == -1) {
-      if (Invalid) *Invalid = true;
+      if (Invalid)
+        *Invalid = true;
       return LocalSLocEntryTable[0];
     }
     return getSLocEntryByID(FID.ID, Invalid);
@@ -1713,8 +1718,8 @@ public:
   /// NumSLocEntries will be allocated, which occupy a total of TotalSize space
   /// in the global source view. The lowest ID and the base offset of the
   /// entries will be returned.
-  std::pair<int, unsigned>
-  AllocateLoadedSLocEntries(unsigned NumSLocEntries, unsigned TotalSize);
+  std::pair<int, unsigned> AllocateLoadedSLocEntries(unsigned NumSLocEntries,
+                                                     unsigned TotalSize);
 
   /// Returns true if \p Loc came from a PCH/Module.
   bool isLoadedSourceLocation(SourceLocation Loc) const {
@@ -1733,14 +1738,13 @@ public:
   }
 
   /// Returns true if \p FID did not come from a PCH/Module.
-  bool isLocalFileID(FileID FID) const {
-    return !isLoadedFileID(FID);
-  }
+  bool isLocalFileID(FileID FID) const { return !isLoadedFileID(FID); }
 
   /// Gets the location of the immediate macro caller, one level up the stack
   /// toward the initial macro typed into the source.
   SourceLocation getImmediateMacroCallerLoc(SourceLocation Loc) const {
-    if (!Loc.isMacroID()) return Loc;
+    if (!Loc.isMacroID())
+      return Loc;
 
     // When we have the location of (part of) an expanded parameter, its
     // spelling location points to the argument as expanded in the macro call,
@@ -1796,8 +1800,7 @@ private:
   /// Implements the common elements of storing an expansion info struct into
   /// the SLocEntry table and producing a source location that refers to it.
   SourceLocation createExpansionLocImpl(const SrcMgr::ExpansionInfo &Expansion,
-                                        unsigned TokLength,
-                                        int LoadedID = 0,
+                                        unsigned TokLength, int LoadedID = 0,
                                         unsigned LoadedOffset = 0);
 
   /// Return true if the specified FileID contains the
@@ -1805,19 +1808,20 @@ private:
   inline bool isOffsetInFileID(FileID FID, unsigned SLocOffset) const {
     const SrcMgr::SLocEntry &Entry = getSLocEntry(FID);
     // If the entry is after the offset, it can't contain it.
-    if (SLocOffset < Entry.getOffset()) return false;
+    if (SLocOffset < Entry.getOffset())
+      return false;
 
     // If this is the very last entry then it does.
     if (FID.ID == -2)
       return true;
 
     // If it is the last local entry, then it does if the location is local.
-    if (FID.ID+1 == static_cast<int>(LocalSLocEntryTable.size()))
+    if (FID.ID + 1 == static_cast<int>(LocalSLocEntryTable.size()))
       return SLocOffset < NextLocalOffset;
 
     // Otherwise, the entry after it has to not include it. This works for both
     // local and loaded entries.
-    return SLocOffset < getSLocEntryByID(FID.ID+1).getOffset();
+    return SLocOffset < getSLocEntryByID(FID.ID + 1).getOffset();
   }
 
   /// Returns the previous in-order FileID or an invalid FileID if there
@@ -1860,19 +1864,16 @@ private:
                                    unsigned Offset) const;
   void computeMacroArgsCache(MacroArgsMap &MacroArgsCache, FileID FID) const;
   void associateFileChunkWithMacroArgExp(MacroArgsMap &MacroArgsCache,
-                                         FileID FID,
-                                         SourceLocation SpellLoc,
+                                         FileID FID, SourceLocation SpellLoc,
                                          SourceLocation ExpansionLoc,
                                          unsigned ExpansionLength) const;
 };
 
 /// Comparison function object.
-template<typename T>
-class BeforeThanCompare;
+template <typename T> class BeforeThanCompare;
 
 /// Compare two source locations.
-template<>
-class BeforeThanCompare<SourceLocation> {
+template <> class BeforeThanCompare<SourceLocation> {
   SourceManager &SM;
 
 public:
@@ -1884,8 +1885,7 @@ public:
 };
 
 /// Compare two non-overlapping source ranges.
-template<>
-class BeforeThanCompare<SourceRange> {
+template <> class BeforeThanCompare<SourceRange> {
   SourceManager &SM;
 
 public:

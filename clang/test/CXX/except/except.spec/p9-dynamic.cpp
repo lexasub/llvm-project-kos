@@ -2,8 +2,7 @@
 
 void external();
 
-void target() throw(int)
-{
+void target() throw(int) {
   // CHECK: invoke void @_Z8externalv()
   external();
 }

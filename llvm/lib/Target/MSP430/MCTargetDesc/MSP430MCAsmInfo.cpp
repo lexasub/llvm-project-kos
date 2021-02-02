@@ -13,7 +13,7 @@
 #include "MSP430MCAsmInfo.h"
 using namespace llvm;
 
-void MSP430MCAsmInfo::anchor() { }
+void MSP430MCAsmInfo::anchor() {}
 
 MSP430MCAsmInfo::MSP430MCAsmInfo(const Triple &TT,
                                  const MCTargetOptions &Options) {

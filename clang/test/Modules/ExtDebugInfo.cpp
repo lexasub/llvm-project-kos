@@ -54,10 +54,14 @@ TypedefFwdDeclTemplate tdfdt;
 InAnonymousNamespace anon;
 
 // Types that are forward-declared in the module and defined here.
-struct PureFwdDecl { int i; };
+struct PureFwdDecl {
+  int i;
+};
 PureFwdDecl definedLocally;
 
-struct Specialized<int>::Member { int i; };
+struct Specialized<int>::Member {
+  int i;
+};
 struct Specialized<int>::Member definedLocally2;
 
 template <class T> struct FwdDeclTemplateMember<T>::Member { T t; };
@@ -113,7 +117,6 @@ void foo() {
 // CHECK: !DICompositeType(tag: DW_TAG_structure_type, name: "traits<float>",
 // CHECK-SAME:             flags: DIFlagFwdDecl
 // CHECK-SAME:             identifier: "_ZTSN8DebugCXX6traitsIfEE")
-
 
 // This type is anchored in the module via a function argument,
 // but we don't know this (yet).
@@ -198,12 +201,10 @@ void foo() {
 // CHECK: ![[GLOBAL_STRUCT]] = distinct !DICompositeType(tag: DW_TAG_structure_type,
 // CHECK-SAME:                elements: !{{[0-9]+}})
 
-
 // CHECK: !DIGlobalVariable(name: "anon",
 // CHECK-SAME:              type: ![[GLOBAL_ANON:[0-9]+]]
 // CHECK: ![[GLOBAL_ANON]] = !DICompositeType(tag: DW_TAG_structure_type,
 // CHECK-SAME:              name: "InAnonymousNamespace", {{.*}}DIFlagFwdDecl)
-
 
 // CHECK: !DIImportedEntity(tag: DW_TAG_imported_declaration, scope: !{{[0-9]+}}, entity: ![[STRUCT]], file: ![[CPP]], line: 27)
 

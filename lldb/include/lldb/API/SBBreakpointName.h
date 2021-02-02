@@ -1,4 +1,5 @@
-//===-- SBBreakpointName.h ------------------------------------------*- C++ -*-===//
+//===-- SBBreakpointName.h ------------------------------------------*- C++
+//-*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -17,14 +18,15 @@ namespace lldb {
 
 class LLDB_API SBBreakpointName {
 public:
-//  typedef bool (*BreakpointHitCallback)(void *baton, SBProcess &process,
-//                                        SBThread &thread,
-//                                        lldb::SBBreakpointLocation &location);
+  //  typedef bool (*BreakpointHitCallback)(void *baton, SBProcess &process,
+  //                                        SBThread &thread,
+  //                                        lldb::SBBreakpointLocation
+  //                                        &location);
 
   SBBreakpointName();
-  
+
   SBBreakpointName(SBTarget &target, const char *name);
-  
+
   SBBreakpointName(SBBreakpoint &bkpt, const char *name);
 
   SBBreakpointName(const lldb::SBBreakpointName &rhs);
@@ -42,7 +44,7 @@ public:
   explicit operator bool() const;
 
   bool IsValid() const;
-  
+
   const char *GetName() const;
 
   void SetEnabled(bool enable);
@@ -93,16 +95,16 @@ public:
   bool GetCommandLineCommands(lldb::SBStringList &commands);
 
   SBError SetScriptCallbackBody(const char *script_body_text);
-  
+
   const char *GetHelpString() const;
   void SetHelpString(const char *help_string);
-  
+
   bool GetAllowList() const;
   void SetAllowList(bool value);
-    
+
   bool GetAllowDelete();
   void SetAllowDelete(bool value);
-    
+
   bool GetAllowDisable();
   void SetAllowDisable(bool value);
 
@@ -110,7 +112,7 @@ public:
 
 private:
   friend class SBTarget;
-  
+
   lldb_private::BreakpointName *GetBreakpointName() const;
   void UpdateName(lldb_private::BreakpointName &bp_name);
 

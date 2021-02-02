@@ -50,7 +50,7 @@ static void run(bool flush) {
     fprintf(stderr, " %p addr %p, len %zu\n", &buf, buf, buf_len);
     check_mem_is_good(&buf, sizeof(buf));
     check_mem_is_good(&buf_len, sizeof(buf_len));
-    check_mem_is_good(buf, buf_len);\
+    check_mem_is_good(buf, buf_len);
   }
 
   fclose(fp);

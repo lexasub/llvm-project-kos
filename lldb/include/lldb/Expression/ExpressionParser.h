@@ -131,6 +131,6 @@ protected:
   Expression &m_expr; ///< The expression to be parsed
   bool m_generate_debug_info;
 };
-}
+} // namespace lldb_private
 
 #endif // LLDB_EXPRESSION_EXPRESSIONPARSER_H

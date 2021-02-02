@@ -8,10 +8,10 @@ struct Foo {
   void theend() const volatile;
 };
 
-template<typename T>
+template <typename T>
 struct smart_ptr {
   T *operator->();
-  const T* operator->() const;
+  const T *operator->() const;
 };
 
 void text(Foo f, Foo *fp, const Foo &fc, const Foo *fcp,
@@ -26,15 +26,12 @@ void text(Foo f, Foo *fp, const Foo &fc, const Foo *fcp,
 }
 
 void Foo::bar() {
-  
 }
 
 void Foo::baz() const {
-
 }
 
 void Foo::bingo() volatile {
-
 }
 
 // Check member access expressions.

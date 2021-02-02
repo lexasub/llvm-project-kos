@@ -58,8 +58,8 @@ static cl::opt<bool>
 static cl::alias TypesShort("t", cl::desc("alias for --types"),
                             cl::aliasopt(Types));
 
-static cl::list<std::string>
-Decorated(cl::Positional, cl::desc("<mangled>"), cl::ZeroOrMore);
+static cl::list<std::string> Decorated(cl::Positional, cl::desc("<mangled>"),
+                                       cl::ZeroOrMore);
 
 static cl::extrahelp
     HelpResponse("\nPass @FILE as argument to read options from FILE.\n");

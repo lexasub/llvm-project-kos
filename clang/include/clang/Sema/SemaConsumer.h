@@ -17,31 +17,30 @@
 #include "clang/AST/ASTConsumer.h"
 
 namespace clang {
-  class Sema;
+class Sema;
 
-  /// An abstract interface that should be implemented by
-  /// clients that read ASTs and then require further semantic
-  /// analysis of the entities in those ASTs.
-  class SemaConsumer : public ASTConsumer {
-    virtual void anchor();
-  public:
-    SemaConsumer() {
-      ASTConsumer::SemaConsumer = true;
-    }
+/// An abstract interface that should be implemented by
+/// clients that read ASTs and then require further semantic
+/// analysis of the entities in those ASTs.
+class SemaConsumer : public ASTConsumer {
+  virtual void anchor();
 
-    /// Initialize the semantic consumer with the Sema instance
-    /// being used to perform semantic analysis on the abstract syntax
-    /// tree.
-    virtual void InitializeSema(Sema &S) {}
+public:
+  SemaConsumer() { ASTConsumer::SemaConsumer = true; }
 
-    /// Inform the semantic consumer that Sema is no longer available.
-    virtual void ForgetSema() {}
+  /// Initialize the semantic consumer with the Sema instance
+  /// being used to perform semantic analysis on the abstract syntax
+  /// tree.
+  virtual void InitializeSema(Sema &S) {}
 
-    // isa/cast/dyn_cast support
-    static bool classof(const ASTConsumer *Consumer) {
-      return Consumer->SemaConsumer;
-    }
-  };
-}
+  /// Inform the semantic consumer that Sema is no longer available.
+  virtual void ForgetSema() {}
+
+  // isa/cast/dyn_cast support
+  static bool classof(const ASTConsumer *Consumer) {
+    return Consumer->SemaConsumer;
+  }
+};
+} // namespace clang
 
 #endif

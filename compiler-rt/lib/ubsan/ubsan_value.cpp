@@ -13,10 +13,10 @@
 
 #include "ubsan_platform.h"
 #if CAN_SANITIZE_UB
-#include "ubsan_value.h"
 #include "sanitizer_common/sanitizer_common.h"
 #include "sanitizer_common/sanitizer_libc.h"
 #include "sanitizer_common/sanitizer_mutex.h"
+#include "ubsan_value.h"
 
 // TODO(dliew): Prefer '__APPLE__' here over 'SANITIZER_MAC', as the latter is
 // unclear. rdar://58124919 tracks using a more obviously portable guard.
@@ -73,14 +73,14 @@ SIntMax Value::getSIntValue() const {
     // Val was zero-extended to ValueHandle. Sign-extend from original width
     // to SIntMax.
     const unsigned ExtraBits =
-      sizeof(SIntMax) * 8 - getType().getIntegerBitWidth();
+        sizeof(SIntMax) * 8 - getType().getIntegerBitWidth();
     return SIntMax(Val) << ExtraBits >> ExtraBits;
   }
   if (getType().getIntegerBitWidth() == 64)
-    return *reinterpret_cast<s64*>(Val);
+    return *reinterpret_cast<s64 *>(Val);
 #if HAVE_INT128_T
   if (getType().getIntegerBitWidth() == 128)
-    return *reinterpret_cast<s128*>(Val);
+    return *reinterpret_cast<s128 *>(Val);
 #else
   if (getType().getIntegerBitWidth() == 128)
     UNREACHABLE("libclang_rt.ubsan was built without __int128 support");
@@ -93,10 +93,10 @@ UIntMax Value::getUIntValue() const {
   if (isInlineInt())
     return Val;
   if (getType().getIntegerBitWidth() == 64)
-    return *reinterpret_cast<u64*>(Val);
+    return *reinterpret_cast<u64 *>(Val);
 #if HAVE_INT128_T
   if (getType().getIntegerBitWidth() == 128)
-    return *reinterpret_cast<u128*>(Val);
+    return *reinterpret_cast<u128 *>(Val);
 #else
   if (getType().getIntegerBitWidth() == 128)
     UNREACHABLE("libclang_rt.ubsan was built without __int128 support");
@@ -128,33 +128,37 @@ FloatMax Value::getFloatValue() const {
         return Value;
       }
 #endif
-      case 32: {
-        float Value;
+    case 32: {
+      float Value;
 #if defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
-       // For big endian the float value is in the last 4 bytes.
-       // On some targets we may only have 4 bytes so we count backwards from
-       // the end of Val to account for both the 32-bit and 64-bit cases.
-       internal_memcpy(&Value, ((const char*)(&Val + 1)) - 4, 4);
+      // For big endian the float value is in the last 4 bytes.
+      // On some targets we may only have 4 bytes so we count backwards from
+      // the end of Val to account for both the 32-bit and 64-bit cases.
+      internal_memcpy(&Value, ((const char *)(&Val + 1)) - 4, 4);
 #else
-       internal_memcpy(&Value, &Val, 4);
+      internal_memcpy(&Value, &Val, 4);
 #endif
-        return Value;
-      }
-      case 64: {
-        double Value;
-        internal_memcpy(&Value, &Val, 8);
-        return Value;
-      }
+      return Value;
+    }
+    case 64: {
+      double Value;
+      internal_memcpy(&Value, &Val, 8);
+      return Value;
+    }
     }
   } else {
     switch (getType().getFloatBitWidth()) {
-    case 64: return *reinterpret_cast<double*>(Val);
-    case 80: return *reinterpret_cast<long double*>(Val);
-    case 96: return *reinterpret_cast<long double*>(Val);
-    case 128: return *reinterpret_cast<long double*>(Val);
+    case 64:
+      return *reinterpret_cast<double *>(Val);
+    case 80:
+      return *reinterpret_cast<long double *>(Val);
+    case 96:
+      return *reinterpret_cast<long double *>(Val);
+    case 128:
+      return *reinterpret_cast<long double *>(Val);
     }
   }
   UNREACHABLE("unexpected floating point bit width");
 }
 
-#endif  // CAN_SANITIZE_UB
+#endif // CAN_SANITIZE_UB

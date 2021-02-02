@@ -16,35 +16,35 @@ using namespace llvm;
 
 namespace {
 
-  enum class ErrorErrorCode : int {
-    MultipleErrors = 1,
-    FileError,
-    InconvertibleError
-  };
+enum class ErrorErrorCode : int {
+  MultipleErrors = 1,
+  FileError,
+  InconvertibleError
+};
 
-  // FIXME: This class is only here to support the transition to llvm::Error. It
-  // will be removed once this transition is complete. Clients should prefer to
-  // deal with the Error value directly, rather than converting to error_code.
-  class ErrorErrorCategory : public std::error_category {
-  public:
-    const char *name() const noexcept override { return "Error"; }
+// FIXME: This class is only here to support the transition to llvm::Error. It
+// will be removed once this transition is complete. Clients should prefer to
+// deal with the Error value directly, rather than converting to error_code.
+class ErrorErrorCategory : public std::error_category {
+public:
+  const char *name() const noexcept override { return "Error"; }
 
-    std::string message(int condition) const override {
-      switch (static_cast<ErrorErrorCode>(condition)) {
-      case ErrorErrorCode::MultipleErrors:
-        return "Multiple errors";
-      case ErrorErrorCode::InconvertibleError:
-        return "Inconvertible error value. An error has occurred that could "
-               "not be converted to a known std::error_code. Please file a "
-               "bug.";
-      case ErrorErrorCode::FileError:
-          return "A file error occurred.";
-      }
-      llvm_unreachable("Unhandled error code");
+  std::string message(int condition) const override {
+    switch (static_cast<ErrorErrorCode>(condition)) {
+    case ErrorErrorCode::MultipleErrors:
+      return "Multiple errors";
+    case ErrorErrorCode::InconvertibleError:
+      return "Inconvertible error value. An error has occurred that could "
+             "not be converted to a known std::error_code. Please file a "
+             "bug.";
+    case ErrorErrorCode::FileError:
+      return "A file error occurred.";
     }
-  };
+    llvm_unreachable("Unhandled error code");
+  }
+};
 
-}
+} // namespace
 
 static ManagedStatic<ErrorErrorCategory> ErrorErrorCat;
 
@@ -67,7 +67,6 @@ void logAllUnhandledErrors(Error E, raw_ostream &OS, Twine ErrorBanner) {
     OS << "\n";
   });
 }
-
 
 std::error_code ErrorList::convertToErrorCode() const {
   return std::error_code(static_cast<int>(ErrorErrorCode::MultipleErrors),
@@ -106,7 +105,7 @@ void Error::fatalUncheckedError() const {
   if (getPtr()) {
     getPtr()->log(dbgs());
     dbgs() << "\n";
-  }else
+  } else
     dbgs() << "Error value was Success. (Note: Success values must still be "
               "checked prior to being destroyed).\n";
   abort();
@@ -129,9 +128,7 @@ void StringError::log(raw_ostream &OS) const {
   }
 }
 
-std::error_code StringError::convertToErrorCode() const {
-  return EC;
-}
+std::error_code StringError::convertToErrorCode() const { return EC; }
 
 Error createStringError(std::error_code EC, char const *Msg) {
   return make_error<StringError>(Msg, EC);

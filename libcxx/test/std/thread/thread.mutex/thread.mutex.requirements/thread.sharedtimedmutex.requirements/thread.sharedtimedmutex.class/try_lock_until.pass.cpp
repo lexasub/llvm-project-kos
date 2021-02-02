@@ -39,7 +39,6 @@ typedef Clock::duration duration;
 typedef std::chrono::milliseconds ms;
 typedef std::chrono::nanoseconds ns;
 
-
 ms WaitTime = ms(250);
 
 // Thread sanitizer causes more overhead and will sometimes cause this test
@@ -51,41 +50,38 @@ ms Tolerance = ms(50);
 ms Tolerance = ms(50 * 5);
 #endif
 
-void f1()
-{
-    time_point t0 = Clock::now();
-    assert(m.try_lock_until(Clock::now() + WaitTime + Tolerance) == true);
-    time_point t1 = Clock::now();
+void f1() {
+  time_point t0 = Clock::now();
+  assert(m.try_lock_until(Clock::now() + WaitTime + Tolerance) == true);
+  time_point t1 = Clock::now();
+  m.unlock();
+  ns d = t1 - t0 - WaitTime;
+  assert(d < Tolerance); // within tolerance
+}
+
+void f2() {
+  time_point t0 = Clock::now();
+  assert(m.try_lock_until(Clock::now() + WaitTime) == false);
+  time_point t1 = Clock::now();
+  ns d = t1 - t0 - WaitTime;
+  assert(d < Tolerance); // within tolerance
+}
+
+int main(int, char**) {
+  {
+    m.lock();
+    std::thread t = support::make_test_thread(f1);
+    std::this_thread::sleep_for(WaitTime);
     m.unlock();
-    ns d = t1 - t0 - WaitTime;
-    assert(d < Tolerance);  // within tolerance
-}
-
-void f2()
-{
-    time_point t0 = Clock::now();
-    assert(m.try_lock_until(Clock::now() + WaitTime) == false);
-    time_point t1 = Clock::now();
-    ns d = t1 - t0 - WaitTime;
-    assert(d < Tolerance);  // within tolerance
-}
-
-int main(int, char**)
-{
-    {
-        m.lock();
-        std::thread t = support::make_test_thread(f1);
-        std::this_thread::sleep_for(WaitTime);
-        m.unlock();
-        t.join();
-    }
-    {
-        m.lock();
-        std::thread t = support::make_test_thread(f2);
-        std::this_thread::sleep_for(WaitTime + Tolerance);
-        m.unlock();
-        t.join();
-    }
+    t.join();
+  }
+  {
+    m.lock();
+    std::thread t = support::make_test_thread(f2);
+    std::this_thread::sleep_for(WaitTime + Tolerance);
+    m.unlock();
+    t.join();
+  }
 
   return 0;
 }

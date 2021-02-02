@@ -103,9 +103,8 @@ struct uses_format_member
 // will only be true if there is not ALSO a format member.
 template <typename T>
 struct uses_format_provider
-    : public std::integral_constant<
-          bool, !uses_format_member<T>::value && has_FormatProvider<T>::value> {
-};
+    : public std::integral_constant<bool, !uses_format_member<T>::value &&
+                                              has_FormatProvider<T>::value> {};
 
 // Simple template that decides whether a type T should use the operator<<
 // based format() invocation.  This takes last priority.
@@ -156,7 +155,7 @@ std::enable_if_t<uses_missing_provider<T>::value, missing_format_adapter<T>>
 build_format_adapter(T &&Item) {
   return missing_format_adapter<T>();
 }
-}
-}
+} // namespace detail
+} // namespace llvm
 
 #endif

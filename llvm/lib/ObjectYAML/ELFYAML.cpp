@@ -18,8 +18,8 @@
 #include "llvm/Support/Casting.h"
 #include "llvm/Support/ErrorHandling.h"
 #include "llvm/Support/MipsABIFlags.h"
-#include "llvm/Support/YAMLTraits.h"
 #include "llvm/Support/WithColor.h"
+#include "llvm/Support/YAMLTraits.h"
 #include <cassert>
 #include <cstdint>
 
@@ -631,7 +631,6 @@ void ScalarEnumerationTraits<ELFYAML::ELF_STT>::enumeration(
   IO.enumFallback<Hex8>(Value);
 }
 
-
 void ScalarEnumerationTraits<ELFYAML::ELF_RSS>::enumeration(
     IO &IO, ELFYAML::ELF_RSS &Value) {
 #define ECase(X) IO.enumCase(Value, #X, ELF::X)
@@ -1082,8 +1081,8 @@ void MappingTraits<ELFYAML::Symbol>::mapping(IO &IO, ELFYAML::Symbol &Symbol) {
 
   // Symbol's Other field is a bit special. It is usually a field that
   // represents st_other and holds the symbol visibility. However, on some
-  // platforms, it can contain bit fields and regular values, or even sometimes a
-  // crazy mix of them (see comments for NormalizedOther). Because of this, we
+  // platforms, it can contain bit fields and regular values, or even sometimes
+  // a crazy mix of them (see comments for NormalizedOther). Because of this, we
   // need special handling.
   MappingNormalization<NormalizedOther, Optional<uint8_t>> Keys(IO,
                                                                 Symbol.Other);
@@ -1173,7 +1172,6 @@ static void sectionMapping(IO &IO, ELFYAML::NoteSection &Section) {
   commonSectionMapping(IO, Section);
   IO.mapOptional("Notes", Section.Notes);
 }
-
 
 static void sectionMapping(IO &IO, ELFYAML::GnuHashSection &Section) {
   commonSectionMapping(IO, Section);
@@ -1393,7 +1391,7 @@ void MappingTraits<std::unique_ptr<ELFYAML::Chunk>>::mapping(
       Section.reset(new ELFYAML::NoteSection());
     sectionMapping(IO, *cast<ELFYAML::NoteSection>(Section.get()));
     break;
- case ELF::SHT_GNU_HASH:
+  case ELF::SHT_GNU_HASH:
     if (!IO.outputting())
       Section.reset(new ELFYAML::GnuHashSection());
     sectionMapping(IO, *cast<ELFYAML::GnuHashSection>(Section.get()));

@@ -77,8 +77,8 @@ Tool *RISCVToolChain::buildLinker() const {
 }
 
 ToolChain::RuntimeLibType RISCVToolChain::GetDefaultRuntimeLibType() const {
-  return GCCInstallation.isValid() ?
-    ToolChain::RLT_Libgcc : ToolChain::RLT_CompilerRT;
+  return GCCInstallation.isValid() ? ToolChain::RLT_Libgcc
+                                   : ToolChain::RLT_CompilerRT;
 }
 
 ToolChain::UnwindLibType
@@ -86,10 +86,9 @@ RISCVToolChain::GetUnwindLibType(const llvm::opt::ArgList &Args) const {
   return ToolChain::UNW_None;
 }
 
-void RISCVToolChain::addClangTargetOptions(
-    const llvm::opt::ArgList &DriverArgs,
-    llvm::opt::ArgStringList &CC1Args,
-    Action::OffloadKind) const {
+void RISCVToolChain::addClangTargetOptions(const llvm::opt::ArgList &DriverArgs,
+                                           llvm::opt::ArgStringList &CC1Args,
+                                           Action::OffloadKind) const {
   CC1Args.push_back("-nostdsysteminc");
 }
 
@@ -112,7 +111,8 @@ void RISCVToolChain::addLibStdCxxIncludePaths(
   StringRef TripleStr = GCCInstallation.getTriple().str();
   const Multilib &Multilib = GCCInstallation.getMultilib();
   addLibStdCXXIncludePaths(computeSysRoot() + "/include/c++/" + Version.Text,
-      "", TripleStr, "", "", Multilib.includeSuffix(), DriverArgs, CC1Args);
+                           "", TripleStr, "", "", Multilib.includeSuffix(),
+                           DriverArgs, CC1Args);
 }
 
 std::string RISCVToolChain::computeSysRoot() const {
@@ -168,11 +168,11 @@ void RISCV::Linker::ConstructJob(Compilation &C, const JobAction &JA,
     crtbegin = "crtbegin.o";
     crtend = "crtend.o";
   } else {
-    assert (RuntimeLib == ToolChain::RLT_CompilerRT);
+    assert(RuntimeLib == ToolChain::RLT_CompilerRT);
     crtbegin = ToolChain.getCompilerRTArgString(Args, "crtbegin",
                                                 ToolChain::FT_Object);
-    crtend = ToolChain.getCompilerRTArgString(Args, "crtend",
-                                              ToolChain::FT_Object);
+    crtend =
+        ToolChain.getCompilerRTArgString(Args, "crtend", ToolChain::FT_Object);
   }
 
   if (WantCRTs) {

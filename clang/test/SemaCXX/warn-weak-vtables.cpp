@@ -5,22 +5,22 @@
 // RUN: %clang_cc1 %s -fsyntax-only -triple %ms_abi_triple -Werror -Wweak-vtables -Wweak-template-vtables
 
 struct A { // expected-warning {{'A' has no out-of-line virtual method definitions; its vtable will be emitted in every translation unit}}
-  virtual void f() { } 
+  virtual void f() {}
 };
 
-template<typename T> struct B {
-  virtual void f() { } 
+template <typename T> struct B {
+  virtual void f() {}
 };
 
 namespace {
-  struct C { 
-    virtual void f() { }
-  };
-}
+struct C {
+  virtual void f() {}
+};
+} // namespace
 
 void f() {
   struct A {
-    virtual void f() { }
+    virtual void f() {}
   };
 
   A a;
@@ -38,18 +38,18 @@ class Parent {
 public:
   Parent() {}
   virtual ~Parent();
-  virtual void * getFoo() const = 0;    
+  virtual void *getFoo() const = 0;
 };
-  
+
 class Derived : public Parent {
 public:
   Derived();
-  void * getFoo() const;
+  void *getFoo() const;
 };
 
 class VeryDerived : public Derived { // expected-warning{{'VeryDerived' has no out-of-line virtual method definitions; its vtable will be emitted in every translation unit}}
 public:
-  void * getFoo() const { return 0; }
+  void *getFoo() const { return 0; }
 };
 
 Parent::~Parent() {}
@@ -59,17 +59,17 @@ void uses_derived() {
   VeryDerived vd;
 }
 
-template<typename T> struct TemplVirt {
+template <typename T> struct TemplVirt {
   virtual void f();
 };
 
 template class TemplVirt<float>; // expected-warning{{explicit template instantiation 'TemplVirt<float>' will emit a vtable in every translation unit}}
 
-template<> struct TemplVirt<bool> {
+template <> struct TemplVirt<bool> {
   virtual void f();
 };
 
-template<> struct TemplVirt<long> { // expected-warning{{'TemplVirt<long>' has no out-of-line virtual method definitions; its vtable will be emitted in every translation unit}}
+template <> struct TemplVirt<long> { // expected-warning{{'TemplVirt<long>' has no out-of-line virtual method definitions; its vtable will be emitted in every translation unit}}
   virtual void f() {}
 };
 

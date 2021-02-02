@@ -52,7 +52,7 @@ namespace {
 cl::opt<std::string> OutputFile("output",
                                 cl::desc("Specify a reference program output "
                                          "(for miscompilation detection)"));
-}
+} // namespace
 
 /// If we reduce or update the program somehow, call this method to update
 /// bugdriver with it.  This deletes the old module and sets the specified one

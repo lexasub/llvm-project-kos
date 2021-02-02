@@ -6,11 +6,11 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "CursorVisitor.h"
 #include "CLog.h"
 #include "CXCursor.h"
 #include "CXSourceLocation.h"
 #include "CXTranslationUnit.h"
+#include "CursorVisitor.h"
 #include "clang/AST/DeclObjC.h"
 #include "clang/Frontend/ASTUnit.h"
 #include "llvm/Support/Compiler.h"
@@ -19,8 +19,7 @@ using namespace clang;
 using namespace cxcursor;
 using namespace cxindex;
 
-static void getTopOverriddenMethods(CXTranslationUnit TU,
-                                    const Decl *D,
+static void getTopOverriddenMethods(CXTranslationUnit TU, const Decl *D,
                                     SmallVectorImpl<const Decl *> &Methods) {
   if (!D)
     return;
@@ -29,14 +28,15 @@ static void getTopOverriddenMethods(CXTranslationUnit TU,
 
   SmallVector<CXCursor, 8> Overridden;
   cxcursor::getOverriddenCursors(cxcursor::MakeCXCursor(D, TU), Overridden);
-  
+
   if (Overridden.empty()) {
     Methods.push_back(D->getCanonicalDecl());
     return;
   }
 
-  for (SmallVectorImpl<CXCursor>::iterator
-         I = Overridden.begin(), E = Overridden.end(); I != E; ++I)
+  for (SmallVectorImpl<CXCursor>::iterator I = Overridden.begin(),
+                                           E = Overridden.end();
+       I != E; ++I)
     getTopOverriddenMethods(TU, cxcursor::getCursorDecl(*I), Methods);
 }
 
@@ -52,10 +52,9 @@ struct FindFileIdRefVisitData {
   typedef SmallVector<const Decl *, 8> TopMethodsTy;
   TopMethodsTy TopMethods;
 
-  FindFileIdRefVisitData(CXTranslationUnit TU, FileID FID,
-                         const Decl *D, int selectorIdIdx,
-                         CXCursorAndRangeVisitor visitor)
-    : TU(TU), FID(FID), SelectorIdIdx(selectorIdIdx), visitor(visitor) {
+  FindFileIdRefVisitData(CXTranslationUnit TU, FileID FID, const Decl *D,
+                         int selectorIdIdx, CXCursorAndRangeVisitor visitor)
+      : TU(TU), FID(FID), SelectorIdIdx(selectorIdIdx), visitor(visitor) {
     Dcl = getCanonical(D);
     getTopOverriddenMethods(TU, Dcl, TopMethods);
   }
@@ -89,7 +88,7 @@ struct FindFileIdRefVisitData {
                    dyn_cast<CXXConstructorDecl>(D)) {
       return getCanonical(CXXCtorD->getParent());
     }
-    
+
     return D;
   }
 
@@ -114,8 +113,8 @@ private:
 
     TopMethodsTy methods;
     getTopOverriddenMethods(TU, D, methods);
-    for (TopMethodsTy::iterator
-           I = methods.begin(), E = methods.end(); I != E; ++I) {
+    for (TopMethodsTy::iterator I = methods.begin(), E = methods.end(); I != E;
+         ++I) {
       if (llvm::find(TopMethods, *I) != TopMethods.end())
         return true;
     }
@@ -129,21 +128,19 @@ private:
 /// For a macro \arg Loc, returns the file spelling location and sets
 /// to \arg isMacroArg whether the spelling resides inside a macro definition or
 /// a macro argument.
-static SourceLocation getFileSpellingLoc(SourceManager &SM,
-                                         SourceLocation Loc,
+static SourceLocation getFileSpellingLoc(SourceManager &SM, SourceLocation Loc,
                                          bool &isMacroArg) {
   assert(Loc.isMacroID());
   SourceLocation SpellLoc = SM.getImmediateSpellingLoc(Loc);
   if (SpellLoc.isMacroID())
     return getFileSpellingLoc(SM, SpellLoc, isMacroArg);
-  
+
   isMacroArg = SM.isMacroArgExpansion(Loc);
   return SpellLoc;
 }
 
-static enum CXChildVisitResult findFileIdRefVisit(CXCursor cursor,
-                                                  CXCursor parent,
-                                                  CXClientData client_data) {
+static enum CXChildVisitResult
+findFileIdRefVisit(CXCursor cursor, CXCursor parent, CXClientData client_data) {
   CXCursor declCursor = clang_getCursorReferenced(cursor);
   if (!clang_isDeclaration(declCursor.kind))
     return CXChildVisit_Recurse;
@@ -160,7 +157,7 @@ static enum CXChildVisitResult findFileIdRefVisit(CXCursor cursor,
     // not a parameter) we can only highlight the selector identifiers.
     if ((cursor.kind == CXCursor_ObjCClassMethodDecl ||
          cursor.kind == CXCursor_ObjCInstanceMethodDecl) &&
-         cxcursor::getSelectorIdentifierIndex(cursor) == -1)
+        cxcursor::getSelectorIdentifierIndex(cursor) == -1)
       return CXChildVisit_Recurse;
 
     if (clang_isExpression(cursor.kind)) {
@@ -171,13 +168,13 @@ static enum CXChildVisitResult findFileIdRefVisit(CXCursor cursor,
       } else if (cursor.kind == CXCursor_ObjCMessageExpr &&
                  cxcursor::getSelectorIdentifierIndex(cursor) != -1) {
         // continue..
-                
+
       } else
         return CXChildVisit_Recurse;
     }
 
-    SourceLocation
-      Loc = cxloc::translateSourceLocation(clang_getCursorLocation(cursor));
+    SourceLocation Loc =
+        cxloc::translateSourceLocation(clang_getCursorLocation(cursor));
     SourceLocation SelIdLoc = cxcursor::getSelectorIdentifierLoc(cursor);
     if (SelIdLoc.isValid())
       Loc = SelIdLoc;
@@ -203,7 +200,8 @@ static enum CXChildVisitResult findFileIdRefVisit(CXCursor cursor,
     }
 
     if (data->visitor.visit(data->visitor.context, cursor,
-                        cxloc::translateSourceRange(Ctx, Loc)) == CXVisit_Break)
+                            cxloc::translateSourceRange(Ctx, Loc)) ==
+        CXVisit_Break)
       return CXChildVisit_Break;
   }
   return CXChildVisit_Recurse;
@@ -220,9 +218,8 @@ static bool findIdRefsInFile(CXTranslationUnit TU, CXCursor declCursor,
   if (!Dcl)
     return false;
 
-  FindFileIdRefVisitData data(TU, FID, Dcl,
-                              cxcursor::getSelectorIdentifierIndex(declCursor),
-                              Visitor);
+  FindFileIdRefVisitData data(
+      TU, FID, Dcl, cxcursor::getSelectorIdentifierIndex(declCursor), Visitor);
 
   if (const DeclContext *DC = Dcl->getParentFunctionOrMethod()) {
     return clang_visitChildren(cxcursor::MakeCXCursor(cast<Decl>(DC), TU),
@@ -230,11 +227,9 @@ static bool findIdRefsInFile(CXTranslationUnit TU, CXCursor declCursor,
   }
 
   SourceRange Range(SM.getLocForStartOfFile(FID), SM.getLocForEndOfFile(FID));
-  CursorVisitor FindIdRefsVisitor(TU,
-                                  findFileIdRefVisit, &data,
+  CursorVisitor FindIdRefsVisitor(TU, findFileIdRefVisit, &data,
                                   /*VisitPreprocessorLast=*/true,
-                                  /*VisitIncludedEntities=*/false,
-                                  Range,
+                                  /*VisitIncludedEntities=*/false, Range,
                                   /*VisitDeclsOnly=*/true);
   return FindIdRefsVisitor.visitFileRegion();
 }
@@ -250,11 +245,9 @@ struct FindFileMacroRefVisitData {
   FindFileMacroRefVisitData(ASTUnit &Unit, const FileEntry *File,
                             const IdentifierInfo *Macro,
                             CXCursorAndRangeVisitor visitor)
-    : Unit(Unit), File(File), Macro(Macro), visitor(visitor) { }
+      : Unit(Unit), File(File), Macro(Macro), visitor(visitor) {}
 
-  ASTContext &getASTContext() const {
-    return Unit.getASTContext();
-  }
+  ASTContext &getASTContext() const { return Unit.getASTContext(); }
 };
 
 } // anonymous namespace
@@ -274,8 +267,8 @@ static enum CXChildVisitResult findFileMacroRefVisit(CXCursor cursor,
   if (data->Macro != Macro)
     return CXChildVisit_Continue;
 
-  SourceLocation
-    Loc = cxloc::translateSourceLocation(clang_getCursorLocation(cursor));
+  SourceLocation Loc =
+      cxloc::translateSourceLocation(clang_getCursorLocation(cursor));
 
   ASTContext &Ctx = data->getASTContext();
   SourceManager &SM = Ctx.getSourceManager();
@@ -298,7 +291,8 @@ static enum CXChildVisitResult findFileMacroRefVisit(CXCursor cursor,
   }
 
   if (data->visitor.visit(data->visitor.context, cursor,
-                        cxloc::translateSourceRange(Ctx, Loc)) == CXVisit_Break)
+                          cxloc::translateSourceRange(Ctx, Loc)) ==
+      CXVisit_Break)
     return CXChildVisit_Break;
   return CXChildVisit_Continue;
 }
@@ -325,11 +319,9 @@ static bool findMacroRefsInFile(CXTranslationUnit TU, CXCursor Cursor,
   FindFileMacroRefVisitData data(*Unit, File, Macro, Visitor);
 
   SourceRange Range(SM.getLocForStartOfFile(FID), SM.getLocForEndOfFile(FID));
-  CursorVisitor FindMacroRefsVisitor(TU,
-                                  findFileMacroRefVisit, &data,
-                                  /*VisitPreprocessorLast=*/false,
-                                  /*VisitIncludedEntities=*/false,
-                                  Range);
+  CursorVisitor FindMacroRefsVisitor(TU, findFileMacroRefVisit, &data,
+                                     /*VisitPreprocessorLast=*/false,
+                                     /*VisitIncludedEntities=*/false, Range);
   return FindMacroRefsVisitor.visitPreprocessedEntitiesInRegion();
 }
 
@@ -342,18 +334,16 @@ struct FindFileIncludesVisitor {
 
   FindFileIncludesVisitor(ASTUnit &Unit, const FileEntry *File,
                           CXCursorAndRangeVisitor visitor)
-    : Unit(Unit), File(File), visitor(visitor) { }
+      : Unit(Unit), File(File), visitor(visitor) {}
 
-  ASTContext &getASTContext() const {
-    return Unit.getASTContext();
-  }
+  ASTContext &getASTContext() const { return Unit.getASTContext(); }
 
   enum CXChildVisitResult visit(CXCursor cursor, CXCursor parent) {
     if (cursor.kind != CXCursor_InclusionDirective)
       return CXChildVisit_Continue;
 
-    SourceLocation
-      Loc = cxloc::translateSourceLocation(clang_getCursorLocation(cursor));
+    SourceLocation Loc =
+        cxloc::translateSourceLocation(clang_getCursorLocation(cursor));
 
     ASTContext &Ctx = getASTContext();
     SourceManager &SM = Ctx.getSourceManager();
@@ -371,8 +361,8 @@ struct FindFileIncludesVisitor {
 
   static enum CXChildVisitResult visit(CXCursor cursor, CXCursor parent,
                                        CXClientData client_data) {
-    return static_cast<FindFileIncludesVisitor*>(client_data)->
-                                                          visit(cursor, parent);
+    return static_cast<FindFileIncludesVisitor *>(client_data)
+        ->visit(cursor, parent);
   }
 };
 
@@ -390,15 +380,12 @@ static bool findIncludesInFile(CXTranslationUnit TU, const FileEntry *File,
   FindFileIncludesVisitor IncludesVisitor(*Unit, File, Visitor);
 
   SourceRange Range(SM.getLocForStartOfFile(FID), SM.getLocForEndOfFile(FID));
-  CursorVisitor InclusionCursorsVisitor(TU,
-                                        FindFileIncludesVisitor::visit,
+  CursorVisitor InclusionCursorsVisitor(TU, FindFileIncludesVisitor::visit,
                                         &IncludesVisitor,
                                         /*VisitPreprocessorLast=*/false,
-                                        /*VisitIncludedEntities=*/false,
-                                        Range);
+                                        /*VisitIncludedEntities=*/false, Range);
   return InclusionCursorsVisitor.visitPreprocessedEntitiesInRegion();
 }
-
 
 //===----------------------------------------------------------------------===//
 // libclang public APIs.
@@ -442,10 +429,8 @@ CXResult clang_findReferencesInFile(CXCursor cursor, CXFile file,
 
   if (cursor.kind == CXCursor_MacroDefinition ||
       cursor.kind == CXCursor_MacroExpansion) {
-    if (findMacroRefsInFile(cxcursor::getCursorTU(cursor),
-                            cursor,
-                            static_cast<const FileEntry *>(file),
-                            visitor))
+    if (findMacroRefsInFile(cxcursor::getCursorTU(cursor), cursor,
+                            static_cast<const FileEntry *>(file), visitor))
       return CXResult_VisitBreak;
     return CXResult_Success;
   }
@@ -467,16 +452,14 @@ CXResult clang_findReferencesInFile(CXCursor cursor, CXFile file,
     return CXResult_Invalid;
   }
 
-  if (findIdRefsInFile(cxcursor::getCursorTU(cursor),
-                       refCursor,
-                       static_cast<const FileEntry *>(file),
-                       visitor))
+  if (findIdRefsInFile(cxcursor::getCursorTU(cursor), refCursor,
+                       static_cast<const FileEntry *>(file), visitor))
     return CXResult_VisitBreak;
   return CXResult_Success;
 }
 
 CXResult clang_findIncludesInFile(CXTranslationUnit TU, CXFile file,
-                             CXCursorAndRangeVisitor visitor) {
+                                  CXCursorAndRangeVisitor visitor) {
   if (cxtu::isNotUsableTU(TU)) {
     LOG_BAD_TU(TU);
     return CXResult_Invalid;
@@ -508,26 +491,24 @@ CXResult clang_findIncludesInFile(CXTranslationUnit TU, CXFile file,
   return CXResult_Success;
 }
 
-static enum CXVisitorResult _visitCursorAndRange(void *context,
-                                                 CXCursor cursor,
+static enum CXVisitorResult _visitCursorAndRange(void *context, CXCursor cursor,
                                                  CXSourceRange range) {
   CXCursorAndRangeVisitorBlock block = (CXCursorAndRangeVisitorBlock)context;
   return INVOKE_BLOCK2(block, cursor, range);
 }
 
-CXResult clang_findReferencesInFileWithBlock(CXCursor cursor,
-                                             CXFile file,
-                                           CXCursorAndRangeVisitorBlock block) {
-  CXCursorAndRangeVisitor visitor = { block,
-                                      block ? _visitCursorAndRange : nullptr };
+CXResult
+clang_findReferencesInFileWithBlock(CXCursor cursor, CXFile file,
+                                    CXCursorAndRangeVisitorBlock block) {
+  CXCursorAndRangeVisitor visitor = {block,
+                                     block ? _visitCursorAndRange : nullptr};
   return clang_findReferencesInFile(cursor, file, visitor);
 }
 
-CXResult clang_findIncludesInFileWithBlock(CXTranslationUnit TU,
-                                           CXFile file,
+CXResult clang_findIncludesInFileWithBlock(CXTranslationUnit TU, CXFile file,
                                            CXCursorAndRangeVisitorBlock block) {
-  CXCursorAndRangeVisitor visitor = { block,
-                                      block ? _visitCursorAndRange : nullptr };
+  CXCursorAndRangeVisitor visitor = {block,
+                                     block ? _visitCursorAndRange : nullptr};
   return clang_findIncludesInFile(TU, file, visitor);
 }
 

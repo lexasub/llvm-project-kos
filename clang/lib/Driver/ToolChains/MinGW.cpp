@@ -7,8 +7,8 @@
 //===----------------------------------------------------------------------===//
 
 #include "MinGW.h"
-#include "InputInfo.h"
 #include "CommonArgs.h"
+#include "InputInfo.h"
 #include "clang/Config/config.h"
 #include "clang/Driver/Compilation.h"
 #include "clang/Driver/Driver.h"
@@ -372,7 +372,8 @@ llvm::ErrorOr<std::string> toolchains::MinGW::findGcc() {
   Gccs.emplace_back("mingw32-gcc");
   // Please do not add "gcc" here
   for (StringRef CandidateGcc : Gccs)
-    if (llvm::ErrorOr<std::string> GPPName = llvm::sys::findProgramByName(CandidateGcc))
+    if (llvm::ErrorOr<std::string> GPPName =
+            llvm::sys::findProgramByName(CandidateGcc))
       return GPPName;
   return make_error_code(std::errc::no_such_file_or_directory);
 }
@@ -550,8 +551,8 @@ void toolchains::MinGW::printVerboseInfo(raw_ostream &OS) const {
 // /usr/include/c++/4.8/backward
 // /usr/x86_64-w64-mingw32/include
 
-void toolchains::MinGW::AddClangSystemIncludeArgs(const ArgList &DriverArgs,
-                                                  ArgStringList &CC1Args) const {
+void toolchains::MinGW::AddClangSystemIncludeArgs(
+    const ArgList &DriverArgs, ArgStringList &CC1Args) const {
   if (DriverArgs.hasArg(options::OPT_nostdinc))
     return;
 
@@ -585,8 +586,9 @@ void toolchains::MinGW::AddClangCXXStdlibIncludeArgs(
 
   switch (GetCXXStdlibType(DriverArgs)) {
   case ToolChain::CST_Libcxx:
-    addSystemInclude(DriverArgs, CC1Args, Base + Arch + Slash + "include" +
-                                              Slash + "c++" + Slash + "v1");
+    addSystemInclude(DriverArgs, CC1Args,
+                     Base + Arch + Slash + "include" + Slash + "c++" + Slash +
+                         "v1");
     addSystemInclude(DriverArgs, CC1Args,
                      Base + "include" + Slash + "c++" + Slash + "v1");
     break;

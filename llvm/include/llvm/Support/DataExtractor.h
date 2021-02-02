@@ -18,15 +18,15 @@ namespace llvm {
 /// An auxiliary type to facilitate extraction of 3-byte entities.
 struct Uint24 {
   uint8_t Bytes[3];
-  Uint24(uint8_t U) {
-    Bytes[0] = Bytes[1] = Bytes[2] = U;
-  }
+  Uint24(uint8_t U) { Bytes[0] = Bytes[1] = Bytes[2] = U; }
   Uint24(uint8_t U0, uint8_t U1, uint8_t U2) {
-    Bytes[0] = U0; Bytes[1] = U1; Bytes[2] = U2;
+    Bytes[0] = U0;
+    Bytes[1] = U1;
+    Bytes[2] = U2;
   }
   uint32_t getAsUint32(bool IsLittleEndian) const {
     int LoIx = IsLittleEndian ? 0 : 2;
-    return Bytes[LoIx] + (Bytes[1] << 8) + (Bytes[2-LoIx] << 16);
+    return Bytes[LoIx] + (Bytes[1] << 8) + (Bytes[2 - LoIx] << 16);
   }
 };
 
@@ -42,6 +42,7 @@ class DataExtractor {
   StringRef Data;
   uint8_t IsLittleEndian;
   uint8_t AddressSize;
+
 public:
   /// A class representing a position in a DataExtractor, as well as any error
   /// encountered during extraction. It enables one to extract a sequence of
@@ -81,7 +82,7 @@ public:
   /// caller. The data must stay around as long as this object is
   /// valid.
   DataExtractor(StringRef Data, bool IsLittleEndian, uint8_t AddressSize)
-    : Data(Data), IsLittleEndian(IsLittleEndian), AddressSize(AddressSize) {}
+      : Data(Data), IsLittleEndian(IsLittleEndian), AddressSize(AddressSize) {}
   DataExtractor(ArrayRef<uint8_t> Data, bool IsLittleEndian,
                 uint8_t AddressSize)
       : Data(StringRef(reinterpret_cast<const char *>(Data.data()),
@@ -197,8 +198,8 @@ public:
   ///     pointed to by \a OffsetPtr is out of bounds, or if the
   ///     offset plus the length of the C string is out of bounds,
   ///     a default-initialized StringRef will be returned.
-  StringRef getFixedLengthString(uint64_t *OffsetPtr,
-      uint64_t Length, StringRef TrimChars = {"\0", 1}) const;
+  StringRef getFixedLengthString(uint64_t *OffsetPtr, uint64_t Length,
+                                 StringRef TrimChars = {"\0", 1}) const;
 
   /// Extract a fixed number of bytes from the specified offset.
   ///

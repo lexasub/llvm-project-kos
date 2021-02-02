@@ -87,9 +87,10 @@ static void signal_handler(int signo) {
 #endif
 
 static void display_usage(const char *progname, const char *subcommand) {
-  fprintf(stderr, "Usage:\n  %s %s [--log-file log-file-name] [--log-channels "
-                  "log-channel-list] [--port-file port-file-path] --server "
-                  "--listen port\n",
+  fprintf(stderr,
+          "Usage:\n  %s %s [--log-file log-file-name] [--log-channels "
+          "log-channel-list] [--port-file port-file-path] --server "
+          "--listen port\n",
           progname, subcommand);
   exit(0);
 }
@@ -253,8 +254,9 @@ int main_platform(int argc, char *argv[]) {
     gdbserver_portmap = GDBRemoteCommunicationServerPlatform::PortMap(
         min_gdbserver_port, max_gdbserver_port);
   } else if (min_gdbserver_port || max_gdbserver_port) {
-    fprintf(stderr, "error: --min-gdbserver-port (%u) is not lower than "
-                    "--max-gdbserver-port (%u)\n",
+    fprintf(stderr,
+            "error: --min-gdbserver-port (%u) is not lower than "
+            "--max-gdbserver-port (%u)\n",
             min_gdbserver_port, max_gdbserver_port);
     option_error = 3;
   }

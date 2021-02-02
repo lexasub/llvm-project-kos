@@ -11,13 +11,17 @@
 // RUN: FileCheck -input-file=%T/macro.cpp -check-prefix=CHECK-CC %s
 // RUN: FileCheck -input-file=%T/macro.h -check-prefix=CHECK-CHANGED-HEADER %s
 #include "macro.h"
-namespace na { namespace nc { class X{}; } }
+namespace na {
+namespace nc {
+class X {};
+} // namespace nc
+} // namespace na
 
 namespace na {
 namespace nb {
 USING;
 }
-}
+} // namespace na
 // CHECK-CC: namespace x {
 // CHECK-CC: namespace y {
 // CHECK-CC: USING;

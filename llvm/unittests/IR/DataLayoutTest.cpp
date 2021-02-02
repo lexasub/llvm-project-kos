@@ -27,12 +27,12 @@ TEST(DataLayoutTest, FunctionPtrAlign) {
   EXPECT_EQ(MaybeAlign(2), DataLayout("Fn16").getFunctionPtrAlign());
   EXPECT_EQ(MaybeAlign(4), DataLayout("Fn32").getFunctionPtrAlign());
   EXPECT_EQ(MaybeAlign(8), DataLayout("Fn64").getFunctionPtrAlign());
-  EXPECT_EQ(DataLayout::FunctionPtrAlignType::Independent, \
-      DataLayout("").getFunctionPtrAlignType());
-  EXPECT_EQ(DataLayout::FunctionPtrAlignType::Independent, \
-      DataLayout("Fi8").getFunctionPtrAlignType());
-  EXPECT_EQ(DataLayout::FunctionPtrAlignType::MultipleOfFunctionAlign, \
-      DataLayout("Fn8").getFunctionPtrAlignType());
+  EXPECT_EQ(DataLayout::FunctionPtrAlignType::Independent,
+            DataLayout("").getFunctionPtrAlignType());
+  EXPECT_EQ(DataLayout::FunctionPtrAlignType::Independent,
+            DataLayout("Fi8").getFunctionPtrAlignType());
+  EXPECT_EQ(DataLayout::FunctionPtrAlignType::MultipleOfFunctionAlign,
+            DataLayout("Fn8").getFunctionPtrAlignType());
   EXPECT_EQ(DataLayout("Fi8"), DataLayout("Fi8"));
   EXPECT_NE(DataLayout("Fi8"), DataLayout("Fi16"));
   EXPECT_NE(DataLayout("Fi8"), DataLayout("Fn8"));

@@ -13,7 +13,7 @@
 // RUN: %clang_cc1 -std=c++11 -fsyntax-only -ast-dump -ast-dump-filter test "-DSUBJECT=variable(is_parameter)" %s | FileCheck --check-prefix=CHECK-VARIABLE_IS_PARAMETER %s
 // RUN: %clang_cc1 -std=c++11 -fsyntax-only -ast-dump -ast-dump-filter test "-DSUBJECT=variable(unless(is_parameter))" %s | FileCheck --check-prefix=CHECK-VARIABLE_UNLESS_IS_PARAMETER %s
 
-#pragma clang attribute push (__attribute__((annotate("test"))), apply_to = any(SUBJECT))
+#pragma clang attribute push(__attribute__((annotate("test"))), apply_to = any(SUBJECT))
 
 namespace testNamespace {
 // CHECK-NAMESPACE: NamespaceDecl{{.*}} testNamespace
@@ -77,7 +77,7 @@ void testFunctionDecl();
 // CHECK-HAS_TYPE_FUNCTION_TYPE: FunctionDecl{{.*}} testFunctionDecl
 // CHECK-HAS_TYPE_FUNCTION_TYPE-NEXT: AnnotateAttr{{.*}} "test"
 
-void testFunctionDecl() { }
+void testFunctionDecl() {}
 // CHECK-FUNCTION: FunctionDecl{{.*}} testFunctionDecl
 // CHECK-FUNCTION-NEXT: CompoundStmt
 // CHECK-FUNCTION-NEXT: AnnotateAttr{{.*}} "test"
@@ -96,7 +96,7 @@ class testMethods {
   testMethods();
   void testMethod();
 };
-void testMethods::testMethod() { }
+void testMethods::testMethod() {}
 void testFunctionNotMethod();
 // CHECK-FUNCTION-LABEL: CXXConstructorDecl{{.*}} testMethods
 // CHECK-FUNCTION-NEXT: AnnotateAttr{{.*}} "test"
@@ -132,24 +132,24 @@ int testVariable;
 // CHECK-VARIABLE_UNLESS_IS_PARAMETER-LABEL: VarDecl{{.*}} testVariable
 // CHECK-VARIABLE_UNLESS_IS_PARAMETER-NEXT: AnnotateAttr{{.*}} "test"
 void testVarFunction(int testParam) {
-// CHECK-VARIABLE: VarDecl{{.*}} testParam
-// CHECK-VARIABLE-NEXT: AnnotateAttr{{.*}} "test"
-// CHECK-VARIABLE_IS_GLOBAL-LABEL: VarDecl{{.*}} testParam
-// CHECK-VARIABLE_IS_GLOBAL-NOT: AnnotateAttr{{.*}} "test"
-// CHECK-VARIABLE_IS_PARAMETER-LABEL: VarDecl{{.*}} testParam
-// CHECK-VARIABLE_IS_PARAMETER-NEXT: AnnotateAttr{{.*}} "test"
-// CHECK-VARIABLE_UNLESS_IS_PARAMETER-LABEL: VarDecl{{.*}} testParam
-// CHECK-VARIABLE_UNLESS_IS_PARAMETER-NOT: AnnotateAttr{{.*}} "test"
+  // CHECK-VARIABLE: VarDecl{{.*}} testParam
+  // CHECK-VARIABLE-NEXT: AnnotateAttr{{.*}} "test"
+  // CHECK-VARIABLE_IS_GLOBAL-LABEL: VarDecl{{.*}} testParam
+  // CHECK-VARIABLE_IS_GLOBAL-NOT: AnnotateAttr{{.*}} "test"
+  // CHECK-VARIABLE_IS_PARAMETER-LABEL: VarDecl{{.*}} testParam
+  // CHECK-VARIABLE_IS_PARAMETER-NEXT: AnnotateAttr{{.*}} "test"
+  // CHECK-VARIABLE_UNLESS_IS_PARAMETER-LABEL: VarDecl{{.*}} testParam
+  // CHECK-VARIABLE_UNLESS_IS_PARAMETER-NOT: AnnotateAttr{{.*}} "test"
 
   int testLocalVariable;
-// CHECK-VARIABLE: VarDecl{{.*}} testLocalVariable
-// CHECK-VARIABLE-NEXT: AnnotateAttr{{.*}} "test"
-// CHECK-VARIABLE_IS_GLOBAL-LABEL: VarDecl{{.*}} testLocalVariable
-// CHECK-VARIABLE_IS_GLOBAL-NOT: AnnotateAttr{{.*}} "test"
-// CHECK-VARIABLE_IS_PARAMETER-LABEL: VarDecl{{.*}} testLocalVariable
-// CHECK-VARIABLE_IS_PARAMETER-NOT: AnnotateAttr{{.*}} "test"
-// CHECK-VARIABLE_UNLESS_IS_PARAMETER-LABEL: VarDecl{{.*}} testLocalVariable
-// CHECK-VARIABLE_UNLESS_IS_PARAMETER-NEXT: AnnotateAttr{{.*}} "test"
+  // CHECK-VARIABLE: VarDecl{{.*}} testLocalVariable
+  // CHECK-VARIABLE-NEXT: AnnotateAttr{{.*}} "test"
+  // CHECK-VARIABLE_IS_GLOBAL-LABEL: VarDecl{{.*}} testLocalVariable
+  // CHECK-VARIABLE_IS_GLOBAL-NOT: AnnotateAttr{{.*}} "test"
+  // CHECK-VARIABLE_IS_PARAMETER-LABEL: VarDecl{{.*}} testLocalVariable
+  // CHECK-VARIABLE_IS_PARAMETER-NOT: AnnotateAttr{{.*}} "test"
+  // CHECK-VARIABLE_UNLESS_IS_PARAMETER-LABEL: VarDecl{{.*}} testLocalVariable
+  // CHECK-VARIABLE_UNLESS_IS_PARAMETER-NEXT: AnnotateAttr{{.*}} "test"
 }
 class testVarClass {
   static int testStaticVar;
@@ -163,7 +163,6 @@ class testVarClass {
 // CHECK-VARIABLE_UNLESS_IS_PARAMETER-LABEL: VarDecl{{.*}} testStaticVar
 // CHECK-VARIABLE_UNLESS_IS_PARAMETER-NEXT: AnnotateAttr{{.*}} "test"
 
-
-}
+} // namespace testNamespace
 
 #pragma clang attribute pop

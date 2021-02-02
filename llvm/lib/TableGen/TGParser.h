@@ -19,59 +19,57 @@
 #include <map>
 
 namespace llvm {
-  class SourceMgr;
-  class Twine;
-  struct ForeachLoop;
-  struct MultiClass;
-  struct SubClassReference;
-  struct SubMultiClassReference;
+class SourceMgr;
+class Twine;
+struct ForeachLoop;
+struct MultiClass;
+struct SubClassReference;
+struct SubMultiClassReference;
 
-  struct LetRecord {
-    StringInit *Name;
-    std::vector<unsigned> Bits;
-    Init *Value;
-    SMLoc Loc;
-    LetRecord(StringInit *N, ArrayRef<unsigned> B, Init *V, SMLoc L)
-      : Name(N), Bits(B), Value(V), Loc(L) {
-    }
-  };
+struct LetRecord {
+  StringInit *Name;
+  std::vector<unsigned> Bits;
+  Init *Value;
+  SMLoc Loc;
+  LetRecord(StringInit *N, ArrayRef<unsigned> B, Init *V, SMLoc L)
+      : Name(N), Bits(B), Value(V), Loc(L) {}
+};
 
-  /// RecordsEntry - Can be either a record or a foreach loop.
-  struct RecordsEntry {
-    std::unique_ptr<Record> Rec;
-    std::unique_ptr<ForeachLoop> Loop;
+/// RecordsEntry - Can be either a record or a foreach loop.
+struct RecordsEntry {
+  std::unique_ptr<Record> Rec;
+  std::unique_ptr<ForeachLoop> Loop;
 
-    void dump() const;
+  void dump() const;
 
-    RecordsEntry() {}
-    RecordsEntry(std::unique_ptr<Record> Rec) : Rec(std::move(Rec)) {}
-    RecordsEntry(std::unique_ptr<ForeachLoop> Loop)
-      : Loop(std::move(Loop)) {}
-  };
+  RecordsEntry() {}
+  RecordsEntry(std::unique_ptr<Record> Rec) : Rec(std::move(Rec)) {}
+  RecordsEntry(std::unique_ptr<ForeachLoop> Loop) : Loop(std::move(Loop)) {}
+};
 
-  /// ForeachLoop - Record the iteration state associated with a for loop.
-  /// This is used to instantiate items in the loop body.
-  ///
-  /// IterVar is allowed to be null, in which case no iteration variable is
-  /// defined in the loop at all. (This happens when a ForeachLoop is
-  /// constructed by desugaring an if statement.)
-  struct ForeachLoop {
-    SMLoc Loc;
-    VarInit *IterVar;
-    Init *ListValue;
-    std::vector<RecordsEntry> Entries;
+/// ForeachLoop - Record the iteration state associated with a for loop.
+/// This is used to instantiate items in the loop body.
+///
+/// IterVar is allowed to be null, in which case no iteration variable is
+/// defined in the loop at all. (This happens when a ForeachLoop is
+/// constructed by desugaring an if statement.)
+struct ForeachLoop {
+  SMLoc Loc;
+  VarInit *IterVar;
+  Init *ListValue;
+  std::vector<RecordsEntry> Entries;
 
-    void dump() const;
+  void dump() const;
 
-    ForeachLoop(SMLoc Loc, VarInit *IVar, Init *LValue)
+  ForeachLoop(SMLoc Loc, VarInit *IVar, Init *LValue)
       : Loc(Loc), IterVar(IVar), ListValue(LValue) {}
-  };
+};
 
-  struct DefsetRecord {
-    SMLoc Loc;
-    RecTy *EltTy = nullptr;
-    SmallVector<Init *, 16> Elements;
-  };
+struct DefsetRecord {
+  SMLoc Loc;
+  RecTy *EltTy = nullptr;
+  SmallVector<Init *, 16> Elements;
+};
 
 class TGLocalVarScope {
   // A scope to hold local variable definitions from defvar.
@@ -114,13 +112,13 @@ public:
 };
 
 struct MultiClass {
-  Record Rec;  // Placeholder for template args and Name.
+  Record Rec; // Placeholder for template args and Name.
   std::vector<RecordsEntry> Entries;
 
   void dump() const;
 
-  MultiClass(StringRef Name, SMLoc Loc, RecordKeeper &Records) :
-    Rec(Name, Loc, Records) {}
+  MultiClass(StringRef Name, SMLoc Loc, RecordKeeper &Records)
+      : Rec(Name, Loc, Records) {}
 };
 
 class TGParser {
@@ -151,15 +149,14 @@ class TGParser {
   // in the middle of creating in.  For those situations, allow the
   // parser to ignore missing object errors.
   enum IDParseMode {
-    ParseValueMode,   // We are parsing a value we expect to look up.
-    ParseNameMode,    // We are parsing a name of an object that does not yet
-                      // exist.
+    ParseValueMode, // We are parsing a value we expect to look up.
+    ParseNameMode,  // We are parsing a name of an object that does not yet
+                    // exist.
   };
 
 public:
-  TGParser(SourceMgr &SM, ArrayRef<std::string> Macros,
-           RecordKeeper &records)
-    : Lex(SM, Macros), CurMultiClass(nullptr), Records(records) {}
+  TGParser(SourceMgr &SM, ArrayRef<std::string> Macros, RecordKeeper &records)
+      : Lex(SM, Macros), CurMultiClass(nullptr), Records(records) {}
 
   /// ParseFile - Main entrypoint for parsing a tblgen file.  These parser
   /// routines return true on error, or false on success.
@@ -169,9 +166,7 @@ public:
     PrintError(L, Msg);
     return true;
   }
-  bool TokError(const Twine &Msg) const {
-    return Error(Lex.getLoc(), Msg);
-  }
+  bool TokError(const Twine &Msg) const { return Error(Lex.getLoc(), Msg); }
   const TGLexer::DependenciesSetTy &getDependencies() const {
     return Lex.getDependencies();
   }
@@ -209,7 +204,7 @@ private: // Semantic analysis methods.
                SMLoc *Loc = nullptr);
   bool addDefOne(std::unique_ptr<Record> Rec);
 
-private:  // Parser methods.
+private: // Parser methods.
   bool consume(tgtok::TokKind K);
   bool ParseObjectList(MultiClass *MC = nullptr);
   bool ParseObject(MultiClass *MC);
@@ -243,10 +238,10 @@ private:  // Parser methods.
                          IDParseMode Mode = ParseValueMode);
   Init *ParseValue(Record *CurRec, RecTy *ItemType = nullptr,
                    IDParseMode Mode = ParseValueMode);
-  void ParseValueList(SmallVectorImpl<llvm::Init*> &Result, Record *CurRec,
+  void ParseValueList(SmallVectorImpl<llvm::Init *> &Result, Record *CurRec,
                       Record *ArgsRec = nullptr, RecTy *EltTy = nullptr);
   void ParseDagArgList(
-      SmallVectorImpl<std::pair<llvm::Init*, StringInit*>> &Result,
+      SmallVectorImpl<std::pair<llvm::Init *, StringInit *>> &Result,
       Record *CurRec);
   bool ParseOptionalRangeList(SmallVectorImpl<unsigned> &Ranges);
   bool ParseOptionalBitList(SmallVectorImpl<unsigned> &Ranges);

@@ -20,15 +20,14 @@ void test1() {
   c.g(1, 2, 3);
 }
 
-
 struct S {
-  inline S() { }
-  inline ~S() { }
+  inline S() {}
+  inline ~S() {}
 
-  void f_inline1() { }
-  inline void f_inline2() { }
+  void f_inline1() {}
+  inline void f_inline2() {}
 
-  static void g() { }
+  static void g() {}
   static void f();
 
   virtual void v() {}
@@ -63,7 +62,7 @@ void test2() {
 // CHECK: define linkonce_odr void @_ZN1SD1Ev{{.*}} unnamed_addr
 
 struct T {
-  T operator+(const T&);
+  T operator+(const T &);
 };
 
 // CHECK-LABEL: define{{.*}} void @_Z5test3v

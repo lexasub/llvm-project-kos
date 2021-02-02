@@ -9,11 +9,11 @@ template <class T1, class T2>
 class ClassTemplatePartial; // expected-note {{explicitly specialized declaration is here}}
 
 template <typename T> struct X {
-  struct MemberClass; // expected-note {{explicitly specialized declaration is here}}
+  struct MemberClass;     // expected-note {{explicitly specialized declaration is here}}
   enum MemberEnumeration; // expected-note {{explicitly specialized declaration is here}} // expected-error {{ISO C++ forbids forward references to 'enum' types}}
 };
 
-}
+} // namespace A
 
 namespace B {
 
@@ -29,5 +29,4 @@ struct A::X<int>::MemberClass; // expected-warning {{member class specialization
 template <>
 enum A::X<int>::MemberEnumeration; // expected-warning {{member enumeration specialization of 'MemberEnumeration' not in class 'X' or an enclosing namespace is a Microsoft extension}} // expected-error {{ISO C++ forbids forward references to 'enum' types}}
 
-}
-
+} // namespace B

@@ -29,30 +29,32 @@ namespace {
          << "unable to legalize instruction: " << MISStream.str();
 }
 
-DefineLegalizerInfo(ALegalizer, {
-  auto p0 = LLT::pointer(0, 64);
-  auto v2s8 = LLT::vector(2, 8);
-  auto v2s16 = LLT::vector(2, 16);
-  getActionDefinitionsBuilder(G_LOAD)
-      .legalForTypesWithMemDesc({{s16, p0, 8, 8}})
-      .scalarize(0)
-      .clampScalar(0, s16, s16);
-  getActionDefinitionsBuilder(G_PTR_ADD).legalFor({{p0, s64}});
-  getActionDefinitionsBuilder(G_CONSTANT).legalFor({s32, s64});
-  getActionDefinitionsBuilder(G_BUILD_VECTOR)
-      .legalFor({{v2s16, s16}})
-      .clampScalar(1, s16, s16);
-  getActionDefinitionsBuilder(G_BUILD_VECTOR_TRUNC).legalFor({{v2s8, s16}});
-  getActionDefinitionsBuilder(G_ANYEXT).legalFor({{s32, s16}});
-  getActionDefinitionsBuilder(G_ZEXT).legalFor({{s32, s16}});
-  getActionDefinitionsBuilder(G_SEXT).legalFor({{s32, s16}});
-  getActionDefinitionsBuilder(G_AND).legalFor({s32});
-  getActionDefinitionsBuilder(G_SEXT_INREG).lower();
-  getActionDefinitionsBuilder(G_ASHR).legalFor({{s32, s32}});
-  getActionDefinitionsBuilder(G_SHL).legalFor({{s32, s32}});
-})
+DefineLegalizerInfo(
+    ALegalizer,
+    {
+      auto p0 = LLT::pointer(0, 64);
+      auto v2s8 = LLT::vector(2, 8);
+      auto v2s16 = LLT::vector(2, 16);
+      getActionDefinitionsBuilder(G_LOAD)
+          .legalForTypesWithMemDesc({{s16, p0, 8, 8}})
+          .scalarize(0)
+          .clampScalar(0, s16, s16);
+      getActionDefinitionsBuilder(G_PTR_ADD).legalFor({{p0, s64}});
+      getActionDefinitionsBuilder(G_CONSTANT).legalFor({s32, s64});
+      getActionDefinitionsBuilder(G_BUILD_VECTOR)
+          .legalFor({{v2s16, s16}})
+          .clampScalar(1, s16, s16);
+      getActionDefinitionsBuilder(G_BUILD_VECTOR_TRUNC).legalFor({{v2s8, s16}});
+      getActionDefinitionsBuilder(G_ANYEXT).legalFor({{s32, s16}});
+      getActionDefinitionsBuilder(G_ZEXT).legalFor({{s32, s16}});
+      getActionDefinitionsBuilder(G_SEXT).legalFor({{s32, s16}});
+      getActionDefinitionsBuilder(G_AND).legalFor({s32});
+      getActionDefinitionsBuilder(G_SEXT_INREG).lower();
+      getActionDefinitionsBuilder(G_ASHR).legalFor({{s32, s32}});
+      getActionDefinitionsBuilder(G_SHL).legalFor({{s32, s32}});
+    })
 
-TEST_F(AArch64GISelMITest, BasicLegalizerTest) {
+    TEST_F(AArch64GISelMITest, BasicLegalizerTest) {
   StringRef MIRString = R"(
     %vptr:_(p0) = COPY $x4
     %v:_(<2 x s8>) = G_LOAD %vptr:_(p0) :: (load 2, align 1)

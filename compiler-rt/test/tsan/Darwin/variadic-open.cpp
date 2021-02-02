@@ -1,9 +1,9 @@
 // RUN: %clangxx_tsan -O1 %s -o %t && %run %t %t.tmp 2>&1 | FileCheck %s
-#include <stdio.h>
 #include <assert.h>
 #include <fcntl.h>
-#include <unistd.h>
+#include <stdio.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 int main(int argc, char *argv[]) {
   fprintf(stderr, "Hello world.\n");

@@ -16,8 +16,8 @@
 #define LLVM_CLANG_AST_ODRHASH_H
 
 #include "clang/AST/DeclarationName.h"
-#include "clang/AST/Type.h"
 #include "clang/AST/TemplateBase.h"
+#include "clang/AST/Type.h"
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/FoldingSet.h"
 #include "llvm/ADT/PointerUnion.h"
@@ -89,12 +89,12 @@ public:
   // Save booleans until the end to lower the size of data to process.
   void AddBoolean(bool value);
 
-  static bool isDeclToBeProcessed(const Decl* D, const DeclContext *Parent);
+  static bool isDeclToBeProcessed(const Decl *D, const DeclContext *Parent);
 
 private:
   void AddDeclarationNameImpl(DeclarationName Name);
 };
 
-}  // end namespace clang
+} // end namespace clang
 
 #endif

@@ -2,28 +2,22 @@
 
 // Compatibility of virtual functions.
 
-struct A
-{
+struct A {
 };
 
-struct B1 : A
-{
+struct B1 : A {
 };
 
-struct B2 : A
-{
+struct B2 : A {
 };
 
-struct D : B1, B2
-{
+struct D : B1, B2 {
 };
 
-struct P : private A
-{
+struct P : private A {
 };
 
-struct Base
-{
+struct Base {
   virtual void f1() throw();
   virtual void f2() throw(int, float);
 
@@ -45,21 +39,20 @@ struct Base
   virtual void f15();
   virtual void f16();
 
-  virtual void g1() throw(); // expected-note {{overridden virtual function is here}}
+  virtual void g1() throw();    // expected-note {{overridden virtual function is here}}
   virtual void g2() throw(int); // expected-note {{overridden virtual function is here}}
-  virtual void g3() throw(A); // expected-note {{overridden virtual function is here}}
-  virtual void g4() throw(B1); // expected-note {{overridden virtual function is here}}
-  virtual void g5() throw(A); // expected-note {{overridden virtual function is here}}
+  virtual void g3() throw(A);   // expected-note {{overridden virtual function is here}}
+  virtual void g4() throw(B1);  // expected-note {{overridden virtual function is here}}
+  virtual void g5() throw(A);   // expected-note {{overridden virtual function is here}}
 
   virtual void g6() noexcept; // expected-note {{overridden virtual function is here}}
   virtual void g7() noexcept; // expected-note {{overridden virtual function is here}}
 
-  virtual void g8() noexcept; // expected-note {{overridden virtual function is here}}
-  virtual void g9() throw(); // expected-note {{overridden virtual function is here}}
+  virtual void g8() noexcept;    // expected-note {{overridden virtual function is here}}
+  virtual void g9() throw();     // expected-note {{overridden virtual function is here}}
   virtual void g10() throw(int); // expected-note {{overridden virtual function is here}}
 };
-struct Derived : Base
-{
+struct Derived : Base {
   virtual void f1() throw();
   virtual void f2() throw(float, int);
 
@@ -82,15 +75,15 @@ struct Derived : Base
   virtual void f16() throw();
 
   virtual void g1() throw(int); // expected-error {{exception specification of overriding function is more lax}}
-  virtual void g2(); // expected-error {{exception specification of overriding function is more lax}}
-  virtual void g3() throw(D); // expected-error {{exception specification of overriding function is more lax}}
-  virtual void g4() throw(A); // expected-error {{exception specification of overriding function is more lax}}
-  virtual void g5() throw(P); // expected-error {{exception specification of overriding function is more lax}}
+  virtual void g2();            // expected-error {{exception specification of overriding function is more lax}}
+  virtual void g3() throw(D);   // expected-error {{exception specification of overriding function is more lax}}
+  virtual void g4() throw(A);   // expected-error {{exception specification of overriding function is more lax}}
+  virtual void g5() throw(P);   // expected-error {{exception specification of overriding function is more lax}}
 
   virtual void g6() noexcept(false); // expected-error {{exception specification of overriding function is more lax}}
-  virtual void g7(); // expected-error {{exception specification of overriding function is more lax}}
+  virtual void g7();                 // expected-error {{exception specification of overriding function is more lax}}
 
-  virtual void g8() throw(int); // expected-error {{exception specification of overriding function is more lax}}
-  virtual void g9() noexcept(false); // expected-error {{exception specification of overriding function is more lax}}
+  virtual void g8() throw(int);       // expected-error {{exception specification of overriding function is more lax}}
+  virtual void g9() noexcept(false);  // expected-error {{exception specification of overriding function is more lax}}
   virtual void g10() noexcept(false); // expected-error {{exception specification of overriding function is more lax}}
 };

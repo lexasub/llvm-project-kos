@@ -33,14 +33,14 @@ template StreamWrapper &StreamWrapper::operator<<<int>(int t);
 template StreamWrapper &StreamWrapper::operator<<<long>(long t);
 template StreamWrapper &StreamWrapper::operator<<<long long>(long long t);
 template StreamWrapper &
-    StreamWrapper::operator<<<unsigned char>(unsigned char t);
+StreamWrapper::operator<<<unsigned char>(unsigned char t);
 template StreamWrapper &
-    StreamWrapper::operator<<<unsigned short>(unsigned short t);
+StreamWrapper::operator<<<unsigned short>(unsigned short t);
 template StreamWrapper &StreamWrapper::operator<<<unsigned int>(unsigned int t);
 template StreamWrapper &
-    StreamWrapper::operator<<<unsigned long>(unsigned long t);
+StreamWrapper::operator<<<unsigned long>(unsigned long t);
 template StreamWrapper &
-    StreamWrapper::operator<<<unsigned long long>(unsigned long long t);
+StreamWrapper::operator<<<unsigned long long>(unsigned long long t);
 template StreamWrapper &StreamWrapper::operator<<<bool>(bool t);
 template StreamWrapper &StreamWrapper::operator<<<std::string>(std::string t);
 

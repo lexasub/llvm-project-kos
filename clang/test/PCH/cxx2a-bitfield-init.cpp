@@ -12,7 +12,7 @@ struct S {
 };
 
 int a;
-template<bool B> struct T {
+template <bool B> struct T {
   int m : B ? 8 : a = 42;
 };
 

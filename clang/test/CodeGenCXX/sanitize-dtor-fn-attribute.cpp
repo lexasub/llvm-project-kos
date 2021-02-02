@@ -5,7 +5,7 @@
 // represses emission of sanitizing callback
 
 template <class T> class Vector {
- public:
+public:
   int size;
   ~Vector() {}
 };
@@ -13,7 +13,7 @@ template <class T> class Vector {
 struct No_San {
   Vector<int> v;
   int x;
-  No_San() { }
+  No_San() {}
   __attribute__((no_sanitize_memory)) ~No_San() = default;
 };
 

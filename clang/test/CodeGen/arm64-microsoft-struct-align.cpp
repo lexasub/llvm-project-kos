@@ -1,12 +1,24 @@
 // RUN: %clang_cc1 -triple aarch64-windows -ffreestanding -emit-llvm -O0 \
 // RUN: -x c++ -o - %s | FileCheck %s
 
-struct size1 { char str[1]; };
-struct size2 { char str[2]; };
-struct size7 { char str[4]; };
-struct size8 { char str[8]; };
-struct size63 { char str[63]; };
-struct size64 { char str[64]; };
+struct size1 {
+  char str[1];
+};
+struct size2 {
+  char str[2];
+};
+struct size7 {
+  char str[4];
+};
+struct size8 {
+  char str[8];
+};
+struct size63 {
+  char str[63];
+};
+struct size64 {
+  char str[64];
+};
 
 struct size1 s1;
 // CHECK: @"?s1@@3Usize1@@A" = dso_local global %struct.size1 zeroinitializer, align 1

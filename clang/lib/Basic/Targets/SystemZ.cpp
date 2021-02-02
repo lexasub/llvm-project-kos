@@ -29,27 +29,26 @@ const Builtin::Info SystemZTargetInfo::BuiltinInfo[] = {
 };
 
 const char *const SystemZTargetInfo::GCCRegNames[] = {
-    "r0",  "r1",  "r2",  "r3",  "r4",  "r5",  "r6",  "r7",
-    "r8",  "r9",  "r10", "r11", "r12", "r13", "r14", "r15",
-    "f0",  "f2",  "f4",  "f6",  "f1",  "f3",  "f5",  "f7",
-    "f8",  "f10", "f12", "f14", "f9",  "f11", "f13", "f15",
-    /*ap*/"", "cc", /*fp*/"", /*rp*/"", "a0",  "a1",
-    "v16", "v18", "v20", "v22", "v17", "v19", "v21", "v23",
-    "v24", "v26", "v28", "v30", "v25", "v27", "v29", "v31"
-};
+    "r0",      "r1",  "r2",      "r3",      "r4",  "r5",  "r6",  "r7",
+    "r8",      "r9",  "r10",     "r11",     "r12", "r13", "r14", "r15",
+    "f0",      "f2",  "f4",      "f6",      "f1",  "f3",  "f5",  "f7",
+    "f8",      "f10", "f12",     "f14",     "f9",  "f11", "f13", "f15",
+    /*ap*/ "", "cc",  /*fp*/ "", /*rp*/ "", "a0",  "a1",  "v16", "v18",
+    "v20",     "v22", "v17",     "v19",     "v21", "v23", "v24", "v26",
+    "v28",     "v30", "v25",     "v27",     "v29", "v31"};
 
 const TargetInfo::AddlRegName GCCAddlRegNames[] = {
-    {{"v0"}, 16}, {{"v2"},  17}, {{"v4"},  18}, {{"v6"},  19},
-    {{"v1"}, 20}, {{"v3"},  21}, {{"v5"},  22}, {{"v7"},  23},
+    {{"v0"}, 16}, {{"v2"}, 17},  {{"v4"}, 18},  {{"v6"}, 19},
+    {{"v1"}, 20}, {{"v3"}, 21},  {{"v5"}, 22},  {{"v7"}, 23},
     {{"v8"}, 24}, {{"v10"}, 25}, {{"v12"}, 26}, {{"v14"}, 27},
-    {{"v9"}, 28}, {{"v11"}, 29}, {{"v13"}, 30}, {{"v15"}, 31}
-};
+    {{"v9"}, 28}, {{"v11"}, 29}, {{"v13"}, 30}, {{"v15"}, 31}};
 
 ArrayRef<const char *> SystemZTargetInfo::getGCCRegNames() const {
   return llvm::makeArrayRef(GCCRegNames);
 }
 
-ArrayRef<TargetInfo::AddlRegName> SystemZTargetInfo::getGCCAddlRegNames() const {
+ArrayRef<TargetInfo::AddlRegName>
+SystemZTargetInfo::getGCCAddlRegNames() const {
   return llvm::makeArrayRef(GCCAddlRegNames);
 }
 
@@ -87,13 +86,9 @@ struct ISANameRevision {
   int ISARevisionID;
 };
 static constexpr ISANameRevision ISARevisions[] = {
-  {{"arch8"}, 8}, {{"z10"}, 8},
-  {{"arch9"}, 9}, {{"z196"}, 9},
-  {{"arch10"}, 10}, {{"zEC12"}, 10},
-  {{"arch11"}, 11}, {{"z13"}, 11},
-  {{"arch12"}, 12}, {{"z14"}, 12},
-  {{"arch13"}, 13}, {{"z15"}, 13}
-};
+    {{"arch8"}, 8},   {{"z10"}, 8},    {{"arch9"}, 9},   {{"z196"}, 9},
+    {{"arch10"}, 10}, {{"zEC12"}, 10}, {{"arch11"}, 11}, {{"z13"}, 11},
+    {{"arch12"}, 12}, {{"z14"}, 12},   {{"arch13"}, 13}, {{"z15"}, 13}};
 
 int SystemZTargetInfo::getISARevision(StringRef Name) const {
   const auto Rev =

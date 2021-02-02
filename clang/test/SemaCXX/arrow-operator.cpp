@@ -1,24 +1,24 @@
 // RUN: %clang_cc1 -fsyntax-only -verify %s
-struct T { 
+struct T {
   void f();
 };
 
 struct A {
-  T* operator->(); // expected-note{{candidate function}}
+  T *operator->(); // expected-note{{candidate function}}
 };
 
 struct B {
-  T* operator->(); // expected-note{{candidate function}}
+  T *operator->(); // expected-note{{candidate function}}
 };
 
 struct C : A, B {
 };
 
-struct D : A { };
+struct D : A {};
 
 struct E; // expected-note {{forward declaration of 'E'}}
 
-void f(C &c, D& d, E& e) {
+void f(C &c, D &d, E &e) {
   c->f(); // expected-error{{use of overloaded operator '->' is ambiguous}}
   d->f();
   e->f(); // expected-error{{incomplete definition of type}}
@@ -27,31 +27,38 @@ void f(C &c, D& d, E& e) {
 // rdar://8875304
 namespace rdar8875304 {
 class Point {};
-class Line_Segment{ public: Line_Segment(const Point&){} };
-class Node { public: Point Location(){ Point p; return p; } };
+class Line_Segment {
+public:
+  Line_Segment(const Point &) {}
+};
+class Node {
+public:
+  Point Location() {
+    Point p;
+    return p;
+  }
+};
 
-void f()
-{
-   Node** node1;
-   Line_Segment(node1->Location()); // expected-error {{not a structure or union}}
+void f() {
+  Node **node1;
+  Line_Segment(node1->Location()); // expected-error {{not a structure or union}}
 }
-}
-
+} // namespace rdar8875304
 
 namespace arrow_suggest {
 
 template <typename T>
 class wrapped_ptr {
- public:
-  wrapped_ptr(T* ptr) : ptr_(ptr) {}
-  T* operator->() { return ptr_; }
+public:
+  wrapped_ptr(T *ptr) : ptr_(ptr) {}
+  T *operator->() { return ptr_; }
   void Check(); // expected-note {{'Check' declared here}}
- private:
+private:
   T *ptr_;
 };
 
 class Worker {
- public:
+public:
   void DoSomething(); // expected-note {{'DoSomething' declared here}}
   void Chuck();
 };
@@ -61,7 +68,7 @@ void test() {
   worker.DoSomething(); // expected-error {{no member named 'DoSomething' in 'arrow_suggest::wrapped_ptr<arrow_suggest::Worker>'; did you mean to use '->' instead of '.'?}}
   worker.DoSamething(); // expected-error {{no member named 'DoSamething' in 'arrow_suggest::wrapped_ptr<arrow_suggest::Worker>'; did you mean to use '->' instead of '.'?}} \
                         // expected-error {{no member named 'DoSamething' in 'arrow_suggest::Worker'; did you mean 'DoSomething'?}}
-  worker.Chuck(); // expected-error {{no member named 'Chuck' in 'arrow_suggest::wrapped_ptr<arrow_suggest::Worker>'; did you mean 'Check'?}}
+  worker.Chuck();       // expected-error {{no member named 'Chuck' in 'arrow_suggest::wrapped_ptr<arrow_suggest::Worker>'; did you mean 'Check'?}}
 }
 
 } // namespace arrow_suggest

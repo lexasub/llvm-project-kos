@@ -13,9 +13,9 @@
 #include <map>
 #include <mutex>
 
-#include "llvm/ADT/DenseMap.h"
 #include "lldb/Core/Section.h"
 #include "lldb/lldb-public.h"
+#include "llvm/ADT/DenseMap.h"
 
 namespace lldb_private {
 

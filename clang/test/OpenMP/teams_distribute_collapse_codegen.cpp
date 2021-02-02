@@ -20,25 +20,25 @@
 #ifdef CK1
 
 template <typename T, int X, long long Y>
-struct SS{
+struct SS {
   T a[X][Y];
 
   // CK1: define {{.*}}i32 @{{.+}}foo{{.+}}(
   int foo(void) {
-    
-    // CK1: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
-    // CK1: call void @[[OFFL1:.+]](
-    #pragma omp target
-    #pragma omp teams distribute collapse(2)
-    for(int i = 0; i < X; i++) {
-      for(int j = 0; j < Y; j++) {
-	a[i][j] = (T)0;
+
+// CK1: call i32 @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
+// CK1: call void @[[OFFL1:.+]](
+#pragma omp target
+#pragma omp teams distribute collapse(2)
+    for (int i = 0; i < X; i++) {
+      for (int j = 0; j < Y; j++) {
+        a[i][j] = (T)0;
       }
     }
     // CK1: define internal void @[[OFFL1]](
     // CK1: call void {{.+}} @__kmpc_fork_teams({{.+}}, i32 1, {{.+}} @[[OUTL1:.+]] to {{.+}},
     // CK1: ret void
-    
+
     // CK1: define internal void @[[OUTL1]]({{.+}})
     // discard loop variables not needed here
     // CK1: = alloca i32,
@@ -49,7 +49,7 @@ struct SS{
     // CK1: store i32 56087, i32* [[OMP_UB]],
     // CK1: call void @__kmpc_for_static_init_4({{.+}}, {{.+}}, i32 92, {{.+}}, {{.+}}, i32* [[OMP_UB]],
     // CK1: call void @__kmpc_for_static_fini(
-    // CK1: ret void  
+    // CK1: ret void
 
     return a[0][0];
   }
@@ -58,7 +58,6 @@ struct SS{
 int teams_template_struct(void) {
   SS<int, 123, 456> V;
   return V.foo();
-
 }
 #endif // CK1
 
@@ -82,24 +81,24 @@ int teams_template_struct(void) {
 template <typename T, int n, int m>
 int tmain(T argc) {
   T a[n][m];
-  #pragma omp target
-  #pragma omp teams distribute collapse(2)
-  for(int i = 0; i < n; i++) {
-    for(int j = 0; j < m; j++) {
+#pragma omp target
+#pragma omp teams distribute collapse(2)
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < m; j++) {
       a[i][j] = (T)0;
     }
   }
   return 0;
 }
 
-int main (int argc, char **argv) {
+int main(int argc, char **argv) {
   int n = 100;
   int m = 2;
   int a[n][m];
-  #pragma omp target
-  #pragma omp teams distribute collapse(2)
-  for(int i = 0; i < n; i++) {
-    for(int j = 0; j < m; j++) {
+#pragma omp target
+#pragma omp teams distribute collapse(2)
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < m; j++) {
       a[i][j] = 0;
     }
   }

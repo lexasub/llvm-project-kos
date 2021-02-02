@@ -4,7 +4,7 @@
 // Tests various places where requiring a complete type involves
 // instantiation of that type.
 
-template<typename T>
+template <typename T>
 struct X {
   X(T);
 
@@ -43,7 +43,7 @@ void test_new() {
 }
 
 void test_memptr(X<long> *p1, long X<long>::*pm1,
-                 X<long(long)> *p2, 
+                 X<long(long)> *p2,
 #ifdef MSABI
                  long (X<long(long)>::*pm2)(long)) { // expected-note{{in instantiation of template class 'X<long (long)>' requested here}}
 #else
@@ -53,102 +53,103 @@ void test_memptr(X<long> *p1, long X<long>::*pm1,
 }
 
 // Reference binding to a base
-template<typename T>
-struct X1 { };
+template <typename T>
+struct X1 {};
 
-template<typename T>
-struct X2 : public T { };
+template <typename T>
+struct X2 : public T {};
 
-void refbind_base(X2<X1<int> > &x2) {
+void refbind_base(X2<X1<int>> &x2) {
   X1<int> &x1 = x2;
 }
 
 // Enumerate constructors for user-defined conversion.
-template<typename T>
+template <typename T>
 struct X3 {
   X3(T);
 };
 
 void enum_constructors(X1<float> &x1) {
-  X3<X1<float> > x3 = x1;
+  X3<X1<float>> x3 = x1;
 }
 
 namespace PR6376 {
-  template<typename T, typename U> struct W { };
+template <typename T, typename U> struct W {};
 
-  template<typename T>
-  struct X {
-    template<typename U>
-    struct apply {
-      typedef W<T, U> type;
-    };
+template <typename T>
+struct X {
+  template <typename U>
+  struct apply {
+    typedef W<T, U> type;
   };
-  
-  template<typename T, typename U>
-  struct Y : public X<T>::template apply<U>::type { };
+};
 
-  template struct Y<int, float>;
-}
+template <typename T, typename U>
+struct Y : public X<T>::template apply<U>::type {};
+
+template struct Y<int, float>;
+} // namespace PR6376
 
 namespace TemporaryObjectCopy {
-  // Make sure we instantiate classes when we create a temporary copy.
-  template<typename T>
-  struct X {
-    X(T); 
-  };
+// Make sure we instantiate classes when we create a temporary copy.
+template <typename T>
+struct X {
+  X(T);
+};
 
-  template<typename T>
-  void f(T t) {
-    const X<int> &x = X<int>(t);
-  }
-
-  template void f(int);
+template <typename T>
+void f(T t) {
+  const X<int> &x = X<int>(t);
 }
+
+template void f(int);
+} // namespace TemporaryObjectCopy
 
 namespace PR7080 {
-  template <class T, class U>
-  class X
-  {
-    typedef char true_t;
-    class false_t { char dummy[2]; };
-    static true_t dispatch(U);
-    static false_t dispatch(...);
-    static T trigger();
-  public:
-    enum { value = sizeof(dispatch(trigger())) == sizeof(true_t) };
+template <class T, class U>
+class X {
+  typedef char true_t;
+  class false_t {
+    char dummy[2];
   };
+  static true_t dispatch(U);
+  static false_t dispatch(...);
+  static T trigger();
 
-  template <class T>
-  class rv : public T
-  { };
+public:
+  enum { value = sizeof(dispatch(trigger())) == sizeof(true_t) };
+};
 
-  bool x = X<int, rv<int>&>::value;
-}
+template <class T>
+class rv : public T {};
+
+bool x = X<int, rv<int> &>::value;
+} // namespace PR7080
 
 namespace pr7199 {
-  template <class T> class A; // expected-note {{template is declared here}}
-  template <class T> class B {
-    class A<T>::C field; // expected-error {{implicit instantiation of undefined template 'pr7199::A<int>'}}
-  };
+template <class T> class A; // expected-note {{template is declared here}}
+template <class T> class B {
+  class A<T>::C field; // expected-error {{implicit instantiation of undefined template 'pr7199::A<int>'}}
+};
 
-  template class B<int>; // expected-note {{in instantiation}}
-}
+template class B<int>; // expected-note {{in instantiation}}
+} // namespace pr7199
 
 namespace PR8425 {
-  template <typename T>
-  class BaseT {};
+template <typename T>
+class BaseT {};
 
-  template <typename T>
-  class DerivedT : public BaseT<T> {};
+template <typename T>
+class DerivedT : public BaseT<T> {};
 
-  template <typename T>
-  class FromT {
-  public:
-    operator DerivedT<T>() const { return DerivedT<T>(); }
-  };
+template <typename T>
+class FromT {
+public:
+  operator DerivedT<T>() const { return DerivedT<T>(); }
+};
 
-  void test() {
-    FromT<int> ft;
-    BaseT<int> bt(ft);
-  }
+void test() {
+  FromT<int> ft;
+  BaseT<int> bt(ft);
 }
+} // namespace PR8425

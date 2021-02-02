@@ -18,30 +18,29 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        char buf[] = "123 4.5 dog";
-        std::istrstream in(buf);
-        int i;
-        in >> i;
-        assert(i == 123);
-        double d;
-        in >> d;
-        assert(d == 4.5);
-        std::string s;
-        in >> s;
-        assert(s == "dog");
-        assert(in.eof());
-        assert(!in.fail());
-        in.clear();
-        in.putback('g');
-        assert(!in.fail());
-        in.putback('g');
-        assert(!in.fail());
-        assert(buf[9] == 'g');
-        assert(buf[10] == 'g');
-    }
+int main(int, char**) {
+  {
+    char buf[] = "123 4.5 dog";
+    std::istrstream in(buf);
+    int i;
+    in >> i;
+    assert(i == 123);
+    double d;
+    in >> d;
+    assert(d == 4.5);
+    std::string s;
+    in >> s;
+    assert(s == "dog");
+    assert(in.eof());
+    assert(!in.fail());
+    in.clear();
+    in.putback('g');
+    assert(!in.fail());
+    in.putback('g');
+    assert(!in.fail());
+    assert(buf[9] == 'g');
+    assert(buf[10] == 'g');
+  }
 
   return 0;
 }

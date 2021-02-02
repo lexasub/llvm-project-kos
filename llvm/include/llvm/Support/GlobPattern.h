@@ -52,6 +52,6 @@ private:
   Optional<StringRef> Prefix;
   Optional<StringRef> Suffix;
 };
-}
+} // namespace llvm
 
 #endif // LLVM_SUPPORT_GLOB_PATTERN_H

@@ -1,8 +1,8 @@
 // RUN: %clangxx_asan -std=c++11 -O0 %s -o %t && %run %t
 
 #include <assert.h>
-#include <unistd.h>
 #include <sys/mman.h>
+#include <unistd.h>
 
 int main(void) {
   unsigned char vec[20];

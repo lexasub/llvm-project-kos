@@ -296,19 +296,21 @@ RNBRunLoopMode RNBRunLoopLaunchInferior(RNBRemote *remote,
 
   while (pid != INVALID_NUB_PROCESS) {
     // Wait for process to start up and hit entry point
-    DNBLogThreadedIf(LOG_RNB_EVENTS, "%s DNBProcessWaitForEvent (%4.4x, "
-                                     "eEventProcessRunningStateChanged | "
-                                     "eEventProcessStoppedStateChanged, true, "
-                                     "INFINITE)...",
+    DNBLogThreadedIf(LOG_RNB_EVENTS,
+                     "%s DNBProcessWaitForEvent (%4.4x, "
+                     "eEventProcessRunningStateChanged | "
+                     "eEventProcessStoppedStateChanged, true, "
+                     "INFINITE)...",
                      __FUNCTION__, pid);
-    nub_event_t set_events =
-        DNBProcessWaitForEvents(pid, eEventProcessRunningStateChanged |
-                                         eEventProcessStoppedStateChanged,
-                                true, NULL);
-    DNBLogThreadedIf(LOG_RNB_EVENTS, "%s DNBProcessWaitForEvent (%4.4x, "
-                                     "eEventProcessRunningStateChanged | "
-                                     "eEventProcessStoppedStateChanged, true, "
-                                     "INFINITE) => 0x%8.8x",
+    nub_event_t set_events = DNBProcessWaitForEvents(
+        pid,
+        eEventProcessRunningStateChanged | eEventProcessStoppedStateChanged,
+        true, NULL);
+    DNBLogThreadedIf(LOG_RNB_EVENTS,
+                     "%s DNBProcessWaitForEvent (%4.4x, "
+                     "eEventProcessRunningStateChanged | "
+                     "eEventProcessStoppedStateChanged, true, "
+                     "INFINITE) => 0x%8.8x",
                      __FUNCTION__, pid, set_events);
 
     if (set_events == 0) {
@@ -461,18 +463,20 @@ RNBRunLoopMode HandleProcessStateChange(RNBRemote *remote, bool initialize) {
         remote->FlushSTDIO();
 
         if (ctx.GetProcessStopCount() == 1) {
-          DNBLogThreadedIf(
-              LOG_RNB_MINIMAL, "%s (&remote, initialize=%i)  pid_state = %s "
-                               "pid_stop_count %llu (old %llu)) Notify??? no, "
-                               "first stop...",
-              __FUNCTION__, (int)initialize, DNBStateAsString(pid_state),
-              (uint64_t)ctx.GetProcessStopCount(),
-              (uint64_t)prev_pid_stop_count);
+          DNBLogThreadedIf(LOG_RNB_MINIMAL,
+                           "%s (&remote, initialize=%i)  pid_state = %s "
+                           "pid_stop_count %llu (old %llu)) Notify??? no, "
+                           "first stop...",
+                           __FUNCTION__, (int)initialize,
+                           DNBStateAsString(pid_state),
+                           (uint64_t)ctx.GetProcessStopCount(),
+                           (uint64_t)prev_pid_stop_count);
         } else {
 
-          DNBLogThreadedIf(LOG_RNB_MINIMAL, "%s (&remote, initialize=%i)  "
-                                            "pid_state = %s pid_stop_count "
-                                            "%llu (old %llu)) Notify??? YES!!!",
+          DNBLogThreadedIf(LOG_RNB_MINIMAL,
+                           "%s (&remote, initialize=%i)  "
+                           "pid_state = %s pid_stop_count "
+                           "%llu (old %llu)) Notify??? YES!!!",
                            __FUNCTION__, (int)initialize,
                            DNBStateAsString(pid_state),
                            (uint64_t)ctx.GetProcessStopCount(),
@@ -481,9 +485,10 @@ RNBRunLoopMode HandleProcessStateChange(RNBRemote *remote, bool initialize) {
         }
       } else {
         DNBLogThreadedIf(
-            LOG_RNB_MINIMAL, "%s (&remote, initialize=%i)  pid_state = %s "
-                             "pid_stop_count %llu (old %llu)) Notify??? "
-                             "skipping...",
+            LOG_RNB_MINIMAL,
+            "%s (&remote, initialize=%i)  pid_state = %s "
+            "pid_stop_count %llu (old %llu)) Notify??? "
+            "skipping...",
             __FUNCTION__, (int)initialize, DNBStateAsString(pid_state),
             (uint64_t)ctx.GetProcessStopCount(), (uint64_t)prev_pid_stop_count);
       }
@@ -667,7 +672,7 @@ RNBRunLoopMode RNBRunLoopPlatform(RNBRemote *remote) {
 
 static void PortWasBoundCallbackUnixSocket(const void *baton, in_port_t port) {
   //::printf ("PortWasBoundCallbackUnixSocket (baton = %p, port = %u)\n", baton,
-  //port);
+  // port);
 
   const char *unix_socket_name = (const char *)baton;
 

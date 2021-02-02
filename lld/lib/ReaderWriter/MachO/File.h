@@ -28,60 +28,55 @@ using lld::mach_o::normalized::Section;
 
 class MachOFile : public SimpleFile {
 public:
-
   /// Real file constructor - for on-disk files.
   MachOFile(std::unique_ptr<MemoryBuffer> mb, MachOLinkingContext *ctx)
-    : SimpleFile(mb->getBufferIdentifier(), File::kindMachObject),
-      _mb(std::move(mb)), _ctx(ctx) {}
+      : SimpleFile(mb->getBufferIdentifier(), File::kindMachObject),
+        _mb(std::move(mb)), _ctx(ctx) {}
 
   /// Dummy file constructor - for virtual files.
-  MachOFile(StringRef path)
-    : SimpleFile(path, File::kindMachObject) {}
+  MachOFile(StringRef path) : SimpleFile(path, File::kindMachObject) {}
 
   void addDefinedAtom(StringRef name, Atom::Scope scope,
                       DefinedAtom::ContentType type, DefinedAtom::Merge merge,
                       uint64_t sectionOffset, uint64_t contentSize, bool thumb,
                       bool noDeadStrip, bool copyRefs,
                       const Section *inSection) {
-    assert(sectionOffset+contentSize <= inSection->content.size());
-    ArrayRef<uint8_t> content = inSection->content.slice(sectionOffset,
-                                                        contentSize);
+    assert(sectionOffset + contentSize <= inSection->content.size());
+    ArrayRef<uint8_t> content =
+        inSection->content.slice(sectionOffset, contentSize);
     if (copyRefs) {
       // Make a copy of the atom's name and content that is owned by this file.
       name = name.copy(allocator());
       content = content.copy(allocator());
     }
-    DefinedAtom::Alignment align(
-        inSection->alignment,
-        sectionOffset % inSection->alignment);
-    auto *atom =
-        new (allocator()) MachODefinedAtom(*this, name, scope, type, merge,
-                                           thumb, noDeadStrip, content, align);
+    DefinedAtom::Alignment align(inSection->alignment,
+                                 sectionOffset % inSection->alignment);
+    auto *atom = new (allocator()) MachODefinedAtom(
+        *this, name, scope, type, merge, thumb, noDeadStrip, content, align);
     addAtomForSection(inSection, atom, sectionOffset);
   }
 
   void addDefinedAtomInCustomSection(StringRef name, Atom::Scope scope,
-                      DefinedAtom::ContentType type, DefinedAtom::Merge merge,
-                      bool thumb, bool noDeadStrip, uint64_t sectionOffset,
-                      uint64_t contentSize, StringRef sectionName,
-                      bool copyRefs, const Section *inSection) {
-    assert(sectionOffset+contentSize <= inSection->content.size());
-    ArrayRef<uint8_t> content = inSection->content.slice(sectionOffset,
-                                                        contentSize);
-   if (copyRefs) {
+                                     DefinedAtom::ContentType type,
+                                     DefinedAtom::Merge merge, bool thumb,
+                                     bool noDeadStrip, uint64_t sectionOffset,
+                                     uint64_t contentSize,
+                                     StringRef sectionName, bool copyRefs,
+                                     const Section *inSection) {
+    assert(sectionOffset + contentSize <= inSection->content.size());
+    ArrayRef<uint8_t> content =
+        inSection->content.slice(sectionOffset, contentSize);
+    if (copyRefs) {
       // Make a copy of the atom's name and content that is owned by this file.
       name = name.copy(allocator());
       content = content.copy(allocator());
       sectionName = sectionName.copy(allocator());
     }
-    DefinedAtom::Alignment align(
-        inSection->alignment,
-        sectionOffset % inSection->alignment);
-    auto *atom =
-        new (allocator()) MachODefinedCustomSectionAtom(*this, name, scope, type,
-                                                        merge, thumb,
-                                                        noDeadStrip, content,
-                                                        sectionName, align);
+    DefinedAtom::Alignment align(inSection->alignment,
+                                 sectionOffset % inSection->alignment);
+    auto *atom = new (allocator())
+        MachODefinedCustomSectionAtom(*this, name, scope, type, merge, thumb,
+                                      noDeadStrip, content, sectionName, align);
     addAtomForSection(inSection, atom, sectionOffset);
   }
 
@@ -93,9 +88,8 @@ public:
       // Make a copy of the atom's name and content that is owned by this file.
       name = name.copy(allocator());
     }
-    DefinedAtom::Alignment align(
-        inSection->alignment,
-        sectionOffset % inSection->alignment);
+    DefinedAtom::Alignment align(inSection->alignment,
+                                 sectionOffset % inSection->alignment);
 
     DefinedAtom::ContentType type = DefinedAtom::typeUnknown;
     switch (inSection->type) {
@@ -109,9 +103,8 @@ public:
       llvm_unreachable("Unrecognized zero-fill section");
     }
 
-    auto *atom =
-        new (allocator()) MachODefinedAtom(*this, name, scope, type, size,
-                                           noDeadStrip, align);
+    auto *atom = new (allocator())
+        MachODefinedAtom(*this, name, scope, type, size, noDeadStrip, align);
     addAtomForSection(inSection, atom, sectionOffset);
   }
 
@@ -131,32 +124,35 @@ public:
       // Make a copy of the atom's name that is owned by this file.
       name = name.copy(allocator());
     }
-    auto *atom =
-        new (allocator()) MachOTentativeDefAtom(*this, name, scope, size, align);
+    auto *atom = new (allocator())
+        MachOTentativeDefAtom(*this, name, scope, size, align);
     addAtom(*atom);
     _undefAtoms[name] = atom;
   }
 
   /// Search this file for the atom from 'section' that covers
   /// 'offsetInSect'.  Returns nullptr is no atom found.
-  MachODefinedAtom *findAtomCoveringAddress(const Section &section,
-                                            uint64_t offsetInSect,
-                                            uint32_t *foundOffsetAtom=nullptr) {
+  MachODefinedAtom *
+  findAtomCoveringAddress(const Section &section, uint64_t offsetInSect,
+                          uint32_t *foundOffsetAtom = nullptr) {
     const auto &pos = _sectionAtoms.find(&section);
     if (pos == _sectionAtoms.end())
       return nullptr;
     const auto &vec = pos->second;
     assert(offsetInSect < section.content.size());
     // Vector of atoms for section are already sorted, so do binary search.
-    const auto &atomPos = std::lower_bound(vec.begin(), vec.end(), offsetInSect,
-        [offsetInSect](const SectionOffsetAndAtom &ao,
-                       uint64_t targetAddr) -> bool {
-          // Each atom has a start offset of its slice of the
-          // section's content. This compare function must return true
-          // iff the atom's range is before the offset being searched for.
-          uint64_t atomsEndOffset = ao.offset+ao.atom->rawContent().size();
-          return (atomsEndOffset <= offsetInSect);
-        });
+    const auto &atomPos =
+        std::lower_bound(vec.begin(), vec.end(), offsetInSect,
+                         [offsetInSect](const SectionOffsetAndAtom &ao,
+                                        uint64_t targetAddr) -> bool {
+                           // Each atom has a start offset of its slice of the
+                           // section's content. This compare function must
+                           // return true iff the atom's range is before the
+                           // offset being searched for.
+                           uint64_t atomsEndOffset =
+                               ao.offset + ao.atom->rawContent().size();
+                           return (atomsEndOffset <= offsetInSect);
+                         });
     if (atomPos == vec.end())
       return nullptr;
     if (foundOffsetAtom)
@@ -173,7 +169,7 @@ public:
     return pos->second;
   }
 
-  typedef std::function<void (MachODefinedAtom* atom)> DefinedAtomVisitor;
+  typedef std::function<void(MachODefinedAtom *atom)> DefinedAtomVisitor;
 
   void eachDefinedAtom(DefinedAtomVisitor vistor) {
     for (auto &sectAndAtoms : _sectionAtoms) {
@@ -236,7 +232,7 @@ public:
     _debugInfo = std::move(debugInfo);
   }
 
-  DebugInfo* debugInfo() const { return _debugInfo.get(); }
+  DebugInfo *debugInfo() const { return _debugInfo.get(); }
   std::unique_ptr<DebugInfo> takeDebugInfo() { return std::move(_debugInfo); }
 
 protected:
@@ -252,41 +248,45 @@ protected:
   }
 
 private:
-  struct SectionOffsetAndAtom { uint64_t offset;  MachODefinedAtom *atom; };
+  struct SectionOffsetAndAtom {
+    uint64_t offset;
+    MachODefinedAtom *atom;
+  };
 
-  void addAtomForSection(const Section *inSection, MachODefinedAtom* atom,
+  void addAtomForSection(const Section *inSection, MachODefinedAtom *atom,
                          uint64_t sectionOffset) {
     SectionOffsetAndAtom offAndAtom;
     offAndAtom.offset = sectionOffset;
-    offAndAtom.atom   = atom;
-     _sectionAtoms[inSection].push_back(offAndAtom);
+    offAndAtom.atom = atom;
+    _sectionAtoms[inSection].push_back(offAndAtom);
     addAtom(*atom);
   }
 
   typedef llvm::DenseMap<const normalized::Section *,
-                         std::vector<SectionOffsetAndAtom>>  SectionToAtoms;
+                         std::vector<SectionOffsetAndAtom>>
+      SectionToAtoms;
   typedef llvm::StringMap<const lld::Atom *> NameToAtom;
 
   std::unique_ptr<MemoryBuffer> _mb;
-  MachOLinkingContext          *_ctx;
-  SectionToAtoms                _sectionAtoms;
-  NameToAtom                     _undefAtoms;
-  MachOLinkingContext::Arch      _arch = MachOLinkingContext::arch_unknown;
-  MachOLinkingContext::OS        _os = MachOLinkingContext::OS::unknown;
-  uint32_t                       _minVersion = 0;
-  LoadCommandType               _minVersionLoadCommandKind = (LoadCommandType)0;
+  MachOLinkingContext *_ctx;
+  SectionToAtoms _sectionAtoms;
+  NameToAtom _undefAtoms;
+  MachOLinkingContext::Arch _arch = MachOLinkingContext::arch_unknown;
+  MachOLinkingContext::OS _os = MachOLinkingContext::OS::unknown;
+  uint32_t _minVersion = 0;
+  LoadCommandType _minVersionLoadCommandKind = (LoadCommandType)0;
   MachOLinkingContext::ObjCConstraint _objcConstraint =
       MachOLinkingContext::objc_unknown;
-  uint32_t                       _swiftVersion = 0;
-  normalized::FileFlags        _flags = llvm::MachO::MH_SUBSECTIONS_VIA_SYMBOLS;
-  std::unique_ptr<DebugInfo>   _debugInfo;
+  uint32_t _swiftVersion = 0;
+  normalized::FileFlags _flags = llvm::MachO::MH_SUBSECTIONS_VIA_SYMBOLS;
+  std::unique_ptr<DebugInfo> _debugInfo;
 };
 
 class MachODylibFile : public SharedLibraryFile {
 public:
   MachODylibFile(std::unique_ptr<MemoryBuffer> mb, MachOLinkingContext *ctx)
-      : SharedLibraryFile(mb->getBufferIdentifier()),
-        _mb(std::move(mb)), _ctx(ctx) {}
+      : SharedLibraryFile(mb->getBufferIdentifier()), _mb(std::move(mb)),
+        _ctx(ctx) {}
 
   MachODylibFile(StringRef path) : SharedLibraryFile(path) {}
 
@@ -344,7 +344,7 @@ public:
 
 protected:
   OwningAtomPtr<SharedLibraryAtom> exports(StringRef name,
-                                   StringRef installName) const {
+                                           StringRef installName) const {
     // First, check if requested symbol is directly implemented by this dylib.
     auto entry = _nameToAtom.find(name);
     if (entry != _nameToAtom.end()) {
@@ -355,9 +355,8 @@ protected:
       // get here again.
       assert(!entry->second.atom && "Duplicate shared library export");
       bool weakDef = entry->second.weakDef;
-      auto *atom = new (allocator()) MachOSharedLibraryAtom(*this, name,
-                                                            installName,
-                                                            weakDef);
+      auto *atom = new (allocator())
+          MachOSharedLibraryAtom(*this, name, installName, weakDef);
       entry->second.atom = atom;
       return atom;
     }
@@ -375,31 +374,30 @@ protected:
   }
 
   struct ReExportedDylib {
-    ReExportedDylib(StringRef p) : path(p), file(nullptr) { }
-    ReExportedDylib(StringRef p, MachODylibFile *file) : path(p), file(file) { }
-    StringRef       path;
+    ReExportedDylib(StringRef p) : path(p), file(nullptr) {}
+    ReExportedDylib(StringRef p, MachODylibFile *file) : path(p), file(file) {}
+    StringRef path;
     MachODylibFile *file;
   };
 
   struct AtomAndFlags {
-    AtomAndFlags() : atom(nullptr), weakDef(false) { }
-    AtomAndFlags(bool weak) : atom(nullptr), weakDef(weak) { }
-    const SharedLibraryAtom  *atom;
-    bool                      weakDef;
+    AtomAndFlags() : atom(nullptr), weakDef(false) {}
+    AtomAndFlags(bool weak) : atom(nullptr), weakDef(weak) {}
+    const SharedLibraryAtom *atom;
+    bool weakDef;
   };
 
-  std::unique_ptr<MemoryBuffer>              _mb;
-  MachOLinkingContext                       *_ctx;
-  StringRef                                  _installName;
-  uint32_t                                   _currentVersion;
-  uint32_t                                   _compatVersion;
-  std::vector<ReExportedDylib>               _reExportedDylibs;
+  std::unique_ptr<MemoryBuffer> _mb;
+  MachOLinkingContext *_ctx;
+  StringRef _installName;
+  uint32_t _currentVersion;
+  uint32_t _compatVersion;
+  std::vector<ReExportedDylib> _reExportedDylibs;
   mutable std::unordered_map<StringRef, AtomAndFlags> _nameToAtom;
 };
 
 class TAPIFile : public MachODylibFile {
 public:
-
   TAPIFile(std::unique_ptr<MemoryBuffer> mb, MachOLinkingContext *ctx)
       : MachODylibFile(std::move(mb), ctx) {}
 
@@ -417,7 +415,7 @@ public:
 private:
   std::error_code loadFromInterface(llvm::MachO::InterfaceFile &interface) {
     llvm::MachO::Architecture arch;
-    switch(_ctx->arch()) {
+    switch (_ctx->arch()) {
     case MachOLinkingContext::arch_x86:
       arch = llvm::MachO::AK_i386;
       break;
@@ -441,8 +439,8 @@ private:
          interface.reexportedLibraries())
       addReExportedDylib(reexport.getInstallName().copy(allocator()));
 
-    for (const auto& document : interface.documents()) {
-      for (auto& reexport : _reExportedDylibs) {
+    for (const auto &document : interface.documents()) {
+      for (auto &reexport : _reExportedDylibs) {
         if (reexport.path != document->getInstallName())
           continue;
         assert(!reexport.file);

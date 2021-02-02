@@ -29,58 +29,56 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    using year           = std::chrono::year;
-    using day            = std::chrono::day;
-    using local_days     = std::chrono::local_days;
-    using days           = std::chrono::days;
-    using year_month_day = std::chrono::year_month_day;
+int main(int, char**) {
+  using year = std::chrono::year;
+  using day = std::chrono::day;
+  using local_days = std::chrono::local_days;
+  using days = std::chrono::days;
+  using year_month_day = std::chrono::year_month_day;
 
-    ASSERT_NOEXCEPT(year_month_day{std::declval<local_days>()});
+  ASSERT_NOEXCEPT(year_month_day{std::declval<local_days>()});
 
-    {
+  {
     constexpr local_days sd{};
     constexpr year_month_day ymd{sd};
 
-    static_assert( ymd.ok(),                            "");
-    static_assert( ymd.year()  == year{1970},           "");
-    static_assert( ymd.month() == std::chrono::January, "");
-    static_assert( ymd.day()   == day{1},               "");
-    }
+    static_assert(ymd.ok(), "");
+    static_assert(ymd.year() == year{1970}, "");
+    static_assert(ymd.month() == std::chrono::January, "");
+    static_assert(ymd.day() == day{1}, "");
+  }
 
-    {
-    constexpr local_days sd{days{10957+32}};
+  {
+    constexpr local_days sd{days{10957 + 32}};
     constexpr year_month_day ymd{sd};
 
-    static_assert( ymd.ok(),                             "");
-    static_assert( ymd.year()  == year{2000},            "");
-    static_assert( ymd.month() == std::chrono::February, "");
-    static_assert( ymd.day()   == day{2},                "");
-    }
+    static_assert(ymd.ok(), "");
+    static_assert(ymd.year() == year{2000}, "");
+    static_assert(ymd.month() == std::chrono::February, "");
+    static_assert(ymd.day() == day{2}, "");
+  }
 
-
-//  There's one more leap day between 1/1/40 and 1/1/70
-//  when compared to 1/1/70 -> 1/1/2000
-    {
+  //  There's one more leap day between 1/1/40 and 1/1/70
+  //  when compared to 1/1/70 -> 1/1/2000
+  {
     constexpr local_days sd{days{-10957}};
     constexpr year_month_day ymd{sd};
 
-    static_assert( ymd.ok(),                            "");
-    static_assert( ymd.year()  == year{1940},           "");
-    static_assert( ymd.month() == std::chrono::January, "");
-    static_assert( ymd.day()   == day{2},               "");
-    }
+    static_assert(ymd.ok(), "");
+    static_assert(ymd.year() == year{1940}, "");
+    static_assert(ymd.month() == std::chrono::January, "");
+    static_assert(ymd.day() == day{2}, "");
+  }
 
-    {
-    local_days sd{days{-(10957+34)}};
+  {
+    local_days sd{days{-(10957 + 34)}};
     year_month_day ymd{sd};
 
-    assert( ymd.ok());
-    assert( ymd.year()  == year{1939});
-    assert( ymd.month() == std::chrono::November);
-    assert( ymd.day()   == day{29});
-    }
+    assert(ymd.ok());
+    assert(ymd.year() == year{1939});
+    assert(ymd.month() == std::chrono::November);
+    assert(ymd.day() == day{29});
+  }
 
   return 0;
 }

@@ -45,8 +45,8 @@ struct is_cstring
 
 template <typename T>
 struct use_string_formatter
-    : public std::integral_constant<bool,
-                                    std::is_convertible<T, llvm::StringRef>::value> {};
+    : public std::integral_constant<
+          bool, std::is_convertible<T, llvm::StringRef>::value> {};
 
 template <typename T>
 struct use_pointer_formatter
@@ -97,7 +97,7 @@ protected:
     return Default;
   }
 };
-}
+} // namespace detail
 
 /// Implementation of format_provider<T> for integral arithmetic types.
 ///
@@ -328,7 +328,7 @@ template <typename IterT>
 struct range_item_has_provider
     : public std::integral_constant<
           bool, !uses_missing_provider<IterValue<IterT>>::value> {};
-}
+} // namespace detail
 
 /// Implementation of format_provider<T> for ranges.
 ///
@@ -417,6 +417,6 @@ public:
     }
   }
 };
-}
+} // namespace llvm
 
 #endif

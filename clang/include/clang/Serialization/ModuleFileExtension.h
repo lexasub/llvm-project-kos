@@ -18,7 +18,7 @@ class BitstreamCursor;
 class BitstreamWriter;
 class hash_code;
 class raw_ostream;
-}
+} // namespace llvm
 
 namespace clang {
 
@@ -27,7 +27,7 @@ class ASTWriter;
 class Sema;
 
 namespace serialization {
-  class ModuleFile;
+class ModuleFile;
 } // end namespace serialization
 
 /// Metadata for a module file extension.
@@ -106,7 +106,7 @@ class ModuleFileExtensionWriter {
 
 protected:
   ModuleFileExtensionWriter(ModuleFileExtension *Extension)
-    : Extension(Extension) { }
+      : Extension(Extension) {}
 
 public:
   virtual ~ModuleFileExtensionWriter();
@@ -133,7 +133,7 @@ class ModuleFileExtensionReader {
 
 protected:
   ModuleFileExtensionReader(ModuleFileExtension *Extension)
-    : Extension(Extension) { }
+      : Extension(Extension) {}
 
 public:
   /// Retrieve the module file extension with which this reader is

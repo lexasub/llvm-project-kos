@@ -113,6 +113,6 @@ public:
   void mutate(Instruction &Inst, RandomIRBuilder &IB) override;
 };
 
-} // end llvm namespace
+} // namespace llvm
 
 #endif // LLVM_FUZZMUTATE_IRMUTATOR_H

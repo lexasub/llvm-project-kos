@@ -101,9 +101,7 @@ public:
     mpfr_set(value, other.value, MPFR_RNDN);
   }
 
-  ~MPFRNumber() {
-    mpfr_clear(value);
-  }
+  ~MPFRNumber() { mpfr_clear(value); }
 
   MPFRNumber &operator=(const MPFRNumber &rhs) {
     mpfrPrecision = rhs.mpfrPrecision;

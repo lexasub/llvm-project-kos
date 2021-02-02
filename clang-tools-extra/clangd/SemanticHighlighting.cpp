@@ -86,10 +86,9 @@ llvm::Optional<HighlightingKind> kindForDecl(const NamedDecl *D) {
   if (isa<ParmVarDecl>(D))
     return HighlightingKind::Parameter;
   if (auto *VD = dyn_cast<VarDecl>(D))
-    return VD->isStaticDataMember()
-               ? HighlightingKind::StaticField
-               : VD->isLocalVarDecl() ? HighlightingKind::LocalVariable
-                                      : HighlightingKind::Variable;
+    return VD->isStaticDataMember() ? HighlightingKind::StaticField
+           : VD->isLocalVarDecl()   ? HighlightingKind::LocalVariable
+                                    : HighlightingKind::Variable;
   if (const auto *BD = dyn_cast<BindingDecl>(D))
     return BD->getDeclContext()->isFunctionOrMethod()
                ? HighlightingKind::LocalVariable
@@ -671,9 +670,8 @@ llvm::StringRef toTextMateScope(HighlightingKind Kind) {
   llvm_unreachable("unhandled HighlightingKind");
 }
 
-std::vector<SemanticTokensEdit>
-diffTokens(llvm::ArrayRef<SemanticToken> Old,
-           llvm::ArrayRef<SemanticToken> New) {
+std::vector<SemanticTokensEdit> diffTokens(llvm::ArrayRef<SemanticToken> Old,
+                                           llvm::ArrayRef<SemanticToken> New) {
   // For now, just replace everything from the first-last modification.
   // FIXME: use a real diff instead, this is bad with include-insertion.
 

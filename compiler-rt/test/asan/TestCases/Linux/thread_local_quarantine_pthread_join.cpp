@@ -6,10 +6,10 @@
 // RUN:   FileCheck %s --allow-empty --check-prefix=CHECK-SMALL-LOCAL-CACHE-SMALL-OVERHEAD
 
 #include <pthread.h>
+#include <sanitizer/allocator_interface.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sanitizer/allocator_interface.h>
 
 // Thread local quarantine is merged to the global one when thread exits and
 // this scenario (a few allocations per thread) used to generate a huge overhead
@@ -26,7 +26,7 @@ static const int kAllocSize = 1;
 void *ThreadFn(void *unused) {
   char *temp = new char[kAllocSize];
   memset(temp, -1, kAllocSize);
-  delete [] (temp);
+  delete[](temp);
   return NULL;
 }
 

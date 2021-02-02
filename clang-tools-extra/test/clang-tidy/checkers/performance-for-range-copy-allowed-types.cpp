@@ -5,12 +5,12 @@
 template <typename T>
 struct Iterator {
   void operator++() {}
-  const T& operator*() {
-    static T* TT = new T();
+  const T &operator*() {
+    static T *TT = new T();
     return *TT;
   }
   bool operator!=(const Iterator &) { return false; }
-  typedef const T& const_reference;
+  typedef const T &const_reference;
 };
 template <typename T>
 struct View {
@@ -57,7 +57,8 @@ struct OtherType {
   ~OtherType();
 };
 
-template <typename T> struct SomeComplexTemplate {
+template <typename T>
+struct SomeComplexTemplate {
   ~SomeComplexTemplate();
 };
 
@@ -113,8 +114,8 @@ void negative_smart_ref() {
 
 void positiveOtherType() {
   for (auto O : View<Iterator<OtherType>>()) {
-  // CHECK-MESSAGES: [[@LINE-1]]:13: warning: loop variable is copied but only used as const reference; consider making it a const reference [performance-for-range-copy]
-  // CHECK-FIXES: for (const auto& O : View<Iterator<OtherType>>()) {
+    // CHECK-MESSAGES: [[@LINE-1]]:13: warning: loop variable is copied but only used as const reference; consider making it a const reference [performance-for-range-copy]
+    // CHECK-FIXES: for (const auto& O : View<Iterator<OtherType>>()) {
     auto O2 = O;
   }
 }

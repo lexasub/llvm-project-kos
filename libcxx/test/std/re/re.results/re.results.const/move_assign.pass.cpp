@@ -19,34 +19,32 @@
 #include "test_allocator.h"
 
 template <class CharT, class Allocator>
-void
-test(const Allocator& a)
-{
-    typedef std::match_results<const CharT*, Allocator> SM;
-    SM m0(a);
-    SM m1;
+void test(const Allocator& a) {
+  typedef std::match_results<const CharT*, Allocator> SM;
+  SM m0(a);
+  SM m1;
 
-    m1 = std::move(m0);
-    assert(m1.size()          == 0);
-    assert(!m1.ready());
-    if (std::allocator_traits<Allocator>::propagate_on_container_move_assignment::value)
-        assert(m1.get_allocator() == a);
-    else
-        assert(m1.get_allocator() == Allocator());
+  m1 = std::move(m0);
+  assert(m1.size() == 0);
+  assert(!m1.ready());
+  if (std::allocator_traits<
+          Allocator>::propagate_on_container_move_assignment::value)
+    assert(m1.get_allocator() == a);
+  else
+    assert(m1.get_allocator() == Allocator());
 }
 
-int main(int, char**)
-{
-    test<char>   (std::allocator<std::sub_match<const char *> >());
-    test<wchar_t>(std::allocator<std::sub_match<const wchar_t *> >());
+int main(int, char**) {
+  test<char>(std::allocator<std::sub_match<const char*> >());
+  test<wchar_t>(std::allocator<std::sub_match<const wchar_t*> >());
 
-//  test_allocator has POCMA -> false
-    test<char>   (test_allocator<std::sub_match<const char*> >(3));
-    test<wchar_t>(test_allocator<std::sub_match<const wchar_t*> >(3));
+  //  test_allocator has POCMA -> false
+  test<char>(test_allocator<std::sub_match<const char*> >(3));
+  test<wchar_t>(test_allocator<std::sub_match<const wchar_t*> >(3));
 
-//  other_allocator has POCMA -> true
-    test<char>   (other_allocator<std::sub_match<const char*> >(3));
-    test<wchar_t>(other_allocator<std::sub_match<const wchar_t*> >(3));
+  //  other_allocator has POCMA -> true
+  test<char>(other_allocator<std::sub_match<const char*> >(3));
+  test<wchar_t>(other_allocator<std::sub_match<const wchar_t*> >(3));
 
   return 0;
 }

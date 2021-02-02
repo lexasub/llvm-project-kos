@@ -51,7 +51,7 @@ int main() {
   foo(&global1[0], &global2[10]);
 
   char *p = &small_global[0];
-  foo(p, p); // OK
+  foo(p, p);     // OK
   foo(p, p + 7); // OK
   // CHECK: ERROR: AddressSanitizer: invalid-pointer-pair
   // CHECK: #{{[0-9]+ .*}} in main {{.*}}invalid-pointer-pairs-compare-errors.cpp:[[@LINE+1]]

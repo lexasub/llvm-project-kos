@@ -12,9 +12,8 @@
 #include <string>
 #include <cassert>
 
-int main(int, char**)
-{
-    std::string foo  =   ""s;  // should fail w/conversion operator not found
+int main(int, char**) {
+  std::string foo = "" s; // should fail w/conversion operator not found
 
   return 0;
 }

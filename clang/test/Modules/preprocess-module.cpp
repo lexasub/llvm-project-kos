@@ -135,7 +135,6 @@
 // CHECK: # 3 "<module-includes>" 2
 // NO-REWRITE: #pragma clang module end
 
-
 __FILE *a; // expected-error-re {{{{declaration of '__FILE' must be imported|unknown type name '__FILE'}}}}
 #if FILE_REWRITE
 // expected-note@file.rewrite.ii:* {{here}}

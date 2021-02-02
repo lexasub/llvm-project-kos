@@ -5,12 +5,12 @@
 // Reported deadly signal due to stack-overflow
 // XFAIL: netbsd
 
+#include <assert.h>
+#include <sanitizer/msan_interface.h>
 #include <signal.h>
 #include <stdarg.h>
-#include <sanitizer/msan_interface.h>
-#include <assert.h>
-#include <sys/time.h>
 #include <stdio.h>
+#include <sys/time.h>
 
 const int kSigCnt = 200;
 

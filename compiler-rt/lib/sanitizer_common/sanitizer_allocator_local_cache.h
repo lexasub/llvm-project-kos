@@ -64,8 +64,7 @@ struct SizeClassAllocator64LocalCache {
   void Drain(SizeClassAllocator *allocator) {
     for (uptr i = 1; i < kNumClasses; i++) {
       PerClass *c = &per_class_[i];
-      while (c->count > 0)
-        Drain(c, allocator, i, c->count);
+      while (c->count > 0) Drain(c, allocator, i, c->count);
     }
   }
 
@@ -132,7 +131,7 @@ struct SizeClassAllocator32LocalCache {
   TransferBatch *CreateBatch(uptr class_id, SizeClassAllocator *allocator,
                              TransferBatch *b) {
     if (uptr batch_class_id = per_class_[class_id].batch_class_id)
-      return (TransferBatch*)Allocate(allocator, batch_class_id);
+      return (TransferBatch *)Allocate(allocator, batch_class_id);
     return b;
   }
 
@@ -180,8 +179,7 @@ struct SizeClassAllocator32LocalCache {
   void Drain(SizeClassAllocator *allocator) {
     for (uptr i = 1; i < kNumClasses; i++) {
       PerClass *c = &per_class_[i];
-      while (c->count > 0)
-        Drain(c, allocator, i);
+      while (c->count > 0) Drain(c, allocator, i);
     }
   }
 
@@ -223,9 +221,11 @@ struct SizeClassAllocator32LocalCache {
       if (kUseSeparateSizeClassForBatch) {
         c->batch_class_id = (i == kBatchClassID) ? 0 : kBatchClassID;
       } else {
-        c->batch_class_id = (size <
-          TransferBatch::AllocationSizeRequiredForNElements(max_cached)) ?
-              batch_class_id : 0;
+        c->batch_class_id =
+            (size <
+             TransferBatch::AllocationSizeRequiredForNElements(max_cached))
+                ? batch_class_id
+                : 0;
       }
     }
     DCHECK_NE(c->max_count, 0UL);
@@ -253,8 +253,10 @@ struct SizeClassAllocator32LocalCache {
     // Failure to allocate a batch while releasing memory is non recoverable.
     // TODO(alekseys): Figure out how to do it without allocating a new batch.
     if (UNLIKELY(!b)) {
-      Report("FATAL: Internal error: %s's allocator failed to allocate a "
-             "transfer batch.\n", SanitizerToolName);
+      Report(
+          "FATAL: Internal error: %s's allocator failed to allocate a "
+          "transfer batch.\n",
+          SanitizerToolName);
       Die();
     }
     b->SetFromArray(&c->batch[first_idx_to_drain], count);

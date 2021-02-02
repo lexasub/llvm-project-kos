@@ -14,9 +14,9 @@
 // RUN: %pull_from_device %device_rundir/%t.log %t.log.ANDROID
 // RUN: FileCheck %s --check-prefix=CHECK-ERROR < %t.log.*
 
+#include "sanitizer_common/print_address.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "sanitizer_common/print_address.h"
 
 int main() {
   void *stack_var = malloc(1337);

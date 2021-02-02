@@ -1,5 +1,5 @@
-#include <string>
 #include <map>
+#include <string>
 #include <vector>
 
 typedef std::map<int, int> intint_map;
@@ -14,25 +14,24 @@ typedef strint_map::iterator simter;
 typedef int_vector::iterator ivter;
 typedef string_vector::iterator svter;
 
-int main()
-{
-	intint_map iim;
-	iim[0xABCD] = 0xF0F1;
+int main() {
+  intint_map iim;
+  iim[0xABCD] = 0xF0F1;
 
-	strint_map sim;
-	sim["world"] = 42;
+  strint_map sim;
+  sim["world"] = 42;
 
-	int_vector iv;
-	iv.push_back(3);
+  int_vector iv;
+  iv.push_back(3);
 
-	string_vector sv;
-	sv.push_back("hello");
+  string_vector sv;
+  sv.push_back("hello");
 
-	iimter iimI = iim.begin();
-	simter simI = sim.begin();
+  iimter iimI = iim.begin();
+  simter simI = sim.begin();
 
-	ivter ivI = iv.begin();
-	svter svI = sv.begin();
+  ivter ivI = iv.begin();
+  svter svI = sv.begin();
 
-	return 0; // Set break point at this line.
+  return 0; // Set break point at this line.
 }

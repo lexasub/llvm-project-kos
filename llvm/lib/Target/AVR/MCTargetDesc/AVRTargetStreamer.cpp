@@ -40,4 +40,3 @@ void AVRTargetStreamer::finish() {
 }
 
 } // end namespace llvm
-

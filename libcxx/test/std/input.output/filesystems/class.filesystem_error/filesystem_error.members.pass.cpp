@@ -26,7 +26,6 @@
 
 #include "test_macros.h"
 
-
 void test_constructors() {
   using namespace fs;
 
@@ -71,8 +70,7 @@ void test_constructors() {
   }
 }
 
-void test_signatures()
-{
+void test_signatures() {
   using namespace fs;
   const path p;
   std::error_code ec;
@@ -95,7 +93,8 @@ void test_signatures()
 }
 
 int main(int, char**) {
-  static_assert(std::is_base_of<std::system_error, fs::filesystem_error>::value, "");
+  static_assert(std::is_base_of<std::system_error, fs::filesystem_error>::value,
+                "");
   test_constructors();
   test_signatures();
 

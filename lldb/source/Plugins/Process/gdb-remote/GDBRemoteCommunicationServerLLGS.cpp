@@ -10,7 +10,6 @@
 
 #include "lldb/Host/Config.h"
 
-
 #include <chrono>
 #include <cstring>
 #include <thread>
@@ -215,7 +214,8 @@ void GDBRemoteCommunicationServerLLGS::RegisterPacketHandlers() {
                         });
 }
 
-void GDBRemoteCommunicationServerLLGS::SetLaunchInfo(const ProcessLaunchInfo &info) {
+void GDBRemoteCommunicationServerLLGS::SetLaunchInfo(
+    const ProcessLaunchInfo &info) {
   m_process_launch_info = info;
 }
 
@@ -556,10 +556,11 @@ static void CollectRegNums(const uint32_t *reg_num, StreamString &response,
   }
 }
 
-static void WriteRegisterValueInHexFixedWidth(
-    StreamString &response, NativeRegisterContext &reg_ctx,
-    const RegisterInfo &reg_info, const RegisterValue *reg_value_p,
-    lldb::ByteOrder byte_order) {
+static void WriteRegisterValueInHexFixedWidth(StreamString &response,
+                                              NativeRegisterContext &reg_ctx,
+                                              const RegisterInfo &reg_info,
+                                              const RegisterValue *reg_value_p,
+                                              lldb::ByteOrder byte_order) {
   RegisterValue reg_value;
   if (!reg_value_p) {
     Status error = reg_ctx.ReadRegister(&reg_info, reg_value);
@@ -585,7 +586,7 @@ static llvm::Optional<json::Object>
 GetRegistersAsJSON(NativeThreadProtocol &thread) {
   Log *log(GetLogIfAnyCategoriesSet(LIBLLDB_LOG_THREAD));
 
-  NativeRegisterContext& reg_ctx = thread.GetRegisterContext();
+  NativeRegisterContext &reg_ctx = thread.GetRegisterContext();
 
   json::Object register_object;
 
@@ -624,8 +625,8 @@ GetRegistersAsJSON(NativeThreadProtocol &thread) {
     }
 
     StreamString stream;
-    WriteRegisterValueInHexFixedWidth(stream, reg_ctx, *reg_info_p,
-                                      &reg_value, lldb::eByteOrderBig);
+    WriteRegisterValueInHexFixedWidth(stream, reg_ctx, *reg_info_p, &reg_value,
+                                      lldb::eByteOrderBig);
 
     register_object.try_emplace(llvm::to_string(reg_num),
                                 stream.GetString().str());
@@ -842,7 +843,7 @@ GDBRemoteCommunicationServerLLGS::SendStopReplyPacketForThread(
     for (NativeThreadProtocol *thread;
          (thread = m_debugged_process_up->GetThreadAtIndex(i)) != nullptr;
          ++i) {
-      NativeRegisterContext& reg_ctx = thread->GetRegisterContext();
+      NativeRegisterContext &reg_ctx = thread->GetRegisterContext();
 
       uint32_t reg_to_read = reg_ctx.ConvertRegisterKindToRegisterNumber(
           eRegisterKindGeneric, LLDB_REGNUM_GENERIC_PC);
@@ -873,7 +874,7 @@ GDBRemoteCommunicationServerLLGS::SendStopReplyPacketForThread(
   //
 
   // Grab the register context.
-  NativeRegisterContext& reg_ctx = thread->GetRegisterContext();
+  NativeRegisterContext &reg_ctx = thread->GetRegisterContext();
   const auto expedited_regs =
       reg_ctx.GetExpeditedRegisters(ExpeditedRegs::Full);
 
@@ -890,8 +891,9 @@ GDBRemoteCommunicationServerLLGS::SendStopReplyPacketForThread(
                                           &reg_value, lldb::eByteOrderBig);
         response.PutChar(';');
       } else {
-        LLDB_LOGF(log, "GDBRemoteCommunicationServerLLGS::%s failed to read "
-                       "register '%s' index %" PRIu32 ": %s",
+        LLDB_LOGF(log,
+                  "GDBRemoteCommunicationServerLLGS::%s failed to read "
+                  "register '%s' index %" PRIu32 ": %s",
                   __FUNCTION__,
                   reg_info_p->name ? reg_info_p->name : "<unnamed-register>",
                   reg_num, error.AsCString());
@@ -1397,7 +1399,7 @@ GDBRemoteCommunicationServerLLGS::Handle_jTraceRead(
   json_dict->GetValueForKeyAsInteger("threadid", tid);
 
   // Allocate the response buffer.
-  std::unique_ptr<uint8_t[]> buffer (new (std::nothrow) uint8_t[byte_count]);
+  std::unique_ptr<uint8_t[]> buffer(new (std::nothrow) uint8_t[byte_count]);
   if (!buffer)
     return SendErrorResponse(0x78);
 
@@ -3141,7 +3143,7 @@ GDBRemoteCommunicationServerLLGS::Handle_QSaveRegisterState(
   }
 
   // Grab the register context for the thread.
-  NativeRegisterContext& reg_context = thread->GetRegisterContext();
+  NativeRegisterContext &reg_context = thread->GetRegisterContext();
 
   // Save registers to a buffer.
   DataBufferSP register_data_sp;
@@ -3497,7 +3499,7 @@ GDBRemoteCommunicationServerLLGS::Handle_QPassSignals(
       break; // End of string
     if (separator != ';')
       return SendIllFormedResponse(packet, "Invalid separator,"
-                                            " expected semicolon.");
+                                           " expected semicolon.");
   }
 
   // Fail if we don't have a current process.

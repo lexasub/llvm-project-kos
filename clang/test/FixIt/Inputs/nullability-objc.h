@@ -12,7 +12,7 @@ void objcIdParameterWithProtocolFirstInFile(id<Protocol> i); // expected-warning
 // CHECK: fix-it:"{{.*}}nullability-objc.h":{[[@LINE-3]]:57-[[@LINE-3]]:57}:" _Nullable"
 // CHECK: fix-it:"{{.*}}nullability-objc.h":{[[@LINE-4]]:57-[[@LINE-4]]:57}:" _Nonnull"
 
-int * _Nonnull forceNullabilityWarningsObjC(void);
+int *_Nonnull forceNullabilityWarningsObjC(void);
 
 void objcClassParameter(Item *i); // expected-warning {{pointer is missing a nullability type specifier}}
 // expected-note@-1 {{insert '_Nullable'}}

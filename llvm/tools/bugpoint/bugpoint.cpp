@@ -39,8 +39,9 @@
 using namespace llvm;
 
 static cl::opt<bool>
-    FindBugs("find-bugs", cl::desc("Run many different optimization sequences "
-                                   "on program to find bugs"),
+    FindBugs("find-bugs",
+             cl::desc("Run many different optimization sequences "
+                      "on program to find bugs"),
              cl::init(false));
 
 static cl::list<std::string>
@@ -82,9 +83,9 @@ static cl::opt<bool> OptLevelOs(
     cl::desc(
         "Like -O2 with extra optimizations for size. Similar to clang -Os"));
 
-static cl::opt<bool>
-OptLevelOz("Oz",
-           cl::desc("Like -Os but reduces code size further. Similar to clang -Oz"));
+static cl::opt<bool> OptLevelOz(
+    "Oz",
+    cl::desc("Like -Os but reduces code size further. Similar to clang -Oz"));
 
 static cl::opt<bool>
     OptLevelO3("O3", cl::desc("Optimization level 3. Identical to 'opt -O3'"));
@@ -113,15 +114,14 @@ public:
     D.addPass(std::string(PI->getPassArgument()));
   }
 };
-}
+} // namespace
 
 // This routine adds optimization passes based on selected optimization level,
 // OptLevel.
 //
 // OptLevel - Optimization Level
 static void AddOptimizationPasses(legacy::FunctionPassManager &FPM,
-                                  unsigned OptLevel,
-                                  unsigned SizeLevel) {
+                                  unsigned OptLevel, unsigned SizeLevel) {
   PassManagerBuilder Builder;
   Builder.OptLevel = OptLevel;
   Builder.SizeLevel = SizeLevel;
@@ -158,7 +158,7 @@ int main(int argc, char **argv) {
   initializeInstrumentation(Registry);
   initializeTarget(Registry);
 
-  if (std::getenv("bar") == (char*) -1) {
+  if (std::getenv("bar") == (char *)-1) {
     InitializeAllTargets();
     InitializeAllTargetMCs();
     InitializeAllAsmPrinters();
@@ -232,8 +232,7 @@ int main(int argc, char **argv) {
 // Needed to pull in symbols from statically linked extensions, including static
 // registration. It is unused otherwise because bugpoint has no support for
 // NewPM.
-#define HANDLE_EXTENSION(Ext)                                                  \
-  (void)get##Ext##PluginInfo();
+#define HANDLE_EXTENSION(Ext) (void)get##Ext##PluginInfo();
 #include "llvm/Support/Extension.def"
 
   if (Error E = D.run()) {

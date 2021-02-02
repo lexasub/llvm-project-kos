@@ -21,10 +21,10 @@ namespace readability {
 /// For the user-facing documentation see:
 /// http://clang.llvm.org/extra/clang-tidy/checks/readability-const-return-type.html
 class ConstReturnTypeCheck : public ClangTidyCheck {
- public:
+public:
   using ClangTidyCheck::ClangTidyCheck;
-  void registerMatchers(ast_matchers::MatchFinder* finder) override;
-  void check(const ast_matchers::MatchFinder::MatchResult& result) override;
+  void registerMatchers(ast_matchers::MatchFinder *finder) override;
+  void check(const ast_matchers::MatchFinder::MatchResult &result) override;
 };
 
 } // namespace readability

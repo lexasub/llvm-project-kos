@@ -14,5 +14,5 @@ struct RecordInSystemHeader {
 template <class T>
 struct ContainerInSystemHeader {
   T &t;
-  ContainerInSystemHeader(T& t) : t(t) {}
+  ContainerInSystemHeader(T &t) : t(t) {}
 };

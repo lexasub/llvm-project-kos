@@ -88,7 +88,7 @@ static void exitWithErrorCode(std::error_code EC, StringRef Whence = "") {
 namespace {
 enum ProfileKinds { instr, sample };
 enum FailureMode { failIfAnyAreInvalid, failIfAllAreInvalid };
-}
+} // namespace
 
 static void warnOrExitGivenError(FailureMode FailMode, std::error_code EC,
                                  StringRef Whence = "") {
@@ -173,7 +173,7 @@ public:
     return New.empty() ? Name : New;
   }
 };
-}
+} // namespace
 
 struct WeightedFile {
   std::string Filename;
@@ -832,7 +832,8 @@ static int merge_main(int argc, const char *argv[]) {
                             "Fail if any profile is invalid."),
                  clEnumValN(failIfAllAreInvalid, "all",
                             "Fail only if all profiles are invalid.")));
-  cl::opt<bool> OutputSparse("sparse", cl::init(false),
+  cl::opt<bool> OutputSparse(
+      "sparse", cl::init(false),
       cl::desc("Generate a sparse profile (only meaningful for -instr)"));
   cl::opt<unsigned> NumThreads(
       "num-threads", cl::init(0),
@@ -2441,7 +2442,8 @@ static int show_main(int argc, const char *argv[]) {
     exitWithErrorCode(EC, OutputFilename);
 
   if (ShowAllFunctions && !ShowFunction.empty())
-    WithColor::warning() << "-function argument ignored: showing all functions\n";
+    WithColor::warning()
+        << "-function argument ignored: showing all functions\n";
 
   if (ProfileKind == instr)
     return showInstrProfile(Filename, ShowCounts, TopNFunctions,

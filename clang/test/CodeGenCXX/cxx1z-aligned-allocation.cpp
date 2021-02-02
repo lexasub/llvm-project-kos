@@ -18,13 +18,18 @@
 // CHECK-UNALIGNED-NOT: _ZdaPvm_St11align_val_t
 
 typedef decltype(sizeof(0)) size_t;
-namespace std { enum class align_val_t : size_t {}; }
+namespace std {
+enum class align_val_t : size_t {};
+}
 
 #define OVERALIGNED alignas(__STDCPP_DEFAULT_NEW_ALIGNMENT__ * 2)
 
 // Global new and delete.
 // ======================
-struct OVERALIGNED A { A(); int n[128]; };
+struct OVERALIGNED A {
+  A();
+  int n[128];
+};
 
 // CHECK-LABEL: define {{.*}} @_Z2a0v()
 // CHECK: %[[ALLOC:.*]] = call noalias nonnull align 32 i8* @_ZnwmSt11align_val_t(i64 512, i64 32)
@@ -61,19 +66,18 @@ void a2(A *p) { delete p; }
 // CHECK: call void @_ZdaPvSt11align_val_t(i8* %{{.*}}, i64 32) #9
 void a3(A *p) { delete[] p; }
 
-
 // Class-specific usual new and delete.
 // ====================================
 struct OVERALIGNED B {
   B();
   // These are just a distraction. We should ignore them.
   void *operator new(size_t);
-  void operator delete(void*, size_t);
-  void operator delete[](void*, size_t);
+  void operator delete(void *, size_t);
+  void operator delete[](void *, size_t);
 
   void *operator new(size_t, std::align_val_t);
-  void operator delete(void*, std::align_val_t);
-  void operator delete[](void*, std::align_val_t);
+  void operator delete(void *, std::align_val_t);
+  void operator delete[](void *, std::align_val_t);
 
   int n[128];
 };
@@ -102,11 +106,11 @@ void b3(B *p) { delete[] p; }
 struct OVERALIGNED C {
   C();
   void *operator new[](size_t, std::align_val_t);
-  void operator delete[](void*, size_t, std::align_val_t);
+  void operator delete[](void *, size_t, std::align_val_t);
 
   // It doesn't matter that we have an unaligned operator delete[] that doesn't
   // want the size. What matters is that the aligned one does.
-  void operator delete[](void*);
+  void operator delete[](void *);
 };
 
 // This one has an array cookie.
@@ -131,21 +135,21 @@ void *b4(long n) { return new C[n]; }
 // CHECK: call void @_ZN1CdaEPvmSt11align_val_t(
 void b5(C *p) { delete[] p; }
 
-
 // Global placement new.
 // =====================
 
-struct Q { int n; } q;
+struct Q {
+  int n;
+} q;
 void *operator new(size_t, Q);
 void *operator new(size_t, std::align_val_t, Q);
-void operator delete(void*, Q);
-void operator delete(void*, std::align_val_t, Q);
+void operator delete(void *, Q);
+void operator delete(void *, std::align_val_t, Q);
 
 // CHECK-LABEL: define {{.*}} @_Z2c0v(
 // CHECK: %[[ALLOC:.*]] = call i8* @_ZnwmSt11align_val_t1Q(i64 512, i64 32, i32 %
 // CHECK: call void @_ZdlPvSt11align_val_t1Q(i8* %[[ALLOC]], i64 32, i32 %
 void *c0() { return new (q) A; }
-
 
 // Class-specific placement new.
 // =============================
@@ -154,15 +158,14 @@ struct OVERALIGNED D {
   D();
   void *operator new(size_t, Q);
   void *operator new(size_t, std::align_val_t, Q);
-  void operator delete(void*, Q);
-  void operator delete(void*, std::align_val_t, Q);
+  void operator delete(void *, Q);
+  void operator delete(void *, std::align_val_t, Q);
 };
 
 // CHECK-LABEL: define {{.*}} @_Z2d0v(
 // CHECK: %[[ALLOC:.*]] = call i8* @_ZN1DnwEmSt11align_val_t1Q(i64 32, i64 32, i32 %
 // CHECK: call void @_ZN1DdlEPvSt11align_val_t1Q(i8* %[[ALLOC]], i64 32, i32 %
 void *d0() { return new (q) D; }
-
 
 // Calling aligned new with placement syntax.
 // ==========================================
@@ -185,7 +188,7 @@ void *e1() { return new (std::align_val_t(4)) B; }
 struct OVERALIGNED F {
   F();
   void *operator new(size_t, ...);
-  void operator delete(void*, ...);
+  void operator delete(void *, ...);
   int n[128];
 };
 
@@ -206,7 +209,7 @@ void *f1() { return new (q) F; }
 struct OVERALIGNED G {
   G();
   void *operator new(size_t, std::align_val_t, ...);
-  void operator delete(void*, std::align_val_t, ...);
+  void operator delete(void *, std::align_val_t, ...);
   int n[128];
 };
 #ifndef UNALIGNED

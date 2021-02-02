@@ -5,7 +5,8 @@ int A::bar() { return 2; }
 
 extern A *ap;
 int test() {
-  for (int i = 0; i < 10000; i++) ap->foo();
+  for (int i = 0; i < 10000; i++)
+    ap->foo();
   return ref(ap);
 }
 

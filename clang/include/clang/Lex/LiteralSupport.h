@@ -47,7 +47,7 @@ class NumericLiteralParser {
   const char *const ThisTokBegin;
   const char *const ThisTokEnd;
   const char *DigitsBegin, *SuffixBegin; // markers
-  const char *s; // cursor
+  const char *s;                         // cursor
 
   unsigned radix;
 
@@ -61,7 +61,7 @@ public:
                        const TargetInfo &Target, DiagnosticsEngine &Diags);
   bool hadError : 1;
   bool isUnsigned : 1;
-  bool isLong : 1;          // This is *not* set for long long.
+  bool isLong : 1; // This is *not* set for long long.
   bool isLongLong : 1;
   bool isHalf : 1;          // 1.0h
   bool isFloat : 1;         // 1.0f
@@ -70,8 +70,8 @@ public:
   bool isFloat128 : 1;      // 1.0q
   uint8_t MicrosoftInteger; // Microsoft suffix extension i8, i16, i32, or i64.
 
-  bool isFract : 1;         // 1.0hr/r/lr/uhr/ur/ulr
-  bool isAccum : 1;         // 1.0hk/k/lk/uhk/uk/ulk
+  bool isFract : 1; // 1.0hr/r/lr/uhr/ur/ulr
+  bool isAccum : 1; // 1.0hk/k/lk/uhk/uk/ulk
 
   bool isFixedPointLiteral() const {
     return (saw_period || saw_exponent) && saw_fixed_point_suffix;
@@ -84,9 +84,7 @@ public:
     return (saw_period || saw_exponent) && !isFixedPointLiteral();
   }
 
-  bool hasUDSuffix() const {
-    return saw_ud_suffix;
-  }
+  bool hasUDSuffix() const { return saw_ud_suffix; }
   StringRef getUDSuffix() const {
     assert(saw_ud_suffix);
     return UDSuffixBuf;
@@ -120,7 +118,6 @@ public:
   bool GetFixedPointValue(llvm::APInt &StoreVal, unsigned Scale);
 
 private:
-
   void ParseNumberStartingWithZero(SourceLocation TokLoc);
   void ParseDecimalOrOctalCommon(SourceLocation TokLoc);
 
@@ -171,7 +168,6 @@ private:
       ptr++;
     return ptr;
   }
-
 };
 
 /// CharLiteralParser - Perform interpretation and semantic analysis of a
@@ -183,10 +179,10 @@ class CharLiteralParser {
   bool HadError;
   SmallString<32> UDSuffixBuf;
   unsigned UDSuffixOffset;
+
 public:
-  CharLiteralParser(const char *begin, const char *end,
-                    SourceLocation Loc, Preprocessor &PP,
-                    tok::TokenKind kind);
+  CharLiteralParser(const char *begin, const char *end, SourceLocation Loc,
+                    Preprocessor &PP, tok::TokenKind kind);
 
   bool hadError() const { return HadError; }
   bool isAscii() const { return Kind == tok::char_constant; }
@@ -221,19 +217,18 @@ class StringLiteralParser {
   SmallString<32> UDSuffixBuf;
   unsigned UDSuffixToken;
   unsigned UDSuffixOffset;
+
 public:
-  StringLiteralParser(ArrayRef<Token> StringToks,
-                      Preprocessor &PP, bool Complain = true);
-  StringLiteralParser(ArrayRef<Token> StringToks,
-                      const SourceManager &sm, const LangOptions &features,
-                      const TargetInfo &target,
+  StringLiteralParser(ArrayRef<Token> StringToks, Preprocessor &PP,
+                      bool Complain = true);
+  StringLiteralParser(ArrayRef<Token> StringToks, const SourceManager &sm,
+                      const LangOptions &features, const TargetInfo &target,
                       DiagnosticsEngine *diags = nullptr)
-    : SM(sm), Features(features), Target(target), Diags(diags),
-      MaxTokenLength(0), SizeBound(0), CharByteWidth(0), Kind(tok::unknown),
-      ResultPtr(ResultBuf.data()), hadError(false), Pascal(false) {
+      : SM(sm), Features(features), Target(target), Diags(diags),
+        MaxTokenLength(0), SizeBound(0), CharByteWidth(0), Kind(tok::unknown),
+        ResultPtr(ResultBuf.data()), hadError(false), Pascal(false) {
     init(StringToks);
   }
-
 
   bool hadError;
   bool Pascal;
@@ -241,7 +236,7 @@ public:
   StringRef GetString() const {
     return StringRef(ResultBuf.data(), GetStringLength());
   }
-  unsigned GetStringLength() const { return ResultPtr-ResultBuf.data(); }
+  unsigned GetStringLength() const { return ResultPtr - ResultBuf.data(); }
 
   unsigned GetNumStringChars() const {
     return GetStringLength() / CharByteWidth;
@@ -283,6 +278,6 @@ private:
   void DiagnoseLexingError(SourceLocation Loc);
 };
 
-}  // end namespace clang
+} // end namespace clang
 
 #endif

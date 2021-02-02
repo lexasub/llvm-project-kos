@@ -54,6 +54,7 @@ class MultipleIncludeOpt {
 
   SourceLocation MacroLoc;
   SourceLocation DefinedLoc;
+
 public:
   MultipleIncludeOpt() {
     ReadAnyTokens = false;
@@ -63,13 +64,9 @@ public:
     DefinedMacro = nullptr;
   }
 
-  SourceLocation GetMacroLocation() const {
-    return MacroLoc;
-  }
+  SourceLocation GetMacroLocation() const { return MacroLoc; }
 
-  SourceLocation GetDefinedLocation() const {
-    return DefinedLoc;
-  }
+  SourceLocation GetDefinedLocation() const { return DefinedLoc; }
 
   void resetImmediatelyAfterTopLevelIfndef() {
     ImmediatelyAfterTopLevelIfndef = false;
@@ -150,7 +147,8 @@ public:
     // If we have a macro, that means the top of the file was ok.  Set our state
     // back to "not having read any tokens" so we can detect anything after the
     // #endif.
-    if (!TheMacro) return Invalidate();
+    if (!TheMacro)
+      return Invalidate();
 
     // At this point, we haven't "read any tokens" but we do have a controlling
     // macro.
@@ -170,11 +168,9 @@ public:
 
   /// If the ControllingMacro is followed by a macro definition, return
   /// the macro that was defined.
-  const IdentifierInfo *GetDefinedMacro() const {
-    return DefinedMacro;
-  }
+  const IdentifierInfo *GetDefinedMacro() const { return DefinedMacro; }
 };
 
-}  // end namespace clang
+} // end namespace clang
 
 #endif

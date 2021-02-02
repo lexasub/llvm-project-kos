@@ -128,7 +128,7 @@ public:
 
   void emitConstantPool() override {
     bool UsingConstantPools =
-      (Subtarget->inMips16Mode() && Subtarget->useConstantIslands());
+        (Subtarget->inMips16Mode() && Subtarget->useConstantIslands());
     if (!UsingConstantPools)
       AsmPrinter::emitConstantPool();
     // we emit constant pools customly!
@@ -143,7 +143,7 @@ public:
   void emitFunctionBodyEnd() override;
   void emitBasicBlockEnd(const MachineBasicBlock &MBB) override;
   bool isBlockOnlyReachableByFallthrough(
-                                   const MachineBasicBlock* MBB) const override;
+      const MachineBasicBlock *MBB) const override;
   bool PrintAsmOperand(const MachineInstr *MI, unsigned OpNo,
                        const char *ExtraCode, raw_ostream &O) override;
   bool PrintAsmMemoryOperand(const MachineInstr *MI, unsigned OpNum,

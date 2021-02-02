@@ -137,11 +137,10 @@ static const uint32_t g_lldb_regnums_x86_64[] = {
     LLDB_INVALID_REGNUM // Register sets must be terminated with
                         // LLDB_INVALID_REGNUM.
 };
-static_assert((sizeof(g_lldb_regnums_x86_64) /
-               sizeof(g_lldb_regnums_x86_64[0])) -
-                      1 ==
-                  k_num_fpr_registers_x86_64,
-              "g_lldb_regnums_x86_64 has wrong number of register infos");
+static_assert(
+    (sizeof(g_lldb_regnums_x86_64) / sizeof(g_lldb_regnums_x86_64[0])) - 1 ==
+        k_num_fpr_registers_x86_64,
+    "g_lldb_regnums_x86_64 has wrong number of register infos");
 
 static const uint32_t g_avx_regnums_x86_64[] = {
     lldb_ymm0_x86_64,   lldb_ymm1_x86_64,  lldb_ymm2_x86_64,  lldb_ymm3_x86_64,
@@ -543,9 +542,8 @@ bool RegisterContextPOSIX_x86::CopyYMMtoXSTATE(uint32_t reg,
 
   if (byte_order == eByteOrderLittle) {
     uint32_t reg_no = reg - m_reg_info.first_ymm;
-    YMMToXState(m_ymm_set.ymm[reg_no],
-        m_fpr.fxsave.xmm[reg_no].bytes,
-        m_fpr.xsave.ymmh[reg_no].bytes);
+    YMMToXState(m_ymm_set.ymm[reg_no], m_fpr.fxsave.xmm[reg_no].bytes,
+                m_fpr.xsave.ymmh[reg_no].bytes);
     return true;
   }
 
@@ -560,9 +558,8 @@ bool RegisterContextPOSIX_x86::CopyXSTATEtoYMM(uint32_t reg,
 
   if (byte_order == eByteOrderLittle) {
     uint32_t reg_no = reg - m_reg_info.first_ymm;
-    m_ymm_set.ymm[reg_no] = XStateToYMM(
-        m_fpr.fxsave.xmm[reg_no].bytes,
-        m_fpr.xsave.ymmh[reg_no].bytes);
+    m_ymm_set.ymm[reg_no] = XStateToYMM(m_fpr.fxsave.xmm[reg_no].bytes,
+                                        m_fpr.xsave.ymmh[reg_no].bytes);
     return true;
   }
 

@@ -48,7 +48,8 @@ size_t ABIMacOSX_i386::GetRedZoneSize() const { return 0; }
 // Static Functions
 
 ABISP
-ABIMacOSX_i386::CreateInstance(lldb::ProcessSP process_sp, const ArchSpec &arch) {
+ABIMacOSX_i386::CreateInstance(lldb::ProcessSP process_sp,
+                               const ArchSpec &arch) {
   if ((arch.GetTriple().getArch() == llvm::Triple::x86) &&
       (arch.GetTriple().isMacOSX() || arch.GetTriple().isiOS() ||
        arch.GetTriple().isWatchOS())) {

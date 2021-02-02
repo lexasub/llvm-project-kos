@@ -94,15 +94,13 @@ BreakpointID::ParseCanonicalReference(llvm::StringRef input) {
 
 bool BreakpointID::StringIsBreakpointName(llvm::StringRef str, Status &error) {
   error.Clear();
-  if (str.empty())
-  {
+  if (str.empty()) {
     error.SetErrorString("Empty breakpoint names are not allowed");
     return false;
   }
 
   // First character must be a letter or _
-  if (!isalpha(str[0]) && str[0] != '_')
-  {
+  if (!isalpha(str[0]) && str[0] != '_') {
     error.SetErrorStringWithFormat("Breakpoint names must start with a "
                                    "character or underscore: %s",
                                    str.str().c_str());

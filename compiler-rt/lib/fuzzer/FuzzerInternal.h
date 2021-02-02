@@ -31,7 +31,6 @@ using namespace std::chrono;
 
 class Fuzzer {
 public:
-
   Fuzzer(UserCallback CB, InputCorpus &Corpus, MutationDispatcher &MD,
          FuzzingOptions Options);
   ~Fuzzer();
@@ -112,7 +111,7 @@ private:
   void AllocateCurrentUnitData();
   uint8_t *CurrentUnitData = nullptr;
   std::atomic<size_t> CurrentUnitSize;
-  uint8_t BaseSha1[kSHA1NumBytes];  // Checksum of the base unit.
+  uint8_t BaseSha1[kSHA1NumBytes]; // Checksum of the base unit.
 
   bool GracefulExitRequested = false;
 

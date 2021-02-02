@@ -75,7 +75,8 @@ TEST(ProcessInstanceInfo, DumpTable) {
 }
 
 TEST(ProcessInstanceInfo, DumpTable_invalidUID) {
-  ProcessInstanceInfo info("a.out", ArchSpec("aarch64-unknown-linux-android"), 47);
+  ProcessInstanceInfo info("a.out", ArchSpec("aarch64-unknown-linux-android"),
+                           47);
 
   DummyUserIDResolver resolver;
   StreamString s;

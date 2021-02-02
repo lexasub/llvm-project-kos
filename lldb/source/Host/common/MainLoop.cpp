@@ -6,8 +6,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "llvm/Config/llvm-config.h"
 #include "lldb/Host/Config.h"
+#include "llvm/Config/llvm-config.h"
 
 #include "lldb/Host/MainLoop.h"
 #include "lldb/Host/PosixApi.h"
@@ -154,7 +154,7 @@ sigset_t MainLoop::RunImpl::get_sigmask() {
 #else
   int ret = pthread_sigmask(SIG_SETMASK, nullptr, &sigmask);
   assert(ret == 0);
-  (void) ret;
+  (void)ret;
 
   for (const auto &sig : loop.m_signals)
     sigdelset(&sigmask, sig.first);
@@ -273,7 +273,7 @@ MainLoop::ReadHandleUP MainLoop::RegisterReadObject(const IOObjectSP &object_sp,
                                                     const Callback &callback,
                                                     Status &error) {
 #ifdef _WIN32
-  if (object_sp->GetFdType() != IOObject:: eFDTypeSocket) {
+  if (object_sp->GetFdType() != IOObject::eFDTypeSocket) {
     error.SetErrorString("MainLoop: non-socket types unsupported on Windows");
     return nullptr;
   }

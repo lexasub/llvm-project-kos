@@ -175,7 +175,8 @@ static void initialize(TargetLibraryInfoImpl &TLI, const Triple &T,
   }
 
   if (T.isOSWindows() && !T.isOSCygMing()) {
-    // XXX: The earliest documentation available at the moment is for VS2015/VC19:
+    // XXX: The earliest documentation available at the moment is for
+    // VS2015/VC19:
     // https://docs.microsoft.com/en-us/cpp/c-runtime-library/floating-point-support?view=vs-2015
     // XXX: In order to use an MSVCRT older than VC19,
     // the specific library version must be explicit in the target triple,
@@ -188,10 +189,8 @@ static void initialize(TargetLibraryInfoImpl &TLI, const Triple &T,
     }
 
     // Latest targets support C89 math functions, in part.
-    bool isARM = (T.getArch() == Triple::aarch64 ||
-                  T.getArch() == Triple::arm);
-    bool hasPartialFloat = (isARM ||
-                            T.getArch() == Triple::x86_64);
+    bool isARM = (T.getArch() == Triple::aarch64 || T.getArch() == Triple::arm);
+    bool hasPartialFloat = (isARM || T.getArch() == Triple::x86_64);
 
     // Win32 does not support float C89 math functions, in general.
     if (!hasPartialFloat) {
@@ -596,7 +595,8 @@ TargetLibraryInfoImpl::TargetLibraryInfoImpl(TargetLibraryInfoImpl &&TLI)
   ScalarDescs = TLI.ScalarDescs;
 }
 
-TargetLibraryInfoImpl &TargetLibraryInfoImpl::operator=(const TargetLibraryInfoImpl &TLI) {
+TargetLibraryInfoImpl &
+TargetLibraryInfoImpl::operator=(const TargetLibraryInfoImpl &TLI) {
   CustomNames = TLI.CustomNames;
   ShouldExtI32Param = TLI.ShouldExtI32Param;
   ShouldExtI32Return = TLI.ShouldExtI32Return;
@@ -605,7 +605,8 @@ TargetLibraryInfoImpl &TargetLibraryInfoImpl::operator=(const TargetLibraryInfoI
   return *this;
 }
 
-TargetLibraryInfoImpl &TargetLibraryInfoImpl::operator=(TargetLibraryInfoImpl &&TLI) {
+TargetLibraryInfoImpl &
+TargetLibraryInfoImpl::operator=(TargetLibraryInfoImpl &&TLI) {
   CustomNames = std::move(TLI.CustomNames);
   ShouldExtI32Param = TLI.ShouldExtI32Param;
   ShouldExtI32Return = TLI.ShouldExtI32Return;
@@ -739,8 +740,7 @@ bool TargetLibraryInfoImpl::isValidProtoForLibFunc(const FunctionType &FTy,
   case LibFunc_strlcpy:
     return NumParams == 3 && IsSizeTTy(FTy.getReturnType()) &&
            FTy.getParamType(0)->isPointerTy() &&
-           FTy.getParamType(1)->isPointerTy() &&
-           IsSizeTTy(FTy.getParamType(2));
+           FTy.getParamType(1)->isPointerTy() && IsSizeTTy(FTy.getParamType(2));
 
   case LibFunc_strncpy_chk:
   case LibFunc_stpncpy_chk:
@@ -752,8 +752,7 @@ bool TargetLibraryInfoImpl::isValidProtoForLibFunc(const FunctionType &FTy,
   case LibFunc_stpncpy:
     return (NumParams == 3 && FTy.getReturnType() == FTy.getParamType(0) &&
             FTy.getParamType(0) == FTy.getParamType(1) &&
-            FTy.getParamType(0) == PCharTy &&
-            IsSizeTTy(FTy.getParamType(2)));
+            FTy.getParamType(0) == PCharTy && IsSizeTTy(FTy.getParamType(2)));
 
   case LibFunc_strxfrm:
     return (NumParams == 3 && FTy.getParamType(0)->isPointerTy() &&
@@ -884,7 +883,7 @@ bool TargetLibraryInfoImpl::isValidProtoForLibFunc(const FunctionType &FTy,
             IsSizeTTy(FTy.getParamType(2)));
 
   case LibFunc_memccpy_chk:
-      --NumParams;
+    --NumParams;
     if (!IsSizeTTy(FTy.getParamType(NumParams)))
       return false;
     LLVM_FALLTHROUGH;
@@ -1482,8 +1481,7 @@ bool TargetLibraryInfoImpl::isValidProtoForLibFunc(const FunctionType &FTy,
 
   case LibFunc_strnlen:
     return (NumParams == 2 && FTy.getReturnType() == FTy.getParamType(1) &&
-            FTy.getParamType(0) == PCharTy &&
-            FTy.getParamType(1) == SizeTTy);
+            FTy.getParamType(0) == PCharTy && FTy.getParamType(1) == SizeTTy);
 
   case LibFunc_posix_memalign:
     return (NumParams == 3 && FTy.getReturnType()->isIntegerTy(32) &&
@@ -1497,7 +1495,7 @@ bool TargetLibraryInfoImpl::isValidProtoForLibFunc(const FunctionType &FTy,
   case LibFunc_cabs:
   case LibFunc_cabsf:
   case LibFunc_cabsl: {
-    Type* RetTy = FTy.getReturnType();
+    Type *RetTy = FTy.getReturnType();
     if (!RetTy->isFloatingPointTy())
       return false;
 
@@ -1526,7 +1524,8 @@ bool TargetLibraryInfoImpl::getLibFunc(const Function &FDecl,
   // Intrinsics don't overlap w/libcalls; if our module has a large number of
   // intrinsics, this ends up being an interesting compile time win since we
   // avoid string normalization and comparison.
-  if (FDecl.isIntrinsic()) return false;
+  if (FDecl.isIntrinsic())
+    return false;
 
   const DataLayout *DL =
       FDecl.getParent() ? &FDecl.getParent()->getDataLayout() : nullptr;
@@ -1567,32 +1566,32 @@ void TargetLibraryInfoImpl::addVectorizableFunctionsFromVecLib(
   switch (VecLib) {
   case Accelerate: {
     const VecDesc VecFuncs[] = {
-    #define TLI_DEFINE_ACCELERATE_VECFUNCS
-    #include "llvm/Analysis/VecFuncs.def"
+#define TLI_DEFINE_ACCELERATE_VECFUNCS
+#include "llvm/Analysis/VecFuncs.def"
     };
     addVectorizableFunctions(VecFuncs);
     break;
   }
   case LIBMVEC_X86: {
     const VecDesc VecFuncs[] = {
-    #define TLI_DEFINE_LIBMVEC_X86_VECFUNCS
-    #include "llvm/Analysis/VecFuncs.def"
+#define TLI_DEFINE_LIBMVEC_X86_VECFUNCS
+#include "llvm/Analysis/VecFuncs.def"
     };
     addVectorizableFunctions(VecFuncs);
     break;
   }
   case MASSV: {
     const VecDesc VecFuncs[] = {
-    #define TLI_DEFINE_MASSV_VECFUNCS
-    #include "llvm/Analysis/VecFuncs.def"
+#define TLI_DEFINE_MASSV_VECFUNCS
+#include "llvm/Analysis/VecFuncs.def"
     };
     addVectorizableFunctions(VecFuncs);
     break;
   }
   case SVML: {
     const VecDesc VecFuncs[] = {
-    #define TLI_DEFINE_SVML_VECFUNCS
-    #include "llvm/Analysis/VecFuncs.def"
+#define TLI_DEFINE_SVML_VECFUNCS
+#include "llvm/Analysis/VecFuncs.def"
     };
     addVectorizableFunctions(VecFuncs);
     break;
@@ -1650,8 +1649,8 @@ TargetLibraryInfo TargetLibraryAnalysis::run(const Function &F,
 }
 
 unsigned TargetLibraryInfoImpl::getWCharSize(const Module &M) const {
-  if (auto *ShortWChar = cast_or_null<ConstantAsMetadata>(
-      M.getModuleFlag("wchar_size")))
+  if (auto *ShortWChar =
+          cast_or_null<ConstantAsMetadata>(M.getModuleFlag("wchar_size")))
     return cast<ConstantInt>(ShortWChar->getValue())->getZExtValue();
   return 0;
 }

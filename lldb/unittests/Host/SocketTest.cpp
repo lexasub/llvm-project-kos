@@ -82,15 +82,15 @@ TEST_P(SocketTest, DecodeHostAndPort) {
   EXPECT_EQ(65535, port);
   EXPECT_TRUE(error.Success());
 
-  EXPECT_TRUE(
-      Socket::DecodeHostAndPort("[::1]:12345", host_str, port_str, port, &error));
+  EXPECT_TRUE(Socket::DecodeHostAndPort("[::1]:12345", host_str, port_str, port,
+                                        &error));
   EXPECT_STREQ("::1", host_str.c_str());
   EXPECT_STREQ("12345", port_str.c_str());
   EXPECT_EQ(12345, port);
   EXPECT_TRUE(error.Success());
 
-  EXPECT_TRUE(
-      Socket::DecodeHostAndPort("[abcd:12fg:AF58::1]:12345", host_str, port_str, port, &error));
+  EXPECT_TRUE(Socket::DecodeHostAndPort("[abcd:12fg:AF58::1]:12345", host_str,
+                                        port_str, port, &error));
   EXPECT_STREQ("abcd:12fg:AF58::1", host_str.c_str());
   EXPECT_STREQ("12345", port_str.c_str());
   EXPECT_EQ(12345, port);
@@ -100,7 +100,8 @@ TEST_P(SocketTest, DecodeHostAndPort) {
 #if LLDB_ENABLE_POSIX
 TEST_P(SocketTest, DomainListenConnectAccept) {
   llvm::SmallString<64> Path;
-  std::error_code EC = llvm::sys::fs::createUniqueDirectory("DomainListenConnectAccept", Path);
+  std::error_code EC =
+      llvm::sys::fs::createUniqueDirectory("DomainListenConnectAccept", Path);
   ASSERT_FALSE(EC);
   llvm::sys::path::append(Path, "test");
 
@@ -204,8 +205,8 @@ TEST_P(SocketTest, UDPGetConnectURI) {
 #if LLDB_ENABLE_POSIX
 TEST_P(SocketTest, DomainGetConnectURI) {
   llvm::SmallString<64> domain_path;
-  std::error_code EC =
-      llvm::sys::fs::createUniqueDirectory("DomainListenConnectAccept", domain_path);
+  std::error_code EC = llvm::sys::fs::createUniqueDirectory(
+      "DomainListenConnectAccept", domain_path);
   ASSERT_FALSE(EC);
   llvm::sys::path::append(domain_path, "test");
 

@@ -30,6 +30,6 @@ public:
                                   bool ZeroData) const override;
   bool generateFMAsInMachineCombiner(CodeGenOpt::Level OptLevel) const override;
 };
-}
+} // namespace llvm
 
 #endif

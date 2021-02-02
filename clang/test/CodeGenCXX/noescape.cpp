@@ -2,26 +2,26 @@
 
 struct S {
   int a[4];
-  S(int *, int * __attribute__((noescape)));
-  S &operator=(int * __attribute__((noescape)));
-  void m0(int *, int * __attribute__((noescape)));
-  virtual void vm1(int *, int * __attribute__((noescape)));
+  S(int *, int *__attribute__((noescape)));
+  S &operator=(int *__attribute__((noescape)));
+  void m0(int *, int *__attribute__((noescape)));
+  virtual void vm1(int *, int *__attribute__((noescape)));
 };
 
 // CHECK: define{{.*}} void @_ZN1SC2EPiS0_(%struct.S* {{.*}}, {{.*}}, {{.*}} nocapture {{%.*}})
 // CHECK: define{{.*}} void @_ZN1SC1EPiS0_(%struct.S* {{.*}}, {{.*}}, {{.*}} nocapture {{%.*}}) {{.*}} {
 // CHECK: call void @_ZN1SC2EPiS0_(%struct.S* {{.*}}, {{.*}}, {{.*}} nocapture {{.*}})
 
-S::S(int *, int * __attribute__((noescape))) {}
+S::S(int *, int *__attribute__((noescape))) {}
 
 // CHECK: define {{.*}} %struct.S* @_ZN1SaSEPi(%struct.S* {{.*}}, {{.*}} nocapture {{%.*}})
-S &S::operator=(int * __attribute__((noescape))) { return *this; }
+S &S::operator=(int *__attribute__((noescape))) { return *this; }
 
 // CHECK: define{{.*}} void @_ZN1S2m0EPiS0_(%struct.S* {{.*}}, {{.*}} nocapture {{%.*}})
-void S::m0(int *, int * __attribute__((noescape))) {}
+void S::m0(int *, int *__attribute__((noescape))) {}
 
 // CHECK: define{{.*}} void @_ZN1S3vm1EPiS0_(%struct.S* {{.*}}, {{.*}} nocapture {{%.*}})
-void S::vm1(int *, int * __attribute__((noescape))) {}
+void S::vm1(int *, int *__attribute__((noescape))) {}
 
 // CHECK-LABEL: define{{.*}} void @_Z5test0P1SPiS1_(
 // CHECK: call void @_ZN1SC1EPiS0_(%struct.S* {{.*}}, {{.*}}, {{.*}} nocapture {{.*}})
@@ -36,11 +36,11 @@ void test0(S *s, int *p0, int *p1) {
 }
 
 namespace std {
-  typedef decltype(sizeof(0)) size_t;
+typedef decltype(sizeof(0)) size_t;
 }
 
 // CHECK: define {{.*}} @_ZnwmPv({{.*}}, {{.*}} nocapture {{.*}})
-void *operator new(std::size_t, void * __attribute__((noescape)) p) {
+void *operator new(std::size_t, void *__attribute__((noescape)) p) {
   return p;
 }
 
@@ -54,7 +54,7 @@ void *test1(void *p0) {
 // CHECK: call void @"_ZZ5test2PiS_ENK3$_0clES_S_"({{.*}}, {{.*}}, {{.*}} nocapture {{.*}})
 // CHECK: define internal void @"_ZZ5test2PiS_ENK3$_0clES_S_"({{.*}}, {{.*}}, {{.*}} nocapture {{%.*}})
 void test2(int *p0, int *p1) {
-  auto t = [](int *, int * __attribute__((noescape))){};
+  auto t = [](int *, int *__attribute__((noescape))) {};
   t(p0, p1);
 }
 
@@ -90,7 +90,9 @@ void noescapefunc(__attribute__((noescape)) BlockTy);
 
 void test() {
   __block S &x = getS();
-  noescapefunc(^{ (void)x; });
+  noescapefunc(^{
+    (void)x;
+  });
 }
 
-}
+} // namespace TestByref

@@ -27,7 +27,7 @@ class PseudoSourceValue;
 class raw_ostream;
 class TargetInstrInfo;
 
-raw_ostream &operator<<(raw_ostream &OS, const PseudoSourceValue* PSV);
+raw_ostream &operator<<(raw_ostream &OS, const PseudoSourceValue *PSV);
 
 /// Special value supplied for machine level alias analysis. It indicates that
 /// a memory access references the functions stack frame (e.g., a spill slot),
@@ -49,7 +49,7 @@ private:
   unsigned Kind;
   unsigned AddressSpace;
   friend raw_ostream &llvm::operator<<(raw_ostream &OS,
-                                       const PseudoSourceValue* PSV);
+                                       const PseudoSourceValue *PSV);
 
   friend class MachineMemOperand; // For printCustom().
   friend class MIRFormatter;      // For printCustom().
@@ -73,7 +73,7 @@ public:
   unsigned getAddressSpace() const { return AddressSpace; }
 
   unsigned getTargetCustom() const {
-    return (Kind >= TargetCustom) ? ((Kind+1) - TargetCustom) : 0;
+    return (Kind >= TargetCustom) ? ((Kind + 1) - TargetCustom) : 0;
   }
 
   /// Test whether the memory pointed to by this PseudoSourceValue has a

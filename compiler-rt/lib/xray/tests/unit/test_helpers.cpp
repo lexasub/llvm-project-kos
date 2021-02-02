@@ -37,9 +37,7 @@ std::string RecordTypeAsString(RecordTypes T) {
   return "<UNKNOWN>";
 }
 
-void PrintTo(RecordTypes T, std::ostream *OS) {
-  *OS << RecordTypeAsString(T);
-}
+void PrintTo(RecordTypes T, std::ostream *OS) { *OS << RecordTypeAsString(T); }
 
 void PrintTo(const XRayRecord &R, std::ostream *OS) {
   *OS << "XRayRecord { CPU = " << R.CPU

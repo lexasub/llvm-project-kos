@@ -20,8 +20,7 @@ class D : C {};
 void fn1(A *p1) {
 }
 
-void
-fn2(C *) {
+void fn2(C *) {
 }
 
 // We end up using an opaque type for 'append' to avoid circular references.

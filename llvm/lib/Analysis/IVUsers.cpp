@@ -71,7 +71,7 @@ static bool isInteresting(const SCEV *S, const Instruction *I, const Loop *L,
     // the step value is not interesting, since we don't yet know how to
     // do effective SCEV expansions for addrecs with interesting steps.
     return isInteresting(AR->getStart(), I, L, SE, LI) &&
-          !isInteresting(AR->getStepRecurrence(*SE), I, L, SE, LI);
+           !isInteresting(AR->getStepRecurrence(*SE), I, L, SE, LI);
   }
 
   // An add is interesting if exactly one of its operands is interesting.
@@ -94,10 +94,9 @@ static bool isInteresting(const SCEV *S, const Instruction *I, const Loop *L,
 /// form.
 static bool isSimplifiedLoopNest(BasicBlock *BB, const DominatorTree *DT,
                                  const LoopInfo *LI,
-                                 SmallPtrSetImpl<Loop*> &SimpleLoopNests) {
+                                 SmallPtrSetImpl<Loop *> &SimpleLoopNests) {
   Loop *NearestLoop = nullptr;
-  for (DomTreeNode *Rung = DT->getNode(BB);
-       Rung; Rung = Rung->getIDom()) {
+  for (DomTreeNode *Rung = DT->getNode(BB); Rung; Rung = Rung->getIDom()) {
     BasicBlock *DomBB = Rung->getBlock();
     Loop *DomLoop = LI->getLoopFor(DomBB);
     if (DomLoop && DomLoop->getHeader() == DomBB) {
@@ -166,16 +165,16 @@ static bool IVUseShouldUsePostIncValue(Instruction *User, Value *Operand,
 /// reducible SCEV, recursively add its users to the IVUsesByStride set and
 /// return true.  Otherwise, return false.
 bool IVUsers::AddUsersImpl(Instruction *I,
-                           SmallPtrSetImpl<Loop*> &SimpleLoopNests) {
+                           SmallPtrSetImpl<Loop *> &SimpleLoopNests) {
   const DataLayout &DL = I->getModule()->getDataLayout();
 
   // Add this IV user to the Processed set before returning false to ensure that
   // all IV users are members of the set. See IVUsers::isIVUserOrOperand.
   if (!Processed.insert(I).second)
-    return true;    // Instruction already handled.
+    return true; // Instruction already handled.
 
   if (!SE->isSCEVable(I->getType()))
-    return false;   // Void and FP expressions cannot be reduced.
+    return false; // Void and FP expressions cannot be reduced.
 
   // IVUsers is used by LSR which assumes that all SCEV expressions are safe to
   // pass to SCEVExpander. Expressions are not safe to expand if they represent
@@ -292,7 +291,7 @@ bool IVUsers::AddUsersIfInteresting(Instruction *I) {
   // SCEVExpander can only handle users that are dominated by simplified loop
   // entries. Keep track of all loops that are only dominated by other simple
   // loops so we don't traverse the domtree for each user.
-  SmallPtrSet<Loop*,16> SimpleLoopNests;
+  SmallPtrSet<Loop *, 16> SimpleLoopNests;
 
   return AddUsersImpl(I, SimpleLoopNests);
 }
@@ -415,9 +414,7 @@ const SCEV *IVUsers::getStride(const IVStrideUse &IU, const Loop *L) const {
   return nullptr;
 }
 
-void IVStrideUse::transformToPostInc(const Loop *L) {
-  PostIncLoops.insert(L);
-}
+void IVStrideUse::transformToPostInc(const Loop *L) { PostIncLoops.insert(L); }
 
 void IVStrideUse::deleted() {
   // Remove this user from the list.

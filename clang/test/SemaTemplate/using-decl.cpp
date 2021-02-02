@@ -2,15 +2,15 @@
 // expected-no-diagnostics
 
 namespace UsingInGenericLambda {
-  namespace a {
-    enum { b };
-  }
-  template<typename> void c() {
-    auto d = [](auto) {
-      using a::b;
-      (void)b;
-    };
-    d(0);
-  }
-  void e() { c<int>(); }
+namespace a {
+enum { b };
 }
+template <typename> void c() {
+  auto d = [](auto) {
+    using a::b;
+    (void)b;
+  };
+  d(0);
+}
+void e() { c<int>(); }
+} // namespace UsingInGenericLambda

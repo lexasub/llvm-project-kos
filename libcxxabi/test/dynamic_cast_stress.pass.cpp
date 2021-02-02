@@ -13,61 +13,49 @@
 #include "support/timer.h"
 
 template <std::size_t Indx, std::size_t Depth>
-struct C
-    : public virtual C<Indx, Depth-1>,
-      public virtual C<Indx+1, Depth-1>
-{
-    virtual ~C() {}
+struct C : public virtual C<Indx, Depth - 1>,
+           public virtual C<Indx + 1, Depth - 1> {
+  virtual ~C() {}
 };
 
 template <std::size_t Indx>
-struct C<Indx, 0>
-{
-    virtual ~C() {}
+struct C<Indx, 0> {
+  virtual ~C() {}
 };
 
 template <std::size_t Indx, std::size_t Depth>
-struct B
-    : public virtual C<Indx, Depth-1>,
-      public virtual C<Indx+1, Depth-1>
-{
-};
+struct B : public virtual C<Indx, Depth - 1>,
+           public virtual C<Indx + 1, Depth - 1> {};
 
 template <class Indx, std::size_t Depth>
 struct makeB;
 
-template <std::size_t ...Indx, std::size_t Depth>
-struct makeB<std::__tuple_indices<Indx...>, Depth>
-    : public B<Indx, Depth>...
-{
+template <std::size_t... Indx, std::size_t Depth>
+struct makeB<std::__tuple_indices<Indx...>, Depth> : public B<Indx, Depth>... {
 };
 
 template <std::size_t Width, std::size_t Depth>
 struct A
-    : public makeB<typename std::__make_tuple_indices<Width>::type, Depth>
-{
-};
+    : public makeB<typename std::__make_tuple_indices<Width>::type, Depth> {};
 
-void test()
-{
-    const std::size_t Width = 10;
-    const std::size_t Depth = 5;
-    A<Width, Depth> a;
-    typedef B<Width/2, Depth> Destination;
-//    typedef A<Width, Depth> Destination;
-    Destination *b = nullptr;
-    {
-        timer t;
-        b = dynamic_cast<Destination*>((C<Width/2, 0>*)&a);
-    }
-    assert(b != 0);
+void test() {
+  const std::size_t Width = 10;
+  const std::size_t Depth = 5;
+  A<Width, Depth> a;
+  typedef B<Width / 2, Depth> Destination;
+  //    typedef A<Width, Depth> Destination;
+  Destination* b = nullptr;
+  {
+    timer t;
+    b = dynamic_cast<Destination*>((C<Width / 2, 0>*)&a);
+  }
+  assert(b != 0);
 }
 
-int main(int, char**)
-{
-    test();
+int main(int, char**) {
+  test();
 
-    return 0;
+  return 0;
 }
 
 /*

@@ -21,21 +21,21 @@ using namespace lldb;
 using namespace lldb_private;
 
 namespace {
-  // We must normalize our path pairs that we store because if we don't then
-  // things won't always work. We found a case where if we did:
-  // (lldb) settings set target.source-map . /tmp
-  // We would store a path pairs of "." and "/tmp" as raw strings. If the debug
-  // info contains "./foo/bar.c", the path will get normalized to "foo/bar.c".
-  // When PathMappingList::RemapPath() is called, it expects the path to start
-  // with the raw path pair, which doesn't work anymore because the paths have
-  // been normalized when the debug info was loaded. So we need to store
-  // nomalized path pairs to ensure things match up.
-  ConstString NormalizePath(ConstString path) {
-    // If we use "path" to construct a FileSpec, it will normalize the path for
-    // us. We then grab the string and turn it back into a ConstString.
-    return ConstString(FileSpec(path.GetStringRef()).GetPath());
-  }
+// We must normalize our path pairs that we store because if we don't then
+// things won't always work. We found a case where if we did:
+// (lldb) settings set target.source-map . /tmp
+// We would store a path pairs of "." and "/tmp" as raw strings. If the debug
+// info contains "./foo/bar.c", the path will get normalized to "foo/bar.c".
+// When PathMappingList::RemapPath() is called, it expects the path to start
+// with the raw path pair, which doesn't work anymore because the paths have
+// been normalized when the debug info was loaded. So we need to store
+// nomalized path pairs to ensure things match up.
+ConstString NormalizePath(ConstString path) {
+  // If we use "path" to construct a FileSpec, it will normalize the path for
+  // us. We then grab the string and turn it back into a ConstString.
+  return ConstString(FileSpec(path.GetStringRef()).GetPath());
 }
+} // namespace
 // PathMappingList constructor
 PathMappingList::PathMappingList()
     : m_pairs(), m_callback(nullptr), m_callback_baton(nullptr), m_mod_id(0) {}
@@ -60,8 +60,8 @@ const PathMappingList &PathMappingList::operator=(const PathMappingList &rhs) {
 
 PathMappingList::~PathMappingList() = default;
 
-void PathMappingList::Append(ConstString path,
-                             ConstString replacement, bool notify) {
+void PathMappingList::Append(ConstString path, ConstString replacement,
+                             bool notify) {
   ++m_mod_id;
   m_pairs.emplace_back(pair(NormalizePath(path), NormalizePath(replacement)));
   if (notify && m_callback)
@@ -79,24 +79,22 @@ void PathMappingList::Append(const PathMappingList &rhs, bool notify) {
   }
 }
 
-void PathMappingList::Insert(ConstString path,
-                             ConstString replacement, uint32_t index,
-                             bool notify) {
+void PathMappingList::Insert(ConstString path, ConstString replacement,
+                             uint32_t index, bool notify) {
   ++m_mod_id;
   iterator insert_iter;
   if (index >= m_pairs.size())
     insert_iter = m_pairs.end();
   else
     insert_iter = m_pairs.begin() + index;
-  m_pairs.emplace(insert_iter, pair(NormalizePath(path),
-                                    NormalizePath(replacement)));
+  m_pairs.emplace(insert_iter,
+                  pair(NormalizePath(path), NormalizePath(replacement)));
   if (notify && m_callback)
     m_callback(*this, m_callback_baton);
 }
 
-bool PathMappingList::Replace(ConstString path,
-                              ConstString replacement, uint32_t index,
-                              bool notify) {
+bool PathMappingList::Replace(ConstString path, ConstString replacement,
+                              uint32_t index, bool notify) {
   if (index >= m_pairs.size())
     return false;
   ++m_mod_id;
@@ -144,8 +142,7 @@ void PathMappingList::Clear(bool notify) {
     m_callback(*this, m_callback_baton);
 }
 
-bool PathMappingList::RemapPath(ConstString path,
-                                ConstString &new_path) const {
+bool PathMappingList::RemapPath(ConstString path, ConstString &new_path) const {
   std::string remapped;
   if (RemapPath(path.GetStringRef(), remapped)) {
     new_path.SetString(remapped);
@@ -184,7 +181,8 @@ bool PathMappingList::RemapPath(llvm::StringRef path,
   return false;
 }
 
-bool PathMappingList::ReverseRemapPath(const FileSpec &file, FileSpec &fixed) const {
+bool PathMappingList::ReverseRemapPath(const FileSpec &file,
+                                       FileSpec &fixed) const {
   std::string path = file.GetPath();
   llvm::StringRef path_ref(path);
   for (const auto &it : m_pairs) {
@@ -201,12 +199,12 @@ bool PathMappingList::FindFile(const FileSpec &orig_spec,
                                FileSpec &new_spec) const {
   if (m_pairs.empty())
     return false;
-  
+
   std::string orig_path = orig_spec.GetPath();
-    
+
   if (orig_path.empty())
     return false;
-      
+
   bool orig_is_relative = orig_spec.IsRelative();
 
   for (auto entry : m_pairs) {
@@ -217,7 +215,7 @@ bool PathMappingList::FindFile(const FileSpec &orig_spec,
     // We consider a relative prefix or one of just "." to
     // mean "only apply to relative paths".
     bool prefix_is_relative = false;
-    
+
     if (prefix_ref == ".") {
       prefix_is_relative = true;
       // Remove the "." since it will have been removed from the
@@ -237,13 +235,13 @@ bool PathMappingList::FindFile(const FileSpec &orig_spec,
         return true;
     }
   }
-  
+
   new_spec.Clear();
   return false;
 }
 
-bool PathMappingList::Replace(ConstString path,
-                              ConstString new_path, bool notify) {
+bool PathMappingList::Replace(ConstString path, ConstString new_path,
+                              bool notify) {
   uint32_t idx = FindIndexForPath(path);
   if (idx < m_pairs.size()) {
     ++m_mod_id;

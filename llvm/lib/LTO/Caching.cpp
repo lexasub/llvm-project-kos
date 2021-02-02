@@ -134,7 +134,8 @@ Expected<NativeObjectCache> lto::localCache(StringRef CacheDirectoryPath,
     return [=](size_t Task) -> std::unique_ptr<NativeObjectStream> {
       // Write to a temporary to avoid race condition
       SmallString<64> TempFilenameModel;
-      sys::path::append(TempFilenameModel, CacheDirectoryPath, "Thin-%%%%%%.tmp.o");
+      sys::path::append(TempFilenameModel, CacheDirectoryPath,
+                        "Thin-%%%%%%.tmp.o");
       Expected<sys::fs::TempFile> Temp = sys::fs::TempFile::create(
           TempFilenameModel, sys::fs::owner_read | sys::fs::owner_write);
       if (!Temp) {

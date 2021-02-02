@@ -385,8 +385,8 @@ bool ICallPromotionFunc::processFunction(ProfileSummaryInfo *PSI) {
 }
 
 // A wrapper function that does the actual work.
-static bool promoteIndirectCalls(Module &M, ProfileSummaryInfo *PSI,
-                                 bool InLTO, bool SamplePGO,
+static bool promoteIndirectCalls(Module &M, ProfileSummaryInfo *PSI, bool InLTO,
+                                 bool SamplePGO,
                                  ModuleAnalysisManager *AM = nullptr) {
   if (DisableICP)
     return false;

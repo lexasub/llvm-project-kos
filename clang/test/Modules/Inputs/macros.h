@@ -7,10 +7,10 @@
 #__private_macro FLOAT
 #__private_macro MODULE
 
-int (INTEGER);
+int(INTEGER);
 
 #if !__building_module(macros)
-#  error Can't include this header without building the 'macros' module.
+#error Can't include this header without building the 'macros' module.
 #endif
 
 #ifdef __MODULE__

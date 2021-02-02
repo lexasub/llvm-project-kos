@@ -15,44 +15,54 @@ namespace std {
 struct nothrow_t {};
 static const nothrow_t nothrow;
 enum class align_val_t : size_t {};
-}  // namespace std
+} // namespace std
 
 void *operator new(size_t);
 void *operator new[](size_t);
-void *operator new(size_t, std::nothrow_t const&);
-void *operator new[](size_t, std::nothrow_t const&);
+void *operator new(size_t, std::nothrow_t const &);
+void *operator new[](size_t, std::nothrow_t const &);
 void *operator new(size_t, std::align_val_t);
 void *operator new[](size_t, std::align_val_t);
-void *operator new(size_t, std::align_val_t, std::nothrow_t const&);
-void *operator new[](size_t, std::align_val_t, std::nothrow_t const&);
+void *operator new(size_t, std::align_val_t, std::nothrow_t const &);
+void *operator new[](size_t, std::align_val_t, std::nothrow_t const &);
 
-void operator delete(void*) throw();
-void operator delete[](void*) throw();
-void operator delete(void*, std::nothrow_t const&);
-void operator delete[](void*, std::nothrow_t const&);
-void operator delete(void*, size_t) throw();
-void operator delete[](void*, size_t) throw();
-void operator delete(void*, std::align_val_t) throw();
-void operator delete[](void*, std::align_val_t) throw();
-void operator delete(void*, std::align_val_t, std::nothrow_t const&);
-void operator delete[](void*, std::align_val_t, std::nothrow_t const&);
-void operator delete(void*, size_t, std::align_val_t) throw();
-void operator delete[](void*, size_t, std::align_val_t) throw();
+void operator delete(void *) throw();
+void operator delete[](void *) throw();
+void operator delete(void *, std::nothrow_t const &);
+void operator delete[](void *, std::nothrow_t const &);
+void operator delete(void *, size_t) throw();
+void operator delete[](void *, size_t) throw();
+void operator delete(void *, std::align_val_t) throw();
+void operator delete[](void *, std::align_val_t) throw();
+void operator delete(void *, std::align_val_t, std::nothrow_t const &);
+void operator delete[](void *, std::align_val_t, std::nothrow_t const &);
+void operator delete(void *, size_t, std::align_val_t) throw();
+void operator delete[](void *, size_t, std::align_val_t) throw();
 
-
-template<typename T>
-inline T* break_optimization(T *arg) {
-  __asm__ __volatile__("" : : "r" (arg) : "memory");
+template <typename T>
+inline T *break_optimization(T *arg) {
+  __asm__ __volatile__(""
+                       :
+                       : "r"(arg)
+                       : "memory");
   return arg;
 }
 
-
-struct S12 { int a, b, c; };
-struct alignas(128) S12_128 { int a, b, c; };
-struct alignas(256) S12_256 { int a, b, c; };
-struct alignas(512) S1024_512 { char a[1024]; };
-struct alignas(1024) S1024_1024 { char a[1024]; };
-
+struct S12 {
+  int a, b, c;
+};
+struct alignas(128) S12_128 {
+  int a, b, c;
+};
+struct alignas(256) S12_256 {
+  int a, b, c;
+};
+struct alignas(512) S1024_512 {
+  char a[1024];
+};
+struct alignas(1024) S1024_1024 {
+  char a[1024];
+};
 
 int main(int argc, char **argv) {
   // Check the mismatched calls only, all the valid cases are verified in
@@ -88,42 +98,42 @@ int main(int argc, char **argv) {
 
   // Various mismatched alignments.
 
-  delete break_optimization(reinterpret_cast<S12*>(new S12_256));
+  delete break_optimization(reinterpret_cast<S12 *>(new S12_256));
   // CHECK: AddressSanitizer: new-delete-type-mismatch
   // CHECK:  object passed to delete has wrong type:
   // CHECK:  alignment of the allocated type:   256 bytes;
   // CHECK:  alignment of the deallocated type: default-aligned.
   // CHECK: SUMMARY: AddressSanitizer: new-delete-type-mismatch
 
-  delete break_optimization(reinterpret_cast<S12_256*>(new S12));
+  delete break_optimization(reinterpret_cast<S12_256 *>(new S12));
   // CHECK: AddressSanitizer: new-delete-type-mismatch
   // CHECK:  object passed to delete has wrong type:
   // CHECK:  alignment of the allocated type:   default-aligned;
   // CHECK:  alignment of the deallocated type: 256 bytes.
   // CHECK: SUMMARY: AddressSanitizer: new-delete-type-mismatch
 
-  delete break_optimization(reinterpret_cast<S12_128*>(new S12_256));
+  delete break_optimization(reinterpret_cast<S12_128 *>(new S12_256));
   // CHECK: AddressSanitizer: new-delete-type-mismatch
   // CHECK:  object passed to delete has wrong type:
   // CHECK:  alignment of the allocated type:   256 bytes;
   // CHECK:  alignment of the deallocated type: 128 bytes.
   // CHECK: SUMMARY: AddressSanitizer: new-delete-type-mismatch
 
-  delete [] break_optimization(reinterpret_cast<S12*>(new S12_256[100]));
+  delete[] break_optimization(reinterpret_cast<S12 *>(new S12_256[100]));
   // CHECK: AddressSanitizer: new-delete-type-mismatch
   // CHECK:  object passed to delete has wrong type:
   // CHECK:  alignment of the allocated type:   256 bytes;
   // CHECK:  alignment of the deallocated type: default-aligned.
   // CHECK: SUMMARY: AddressSanitizer: new-delete-type-mismatch
 
-  delete [] break_optimization(reinterpret_cast<S12_256*>(new S12[100]));
+  delete[] break_optimization(reinterpret_cast<S12_256 *>(new S12[100]));
   // CHECK: AddressSanitizer: new-delete-type-mismatch
   // CHECK:  object passed to delete has wrong type:
   // CHECK:  alignment of the allocated type:   default-aligned;
   // CHECK:  alignment of the deallocated type: 256 bytes.
   // CHECK: SUMMARY: AddressSanitizer: new-delete-type-mismatch
 
-  delete [] break_optimization(reinterpret_cast<S12_128*>(new S12_256[100]));
+  delete[] break_optimization(reinterpret_cast<S12_128 *>(new S12_256[100]));
   // CHECK: AddressSanitizer: new-delete-type-mismatch
   // CHECK:  object passed to delete has wrong type:
   // CHECK:  alignment of the allocated type:   256 bytes;
@@ -133,7 +143,7 @@ int main(int argc, char **argv) {
   // Push ASan limits, the current limitation is that it cannot differentiate
   // alignments above 512 bytes.
   fprintf(stderr, "Checking alignments >= 512 bytes\n");
-  delete break_optimization(reinterpret_cast<S1024_512*>(new S1024_1024));
+  delete break_optimization(reinterpret_cast<S1024_512 *>(new S1024_1024));
   fprintf(stderr, "Done\n");
   // CHECK: Checking alignments >= 512 bytes
   // CHECK-NEXT: Done

@@ -20,17 +20,18 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    std::money_base mb; ((void)mb);
-    static_assert(std::money_base::none == 0, "");
-    static_assert(std::money_base::space == 1, "");
-    static_assert(std::money_base::symbol == 2, "");
-    static_assert(std::money_base::sign == 3, "");
-    static_assert(std::money_base::value == 4, "");
-    static_assert(sizeof(std::money_base::pattern) == 4, "");
-    std::money_base::pattern p; (void)p;
-    p.field[0] = std::money_base::none;
+int main(int, char**) {
+  std::money_base mb;
+  ((void)mb);
+  static_assert(std::money_base::none == 0, "");
+  static_assert(std::money_base::space == 1, "");
+  static_assert(std::money_base::symbol == 2, "");
+  static_assert(std::money_base::sign == 3, "");
+  static_assert(std::money_base::value == 4, "");
+  static_assert(sizeof(std::money_base::pattern) == 4, "");
+  std::money_base::pattern p;
+  (void)p;
+  p.field[0] = std::money_base::none;
 
   return 0;
 }

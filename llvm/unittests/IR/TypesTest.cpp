@@ -34,4 +34,4 @@ TEST(TypesTest, LayoutIdenticalEmptyStructs) {
   EXPECT_TRUE(Foo->isLayoutIdentical(Bar));
 }
 
-}  // end anonymous namespace
+} // end anonymous namespace

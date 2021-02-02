@@ -13,16 +13,16 @@
 #include "scudo_utils.h"
 
 #if defined(__x86_64__) || defined(__i386__)
-# include <cpuid.h>
+#include <cpuid.h>
 #elif defined(__arm__) || defined(__aarch64__)
-# include "sanitizer_common/sanitizer_getauxval.h"
-# if SANITIZER_FUCHSIA
-#  include <zircon/syscalls.h>
-#  include <zircon/features.h>
-# elif SANITIZER_POSIX
-#  include "sanitizer_common/sanitizer_posix.h"
-#  include <fcntl.h>
-# endif
+#include "sanitizer_common/sanitizer_getauxval.h"
+#if SANITIZER_FUCHSIA
+#include <zircon/features.h>
+#include <zircon/syscalls.h>
+#elif SANITIZER_POSIX
+#include "sanitizer_common/sanitizer_posix.h"
+#include <fcntl.h>
+#endif
 #endif
 
 #include <stdarg.h>
@@ -35,7 +35,7 @@ namespace __sanitizer {
 extern int VSNPrintf(char *buff, int buff_length, const char *format,
                      va_list args);
 
-}  // namespace __sanitizer
+} // namespace __sanitizer
 
 namespace __scudo {
 
@@ -59,9 +59,9 @@ FORMAT(1, 2) void NORETURN dieWithMessage(const char *Format, ...) {
 #if defined(__x86_64__) || defined(__i386__)
 // i386 and x86_64 specific code to detect CRC32 hardware support via CPUID.
 // CRC32 requires the SSE 4.2 instruction set.
-# ifndef bit_SSE4_2
-#  define bit_SSE4_2 bit_SSE42  // clang and gcc have different defines.
-# endif
+#ifndef bit_SSE4_2
+#define bit_SSE4_2 bit_SSE42 // clang and gcc have different defines.
+#endif
 
 #ifndef signature_HYGON_ebx // They are not defined in gcc.
 // HYGON: "HygonGenuine".
@@ -76,8 +76,7 @@ bool hasHardwareCRC32() {
   const bool IsIntel = (Ebx == signature_INTEL_ebx) &&
                        (Edx == signature_INTEL_edx) &&
                        (Ecx == signature_INTEL_ecx);
-  const bool IsAMD = (Ebx == signature_AMD_ebx) &&
-                     (Edx == signature_AMD_edx) &&
+  const bool IsAMD = (Ebx == signature_AMD_ebx) && (Edx == signature_AMD_edx) &&
                      (Ecx == signature_AMD_ecx);
   const bool IsHygon = (Ebx == signature_HYGON_ebx) &&
                        (Edx == signature_HYGON_edx) &&
@@ -90,18 +89,21 @@ bool hasHardwareCRC32() {
 #elif defined(__arm__) || defined(__aarch64__)
 // For ARM and AArch64, hardware CRC32 support is indicated in the AT_HWCAP
 // auxiliary vector.
-# ifndef AT_HWCAP
-#  define AT_HWCAP 16
-# endif
-# ifndef HWCAP_CRC32
-#  define HWCAP_CRC32 (1 << 7)  // HWCAP_CRC32 is missing on older platforms.
-# endif
-# if SANITIZER_POSIX
+#ifndef AT_HWCAP
+#define AT_HWCAP 16
+#endif
+#ifndef HWCAP_CRC32
+#define HWCAP_CRC32 (1 << 7) // HWCAP_CRC32 is missing on older platforms.
+#endif
+#if SANITIZER_POSIX
 bool hasHardwareCRC32ARMPosix() {
   uptr F = internal_open("/proc/self/auxv", O_RDONLY);
   if (internal_iserror(F))
     return false;
-  struct { uptr Tag; uptr Value; } Entry = { 0, 0 };
+  struct {
+    uptr Tag;
+    uptr Value;
+  } Entry = {0, 0};
   for (;;) {
     uptr N = internal_read(F, &Entry, sizeof(Entry));
     if (internal_iserror(N) || N != sizeof(Entry) ||
@@ -111,9 +113,9 @@ bool hasHardwareCRC32ARMPosix() {
   internal_close(F);
   return (Entry.Tag == AT_HWCAP && (Entry.Value & HWCAP_CRC32) != 0);
 }
-# else
+#else
 bool hasHardwareCRC32ARMPosix() { return false; }
-# endif  // SANITIZER_POSIX
+#endif // SANITIZER_POSIX
 
 // Bionic doesn't initialize its globals early enough. This causes issues when
 // trying to access them from a preinit_array (b/25751302) or from another
@@ -136,10 +138,10 @@ bool hasHardwareCRC32() {
   if (&getauxval && areBionicGlobalsInitialized())
     return !!(getauxval(AT_HWCAP) & HWCAP_CRC32);
   return hasHardwareCRC32ARMPosix();
-#endif  // SANITIZER_FUCHSIA
+#endif // SANITIZER_FUCHSIA
 }
 #else
 bool hasHardwareCRC32() { return false; }
-#endif  // defined(__x86_64__) || defined(__i386__)
+#endif // defined(__x86_64__) || defined(__i386__)
 
-}  // namespace __scudo
+} // namespace __scudo

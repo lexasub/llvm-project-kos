@@ -246,11 +246,11 @@ BENCHMARK(BM_test)->Unit(benchmark::kMillisecond);
 #endif
 
 #if defined(__GNUC__) || __has_builtin(__builtin_unreachable)
-  #define BENCHMARK_UNREACHABLE() __builtin_unreachable()
+#define BENCHMARK_UNREACHABLE() __builtin_unreachable()
 #elif defined(_MSC_VER)
-  #define BENCHMARK_UNREACHABLE() __assume(false)
+#define BENCHMARK_UNREACHABLE() __assume(false)
 #else
-  #define BENCHMARK_UNREACHABLE() ((void)0)
+#define BENCHMARK_UNREACHABLE() ((void)0)
 #endif
 
 namespace benchmark {
@@ -388,7 +388,7 @@ class Counter {
   Counter(double v = 0., Flags f = kDefaults, OneK k = kIs1000)
       : value(v), flags(f), oneK(k) {}
 
-  BENCHMARK_ALWAYS_INLINE operator double const&() const { return value; }
+  BENCHMARK_ALWAYS_INLINE operator double const &() const { return value; }
   BENCHMARK_ALWAYS_INLINE operator double&() { return value; }
 };
 
@@ -1293,10 +1293,11 @@ struct CPUInfo {
   BENCHMARK_DISALLOW_COPY_AND_ASSIGN(CPUInfo);
 };
 
-//Adding Struct for System Information
+// Adding Struct for System Information
 struct SystemInfo {
   std::string name;
   static const SystemInfo& Get();
+
  private:
   SystemInfo();
   BENCHMARK_DISALLOW_COPY_AND_ASSIGN(SystemInfo);
@@ -1341,7 +1342,7 @@ class BenchmarkReporter {
 
     std::string benchmark_name() const;
     std::string run_name;
-    RunType run_type;          // is this a measurement, or an aggregate?
+    RunType run_type;  // is this a measurement, or an aggregate?
     std::string aggregate_name;
     std::string report_label;  // Empty if not set by benchmark.
     bool error_occurred;
@@ -1485,8 +1486,9 @@ class JSONReporter : public BenchmarkReporter {
   bool first_report_;
 };
 
-class BENCHMARK_DEPRECATED_MSG("The CSV Reporter will be removed in a future release")
-      CSVReporter : public BenchmarkReporter {
+class BENCHMARK_DEPRECATED_MSG(
+    "The CSV Reporter will be removed in a future release") CSVReporter
+    : public BenchmarkReporter {
  public:
   CSVReporter() : printed_header_(false) {}
   virtual bool ReportContext(const Context& context);

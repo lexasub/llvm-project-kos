@@ -1,20 +1,23 @@
 // RUN: %clang_cc1 %s -fsyntax-only -verify -std=c++11 -fcxx-exceptions
 // RUN: %clang_cc1 %s -fsyntax-only -verify -std=c++1z -fcxx-exceptions
-typedef const struct __CFString * CFStringRef;
+typedef const struct __CFString *CFStringRef;
 #define CFSTR __builtin___CFStringMakeConstantString
 
 void f() {
   (void)CFStringRef(CFSTR("Hello"));
 }
 
-void a() { __builtin_va_list x, y; ::__builtin_va_copy(x, y); }
+void a() {
+  __builtin_va_list x, y;
+  ::__builtin_va_copy(x, y);
+}
 
 // <rdar://problem/10063539>
-template<int (*Compare)(const char *s1, const char *s2)>
+template <int (*Compare)(const char *s1, const char *s2)>
 int equal(const char *s1, const char *s2) {
   return Compare(s1, s2) == 0;
 }
-template int equal<&__builtin_strcmp>(const char*, const char*); // expected-error {{builtin functions must be directly called}}
+template int equal<&__builtin_strcmp>(const char *, const char *); // expected-error {{builtin functions must be directly called}}
 
 // PR13195
 void f2() {
@@ -23,25 +26,31 @@ void f2() {
 
 // pr14895
 typedef __typeof(sizeof(int)) size_t;
-extern "C" void *__builtin_alloca (size_t);
+extern "C" void *__builtin_alloca(size_t);
 
 namespace addressof {
-  struct S {} s;
-  static_assert(__builtin_addressof(s) == &s, "");
+struct S {
+} s;
+static_assert(__builtin_addressof(s) == &s, "");
 
-  struct T { constexpr T *operator&() const { return nullptr; } int n; } t;
-  constexpr T *pt = __builtin_addressof(t);
-  static_assert(&pt->n == &t.n, "");
+struct T {
+  constexpr T *operator&() const { return nullptr; }
+  int n;
+} t;
+constexpr T *pt = __builtin_addressof(t);
+static_assert(&pt->n == &t.n, "");
 
-  struct U { int n : 5; } u;
-  int *pbf = __builtin_addressof(u.n); // expected-error {{address of bit-field requested}}
+struct U {
+  int n : 5;
+} u;
+int *pbf = __builtin_addressof(u.n); // expected-error {{address of bit-field requested}}
 
-  S *ptmp = __builtin_addressof(S{}); // expected-error {{taking the address of a temporary}}
-}
+S *ptmp = __builtin_addressof(S{}); // expected-error {{taking the address of a temporary}}
+} // namespace addressof
 
 void no_ms_builtins() {
-  __assume(1); // expected-error {{use of undeclared}}
-  __noop(1); // expected-error {{use of undeclared}}
+  __assume(1);    // expected-error {{use of undeclared}}
+  __noop(1);      // expected-error {{use of undeclared}}
   __debugbreak(); // expected-error {{use of undeclared}}
 }
 
@@ -84,15 +93,15 @@ void test_builtin_launder(char *p, const volatile int *ip, const float *&fp,
   int x;
   __builtin_launder(x); // expected-error {{non-pointer argument to '__builtin_launder' is not allowed}}
 
-  TEST_TYPE(p, char*);
-  TEST_TYPE(ip, const volatile int*);
-  TEST_TYPE(fp, const float*);
+  TEST_TYPE(p, char *);
+  TEST_TYPE(ip, const volatile int *);
+  TEST_TYPE(fp, const float *);
   TEST_TYPE(dp, double *__restrict);
 
   char *d = __builtin_launder(p);
   const volatile int *id = __builtin_launder(ip);
   int *id2 = __builtin_launder(ip); // expected-error {{cannot initialize a variable of type 'int *' with an rvalue of type 'const volatile int *'}}
-  const float* fd = __builtin_launder(fp);
+  const float *fd = __builtin_launder(fp);
 }
 
 void test_launder_return_type(const int (&ArrayRef)[101], int (&MArrRef)[42][13],
@@ -145,11 +154,11 @@ void test_noexcept(int *i) {
 #undef TEST_TYPE
 } // end namespace test_launder
 
-template<typename T> void test_builtin_complex(T v, double d) {
+template <typename T> void test_builtin_complex(T v, double d) {
   (void)__builtin_complex(v, d); // expected-error {{different types}} expected-error {{not a real floating}}
   (void)__builtin_complex(d, v); // expected-error {{different types}} expected-error {{not a real floating}}
   (void)__builtin_complex(v, v); // expected-error {{not a real floating}}
 }
 template void test_builtin_complex(double, double);
 template void test_builtin_complex(float, double); // expected-note {{instantiation of}}
-template void test_builtin_complex(int, double); // expected-note {{instantiation of}}
+template void test_builtin_complex(int, double);   // expected-note {{instantiation of}}

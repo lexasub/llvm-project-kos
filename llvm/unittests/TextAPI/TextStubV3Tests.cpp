@@ -367,7 +367,7 @@ TEST(TBDv3, WriteMultipleDocuments) {
   Document.addSymbol(SymbolKind::GlobalSymbol, "_sym3", Targets);
   Document.addSymbol(SymbolKind::GlobalSymbol, "_sym4", Targets);
   File.addDocument(std::make_shared<InterfaceFile>(std::move(Document)));
-  
+
   SmallString<4096> Buffer;
   raw_svector_ostream OS(Buffer);
   Error Result = TextAPIWriter::writeToStream(OS, File);
@@ -533,7 +533,7 @@ TEST(TBDv3, Platform_zippered) {
   Platforms.insert(PlatformKind::macCatalyst);
   EXPECT_EQ(Platforms.size(), File->getPlatforms().size());
   for (auto Platform : File->getPlatforms())
-	    EXPECT_EQ(Platforms.count(Platform), 1U);
+    EXPECT_EQ(Platforms.count(Platform), 1U);
 
   SmallString<4096> Buffer;
   raw_svector_ostream OS(Buffer);

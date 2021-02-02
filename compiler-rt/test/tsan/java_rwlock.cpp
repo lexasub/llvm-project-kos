@@ -7,7 +7,7 @@ jptr lockaddr;
 void *Thread(void *p) {
   barrier_wait(&barrier);
   __tsan_java_mutex_read_lock(lockaddr);
-  *(int*)varaddr = 42;
+  *(int *)varaddr = 42;
   __tsan_java_mutex_read_unlock(lockaddr);
   return 0;
 }
@@ -24,7 +24,7 @@ int main() {
   pthread_t th;
   pthread_create(&th, 0, Thread, 0);
   __tsan_java_mutex_lock(lockaddr);
-  *(int*)varaddr = 43;
+  *(int *)varaddr = 43;
   __tsan_java_mutex_unlock(lockaddr);
   barrier_wait(&barrier);
   pthread_join(th, 0);

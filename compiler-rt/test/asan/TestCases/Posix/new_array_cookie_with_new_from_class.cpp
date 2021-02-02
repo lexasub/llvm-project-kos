@@ -6,14 +6,14 @@
 
 // UNSUPPORTED: ios
 
+#include <assert.h>
 #include <new>
-#include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <assert.h>
+#include <stdlib.h>
 struct Foo {
   void *operator new(size_t s) { return Allocate(s); }
-  void *operator new[] (size_t s) { return Allocate(s); }
+  void *operator new[](size_t s) { return Allocate(s); }
   ~Foo();
   static void *allocated;
   static void *Allocate(size_t s) {
@@ -34,7 +34,7 @@ int main() {
   fprintf(stderr, "foo  : %p\n", foo);
   fprintf(stderr, "alloc: %p\n", Foo::allocated);
   assert(reinterpret_cast<uintptr_t>(foo) ==
-         reinterpret_cast<uintptr_t>(Foo::allocated) + sizeof(void*));
-  *reinterpret_cast<uintptr_t*>(Foo::allocated) = 42;
+         reinterpret_cast<uintptr_t>(Foo::allocated) + sizeof(void *));
+  *reinterpret_cast<uintptr_t *>(Foo::allocated) = 42;
   return 0;
 }

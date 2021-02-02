@@ -55,9 +55,9 @@ T tmain(T argc, S **argv) {
   for (int i = ST; i < N; i++)
     argv[0][i] = argv[0][i] - argv[0][i - ST];
 #if __cplusplus >= 201103L
-  // expected-error@+4 2 {{integral constant expression must have integral or unscoped enumeration type, not 'char *'}}
+    // expected-error@+4 2 {{integral constant expression must have integral or unscoped enumeration type, not 'char *'}}
 #else
-  // expected-error@+2 2 {{integral constant expression}} expected-note@+2 0+{{constant expression}}
+    // expected-error@+2 2 {{integral constant expression}} expected-note@+2 0+{{constant expression}}
 #endif
 #pragma omp target parallel for ordered(argv[1] = 2) // expected-error {{expected ')'}} expected-note {{to match this '('}}
   for (int i = ST; i < N; i++)
@@ -69,7 +69,7 @@ T tmain(T argc, S **argv) {
   for (T i = ST; i < N; i++)
     argv[0][i] = argv[0][i] - argv[0][i - ST];
 #pragma omp target parallel for ordered(2) // expected-note {{as specified in 'ordered' clause}}
-  foo();                            // expected-error {{expected 2 for loops after '#pragma omp target parallel for'}}
+  foo(); // expected-error {{expected 2 for loops after '#pragma omp target parallel for'}}
   return argc;
 }
 
@@ -85,10 +85,10 @@ int main(int argc, char **argv) {
     argv[0][i] = argv[0][i] - argv[0][i - 4];
 #pragma omp target parallel for ordered(4 // expected-error {{expected ')'}} expected-note {{to match this '('}} expected-note {{as specified in 'ordered' clause}}
   for (int i = 4; i < 12; i++)
-    argv[0][i] = argv[0][i] - argv[0][i - 4]; // expected-error {{expected 4 for loops after '#pragma omp target parallel for', but found only 1}}
-#pragma omp target parallel for ordered(2 + 2))      // expected-warning {{extra tokens at the end of '#pragma omp target parallel for' are ignored}}  expected-note {{as specified in 'ordered' clause}}
+    argv[0][i] = argv[0][i] - argv[0][i - 4];   // expected-error {{expected 4 for loops after '#pragma omp target parallel for', but found only 1}}
+#pragma omp target parallel for ordered(2 + 2)) // expected-warning {{extra tokens at the end of '#pragma omp target parallel for' are ignored}}  expected-note {{as specified in 'ordered' clause}}
   for (int i = 4; i < 12; i++)
-    argv[0][i] = argv[0][i] - argv[0][i - 4];            // expected-error {{expected 4 for loops after '#pragma omp target parallel for', but found only 1}}
+    argv[0][i] = argv[0][i] - argv[0][i - 4]; // expected-error {{expected 4 for loops after '#pragma omp target parallel for', but found only 1}}
 
 #pragma omp target parallel for ordered(foobool(1) > 0 ? 1 : 2) // expected-error {{integral constant expression}} expected-note 0+{{constant expression}}
   for (int i = 4; i < 12; i++)
@@ -104,20 +104,19 @@ int main(int argc, char **argv) {
   for (int i = 4; i < 12; i++)
     argv[0][i] = argv[0][i] - argv[0][i - 4];
 #if __cplusplus >= 201103L
-  // expected-error@+4 {{integral constant expression must have integral or unscoped enumeration type, not 'char *'}}
+    // expected-error@+4 {{integral constant expression must have integral or unscoped enumeration type, not 'char *'}}
 #else
-  // expected-error@+2 {{integral constant expression}} expected-note@+2 0+{{constant expression}}
+    // expected-error@+2 {{integral constant expression}} expected-note@+2 0+{{constant expression}}
 #endif
 #pragma omp target parallel for ordered(argv[1] = 2) // expected-error {{expected ')'}} expected-note {{to match this '('}}
   for (int i = 4; i < 12; i++)
     argv[0][i] = argv[0][i] - argv[0][i - 4];
 // expected-error@+3 {{statement after '#pragma omp target parallel for' must be a for loop}}
 // expected-note@+1 {{in instantiation of function template specialization 'tmain<int, char, -1, -2>' requested here}}
-#pragma omp target parallel for ordered(ordered(tmain < int, char, -1, -2 > (argc, argv) // expected-error 2 {{expected ')'}} expected-note 2 {{to match this '('}}
+#pragma omp target parallel for ordered(ordered(tmain <int, char, -1, -2>(argc, argv) // expected-error 2 {{expected ')'}} expected-note 2 {{to match this '('}}
   foo();
 #pragma omp target parallel for ordered(2) // expected-note {{as specified in 'ordered' clause}}
-  foo();                            // expected-error {{expected 2 for loops after '#pragma omp target parallel for'}}
+  foo(); // expected-error {{expected 2 for loops after '#pragma omp target parallel for'}}
   // expected-note@+1 {{in instantiation of function template specialization 'tmain<int, char, 1, 0>' requested here}}
   return tmain<int, char, 1, 0>(argc, argv);
 }
-

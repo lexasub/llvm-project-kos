@@ -15,20 +15,19 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    std::locale l;
-    assert( std::isspace(' ', l));
-    assert(!std::isspace('<', l));
-    assert(!std::isspace('\x8', l));
-    assert(!std::isspace('A', l));
-    assert(!std::isspace('a', l));
-    assert(!std::isspace('z', l));
-    assert(!std::isspace('3', l));
-    assert(!std::isspace('.', l));
-    assert(!std::isspace('f', l));
-    assert(!std::isspace('9', l));
-    assert(!std::isspace('+', l));
+int main(int, char**) {
+  std::locale l;
+  assert(std::isspace(' ', l));
+  assert(!std::isspace('<', l));
+  assert(!std::isspace('\x8', l));
+  assert(!std::isspace('A', l));
+  assert(!std::isspace('a', l));
+  assert(!std::isspace('z', l));
+  assert(!std::isspace('3', l));
+  assert(!std::isspace('.', l));
+  assert(!std::isspace('f', l));
+  assert(!std::isspace('9', l));
+  assert(!std::isspace('+', l));
 
   return 0;
 }

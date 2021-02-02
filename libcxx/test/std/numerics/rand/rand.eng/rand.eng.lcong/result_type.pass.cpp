@@ -21,20 +21,19 @@
 #include "test_macros.h"
 
 template <class T>
-void
-test()
-{
-    static_assert((std::is_same<
-        typename std::linear_congruential_engine<T, 0, 0, 0>::result_type,
-        T>::value), "");
+void test() {
+  static_assert(
+      (std::is_same<
+          typename std::linear_congruential_engine<T, 0, 0, 0>::result_type,
+          T>::value),
+      "");
 }
 
-int main(int, char**)
-{
-    test<unsigned short>();
-    test<unsigned int>();
-    test<unsigned long>();
-    test<unsigned long long>();
+int main(int, char**) {
+  test<unsigned short>();
+  test<unsigned int>();
+  test<unsigned long>();
+  test<unsigned long long>();
 
   return 0;
 }

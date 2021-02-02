@@ -43,80 +43,83 @@ struct SelectionSampleExpectations {
 int SelectionSampleExpectations::oa1[] = {1, 4, 6, 7};
 int SelectionSampleExpectations::oa2[] = {1, 2, 6, 8};
 
-template <class IteratorCategory> struct TestExpectations
-    : public SelectionSampleExpectations {};
+template <class IteratorCategory>
+struct TestExpectations : public SelectionSampleExpectations {};
 
 template <>
 struct TestExpectations<std::input_iterator_tag>
     : public ReservoirSampleExpectations {};
 
-template <template<class...> class PopulationIteratorType, class PopulationItem,
-          template<class...> class SampleIteratorType, class SampleItem>
+template <template <class...> class PopulationIteratorType,
+          class PopulationItem, template <class...> class SampleIteratorType,
+          class SampleItem>
 void test() {
-  typedef PopulationIteratorType<PopulationItem *> PopulationIterator;
-  typedef SampleIteratorType<SampleItem *> SampleIterator;
+  typedef PopulationIteratorType<PopulationItem*> PopulationIterator;
+  typedef SampleIteratorType<SampleItem*> SampleIterator;
   PopulationItem ia[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
   const unsigned is = sizeof(ia) / sizeof(ia[0]);
-  typedef TestExpectations<typename std::iterator_traits<
-      PopulationIterator>::iterator_category> Expectations;
+  typedef TestExpectations<
+      typename std::iterator_traits<PopulationIterator>::iterator_category>
+      Expectations;
   const unsigned os = Expectations::os;
   SampleItem oa[os];
-  const int *oa1 = Expectations::oa1;
+  const int* oa1 = Expectations::oa1;
   ((void)oa1); // Prevent unused warning
-  const int *oa2 = Expectations::oa2;
+  const int* oa2 = Expectations::oa2;
   ((void)oa2); // Prevent unused warning
   std::minstd_rand g;
   SampleIterator end;
-  end = std::sample(PopulationIterator(ia),
-                                  PopulationIterator(ia + is),
-                                  SampleIterator(oa), os, g);
+  end = std::sample(PopulationIterator(ia), PopulationIterator(ia + is),
+                    SampleIterator(oa), os, g);
   assert(static_cast<std::size_t>(end.base() - oa) == std::min(os, is));
   // sample() is deterministic but non-reproducible;
   // its results can vary between implementations.
   LIBCPP_ASSERT(std::equal(oa, oa + os, oa1));
-  end = std::sample(PopulationIterator(ia),
-                                  PopulationIterator(ia + is),
-                                  SampleIterator(oa), os, std::move(g));
+  end = std::sample(PopulationIterator(ia), PopulationIterator(ia + is),
+                    SampleIterator(oa), os, std::move(g));
   assert(static_cast<std::size_t>(end.base() - oa) == std::min(os, is));
   LIBCPP_ASSERT(std::equal(oa, oa + os, oa2));
 }
 
-template <template<class...> class PopulationIteratorType, class PopulationItem,
-          template<class...> class SampleIteratorType, class SampleItem>
+template <template <class...> class PopulationIteratorType,
+          class PopulationItem, template <class...> class SampleIteratorType,
+          class SampleItem>
 void test_empty_population() {
-  typedef PopulationIteratorType<PopulationItem *> PopulationIterator;
-  typedef SampleIteratorType<SampleItem *> SampleIterator;
+  typedef PopulationIteratorType<PopulationItem*> PopulationIterator;
+  typedef SampleIteratorType<SampleItem*> SampleIterator;
   PopulationItem ia[] = {42};
   const unsigned os = 4;
   SampleItem oa[os];
   std::minstd_rand g;
   SampleIterator end =
       std::sample(PopulationIterator(ia), PopulationIterator(ia),
-                                SampleIterator(oa), os, g);
+                  SampleIterator(oa), os, g);
   assert(end.base() == oa);
 }
 
-template <template<class...> class PopulationIteratorType, class PopulationItem,
-          template<class...> class SampleIteratorType, class SampleItem>
+template <template <class...> class PopulationIteratorType,
+          class PopulationItem, template <class...> class SampleIteratorType,
+          class SampleItem>
 void test_empty_sample() {
-  typedef PopulationIteratorType<PopulationItem *> PopulationIterator;
-  typedef SampleIteratorType<SampleItem *> SampleIterator;
+  typedef PopulationIteratorType<PopulationItem*> PopulationIterator;
+  typedef SampleIteratorType<SampleItem*> SampleIterator;
   PopulationItem ia[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
   const unsigned is = sizeof(ia) / sizeof(ia[0]);
   SampleItem oa[1];
   std::minstd_rand g;
   SampleIterator end =
       std::sample(PopulationIterator(ia), PopulationIterator(ia + is),
-                                SampleIterator(oa), 0, g);
+                  SampleIterator(oa), 0, g);
   assert(end.base() == oa);
 }
 
-template <template<class...> class PopulationIteratorType, class PopulationItem,
-          template<class...> class SampleIteratorType, class SampleItem>
+template <template <class...> class PopulationIteratorType,
+          class PopulationItem, template <class...> class SampleIteratorType,
+          class SampleItem>
 void test_small_population() {
   // The population size is less than the sample size.
-  typedef PopulationIteratorType<PopulationItem *> PopulationIterator;
-  typedef SampleIteratorType<SampleItem *> SampleIterator;
+  typedef PopulationIteratorType<PopulationItem*> PopulationIterator;
+  typedef SampleIteratorType<SampleItem*> SampleIterator;
   PopulationItem ia[] = {1, 2, 3, 4, 5};
   const unsigned is = sizeof(ia) / sizeof(ia[0]);
   const unsigned os = 8;
@@ -124,11 +127,11 @@ void test_small_population() {
   const SampleItem oa1[] = {1, 2, 3, 4, 5};
   std::minstd_rand g;
   SampleIterator end;
-  end = std::sample(PopulationIterator(ia),
-                                  PopulationIterator(ia + is),
-                                  SampleIterator(oa), os, g);
+  end = std::sample(PopulationIterator(ia), PopulationIterator(ia + is),
+                    SampleIterator(oa), os, g);
   assert(static_cast<std::size_t>(end.base() - oa) == std::min(os, is));
-  typedef typename std::iterator_traits<PopulationIterator>::iterator_category PopulationCategory;
+  typedef typename std::iterator_traits<PopulationIterator>::iterator_category
+      PopulationCategory;
   if (std::is_base_of<std::forward_iterator_tag, PopulationCategory>::value) {
     assert(std::equal(oa, end.base(), oa1));
   } else {

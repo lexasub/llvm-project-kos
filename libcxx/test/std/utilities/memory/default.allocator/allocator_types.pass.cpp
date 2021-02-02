@@ -30,35 +30,44 @@
 #include "test_macros.h"
 
 template <typename T, typename U>
-TEST_CONSTEXPR_CXX20 bool test()
-{
-    static_assert((std::is_same<typename std::allocator<T>::size_type, std::size_t>::value), "");
-    static_assert((std::is_same<typename std::allocator<T>::difference_type, std::ptrdiff_t>::value), "");
-    static_assert((std::is_same<typename std::allocator<T>::value_type, T>::value), "");
-    static_assert((std::is_same<typename std::allocator<T>::propagate_on_container_move_assignment, std::true_type>::value), "");
-    static_assert((std::is_same<typename std::allocator<T>::is_always_equal, std::true_type>::value), "");
+TEST_CONSTEXPR_CXX20 bool test() {
+  static_assert(
+      (std::is_same<typename std::allocator<T>::size_type, std::size_t>::value),
+      "");
+  static_assert((std::is_same<typename std::allocator<T>::difference_type,
+                              std::ptrdiff_t>::value),
+                "");
+  static_assert(
+      (std::is_same<typename std::allocator<T>::value_type, T>::value), "");
+  static_assert(
+      (std::is_same<
+          typename std::allocator<T>::propagate_on_container_move_assignment,
+          std::true_type>::value),
+      "");
+  static_assert((std::is_same<typename std::allocator<T>::is_always_equal,
+                              std::true_type>::value),
+                "");
 
-    std::allocator<T> a;
-    std::allocator<T> a2 = a;
-    a2 = a;
-    std::allocator<U> a3 = a2;
-    (void)a3;
+  std::allocator<T> a;
+  std::allocator<T> a2 = a;
+  a2 = a;
+  std::allocator<U> a3 = a2;
+  (void)a3;
 
-    return true;
+  return true;
 }
 
-int main(int, char**)
-{
-    test<char, int>();
+int main(int, char**) {
+  test<char, int>();
 #ifdef _LIBCPP_VERSION // extension
-    test<char const, int const>();
+  test<char const, int const>();
 #endif // _LIBCPP_VERSION
 
 #if TEST_STD_VER > 17
-    static_assert(test<char, int>());
+  static_assert(test<char, int>());
 #ifdef _LIBCPP_VERSION // extension
-    static_assert(test<char const, int const>());
+  static_assert(test<char const, int const>());
 #endif // _LIBCPP_VERSION
 #endif
-    return 0;
+  return 0;
 }

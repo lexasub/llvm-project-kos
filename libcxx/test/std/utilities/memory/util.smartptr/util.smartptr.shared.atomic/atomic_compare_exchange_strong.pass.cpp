@@ -24,28 +24,27 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        std::shared_ptr<int> p(new int(4));
-        std::shared_ptr<int> v(new int(3));
-        std::shared_ptr<int> w(new int(2));
-        bool b = std::atomic_compare_exchange_strong(&p, &v, w);
-        assert(b == false);
-        assert(*p == 4);
-        assert(*v == 4);
-        assert(*w == 2);
-    }
-    {
-        std::shared_ptr<int> p(new int(4));
-        std::shared_ptr<int> v = p;
-        std::shared_ptr<int> w(new int(2));
-        bool b = std::atomic_compare_exchange_strong(&p, &v, w);
-        assert(b == true);
-        assert(*p == 2);
-        assert(*v == 4);
-        assert(*w == 2);
-    }
+int main(int, char**) {
+  {
+    std::shared_ptr<int> p(new int(4));
+    std::shared_ptr<int> v(new int(3));
+    std::shared_ptr<int> w(new int(2));
+    bool b = std::atomic_compare_exchange_strong(&p, &v, w);
+    assert(b == false);
+    assert(*p == 4);
+    assert(*v == 4);
+    assert(*w == 2);
+  }
+  {
+    std::shared_ptr<int> p(new int(4));
+    std::shared_ptr<int> v = p;
+    std::shared_ptr<int> w(new int(2));
+    bool b = std::atomic_compare_exchange_strong(&p, &v, w);
+    assert(b == true);
+    assert(*p == 2);
+    assert(*v == 4);
+    assert(*w == 2);
+  }
 
   return 0;
 }

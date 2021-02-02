@@ -15,7 +15,7 @@ class C { // expected-warning{{Value assigned to field 'y' in implicit construct
   S s;
 
 public:
-  C(): x(0) {}
+  C() : x(0) {}
 };
 
 void test() {
@@ -24,18 +24,16 @@ void test() {
 }
 } // end namespace implicit_constructor
 
-
 namespace explicit_constructor {
 class C {
   int x, y;
 
 public:
-  C(): x(0) {}
+  C() : x(0) {}
   // It is not necessary to specify which field is being assigned to.
-  C(const C &c):
-    x(c.x),
-    y(c.y) // expected-warning{{Assigned value is garbage or undefined}}
-           // expected-note@-1{{Assigned value is garbage or undefined}}
+  C(const C &c) : x(c.x),
+                  y(c.y) // expected-warning{{Assigned value is garbage or undefined}}
+                         // expected-note@-1{{Assigned value is garbage or undefined}}
   {}
 };
 
@@ -44,7 +42,6 @@ void test() {
   C c2(c1); // expected-note{{Calling copy constructor for 'C'}}
 }
 } // end namespace explicit_constructor
-
 
 namespace base_class_constructor {
 struct S {
@@ -59,12 +56,12 @@ class C { // expected-warning{{Value assigned to field 'y' in implicit construct
   S s;
 
 public:
-  C(): x(0) {}
+  C() : x(0) {}
 };
 
-class D: public C {
+class D : public C {
 public:
-  D(): C() {}
+  D() : C() {}
 };
 
 void test() {

@@ -13,7 +13,9 @@ public:
   virtual ~B();
 };
 
-B::~B() { extern void mayThrow(); mayThrow();
+B::~B() {
+  extern void mayThrow();
+  mayThrow();
 }
 
 struct C {

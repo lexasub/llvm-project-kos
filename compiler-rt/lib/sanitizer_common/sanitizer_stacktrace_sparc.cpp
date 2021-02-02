@@ -38,8 +38,9 @@ void BufferedStackTrace::UnwindFast(uptr pc, uptr bp, uptr stack_top,
   trace_buffer[0] = pc;
 #endif
   size = 1;
-  if (stack_top < 4096) return;  // Sanity check for stack top.
-  // Flush register windows to memory
+  if (stack_top < 4096)
+    return;  // Sanity check for stack top.
+    // Flush register windows to memory
 #if defined(__sparc_v9__) || defined(__sparcv9__) || defined(__sparcv9)
   asm volatile("flushw" ::: "memory");
 #else

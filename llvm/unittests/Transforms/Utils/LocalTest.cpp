@@ -33,7 +33,7 @@ TEST(Local, RecursivelyDeleteDeadPHINodes) {
   BasicBlock *bb1 = BasicBlock::Create(C);
 
   builder.SetInsertPoint(bb0);
-  PHINode    *phi = builder.CreatePHI(Type::getInt32Ty(C), 2);
+  PHINode *phi = builder.CreatePHI(Type::getInt32Ty(C), 2);
   BranchInst *br0 = builder.CreateCondBr(builder.getTrue(), bb0, bb1);
 
   builder.SetInsertPoint(bb1);
@@ -165,9 +165,9 @@ TEST(Local, ReplaceDbgDeclare) {
 }
 
 /// Build the dominator tree for the function and run the Test.
-static void runWithDomTree(
-    Module &M, StringRef FuncName,
-    function_ref<void(Function &F, DominatorTree *DT)> Test) {
+static void
+runWithDomTree(Module &M, StringRef FuncName,
+               function_ref<void(Function &F, DominatorTree *DT)> Test) {
   auto *F = M.getFunction(FuncName);
   ASSERT_NE(F, nullptr) << "Could not find " << FuncName;
   // Compute the dominator tree for the function.
@@ -619,7 +619,7 @@ TEST(Local, ChangeToUnreachable) {
 
   ASSERT_TRUE(isa<ReturnInst>(&A));
   // One instruction should be affected.
-  EXPECT_EQ(changeToUnreachable(&A, /*UseLLVMTrap*/false), 1U);
+  EXPECT_EQ(changeToUnreachable(&A, /*UseLLVMTrap*/ false), 1U);
 
   Instruction &B = BB.front();
 
@@ -791,35 +791,35 @@ TEST(Local, ReplaceAllDbgUsesWith) {
   };
 
   // Case 1: The original expr is empty, so no deref is needed.
-  EXPECT_TRUE(hasADbgVal({DW_OP_LLVM_convert, 32, DW_ATE_signed,
-                         DW_OP_LLVM_convert, 64, DW_ATE_signed,
-                         DW_OP_stack_value}));
+  EXPECT_TRUE(
+      hasADbgVal({DW_OP_LLVM_convert, 32, DW_ATE_signed, DW_OP_LLVM_convert, 64,
+                  DW_ATE_signed, DW_OP_stack_value}));
 
   // Case 2: Perform an address calculation with the original expr, deref it,
   // then sign-extend the result.
-  EXPECT_TRUE(hasADbgVal({DW_OP_lit0, DW_OP_mul, DW_OP_deref,
-                         DW_OP_LLVM_convert, 32, DW_ATE_signed,
-                         DW_OP_LLVM_convert, 64, DW_ATE_signed,
-                         DW_OP_stack_value}));
+  EXPECT_TRUE(
+      hasADbgVal({DW_OP_lit0, DW_OP_mul, DW_OP_deref, DW_OP_LLVM_convert, 32,
+                  DW_ATE_signed, DW_OP_LLVM_convert, 64, DW_ATE_signed,
+                  DW_OP_stack_value}));
 
   // Case 3: Insert the sign-extension logic before the DW_OP_stack_value.
-  EXPECT_TRUE(hasADbgVal({DW_OP_lit0, DW_OP_mul, DW_OP_LLVM_convert, 32,
-                         DW_ATE_signed, DW_OP_LLVM_convert, 64, DW_ATE_signed,
-                         DW_OP_stack_value}));
+  EXPECT_TRUE(
+      hasADbgVal({DW_OP_lit0, DW_OP_mul, DW_OP_LLVM_convert, 32, DW_ATE_signed,
+                  DW_OP_LLVM_convert, 64, DW_ATE_signed, DW_OP_stack_value}));
 
   // Cases 4-6: Just like cases 1-3, but preserve the fragment at the end.
   EXPECT_TRUE(hasADbgVal({DW_OP_LLVM_convert, 32, DW_ATE_signed,
-                         DW_OP_LLVM_convert, 64, DW_ATE_signed,
-                         DW_OP_stack_value, DW_OP_LLVM_fragment, 0, 8}));
+                          DW_OP_LLVM_convert, 64, DW_ATE_signed,
+                          DW_OP_stack_value, DW_OP_LLVM_fragment, 0, 8}));
 
-  EXPECT_TRUE(hasADbgVal({DW_OP_lit0, DW_OP_mul, DW_OP_deref,
-                         DW_OP_LLVM_convert, 32, DW_ATE_signed,
-                         DW_OP_LLVM_convert, 64, DW_ATE_signed,
-                         DW_OP_stack_value, DW_OP_LLVM_fragment, 0, 8}));
+  EXPECT_TRUE(
+      hasADbgVal({DW_OP_lit0, DW_OP_mul, DW_OP_deref, DW_OP_LLVM_convert, 32,
+                  DW_ATE_signed, DW_OP_LLVM_convert, 64, DW_ATE_signed,
+                  DW_OP_stack_value, DW_OP_LLVM_fragment, 0, 8}));
 
   EXPECT_TRUE(hasADbgVal({DW_OP_lit0, DW_OP_mul, DW_OP_LLVM_convert, 32,
-                         DW_ATE_signed, DW_OP_LLVM_convert, 64, DW_ATE_signed,
-                         DW_OP_stack_value, DW_OP_LLVM_fragment, 0, 8}));
+                          DW_ATE_signed, DW_OP_LLVM_convert, 64, DW_ATE_signed,
+                          DW_OP_stack_value, DW_OP_LLVM_fragment, 0, 8}));
 
   verifyModule(*M, &errs(), &BrokenDebugInfo);
   ASSERT_FALSE(BrokenDebugInfo);
@@ -1011,24 +1011,22 @@ TEST(Local, CanReplaceOperandWithVariable) {
   Module M("test_module", Ctx);
   IRBuilder<> B(Ctx);
 
-  FunctionType *FnType =
-    FunctionType::get(Type::getVoidTy(Ctx), {}, false);
+  FunctionType *FnType = FunctionType::get(Type::getVoidTy(Ctx), {}, false);
 
   FunctionType *VarArgFnType =
-    FunctionType::get(Type::getVoidTy(Ctx), {B.getInt32Ty()}, true);
+      FunctionType::get(Type::getVoidTy(Ctx), {B.getInt32Ty()}, true);
 
-  Function *TestBody = Function::Create(FnType, GlobalValue::ExternalLinkage,
-                                        0, "", &M);
+  Function *TestBody =
+      Function::Create(FnType, GlobalValue::ExternalLinkage, 0, "", &M);
 
   BasicBlock *BB0 = BasicBlock::Create(Ctx, "", TestBody);
   B.SetInsertPoint(BB0);
 
   FunctionCallee Intrin = M.getOrInsertFunction("llvm.foo", FnType);
   FunctionCallee Func = M.getOrInsertFunction("foo", FnType);
-  FunctionCallee VarArgFunc
-    = M.getOrInsertFunction("foo.vararg", VarArgFnType);
-  FunctionCallee VarArgIntrin
-    = M.getOrInsertFunction("llvm.foo.vararg", VarArgFnType);
+  FunctionCallee VarArgFunc = M.getOrInsertFunction("foo.vararg", VarArgFnType);
+  FunctionCallee VarArgIntrin =
+      M.getOrInsertFunction("llvm.foo.vararg", VarArgFnType);
 
   auto *CallToIntrin = B.CreateCall(Intrin);
   auto *CallToFunc = B.CreateCall(Func);
@@ -1039,15 +1037,15 @@ TEST(Local, CanReplaceOperandWithVariable) {
 
   // That it's invalid to replace an argument in the variadic argument list for
   // an intrinsic, but OK for a normal function.
-  auto *CallToVarArgFunc = B.CreateCall(
-    VarArgFunc, {B.getInt32(0), B.getInt32(1), B.getInt32(2)});
+  auto *CallToVarArgFunc =
+      B.CreateCall(VarArgFunc, {B.getInt32(0), B.getInt32(1), B.getInt32(2)});
   EXPECT_TRUE(canReplaceOperandWithVariable(CallToVarArgFunc, 0));
   EXPECT_TRUE(canReplaceOperandWithVariable(CallToVarArgFunc, 1));
   EXPECT_TRUE(canReplaceOperandWithVariable(CallToVarArgFunc, 2));
   EXPECT_TRUE(canReplaceOperandWithVariable(CallToVarArgFunc, 3));
 
-  auto *CallToVarArgIntrin = B.CreateCall(
-    VarArgIntrin, {B.getInt32(0), B.getInt32(1), B.getInt32(2)});
+  auto *CallToVarArgIntrin =
+      B.CreateCall(VarArgIntrin, {B.getInt32(0), B.getInt32(1), B.getInt32(2)});
   EXPECT_TRUE(canReplaceOperandWithVariable(CallToVarArgIntrin, 0));
   EXPECT_FALSE(canReplaceOperandWithVariable(CallToVarArgIntrin, 1));
   EXPECT_FALSE(canReplaceOperandWithVariable(CallToVarArgIntrin, 2));
@@ -1057,8 +1055,8 @@ TEST(Local, CanReplaceOperandWithVariable) {
   // immarg.
   Type *PtrPtr = B.getInt8Ty()->getPointerTo(0);
   Value *Alloca = B.CreateAlloca(PtrPtr, (unsigned)0);
-  CallInst *GCRoot = B.CreateIntrinsic(Intrinsic::gcroot, {},
-    {Alloca, Constant::getNullValue(PtrPtr)});
+  CallInst *GCRoot = B.CreateIntrinsic(
+      Intrinsic::gcroot, {}, {Alloca, Constant::getNullValue(PtrPtr)});
   EXPECT_TRUE(canReplaceOperandWithVariable(GCRoot, 0)); // Alloca
   EXPECT_FALSE(canReplaceOperandWithVariable(GCRoot, 1));
   EXPECT_FALSE(canReplaceOperandWithVariable(GCRoot, 2));

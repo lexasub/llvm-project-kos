@@ -38,8 +38,7 @@ int main() {
     Container c2(c1);
 
     return 2;
-  }
-  catch (...) {
+  } catch (...) {
     return 1;
   }
   return 0;

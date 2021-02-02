@@ -23,7 +23,8 @@ namespace __asan {
 
 void DescribeThread(AsanThreadContext *context);
 static inline void DescribeThread(AsanThread *t) {
-  if (t) DescribeThread(t->context());
+  if (t)
+    DescribeThread(t->context());
 }
 
 class AsanThreadIdAndName {

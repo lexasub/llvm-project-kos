@@ -53,7 +53,7 @@ void test_default_ctor_sfinae() {
   }
 #if !defined(TEST_VARIANT_HAS_NO_REFERENCES)
   {
-    using V = std::variant<int &, int>;
+    using V = std::variant<int&, int>;
     static_assert(!std::is_default_constructible<V>::value, "");
   }
 #endif
@@ -76,7 +76,7 @@ void test_default_ctor_throws() {
   try {
     V v;
     assert(false);
-  } catch (const int &ex) {
+  } catch (const int& ex) {
     assert(ex == 42);
   } catch (...) {
     assert(false);

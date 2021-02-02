@@ -1,15 +1,14 @@
 // RUN: %clang_cc1 -emit-llvm -debug-info-kind=limited -triple x86_64-apple-darwin %s -o - | FileCheck %s
 
-template<class X> class B {
+template <class X> class B {
 public:
-  explicit B(X* p = 0);
+  explicit B(X *p = 0);
 };
 
-class A
-{
+class A {
 public:
-  A(int value) : m_a_value(value) {};
-  A(int value, A* client_A) : m_a_value (value), m_client_A (client_A) {}
+  A(int value) : m_a_value(value){};
+  A(int value, A *client_A) : m_a_value(value), m_client_A(client_A) {}
 
   virtual ~A() {}
 
@@ -19,7 +18,7 @@ private:
 };
 
 int main(int argc, char **argv) {
-  A reallyA (500);
+  A reallyA(500);
 }
 
 // CHECK: ![[CLASSTYPE:.*]] = distinct !DICompositeType(tag: DW_TAG_class_type, name: "A",

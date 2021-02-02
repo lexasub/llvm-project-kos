@@ -54,7 +54,8 @@ constexpr auto test_emplace_exists_imp(long) -> bool {
   return false;
 }
 
-template <class Var, size_t I, class... Args> constexpr bool emplace_exists() {
+template <class Var, size_t I, class... Args>
+constexpr bool emplace_exists() {
   return test_emplace_exists_imp<Var, I, Args...>(0);
 }
 

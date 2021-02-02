@@ -16,8 +16,7 @@
 
 using namespace clang;
 
-static SourceLocation getStandardSelLoc(unsigned Index,
-                                        Selector Sel,
+static SourceLocation getStandardSelLoc(unsigned Index, Selector Sel,
                                         bool WithArgSpace,
                                         SourceLocation ArgLoc,
                                         SourceLocation EndLoc) {
@@ -43,16 +42,13 @@ static SourceLocation getStandardSelLoc(unsigned Index,
 
 namespace {
 
-template <typename T>
-SourceLocation getArgLoc(T* Arg);
+template <typename T> SourceLocation getArgLoc(T *Arg);
 
-template <>
-SourceLocation getArgLoc<Expr>(Expr *Arg) {
+template <> SourceLocation getArgLoc<Expr>(Expr *Arg) {
   return Arg->getBeginLoc();
 }
 
-template <>
-SourceLocation getArgLoc<ParmVarDecl>(ParmVarDecl *Arg) {
+template <> SourceLocation getArgLoc<ParmVarDecl>(ParmVarDecl *Arg) {
   SourceLocation Loc = Arg->getBeginLoc();
   if (Loc.isInvalid())
     return Loc;
@@ -61,20 +57,19 @@ SourceLocation getArgLoc<ParmVarDecl>(ParmVarDecl *Arg) {
 }
 
 template <typename T>
-SourceLocation getArgLoc(unsigned Index, ArrayRef<T*> Args) {
+SourceLocation getArgLoc(unsigned Index, ArrayRef<T *> Args) {
   return Index < Args.size() ? getArgLoc(Args[Index]) : SourceLocation();
 }
 
 template <typename T>
-SelectorLocationsKind hasStandardSelLocs(Selector Sel,
-                                         ArrayRef<SourceLocation> SelLocs,
-                                         ArrayRef<T *> Args,
-                                         SourceLocation EndLoc) {
+SelectorLocationsKind
+hasStandardSelLocs(Selector Sel, ArrayRef<SourceLocation> SelLocs,
+                   ArrayRef<T *> Args, SourceLocation EndLoc) {
   // Are selector locations in standard position with no space between args ?
   unsigned i;
   for (i = 0; i != SelLocs.size(); ++i) {
-    if (SelLocs[i] != getStandardSelectorLoc(i, Sel, /*WithArgSpace=*/false,
-                                             Args, EndLoc))
+    if (SelLocs[i] !=
+        getStandardSelectorLoc(i, Sel, /*WithArgSpace=*/false, Args, EndLoc))
       break;
   }
   if (i == SelLocs.size())
@@ -82,8 +77,8 @@ SelectorLocationsKind hasStandardSelLocs(Selector Sel,
 
   // Are selector locations in standard position with space between args ?
   for (i = 0; i != SelLocs.size(); ++i) {
-    if (SelLocs[i] != getStandardSelectorLoc(i, Sel, /*WithArgSpace=*/true,
-                                             Args, EndLoc))
+    if (SelLocs[i] !=
+        getStandardSelectorLoc(i, Sel, /*WithArgSpace=*/true, Args, EndLoc))
       return SelLoc_NonStandard;
   }
 
@@ -93,35 +88,30 @@ SelectorLocationsKind hasStandardSelLocs(Selector Sel,
 } // anonymous namespace
 
 SelectorLocationsKind
-clang::hasStandardSelectorLocs(Selector Sel,
-                               ArrayRef<SourceLocation> SelLocs,
-                               ArrayRef<Expr *> Args,
-                               SourceLocation EndLoc) {
+clang::hasStandardSelectorLocs(Selector Sel, ArrayRef<SourceLocation> SelLocs,
+                               ArrayRef<Expr *> Args, SourceLocation EndLoc) {
   return hasStandardSelLocs(Sel, SelLocs, Args, EndLoc);
 }
 
-SourceLocation clang::getStandardSelectorLoc(unsigned Index,
-                                             Selector Sel,
+SourceLocation clang::getStandardSelectorLoc(unsigned Index, Selector Sel,
                                              bool WithArgSpace,
                                              ArrayRef<Expr *> Args,
                                              SourceLocation EndLoc) {
-  return getStandardSelLoc(Index, Sel, WithArgSpace,
-                           getArgLoc(Index, Args), EndLoc);
+  return getStandardSelLoc(Index, Sel, WithArgSpace, getArgLoc(Index, Args),
+                           EndLoc);
 }
 
 SelectorLocationsKind
-clang::hasStandardSelectorLocs(Selector Sel,
-                               ArrayRef<SourceLocation> SelLocs,
+clang::hasStandardSelectorLocs(Selector Sel, ArrayRef<SourceLocation> SelLocs,
                                ArrayRef<ParmVarDecl *> Args,
                                SourceLocation EndLoc) {
   return hasStandardSelLocs(Sel, SelLocs, Args, EndLoc);
 }
 
-SourceLocation clang::getStandardSelectorLoc(unsigned Index,
-                                             Selector Sel,
+SourceLocation clang::getStandardSelectorLoc(unsigned Index, Selector Sel,
                                              bool WithArgSpace,
                                              ArrayRef<ParmVarDecl *> Args,
                                              SourceLocation EndLoc) {
-  return getStandardSelLoc(Index, Sel, WithArgSpace,
-                           getArgLoc(Index, Args), EndLoc);
+  return getStandardSelLoc(Index, Sel, WithArgSpace, getArgLoc(Index, Args),
+                           EndLoc);
 }

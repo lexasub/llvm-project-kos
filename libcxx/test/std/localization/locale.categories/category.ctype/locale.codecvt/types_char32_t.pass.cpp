@@ -29,19 +29,18 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    typedef std::codecvt<char32_t, char, std::mbstate_t> F;
-    static_assert((std::is_base_of<std::locale::facet, F>::value), "");
-    static_assert((std::is_base_of<std::codecvt_base, F>::value), "");
-    static_assert((std::is_same<F::intern_type, char32_t>::value), "");
-    static_assert((std::is_same<F::extern_type, char>::value), "");
-    static_assert((std::is_same<F::state_type, std::mbstate_t>::value), "");
-    std::locale l = std::locale::classic();
-    assert(std::has_facet<F>(l));
-    const F& f = std::use_facet<F>(l);
-    (void)F::id;
-    ((void)f);
+int main(int, char**) {
+  typedef std::codecvt<char32_t, char, std::mbstate_t> F;
+  static_assert((std::is_base_of<std::locale::facet, F>::value), "");
+  static_assert((std::is_base_of<std::codecvt_base, F>::value), "");
+  static_assert((std::is_same<F::intern_type, char32_t>::value), "");
+  static_assert((std::is_same<F::extern_type, char>::value), "");
+  static_assert((std::is_same<F::state_type, std::mbstate_t>::value), "");
+  std::locale l = std::locale::classic();
+  assert(std::has_facet<F>(l));
+  const F& f = std::use_facet<F>(l);
+  (void)F::id;
+  ((void)f);
 
   return 0;
 }

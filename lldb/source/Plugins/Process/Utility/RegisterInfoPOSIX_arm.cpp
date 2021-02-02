@@ -33,12 +33,11 @@ using namespace lldb_private;
     sizeof(RegisterInfoPOSIX_arm::EXC)))
 
 #define DEFINE_DBG(reg, i)                                                     \
-  #reg, NULL, sizeof(((RegisterInfoPOSIX_arm::DBG *) NULL)->reg[i]),           \
-                      DBG_OFFSET(reg[i]), eEncodingUint, eFormatHex,           \
-                                 {LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,    \
-                                  LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,    \
-                                  dbg_##reg##i },                              \
-                                  NULL, NULL, NULL, 0
+#reg, NULL, sizeof(((RegisterInfoPOSIX_arm::DBG *)NULL)->reg[i]),            \
+      DBG_OFFSET(reg[i]), eEncodingUint, eFormatHex,                           \
+      {LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,          \
+       LLDB_INVALID_REGNUM, dbg_##reg##i },                                    \
+       NULL, NULL, NULL, 0
 #define REG_CONTEXT_SIZE                                                       \
   (sizeof(RegisterInfoPOSIX_arm::GPR) + sizeof(RegisterInfoPOSIX_arm::FPU) +   \
    sizeof(RegisterInfoPOSIX_arm::EXC))

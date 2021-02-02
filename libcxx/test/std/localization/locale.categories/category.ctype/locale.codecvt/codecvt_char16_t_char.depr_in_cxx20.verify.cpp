@@ -18,10 +18,11 @@
 #include "../with_public_dtor.hpp"
 #include "test_macros.h"
 
-int main(int, char **)
-{
-    with_public_dtor<std::codecvt<char16_t, char, std::mbstate_t>> cvt("", 0); // expected-warning {{'codecvt<char16_t, char, __mbstate_t>' is deprecated}}
-    (void)cvt;
+int main(int, char**) {
+  with_public_dtor<std::codecvt<char16_t, char, std::mbstate_t> > cvt(
+      "",
+      0); // expected-warning {{'codecvt<char16_t, char, __mbstate_t>' is deprecated}}
+  (void)cvt;
 
-    return 0;
+  return 0;
 }

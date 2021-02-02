@@ -9,7 +9,6 @@
 #include "lldb/DataFormatters/TypeCategory.h"
 #include "lldb/Target/Language.h"
 
-
 using namespace lldb;
 using namespace lldb_private;
 

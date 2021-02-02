@@ -6,7 +6,8 @@ struct S {
 };
 
 struct T {
-  T() noexcept;
+  T()
+  noexcept;
   ~T();
   int n;
 };

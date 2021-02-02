@@ -2,17 +2,20 @@
 // FIXME: Fix the checker to work in C++17 mode.
 
 namespace std {
-template <typename T> struct less {
+template <typename T>
+struct less {
   bool operator()(const T &lhs, const T &rhs) { return lhs < rhs; }
 };
 
-template <typename T> struct greater {
+template <typename T>
+struct greater {
   bool operator()(const T &lhs, const T &rhs) { return lhs > rhs; }
 };
 
 struct iterator_type {};
 
-template <typename K, typename Cmp = less<K>> struct set {
+template <typename K, typename Cmp = less<K>>
+struct set {
   typedef iterator_type iterator;
   iterator find(const K &k);
   unsigned count(const K &k);
@@ -25,7 +28,8 @@ template <typename K, typename Cmp = less<K>> struct set {
 
 struct other_iterator_type {};
 
-template <typename K, typename V, typename Cmp = less<K>> struct map {
+template <typename K, typename V, typename Cmp = less<K>>
+struct map {
   typedef other_iterator_type iterator;
   iterator find(const K &k);
   unsigned count(const K &k);
@@ -36,13 +40,19 @@ template <typename K, typename V, typename Cmp = less<K>> struct map {
   iterator end() const;
 };
 
-template <typename K, typename V> struct multimap : map<K, V> {};
-template <typename K> struct unordered_set : set<K> {};
-template <typename K, typename V> struct unordered_map : map<K, V> {};
-template <typename K> struct unordered_multiset : set<K> {};
-template <typename K, typename V> struct unordered_multimap : map<K, V> {};
+template <typename K, typename V>
+struct multimap : map<K, V> {};
+template <typename K>
+struct unordered_set : set<K> {};
+template <typename K, typename V>
+struct unordered_map : map<K, V> {};
+template <typename K>
+struct unordered_multiset : set<K> {};
+template <typename K, typename V>
+struct unordered_multimap : map<K, V> {};
 
-template <typename K, typename Cmp = less<K>> struct multiset : set<K, Cmp> {};
+template <typename K, typename Cmp = less<K>>
+struct multiset : set<K, Cmp> {};
 
 template <typename FwIt, typename K>
 FwIt find(FwIt, FwIt end, const K &) { return end; }
@@ -61,12 +71,13 @@ FwIt lower_bound(FwIt, FwIt end, const K &) { return end; }
 
 template <typename FwIt, typename K, typename Ord>
 FwIt lower_bound(FwIt, FwIt end, const K &, Ord) { return end; }
-}
+} // namespace std
 
 #define FIND_IN_SET(x) find(x.begin(), x.end(), 10)
 // CHECK-FIXES: #define FIND_IN_SET(x) find(x.begin(), x.end(), 10)
 
-template <typename T> void f(const T &t) {
+template <typename T>
+void f(const T &t) {
   std::set<int> s;
   find(s.begin(), s.end(), 46);
   // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: this STL algorithm call should be
@@ -86,7 +97,7 @@ int main() {
   // CHECK-FIXES: {{^  }}auto c = s.count(43);{{$}}
 
 #define SECOND(x, y, z) y
-  SECOND(q,std::count(s.begin(), s.end(), 22),w);
+  SECOND(q, std::count(s.begin(), s.end(), 22), w);
   // CHECK-MESSAGES: :[[@LINE-1]]:12: warning: this STL algorithm call should be
   // CHECK-FIXES: {{^  }}SECOND(q,s.count(22),w);{{$}}
 

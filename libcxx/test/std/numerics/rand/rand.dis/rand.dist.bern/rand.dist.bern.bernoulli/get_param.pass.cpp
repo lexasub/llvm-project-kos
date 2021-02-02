@@ -17,15 +17,14 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        typedef std::bernoulli_distribution D;
-        typedef D::param_type P;
-        P p(.125);
-        D d(p);
-        assert(d.param() == p);
-    }
+int main(int, char**) {
+  {
+    typedef std::bernoulli_distribution D;
+    typedef D::param_type P;
+    P p(.125);
+    D d(p);
+    assert(d.param() == p);
+  }
 
   return 0;
 }

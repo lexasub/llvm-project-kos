@@ -25,11 +25,10 @@
 namespace lldb_private {
 class Log;
 class Stream;
-}
+} // namespace lldb_private
 namespace llvm {
 template <typename T> class SmallVectorImpl;
 }
-
 
 namespace lldb_private {
 

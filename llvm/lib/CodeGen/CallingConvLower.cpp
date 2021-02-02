@@ -35,7 +35,7 @@ CCState::CCState(CallingConv::ID CC, bool isVarArg, MachineFunction &mf,
   StackOffset = 0;
 
   clearByValRegsInfo();
-  UsedRegs.resize((TRI.getNumRegs()+31)/32);
+  UsedRegs.resize((TRI.getNumRegs() + 31) / 32);
 }
 
 /// Allocate space on the stack large enough to pass an argument by value.
@@ -45,7 +45,7 @@ void CCState::HandleByVal(unsigned ValNo, MVT ValVT, MVT LocVT,
                           CCValAssign::LocInfo LocInfo, int MinSize,
                           Align MinAlign, ISD::ArgFlagsTy ArgFlags) {
   Align Alignment = ArgFlags.getNonZeroByValAlign();
-  unsigned Size  = ArgFlags.getByValSize();
+  unsigned Size = ArgFlags.getByValSize();
   if (MinSize > (int)Size)
     Size = MinSize;
   if (MinAlign > Alignment)
@@ -86,9 +86,8 @@ bool CCState::IsShadowAllocatedReg(MCRegister Reg) const {
 
 /// Analyze an array of argument values,
 /// incorporating info about the formals into this state.
-void
-CCState::AnalyzeFormalArguments(const SmallVectorImpl<ISD::InputArg> &Ins,
-                                CCAssignFn Fn) {
+void CCState::AnalyzeFormalArguments(const SmallVectorImpl<ISD::InputArg> &Ins,
+                                     CCAssignFn Fn) {
   unsigned NumArgs = Ins.size();
 
   for (unsigned i = 0; i != NumArgs; ++i) {
@@ -183,8 +182,8 @@ void CCState::AnalyzeCallResult(const SmallVectorImpl<ISD::InputArg> &Ins,
 void CCState::AnalyzeCallResult(MVT VT, CCAssignFn Fn) {
   if (Fn(0, VT, VT, CCValAssign::Full, ISD::ArgFlagsTy(), *this)) {
 #ifndef NDEBUG
-    dbgs() << "Call result has unhandled type "
-           << EVT(VT).getEVTString() << '\n';
+    dbgs() << "Call result has unhandled type " << EVT(VT).getEVTString()
+           << '\n';
 #endif
     llvm_unreachable(nullptr);
   }

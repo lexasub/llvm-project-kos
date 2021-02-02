@@ -15,19 +15,17 @@
 
 int A_constructed = 0;
 
-struct A
-{
-    A() {++A_constructed;}
-    ~A() {--A_constructed;}
+struct A {
+  A() { ++A_constructed; }
+  ~A() { --A_constructed; }
 };
 
-int main(int, char**)
-{
-    char buf[sizeof(A)];
+int main(int, char**) {
+  char buf[sizeof(A)];
 
-    A* ap = new(buf) A;
-    assert((char*)ap == buf);
-    assert(A_constructed == 1);
+  A* ap = new (buf) A;
+  assert((char*)ap == buf);
+  assert(A_constructed == 1);
 
   return 0;
 }

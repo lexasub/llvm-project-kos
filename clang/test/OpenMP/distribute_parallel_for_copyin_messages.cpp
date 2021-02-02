@@ -55,7 +55,7 @@ S5 m(4);
 namespace A {
 double x;
 #pragma omp threadprivate(x)
-}
+} // namespace A
 namespace B {
 using A::x;
 }
@@ -120,7 +120,7 @@ T tmain(T argc, S **argv) {
     foo();
 #pragma omp target
 #pragma omp teams
-#pragma omp distribute parallel for copyin(ST<int>::s, B::x) // expected-error {{copyin variable must be threadprivate}}
+#pragma omp distribute parallel for copyin(ST <int>::s, B::x) // expected-error {{copyin variable must be threadprivate}}
   for (i = 0; i < argc; ++i)
     foo();
 }
@@ -184,7 +184,7 @@ int main(int argc, char **argv) {
     foo();
 #pragma omp target
 #pragma omp teams
-#pragma omp distribute parallel for copyin(ST<int>::s, B::x) // expected-error {{copyin variable must be threadprivate}}
+#pragma omp distribute parallel for copyin(ST <int>::s, B::x) // expected-error {{copyin variable must be threadprivate}}
   for (i = 0; i < argc; ++i)
     foo();
 

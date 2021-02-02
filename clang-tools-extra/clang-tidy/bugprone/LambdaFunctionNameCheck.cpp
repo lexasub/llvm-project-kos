@@ -32,12 +32,11 @@ public:
       LambdaFunctionNameCheck::SourceRangeSet *SME)
       : SuppressMacroExpansions(SME) {}
 
-  void MacroExpands(const Token &MacroNameTok,
-                    const MacroDefinition &MD, SourceRange Range,
-                    const MacroArgs *Args) override {
+  void MacroExpands(const Token &MacroNameTok, const MacroDefinition &MD,
+                    SourceRange Range, const MacroArgs *Args) override {
     bool HasFile = false;
     bool HasLine = false;
-    for (const auto& T : MD.getMacroInfo()->tokens()) {
+    for (const auto &T : MD.getMacroInfo()->tokens()) {
       if (T.is(tok::identifier)) {
         StringRef IdentName = T.getIdentifierInfo()->getName();
         if (IdentName == "__FILE__") {
@@ -53,15 +52,14 @@ public:
   }
 
 private:
-  LambdaFunctionNameCheck::SourceRangeSet* SuppressMacroExpansions;
+  LambdaFunctionNameCheck::SourceRangeSet *SuppressMacroExpansions;
 };
 
 } // namespace
 
 void LambdaFunctionNameCheck::registerMatchers(MatchFinder *Finder) {
   // Match on PredefinedExprs inside a lambda.
-  Finder->addMatcher(predefinedExpr(hasAncestor(lambdaExpr())).bind("E"),
-                     this);
+  Finder->addMatcher(predefinedExpr(hasAncestor(lambdaExpr())).bind("E"), this);
 }
 
 void LambdaFunctionNameCheck::registerPPCallbacks(

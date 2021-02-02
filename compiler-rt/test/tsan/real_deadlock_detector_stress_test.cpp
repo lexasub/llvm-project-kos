@@ -1,14 +1,14 @@
 // RUN: %clangxx_tsan -O1 %s %link_libcxx_tsan -o %t && %run %t 2>&1 | FileCheck %s
 
-#include <pthread.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <time.h>
-#include <errno.h>
-#include <vector>
 #include <algorithm>
+#include <errno.h>
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <sys/time.h>
+#include <time.h>
+#include <unistd.h>
+#include <vector>
 
 const int kThreads = 4;
 const int kMutexes = 16 << 10;
@@ -35,7 +35,7 @@ void check(int res) {
 
 bool cas(int *a, int oldval, int newval) {
   return __atomic_compare_exchange_n(a, &oldval, newval, false,
-      __ATOMIC_ACQ_REL, __ATOMIC_RELAXED);
+                                     __ATOMIC_ACQ_REL, __ATOMIC_RELAXED);
 }
 
 void *Thread(void *seed) {
@@ -175,7 +175,7 @@ int main() {
     mtx[i].state = kStateNotInited;
   pthread_t t[kThreads];
   for (int i = 0; i < kThreads; i++)
-    pthread_create(&t[i], 0, Thread, (void*)(unsigned long)rand());
+    pthread_create(&t[i], 0, Thread, (void *)(unsigned long)rand());
   for (int i = 0; i < kThreads; i++)
     pthread_join(t[i], 0);
   fprintf(stderr, "DONE\n");
@@ -184,4 +184,3 @@ int main() {
 
 // CHECK-NOT: WARNING: ThreadSanitizer
 // CHECK: DONE
-

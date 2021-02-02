@@ -5,7 +5,7 @@ struct S {
 };
 
 struct PositiveValueChar {
-  PositiveValueChar() : c0(), c1()/*, c2(), c3()*/ {}
+  PositiveValueChar() : c0(), c1() /*, c2(), c3()*/ {}
   // CHECK-FIXES: PositiveValueChar()  {}
   const char c0;
   // CHECK-MESSAGES: :[[@LINE-1]]:14: warning: use default member initializer for 'c0' [modernize-use-default-member-init]
@@ -184,8 +184,8 @@ struct PositiveString {
 
 template <typename T>
 struct NegativeTemplate {
-    NegativeTemplate() : t() {}
-    T t;
+  NegativeTemplate() : t() {}
+  T t;
 };
 
 NegativeTemplate<int> nti;

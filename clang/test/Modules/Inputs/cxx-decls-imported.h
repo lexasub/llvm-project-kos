@@ -12,6 +12,7 @@ struct HasNontrivialDefaultConstructor {
   // This is necessary to exercise the second static_assert below,
   // because GCC's spec for __has_trivial_constructor is absurd.
   int m;
+
 private:
   int n;
 };
@@ -45,11 +46,17 @@ typedef struct {
 auto name_for_linkage2_inner_a = NameForLinkage2::Inner();
 typedef decltype(name_for_linkage2_inner_a) NameForLinkage2Inner;
 
-namespace Aliased { extern int a; }
+namespace Aliased {
+extern int a;
+}
 namespace Alias = Aliased;
 
-struct InhCtorA { InhCtorA(int); };
-struct InhCtorB : InhCtorA { using InhCtorA::InhCtorA; };
+struct InhCtorA {
+  InhCtorA(int);
+};
+struct InhCtorB : InhCtorA {
+  using InhCtorA::InhCtorA;
+};
 
 struct ClassWithVBases : HasFriends, virtual HasNontrivialDefaultConstructor {
   int n;

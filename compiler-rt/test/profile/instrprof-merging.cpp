@@ -36,11 +36,11 @@ struct A {
 void foo();
 
 void bar() {
-  A x;      // V1: [[@LINE]]{{ *}}|{{ *}}1
+  A x; // V1: [[@LINE]]{{ *}}|{{ *}}1
 }
 
 int main() {
-  foo();    // V1: [[@LINE]]{{ *}}|{{ *}}1
+  foo(); // V1: [[@LINE]]{{ *}}|{{ *}}1
   bar();
   return 0;
 }
@@ -50,7 +50,7 @@ int main() {
 #ifdef _VERSION_2
 
 void foo() {
-  A x{0};   // V2: [[@LINE]]{{ *}}|{{ *}}1
+  A x{0}; // V2: [[@LINE]]{{ *}}|{{ *}}1
 }
 
 #endif // _VERSION_2

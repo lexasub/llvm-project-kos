@@ -22,14 +22,14 @@
 // TypeID - Represent a unique identifier for a type. TypeID allows equality
 // comparisons between different types.
 struct TypeID {
-  friend bool operator==(TypeID const& LHS, TypeID const& RHS)
-  {return LHS.m_id == RHS.m_id; }
-  friend bool operator!=(TypeID const& LHS, TypeID const& RHS)
-  {return LHS.m_id != RHS.m_id; }
-
-  std::string name() const {
-    return m_id;
+  friend bool operator==(TypeID const& LHS, TypeID const& RHS) {
+    return LHS.m_id == RHS.m_id;
   }
+  friend bool operator!=(TypeID const& LHS, TypeID const& RHS) {
+    return LHS.m_id != RHS.m_id;
+  }
+
+  std::string name() const { return m_id; }
 
 private:
   explicit constexpr TypeID(const char* xid) : m_id(xid) {}
@@ -38,7 +38,8 @@ private:
   TypeID& operator=(TypeID const&) = delete;
 
   const char* const m_id;
-  template <class T> friend TypeID const& makeTypeIDImp();
+  template <class T>
+  friend TypeID const& makeTypeIDImp();
 };
 
 // makeTypeID - Return the TypeID for the specified type 'T'.
@@ -56,20 +57,19 @@ template <class T>
 struct TypeWrapper {};
 
 template <class T>
-inline  TypeID const& makeTypeID() {
-  return makeTypeIDImp<TypeWrapper<T>>();
+inline TypeID const& makeTypeID() {
+  return makeTypeIDImp<TypeWrapper<T> >();
 }
 
-template <class ...Args>
+template <class... Args>
 struct ArgumentListID {};
 
 // makeArgumentID - Create and return a unique identifier for a given set
 // of arguments.
-template <class ...Args>
-inline  TypeID const& makeArgumentID() {
-  return makeTypeIDImp<ArgumentListID<Args...>>();
+template <class... Args>
+inline TypeID const& makeArgumentID() {
+  return makeTypeIDImp<ArgumentListID<Args...> >();
 }
-
 
 // COMPARE_TYPEID(...) is a utility macro for generating diagnostics when
 // two typeid's are expected to be equal
@@ -80,8 +80,7 @@ inline bool CompareTypeIDVerbose(const char* LHSString, TypeID const* LHS,
   if (*LHS == *RHS)
     return true;
   std::printf("TypeID's not equal:\n");
-  std::printf("%s: %s\n----------\n%s: %s\n",
-              LHSString, LHS->name().c_str(),
+  std::printf("%s: %s\n----------\n%s: %s\n", LHSString, LHS->name().c_str(),
               RHSString, RHS->name().c_str());
   return false;
 }

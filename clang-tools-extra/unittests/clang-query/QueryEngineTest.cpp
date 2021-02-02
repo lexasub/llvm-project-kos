@@ -93,8 +93,7 @@ TEST_F(QueryEngineTest, Basic) {
 
   Str.clear();
 
-  EXPECT_TRUE(
-      SetExclusiveOutputQuery(&QuerySession::PrintOutput).run(OS, S));
+  EXPECT_TRUE(SetExclusiveOutputQuery(&QuerySession::PrintOutput).run(OS, S));
   EXPECT_TRUE(MatchQuery(FooMatcherString, FooMatcher).run(OS, S));
 
   EXPECT_TRUE(OS.str().find("Binding for \"root\":\nvoid foo1()") !=
@@ -156,6 +155,7 @@ TEST_F(QueryEngineTest, LetAndMatch) {
 
   EXPECT_FALSE(QueryParser::parse("let y hasName(x)", S)->run(OS, S));
   EXPECT_EQ("1:2: Error parsing argument 1 for matcher hasName.\n"
-            "1:10: Value not found: x\n", OS.str());
+            "1:10: Value not found: x\n",
+            OS.str());
   Str.clear();
 }

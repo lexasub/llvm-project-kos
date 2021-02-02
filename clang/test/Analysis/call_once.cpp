@@ -16,17 +16,17 @@ namespace std {
 template <typename>
 class function;
 class function_base {
- public:
+public:
   long field;
 };
 template <typename R, typename... P>
 class function<R(P...)> : function_base {
- public:
-   R operator()(P...) const {
+public:
+  R operator()(P...) const {
 
-     // Read from a super-class necessary to reproduce a crash.
-     bool a = field;
-   }
+    // Read from a super-class necessary to reproduce a crash.
+    bool a = field;
+  }
 };
 
 #ifndef EMULATE_LIBSTDCPP
@@ -41,10 +41,10 @@ typedef struct once_flag_s {
 
 #ifndef EMULATE_LIBCXX03
 template <class Callable, class... Args>
-void call_once(once_flag &o, Callable&& func, Args&&... args) {};
+void call_once(once_flag &o, Callable &&func, Args &&...args){};
 #else
 template <class Callable, class... Args> // libcxx03 call_once
-void call_once(once_flag &o, Callable func, Args&&... args) {};
+void call_once(once_flag &o, Callable func, Args &&...args){};
 #endif
 
 } // namespace std
@@ -76,7 +76,7 @@ void test_called_on_path_inside_no_warning() {
   });
 
 #ifndef EMULATE_LIBCXX03
-  *x = 100; // no-warning
+  *x = 100;                      // no-warning
   clang_analyzer_eval(z == 100); // expected-warning{{TRUE}}
 #endif
 }
@@ -170,7 +170,7 @@ template <class _Rp, class... _ArgTypes>
 struct function<_Rp(_ArgTypes...)> {
   _Rp operator()(_ArgTypes...) const {};
   template <class _Fp>
-  function(_Fp) {};
+  function(_Fp){};
 };
 
 // Note: currently we do not support calls to std::function,
@@ -196,10 +196,11 @@ void test_param_passing_lambda() {
   int x = 120;
   int y = 0;
 
-  std::call_once(flag, [&](int p) {
-    y = p;
-  },
-                 x);
+  std::call_once(
+      flag, [&](int p) {
+        y = p;
+      },
+      x);
 
 #ifndef EMULATE_LIBCXX03
   clang_analyzer_eval(y == 120); // expected-warning{{TRUE}}
@@ -210,10 +211,11 @@ void test_param_passing_lambda_false() {
   std::once_flag flag;
   int x = 120;
 
-  std::call_once(flag, [&](int p) {
-    x = 0;
-  },
-                 x);
+  std::call_once(
+      flag, [&](int p) {
+        x = 0;
+      },
+      x);
 
 #ifndef EMULATE_LIBCXX03
   clang_analyzer_eval(x == 120); // expected-warning{{FALSE}}
@@ -239,14 +241,15 @@ void test_multiparam_passing_lambda() {
   std::once_flag flag;
   int x = 120;
 
-  std::call_once(flag, [&](int a, int b, int c) {
-    x = a + b + c;
-  },
-                 1, 2, 3);
+  std::call_once(
+      flag, [&](int a, int b, int c) {
+        x = a + b + c;
+      },
+      1, 2, 3);
 
 #ifndef EMULATE_LIBCXX03
   clang_analyzer_eval(x == 120); // expected-warning{{FALSE}}
-  clang_analyzer_eval(x == 6); // expected-warning{{TRUE}}
+  clang_analyzer_eval(x == 6);   // expected-warning{{TRUE}}
 #endif
 }
 
@@ -254,10 +257,11 @@ static int global2 = 0;
 void test_param_passing_lambda_global() {
   std::once_flag flag;
   global2 = 0;
-  std::call_once(flag, [&](int a, int b, int c) {
-    global2 = a + b + c;
-  },
-                 1, 2, 3);
+  std::call_once(
+      flag, [&](int a, int b, int c) {
+        global2 = a + b + c;
+      },
+      1, 2, 3);
 #ifndef EMULATE_LIBCXX03
   clang_analyzer_eval(global2 == 6); // expected-warning{{TRUE}}
 #endif
@@ -315,7 +319,8 @@ void test_no_segfault_on_different_impl() {
 void test_lambda_refcapture() {
   static std::once_flag flag;
   int a = 6;
-  std::call_once(flag, [&](int &a) { a = 42; }, a);
+  std::call_once(
+      flag, [&](int &a) { a = 42; }, a);
 #ifndef EMULATE_LIBCXX03
   clang_analyzer_eval(a == 42); // expected-warning{{TRUE}}
 #endif
@@ -324,7 +329,8 @@ void test_lambda_refcapture() {
 void test_lambda_refcapture2() {
   static std::once_flag flag;
   int a = 6;
-  std::call_once(flag, [=](int &a) { a = 42; }, a);
+  std::call_once(
+      flag, [=](int &a) { a = 42; }, a);
 #ifndef EMULATE_LIBCXX03
   clang_analyzer_eval(a == 42); // expected-warning{{TRUE}}
 #endif
@@ -333,7 +339,8 @@ void test_lambda_refcapture2() {
 void test_lambda_fail_refcapture() {
   static std::once_flag flag;
   int a = 6;
-  std::call_once(flag, [=](int a) { a = 42; }, a);
+  std::call_once(
+      flag, [=](int a) { a = 42; }, a);
 #ifndef EMULATE_LIBCXX03
   clang_analyzer_eval(a == 42); // expected-warning{{FALSE}}
 #endif
@@ -382,7 +389,7 @@ int param_passed(int *x) {
   return *x; // no-warning, as std::function is not working yet.
 }
 
-void callback_taking_func_ok(std::function<void(int*)> &innerCallback) {
+void callback_taking_func_ok(std::function<void(int *)> &innerCallback) {
   innerCallback(nullptr);
 }
 

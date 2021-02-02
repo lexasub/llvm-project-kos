@@ -71,7 +71,7 @@ class NestedNameSpecifier : public llvm::FoldingSetNode {
   /// specifier '::'. Otherwise, the pointer is one of
   /// IdentifierInfo*, Namespace*, or Type*, depending on the kind of
   /// specifier as encoded within the prefix.
-  void* Specifier = nullptr;
+  void *Specifier = nullptr;
 
 public:
   /// The kind of specifier that completes this nested name
@@ -138,8 +138,8 @@ public:
 
   /// Builds a nested name specifier that names a type.
   static NestedNameSpecifier *Create(const ASTContext &Context,
-                                     NestedNameSpecifier *Prefix,
-                                     bool Template, const Type *T);
+                                     NestedNameSpecifier *Prefix, bool Template,
+                                     const Type *T);
 
   /// Builds a specifier that consists of just an identifier.
   ///
@@ -271,9 +271,7 @@ public:
 
   /// Retrieve the nested-name-specifier to which this instance
   /// refers.
-  NestedNameSpecifier *getNestedNameSpecifier() const {
-    return Qualifier;
-  }
+  NestedNameSpecifier *getNestedNameSpecifier() const { return Qualifier; }
 
   /// Retrieve the opaque pointer that refers to source-location data.
   void *getOpaqueData() const { return Data; }
@@ -296,15 +294,11 @@ public:
 
   /// Retrieve the location of the beginning of this
   /// nested-name-specifier.
-  SourceLocation getBeginLoc() const {
-    return getSourceRange().getBegin();
-  }
+  SourceLocation getBeginLoc() const { return getSourceRange().getBegin(); }
 
   /// Retrieve the location of the end of this
   /// nested-name-specifier.
-  SourceLocation getEndLoc() const {
-    return getSourceRange().getEnd();
-  }
+  SourceLocation getEndLoc() const { return getSourceRange().getEnd(); }
 
   /// Retrieve the location of the beginning of this
   /// component of the nested-name-specifier.
@@ -339,13 +333,11 @@ public:
   /// nested-name-specifier.
   unsigned getDataLength() const { return getDataLength(Qualifier); }
 
-  friend bool operator==(NestedNameSpecifierLoc X,
-                         NestedNameSpecifierLoc Y) {
+  friend bool operator==(NestedNameSpecifierLoc X, NestedNameSpecifierLoc Y) {
     return X.Qualifier == Y.Qualifier && X.Data == Y.Data;
   }
 
-  friend bool operator!=(NestedNameSpecifierLoc X,
-                         NestedNameSpecifierLoc Y) {
+  friend bool operator!=(NestedNameSpecifierLoc X, NestedNameSpecifierLoc Y) {
     return !(X == Y);
   }
 };

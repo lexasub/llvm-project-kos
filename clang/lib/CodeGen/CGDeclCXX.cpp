@@ -27,10 +27,10 @@ using namespace CodeGen;
 
 static void EmitDeclInit(CodeGenFunction &CGF, const VarDecl &D,
                          ConstantAddress DeclPtr) {
-  assert(
-      (D.hasGlobalStorage() ||
-       (D.hasLocalStorage() && CGF.getContext().getLangOpts().OpenCLCPlusPlus)) &&
-      "VarDecl must have global or local (in the case of OpenCL) storage!");
+  assert((D.hasGlobalStorage() ||
+          (D.hasLocalStorage() &&
+           CGF.getContext().getLangOpts().OpenCLCPlusPlus)) &&
+         "VarDecl must have global or local (in the case of OpenCL) storage!");
   assert(!D.getType()->isReferenceType() &&
          "Should not call EmitDeclInit on a reference!");
 
@@ -134,11 +134,11 @@ static void EmitDeclDestroy(CodeGenFunction &CGF, const VarDecl &D,
       Argument = llvm::ConstantExpr::getBitCast(
           Addr.getPointer(), CGF.getTypes().ConvertType(Type)->getPointerTo());
     }
-  // Otherwise, the standard logic requires a helper function.
+    // Otherwise, the standard logic requires a helper function.
   } else {
-    Func = CodeGenFunction(CGM)
-           .generateDestroyHelper(Addr, Type, CGF.getDestroyer(DtorKind),
-                                  CGF.needsEHCleanup(DtorKind), &D);
+    Func = CodeGenFunction(CGM).generateDestroyHelper(
+        Addr, Type, CGF.getDestroyer(DtorKind), CGF.needsEHCleanup(DtorKind),
+        &D);
     Argument = llvm::Constant::getNullValue(CGF.Int8PtrTy);
   }
 
@@ -166,8 +166,8 @@ void CodeGenFunction::EmitInvariantStart(llvm::Constant *Addr, CharUnits Size) {
 
   // Emit a call with the size in bytes of the object.
   uint64_t Width = Size.getQuantity();
-  llvm::Value *Args[2] = { llvm::ConstantInt::getSigned(Int64Ty, Width),
-                           llvm::ConstantExpr::getBitCast(Addr, Int8PtrTy)};
+  llvm::Value *Args[2] = {llvm::ConstantInt::getSigned(Int64Ty, Width),
+                          llvm::ConstantExpr::getBitCast(Addr, Int8PtrTy)};
   Builder.CreateCall(InvariantStart, Args);
 }
 
@@ -220,7 +220,7 @@ void CodeGenFunction::EmitCXXGlobalVarDeclInit(const VarDecl &D,
   }
 
   assert(PerformInit && "cannot have constant initializer which needs "
-         "destruction for reference");
+                        "destruction for reference");
   RValue RV = EmitReferenceBindingToExpr(Init);
   EmitStoreOfScalar(RV.getScalarVal(), DeclAddr, false, T);
 }
@@ -448,10 +448,9 @@ void CodeGenModule::EmitPointerToInitFunc(const VarDecl *D,
     PtrArray->setComdat(C);
 }
 
-void
-CodeGenModule::EmitCXXGlobalVarDeclInitFunc(const VarDecl *D,
-                                            llvm::GlobalVariable *Addr,
-                                            bool PerformInit) {
+void CodeGenModule::EmitCXXGlobalVarDeclInitFunc(const VarDecl *D,
+                                                 llvm::GlobalVariable *Addr,
+                                                 bool PerformInit) {
 
   // According to E.2.3.1 in CUDA-7.5 Programming guide: __device__,
   // __constant__ and __shared__ variables defined in namespace scope,
@@ -566,8 +565,7 @@ static SmallString<128> getTransformedFileName(llvm::Module &M) {
   return FileName;
 }
 
-void
-CodeGenModule::EmitCXXGlobalInitFunc() {
+void CodeGenModule::EmitCXXGlobalInitFunc() {
   while (!CXXGlobalInits.empty() && !CXXGlobalInits.back())
     CXXGlobalInits.pop_back();
 
@@ -589,11 +587,12 @@ CodeGenModule::EmitCXXGlobalInitFunc() {
     // Iterate over "chunks" of ctors with same priority and emit each chunk
     // into separate function. Note - everything is sorted first by priority,
     // second - by lex order, so we emit ctor functions in proper order.
-    for (SmallVectorImpl<GlobalInitData >::iterator
-           I = PrioritizedCXXGlobalInits.begin(),
-           E = PrioritizedCXXGlobalInits.end(); I != E; ) {
-      SmallVectorImpl<GlobalInitData >::iterator
-        PrioE = std::upper_bound(I + 1, E, *I, GlobalInitPriorityCmp());
+    for (SmallVectorImpl<GlobalInitData>::iterator
+             I = PrioritizedCXXGlobalInits.begin(),
+             E = PrioritizedCXXGlobalInits.end();
+         I != E;) {
+      SmallVectorImpl<GlobalInitData>::iterator PrioE =
+          std::upper_bound(I + 1, E, *I, GlobalInitPriorityCmp());
 
       LocalCXXGlobalInits.clear();
       unsigned Priority = I->first.priority;
@@ -601,7 +600,8 @@ CodeGenModule::EmitCXXGlobalInitFunc() {
       // sure the function names are also ordered as priorities.
       std::string PrioritySuffix = llvm::utostr(Priority);
       // Priority is always <= 65535 (enforced by sema).
-      PrioritySuffix = std::string(6-PrioritySuffix.size(), '0')+PrioritySuffix;
+      PrioritySuffix =
+          std::string(6 - PrioritySuffix.size(), '0') + PrioritySuffix;
       llvm::Function *Fn = CreateGlobalInitOrCleanUpFunction(
           FTy, "_GLOBAL__I_" + PrioritySuffix, FI);
 
@@ -666,10 +666,9 @@ void CodeGenModule::EmitCXXGlobalCleanUpFunc() {
 }
 
 /// Emit the code necessary to initialize the given global variable.
-void CodeGenFunction::GenerateCXXGlobalVarDeclInitFunc(llvm::Function *Fn,
-                                                       const VarDecl *D,
-                                                 llvm::GlobalVariable *Addr,
-                                                       bool PerformInit) {
+void CodeGenFunction::GenerateCXXGlobalVarDeclInitFunc(
+    llvm::Function *Fn, const VarDecl *D, llvm::GlobalVariable *Addr,
+    bool PerformInit) {
   // Check if we need to emit debug info for variable initializer.
   if (D->hasAttr<NoDebugAttr>())
     DebugInfo = nullptr; // disable debug info indefinitely for this function
@@ -700,10 +699,9 @@ void CodeGenFunction::GenerateCXXGlobalVarDeclInitFunc(llvm::Function *Fn,
   FinishFunction();
 }
 
-void
-CodeGenFunction::GenerateCXXGlobalInitFunc(llvm::Function *Fn,
-                                           ArrayRef<llvm::Function *> Decls,
-                                           ConstantAddress Guard) {
+void CodeGenFunction::GenerateCXXGlobalInitFunc(
+    llvm::Function *Fn, ArrayRef<llvm::Function *> Decls,
+    ConstantAddress Guard) {
   {
     auto NL = ApplyDebugLocation::CreateEmpty(*this);
     StartFunction(GlobalDecl(), getContext().VoidTy, Fn,
@@ -716,8 +714,8 @@ CodeGenFunction::GenerateCXXGlobalInitFunc(llvm::Function *Fn,
       // If we have a guard variable, check whether we've already performed
       // these initializations. This happens for TLS initialization functions.
       llvm::Value *GuardVal = Builder.CreateLoad(Guard);
-      llvm::Value *Uninit = Builder.CreateIsNull(GuardVal,
-                                                 "guard.uninitialized");
+      llvm::Value *Uninit =
+          Builder.CreateIsNull(GuardVal, "guard.uninitialized");
       llvm::BasicBlock *InitBlock = createBasicBlock("init");
       ExitBlock = createBasicBlock("exit");
       EmitCXXGuardedInitBranch(Uninit, InitBlock, ExitBlock,
@@ -726,7 +724,8 @@ CodeGenFunction::GenerateCXXGlobalInitFunc(llvm::Function *Fn,
       // Mark as initialized before initializing anything else. If the
       // initializers use previously-initialized thread_local vars, that's
       // probably supposed to be OK, but the standard doesn't say.
-      Builder.CreateStore(llvm::ConstantInt::get(GuardVal->getType(),1), Guard);
+      Builder.CreateStore(llvm::ConstantInt::get(GuardVal->getType(), 1),
+                          Guard);
 
       // The guard variable can't ever change again.
       EmitInvariantStart(
@@ -806,8 +805,8 @@ llvm::Function *CodeGenFunction::generateDestroyHelper(
                         ImplicitParamDecl::Other);
   args.push_back(&Dst);
 
-  const CGFunctionInfo &FI =
-    CGM.getTypes().arrangeBuiltinFunctionDeclaration(getContext().VoidTy, args);
+  const CGFunctionInfo &FI = CGM.getTypes().arrangeBuiltinFunctionDeclaration(
+      getContext().VoidTy, args);
   llvm::FunctionType *FTy = CGM.getTypes().GetFunctionType(FI);
   llvm::Function *fn = CGM.CreateGlobalInitOrCleanUpFunction(
       FTy, "__cxx_global_array_dtor", FI, VD->getLocation());

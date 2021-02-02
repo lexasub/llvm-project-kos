@@ -20,11 +20,10 @@
 #include <strstream>
 #include <cassert>
 
-int main(int, char**)
-{
+int main(int, char**) {
 #if TEST_STD_VER <= 14
-    std::strstream::seek_dir b = std::strstream::cur;
-    assert(b == std::ios::cur);
+  std::strstream::seek_dir b = std::strstream::cur;
+  assert(b == std::ios::cur);
 #endif
 
   return 0;

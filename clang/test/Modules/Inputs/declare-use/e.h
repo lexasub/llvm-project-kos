@@ -3,5 +3,5 @@
 #define HEADER "a.h"
 #include HEADER
 #include "b.h"
-const int e = a*b;
+const int e = a * b;
 #endif

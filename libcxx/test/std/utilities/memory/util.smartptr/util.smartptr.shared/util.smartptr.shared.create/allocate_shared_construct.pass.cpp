@@ -47,8 +47,8 @@ public:
 
   void deallocate(pointer p, std::ptrdiff_t) { return ::operator delete(p); }
 
-  template <typename ...Args>
-  void construct(T* p, Args&& ...args) {
+  template <typename... Args>
+  void construct(T* p, Args&&... args) {
     construct_called = true;
     destroy_called = false;
     allocator_id = id;

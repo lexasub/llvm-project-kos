@@ -6,7 +6,7 @@ struct Main {
 };
 
 Main::Main() : x(47) {
-    bool some_code = x == 47; // !BR_main
+  bool some_code = x == 47; // !BR_main
 }
 
 Main MainObj;

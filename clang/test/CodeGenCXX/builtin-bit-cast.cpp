@@ -30,9 +30,9 @@ struct two_floats {
   float y;
 };
 
-two_floats test_aggregate_record(two_ints& ti) {
+two_floats test_aggregate_record(two_ints &ti) {
   // CHECK-LABEL: define{{.*}} <2 x float> @_Z21test_aggregate_recordR8two_int
-   return __builtin_bit_cast(two_floats, ti);
+  return __builtin_bit_cast(two_floats, ti);
 
   // CHECK: [[RETVAL:%.*]] = alloca %struct.two_floats, align 4
   // CHECK: [[TI:%.*]] = alloca %struct.two_ints*, align 8

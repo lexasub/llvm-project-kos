@@ -1,15 +1,15 @@
 namespace outer {
-  namespace inner {
-    template<typename T>
-    struct vector {
-      typedef T* iterator;
-    };
-  }
-}
+namespace inner {
+template <typename T>
+struct vector {
+  typedef T *iterator;
+};
+} // namespace inner
+} // namespace outer
 
 namespace outer_alias = outer;
 
-struct X { };
+struct X {};
 
 using outer_alias::inner::vector;
 
@@ -18,23 +18,23 @@ struct X_vector : outer_alias::inner::vector<X> {
 };
 
 namespace outer {
-  namespace inner {
-    template<typename T, unsigned N>
-    struct array {
-      void foo();
-      static int max_size;
-    };
-  }
-}
+namespace inner {
+template <typename T, unsigned N>
+struct array {
+  void foo();
+  static int max_size;
+};
+} // namespace inner
+} // namespace outer
 
-template<typename T, unsigned N>
+template <typename T, unsigned N>
 void outer::inner::array<T, N>::foo() {
 }
 
-template<typename T, unsigned N>
+template <typename T, unsigned N>
 int outer::inner::array<T, N>::max_size = 17;
 
-template<typename T>
+template <typename T>
 struct X2 : outer::inner::vector<T> {
   typedef T type;
   using typename outer::inner::vector<type>::iterator;
@@ -42,16 +42,16 @@ struct X2 : outer::inner::vector<T> {
 };
 
 namespace outer {
-  namespace inner {
-    namespace secret {
-    }
-  }
+namespace inner {
+namespace secret {
 }
+} // namespace inner
+} // namespace outer
 
 using namespace outer_alias::inner::secret;
 namespace super_secret = outer_alias::inner::secret;
 
-template<typename T>
+template <typename T>
 struct X3 {
   void f(T *t) {
     t->::outer_alias::inner::template vector<T>::~vector<T>();
@@ -59,13 +59,13 @@ struct X3 {
 };
 
 namespace outer {
-  namespace inner {
-    void f(int);
-    void f(double);
-  }
-}
+namespace inner {
+void f(int);
+void f(double);
+} // namespace inner
+} // namespace outer
 
-template<typename T>
+template <typename T>
 struct X4 {
   typedef T type;
   void g(int);
@@ -79,7 +79,7 @@ struct X4 {
 };
 
 typedef int Integer;
-template<>
+template <>
 struct X4<Integer> {
   typedef Integer type;
 
@@ -93,17 +93,16 @@ struct X4<Integer> {
   }
 };
 
-
-template<typename T>
+template <typename T>
 struct X5 {
   typedef T type;
   typedef typename outer_alias::inner::vector<type>::iterator iter_type;
   typedef typename outer_alias::inner::vector<int>::iterator int_ptr_type;
 };
 
-template<typename T>
+template <typename T>
 struct X6 {
-  typedef T* type;
+  typedef T *type;
   typedef typename outer_alias::inner::vector<type>::template rebind<type> type1;
   typedef typename outer_alias::inner::vector<type>::template rebind<type>::other type2;
   typedef class outer_alias::inner::vector<type>::template rebind<type> type3;
@@ -111,15 +110,15 @@ struct X6 {
 };
 
 namespace outer {
-  namespace inner {
-    template<typename T, template<class> class TT>
-    struct apply_meta {
-      typedef typename TT<T>::type type;
-    };
-  }
-}
+namespace inner {
+template <typename T, template <class> class TT>
+struct apply_meta {
+  typedef typename TT<T>::type type;
+};
+} // namespace inner
+} // namespace outer
 
-template<typename T, typename U>
+template <typename T, typename U>
 struct X7 {
   typedef T T_type;
   typedef U U_type;
@@ -132,7 +131,7 @@ struct X8 {
 
 struct X9 : X8 {
   typedef X8 inherited;
-  void f() { 
+  void f() {
     inherited::f();
   }
 };
@@ -156,7 +155,6 @@ struct X9 : X8 {
 // CHECK: Punctuation: "<" [16:45 - 16:46] C++ base class specifier=outer_alias::inner::vector<X>:4:12 [access=public isVirtual=false]
 // CHECK: Identifier: "X" [16:46 - 16:47] TypeRef=struct X:12:8
 // CHECK: Punctuation: ">" [16:47 - 16:48] C++ base class specifier=outer_alias::inner::vector<X>:4:12 [access=public isVirtual=false]
-
 
 // CHECK: Keyword: "using" [17:3 - 17:8] UsingDeclaration=iterator[5:18]
 // CHECK: Identifier: "outer_alias" [17:9 - 17:20] NamespaceRef=outer_alias:10:11

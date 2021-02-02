@@ -20,7 +20,6 @@
 
 #include "test_macros.h"
 
-
 template <class T, size_t Size>
 struct MyArray {
   T elems[Size];
@@ -44,17 +43,13 @@ void test_type() {
 }
 
 #ifdef __STDCPP_DEFAULT_NEW_ALIGNMENT__
-struct TEST_ALIGNAS(__STDCPP_DEFAULT_NEW_ALIGNMENT__ * 2) TestType1 {
-
-};
+struct TEST_ALIGNAS(__STDCPP_DEFAULT_NEW_ALIGNMENT__ * 2) TestType1 {};
 
 struct TEST_ALIGNAS(__STDCPP_DEFAULT_NEW_ALIGNMENT__ * 2) TestType2 {
   char data[1000];
 };
 #else
-struct TEST_ALIGNAS(TEST_ALIGNOF(std::max_align_t) * 2) TestType1 {
-
-};
+struct TEST_ALIGNAS(TEST_ALIGNOF(std::max_align_t) * 2) TestType1 {};
 
 struct TEST_ALIGNAS(TEST_ALIGNOF(std::max_align_t) * 2) TestType2 {
   char data[1000];

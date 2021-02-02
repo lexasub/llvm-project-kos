@@ -1,4 +1,4 @@
 #include "Base.h"
-@interface DVTSourceModel(Additions)
+@interface DVTSourceModel (Additions)
 - (int)test:(int)item;
 @end

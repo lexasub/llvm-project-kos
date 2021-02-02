@@ -53,9 +53,8 @@ void InitializeShadowMemory() {
   // a program uses a small part of large mmap. On some programs
   // we see 20% memory usage reduction without huge pages for this range.
   DontDumpShadow(ShadowBeg(), ShadowEnd() - ShadowBeg());
-  DPrintf("memory shadow: %zx-%zx (%zuGB)\n",
-      ShadowBeg(), ShadowEnd(),
-      (ShadowEnd() - ShadowBeg()) >> 30);
+  DPrintf("memory shadow: %zx-%zx (%zuGB)\n", ShadowBeg(), ShadowEnd(),
+          (ShadowEnd() - ShadowBeg()) >> 30);
 
   // Map meta shadow.
   const uptr meta = MetaShadowBeg();
@@ -66,8 +65,8 @@ void InitializeShadowMemory() {
     Die();
   }
   DontDumpShadow(meta, meta_size);
-  DPrintf("meta shadow: %zx-%zx (%zuGB)\n",
-      meta, meta + meta_size, meta_size >> 30);
+  DPrintf("meta shadow: %zx-%zx (%zuGB)\n", meta, meta + meta_size,
+          meta_size >> 30);
 
   InitializeShadowMemoryPlatform();
 }
@@ -88,8 +87,10 @@ void CheckAndProtect() {
   MemoryMappingLayout proc_maps(true);
   MemoryMappedSegment segment;
   while (proc_maps.Next(&segment)) {
-    if (IsAppMem(segment.start)) continue;
-    if (segment.start >= HeapMemEnd() && segment.start < HeapEnd()) continue;
+    if (IsAppMem(segment.start))
+      continue;
+    if (segment.start >= HeapMemEnd() && segment.start < HeapEnd())
+      continue;
     if (segment.protection == 0)  // Zero page or mprotected.
       continue;
     if (segment.start >= VdsoBeg())  // vdso

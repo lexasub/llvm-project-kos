@@ -209,7 +209,7 @@ struct ParsedBinaryOperator {
     SelectedOperands.clear();
 
     if (const BinaryOperator *Op =
-        llvm::dyn_cast_or_null<BinaryOperator>(N.ASTNode.get<Expr>())) {
+            llvm::dyn_cast_or_null<BinaryOperator>(N.ASTNode.get<Expr>())) {
       Kind = Op->getOpcode();
       ExprLoc = Op->getExprLoc();
       SelectedOperands = N.Children;
@@ -224,7 +224,7 @@ struct ParsedBinaryOperator {
       Kind = BinaryOperator::getOverloadedOpcode(Op->getOperator());
       ExprLoc = Op->getExprLoc();
       // Not all children are args, there's also the callee (operator).
-      for (const auto* Child : N.Children) {
+      for (const auto *Child : N.Children) {
         const Expr *E = Child->ASTNode.get<Expr>();
         assert(E && "callee and args should be Exprs!");
         if (E == Op->getArg(0) || E == Op->getArg(1))
@@ -345,15 +345,15 @@ bool childExprIsStmt(const Stmt *Outer, const Expr *Inner) {
   if (llvm::isa<SwitchCase>(Outer))
     return true;
   // Control flow statements use condition etc, but not the body.
-  if (const auto* WS = llvm::dyn_cast<WhileStmt>(Outer))
+  if (const auto *WS = llvm::dyn_cast<WhileStmt>(Outer))
     return Inner == WS->getBody();
-  if (const auto* DS = llvm::dyn_cast<DoStmt>(Outer))
+  if (const auto *DS = llvm::dyn_cast<DoStmt>(Outer))
     return Inner == DS->getBody();
-  if (const auto* FS = llvm::dyn_cast<ForStmt>(Outer))
+  if (const auto *FS = llvm::dyn_cast<ForStmt>(Outer))
     return Inner == FS->getBody();
-  if (const auto* FS = llvm::dyn_cast<CXXForRangeStmt>(Outer))
+  if (const auto *FS = llvm::dyn_cast<CXXForRangeStmt>(Outer))
     return Inner == FS->getBody();
-  if (const auto* IS = llvm::dyn_cast<IfStmt>(Outer))
+  if (const auto *IS = llvm::dyn_cast<IfStmt>(Outer))
     return Inner == IS->getThen() || Inner == IS->getElse();
   // Assume all other cases may be actual expressions.
   // This includes the important case of subexpressions (where Outer is Expr).

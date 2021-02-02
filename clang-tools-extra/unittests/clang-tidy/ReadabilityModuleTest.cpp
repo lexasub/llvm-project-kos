@@ -488,9 +488,9 @@ TEST(BracesAroundStatementsCheckTest, ImplicitCastInReturn) {
   Opts.CheckOptions["test-check-0.ShortStatementLines"] = "1";
 
   StringRef Input = "const char *f() {\n"
-                              "  if (true) return \"\";\n"
-                              "  return \"abc\";\n"
-                              "}\n";
+                    "  if (true) return \"\";\n"
+                    "  return \"abc\";\n"
+                    "}\n";
   EXPECT_NO_CHANGES_WITH_OPTS(BracesAroundStatementsCheck, Opts, Input);
   EXPECT_EQ("const char *f() {\n"
             "  if (true) { return \"\";\n"

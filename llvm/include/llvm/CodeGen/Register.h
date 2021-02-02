@@ -20,8 +20,8 @@ class Register {
   unsigned Reg;
 
 public:
-  constexpr Register(unsigned Val = 0): Reg(Val) {}
-  constexpr Register(MCRegister Val): Reg(Val) {}
+  constexpr Register(unsigned Val = 0) : Reg(Val) {}
+  constexpr Register(MCRegister Val) : Reg(Val) {}
 
   // Register numbers can represent physical registers, virtual registers, and
   // sometimes stack slots. The unsigned values are divided into these ranges:
@@ -41,9 +41,7 @@ public:
   /// returns true if Reg is in the range used for stack slots.
   ///
   /// FIXME: remove in favor of member.
-  static bool isStackSlot(unsigned Reg) {
-    return MCRegister::isStackSlot(Reg);
-  }
+  static bool isStackSlot(unsigned Reg) { return MCRegister::isStackSlot(Reg); }
 
   /// Return true if this is a stack slot.
   bool isStack() const { return MCRegister::isStackSlot(Reg); }
@@ -88,31 +86,21 @@ public:
 
   /// Return true if the specified register number is in the virtual register
   /// namespace.
-  bool isVirtual() const {
-    return isVirtualRegister(Reg);
-  }
+  bool isVirtual() const { return isVirtualRegister(Reg); }
 
   /// Return true if the specified register number is in the physical register
   /// namespace.
-  bool isPhysical() const {
-    return isPhysicalRegister(Reg);
-  }
+  bool isPhysical() const { return isPhysicalRegister(Reg); }
 
   /// Convert a virtual register number to a 0-based index. The first virtual
   /// register in a function will get the index 0.
-  unsigned virtRegIndex() const {
-    return virtReg2Index(Reg);
-  }
+  unsigned virtRegIndex() const { return virtReg2Index(Reg); }
 
-  constexpr operator unsigned() const {
-    return Reg;
-  }
+  constexpr operator unsigned() const { return Reg; }
 
   unsigned id() const { return Reg; }
 
-  operator MCRegister() const {
-    return MCRegister(Reg);
-  }
+  operator MCRegister() const { return MCRegister(Reg); }
 
   /// Utility to check-convert this value to a MCRegister. The caller is
   /// expected to have already validated that this Register is, indeed,
@@ -145,7 +133,7 @@ public:
 };
 
 // Provide DenseMapInfo for Register
-template<> struct DenseMapInfo<Register> {
+template <> struct DenseMapInfo<Register> {
   static inline unsigned getEmptyKey() {
     return DenseMapInfo<unsigned>::getEmptyKey();
   }
@@ -160,6 +148,6 @@ template<> struct DenseMapInfo<Register> {
   }
 };
 
-}
+} // namespace llvm
 
 #endif // ifndef LLVM_CODEGEN_REGISTER_H

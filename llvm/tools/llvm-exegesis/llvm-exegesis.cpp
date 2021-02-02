@@ -183,7 +183,7 @@ static cl::opt<bool>
 static ExitOnError ExitOnErr("llvm-exegesis error: ");
 
 // Helper function that logs the error(s) and exits.
-template <typename... ArgTs> static void ExitWithError(ArgTs &&... Args) {
+template <typename... ArgTs> static void ExitWithError(ArgTs &&...Args) {
   ExitOnErr(make_error<Failure>(std::forward<ArgTs>(Args)...));
 }
 

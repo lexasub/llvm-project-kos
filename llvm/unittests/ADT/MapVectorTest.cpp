@@ -186,7 +186,7 @@ TYPED_TEST(MapVectorMappedTypeTest, DifferentDenseMap) {
   EXPECT_EQ(R.first->second, 2);
   EXPECT_FALSE(R.second);
 
-  int& value = MV[4];
+  int &value = MV[4];
   EXPECT_EQ(value, 0);
   value = 5;
 

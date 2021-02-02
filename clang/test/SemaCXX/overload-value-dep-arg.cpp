@@ -2,13 +2,12 @@
 // expected-no-diagnostics
 
 class C {
-  C(void*);
+  C(void *);
 };
 
-int f(const C&);
+int f(const C &);
 int f(unsigned long);
 
-template<typename T> int f(const T* t) {
+template <typename T> int f(const T *t) {
   return f(reinterpret_cast<unsigned long>(t));
 }
-

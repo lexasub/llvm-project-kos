@@ -6,7 +6,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-
 // <string_view>
 
 // template<class Allocator>
@@ -19,15 +18,15 @@
 struct dummy_char_traits : public std::char_traits<char> {};
 
 int main(int, char**) {
-    using string_view = std::basic_string_view<char, dummy_char_traits>;
-    using string      = std::              basic_string     <char>;
+  using string_view = std::basic_string_view<char, dummy_char_traits>;
+  using string = std::basic_string<char>;
 
-    {
+  {
     string s{"QBCDE"};
-    string_view sv1 ( s );
-    assert ( sv1.size() == s.size());
-    assert ( sv1.data() == s.data());
-    }
+    string_view sv1(s);
+    assert(sv1.size() == s.size());
+    assert(sv1.data() == s.data());
+  }
 
   return 0;
 }

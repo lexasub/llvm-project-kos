@@ -67,7 +67,6 @@ protected:
   bool IsVMX(unsigned reg);
 
   bool IsVSX(unsigned reg);
-
 };
 
 #endif // LLDB_SOURCE_PLUGINS_PROCESS_UTILITY_REGISTERCONTEXTPOSIX_PPC64LE_H

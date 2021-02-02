@@ -4,11 +4,11 @@
 #include <stdint.h>
 
 typedef union {
-	long double ld;
-	struct {
-		double hi;
-		double lo;
-	};
+  long double ld;
+  struct {
+    double hi;
+    double lo;
+  };
 } DD;
 
 #endif // __DD_HEADER

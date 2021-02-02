@@ -7,7 +7,7 @@ class T_A;
 // CHECK-NOTES: note: a declaration of 'T_A' is found here
 // CHECK-NOTES: :[[@LINE-3]]:7: warning: no definition found for 'T_A', but a definition with the same name 'T_A' found in another namespace '(global)' [bugprone-forward-declaration-namespace]
 // CHECK-NOTES: note: a definition of 'T_A' is found here
-}
+} // namespace
 
 namespace na {
 // This is a declaration in a wrong namespace.
@@ -16,7 +16,7 @@ class T_A;
 // CHECK-NOTES: note: a declaration of 'T_A' is found here
 // CHECK-NOTES: :[[@LINE-3]]:7: warning: no definition found for 'T_A', but a definition with the same name 'T_A' found in another namespace '(global)'
 // CHECK-NOTES: note: a definition of 'T_A' is found here
-}
+} // namespace na
 
 class T_A;
 
@@ -32,9 +32,9 @@ namespace {
 namespace nq {
 namespace {
 class NESTED {};
-}
-}
-}
+} // namespace
+} // namespace nq
+} // namespace
 
 namespace na {
 class T_B;
@@ -42,7 +42,7 @@ class T_B;
 // CHECK-NOTES: note: a declaration of 'T_B' is found here
 // CHECK-NOTES: :[[@LINE-3]]:7: warning: no definition found for 'T_B', but a definition with the same name 'T_B' found in another namespace 'nb'
 // CHECK-NOTES: note: a definition of 'T_B' is found here
-}
+} // namespace na
 
 namespace nb {
 class T_B;
@@ -52,7 +52,7 @@ namespace nb {
 class T_B {
   int x;
 };
-}
+} // namespace nb
 
 namespace na {
 class T_B;
@@ -60,7 +60,7 @@ class T_B;
 // CHECK-NOTES: note: a declaration of 'T_B' is found here
 // CHECK-NOTES: :[[@LINE-3]]:7: warning: no definition found for 'T_B', but a definition with the same name 'T_B' found in another namespace 'nb'
 // CHECK-NOTES: note: a definition of 'T_B' is found here
-}
+} // namespace na
 
 // A simple forward declaration. Although it is never used, but no declaration
 // with the same name is found in other namespace.
@@ -69,7 +69,7 @@ class OUTSIDER;
 namespace na {
 // This class is referenced declaration, we don't generate warning.
 class OUTSIDER_1;
-}
+} // namespace na
 
 void f(na::OUTSIDER_1);
 
@@ -80,38 +80,37 @@ class OUTSIDER_1;
 class OOP {
   friend struct OUTSIDER_1;
 };
-}
+} // namespace nc
 
 namespace nd {
 class OUTSIDER_1;
 void f(OUTSIDER_1 *);
-}
+} // namespace nd
 
 namespace nb {
 class OUTSIDER_1;
 // CHECK-NOTES: :[[@LINE-1]]:7: warning: declaration 'OUTSIDER_1' is never referenced, but a declaration with the same name found in another namespace 'na'
 // CHECK-NOTES: note: a declaration of 'OUTSIDER_1' is found here
-}
-
+} // namespace nb
 
 namespace na {
-template<typename T>
+template <typename T>
 class T_C;
 }
 
 namespace nb {
 // FIXME: this is an error, but we don't consider template class declaration
 // now.
-template<typename T>
+template <typename T>
 class T_C;
-}
+} // namespace nb
 
 namespace na {
-template<typename T>
+template <typename T>
 class T_C {
   int x;
 };
-}
+} // namespace na
 
 namespace na {
 
@@ -123,7 +122,7 @@ class T_TEMP {
 
 // We ignore class template specialization.
 template class T_TEMP<char>;
-}
+} // namespace na
 
 namespace nb {
 
@@ -135,22 +134,21 @@ class T_TEMP_1 {
 
 // We ignore class template specialization.
 extern template class T_TEMP_1<char>;
-}
+} // namespace nb
 
 namespace nd {
 class D;
 // CHECK-NOTES: :[[@LINE-1]]:7: warning: declaration 'D' is never referenced, but a declaration with the same name found in another namespace 'nd::ne'
 // CHECK-NOTES: note: a declaration of 'D' is found here
-}
+} // namespace nd
 
 namespace nd {
 namespace ne {
 class D;
 }
-}
+} // namespace nd
 
 int f(nd::ne::D &d);
-
 
 // This should be ignored by the check.
 template <typename... Args>

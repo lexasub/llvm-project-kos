@@ -19,11 +19,11 @@
 #elif SANITIZER_RTEMS
 #include "sanitizer_symbolizer_rtems.h"
 #endif
-#include "sanitizer_stacktrace.h"
-#include "sanitizer_symbolizer.h"
-
 #include <limits.h>
 #include <unwind.h>
+
+#include "sanitizer_stacktrace.h"
+#include "sanitizer_symbolizer.h"
 
 namespace __sanitizer {
 
@@ -116,7 +116,8 @@ _Unwind_Reason_Code Unwind_Trace(struct _Unwind_Context *ctx, void *param) {
   UnwindTraceArg *arg = static_cast<UnwindTraceArg *>(param);
   CHECK_LT(arg->stack->size, arg->max_depth);
   uptr pc = _Unwind_GetIP(ctx);
-  if (pc < PAGE_SIZE) return _URC_NORMAL_STOP;
+  if (pc < PAGE_SIZE)
+    return _URC_NORMAL_STOP;
   arg->stack->trace_buffer[arg->stack->size++] = pc;
   return (arg->stack->size == arg->max_depth ? _URC_NORMAL_STOP
                                              : _URC_NO_REASON);

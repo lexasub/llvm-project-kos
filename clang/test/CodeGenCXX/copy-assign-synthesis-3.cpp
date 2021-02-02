@@ -2,7 +2,7 @@
 // expected-no-diagnostics
 
 struct A {
-  A& operator=(A&);
+  A &operator=(A &);
 };
 
 struct B {
@@ -19,7 +19,6 @@ struct C {
   A g[2];
   B h[2];
 };
-void a(C& x, C& y) {
+void a(C &x, C &y) {
   x = y;
 }
-

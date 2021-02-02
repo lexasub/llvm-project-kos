@@ -14,6 +14,8 @@
 #include <ostream>
 #include <utility>
 
-struct Foo { };
+struct Foo {};
 
-using X = decltype(std::declval<std::ostream>() << std::declval<Foo const&>()); // expected-error {{invalid operands to binary expression}}
+using X = decltype(
+    std::declval<std::ostream>() << std::declval<
+        Foo const&>()); // expected-error {{invalid operands to binary expression}}

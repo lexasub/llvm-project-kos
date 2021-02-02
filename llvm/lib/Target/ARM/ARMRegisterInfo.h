@@ -21,6 +21,7 @@ class ARMSubtarget;
 
 struct ARMRegisterInfo : public ARMBaseRegisterInfo {
   virtual void anchor();
+
 public:
   ARMRegisterInfo();
 };

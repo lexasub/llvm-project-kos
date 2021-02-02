@@ -18,7 +18,6 @@
 
 #include "test_macros.h"
 
-
 struct MyTraits : std::char_traits<char> {};
 
 typedef std::basic_ostringstream<char, MyTraits> StringStream;
@@ -26,23 +25,22 @@ typedef std::basic_ostream<char, MyTraits> BasicStream;
 
 void operator&(BasicStream const&) {}
 
-int main(int, char**)
-{
-    {
-        std::ostringstream outf;
-        std::ostream_iterator<int> i(outf, ", ");
-        assert(outf.good());
-    }
-    {
-        std::wostringstream outf;
-        std::ostream_iterator<double, wchar_t> i(outf, L", ");
-        assert(outf.good());
-    }
-    {
-        StringStream outf;
-        std::ostream_iterator<int, char, MyTraits> i(outf, ", ");
-        assert(outf.good());
-    }
+int main(int, char**) {
+  {
+    std::ostringstream outf;
+    std::ostream_iterator<int> i(outf, ", ");
+    assert(outf.good());
+  }
+  {
+    std::wostringstream outf;
+    std::ostream_iterator<double, wchar_t> i(outf, L", ");
+    assert(outf.good());
+  }
+  {
+    StringStream outf;
+    std::ostream_iterator<int, char, MyTraits> i(outf, ", ");
+    assert(outf.good());
+  }
 
   return 0;
 }

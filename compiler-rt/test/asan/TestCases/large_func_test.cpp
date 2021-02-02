@@ -5,8 +5,7 @@
 // REQUIRES: stable-runtime
 
 #include <stdlib.h>
-__attribute__((noinline))
-static void LargeFunction(int *x, int zero) {
+__attribute__((noinline)) static void LargeFunction(int *x, int zero) {
   x[0]++;
   x[1]++;
   x[2]++;
@@ -21,7 +20,7 @@ static void LargeFunction(int *x, int zero) {
   // CHECK: {{.*ERROR: AddressSanitizer: heap-buffer-overflow on address}}
   // CHECK:   {{0x.* at pc 0x.* bp 0x.* sp 0x.*}}
   // CHECK: {{READ of size 4 at 0x.* thread T0}}
-  x[zero + 103]++;  // we should report this exact line
+  x[zero + 103]++; // we should report this exact line
   // atos incorrectly extracts the symbol name for the static functions on
   // Darwin.
   // CHECK-Linux:  {{#0 0x.* in LargeFunction.*large_func_test.cpp:}}[[@LINE-3]]

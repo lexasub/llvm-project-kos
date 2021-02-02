@@ -28,21 +28,25 @@ int main(int, char**) {
 
   {
     std::shared_ptr<A> pA;
-    std::shared_ptr<int> pi(pA); // expected-error {{no matching constructor for initialization of 'std::shared_ptr<int>'}}
+    std::shared_ptr<int> pi(
+        pA); // expected-error {{no matching constructor for initialization of 'std::shared_ptr<int>'}}
   }
   {
     std::shared_ptr<A> pA;
-    std::shared_ptr<int> pi(std::move(pA)); // expected-error {{no matching constructor for initialization of 'std::shared_ptr<int>'}}
+    std::shared_ptr<int> pi(std::move(
+        pA)); // expected-error {{no matching constructor for initialization of 'std::shared_ptr<int>'}}
   }
   {
     std::weak_ptr<A> pA;
-    std::shared_ptr<int> pi(std::move(pA)); // expected-error {{no matching constructor for initialization of 'std::shared_ptr<int>'}}
+    std::shared_ptr<int> pi(std::move(
+        pA)); // expected-error {{no matching constructor for initialization of 'std::shared_ptr<int>'}}
   }
 
 #if TEST_STD_VER > 14
   {
     std::unique_ptr<int, ADel> ui;
-    std::shared_ptr<int> pi(std::move(ui)); // expected-error {{no matching constructor for initialization of 'std::shared_ptr<int>'}}
+    std::shared_ptr<int> pi(std::move(
+        ui)); // expected-error {{no matching constructor for initialization of 'std::shared_ptr<int>'}}
   }
 #endif
 

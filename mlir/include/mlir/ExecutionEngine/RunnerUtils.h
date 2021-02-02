@@ -73,11 +73,13 @@ namespace impl {
 template <typename T, int M, int... Dims>
 std::ostream &operator<<(std::ostream &os, const Vector<T, M, Dims...> &v);
 
-template <int... Dims> struct StaticSizeMult {
+template <int... Dims>
+struct StaticSizeMult {
   static constexpr int value = 1;
 };
 
-template <int N, int... Dims> struct StaticSizeMult<N, Dims...> {
+template <int N, int... Dims>
+struct StaticSizeMult<N, Dims...> {
   static constexpr int value = N * StaticSizeMult<Dims...>::value;
 };
 
@@ -87,7 +89,8 @@ static inline void printSpace(std::ostream &os, int count) {
   }
 }
 
-template <typename T, int M, int... Dims> struct VectorDataPrinter {
+template <typename T, int M, int... Dims>
+struct VectorDataPrinter {
   static void print(std::ostream &os, const Vector<T, M, Dims...> &val);
 };
 

@@ -231,9 +231,9 @@ bool CrossWindowsToolChain::isPICDefaultForced() const {
   return getArch() == llvm::Triple::x86_64;
 }
 
-void CrossWindowsToolChain::
-AddClangSystemIncludeArgs(const llvm::opt::ArgList &DriverArgs,
-                          llvm::opt::ArgStringList &CC1Args) const {
+void CrossWindowsToolChain::AddClangSystemIncludeArgs(
+    const llvm::opt::ArgList &DriverArgs,
+    llvm::opt::ArgStringList &CC1Args) const {
   const Driver &D = getDriver();
   const std::string &SysRoot = D.SysRoot;
 
@@ -257,9 +257,9 @@ AddClangSystemIncludeArgs(const llvm::opt::ArgList &DriverArgs,
   addExternCSystemInclude(DriverArgs, CC1Args, SysRoot + "/usr/include");
 }
 
-void CrossWindowsToolChain::
-AddClangCXXStdlibIncludeArgs(const llvm::opt::ArgList &DriverArgs,
-                             llvm::opt::ArgStringList &CC1Args) const {
+void CrossWindowsToolChain::AddClangCXXStdlibIncludeArgs(
+    const llvm::opt::ArgList &DriverArgs,
+    llvm::opt::ArgStringList &CC1Args) const {
   const std::string &SysRoot = getDriver().SysRoot;
 
   if (DriverArgs.hasArg(options::OPT_nostdinc) ||
@@ -270,9 +270,8 @@ AddClangCXXStdlibIncludeArgs(const llvm::opt::ArgList &DriverArgs,
     addSystemInclude(DriverArgs, CC1Args, SysRoot + "/usr/include/c++/v1");
 }
 
-void CrossWindowsToolChain::
-AddCXXStdlibLibArgs(const llvm::opt::ArgList &Args,
-                    llvm::opt::ArgStringList &CmdArgs) const {
+void CrossWindowsToolChain::AddCXXStdlibLibArgs(
+    const llvm::opt::ArgList &Args, llvm::opt::ArgStringList &CmdArgs) const {
   if (GetCXXStdlibType(Args) == ToolChain::CST_Libcxx)
     CmdArgs.push_back("-lc++");
 }

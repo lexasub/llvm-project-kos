@@ -10,6 +10,6 @@ struct MergeExceptionSpec {
 
 MergeExceptionSpec mergeExceptionSpec2;
 
-template<typename T> struct DeductionGuide {};
-DeductionGuide() -> DeductionGuide<int>;
+template <typename T> struct DeductionGuide {};
+DeductionGuide()->DeductionGuide<int>;
 DeductionGuide a;

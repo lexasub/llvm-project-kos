@@ -134,11 +134,13 @@ private:
 
 char InterleavedAccess::ID = 0;
 
-INITIALIZE_PASS_BEGIN(InterleavedAccess, DEBUG_TYPE,
+INITIALIZE_PASS_BEGIN(
+    InterleavedAccess, DEBUG_TYPE,
     "Lower interleaved memory accesses to target specific intrinsics", false,
     false)
 INITIALIZE_PASS_DEPENDENCY(DominatorTreeWrapperPass)
-INITIALIZE_PASS_END(InterleavedAccess, DEBUG_TYPE,
+INITIALIZE_PASS_END(
+    InterleavedAccess, DEBUG_TYPE,
     "Lower interleaved memory accesses to target specific intrinsics", false,
     false)
 
@@ -196,8 +198,8 @@ static bool isDeInterleaveMask(ArrayRef<int> Mask, unsigned &Factor,
 /// It checks for a more general pattern than the RE-interleave mask.
 /// I.e. <x, y, ... z, x+1, y+1, ...z+1, x+2, y+2, ...z+2, ...>
 /// E.g. For a Factor of 2 (LaneLen=4): <4, 32, 5, 33, 6, 34, 7, 35>
-/// E.g. For a Factor of 3 (LaneLen=4): <4, 32, 16, 5, 33, 17, 6, 34, 18, 7, 35, 19>
-/// E.g. For a Factor of 4 (LaneLen=2): <8, 2, 12, 4, 9, 3, 13, 5>
+/// E.g. For a Factor of 3 (LaneLen=4): <4, 32, 16, 5, 33, 17, 6, 34, 18, 7, 35,
+/// 19> E.g. For a Factor of 4 (LaneLen=2): <8, 2, 12, 4, 9, 3, 13, 5>
 ///
 /// The particular case of an RE-interleave mask is:
 /// I.e. <0, LaneLen, ... , LaneLen*(Factor - 1), 1, LaneLen + 1, ...>
@@ -276,7 +278,7 @@ static bool isReInterleaveMask(ArrayRef<int> Mask, unsigned &Factor,
       if (StartMask < 0)
         break;
       // We must stay within the vectors; This case can happen with undefs.
-      if (StartMask + LaneLen > OpNumElts*2)
+      if (StartMask + LaneLen > OpNumElts * 2)
         break;
     }
 
@@ -347,8 +349,7 @@ bool InterleavedAccess::lowerInterleavedLoad(
   for (auto *Shuffle : Shuffles) {
     if (Shuffle->getType() != VecTy)
       return false;
-    if (!isDeInterleaveMaskOfFactor(Shuffle->getShuffleMask(), Factor,
-                                    Index))
+    if (!isDeInterleaveMaskOfFactor(Shuffle->getShuffleMask(), Factor, Index))
       return false;
 
     assert(Shuffle->getShuffleMask().size() <= NumLoadElements);
@@ -357,8 +358,7 @@ bool InterleavedAccess::lowerInterleavedLoad(
   for (auto *Shuffle : BinOpShuffles) {
     if (Shuffle->getType() != VecTy)
       return false;
-    if (!isDeInterleaveMaskOfFactor(Shuffle->getShuffleMask(), Factor,
-                                    Index))
+    if (!isDeInterleaveMaskOfFactor(Shuffle->getShuffleMask(), Factor, Index))
       return false;
 
     assert(Shuffle->getShuffleMask().size() <= NumLoadElements);

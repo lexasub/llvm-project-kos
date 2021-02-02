@@ -1,25 +1,18 @@
 #include <stdio.h>
 
-namespace namesp
-{
-  class Virtual {
-  public:
-    virtual void doSomething() {
-      printf ("namesp function did something.\n");
-    }
-  }; 
-}
+namespace namesp {
+class Virtual {
+public:
+  virtual void doSomething() { printf("namesp function did something.\n"); }
+};
+} // namespace namesp
 
 class Virtual {
-  public:
-  virtual void doSomething() {
-    printf("Virtual function did something.\n");
-  }
+public:
+  virtual void doSomething() { printf("Virtual function did something.\n"); }
 };
 
-int
-main()
-{
+int main() {
   namesp::Virtual my_outer;
   Virtual my_virtual;
 
@@ -29,4 +22,3 @@ main()
 
   return 0;
 }
-    

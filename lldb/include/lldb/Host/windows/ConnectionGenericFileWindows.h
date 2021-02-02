@@ -60,6 +60,6 @@ private:
   const ConnectionGenericFile &
   operator=(const ConnectionGenericFile &) = delete;
 };
-}
+} // namespace lldb_private
 
 #endif

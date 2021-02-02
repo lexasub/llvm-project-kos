@@ -233,9 +233,7 @@ public:
   ///        This happens with escaped characters and multi-line literals.
   StringRef getValue(SmallVectorImpl<char> &Storage) const;
 
-  static bool classof(const Node *N) {
-    return N->getType() == NK_Scalar;
-  }
+  static bool classof(const Node *N) { return N->getType() == NK_Scalar; }
 
 private:
   StringRef Value;
@@ -267,9 +265,7 @@ public:
   /// Gets the value of this node as a StringRef.
   StringRef getValue() const { return Value; }
 
-  static bool classof(const Node *N) {
-    return N->getType() == NK_BlockScalar;
-  }
+  static bool classof(const Node *N) { return N->getType() == NK_BlockScalar; }
 
 private:
   StringRef Value;
@@ -311,9 +307,7 @@ public:
     }
   }
 
-  static bool classof(const Node *N) {
-    return N->getType() == NK_KeyValue;
-  }
+  static bool classof(const Node *N) { return N->getType() == NK_KeyValue; }
 
 private:
   Node *Key = nullptr;
@@ -357,8 +351,8 @@ public:
   /// iff Base and Other.Base are equal.
   bool operator==(const basic_collection_iterator &Other) const {
     if (Base && (Base == Other.Base)) {
-      assert((Base->CurrentEntry == Other.Base->CurrentEntry)
-             && "Equal Bases expected to point to equal Entries");
+      assert((Base->CurrentEntry == Other.Base->CurrentEntry) &&
+             "Equal Bases expected to point to equal Entries");
     }
 
     return Base == Other.Base;
@@ -434,9 +428,7 @@ public:
 
   void skip() override { yaml::skip(*this); }
 
-  static bool classof(const Node *N) {
-    return N->getType() == NK_Mapping;
-  }
+  static bool classof(const Node *N) { return N->getType() == NK_Mapping; }
 
 private:
   MappingType Type;
@@ -491,9 +483,7 @@ public:
 
   void skip() override { yaml::skip(*this); }
 
-  static bool classof(const Node *N) {
-    return N->getType() == NK_Sequence;
-  }
+  static bool classof(const Node *N) { return N->getType() == NK_Sequence; }
 
 private:
   SequenceType SeqType;

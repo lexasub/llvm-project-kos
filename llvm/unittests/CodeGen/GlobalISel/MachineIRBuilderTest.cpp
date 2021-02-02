@@ -6,8 +6,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "GISelMITest.h"
 #include "llvm/CodeGen/GlobalISel/MachineIRBuilder.h"
+#include "GISelMITest.h"
 
 TEST_F(AArch64GISelMITest, TestBuildConstantFConstant) {
   setUp();
@@ -85,8 +85,8 @@ TEST_F(AArch64GISelMITest, DstOpSrcOp) {
 
   // Test SrcOp and DstOp can be constructed directly from MachineOperand by
   // copying the instruction
-  B.buildAdd(MIBAdd->getOperand(0), MIBAdd->getOperand(1), MIBAdd->getOperand(2));
-
+  B.buildAdd(MIBAdd->getOperand(0), MIBAdd->getOperand(1),
+             MIBAdd->getOperand(2));
 
   auto CheckStr = R"(
   ; CHECK: [[COPY0:%[0-9]+]]:_(s64) = COPY $x0
@@ -165,14 +165,12 @@ TEST_F(AArch64GISelMITest, BuildIntrinsic) {
   collectCopies(Copies, MF);
 
   // Make sure DstOp version works. sqrt is just a placeholder intrinsic.
-  B.buildIntrinsic(Intrinsic::sqrt, {S64}, false)
-    .addUse(Copies[0]);
+  B.buildIntrinsic(Intrinsic::sqrt, {S64}, false).addUse(Copies[0]);
 
   // Make sure register version works
   SmallVector<Register, 1> Results;
   Results.push_back(MRI->createGenericVirtualRegister(S64));
-  B.buildIntrinsic(Intrinsic::sqrt, Results, false)
-    .addUse(Copies[1]);
+  B.buildIntrinsic(Intrinsic::sqrt, Results, false).addUse(Copies[1]);
 
   auto CheckStr = R"(
   ; CHECK: [[COPY0:%[0-9]+]]:_(s64) = COPY $x0
@@ -340,10 +338,8 @@ TEST_F(AArch64GISelMITest, BuildMerge) {
   B.buildMerge(LLT::scalar(128), {RegC0, RegC1, RegC2, RegC3});
   // Merging plain constants to a vector should produce a G_BUILD_VECTOR.
   LLT V2x32 = LLT::vector(2, 32);
-  Register RegC0C1 =
-      B.buildMerge(V2x32, {RegC0, RegC1}).getReg(0);
-  Register RegC2C3 =
-      B.buildMerge(V2x32, {RegC2, RegC3}).getReg(0);
+  Register RegC0C1 = B.buildMerge(V2x32, {RegC0, RegC1}).getReg(0);
+  Register RegC2C3 = B.buildMerge(V2x32, {RegC2, RegC3}).getReg(0);
   // Merging vector constants to a vector should produce a G_CONCAT_VECTORS.
   B.buildMerge(LLT::vector(4, 32), {RegC0C1, RegC2C3});
   // Merging vector constants to a plain type is not allowed.

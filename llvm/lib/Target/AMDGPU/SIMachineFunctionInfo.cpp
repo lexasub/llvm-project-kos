@@ -14,26 +14,14 @@
 using namespace llvm;
 
 SIMachineFunctionInfo::SIMachineFunctionInfo(const MachineFunction &MF)
-  : AMDGPUMachineFunction(MF),
-    PrivateSegmentBuffer(false),
-    DispatchPtr(false),
-    QueuePtr(false),
-    KernargSegmentPtr(false),
-    DispatchID(false),
-    FlatScratchInit(false),
-    WorkGroupIDX(false),
-    WorkGroupIDY(false),
-    WorkGroupIDZ(false),
-    WorkGroupInfo(false),
-    PrivateSegmentWaveByteOffset(false),
-    WorkItemIDX(false),
-    WorkItemIDY(false),
-    WorkItemIDZ(false),
-    ImplicitBufferPtr(false),
-    ImplicitArgPtr(false),
-    GITPtrHigh(0xffffffff),
-    HighBitsOf32BitAddress(0),
-    GDSSize(0) {
+    : AMDGPUMachineFunction(MF), PrivateSegmentBuffer(false),
+      DispatchPtr(false), QueuePtr(false), KernargSegmentPtr(false),
+      DispatchID(false), FlatScratchInit(false), WorkGroupIDX(false),
+      WorkGroupIDY(false), WorkGroupIDZ(false), WorkGroupInfo(false),
+      PrivateSegmentWaveByteOffset(false), WorkItemIDX(false),
+      WorkItemIDY(false), WorkItemIDZ(false), ImplicitBufferPtr(false),
+      ImplicitArgPtr(false), GITPtrHigh(0xffffffff), HighBitsOf32BitAddress(0),
+      GDSSize(0) {
   const GCNSubtarget &ST = MF.getSubtarget<GCNSubtarget>();
   const Function &F = MF.getFunction();
   FlatWorkGroupSizes = ST.getFlatWorkGroupSizes(F);
@@ -71,7 +59,7 @@ SIMachineFunctionInfo::SIMachineFunctionInfo(const MachineFunction &MF)
       ScratchRSrcReg = AMDGPU::SGPR0_SGPR1_SGPR2_SGPR3;
 
       ArgInfo.PrivateSegmentBuffer =
-        ArgDescriptor::createRegister(ScratchRSrcReg);
+          ArgDescriptor::createRegister(ScratchRSrcReg);
     }
 
     if (F.hasFnAttribute("amdgpu-implicitarg-ptr"))
@@ -79,8 +67,8 @@ SIMachineFunctionInfo::SIMachineFunctionInfo(const MachineFunction &MF)
   } else {
     if (F.hasFnAttribute("amdgpu-implicitarg-ptr")) {
       KernargSegmentPtr = true;
-      MaxKernArgAlign = std::max(ST.getAlignmentForImplicitArgPtr(),
-                                 MaxKernArgAlign);
+      MaxKernArgAlign =
+          std::max(ST.getAlignmentForImplicitArgPtr(), MaxKernArgAlign);
     }
   }
 
@@ -182,59 +170,63 @@ SIMachineFunctionInfo::SIMachineFunctionInfo(const MachineFunction &MF)
 
 void SIMachineFunctionInfo::limitOccupancy(const MachineFunction &MF) {
   limitOccupancy(getMaxWavesPerEU());
-  const GCNSubtarget& ST = MF.getSubtarget<GCNSubtarget>();
-  limitOccupancy(ST.getOccupancyWithLocalMemSize(getLDSSize(),
-                 MF.getFunction()));
+  const GCNSubtarget &ST = MF.getSubtarget<GCNSubtarget>();
+  limitOccupancy(
+      ST.getOccupancyWithLocalMemSize(getLDSSize(), MF.getFunction()));
 }
 
-Register SIMachineFunctionInfo::addPrivateSegmentBuffer(
-  const SIRegisterInfo &TRI) {
+Register
+SIMachineFunctionInfo::addPrivateSegmentBuffer(const SIRegisterInfo &TRI) {
   ArgInfo.PrivateSegmentBuffer =
-    ArgDescriptor::createRegister(TRI.getMatchingSuperReg(
-    getNextUserSGPR(), AMDGPU::sub0, &AMDGPU::SGPR_128RegClass));
+      ArgDescriptor::createRegister(TRI.getMatchingSuperReg(
+          getNextUserSGPR(), AMDGPU::sub0, &AMDGPU::SGPR_128RegClass));
   NumUserSGPRs += 4;
   return ArgInfo.PrivateSegmentBuffer.getRegister();
 }
 
 Register SIMachineFunctionInfo::addDispatchPtr(const SIRegisterInfo &TRI) {
   ArgInfo.DispatchPtr = ArgDescriptor::createRegister(TRI.getMatchingSuperReg(
-    getNextUserSGPR(), AMDGPU::sub0, &AMDGPU::SReg_64RegClass));
+      getNextUserSGPR(), AMDGPU::sub0, &AMDGPU::SReg_64RegClass));
   NumUserSGPRs += 2;
   return ArgInfo.DispatchPtr.getRegister();
 }
 
 Register SIMachineFunctionInfo::addQueuePtr(const SIRegisterInfo &TRI) {
   ArgInfo.QueuePtr = ArgDescriptor::createRegister(TRI.getMatchingSuperReg(
-    getNextUserSGPR(), AMDGPU::sub0, &AMDGPU::SReg_64RegClass));
+      getNextUserSGPR(), AMDGPU::sub0, &AMDGPU::SReg_64RegClass));
   NumUserSGPRs += 2;
   return ArgInfo.QueuePtr.getRegister();
 }
 
-Register SIMachineFunctionInfo::addKernargSegmentPtr(const SIRegisterInfo &TRI) {
-  ArgInfo.KernargSegmentPtr
-    = ArgDescriptor::createRegister(TRI.getMatchingSuperReg(
-    getNextUserSGPR(), AMDGPU::sub0, &AMDGPU::SReg_64RegClass));
+Register
+SIMachineFunctionInfo::addKernargSegmentPtr(const SIRegisterInfo &TRI) {
+  ArgInfo.KernargSegmentPtr =
+      ArgDescriptor::createRegister(TRI.getMatchingSuperReg(
+          getNextUserSGPR(), AMDGPU::sub0, &AMDGPU::SReg_64RegClass));
   NumUserSGPRs += 2;
   return ArgInfo.KernargSegmentPtr.getRegister();
 }
 
 Register SIMachineFunctionInfo::addDispatchID(const SIRegisterInfo &TRI) {
   ArgInfo.DispatchID = ArgDescriptor::createRegister(TRI.getMatchingSuperReg(
-    getNextUserSGPR(), AMDGPU::sub0, &AMDGPU::SReg_64RegClass));
+      getNextUserSGPR(), AMDGPU::sub0, &AMDGPU::SReg_64RegClass));
   NumUserSGPRs += 2;
   return ArgInfo.DispatchID.getRegister();
 }
 
 Register SIMachineFunctionInfo::addFlatScratchInit(const SIRegisterInfo &TRI) {
-  ArgInfo.FlatScratchInit = ArgDescriptor::createRegister(TRI.getMatchingSuperReg(
-    getNextUserSGPR(), AMDGPU::sub0, &AMDGPU::SReg_64RegClass));
+  ArgInfo.FlatScratchInit =
+      ArgDescriptor::createRegister(TRI.getMatchingSuperReg(
+          getNextUserSGPR(), AMDGPU::sub0, &AMDGPU::SReg_64RegClass));
   NumUserSGPRs += 2;
   return ArgInfo.FlatScratchInit.getRegister();
 }
 
-Register SIMachineFunctionInfo::addImplicitBufferPtr(const SIRegisterInfo &TRI) {
-  ArgInfo.ImplicitBufferPtr = ArgDescriptor::createRegister(TRI.getMatchingSuperReg(
-    getNextUserSGPR(), AMDGPU::sub0, &AMDGPU::SReg_64RegClass));
+Register
+SIMachineFunctionInfo::addImplicitBufferPtr(const SIRegisterInfo &TRI) {
+  ArgInfo.ImplicitBufferPtr =
+      ArgDescriptor::createRegister(TRI.getMatchingSuperReg(
+          getNextUserSGPR(), AMDGPU::sub0, &AMDGPU::SReg_64RegClass));
   NumUserSGPRs += 2;
   return ArgInfo.ImplicitBufferPtr.getRegister();
 }
@@ -352,12 +344,11 @@ bool SIMachineFunctionInfo::reserveVGPRforSGPRSpills(MachineFunction &MF) {
 /// Reserve AGPRs or VGPRs to support spilling for FrameIndex \p FI.
 /// Either AGPR is spilled to VGPR to vice versa.
 /// Returns true if a \p FI can be eliminated completely.
-bool SIMachineFunctionInfo::allocateVGPRSpillToAGPR(MachineFunction &MF,
-                                                    int FI,
+bool SIMachineFunctionInfo::allocateVGPRSpillToAGPR(MachineFunction &MF, int FI,
                                                     bool isAGPRtoVGPR) {
   MachineRegisterInfo &MRI = MF.getRegInfo();
   MachineFrameInfo &FrameInfo = MF.getFrameInfo();
-  const GCNSubtarget &ST =  MF.getSubtarget<GCNSubtarget>();
+  const GCNSubtarget &ST = MF.getSubtarget<GCNSubtarget>();
 
   assert(ST.hasMAIInsts() && FrameInfo.isSpillSlotObjectIndex(FI));
 
@@ -550,7 +541,7 @@ void yaml::SIMachineFunctionInfo::mappingImpl(yaml::IO &YamlIO) {
 }
 
 bool SIMachineFunctionInfo::initializeBaseYamlFields(
-  const yaml::SIMachineFunctionInfo &YamlMFI) {
+    const yaml::SIMachineFunctionInfo &YamlMFI) {
   ExplicitKernArgSize = YamlMFI.ExplicitKernArgSize;
   MaxKernArgAlign = assumeAligned(YamlMFI.MaxKernArgAlign);
   LDSSize = YamlMFI.LDSSize;

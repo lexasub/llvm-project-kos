@@ -17,11 +17,11 @@ extern "C" {
 #endif
 
 struct isl_blk {
-	size_t size;
-	isl_int *data;
+  size_t size;
+  isl_int *data;
 };
 
-#define ISL_BLK_CACHE_SIZE	20
+#define ISL_BLK_CACHE_SIZE 20
 
 struct isl_ctx;
 
@@ -29,7 +29,7 @@ struct isl_blk isl_blk_alloc(struct isl_ctx *ctx, size_t n);
 struct isl_blk isl_blk_empty(void);
 int isl_blk_is_error(struct isl_blk block);
 struct isl_blk isl_blk_extend(struct isl_ctx *ctx, struct isl_blk block,
-				size_t new_n);
+                              size_t new_n);
 void isl_blk_free(struct isl_ctx *ctx, struct isl_blk block);
 void isl_blk_clear_cache(struct isl_ctx *ctx);
 

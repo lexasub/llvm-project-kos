@@ -4,12 +4,12 @@
 
 #include <argz.h>
 #include <assert.h>
-#include <sys/types.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
 
 #include <sanitizer/msan_interface.h>
 
@@ -55,7 +55,7 @@ ssize_t fgetxattr_wrapper(const char *name, char *buf, size_t size) {
   return fgetxattr(g_fd, name, buf, size);
 }
 
-size_t test_list(ssize_t fun(char*, size_t), char **buf) {
+size_t test_list(ssize_t fun(char *, size_t), char **buf) {
   int buf_size = 1024;
   while (true) {
     *buf = (char *)malloc(buf_size);

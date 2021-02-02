@@ -13,7 +13,7 @@ int main(int argc, char **argv) {
   else
     x = &g[0];
   memset(x, 0, 21);
-  int *y = (int*)x;
+  int *y = (int *)x;
   return y[5];
 }
 // CHECK: 0 bytes to the right

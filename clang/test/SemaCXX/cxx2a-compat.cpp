@@ -1,33 +1,39 @@
 // RUN: %clang_cc1 -fsyntax-only -std=c++17 -Wc++20-compat-pedantic -verify %s
 // RUN: %clang_cc1 -fsyntax-only -std=c++20 -pedantic -verify %s
 
-struct A { // expected-note 0+{{candidate}}
+struct A {       // expected-note 0+{{candidate}}
   A() = default; // expected-note 0+{{candidate}}
   int x, y;
 };
 A a1 = {1, 2};
 #if __cplusplus <= 201703L
-  // expected-warning@-2 {{aggregate initialization of type 'A' with user-declared constructors is incompatible with C++20}}
+// expected-warning@-2 {{aggregate initialization of type 'A' with user-declared constructors is incompatible with C++20}}
 #else
-  // expected-error@-4 {{no matching constructor}}
+// expected-error@-4 {{no matching constructor}}
 #endif
 A a2 = {};
 
-struct B : A { A a; };
+struct B : A {
+  A a;
+};
 B b1 = {{}, {}}; // ok
 B b2 = {1, 2, 3, 4};
 #if __cplusplus <= 201703L
-  // expected-warning@-2 2{{aggregate initialization of type 'A' with user-declared constructors is incompatible with C++20}}
+// expected-warning@-2 2{{aggregate initialization of type 'A' with user-declared constructors is incompatible with C++20}}
 #else
-  // expected-error@-4 2{{no viable conversion from 'int' to 'A'}}
+// expected-error@-4 2{{no viable conversion from 'int' to 'A'}}
 #endif
 
 // Essentially any use of a u8 string literal in C++<=17 is broken by C++20.
 // Just warn on all such string literals.
-struct string { string(const char*); }; // expected-note 0+{{candidate}}
+struct string {
+  string(const char *);
+}; // expected-note 0+{{candidate}}
 char u8arr[] = u8"hello";
-const char *u8ptr = "wo" u8"rld";
-string u8str = u8"test" u8"test";
+const char *u8ptr = "wo"
+                    u8"rld";
+string u8str = u8"test"
+               u8"test";
 #if __cplusplus <= 201703L
 // expected-warning@-4 {{type of UTF-8 string literal will change}} expected-note@-4 {{remove 'u8' prefix}}
 // expected-warning@-4 {{type of UTF-8 string literal will change}} expected-note@-4 {{remove 'u8' prefix}}
@@ -38,7 +44,7 @@ string u8str = u8"test" u8"test";
 // expected-error@-8 {{no viable conversion from 'const char8_t [9]' to 'string'}}
 #endif
 
-template<bool b>
+template <bool b>
 struct C {
   explicit(C)(int);
 };

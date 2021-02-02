@@ -64,12 +64,12 @@ public:
                 const TargetLibraryInfo &TLI, AssumptionCache &AC,
                 DominatorTree *DT = nullptr, LoopInfo *LI = nullptr,
                 PhiValues *PV = nullptr)
-      : AAResultBase(), DL(DL), F(F), TLI(TLI), AC(AC), DT(DT), LI(LI), PV(PV)
-        {}
+      : AAResultBase(), DL(DL), F(F), TLI(TLI), AC(AC), DT(DT), LI(LI), PV(PV) {
+  }
 
   BasicAAResult(const BasicAAResult &Arg)
       : AAResultBase(Arg), DL(Arg.DL), F(Arg.F), TLI(Arg.TLI), AC(Arg.AC),
-        DT(Arg.DT),  LI(Arg.LI), PV(Arg.PV) {}
+        DT(Arg.DT), LI(Arg.LI), PV(Arg.PV) {}
   BasicAAResult(BasicAAResult &&Arg)
       : AAResultBase(std::move(Arg)), DL(Arg.DL), F(Arg.F), TLI(Arg.TLI),
         AC(Arg.AC), DT(Arg.DT), LI(Arg.LI), PV(Arg.PV) {}
@@ -134,10 +134,8 @@ private:
       dbgs() << "\n";
     }
     void print(raw_ostream &OS) const {
-      OS << "(V=" << V->getName()
-	 << ", zextbits=" << ZExtBits
-	 << ", sextbits=" << SExtBits
-	 << ", scale=" << Scale << ")";
+      OS << "(V=" << V->getName() << ", zextbits=" << ZExtBits
+         << ", sextbits=" << SExtBits << ", scale=" << Scale << ")";
     }
   };
 
@@ -158,16 +156,15 @@ private:
       dbgs() << "\n";
     }
     void print(raw_ostream &OS) const {
-      OS << "(DecomposedGEP Base=" << Base->getName()
-	 << ", Offset=" << Offset
-	 << ", VarIndices=[";
+      OS << "(DecomposedGEP Base=" << Base->getName() << ", Offset=" << Offset
+         << ", VarIndices=[";
       for (size_t i = 0; i < VarIndices.size(); i++) {
-       if (i != 0)
-         OS << ", ";
-       VarIndices[i].print(OS);
+        if (i != 0)
+          OS << ", ";
+        VarIndices[i].print(OS);
       }
       OS << "], HasCompileTimeConstantScale=" << HasCompileTimeConstantScale
-	 << ")";
+         << ")";
     }
   };
 
@@ -196,13 +193,15 @@ private:
                       const DataLayout &DL, unsigned Depth, AssumptionCache *AC,
                       DominatorTree *DT, bool &NSW, bool &NUW);
 
-  static DecomposedGEP
-  DecomposeGEPExpression(const Value *V, const DataLayout &DL,
-                         AssumptionCache *AC, DominatorTree *DT);
+  static DecomposedGEP DecomposeGEPExpression(const Value *V,
+                                              const DataLayout &DL,
+                                              AssumptionCache *AC,
+                                              DominatorTree *DT);
 
   static bool isGEPBaseAtNegativeOffset(const GEPOperator *GEPOp,
-      const DecomposedGEP &DecompGEP, const DecomposedGEP &DecompObject,
-      LocationSize ObjectAccessSize);
+                                        const DecomposedGEP &DecompGEP,
+                                        const DecomposedGEP &DecompObject,
+                                        LocationSize ObjectAccessSize);
 
   /// A Heuristic for aliasGEP that searches for a constant offset
   /// between the variables.

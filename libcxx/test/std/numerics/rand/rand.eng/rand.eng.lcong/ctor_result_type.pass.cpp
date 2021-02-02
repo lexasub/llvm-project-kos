@@ -36,91 +36,83 @@ std::string to_string(T const& e) {
 }
 
 template <class T>
-void
-test1()
-{
-    // c % m != 0 && s % m != 0
-    {
-        typedef std::linear_congruential_engine<T, 2, 3, 7> E;
-        E e(5);
-        assert(to_string(e) == "5");
-    }
-    {
-        typedef std::linear_congruential_engine<T, 2, 3, 0> E;
-        E e(5);
-        assert(to_string(e) == "5");
-    }
-    {
-        typedef std::linear_congruential_engine<T, 2, 3, 4> E;
-        E e(5);
-        assert(to_string(e) == "1");
-    }
+void test1() {
+  // c % m != 0 && s % m != 0
+  {
+    typedef std::linear_congruential_engine<T, 2, 3, 7> E;
+    E e(5);
+    assert(to_string(e) == "5");
+  }
+  {
+    typedef std::linear_congruential_engine<T, 2, 3, 0> E;
+    E e(5);
+    assert(to_string(e) == "5");
+  }
+  {
+    typedef std::linear_congruential_engine<T, 2, 3, 4> E;
+    E e(5);
+    assert(to_string(e) == "1");
+  }
 }
 
 template <class T>
-void
-test2()
-{
-    // c % m != 0 && s % m == 0
-    {
-        typedef std::linear_congruential_engine<T, 2, 3, 7> E;
-        E e(7);
-        assert(to_string(e) == "0");
-    }
-    {
-        typedef std::linear_congruential_engine<T, 2, 3, 0> E;
-        E e(0);
-        assert(to_string(e) == "0");
-    }
-    {
-        typedef std::linear_congruential_engine<T, 2, 3, 4> E;
-        E e(4);
-        assert(to_string(e) == "0");
-    }
+void test2() {
+  // c % m != 0 && s % m == 0
+  {
+    typedef std::linear_congruential_engine<T, 2, 3, 7> E;
+    E e(7);
+    assert(to_string(e) == "0");
+  }
+  {
+    typedef std::linear_congruential_engine<T, 2, 3, 0> E;
+    E e(0);
+    assert(to_string(e) == "0");
+  }
+  {
+    typedef std::linear_congruential_engine<T, 2, 3, 4> E;
+    E e(4);
+    assert(to_string(e) == "0");
+  }
 }
 
 template <class T>
-void
-test3()
-{
-    // c % m == 0 && s % m != 0
-    {
-        typedef std::linear_congruential_engine<T, 2, 0, 7> E;
-        E e(3);
-        assert(to_string(e) == "3");
-    }
-    {
-        typedef std::linear_congruential_engine<T, 2, 0, 0> E;
-        E e(5);
-        assert(to_string(e) == "5");
-    }
-    {
-        typedef std::linear_congruential_engine<T, 2, 0, 4> E;
-        E e(7);
-        assert(to_string(e) == "3");
-    }
+void test3() {
+  // c % m == 0 && s % m != 0
+  {
+    typedef std::linear_congruential_engine<T, 2, 0, 7> E;
+    E e(3);
+    assert(to_string(e) == "3");
+  }
+  {
+    typedef std::linear_congruential_engine<T, 2, 0, 0> E;
+    E e(5);
+    assert(to_string(e) == "5");
+  }
+  {
+    typedef std::linear_congruential_engine<T, 2, 0, 4> E;
+    E e(7);
+    assert(to_string(e) == "3");
+  }
 }
 
 template <class T>
-void
-test4()
-{
-    // c % m == 0 && s % m == 0
-    {
-        typedef std::linear_congruential_engine<T, 2, 0, 7> E;
-        E e(7);
-        assert(to_string(e) == "1");
-    }
-    {
-        typedef std::linear_congruential_engine<T, 2, 0, 0> E;
-        E e(0);
-        assert(to_string(e) == "1");
-    }
-    {
-        typedef std::linear_congruential_engine<T, 2, 0, 4> E;
-        E e(8);
-        assert(to_string(e) == "1");
-    }
+void test4() {
+  // c % m == 0 && s % m == 0
+  {
+    typedef std::linear_congruential_engine<T, 2, 0, 7> E;
+    E e(7);
+    assert(to_string(e) == "1");
+  }
+  {
+    typedef std::linear_congruential_engine<T, 2, 0, 0> E;
+    E e(0);
+    assert(to_string(e) == "1");
+  }
+  {
+    typedef std::linear_congruential_engine<T, 2, 0, 4> E;
+    E e(8);
+    assert(to_string(e) == "1");
+  }
 }
 
 template <class T>
@@ -133,29 +125,28 @@ void test_implicit() {
 #endif
 }
 
-int main(int, char**)
-{
-    test1<unsigned short>();
-    test1<unsigned int>();
-    test1<unsigned long>();
-    test1<unsigned long long>();
+int main(int, char**) {
+  test1<unsigned short>();
+  test1<unsigned int>();
+  test1<unsigned long>();
+  test1<unsigned long long>();
 
-    test2<unsigned short>();
-    test2<unsigned int>();
-    test2<unsigned long>();
-    test2<unsigned long long>();
+  test2<unsigned short>();
+  test2<unsigned int>();
+  test2<unsigned long>();
+  test2<unsigned long long>();
 
-    test3<unsigned short>();
-    test3<unsigned int>();
-    test3<unsigned long>();
-    test3<unsigned long long>();
+  test3<unsigned short>();
+  test3<unsigned int>();
+  test3<unsigned long>();
+  test3<unsigned long long>();
 
-    test4<unsigned short>();
-    test4<unsigned int>();
-    test4<unsigned long>();
-    test4<unsigned long long>();
+  test4<unsigned short>();
+  test4<unsigned int>();
+  test4<unsigned long>();
+  test4<unsigned long long>();
 
-    test_implicit<unsigned short>();
+  test_implicit<unsigned short>();
 
-    return 0;
+  return 0;
 }

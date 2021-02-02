@@ -81,8 +81,7 @@ public:
 /// Separate parts of a FullComment.
 struct FullCommentParts {
   /// Take a full comment apart and initialize members accordingly.
-  FullCommentParts(const FullComment *C,
-                   const CommandTraits &Traits);
+  FullCommentParts(const FullComment *C, const CommandTraits &Traits);
 
   const BlockContentComment *Brief;
   const BlockContentComment *Headerfile;
@@ -95,10 +94,10 @@ struct FullCommentParts {
 };
 
 FullCommentParts::FullCommentParts(const FullComment *C,
-                                   const CommandTraits &Traits) :
-    Brief(nullptr), Headerfile(nullptr), FirstParagraph(nullptr) {
-  for (Comment::child_iterator I = C->child_begin(), E = C->child_end();
-       I != E; ++I) {
+                                   const CommandTraits &Traits)
+    : Brief(nullptr), Headerfile(nullptr), FirstParagraph(nullptr) {
+  for (Comment::child_iterator I = C->child_begin(), E = C->child_end(); I != E;
+       ++I) {
     const Comment *Child = *I;
     if (!Child)
       continue;
@@ -214,15 +213,13 @@ void printHTMLStartTagComment(const HTMLStartTagComment *C,
     Result << "/>";
 }
 
-class CommentASTToHTMLConverter :
-    public ConstCommentVisitor<CommentASTToHTMLConverter> {
+class CommentASTToHTMLConverter
+    : public ConstCommentVisitor<CommentASTToHTMLConverter> {
 public:
   /// \param Str accumulator for HTML.
-  CommentASTToHTMLConverter(const FullComment *FC,
-                            SmallVectorImpl<char> &Str,
-                            const CommandTraits &Traits) :
-      FC(FC), Result(Str), Traits(Traits)
-  { }
+  CommentASTToHTMLConverter(const FullComment *FC, SmallVectorImpl<char> &Str,
+                            const CommandTraits &Traits)
+      : FC(FC), Result(Str), Traits(Traits) {}
 
   // Inline content.
   void visitTextComment(const TextComment *C);
@@ -263,7 +260,7 @@ void CommentASTToHTMLConverter::visitTextComment(const TextComment *C) {
 }
 
 void CommentASTToHTMLConverter::visitInlineCommandComment(
-                                  const InlineCommandComment *C) {
+    const InlineCommandComment *C) {
   // Nothing to render if no arguments supplied.
   if (C->getNumArgs() == 0)
     return;
@@ -291,7 +288,7 @@ void CommentASTToHTMLConverter::visitInlineCommandComment(
     assert(C->getNumArgs() == 1);
     Result << "<tt>";
     appendToResultWithHTMLEscaping(Arg0);
-    Result<< "</tt>";
+    Result << "</tt>";
     return;
   case InlineCommandComment::RenderEmphasized:
     assert(C->getNumArgs() == 1);
@@ -307,30 +304,30 @@ void CommentASTToHTMLConverter::visitInlineCommandComment(
 }
 
 void CommentASTToHTMLConverter::visitHTMLStartTagComment(
-                                  const HTMLStartTagComment *C) {
+    const HTMLStartTagComment *C) {
   printHTMLStartTagComment(C, Result);
 }
 
 void CommentASTToHTMLConverter::visitHTMLEndTagComment(
-                                  const HTMLEndTagComment *C) {
+    const HTMLEndTagComment *C) {
   Result << "</" << C->getTagName() << ">";
 }
 
 void CommentASTToHTMLConverter::visitParagraphComment(
-                                  const ParagraphComment *C) {
+    const ParagraphComment *C) {
   if (C->isWhitespace())
     return;
 
   Result << "<p>";
-  for (Comment::child_iterator I = C->child_begin(), E = C->child_end();
-       I != E; ++I) {
+  for (Comment::child_iterator I = C->child_begin(), E = C->child_end(); I != E;
+       ++I) {
     visit(*I);
   }
   Result << "</p>";
 }
 
 void CommentASTToHTMLConverter::visitBlockCommandComment(
-                                  const BlockCommandComment *C) {
+    const BlockCommandComment *C) {
   const CommandInfo *Info = Traits.getCommandInfo(C->getCommandID());
   if (Info->IsBriefCommand) {
     Result << "<p class=\"para-brief\">";
@@ -350,15 +347,13 @@ void CommentASTToHTMLConverter::visitBlockCommandComment(
 }
 
 void CommentASTToHTMLConverter::visitParamCommandComment(
-                                  const ParamCommandComment *C) {
+    const ParamCommandComment *C) {
   if (C->isParamIndexValid()) {
     if (C->isVarArgParam()) {
       Result << "<dt class=\"param-name-index-vararg\">";
       appendToResultWithHTMLEscaping(C->getParamNameAsWritten());
     } else {
-      Result << "<dt class=\"param-name-index-"
-             << C->getParamIndex()
-             << "\">";
+      Result << "<dt class=\"param-name-index-" << C->getParamIndex() << "\">";
       appendToResultWithHTMLEscaping(C->getParamName(FC));
     }
   } else {
@@ -371,9 +366,7 @@ void CommentASTToHTMLConverter::visitParamCommandComment(
     if (C->isVarArgParam())
       Result << "<dd class=\"param-descr-index-vararg\">";
     else
-      Result << "<dd class=\"param-descr-index-"
-             << C->getParamIndex()
-             << "\">";
+      Result << "<dd class=\"param-descr-index-" << C->getParamIndex() << "\">";
   } else
     Result << "<dd class=\"param-descr-index-invalid\">";
 
@@ -382,12 +375,10 @@ void CommentASTToHTMLConverter::visitParamCommandComment(
 }
 
 void CommentASTToHTMLConverter::visitTParamCommandComment(
-                                  const TParamCommandComment *C) {
+    const TParamCommandComment *C) {
   if (C->isPositionValid()) {
     if (C->getDepth() == 1)
-      Result << "<dt class=\"tparam-name-index-"
-             << C->getIndex(0)
-             << "\">";
+      Result << "<dt class=\"tparam-name-index-" << C->getIndex(0) << "\">";
     else
       Result << "<dt class=\"tparam-name-index-other\">";
     appendToResultWithHTMLEscaping(C->getParamName(FC));
@@ -400,9 +391,7 @@ void CommentASTToHTMLConverter::visitTParamCommandComment(
 
   if (C->isPositionValid()) {
     if (C->getDepth() == 1)
-      Result << "<dd class=\"tparam-descr-index-"
-             << C->getIndex(0)
-             << "\">";
+      Result << "<dd class=\"tparam-descr-index-" << C->getIndex(0) << "\">";
     else
       Result << "<dd class=\"tparam-descr-index-other\">";
   } else
@@ -413,7 +402,7 @@ void CommentASTToHTMLConverter::visitTParamCommandComment(
 }
 
 void CommentASTToHTMLConverter::visitVerbatimBlockComment(
-                                  const VerbatimBlockComment *C) {
+    const VerbatimBlockComment *C) {
   unsigned NumLines = C->getNumLines();
   if (NumLines == 0)
     return;
@@ -428,12 +417,12 @@ void CommentASTToHTMLConverter::visitVerbatimBlockComment(
 }
 
 void CommentASTToHTMLConverter::visitVerbatimBlockLineComment(
-                                  const VerbatimBlockLineComment *C) {
+    const VerbatimBlockLineComment *C) {
   llvm_unreachable("should not see this AST node");
 }
 
 void CommentASTToHTMLConverter::visitVerbatimLineComment(
-                                  const VerbatimLineComment *C) {
+    const VerbatimLineComment *C) {
   Result << "<pre>";
   appendToResultWithHTMLEscaping(C->getText());
   Result << "</pre>";
@@ -481,16 +470,15 @@ void CommentASTToHTMLConverter::visitFullComment(const FullComment *C) {
       visit(Parts.Returns[i]);
     Result << "</div>";
   }
-
 }
 
 void CommentASTToHTMLConverter::visitNonStandaloneParagraphComment(
-                                  const ParagraphComment *C) {
+    const ParagraphComment *C) {
   if (!C)
     return;
 
-  for (Comment::child_iterator I = C->child_begin(), E = C->child_end();
-       I != E; ++I) {
+  for (Comment::child_iterator I = C->child_begin(), E = C->child_end(); I != E;
+       ++I) {
     visit(*I);
   }
 }
@@ -525,15 +513,13 @@ void CommentASTToHTMLConverter::appendToResultWithHTMLEscaping(StringRef S) {
 }
 
 namespace {
-class CommentASTToXMLConverter :
-    public ConstCommentVisitor<CommentASTToXMLConverter> {
+class CommentASTToXMLConverter
+    : public ConstCommentVisitor<CommentASTToXMLConverter> {
 public:
   /// \param Str accumulator for XML.
-  CommentASTToXMLConverter(const FullComment *FC,
-                           SmallVectorImpl<char> &Str,
-                           const CommandTraits &Traits,
-                           const SourceManager &SM) :
-      FC(FC), Result(Str), Traits(Traits), SM(SM) { }
+  CommentASTToXMLConverter(const FullComment *FC, SmallVectorImpl<char> &Str,
+                           const CommandTraits &Traits, const SourceManager &SM)
+      : FC(FC), Result(Str), Traits(Traits), SM(SM) {}
 
   // Inline content.
   void visitTextComment(const TextComment *C);
@@ -583,7 +569,7 @@ void getSourceTextOfDeclaration(const DeclInfo *ThisDecl,
   PPolicy.TerseOutput = true;
   PPolicy.ConstantsAsWritten = true;
   ThisDecl->CurrentDecl->print(OS, PPolicy,
-                               /*Indentation*/0, /*PrintInstantiation*/false);
+                               /*Indentation*/ 0, /*PrintInstantiation*/ false);
 }
 
 void CommentASTToXMLConverter::formatTextOfDeclaration(
@@ -671,22 +657,21 @@ void CommentASTToXMLConverter::visitHTMLStartTagComment(
   Result << "</rawHTML>";
 }
 
-void
-CommentASTToXMLConverter::visitHTMLEndTagComment(const HTMLEndTagComment *C) {
+void CommentASTToXMLConverter::visitHTMLEndTagComment(
+    const HTMLEndTagComment *C) {
   Result << "<rawHTML";
   if (C->isMalformed())
     Result << " isMalformed=\"1\"";
   Result << ">&lt;/" << C->getTagName() << "&gt;</rawHTML>";
 }
 
-void
-CommentASTToXMLConverter::visitParagraphComment(const ParagraphComment *C) {
+void CommentASTToXMLConverter::visitParagraphComment(
+    const ParagraphComment *C) {
   appendParagraphCommentWithKind(C, StringRef());
 }
 
 void CommentASTToXMLConverter::appendParagraphCommentWithKind(
-                                  const ParagraphComment *C,
-                                  StringRef ParagraphKind) {
+    const ParagraphComment *C, StringRef ParagraphKind) {
   if (C->isWhitespace())
     return;
 
@@ -695,8 +680,8 @@ void CommentASTToXMLConverter::appendParagraphCommentWithKind(
   else
     Result << "<Para kind=\"" << ParagraphKind << "\">";
 
-  for (Comment::child_iterator I = C->child_begin(), E = C->child_end();
-       I != E; ++I) {
+  for (Comment::child_iterator I = C->child_begin(), E = C->child_end(); I != E;
+       ++I) {
     visit(*I);
   }
   Result << "</Para>";
@@ -767,10 +752,10 @@ void CommentASTToXMLConverter::visitParamCommandComment(
 }
 
 void CommentASTToXMLConverter::visitTParamCommandComment(
-                                  const TParamCommandComment *C) {
+    const TParamCommandComment *C) {
   Result << "<Parameter><Name>";
-  appendToResultWithXMLEscaping(C->isPositionValid() ? C->getParamName(FC)
-                                : C->getParamNameAsWritten());
+  appendToResultWithXMLEscaping(
+      C->isPositionValid() ? C->getParamName(FC) : C->getParamNameAsWritten());
   Result << "</Name>";
 
   if (C->isPositionValid() && C->getDepth() == 1) {
@@ -783,7 +768,7 @@ void CommentASTToXMLConverter::visitTParamCommandComment(
 }
 
 void CommentASTToXMLConverter::visitVerbatimBlockComment(
-                                  const VerbatimBlockComment *C) {
+    const VerbatimBlockComment *C) {
   unsigned NumLines = C->getNumLines();
   if (NumLines == 0)
     return;
@@ -805,12 +790,12 @@ void CommentASTToXMLConverter::visitVerbatimBlockComment(
 }
 
 void CommentASTToXMLConverter::visitVerbatimBlockLineComment(
-                                  const VerbatimBlockLineComment *C) {
+    const VerbatimBlockLineComment *C) {
   llvm_unreachable("should not see this AST node");
 }
 
 void CommentASTToXMLConverter::visitVerbatimLineComment(
-                                  const VerbatimLineComment *C) {
+    const VerbatimLineComment *C) {
   Result << "<Verbatim xml:space=\"preserve\" kind=\"verbatim\">";
   appendToResultWithXMLEscaping(C->getText());
   Result << "</Verbatim>";
@@ -897,8 +882,7 @@ void CommentASTToXMLConverter::visitFullComment(const FullComment *C) {
           Result << "\"";
         }
         Result << " line=\"" << SM.getLineNumber(FID, FileOffset)
-               << "\" column=\"" << SM.getColumnNumber(FID, FileOffset)
-               << "\"";
+               << "\" column=\"" << SM.getColumnNumber(FID, FileOffset) << "\"";
       }
     }
 
@@ -1003,8 +987,8 @@ void CommentASTToXMLConverter::visitFullComment(const FullComment *C) {
             appendToResultWithXMLEscaping(DA->getMessage());
             Result << "</Deprecated>";
           }
-        }
-        else if (const UnavailableAttr *UA = dyn_cast<UnavailableAttr>(Attrs[i])) {
+        } else if (const UnavailableAttr *UA =
+                       dyn_cast<UnavailableAttr>(Attrs[i])) {
           if (UA->getMessage().empty())
             Result << "<Unavailable/>";
           else {
@@ -1021,27 +1005,24 @@ void CommentASTToXMLConverter::visitFullComment(const FullComment *C) {
       StringRef Distribution;
       if (AA->getPlatform()) {
         Distribution = AvailabilityAttr::getPrettyPlatformName(
-                                        AA->getPlatform()->getName());
+            AA->getPlatform()->getName());
         if (Distribution.empty())
           Distribution = AA->getPlatform()->getName();
       }
       Result << " distribution=\"" << Distribution << "\">";
       VersionTuple IntroducedInVersion = AA->getIntroduced();
       if (!IntroducedInVersion.empty()) {
-        Result << "<IntroducedInVersion>"
-               << IntroducedInVersion.getAsString()
+        Result << "<IntroducedInVersion>" << IntroducedInVersion.getAsString()
                << "</IntroducedInVersion>";
       }
       VersionTuple DeprecatedInVersion = AA->getDeprecated();
       if (!DeprecatedInVersion.empty()) {
-        Result << "<DeprecatedInVersion>"
-               << DeprecatedInVersion.getAsString()
+        Result << "<DeprecatedInVersion>" << DeprecatedInVersion.getAsString()
                << "</DeprecatedInVersion>";
       }
       VersionTuple RemovedAfterVersion = AA->getObsoleted();
       if (!RemovedAfterVersion.empty()) {
-        Result << "<RemovedAfterVersion>"
-               << RemovedAfterVersion.getAsString()
+        Result << "<RemovedAfterVersion>" << RemovedAfterVersion.getAsString()
                << "</RemovedAfterVersion>";
       }
       StringRef DeprecationSummary = AA->getMessage();

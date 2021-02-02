@@ -5,33 +5,32 @@
 #include "llvm/Bitcode/ReaderWriter.h"
 #endif
 
+#include "llvm/Config/llvm-config.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/GlobalVariable.h"
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
 #include "llvm/Support/CommandLine.h"
+#include "llvm/Support/ErrorOr.h"
+#include "llvm/Support/FileSystem.h"
 #include "llvm/Support/ManagedStatic.h"
 #include "llvm/Support/MemoryBuffer.h"
-#include "llvm/Support/FileSystem.h"
-#include "llvm/Support/raw_ostream.h"
-#include "llvm/Support/ErrorOr.h"
 #include "llvm/Support/ToolOutputFile.h"
-#include "llvm/Config/llvm-config.h"
+#include "llvm/Support/raw_ostream.h"
 
 #include <system_error>
 
 using namespace llvm;
 
 static cl::opt<std::string>
-InputFilename(cl::Positional, cl::desc("<input bitcode>"), cl::init("-"));
+    InputFilename(cl::Positional, cl::desc("<input bitcode>"), cl::init("-"));
 
-static cl::opt<std::string>
-OutputFilename("o", cl::desc("Output filename"),
-               cl::value_desc("filename"));
+static cl::opt<std::string> OutputFilename("o", cl::desc("Output filename"),
+                                           cl::value_desc("filename"));
 
 int main(int argc, char **argv) {
   LLVMContext Context;
-  llvm_shutdown_obj Y;  // Call llvm_shutdown() on exit.
+  llvm_shutdown_obj Y; // Call llvm_shutdown() on exit.
 
   cl::ParseCommandLineOptions(argc, argv, "libclc builtin preparation tool\n");
 
@@ -40,15 +39,16 @@ int main(int argc, char **argv) {
 
   {
     ErrorOr<std::unique_ptr<MemoryBuffer>> BufferOrErr =
-      MemoryBuffer::getFile(InputFilename);
-    if (std::error_code  ec = BufferOrErr.getError()) {
+        MemoryBuffer::getFile(InputFilename);
+    if (std::error_code ec = BufferOrErr.getError()) {
       ErrorMessage = ec.message();
     } else {
       std::unique_ptr<MemoryBuffer> &BufferPtr = BufferOrErr.get();
       ErrorOr<std::unique_ptr<Module>> ModuleOrErr =
 #if HAVE_LLVM > 0x0390
-          expectedToErrorOrAndEmitErrors(Context,
-          parseBitcodeFile(BufferPtr.get()->getMemBufferRef(), Context));
+          expectedToErrorOrAndEmitErrors(
+              Context,
+              parseBitcodeFile(BufferPtr.get()->getMemBufferRef(), Context));
 #else
           parseBitcodeFile(BufferPtr.get()->getMemBufferRef(), Context);
 #endif
@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
   // version. This may also report a different version than the user
   // program is using. This should probably be uniqued when linking.
   if (NamedMDNode *OCLVersion = M->getNamedMetadata("opencl.ocl.version"))
-      M->eraseNamedMetadata(OCLVersion);
+    M->eraseNamedMetadata(OCLVersion);
 
   // Set linkage of every external definition to linkonce_odr.
   for (Module::iterator i = M->begin(), e = M->end(); i != e; ++i) {
@@ -115,4 +115,3 @@ int main(int argc, char **argv) {
   Out->keep();
   return 0;
 }
-

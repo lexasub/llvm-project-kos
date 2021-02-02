@@ -17,4 +17,3 @@ using namespace llvm;
 
 // pin vtable to this file
 void AMDGPUMCCodeEmitter::anchor() {}
-

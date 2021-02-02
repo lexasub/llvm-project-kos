@@ -17,19 +17,18 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        std::strstreambuf sb;
-        assert(sb.pcount() == 0);
-        assert(sb.sputc('a') == 'a');
-        assert(sb.pcount() == 1);
-        assert(sb.sputc(0) == 0);
-        assert(sb.pcount() == 2);
-        assert(sb.str() == std::string("a"));
-        assert(sb.pcount() == 2);
-        sb.freeze(false);
-    }
+int main(int, char**) {
+  {
+    std::strstreambuf sb;
+    assert(sb.pcount() == 0);
+    assert(sb.sputc('a') == 'a');
+    assert(sb.pcount() == 1);
+    assert(sb.sputc(0) == 0);
+    assert(sb.pcount() == 2);
+    assert(sb.str() == std::string("a"));
+    assert(sb.pcount() == 2);
+    sb.freeze(false);
+  }
 
   return 0;
 }

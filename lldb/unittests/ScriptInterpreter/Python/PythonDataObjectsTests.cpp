@@ -214,8 +214,8 @@ TEST_F(PythonDataObjectsTest, TestPythonBoolean) {
   };
 
   // Test PythonBoolean constructed from long integer values.
-  test_from_long(0); // Test 'false' value.
-  test_from_long(1); // Test 'true' value.
+  test_from_long(0);  // Test 'false' value.
+  test_from_long(1);  // Test 'true' value.
   test_from_long(~0); // Any value != 0 is 'true'.
 }
 

@@ -28,7 +28,6 @@
 #include "test_macros.h"
 #include "archetypes.h"
 
-
 // Overloads
 //  using A = Allocator
 //  using AT = std::allocator_arg_t
@@ -43,8 +42,7 @@
 // (8)  tuple(tuple&& t) -> decltype(t)
 // (9)  tuple(AT, A const&, tuple const& t) -> decltype(t)
 // (10) tuple(AT, A const&, tuple&& t) -> decltype(t)
-void test_primary_template()
-{
+void test_primary_template() {
   const std::allocator<int> A;
   const auto AT = std::allocator_arg;
   { // Testing (1)
@@ -59,14 +57,17 @@ void test_primary_template()
     std::tuple t1(p1);
     ASSERT_SAME_TYPE(decltype(t1), std::tuple<int, char>);
 
-    std::pair<int, std::tuple<char, long, void*>> p2(1, std::tuple<char, long, void*>('c', 3l, nullptr));
+    std::pair<int, std::tuple<char, long, void*> > p2(
+        1, std::tuple<char, long, void*>('c', 3l, nullptr));
     std::tuple t2(p2);
-    ASSERT_SAME_TYPE(decltype(t2), std::tuple<int, std::tuple<char, long, void*>>);
+    ASSERT_SAME_TYPE(decltype(t2),
+                     std::tuple<int, std::tuple<char, long, void*> >);
 
     int i = 3;
     std::pair<std::reference_wrapper<int>, char> p3(std::ref(i), 'c');
     std::tuple t3(p3);
-    ASSERT_SAME_TYPE(decltype(t3), std::tuple<std::reference_wrapper<int>, char>);
+    ASSERT_SAME_TYPE(decltype(t3),
+                     std::tuple<std::reference_wrapper<int>, char>);
 
     std::pair<int&, char> p4(i, 'c');
     std::tuple t4(p4);
@@ -110,14 +111,17 @@ void test_primary_template()
     std::tuple t1(AT, A, p1);
     ASSERT_SAME_TYPE(decltype(t1), std::tuple<int, char>);
 
-    std::pair<int, std::tuple<char, long, void*>> p2(1, std::tuple<char, long, void*>('c', 3l, nullptr));
+    std::pair<int, std::tuple<char, long, void*> > p2(
+        1, std::tuple<char, long, void*>('c', 3l, nullptr));
     std::tuple t2(AT, A, p2);
-    ASSERT_SAME_TYPE(decltype(t2), std::tuple<int, std::tuple<char, long, void*>>);
+    ASSERT_SAME_TYPE(decltype(t2),
+                     std::tuple<int, std::tuple<char, long, void*> >);
 
     int i = 3;
     std::pair<std::reference_wrapper<int>, char> p3(std::ref(i), 'c');
     std::tuple t3(AT, A, p3);
-    ASSERT_SAME_TYPE(decltype(t3), std::tuple<std::reference_wrapper<int>, char>);
+    ASSERT_SAME_TYPE(decltype(t3),
+                     std::tuple<std::reference_wrapper<int>, char>);
 
     std::pair<int&, char> p4(i, 'c');
     std::tuple t4(AT, A, p4);
@@ -162,8 +166,7 @@ void test_primary_template()
 // (4)  tuple(tuple&&) -> tuple<>
 // (5)  tuple(AT, A const&, tuple const&) -> tuple<>
 // (6)  tuple(AT, A const&, tuple&&) -> tuple<>
-void test_empty_specialization()
-{
+void test_empty_specialization() {
   std::allocator<int> A;
   const auto AT = std::allocator_arg;
   { // Testing (1)

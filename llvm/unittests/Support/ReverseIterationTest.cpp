@@ -18,14 +18,11 @@
 using namespace llvm;
 
 TEST(ReverseIterationTest, DenseMapTest1) {
-  static_assert(detail::IsPointerLike<int *>::value,
-                "int * is pointer-like");
+  static_assert(detail::IsPointerLike<int *>::value, "int * is pointer-like");
   static_assert(detail::IsPointerLike<uintptr_t>::value,
                 "uintptr_t is pointer-like");
-  static_assert(!detail::IsPointerLike<int>::value,
-                "int is not pointer-like");
-  static_assert(detail::IsPointerLike<void *>::value,
-                "void * is pointer-like");
+  static_assert(!detail::IsPointerLike<int>::value, "int is not pointer-like");
+  static_assert(detail::IsPointerLike<void *>::value, "void * is pointer-like");
   struct IncompleteType;
   static_assert(detail::IsPointerLike<IncompleteType *>::value,
                 "incomplete * is pointer-like");
@@ -33,16 +30,16 @@ TEST(ReverseIterationTest, DenseMapTest1) {
   // For a DenseMap with non-pointer-like keys, forward iteration equals
   // reverse iteration.
   DenseMap<int, int> Map;
-  int Keys[] = { 1, 2, 3, 4 };
+  int Keys[] = {1, 2, 3, 4};
 
   // Insert keys into the DenseMap.
-  for (auto Key: Keys)
+  for (auto Key : Keys)
     Map[Key] = 0;
 
   // Note: This is the observed order of keys in the DenseMap.
   // If there is any change in the behavior of the DenseMap, this order
   // would need to be adjusted accordingly.
-  int IterKeys[] = { 2, 4, 1, 3 };
+  int IterKeys[] = {2, 4, 1, 3};
 
   // Check that the DenseMap is iterated in the expected order.
   for (auto Tuple : zip(Map, IterKeys))
@@ -55,11 +52,13 @@ TEST(ReverseIterationTest, DenseMapTest1) {
 }
 
 // Define a pointer-like int.
-struct PtrLikeInt { int value; };
+struct PtrLikeInt {
+  int value;
+};
 
 namespace llvm {
 
-template<> struct DenseMapInfo<PtrLikeInt *> {
+template <> struct DenseMapInfo<PtrLikeInt *> {
   static PtrLikeInt *getEmptyKey() {
     static PtrLikeInt EmptyKey;
     return &EmptyKey;
@@ -70,9 +69,7 @@ template<> struct DenseMapInfo<PtrLikeInt *> {
     return &TombstoneKey;
   }
 
-  static int getHashValue(const PtrLikeInt *P) {
-    return P->value;
-  }
+  static int getHashValue(const PtrLikeInt *P) { return P->value; }
 
   static bool isEqual(const PtrLikeInt *LHS, const PtrLikeInt *RHS) {
     return LHS == RHS;
@@ -86,7 +83,7 @@ TEST(ReverseIterationTest, DenseMapTest2) {
                 "PtrLikeInt * is pointer-like");
 
   PtrLikeInt a = {4}, b = {8}, c = {12}, d = {16};
-  PtrLikeInt *Keys[] = { &a, &b, &c, &d };
+  PtrLikeInt *Keys[] = {&a, &b, &c, &d};
 
   // Insert keys into the DenseMap.
   DenseMap<PtrLikeInt *, int> Map;

@@ -22,47 +22,51 @@
  * in the schedule tree.
  */
 struct isl_schedule_node {
-	int ref;
+  int ref;
 
-	isl_schedule *schedule;
-	isl_schedule_tree_list *ancestors;
-	int *child_pos;
-	isl_schedule_tree *tree;
+  isl_schedule *schedule;
+  isl_schedule_tree_list *ancestors;
+  int *child_pos;
+  isl_schedule_tree *tree;
 };
 
 __isl_give isl_schedule_node *isl_schedule_node_alloc(
-	__isl_take isl_schedule *schedule, __isl_take isl_schedule_tree *tree,
-	__isl_take isl_schedule_tree_list *ancestors, int *child_pos);
-__isl_give isl_schedule_node *isl_schedule_node_graft_tree(
-	__isl_take isl_schedule_node *pos, __isl_take isl_schedule_tree *tree);
+    __isl_take isl_schedule *schedule, __isl_take isl_schedule_tree *tree,
+    __isl_take isl_schedule_tree_list *ancestors, int *child_pos);
+__isl_give isl_schedule_node *
+isl_schedule_node_graft_tree(__isl_take isl_schedule_node *pos,
+                             __isl_take isl_schedule_tree *tree);
 
-__isl_give isl_schedule_tree *isl_schedule_node_get_tree(
-	__isl_keep isl_schedule_node *node);
+__isl_give isl_schedule_tree *
+isl_schedule_node_get_tree(__isl_keep isl_schedule_node *node);
 
 __isl_give isl_schedule_node *isl_schedule_node_pullback_union_pw_multi_aff(
-	__isl_take isl_schedule_node *node,
-	__isl_take isl_union_pw_multi_aff *upma);
+    __isl_take isl_schedule_node *node,
+    __isl_take isl_union_pw_multi_aff *upma);
 
-__isl_give isl_schedule_node *isl_schedule_node_expand(
-	__isl_take isl_schedule_node *node,
-	__isl_take isl_union_pw_multi_aff *contraction,
-	__isl_take isl_union_set *domain,
-	__isl_take isl_schedule_tree *tree);
+__isl_give isl_schedule_node *
+isl_schedule_node_expand(__isl_take isl_schedule_node *node,
+                         __isl_take isl_union_pw_multi_aff *contraction,
+                         __isl_take isl_union_set *domain,
+                         __isl_take isl_schedule_tree *tree);
 
-__isl_give isl_schedule_node *isl_schedule_node_gist(
-	__isl_take isl_schedule_node *node, __isl_take isl_union_set *context);
+__isl_give isl_schedule_node *
+isl_schedule_node_gist(__isl_take isl_schedule_node *node,
+                       __isl_take isl_union_set *context);
 
-__isl_give isl_schedule_node *isl_schedule_node_domain_intersect_domain(
-	__isl_take isl_schedule_node *node, __isl_take isl_union_set *domain);
-__isl_give isl_schedule_node *isl_schedule_node_domain_gist_params(
-	__isl_take isl_schedule_node *node, __isl_take isl_set *context);
+__isl_give isl_schedule_node *
+isl_schedule_node_domain_intersect_domain(__isl_take isl_schedule_node *node,
+                                          __isl_take isl_union_set *domain);
+__isl_give isl_schedule_node *
+isl_schedule_node_domain_gist_params(__isl_take isl_schedule_node *node,
+                                     __isl_take isl_set *context);
 
 __isl_give isl_schedule_node *isl_schedule_node_insert_expansion(
-	__isl_take isl_schedule_node *node,
-	__isl_take isl_union_pw_multi_aff *contraction,
-	__isl_take isl_union_map *expansion);
-__isl_give isl_schedule_node *isl_schedule_node_insert_extension(
-	__isl_take isl_schedule_node *node,
-	__isl_take isl_union_map *extension);
+    __isl_take isl_schedule_node *node,
+    __isl_take isl_union_pw_multi_aff *contraction,
+    __isl_take isl_union_map *expansion);
+__isl_give isl_schedule_node *
+isl_schedule_node_insert_extension(__isl_take isl_schedule_node *node,
+                                   __isl_take isl_union_map *extension);
 
 #endif

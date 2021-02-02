@@ -8,5 +8,5 @@ int main() {
   char buffer[42];
   buffer[subscript] = 42;
   printf("OK\n");
-// CHECK: OK
+  // CHECK: OK
 }

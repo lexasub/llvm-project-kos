@@ -14,10 +14,10 @@ Bar bar;
 // DEFAULT: @_Z7checkmev
 // TYPE: @_Z7checkmev
 void checkme() {
-// DEFAULT: call void @__ubsan_handle_dynamic_type_cache_miss({{.*}} ({{.*}}* @bar to
-// TYPE-NOT: @__ubsan_handle_dynamic_type_cache_miss
-  Foo* foo = static_cast<Foo*>(&bar); // down-casting
-// DEFAULT: ret void
-// TYPE: ret void
+  // DEFAULT: call void @__ubsan_handle_dynamic_type_cache_miss({{.*}} ({{.*}}* @bar to
+  // TYPE-NOT: @__ubsan_handle_dynamic_type_cache_miss
+  Foo *foo = static_cast<Foo *>(&bar); // down-casting
+                                       // DEFAULT: ret void
+                                       // TYPE: ret void
   return;
 }

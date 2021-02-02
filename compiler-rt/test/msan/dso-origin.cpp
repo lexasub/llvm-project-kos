@@ -18,9 +18,9 @@ void my_access(int *p) {
 void *my_alloc(unsigned sz) {
   return malloc(sz);
 }
-}  // extern "C"
+} // extern "C"
 
-#else  // BUILD_SO
+#else // BUILD_SO
 
 #include <stdlib.h>
 
@@ -45,4 +45,4 @@ int main(int argc, char **argv) {
   return 0;
 }
 
-#endif  // BUILD_SO
+#endif // BUILD_SO

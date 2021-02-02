@@ -411,7 +411,7 @@ llvm::DIFile *CGDebugInfo::getOrCreateFile(SourceLocation Loc) {
   } else {
     PresumedLoc PLoc = SM.getPresumedLoc(Loc);
     FileName = PLoc.getFilename();
-    
+
     if (FileName.empty()) {
       FileName = TheCU->getFile()->getFilename();
     } else {
@@ -715,8 +715,8 @@ llvm::DIType *CGDebugInfo::CreateType(const BuiltinType *BT) {
     return getOrCreateStructPtrType("opencl_queue_t", OCLQueueDITy);
   case BuiltinType::OCLReserveID:
     return getOrCreateStructPtrType("opencl_reserve_id_t", OCLReserveIDDITy);
-#define EXT_OPAQUE_TYPE(ExtType, Id, Ext) \
-  case BuiltinType::Id: \
+#define EXT_OPAQUE_TYPE(ExtType, Id, Ext)                                      \
+  case BuiltinType::Id:                                                        \
     return getOrCreateStructPtrType("opencl_" #ExtType, Id##Ty);
 #include "clang/Basic/OpenCLExtensionTypes.def"
 
@@ -725,7 +725,8 @@ llvm::DIType *CGDebugInfo::CreateType(const BuiltinType *BT) {
     {
       ASTContext::BuiltinVectorTypeInfo Info =
           CGM.getContext().getBuiltinVectorTypeInfo(BT);
-      unsigned NumElemsPerVG = (Info.EC.getKnownMinValue() * Info.NumVectors) / 2;
+      unsigned NumElemsPerVG =
+          (Info.EC.getKnownMinValue() * Info.NumVectors) / 2;
 
       // Debuggers can't extract 1bit from a vector, so will display a
       // bitpattern for svbool_t instead.
@@ -752,10 +753,9 @@ llvm::DIType *CGDebugInfo::CreateType(const BuiltinType *BT) {
       return DBuilder.createVectorType(/*Size*/ 0, Align, ElemTy,
                                        SubscriptArray);
     }
-  // It doesn't make sense to generate debug info for PowerPC MMA vector types.
-  // So we return a safe type here to avoid generating an error.
-#define PPC_VECTOR_TYPE(Name, Id, size) \
-  case BuiltinType::Id:
+    // It doesn't make sense to generate debug info for PowerPC MMA vector
+    // types. So we return a safe type here to avoid generating an error.
+#define PPC_VECTOR_TYPE(Name, Id, size) case BuiltinType::Id:
 #include "clang/Basic/PPCTypes.def"
     return CreateType(cast<const BuiltinType>(CGM.getContext().IntTy));
 
@@ -1165,8 +1165,8 @@ llvm::DIType *CGDebugInfo::CreateType(const BlockPointerType *Ty,
 
   auto *DescTy = DBuilder.createPointerType(EltTy, Size);
 
-  FieldOffset = collectDefaultElementTypesForBlockPointer(Ty, Unit, DescTy,
-                                                          0, EltTys);
+  FieldOffset =
+      collectDefaultElementTypesForBlockPointer(Ty, Unit, DescTy, 0, EltTys);
 
   Elements = DBuilder.getOrCreateArray(EltTys);
 
@@ -1174,8 +1174,8 @@ llvm::DIType *CGDebugInfo::CreateType(const BlockPointerType *Ty,
   // DW_AT_APPLE_BLOCK attribute and are an implementation detail only
   // the debugger needs to know about. To allow type uniquing, emit
   // them without a name or a location.
-  EltTy = DBuilder.createStructType(Unit, "", nullptr, 0, FieldOffset, 0,
-                                    Flags, nullptr, Elements);
+  EltTy = DBuilder.createStructType(Unit, "", nullptr, 0, FieldOffset, 0, Flags,
+                                    nullptr, Elements);
 
   return DBuilder.createPointerType(EltTy, Size);
 }
@@ -2618,9 +2618,8 @@ llvm::DIModule *CGDebugInfo::getOrCreateModuleRef(ASTSourceDescriptor Mod,
                    : getOrCreateModuleRef(ASTSourceDescriptor(*M->Parent),
                                           CreateSkeletonCU);
   std::string IncludePath = Mod.getPath().str();
-  llvm::DIModule *DIMod =
-      DBuilder.createModule(Parent, Mod.getModuleName(), ConfigMacros,
-                            RemapPath(IncludePath));
+  llvm::DIModule *DIMod = DBuilder.createModule(
+      Parent, Mod.getModuleName(), ConfigMacros, RemapPath(IncludePath));
   ModuleCache[M].reset(DIMod);
   return DIMod;
 }
@@ -3383,7 +3382,7 @@ llvm::DICompositeType *CGDebugInfo::CreateLimitedType(const RecordType *Ty) {
 
     // Record exports it symbols to the containing structure.
     if (CXXRD->isAnonymousStructOrUnion())
-        Flags |= llvm::DINode::FlagExportSymbols;
+      Flags |= llvm::DINode::FlagExportSymbols;
   }
 
   llvm::DICompositeType *RealDecl = DBuilder.createReplaceableCompositeType(
@@ -4758,7 +4757,7 @@ void CGDebugInfo::EmitGlobalVariable(const ValueDecl *VD, const APValue &Init) {
       // first time `ZERO` is referenced in a function.
       llvm::DIType *EDTy =
           getOrCreateType(QualType(ED->getTypeForDecl(), 0), Unit);
-      assert (EDTy->getTag() == llvm::dwarf::DW_TAG_enumeration_type);
+      assert(EDTy->getTag() == llvm::dwarf::DW_TAG_enumeration_type);
       (void)EDTy;
       return;
     }

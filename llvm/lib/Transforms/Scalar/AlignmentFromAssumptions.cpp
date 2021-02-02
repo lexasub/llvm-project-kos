@@ -19,7 +19,6 @@
 #include "llvm/InitializePasses.h"
 #define AA_NAME "alignment-from-assumptions"
 #define DEBUG_TYPE AA_NAME
-#include "llvm/Transforms/Scalar/AlignmentFromAssumptions.h"
 #include "llvm/ADT/SmallPtrSet.h"
 #include "llvm/ADT/Statistic.h"
 #include "llvm/Analysis/AliasAnalysis.h"
@@ -37,14 +36,15 @@
 #include "llvm/Support/Debug.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Transforms/Scalar.h"
+#include "llvm/Transforms/Scalar/AlignmentFromAssumptions.h"
 using namespace llvm;
 
 STATISTIC(NumLoadAlignChanged,
-  "Number of loads changed by alignment assumptions");
+          "Number of loads changed by alignment assumptions");
 STATISTIC(NumStoreAlignChanged,
-  "Number of stores changed by alignment assumptions");
+          "Number of stores changed by alignment assumptions");
 STATISTIC(NumMemIntAlignChanged,
-  "Number of memory intrinsics changed by alignment assumptions");
+          "Number of memory intrinsics changed by alignment assumptions");
 
 namespace {
 struct AlignmentFromAssumptions : public FunctionPass {
@@ -70,17 +70,15 @@ struct AlignmentFromAssumptions : public FunctionPass {
 
   AlignmentFromAssumptionsPass Impl;
 };
-}
+} // namespace
 
 char AlignmentFromAssumptions::ID = 0;
 static const char aip_name[] = "Alignment from assumptions";
-INITIALIZE_PASS_BEGIN(AlignmentFromAssumptions, AA_NAME,
-                      aip_name, false, false)
+INITIALIZE_PASS_BEGIN(AlignmentFromAssumptions, AA_NAME, aip_name, false, false)
 INITIALIZE_PASS_DEPENDENCY(AssumptionCacheTracker)
 INITIALIZE_PASS_DEPENDENCY(DominatorTreeWrapperPass)
 INITIALIZE_PASS_DEPENDENCY(ScalarEvolutionWrapperPass)
-INITIALIZE_PASS_END(AlignmentFromAssumptions, AA_NAME,
-                    aip_name, false, false)
+INITIALIZE_PASS_END(AlignmentFromAssumptions, AA_NAME, aip_name, false, false)
 
 FunctionPass *llvm::createAlignmentFromAssumptionsPass() {
   return new AlignmentFromAssumptions();
@@ -101,8 +99,7 @@ static MaybeAlign getNewAlignmentDiff(const SCEV *DiffSCEV,
   LLVM_DEBUG(dbgs() << "\talignment relative to " << *AlignSCEV << " is "
                     << *DiffUnitsSCEV << " (diff: " << *DiffSCEV << ")\n");
 
-  if (const SCEVConstant *ConstDUSCEV =
-      dyn_cast<SCEVConstant>(DiffUnitsSCEV)) {
+  if (const SCEVConstant *ConstDUSCEV = dyn_cast<SCEVConstant>(DiffUnitsSCEV)) {
     int64_t DiffUnits = ConstDUSCEV->getValue()->getSExtValue();
 
     // If the displacement is an exact multiple of the alignment, then the
@@ -242,13 +239,13 @@ bool AlignmentFromAssumptionsPass::processAssumption(CallInst *ACall,
 
   // Apply the assumption to all other users of the specified pointer.
   SmallPtrSet<Instruction *, 32> Visited;
-  SmallVector<Instruction*, 16> WorkList;
+  SmallVector<Instruction *, 16> WorkList;
   for (User *J : AAPtr->users()) {
     if (J == ACall)
       continue;
 
     if (Instruction *K = dyn_cast<Instruction>(J))
-        WorkList.push_back(K);
+      WorkList.push_back(K);
   }
 
   while (!WorkList.empty()) {

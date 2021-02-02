@@ -10,9 +10,9 @@
 #ifndef ISL_BASIS_REDUCTION_H
 #define ISL_BASIS_REDUCTION_H
 
+#include "isl_tab.h"
 #include <isl/set.h>
 #include <isl_mat_private.h>
-#include "isl_tab.h"
 
 #if defined(__cplusplus)
 extern "C" {

@@ -58,8 +58,8 @@ TEST_F(ReplacementTest, CanAddText) {
 }
 
 TEST_F(ReplacementTest, CanReplaceTextAtPosition) {
-  FileID ID = Context.createInMemoryFile("input.cpp",
-                                         "line1\nline2\nline3\nline4");
+  FileID ID =
+      Context.createInMemoryFile("input.cpp", "line1\nline2\nline3\nline4");
   SourceLocation Location = Context.getLocation(ID, 2, 3);
   Replacement Replace(createReplacement(Location, 12, "x"));
   EXPECT_TRUE(Replace.apply(Context.Rewrite));
@@ -67,8 +67,8 @@ TEST_F(ReplacementTest, CanReplaceTextAtPosition) {
 }
 
 TEST_F(ReplacementTest, CanReplaceTextAtPositionMultipleTimes) {
-  FileID ID = Context.createInMemoryFile("input.cpp",
-                                         "line1\nline2\nline3\nline4");
+  FileID ID =
+      Context.createInMemoryFile("input.cpp", "line1\nline2\nline3\nline4");
   SourceLocation Location1 = Context.getLocation(ID, 2, 3);
   Replacement Replace1(createReplacement(Location1, 12, "x\ny\n"));
   EXPECT_TRUE(Replace1.apply(Context.Rewrite));
@@ -135,7 +135,8 @@ static bool checkReplacementError(llvm::Error &&Error,
     }
   });
   OS.flush();
-  if (ErrorMessage.empty()) return true;
+  if (ErrorMessage.empty())
+    return true;
   llvm::errs() << ErrorMessage;
   return false;
 }
@@ -430,8 +431,8 @@ TEST_F(ReplacementTest, InsertBetweenAdjacentReplacements) {
 }
 
 TEST_F(ReplacementTest, CanApplyReplacements) {
-  FileID ID = Context.createInMemoryFile("input.cpp",
-                                         "line1\nline2\nline3\nline4");
+  FileID ID =
+      Context.createInMemoryFile("input.cpp", "line1\nline2\nline3\nline4");
   Replacements Replaces =
       toReplacements({Replacement(Context.Sources,
                                   Context.getLocation(ID, 2, 1), 5, "replaced"),
@@ -444,8 +445,8 @@ TEST_F(ReplacementTest, CanApplyReplacements) {
 // Verifies that replacement/deletion is applied before insertion at the same
 // offset.
 TEST_F(ReplacementTest, InsertAndDelete) {
-  FileID ID = Context.createInMemoryFile("input.cpp",
-                                         "line1\nline2\nline3\nline4");
+  FileID ID =
+      Context.createInMemoryFile("input.cpp", "line1\nline2\nline3\nline4");
   Replacements Replaces = toReplacements(
       {Replacement(Context.Sources, Context.getLocation(ID, 2, 1), 6, ""),
        Replacement(Context.Sources, Context.getLocation(ID, 2, 1), 0,
@@ -455,8 +456,7 @@ TEST_F(ReplacementTest, InsertAndDelete) {
 }
 
 TEST_F(ReplacementTest, AdjacentReplacements) {
-  FileID ID = Context.createInMemoryFile("input.cpp",
-                                         "ab");
+  FileID ID = Context.createInMemoryFile("input.cpp", "ab");
   Replacements Replaces = toReplacements(
       {Replacement(Context.Sources, Context.getLocation(ID, 1, 1), 1, "x"),
        Replacement(Context.Sources, Context.getLocation(ID, 1, 2), 1, "y")});
@@ -465,8 +465,8 @@ TEST_F(ReplacementTest, AdjacentReplacements) {
 }
 
 TEST_F(ReplacementTest, AddDuplicateReplacements) {
-  FileID ID = Context.createInMemoryFile("input.cpp",
-                                         "line1\nline2\nline3\nline4");
+  FileID ID =
+      Context.createInMemoryFile("input.cpp", "line1\nline2\nline3\nline4");
   auto Replaces = toReplacements({Replacement(
       Context.Sources, Context.getLocation(ID, 2, 1), 5, "replaced")});
 
@@ -485,8 +485,8 @@ TEST_F(ReplacementTest, AddDuplicateReplacements) {
 }
 
 TEST_F(ReplacementTest, FailOrderDependentReplacements) {
-  FileID ID = Context.createInMemoryFile("input.cpp",
-                                         "line1\nline2\nline3\nline4");
+  FileID ID =
+      Context.createInMemoryFile("input.cpp", "line1\nline2\nline3\nline4");
   auto Replaces = toReplacements({Replacement(
       Context.Sources, Context.getLocation(ID, 2, 1), 5, "other")});
 
@@ -585,9 +585,9 @@ TEST(ShiftedCodePositionTest, NoReplacementText) {
 
 class FlushRewrittenFilesTest : public ::testing::Test {
 public:
-   FlushRewrittenFilesTest() {}
+  FlushRewrittenFilesTest() {}
 
-   ~FlushRewrittenFilesTest() override {
+  ~FlushRewrittenFilesTest() override {
     for (llvm::StringMap<std::string>::iterator I = TemporaryFiles.begin(),
                                                 E = TemporaryFiles.end();
          I != E; ++I) {
@@ -647,8 +647,7 @@ TEST_F(FlushRewrittenFilesTest, StoresChangesOnDisk) {
 }
 
 namespace {
-template <typename T>
-class TestVisitor : public clang::RecursiveASTVisitor<T> {
+template <typename T> class TestVisitor : public clang::RecursiveASTVisitor<T> {
 public:
   bool runOver(StringRef Code) {
     return runToolOnCode(std::make_unique<TestAction>(this), Code);
@@ -690,8 +689,8 @@ private:
 };
 } // end namespace
 
-void expectReplacementAt(const Replacement &Replace,
-                         StringRef File, unsigned Offset, unsigned Length) {
+void expectReplacementAt(const Replacement &Replace, StringRef File,
+                         unsigned Offset, unsigned Length) {
   ASSERT_TRUE(Replace.isApplicable());
   EXPECT_EQ(File, Replace.getFilePath());
   EXPECT_EQ(Offset, Replace.getOffset());
@@ -741,7 +740,7 @@ TEST(Replacement, FunctionCall) {
 TEST(Replacement, TemplatedFunctionCall) {
   CallToFVisitor CallToF;
   EXPECT_TRUE(CallToF.runOver(
-        "template <typename T> void F(); void G() { F<int>(); }"));
+      "template <typename T> void F(); void G() { F<int>(); }"));
   expectReplacementAt(CallToF.Replace, "input.cc", 43, 8);
 }
 
@@ -750,14 +749,15 @@ class NestedNameSpecifierAVisitor
 public:
   bool TraverseNestedNameSpecifierLoc(NestedNameSpecifierLoc NNSLoc) {
     if (NNSLoc.getNestedNameSpecifier()) {
-      if (const NamespaceDecl* NS = NNSLoc.getNestedNameSpecifier()->getAsNamespace()) {
+      if (const NamespaceDecl *NS =
+              NNSLoc.getNestedNameSpecifier()->getAsNamespace()) {
         if (NS->getName() == "a") {
           Replace = Replacement(*SM, &NNSLoc, "", Context->getLangOpts());
         }
       }
     }
-    return TestVisitor<NestedNameSpecifierAVisitor>::TraverseNestedNameSpecifierLoc(
-        NNSLoc);
+    return TestVisitor<
+        NestedNameSpecifierAVisitor>::TraverseNestedNameSpecifierLoc(NNSLoc);
   }
   Replacement Replace;
 };
@@ -897,7 +897,8 @@ TEST(Range, AjacentReplacements) {
 }
 
 TEST(Range, MergeRangesAfterReplacements) {
-  std::vector<Range> Ranges = {Range(8, 0), Range(5, 2), Range(9, 0), Range(0, 1)};
+  std::vector<Range> Ranges = {Range(8, 0), Range(5, 2), Range(9, 0),
+                               Range(0, 1)};
   Replacements Replaces = toReplacements({Replacement("foo", 1, 3, ""),
                                           Replacement("foo", 7, 0, "12"),
                                           Replacement("foo", 9, 2, "")});
@@ -1092,19 +1093,19 @@ TEST(DeduplicateByFileTest, NonExistingFilePath) {
 }
 
 class AtomicChangeTest : public ::testing::Test {
-  protected:
-    void SetUp() override {
-      DefaultFileID = Context.createInMemoryFile("input.cpp", DefaultCode);
-      DefaultLoc = Context.Sources.getLocForStartOfFile(DefaultFileID)
-                       .getLocWithOffset(20);
-      assert(DefaultLoc.isValid() && "Default location must be valid.");
-    }
+protected:
+  void SetUp() override {
+    DefaultFileID = Context.createInMemoryFile("input.cpp", DefaultCode);
+    DefaultLoc = Context.Sources.getLocForStartOfFile(DefaultFileID)
+                     .getLocWithOffset(20);
+    assert(DefaultLoc.isValid() && "Default location must be valid.");
+  }
 
-    RewriterTestContext Context;
-    std::string DefaultCode = std::string(100, 'a');
-    unsigned DefaultOffset = 20;
-    SourceLocation DefaultLoc;
-    FileID DefaultFileID;
+  RewriterTestContext Context;
+  std::string DefaultCode = std::string(100, 'a');
+  unsigned DefaultOffset = 20;
+  SourceLocation DefaultLoc;
+  FileID DefaultFileID;
 };
 
 TEST_F(AtomicChangeTest, AtomicChangeToYAML) {
@@ -1113,7 +1114,7 @@ TEST_F(AtomicChangeTest, AtomicChangeToYAML) {
       Change.insert(Context.Sources, DefaultLoc, "aa", /*InsertAfter=*/false);
   ASSERT_TRUE(!Err);
   Err = Change.insert(Context.Sources, DefaultLoc.getLocWithOffset(10), "bb",
-                    /*InsertAfter=*/false);
+                      /*InsertAfter=*/false);
   ASSERT_TRUE(!Err);
   Change.addHeader("a.h");
   Change.removeHeader("b.h");
@@ -1162,10 +1163,10 @@ TEST_F(AtomicChangeTest, YAMLToAtomicChange) {
                             "...\n";
   AtomicChange ExpectedChange(Context.Sources, DefaultLoc);
   llvm::Error Err = ExpectedChange.insert(Context.Sources, DefaultLoc, "aa",
-                                        /*InsertAfter=*/false);
+                                          /*InsertAfter=*/false);
   ASSERT_TRUE(!Err);
   Err = ExpectedChange.insert(Context.Sources, DefaultLoc.getLocWithOffset(10),
-                            "bb", /*InsertAfter=*/false);
+                              "bb", /*InsertAfter=*/false);
   ASSERT_TRUE(!Err);
 
   ExpectedChange.addHeader("a.h");
@@ -1257,7 +1258,7 @@ TEST_F(AtomicChangeTest, InsertBeforeWithInvalidLocation) {
 
   // Invalid location.
   Err = Change.insert(Context.Sources, SourceLocation(), "a",
-                    /*InsertAfter=*/false);
+                      /*InsertAfter=*/false);
   ASSERT_TRUE((bool)Err);
   EXPECT_TRUE(checkReplacementError(
       std::move(Err), replacement_error::wrong_file_path,

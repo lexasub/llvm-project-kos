@@ -24,9 +24,8 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    std::shared_mutex m;
+int main(int, char**) {
+  std::shared_mutex m;
 
   return 0;
 }

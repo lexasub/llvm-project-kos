@@ -22,13 +22,13 @@ void f() {
 void g() {
 #if __has_feature(cxx_trailing_return)
   auto a = 0,
-       (*b)() -> void, // expected-error {{declaration with trailing return type must be the only declaration in its group}}
-       c = 0;
+       (*b)()->void, // expected-error {{declaration with trailing return type must be the only declaration in its group}}
+      c = 0;
   auto d = 0,
-       e() -> void, // expected-error {{declaration with trailing return type must be the only declaration in its group}}
-       f = 0.0;
-  auto x() -> void, // expected-error {{declaration with trailing return type must be the only declaration in its group}}
-       y() -> void;
+       e()->void, // expected-error {{declaration with trailing return type must be the only declaration in its group}}
+      f = 0.0;
+  auto x()->void, // expected-error {{declaration with trailing return type must be the only declaration in its group}}
+      y()->void;
 #endif
 
 #if __has_feature(cxx_decltype)
@@ -39,24 +39,24 @@ void g() {
 #if __has_feature(cxx_trailing_return)
 int F();
 auto p = 0, (*q)() -> auto = F; // expected-error {{declaration with trailing return type must be the only declaration in its group}}
-  #if __cplusplus < 201402L
-  // expected-error@-2 {{'auto' not allowed in function return type}}
-  #endif
+#if __cplusplus < 201402L
+    // expected-error@-2 {{'auto' not allowed in function return type}}
+#endif
 #endif
 
 #if __cplusplus >= 201402L
 namespace DeducedReturnType {
-  auto a = 0,
-       b(), // expected-error {{function with deduced return type must be the only declaration in its group}}
-       c = 0.0;
-  auto d(), // expected-error {{function with deduced return type must be the only declaration in its group}}
-       e = 1;
-  auto f(), // expected-error {{function with deduced return type must be the only declaration in its group}}
-       g();
-}
+auto a = 0,
+     b(), // expected-error {{function with deduced return type must be the only declaration in its group}}
+    c = 0.0;
+auto d(), // expected-error {{function with deduced return type must be the only declaration in its group}}
+    e = 1;
+auto f(), // expected-error {{function with deduced return type must be the only declaration in its group}}
+    g();
+} // namespace DeducedReturnType
 #endif
 
-template<typename T> void h() {
+template <typename T> void h() {
   auto a = T(), *b = &a;
 #if __has_feature(cxx_decltype)
   auto c = T(), d = decltype(c)(0);

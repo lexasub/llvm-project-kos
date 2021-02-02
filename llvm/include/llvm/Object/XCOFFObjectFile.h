@@ -428,6 +428,7 @@ class XCOFFTracebackTable {
   Optional<uint8_t> ExtensionTable;
 
   XCOFFTracebackTable(const uint8_t *Ptr, uint64_t &Size, Error &Err);
+
 public:
   /// Parse an XCOFF Traceback Table from \a Ptr with \a Size bytes.
   /// Returns an XCOFFTracebackTable upon successful parsing, otherwise an

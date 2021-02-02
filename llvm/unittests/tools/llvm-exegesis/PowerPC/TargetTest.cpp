@@ -17,16 +17,16 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
-namespace llvm{
+namespace llvm {
 namespace exegesis {
 
 void InitializePowerPCExegesisTarget();
 
 namespace {
 
-using testing::NotNull;
 using testing::IsEmpty;
 using testing::Not;
+using testing::NotNull;
 
 constexpr const char kTriple[] = "powerpc64le-unknown-linux";
 

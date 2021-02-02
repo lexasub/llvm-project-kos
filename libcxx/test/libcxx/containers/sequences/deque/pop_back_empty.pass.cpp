@@ -17,13 +17,12 @@
 
 #include "test_macros.h"
 
-
 int main(int, char**) {
-    std::deque<int> q;
-    q.push_back(0);
-    q.pop_back();
-    q.pop_back();
-    std::exit(1);
+  std::deque<int> q;
+  q.push_back(0);
+  q.pop_back();
+  q.pop_back();
+  std::exit(1);
 
   return 0;
 }

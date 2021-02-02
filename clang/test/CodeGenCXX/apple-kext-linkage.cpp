@@ -2,19 +2,19 @@
 
 struct Base {
   virtual ~Base();
-} ;
+};
 
 struct Derived : Base {
-  void operator delete(void *) { }
+  void operator delete(void *) {}
   Derived();
 };
 
 void foo() {
-  Derived d1;			// ok
+  Derived d1; // ok
 }
 
 // CHECK-LABEL: define internal i32 @_Z1fj(
-inline unsigned f(unsigned n) { return n == 0 ? 0 : n + f(n-1); }
+inline unsigned f(unsigned n) { return n == 0 ? 0 : n + f(n - 1); }
 
 unsigned g(unsigned n) { return f(n); }
 

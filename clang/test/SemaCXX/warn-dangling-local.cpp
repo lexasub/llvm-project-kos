@@ -3,7 +3,7 @@
 using T = int[];
 
 void f() {
-  int *p = &(int&)(int&&)0; // expected-warning {{temporary whose address is used as value of local variable 'p' will be destroyed at the end of the full-expression}}
+  int *p = &(int &)(int &&)0; // expected-warning {{temporary whose address is used as value of local variable 'p' will be destroyed at the end of the full-expression}}
 
   int *q = (int *const &)T{1, 2, 3}; // expected-warning {{temporary whose address is used as value of local variable 'q' will be destroyed at the end of the full-expression}}
 

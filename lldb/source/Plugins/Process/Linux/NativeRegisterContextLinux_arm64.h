@@ -86,7 +86,6 @@ public:
   enum DREGType { eDREGTypeWATCH = 0, eDREGTypeBREAK };
 
 protected:
-
   Status ReadGPR() override;
 
   Status WriteGPR() override;

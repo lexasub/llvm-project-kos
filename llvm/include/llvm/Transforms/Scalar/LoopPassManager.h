@@ -502,6 +502,6 @@ public:
   PreservedAnalyses run(Loop &L, LoopAnalysisManager &,
                         LoopStandardAnalysisResults &, LPMUpdater &);
 };
-}
+} // namespace llvm
 
 #endif // LLVM_TRANSFORMS_SCALAR_LOOPPASSMANAGER_H

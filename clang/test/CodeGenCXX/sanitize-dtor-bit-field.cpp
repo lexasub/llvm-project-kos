@@ -9,7 +9,7 @@ struct Packed {
   unsigned int b : 1;
   //unsigned int c : 1;
   // Force alignment to next 4 bytes
-  unsigned int   : 0;
+  unsigned int : 0;
   unsigned int d : 1;
   // Force alignment, 8 more bytes
   double e = 5.0;
@@ -19,14 +19,12 @@ struct Packed {
 };
 Packed p;
 
-
 // 1 byte total
 struct Empty {
   unsigned int : 0;
   ~Empty() {}
 };
 Empty e;
-
 
 // 4 byte total
 struct Simple {
@@ -35,19 +33,17 @@ struct Simple {
 };
 Simple s;
 
-
 // 8 bytes total
 struct Anon {
   // 1 byte
   unsigned int a : 1;
   unsigned int b : 2;
   // Force alignment to next byte
-  unsigned int   : 0;
+  unsigned int : 0;
   unsigned int c : 1;
   ~Anon() {}
 };
 Anon an;
-
 
 struct CharStruct {
   char c;
@@ -61,7 +57,6 @@ struct Adjacent {
   ~Adjacent() {}
 };
 Adjacent ad;
-
 
 // CHECK-LABEL: define {{.*}}PackedD2Ev
 // CHECK: call void @__sanitizer_dtor_callback{{.*}}i64 17

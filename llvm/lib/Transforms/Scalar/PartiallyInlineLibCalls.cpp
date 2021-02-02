@@ -127,8 +127,8 @@ static bool runPartiallyInlineLibCalls(Function &F, TargetLibraryInfo *TLI,
       // Skip if function either has local linkage or is not a known library
       // function.
       LibFunc LF;
-      if (CalledFunc->hasLocalLinkage() ||
-          !TLI->getLibFunc(*CalledFunc, LF) || !TLI->has(LF))
+      if (CalledFunc->hasLocalLinkage() || !TLI->getLibFunc(*CalledFunc, LF) ||
+          !TLI->has(LF))
         continue;
 
       switch (LF) {
@@ -194,7 +194,7 @@ public:
     return runPartiallyInlineLibCalls(F, TLI, TTI, DT);
   }
 };
-}
+} // namespace
 
 char PartiallyInlineLibCallsLegacyPass::ID = 0;
 INITIALIZE_PASS_BEGIN(PartiallyInlineLibCallsLegacyPass,

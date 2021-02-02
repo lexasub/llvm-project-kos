@@ -64,8 +64,8 @@ NativeSession::~NativeSession() = default;
 Error NativeSession::createFromPdb(std::unique_ptr<MemoryBuffer> Buffer,
                                    std::unique_ptr<IPDBSession> &Session) {
   StringRef Path = Buffer->getBufferIdentifier();
-  auto Stream = std::make_unique<MemoryBufferByteStream>(
-      std::move(Buffer), llvm::support::little);
+  auto Stream = std::make_unique<MemoryBufferByteStream>(std::move(Buffer),
+                                                         llvm::support::little);
 
   auto Allocator = std::make_unique<BumpPtrAllocator>();
   auto File = std::make_unique<PDBFile>(Path, std::move(Stream), *Allocator);
@@ -354,8 +354,7 @@ NativeSession::getSectionContribs() const {
   return nullptr;
 }
 
-std::unique_ptr<IPDBEnumFrameData>
-NativeSession::getFrameData() const {
+std::unique_ptr<IPDBEnumFrameData> NativeSession::getFrameData() const {
   return nullptr;
 }
 

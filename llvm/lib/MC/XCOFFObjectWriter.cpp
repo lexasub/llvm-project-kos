@@ -404,7 +404,8 @@ void XCOFFObjectWriter::recordRelocation(MCAssembler &Asm,
                             &Layout](const MCSymbol *Sym,
                                      const MCSectionXCOFF *ContainingCsect) {
     // If Sym is a csect, return csect's address.
-    // If Sym is a label, return csect's address + label's offset from the csect.
+    // If Sym is a label, return csect's address + label's offset from the
+    // csect.
     return SectionMap[ContainingCsect]->Address +
            (Sym->isDefined() ? Layout.getSymbolOffset(*Sym) : 0);
   };
@@ -555,7 +556,7 @@ void XCOFFObjectWriter::writeSymbolName(const StringRef &SymbolName) {
     W.write<int32_t>(0);
     W.write<uint32_t>(Strings.getOffset(SymbolName));
   } else {
-    char Name[XCOFF::NameSize+1];
+    char Name[XCOFF::NameSize + 1];
     std::strncpy(Name, SymbolName.data(), XCOFF::NameSize);
     ArrayRef<char> NameRef(Name, XCOFF::NameSize);
     W.write(NameRef);
@@ -714,8 +715,9 @@ void XCOFFObjectWriter::writeRelocations() {
 
 void XCOFFObjectWriter::writeSymbolTable(const MCAsmLayout &Layout) {
   for (const auto &Csect : UndefinedCsects) {
-    writeSymbolTableEntryForControlSection(
-        Csect, XCOFF::ReservedSectionNum::N_UNDEF, Csect.MCCsect->getStorageClass());
+    writeSymbolTableEntryForControlSection(Csect,
+                                           XCOFF::ReservedSectionNum::N_UNDEF,
+                                           Csect.MCCsect->getStorageClass());
   }
 
   for (const auto *Section : Sections) {

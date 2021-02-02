@@ -145,7 +145,7 @@ Expected<unsigned> BitstreamCursor::skipRecord(unsigned AbbrevID) {
       unsigned NumElts = MaybeNum.get();
 
       // Get the element encoding.
-      assert(i+2 == e && "array op not second to last?");
+      assert(i + 2 == e && "array op not second to last?");
       const BitCodeAbbrevOp &EltEnc = Abbv->getOperandInfo(++i);
 
       // Read all the elements.
@@ -183,14 +183,14 @@ Expected<unsigned> BitstreamCursor::skipRecord(unsigned AbbrevID) {
     if (!MaybeNum)
       return MaybeNum.takeError();
     unsigned NumElts = MaybeNum.get();
-    SkipToFourByteBoundary();  // 32-bit alignment
+    SkipToFourByteBoundary(); // 32-bit alignment
 
     // Figure out where the end of this blob will be including tail padding.
     const size_t NewEnd = GetCurrentBitNo() + alignTo(NumElts, 4) * 8;
 
     // If this would read off the end of the bitcode file, just set the
     // record to empty and return.
-    if (!canSkipToPos(NewEnd/8)) {
+    if (!canSkipToPos(NewEnd / 8)) {
       skipToEnd();
       break;
     }
@@ -310,7 +310,7 @@ Expected<unsigned> BitstreamCursor::readRecord(unsigned AbbrevID,
     if (!MaybeNumElts)
       return MaybeNumElts.takeError();
     uint32_t NumElts = MaybeNumElts.get();
-    SkipToFourByteBoundary();  // 32-bit alignment
+    SkipToFourByteBoundary(); // 32-bit alignment
 
     // Figure out where the end of this blob will be including tail padding.
     size_t CurBitPos = GetCurrentBitNo();
@@ -318,7 +318,7 @@ Expected<unsigned> BitstreamCursor::readRecord(unsigned AbbrevID,
 
     // If this would read off the end of the bitcode file, just set the
     // record to empty and return.
-    if (!canSkipToPos(NewEnd/8)) {
+    if (!canSkipToPos(NewEnd / 8)) {
       Vals.append(NumElts, 0);
       skipToEnd();
       break;
@@ -431,7 +431,8 @@ BitstreamCursor::ReadBlockInfoBlock(bool ReadBlockInfoNames) {
 
     // Read abbrev records, associate them with CurBID.
     if (Entry.ID == bitc::DEFINE_ABBREV) {
-      if (!CurBlockInfo) return None;
+      if (!CurBlockInfo)
+        return None;
       if (Error Err = ReadAbbrevRecord())
         return std::move(Err);
 
@@ -463,14 +464,15 @@ BitstreamCursor::ReadBlockInfoBlock(bool ReadBlockInfoNames) {
       CurBlockInfo->Name = std::string(Record.begin(), Record.end());
       break;
     }
-      case bitc::BLOCKINFO_CODE_SETRECORDNAME: {
-        if (!CurBlockInfo) return None;
-        if (!ReadBlockInfoNames)
-          break; // Ignore name.
-        CurBlockInfo->RecordNames.emplace_back(
-            (unsigned)Record[0], std::string(Record.begin() + 1, Record.end()));
-        break;
-      }
-      }
+    case bitc::BLOCKINFO_CODE_SETRECORDNAME: {
+      if (!CurBlockInfo)
+        return None;
+      if (!ReadBlockInfoNames)
+        break; // Ignore name.
+      CurBlockInfo->RecordNames.emplace_back(
+          (unsigned)Record[0], std::string(Record.begin() + 1, Record.end()));
+      break;
+    }
+    }
   }
 }

@@ -39,7 +39,8 @@ static int d = 2;
 
 int maini1() {
   int a;
-#pragma omp target map(tofrom : a)
+#pragma omp target map(tofrom \
+                       : a)
   {
     a = c;
     d++;

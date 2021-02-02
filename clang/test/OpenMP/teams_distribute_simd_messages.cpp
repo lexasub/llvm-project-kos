@@ -21,15 +21,15 @@ static int pvt;
 #pragma omp teams distribute simd // expected-error {{unexpected OpenMP directive '#pragma omp teams distribute simd'}}
 
 int main(int argc, char **argv) {
-  #pragma omp target
-  #pragma omp teams distribute simd
+#pragma omp target
+#pragma omp teams distribute simd
   f; // expected-error {{use of undeclared identifier 'f'}}
 #pragma omp target
 #pragma omp teams distribute simd { // expected-warning {{extra tokens at the end of '#pragma omp teams distribute simd' are ignored}}
   for (int i = 0; i < argc; ++i)
     foo();
 #pragma omp target
-#pragma omp teams distribute simd ( // expected-warning {{extra tokens at the end of '#pragma omp teams distribute simd' are ignored}}
+#pragma omp teams distribute simd( // expected-warning {{extra tokens at the end of '#pragma omp teams distribute simd' are ignored}}
   for (int i = 0; i < argc; ++i)
     foo();
 #pragma omp target
@@ -95,7 +95,7 @@ L1:
 #pragma omp teams distribute simd
   for (int i = 0; i < argc; ++i)
   L2:
-  foo();
+    foo();
 #pragma omp target
 #pragma omp teams distribute simd
   for (int i = 0; i < argc; ++i) {
@@ -110,7 +110,8 @@ L1:
 
 #pragma omp target
 #pragma omp teams distribute simd copyin(pvt) // expected-error {{unexpected OpenMP clause 'copyin' in directive '#pragma omp teams distribute simd'}}
-  for (int n = 0; n < 100; ++n) {}
+  for (int n = 0; n < 100; ++n) {
+  }
 
   return 0;
 }
@@ -176,12 +177,12 @@ void test_nontemporal() {
   int x, y;
 #pragma omp target
 // omp45-error@+1 {{unexpected OpenMP clause 'nontemporal' in directive '#pragma omp teams distribute simd'}} expected-error@+1 {{expected ',' or ')' in 'nontemporal' clause}} expected-error@+1 {{expected ')'}} expected-note@+1 {{to match this '('}}
-#pragma omp teams distribute simd nontemporal(x :)
+#pragma omp teams distribute simd nontemporal(x:)
   for (i = 0; i < 16; ++i)
     ;
 #pragma omp target
 // omp45-error@+1 {{unexpected OpenMP clause 'nontemporal' in directive '#pragma omp teams distribute simd'}} expected-error@+1 {{expected ')'}} expected-note@+1 {{to match this '('}} expected-error@+1 {{expected ',' or ')' in 'nontemporal' clause}}
-#pragma omp teams distribute simd nontemporal(x :, )
+#pragma omp teams distribute simd nontemporal(x:, )
   for (i = 0; i < 16; ++i)
     ;
 
@@ -242,4 +243,3 @@ void test_nontemporal() {
   for (int i = 0; i < 10; ++i)
     ;
 }
-

@@ -26,21 +26,20 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    globalMemCounter.reset();
+int main(int, char**) {
+  globalMemCounter.reset();
+  assert(globalMemCounter.checkOutstandingNewEq(0));
+  {
+    typedef std::codecvt_utf8<wchar_t> C;
+    C c;
     assert(globalMemCounter.checkOutstandingNewEq(0));
-    {
-        typedef std::codecvt_utf8<wchar_t> C;
-        C c;
-        assert(globalMemCounter.checkOutstandingNewEq(0));
-    }
-    {
-        typedef std::codecvt_utf8<wchar_t> C;
-        std::locale loc(std::locale::classic(), new C);
-        assert(globalMemCounter.checkOutstandingNewNotEq(0));
-    }
-    assert(globalMemCounter.checkOutstandingNewEq(0));
+  }
+  {
+    typedef std::codecvt_utf8<wchar_t> C;
+    std::locale loc(std::locale::classic(), new C);
+    assert(globalMemCounter.checkOutstandingNewNotEq(0));
+  }
+  assert(globalMemCounter.checkOutstandingNewEq(0));
 
   return 0;
 }

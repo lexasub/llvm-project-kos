@@ -15,13 +15,12 @@ struct unique_ptr;
 
 // Prevent <ext/hash_map> from generating deprecated warnings for this test.
 #if defined(__DEPRECATED)
-#   undef __DEPRECATED
+#undef __DEPRECATED
 #endif
 
 #include <ext/hash_map>
 
 #include "test_macros.h"
-
 
 namespace __gnu_cxx {
 template class hash_map<int, int>;

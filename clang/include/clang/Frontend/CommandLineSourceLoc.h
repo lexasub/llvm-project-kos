@@ -32,8 +32,7 @@ public:
   static ParsedSourceLocation FromString(StringRef Str) {
     ParsedSourceLocation PSL;
     std::pair<StringRef, StringRef> ColSplit = Str.rsplit(':');
-    std::pair<StringRef, StringRef> LineSplit =
-      ColSplit.first.rsplit(':');
+    std::pair<StringRef, StringRef> LineSplit = ColSplit.first.rsplit(':');
 
     // If both tail splits were valid integers, return success.
     if (!ColSplit.second.getAsInteger(10, PSL.Column) &&
@@ -96,37 +95,36 @@ struct ParsedSourceRange {
                              {EndLine, EndColumn}};
   }
 };
-}
+} // namespace clang
 
 namespace llvm {
-  namespace cl {
-    /// Command-line option parser that parses source locations.
-    ///
-    /// Source locations are of the form filename:line:column.
-    template<>
-    class parser<clang::ParsedSourceLocation> final
-      : public basic_parser<clang::ParsedSourceLocation> {
-    public:
-      inline bool parse(Option &O, StringRef ArgName, StringRef ArgValue,
-                 clang::ParsedSourceLocation &Val);
-    };
+namespace cl {
+/// Command-line option parser that parses source locations.
+///
+/// Source locations are of the form filename:line:column.
+template <>
+class parser<clang::ParsedSourceLocation> final
+    : public basic_parser<clang::ParsedSourceLocation> {
+public:
+  inline bool parse(Option &O, StringRef ArgName, StringRef ArgValue,
+                    clang::ParsedSourceLocation &Val);
+};
 
-    bool
-    parser<clang::ParsedSourceLocation>::
-    parse(Option &O, StringRef ArgName, StringRef ArgValue,
-          clang::ParsedSourceLocation &Val) {
-      using namespace clang;
+bool parser<clang::ParsedSourceLocation>::parse(
+    Option &O, StringRef ArgName, StringRef ArgValue,
+    clang::ParsedSourceLocation &Val) {
+  using namespace clang;
 
-      Val = ParsedSourceLocation::FromString(ArgValue);
-      if (Val.FileName.empty()) {
-        errs() << "error: "
-               << "source location must be of the form filename:line:column\n";
-        return true;
-      }
-
-      return false;
-    }
+  Val = ParsedSourceLocation::FromString(ArgValue);
+  if (Val.FileName.empty()) {
+    errs() << "error: "
+           << "source location must be of the form filename:line:column\n";
+    return true;
   }
+
+  return false;
 }
+} // namespace cl
+} // namespace llvm
 
 #endif

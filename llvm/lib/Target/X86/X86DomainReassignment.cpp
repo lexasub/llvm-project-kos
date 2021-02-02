@@ -39,7 +39,13 @@ static cl::opt<bool> DisableX86DomainReassignment(
     cl::desc("X86: Disable Virtual Register Reassignment."), cl::init(false));
 
 namespace {
-enum RegDomain { NoDomain = -1, GPRDomain, MaskDomain, OtherDomain, NumDomains };
+enum RegDomain {
+  NoDomain = -1,
+  GPRDomain,
+  MaskDomain,
+  OtherDomain,
+  NumDomains
+};
 
 static bool isGPR(const TargetRegisterClass *RC) {
   return X86::GR64RegClass.hasSubClassEq(RC) ||
@@ -311,7 +317,8 @@ private:
   unsigned ID;
 
 public:
-  Closure(unsigned ID, std::initializer_list<RegDomain> LegalDstDomainList) : ID(ID) {
+  Closure(unsigned ID, std::initializer_list<RegDomain> LegalDstDomainList)
+      : ID(ID) {
     for (RegDomain D : LegalDstDomainList)
       LegalDstDomains.set(D);
   }
@@ -337,13 +344,9 @@ public:
     return iterator_range<const_edge_iterator>(Edges.begin(), Edges.end());
   }
 
-  void addInstruction(MachineInstr *I) {
-    Instrs.push_back(I);
-  }
+  void addInstruction(MachineInstr *I) { Instrs.push_back(I); }
 
-  ArrayRef<MachineInstr *> instructions() const {
-    return Instrs;
-  }
+  ArrayRef<MachineInstr *> instructions() const { return Instrs; }
 
   LLVM_DUMP_METHOD void dump(const MachineRegisterInfo *MRI) const {
     dbgs() << "Registers: ";
@@ -354,7 +357,8 @@ public:
       First = false;
       dbgs() << printReg(Reg, MRI->getTargetRegisterInfo(), 0, MRI);
     }
-    dbgs() << "\n" << "Instructions:";
+    dbgs() << "\n"
+           << "Instructions:";
     for (MachineInstr *MI : Instrs) {
       dbgs() << "\n  ";
       MI->print(dbgs());
@@ -362,10 +366,7 @@ public:
     dbgs() << "\n";
   }
 
-  unsigned getID() const {
-    return ID;
-  }
-
+  unsigned getID() const { return ID; }
 };
 
 class X86DomainReassignment : public MachineFunctionPass {
@@ -382,7 +383,7 @@ class X86DomainReassignment : public MachineFunctionPass {
 public:
   static char ID;
 
-  X86DomainReassignment() : MachineFunctionPass(ID) { }
+  X86DomainReassignment() : MachineFunctionPass(ID) {}
 
   bool runOnMachineFunction(MachineFunction &MF) override;
 
@@ -685,8 +686,8 @@ void X86DomainReassignment::initConverters() {
 
     // TODO: KTEST is not a replacement for TEST due to flag differences. Need
     // to prove only Z flag is used.
-    //createReplacer(X86::TEST32rr, X86::KTESTDrr);
-    //createReplacer(X86::TEST64rr, X86::KTESTQrr);
+    // createReplacer(X86::TEST32rr, X86::KTESTDrr);
+    // createReplacer(X86::TEST64rr, X86::KTESTQrr);
   }
 
   if (STI->hasDQI()) {
@@ -708,8 +709,8 @@ void X86DomainReassignment::initConverters() {
 
     // TODO: KTEST is not a replacement for TEST due to flag differences. Need
     // to prove only Z flag is used.
-    //createReplacer(X86::TEST8rr, X86::KTESTBrr);
-    //createReplacer(X86::TEST16rr, X86::KTESTWrr);
+    // createReplacer(X86::TEST8rr, X86::KTESTBrr);
+    // createReplacer(X86::TEST16rr, X86::KTESTWrr);
 
     createReplacer(X86::XOR8rr, X86::KXORBrr);
   }

@@ -53,10 +53,10 @@ void f() {
   // CHECK-FIXES: absl::ToDoubleMicroseconds(d1);
 
   // C-style casts
-  i = (int) absl::ToDoubleHours(d1);
+  i = (int)absl::ToDoubleHours(d1);
   // CHECK-MESSAGES: [[@LINE-1]]:7: warning: duration should be converted directly to an integer rather than through a type cast [abseil-duration-conversion-cast]
   // CHECK-FIXES: absl::ToInt64Hours(d1);
-  x = (float) absl::ToInt64Microseconds(d1);
+  x = (float)absl::ToInt64Microseconds(d1);
   // CHECK-MESSAGES: [[@LINE-1]]:7: warning: duration should be converted directly to a floating-point number rather than through a type cast [abseil-duration-conversion-cast]
   // CHECK-FIXES: absl::ToDoubleMicroseconds(d1);
 

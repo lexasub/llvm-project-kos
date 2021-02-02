@@ -19,14 +19,14 @@
 
 #include "test_macros.h"
 
-double unary_f(int i) {return 0.5 - i;}
+double unary_f(int i) { return 0.5 - i; }
 
-int main(int, char**)
-{
-    typedef std::pointer_to_unary_function<int, double> F;
-    static_assert((std::is_base_of<std::unary_function<int, double>, F>::value), "");
-    const F f(unary_f);
-    assert(f(36) == -35.5);
+int main(int, char**) {
+  typedef std::pointer_to_unary_function<int, double> F;
+  static_assert((std::is_base_of<std::unary_function<int, double>, F>::value),
+                "");
+  const F f(unary_f);
+  assert(f(36) == -35.5);
 
   return 0;
 }

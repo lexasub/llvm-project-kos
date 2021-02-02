@@ -3,12 +3,12 @@
 // RUN: FileCheck -input-file %tmapping %s --check-prefix=CHECK-INNER
 // RUN: FileCheck -input-file %tmapping %s --check-prefix=CHECK-INNERMOST
 
-struct Test {                   // CHECK-OUTER: emitTest
-  void emitTest() {             // CHECK-OUTER: File 0, [[@LINE]]:19 -> [[@LINE+2]]:4 = #0
+struct Test {       // CHECK-OUTER: emitTest
+  void emitTest() { // CHECK-OUTER: File 0, [[@LINE]]:19 -> [[@LINE+2]]:4 = #0
     int i = 0;
   }
-  struct Test2 {                // CHECK-INNER: emitTest2
-    void emitTest2() {          // CHECK-INNER: File 0, [[@LINE]]:22 -> [[@LINE+2]]:6 = #0
+  struct Test2 {       // CHECK-INNER: emitTest2
+    void emitTest2() { // CHECK-INNER: File 0, [[@LINE]]:22 -> [[@LINE+2]]:6 = #0
       int i = 0;
     }
     struct Test3 {              // CHECK-INNERMOST: emitTest3

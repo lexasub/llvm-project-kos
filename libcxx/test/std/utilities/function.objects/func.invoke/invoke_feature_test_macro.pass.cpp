@@ -17,16 +17,16 @@
 #include "test_macros.h"
 
 #if TEST_STD_VER <= 14
-# ifdef __cpp_lib_invoke
-#   error Feature test macro should be defined
-# endif
+#ifdef __cpp_lib_invoke
+#error Feature test macro should be defined
+#endif
 #else
-# ifndef __cpp_lib_invoke
-#   error Feature test macro not defined
-# endif
-# if __cpp_lib_invoke != 201411
-#   error __cpp_lib_invoke has the wrong value
-# endif
+#ifndef __cpp_lib_invoke
+#error Feature test macro not defined
+#endif
+#if __cpp_lib_invoke != 201411
+#error __cpp_lib_invoke has the wrong value
+#endif
 #endif
 
 int foo(int) { return 42; }

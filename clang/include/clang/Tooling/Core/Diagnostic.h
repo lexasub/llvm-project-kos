@@ -111,7 +111,7 @@ struct TranslationUnitDiagnostics {
 
 /// Get the first fix to apply for this diagnostic.
 /// \returns nullptr if no fixes are attached to the diagnostic.
-const llvm::StringMap<Replacements> *selectFirstFix(const Diagnostic& D);
+const llvm::StringMap<Replacements> *selectFirstFix(const Diagnostic &D);
 
 } // end namespace tooling
 } // end namespace clang

@@ -399,8 +399,8 @@ static const ArchDefinitionEntry g_elf_arch_entries[] = {
      LLDB_INVALID_CPUTYPE, 0xFFFFFFFFu, 0xFFFFFFFFu}, // HEXAGON
     {ArchSpec::eCore_arc, llvm::ELF::EM_ARC_COMPACT2, LLDB_INVALID_CPUTYPE,
      0xFFFFFFFFu, 0xFFFFFFFFu}, // ARC
-    {ArchSpec::eCore_avr, llvm::ELF::EM_AVR, LLDB_INVALID_CPUTYPE,
-     0xFFFFFFFFu, 0xFFFFFFFFu}, // AVR
+    {ArchSpec::eCore_avr, llvm::ELF::EM_AVR, LLDB_INVALID_CPUTYPE, 0xFFFFFFFFu,
+     0xFFFFFFFFu}, // AVR
     {ArchSpec::eCore_riscv32, llvm::ELF::EM_RISCV,
      ArchSpec::eRISCVSubType_riscv32, 0xFFFFFFFFu, 0xFFFFFFFFu}, // riscv32
     {ArchSpec::eCore_riscv64, llvm::ELF::EM_RISCV,
@@ -656,13 +656,9 @@ uint32_t ArchSpec::GetMachOCPUSubType() const {
   return LLDB_INVALID_CPUTYPE;
 }
 
-uint32_t ArchSpec::GetDataByteSize() const {
-  return 1;
-}
+uint32_t ArchSpec::GetDataByteSize() const { return 1; }
 
-uint32_t ArchSpec::GetCodeByteSize() const {
-  return 1;
-}
+uint32_t ArchSpec::GetCodeByteSize() const { return 1; }
 
 llvm::Triple::ArchType ArchSpec::GetMachine() const {
   const CoreDefinition *core_def = FindCoreDefinition(m_core);
@@ -672,9 +668,7 @@ llvm::Triple::ArchType ArchSpec::GetMachine() const {
   return llvm::Triple::UnknownArch;
 }
 
-ConstString ArchSpec::GetDistributionId() const {
-  return m_distribution_id;
-}
+ConstString ArchSpec::GetDistributionId() const { return m_distribution_id; }
 
 void ArchSpec::SetDistributionId(const char *distribution_id) {
   m_distribution_id.SetCString(distribution_id);
@@ -902,7 +896,8 @@ bool ArchSpec::SetArchitecture(ArchitectureType arch_type, uint32_t cpu,
           m_triple.setArch(core_def->machine);
       }
     } else {
-      Log *log(lldb_private::GetLogIfAnyCategoriesSet(LIBLLDB_LOG_TARGET | LIBLLDB_LOG_PROCESS | LIBLLDB_LOG_PLATFORM));
+      Log *log(lldb_private::GetLogIfAnyCategoriesSet(
+          LIBLLDB_LOG_TARGET | LIBLLDB_LOG_PROCESS | LIBLLDB_LOG_PLATFORM));
       LLDB_LOGF(log,
                 "Unable to find a core definition for cpu 0x%" PRIx32
                 " sub %" PRId32,
@@ -1380,7 +1375,6 @@ bool lldb_private::operator<(const ArchSpec &lhs, const ArchSpec &rhs) {
   const ArchSpec::Core rhs_core = rhs.GetCore();
   return lhs_core < rhs_core;
 }
-
 
 bool lldb_private::operator==(const ArchSpec &lhs, const ArchSpec &rhs) {
   return lhs.GetCore() == rhs.GetCore();

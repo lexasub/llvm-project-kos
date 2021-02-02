@@ -105,6 +105,7 @@ private:
   const DiagnosticSeverity Severity;
 
   virtual void anchor();
+
 public:
   DiagnosticInfo(/* DiagnosticKind */ int Kind, DiagnosticSeverity Severity)
       : Kind(Kind), Severity(Severity) {}
@@ -215,6 +216,7 @@ public:
 
 class DiagnosticInfoStackSize : public DiagnosticInfoResourceLimit {
   void anchor() override;
+
 public:
   DiagnosticInfoStackSize(const Function &Fn, uint64_t StackSize,
                           DiagnosticSeverity Severity = DS_Warning,
@@ -366,6 +368,7 @@ public:
 /// Common features for diagnostics with an associated location.
 class DiagnosticInfoWithLocationBase : public DiagnosticInfo {
   void anchor() override;
+
 public:
   /// \p Fn is the function where the diagnostic is being emitted. \p Loc is
   /// the location information to use in the diagnostic.
@@ -390,7 +393,7 @@ public:
 
   /// Return the absolute path tot the file.
   std::string getAbsolutePath() const;
-  
+
   const Function &getFunction() const { return Fn; }
   DiagnosticLocation getLocation() const { return Loc; }
 
@@ -427,7 +430,7 @@ public:
     Argument(StringRef Key, const Value *V);
     Argument(StringRef Key, const Type *T);
     Argument(StringRef Key, StringRef S);
-    Argument(StringRef Key, const char *S) : Argument(Key, StringRef(S)) {};
+    Argument(StringRef Key, const char *S) : Argument(Key, StringRef(S)){};
     Argument(StringRef Key, int N);
     Argument(StringRef Key, float N);
     Argument(StringRef Key, long N);
@@ -615,6 +618,7 @@ operator<<(RemarkT &R,
 /// that are used by IR passes.
 class DiagnosticInfoIROptimization : public DiagnosticInfoOptimizationBase {
   void anchor() override;
+
 public:
   /// \p PassName is the name of the pass emitting this diagnostic. \p
   /// RemarkName is a textual identifier for the remark (single-word,
@@ -836,6 +840,7 @@ private:
 /// floating-point non-commutativity.
 class OptimizationRemarkAnalysisFPCommute : public OptimizationRemarkAnalysis {
   void anchor() override;
+
 public:
   /// \p PassName is the name of the pass emitting this diagnostic. If this name
   /// matches the regular expression given in -Rpass-analysis=, then the
@@ -878,6 +883,7 @@ private:
 /// pointer aliasing.
 class OptimizationRemarkAnalysisAliasing : public OptimizationRemarkAnalysis {
   void anchor() override;
+
 public:
   /// \p PassName is the name of the pass emitting this diagnostic. If this name
   /// matches the regular expression given in -Rpass-analysis=, then the

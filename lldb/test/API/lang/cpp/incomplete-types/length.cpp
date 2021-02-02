@@ -1,8 +1,4 @@
 
 #include "length.h"
 
-int
-length (A &a)
-{
-  return a.length();
-}
+int length(A &a) { return a.length(); }

@@ -1,23 +1,25 @@
 // RUN: %clang_cc1 -fsyntax-only -verify %s
 namespace foo {
-  namespace wibble {
-    struct x { int y; };
-
-    namespace bar {
-      namespace wonka {
-        struct x {
-          struct y { };
-        };
-      }
-    }
-  }
-}
+namespace wibble {
+struct x {
+  int y;
+};
 
 namespace bar {
-  typedef int y;
+namespace wonka {
+struct x {
+  struct y {};
+};
+} // namespace wonka
+} // namespace bar
+} // namespace wibble
+} // namespace foo
 
-  struct incomplete; // expected-note{{forward declaration of 'bar::incomplete'}}
-}
+namespace bar {
+typedef int y;
+
+struct incomplete; // expected-note{{forward declaration of 'bar::incomplete'}}
+} // namespace bar
 void test() {
   foo::wibble::x a;
   ::bar::y b;
@@ -29,5 +31,4 @@ void test() {
   (void)sizeof(bar::incomplete); // expected-error{{invalid application of 'sizeof' to an incomplete type 'bar::incomplete'}}
 }
 
-int ::foo::wibble::bar::wonka::x::y::* ptrmem;
-
+int ::foo::wibble::bar::wonka::x::y::*ptrmem;

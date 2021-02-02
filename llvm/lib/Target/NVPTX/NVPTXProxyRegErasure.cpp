@@ -61,7 +61,8 @@ private:
 
 char NVPTXProxyRegErasure::ID = 0;
 
-INITIALIZE_PASS(NVPTXProxyRegErasure, "nvptx-proxyreg-erasure", "NVPTX ProxyReg Erasure", false, false)
+INITIALIZE_PASS(NVPTXProxyRegErasure, "nvptx-proxyreg-erasure",
+                "NVPTX ProxyReg Erasure", false, false)
 
 bool NVPTXProxyRegErasure::runOnMachineFunction(MachineFunction &MF) {
   SmallVector<MachineInstr *, 16> RemoveList;

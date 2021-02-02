@@ -18,7 +18,7 @@ int main() {
   strcpy(a, "hello");
   CFStringRef str =
       CFStringCreateWithBytes(kCFAllocatorDefault, (unsigned char *)a, 10,
-                              kCFStringEncodingUTF8, FALSE);  // BOOM
+                              kCFStringEncodingUTF8, FALSE); // BOOM
   fprintf(stderr, "Ignored.\n");
   free(a);
   CFRelease(str);

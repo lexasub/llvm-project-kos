@@ -20,16 +20,16 @@ using namespace CodeGen;
 
 llvm::Type *ConstantInitFuture::getType() const {
   assert(Data && "dereferencing null future");
-  if (Data.is<llvm::Constant*>()) {
-    return Data.get<llvm::Constant*>()->getType();
+  if (Data.is<llvm::Constant *>()) {
+    return Data.get<llvm::Constant *>()->getType();
   } else {
-    return Data.get<ConstantInitBuilderBase*>()->Buffer[0]->getType();
+    return Data.get<ConstantInitBuilderBase *>()->Buffer[0]->getType();
   }
 }
 
 void ConstantInitFuture::abandon() {
   assert(Data && "abandoning null future");
-  if (auto builder = Data.dyn_cast<ConstantInitBuilderBase*>()) {
+  if (auto builder = Data.dyn_cast<ConstantInitBuilderBase *>()) {
     builder->abandon(0);
   }
   Data = nullptr;
@@ -37,10 +37,10 @@ void ConstantInitFuture::abandon() {
 
 void ConstantInitFuture::installInGlobal(llvm::GlobalVariable *GV) {
   assert(Data && "installing null future");
-  if (Data.is<llvm::Constant*>()) {
-    GV->setInitializer(Data.get<llvm::Constant*>());
+  if (Data.is<llvm::Constant *>()) {
+    GV->setInitializer(Data.get<llvm::Constant *>());
   } else {
-    auto &builder = *Data.get<ConstantInitBuilderBase*>();
+    auto &builder = *Data.get<ConstantInitBuilderBase *>();
     assert(builder.Buffer.size() == 1);
     builder.setGlobalInitializer(GV, builder.Buffer[0]);
     builder.Buffer.clear();
@@ -63,29 +63,22 @@ inline ConstantInitFuture::ConstantInitFuture(ConstantInitBuilderBase *builder)
   assert(builder->Buffer[0] != nullptr);
 }
 
-llvm::GlobalVariable *
-ConstantInitBuilderBase::createGlobal(llvm::Constant *initializer,
-                                      const llvm::Twine &name,
-                                      CharUnits alignment,
-                                      bool constant,
-                                      llvm::GlobalValue::LinkageTypes linkage,
-                                      unsigned addressSpace) {
-  auto GV = new llvm::GlobalVariable(CGM.getModule(),
-                                     initializer->getType(),
-                                     constant,
-                                     linkage,
-                                     initializer,
-                                     name,
-                                     /*insert before*/ nullptr,
-                                     llvm::GlobalValue::NotThreadLocal,
-                                     addressSpace);
+llvm::GlobalVariable *ConstantInitBuilderBase::createGlobal(
+    llvm::Constant *initializer, const llvm::Twine &name, CharUnits alignment,
+    bool constant, llvm::GlobalValue::LinkageTypes linkage,
+    unsigned addressSpace) {
+  auto GV =
+      new llvm::GlobalVariable(CGM.getModule(), initializer->getType(),
+                               constant, linkage, initializer, name,
+                               /*insert before*/ nullptr,
+                               llvm::GlobalValue::NotThreadLocal, addressSpace);
   GV->setAlignment(alignment.getAsAlign());
   resolveSelfReferences(GV);
   return GV;
 }
 
-void ConstantInitBuilderBase::setGlobalInitializer(llvm::GlobalVariable *GV,
-                                                   llvm::Constant *initializer){
+void ConstantInitBuilderBase::setGlobalInitializer(
+    llvm::GlobalVariable *GV, llvm::Constant *initializer) {
   GV->setInitializer(initializer);
 
   if (!SelfReferences.empty())
@@ -95,8 +88,8 @@ void ConstantInitBuilderBase::setGlobalInitializer(llvm::GlobalVariable *GV,
 void ConstantInitBuilderBase::resolveSelfReferences(llvm::GlobalVariable *GV) {
   for (auto &entry : SelfReferences) {
     llvm::Constant *resolvedReference =
-      llvm::ConstantExpr::getInBoundsGetElementPtr(
-        GV->getValueType(), GV, entry.Indices);
+        llvm::ConstantExpr::getInBoundsGetElementPtr(GV->getValueType(), GV,
+                                                     entry.Indices);
     auto dummy = entry.Dummy;
     dummy->replaceAllUsesWith(resolvedReference);
     dummy->eraseFromParent();
@@ -168,24 +161,22 @@ llvm::Constant *
 ConstantAggregateBuilderBase::getAddrOfCurrentPosition(llvm::Type *type) {
   // Make a global variable.  We will replace this with a GEP to this
   // position after installing the initializer.
-  auto dummy =
-    new llvm::GlobalVariable(Builder.CGM.getModule(), type, true,
-                             llvm::GlobalVariable::PrivateLinkage,
-                             nullptr, "");
+  auto dummy = new llvm::GlobalVariable(Builder.CGM.getModule(), type, true,
+                                        llvm::GlobalVariable::PrivateLinkage,
+                                        nullptr, "");
   Builder.SelfReferences.emplace_back(dummy);
   auto &entry = Builder.SelfReferences.back();
-  (void) getGEPIndicesToCurrentPosition(entry.Indices);
+  (void)getGEPIndicesToCurrentPosition(entry.Indices);
   return dummy;
 }
 
 void ConstantAggregateBuilderBase::getGEPIndicesTo(
-                               llvm::SmallVectorImpl<llvm::Constant*> &indices,
-                               size_t position) const {
+    llvm::SmallVectorImpl<llvm::Constant *> &indices, size_t position) const {
   // Recurse on the parent builder if present.
   if (Parent) {
     Parent->getGEPIndicesTo(indices, Begin);
 
-  // Otherwise, add an index to drill into the first level of pointer.
+    // Otherwise, add an index to drill into the first level of pointer.
   } else {
     assert(indices.empty());
     indices.push_back(llvm::ConstantInt::get(Builder.CGM.Int32Ty, 0));
@@ -194,8 +185,8 @@ void ConstantAggregateBuilderBase::getGEPIndicesTo(
   assert(position >= Begin);
   // We have to use i32 here because struct GEPs demand i32 indices.
   // It's rather unlikely to matter in practice.
-  indices.push_back(llvm::ConstantInt::get(Builder.CGM.Int32Ty,
-                                           position - Begin));
+  indices.push_back(
+      llvm::ConstantInt::get(Builder.CGM.Int32Ty, position - Begin));
 }
 
 ConstantAggregateBuilderBase::PlaceholderPosition
@@ -209,8 +200,8 @@ ConstantAggregateBuilderBase::addPlaceholderWithSize(llvm::Type *type) {
   // Advance the offset past that field.
   auto &layout = Builder.CGM.getDataLayout();
   if (!Packed)
-    offset = offset.alignTo(CharUnits::fromQuantity(
-                                layout.getABITypeAlignment(type)));
+    offset = offset.alignTo(
+        CharUnits::fromQuantity(layout.getABITypeAlignment(type)));
   offset += CharUnits::fromQuantity(layout.getTypeStoreSize(type));
 
   CachedOffsetEnd = Builder.Buffer.size();
@@ -219,7 +210,8 @@ ConstantAggregateBuilderBase::addPlaceholderWithSize(llvm::Type *type) {
   return position;
 }
 
-CharUnits ConstantAggregateBuilderBase::getOffsetFromGlobalTo(size_t end) const{
+CharUnits
+ConstantAggregateBuilderBase::getOffsetFromGlobalTo(size_t end) const {
   size_t cacheEnd = CachedOffsetEnd;
   assert(cacheEnd <= end);
 
@@ -249,8 +241,8 @@ CharUnits ConstantAggregateBuilderBase::getOffsetFromGlobalTo(size_t end) const{
              "cannot compute offset when a placeholder is present");
       llvm::Type *elementType = element->getType();
       if (!Packed)
-        offset = offset.alignTo(CharUnits::fromQuantity(
-                                  layout.getABITypeAlignment(elementType)));
+        offset = offset.alignTo(
+            CharUnits::fromQuantity(layout.getABITypeAlignment(elementType)));
       offset += CharUnits::fromQuantity(layout.getTypeStoreSize(elementType));
     } while (++cacheEnd != end);
   }
@@ -265,11 +257,11 @@ llvm::Constant *ConstantAggregateBuilderBase::finishArray(llvm::Type *eltTy) {
   markFinished();
 
   auto &buffer = getBuffer();
-  assert((Begin < buffer.size() ||
-          (Begin == buffer.size() && eltTy))
-         && "didn't add any array elements without element type");
+  assert((Begin < buffer.size() || (Begin == buffer.size() && eltTy)) &&
+         "didn't add any array elements without element type");
   auto elts = llvm::makeArrayRef(buffer).slice(Begin);
-  if (!eltTy) eltTy = elts[0]->getType();
+  if (!eltTy)
+    eltTy = elts[0]->getType();
   auto type = llvm::ArrayType::get(eltTy, elts.size());
   auto constant = llvm::ConstantArray::get(type, elts);
   buffer.erase(buffer.begin() + Begin, buffer.end());

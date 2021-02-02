@@ -25,9 +25,9 @@ struct DefaultAnalysisGraphTraits {
   static GraphT getGraph(AnalysisT *A) { return A; }
 };
 
-template <
-    typename AnalysisT, bool IsSimple, typename GraphT = AnalysisT *,
-    typename AnalysisGraphTraitsT = DefaultAnalysisGraphTraits<AnalysisT, GraphT> >
+template <typename AnalysisT, bool IsSimple, typename GraphT = AnalysisT *,
+          typename AnalysisGraphTraitsT =
+              DefaultAnalysisGraphTraits<AnalysisT, GraphT>>
 class DOTGraphTraitsViewer : public FunctionPass {
 public:
   DOTGraphTraitsViewer(StringRef GraphName, char &ID)
@@ -67,9 +67,9 @@ private:
   std::string Name;
 };
 
-template <
-    typename AnalysisT, bool IsSimple, typename GraphT = AnalysisT *,
-    typename AnalysisGraphTraitsT = DefaultAnalysisGraphTraits<AnalysisT, GraphT> >
+template <typename AnalysisT, bool IsSimple, typename GraphT = AnalysisT *,
+          typename AnalysisGraphTraitsT =
+              DefaultAnalysisGraphTraits<AnalysisT, GraphT>>
 class DOTGraphTraitsPrinter : public FunctionPass {
 public:
   DOTGraphTraitsPrinter(StringRef GraphName, char &ID)
@@ -119,9 +119,9 @@ private:
   std::string Name;
 };
 
-template <
-    typename AnalysisT, bool IsSimple, typename GraphT = AnalysisT *,
-    typename AnalysisGraphTraitsT = DefaultAnalysisGraphTraits<AnalysisT, GraphT> >
+template <typename AnalysisT, bool IsSimple, typename GraphT = AnalysisT *,
+          typename AnalysisGraphTraitsT =
+              DefaultAnalysisGraphTraits<AnalysisT, GraphT>>
 class DOTGraphTraitsModuleViewer : public ModulePass {
 public:
   DOTGraphTraitsModuleViewer(StringRef GraphName, char &ID)
@@ -145,9 +145,9 @@ private:
   std::string Name;
 };
 
-template <
-    typename AnalysisT, bool IsSimple, typename GraphT = AnalysisT *,
-    typename AnalysisGraphTraitsT = DefaultAnalysisGraphTraits<AnalysisT, GraphT> >
+template <typename AnalysisT, bool IsSimple, typename GraphT = AnalysisT *,
+          typename AnalysisGraphTraitsT =
+              DefaultAnalysisGraphTraits<AnalysisT, GraphT>>
 class DOTGraphTraitsModulePrinter : public ModulePass {
 public:
   DOTGraphTraitsModulePrinter(StringRef GraphName, char &ID)

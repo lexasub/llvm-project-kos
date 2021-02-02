@@ -33,12 +33,11 @@ static std::pair<size_t, size_t> GetRegParams(RegisterInfoInterface &ctx,
               ::testing::Pair(offset + base_offset, size))
 
 #define EXPECT_GPR_I386(regname)                                               \
-  EXPECT_THAT(GetRegParams(reg_ctx, lldb_##regname##_i386),                    \
-              ::testing::Pair(offsetof(reg, r_##regname),         \
-                              sizeof(reg::r_##regname)))
+  EXPECT_THAT(                                                                 \
+      GetRegParams(reg_ctx, lldb_##regname##_i386),                            \
+      ::testing::Pair(offsetof(reg, r_##regname), sizeof(reg::r_##regname)))
 #define EXPECT_DBR_I386(num)                                                   \
-  EXPECT_OFF(dr##num##_i386, offsetof(dbreg, dr[num]),            \
-             sizeof(dbreg::dr[num]))
+  EXPECT_OFF(dr##num##_i386, offsetof(dbreg, dr[num]), sizeof(dbreg::dr[num]))
 
 TEST(RegisterContextNetBSDTest, i386) {
   ArchSpec arch{"i686-unknown-netbsd"};

@@ -16,15 +16,17 @@ class Bar {
 
 void foo() {
   int a;
-  struct X; // expected-note {{forward declaration}}
-  for (X x // expected-error {{incomplete type}}
-      : a) { // expected-error {{range expression of type 'int'}}
+  struct X;   // expected-note {{forward declaration}}
+  for (X x    // expected-error {{incomplete type}}
+       : a) { // expected-error {{range expression of type 'int'}}
     constexpr int n = sizeof(x);
   }
 
-  struct S { int x, y; };
-  for (S [x, y] // expected-error {{must be 'auto'}}
-      : a) { // expected-error {{range expression}}
+  struct S {
+    int x, y;
+  };
+  for (S[x, y] // expected-error {{must be 'auto'}}
+       : a) {  // expected-error {{range expression}}
     typename decltype(x)::a b;
   }
 }

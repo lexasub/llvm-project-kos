@@ -43,7 +43,6 @@ A &noop(A &a) {
   return a;
 }
 
-
 void test_B(B b) {
   if (b.a.x == 0)
     return;

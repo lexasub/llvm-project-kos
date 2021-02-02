@@ -9,7 +9,6 @@
 #ifndef CLANG_UNITTESTS_CODEGEN_TESTCOMPILER_H
 #define CLANG_UNITTESTS_CODEGEN_TESTCOMPILER_H
 
-
 #include "clang/AST/ASTConsumer.h"
 #include "clang/Basic/TargetInfo.h"
 #include "clang/Basic/TargetOptions.h"
@@ -56,12 +55,10 @@ struct TestCompiler {
 
     compiler.createASTContext();
 
-    CG.reset(CreateLLVMCodeGen(compiler.getDiagnostics(),
-                               "main-module",
+    CG.reset(CreateLLVMCodeGen(compiler.getDiagnostics(), "main-module",
                                compiler.getHeaderSearchOpts(),
                                compiler.getPreprocessorOpts(),
-                               compiler.getCodeGenOpts(),
-                               Context));
+                               compiler.getCodeGenOpts(), Context));
   }
 
   void init(const char *TestProgram,
@@ -80,8 +77,8 @@ struct TestCompiler {
 
   const BasicBlock *compile() {
     clang::ParseAST(compiler.getSema(), false, false);
-    M =
-      static_cast<clang::CodeGenerator&>(compiler.getASTConsumer()).GetModule();
+    M = static_cast<clang::CodeGenerator &>(compiler.getASTConsumer())
+            .GetModule();
 
     // Do not expect more than one function definition.
     auto FuncPtr = M->begin();

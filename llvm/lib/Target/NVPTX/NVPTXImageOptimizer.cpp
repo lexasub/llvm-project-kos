@@ -28,7 +28,7 @@ namespace {
 class NVPTXImageOptimizer : public FunctionPass {
 private:
   static char ID;
-  SmallVector<Instruction*, 4> InstrToDelete;
+  SmallVector<Instruction *, 4> InstrToDelete;
 
 public:
   NVPTXImageOptimizer();
@@ -42,12 +42,11 @@ private:
   Value *cleanupValue(Value *V);
   void replaceWith(Instruction *From, ConstantInt *To);
 };
-}
+} // namespace
 
 char NVPTXImageOptimizer::ID = 0;
 
-NVPTXImageOptimizer::NVPTXImageOptimizer()
-  : FunctionPass(ID) {}
+NVPTXImageOptimizer::NVPTXImageOptimizer() : FunctionPass(ID) {}
 
 bool NVPTXImageOptimizer::runOnFunction(Function &F) {
   if (skipFunction(F))
@@ -57,17 +56,16 @@ bool NVPTXImageOptimizer::runOnFunction(Function &F) {
   InstrToDelete.clear();
 
   // Look for call instructions in the function
-  for (Function::iterator BI = F.begin(), BE = F.end(); BI != BE;
-       ++BI) {
-    for (BasicBlock::iterator I = (*BI).begin(), E = (*BI).end();
-         I != E; ++I) {
+  for (Function::iterator BI = F.begin(), BE = F.end(); BI != BE; ++BI) {
+    for (BasicBlock::iterator I = (*BI).begin(), E = (*BI).end(); I != E; ++I) {
       Instruction &Instr = *I;
       if (CallInst *CI = dyn_cast<CallInst>(I)) {
         Function *CalledF = CI->getCalledFunction();
         if (CalledF && CalledF->isIntrinsic()) {
           // This is an intrinsic function call, check if its an istypep
           switch (CalledF->getIntrinsicID()) {
-          default: break;
+          default:
+            break;
           case Intrinsic::nvvm_istypep_sampler:
             Changed |= replaceIsTypePSampler(Instr);
             break;
@@ -108,13 +106,11 @@ bool NVPTXImageOptimizer::replaceIsTypePSampler(Instruction &I) {
 
 bool NVPTXImageOptimizer::replaceIsTypePSurface(Instruction &I) {
   Value *TexHandle = cleanupValue(I.getOperand(0));
-  if (isImageReadWrite(*TexHandle) ||
-      isImageWriteOnly(*TexHandle)) {
+  if (isImageReadWrite(*TexHandle) || isImageWriteOnly(*TexHandle)) {
     // This is an OpenCL read-only/read-write image, so it must be a surfref
     replaceWith(&I, ConstantInt::getTrue(I.getContext()));
     return true;
-  } else if (isImageReadOnly(*TexHandle) ||
-             isSampler(*TexHandle)) {
+  } else if (isImageReadOnly(*TexHandle) || isSampler(*TexHandle)) {
     // This is an OpenCL read-only/ imageor sampler, so it cannot be
     // a surfref
     replaceWith(&I, ConstantInt::getFalse(I.getContext()));
@@ -131,8 +127,7 @@ bool NVPTXImageOptimizer::replaceIsTypePTexture(Instruction &I) {
     // This is an OpenCL read-only image, so it must be a texref
     replaceWith(&I, ConstantInt::getTrue(I.getContext()));
     return true;
-  } else if (isImageWriteOnly(*TexHandle) ||
-             isImageReadWrite(*TexHandle) ||
+  } else if (isImageWriteOnly(*TexHandle) || isImageReadWrite(*TexHandle) ||
              isSampler(*TexHandle)) {
     // This is an OpenCL read-write/write-only image or a sampler, so it
     // cannot be a texref
@@ -151,7 +146,8 @@ void NVPTXImageOptimizer::replaceWith(Instruction *From, ConstantInt *To) {
   for (CallInst::use_iterator UI = From->use_begin(), UE = From->use_end();
        UI != UE; ++UI) {
     if (BranchInst *BI = dyn_cast<BranchInst>(*UI)) {
-      if (BI->isUnconditional()) continue;
+      if (BI->isUnconditional())
+        continue;
       BasicBlock *Dest;
       if (To->isZero())
         // Get false block

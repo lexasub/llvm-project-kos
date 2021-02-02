@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
 #pragma omp parallel for simd { // expected-warning {{extra tokens at the end of '#pragma omp parallel for simd' are ignored}}
   for (int i = 0; i < argc; ++i)
     foo();
-#pragma omp parallel for simd ( // expected-warning {{extra tokens at the end of '#pragma omp parallel for simd' are ignored}}
+#pragma omp parallel for simd( // expected-warning {{extra tokens at the end of '#pragma omp parallel for simd' are ignored}}
   for (int i = 0; i < argc; ++i)
     foo();
 #pragma omp parallel for simd[ // expected-warning {{extra tokens at the end of '#pragma omp parallel for simd' are ignored}}
@@ -73,7 +73,7 @@ L1:
 #pragma omp parallel for simd
   for (int i = 0; i < argc; ++i)
   L2:
-  foo();
+    foo();
 #pragma omp parallel for simd
   for (int i = 0; i < argc; ++i) {
     return 1; // expected-error {{cannot return from OpenMP region}}
@@ -99,4 +99,3 @@ void test_ordered() {
   for (int i = 0; i < 16; ++i)
     ;
 }
-

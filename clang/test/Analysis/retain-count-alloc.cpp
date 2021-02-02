@@ -10,7 +10,9 @@
 #define __isl_take
 #define __isl_keep
 
-struct Object { int Ref; };
+struct Object {
+  int Ref;
+};
 void free(void *);
 
 Object *copyObj(__isl_keep Object *O) {

@@ -75,177 +75,174 @@ int foo(int, int, int, ...) { return 42; }
 
 ///////////////////////////////////////////////////////////////////////////////
 struct MemFun03 {
-    int foo() { return 42; }
-    int foo() const { return 42; }
-    int foo() volatile { return 42; }
-    int foo() const volatile { return 42; }
+  int foo() { return 42; }
+  int foo() const { return 42; }
+  int foo() volatile { return 42; }
+  int foo() const volatile { return 42; }
 
-    int foo(int) { return 42; }
-    int foo(int) const { return 42; }
-    int foo(int) volatile { return 42; }
-    int foo(int) const volatile { return 42; }
+  int foo(int) { return 42; }
+  int foo(int) const { return 42; }
+  int foo(int) volatile { return 42; }
+  int foo(int) const volatile { return 42; }
 
-    int foo(int, int) { return 42; }
-    int foo(int, int) const { return 42; }
-    int foo(int, int) volatile { return 42; }
-    int foo(int, int) const volatile { return 42; }
+  int foo(int, int) { return 42; }
+  int foo(int, int) const { return 42; }
+  int foo(int, int) volatile { return 42; }
+  int foo(int, int) const volatile { return 42; }
 
-    int foo(int, int, int) { return 42; }
-    int foo(int, int, int) const { return 42; }
-    int foo(int, int, int) volatile { return 42; }
-    int foo(int, int, int) const volatile { return 42; }
+  int foo(int, int, int) { return 42; }
+  int foo(int, int, int) const { return 42; }
+  int foo(int, int, int) volatile { return 42; }
+  int foo(int, int, int) const volatile { return 42; }
 
-    int foo(...) { return 42; }
-    int foo(...) const { return 42; }
-    int foo(...) volatile { return 42; }
-    int foo(...) const volatile { return 42; }
+  int foo(...) { return 42; }
+  int foo(...) const { return 42; }
+  int foo(...) volatile { return 42; }
+  int foo(...) const volatile { return 42; }
 
-    int foo(int, ...) { return 42; }
-    int foo(int, ...) const { return 42; }
-    int foo(int, ...) volatile { return 42; }
-    int foo(int, ...) const volatile { return 42; }
+  int foo(int, ...) { return 42; }
+  int foo(int, ...) const { return 42; }
+  int foo(int, ...) volatile { return 42; }
+  int foo(int, ...) const volatile { return 42; }
 
-    int foo(int, int, ...) { return 42; }
-    int foo(int, int, ...) const { return 42; }
-    int foo(int, int, ...) volatile { return 42; }
-    int foo(int, int, ...) const volatile { return 42; }
+  int foo(int, int, ...) { return 42; }
+  int foo(int, int, ...) const { return 42; }
+  int foo(int, int, ...) volatile { return 42; }
+  int foo(int, int, ...) const volatile { return 42; }
 
-    int foo(int, int, int, ...) { return 42; }
-    int foo(int, int, int, ...) const { return 42; }
-    int foo(int, int, int, ...) volatile { return 42; }
-    int foo(int, int, int, ...) const volatile { return 42; }
+  int foo(int, int, int, ...) { return 42; }
+  int foo(int, int, int, ...) const { return 42; }
+  int foo(int, int, int, ...) volatile { return 42; }
+  int foo(int, int, int, ...) const volatile { return 42; }
 };
 
 #if TEST_STD_VER >= 11
 struct MemFun11 {
-    int foo() & { return 42; }
-    int foo() const & { return 42; }
-    int foo() volatile & { return 42; }
-    int foo() const volatile & { return 42; }
+  int foo() & { return 42; }
+  int foo() const& { return 42; }
+  int foo() volatile& { return 42; }
+  int foo() const volatile& { return 42; }
 
-    int foo(...) & { return 42; }
-    int foo(...) const & { return 42; }
-    int foo(...) volatile & { return 42; }
-    int foo(...) const volatile & { return 42; }
+  int foo(...) & { return 42; }
+  int foo(...) const& { return 42; }
+  int foo(...) volatile& { return 42; }
+  int foo(...) const volatile& { return 42; }
 
-    int foo() && { return 42; }
-    int foo() const && { return 42; }
-    int foo() volatile && { return 42; }
-    int foo() const volatile && { return 42; }
+  int foo() && { return 42; }
+  int foo() const&& { return 42; }
+  int foo() volatile&& { return 42; }
+  int foo() const volatile&& { return 42; }
 
-    int foo(...) && { return 42; }
-    int foo(...) const && { return 42; }
-    int foo(...) volatile && { return 42; }
-    int foo(...) const volatile && { return 42; }
+  int foo(...) && { return 42; }
+  int foo(...) const&& { return 42; }
+  int foo(...) volatile&& { return 42; }
+  int foo(...) const volatile&& { return 42; }
 };
 #endif // TEST_STD_VER >= 11
 
 struct MemData {
-    int foo;
+  int foo;
 };
 
 // Create a non-null free function by taking the address of
 // &static_cast<Tp&>(foo);
 template <class Tp>
 struct Creator {
-    static Tp create() {
-        return &foo;
-    }
+  static Tp create() { return &foo; }
 };
 
 // Create a non-null member pointer.
 template <class Ret, class Class>
 struct Creator<Ret Class::*> {
-    typedef Ret Class::*ReturnType;
-    static ReturnType create() {
-        return &Class::foo;
-    }
+  typedef Ret Class::*ReturnType;
+  static ReturnType create() { return &Class::foo; }
 };
 
 template <class TestFn, class Fn>
 void test_imp() {
-    { // Check that the null value is detected
-        TestFn tf = nullptr;
-        std::function<Fn> f = tf;
-        RTTI_ASSERT(f.template target<TestFn>() == nullptr);
-    }
-    { // Check that the non-null value is detected.
-        TestFn tf = Creator<TestFn>::create();
-        assert(tf != nullptr);
-        std::function<Fn> f = tf;
-        RTTI_ASSERT(f.template target<TestFn>() != nullptr);
-        RTTI_ASSERT(*f.template target<TestFn>() == tf);
-    }
+  { // Check that the null value is detected
+    TestFn tf = nullptr;
+    std::function<Fn> f = tf;
+    RTTI_ASSERT(f.template target<TestFn>() == nullptr);
+  }
+  { // Check that the non-null value is detected.
+    TestFn tf = Creator<TestFn>::create();
+    assert(tf != nullptr);
+    std::function<Fn> f = tf;
+    RTTI_ASSERT(f.template target<TestFn>() != nullptr);
+    RTTI_ASSERT(*f.template target<TestFn>() == tf);
+  }
 }
 
 void test_func() {
-    test_imp<int(*)(), int()>();
-    test_imp<int(*)(...), int()>();
-    test_imp<int(*)(int), int(int)>();
-    test_imp<int(*)(int, ...), int(int)>();
-    test_imp<int(*)(int, int), int(int, int)>();
-    test_imp<int(*)(int, int, ...), int(int, int)>();
-    test_imp<int(*)(int, int, int), int(int, int, int)>();
-    test_imp<int(*)(int, int, int, ...), int(int, int, int)>();
+  test_imp<int (*)(), int()>();
+  test_imp<int (*)(...), int()>();
+  test_imp<int (*)(int), int(int)>();
+  test_imp<int (*)(int, ...), int(int)>();
+  test_imp<int (*)(int, int), int(int, int)>();
+  test_imp<int (*)(int, int, ...), int(int, int)>();
+  test_imp<int (*)(int, int, int), int(int, int, int)>();
+  test_imp<int (*)(int, int, int, ...), int(int, int, int)>();
 }
 
 void test_mf() {
-    test_imp<int(MemFun03::*)(), int(MemFun03&)>();
-    test_imp<int(MemFun03::*)(...), int(MemFun03&)>();
-    test_imp<int(MemFun03::*)() const, int(MemFun03&)>();
-    test_imp<int(MemFun03::*)(...) const, int(MemFun03&)>();
-    test_imp<int(MemFun03::*)() volatile, int(MemFun03&)>();
-    test_imp<int(MemFun03::*)(...) volatile, int(MemFun03&)>();
-    test_imp<int(MemFun03::*)() const volatile, int(MemFun03&)>();
-    test_imp<int(MemFun03::*)(...) const volatile, int(MemFun03&)>();
+  test_imp<int (MemFun03::*)(), int(MemFun03&)>();
+  test_imp<int (MemFun03::*)(...), int(MemFun03&)>();
+  test_imp<int (MemFun03::*)() const, int(MemFun03&)>();
+  test_imp<int (MemFun03::*)(...) const, int(MemFun03&)>();
+  test_imp<int (MemFun03::*)() volatile, int(MemFun03&)>();
+  test_imp<int (MemFun03::*)(...) volatile, int(MemFun03&)>();
+  test_imp<int (MemFun03::*)() const volatile, int(MemFun03&)>();
+  test_imp<int (MemFun03::*)(...) const volatile, int(MemFun03&)>();
 
-    test_imp<int(MemFun03::*)(int), int(MemFun03&, int)>();
-    test_imp<int(MemFun03::*)(int, ...), int(MemFun03&, int)>();
-    test_imp<int(MemFun03::*)(int) const, int(MemFun03&, int)>();
-    test_imp<int(MemFun03::*)(int, ...) const, int(MemFun03&, int)>();
-    test_imp<int(MemFun03::*)(int) volatile, int(MemFun03&, int)>();
-    test_imp<int(MemFun03::*)(int, ...) volatile, int(MemFun03&, int)>();
-    test_imp<int(MemFun03::*)(int) const volatile, int(MemFun03&, int)>();
-    test_imp<int(MemFun03::*)(int, ...) const volatile, int(MemFun03&, int)>();
+  test_imp<int (MemFun03::*)(int), int(MemFun03&, int)>();
+  test_imp<int (MemFun03::*)(int, ...), int(MemFun03&, int)>();
+  test_imp<int (MemFun03::*)(int) const, int(MemFun03&, int)>();
+  test_imp<int (MemFun03::*)(int, ...) const, int(MemFun03&, int)>();
+  test_imp<int (MemFun03::*)(int) volatile, int(MemFun03&, int)>();
+  test_imp<int (MemFun03::*)(int, ...) volatile, int(MemFun03&, int)>();
+  test_imp<int (MemFun03::*)(int) const volatile, int(MemFun03&, int)>();
+  test_imp<int (MemFun03::*)(int, ...) const volatile, int(MemFun03&, int)>();
 
-    test_imp<int(MemFun03::*)(int, int), int(MemFun03&, int, int)>();
-    test_imp<int(MemFun03::*)(int, int, ...), int(MemFun03&, int, int)>();
-    test_imp<int(MemFun03::*)(int, int) const, int(MemFun03&, int, int)>();
-    test_imp<int(MemFun03::*)(int, int, ...) const, int(MemFun03&, int, int)>();
-    test_imp<int(MemFun03::*)(int, int) volatile, int(MemFun03&, int, int)>();
-    test_imp<int(MemFun03::*)(int, int, ...) volatile, int(MemFun03&, int, int)>();
-    test_imp<int(MemFun03::*)(int, int) const volatile, int(MemFun03&, int, int)>();
-    test_imp<int(MemFun03::*)(int, int, ...) const volatile, int(MemFun03&, int, int)>();
+  test_imp<int (MemFun03::*)(int, int), int(MemFun03&, int, int)>();
+  test_imp<int (MemFun03::*)(int, int, ...), int(MemFun03&, int, int)>();
+  test_imp<int (MemFun03::*)(int, int) const, int(MemFun03&, int, int)>();
+  test_imp<int (MemFun03::*)(int, int, ...) const, int(MemFun03&, int, int)>();
+  test_imp<int (MemFun03::*)(int, int) volatile, int(MemFun03&, int, int)>();
+  test_imp<int (MemFun03::*)(int, int, ...) volatile,
+           int(MemFun03&, int, int)>();
+  test_imp<int (MemFun03::*)(int, int) const volatile,
+           int(MemFun03&, int, int)>();
+  test_imp<int (MemFun03::*)(int, int, ...) const volatile,
+           int(MemFun03&, int, int)>();
 
 #if TEST_STD_VER >= 11
-    test_imp<int(MemFun11::*)() &, int(MemFun11&)>();
-    test_imp<int(MemFun11::*)(...) &, int(MemFun11&)>();
-    test_imp<int(MemFun11::*)() const &, int(MemFun11&)>();
-    test_imp<int(MemFun11::*)(...) const &, int(MemFun11&)>();
-    test_imp<int(MemFun11::*)() volatile &, int(MemFun11&)>();
-    test_imp<int(MemFun11::*)(...) volatile &, int(MemFun11&)>();
-    test_imp<int(MemFun11::*)() const volatile &, int(MemFun11&)>();
-    test_imp<int(MemFun11::*)(...) const volatile &, int(MemFun11&)>();
+  test_imp<int (MemFun11::*)()&, int(MemFun11&)>();
+  test_imp<int (MemFun11::*)(...)&, int(MemFun11&)>();
+  test_imp<int (MemFun11::*)() const&, int(MemFun11&)>();
+  test_imp<int (MemFun11::*)(...) const&, int(MemFun11&)>();
+  test_imp<int (MemFun11::*)() volatile&, int(MemFun11&)>();
+  test_imp<int (MemFun11::*)(...) volatile&, int(MemFun11&)>();
+  test_imp<int (MemFun11::*)() const volatile&, int(MemFun11&)>();
+  test_imp<int (MemFun11::*)(...) const volatile&, int(MemFun11&)>();
 
-    test_imp<int(MemFun11::*)() &&, int(MemFun11&&)>();
-    test_imp<int(MemFun11::*)(...) &&, int(MemFun11&&)>();
-    test_imp<int(MemFun11::*)() const &&, int(MemFun11&&)>();
-    test_imp<int(MemFun11::*)(...) const &&, int(MemFun11&&)>();
-    test_imp<int(MemFun11::*)() volatile &&, int(MemFun11&&)>();
-    test_imp<int(MemFun11::*)(...) volatile &&, int(MemFun11&&)>();
-    test_imp<int(MemFun11::*)() const volatile &&, int(MemFun11&&)>();
-    test_imp<int(MemFun11::*)(...) const volatile &&, int(MemFun11&&)>();
+  test_imp<int (MemFun11::*)()&&, int(MemFun11 &&)>();
+  test_imp<int (MemFun11::*)(...)&&, int(MemFun11 &&)>();
+  test_imp<int (MemFun11::*)() const&&, int(MemFun11 &&)>();
+  test_imp<int (MemFun11::*)(...) const&&, int(MemFun11 &&)>();
+  test_imp<int (MemFun11::*)() volatile&&, int(MemFun11 &&)>();
+  test_imp<int (MemFun11::*)(...) volatile&&, int(MemFun11 &&)>();
+  test_imp<int (MemFun11::*)() const volatile&&, int(MemFun11 &&)>();
+  test_imp<int (MemFun11::*)(...) const volatile&&, int(MemFun11 &&)>();
 #endif
 }
 
-void test_md() {
-    test_imp<int MemData::*, int(MemData&)>();
-}
+void test_md() { test_imp<int MemData::*, int(MemData&)>(); }
 
 int main(int, char**) {
-    test_func();
-    test_mf();
-    test_md();
+  test_func();
+  test_mf();
+  test_md();
 
   return 0;
 }

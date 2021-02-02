@@ -19,6 +19,6 @@ public:
   LinkDiagnosticInfo(DiagnosticSeverity Severity, const Twine &Msg);
   void print(DiagnosticPrinter &DP) const override;
 };
-}
+} // namespace llvm
 
 #endif

@@ -1,5 +1,5 @@
 template <typename T, int U>
-bool Foo = true;  // CHECK: bool Bar = true;
+bool Foo = true; // CHECK: bool Bar = true;
 
 // explicit template specialization
 template <>
@@ -11,11 +11,10 @@ bool Foo<T, 1> = false; // bool Bar<x, 1> = false;
 
 void k() {
   // ref to the explicit template specialization
-  Foo<int, 0>;   // CHECK: Bar<int, 0>;
+  Foo<int, 0>; // CHECK: Bar<int, 0>;
   // ref to the primary template.
-  Foo<double, 2>;   // CHECK: Bar<double, 2>;
+  Foo<double, 2>; // CHECK: Bar<double, 2>;
 }
-
 
 // Test 1.
 // RUN: clang-rename -offset=34 -new-name=Bar %s -- | sed 's,//.*,,' | FileCheck %s

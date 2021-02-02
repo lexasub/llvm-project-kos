@@ -9,15 +9,12 @@
 // CHECK: recursive.cpp:
 
 int func(int i) {
-    if (i > 1)
-        return i + func(i - 1);
-    return i;
+  if (i > 1)
+    return i + func(i - 1);
+  return i;
 }
 
-int main()
-{
-    return func(3);
-}
+int main() { return func(3); }
 
 // main, func, func, func
 // DexExpectStepKind('FUNC', 4)

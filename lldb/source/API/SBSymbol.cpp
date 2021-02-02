@@ -30,8 +30,8 @@ SBSymbol::SBSymbol(const lldb::SBSymbol &rhs) : m_opaque_ptr(rhs.m_opaque_ptr) {
 }
 
 const SBSymbol &SBSymbol::operator=(const SBSymbol &rhs) {
-  LLDB_RECORD_METHOD(const lldb::SBSymbol &,
-                     SBSymbol, operator=,(const lldb::SBSymbol &), rhs);
+  LLDB_RECORD_METHOD(const lldb::SBSymbol &, SBSymbol, operator=,
+                     (const lldb::SBSymbol &), rhs);
 
   m_opaque_ptr = rhs.m_opaque_ptr;
   return LLDB_RECORD_RESULT(*this);
@@ -83,14 +83,14 @@ const char *SBSymbol::GetMangledName() const {
 }
 
 bool SBSymbol::operator==(const SBSymbol &rhs) const {
-  LLDB_RECORD_METHOD_CONST(bool, SBSymbol, operator==,(const lldb::SBSymbol &),
+  LLDB_RECORD_METHOD_CONST(bool, SBSymbol, operator==, (const lldb::SBSymbol &),
                            rhs);
 
   return m_opaque_ptr == rhs.m_opaque_ptr;
 }
 
 bool SBSymbol::operator!=(const SBSymbol &rhs) const {
-  LLDB_RECORD_METHOD_CONST(bool, SBSymbol, operator!=,(const lldb::SBSymbol &),
+  LLDB_RECORD_METHOD_CONST(bool, SBSymbol, operator!=, (const lldb::SBSymbol &),
                            rhs);
 
   return m_opaque_ptr != rhs.m_opaque_ptr;
@@ -205,21 +205,20 @@ bool SBSymbol::IsSynthetic() {
 namespace lldb_private {
 namespace repro {
 
-template <>
-void RegisterMethods<SBSymbol>(Registry &R) {
+template <> void RegisterMethods<SBSymbol>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBSymbol, ());
   LLDB_REGISTER_CONSTRUCTOR(SBSymbol, (const lldb::SBSymbol &));
-  LLDB_REGISTER_METHOD(const lldb::SBSymbol &,
-                       SBSymbol, operator=,(const lldb::SBSymbol &));
+  LLDB_REGISTER_METHOD(const lldb::SBSymbol &, SBSymbol, operator=,
+                       (const lldb::SBSymbol &));
   LLDB_REGISTER_METHOD_CONST(bool, SBSymbol, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBSymbol, operator bool, ());
   LLDB_REGISTER_METHOD_CONST(const char *, SBSymbol, GetName, ());
   LLDB_REGISTER_METHOD_CONST(const char *, SBSymbol, GetDisplayName, ());
   LLDB_REGISTER_METHOD_CONST(const char *, SBSymbol, GetMangledName, ());
-  LLDB_REGISTER_METHOD_CONST(bool,
-                             SBSymbol, operator==,(const lldb::SBSymbol &));
-  LLDB_REGISTER_METHOD_CONST(bool,
-                             SBSymbol, operator!=,(const lldb::SBSymbol &));
+  LLDB_REGISTER_METHOD_CONST(bool, SBSymbol, operator==,
+                             (const lldb::SBSymbol &));
+  LLDB_REGISTER_METHOD_CONST(bool, SBSymbol, operator!=,
+                             (const lldb::SBSymbol &));
   LLDB_REGISTER_METHOD(bool, SBSymbol, GetDescription, (lldb::SBStream &));
   LLDB_REGISTER_METHOD(lldb::SBInstructionList, SBSymbol, GetInstructions,
                        (lldb::SBTarget));
@@ -233,5 +232,5 @@ void RegisterMethods<SBSymbol>(Registry &R) {
   LLDB_REGISTER_METHOD(bool, SBSymbol, IsSynthetic, ());
 }
 
-}
-}
+} // namespace repro
+} // namespace lldb_private

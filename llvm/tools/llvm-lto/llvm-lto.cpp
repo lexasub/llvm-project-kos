@@ -65,8 +65,9 @@ using namespace llvm;
 static codegen::RegisterCodeGenFlags CGF;
 
 static cl::opt<char>
-    OptLevel("O", cl::desc("Optimization level. [-O0, -O1, -O2, or -O3] "
-                           "(default = '-O2')"),
+    OptLevel("O",
+             cl::desc("Optimization level. [-O0, -O1, -O2, or -O3] "
+                      "(default = '-O2')"),
              cl::Prefix, cl::ZeroOrMore, cl::init('2'));
 
 static cl::opt<bool>
@@ -114,9 +115,10 @@ cl::opt<ThinLTOModes> ThinLTOMode(
                    "Emit imports files for distributed backends."),
         clEnumValN(THINPROMOTE, "promote",
                    "Perform pre-import promotion (requires -thinlto-index)."),
-        clEnumValN(THINIMPORT, "import", "Perform both promotion and "
-                                         "cross-module importing (requires "
-                                         "-thinlto-index)."),
+        clEnumValN(THINIMPORT, "import",
+                   "Perform both promotion and "
+                   "cross-module importing (requires "
+                   "-thinlto-index)."),
         clEnumValN(THININTERNALIZE, "internalize",
                    "Perform internalization driven by -exported-symbol "
                    "(requires -thinlto-index)."),
@@ -144,20 +146,20 @@ static cl::opt<std::string> ThinLTOModuleId(
 static cl::opt<std::string>
     ThinLTOCacheDir("thinlto-cache-dir", cl::desc("Enable ThinLTO caching."));
 
-static cl::opt<int>
-    ThinLTOCachePruningInterval("thinlto-cache-pruning-interval",
-    cl::init(1200), cl::desc("Set ThinLTO cache pruning interval."));
+static cl::opt<int> ThinLTOCachePruningInterval(
+    "thinlto-cache-pruning-interval", cl::init(1200),
+    cl::desc("Set ThinLTO cache pruning interval."));
 
 static cl::opt<uint64_t> ThinLTOCacheMaxSizeBytes(
     "thinlto-cache-max-size-bytes",
     cl::desc("Set ThinLTO cache pruning directory maximum size in bytes."));
 
-static cl::opt<int>
-    ThinLTOCacheMaxSizeFiles("thinlto-cache-max-size-files", cl::init(1000000),
+static cl::opt<int> ThinLTOCacheMaxSizeFiles(
+    "thinlto-cache-max-size-files", cl::init(1000000),
     cl::desc("Set ThinLTO cache pruning directory maximum number of files."));
 
-static cl::opt<unsigned>
-    ThinLTOCacheEntryExpiration("thinlto-cache-entry-expiration", cl::init(604800) /* 1w */,
+static cl::opt<unsigned> ThinLTOCacheEntryExpiration(
+    "thinlto-cache-entry-expiration", cl::init(604800) /* 1w */,
     cl::desc("Set ThinLTO cache entry expiration time."));
 
 static cl::opt<std::string> ThinLTOSaveTempsPrefix(
@@ -199,9 +201,10 @@ static cl::opt<bool> ListSymbolsOnly(
     "list-symbols-only", cl::init(false),
     cl::desc("Instead of running LTO, list the symbols in each IR file"));
 
-static cl::opt<bool> ListDependentLibrariesOnly(
-    "list-dependent-libraries-only", cl::init(false),
-    cl::desc("Instead of running LTO, list the dependent libraries in each IR file"));
+static cl::opt<bool>
+    ListDependentLibrariesOnly("list-dependent-libraries-only", cl::init(false),
+                               cl::desc("Instead of running LTO, list the "
+                                        "dependent libraries in each IR file"));
 
 static cl::opt<bool> SetMergedModule(
     "set-merged-module", cl::init(false),
@@ -258,38 +261,38 @@ static void handleDiagnostics(lto_codegen_diagnostic_severity_t Severity,
 static std::string CurrentActivity;
 
 namespace {
-  struct LLVMLTODiagnosticHandler : public DiagnosticHandler {
-    bool handleDiagnostics(const DiagnosticInfo &DI) override {
-      raw_ostream &OS = errs();
-      OS << "llvm-lto: ";
-      switch (DI.getSeverity()) {
-      case DS_Error:
-        OS << "error";
-        break;
-      case DS_Warning:
-        OS << "warning";
-        break;
-      case DS_Remark:
-        OS << "remark";
-        break;
-      case DS_Note:
-        OS << "note";
-        break;
-      }
-      if (!CurrentActivity.empty())
-        OS << ' ' << CurrentActivity;
-      OS << ": ";
-  
-      DiagnosticPrinterRawOStream DP(OS);
-      DI.print(DP);
-      OS << '\n';
-  
-      if (DI.getSeverity() == DS_Error)
-        exit(1);
-      return true;
+struct LLVMLTODiagnosticHandler : public DiagnosticHandler {
+  bool handleDiagnostics(const DiagnosticInfo &DI) override {
+    raw_ostream &OS = errs();
+    OS << "llvm-lto: ";
+    switch (DI.getSeverity()) {
+    case DS_Error:
+      OS << "error";
+      break;
+    case DS_Warning:
+      OS << "warning";
+      break;
+    case DS_Remark:
+      OS << "remark";
+      break;
+    case DS_Note:
+      OS << "note";
+      break;
     }
-  };
+    if (!CurrentActivity.empty())
+      OS << ' ' << CurrentActivity;
+    OS << ": ";
+
+    DiagnosticPrinterRawOStream DP(OS);
+    DI.print(DP);
+    OS << '\n';
+
+    if (DI.getSeverity() == DS_Error)
+      exit(1);
+    return true;
   }
+};
+} // namespace
 
 static void error(const Twine &Msg) {
   errs() << "llvm-lto: " << Msg << '\n';
@@ -381,9 +384,9 @@ static void listSymbols(const TargetOptions &Options) {
 }
 
 static std::unique_ptr<MemoryBuffer> loadFile(StringRef Filename) {
-    ExitOnError ExitOnErr("llvm-lto: error loading file '" + Filename.str() +
-        "': ");
-    return ExitOnErr(errorOrToExpected(MemoryBuffer::getFileOrSTDIN(Filename)));
+  ExitOnError ExitOnErr("llvm-lto: error loading file '" + Filename.str() +
+                        "': ");
+  return ExitOnErr(errorOrToExpected(MemoryBuffer::getFileOrSTDIN(Filename)));
 }
 
 static void listDependentLibraries() {
@@ -675,8 +678,7 @@ private:
       if (OutputName.empty()) {
         OutputName = Filename + ".imports";
       }
-      OutputName =
-          getThinLTOOutputFile(OutputName, OldPrefix, NewPrefix);
+      OutputName = getThinLTOOutputFile(OutputName, OldPrefix, NewPrefix);
       ThinGenerator.emitImports(*TheModule, OutputName, *Index, *Input);
     }
   }
@@ -1076,7 +1078,7 @@ int main(int argc, char **argv) {
     const char *OutputName = nullptr;
     if (!CodeGen.compile_to_file(&OutputName))
       error("error compiling the code");
-      // Diagnostic messages should have been printed by the handler.
+    // Diagnostic messages should have been printed by the handler.
 
     outs() << "Wrote native object file '" << OutputName << "'\n";
   }

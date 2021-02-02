@@ -152,8 +152,8 @@ struct ConstantOpLowering : public OpRewritePattern<toy::ConstantOp> {
 
     if (!valueShape.empty()) {
       for (auto i : llvm::seq<int64_t>(
-              0, *std::max_element(valueShape.begin(), valueShape.end())))
-       constantIndices.push_back(rewriter.create<ConstantIndexOp>(loc, i));
+               0, *std::max_element(valueShape.begin(), valueShape.end())))
+        constantIndices.push_back(rewriter.create<ConstantIndexOp>(loc, i));
     } else {
       // This is the case of a tensor of rank 0.
       constantIndices.push_back(rewriter.create<ConstantIndexOp>(loc, 0));

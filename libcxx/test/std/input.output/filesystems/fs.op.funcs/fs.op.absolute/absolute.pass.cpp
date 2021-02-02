@@ -24,34 +24,30 @@ using namespace fs;
 
 TEST_SUITE(filesystem_absolute_path_test_suite)
 
-TEST_CASE(absolute_signature_test)
-{
-    const path p; ((void)p);
-    std::error_code ec;
-    ASSERT_NOT_NOEXCEPT(absolute(p));
-    ASSERT_NOT_NOEXCEPT(absolute(p, ec));
+TEST_CASE(absolute_signature_test) {
+  const path p;
+  ((void)p);
+  std::error_code ec;
+  ASSERT_NOT_NOEXCEPT(absolute(p));
+  ASSERT_NOT_NOEXCEPT(absolute(p, ec));
 }
 
-
-TEST_CASE(basic_test)
-{
-    const fs::path cwd = fs::current_path();
-    const struct {
-      std::string input;
-      fs::path expect;
-    } TestCases [] = {
-        {"", cwd / ""},
-        {"foo", cwd / "foo"},
-        {"foo/", cwd / "foo" / ""},
-        {"/already_absolute", cwd.root_path() / "already_absolute"}
-    };
-    for (auto& TC : TestCases) {
-        std::error_code ec = GetTestEC();
-        const path ret = absolute(TC.input, ec);
-        TEST_CHECK(!ec);
-        TEST_CHECK(ret.is_absolute());
-        TEST_CHECK(PathEq(ret, TC.expect));
-    }
+TEST_CASE(basic_test) {
+  const fs::path cwd = fs::current_path();
+  const struct {
+    std::string input;
+    fs::path expect;
+  } TestCases[] = {{"", cwd / ""},
+                   {"foo", cwd / "foo"},
+                   {"foo/", cwd / "foo" / ""},
+                   {"/already_absolute", cwd.root_path() / "already_absolute"}};
+  for (auto& TC : TestCases) {
+    std::error_code ec = GetTestEC();
+    const path ret = absolute(TC.input, ec);
+    TEST_CHECK(!ec);
+    TEST_CHECK(ret.is_absolute());
+    TEST_CHECK(PathEq(ret, TC.expect));
+  }
 }
 
 TEST_SUITE_END()

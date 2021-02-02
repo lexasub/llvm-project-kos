@@ -141,8 +141,7 @@ ValueObjectRegisterSet::GetChildMemberWithName(ConstString name,
     return ValueObjectSP();
 }
 
-size_t
-ValueObjectRegisterSet::GetIndexOfChildWithName(ConstString name) {
+size_t ValueObjectRegisterSet::GetIndexOfChildWithName(ConstString name) {
   if (m_reg_ctx_sp && m_reg_set) {
     const RegisterInfo *reg_info =
         m_reg_ctx_sp->GetRegisterInfoByName(name.GetStringRef());

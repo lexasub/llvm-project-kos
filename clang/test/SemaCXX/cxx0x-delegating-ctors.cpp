@@ -7,39 +7,38 @@ struct foo {
   foo(int, int);
   foo(bool);
   foo(char);
-  foo(const float*);
-  foo(const float&);
-  foo(void*);
+  foo(const float *);
+  foo(const float &);
+  foo(void *);
 };
 
 // Good
-foo::foo (int i) : i(i) {
+foo::foo(int i) : i(i) {
 }
 // Good
-foo::foo () : foo(-1) {
+foo::foo() : foo(-1) {
 }
 // Good
-foo::foo (int, int) : foo() {
+foo::foo(int, int) : foo() {
 }
 
-foo::foo (bool) : foo(true) { // expected-error{{creates a delegation cycle}}
+foo::foo(bool) : foo(true) { // expected-error{{creates a delegation cycle}}
 }
 
 // Good
-foo::foo (const float* f) : foo(*f) { // expected-note{{it delegates to}}
+foo::foo(const float *f) : foo(*f) { // expected-note{{it delegates to}}
 }
 
-foo::foo (const float &f) : foo(&f) { //expected-error{{creates a delegation cycle}} \
+foo::foo(const float &f) : foo(&f) { //expected-error{{creates a delegation cycle}} \
                                       //expected-note{{which delegates to}}
 }
 
-foo::foo (char) :
-  i(3),
-  foo(3) { // expected-error{{must appear alone}}
+foo::foo(char) : i(3),
+                 foo(3) { // expected-error{{must appear alone}}
 }
 
 // This should not cause an infinite loop
-foo::foo (void*) : foo(4.0f) {
+foo::foo(void *) : foo(4.0f) {
 }
 
 struct deleted_dtor {

@@ -18,14 +18,13 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        typedef std::codecvt_utf8<wchar_t> Codecvt;
-        typedef std::wstring_convert<Codecvt> Myconv;
-        Myconv myconv(new Codecvt, std::mbstate_t());
-        assert(myconv.converted() == 0);
-    }
+int main(int, char**) {
+  {
+    typedef std::codecvt_utf8<wchar_t> Codecvt;
+    typedef std::wstring_convert<Codecvt> Myconv;
+    Myconv myconv(new Codecvt, std::mbstate_t());
+    assert(myconv.converted() == 0);
+  }
 
   return 0;
 }

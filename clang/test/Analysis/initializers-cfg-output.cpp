@@ -105,10 +105,10 @@ public:
   C(int i) : A(i) {}
 };
 
-
 class TestOrder : public C, public B, public A {
   int i;
-  int& r;
+  int &r;
+
 public:
   TestOrder();
 };
@@ -148,12 +148,13 @@ public:
 // CHECK:        [B0 (EXIT)]
 // CHECK-NEXT:     Preds (1): B1
 TestOrder::TestOrder()
-  : r(i), B(), i(), C() {
+    : r(i), B(), i(), C() {
   A a;
 }
 
 class TestControlFlow {
   int x, y, z;
+
 public:
   TestControlFlow(bool b);
 };
@@ -190,16 +191,14 @@ public:
 // CHECK:        [B0 (EXIT)]
 // CHECK-NEXT:     Preds (1): B1
 TestControlFlow::TestControlFlow(bool b)
-  : y(b ? 0 : 1)
-  , x(0)
-  , z(y) {
+    : y(b ? 0 : 1), x(0), z(y) {
   int v;
 }
 
 class TestDelegating {
   int x, z;
-public:
 
+public:
   // CHECK:       TestDelegating()
   // CHECK:        [B2 (ENTRY)]
   // CHECK-NEXT:     Succs (1): B1

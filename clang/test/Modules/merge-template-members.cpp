@@ -6,8 +6,8 @@
 
 #if TEST == 1
 
-template<typename> struct A { int n; };
-template<typename> struct B { typedef A<void> C; };
+template <typename> struct A { int n; };
+template <typename> struct B { typedef A<void> C; };
 template class B<int>;
 
 #include "update.h"

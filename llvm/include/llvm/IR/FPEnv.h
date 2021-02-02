@@ -34,7 +34,7 @@ enum ExceptionBehavior : uint8_t {
   ebStrict   ///< This corresponds to "fpexcept.strict".
 };
 
-}
+} // namespace fp
 
 /// Returns a valid RoundingMode enumerator when given a string
 /// that is valid as input in constrained intrinsic rounding mode
@@ -52,5 +52,5 @@ Optional<fp::ExceptionBehavior> StrToExceptionBehavior(StringRef);
 /// For any ExceptionBehavior enumerator, returns a string valid as
 /// input in constrained intrinsic exception behavior metadata.
 Optional<StringRef> ExceptionBehaviorToStr(fp::ExceptionBehavior);
-}
+} // namespace llvm
 #endif

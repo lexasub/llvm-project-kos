@@ -2,21 +2,19 @@
 
 // PR5392
 namespace PR5392 {
-struct A
-{
+struct A {
   static int a;
 };
 
 A a1;
-void f()
-{
+void f() {
   // CHECK: store i32 10, i32* @_ZN6PR53921A1aE
   a1.a = 10;
   // CHECK: store i32 20, i32* @_ZN6PR53921A1aE
   A().a = 20;
 }
 
-}
+} // namespace PR5392
 
 struct A {
   A();
@@ -28,7 +26,7 @@ A *g();
 
 void f(A *a) {
   A::E e1 = a->Foo;
-  
+
   // CHECK: call %struct.A* @_Z1gv()
   A::E e2 = g()->Foo;
   // CHECK: call void @_ZN1AC1Ev(
@@ -43,44 +41,44 @@ struct A {
 int f() {
   return A().foo();
 }
-}
+} // namespace test3
 
 namespace test4 {
-  struct A {
-    int x;
-  };
-  struct B {
-    int x;
-    void foo();
-  };
-  struct C : A, B {
-  };
+struct A {
+  int x;
+};
+struct B {
+  int x;
+  void foo();
+};
+struct C : A, B {
+};
 
-  extern C *c_ptr;
+extern C *c_ptr;
 
-  // CHECK-LABEL: define{{.*}} i32 @_ZN5test44testEv()
-  int test() {
-    // CHECK: load {{.*}} @_ZN5test45c_ptrE
-    // CHECK-NEXT: bitcast
-    // CHECK-NEXT: getelementptr
-    // CHECK-NEXT: bitcast
-    // CHECK-NEXT: call void @_ZN5test41B3fooEv
-    c_ptr->B::foo();
+// CHECK-LABEL: define{{.*}} i32 @_ZN5test44testEv()
+int test() {
+  // CHECK: load {{.*}} @_ZN5test45c_ptrE
+  // CHECK-NEXT: bitcast
+  // CHECK-NEXT: getelementptr
+  // CHECK-NEXT: bitcast
+  // CHECK-NEXT: call void @_ZN5test41B3fooEv
+  c_ptr->B::foo();
 
-    // CHECK: load {{.*}} @_ZN5test45c_ptrE
-    // CHECK-NEXT: bitcast
-    // CHECK-NEXT: getelementptr
-    // CHECK-NEXT: bitcast
-    // CHECK-NEXT: getelementptr
-    // CHECK-NEXT: store i32 5
-    c_ptr->B::x = 5;
+  // CHECK: load {{.*}} @_ZN5test45c_ptrE
+  // CHECK-NEXT: bitcast
+  // CHECK-NEXT: getelementptr
+  // CHECK-NEXT: bitcast
+  // CHECK-NEXT: getelementptr
+  // CHECK-NEXT: store i32 5
+  c_ptr->B::x = 5;
 
-    // CHECK: load {{.*}} @_ZN5test45c_ptrE
-    // CHECK-NEXT: bitcast
-    // CHECK-NEXT: getelementptr
-    // CHECK-NEXT: bitcast
-    // CHECK-NEXT: getelementptr
-    // CHECK-NEXT: load i32, i32*
-    return c_ptr->B::x;
-  }
+  // CHECK: load {{.*}} @_ZN5test45c_ptrE
+  // CHECK-NEXT: bitcast
+  // CHECK-NEXT: getelementptr
+  // CHECK-NEXT: bitcast
+  // CHECK-NEXT: getelementptr
+  // CHECK-NEXT: load i32, i32*
+  return c_ptr->B::x;
 }
+} // namespace test4

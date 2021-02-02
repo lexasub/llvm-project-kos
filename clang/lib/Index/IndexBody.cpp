@@ -7,8 +7,8 @@
 //===----------------------------------------------------------------------===//
 
 #include "IndexingContext.h"
-#include "clang/AST/RecursiveASTVisitor.h"
 #include "clang/AST/ASTLambda.h"
+#include "clang/AST/RecursiveASTVisitor.h"
 
 using namespace clang;
 using namespace clang::index;
@@ -19,17 +19,18 @@ class BodyIndexer : public RecursiveASTVisitor<BodyIndexer> {
   IndexingContext &IndexCtx;
   const NamedDecl *Parent;
   const DeclContext *ParentDC;
-  SmallVector<Stmt*, 16> StmtStack;
+  SmallVector<Stmt *, 16> StmtStack;
 
   typedef RecursiveASTVisitor<BodyIndexer> base;
 
   Stmt *getParentStmt() const {
     return StmtStack.size() < 2 ? nullptr : StmtStack.end()[-2];
   }
+
 public:
-  BodyIndexer(IndexingContext &indexCtx,
-              const NamedDecl *Parent, const DeclContext *DC)
-    : IndexCtx(indexCtx), Parent(Parent), ParentDC(DC) { }
+  BodyIndexer(IndexingContext &indexCtx, const NamedDecl *Parent,
+              const DeclContext *DC)
+      : IndexCtx(indexCtx), Parent(Parent), ParentDC(DC) {}
 
   bool shouldWalkTypesOfTypeLocs() const { return false; }
 
@@ -60,7 +61,7 @@ public:
     assert(!StmtStack.empty() && E == StmtStack.back());
     if (StmtStack.size() == 1)
       return Roles;
-    auto It = StmtStack.end()-2;
+    auto It = StmtStack.end() - 2;
     while (isa<CastExpr>(*It) || isa<ParenExpr>(*It)) {
       if (auto ICE = dyn_cast<ImplicitCastExpr>(*It)) {
         if (ICE->getCastKind() == CK_LValueToRValue)
@@ -94,18 +95,20 @@ public:
       if (CE->getCallee()->IgnoreParenCasts() == E) {
         addCallRole(Roles, Relations);
         if (auto *ME = dyn_cast<MemberExpr>(E)) {
-          if (auto *CXXMD = dyn_cast_or_null<CXXMethodDecl>(ME->getMemberDecl()))
+          if (auto *CXXMD =
+                  dyn_cast_or_null<CXXMethodDecl>(ME->getMemberDecl()))
             if (CXXMD->isVirtual() && !ME->hasQualifier()) {
               Roles |= (unsigned)SymbolRole::Dynamic;
               auto BaseTy = ME->getBase()->IgnoreImpCasts()->getType();
               if (!BaseTy.isNull())
                 if (auto *CXXRD = BaseTy->getPointeeCXXRecordDecl())
-                  Relations.emplace_back((unsigned)SymbolRole::RelationReceivedBy,
-                                         CXXRD);
+                  Relations.emplace_back(
+                      (unsigned)SymbolRole::RelationReceivedBy, CXXRD);
             }
         }
       } else if (auto CXXOp = dyn_cast<CXXOperatorCallExpr>(CE)) {
-        if (CXXOp->getNumArgs() > 0 && CXXOp->getArg(0)->IgnoreParenCasts() == E) {
+        if (CXXOp->getNumArgs() > 0 &&
+            CXXOp->getArg(0)->IgnoreParenCasts() == E) {
           OverloadedOperatorKind Op = CXXOp->getOperator();
           if (Op == OO_Equal) {
             Roles |= (unsigned)SymbolRole::Write;
@@ -136,8 +139,8 @@ public:
   bool VisitDeclRefExpr(DeclRefExpr *E) {
     SmallVector<SymbolRelation, 4> Relations;
     SymbolRoleSet Roles = getRolesForRef(E, Relations);
-    return IndexCtx.handleReference(E->getDecl(), E->getLocation(),
-                                    Parent, ParentDC, Roles, Relations, E);
+    return IndexCtx.handleReference(E->getDecl(), E->getLocation(), Parent,
+                                    ParentDC, Roles, Relations, E);
   }
 
   bool VisitMemberExpr(MemberExpr *E) {
@@ -146,8 +149,8 @@ public:
       Loc = E->getBeginLoc();
     SmallVector<SymbolRelation, 4> Relations;
     SymbolRoleSet Roles = getRolesForRef(E, Relations);
-    return IndexCtx.handleReference(E->getMemberDecl(), Loc,
-                                    Parent, ParentDC, Roles, Relations, E);
+    return IndexCtx.handleReference(E->getMemberDecl(), Loc, Parent, ParentDC,
+                                    Roles, Relations, E);
   }
 
   bool indexDependentReference(
@@ -209,12 +212,12 @@ public:
   bool VisitObjCIvarRefExpr(ObjCIvarRefExpr *E) {
     SmallVector<SymbolRelation, 4> Relations;
     SymbolRoleSet Roles = getRolesForRef(E, Relations);
-    return IndexCtx.handleReference(E->getDecl(), E->getLocation(),
-                                    Parent, ParentDC, Roles, Relations, E);
+    return IndexCtx.handleReference(E->getDecl(), E->getLocation(), Parent,
+                                    ParentDC, Roles, Relations, E);
   }
 
   bool VisitObjCMessageExpr(ObjCMessageExpr *E) {
-    auto isDynamic = [](const ObjCMessageExpr *MsgE)->bool {
+    auto isDynamic = [](const ObjCMessageExpr *MsgE) -> bool {
       if (MsgE->getReceiverKind() != ObjCMessageExpr::Instance)
         return false;
       if (auto *RecE = dyn_cast<ObjCMessageExpr>(
@@ -279,8 +282,8 @@ public:
           addReceivers(recT->getAs<ObjCObjectType>());
       }
 
-      return IndexCtx.handleReference(MD, E->getSelectorStartLoc(),
-                                      Parent, ParentDC, Roles, Relations, E);
+      return IndexCtx.handleReference(MD, E->getSelectorStartLoc(), Parent,
+                                      ParentDC, Roles, Relations, E);
     }
     return true;
   }
@@ -292,8 +295,9 @@ public:
     if (E->isExplicitProperty()) {
       SmallVector<SymbolRelation, 2> Relations;
       SymbolRoleSet Roles = getRolesForRef(E, Relations);
-      return IndexCtx.handleReference(E->getExplicitProperty(), E->getLocation(),
-                                      Parent, ParentDC, Roles, Relations, E);
+      return IndexCtx.handleReference(E->getExplicitProperty(),
+                                      E->getLocation(), Parent, ParentDC, Roles,
+                                      Relations, E);
     } else if (const ObjCMethodDecl *Getter = E->getImplicitPropertyGetter()) {
       // Class properties that are explicitly defined using @property
       // declarations are represented implicitly as there is no ivar for class
@@ -415,11 +419,11 @@ public:
     };
 
     auto visitSyntacticDesignatedInitExpr = [&](DesignatedInitExpr *E) -> bool {
-      for (DesignatedInitExpr::Designator &D : llvm::reverse(E->designators())) {
+      for (DesignatedInitExpr::Designator &D :
+           llvm::reverse(E->designators())) {
         if (D.isFieldDesignator() && D.getField())
-          return IndexCtx.handleReference(D.getField(), D.getFieldLoc(),
-                                          Parent, ParentDC, SymbolRoleSet(),
-                                          {}, E);
+          return IndexCtx.handleReference(D.getField(), D.getFieldLoc(), Parent,
+                                          ParentDC, SymbolRoleSet(), {}, E);
       }
       return true;
     };
@@ -457,7 +461,7 @@ public:
     return true;
   }
 
-  bool VisitParmVarDecl(ParmVarDecl* D) {
+  bool VisitParmVarDecl(ParmVarDecl *D) {
     // Index the parameters of lambda expression.
     if (IndexCtx.shouldIndexFunctionLocalSymbols()) {
       const auto *DC = D->getDeclContext();
@@ -477,5 +481,5 @@ void IndexingContext::indexBody(const Stmt *S, const NamedDecl *Parent,
 
   if (!DC)
     DC = Parent->getLexicalDeclContext();
-  BodyIndexer(*this, Parent, DC).TraverseStmt(const_cast<Stmt*>(S));
+  BodyIndexer(*this, Parent, DC).TraverseStmt(const_cast<Stmt *>(S));
 }

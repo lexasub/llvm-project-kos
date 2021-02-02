@@ -133,9 +133,9 @@ static bool isConstantIntVector(Value *Mask) {
 //  br label %else2
 //
 // else2:                                          ; preds = %else, %cond.load1
-//  %res.phi.else3 = phi <16 x i32> [ %9, %cond.load1 ], [ %res.phi.else, %else ]
-//  %10 = extractelement <16 x i1> %mask, i32 2
-//  br i1 %10, label %cond.load4, label %else5
+//  %res.phi.else3 = phi <16 x i32> [ %9, %cond.load1 ], [ %res.phi.else, %else
+//  ] %10 = extractelement <16 x i1> %mask, i32 2 br i1 %10, label %cond.load4,
+//  label %else5
 //
 static void scalarizeMaskedLoad(CallInst *CI, DomTreeUpdater *DTU,
                                 bool &ModifiedDT) {
@@ -200,10 +200,9 @@ static void scalarizeMaskedLoad(CallInst *CI, DomTreeUpdater *DTU,
   for (unsigned Idx = 0; Idx < VectorWidth; ++Idx) {
     // Fill the "else" block, created in the previous iteration
     //
-    //  %res.phi.else3 = phi <16 x i32> [ %11, %cond.load1 ], [ %res.phi.else, %else ]
-    //  %mask_1 = and i16 %scalar_mask, i32 1 << Idx
-    //  %cond = icmp ne i16 %mask_1, 0
-    //  br i1 %mask_1, label %cond.load, label %else
+    //  %res.phi.else3 = phi <16 x i32> [ %11, %cond.load1 ], [ %res.phi.else,
+    //  %else ] %mask_1 = and i16 %scalar_mask, i32 1 << Idx %cond = icmp ne i16
+    //  %mask_1, 0 br i1 %mask_1, label %cond.load, label %else
     //
     Value *Predicate;
     if (VectorWidth != 1) {
@@ -685,9 +684,9 @@ static void scalarizeMaskedExpandLoad(CallInst *CI, DomTreeUpdater *DTU,
   for (unsigned Idx = 0; Idx < VectorWidth; ++Idx) {
     // Fill the "else" block, created in the previous iteration
     //
-    //  %res.phi.else3 = phi <16 x i32> [ %11, %cond.load1 ], [ %res.phi.else, %else ]
-    //  %mask_1 = extractelement <16 x i1> %mask, i32 Idx
-    //  br i1 %mask_1, label %cond.load, label %else
+    //  %res.phi.else3 = phi <16 x i32> [ %11, %cond.load1 ], [ %res.phi.else,
+    //  %else ] %mask_1 = extractelement <16 x i1> %mask, i32 Idx br i1 %mask_1,
+    //  label %cond.load, label %else
     //
 
     Value *Predicate;
@@ -866,7 +865,6 @@ static bool runImpl(Function &F, const TargetTransformInfo &TTI,
       bool ModifiedDTOnIteration = false;
       MadeChange |= optimizeBlock(*BB, ModifiedDTOnIteration, TTI, DL,
                                   DTU.hasValue() ? DTU.getPointer() : nullptr);
-
 
       // Restart BB iteration if the dominator tree of the Function was changed
       if (ModifiedDTOnIteration)

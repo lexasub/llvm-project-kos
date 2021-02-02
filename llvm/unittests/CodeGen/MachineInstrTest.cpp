@@ -6,8 +6,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "llvm/CodeGen/MachineBasicBlock.h"
 #include "llvm/CodeGen/MachineInstr.h"
+#include "llvm/CodeGen/MachineBasicBlock.h"
 #include "llvm/CodeGen/MachineFunction.h"
 #include "llvm/CodeGen/MachineMemOperand.h"
 #include "llvm/CodeGen/MachineModuleInfo.h"
@@ -33,8 +33,8 @@ namespace {
 #include "MFCommon.inc"
 
 std::unique_ptr<MCContext> createMCContext(MCAsmInfo *AsmInfo) {
-  return std::make_unique<MCContext>(
-      AsmInfo, nullptr, nullptr, nullptr, nullptr, false);
+  return std::make_unique<MCContext>(AsmInfo, nullptr, nullptr, nullptr,
+                                     nullptr, false);
 }
 
 // This test makes sure that MachineInstr::isIdenticalTo handles Defs correctly
@@ -209,12 +209,12 @@ TEST(MachineInstrPrintingTest, DebugLocPrinting) {
 
   std::string str;
   raw_string_ostream OS(str);
-  MI->print(OS, /*IsStandalone*/true, /*SkipOpers*/false, /*SkipDebugLoc*/false,
-            /*AddNewLine*/false);
+  MI->print(OS, /*IsStandalone*/ true, /*SkipOpers*/ false,
+            /*SkipDebugLoc*/ false,
+            /*AddNewLine*/ false);
   ASSERT_TRUE(
       StringRef(OS.str()).startswith("$noreg = UNKNOWN debug-location "));
-  ASSERT_TRUE(
-      StringRef(OS.str()).endswith("filename:1:5"));
+  ASSERT_TRUE(StringRef(OS.str()).endswith("filename:1:5"));
 }
 
 TEST(MachineInstrSpan, DistanceBegin) {

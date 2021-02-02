@@ -1,10 +1,10 @@
 // Note: the run lines follow their respective tests, since line/column
 // matter in this test.
 
-template<class T> void (&foo(T))(T);
-template<class T> void (*bar(T))(T);
-template<class T> void (&baz(T))(T, ...);
-template<class T> void (*fiz(T))(T, ...);
+template <class T> void (&foo(T))(T);
+template <class T> void (*bar(T))(T);
+template <class T> void (&baz(T))(T, ...);
+template <class T> void (*fiz(T))(T, ...);
 
 int main() {
   foo(42)(42);

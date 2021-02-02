@@ -38,7 +38,7 @@ TEST(DWARFFormValue, FormClass) {
   EXPECT_TRUE(isFormClass(DW_FORM_ref_sig8, DWARFFormValue::FC_Reference));
 }
 
-template<typename RawTypeT>
+template <typename RawTypeT>
 DWARFFormValue createDataXFormValue(dwarf::Form Form, RawTypeT Value) {
   char Raw[sizeof(RawTypeT)];
   memcpy(Raw, &Value, sizeof(RawTypeT));
@@ -94,7 +94,8 @@ TEST(DWARFFormValue, SignedConstantForms) {
   auto Data1 = createDataXFormValue<uint8_t>(DW_FORM_data1, 120);
   auto Data2 = createDataXFormValue<uint16_t>(DW_FORM_data2, 32000);
   auto Data4 = createDataXFormValue<uint32_t>(DW_FORM_data4, 2000000000);
-  auto Data8 = createDataXFormValue<uint64_t>(DW_FORM_data8, 0x1234567812345678LL);
+  auto Data8 =
+      createDataXFormValue<uint64_t>(DW_FORM_data8, 0x1234567812345678LL);
   auto LEBMin = createSLEBFormValue(LLONG_MIN);
   auto LEBMax = createSLEBFormValue(LLONG_MAX);
   auto LEB1 = createSLEBFormValue(-42);

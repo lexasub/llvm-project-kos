@@ -36,7 +36,7 @@ Regex::Regex(StringRef regex, RegexFlags Flags) {
     flags |= REG_NEWLINE;
   if (!(Flags & BasicRegex))
     flags |= REG_EXTENDED;
-  error = llvm_regcomp(preg, regex.data(), flags|REG_PEND);
+  error = llvm_regcomp(preg, regex.data(), flags | REG_PEND);
 }
 
 Regex::Regex(StringRef regex, unsigned Flags)
@@ -79,9 +79,7 @@ bool Regex::isValid(std::string &Error) const {
 
 /// getNumMatches - In a valid regex, return the number of parenthesized
 /// matches it contains.
-unsigned Regex::getNumMatches() const {
-  return preg->re_nsub;
-}
+unsigned Regex::getNumMatches() const { return preg->re_nsub; }
 
 bool Regex::match(StringRef String, SmallVectorImpl<StringRef> *Matches,
                   std::string *Error) const {
@@ -93,7 +91,7 @@ bool Regex::match(StringRef String, SmallVectorImpl<StringRef> *Matches,
   if (Error ? !isValid(*Error) : !isValid())
     return false;
 
-  unsigned nmatch = Matches ? preg->re_nsub+1 : 0;
+  unsigned nmatch = Matches ? preg->re_nsub + 1 : 0;
 
   // pmatch needs to have at least one element.
   SmallVector<llvm_regmatch_t, 8> pm;
@@ -125,8 +123,8 @@ bool Regex::match(StringRef String, SmallVectorImpl<StringRef> *Matches,
         continue;
       }
       assert(pm[i].rm_eo >= pm[i].rm_so);
-      Matches->push_back(StringRef(String.data()+pm[i].rm_so,
-                                   pm[i].rm_eo-pm[i].rm_so));
+      Matches->push_back(
+          StringRef(String.data() + pm[i].rm_so, pm[i].rm_eo - pm[i].rm_so));
     }
   }
 
@@ -155,8 +153,7 @@ std::string Regex::sub(StringRef Repl, StringRef String,
 
     // Check for terminimation and trailing backslash.
     if (Split.second.empty()) {
-      if (Repl.size() != Split.first.size() &&
-          Error && Error->empty())
+      if (Repl.size() != Split.first.size() && Error && Error->empty())
         *Error = "replacement string contained trailing backslash";
       break;
     }
@@ -183,15 +180,22 @@ std::string Regex::sub(StringRef Repl, StringRef String,
       break;
 
       // Decimal escapes are backreferences.
-    case '0': case '1': case '2': case '3': case '4':
-    case '5': case '6': case '7': case '8': case '9': {
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9': {
       // Extract the backreference number.
       StringRef Ref = Repl.slice(0, Repl.find_first_not_of("0123456789"));
       Repl = Repl.substr(Ref.size());
 
       unsigned RefValue;
-      if (!Ref.getAsInteger(10, RefValue) &&
-          RefValue < Matches.size())
+      if (!Ref.getAsInteger(10, RefValue) && RefValue < Matches.size())
         Res += Matches[RefValue];
       else if (Error && Error->empty())
         *Error = ("invalid backreference string '" + Twine(Ref) + "'").str();

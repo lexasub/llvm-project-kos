@@ -8,7 +8,7 @@
 
 #define HEADER_INCLUDED
 
-template<typename T> void f(T t) {
+template <typename T> void f(T t) {
   auto a = t.x;
   decltype(auto) b = t.x;
   auto c = (t.x);

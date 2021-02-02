@@ -29,13 +29,9 @@ namespace clang_fuzzer {
 
 static bool inner_loop = false;
 class InnerLoop {
-  public:
-  InnerLoop() {
-    inner_loop = true;
-  }
-  ~InnerLoop() {
-    inner_loop = false;
-  }
+public:
+  InnerLoop() { inner_loop = true; }
+  ~InnerLoop() { inner_loop = false; }
 };
 
 // Forward decls.
@@ -49,12 +45,12 @@ std::ostream &operator<<(std::ostream &os, const Const &x) {
 std::ostream &operator<<(std::ostream &os, const VarRef &x) {
   std::string which_loop = inner_loop ? "j" : "i";
   switch (x.arr()) {
-    case VarRef::ARR_A:
-      return os << "a[" << which_loop << "]";
-    case VarRef::ARR_B:
-      return os << "b[" << which_loop << "]";
-    case VarRef::ARR_C:
-      return os << "c[" << which_loop << "]";
+  case VarRef::ARR_A:
+    return os << "a[" << which_loop << "]";
+  case VarRef::ARR_B:
+    return os << "b[" << which_loop << "]";
+  case VarRef::ARR_C:
+    return os << "c[" << which_loop << "]";
   }
 }
 std::ostream &operator<<(std::ostream &os, const Rvalue &x) {

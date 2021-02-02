@@ -14,5 +14,5 @@ struct Trivial {
 void (*fnptr)(Trivial);
 
 void test() {
-  fnptr = [](Trivial a){ (void)a; };
+  fnptr = [](Trivial a) { (void)a; };
 }

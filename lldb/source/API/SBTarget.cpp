@@ -110,8 +110,8 @@ SBTarget::SBTarget(const TargetSP &target_sp) : m_opaque_sp(target_sp) {
 }
 
 const SBTarget &SBTarget::operator=(const SBTarget &rhs) {
-  LLDB_RECORD_METHOD(const lldb::SBTarget &,
-                     SBTarget, operator=,(const lldb::SBTarget &), rhs);
+  LLDB_RECORD_METHOD(const lldb::SBTarget &, SBTarget, operator=,
+                     (const lldb::SBTarget &), rhs);
 
   if (this != &rhs)
     m_opaque_sp = rhs.m_opaque_sp;
@@ -412,7 +412,6 @@ SBProcess SBTarget::Launch(SBLaunchInfo &sb_launch_info, SBError &error) {
                      (lldb::SBLaunchInfo &, lldb::SBError &), sb_launch_info,
                      error);
 
-
   SBProcess sb_process;
   TargetSP target_sp(GetSP());
 
@@ -566,9 +565,8 @@ lldb::SBProcess SBTarget::ConnectRemote(SBListener &listener, const char *url,
   if (target_sp) {
     std::lock_guard<std::recursive_mutex> guard(target_sp->GetAPIMutex());
     if (listener.IsValid())
-      process_sp =
-          target_sp->CreateProcess(listener.m_opaque_sp, plugin_name, nullptr,
-                                   true);
+      process_sp = target_sp->CreateProcess(listener.m_opaque_sp, plugin_name,
+                                            nullptr, true);
     else
       process_sp = target_sp->CreateProcess(
           target_sp->GetDebugger().GetListener(), plugin_name, nullptr, true);
@@ -601,14 +599,14 @@ SBFileSpec SBTarget::GetExecutable() {
 }
 
 bool SBTarget::operator==(const SBTarget &rhs) const {
-  LLDB_RECORD_METHOD_CONST(bool, SBTarget, operator==,(const lldb::SBTarget &),
+  LLDB_RECORD_METHOD_CONST(bool, SBTarget, operator==, (const lldb::SBTarget &),
                            rhs);
 
   return m_opaque_sp.get() == rhs.m_opaque_sp.get();
 }
 
 bool SBTarget::operator!=(const SBTarget &rhs) const {
-  LLDB_RECORD_METHOD_CONST(bool, SBTarget, operator!=,(const lldb::SBTarget &),
+  LLDB_RECORD_METHOD_CONST(bool, SBTarget, operator!=, (const lldb::SBTarget &),
                            rhs);
 
   return m_opaque_sp.get() != rhs.m_opaque_sp.get();
@@ -999,7 +997,6 @@ lldb::SBBreakpoint SBTarget::BreakpointCreateByRegex(
        const lldb::SBFileSpecList &),
       symbol_name_regex, symbol_language, module_list, comp_unit_list);
 
-
   SBBreakpoint sb_bp;
   TargetSP target_sp(GetSP());
   if (target_sp && symbol_name_regex && symbol_name_regex[0]) {
@@ -1131,7 +1128,7 @@ SBTarget::BreakpointCreateForException(lldb::LanguageType language,
     std::lock_guard<std::recursive_mutex> guard(target_sp->GetAPIMutex());
     const bool hardware = false;
     sb_bp = target_sp->CreateExceptionBreakpoint(language, catch_bp, throw_bp,
-                                                  hardware);
+                                                 hardware);
   }
 
   return LLDB_RECORD_RESULT(sb_bp);
@@ -1154,14 +1151,9 @@ lldb::SBBreakpoint SBTarget::BreakpointCreateFromScript(
     Status error;
 
     StructuredData::ObjectSP obj_sp = extra_args.m_impl_up->GetObjectSP();
-    sb_bp =
-        target_sp->CreateScriptedBreakpoint(class_name,
-                                            module_list.get(),
-                                            file_list.get(),
-                                            false, /* internal */
-                                            request_hardware,
-                                            obj_sp,
-                                            &error);
+    sb_bp = target_sp->CreateScriptedBreakpoint(
+        class_name, module_list.get(), file_list.get(), false, /* internal */
+        request_hardware, obj_sp, &error);
   }
 
   return LLDB_RECORD_RESULT(sb_bp);
@@ -1418,7 +1410,6 @@ bool SBTarget::DeleteWatchpoint(watch_id_t wp_id) {
   LLDB_RECORD_METHOD(bool, SBTarget, DeleteWatchpoint, (lldb::watch_id_t),
                      wp_id);
 
-
   bool result = false;
   TargetSP target_sp(GetSP());
   if (target_sp) {
@@ -1434,7 +1425,6 @@ bool SBTarget::DeleteWatchpoint(watch_id_t wp_id) {
 SBWatchpoint SBTarget::FindWatchpointByID(lldb::watch_id_t wp_id) {
   LLDB_RECORD_METHOD(lldb::SBWatchpoint, SBTarget, FindWatchpointByID,
                      (lldb::watch_id_t), wp_id);
-
 
   SBWatchpoint sb_watchpoint;
   lldb::WatchpointSP watchpoint_sp;
@@ -1639,7 +1629,8 @@ lldb::SBModule SBTarget::AddModule(const char *path, const char *triple,
     if (symfile)
       module_spec.GetSymbolFileSpec().SetFile(symfile, FileSpec::Style::native);
 
-    sb_module.SetSP(target_sp->GetOrCreateModule(module_spec, true /* notify */));
+    sb_module.SetSP(
+        target_sp->GetOrCreateModule(module_spec, true /* notify */));
   }
   return LLDB_RECORD_RESULT(sb_module);
 }
@@ -1793,10 +1784,8 @@ SBBroadcaster SBTarget::GetBroadcaster() const {
   LLDB_RECORD_METHOD_CONST_NO_ARGS(lldb::SBBroadcaster, SBTarget,
                                    GetBroadcaster);
 
-
   TargetSP target_sp(GetSP());
   SBBroadcaster broadcaster(target_sp.get(), false);
-
 
   return LLDB_RECORD_RESULT(broadcaster);
 }
@@ -2376,7 +2365,6 @@ lldb::SBValue SBTarget::EvaluateExpression(const char *expr,
     std::lock_guard<std::recursive_mutex> guard(target_sp->GetAPIMutex());
     ExecutionContext exe_ctx(m_opaque_sp.get());
 
-
     frame = exe_ctx.GetFramePtr();
     Target *target = exe_ctx.GetTargetPtr();
 
@@ -2458,13 +2446,12 @@ SBEnvironment SBTarget::GetEnvironment() {
 namespace lldb_private {
 namespace repro {
 
-template <>
-void RegisterMethods<SBTarget>(Registry &R) {
+template <> void RegisterMethods<SBTarget>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBTarget, ());
   LLDB_REGISTER_CONSTRUCTOR(SBTarget, (const lldb::SBTarget &));
   LLDB_REGISTER_CONSTRUCTOR(SBTarget, (const lldb::TargetSP &));
-  LLDB_REGISTER_METHOD(const lldb::SBTarget &,
-                       SBTarget, operator=,(const lldb::SBTarget &));
+  LLDB_REGISTER_METHOD(const lldb::SBTarget &, SBTarget, operator=,
+                       (const lldb::SBTarget &));
   LLDB_REGISTER_STATIC_METHOD(bool, SBTarget, EventIsTargetEvent,
                               (const lldb::SBEvent &));
   LLDB_REGISTER_STATIC_METHOD(lldb::SBTarget, SBTarget, GetTargetFromEvent,
@@ -2492,8 +2479,8 @@ void RegisterMethods<SBTarget>(Registry &R) {
   LLDB_REGISTER_METHOD(lldb::SBError, SBTarget, Install, ());
   LLDB_REGISTER_METHOD(lldb::SBProcess, SBTarget, Launch,
                        (lldb::SBListener &, const char **, const char **,
-                        const char *, const char *, const char *,
-                        const char *, uint32_t, bool, lldb::SBError &));
+                        const char *, const char *, const char *, const char *,
+                        uint32_t, bool, lldb::SBError &));
   LLDB_REGISTER_METHOD(lldb::SBProcess, SBTarget, Launch,
                        (lldb::SBLaunchInfo &, lldb::SBError &));
   LLDB_REGISTER_METHOD(lldb::SBProcess, SBTarget, Attach,
@@ -2507,10 +2494,10 @@ void RegisterMethods<SBTarget>(Registry &R) {
       lldb::SBProcess, SBTarget, ConnectRemote,
       (lldb::SBListener &, const char *, const char *, lldb::SBError &));
   LLDB_REGISTER_METHOD(lldb::SBFileSpec, SBTarget, GetExecutable, ());
-  LLDB_REGISTER_METHOD_CONST(bool,
-                             SBTarget, operator==,(const lldb::SBTarget &));
-  LLDB_REGISTER_METHOD_CONST(bool,
-                             SBTarget, operator!=,(const lldb::SBTarget &));
+  LLDB_REGISTER_METHOD_CONST(bool, SBTarget, operator==,
+                             (const lldb::SBTarget &));
+  LLDB_REGISTER_METHOD_CONST(bool, SBTarget, operator!=,
+                             (const lldb::SBTarget &));
   LLDB_REGISTER_METHOD(lldb::SBAddress, SBTarget, ResolveLoadAddress,
                        (lldb::addr_t));
   LLDB_REGISTER_METHOD(lldb::SBAddress, SBTarget, ResolveFileAddress,
@@ -2520,20 +2507,16 @@ void RegisterMethods<SBTarget>(Registry &R) {
   LLDB_REGISTER_METHOD(lldb::SBSymbolContext, SBTarget,
                        ResolveSymbolContextForAddress,
                        (const lldb::SBAddress &, uint32_t));
-  LLDB_REGISTER_METHOD(lldb::SBBreakpoint, SBTarget,
-                       BreakpointCreateByLocation, (const char *, uint32_t));
-  LLDB_REGISTER_METHOD(lldb::SBBreakpoint, SBTarget,
-                       BreakpointCreateByLocation,
+  LLDB_REGISTER_METHOD(lldb::SBBreakpoint, SBTarget, BreakpointCreateByLocation,
+                       (const char *, uint32_t));
+  LLDB_REGISTER_METHOD(lldb::SBBreakpoint, SBTarget, BreakpointCreateByLocation,
                        (const lldb::SBFileSpec &, uint32_t));
-  LLDB_REGISTER_METHOD(lldb::SBBreakpoint, SBTarget,
-                       BreakpointCreateByLocation,
+  LLDB_REGISTER_METHOD(lldb::SBBreakpoint, SBTarget, BreakpointCreateByLocation,
                        (const lldb::SBFileSpec &, uint32_t, lldb::addr_t));
-  LLDB_REGISTER_METHOD(lldb::SBBreakpoint, SBTarget,
-                       BreakpointCreateByLocation,
+  LLDB_REGISTER_METHOD(lldb::SBBreakpoint, SBTarget, BreakpointCreateByLocation,
                        (const lldb::SBFileSpec &, uint32_t, lldb::addr_t,
                         lldb::SBFileSpecList &));
-  LLDB_REGISTER_METHOD(lldb::SBBreakpoint, SBTarget,
-                       BreakpointCreateByLocation,
+  LLDB_REGISTER_METHOD(lldb::SBBreakpoint, SBTarget, BreakpointCreateByLocation,
                        (const lldb::SBFileSpec &, uint32_t, uint32_t,
                         lldb::addr_t, lldb::SBFileSpecList &));
   LLDB_REGISTER_METHOD(lldb::SBBreakpoint, SBTarget, BreakpointCreateByLocation,
@@ -2572,31 +2555,31 @@ void RegisterMethods<SBTarget>(Registry &R) {
                        (const char *, lldb::LanguageType,
                         const lldb::SBFileSpecList &,
                         const lldb::SBFileSpecList &));
-  LLDB_REGISTER_METHOD(lldb::SBBreakpoint, SBTarget,
-                       BreakpointCreateByAddress, (lldb::addr_t));
+  LLDB_REGISTER_METHOD(lldb::SBBreakpoint, SBTarget, BreakpointCreateByAddress,
+                       (lldb::addr_t));
   LLDB_REGISTER_METHOD(lldb::SBBreakpoint, SBTarget,
                        BreakpointCreateBySBAddress, (lldb::SBAddress &));
-  LLDB_REGISTER_METHOD(
-      lldb::SBBreakpoint, SBTarget, BreakpointCreateBySourceRegex,
-      (const char *, const lldb::SBFileSpec &, const char *));
+  LLDB_REGISTER_METHOD(lldb::SBBreakpoint, SBTarget,
+                       BreakpointCreateBySourceRegex,
+                       (const char *, const lldb::SBFileSpec &, const char *));
   LLDB_REGISTER_METHOD(lldb::SBBreakpoint, SBTarget,
                        BreakpointCreateBySourceRegex,
                        (const char *, const lldb::SBFileSpecList &,
                         const lldb::SBFileSpecList &));
   LLDB_REGISTER_METHOD(
       lldb::SBBreakpoint, SBTarget, BreakpointCreateBySourceRegex,
-      (const char *, const lldb::SBFileSpecList &,
-       const lldb::SBFileSpecList &, const lldb::SBStringList &));
+      (const char *, const lldb::SBFileSpecList &, const lldb::SBFileSpecList &,
+       const lldb::SBStringList &));
   LLDB_REGISTER_METHOD(lldb::SBBreakpoint, SBTarget,
                        BreakpointCreateForException,
                        (lldb::LanguageType, bool, bool));
-  LLDB_REGISTER_METHOD(
-      lldb::SBBreakpoint, SBTarget, BreakpointCreateFromScript,
-      (const char *, lldb::SBStructuredData &, const lldb::SBFileSpecList &,
-       const lldb::SBFileSpecList &, bool));
+  LLDB_REGISTER_METHOD(lldb::SBBreakpoint, SBTarget, BreakpointCreateFromScript,
+                       (const char *, lldb::SBStructuredData &,
+                        const lldb::SBFileSpecList &,
+                        const lldb::SBFileSpecList &, bool));
   LLDB_REGISTER_METHOD_CONST(uint32_t, SBTarget, GetNumBreakpoints, ());
-  LLDB_REGISTER_METHOD_CONST(lldb::SBBreakpoint, SBTarget,
-                             GetBreakpointAtIndex, (uint32_t));
+  LLDB_REGISTER_METHOD_CONST(lldb::SBBreakpoint, SBTarget, GetBreakpointAtIndex,
+                             (uint32_t));
   LLDB_REGISTER_METHOD(bool, SBTarget, BreakpointDelete, (lldb::break_id_t));
   LLDB_REGISTER_METHOD(lldb::SBBreakpoint, SBTarget, FindBreakpointByID,
                        (lldb::break_id_t));
@@ -2618,8 +2601,8 @@ void RegisterMethods<SBTarget>(Registry &R) {
   LLDB_REGISTER_METHOD(lldb::SBError, SBTarget, BreakpointsWriteToFile,
                        (lldb::SBFileSpec &, lldb::SBBreakpointList &, bool));
   LLDB_REGISTER_METHOD_CONST(uint32_t, SBTarget, GetNumWatchpoints, ());
-  LLDB_REGISTER_METHOD_CONST(lldb::SBWatchpoint, SBTarget,
-                             GetWatchpointAtIndex, (uint32_t));
+  LLDB_REGISTER_METHOD_CONST(lldb::SBWatchpoint, SBTarget, GetWatchpointAtIndex,
+                             (uint32_t));
   LLDB_REGISTER_METHOD(bool, SBTarget, DeleteWatchpoint, (lldb::watch_id_t));
   LLDB_REGISTER_METHOD(lldb::SBWatchpoint, SBTarget, FindWatchpointByID,
                        (lldb::watch_id_t));
@@ -2655,21 +2638,17 @@ void RegisterMethods<SBTarget>(Registry &R) {
   LLDB_REGISTER_METHOD(uint32_t, SBTarget, GetDataByteSize, ());
   LLDB_REGISTER_METHOD(uint32_t, SBTarget, GetCodeByteSize, ());
   LLDB_REGISTER_METHOD(uint32_t, SBTarget, GetAddressByteSize, ());
-  LLDB_REGISTER_METHOD(lldb::SBModule, SBTarget, GetModuleAtIndex,
-                       (uint32_t));
+  LLDB_REGISTER_METHOD(lldb::SBModule, SBTarget, GetModuleAtIndex, (uint32_t));
   LLDB_REGISTER_METHOD(bool, SBTarget, RemoveModule, (lldb::SBModule));
-  LLDB_REGISTER_METHOD_CONST(lldb::SBBroadcaster, SBTarget, GetBroadcaster,
-                             ());
+  LLDB_REGISTER_METHOD_CONST(lldb::SBBroadcaster, SBTarget, GetBroadcaster, ());
   LLDB_REGISTER_METHOD(bool, SBTarget, GetDescription,
                        (lldb::SBStream &, lldb::DescriptionLevel));
   LLDB_REGISTER_METHOD(lldb::SBSymbolContextList, SBTarget, FindFunctions,
                        (const char *, uint32_t));
-  LLDB_REGISTER_METHOD(lldb::SBSymbolContextList, SBTarget,
-                       FindGlobalFunctions,
+  LLDB_REGISTER_METHOD(lldb::SBSymbolContextList, SBTarget, FindGlobalFunctions,
                        (const char *, uint32_t, lldb::MatchType));
   LLDB_REGISTER_METHOD(lldb::SBType, SBTarget, FindFirstType, (const char *));
-  LLDB_REGISTER_METHOD(lldb::SBType, SBTarget, GetBasicType,
-                       (lldb::BasicType));
+  LLDB_REGISTER_METHOD(lldb::SBType, SBTarget, GetBasicType, (lldb::BasicType));
   LLDB_REGISTER_METHOD(lldb::SBTypeList, SBTarget, FindTypes, (const char *));
   LLDB_REGISTER_METHOD(lldb::SBValueList, SBTarget, FindGlobalVariables,
                        (const char *, uint32_t));
@@ -2718,5 +2697,5 @@ void RegisterMethods<SBTarget>(Registry &R) {
   LLDB_REGISTER_METHOD(lldb::SBEnvironment, SBTarget, GetEnvironment, ());
 }
 
-}
-}
+} // namespace repro
+} // namespace lldb_private

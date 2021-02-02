@@ -46,7 +46,8 @@ void openbsd::Assembler::ConstructJob(Compilation &C, const JobAction &JA,
   case llvm::Triple::sparcv9: {
     CmdArgs.push_back("-64");
     std::string CPU = getCPUName(Args, getToolChain().getTriple());
-    CmdArgs.push_back(sparc::getSparcAsmModeForCPU(CPU, getToolChain().getTriple()));
+    CmdArgs.push_back(
+        sparc::getSparcAsmModeForCPU(CPU, getToolChain().getTriple()));
     AddAssemblerKPIC(getToolChain(), Args, CmdArgs);
     break;
   }
@@ -165,9 +166,9 @@ void openbsd::Linker::ConstructJob(Compilation &C, const JobAction &JA,
 
   Args.AddAllArgs(CmdArgs, options::OPT_L);
   ToolChain.AddFilePathLibArgs(Args, CmdArgs);
-  Args.AddAllArgs(CmdArgs, {options::OPT_T_Group, options::OPT_e,
-                            options::OPT_s, options::OPT_t,
-                            options::OPT_Z_Flag, options::OPT_r});
+  Args.AddAllArgs(CmdArgs,
+                  {options::OPT_T_Group, options::OPT_e, options::OPT_s,
+                   options::OPT_t, options::OPT_Z_Flag, options::OPT_r});
 
   bool NeedsSanitizerDeps = addSanitizerRuntimes(ToolChain, Args, CmdArgs);
   bool NeedsXRayDeps = addXRayRuntime(ToolChain, Args, CmdArgs);
@@ -298,8 +299,7 @@ void OpenBSD::AddCXXStdlibLibArgs(const ArgList &Args,
   CmdArgs.push_back(Profiling ? "-lc++abi_p" : "-lc++abi");
 }
 
-std::string OpenBSD::getCompilerRT(const ArgList &Args,
-                                   StringRef Component,
+std::string OpenBSD::getCompilerRT(const ArgList &Args, StringRef Component,
                                    FileType Type) const {
   SmallString<128> Path(getDriver().SysRoot);
   llvm::sys::path::append(Path, "/usr/lib/libcompiler_rt.a");

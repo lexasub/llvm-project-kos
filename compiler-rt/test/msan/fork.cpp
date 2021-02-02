@@ -17,15 +17,15 @@
 // Sometimes hangs
 // UNSUPPORTED: netbsd
 
+#include <errno.h>
 #include <pthread.h>
-#include <unistd.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <sys/time.h>
-#include <signal.h>
-#include <errno.h>
+#include <unistd.h>
 
 #include <sanitizer/msan_interface.h>
 
@@ -70,14 +70,15 @@ void test() {
   const int kThreads = 10;
   pthread_t t[kThreads];
   for (int i = 0; i < kThreads; ++i)
-    pthread_create(&t[i], NULL, copy_uninit_thread, (void*)(long)i);
+    pthread_create(&t[i], NULL, copy_uninit_thread, (void *)(long)i);
   usleep(100000);
   pid_t pid = fork();
   if (pid) {
     // parent
     __atomic_store_n(&done, 1, __ATOMIC_RELAXED);
     pid_t p;
-    while ((p = wait(NULL)) == -1) {  }
+    while ((p = wait(NULL)) == -1) {
+    }
   } else {
     // child
     child();
@@ -98,7 +99,8 @@ int main() {
 
   for (int i = 0; i < kChildren; ++i) {
     pid_t p;
-    while ((p = wait(NULL)) == -1) {  }
+    while ((p = wait(NULL)) == -1) {
+    }
   }
 
   return 0;

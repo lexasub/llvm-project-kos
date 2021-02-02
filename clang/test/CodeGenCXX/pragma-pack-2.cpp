@@ -2,16 +2,16 @@
 // <rdar://problem/10551376>
 
 struct FOO {
-	unsigned int x;
+  unsigned int x;
 };
 
 #pragma pack(push, 2)
 
 // CHECK: %struct.BAR = type <{ %struct.FOO, i8, i8 }>
 struct BAR : FOO {
-	char y;
+  char y;
 };
 
 #pragma pack(pop)
 
-BAR* x = 0;
+BAR *x = 0;

@@ -4,4 +4,8 @@
 // RUN: clang-check -analyze "%s" -- -c -flto=full 2>&1 | FileCheck %s
 
 // CHECK: Dereference of null pointer
-void a(int *x) { if(x){} *x = 47; }
+void a(int *x) {
+  if (x) {
+  }
+  *x = 47;
+}

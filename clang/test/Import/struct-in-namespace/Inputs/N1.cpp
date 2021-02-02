@@ -1,11 +1,11 @@
 namespace N {
-  struct S {
-    int a;
-  };
-}
+struct S {
+  int a;
+};
+} // namespace N
 
 namespace N {
-  struct T {
-    int b;
-  };
-}
+struct T {
+  int b;
+};
+} // namespace N

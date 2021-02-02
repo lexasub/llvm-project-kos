@@ -7,7 +7,7 @@
 typedef __SIZE_TYPE__ size;
 
 struct locale_t {
-  void* dummy;
+  void *dummy;
 } locale;
 
 static const char A[] = "abc";
@@ -30,7 +30,7 @@ int strncasecmp(const char *, const char *, size);
 int stricmp(const char *, const char *);
 int strcmpi(const char *, const char *);
 int strnicmp(const char *, const char *, size);
-int _stricmp(const char *, const char * );
+int _stricmp(const char *, const char *);
 int _strnicmp(const char *, const char *, size);
 int _stricmp_l(const char *, const char *, locale_t);
 int _strnicmp_l(const char *, const char *, size, locale_t);
@@ -300,23 +300,20 @@ int test_implicit_compare_with_functions() {
   return 1;
 }
 
-int strcmp_wrapper1(const char* a, const char* b) {
+int strcmp_wrapper1(const char *a, const char *b) {
   return strcmp(a, b);
 }
 
-int strcmp_wrapper2(const char* a, const char* b) {
+int strcmp_wrapper2(const char *a, const char *b) {
   return (a && b) ? strcmp(a, b) : 0;
 }
 
-#define macro_strncmp(s1, s2, n)                                              \
-  (__extension__ (__builtin_constant_p (n)                                    \
-                  && ((__builtin_constant_p (s1)                              \
-                       && strlen (s1) < ((size) (n)))                         \
-                      || (__builtin_constant_p (s2)                           \
-                          && strlen (s2) < ((size) (n))))                     \
-                  ? strcmp (s1, s2) : strncmp (s1, s2, n)))
+#define macro_strncmp(s1, s2, n)                                                                                                                               \
+  (__extension__(__builtin_constant_p(n) && ((__builtin_constant_p(s1) && strlen(s1) < ((size)(n))) || (__builtin_constant_p(s2) && strlen(s2) < ((size)(n)))) \
+                     ? strcmp(s1, s2)                                                                                                                          \
+                     : strncmp(s1, s2, n)))
 
-int strncmp_macro(const char* a, const char* b) {
+int strncmp_macro(const char *a, const char *b) {
   if (macro_strncmp(a, b, 4))
     return 0;
   // CHECK-MESSAGES: [[@LINE-2]]:7: warning: function 'strcmp' is called without explicitly comparing result

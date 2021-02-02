@@ -7,20 +7,20 @@
 //   later defined in a namespace scope enclosing the definition of class X.
 
 namespace example {
-  class E {
-    class I1;
-    class I2;
-    class I1 { };
-  };
-  class E::I2 { };
-}
+class E {
+  class I1;
+  class I2;
+  class I1 {};
+};
+class E::I2 {};
+} // namespace example
 
 // Don't insert out-of-line inner class definitions into the namespace scope.
 namespace PR6107 {
-  struct S1 { };
-  struct S2 {
-    struct S1;
-  };
-  struct S2::S1 { };
-  S1 s1;
-}
+struct S1 {};
+struct S2 {
+  struct S1;
+};
+struct S2::S1 {};
+S1 s1;
+} // namespace PR6107

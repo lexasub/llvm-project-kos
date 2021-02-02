@@ -8,7 +8,6 @@
 
 [[gnu::deprecated("3")]] int function_3();
 
-int __attribute__ (( deprecated("2") )) function_2();
+int __attribute__((deprecated("2"))) function_2();
 
 __declspec(deprecated("4")) int function_4();
-

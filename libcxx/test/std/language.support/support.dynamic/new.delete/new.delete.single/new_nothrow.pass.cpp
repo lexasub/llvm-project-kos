@@ -20,42 +20,39 @@
 
 int new_handler_called = 0;
 
-void my_new_handler()
-{
-    ++new_handler_called;
-    std::set_new_handler(0);
+void my_new_handler() {
+  ++new_handler_called;
+  std::set_new_handler(0);
 }
 
 bool A_constructed = false;
 
-struct A
-{
-    A() {A_constructed = true;}
-    ~A() {A_constructed = false;}
+struct A {
+  A() { A_constructed = true; }
+  ~A() { A_constructed = false; }
 };
 
-int main(int, char**)
-{
-    std::set_new_handler(my_new_handler);
+int main(int, char**) {
+  std::set_new_handler(my_new_handler);
 #ifndef TEST_HAS_NO_EXCEPTIONS
-    try
+  try
 #endif
-    {
-        void* vp = operator new (std::numeric_limits<std::size_t>::max(), std::nothrow);
-        assert(new_handler_called == 1);
-        assert(vp == 0);
-    }
+  {
+    void* vp = operator new(std::numeric_limits<std::size_t>::max(),
+                            std::nothrow);
+    assert(new_handler_called == 1);
+    assert(vp == 0);
+  }
 #ifndef TEST_HAS_NO_EXCEPTIONS
-    catch (...)
-    {
-        assert(false);
-    }
+  catch (...) {
+    assert(false);
+  }
 #endif
-    A* ap = new(std::nothrow) A;
-    assert(ap);
-    assert(A_constructed);
-    delete ap;
-    assert(!A_constructed);
+  A* ap = new (std::nothrow) A;
+  assert(ap);
+  assert(A_constructed);
+  delete ap;
+  assert(!A_constructed);
 
   return 0;
 }

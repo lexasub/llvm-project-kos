@@ -237,9 +237,8 @@ void mips::getMIPSTargetFeatures(const Driver &D, const llvm::Triple &Triple,
     NonPIC =
         (O.matches(options::OPT_fno_PIC) || O.matches(options::OPT_fno_pic) ||
          O.matches(options::OPT_fno_PIE) || O.matches(options::OPT_fno_pie));
-    IsPIC =
-        (O.matches(options::OPT_fPIC) || O.matches(options::OPT_fpic) ||
-         O.matches(options::OPT_fPIE) || O.matches(options::OPT_fpie));
+    IsPIC = (O.matches(options::OPT_fPIC) || O.matches(options::OPT_fpic) ||
+             O.matches(options::OPT_fPIE) || O.matches(options::OPT_fpie));
   }
 
   bool UseAbiCalls = false;
@@ -384,11 +383,11 @@ void mips::getMIPSTargetFeatures(const Driver &D, const llvm::Triple &Triple,
       Arg *C = Args.getLastArg(options::OPT_mips16, options::OPT_mno_mips16);
 
       if (B && B->getOption().matches(options::OPT_mmicromips))
-        D.Diag(diag::err_drv_unsupported_indirect_jump_opt)
-            << "hazard" << "micromips";
+        D.Diag(diag::err_drv_unsupported_indirect_jump_opt) << "hazard"
+                                                            << "micromips";
       else if (C && C->getOption().matches(options::OPT_mips16))
-        D.Diag(diag::err_drv_unsupported_indirect_jump_opt)
-            << "hazard" << "mips16";
+        D.Diag(diag::err_drv_unsupported_indirect_jump_opt) << "hazard"
+                                                            << "mips16";
       else if (mips::supportsIndirectJumpHazardBarrier(CPUName))
         Features.push_back("+use-indirect-jump-hazard");
       else

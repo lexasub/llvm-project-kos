@@ -149,11 +149,11 @@ void test_noexcept() {
     static_assert(std::is_nothrow_move_constructible<U>::value, "");
   }
   {
-    typedef std::unique_ptr<VT, NCDeleter<VT> &> U;
+    typedef std::unique_ptr<VT, NCDeleter<VT>&> U;
     static_assert(std::is_nothrow_move_constructible<U>::value, "");
   }
   {
-    typedef std::unique_ptr<VT, const NCConstDeleter<VT> &> U;
+    typedef std::unique_ptr<VT, const NCConstDeleter<VT>&> U;
     static_assert(std::is_nothrow_move_constructible<U>::value, "");
   }
 #endif

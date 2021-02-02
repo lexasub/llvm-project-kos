@@ -53,4 +53,3 @@ int main() {
 
 // DexExpectWatchValue('output.i', 3, on_line='string-nrvo')
 // DexExpectWatchValue('output.i', 5, on_line='string2-nrvo')
-

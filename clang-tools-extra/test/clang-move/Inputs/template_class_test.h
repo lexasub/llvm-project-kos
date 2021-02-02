@@ -3,11 +3,13 @@
 
 template <typename T>
 class A {
- public:
+public:
   void f();
   void g();
-  template <typename U> void h();
-  template <typename U> void k();
+  template <typename U>
+  void h();
+  template <typename U>
+  void k();
   static int b;
   static int c;
 };
@@ -23,7 +25,7 @@ template <typename T>
 int A<T>::b = 2;
 
 class B {
- public:
+public:
   void f();
 };
 

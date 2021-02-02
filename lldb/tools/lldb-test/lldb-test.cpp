@@ -245,7 +245,7 @@ std::vector<CompilerContext> parseCompilerContext() {
 
   StringRef str{opts::symbols::CompilerContext};
   SmallVector<StringRef, 8> entries_str;
-  str.split(entries_str, ',', /*maxSplit*/-1, /*keepEmpty=*/false);
+  str.split(entries_str, ',', /*maxSplit*/ -1, /*keepEmpty=*/false);
   for (auto entry_str : entries_str) {
     StringRef key, value;
     std::tie(key, value) = entry_str.split(':');
@@ -271,7 +271,7 @@ std::vector<CompilerContext> parseCompilerContext() {
     result.push_back({kind, ConstString{value}});
   }
   outs() << "Search context: {\n";
-  for (auto entry: result)
+  for (auto entry : result)
     entry.Dump();
   outs() << "}\n";
 
@@ -279,7 +279,7 @@ std::vector<CompilerContext> parseCompilerContext() {
 }
 
 template <typename... Args>
-static Error make_string_error(const char *Format, Args &&... args) {
+static Error make_string_error(const char *Format, Args &&...args) {
   return llvm::make_error<llvm::StringError>(
       llvm::formatv(Format, std::forward<Args>(args)...).str(),
       llvm::inconvertibleErrorCode());
@@ -408,7 +408,8 @@ opts::symbols::getDeclContext(SymbolFile &Symfile) {
 }
 
 static lldb::DescriptionLevel GetDescriptionLevel() {
-  return opts::symbols::DumpClangAST ? eDescriptionLevelVerbose : eDescriptionLevelFull;
+  return opts::symbols::DumpClangAST ? eDescriptionLevelVerbose
+                                     : eDescriptionLevelFull;
 }
 
 Error opts::symbols::findFunctions(lldb_private::Module &Module) {
@@ -455,7 +456,7 @@ Error opts::symbols::findFunctions(lldb_private::Module &Module) {
 
     List.Clear();
     Symfile.FindFunctions(ConstString(Name), ContextPtr, getFunctionNameFlags(),
-                         true, List);
+                          true, List);
   }
   outs() << formatv("Found {0} functions:\n", List.GetSize());
   StreamString Stream;
@@ -582,7 +583,8 @@ Error opts::symbols::findVariables(lldb_private::Module &Module) {
     const CompilerDeclContext &ContextPtr =
         ContextOr->IsValid() ? *ContextOr : CompilerDeclContext();
 
-    Symfile.FindGlobalVariables(ConstString(Name), ContextPtr, UINT32_MAX, List);
+    Symfile.FindGlobalVariables(ConstString(Name), ContextPtr, UINT32_MAX,
+                                List);
   }
   outs() << formatv("Found {0} variables:\n", List.GetSize());
   StreamString Stream;
@@ -837,7 +839,8 @@ int opts::symbols::dumpSymbols(Debugger &Dbg) {
   return 0;
 }
 
-static void dumpSectionList(LinePrinter &Printer, const SectionList &List, bool is_subsection) {
+static void dumpSectionList(LinePrinter &Printer, const SectionList &List,
+                            bool is_subsection) {
   size_t Count = List.GetNumSections(0);
   if (Count == 0) {
     Printer.formatLine("There are no {0}sections", is_subsection ? "sub" : "");
@@ -853,7 +856,8 @@ static void dumpSectionList(LinePrinter &Printer, const SectionList &List, bool 
     Printer.formatLine("ID: {0:x}", S->GetID());
     Printer.formatLine("Name: {0}", S->GetName().GetStringRef());
     Printer.formatLine("Type: {0}", S->GetTypeAsCString());
-    Printer.formatLine("Permissions: {0}", GetPermissionsAsCString(S->GetPermissions()));
+    Printer.formatLine("Permissions: {0}",
+                       GetPermissionsAsCString(S->GetPermissions()));
     Printer.formatLine("Thread specific: {0:y}", S->IsThreadSpecific());
     Printer.formatLine("VM address: {0:x}", S->GetFileAddress());
     Printer.formatLine("VM size: {0}", S->GetByteSize());

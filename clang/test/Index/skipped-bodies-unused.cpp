@@ -3,6 +3,6 @@
 
 // No 'unused parameter' warnings should be shown when skipping the function bodies.
 inline int foo(int used, int unused) {
-    used = 100;
+  used = 100;
 }
 // CHECK-NOT: warning: unused parameter

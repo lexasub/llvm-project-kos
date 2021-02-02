@@ -35,8 +35,8 @@ DiagnosticMessage::DiagnosticMessage(llvm::StringRef Message,
     FileOffset = Sources.getFileOffset(Loc);
 }
 
-FileByteRange::FileByteRange(
-    const SourceManager &Sources, CharSourceRange Range)
+FileByteRange::FileByteRange(const SourceManager &Sources,
+                             CharSourceRange Range)
     : FileOffset(0), Length(0) {
   FilePath = std::string(Sources.getFilename(Range.getBegin()));
   if (!FilePath.empty()) {
@@ -58,8 +58,8 @@ Diagnostic::Diagnostic(llvm::StringRef DiagnosticName,
     : DiagnosticName(DiagnosticName), Message(Message), Notes(Notes),
       DiagLevel(DiagLevel), BuildDirectory(BuildDirectory), Ranges(Ranges) {}
 
-const llvm::StringMap<Replacements> *selectFirstFix(const Diagnostic& D) {
-   if (!D.Message.Fix.empty())
+const llvm::StringMap<Replacements> *selectFirstFix(const Diagnostic &D) {
+  if (!D.Message.Fix.empty())
     return &D.Message.Fix;
   auto Iter = llvm::find_if(D.Notes, [](const tooling::DiagnosticMessage &D) {
     return !D.Fix.empty();

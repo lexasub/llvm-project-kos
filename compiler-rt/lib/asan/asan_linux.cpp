@@ -15,6 +15,19 @@
 #if SANITIZER_FREEBSD || SANITIZER_LINUX || SANITIZER_NETBSD || \
     SANITIZER_SOLARIS
 
+#include <dlfcn.h>
+#include <fcntl.h>
+#include <limits.h>
+#include <pthread.h>
+#include <stdio.h>
+#include <sys/mman.h>
+#include <sys/resource.h>
+#include <sys/syscall.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <unwind.h>
+
 #include "asan_interceptors.h"
 #include "asan_internal.h"
 #include "asan_premap_shadow.h"
@@ -23,19 +36,6 @@
 #include "sanitizer_common/sanitizer_freebsd.h"
 #include "sanitizer_common/sanitizer_libc.h"
 #include "sanitizer_common/sanitizer_procmaps.h"
-
-#include <sys/time.h>
-#include <sys/resource.h>
-#include <sys/mman.h>
-#include <sys/syscall.h>
-#include <sys/types.h>
-#include <dlfcn.h>
-#include <fcntl.h>
-#include <limits.h>
-#include <pthread.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <unwind.h>
 
 #if SANITIZER_FREEBSD
 #include <sys/link_elf.h>
@@ -47,21 +47,21 @@
 
 #if SANITIZER_ANDROID || SANITIZER_FREEBSD || SANITIZER_SOLARIS
 #include <ucontext.h>
-extern "C" void* _DYNAMIC;
+extern "C" void *_DYNAMIC;
 #elif SANITIZER_NETBSD
 #include <link_elf.h>
 #include <ucontext.h>
 extern Elf_Dyn _DYNAMIC;
 #else
-#include <sys/ucontext.h>
 #include <link.h>
+#include <sys/ucontext.h>
 extern ElfW(Dyn) _DYNAMIC[];
 #endif
 
 // x86-64 FreeBSD 9.2 and older define 'ucontext_t' incorrectly in
 // 32-bit mode.
 #if SANITIZER_FREEBSD && (SANITIZER_WORDSIZE == 32) && \
-  __FreeBSD_version <= 902001  // v9.2
+    __FreeBSD_version <= 902001  // v9.2
 #define ucontext_t xucontext_t
 #endif
 
@@ -74,14 +74,14 @@ typedef enum {
 // FIXME: perhaps also store abi version here?
 extern "C" {
 SANITIZER_INTERFACE_ATTRIBUTE
-asan_rt_version_t  __asan_rt_version;
+asan_rt_version_t __asan_rt_version;
 }
 
 namespace __asan {
 
 void InitializePlatformInterceptors() {}
 void InitializePlatformExceptionHandlers() {}
-bool IsSystemHeapAddress (uptr addr) { return false; }
+bool IsSystemHeapAddress(uptr addr) { return false; }
 
 void *AsanDoesNotSupportStaticLinkage() {
   // This will fail to link with -static.
@@ -128,8 +128,8 @@ void AsanCheckIncompatibleRT() {}
 #else
 static int FindFirstDSOCallback(struct dl_phdr_info *info, size_t size,
                                 void *data) {
-  VReport(2, "info->dlpi_name = %s\tinfo->dlpi_addr = %p\n",
-          info->dlpi_name, info->dlpi_addr);
+  VReport(2, "info->dlpi_name = %s\tinfo->dlpi_addr = %p\n", info->dlpi_name,
+          info->dlpi_addr);
 
   // Continue until the first dynamic library is found
   if (!info->dlpi_name || info->dlpi_name[0] == 0)
@@ -160,7 +160,7 @@ static int FindFirstDSOCallback(struct dl_phdr_info *info, size_t size,
 
 static bool IsDynamicRTName(const char *libname) {
   return internal_strstr(libname, "libclang_rt.asan") ||
-    internal_strstr(libname, "libasan.so");
+         internal_strstr(libname, "libasan.so");
 }
 
 static void ReportIncompatibleRT() {
@@ -176,9 +176,10 @@ void AsanCheckDynamicRTPrereqs() {
   const char *first_dso_name = nullptr;
   dl_iterate_phdr(FindFirstDSOCallback, &first_dso_name);
   if (first_dso_name && !IsDynamicRTName(first_dso_name)) {
-    Report("ASan runtime does not come first in initial library list; "
-           "you should either link runtime to your application or "
-           "manually preload it with LD_PRELOAD.\n");
+    Report(
+        "ASan runtime does not come first in initial library list; "
+        "you should either link runtime to your application or "
+        "manually preload it with LD_PRELOAD.\n");
     Die();
   }
 }
@@ -196,13 +197,14 @@ void AsanCheckIncompatibleRT() {
       // as early as possible, otherwise ASan interceptors could bind to
       // the functions in dynamic ASan runtime instead of the functions in
       // system libraries, causing crashes later in ASan initialization.
-      MemoryMappingLayout proc_maps(/*cache_enabled*/true);
+      MemoryMappingLayout proc_maps(/*cache_enabled*/ true);
       char filename[PATH_MAX];
       MemoryMappedSegment segment(filename, sizeof(filename));
       while (proc_maps.Next(&segment)) {
         if (IsDynamicRTName(segment.filename)) {
-          Report("Your application is linked against "
-                 "incompatible ASan runtimes.\n");
+          Report(
+              "Your application is linked against "
+              "incompatible ASan runtimes.\n");
           Die();
         }
       }
@@ -212,11 +214,11 @@ void AsanCheckIncompatibleRT() {
     }
   }
 }
-#endif // SANITIZER_ANDROID
+#endif  // SANITIZER_ANDROID
 
 #if !SANITIZER_ANDROID
 void ReadContextStack(void *context, uptr *stack, uptr *ssize) {
-  ucontext_t *ucp = (ucontext_t*)context;
+  ucontext_t *ucp = (ucontext_t *)context;
   *stack = (uptr)ucp->uc_stack.ss_sp;
   *ssize = ucp->uc_stack.ss_size;
 }
@@ -226,9 +228,7 @@ void ReadContextStack(void *context, uptr *stack, uptr *ssize) {
 }
 #endif
 
-void *AsanDlSymNext(const char *sym) {
-  return dlsym(RTLD_NEXT, sym);
-}
+void *AsanDlSymNext(const char *sym) { return dlsym(RTLD_NEXT, sym); }
 
 bool HandleDlopenInit() {
   // Not supported on this platform.
@@ -237,7 +237,7 @@ bool HandleDlopenInit() {
   return false;
 }
 
-} // namespace __asan
+}  // namespace __asan
 
 #endif  // SANITIZER_FREEBSD || SANITIZER_LINUX || SANITIZER_NETBSD ||
         // SANITIZER_SOLARIS

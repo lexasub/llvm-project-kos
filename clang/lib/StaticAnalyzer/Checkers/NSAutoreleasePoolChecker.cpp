@@ -14,9 +14,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "clang/StaticAnalyzer/Checkers/BuiltinCheckerRegistration.h"
 #include "clang/AST/Decl.h"
 #include "clang/AST/DeclObjC.h"
+#include "clang/StaticAnalyzer/Checkers/BuiltinCheckerRegistration.h"
 #include "clang/StaticAnalyzer/Core/BugReporter/BugReporter.h"
 #include "clang/StaticAnalyzer/Core/BugReporter/BugType.h"
 #include "clang/StaticAnalyzer/Core/Checker.h"
@@ -29,8 +29,7 @@ using namespace clang;
 using namespace ento;
 
 namespace {
-class NSAutoreleasePoolChecker
-  : public Checker<check::PreObjCMessage> {
+class NSAutoreleasePoolChecker : public Checker<check::PreObjCMessage> {
   mutable std::unique_ptr<BugType> BT;
   mutable Selector releaseS;
 
@@ -80,7 +79,7 @@ void ento::registerNSAutoreleasePoolChecker(CheckerManager &mgr) {
   mgr.registerChecker<NSAutoreleasePoolChecker>();
 }
 
-bool ento::shouldRegisterNSAutoreleasePoolChecker(const CheckerManager &mgr) { 
+bool ento::shouldRegisterNSAutoreleasePoolChecker(const CheckerManager &mgr) {
   const LangOptions &LO = mgr.getLangOpts();
   return LO.getGC() != LangOptions::NonGC;
 }

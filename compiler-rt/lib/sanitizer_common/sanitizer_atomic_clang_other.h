@@ -16,20 +16,16 @@
 
 namespace __sanitizer {
 
+inline void proc_yield(int cnt) { __asm__ __volatile__("" ::: "memory"); }
 
-inline void proc_yield(int cnt) {
-  __asm__ __volatile__("" ::: "memory");
-}
-
-template<typename T>
-inline typename T::Type atomic_load(
-    const volatile T *a, memory_order mo) {
-  DCHECK(mo & (memory_order_relaxed | memory_order_consume
-      | memory_order_acquire | memory_order_seq_cst));
+template <typename T>
+inline typename T::Type atomic_load(const volatile T *a, memory_order mo) {
+  DCHECK(mo & (memory_order_relaxed | memory_order_consume |
+               memory_order_acquire | memory_order_seq_cst));
   DCHECK(!((uptr)a % sizeof(*a)));
   typename T::Type v;
 
-  if (sizeof(*a) < 8 || sizeof(void*) == 8) {
+  if (sizeof(*a) < 8 || sizeof(void *) == 8) {
     // Assume that aligned loads are atomic.
     if (mo == memory_order_relaxed) {
       v = a->val_dont_use;
@@ -56,13 +52,13 @@ inline typename T::Type atomic_load(
   return v;
 }
 
-template<typename T>
+template <typename T>
 inline void atomic_store(volatile T *a, typename T::Type v, memory_order mo) {
-  DCHECK(mo & (memory_order_relaxed | memory_order_release
-      | memory_order_seq_cst));
+  DCHECK(mo &
+         (memory_order_relaxed | memory_order_release | memory_order_seq_cst));
   DCHECK(!((uptr)a % sizeof(*a)));
 
-  if (sizeof(*a) < 8 || sizeof(void*) == 8) {
+  if (sizeof(*a) < 8 || sizeof(void *) == 8) {
     // Assume that aligned loads are atomic.
     if (mo == memory_order_relaxed) {
       a->val_dont_use = v;

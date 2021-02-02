@@ -19,12 +19,12 @@ template <class T>
 void CheckIntVectorTypes() {
   // T will be substituted with 'int'.
 
-  typedef int __attribute__((mode(QI))) __attribute__((vector_size(8)))  VT_11;
-  typedef T   __attribute__((mode(V8QI)))                                VT_12;
+  typedef int __attribute__((mode(QI))) __attribute__((vector_size(8))) VT_11;
+  typedef T __attribute__((mode(V8QI))) VT_12;
   typedef int __attribute__((mode(SI))) __attribute__((vector_size(16))) VT_21;
-  typedef T   __attribute__((mode(V4SI)))                                VT_22;
+  typedef T __attribute__((mode(V4SI))) VT_22;
   typedef int __attribute__((mode(DI))) __attribute__((vector_size(64))) VT_31;
-  typedef T   __attribute__((mode(V8DI)))                                VT_32;
+  typedef T __attribute__((mode(V8DI))) VT_32;
 
   VT_11 v11;
   VT_12 v12;
@@ -41,9 +41,9 @@ void CheckFloatVectorTypes() {
   // T will be substituted with 'float'.
 
   typedef float __attribute__((mode(SF))) __attribute__((vector_size(128))) VT_41;
-  typedef T     __attribute__((mode(V32SF)))                                VT_42;
+  typedef T __attribute__((mode(V32SF))) VT_42;
   typedef float __attribute__((mode(DF))) __attribute__((vector_size(256))) VT_51;
-  typedef T     __attribute__((mode(V32DF)))                                VT_52;
+  typedef T __attribute__((mode(V32DF))) VT_52;
 
   VT_41 v41;
   VT_42 v42;
@@ -57,10 +57,11 @@ void CheckInstantiationWithModedType() {
   T x1;
 }
 
-typedef enum { A1, B1 }                       EnumTy;
-typedef int __attribute__((mode(DI)))         Int64Ty1;
+typedef enum { A1,
+               B1 } EnumTy;
+typedef int __attribute__((mode(DI))) Int64Ty1;
 typedef enum __attribute__((mode(DI))) { A2 } Int64Ty2;
-typedef int __attribute__((mode(V8HI)))       IntVecTy1;
+typedef int __attribute__((mode(V8HI))) IntVecTy1;
 
 void test() {
 

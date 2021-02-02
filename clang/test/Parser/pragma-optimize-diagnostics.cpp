@@ -5,10 +5,10 @@
 #pragma clang optimize on
 
 // Extra arguments
-#pragma clang optimize on top of spaghetti  // expected-error {{unexpected extra argument 'top' to '#pragma clang optimize'}}
+#pragma clang optimize on top of spaghetti // expected-error {{unexpected extra argument 'top' to '#pragma clang optimize'}}
 
 // Wrong argument
-#pragma clang optimize something_wrong  // expected-error {{unexpected argument 'something_wrong' to '#pragma clang optimize'; expected 'on' or 'off'}}
+#pragma clang optimize something_wrong // expected-error {{unexpected argument 'something_wrong' to '#pragma clang optimize'; expected 'on' or 'off'}}
 
 // No argument
 #pragma clang optimize // expected-error {{missing argument to '#pragma clang optimize'; expected 'on' or 'off'}}

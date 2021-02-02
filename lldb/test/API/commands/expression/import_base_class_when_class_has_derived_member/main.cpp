@@ -21,7 +21,8 @@ struct C {
   D::Iterator iter;
 
   bool f(D *DD) {
-    return true; //%self.expect_expr("DD->dump()", result_type="int", result_value="42")
+    return true; //%self.expect_expr("DD->dump()", result_type="int",
+                 //result_value="42")
   }
 };
 

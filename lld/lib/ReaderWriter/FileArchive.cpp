@@ -29,9 +29,9 @@
 #include <utility>
 #include <vector>
 
-using llvm::object::Archive;
 using llvm::file_magic;
 using llvm::identify_magic;
+using llvm::object::Archive;
 
 namespace lld {
 
@@ -42,8 +42,9 @@ class FileArchive : public lld::ArchiveLibraryFile {
 public:
   FileArchive(std::unique_ptr<MemoryBuffer> mb, const Registry &reg,
               StringRef path, bool logLoading)
-      : ArchiveLibraryFile(path), _mb(std::shared_ptr<MemoryBuffer>(mb.release())),
-        _registry(reg), _logLoading(logLoading) {}
+      : ArchiveLibraryFile(path),
+        _mb(std::shared_ptr<MemoryBuffer>(mb.release())), _registry(reg),
+        _logLoading(logLoading) {}
 
   /// Check if any member of the archive contains an Atom with the
   /// specified name and return the File object for that member, or nullptr.
@@ -72,7 +73,8 @@ public:
     File *file = result.get();
     _filesReturned.push_back(std::move(result));
 
-    // Give up the file pointer. It was stored and will be destroyed with destruction of FileArchive
+    // Give up the file pointer. It was stored and will be destroyed with
+    // destruction of FileArchive
     return file;
   }
 
@@ -141,8 +143,8 @@ private:
     if (!mbOrErr)
       return errorToErrorCode(mbOrErr.takeError());
     llvm::MemoryBufferRef mb = mbOrErr.get();
-    std::string memberPath = (_archive->getFileName() + "("
-                           + mb.getBufferIdentifier() + ")").str();
+    std::string memberPath =
+        (_archive->getFileName() + "(" + mb.getBufferIdentifier() + ")").str();
 
     if (_logLoading)
       llvm::errs() << memberPath << "\n";
@@ -175,11 +177,10 @@ private:
       if (!memberOrErr)
         return errorToErrorCode(memberOrErr.takeError());
       Archive::Child member = memberOrErr.get();
-      DEBUG_WITH_TYPE("FileArchive",
-                      llvm::dbgs()
-                          << llvm::format("0x%08llX ",
-                                          member.getBuffer()->data())
-                          << "'" << name << "'\n");
+      DEBUG_WITH_TYPE(
+          "FileArchive",
+          llvm::dbgs() << llvm::format("0x%08llX ", member.getBuffer()->data())
+                       << "'" << name << "'\n");
       _symbolMemberMap.insert(std::make_pair(name, member));
     }
     return std::error_code();

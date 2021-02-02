@@ -6,10 +6,10 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "clang/Tooling/RefactoringCallbacks.h"
 #include "RewriterTestContext.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
 #include "clang/ASTMatchers/ASTMatchers.h"
-#include "clang/Tooling/RefactoringCallbacks.h"
 #include "gtest/gtest.h"
 
 namespace clang {
@@ -115,34 +115,32 @@ TEST(RefactoringCallbacksTest, TemplateSimpleSubst) {
 TEST(RefactoringCallbacksTest, TemplateLiteral) {
   std::string Code = "void f() { int i = 1; }";
   std::string Expected = "void f() { string x = \"$-1\"; }";
-  auto Callback = ReplaceNodeWithTemplate::create("decl",
-                                                  "string x = \"$$-${init}\"");
+  auto Callback =
+      ReplaceNodeWithTemplate::create("decl", "string x = \"$$-${init}\"");
   EXPECT_FALSE(Callback.takeError());
   expectRewritten(Code, Expected,
                   varDecl(hasInitializer(expr().bind("init"))).bind("decl"),
                   **Callback);
 }
 
-static void ExpectStringError(const std::string &Expected,
-                              llvm::Error E) {
+static void ExpectStringError(const std::string &Expected, llvm::Error E) {
   std::string Found;
   handleAllErrors(std::move(E), [&](const llvm::StringError &SE) {
-      llvm::raw_string_ostream Stream(Found);
-      SE.log(Stream);
-    });
+    llvm::raw_string_ostream Stream(Found);
+    SE.log(Stream);
+  });
   EXPECT_EQ(Expected, Found);
 }
 
 TEST(RefactoringCallbacksTest, TemplateUnterminated) {
-  auto Callback = ReplaceNodeWithTemplate::create("decl",
-                                                  "string x = \"$$-${init\"");
+  auto Callback =
+      ReplaceNodeWithTemplate::create("decl", "string x = \"$$-${init\"");
   ExpectStringError("Unterminated ${...} in replacement template near ${init\"",
                     Callback.takeError());
 }
 
 TEST(RefactoringCallbacksTest, TemplateUnknownDollar) {
-  auto Callback = ReplaceNodeWithTemplate::create("decl",
-                                                  "string x = \"$<");
+  auto Callback = ReplaceNodeWithTemplate::create("decl", "string x = \"$<");
   ExpectStringError("Invalid $ in replacement template near $<",
                     Callback.takeError());
 }

@@ -15,7 +15,7 @@ void f0(int i) {
 // expected-note@-2 {{here}}
 #endif
     i = i + 1;
-    int x = 0;
+  int x = 0;
 #ifdef WITH_WARN
 // expected-warning@-2 {{misleading indentation; statement is not part of the previous 'if'}}
 #endif
@@ -26,7 +26,7 @@ void f0(int i) {
 // expected-note@-2 {{here}}
 #endif
     i = 0;
-    i += 1;
+  i += 1;
 #ifdef WITH_WARN
 // expected-warning@-2 {{misleading indentation; statement is not part of the previous 'if'}}
 #endif
@@ -34,12 +34,12 @@ void f0(int i) {
 }
 
 void f1(int i) {
-  for (;i;)
+  for (; i;)
 #ifdef WITH_WARN
 // expected-note@-2 {{here}}
 #endif
     i = i + 1;
-    i *= 2;
+  i *= 2;
 #ifdef WITH_WARN
 // expected-warning@-2 {{misleading indentation; statement is not part of the previous 'for'}}
 #endif
@@ -51,7 +51,8 @@ void f2(int i) {
 #ifdef WITH_WARN
 // expected-note@-2 {{here}}
 #endif
-    i = i + 1; i *= 2;
+    i = i + 1;
+  i *= 2;
 #ifdef WITH_WARN
 // expected-warning@-2 {{misleading indentation; statement is not part of the previous 'while'}}
 #endif
@@ -66,7 +67,7 @@ void f3(int i) {
 // expected-note@-2 {{here}}
 #endif
     i *= 2;
-    const int x = 0;
+  const int x = 0;
 #ifdef WITH_WARN
 // expected-warning@-2 {{misleading indentation; statement is not part of the previous 'else'}}
 #endif
@@ -74,24 +75,24 @@ void f3(int i) {
 
 #ifdef CXX17
 struct Range {
-  int *begin() {return nullptr;}
-  int *end() {return nullptr;}
+  int *begin() { return nullptr; }
+  int *end() { return nullptr; }
 };
 #endif
 
 void f4(int i) {
   if (i)
-  i *= 2;
+    i *= 2;
   return;
   if (i)
     i *= 2;
-    ;
+  ;
   if (i)
 #ifdef WITH_WARN
 // expected-note@-2 {{here}}
 #endif
     i *= 2;
-    typedef int Int;
+  typedef int Int;
 #ifdef WITH_WARN
 // expected-warning@-2 {{misleading indentation; statement is not part of the previous 'if'}}
 #endif
@@ -102,7 +103,7 @@ void f4(int i) {
 // expected-note@-2 {{here}}
 #endif
     i *= 2;
-    using Int2 = int;
+  using Int2 = int;
 #ifdef WITH_WARN
 // expected-warning@-2 {{misleading indentation; statement is not part of the previous 'for'}}
 #endif
@@ -111,27 +112,24 @@ void f4(int i) {
 
 int bar(void);
 
-int foo(int* dst)
-{   
-    if (dst)
-       return
-    bar();
+int foo(int *dst) {
   if (dst)
-    dst = dst + \
-    bar();
+    return bar();
+  if (dst)
+    dst = dst +
+          bar();
   return 0;
 }
 
 void g(int i) {
   if (1)
     i = 2;
-  else
-         if (i == 3)
+  else if (i == 3)
 #ifdef WITH_WARN
 // expected-note@-3 {{here}}
 #endif
     i = 4;
-    i = 5;
+  i = 5;
 #ifdef WITH_WARN
 // expected-warning@-2 {{misleading indentation; statement is not part of the previous 'if'}}
 #endif
@@ -144,7 +142,7 @@ void g0(int i) {
     i = 2;
   else
     i = 5;
-    TEST;
+  TEST;
 }
 
 void g1(int i) {
@@ -154,8 +152,8 @@ void g1(int i) {
 #ifdef WITH_WARN
 // expected-note@-2 {{here}}
 #endif
-      i = 4;
-      i = 5;
+    i = 4;
+  i = 5;
 #ifdef WITH_WARN
 // expected-warning@-2 {{misleading indentation; statement is not part of the previous 'if'}}
 #endif
@@ -164,20 +162,20 @@ void g1(int i) {
 void g2(int i) {
   if (1)
     i = 2;
-  else
-    if (i == 3)
-    {i = 4;}
-    i = 5;
+  else if (i == 3) {
+    i = 4;
+  }
+  i = 5;
 }
 
 void g6(int i) {
-        if (1)
-                if (i == 3)
+  if (1)
+    if (i == 3)
 #ifdef WITH_WARN
 // expected-note@-2 {{here}}
 #endif
-                        i = 4;
-                        i = 5;
+      i = 4;
+  i = 5;
 #ifdef WITH_WARN
 // expected-warning@-2 {{misleading indentation; statement is not part of the previous 'if'}}
 #endif
@@ -188,72 +186,72 @@ void g7(int i) {
     i = 4;
 #ifdef TEST1
 #endif
-    i = 5;
+  i = 5;
 }
 
-void a1(int i) { if (1) i = 4; return; }
+void a1(int i) {
+  if (1)
+    i = 4;
+  return;
+}
 
 void a2(int i) {
   {
     if (1)
       i = 4;
-      }
+  }
   return;
 }
 
 void a3(int i) {
-  if (1)
-    {
+  if (1) {
     i = 4;
-    }
-    return;
+  }
+  return;
 }
 
 void s(int num) {
-    {
-        if (1)
-            return;
-        else
-            return;
-        return;
-    }
-    if (0)
+  {
+    if (1)
+      return;
+    else
+      return;
+    return;
+  }
+  if (0)
 #ifdef WITH_WARN
 // expected-note@-2 {{here}}
 #endif
-        return;
-        return;
+    return;
+  return;
 #ifdef WITH_WARN
 // expected-warning@-2 {{misleading indentation; statement is not part of the previous 'if'}}
 #endif
 }
-int a4()
-{
-	if (0)
-		return 1;
- 	return 0;
+int a4() {
+  if (0)
+    return 1;
+  return 0;
 #if (TAB_SIZE == 1)
 // expected-warning@-2 {{misleading indentation; statement is not part of the previous 'if'}}
 // expected-note@-5 {{here}}
-#endif 
+#endif
 }
 
-int a5()
-{
-	if (0)
-		return 1;
-		return 0;
+int a5() {
+  if (0)
+    return 1;
+  return 0;
 #if WITH_WARN
 // expected-warning@-2 {{misleading indentation; statement is not part of the previous 'if'}}
 // expected-note@-5 {{here}}
 #endif
 }
 
-int a6()
-{
-	if (0)
-		return 1;
-      		return 0;
+int a6() {
+  if (0)
+    return 1;
+  return 0;
 #if (TAB_SIZE == 8)
 // expected-warning@-2 {{misleading indentation; statement is not part of the previous 'if'}}
 // expected-note@-5 {{here}}
@@ -261,9 +259,9 @@ int a6()
 }
 
 #define FOO \
- goto fail
+  goto fail
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
   if (5 != 0)
     goto fail;
   else
@@ -289,18 +287,19 @@ int main(int argc, char* argv[]) {
   } else if (1)
     goto fail;
 
+  if (1)
+    goto fail;
+  goto fail;
 
-  if (1) goto fail; goto fail;
-
-    if (0)
-        goto fail;
-
+  if (0)
     goto fail;
 
-    if (0)
-        FOO;
+  goto fail;
 
-    goto fail;
+  if (0)
+    FOO;
+
+  goto fail;
 
 fail:;
 }
@@ -308,7 +307,7 @@ fail:;
 void f_label(int b) {
   if (b)
     return;
-    a:
+a:
   return;
   goto a;
 }

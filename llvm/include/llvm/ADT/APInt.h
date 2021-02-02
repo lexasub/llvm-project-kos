@@ -105,9 +105,7 @@ private:
   ///
   /// This constructor is used only internally for speed of construction of
   /// temporaries. It is unsafe for general use so it is not public.
-  APInt(uint64_t *val, unsigned bits) : BitWidth(bits) {
-    U.pVal = val;
-  }
+  APInt(uint64_t *val, unsigned bits) : BitWidth(bits) { U.pVal = val; }
 
   /// Determine if this APInt just has one word to store value.
   ///
@@ -147,7 +145,7 @@ private:
   /// zero'd out.
   APInt &clearUnusedBits() {
     // Compute how many bits are used in the final word
-    unsigned WordBits = ((BitWidth-1) % APINT_BITS_PER_WORD) + 1;
+    unsigned WordBits = ((BitWidth - 1) % APINT_BITS_PER_WORD) + 1;
 
     // Mask out the high bits.
     uint64_t mask = WORDTYPE_MAX >> (APINT_BITS_PER_WORD - WordBits);
@@ -245,13 +243,13 @@ private:
   void flipAllBitsSlowCase();
 
   /// out-of-line slow case for operator&=.
-  void AndAssignSlowCase(const APInt& RHS);
+  void AndAssignSlowCase(const APInt &RHS);
 
   /// out-of-line slow case for operator|=.
-  void OrAssignSlowCase(const APInt& RHS);
+  void OrAssignSlowCase(const APInt &RHS);
 
   /// out-of-line slow case for operator^=.
-  void XorAssignSlowCase(const APInt& RHS);
+  void XorAssignSlowCase(const APInt &RHS);
 
   /// Unsigned comparison. Returns -1, 0, or 1 if this APInt is less than, equal
   /// to, or greater than RHS.
@@ -373,7 +371,7 @@ public:
   /// This tests the high bit of this APInt to determine if it is set.
   ///
   /// \returns true if this APInt has its sign bit set, false otherwise.
-  bool isSignBitSet() const { return (*this)[BitWidth-1]; }
+  bool isSignBitSet() const { return (*this)[BitWidth - 1]; }
 
   /// Determine if sign bit of this APInt is clear.
   ///
@@ -827,7 +825,7 @@ public:
       return *this;
     }
     U.pVal[0] &= RHS;
-    memset(U.pVal+1, 0, (getNumWords() - 1) * APINT_WORD_SIZE);
+    memset(U.pVal + 1, 0, (getNumWords() - 1) * APINT_WORD_SIZE);
     return *this;
   }
 
@@ -1449,9 +1447,7 @@ public:
   }
 
   /// Set the sign bit to 1.
-  void setSignBit() {
-    setBit(BitWidth - 1);
-  }
+  void setSignBit() { setBit(BitWidth - 1); }
 
   /// Set a given bit to a given value.
   void setBitVal(unsigned BitPosition, bool BitValue) {
@@ -1497,14 +1493,10 @@ public:
   }
 
   /// Set the top bits starting from loBit.
-  void setBitsFrom(unsigned loBit) {
-    return setBits(loBit, BitWidth);
-  }
+  void setBitsFrom(unsigned loBit) { return setBits(loBit, BitWidth); }
 
   /// Set the bottom loBits bits.
-  void setLowBits(unsigned loBits) {
-    return setBits(0, loBits);
-  }
+  void setLowBits(unsigned loBits) { return setBits(0, loBits); }
 
   /// Set the top hiBits bits.
   void setHighBits(unsigned hiBits) {
@@ -1539,9 +1531,7 @@ public:
   }
 
   /// Set the sign bit to 0.
-  void clearSignBit() {
-    clearBit(BitWidth - 1);
-  }
+  void clearSignBit() { clearBit(BitWidth - 1); }
 
   /// Toggle every bit to its opposite value.
   void flipAllBits() {
@@ -1779,9 +1769,7 @@ public:
   /// The conversion does not do a translation from integer to double, it just
   /// re-interprets the bits as a double. Note that it is valid to do this on
   /// any bit width. Exactly 64 bits will be translated.
-  double bitsToDouble() const {
-    return BitsToDouble(getWord(0));
-  }
+  double bitsToDouble() const { return BitsToDouble(getWord(0)); }
 
   /// Converts APInt bits to a float
   ///
@@ -1813,7 +1801,7 @@ public:
   /// @{
 
   /// \returns the floor log base 2 of this APInt.
-  unsigned logBase2() const { return getActiveBits() -  1; }
+  unsigned logBase2() const { return getActiveBits() - 1; }
 
   /// \returns the ceil log base 2 of this APInt.
   unsigned ceilLogBase2() const {
@@ -1913,9 +1901,8 @@ public:
   /// DST, of dstCOUNT parts, such that the bit srcLSB becomes the least
   /// significant bit of DST.  All high bits above srcBITS in DST are
   /// zero-filled.
-  static void tcExtract(WordType *, unsigned dstCount,
-                        const WordType *, unsigned srcBits,
-                        unsigned srcLSB);
+  static void tcExtract(WordType *, unsigned dstCount, const WordType *,
+                        unsigned srcBits, unsigned srcLSB);
 
   /// Set the given bit of a bignum.  Zero-based.
   static void tcSetBit(WordType *, unsigned bit);
@@ -1932,14 +1919,13 @@ public:
   static void tcNegate(WordType *, unsigned);
 
   /// DST += RHS + CARRY where CARRY is zero or one.  Returns the carry flag.
-  static WordType tcAdd(WordType *, const WordType *,
-                        WordType carry, unsigned);
+  static WordType tcAdd(WordType *, const WordType *, WordType carry, unsigned);
   /// DST += RHS.  Returns the carry flag.
   static WordType tcAddPart(WordType *, WordType, unsigned);
 
   /// DST -= RHS + CARRY where CARRY is zero or one. Returns the carry flag.
-  static WordType tcSubtract(WordType *, const WordType *,
-                             WordType carry, unsigned);
+  static WordType tcSubtract(WordType *, const WordType *, WordType carry,
+                             unsigned);
   /// DST -= RHS.  Returns the carry flag.
   static WordType tcSubtractPart(WordType *, WordType, unsigned);
 
@@ -1955,8 +1941,7 @@ public:
   /// otherwise overflow occurred and return one.
   static int tcMultiplyPart(WordType *dst, const WordType *src,
                             WordType multiplier, WordType carry,
-                            unsigned srcParts, unsigned dstParts,
-                            bool add);
+                            unsigned srcParts, unsigned dstParts, bool add);
 
   /// DST = LHS * RHS, where DST has the same width as the operands and is
   /// filled with the least significant parts of the result.  Returns one if
@@ -1967,8 +1952,8 @@ public:
 
   /// DST = LHS * RHS, where DST has width the sum of the widths of the
   /// operands. No overflow occurs. DST must be disjoint from both operands.
-  static void tcFullMultiply(WordType *, const WordType *,
-                             const WordType *, unsigned, unsigned);
+  static void tcFullMultiply(WordType *, const WordType *, const WordType *,
+                             unsigned, unsigned);
 
   /// If RHS is zero LHS and REMAINDER are left unchanged, return one.
   /// Otherwise set LHS to LHS / RHS with the fractional part discarded, set
@@ -1979,9 +1964,8 @@ public:
   /// SCRATCH is a bignum of the same size as the operands and result for use by
   /// the routine; its contents need not be initialized and are destroyed.  LHS,
   /// REMAINDER and SCRATCH must be distinct.
-  static int tcDivide(WordType *lhs, const WordType *rhs,
-                      WordType *remainder, WordType *scratch,
-                      unsigned parts);
+  static int tcDivide(WordType *lhs, const WordType *rhs, WordType *remainder,
+                      WordType *scratch, unsigned parts);
 
   /// Shift a bignum left Count bits. Shifted in bits are zero. There are no
   /// restrictions on Count.
@@ -2166,7 +2150,6 @@ inline APInt operator*(uint64_t LHS, APInt b) {
   return b;
 }
 
-
 namespace APIntOps {
 
 /// Determine the smaller of two APInts considered to be signed.
@@ -2282,7 +2265,7 @@ Optional<APInt> SolveQuadraticEquationWrap(APInt A, APInt B, APInt C,
 Optional<unsigned> GetMostSignificantDifferentBit(const APInt &A,
                                                   const APInt &B);
 
-} // End of APIntOps namespace
+} // namespace APIntOps
 
 // See friend declaration above. This additional declaration is required in
 // order to compile LLVM with IBM xlC compiler.

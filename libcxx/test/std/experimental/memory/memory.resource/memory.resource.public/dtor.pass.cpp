@@ -28,35 +28,27 @@
 
 using std::experimental::pmr::memory_resource;
 
-int main(int, char**)
-{
-    static_assert(
-        std::has_virtual_destructor<memory_resource>::value
-      , "Must have virtual destructor"
-      );
-    static_assert(
-        std::is_nothrow_destructible<memory_resource>::value,
-        "Must be nothrow destructible"
-      );
-    static_assert(
-        std::is_abstract<memory_resource>::value
-      , "Must be abstract"
-      );
-    // Check that the destructor of `TestResource` is called when
-    // it is deleted as a pointer to `memory_resource`
-    {
-        using TR = TestResource;
-        memory_resource* M = new TR(42);
-        assert(TR::resource_alive == 1);
-        assert(TR::resource_constructed == 1);
-        assert(TR::resource_destructed == 0);
+int main(int, char**) {
+  static_assert(std::has_virtual_destructor<memory_resource>::value,
+                "Must have virtual destructor");
+  static_assert(std::is_nothrow_destructible<memory_resource>::value,
+                "Must be nothrow destructible");
+  static_assert(std::is_abstract<memory_resource>::value, "Must be abstract");
+  // Check that the destructor of `TestResource` is called when
+  // it is deleted as a pointer to `memory_resource`
+  {
+    using TR = TestResource;
+    memory_resource* M = new TR(42);
+    assert(TR::resource_alive == 1);
+    assert(TR::resource_constructed == 1);
+    assert(TR::resource_destructed == 0);
 
-        delete M;
+    delete M;
 
-        assert(TR::resource_alive == 0);
-        assert(TR::resource_constructed == 1);
-        assert(TR::resource_destructed == 1);
-    }
+    assert(TR::resource_alive == 0);
+    assert(TR::resource_constructed == 1);
+    assert(TR::resource_destructed == 1);
+  }
 
   return 0;
 }

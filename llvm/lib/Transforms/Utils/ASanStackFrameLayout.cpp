@@ -41,12 +41,18 @@ static const size_t kMinAlignment = 16;
 static size_t VarAndRedzoneSize(size_t Size, size_t Granularity,
                                 size_t Alignment) {
   size_t Res = 0;
-  if (Size <= 4)  Res = 16;
-  else if (Size <= 16) Res = 32;
-  else if (Size <= 128) Res = Size + 32;
-  else if (Size <= 512) Res = Size + 64;
-  else if (Size <= 4096) Res = Size + 128;
-  else                   Res = Size + 256;
+  if (Size <= 4)
+    Res = 16;
+  else if (Size <= 16)
+    Res = 32;
+  else if (Size <= 128)
+    Res = Size + 32;
+  else if (Size <= 512)
+    Res = Size + 64;
+  else if (Size <= 4096)
+    Res = Size + 128;
+  else
+    Res = Size + 256;
   return alignTo(std::max(Res, 2 * Granularity), Alignment);
 }
 
@@ -67,22 +73,22 @@ ComputeASanStackFrameLayout(SmallVectorImpl<ASanStackVariableDescription> &Vars,
   ASanStackFrameLayout Layout;
   Layout.Granularity = Granularity;
   Layout.FrameAlignment = std::max(Granularity, Vars[0].Alignment);
-  size_t Offset = std::max(std::max(MinHeaderSize, Granularity),
-     Vars[0].Alignment);
+  size_t Offset =
+      std::max(std::max(MinHeaderSize, Granularity), Vars[0].Alignment);
   assert((Offset % Granularity) == 0);
   for (size_t i = 0; i < NumVars; i++) {
     bool IsLast = i == NumVars - 1;
     size_t Alignment = std::max(Granularity, Vars[i].Alignment);
-    (void)Alignment;  // Used only in asserts.
+    (void)Alignment; // Used only in asserts.
     size_t Size = Vars[i].Size;
     assert((Alignment & (Alignment - 1)) == 0);
     assert(Layout.FrameAlignment >= Alignment);
     assert((Offset % Alignment) == 0);
     assert(Size > 0);
-    size_t NextAlignment = IsLast ? Granularity
-                   : std::max(Granularity, Vars[i + 1].Alignment);
-    size_t SizeWithRedzone = VarAndRedzoneSize(Size, Granularity,
-                                               NextAlignment);
+    size_t NextAlignment =
+        IsLast ? Granularity : std::max(Granularity, Vars[i + 1].Alignment);
+    size_t SizeWithRedzone =
+        VarAndRedzoneSize(Size, Granularity, NextAlignment);
     Vars[i].Offset = Offset;
     Offset += SizeWithRedzone;
   }
@@ -149,4 +155,4 @@ SmallVector<uint8_t, 64> GetShadowBytesAfterScope(
   return SB;
 }
 
-} // llvm namespace
+} // namespace llvm

@@ -17,49 +17,40 @@ struct PointerList {
 };
 
 struct MallocWrapper {
-  __attribute__((always_inline))
-  static void* Allocate(size_t N) {
+  __attribute__((always_inline)) static void* Allocate(size_t N) {
     return std::malloc(N);
   }
-  __attribute__((always_inline))
-  static void Deallocate(void* P, size_t) {
+  __attribute__((always_inline)) static void Deallocate(void* P, size_t) {
     std::free(P);
   }
 };
 
 struct NewWrapper {
-  __attribute__((always_inline))
-  static void* Allocate(size_t N) {
+  __attribute__((always_inline)) static void* Allocate(size_t N) {
     return ::operator new(N);
   }
-  __attribute__((always_inline))
-  static void Deallocate(void* P, size_t) {
+  __attribute__((always_inline)) static void Deallocate(void* P, size_t) {
     ::operator delete(P);
   }
 };
 
 struct BuiltinNewWrapper {
-  __attribute__((always_inline))
-  static void* Allocate(size_t N) {
+  __attribute__((always_inline)) static void* Allocate(size_t N) {
     return __builtin_operator_new(N);
   }
-  __attribute__((always_inline))
-  static void Deallocate(void* P, size_t) {
+  __attribute__((always_inline)) static void Deallocate(void* P, size_t) {
     __builtin_operator_delete(P);
   }
 };
 
 struct BuiltinSizedNewWrapper {
-  __attribute__((always_inline))
-  static void* Allocate(size_t N) {
+  __attribute__((always_inline)) static void* Allocate(size_t N) {
     return __builtin_operator_new(N);
   }
-  __attribute__((always_inline))
-  static void Deallocate(void* P, size_t N) {
+  __attribute__((always_inline)) static void Deallocate(void* P, size_t N) {
     __builtin_operator_delete(P, N);
   }
 };
-
 
 template <class AllocWrapper>
 static void BM_AllocateAndDeallocate(benchmark::State& st) {
@@ -71,11 +62,10 @@ static void BM_AllocateAndDeallocate(benchmark::State& st) {
   }
 }
 
-
 template <class AllocWrapper>
 static void BM_AllocateOnly(benchmark::State& st) {
   const size_t alloc_size = st.range(0);
-  PointerList *Start = nullptr;
+  PointerList* Start = nullptr;
 
   while (st.KeepRunning()) {
     PointerList* p = (PointerList*)AllocWrapper::Allocate(alloc_size);
@@ -84,9 +74,9 @@ static void BM_AllocateOnly(benchmark::State& st) {
     Start = p;
   }
 
-  PointerList *Next = Start;
+  PointerList* Next = Start;
   while (Next) {
-    PointerList *Tmp = Next;
+    PointerList* Tmp = Next;
     Next = Tmp->Next;
     AllocWrapper::Deallocate(Tmp, alloc_size);
   }
@@ -113,7 +103,7 @@ static void BM_DeallocateOnly(benchmark::State& st) {
 }
 
 static int RegisterAllocBenchmarks() {
-  using FnType = void(*)(benchmark::State&);
+  using FnType = void (*)(benchmark::State&);
   struct {
     const char* name;
     FnType func;
@@ -121,9 +111,11 @@ static int RegisterAllocBenchmarks() {
       {"BM_Malloc", &BM_AllocateAndDeallocate<MallocWrapper>},
       {"BM_New", &BM_AllocateAndDeallocate<NewWrapper>},
       {"BM_BuiltinNewDelete", BM_AllocateAndDeallocate<BuiltinNewWrapper>},
-      {"BM_BuiltinSizedNewDelete", BM_AllocateAndDeallocate<BuiltinSizedNewWrapper>},
+      {"BM_BuiltinSizedNewDelete",
+       BM_AllocateAndDeallocate<BuiltinSizedNewWrapper>},
       {"BM_BuiltinNewAllocateOnly", BM_AllocateOnly<BuiltinSizedNewWrapper>},
-      {"BM_BuiltinNewSizedDeallocateOnly", BM_DeallocateOnly<BuiltinSizedNewWrapper>},
+      {"BM_BuiltinNewSizedDeallocateOnly",
+       BM_DeallocateOnly<BuiltinSizedNewWrapper>},
 
   };
   for (auto TC : TestCases) {

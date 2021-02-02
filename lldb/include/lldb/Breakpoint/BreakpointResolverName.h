@@ -88,8 +88,7 @@ protected:
   lldb::LanguageType m_language;
   bool m_skip_prologue;
 
-  void AddNameLookup(ConstString name,
-                     lldb::FunctionNameType name_type_mask);
+  void AddNameLookup(ConstString name, lldb::FunctionNameType name_type_mask);
 };
 
 } // namespace lldb_private

@@ -1,5 +1,6 @@
 // See http://llvm.org/bugs/show_bug.cgi?id=11468
 #include <stdio.h>
+
 #include <string>
 
 class Action {
@@ -19,7 +20,7 @@ int main() {
   fprintf(stderr, "&a before = %p\n", &a);
   try {
     a.Throw('c');
-  } catch(const char&) {
+  } catch (const char&) {
     fprintf(stderr, "&a in catch = %p\n", &a);
   }
   fprintf(stderr, "&a final = %p\n", &a);

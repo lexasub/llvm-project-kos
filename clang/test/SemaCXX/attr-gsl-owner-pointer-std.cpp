@@ -148,7 +148,7 @@ static_assert(sizeof(unordered_multiset<int>::iterator), ""); // Force instantia
 // std::list has an implicit gsl::Owner attribute,
 // but explicit attributes take precedence.
 template <typename T>
-class [[gsl::Pointer]] list{};
+class [[gsl::Pointer]] list {};
 // CHECK: ClassTemplateDecl {{.*}} list
 // CHECK: PointerAttr {{.*}}
 // CHECK: ClassTemplateSpecializationDecl {{.*}} list

@@ -445,8 +445,8 @@ llvm::ArrayRef<uint8_t> SymbolFileBreakpad::SaveAsDWARF(postfix::Node &node) {
 }
 
 bool SymbolFileBreakpad::ParseCFIUnwindRow(llvm::StringRef unwind_rules,
-                                        const RegisterInfoResolver &resolver,
-                                        UnwindPlan::Row &row) {
+                                           const RegisterInfoResolver &resolver,
+                                           UnwindPlan::Row &row) {
   Log *log = GetLogIfAllCategoriesSet(LIBLLDB_LOG_SYMBOLS);
 
   llvm::BumpPtrAllocator node_alloc;
@@ -613,7 +613,7 @@ SymbolFileBreakpad::ParseWinUnwindPlan(const Bookmark &bookmark,
                record->ProgramString);
       return nullptr;
     }
-    llvm::ArrayRef<uint8_t> saved  = SaveAsDWARF(*it->second);
+    llvm::ArrayRef<uint8_t> saved = SaveAsDWARF(*it->second);
     row_sp->GetCFAValue().SetIsDWARFExpression(saved.data(), saved.size());
   }
 
@@ -621,7 +621,6 @@ SymbolFileBreakpad::ParseWinUnwindPlan(const Bookmark &bookmark,
   // expressions refer to the CFA value instead of recomputing the whole
   // expression.
   it->second = postfix::MakeNode<postfix::InitialValueNode>(node_alloc);
-
 
   // Now process the rest of the assignments.
   for (++it; it != program.end(); ++it) {

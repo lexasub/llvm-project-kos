@@ -28,23 +28,28 @@ namespace {
 TEST(DistroTest, DetectUbuntu) {
   llvm::vfs::InMemoryFileSystem UbuntuTrustyFileSystem;
   // Ubuntu uses Debian Sid version.
-  UbuntuTrustyFileSystem.addFile("/etc/debian_version", 0,
+  UbuntuTrustyFileSystem.addFile(
+      "/etc/debian_version", 0,
       llvm::MemoryBuffer::getMemBuffer("jessie/sid\n"));
-  UbuntuTrustyFileSystem.addFile("/etc/lsb-release", 0,
-      llvm::MemoryBuffer::getMemBuffer("DISTRIB_ID=Ubuntu\n"
-                                       "DISTRIB_RELEASE=14.04\n"
-                                       "DISTRIB_CODENAME=trusty\n"
-                                       "DISTRIB_DESCRIPTION=\"Ubuntu 14.04 LTS\"\n"));
-  UbuntuTrustyFileSystem.addFile("/etc/os-release", 0,
-      llvm::MemoryBuffer::getMemBuffer("NAME=\"Ubuntu\"\n"
-                                       "VERSION=\"14.04, Trusty Tahr\"\n"
-                                       "ID=ubuntu\n"
-                                       "ID_LIKE=debian\n"
-                                       "PRETTY_NAME=\"Ubuntu 14.04 LTS\"\n"
-                                       "VERSION_ID=\"14.04\"\n"
-                                       "HOME_URL=\"http://www.ubuntu.com/\"\n"
-                                       "SUPPORT_URL=\"http://help.ubuntu.com/\"\n"
-                                       "BUG_REPORT_URL=\"http://bugs.launchpad.net/ubuntu/\"\n"));
+  UbuntuTrustyFileSystem.addFile(
+      "/etc/lsb-release", 0,
+      llvm::MemoryBuffer::getMemBuffer(
+          "DISTRIB_ID=Ubuntu\n"
+          "DISTRIB_RELEASE=14.04\n"
+          "DISTRIB_CODENAME=trusty\n"
+          "DISTRIB_DESCRIPTION=\"Ubuntu 14.04 LTS\"\n"));
+  UbuntuTrustyFileSystem.addFile(
+      "/etc/os-release", 0,
+      llvm::MemoryBuffer::getMemBuffer(
+          "NAME=\"Ubuntu\"\n"
+          "VERSION=\"14.04, Trusty Tahr\"\n"
+          "ID=ubuntu\n"
+          "ID_LIKE=debian\n"
+          "PRETTY_NAME=\"Ubuntu 14.04 LTS\"\n"
+          "VERSION_ID=\"14.04\"\n"
+          "HOME_URL=\"http://www.ubuntu.com/\"\n"
+          "SUPPORT_URL=\"http://help.ubuntu.com/\"\n"
+          "BUG_REPORT_URL=\"http://bugs.launchpad.net/ubuntu/\"\n"));
 
   Distro UbuntuTrusty{UbuntuTrustyFileSystem, llvm::Triple("unknown-pc-linux")};
   ASSERT_EQ(Distro(Distro::UbuntuTrusty), UbuntuTrusty);
@@ -54,32 +59,40 @@ TEST(DistroTest, DetectUbuntu) {
   ASSERT_FALSE(UbuntuTrusty.IsDebian());
   ASSERT_FALSE(UbuntuTrusty.IsGentoo());
 
-  Distro UbuntuTrusty2{UbuntuTrustyFileSystem, llvm::Triple("unknown-pc-windows")};
+  Distro UbuntuTrusty2{UbuntuTrustyFileSystem,
+                       llvm::Triple("unknown-pc-windows")};
   ASSERT_EQ(Distro(Distro::UnknownDistro), UbuntuTrusty2);
 
   llvm::vfs::InMemoryFileSystem UbuntuYakketyFileSystem;
-  UbuntuYakketyFileSystem.addFile("/etc/debian_version", 0,
+  UbuntuYakketyFileSystem.addFile(
+      "/etc/debian_version", 0,
       llvm::MemoryBuffer::getMemBuffer("stretch/sid\n"));
-  UbuntuYakketyFileSystem.addFile("/etc/lsb-release", 0,
-      llvm::MemoryBuffer::getMemBuffer("DISTRIB_ID=Ubuntu\n"
-                                       "DISTRIB_RELEASE=16.10\n"
-                                       "DISTRIB_CODENAME=yakkety\n"
-                                       "DISTRIB_DESCRIPTION=\"Ubuntu 16.10\"\n"));
-  UbuntuYakketyFileSystem.addFile("/etc/os-release", 0,
-      llvm::MemoryBuffer::getMemBuffer("NAME=\"Ubuntu\"\n"
-                                       "VERSION=\"16.10 (Yakkety Yak)\"\n"
-                                       "ID=ubuntu\n"
-                                       "ID_LIKE=debian\n"
-                                       "PRETTY_NAME=\"Ubuntu 16.10\"\n"
-                                       "VERSION_ID=\"16.10\"\n"
-                                       "HOME_URL=\"http://www.ubuntu.com/\"\n"
-                                       "SUPPORT_URL=\"http://help.ubuntu.com/\"\n"
-                                       "BUG_REPORT_URL=\"http://bugs.launchpad.net/ubuntu/\"\n"
-                                       "PRIVACY_POLICY_URL=\"http://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\n"
-                                       "VERSION_CODENAME=yakkety\n"
-                                       "UBUNTU_CODENAME=yakkety\n"));
+  UbuntuYakketyFileSystem.addFile(
+      "/etc/lsb-release", 0,
+      llvm::MemoryBuffer::getMemBuffer(
+          "DISTRIB_ID=Ubuntu\n"
+          "DISTRIB_RELEASE=16.10\n"
+          "DISTRIB_CODENAME=yakkety\n"
+          "DISTRIB_DESCRIPTION=\"Ubuntu 16.10\"\n"));
+  UbuntuYakketyFileSystem.addFile(
+      "/etc/os-release", 0,
+      llvm::MemoryBuffer::getMemBuffer(
+          "NAME=\"Ubuntu\"\n"
+          "VERSION=\"16.10 (Yakkety Yak)\"\n"
+          "ID=ubuntu\n"
+          "ID_LIKE=debian\n"
+          "PRETTY_NAME=\"Ubuntu 16.10\"\n"
+          "VERSION_ID=\"16.10\"\n"
+          "HOME_URL=\"http://www.ubuntu.com/\"\n"
+          "SUPPORT_URL=\"http://help.ubuntu.com/\"\n"
+          "BUG_REPORT_URL=\"http://bugs.launchpad.net/ubuntu/\"\n"
+          "PRIVACY_POLICY_URL=\"http://www.ubuntu.com/legal/terms-and-policies/"
+          "privacy-policy\"\n"
+          "VERSION_CODENAME=yakkety\n"
+          "UBUNTU_CODENAME=yakkety\n"));
 
-  Distro UbuntuYakkety{UbuntuYakketyFileSystem, llvm::Triple("unknown-pc-linux")};
+  Distro UbuntuYakkety{UbuntuYakketyFileSystem,
+                       llvm::Triple("unknown-pc-linux")};
   ASSERT_EQ(Distro(Distro::UbuntuYakkety), UbuntuYakkety);
   ASSERT_TRUE(UbuntuYakkety.IsUbuntu());
   ASSERT_FALSE(UbuntuYakkety.IsRedhat());
@@ -90,30 +103,37 @@ TEST(DistroTest, DetectUbuntu) {
 
 TEST(DistroTest, DetectRedhat) {
   llvm::vfs::InMemoryFileSystem Fedora25FileSystem;
-  Fedora25FileSystem.addFile("/etc/system-release-cpe", 0,
+  Fedora25FileSystem.addFile(
+      "/etc/system-release-cpe", 0,
       llvm::MemoryBuffer::getMemBuffer("cpe:/o:fedoraproject:fedora:25\n"));
   // Both files are symlinks to fedora-release.
-  Fedora25FileSystem.addFile("/etc/system-release", 0,
+  Fedora25FileSystem.addFile(
+      "/etc/system-release", 0,
       llvm::MemoryBuffer::getMemBuffer("Fedora release 25 (Twenty Five)\n"));
-  Fedora25FileSystem.addFile("/etc/redhat-release", 0,
+  Fedora25FileSystem.addFile(
+      "/etc/redhat-release", 0,
       llvm::MemoryBuffer::getMemBuffer("Fedora release 25 (Twenty Five)\n"));
-  Fedora25FileSystem.addFile("/etc/fedora-release", 0,
+  Fedora25FileSystem.addFile(
+      "/etc/fedora-release", 0,
       llvm::MemoryBuffer::getMemBuffer("Fedora release 25 (Twenty Five)\n"));
-  Fedora25FileSystem.addFile("/etc/os-release", 0,
-      llvm::MemoryBuffer::getMemBuffer("NAME=Fedora\n"
-                                       "VERSION=\"25 (Twenty Five)\"\n"
-                                       "ID=fedora\n"
-                                       "VERSION_ID=25\n"
-                                       "PRETTY_NAME=\"Fedora 25 (Twenty Five)\"\n"
-                                       "ANSI_COLOR=\"0;34\"\n"
-                                       "CPE_NAME=\"cpe:/o:fedoraproject:fedora:25\"\n"
-                                       "HOME_URL=\"https://fedoraproject.org/\"\n"
-                                       "BUG_REPORT_URL=\"https://bugzilla.redhat.com/\"\n"
-                                       "REDHAT_BUGZILLA_PRODUCT=\"Fedora\"\n"
-                                       "REDHAT_BUGZILLA_PRODUCT_VERSION=25\n"
-                                       "REDHAT_SUPPORT_PRODUCT=\"Fedora\"\n"
-                                       "REDHAT_SUPPORT_PRODUCT_VERSION=25\n"
-                                       "PRIVACY_POLICY_URL=https://fedoraproject.org/wiki/Legal:PrivacyPolicy\n"));
+  Fedora25FileSystem.addFile(
+      "/etc/os-release", 0,
+      llvm::MemoryBuffer::getMemBuffer(
+          "NAME=Fedora\n"
+          "VERSION=\"25 (Twenty Five)\"\n"
+          "ID=fedora\n"
+          "VERSION_ID=25\n"
+          "PRETTY_NAME=\"Fedora 25 (Twenty Five)\"\n"
+          "ANSI_COLOR=\"0;34\"\n"
+          "CPE_NAME=\"cpe:/o:fedoraproject:fedora:25\"\n"
+          "HOME_URL=\"https://fedoraproject.org/\"\n"
+          "BUG_REPORT_URL=\"https://bugzilla.redhat.com/\"\n"
+          "REDHAT_BUGZILLA_PRODUCT=\"Fedora\"\n"
+          "REDHAT_BUGZILLA_PRODUCT_VERSION=25\n"
+          "REDHAT_SUPPORT_PRODUCT=\"Fedora\"\n"
+          "REDHAT_SUPPORT_PRODUCT_VERSION=25\n"
+          "PRIVACY_POLICY_URL=https://fedoraproject.org/wiki/"
+          "Legal:PrivacyPolicy\n"));
   Distro Fedora25{Fedora25FileSystem, llvm::Triple("unknown-pc-linux")};
   ASSERT_EQ(Distro(Distro::Fedora), Fedora25);
   ASSERT_FALSE(Fedora25.IsUbuntu());
@@ -123,33 +143,40 @@ TEST(DistroTest, DetectRedhat) {
   ASSERT_FALSE(Fedora25.IsGentoo());
 
   llvm::vfs::InMemoryFileSystem CentOS7FileSystem;
-  CentOS7FileSystem.addFile("/etc/system-release-cpe", 0,
+  CentOS7FileSystem.addFile(
+      "/etc/system-release-cpe", 0,
       llvm::MemoryBuffer::getMemBuffer("cpe:/o:centos:centos:7\n"));
   // Both files are symlinks to centos-release.
   CentOS7FileSystem.addFile("/etc/system-release", 0,
-      llvm::MemoryBuffer::getMemBuffer("CentOS Linux release 7.2.1511 (Core) \n"));
+                            llvm::MemoryBuffer::getMemBuffer(
+                                "CentOS Linux release 7.2.1511 (Core) \n"));
   CentOS7FileSystem.addFile("/etc/redhat-release", 0,
-      llvm::MemoryBuffer::getMemBuffer("CentOS Linux release 7.2.1511 (Core) \n"));
+                            llvm::MemoryBuffer::getMemBuffer(
+                                "CentOS Linux release 7.2.1511 (Core) \n"));
   CentOS7FileSystem.addFile("/etc/centos-release", 0,
-      llvm::MemoryBuffer::getMemBuffer("CentOS Linux release 7.2.1511 (Core) \n"));
-  CentOS7FileSystem.addFile("/etc/centos-release-upstream", 0,
-      llvm::MemoryBuffer::getMemBuffer("Derived from Red Hat Enterprise Linux 7.2 (Source)\n"));
+                            llvm::MemoryBuffer::getMemBuffer(
+                                "CentOS Linux release 7.2.1511 (Core) \n"));
+  CentOS7FileSystem.addFile(
+      "/etc/centos-release-upstream", 0,
+      llvm::MemoryBuffer::getMemBuffer(
+          "Derived from Red Hat Enterprise Linux 7.2 (Source)\n"));
   CentOS7FileSystem.addFile("/etc/os-release", 0,
-      llvm::MemoryBuffer::getMemBuffer("NAME=\"CentOS Linux\"\n"
-                                       "VERSION=\"7 (Core)\"\n"
-                                       "ID=\"centos\"\n"
-                                       "ID_LIKE=\"rhel fedora\"\n"
-                                       "VERSION_ID=\"7\"\n"
-                                       "PRETTY_NAME=\"CentOS Linux 7 (Core)\"\n"
-                                       "ANSI_COLOR=\"0;31\"\n"
-                                       "CPE_NAME=\"cpe:/o:centos:centos:7\"\n"
-                                       "HOME_URL=\"https://www.centos.org/\"\n"
-                                       "BUG_REPORT_URL=\"https://bugs.centos.org/\"\n"
-                                       "\n"
-                                       "CENTOS_MANTISBT_PROJECT=\"CentOS-7\"\n"
-                                       "CENTOS_MANTISBT_PROJECT_VERSION=\"7\"\n"
-                                       "REDHAT_SUPPORT_PRODUCT=\"centos\"\n"
-                                       "REDHAT_SUPPORT_PRODUCT_VERSION=\"7\"\n"));
+                            llvm::MemoryBuffer::getMemBuffer(
+                                "NAME=\"CentOS Linux\"\n"
+                                "VERSION=\"7 (Core)\"\n"
+                                "ID=\"centos\"\n"
+                                "ID_LIKE=\"rhel fedora\"\n"
+                                "VERSION_ID=\"7\"\n"
+                                "PRETTY_NAME=\"CentOS Linux 7 (Core)\"\n"
+                                "ANSI_COLOR=\"0;31\"\n"
+                                "CPE_NAME=\"cpe:/o:centos:centos:7\"\n"
+                                "HOME_URL=\"https://www.centos.org/\"\n"
+                                "BUG_REPORT_URL=\"https://bugs.centos.org/\"\n"
+                                "\n"
+                                "CENTOS_MANTISBT_PROJECT=\"CentOS-7\"\n"
+                                "CENTOS_MANTISBT_PROJECT_VERSION=\"7\"\n"
+                                "REDHAT_SUPPORT_PRODUCT=\"centos\"\n"
+                                "REDHAT_SUPPORT_PRODUCT_VERSION=\"7\"\n"));
 
   Distro CentOS7{CentOS7FileSystem, llvm::Triple("unknown-pc-linux")};
   ASSERT_EQ(Distro(Distro::RHEL7), CentOS7);
@@ -162,24 +189,30 @@ TEST(DistroTest, DetectRedhat) {
 
 TEST(DistroTest, DetectOpenSUSE) {
   llvm::vfs::InMemoryFileSystem OpenSUSELeap421FileSystem;
-  OpenSUSELeap421FileSystem.addFile("/etc/SuSE-release", 0,
-      llvm::MemoryBuffer::getMemBuffer("openSUSE 42.1 (x86_64)\n"
-                                       "VERSION = 42.1\n"
-                                       "CODENAME = Malachite\n"
-                                       "# /etc/SuSE-release is deprecated and will be removed in the future, use /etc/os-release instead\n"));
-  OpenSUSELeap421FileSystem.addFile("/etc/os-release", 0,
-      llvm::MemoryBuffer::getMemBuffer("NAME=\"openSUSE Leap\"\n"
-                                       "VERSION=\"42.1\"\n"
-                                       "VERSION_ID=\"42.1\"\n"
-                                       "PRETTY_NAME=\"openSUSE Leap 42.1 (x86_64)\"\n"
-                                       "ID=opensuse\n"
-                                       "ANSI_COLOR=\"0;32\"\n"
-                                       "CPE_NAME=\"cpe:/o:opensuse:opensuse:42.1\"\n"
-                                       "BUG_REPORT_URL=\"https://bugs.opensuse.org\"\n"
-                                       "HOME_URL=\"https://opensuse.org/\"\n"
-                                       "ID_LIKE=\"suse\"\n"));
+  OpenSUSELeap421FileSystem.addFile(
+      "/etc/SuSE-release", 0,
+      llvm::MemoryBuffer::getMemBuffer(
+          "openSUSE 42.1 (x86_64)\n"
+          "VERSION = 42.1\n"
+          "CODENAME = Malachite\n"
+          "# /etc/SuSE-release is deprecated and will be removed in the "
+          "future, use /etc/os-release instead\n"));
+  OpenSUSELeap421FileSystem.addFile(
+      "/etc/os-release", 0,
+      llvm::MemoryBuffer::getMemBuffer(
+          "NAME=\"openSUSE Leap\"\n"
+          "VERSION=\"42.1\"\n"
+          "VERSION_ID=\"42.1\"\n"
+          "PRETTY_NAME=\"openSUSE Leap 42.1 (x86_64)\"\n"
+          "ID=opensuse\n"
+          "ANSI_COLOR=\"0;32\"\n"
+          "CPE_NAME=\"cpe:/o:opensuse:opensuse:42.1\"\n"
+          "BUG_REPORT_URL=\"https://bugs.opensuse.org\"\n"
+          "HOME_URL=\"https://opensuse.org/\"\n"
+          "ID_LIKE=\"suse\"\n"));
 
-  Distro OpenSUSELeap421{OpenSUSELeap421FileSystem, llvm::Triple("unknown-pc-linux")};
+  Distro OpenSUSELeap421{OpenSUSELeap421FileSystem,
+                         llvm::Triple("unknown-pc-linux")};
   ASSERT_EQ(Distro(Distro::OpenSUSE), OpenSUSELeap421);
   ASSERT_FALSE(OpenSUSELeap421.IsUbuntu());
   ASSERT_FALSE(OpenSUSELeap421.IsRedhat());
@@ -188,22 +221,27 @@ TEST(DistroTest, DetectOpenSUSE) {
   ASSERT_FALSE(OpenSUSELeap421.IsGentoo());
 
   llvm::vfs::InMemoryFileSystem OpenSUSE132FileSystem;
-  OpenSUSE132FileSystem.addFile("/etc/SuSE-release", 0,
-      llvm::MemoryBuffer::getMemBuffer("openSUSE 13.2 (x86_64)\n"
-                                       "VERSION = 13.2\n"
-                                       "CODENAME = Harlequin\n"
-                                       "# /etc/SuSE-release is deprecated and will be removed in the future, use /etc/os-release instead\n"));
-  OpenSUSE132FileSystem.addFile("/etc/os-release", 0,
-      llvm::MemoryBuffer::getMemBuffer("NAME=openSUSE\n"
-                                       "VERSION=\"13.2 (Harlequin)\"\n"
-                                       "VERSION_ID=\"13.2\"\n"
-                                       "PRETTY_NAME=\"openSUSE 13.2 (Harlequin) (x86_64)\"\n"
-                                       "ID=opensuse\n"
-                                       "ANSI_COLOR=\"0;32\"\n"
-                                       "CPE_NAME=\"cpe:/o:opensuse:opensuse:13.2\"\n"
-                                       "BUG_REPORT_URL=\"https://bugs.opensuse.org\"\n"
-                                       "HOME_URL=\"https://opensuse.org/\"\n"
-                                       "ID_LIKE=\"suse\"\n"));
+  OpenSUSE132FileSystem.addFile(
+      "/etc/SuSE-release", 0,
+      llvm::MemoryBuffer::getMemBuffer(
+          "openSUSE 13.2 (x86_64)\n"
+          "VERSION = 13.2\n"
+          "CODENAME = Harlequin\n"
+          "# /etc/SuSE-release is deprecated and will be removed in the "
+          "future, use /etc/os-release instead\n"));
+  OpenSUSE132FileSystem.addFile(
+      "/etc/os-release", 0,
+      llvm::MemoryBuffer::getMemBuffer(
+          "NAME=openSUSE\n"
+          "VERSION=\"13.2 (Harlequin)\"\n"
+          "VERSION_ID=\"13.2\"\n"
+          "PRETTY_NAME=\"openSUSE 13.2 (Harlequin) (x86_64)\"\n"
+          "ID=opensuse\n"
+          "ANSI_COLOR=\"0;32\"\n"
+          "CPE_NAME=\"cpe:/o:opensuse:opensuse:13.2\"\n"
+          "BUG_REPORT_URL=\"https://bugs.opensuse.org\"\n"
+          "HOME_URL=\"https://opensuse.org/\"\n"
+          "ID_LIKE=\"suse\"\n"));
 
   Distro OpenSUSE132{OpenSUSE132FileSystem, llvm::Triple("unknown-pc-linux")};
   ASSERT_EQ(Distro(Distro::OpenSUSE), OpenSUSE132);
@@ -215,11 +253,14 @@ TEST(DistroTest, DetectOpenSUSE) {
 
   llvm::vfs::InMemoryFileSystem SLES10FileSystem;
   SLES10FileSystem.addFile("/etc/SuSE-release", 0,
-      llvm::MemoryBuffer::getMemBuffer("SUSE Linux Enterprise Server 10 (x86_64)\n"
-                                       "VERSION = 10\n"
-                                       "PATCHLEVEL = 4\n"));
+                           llvm::MemoryBuffer::getMemBuffer(
+                               "SUSE Linux Enterprise Server 10 (x86_64)\n"
+                               "VERSION = 10\n"
+                               "PATCHLEVEL = 4\n"));
   SLES10FileSystem.addFile("/etc/lsb_release", 0,
-      llvm::MemoryBuffer::getMemBuffer("LSB_VERSION=\"core-2.0-noarch:core-3.0-noarch:core-2.0-x86_64:core-3.0-x86_64\"\n"));
+                           llvm::MemoryBuffer::getMemBuffer(
+                               "LSB_VERSION=\"core-2.0-noarch:core-3.0-noarch:"
+                               "core-2.0-x86_64:core-3.0-x86_64\"\n"));
 
   // SLES10 is unsupported and therefore evaluates to unknown
   Distro SLES10{SLES10FileSystem, llvm::Triple("unknown-pc-linux")};
@@ -235,15 +276,17 @@ TEST(DistroTest, DetectDebian) {
   llvm::vfs::InMemoryFileSystem DebianJessieFileSystem;
   DebianJessieFileSystem.addFile("/etc/debian_version", 0,
                                  llvm::MemoryBuffer::getMemBuffer("8.6\n"));
-  DebianJessieFileSystem.addFile("/etc/os-release", 0,
-      llvm::MemoryBuffer::getMemBuffer("PRETTY_NAME=\"Debian GNU/Linux 8 (jessie)\"\n"
-                                       "NAME=\"Debian GNU/Linux\"\n"
-                                       "VERSION_ID=\"8\"\n"
-                                       "VERSION=\"8 (jessie)\"\n"
-                                       "ID=debian\n"
-                                       "HOME_URL=\"http://www.debian.org/\"\n"
-                                       "SUPPORT_URL=\"http://www.debian.org/support\"\n"
-                                       "BUG_REPORT_URL=\"https://bugs.debian.org/\"\n"));
+  DebianJessieFileSystem.addFile(
+      "/etc/os-release", 0,
+      llvm::MemoryBuffer::getMemBuffer(
+          "PRETTY_NAME=\"Debian GNU/Linux 8 (jessie)\"\n"
+          "NAME=\"Debian GNU/Linux\"\n"
+          "VERSION_ID=\"8\"\n"
+          "VERSION=\"8 (jessie)\"\n"
+          "ID=debian\n"
+          "HOME_URL=\"http://www.debian.org/\"\n"
+          "SUPPORT_URL=\"http://www.debian.org/support\"\n"
+          "BUG_REPORT_URL=\"https://bugs.debian.org/\"\n"));
 
   Distro DebianJessie{DebianJessieFileSystem, llvm::Triple("unknown-pc-linux")};
   ASSERT_EQ(Distro(Distro::DebianJessie), DebianJessie);
@@ -254,17 +297,21 @@ TEST(DistroTest, DetectDebian) {
   ASSERT_FALSE(DebianJessie.IsGentoo());
 
   llvm::vfs::InMemoryFileSystem DebianStretchSidFileSystem;
-  DebianStretchSidFileSystem.addFile("/etc/debian_version", 0,
-                                 llvm::MemoryBuffer::getMemBuffer("stretch/sid\n"));
-  DebianStretchSidFileSystem.addFile("/etc/os-release", 0,
-      llvm::MemoryBuffer::getMemBuffer("PRETTY_NAME=\"Debian GNU/Linux stretch/sid\"\n"
-                                       "NAME=\"Debian GNU/Linux\"\n"
-                                       "ID=debian\n"
-                                       "HOME_URL=\"http://www.debian.org/\"\n"
-                                       "SUPPORT_URL=\"http://www.debian.org/support\"\n"
-                                       "BUG_REPORT_URL=\"https://bugs.debian.org/\"\n"));
+  DebianStretchSidFileSystem.addFile(
+      "/etc/debian_version", 0,
+      llvm::MemoryBuffer::getMemBuffer("stretch/sid\n"));
+  DebianStretchSidFileSystem.addFile(
+      "/etc/os-release", 0,
+      llvm::MemoryBuffer::getMemBuffer(
+          "PRETTY_NAME=\"Debian GNU/Linux stretch/sid\"\n"
+          "NAME=\"Debian GNU/Linux\"\n"
+          "ID=debian\n"
+          "HOME_URL=\"http://www.debian.org/\"\n"
+          "SUPPORT_URL=\"http://www.debian.org/support\"\n"
+          "BUG_REPORT_URL=\"https://bugs.debian.org/\"\n"));
 
-  Distro DebianStretchSid{DebianStretchSidFileSystem, llvm::Triple("unknown-pc-linux")};
+  Distro DebianStretchSid{DebianStretchSidFileSystem,
+                          llvm::Triple("unknown-pc-linux")};
   ASSERT_EQ(Distro(Distro::DebianStretch), DebianStretchSid);
   ASSERT_FALSE(DebianStretchSid.IsUbuntu());
   ASSERT_FALSE(DebianStretchSid.IsRedhat());
@@ -276,15 +323,17 @@ TEST(DistroTest, DetectDebian) {
 TEST(DistroTest, DetectExherbo) {
   llvm::vfs::InMemoryFileSystem ExherboFileSystem;
   ExherboFileSystem.addFile("/etc/exherbo-release", 0, // (ASCII art)
-                                 llvm::MemoryBuffer::getMemBuffer(""));
-  ExherboFileSystem.addFile("/etc/os-release", 0,
-      llvm::MemoryBuffer::getMemBuffer("NAME=\"Exherbo\"\n"
-                                       "PRETTY_NAME=\"Exherbo Linux\"\n"
-                                       "ID=\"exherbo\"\n"
-                                       "ANSI_COLOR=\"0;32\"\n"
-                                       "HOME_URL=\"https://www.exherbo.org/\"\n"
-                                       "SUPPORT_URL=\"irc://irc.freenode.net/#exherbo\"\n"
-                                       "BUG_REPORT_URL=\"https://bugs.exherbo.org/\"\n"));
+                            llvm::MemoryBuffer::getMemBuffer(""));
+  ExherboFileSystem.addFile(
+      "/etc/os-release", 0,
+      llvm::MemoryBuffer::getMemBuffer(
+          "NAME=\"Exherbo\"\n"
+          "PRETTY_NAME=\"Exherbo Linux\"\n"
+          "ID=\"exherbo\"\n"
+          "ANSI_COLOR=\"0;32\"\n"
+          "HOME_URL=\"https://www.exherbo.org/\"\n"
+          "SUPPORT_URL=\"irc://irc.freenode.net/#exherbo\"\n"
+          "BUG_REPORT_URL=\"https://bugs.exherbo.org/\"\n"));
 
   Distro Exherbo{ExherboFileSystem, llvm::Triple("unknown-pc-linux")};
   ASSERT_EQ(Distro(Distro::Exherbo), Exherbo);
@@ -298,15 +347,17 @@ TEST(DistroTest, DetectExherbo) {
 TEST(DistroTest, DetectArchLinux) {
   llvm::vfs::InMemoryFileSystem ArchLinuxFileSystem;
   ArchLinuxFileSystem.addFile("/etc/arch-release", 0, // (empty)
-                                 llvm::MemoryBuffer::getMemBuffer(""));
-  ArchLinuxFileSystem.addFile("/etc/os-release", 0,
-      llvm::MemoryBuffer::getMemBuffer("NAME=\"Arch Linux\"\n"
-                                       "ID=arch\n"
-                                       "PRETTY_NAME=\"Arch Linux\"\n"
-                                       "ANSI_COLOR=\"0;36\"\n"
-                                       "HOME_URL=\"https://www.archlinux.org/\"\n"
-                                       "SUPPORT_URL=\"https://bbs.archlinux.org/\"\n"
-                                       "BUG_REPORT_URL=\"https://bugs.archlinux.org/\"\n"));
+                              llvm::MemoryBuffer::getMemBuffer(""));
+  ArchLinuxFileSystem.addFile(
+      "/etc/os-release", 0,
+      llvm::MemoryBuffer::getMemBuffer(
+          "NAME=\"Arch Linux\"\n"
+          "ID=arch\n"
+          "PRETTY_NAME=\"Arch Linux\"\n"
+          "ANSI_COLOR=\"0;36\"\n"
+          "HOME_URL=\"https://www.archlinux.org/\"\n"
+          "SUPPORT_URL=\"https://bbs.archlinux.org/\"\n"
+          "BUG_REPORT_URL=\"https://bugs.archlinux.org/\"\n"));
 
   Distro ArchLinux{ArchLinuxFileSystem, llvm::Triple("unknown-pc-linux")};
   ASSERT_EQ(Distro(Distro::ArchLinux), ArchLinux);

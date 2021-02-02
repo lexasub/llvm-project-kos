@@ -94,7 +94,9 @@ void doubleNonblocking2() {
 }
 
 void doubleNonblocking3() {
-  typedef struct { MPI_Request req; } ReqStruct;
+  typedef struct {
+    MPI_Request req;
+  } ReqStruct;
 
   ReqStruct rs;
   int rank = 0;
@@ -137,7 +139,9 @@ void missingNonBlocking() {
 void missingNonBlocking2() {
   int rank = 0;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  typedef struct { MPI_Request req[2][2]; } ReqStruct;
+  typedef struct {
+    MPI_Request req[2][2];
+  } ReqStruct;
   ReqStruct rs;
   MPI_Request *r = &rs.req[0][1];
   MPI_Wait(r, MPI_STATUS_IGNORE); // expected-warning{{Request 'rs.req[0][1]' has no matching nonblocking call.}}
@@ -166,11 +170,11 @@ void missingNonBlockingWaitall() {
   MPI_Request req[4];
 
   MPI_Ireduce(MPI_IN_PLACE, &buf, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD,
-      &req[0]);
+              &req[0]);
   MPI_Ireduce(MPI_IN_PLACE, &buf, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD,
-      &req[1]);
+              &req[1]);
   MPI_Ireduce(MPI_IN_PLACE, &buf, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD,
-      &req[3]);
+              &req[3]);
 
   MPI_Waitall(4, req, MPI_STATUSES_IGNORE); // expected-warning{{Request 'req[2]' has no matching nonblocking call.}}
 }
@@ -182,9 +186,9 @@ void missingNonBlockingWaitall2() {
   MPI_Request req[4];
 
   MPI_Ireduce(MPI_IN_PLACE, &buf, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD,
-      &req[0]);
+              &req[0]);
   MPI_Ireduce(MPI_IN_PLACE, &buf, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD,
-      &req[3]);
+              &req[3]);
 
   MPI_Waitall(4, req, MPI_STATUSES_IGNORE); // expected-warning-re 2{{Request '{{(.*)[[1-2]](.*)}}' has no matching nonblocking call.}}
 }
@@ -196,9 +200,9 @@ void missingNonBlockingWaitall3() {
   MPI_Request req[4];
 
   MPI_Ireduce(MPI_IN_PLACE, &buf, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD,
-      &req[0]);
+              &req[0]);
   MPI_Ireduce(MPI_IN_PLACE, &buf, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD,
-      &req[2]);
+              &req[2]);
 
   MPI_Waitall(4, req, MPI_STATUSES_IGNORE); // expected-warning-re 2{{Request '{{(.*)[[1,3]](.*)}}' has no matching nonblocking call.}}
 }
@@ -311,7 +315,7 @@ void multiRequestUsage2() {
 void callNonblocking(MPI_Request *req) {
   double buf = 0;
   MPI_Ireduce(MPI_IN_PLACE, &buf, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD,
-             req);
+              req);
 }
 
 // wrapper function
@@ -331,12 +335,12 @@ void externFunctions1() {
   MPI_Request req;
   MPI_Ireduce(MPI_IN_PLACE, &buf, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD,
               &req);
-  void callWaitExtern(MPI_Request *req);
+  void callWaitExtern(MPI_Request * req);
   callWaitExtern(&req);
 } // expected-warning{{Request 'req' has no matching wait.}}
 
 void externFunctions2() {
   MPI_Request req;
-  void callNonblockingExtern(MPI_Request *req);
+  void callNonblockingExtern(MPI_Request * req);
   callNonblockingExtern(&req);
 }

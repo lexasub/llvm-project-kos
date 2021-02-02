@@ -144,6 +144,6 @@ Pass *createLoadStoreVectorizerPass();
 //
 Pass *createVectorCombinePass();
 
-} // End llvm namespace
+} // namespace llvm
 
 #endif

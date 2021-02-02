@@ -1,9 +1,9 @@
-class Foo {                   // CHECK: class Bar {
+class Foo { // CHECK: class Bar {
 public:
-  Foo();    /* Test 1 */      // CHECK: Bar();
+  Foo(); /* Test 1 */ // CHECK: Bar();
 };
 
-Foo::Foo()  /* Test 2 */ {}   // CHECK: Bar::Bar()  /* Test 2 */ {}
+Foo::Foo() /* Test 2 */ {} // CHECK: Bar::Bar()  /* Test 2 */ {}
 
 // Test 1.
 // RUN: clang-rename -offset=62 -new-name=Bar %s -- | sed 's,//.*,,' | FileCheck %s

@@ -18,34 +18,26 @@
 #include "min_allocator.h"
 
 template <class S>
-void
-test(S s, typename S::size_type n, S expected)
-{
-    if (n <= s.max_size())
-    {
-        s.resize(n);
-        LIBCPP_ASSERT(s.__invariants());
-        assert(s == expected);
-    }
+void test(S s, typename S::size_type n, S expected) {
+  if (n <= s.max_size()) {
+    s.resize(n);
+    LIBCPP_ASSERT(s.__invariants());
+    assert(s == expected);
+  }
 #ifndef TEST_HAS_NO_EXCEPTIONS
-    else
-    {
-        try
-        {
-            s.resize(n);
-            assert(false);
-        }
-        catch (std::length_error&)
-        {
-            assert(n > s.max_size());
-        }
+  else {
+    try {
+      s.resize(n);
+      assert(false);
+    } catch (std::length_error&) {
+      assert(n > s.max_size());
     }
+  }
 #endif
 }
 
-int main(int, char**)
-{
-    {
+int main(int, char**) {
+  {
     typedef std::string S;
     test(S(), 0, S());
     test(S(), 1, S(1, '\0'));
@@ -61,12 +53,16 @@ int main(int, char**)
     test(S("12345678901234567890123456789012345678901234567890"), 50,
          S("12345678901234567890123456789012345678901234567890"));
     test(S("12345678901234567890123456789012345678901234567890"), 60,
-         S("12345678901234567890123456789012345678901234567890\0\0\0\0\0\0\0\0\0\0", 60));
+         S("12345678901234567890123456789012345678901234567890\0\0\0\0\0\0\0\0"
+           "\0\0",
+           60));
     test(S(), S::npos, S("not going to happen"));
-    }
+  }
 #if TEST_STD_VER >= 11
-    {
-    typedef std::basic_string<char, std::char_traits<char>, min_allocator<char>> S;
+  {
+    typedef std::basic_string<char, std::char_traits<char>,
+                              min_allocator<char> >
+        S;
     test(S(), 0, S());
     test(S(), 1, S(1, '\0'));
     test(S(), 10, S(10, '\0'));
@@ -81,9 +77,11 @@ int main(int, char**)
     test(S("12345678901234567890123456789012345678901234567890"), 50,
          S("12345678901234567890123456789012345678901234567890"));
     test(S("12345678901234567890123456789012345678901234567890"), 60,
-         S("12345678901234567890123456789012345678901234567890\0\0\0\0\0\0\0\0\0\0", 60));
+         S("12345678901234567890123456789012345678901234567890\0\0\0\0\0\0\0\0"
+           "\0\0",
+           60));
     test(S(), S::npos, S("not going to happen"));
-    }
+  }
 #endif
 
   return 0;

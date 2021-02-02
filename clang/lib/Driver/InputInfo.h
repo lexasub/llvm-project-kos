@@ -26,19 +26,14 @@ class InputInfo {
   // steps when it sees linker inputs (but not treat them as
   // arguments), and making sure that arguments get rendered
   // correctly.
-  enum Class {
-    Nothing,
-    Filename,
-    InputArg,
-    Pipe
-  };
+  enum Class { Nothing, Filename, InputArg, Pipe };
 
   union {
     const char *Filename;
     const llvm::opt::Arg *InputArg;
   } Data;
   Class Kind;
-  const Action* Act;
+  const Action *Act;
   types::ID Type;
   const char *BaseInput;
 

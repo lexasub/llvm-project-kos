@@ -72,7 +72,6 @@ static bool isSecondInstructionInSequence(MachineInstr *MI) {
   }
 }
 
-
 //===----------------------------------------------------------------------===//
 
 namespace {
@@ -113,8 +112,7 @@ INITIALIZE_PASS(AArch64A53Fix835769, "aarch64-fix-cortex-a53-835769-pass",
 
 //===----------------------------------------------------------------------===//
 
-bool
-AArch64A53Fix835769::runOnMachineFunction(MachineFunction &F) {
+bool AArch64A53Fix835769::runOnMachineFunction(MachineFunction &F) {
   LLVM_DEBUG(dbgs() << "***** AArch64A53Fix835769 *****\n");
   bool Changed = false;
   TII = F.getSubtarget().getInstrInfo();
@@ -168,7 +166,7 @@ static MachineInstr *getLastNonPseudo(MachineBasicBlock &MBB,
   return nullptr;
 }
 
-static void insertNopBeforeInstruction(MachineBasicBlock &MBB, MachineInstr* MI,
+static void insertNopBeforeInstruction(MachineBasicBlock &MBB, MachineInstr *MI,
                                        const TargetInstrInfo *TII) {
   // If we are the first instruction of the block, put the NOP at the end of
   // the previous fallthrough block
@@ -177,8 +175,7 @@ static void insertNopBeforeInstruction(MachineBasicBlock &MBB, MachineInstr* MI,
     assert(I && "Expected instruction");
     DebugLoc DL = I->getDebugLoc();
     BuildMI(I->getParent(), DL, TII->get(AArch64::HINT)).addImm(0);
-  }
-  else {
+  } else {
     DebugLoc DL = MI->getDebugLoc();
     BuildMI(MBB, MI, DL, TII->get(AArch64::HINT)).addImm(0);
   }
@@ -186,8 +183,7 @@ static void insertNopBeforeInstruction(MachineBasicBlock &MBB, MachineInstr* MI,
   ++NumNopsAdded;
 }
 
-bool
-AArch64A53Fix835769::runOnBasicBlock(MachineBasicBlock &MBB) {
+bool AArch64A53Fix835769::runOnBasicBlock(MachineBasicBlock &MBB) {
   bool Changed = false;
   LLVM_DEBUG(dbgs() << "Running on MBB: " << MBB
                     << " - scanning instructions...\n");
@@ -196,7 +192,7 @@ AArch64A53Fix835769::runOnBasicBlock(MachineBasicBlock &MBB) {
   // that match the conditions under which the erratum may trigger.
 
   // List of terminating instructions in matching sequences
-  std::vector<MachineInstr*> Sequences;
+  std::vector<MachineInstr *> Sequences;
   unsigned Idx = 0;
   MachineInstr *PrevInstr = nullptr;
 

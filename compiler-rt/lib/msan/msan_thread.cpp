@@ -1,17 +1,16 @@
 
-#include "msan.h"
 #include "msan_thread.h"
-#include "msan_interface_internal.h"
 
+#include "msan.h"
+#include "msan_interface_internal.h"
 #include "sanitizer_common/sanitizer_tls_get_addr.h"
 
 namespace __msan {
 
-MsanThread *MsanThread::Create(thread_callback_t start_routine,
-                               void *arg) {
+MsanThread *MsanThread::Create(thread_callback_t start_routine, void *arg) {
   uptr PageSize = GetPageSizeCached();
   uptr size = RoundUpTo(sizeof(MsanThread), PageSize);
-  MsanThread *thread = (MsanThread*)MmapOrDie(size, __func__);
+  MsanThread *thread = (MsanThread *)MmapOrDie(size, __func__);
   thread->start_routine_ = start_routine;
   thread->arg_ = arg;
   thread->destructor_iterations_ = GetPthreadDestructorIterations();
@@ -50,7 +49,7 @@ void MsanThread::Init() {
 }
 
 void MsanThread::TSDDtor(void *tsd) {
-  MsanThread *t = (MsanThread*)tsd;
+  MsanThread *t = (MsanThread *)tsd;
   t->Destroy();
 }
 
@@ -121,4 +120,4 @@ void MsanThread::FinishSwitchFiber(uptr *bottom_old, uptr *size_old) {
   next_stack_.bottom = 0;
 }
 
-} // namespace __msan
+}  // namespace __msan

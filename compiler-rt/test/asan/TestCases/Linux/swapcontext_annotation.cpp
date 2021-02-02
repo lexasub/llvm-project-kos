@@ -47,7 +47,8 @@ __attribute__((noinline, noreturn)) void LongJump(jmp_buf env) {
 // Simulate __asan_handle_no_return().
 __attribute__((noinline)) void CallNoReturn() {
   jmp_buf env;
-  if (setjmp(env) != 0) return;
+  if (setjmp(env) != 0)
+    return;
 
   LongJump(env);
   _exit(1);
@@ -59,7 +60,7 @@ void NextChild() {
 
   printf("NextChild from: %p %zu\n", from_stack, from_stacksize);
 
-  char x[32] = {0};  // Stack gets poisoned.
+  char x[32] = {0}; // Stack gets poisoned.
   printf("NextChild: %p\n", x);
 
   CallNoReturn();
@@ -79,7 +80,7 @@ void Child(int mode) {
   __sanitizer_finish_switch_fiber(nullptr,
                                   &main_thread_stack,
                                   &main_thread_stacksize);
-  char x[32] = {0};  // Stack gets poisoned.
+  char x[32] = {0}; // Stack gets poisoned.
   printf("Child: %p\n", x);
   CallNoReturn();
   // (a) Do nothing, just return to parent function.
@@ -129,7 +130,7 @@ int Run(int arg, int mode, char *child_stack) {
   }
   makecontext(&child_context, (void (*)())Child, 1, mode);
   CallNoReturn();
-  void* fake_stack_save;
+  void *fake_stack_save;
   __sanitizer_start_switch_fiber(&fake_stack_save,
                                  child_context.uc_stack.ss_sp,
                                  child_context.uc_stack.ss_size);

@@ -1,16 +1,15 @@
 // RUN: %clang_cc1 -emit-llvm -debug-info-kind=limited -triple x86_64-apple-darwin %s -o - | FileCheck %s
 
-template<typename _CharT>
+template <typename _CharT>
 struct basic_string {
 
-  basic_string&
-  assign(const _CharT* __s, const basic_string<_CharT> &x)
-  {
+  basic_string &
+  assign(const _CharT *__s, const basic_string<_CharT> &x) {
     return *this;
   }
 };
 
-void foo (const char *c) {
+void foo(const char *c) {
   basic_string<char> str;
   str.assign(c, str);
 }

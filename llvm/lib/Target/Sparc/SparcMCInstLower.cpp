@@ -25,17 +25,15 @@
 
 using namespace llvm;
 
-
 static MCOperand LowerSymbolOperand(const MachineInstr *MI,
-                                    const MachineOperand &MO,
-                                    AsmPrinter &AP) {
+                                    const MachineOperand &MO, AsmPrinter &AP) {
 
-  SparcMCExpr::VariantKind Kind =
-    (SparcMCExpr::VariantKind)MO.getTargetFlags();
+  SparcMCExpr::VariantKind Kind = (SparcMCExpr::VariantKind)MO.getTargetFlags();
   const MCSymbol *Symbol = nullptr;
 
-  switch(MO.getType()) {
-  default: llvm_unreachable("Unknown type in LowerSymbolOperand");
+  switch (MO.getType()) {
+  default:
+    llvm_unreachable("Unknown type in LowerSymbolOperand");
   case MachineOperand::MO_MachineBasicBlock:
     Symbol = MO.getMBB()->getSymbol();
     break;
@@ -57,18 +55,17 @@ static MCOperand LowerSymbolOperand(const MachineInstr *MI,
     break;
   }
 
-  const MCSymbolRefExpr *MCSym = MCSymbolRefExpr::create(Symbol,
-                                                         AP.OutContext);
-  const SparcMCExpr *expr = SparcMCExpr::create(Kind, MCSym,
-                                                AP.OutContext);
+  const MCSymbolRefExpr *MCSym = MCSymbolRefExpr::create(Symbol, AP.OutContext);
+  const SparcMCExpr *expr = SparcMCExpr::create(Kind, MCSym, AP.OutContext);
   return MCOperand::createExpr(expr);
 }
 
-static MCOperand LowerOperand(const MachineInstr *MI,
-                              const MachineOperand &MO,
+static MCOperand LowerOperand(const MachineInstr *MI, const MachineOperand &MO,
                               AsmPrinter &AP) {
-  switch(MO.getType()) {
-  default: llvm_unreachable("unknown operand type"); break;
+  switch (MO.getType()) {
+  default:
+    llvm_unreachable("unknown operand type");
+    break;
   case MachineOperand::MO_Register:
     if (MO.isImplicit())
       break;
@@ -84,16 +81,14 @@ static MCOperand LowerOperand(const MachineInstr *MI,
   case MachineOperand::MO_ConstantPoolIndex:
     return LowerSymbolOperand(MI, MO, AP);
 
-  case MachineOperand::MO_RegisterMask:   break;
-
+  case MachineOperand::MO_RegisterMask:
+    break;
   }
   return MCOperand();
 }
 
-void llvm::LowerSparcMachineInstrToMCInst(const MachineInstr *MI,
-                                          MCInst &OutMI,
-                                          AsmPrinter &AP)
-{
+void llvm::LowerSparcMachineInstrToMCInst(const MachineInstr *MI, MCInst &OutMI,
+                                          AsmPrinter &AP) {
 
   OutMI.setOpcode(MI->getOpcode());
 

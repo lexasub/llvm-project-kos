@@ -11,8 +11,8 @@ void foo(int index, int len) {
     char array[len];
     assert(!(reinterpret_cast<uintptr_t>(array) & 31L));
     array[index + i] = 0;
-// CHECK: ERROR: AddressSanitizer: dynamic-stack-buffer-overflow on address [[ADDR:0x[0-9a-f]+]]
-// CHECK: WRITE of size 1 at [[ADDR]] thread T0
+    // CHECK: ERROR: AddressSanitizer: dynamic-stack-buffer-overflow on address [[ADDR:0x[0-9a-f]+]]
+    // CHECK: WRITE of size 1 at [[ADDR]] thread T0
   }
 }
 

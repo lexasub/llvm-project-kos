@@ -30,7 +30,7 @@
 namespace llvm {
 
 namespace {
-typedef std::map<std::string, std::vector<unsigned> > key_val_pair_t;
+typedef std::map<std::string, std::vector<unsigned>> key_val_pair_t;
 typedef std::map<const GlobalValue *, key_val_pair_t> global_val_annot_t;
 typedef std::map<const Module *, global_val_annot_t> per_module_annot_t;
 } // anonymous namespace
@@ -214,7 +214,7 @@ bool isImage(const Value &val) {
 }
 
 bool isManaged(const Value &val) {
-  if(const GlobalValue *gv = dyn_cast<GlobalValue>(&val)) {
+  if (const GlobalValue *gv = dyn_cast<GlobalValue>(&val)) {
     unsigned annot;
     if (findOneNVVMAnnotation(gv, "managed", annot)) {
       assert((annot == 1) && "Unexpected annotation on a managed symbol");

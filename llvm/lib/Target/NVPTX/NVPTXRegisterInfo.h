@@ -53,7 +53,6 @@ public:
     O << "reg" << RegNo;
     return getStrPool()->getManagedString(O.str().c_str())->c_str();
   }
-
 };
 
 std::string getNVPTXRegClassName(const TargetRegisterClass *RC);

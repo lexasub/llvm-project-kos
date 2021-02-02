@@ -6,7 +6,7 @@ module A {}
 #pragma clang module contents
 #pragma clang module begin A
 namespace N {
-  class X;
+class X;
 }
 #pragma clang module end
 #pragma clang module endbuild
@@ -19,14 +19,14 @@ module B {
 #pragma clang module contents
 #pragma clang module begin B.X
 namespace N {
-  class Friendly {
-    friend class X;
-  };
-}
+class Friendly {
+  friend class X;
+};
+} // namespace N
 #pragma clang module end
 #pragma clang module begin B.Y
 namespace N {
-  class X;
+class X;
 }
 #pragma clang module end
 #pragma clang module endbuild

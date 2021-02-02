@@ -3,8 +3,8 @@
 // Test anonymous union with members of the same size.
 int test1(float F) {
   union {
-     float G;
-     int i;
+    float G;
+    int i;
   };
   G = F;
   return i;
@@ -13,8 +13,8 @@ int test1(float F) {
 // test anonymous union with members of differing size.
 int test2(short F) {
   volatile union {
-     short G;
-     int i;
+    short G;
+    int i;
   };
   G = F;
   return i;

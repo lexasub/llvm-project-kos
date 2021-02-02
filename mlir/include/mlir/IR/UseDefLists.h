@@ -22,16 +22,20 @@ namespace mlir {
 class Block;
 class Operation;
 class Value;
-template <typename OperandType> class ValueUseIterator;
-template <typename OperandType> class FilteredValueUseIterator;
-template <typename UseIteratorT, typename OperandType> class ValueUserIterator;
+template <typename OperandType>
+class ValueUseIterator;
+template <typename OperandType>
+class FilteredValueUseIterator;
+template <typename UseIteratorT, typename OperandType>
+class ValueUserIterator;
 
 //===----------------------------------------------------------------------===//
 // IRObjectWithUseList
 //===----------------------------------------------------------------------===//
 
 /// This class represents a single IR object that contains a use list.
-template <typename OperandType> class IRObjectWithUseList {
+template <typename OperandType>
+class IRObjectWithUseList {
 public:
   ~IRObjectWithUseList() {
     assert(use_empty() && "Cannot destroy a value that still has uses!");
@@ -95,7 +99,8 @@ protected:
   OperandType *getFirstUse() const { return firstUse; }
 
 private:
-  template <typename DerivedT, typename IRValueTy> friend class IROperand;
+  template <typename DerivedT, typename IRValueTy>
+  friend class IROperand;
   OperandType *firstUse = nullptr;
 };
 
@@ -108,7 +113,8 @@ private:
 /// types are expected to provide the following:
 ///  * static IRObjectWithUseList *getUseList(IRValueTy value);
 ///    - Provide the use list that is attached to the given value.
-template <typename DerivedT, typename IRValueTy> class IROperand {
+template <typename DerivedT, typename IRValueTy>
+class IROperand {
 public:
   using ValueType = IRValueTy;
 

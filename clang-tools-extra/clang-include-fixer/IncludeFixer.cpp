@@ -288,9 +288,10 @@ clang::TypoCorrection IncludeFixerSemaSource::CorrectTypo(
     StringRef Code = SM.getBufferData(FID);
     SourceLocation StartOfFile = SM.getLocForStartOfFile(FID);
     if (addDiagnosticsForContext(
-            Correction, getIncludeFixerContext(
-                            SM, CI->getPreprocessor().getHeaderSearchInfo(),
-                            MatchedSymbols),
+            Correction,
+            getIncludeFixerContext(SM,
+                                   CI->getPreprocessor().getHeaderSearchInfo(),
+                                   MatchedSymbols),
             Code, StartOfFile, CI->getASTContext()))
       return Correction;
   }

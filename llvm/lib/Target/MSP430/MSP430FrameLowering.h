@@ -19,7 +19,6 @@
 namespace llvm {
 class MSP430FrameLowering : public TargetFrameLowering {
 protected:
-
 public:
   explicit MSP430FrameLowering()
       : TargetFrameLowering(TargetFrameLowering::StackGrowsDown, Align(2), -2,
@@ -46,10 +45,10 @@ public:
 
   bool hasFP(const MachineFunction &MF) const override;
   bool hasReservedCallFrame(const MachineFunction &MF) const override;
-  void processFunctionBeforeFrameFinalized(MachineFunction &MF,
-                                     RegScavenger *RS = nullptr) const override;
+  void processFunctionBeforeFrameFinalized(
+      MachineFunction &MF, RegScavenger *RS = nullptr) const override;
 };
 
-} // End llvm namespace
+} // namespace llvm
 
 #endif

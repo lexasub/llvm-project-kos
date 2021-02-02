@@ -2,12 +2,12 @@
 // column-number sensitive.
 
 namespace N {
-  template<typename T> struct A {
-    template<typename U> friend class B;
-  };
+template <typename T> struct A {
+  template <typename U> friend class B;
+};
 
-  template<typename T> struct B { };
-}
+template <typename T> struct B {};
+} // namespace N
 
 void foo() {
   N::A<int> a1;
@@ -15,10 +15,10 @@ void foo() {
 }
 
 namespace M {
-  template<typename T> struct C {
-    template<typename U> friend struct C;
-  };
-}
+template <typename T> struct C {
+  template <typename U> friend struct C;
+};
+} // namespace M
 
 void bar() {
   M::C<int> c1;

@@ -17,7 +17,6 @@
 // template <class InputIterator>
 //      path(InputIterator first, InputIterator last);
 
-
 #include "filesystem_include.h"
 #include <iterator>
 #include <type_traits>
@@ -25,8 +24,6 @@
 
 #include "test_macros.h"
 #include "filesystem_test_helper.h"
-
-
 
 template <class It>
 std::reverse_iterator<It> mkRev(It it) {
@@ -39,7 +36,7 @@ void checkIteratorConcepts() {
   using Traits = std::iterator_traits<It>;
   ASSERT_SAME_TYPE(Traits::iterator_category, std::bidirectional_iterator_tag);
   ASSERT_SAME_TYPE(Traits::value_type, path);
-  ASSERT_SAME_TYPE(Traits::pointer,   path const*);
+  ASSERT_SAME_TYPE(Traits::pointer, path const*);
   ASSERT_SAME_TYPE(Traits::reference, path const&);
   {
     It it;
@@ -87,18 +84,19 @@ void checkBeginEndBasic() {
   {
     path p("//root_name//first_dir////second_dir");
     const path expect[] = {"/", "root_name", "first_dir", "second_dir"};
-    assert(checkCollectionsEqual(p.begin(), p.end(), std::begin(expect), std::end(expect)));
-    assert(checkCollectionsEqualBackwards(p.begin(), p.end(), std::begin(expect), std::end(expect)));
-
+    assert(checkCollectionsEqual(p.begin(), p.end(), std::begin(expect),
+                                 std::end(expect)));
+    assert(checkCollectionsEqualBackwards(
+        p.begin(), p.end(), std::begin(expect), std::end(expect)));
   }
   {
     path p("////foo/bar/baz///");
     const path expect[] = {"/", "foo", "bar", "baz", ""};
-    assert(checkCollectionsEqual(p.begin(), p.end(), std::begin(expect), std::end(expect)));
-    assert(checkCollectionsEqualBackwards(p.begin(), p.end(), std::begin(expect), std::end(expect)));
-
+    assert(checkCollectionsEqual(p.begin(), p.end(), std::begin(expect),
+                                 std::end(expect)));
+    assert(checkCollectionsEqualBackwards(
+        p.begin(), p.end(), std::begin(expect), std::end(expect)));
   }
-
 }
 
 int main(int, char**) {

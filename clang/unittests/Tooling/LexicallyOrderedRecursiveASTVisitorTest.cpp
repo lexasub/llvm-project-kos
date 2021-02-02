@@ -6,8 +6,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "TestVisitor.h"
 #include "clang/AST/LexicallyOrderedRecursiveASTVisitor.h"
+#include "TestVisitor.h"
 #include <stack>
 
 using namespace clang;

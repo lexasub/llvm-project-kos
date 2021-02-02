@@ -108,11 +108,10 @@ public:
   friend class ASTNodeImporter;
   friend TrailingObjects;
 
-  static FriendDecl *Create(ASTContext &C, DeclContext *DC,
-                            SourceLocation L, FriendUnion Friend_,
-                            SourceLocation FriendL,
-                            ArrayRef<TemplateParameterList*> FriendTypeTPLists
-                            = None);
+  static FriendDecl *
+  Create(ASTContext &C, DeclContext *DC, SourceLocation L, FriendUnion Friend_,
+         SourceLocation FriendL,
+         ArrayRef<TemplateParameterList *> FriendTypeTPLists = None);
   static FriendDecl *CreateDeserialized(ASTContext &C, unsigned ID,
                                         unsigned FriendTypeNumTPLists);
 
@@ -121,12 +120,10 @@ public:
   /// is used for elaborated-type-specifiers and, in C++0x, for
   /// arbitrary friend type declarations.
   TypeSourceInfo *getFriendType() const {
-    return Friend.dyn_cast<TypeSourceInfo*>();
+    return Friend.dyn_cast<TypeSourceInfo *>();
   }
 
-  unsigned getFriendTypeNumTemplateParameterLists() const {
-    return NumTPLists;
-  }
+  unsigned getFriendTypeNumTemplateParameterLists() const { return NumTPLists; }
 
   TemplateParameterList *getFriendTypeTemplateParameterList(unsigned N) const {
     assert(N < NumTPLists);
@@ -135,14 +132,10 @@ public:
 
   /// If this friend declaration doesn't name a type, return the inner
   /// declaration.
-  NamedDecl *getFriendDecl() const {
-    return Friend.dyn_cast<NamedDecl *>();
-  }
+  NamedDecl *getFriendDecl() const { return Friend.dyn_cast<NamedDecl *>(); }
 
   /// Retrieves the location of the 'friend' keyword.
-  SourceLocation getFriendLoc() const {
-    return FriendLoc;
-  }
+  SourceLocation getFriendLoc() const { return FriendLoc; }
 
   /// Retrieves the source range for the friend declaration.
   SourceRange getSourceRange() const override LLVM_READONLY {
@@ -158,22 +151,18 @@ public:
           return DD->getSourceRange();
       }
       return SourceRange(getFriendLoc(), ND->getEndLoc());
-    }
-    else if (TypeSourceInfo *TInfo = getFriendType()) {
+    } else if (TypeSourceInfo *TInfo = getFriendType()) {
       SourceLocation StartL =
           (NumTPLists == 0) ? getFriendLoc()
                             : getTrailingObjects<TemplateParameterList *>()[0]
                                   ->getTemplateLoc();
       return SourceRange(StartL, TInfo->getTypeLoc().getEndLoc());
-    }
-    else
+    } else
       return SourceRange(getFriendLoc(), getLocation());
   }
 
   /// Determines if this friend kind is unsupported.
-  bool isUnsupportedFriend() const {
-    return UnsupportedFriend;
-  }
+  bool isUnsupportedFriend() const { return UnsupportedFriend; }
   void setUnsupportedFriend(bool Unsupported) {
     UnsupportedFriend = Unsupported;
   }

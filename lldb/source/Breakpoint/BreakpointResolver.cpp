@@ -32,16 +32,15 @@ using namespace lldb_private;
 using namespace lldb;
 
 // BreakpointResolver:
-const char *BreakpointResolver::g_ty_to_name[] = {"FileAndLine", "Address",
-                                                  "SymbolName",  "SourceRegex",
-                                                  "Python",   "Exception",
-                                                  "Unknown"};
+const char *BreakpointResolver::g_ty_to_name[] = {
+    "FileAndLine", "Address",   "SymbolName", "SourceRegex",
+    "Python",      "Exception", "Unknown"};
 
 const char *BreakpointResolver::g_option_names[static_cast<uint32_t>(
     BreakpointResolver::OptionNames::LastOptionName)] = {
-    "AddressOffset", "Exact",     "FileName",     "Inlines",     "Language",
-    "LineNumber",    "Column",    "ModuleName",   "NameMask",    "Offset",
-    "PythonClass",   "Regex",     "ScriptArgs",   "SectionName", "SearchDepth",
+    "AddressOffset", "Exact",      "FileName",   "Inlines",     "Language",
+    "LineNumber",    "Column",     "ModuleName", "NameMask",    "Offset",
+    "PythonClass",   "Regex",      "ScriptArgs", "SectionName", "SearchDepth",
     "SkipPrologue",  "SymbolNames"};
 
 const char *BreakpointResolver::ResolverTyToName(enum ResolverTy type) {
@@ -241,7 +240,8 @@ void BreakpointResolver::SetSCMatchesByLine(SearchFilter &filter,
                    return SourceLoc(a) < SourceLoc(b);
                  });
 
-      // Filter out all locations with a source location after the closest match.
+      // Filter out all locations with a source location after the closest
+      // match.
       if (worklist_begin != worklist_end)
         worklist_end = std::remove_if(
             worklist_begin, worklist_end, [&](const SymbolContext &sc) {
@@ -272,11 +272,10 @@ void BreakpointResolver::SetSCMatchesByLine(SearchFilter &filter,
     for (auto first = worklist_begin; first != worklist_end; ++first) {
       assert(!blocks_with_breakpoints.count(first->block));
       blocks_with_breakpoints.insert(first->block);
-      worklist_end =
-          std::remove_if(std::next(first), worklist_end,
-                         [&](const SymbolContext &sc) {
-                           return blocks_with_breakpoints.count(sc.block);
-                         });
+      worklist_end = std::remove_if(
+          std::next(first), worklist_end, [&](const SymbolContext &sc) {
+            return blocks_with_breakpoints.count(sc.block);
+          });
     }
 
     // Make breakpoints out of the closest line number match.

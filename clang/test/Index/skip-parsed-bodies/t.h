@@ -4,25 +4,31 @@
 extern int some_val;
 
 namespace NS {
-  class C {
-    void method_decl();
-    int method_def1() { ++some_val; return undef_val1; }
-    inline int method_def2();
-  };
-}
+class C {
+  void method_decl();
+  int method_def1() {
+    ++some_val;
+    return undef_val1;
+  }
+  inline int method_def2();
+};
+} // namespace NS
 
 inline int NS::C::method_def2() {
-  ++some_val; return undef_val2;
+  ++some_val;
+  return undef_val2;
 }
 
 static inline int foo1() {
-  ++some_val; return undef_val3;
+  ++some_val;
+  return undef_val3;
 }
 
 #ifdef BLAH
 
 static inline int foo2() {
-  ++some_val; return undef_val4;
+  ++some_val;
+  return undef_val4;
 }
 
 #endif

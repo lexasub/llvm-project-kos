@@ -13,10 +13,10 @@
 using namespace lldb_private;
 
 enum DummyFlags {
-  eFlag0     = 1 << 0,
-  eFlag1     = 1 << 1,
-  eFlag2     = 1 << 2,
-  eAllFlags  = (eFlag0 | eFlag1 | eFlag2)
+  eFlag0 = 1 << 0,
+  eFlag1 = 1 << 1,
+  eFlag2 = 1 << 2,
+  eAllFlags = (eFlag0 | eFlag1 | eFlag2)
 };
 
 TEST(Flags, GetBitSize) {

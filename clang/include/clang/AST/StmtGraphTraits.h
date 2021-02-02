@@ -28,22 +28,22 @@ template <> struct GraphTraits<clang::Stmt *> {
   static NodeRef getEntryNode(clang::Stmt *S) { return S; }
 
   static ChildIteratorType child_begin(NodeRef N) {
-    if (N) return N->child_begin();
-    else return ChildIteratorType();
+    if (N)
+      return N->child_begin();
+    else
+      return ChildIteratorType();
   }
 
   static ChildIteratorType child_end(NodeRef N) {
-    if (N) return N->child_end();
-    else return ChildIteratorType();
+    if (N)
+      return N->child_end();
+    else
+      return ChildIteratorType();
   }
 
-  static nodes_iterator nodes_begin(clang::Stmt* S) {
-    return df_begin(S);
-  }
+  static nodes_iterator nodes_begin(clang::Stmt *S) { return df_begin(S); }
 
-  static nodes_iterator nodes_end(clang::Stmt* S) {
-    return df_end(S);
-  }
+  static nodes_iterator nodes_end(clang::Stmt *S) { return df_end(S); }
 };
 
 template <> struct GraphTraits<const clang::Stmt *> {
@@ -54,22 +54,24 @@ template <> struct GraphTraits<const clang::Stmt *> {
   static NodeRef getEntryNode(const clang::Stmt *S) { return S; }
 
   static ChildIteratorType child_begin(NodeRef N) {
-    if (N) return N->child_begin();
-    else return ChildIteratorType();
+    if (N)
+      return N->child_begin();
+    else
+      return ChildIteratorType();
   }
 
   static ChildIteratorType child_end(NodeRef N) {
-    if (N) return N->child_end();
-    else return ChildIteratorType();
+    if (N)
+      return N->child_end();
+    else
+      return ChildIteratorType();
   }
 
-  static nodes_iterator nodes_begin(const clang::Stmt* S) {
+  static nodes_iterator nodes_begin(const clang::Stmt *S) {
     return df_begin(S);
   }
 
-  static nodes_iterator nodes_end(const clang::Stmt* S) {
-    return df_end(S);
-  }
+  static nodes_iterator nodes_end(const clang::Stmt *S) { return df_end(S); }
 };
 
 } // namespace llvm

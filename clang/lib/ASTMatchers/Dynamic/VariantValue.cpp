@@ -52,9 +52,8 @@ bool ArgKind::isConvertibleTo(ArgKind To, unsigned *Specificity) const {
   return true;
 }
 
-bool
-VariantMatcher::MatcherOps::canConstructFrom(const DynTypedMatcher &Matcher,
-                                             bool &IsExactMatch) const {
+bool VariantMatcher::MatcherOps::canConstructFrom(
+    const DynTypedMatcher &Matcher, bool &IsExactMatch) const {
   IsExactMatch = Matcher.getSupportedKind().isSame(NodeKind);
   return Matcher.canConvertTo(NodeKind);
 }
@@ -230,9 +229,9 @@ VariantMatcher::PolymorphicMatcher(std::vector<DynTypedMatcher> Matchers) {
       std::make_shared<PolymorphicPayload>(std::move(Matchers)));
 }
 
-VariantMatcher VariantMatcher::VariadicOperatorMatcher(
-    DynTypedMatcher::VariadicOperator Op,
-    std::vector<VariantMatcher> Args) {
+VariantMatcher
+VariantMatcher::VariadicOperatorMatcher(DynTypedMatcher::VariadicOperator Op,
+                                        std::vector<VariantMatcher> Args) {
   return VariantMatcher(
       std::make_shared<VariadicOpPayload>(Op, std::move(Args)));
 }
@@ -244,7 +243,8 @@ llvm::Optional<DynTypedMatcher> VariantMatcher::getSingleMatcher() const {
 void VariantMatcher::reset() { Value.reset(); }
 
 std::string VariantMatcher::getTypeAsString() const {
-  if (Value) return Value->getTypeAsString();
+  if (Value)
+    return Value->getTypeAsString();
   return "<Nothing>";
 }
 
@@ -279,7 +279,8 @@ VariantValue::VariantValue(const VariantMatcher &Matcher) : Type(VT_Nothing) {
 VariantValue::~VariantValue() { reset(); }
 
 VariantValue &VariantValue::operator=(const VariantValue &Other) {
-  if (this == &Other) return *this;
+  if (this == &Other)
+    return *this;
   reset();
   switch (Other.Type) {
   case VT_Boolean:
@@ -328,9 +329,7 @@ void VariantValue::reset() {
   Type = VT_Nothing;
 }
 
-bool VariantValue::isBoolean() const {
-  return Type == VT_Boolean;
-}
+bool VariantValue::isBoolean() const { return Type == VT_Boolean; }
 
 bool VariantValue::getBoolean() const {
   assert(isBoolean());
@@ -343,9 +342,7 @@ void VariantValue::setBoolean(bool NewValue) {
   Value.Boolean = NewValue;
 }
 
-bool VariantValue::isDouble() const {
-  return Type == VT_Double;
-}
+bool VariantValue::isDouble() const { return Type == VT_Double; }
 
 double VariantValue::getDouble() const {
   assert(isDouble());
@@ -358,9 +355,7 @@ void VariantValue::setDouble(double NewValue) {
   Value.Double = NewValue;
 }
 
-bool VariantValue::isUnsigned() const {
-  return Type == VT_Unsigned;
-}
+bool VariantValue::isUnsigned() const { return Type == VT_Unsigned; }
 
 unsigned VariantValue::getUnsigned() const {
   assert(isUnsigned());
@@ -373,9 +368,7 @@ void VariantValue::setUnsigned(unsigned NewValue) {
   Value.Unsigned = NewValue;
 }
 
-bool VariantValue::isString() const {
-  return Type == VT_String;
-}
+bool VariantValue::isString() const { return Type == VT_String; }
 
 const std::string &VariantValue::getString() const {
   assert(isString());
@@ -401,9 +394,7 @@ void VariantValue::setNodeKind(ASTNodeKind NewValue) {
   Value.NodeKind = new ASTNodeKind(NewValue);
 }
 
-bool VariantValue::isMatcher() const {
-  return Type == VT_Matcher;
-}
+bool VariantValue::isMatcher() const { return Type == VT_Matcher; }
 
 const VariantMatcher &VariantValue::getMatcher() const {
   assert(isMatcher());
@@ -453,7 +444,7 @@ bool VariantValue::isConvertibleTo(ArgKind Kind, unsigned *Specificity) const {
 bool VariantValue::isConvertibleTo(ArrayRef<ArgKind> Kinds,
                                    unsigned *Specificity) const {
   unsigned MaxSpecificity = 0;
-  for (const ArgKind& Kind : Kinds) {
+  for (const ArgKind &Kind : Kinds) {
     unsigned ThisSpecificity;
     if (!isConvertibleTo(Kind, &ThisSpecificity))
       continue;
@@ -467,14 +458,20 @@ bool VariantValue::isConvertibleTo(ArrayRef<ArgKind> Kinds,
 
 std::string VariantValue::getTypeAsString() const {
   switch (Type) {
-  case VT_String: return "String";
-  case VT_Matcher: return getMatcher().getTypeAsString();
-  case VT_Boolean: return "Boolean";
-  case VT_Double: return "Double";
-  case VT_Unsigned: return "Unsigned";
+  case VT_String:
+    return "String";
+  case VT_Matcher:
+    return getMatcher().getTypeAsString();
+  case VT_Boolean:
+    return "Boolean";
+  case VT_Double:
+    return "Double";
+  case VT_Unsigned:
+    return "Unsigned";
   case VT_NodeKind:
     return getNodeKind().asStringRef().str();
-  case VT_Nothing: return "Nothing";
+  case VT_Nothing:
+    return "Nothing";
   }
   llvm_unreachable("Invalid Type");
 }

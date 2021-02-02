@@ -82,8 +82,8 @@ private:
                                       Type *Ty, Value *BasePtr, int Idx1,
                                       const char *Name);
   static GetElementPtrInst *CreateGEP(LLVMContext &Context, IRBuilder<> &B,
-                                      Type *Ty, Value *BasePtr, int Idx1, int Idx2,
-                                      const char *Name);
+                                      Type *Ty, Value *BasePtr, int Idx1,
+                                      int Idx2, const char *Name);
 };
 
 } // end anonymous namespace
@@ -97,7 +97,9 @@ INITIALIZE_PASS_DEPENDENCY(DominatorTreeWrapperPass)
 INITIALIZE_PASS_END(ShadowStackGCLowering, DEBUG_TYPE,
                     "Shadow Stack GC Lowering", false, false)
 
-FunctionPass *llvm::createShadowStackGCLoweringPass() { return new ShadowStackGCLowering(); }
+FunctionPass *llvm::createShadowStackGCLoweringPass() {
+  return new ShadowStackGCLowering();
+}
 
 ShadowStackGCLowering::ShadowStackGCLowering() : FunctionPass(ID) {
   initializeShadowStackGCLoweringPass(*PassRegistry::getPassRegistry());
@@ -273,8 +275,9 @@ GetElementPtrInst *ShadowStackGCLowering::CreateGEP(LLVMContext &Context,
 }
 
 GetElementPtrInst *ShadowStackGCLowering::CreateGEP(LLVMContext &Context,
-                                            IRBuilder<> &B, Type *Ty, Value *BasePtr,
-                                            int Idx, const char *Name) {
+                                                    IRBuilder<> &B, Type *Ty,
+                                                    Value *BasePtr, int Idx,
+                                                    const char *Name) {
   Value *Indices[] = {ConstantInt::get(Type::getInt32Ty(Context), 0),
                       ConstantInt::get(Type::getInt32Ty(Context), Idx)};
   Value *Val = B.CreateGEP(Ty, BasePtr, Indices, Name);
@@ -291,8 +294,7 @@ void ShadowStackGCLowering::getAnalysisUsage(AnalysisUsage &AU) const {
 /// runOnFunction - Insert code to maintain the shadow stack.
 bool ShadowStackGCLowering::runOnFunction(Function &F) {
   // Quick exit for functions that do not use the shadow stack GC.
-  if (!F.hasGC() ||
-      F.getGC() != std::string("shadow-stack"))
+  if (!F.hasGC() || F.getGC() != std::string("shadow-stack"))
     return false;
 
   LLVMContext &Context = F.getContext();

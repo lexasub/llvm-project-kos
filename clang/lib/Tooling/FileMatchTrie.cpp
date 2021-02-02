@@ -69,14 +69,14 @@ public:
     if (Children.empty()) {
       // This is a leaf, ignore duplicate entry if 'Path' equals 'NewPath'.
       if (NewPath == Path)
-          return;
+        return;
       // Make this a node and create a child-leaf with 'Path'.
-      StringRef Element(llvm::sys::path::filename(
-          StringRef(Path).drop_back(ConsumedLength)));
+      StringRef Element(
+          llvm::sys::path::filename(StringRef(Path).drop_back(ConsumedLength)));
       Children[Element].Path = Path;
     }
     StringRef Element(llvm::sys::path::filename(
-          StringRef(NewPath).drop_back(ConsumedLength)));
+        StringRef(NewPath).drop_back(ConsumedLength)));
     Children[Element].insert(NewPath, ConsumedLength + Element.size() + 1);
   }
 
@@ -101,8 +101,7 @@ public:
   ///   equivalent, continue with the parent node as if 'n' didn't exist. If one
   ///   is equivalent, the best match is found. Otherwise, report and ambigiuity
   ///   error.
-  StringRef findEquivalent(const PathComparator& Comparator,
-                           StringRef FileName,
+  StringRef findEquivalent(const PathComparator &Comparator, StringRef FileName,
                            bool &IsAmbiguous,
                            unsigned ConsumedLength = 0) const {
     // Note: we support only directory symlinks for performance reasons.
@@ -115,8 +114,8 @@ public:
         return StringRef(Path);
       return {};
     }
-    StringRef Element(llvm::sys::path::filename(FileName.drop_back(
-        ConsumedLength)));
+    StringRef Element(
+        llvm::sys::path::filename(FileName.drop_back(ConsumedLength)));
     llvm::StringMap<FileMatchTrieNode>::const_iterator MatchingChild =
         Children.find(Element);
     if (MatchingChild != Children.end()) {
@@ -160,7 +159,8 @@ private:
       return;
     }
     for (llvm::StringMap<FileMatchTrieNode>::const_iterator
-         It = Children.begin(), E = Children.end();
+             It = Children.begin(),
+             E = Children.end();
          It != E; ++It) {
       if (It == Except)
         continue;
@@ -185,13 +185,9 @@ FileMatchTrie::FileMatchTrie()
 FileMatchTrie::FileMatchTrie(PathComparator *Comparator)
     : Root(new FileMatchTrieNode), Comparator(Comparator) {}
 
-FileMatchTrie::~FileMatchTrie() {
-  delete Root;
-}
+FileMatchTrie::~FileMatchTrie() { delete Root; }
 
-void FileMatchTrie::insert(StringRef NewPath) {
-  Root->insert(NewPath);
-}
+void FileMatchTrie::insert(StringRef NewPath) { Root->insert(NewPath); }
 
 StringRef FileMatchTrie::findEquivalent(StringRef FileName,
                                         raw_ostream &Error) const {

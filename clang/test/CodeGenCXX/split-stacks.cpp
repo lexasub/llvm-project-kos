@@ -6,13 +6,11 @@ int foo() {
 }
 
 template <typename T>
-[[gnu::no_split_stack]]
-int tnosplit() {
+[[gnu::no_split_stack]] int tnosplit() {
   return 0;
 }
 
-[[gnu::no_split_stack]]
-int nosplit() {
+[[gnu::no_split_stack]] int nosplit() {
   return tnosplit<int>();
 }
 

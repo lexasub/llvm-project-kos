@@ -7,7 +7,7 @@ template <typename T = Baz> // expected-warning {{using the undeclared type 'Baz
 struct Foo { T x; };
 typedef int Baz;
 template struct Foo<>;
-}
+} // namespace test_basic
 
 namespace test_namespace {
 namespace nested {
@@ -16,10 +16,10 @@ struct Foo {
   static_assert(sizeof(T) == 4, "should get int, not double");
 };
 typedef int Baz;
-}
+} // namespace nested
 typedef double Baz;
 template struct nested::Foo<>;
-}
+} // namespace test_namespace
 
 namespace test_inner_class_template {
 struct Outer {
@@ -31,7 +31,7 @@ struct Outer {
 };
 typedef double Baz;
 template struct Outer::Foo<>;
-}
+} // namespace test_inner_class_template
 
 namespace test_nontype_param {
 template <typename T> struct Bar { T x; };
@@ -41,26 +41,28 @@ struct Foo {
 };
 Bar<int> g;
 template struct Foo<&g>;
-}
+} // namespace test_nontype_param
 
 // MSVC accepts this, but Clang doesn't.
 namespace test_template_instantiation_arg {
 template <typename T> struct Bar { T x; };
-template <typename T = Bar<Weber>>  // expected-error {{use of undeclared identifier 'Weber'}}
+template <typename T = Bar<Weber>> // expected-error {{use of undeclared identifier 'Weber'}}
 struct Foo {
   static_assert(sizeof(T) == 4, "Bar should have gotten int");
 };
 typedef int Weber;
-}
+} // namespace test_template_instantiation_arg
 
 // MSVC accepts this, but Clang doesn't.
 namespace test_scope_spec {
-template <typename T = ns::Bar>  // expected-error {{use of undeclared identifier 'ns'}}
+template <typename T = ns::Bar> // expected-error {{use of undeclared identifier 'ns'}}
 struct Foo {
   static_assert(sizeof(T) == 4, "Bar should have gotten int");
 };
-namespace ns { typedef int Bar; }
+namespace ns {
+typedef int Bar;
 }
+} // namespace test_scope_spec
 
 #ifdef __clang__
 // These are negative test cases that MSVC doesn't compile either.  Try to use
@@ -72,19 +74,19 @@ template <Zargon N> // expected-error {{unknown type name 'Zargon'}}
 struct Foo { int x[N]; };
 typedef int Zargon;
 template struct Foo<4>;
-}
+} // namespace test_undeclared_nontype_parm_type
 
 namespace test_undeclared_nontype_parm_type_no_name {
 template <typename T, Asdf> // expected-error {{unknown type name 'Asdf'}}
 struct Foo { T x; };
 template struct Foo<int, 0>;
-}
+} // namespace test_undeclared_nontype_parm_type_no_name
 
 namespace test_undeclared_type_arg {
 template <typename T>
 struct Foo { T x; };
 template struct Foo<Yodel>; // expected-error {{use of undeclared identifier 'Yodel'}}
-}
+} // namespace test_undeclared_type_arg
 
 namespace test_undeclared_nontype_parm_arg {
 // Bury an undeclared type as a template argument to the type of a non-type
@@ -93,11 +95,11 @@ template <typename T> struct Bar { T x; };
 
 template <Bar<Xylophone> *P> // expected-error {{use of undeclared identifier 'Xylophone'}}
 // expected-note@-1{{template parameter is declared here}}
-struct Foo { };
+struct Foo {};
 
 typedef int Xylophone;
 Bar<Xylophone> g;
 template struct Foo<&g>; // expected-error {{value of type}}
-}
+} // namespace test_undeclared_nontype_parm_arg
 
 #endif

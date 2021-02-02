@@ -52,17 +52,15 @@ public:
                    const DebugLoc &DL, MCRegister DestReg, MCRegister SrcReg,
                    bool KillSrc) const override;
 
-  void storeRegToStack(MachineBasicBlock &MBB,
-                       MachineBasicBlock::iterator MBBI,
+  void storeRegToStack(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI,
                        Register SrcReg, bool isKill, int FrameIndex,
                        const TargetRegisterClass *RC,
                        const TargetRegisterInfo *TRI,
                        int64_t Offset) const override;
 
   void loadRegFromStack(MachineBasicBlock &MBB,
-                        MachineBasicBlock::iterator MBBI,
-                        Register DestReg, int FrameIndex,
-                        const TargetRegisterClass *RC,
+                        MachineBasicBlock::iterator MBBI, Register DestReg,
+                        int FrameIndex, const TargetRegisterClass *RC,
                         const TargetRegisterInfo *TRI,
                         int64_t Offset) const override;
 
@@ -76,7 +74,7 @@ public:
 
   // Adjust SP by FrameSize bytes. Restore RA, S0, S1
   void restoreFrame(unsigned SP, int64_t FrameSize, MachineBasicBlock &MBB,
-                      MachineBasicBlock::iterator I) const;
+                    MachineBasicBlock::iterator I) const;
 
   /// Adjust SP by Amount bytes.
   void adjustStackPtr(unsigned SP, int64_t Amount, MachineBasicBlock &MBB,
@@ -97,27 +95,28 @@ public:
 
   // build the proper one based on the Imm field
 
-  const MCInstrDesc& AddiuSpImm(int64_t Imm) const;
+  const MCInstrDesc &AddiuSpImm(int64_t Imm) const;
 
-  void BuildAddiuSpImm
-    (MachineBasicBlock &MBB, MachineBasicBlock::iterator I, int64_t Imm) const;
+  void BuildAddiuSpImm(MachineBasicBlock &MBB, MachineBasicBlock::iterator I,
+                       int64_t Imm) const;
 
 protected:
   /// If the specific machine instruction is a instruction that moves/copies
   /// value from one register to another register return destination and source
   /// registers as machine operands.
-  Optional<DestSourcePair> isCopyInstrImpl(const MachineInstr &MI) const override;
+  Optional<DestSourcePair>
+  isCopyInstrImpl(const MachineInstr &MI) const override;
 
 private:
   unsigned getAnalyzableBrOpc(unsigned Opc) const override;
 
   void ExpandRetRA16(MachineBasicBlock &MBB, MachineBasicBlock::iterator I,
-                   unsigned Opc) const;
+                     unsigned Opc) const;
 
   // Adjust SP by Amount bytes where bytes can be up to 32bit number.
   void adjustStackPtrBig(unsigned SP, int64_t Amount, MachineBasicBlock &MBB,
-                         MachineBasicBlock::iterator I,
-                         unsigned Reg1, unsigned Reg2) const;
+                         MachineBasicBlock::iterator I, unsigned Reg1,
+                         unsigned Reg2) const;
 
   // Adjust SP by Amount bytes where bytes can be up to 32bit number.
   void adjustStackPtrBigUnrestricted(unsigned SP, int64_t Amount,

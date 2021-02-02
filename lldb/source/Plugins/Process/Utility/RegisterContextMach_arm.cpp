@@ -13,7 +13,6 @@
 #include <mach/mach_types.h>
 #include <mach/thread_act.h>
 
-
 using namespace lldb;
 using namespace lldb_private;
 

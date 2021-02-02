@@ -22,8 +22,7 @@
 // CK1: [[MTYPE01:@.+]] = {{.*}}constant [1 x i64] [i64 288]
 // CK1: [[MTYPE02:@.+]] = {{.*}}constant [1 x i64] [i64 288]
 
-void add_one(float *b, int dm)
-{
+void add_one(float *b, int dm) {
   // CK1:     [[BP:%.+]] = getelementptr inbounds [1 x i8*], [1 x i8*]* %{{.+}}, i32 0, i32 0
   // CK1:     [[CBP:%.+]] = bitcast i8** [[BP]] to float**
   // CK1:     store float* [[B_ADDR:%.+]], float** [[CBP]]
@@ -35,12 +34,13 @@ void add_one(float *b, int dm)
   // CK1:     call i32 @__tgt_target{{.+}}[[MTYPE01]]
   // CK1:     call i32 @__tgt_target{{.+}}[[MTYPE02]]
   // CK1:     call void @__tgt_target_data_end{{.+}}[[MTYPE00]]
-#pragma omp target data map(tofrom:b[:1]) use_device_ptr(b) if(dm == 0)
+#pragma omp target data map(tofrom \
+                            : b[:1]) use_device_ptr(b) if (dm == 0)
   {
 #pragma omp target is_device_ptr(b)
-  {
-    b[0] += 1;
-  }
+    {
+      b[0] += 1;
+    }
   }
 }
 

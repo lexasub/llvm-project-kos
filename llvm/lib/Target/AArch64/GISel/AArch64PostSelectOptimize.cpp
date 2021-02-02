@@ -174,11 +174,9 @@ bool AArch64PostSelectOptimize::runOnMachineFunction(MachineFunction &MF) {
 
 char AArch64PostSelectOptimize::ID = 0;
 INITIALIZE_PASS_BEGIN(AArch64PostSelectOptimize, DEBUG_TYPE,
-                      "Optimize AArch64 selected instructions",
-                      false, false)
+                      "Optimize AArch64 selected instructions", false, false)
 INITIALIZE_PASS_END(AArch64PostSelectOptimize, DEBUG_TYPE,
-                    "Optimize AArch64 selected instructions", false,
-                    false)
+                    "Optimize AArch64 selected instructions", false, false)
 
 namespace llvm {
 FunctionPass *createAArch64PostSelectOptimize() {

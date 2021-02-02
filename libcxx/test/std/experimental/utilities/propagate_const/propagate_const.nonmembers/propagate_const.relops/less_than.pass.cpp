@@ -21,9 +21,7 @@
 
 using std::experimental::propagate_const;
 
-constexpr bool operator<(const X &lhs, const X &rhs) {
-  return lhs.i_ < rhs.i_;
-}
+constexpr bool operator<(const X& lhs, const X& rhs) { return lhs.i_ < rhs.i_; }
 
 int main(int, char**) {
   constexpr X x1_1(1);

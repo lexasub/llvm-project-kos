@@ -14,7 +14,8 @@ int b = 0;
 // CHECK:       for.cond:
 // CHECK-NOT:    br label [[FOR_COND]], !llvm.loop !{{.*}}
 void f0() {
-  for (; ;) ;
+  for (;;)
+    ;
 }
 
 // CHECK: Function Attrs: noinline nounwind optnone
@@ -268,4 +269,3 @@ void D2() {
     ;
   while (1);
 }
-

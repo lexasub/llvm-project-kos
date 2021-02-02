@@ -17,7 +17,7 @@
 #include "llvm/InitializePasses.h"
 
 namespace llvm {
-  class PassRegistry;
+class PassRegistry;
 }
 
 using namespace llvm;

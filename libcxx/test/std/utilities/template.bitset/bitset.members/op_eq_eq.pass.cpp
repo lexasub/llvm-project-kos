@@ -21,28 +21,28 @@
 
 template <std::size_t N>
 void test_equality() {
-    std::vector<std::bitset<N> > const cases = get_test_cases<N>();
-    for (std::size_t c = 0; c != cases.size(); ++c) {
-        std::bitset<N> const v1 = cases[c];
-        std::bitset<N> v2 = v1;
-        assert(v1 == v2);
-        if (v1.size() > 0) {
-            v2[N/2].flip();
-            assert(v1 != v2);
-        }
+  std::vector<std::bitset<N> > const cases = get_test_cases<N>();
+  for (std::size_t c = 0; c != cases.size(); ++c) {
+    std::bitset<N> const v1 = cases[c];
+    std::bitset<N> v2 = v1;
+    assert(v1 == v2);
+    if (v1.size() > 0) {
+      v2[N / 2].flip();
+      assert(v1 != v2);
     }
+  }
 }
 
 int main(int, char**) {
-    test_equality<0>();
-    test_equality<1>();
-    test_equality<31>();
-    test_equality<32>();
-    test_equality<33>();
-    test_equality<63>();
-    test_equality<64>();
-    test_equality<65>();
-    test_equality<1000>();
+  test_equality<0>();
+  test_equality<1>();
+  test_equality<31>();
+  test_equality<32>();
+  test_equality<33>();
+  test_equality<63>();
+  test_equality<64>();
+  test_equality<65>();
+  test_equality<1000>();
 
-    return 0;
+  return 0;
 }

@@ -58,7 +58,6 @@ C::C(int n) : B(n) { may_throw(); }
 // CHECK: call void @"?may_throw@@YAXXZ"()
 // no cleanups
 
-
 D::D(int n) : C(n), B(n) { may_throw(); }
 
 // Conditionally construct (and destroy) vbase B, unconditionally C.

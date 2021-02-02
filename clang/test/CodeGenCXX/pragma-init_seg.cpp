@@ -21,7 +21,7 @@ int y = f();
 int z = f();
 // CHECK: @"?z@simple_init@@3HA" = dso_local global i32 0, align 4
 // No function pointer!  This one goes on @llvm.global_ctors.
-}
+} // namespace simple_init
 
 #pragma init_seg(".asdf")
 
@@ -30,14 +30,14 @@ namespace {
 int x = f();
 // CHECK: @"?x@?A0x{{[^@]*}}@internal_init@@3HA" = internal global i32 0, align 4
 // CHECK: @__cxx_init_fn_ptr.2 = private constant void ()* @"??__Ex@?A0x{{[^@]*}}@internal_init@@YAXXZ", section ".asdf"
-}
-}
+} // namespace
+} // namespace internal_init
 
 namespace selectany_init {
 int __declspec(selectany) x = f();
 // CHECK: @"?x@selectany_init@@3HA" = weak_odr dso_local global i32 0, comdat, align 4
 // CHECK: @__cxx_init_fn_ptr.3 = private constant void ()* @"??__Ex@selectany_init@@YAXXZ", section ".asdf", comdat($"?x@selectany_init@@3HA")
-}
+} // namespace selectany_init
 
 namespace explicit_template_instantiation {
 template <typename T> struct A { static const int x; };
@@ -45,7 +45,7 @@ template <typename T> const int A<T>::x = f();
 template struct A<int>;
 // CHECK: @"?x@?$A@H@explicit_template_instantiation@@2HB" = weak_odr dso_local global i32 0, comdat, align 4
 // CHECK: @__cxx_init_fn_ptr.4 = private constant void ()* @"??__E?x@?$A@H@explicit_template_instantiation@@2HB@@YAXXZ", section ".asdf", comdat($"?x@?$A@H@explicit_template_instantiation@@2HB")
-}
+} // namespace explicit_template_instantiation
 
 namespace implicit_template_instantiation {
 template <typename T> struct A { static const int x; };
@@ -53,7 +53,7 @@ template <typename T> const int A<T>::x = f();
 int g() { return A<int>::x; }
 // CHECK: @"?x@?$A@H@implicit_template_instantiation@@2HB" = linkonce_odr dso_local global i32 0, comdat, align 4
 // CHECK: @__cxx_init_fn_ptr.5 = private constant void ()* @"??__E?x@?$A@H@implicit_template_instantiation@@2HB@@YAXXZ", section ".asdf", comdat($"?x@?$A@H@implicit_template_instantiation@@2HB")
-}
+} // namespace implicit_template_instantiation
 
 // ... and here's where we emitted user level ctors.
 // CHECK: @llvm.global_ctors = appending global [1 x { i32, void ()*, i8* }]

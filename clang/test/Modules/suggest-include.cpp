@@ -15,7 +15,7 @@
 void f() {
   (void)::usetextual1; // expected-error {{missing '#include "usetextual1.h"'}}
   (void)::usetextual2; // expected-error {{missing '#include "usetextual2.h"'}}
-  (void)::textual3; // expected-error-re {{{{^}}missing '#include "usetextual3.h"'}}
+  (void)::textual3;    // expected-error-re {{{{^}}missing '#include "usetextual3.h"'}}
   // If the declaration is in an include-guarded header, make sure we suggest
   // including that rather than importing a module. In this case, there could
   // be more than one module, and the module name we picked is almost certainly

@@ -24,14 +24,7 @@ class FunctionPass;
 class MachineFunctionPass;
 
 namespace NVPTXCC {
-enum CondCodes {
-  EQ,
-  NE,
-  LT,
-  LE,
-  GT,
-  GE
-};
+enum CondCodes { EQ, NE, LT, LE, GT, GE };
 }
 
 FunctionPass *createNVPTXISelDag(NVPTXTargetMachine &TM,
@@ -67,10 +60,7 @@ private:
 };
 
 namespace NVPTX {
-enum DrvInterface {
-  NVCL,
-  CUDA
-};
+enum DrvInterface { NVCL, CUDA };
 
 // A field inside TSFlags needs a shift and a mask. The usage is
 // always as follows :
@@ -92,10 +82,7 @@ enum VecInstType {
   VecOther = 15
 };
 
-enum SimpleMove {
-  SimpleMoveMask = 0x10,
-  SimpleMoveShift = 4
-};
+enum SimpleMove { SimpleMoveMask = 0x10, SimpleMoveShift = 4 };
 enum LoadStore {
   isLoadMask = 0x20,
   isLoadShift = 5,
@@ -112,18 +99,9 @@ enum AddressSpace {
   PARAM = 4,
   LOCAL = 5
 };
-enum FromType {
-  Unsigned = 0,
-  Signed,
-  Float,
-  Untyped
-};
-enum VecType {
-  Scalar = 1,
-  V2 = 2,
-  V4 = 4
-};
-}
+enum FromType { Unsigned = 0, Signed, Float, Untyped };
+enum VecType { Scalar = 1, V2 = 2, V4 = 4 };
+} // namespace PTXLdStInstCode
 
 /// PTXCvtMode - Conversion code enumeration
 namespace PTXCvtMode {
@@ -171,8 +149,8 @@ enum CmpMode {
   FTZ_FLAG = 0x100
 };
 }
-}
-} // end namespace llvm;
+} // namespace NVPTX
+} // namespace llvm
 
 // Defines symbolic names for NVPTX registers.  This defines a mapping from
 // register name to register number.

@@ -9,7 +9,7 @@ struct initializer_list {
   constexpr initializer_list(const T *B, __SIZE_TYPE__ S)
       : Begin(B), Size(S) {}
 };
-}
+} // namespace std
 
 void f() {
   static std::initializer_list<std::initializer_list<int>> a{

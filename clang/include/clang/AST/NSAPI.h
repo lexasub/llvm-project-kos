@@ -14,10 +14,10 @@
 #include "llvm/ADT/Optional.h"
 
 namespace clang {
-  class ASTContext;
-  class ObjCInterfaceDecl;
-  class QualType;
-  class Expr;
+class ASTContext;
+class ObjCInterfaceDecl;
+class QualType;
+class Expr;
 
 // Provides info and caches identifiers/selectors for NSFoundation API.
 class NSAPI {
@@ -64,7 +64,8 @@ public:
   /// Returns true if the expression \param E is a reference of
   /// "NSASCIIStringEncoding" enum constant.
   bool isNSASCIIStringEncodingConstant(const Expr *E) const {
-    return isObjCEnumerator(E, "NSASCIIStringEncoding",NSASCIIStringEncodingId);
+    return isObjCEnumerator(E, "NSASCIIStringEncoding",
+                            NSASCIIStringEncodingId);
   }
 
   /// Enumerates the NSArray/NSMutableArray methods used to generate
@@ -147,13 +148,13 @@ public:
 
   /// Returns selector for "setObject:forKeyedSubscript".
   Selector getSetObjectForKeyedSubscriptSelector() const {
-    StringRef Ids[] = { "setObject", "forKeyedSubscript" };
+    StringRef Ids[] = {"setObject", "forKeyedSubscript"};
     return getOrInitSelector(Ids, setObjectForKeyedSubscriptSel);
   }
 
   /// Returns selector for "setObject:atIndexedSubscript".
   Selector getSetObjectAtIndexedSubscriptSelector() const {
-    StringRef Ids[] = { "setObject", "atIndexedSubscript" };
+    StringRef Ids[] = {"setObject", "atIndexedSubscript"};
     return getOrInitSelector(Ids, setObjectAtIndexedSubscriptSel);
   }
 
@@ -204,12 +205,12 @@ public:
 
   /// Return NSNumberLiteralMethodKind if \p Sel is such a selector.
   Optional<NSNumberLiteralMethodKind>
-      getNSNumberLiteralMethodKind(Selector Sel) const;
+  getNSNumberLiteralMethodKind(Selector Sel) const;
 
   /// Determine the appropriate NSNumber factory method kind for a
   /// literal of the given type.
   Optional<NSNumberLiteralMethodKind>
-      getNSNumberFactoryMethodKind(QualType T) const;
+  getNSNumberFactoryMethodKind(QualType T) const;
 
   /// Returns true if \param T is a typedef of "BOOL" in objective-c.
   bool isObjCBOOLType(QualType T) const;
@@ -230,8 +231,8 @@ public:
 
 private:
   bool isObjCTypedef(QualType T, StringRef name, IdentifierInfo *&II) const;
-  bool isObjCEnumerator(const Expr *E,
-                        StringRef name, IdentifierInfo *&II) const;
+  bool isObjCEnumerator(const Expr *E, StringRef name,
+                        IdentifierInfo *&II) const;
   Selector getOrInitSelector(ArrayRef<StringRef> Ids, Selector &Sel) const;
   Selector getOrInitNullarySelector(StringRef Id, Selector &Sel) const;
 
@@ -255,13 +256,13 @@ private:
   mutable Selector NSNumberInstanceSelectors[NumNSNumberLiteralMethods];
 
   mutable Selector objectForKeyedSubscriptSel, objectAtIndexedSubscriptSel,
-                   setObjectForKeyedSubscriptSel,setObjectAtIndexedSubscriptSel,
-                   isEqualSel, InitSel, NewSel;
+      setObjectForKeyedSubscriptSel, setObjectAtIndexedSubscriptSel, isEqualSel,
+      InitSel, NewSel;
 
   mutable IdentifierInfo *BOOLId, *NSIntegerId, *NSUIntegerId;
   mutable IdentifierInfo *NSASCIIStringEncodingId, *NSUTF8StringEncodingId;
 };
 
-}  // end namespace clang
+} // end namespace clang
 
 #endif // LLVM_CLANG_AST_NSAPI_H

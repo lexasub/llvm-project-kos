@@ -21,9 +21,9 @@
 #include <cassert>
 
 namespace llvm {
-  class StringRef;
-  class APSInt;
-}
+class StringRef;
+class APSInt;
+} // namespace llvm
 
 namespace clang {
 
@@ -95,6 +95,7 @@ public:
     /// the comparison category result type.
     llvm::APSInt getIntValue() const;
   };
+
 private:
   const ASTContext &Ctx;
 

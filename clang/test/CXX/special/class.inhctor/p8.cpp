@@ -4,8 +4,8 @@
 // for the wording that used to be there.
 
 struct A {
-  constexpr A(const int&) : rval(false) {}
-  constexpr A(const int&&) : rval(true) {}
+  constexpr A(const int &) : rval(false) {}
+  constexpr A(const int &&) : rval(true) {}
   bool rval;
 };
 struct B : A {
@@ -21,7 +21,7 @@ constexpr B b1{k};
 static_assert(a0.rval && !a1.rval && b0.rval && !b1.rval, "");
 
 struct C {
-  template<typename T> constexpr C(T t) : v(t) {}
+  template <typename T> constexpr C(T t) : v(t) {}
   int v;
 };
 struct D : C {
@@ -29,4 +29,4 @@ struct D : C {
 };
 static_assert(D(123).v == 123, "");
 
-template<typename T> constexpr D::D(T t) : C(t) {} // expected-error {{does not match any declaration in 'D'}}
+template <typename T> constexpr D::D(T t) : C(t) {} // expected-error {{does not match any declaration in 'D'}}

@@ -38,12 +38,18 @@ void checkDeclStmts() {
   int i, j;
   int k = 1, l, m = 2;
 
-  struct standalone { int x, y; };
+  struct standalone {
+    int x, y;
+  };
   struct standalone myStandalone;
 
-  struct { int x, y; } myAnon;
+  struct {
+    int x, y;
+  } myAnon;
 
-  struct named { int x, y; } myNamed;
+  struct named {
+    int x, y;
+  } myNamed;
 
   static_assert(1, "abc");
 }
@@ -133,17 +139,16 @@ void test_deleteArraydtor() {
   delete[] a;
 }
 
-
 namespace NoReturnSingleSuccessor {
-  struct A {
-    A();
-    ~A();
-  };
+struct A {
+  A();
+  ~A();
+};
 
-  struct B : public A {
-    B();
-    ~B() __attribute__((noreturn));
-  };
+struct B : public A {
+  B();
+  ~B() __attribute__((noreturn));
+};
 
 // CHECK-LABEL: int test1(int *x)
 // CHECK: 1: 1
@@ -151,11 +156,11 @@ namespace NoReturnSingleSuccessor {
 // CHECK-NEXT: ~NoReturnSingleSuccessor::B() (Implicit destructor)
 // CHECK-NEXT: Preds (1)
 // CHECK-NEXT: Succs (1): B0
-  int test1(int *x) {
-    B b;
-    if (x)
-      return 1;
-  }
+int test1(int *x) {
+  B b;
+  if (x)
+    return 1;
+}
 
 // CHECK-LABEL: int test2(int *x)
 // CHECK: 1: 1
@@ -163,12 +168,12 @@ namespace NoReturnSingleSuccessor {
 // CHECK-NEXT: destructor
 // CHECK-NEXT: Preds (1)
 // CHECK-NEXT: Succs (1): B0
-  int test2(int *x) {
-    const A& a = B();
-    if (x)
-      return 1;
-  }
+int test2(int *x) {
+  const A &a = B();
+  if (x)
+    return 1;
 }
+} // namespace NoReturnSingleSuccessor
 
 // Test CFG support for "extending" an enum.
 // CHECK-LABEL: int test_enum_with_extension(enum MyEnum value)
@@ -223,16 +228,26 @@ namespace NoReturnSingleSuccessor {
 // CHECK-NEXT:    Succs (1): B1
 // CHECK:  [B0 (EXIT)]
 // CHECK-NEXT:    Preds (1): B1
-enum MyEnum { A, B, C };
-static const enum MyEnum D = (enum MyEnum) 32;
+enum MyEnum { A,
+              B,
+              C };
+static const enum MyEnum D = (enum MyEnum)32;
 
 int test_enum_with_extension(enum MyEnum value) {
   int x = 0;
   switch (value) {
-    case A: x = 1; break;
-    case B: x = 2; break;
-    case C: x = 3; break;
-    case D: x = 4; break;
+  case A:
+    x = 1;
+    break;
+  case B:
+    x = 2;
+    break;
+  case C:
+    x = 3;
+    break;
+  case D:
+    x = 4;
+    break;
   }
   return x;
 }
@@ -292,10 +307,18 @@ int test_enum_with_extension(enum MyEnum value) {
 int test_enum_with_extension_default(enum MyEnum value) {
   int x = 0;
   switch (value) {
-    case A: x = 1; break;
-    case B: x = 2; break;
-    case C: x = 3; break;
-    default: x = 4; break;
+  case A:
+    x = 1;
+    break;
+  case B:
+    x = 2;
+    break;
+  case C:
+    x = 3;
+    break;
+  default:
+    x = 4;
+    break;
   }
   return x;
 }
@@ -318,8 +341,8 @@ int test_enum_with_extension_default(enum MyEnum value) {
 // CHECK: [B0 (EXIT)]
 // CHECK-NEXT:  Preds (1): B1
 
-extern void* operator new (unsigned long sz, void* v);
-extern void* operator new[] (unsigned long sz, void* ptr);
+extern void *operator new(unsigned long sz, void *v);
+extern void *operator new[](unsigned long sz, void *ptr);
 
 class MyClass {
 public:
@@ -329,7 +352,7 @@ public:
 
 void test_placement_new() {
   int buffer[16];
-  MyClass* obj = new (buffer) MyClass();
+  MyClass *obj = new (buffer) MyClass();
 }
 
 // CHECK-LABEL: void test_placement_new_array()
@@ -353,15 +376,23 @@ void test_placement_new() {
 
 void test_placement_new_array() {
   int buffer[16];
-  MyClass* obj = new (buffer) MyClass[5];
+  MyClass *obj = new (buffer) MyClass[5];
 }
-
 
 // CHECK-LABEL: void test_lifetime_extended_temporaries()
 // CHECK: [B1]
-struct LifetimeExtend { LifetimeExtend(int); ~LifetimeExtend(); };
-struct Aggregate { const LifetimeExtend a; const LifetimeExtend b; };
-struct AggregateRef { const LifetimeExtend &a; const LifetimeExtend &b; };
+struct LifetimeExtend {
+  LifetimeExtend(int);
+  ~LifetimeExtend();
+};
+struct Aggregate {
+  const LifetimeExtend a;
+  const LifetimeExtend b;
+};
+struct AggregateRef {
+  const LifetimeExtend &a;
+  const LifetimeExtend &b;
+};
 void test_lifetime_extended_temporaries() {
   // CHECK: LifetimeExtend(1);
   // CHECK-NEXT: : 1
@@ -411,7 +442,6 @@ void test_lifetime_extended_temporaries() {
   // references (LifetimeExtend().some_member).
 }
 
-
 // FIXME: The destructor for 'a' shouldn't be there because it's deleted
 // in the union.
 // CHECK-LABEL: void foo()
@@ -428,7 +458,9 @@ void test_lifetime_extended_temporaries() {
 // CHECK-NEXT:    Preds (1): B1
 
 namespace pr37688_deleted_union_destructor {
-struct S { ~S(); };
+struct S {
+  ~S();
+};
 struct A {
   ~A() noexcept {}
   union {
@@ -441,7 +473,6 @@ void foo() {
   A a;
 }
 } // end namespace pr37688_deleted_union_destructor
-
 
 namespace return_statement_expression {
 int unknown();
@@ -489,7 +520,7 @@ int foo() {
   else
     return 0;
 }
-} // namespace statement_expression_in_return
+} // namespace return_statement_expression
 
 // CHECK-LABEL: void vla_simple(int x)
 // CHECK: [B1]
@@ -585,10 +616,14 @@ int vla_evaluate(int x) {
 // CHECK-NEXT:    6: ~CommaTemp::B() (Temporary object destructor)
 // CHECK-NEXT:    7: ~CommaTemp::A() (Temporary object destructor)
 namespace CommaTemp {
-  struct A { ~A(); };
-  struct B { ~B(); };
-  void f();
-}
+struct A {
+  ~A();
+};
+struct B {
+  ~B();
+};
+void f();
+} // namespace CommaTemp
 void CommaTemp::f() {
   A(), B();
 }
@@ -609,9 +644,9 @@ void CommaTemp::f() {
 // CHECK-NEXT:   Preds (1): B1
 
 extern "C" typedef int *PR18472_t;
-void *operator new (unsigned long, PR18472_t);
+void *operator new(unsigned long, PR18472_t);
 template <class T> T *PR18472() {
-  return new (((PR18472_t) 0)) T;
+  return new (((PR18472_t)0)) T;
 }
 void PR18472_helper() {
   PR18472<int>();

@@ -75,7 +75,6 @@ static void extractMetadataFromModule(const std::vector<Chunk> &ChunksToKeep,
         eraseMetadataIfOutsideChunk(Inst, NodesToKeep);
   }
 
-
   // Get out-of-chunk Named metadata nodes
   std::vector<NamedMDNode *> NamedNodesToDelete;
   for (auto &MD : Program->named_metadata())

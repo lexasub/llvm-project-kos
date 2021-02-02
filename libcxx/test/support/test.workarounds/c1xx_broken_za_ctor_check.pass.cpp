@@ -16,27 +16,27 @@
 #include "test_workarounds.h"
 
 struct X {
-    X(int) {}
+  X(int) {}
 
-    X(X&&) = default;
-    X& operator=(X&&) = default;
+  X(X&&) = default;
+  X& operator=(X&&) = default;
 
 private:
-    X(const X&) = default;
-    X& operator=(const X&) = default;
+  X(const X&) = default;
+  X& operator=(const X&) = default;
 };
 
 void PushFront(X&&) {}
 
-template<class T = int>
+template <class T = int>
 auto test(int) -> decltype(PushFront(std::declval<T>()), std::true_type{});
 auto test(long) -> std::false_type;
 
 int main(int, char**) {
 #if defined(TEST_WORKAROUND_C1XX_BROKEN_ZA_CTOR_CHECK)
-    static_assert(!decltype(test(0))::value, "");
+  static_assert(!decltype(test(0))::value, "");
 #else
-    static_assert(decltype(test(0))::value, "");
+  static_assert(decltype(test(0))::value, "");
 #endif
 
   return 0;

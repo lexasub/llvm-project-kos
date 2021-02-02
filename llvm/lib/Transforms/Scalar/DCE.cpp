@@ -59,7 +59,7 @@ struct RedundantDbgInstElimination : public FunctionPass {
     AU.setPreservesCFG();
   }
 };
-}
+} // namespace
 
 char RedundantDbgInstElimination::ID = 0;
 INITIALIZE_PASS(RedundantDbgInstElimination, "redundant-dbg-inst-elim",
@@ -173,7 +173,7 @@ struct DCELegacyPass : public FunctionPass {
     AU.setPreservesCFG();
   }
 };
-}
+} // namespace
 
 char DCELegacyPass::ID = 0;
 INITIALIZE_PASS(DCELegacyPass, "dce", "Dead Code Elimination", false, false)

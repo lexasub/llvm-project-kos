@@ -21,7 +21,7 @@ namespace {
 
 class TestObjectCache : public ObjectCache {
 public:
-  TestObjectCache() : DuplicateInserted(false) { }
+  TestObjectCache() : DuplicateInserted(false) {}
 
   void notifyObjectCompiled(const Module *M, MemoryBufferRef Obj) override {
     // If we've seen this module before, note that.
@@ -33,7 +33,7 @@ public:
   }
 
   std::unique_ptr<MemoryBuffer> getObject(const Module *M) override {
-    const MemoryBuffer* BufferFound = getObjectInternal(M);
+    const MemoryBuffer *BufferFound = getObjectInternal(M);
     ModulesLookedUp.insert(M->getModuleIdentifier());
     if (!BufferFound)
       return nullptr;
@@ -46,11 +46,11 @@ public:
   bool wereDuplicatesInserted() { return DuplicateInserted; }
 
   bool wasModuleLookedUp(const Module *M) {
-    return ModulesLookedUp.find(M->getModuleIdentifier())
-                                      != ModulesLookedUp.end();
+    return ModulesLookedUp.find(M->getModuleIdentifier()) !=
+           ModulesLookedUp.end();
   }
 
-  const MemoryBuffer* getObjectInternal(const Module* M) {
+  const MemoryBuffer *getObjectInternal(const Module *M) {
     // Look for the module in our map.
     const std::string ModuleID = M->getModuleIdentifier();
     StringMap<const MemoryBuffer *>::iterator it = ObjMap.find(ModuleID);
@@ -70,17 +70,14 @@ private:
   }
 
   StringMap<const MemoryBuffer *> ObjMap;
-  StringSet<>                     ModulesLookedUp;
+  StringSet<> ModulesLookedUp;
   SmallVector<std::unique_ptr<MemoryBuffer>, 2> AllocatedBuffers;
-  bool                            DuplicateInserted;
+  bool DuplicateInserted;
 };
 
 class MCJITObjectCacheTest : public testing::Test, public MCJITTestBase {
 protected:
-  enum {
-    OriginalRC = 6,
-    ReplacementRC = 7
-  };
+  enum { OriginalRC = 6, ReplacementRC = 7 };
 
   void SetUp() override {
     M.reset(createEmptyModule("<main>"));
@@ -96,10 +93,9 @@ protected:
     TheJIT->finalizeObject();
     void *vPtr = TheJIT->getPointerToFunction(Main);
 
-    EXPECT_TRUE(nullptr != vPtr)
-      << "Unable to get pointer to main() from JIT";
+    EXPECT_TRUE(nullptr != vPtr) << "Unable to get pointer to main() from JIT";
 
-    int (*FuncPtr)() = (int(*)())(intptr_t)vPtr;
+    int (*FuncPtr)() = (int (*)())(intptr_t)vPtr;
     int returnCode = FuncPtr();
     EXPECT_EQ(returnCode, ExpectedRC);
   }
@@ -123,7 +119,7 @@ TEST_F(MCJITObjectCacheTest, VerifyBasicObjectCaching) {
   std::unique_ptr<TestObjectCache> Cache(new TestObjectCache);
 
   // Save a copy of the module pointer before handing it off to MCJIT.
-  const Module * SavedModulePointer = M.get();
+  const Module *SavedModulePointer = M.get();
 
   createJIT(std::move(M));
 
@@ -166,7 +162,7 @@ TEST_F(MCJITObjectCacheTest, VerifyLoadFromCache) {
   // tell if MCJIT compiled this module or used the cache.
   M.reset(createEmptyModule("<main>"));
   Main = insertMainFunction(M.get(), ReplacementRC);
-  const Module * SecondModulePointer = M.get();
+  const Module *SecondModulePointer = M.get();
 
   // Create a new MCJIT instance to load this module then execute it.
   createJIT(std::move(M));
@@ -201,7 +197,7 @@ TEST_F(MCJITObjectCacheTest, VerifyNonLoadFromCache) {
   // a new module name here so the module shouldn't be found in the cache.
   M.reset(createEmptyModule("<not-main>"));
   Main = insertMainFunction(M.get(), ReplacementRC);
-  const Module * SecondModulePointer = M.get();
+  const Module *SecondModulePointer = M.get();
 
   // Create a new MCJIT instance to load this module then execute it.
   createJIT(std::move(M));

@@ -38,7 +38,7 @@ using namespace llvm;
 namespace llvm {
 bool DisableSimplifyCFG = false;
 extern cl::opt<std::string> OutputPrefix;
-} // End llvm namespace
+} // namespace llvm
 
 namespace {
 cl::opt<bool> NoDCE("disable-dce",

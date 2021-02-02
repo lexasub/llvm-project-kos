@@ -206,7 +206,8 @@ VariableListSP CompileUnit::GetVariableList(bool can_create) {
   return m_variables;
 }
 
-std::vector<uint32_t> FindFileIndexes(const FileSpecList &files, const FileSpec &file) {
+std::vector<uint32_t> FindFileIndexes(const FileSpecList &files,
+                                      const FileSpec &file) {
   std::vector<uint32_t> result;
   uint32_t idx = -1;
   while ((idx = files.FindFileIndex(idx + 1, file, /*full=*/true)) !=
@@ -220,7 +221,8 @@ uint32_t CompileUnit::FindLineEntry(uint32_t start_idx, uint32_t line,
                                     LineEntry *line_entry_ptr) {
   if (!file_spec_ptr)
     file_spec_ptr = &GetPrimaryFile();
-  std::vector<uint32_t> file_indexes = FindFileIndexes(GetSupportFiles(), *file_spec_ptr);
+  std::vector<uint32_t> file_indexes =
+      FindFileIndexes(GetSupportFiles(), *file_spec_ptr);
   if (file_indexes.empty())
     return UINT32_MAX;
 
@@ -231,9 +233,8 @@ uint32_t CompileUnit::FindLineEntry(uint32_t start_idx, uint32_t line,
   return UINT32_MAX;
 }
 
-void CompileUnit::ResolveSymbolContext(const FileSpec &file_spec,
-                                       uint32_t line, bool check_inlines,
-                                       bool exact,
+void CompileUnit::ResolveSymbolContext(const FileSpec &file_spec, uint32_t line,
+                                       bool check_inlines, bool exact,
                                        SymbolContextItem resolve_scope,
                                        SymbolContextList &sc_list) {
   // First find all of the file indexes that match our "file_spec". If
@@ -248,8 +249,7 @@ void CompileUnit::ResolveSymbolContext(const FileSpec &file_spec,
   if (!file_spec_matches_cu_file_spec && !check_inlines)
     return;
 
-  uint32_t file_idx =
-      GetSupportFiles().FindFileIndex(0, file_spec, true);
+  uint32_t file_idx = GetSupportFiles().FindFileIndex(0, file_spec, true);
   while (file_idx != UINT32_MAX) {
     file_indexes.push_back(file_idx);
     file_idx = GetSupportFiles().FindFileIndex(file_idx + 1, file_spec, true);
@@ -292,13 +292,13 @@ void CompileUnit::ResolveSymbolContext(const FileSpec &file_spec,
     line_idx = line_table->FindLineEntryIndexByFileIndex(0, file_indexes, line,
                                                          exact, &line_entry);
   }
-  
+
   // If "exact == true", then "found_line" will be the same as "line". If
   // "exact == false", the "found_line" will be the closest line entry
   // with a line number greater than "line" and we will use this for our
   // subsequent line exact matches below.
   uint32_t found_line = line_entry.line;
-  
+
   while (line_idx != UINT32_MAX) {
     // If they only asked for the line entry, then we're done, we can
     // just copy that over. But if they wanted more than just the line

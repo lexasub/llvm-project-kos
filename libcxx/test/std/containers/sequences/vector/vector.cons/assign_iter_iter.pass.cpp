@@ -22,7 +22,6 @@
 #include "container_test_types.h"
 #endif
 
-
 void test_emplaceable_concept() {
 #if TEST_STD_VER >= 11
   int arr1[] = {42};
@@ -66,11 +65,8 @@ void test_emplaceable_concept() {
 #endif
 }
 
-
-
-int main(int, char**)
-{
-    test_emplaceable_concept();
+int main(int, char**) {
+  test_emplaceable_concept();
 
   return 0;
 }

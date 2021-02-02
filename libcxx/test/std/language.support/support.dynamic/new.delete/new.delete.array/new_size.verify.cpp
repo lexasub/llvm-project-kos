@@ -19,6 +19,7 @@
 #include <new>
 
 int main(int, char**) {
-    ::operator new[](4);  // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute}}
-    return 0;
+  ::operator new[](
+      4); // expected-warning {{ignoring return value of function declared with 'nodiscard' attribute}}
+  return 0;
 }

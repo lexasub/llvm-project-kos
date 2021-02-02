@@ -9,9 +9,10 @@
 // This file is a part of AddressSanitizer, an address sanity checker.
 //
 //===----------------------------------------------------------------------===//
+#include <vector>
+
 #include "asan_interface_internal.h"
 #include "asan_test_utils.h"
-#include <vector>
 
 TEST(AddressSanitizerInternalInterface, SetShadow) {
   std::vector<char> buffer(17, 0xff);

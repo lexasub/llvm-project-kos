@@ -50,46 +50,42 @@ ms Tolerance = ms(50);
 ms Tolerance = ms(50 * 5);
 #endif
 
-void f()
-{
-    time_point t0 = Clock::now();
-    m.lock_shared();
-    time_point t1 = Clock::now();
-    m.unlock_shared();
-    ns d = t1 - t0 - WaitTime;
-    assert(d < Tolerance);  // within tolerance
+void f() {
+  time_point t0 = Clock::now();
+  m.lock_shared();
+  time_point t1 = Clock::now();
+  m.unlock_shared();
+  ns d = t1 - t0 - WaitTime;
+  assert(d < Tolerance); // within tolerance
 }
 
-void g()
-{
-    time_point t0 = Clock::now();
-    m.lock_shared();
-    time_point t1 = Clock::now();
-    m.unlock_shared();
-    ns d = t1 - t0;
-    assert(d < Tolerance);  // within tolerance
+void g() {
+  time_point t0 = Clock::now();
+  m.lock_shared();
+  time_point t1 = Clock::now();
+  m.unlock_shared();
+  ns d = t1 - t0;
+  assert(d < Tolerance); // within tolerance
 }
 
-
-int main(int, char**)
-{
-    m.lock();
-    std::vector<std::thread> v;
-    for (int i = 0; i < 5; ++i)
-        v.push_back(support::make_test_thread(f));
-    std::this_thread::sleep_for(WaitTime);
-    m.unlock();
-    for (auto& t : v)
-        t.join();
-    m.lock_shared();
-    for (auto& t : v)
-        t = support::make_test_thread(g);
-    std::thread q = support::make_test_thread(f);
-    std::this_thread::sleep_for(WaitTime);
-    m.unlock_shared();
-    for (auto& t : v)
-        t.join();
-    q.join();
+int main(int, char**) {
+  m.lock();
+  std::vector<std::thread> v;
+  for (int i = 0; i < 5; ++i)
+    v.push_back(support::make_test_thread(f));
+  std::this_thread::sleep_for(WaitTime);
+  m.unlock();
+  for (auto& t : v)
+    t.join();
+  m.lock_shared();
+  for (auto& t : v)
+    t = support::make_test_thread(g);
+  std::thread q = support::make_test_thread(f);
+  std::this_thread::sleep_for(WaitTime);
+  m.unlock_shared();
+  for (auto& t : v)
+    t.join();
+  q.join();
 
   return 0;
 }

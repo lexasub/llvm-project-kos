@@ -16,7 +16,7 @@ void good_insert3(std::vector<int> &V1, std::vector<int> &V2) {
 }
 
 void good_insert4(std::vector<int> &V, int len, int n) {
-  V.insert(V.cbegin(), {n-1, n, n+1}); // no-warning
+  V.insert(V.cbegin(), {n - 1, n, n + 1}); // no-warning
 }
 
 void good_insert_find(std::vector<int> &V, int n, int m) {
@@ -67,7 +67,7 @@ void bad_insert3(std::vector<int> &V1, std::vector<int> &V2) {
 }
 
 void bad_insert4(std::vector<int> &V1, std::vector<int> &V2, int len, int n) {
-  V2.insert(V1.cbegin(), {n-1, n, n+1}); // expected-warning{{Container accessed using foreign iterator argument}}
+  V2.insert(V1.cbegin(), {n - 1, n, n + 1}); // expected-warning{{Container accessed using foreign iterator argument}}
 }
 
 void bad_erase1(std::vector<int> &V1, std::vector<int> &V2) {
@@ -85,11 +85,13 @@ void bad_emplace(std::vector<int> &V1, std::vector<int> &V2, int n) {
 }
 
 void good_comparison(std::vector<int> &V) {
-  if (V.cbegin() == V.cend()) {} // no-warning
+  if (V.cbegin() == V.cend()) {
+  } // no-warning
 }
 
 void bad_comparison(std::vector<int> &V1, std::vector<int> &V2) {
-  if (V1.cbegin() != V2.cend()) {} // expected-warning{{Iterators of different containers used where the same container is expected}}
+  if (V1.cbegin() != V2.cend()) {
+  } // expected-warning{{Iterators of different containers used where the same container is expected}}
 }
 
 void bad_ctor(std::vector<int> &V1, std::vector<int> &V2) {
@@ -116,10 +118,11 @@ void ignore_conjured1() {
 void ignore_conjured2() {
   std::vector<int> &V1 = return_vector_ref(), &V2 = return_vector_ref();
 
-  if (V1.cbegin() == V2.cbegin()) {} //no-warning
+  if (V1.cbegin() == V2.cbegin()) {
+  } //no-warning
 }
 
-template<typename T>
+template <typename T>
 struct cont_with_ptr_iterator {
   T *begin() const;
   T *end() const;
@@ -127,6 +130,6 @@ struct cont_with_ptr_iterator {
 
 void comparison_ptr_iterator(cont_with_ptr_iterator<int> &C1,
                              cont_with_ptr_iterator<int> &C2) {
-  if (C1.begin() != C2.end()) {} // expected-warning{{Iterators of different containers used where the same container is expected}}
+  if (C1.begin() != C2.end()) {
+  } // expected-warning{{Iterators of different containers used where the same container is expected}}
 }
-

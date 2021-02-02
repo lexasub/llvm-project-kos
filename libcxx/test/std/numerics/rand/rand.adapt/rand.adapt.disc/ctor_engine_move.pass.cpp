@@ -18,16 +18,15 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        typedef std::ranlux24_base Engine;
-        typedef std::ranlux24 Adaptor;
-        Engine e;
-        Engine e0 = e;
-        Adaptor a(std::move(e0));
-        assert(a.base() == e);
-    }
+int main(int, char**) {
+  {
+    typedef std::ranlux24_base Engine;
+    typedef std::ranlux24 Adaptor;
+    Engine e;
+    Engine e0 = e;
+    Adaptor a(std::move(e0));
+    assert(a.base() == e);
+  }
 
   return 0;
 }

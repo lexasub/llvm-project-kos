@@ -19,13 +19,12 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    std::type_index t1(typeid(int));
-    std::type_index t2(typeid(double));
-    assert(t2 != t1);
-    t2 = t1;
-    assert(t2 == t1);
+int main(int, char**) {
+  std::type_index t1(typeid(int));
+  std::type_index t2(typeid(double));
+  assert(t2 != t1);
+  t2 = t1;
+  assert(t2 == t1);
 
   return 0;
 }

@@ -30,7 +30,7 @@ void BufferedStackTrace::UnwindSlow(uptr pc, u32 max_depth) {
   // FIXME: Compare with StackWalk64.
   // FIXME: Look at LLVMUnhandledExceptionFilter in Signals.inc
   size = CaptureStackBackTrace(1, Min(max_depth, kStackTraceMax),
-    (void **)&trace_buffer[0], 0);
+                               (void **)&trace_buffer[0], 0);
   if (size == 0)
     return;
 
@@ -72,9 +72,9 @@ void BufferedStackTrace::UnwindSlow(uptr pc, void *context, u32 max_depth) {
   stack_frame.AddrFrame.Mode = AddrModeFlat;
   stack_frame.AddrStack.Mode = AddrModeFlat;
   while (StackWalk64(machine_type, GetCurrentProcess(), GetCurrentThread(),
-    &stack_frame, &ctx, NULL, SymFunctionTableAccess64,
-    SymGetModuleBase64, NULL) &&
-    size < Min(max_depth, kStackTraceMax)) {
+                     &stack_frame, &ctx, NULL, SymFunctionTableAccess64,
+                     SymGetModuleBase64, NULL) &&
+         size < Min(max_depth, kStackTraceMax)) {
     trace_buffer[size++] = (uptr)stack_frame.AddrPC.Offset;
   }
 }

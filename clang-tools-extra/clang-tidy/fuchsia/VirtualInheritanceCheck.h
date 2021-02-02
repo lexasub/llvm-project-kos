@@ -20,15 +20,15 @@ namespace fuchsia {
 /// For the user-facing documentation see:
 /// http://clang.llvm.org/extra/clang-tidy/checks/fuchsia-virtual-inheritance.html
 class VirtualInheritanceCheck : public ClangTidyCheck {
- public:
+public:
   VirtualInheritanceCheck(StringRef Name, ClangTidyContext *Context)
       : ClangTidyCheck(Name, Context) {}
   void registerMatchers(ast_matchers::MatchFinder *Finder) override;
   void check(const ast_matchers::MatchFinder::MatchResult &Result) override;
 };
 
-}  // namespace fuchsia
-}  // namespace tidy
-}  // namespace clang
+} // namespace fuchsia
+} // namespace tidy
+} // namespace clang
 
-#endif  // LLVM_CLANG_TOOLS_EXTRA_CLANG_TIDY_FUCHSIA_VIRTUAL_INHERITANCE_H
+#endif // LLVM_CLANG_TOOLS_EXTRA_CLANG_TIDY_FUCHSIA_VIRTUAL_INHERITANCE_H

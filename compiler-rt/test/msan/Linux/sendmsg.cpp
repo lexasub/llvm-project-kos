@@ -20,13 +20,13 @@
 // UNSUPPORTED: android
 
 #include <assert.h>
+#include <sanitizer/msan_interface.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
 #include <sys/socket.h>
-#include <sanitizer/msan_interface.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 const int kBufSize = 10;
 const int kRecvBufSize = 100;
@@ -70,7 +70,7 @@ int main() {
 
   struct mmsghdr mmsg[2];
   mmsg[0].msg_hdr = msg0; // good
-  mmsg[1].msg_hdr = msg; // poisoned
+  mmsg[1].msg_hdr = msg;  // poisoned
 #endif
 
 #if defined(SEND)

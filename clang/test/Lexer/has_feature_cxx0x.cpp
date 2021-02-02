@@ -26,7 +26,6 @@ int no_lambdas();
 // CHECK-11: has_lambdas
 // CHECK-NO-11: no_lambdas
 
-
 #if __has_feature(cxx_nullptr)
 int has_nullptr();
 #else
@@ -37,7 +36,6 @@ int no_nullptr();
 // CHECK-14: has_nullptr
 // CHECK-11: has_nullptr
 // CHECK-NO-11: no_nullptr
-
 
 #if __has_feature(cxx_decltype)
 int has_decltype();
@@ -50,7 +48,6 @@ int no_decltype();
 // CHECK-11: has_decltype
 // CHECK-NO-11: no_decltype
 
-
 #if __has_feature(cxx_decltype_incomplete_return_types)
 int has_decltype_incomplete_return_types();
 #else
@@ -61,7 +58,6 @@ int no_decltype_incomplete_return_types();
 // CHECK-14: has_decltype_incomplete_return_types
 // CHECK-11: has_decltype_incomplete_return_types
 // CHECK-NO-11: no_decltype_incomplete_return_types
-
 
 #if __has_feature(cxx_auto_type)
 int has_auto_type();
@@ -74,7 +70,6 @@ int no_auto_type();
 // CHECK-11: has_auto_type
 // CHECK-NO-11: no_auto_type
 
-
 #if __has_feature(cxx_trailing_return)
 int has_trailing_return();
 #else
@@ -86,7 +81,6 @@ int no_trailing_return();
 // CHECK-11: has_trailing_return
 // CHECK-NO-11: no_trailing_return
 
-
 #if __has_feature(cxx_attributes)
 int has_attributes();
 #else
@@ -97,7 +91,6 @@ int no_attributes();
 // CHECK-14: has_attributes
 // CHECK-11: has_attributes
 // CHECK-NO-11: no_attributes
-
 
 #if __has_feature(cxx_static_assert)
 int has_static_assert();
@@ -143,7 +136,6 @@ int no_rvalue_references();
 // CHECK-11: has_rvalue_references
 // CHECK-NO-11: no_rvalue_references
 
-
 #if __has_feature(cxx_variadic_templates)
 int has_variadic_templates();
 #else
@@ -154,7 +146,6 @@ int no_variadic_templates();
 // CHECK-14: has_variadic_templates
 // CHECK-11: has_variadic_templates
 // CHECK-NO-11: no_variadic_templates
-
 
 #if __has_feature(cxx_inline_namespaces)
 int has_inline_namespaces();
@@ -167,7 +158,6 @@ int no_inline_namespaces();
 // CHECK-11: has_inline_namespaces
 // CHECK-NO-11: no_inline_namespaces
 
-
 #if __has_feature(cxx_range_for)
 int has_range_for();
 #else
@@ -178,7 +168,6 @@ int no_range_for();
 // CHECK-14: has_range_for
 // CHECK-11: has_range_for
 // CHECK-NO-11: no_range_for
-
 
 #if __has_feature(cxx_reference_qualified_functions)
 int has_reference_qualified_functions();

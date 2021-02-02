@@ -179,8 +179,9 @@ void NamespaceCommentCheck::check(const MatchFinder::MatchResult &Result) {
   }
 
   std::string NamespaceNameForDiag =
-      ND->isAnonymousNamespace() ? "anonymous namespace"
-                                 : ("namespace '" + *NamespaceNameAsWritten + "'");
+      ND->isAnonymousNamespace()
+          ? "anonymous namespace"
+          : ("namespace '" + *NamespaceNameAsWritten + "'");
 
   std::string Fix(SpacesBeforeComments, ' ');
   Fix.append("// namespace");

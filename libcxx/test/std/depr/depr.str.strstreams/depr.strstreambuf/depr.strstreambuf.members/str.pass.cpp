@@ -17,15 +17,14 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        std::strstreambuf sb;
-        assert(sb.sputc('a') == 'a');
-        assert(sb.sputc(0) == 0);
-        assert(sb.str() == std::string("a"));
-        sb.freeze(false);
-    }
+int main(int, char**) {
+  {
+    std::strstreambuf sb;
+    assert(sb.sputc('a') == 'a');
+    assert(sb.sputc(0) == 0);
+    assert(sb.str() == std::string("a"));
+    sb.freeze(false);
+  }
 
   return 0;
 }

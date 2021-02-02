@@ -22,21 +22,12 @@
 #include "test_macros.h"
 #include "../AB.h"
 
-std::auto_ptr<B>
-source()
-{
-    return std::auto_ptr<B>(new B(1));
-}
+std::auto_ptr<B> source() { return std::auto_ptr<B>(new B(1)); }
 
-void
-test()
-{
-    std::auto_ptr<A> ap2(source());
-}
+void test() { std::auto_ptr<A> ap2(source()); }
 
-int main(int, char**)
-{
-    test();
+int main(int, char**) {
+  test();
 
   return 0;
 }

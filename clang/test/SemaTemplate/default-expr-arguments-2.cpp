@@ -4,16 +4,17 @@
 // the default arguments of the constructor when the function type is
 // otherwise non-dependent.
 namespace PR6733 {
-  template <class T>
-  class bar {
-  public: enum { kSomeConst = 128 };
-    bar(int x = kSomeConst) {}
-  };
+template <class T>
+class bar {
+public:
+  enum { kSomeConst = 128 };
+  bar(int x = kSomeConst) {}
+};
 
-  // CHECK: FunctionDecl{{.*}}f 'void ()'
-  void f() {
-    // CHECK: VarDecl{{.*}}tmp 'bar<int>'
-    // CHECK: CXXDefaultArgExpr{{.*}}'int'
-    bar<int> tmp;
-  }
+// CHECK: FunctionDecl{{.*}}f 'void ()'
+void f() {
+  // CHECK: VarDecl{{.*}}tmp 'bar<int>'
+  // CHECK: CXXDefaultArgExpr{{.*}}'int'
+  bar<int> tmp;
 }
+} // namespace PR6733

@@ -4,12 +4,12 @@
 #include "Inputs/system-header-simulator-cxx.h"
 
 namespace Cxx11BraceInit {
-  struct Foo {
-    ~Foo() {}
-  };
+struct Foo {
+  ~Foo() {}
+};
 
-  void testInitializerList() {
-    for (Foo foo : {Foo(), Foo()}) {}
+void testInitializerList() {
+  for (Foo foo : {Foo(), Foo()}) {
   }
 }
-
+} // namespace Cxx11BraceInit

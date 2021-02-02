@@ -385,11 +385,11 @@ public:
     return GetStaticBroadcasterClass();
   }
 
-/// A notification structure that can be used by clients to listen
-/// for changes in a process's lifetime.
-///
-/// \see RegisterNotificationCallbacks (const Notifications&) @see
-/// UnregisterNotificationCallbacks (const Notifications&)
+  /// A notification structure that can be used by clients to listen
+  /// for changes in a process's lifetime.
+  ///
+  /// \see RegisterNotificationCallbacks (const Notifications&) @see
+  /// UnregisterNotificationCallbacks (const Notifications&)
   typedef struct {
     void *baton;
     void (*initialize)(void *baton, Process *process);
@@ -727,7 +727,7 @@ public:
   ///
   /// \return
   ///     The constant reference to the member m_image_tokens.
-  const std::vector<lldb::addr_t>& GetImageTokens() { return m_image_tokens; }
+  const std::vector<lldb::addr_t> &GetImageTokens() { return m_image_tokens; }
 
   /// Get the image information address for the current process.
   ///
@@ -757,32 +757,32 @@ public:
   /// public clients.
   virtual void WillPublicStop() {}
 
-/// Register for process and thread notifications.
-///
-/// Clients can register notification callbacks by filling out a
-/// Process::Notifications structure and calling this function.
-///
-/// \param[in] callbacks
-///     A structure that contains the notification baton and
-///     callback functions.
-///
-/// \see Process::Notifications
+  /// Register for process and thread notifications.
+  ///
+  /// Clients can register notification callbacks by filling out a
+  /// Process::Notifications structure and calling this function.
+  ///
+  /// \param[in] callbacks
+  ///     A structure that contains the notification baton and
+  ///     callback functions.
+  ///
+  /// \see Process::Notifications
   void RegisterNotificationCallbacks(const Process::Notifications &callbacks);
 
-/// Unregister for process and thread notifications.
-///
-/// Clients can unregister notification callbacks by passing a copy of the
-/// original baton and callbacks in \a callbacks.
-///
-/// \param[in] callbacks
-///     A structure that contains the notification baton and
-///     callback functions.
-///
-/// \return
-///     Returns \b true if the notification callbacks were
-///     successfully removed from the process, \b false otherwise.
-///
-/// \see Process::Notifications
+  /// Unregister for process and thread notifications.
+  ///
+  /// Clients can unregister notification callbacks by passing a copy of the
+  /// original baton and callbacks in \a callbacks.
+  ///
+  /// \param[in] callbacks
+  ///     A structure that contains the notification baton and
+  ///     callback functions.
+  ///
+  /// \return
+  ///     Returns \b true if the notification callbacks were
+  ///     successfully removed from the process, \b false otherwise.
+  ///
+  /// \see Process::Notifications
   bool UnregisterNotificationCallbacks(const Process::Notifications &callbacks);
 
   //==================================================================
@@ -1226,8 +1226,7 @@ public:
 
   size_t GetThreadStatus(Stream &ostrm, bool only_threads_with_stop_reason,
                          uint32_t start_frame, uint32_t num_frames,
-                         uint32_t num_frames_with_source,
-                         bool stop_format);
+                         uint32_t num_frames_with_source, bool stop_format);
 
   void SendAsyncInterrupt();
 
@@ -1748,8 +1747,7 @@ public:
   ///
   /// \return
   ///     An error value.
-  virtual Status
-  GetMemoryRegions(lldb_private::MemoryRegionInfos &region_list);
+  virtual Status GetMemoryRegions(lldb_private::MemoryRegionInfos &region_list);
 
   virtual Status GetWatchpointSupportInfo(uint32_t &num) {
     Status error;
@@ -2178,17 +2176,17 @@ public:
 
   void SetDynamicCheckers(DynamicCheckerFunctions *dynamic_checkers);
 
-/// Prune ThreadPlanStacks for unreported threads.
-///
-/// \param[in] tid
-///     The tid whose Plan Stack we are seeking to prune.
-///
-/// \return
-///     \b true if the TID is found or \b false if not.
-bool PruneThreadPlansForTID(lldb::tid_t tid);
+  /// Prune ThreadPlanStacks for unreported threads.
+  ///
+  /// \param[in] tid
+  ///     The tid whose Plan Stack we are seeking to prune.
+  ///
+  /// \return
+  ///     \b true if the TID is found or \b false if not.
+  bool PruneThreadPlansForTID(lldb::tid_t tid);
 
-/// Prune ThreadPlanStacks for all unreported threads.
-void PruneThreadPlans();
+  /// Prune ThreadPlanStacks for all unreported threads.
+  void PruneThreadPlans();
 
   /// Find the thread plan stack associated with thread with \a tid.
   ///
@@ -2720,7 +2718,7 @@ protected:
     PreResumeCallbackAndBaton(PreResumeActionCallback in_callback,
                               void *in_baton)
         : callback(in_callback), baton(in_baton) {}
-    bool operator== (const PreResumeCallbackAndBaton &rhs) {
+    bool operator==(const PreResumeCallbackAndBaton &rhs) {
       return callback == rhs.callback && baton == rhs.baton;
     }
   };
@@ -2744,46 +2742,46 @@ protected:
   lldb::ListenerSP m_private_state_listener_sp; // This is the listener for the
                                                 // private state thread.
   HostThread m_private_state_thread; ///< Thread ID for the thread that watches
-                                     ///internal state events
+                                     /// internal state events
   ProcessModID m_mod_id; ///< Tracks the state of the process over stops and
-                         ///other alterations.
+                         /// other alterations.
   uint32_t m_process_unique_id; ///< Each lldb_private::Process class that is
-                                ///created gets a unique integer ID that
-                                ///increments with each new instance
-  uint32_t m_thread_index_id;   ///< Each thread is created with a 1 based index
-                                ///that won't get re-used.
+                                /// created gets a unique integer ID that
+                                /// increments with each new instance
+  uint32_t m_thread_index_id; ///< Each thread is created with a 1 based index
+                              /// that won't get re-used.
   std::map<uint64_t, uint32_t> m_thread_id_to_index_id_map;
   int m_exit_status; ///< The exit status of the process, or -1 if not set.
   std::string m_exit_string; ///< A textual description of why a process exited.
   std::mutex m_exit_status_mutex; ///< Mutex so m_exit_status m_exit_string can
-                                  ///be safely accessed from multiple threads
+                                  /// be safely accessed from multiple threads
   std::recursive_mutex m_thread_mutex;
   ThreadList m_thread_list_real; ///< The threads for this process as are known
-                                 ///to the protocol we are debugging with
+                                 /// to the protocol we are debugging with
   ThreadList m_thread_list; ///< The threads for this process as the user will
-                            ///see them. This is usually the same as
+                            /// see them. This is usually the same as
   ///< m_thread_list_real, but might be different if there is an OS plug-in
-  ///creating memory threads
+  /// creating memory threads
   ThreadPlanStackMap m_thread_plans; ///< This is the list of thread plans for
                                      /// threads in m_thread_list, as well as
                                      /// threads we knew existed, but haven't
                                      /// determined that they have died yet.
   ThreadList m_extended_thread_list; ///< Owner for extended threads that may be
-                                     ///generated, cleared on natural stops
+                                     /// generated, cleared on natural stops
   uint32_t m_extended_thread_stop_id; ///< The natural stop id when
-                                      ///extended_thread_list was last updated
+                                      /// extended_thread_list was last updated
   QueueList
       m_queue_list; ///< The list of libdispatch queues at a given stop point
   uint32_t m_queue_list_stop_id; ///< The natural stop id when queue list was
-                                 ///last fetched
+                                 /// last fetched
   std::vector<Notifications> m_notifications; ///< The list of notifications
-                                              ///that this process can deliver.
+                                              /// that this process can deliver.
   std::vector<lldb::addr_t> m_image_tokens;
   lldb::ListenerSP m_listener_sp; ///< Shared pointer to the listener used for
-                                  ///public events.  Can not be empty.
+                                  /// public events.  Can not be empty.
   BreakpointSiteList m_breakpoint_site_list; ///< This is the list of breakpoint
-                                             ///locations we intend to insert in
-                                             ///the target.
+                                             /// locations we intend to insert
+                                             /// in the target.
   lldb::DynamicLoaderUP m_dyld_up;
   lldb::JITLoaderListUP m_jit_loaders_up;
   lldb::DynamicCheckerFunctionsUP m_dynamic_checkers_up; ///< The functions used

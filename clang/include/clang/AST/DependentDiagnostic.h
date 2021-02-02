@@ -37,16 +37,11 @@ class DependentDiagnostic {
 public:
   enum AccessNonce { Access = 0 };
 
-  static DependentDiagnostic *Create(ASTContext &Context,
-                                     DeclContext *Parent,
-                                     AccessNonce _,
-                                     SourceLocation Loc,
-                                     bool IsMemberAccess,
-                                     AccessSpecifier AS,
-                                     NamedDecl *TargetDecl,
-                                     CXXRecordDecl *NamingClass,
-                                     QualType BaseObjectType,
-                                     const PartialDiagnostic &PDiag) {
+  static DependentDiagnostic *
+  Create(ASTContext &Context, DeclContext *Parent, AccessNonce _,
+         SourceLocation Loc, bool IsMemberAccess, AccessSpecifier AS,
+         NamedDecl *TargetDecl, CXXRecordDecl *NamingClass,
+         QualType BaseObjectType, const PartialDiagnostic &PDiag) {
     DependentDiagnostic *DD = Create(Context, Parent, PDiag);
     DD->AccessData.Loc = Loc;
     DD->AccessData.IsMember = IsMemberAccess;
@@ -57,9 +52,7 @@ public:
     return DD;
   }
 
-  unsigned getKind() const {
-    return Access;
-  }
+  unsigned getKind() const { return Access; }
 
   bool isAccessToMember() const {
     assert(getKind() == Access);
@@ -91,9 +84,7 @@ public:
     return QualType::getFromOpaquePtr(AccessData.BaseObjectType);
   }
 
-  const PartialDiagnostic &getDiagnostic() const {
-    return Diag;
-  }
+  const PartialDiagnostic &getDiagnostic() const { return Diag; }
 
 private:
   friend class DeclContext::ddiag_iterator;
@@ -103,8 +94,7 @@ private:
                       DiagnosticStorage *Storage)
       : Diag(PDiag, Storage) {}
 
-  static DependentDiagnostic *Create(ASTContext &Context,
-                                     DeclContext *Parent,
+  static DependentDiagnostic *Create(ASTContext &Context, DeclContext *Parent,
                                      const PartialDiagnostic &PDiag);
 
   DependentDiagnostic *NextDiagnostic;
@@ -147,13 +137,9 @@ public:
     return tmp;
   }
 
-  bool operator==(ddiag_iterator Other) const {
-    return Ptr == Other.Ptr;
-  }
+  bool operator==(ddiag_iterator Other) const { return Ptr == Other.Ptr; }
 
-  bool operator!=(ddiag_iterator Other) const {
-    return Ptr != Other.Ptr;
-  }
+  bool operator!=(ddiag_iterator Other) const { return Ptr != Other.Ptr; }
 
   ddiag_iterator &operator+=(difference_type N) {
     assert(N >= 0 && "cannot rewind a DeclContext::ddiag_iterator");
@@ -173,10 +159,10 @@ private:
 };
 
 inline DeclContext::ddiag_range DeclContext::ddiags() const {
-  assert(isDependentContext()
-         && "cannot iterate dependent diagnostics of non-dependent context");
-  const DependentStoredDeclsMap *Map
-    = static_cast<DependentStoredDeclsMap*>(getPrimaryContext()->getLookupPtr());
+  assert(isDependentContext() &&
+         "cannot iterate dependent diagnostics of non-dependent context");
+  const DependentStoredDeclsMap *Map = static_cast<DependentStoredDeclsMap *>(
+      getPrimaryContext()->getLookupPtr());
 
   if (!Map)
     // Return an empty range using the always-end default constructor.

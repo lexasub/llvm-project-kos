@@ -27,7 +27,7 @@ static llvm::Function *GetVprintfDeclaration(llvm::Module &M) {
   llvm::FunctionType *VprintfFuncType = llvm::FunctionType::get(
       llvm::Type::getInt32Ty(M.getContext()), ArgTypes, false);
 
-  if (auto* F = M.getFunction("vprintf")) {
+  if (auto *F = M.getFunction("vprintf")) {
     // Our CUDA system header declares vprintf with the right signature, so
     // nobody else should have been able to declare vprintf with a bogus
     // signature.
@@ -113,11 +113,12 @@ CodeGenFunction::EmitNVPTXDevicePrintfCallExpr(const CallExpr *E,
       llvm::Value *Arg = Args[I].getRValue(*this).getScalarVal();
       Builder.CreateAlignedStore(Arg, P, DL.getPrefTypeAlign(Arg->getType()));
     }
-    BufferPtr = Builder.CreatePointerCast(Alloca, llvm::Type::getInt8PtrTy(Ctx));
+    BufferPtr =
+        Builder.CreatePointerCast(Alloca, llvm::Type::getInt8PtrTy(Ctx));
   }
 
   // Invoke vprintf and return.
-  llvm::Function* VprintfFunc = GetVprintfDeclaration(CGM.getModule());
+  llvm::Function *VprintfFunc = GetVprintfDeclaration(CGM.getModule());
   return RValue::get(Builder.CreateCall(
       VprintfFunc, {Args[0].getRValue(*this).getScalarVal(), BufferPtr}));
 }

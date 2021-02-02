@@ -3,12 +3,12 @@
 // PR5775
 class Twine {
 public:
-  Twine(const char *Str) { }
+  Twine(const char *Str) {}
 };
 
 static void error(const Twine &Message) {}
 
-template<typename>
+template <typename>
 struct opt_storage {
   void f() {
     error("cl::location(x) specified more than once!");

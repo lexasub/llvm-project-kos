@@ -96,7 +96,8 @@ enum LegalizeAction : std::uint8_t {
   UseLegacyRules,
 };
 } // end namespace LegalizeActions
-raw_ostream &operator<<(raw_ostream &OS, LegalizeActions::LegalizeAction Action);
+raw_ostream &operator<<(raw_ostream &OS,
+                        LegalizeActions::LegalizeAction Action);
 
 using LegalizeActions::LegalizeAction;
 
@@ -155,17 +156,16 @@ struct LegalizeActionStep {
   /// If describing an action, the new type for TypeIdx. Otherwise LLT{}.
   LLT NewType;
 
-  LegalizeActionStep(LegalizeAction Action, unsigned TypeIdx,
-                     const LLT NewType)
+  LegalizeActionStep(LegalizeAction Action, unsigned TypeIdx, const LLT NewType)
       : Action(Action), TypeIdx(TypeIdx), NewType(NewType) {}
 
   bool operator==(const LegalizeActionStep &RHS) const {
     return std::tie(Action, TypeIdx, NewType) ==
-        std::tie(RHS.Action, RHS.TypeIdx, RHS.NewType);
+           std::tie(RHS.Action, RHS.TypeIdx, RHS.NewType);
   }
 };
 
-using LegalityPredicate = std::function<bool (const LegalityQuery &)>;
+using LegalityPredicate = std::function<bool(const LegalityQuery &)>;
 using LegalizeMutation =
     std::function<std::pair<unsigned, LLT>(const LegalityQuery &)>;
 
@@ -178,41 +178,33 @@ struct TypePairAndMemDesc {
 
   bool operator==(const TypePairAndMemDesc &Other) const {
     return Type0 == Other.Type0 && Type1 == Other.Type1 &&
-           Align == Other.Align &&
-           MemSize == Other.MemSize;
+           Align == Other.Align && MemSize == Other.MemSize;
   }
 
   /// \returns true if this memory access is legal with for the access described
   /// by \p Other (The alignment is sufficient for the size and result type).
   bool isCompatible(const TypePairAndMemDesc &Other) const {
     return Type0 == Other.Type0 && Type1 == Other.Type1 &&
-           Align >= Other.Align &&
-           MemSize == Other.MemSize;
+           Align >= Other.Align && MemSize == Other.MemSize;
   }
 };
 
 /// True iff P0 and P1 are true.
-template<typename Predicate>
-Predicate all(Predicate P0, Predicate P1) {
-  return [=](const LegalityQuery &Query) {
-    return P0(Query) && P1(Query);
-  };
+template <typename Predicate> Predicate all(Predicate P0, Predicate P1) {
+  return [=](const LegalityQuery &Query) { return P0(Query) && P1(Query); };
 }
 /// True iff all given predicates are true.
-template<typename Predicate, typename... Args>
+template <typename Predicate, typename... Args>
 Predicate all(Predicate P0, Predicate P1, Args... args) {
   return all(all(P0, P1), args...);
 }
 
 /// True iff P0 or P1 are true.
-template<typename Predicate>
-Predicate any(Predicate P0, Predicate P1) {
-  return [=](const LegalityQuery &Query) {
-    return P0(Query) || P1(Query);
-  };
+template <typename Predicate> Predicate any(Predicate P0, Predicate P1) {
+  return [=](const LegalityQuery &Query) { return P0(Query) || P1(Query); };
 }
 /// True iff any given predicates are true.
-template<typename Predicate, typename... Args>
+template <typename Predicate, typename... Args>
 Predicate any(Predicate P0, Predicate P1, Args... args) {
   return any(any(P0, P1), args...);
 }
@@ -225,9 +217,8 @@ LegalityPredicate typeInSet(unsigned TypeIdx,
 
 /// True iff the given type index is not the specified type.
 inline LegalityPredicate typeIsNot(unsigned TypeIdx, LLT Type) {
-  return [=](const LegalityQuery &Query) {
-           return Query.Types[TypeIdx] != Type;
-         };
+  return
+      [=](const LegalityQuery &Query) { return Query.Types[TypeIdx] != Type; };
 }
 
 /// True iff the given types for the given pair of type indexes is one of the
@@ -346,9 +337,7 @@ public:
       : Predicate(Predicate), Action(Action), Mutation(Mutation) {}
 
   /// Test whether the LegalityQuery matches.
-  bool match(const LegalityQuery &Query) const {
-    return Predicate(Query);
-  }
+  bool match(const LegalityQuery &Query) const { return Predicate(Query); }
 
   LegalizeAction getAction() const { return Action; }
 
@@ -473,8 +462,9 @@ class LegalizeRuleSet {
     return actionIf(Action, typeInSet(typeIdx(0), Types));
   }
 
-  LegalizeRuleSet &actionForTypeWithAnyImm(
-    LegalizeAction Action, std::initializer_list<std::pair<LLT, LLT>> Types) {
+  LegalizeRuleSet &
+  actionForTypeWithAnyImm(LegalizeAction Action,
+                          std::initializer_list<std::pair<LLT, LLT>> Types) {
     using namespace LegalityPredicates;
     immIdx(0); // Inform verifier imm idx 0 is handled.
     return actionIf(Action, typePairInSet(typeIdx(0), typeIdx(1), Types));
@@ -550,8 +540,8 @@ public:
     return actionForTypeWithAnyImm(LegalizeAction::Legal, Types);
   }
 
-  LegalizeRuleSet &legalForTypeWithAnyImm(
-    std::initializer_list<std::pair<LLT, LLT>> Types) {
+  LegalizeRuleSet &
+  legalForTypeWithAnyImm(std::initializer_list<std::pair<LLT, LLT>> Types) {
     markAllIdxsAsCovered();
     return actionForTypeWithAnyImm(LegalizeAction::Legal, Types);
   }
@@ -774,8 +764,8 @@ public:
     return actionFor(LegalizeAction::Custom, Types);
   }
 
-  /// The instruction is custom when type indexes 0 and 1 is any type pair in the
-  /// given list.
+  /// The instruction is custom when type indexes 0 and 1 is any type pair in
+  /// the given list.
   LegalizeRuleSet &customFor(std::initializer_list<std::pair<LLT, LLT>> Types) {
     return actionFor(LegalizeAction::Custom, Types);
   }
@@ -790,9 +780,7 @@ public:
   }
 
   /// Unconditionally custom lower.
-  LegalizeRuleSet &custom() {
-    return customIf(always);
-  }
+  LegalizeRuleSet &custom() { return customIf(always); }
 
   /// Widen the scalar to the next power of two that is at least MinSize.
   /// No effect if the type is not a scalar or is a power of two.
@@ -937,12 +925,13 @@ public:
   /// SameSizeIdx.
   LegalizeRuleSet &scalarSameSizeAs(unsigned TypeIdx, unsigned SameSizeIdx) {
     return minScalarSameAs(TypeIdx, SameSizeIdx)
-          .maxScalarSameAs(TypeIdx, SameSizeIdx);
+        .maxScalarSameAs(TypeIdx, SameSizeIdx);
   }
 
   /// Conditionally widen the scalar or elt to match the size of another.
   LegalizeRuleSet &minScalarEltSameAsIf(LegalityPredicate Predicate,
-                                   unsigned TypeIdx, unsigned LargeTypeIdx) {
+                                        unsigned TypeIdx,
+                                        unsigned LargeTypeIdx) {
     typeIdx(TypeIdx);
     return widenScalarIf(
         [=](const LegalityQuery &Query) {
@@ -1268,8 +1257,7 @@ public:
                        const MachineRegisterInfo &MRI) const;
 
   /// Called for instructions with the Custom LegalizationAction.
-  virtual bool legalizeCustom(LegalizerHelper &Helper,
-                              MachineInstr &MI) const {
+  virtual bool legalizeCustom(LegalizerHelper &Helper, MachineInstr &MI) const {
     llvm_unreachable("must implement this if custom action is used");
   }
 
@@ -1364,12 +1352,12 @@ private:
 
   /// A partial SizeAndActionsVec potentially doesn't cover all bit sizes,
   /// i.e. it's OK if it doesn't start from size 1.
-  static void checkPartialSizeAndActionsVector(const SizeAndActionsVec& v) {
+  static void checkPartialSizeAndActionsVector(const SizeAndActionsVec &v) {
     using namespace LegalizeActions;
 #ifndef NDEBUG
     // The sizes should be in increasing order
     int prev_size = -1;
-    for(auto SizeAndAction: v) {
+    for (auto SizeAndAction : v) {
       assert(SizeAndAction.first > prev_size);
       prev_size = SizeAndAction.first;
     }
@@ -1382,23 +1370,23 @@ private:
     int LargestWidenIdx = -1;
     int SmallestLegalizableToSameSizeIdx = -1;
     int LargestLegalizableToSameSizeIdx = -1;
-    for(size_t i=0; i<v.size(); ++i) {
+    for (size_t i = 0; i < v.size(); ++i) {
       switch (v[i].second) {
-        case FewerElements:
-        case NarrowScalar:
-          if (SmallestNarrowIdx == -1)
-            SmallestNarrowIdx = i;
-          break;
-        case WidenScalar:
-        case MoreElements:
-          LargestWidenIdx = i;
-          break;
-        case Unsupported:
-          break;
-        default:
-          if (SmallestLegalizableToSameSizeIdx == -1)
-            SmallestLegalizableToSameSizeIdx = i;
-          LargestLegalizableToSameSizeIdx = i;
+      case FewerElements:
+      case NarrowScalar:
+        if (SmallestNarrowIdx == -1)
+          SmallestNarrowIdx = i;
+        break;
+      case WidenScalar:
+      case MoreElements:
+        LargestWidenIdx = i;
+        break;
+      case Unsupported:
+        break;
+      default:
+        if (SmallestLegalizableToSameSizeIdx == -1)
+          SmallestLegalizableToSameSizeIdx = i;
+        LargestLegalizableToSameSizeIdx = i;
       }
     }
     if (SmallestNarrowIdx != -1) {
@@ -1412,7 +1400,7 @@ private:
 
   /// A full SizeAndActionsVec must cover all bit sizes, i.e. must start with
   /// from size 1.
-  static void checkFullSizeAndActionsVector(const SizeAndActionsVec& v) {
+  static void checkFullSizeAndActionsVector(const SizeAndActionsVec &v) {
 #ifndef NDEBUG
     // Data structure invariant: The first bit size must be size 1.
     assert(v.size() >= 1);

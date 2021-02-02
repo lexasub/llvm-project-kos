@@ -57,18 +57,20 @@ IncompleteType* getNewIncomplete();
 IncompleteType* getNewIncompleteArray(int size);
 
 #if TEST_STD_VER >= 11
-template <class ThisT, class ...Args>
+template <class ThisT, class... Args>
 struct args_is_this_type : std::false_type {};
 
 template <class ThisT, class A1>
-struct args_is_this_type<ThisT, A1> : std::is_same<ThisT, typename std::decay<A1>::type> {};
+struct args_is_this_type<ThisT, A1>
+    : std::is_same<ThisT, typename std::decay<A1>::type> {};
 #endif
 
 template <class IncompleteT = IncompleteType,
           class Del = std::default_delete<IncompleteT> >
 struct StoresIncomplete {
   static_assert((std::is_same<IncompleteT, IncompleteType>::value ||
-                 std::is_same<IncompleteT, IncompleteType[]>::value), "");
+                 std::is_same<IncompleteT, IncompleteType[]>::value),
+                "");
 
   std::unique_ptr<IncompleteT, Del> m_ptr;
 
@@ -76,7 +78,7 @@ struct StoresIncomplete {
   StoresIncomplete(StoresIncomplete const&) = delete;
   StoresIncomplete(StoresIncomplete&&) = default;
 
-  template <class ...Args>
+  template <class... Args>
   StoresIncomplete(Args&&... args) : m_ptr(std::forward<Args>(args)...) {
     static_assert(!args_is_this_type<StoresIncomplete, Args...>::value, "");
   }
@@ -84,6 +86,7 @@ struct StoresIncomplete {
 private:
   StoresIncomplete();
   StoresIncomplete(StoresIncomplete const&);
+
 public:
 #endif
 

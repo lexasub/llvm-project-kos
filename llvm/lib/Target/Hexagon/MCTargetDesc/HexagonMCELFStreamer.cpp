@@ -39,11 +39,10 @@
 
 using namespace llvm;
 
-static cl::opt<unsigned> GPSize
-  ("gpsize", cl::NotHidden,
-   cl::desc("Global Pointer Addressing Size.  The default size is 8."),
-   cl::Prefix,
-   cl::init(8));
+static cl::opt<unsigned>
+    GPSize("gpsize", cl::NotHidden,
+           cl::desc("Global Pointer Addressing Size.  The default size is 8."),
+           cl::Prefix, cl::init(8));
 
 HexagonMCELFStreamer::HexagonMCELFStreamer(
     MCContext &Context, std::unique_ptr<MCAsmBackend> TAB,
@@ -136,17 +135,15 @@ void HexagonMCELFStreamer::HexagonMCEmitCommonSymbol(MCSymbol *Symbol,
   ELFSymbol->setSize(MCConstantExpr::create(Size, getContext()));
 }
 
-void HexagonMCELFStreamer::HexagonMCEmitLocalCommonSymbol(MCSymbol *Symbol,
-                                                         uint64_t Size,
-                                                         unsigned ByteAlignment,
-                                                         unsigned AccessSize) {
+void HexagonMCELFStreamer::HexagonMCEmitLocalCommonSymbol(
+    MCSymbol *Symbol, uint64_t Size, unsigned ByteAlignment,
+    unsigned AccessSize) {
   getAssembler().registerSymbol(*Symbol);
   auto ELFSymbol = cast<MCSymbolELF>(Symbol);
   ELFSymbol->setBinding(ELF::STB_LOCAL);
   ELFSymbol->setExternal(false);
   HexagonMCEmitCommonSymbol(Symbol, Size, ByteAlignment, AccessSize);
 }
-
 
 namespace llvm {
 MCStreamer *createHexagonELFStreamer(Triple const &TT, MCContext &Context,
@@ -155,6 +152,6 @@ MCStreamer *createHexagonELFStreamer(Triple const &TT, MCContext &Context,
                                      std::unique_ptr<MCCodeEmitter> CE) {
   return new HexagonMCELFStreamer(Context, std::move(MAB), std::move(OW),
                                   std::move(CE));
-  }
+}
 
 } // end namespace llvm

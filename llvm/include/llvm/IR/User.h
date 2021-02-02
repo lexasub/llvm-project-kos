@@ -38,12 +38,10 @@ template <typename T> class MutableArrayRef;
 /// Compile-time customization of User operands.
 ///
 /// Customizes operand-related allocators and accessors.
-template <class>
-struct OperandTraits;
+template <class> struct OperandTraits;
 
 class User : public Value {
-  template <unsigned>
-  friend struct HungoffOperandTraits;
+  template <unsigned> friend struct HungoffOperandTraits;
 
   LLVM_ATTRIBUTE_ALWAYS_INLINE static void *
   allocateFixedOperandUser(size_t, unsigned, unsigned);
@@ -70,8 +68,7 @@ protected:
   /// This is used for subclasses which have a fixed number of operands.
   void *operator new(size_t Size, unsigned Us, unsigned DescBytes);
 
-  User(Type *ty, unsigned vty, Use *, unsigned NumOps)
-      : Value(ty, vty) {
+  User(Type *ty, unsigned vty, Use *, unsigned NumOps) : Value(ty, vty) {
     assert(NumOps < (1u << NumUserOperandsBits) && "Too many operands");
     NumUserOperands = NumOps;
     // If we have hung off uses, then the operand list should initially be
@@ -100,10 +97,11 @@ public:
   void operator delete(void *Usr);
   /// Placement delete - required by std, called if the ctor throws.
   void operator delete(void *Usr, unsigned) {
-    // Note: If a subclass manipulates the information which is required to calculate the
-    // Usr memory pointer, e.g. NumUserOperands, the operator delete of that subclass has
-    // to restore the changed information to the original value, since the dtor of that class
-    // is not called if the ctor fails.
+    // Note: If a subclass manipulates the information which is required to
+    // calculate the Usr memory pointer, e.g. NumUserOperands, the operator
+    // delete of that subclass has to restore the changed information to the
+    // original value, since the dtor of that class is not called if the ctor
+    // fails.
     User::operator delete(Usr);
 
 #ifndef LLVM_ENABLE_EXCEPTIONS
@@ -112,10 +110,11 @@ public:
   }
   /// Placement delete - required by std, called if the ctor throws.
   void operator delete(void *Usr, unsigned, unsigned) {
-    // Note: If a subclass manipulates the information which is required to calculate the
-    // Usr memory pointer, e.g. NumUserOperands, the operator delete of that subclass has
-    // to restore the changed information to the original value, since the dtor of that class
-    // is not called if the ctor fails.
+    // Note: If a subclass manipulates the information which is required to
+    // calculate the Usr memory pointer, e.g. NumUserOperands, the operator
+    // delete of that subclass has to restore the changed information to the
+    // original value, since the dtor of that class is not called if the ctor
+    // fails.
     User::operator delete(Usr);
 
 #ifndef LLVM_ENABLE_EXCEPTIONS
@@ -125,17 +124,12 @@ public:
 
 protected:
   template <int Idx, typename U> static Use &OpFrom(const U *that) {
-    return Idx < 0
-      ? OperandTraits<U>::op_end(const_cast<U*>(that))[Idx]
-      : OperandTraits<U>::op_begin(const_cast<U*>(that))[Idx];
+    return Idx < 0 ? OperandTraits<U>::op_end(const_cast<U *>(that))[Idx]
+                   : OperandTraits<U>::op_begin(const_cast<U *>(that))[Idx];
   }
 
-  template <int Idx> Use &Op() {
-    return OpFrom<Idx>(this);
-  }
-  template <int Idx> const Use &Op() const {
-    return OpFrom<Idx>(this);
-  }
+  template <int Idx> Use &Op() { return OpFrom<Idx>(this); }
+  template <int Idx> const Use &Op() const { return OpFrom<Idx>(this); }
 
 private:
   const Use *getHungOffOperands() const {
@@ -173,8 +167,8 @@ public:
 
   void setOperand(unsigned i, Value *Val) {
     assert(i < NumUserOperands && "setOperand() out of range!");
-    assert((!isa<Constant>((const Value*)this) ||
-            isa<GlobalValue>((const Value*)this)) &&
+    assert((!isa<Constant>((const Value *)this) ||
+            isa<GlobalValue>((const Value *)this)) &&
            "Cannot mutate a constant with setOperand!");
     getOperandList()[i] = Val;
   }
@@ -226,22 +220,18 @@ public:
   // ---------------------------------------------------------------------------
   // Operand Iterator interface...
   //
-  using op_iterator = Use*;
-  using const_op_iterator = const Use*;
+  using op_iterator = Use *;
+  using const_op_iterator = const Use *;
   using op_range = iterator_range<op_iterator>;
   using const_op_range = iterator_range<const_op_iterator>;
 
-  op_iterator       op_begin()       { return getOperandList(); }
+  op_iterator op_begin() { return getOperandList(); }
   const_op_iterator op_begin() const { return getOperandList(); }
-  op_iterator       op_end()         {
+  op_iterator op_end() { return getOperandList() + NumUserOperands; }
+  const_op_iterator op_end() const {
     return getOperandList() + NumUserOperands;
   }
-  const_op_iterator op_end()   const {
-    return getOperandList() + NumUserOperands;
-  }
-  op_range operands() {
-    return op_range(op_begin(), op_end());
-  }
+  op_range operands() { return op_range(op_begin(), op_end()); }
   const_op_range operands() const {
     return const_op_range(op_begin(), op_end());
   }
@@ -257,12 +247,8 @@ public:
     Value *operator->() const { return operator*(); }
   };
 
-  value_op_iterator value_op_begin() {
-    return value_op_iterator(op_begin());
-  }
-  value_op_iterator value_op_end() {
-    return value_op_iterator(op_end());
-  }
+  value_op_iterator value_op_begin() { return value_op_iterator(op_begin()); }
+  value_op_iterator value_op_end() { return value_op_iterator(op_end()); }
   iterator_range<value_op_iterator> operand_values() {
     return make_range(value_op_begin(), value_op_end());
   }
@@ -271,8 +257,8 @@ public:
       : iterator_adaptor_base<const_value_op_iterator, const_op_iterator,
                               std::random_access_iterator_tag, const Value *,
                               ptrdiff_t, const Value *, const Value *> {
-    explicit const_value_op_iterator(const Use *U = nullptr) :
-      iterator_adaptor_base(U) {}
+    explicit const_value_op_iterator(const Use *U = nullptr)
+        : iterator_adaptor_base(U) {}
 
     const Value *operator*() const { return *I; }
     const Value *operator->() const { return operator*(); }
@@ -319,15 +305,15 @@ static_assert(alignof(Use) >= alignof(User),
 static_assert(alignof(Use *) >= alignof(User),
               "Alignment is insufficient after objects prepended to User");
 
-template<> struct simplify_type<User::op_iterator> {
-  using SimpleType = Value*;
+template <> struct simplify_type<User::op_iterator> {
+  using SimpleType = Value *;
 
   static SimpleType getSimplifiedValue(User::op_iterator &Val) {
     return Val->get();
   }
 };
-template<> struct simplify_type<User::const_op_iterator> {
-  using SimpleType = /*const*/ Value*;
+template <> struct simplify_type<User::const_op_iterator> {
+  using SimpleType = /*const*/ Value *;
 
   static SimpleType getSimplifiedValue(User::const_op_iterator &Val) {
     return Val->get();

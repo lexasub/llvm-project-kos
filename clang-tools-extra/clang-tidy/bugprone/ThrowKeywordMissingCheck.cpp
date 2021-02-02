@@ -31,7 +31,7 @@ void ThrowKeywordMissingCheck::registerMatchers(MatchFinder *Finder) {
                         allOf(hasAncestor(CtorInitializerList),
                               unless(hasAncestor(cxxCatchStmt()))))))
           .bind("temporary-exception-not-thrown"),
-      this); 
+      this);
 }
 
 void ThrowKeywordMissingCheck::check(const MatchFinder::MatchResult &Result) {

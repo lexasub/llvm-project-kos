@@ -8,8 +8,8 @@ void *malloc(size_t size);
 
 void *operator new(size_t size) throw() {
   void *x = malloc(size); // expected-note {{Memory is allocated}}
-  if (!x) // expected-note    {{Assuming 'x' is non-null}}
-          // expected-note@-1 {{Taking false branch}}
+  if (!x)                 // expected-note    {{Assuming 'x' is non-null}}
+                          // expected-note@-1 {{Taking false branch}}
     return nullptr;
   // expected-warning@-1 {{null returned from function that requires a non-null return value}}
   return x;
@@ -19,4 +19,4 @@ void checkNewAndConstructorInlining() {
   int *s = new int; // expected-note   {{Calling 'operator new'}}
                     // expected-note@-1{{Returning from 'operator new'}}
 } // expected-warning {{Potential leak of memory pointed to by 's'}}
-  // expected-note@-1 {{Potential leak of memory pointed to by 's'}}
+// expected-note@-1 {{Potential leak of memory pointed to by 's'}}

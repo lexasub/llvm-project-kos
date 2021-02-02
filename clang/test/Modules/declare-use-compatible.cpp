@@ -33,4 +33,3 @@
 #include "b.h"
 
 const int g = b;
-

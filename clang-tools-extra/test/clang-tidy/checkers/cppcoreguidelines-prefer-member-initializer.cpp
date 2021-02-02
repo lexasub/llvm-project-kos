@@ -1,10 +1,10 @@
 // RUN: %check_clang_tidy %s cppcoreguidelines-prefer-member-initializer %t -- -- -fcxx-exceptions
 
-extern void __assert_fail (__const char *__assertion, __const char *__file,
-    unsigned int __line, __const char *__function)
-     __attribute__ ((__noreturn__));
+extern void __assert_fail(__const char *__assertion, __const char *__file,
+                          unsigned int __line, __const char *__function)
+    __attribute__((__noreturn__));
 #define assert(expr) \
-  ((expr)  ? (void)(0)  : __assert_fail (#expr, __FILE__, __LINE__, __func__))
+  ((expr) ? (void)(0) : __assert_fail(#expr, __FILE__, __LINE__, __func__))
 
 class Simple1 {
   int n;
@@ -269,7 +269,7 @@ public:
       risky();
       m = 1;
       // NO-MESSAGES: initialization of 'm' follows is nested in a try-block
-    } catch (const E& e) {
+    } catch (const E &e) {
       return;
     }
   }
@@ -285,7 +285,7 @@ public:
   Complex12() : n(0) {
     try {
       risky();
-    } catch (const E& e) {
+    } catch (const E &e) {
       return;
     }
     m = 1;
@@ -318,8 +318,7 @@ public:
     goto X;
     m = 1;
     // NO-MESSAGES: initialization of 'm' follows a goto statement
-  X:
-    ;
+  X:;
   }
 
   ~Complex14() = default;
@@ -380,7 +379,7 @@ public:
   Complex18() try {
     n = risky();
     // NO-MESSAGES: initialization of 'n' in a 'try' body;
-  } catch (const E& e) {
+  } catch (const E &e) {
     n = 0;
   }
 
@@ -389,6 +388,7 @@ public:
 
 class Complex19 {
   int n;
+
 public:
   Complex19() {
     // CHECK-FIXES: Complex19() : n(0) {
@@ -434,20 +434,20 @@ class VeryComplex1 {
     // CHECK-FIXES:                  n4(something_int()), n5(something_int()), n6(something_int()), x4(something_double()),
     // CHECK-FIXES:                  x5(something_double()), x6(something_double()) {
 
-// FIXME: Order of elements on the constructor initializer list should match
-//        the order of the declaration of the fields. Thus the correct fixes
-//        should look like these:
-//
+    // FIXME: Order of elements on the constructor initializer list should match
+    //        the order of the declaration of the fields. Thus the correct fixes
+    //        should look like these:
+    //
     // C ECK-FIXES: VeryComplex1() : n2(something_int()), n1(something_int()), n3(something_int()), x2(something_double()), x1(something_double()), x3(something_double()),
     // C ECK-FIXES:                  n4(something_int()), n5(something_int()), n6(something_int()), x4(something_double()),
     // C ECK-FIXES:                  x5(something_double()), x6(something_double()) {
-//
-//        However, the Diagnostics Engine processes fixes in the order of the
-//        diagnostics and insertions to the same position are handled in left to
-//        right order thus in the case two adjacent fields are initialized
-//        inside the constructor in reverse order the provided fix is a
-//        constructor initializer list that does not match the order of the
-//        declaration of the fields.
+    //
+    //        However, the Diagnostics Engine processes fixes in the order of the
+    //        diagnostics and insertions to the same position are handled in left to
+    //        right order thus in the case two adjacent fields are initialized
+    //        inside the constructor in reverse order the provided fix is a
+    //        constructor initializer list that does not match the order of the
+    //        declaration of the fields.
 
     x2 = something_double();
     // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: 'x2' should be initialized in a member initializer of the constructor [cppcoreguidelines-prefer-member-initializer]
@@ -480,11 +480,11 @@ struct Outside {
 };
 
 Outside::Outside() {
-    // CHECK-FIXES: Outside::Outside() : n(1), x(1.0) {
+  // CHECK-FIXES: Outside::Outside() : n(1), x(1.0) {
   n = 1;
-    // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: 'n' should be initialized in a member initializer of the constructor [cppcoreguidelines-prefer-member-initializer]
-    // CHECK-FIXES: {{^\ *$}}
+  // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: 'n' should be initialized in a member initializer of the constructor [cppcoreguidelines-prefer-member-initializer]
+  // CHECK-FIXES: {{^\ *$}}
   x = 1.0;
-    // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: 'x' should be initialized in a member initializer of the constructor [cppcoreguidelines-prefer-member-initializer]
-    // CHECK-FIXES: {{^\ *$}}
+  // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: 'x' should be initialized in a member initializer of the constructor [cppcoreguidelines-prefer-member-initializer]
+  // CHECK-FIXES: {{^\ *$}}
 }

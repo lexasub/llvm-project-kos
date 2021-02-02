@@ -36,7 +36,7 @@ using namespace llvm::minidump;
 LLVM_ENABLE_BITMASK_ENUMS_IN_NAMESPACE();
 
 enum class CvSignature : uint32_t {
-  Pdb70 = 0x53445352, // RSDS
+  Pdb70 = 0x53445352,      // RSDS
   ElfBuildId = 0x4270454c, // BpEL (Breakpad/Crashpad minidumps)
 };
 

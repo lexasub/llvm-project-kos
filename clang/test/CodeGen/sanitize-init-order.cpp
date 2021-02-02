@@ -13,14 +13,14 @@ struct PODStruct {
 PODStruct s1;
 
 struct PODWithDtor {
-  ~PODWithDtor() { }
+  ~PODWithDtor() {}
   int x;
 };
 PODWithDtor s2;
 
 struct PODWithCtorAndDtor {
-  PODWithCtorAndDtor() { }
-  ~PODWithCtorAndDtor() { }
+  PODWithCtorAndDtor() {}
+  ~PODWithCtorAndDtor() {}
   int x;
 };
 PODWithCtorAndDtor s3;
@@ -32,7 +32,7 @@ public:
 };
 
 const volatile PODWithCtor array[5][5];
-}
+} // namespace NS
 
 // Check that ASan init-order checking ignores structs with trivial default
 // constructor.

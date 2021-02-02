@@ -24,4 +24,3 @@ char nl = '\n';
 
 // CHECK: "value": "abc \n\t\u0000\u001f"
 char s[] = "abc \n\t\0\x1f";
-

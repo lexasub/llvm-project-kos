@@ -44,9 +44,9 @@ private:
   // objects are only destroyed when every shared pointer to any of them
   // is destroyed, so we must not store a shared pointer to any ValueObject
   // derived from our backend ValueObject (since we're in the same cluster).
-  ValueObject* m_ptr_obj = nullptr;
-  ValueObject* m_obj_obj = nullptr;
-  ValueObject* m_del_obj = nullptr;
+  ValueObject *m_ptr_obj = nullptr;
+  ValueObject *m_obj_obj = nullptr;
+  ValueObject *m_del_obj = nullptr;
 
   ValueObjectSP GetTuple();
 };
@@ -72,7 +72,7 @@ ValueObjectSP LibStdcppUniquePtrSyntheticFrontEnd::GetTuple() {
   ValueObjectSP obj_child_sp =
       valobj_sp->GetChildMemberWithName(ConstString("_M_t"), true);
   if (!obj_child_sp)
-      return nullptr;
+    return nullptr;
 
   ValueObjectSP obj_subchild_sp =
       obj_child_sp->GetChildMemberWithName(ConstString("_M_t"), true);
@@ -133,8 +133,8 @@ size_t LibStdcppUniquePtrSyntheticFrontEnd::CalculateNumChildren() {
   return 1;
 }
 
-size_t LibStdcppUniquePtrSyntheticFrontEnd::GetIndexOfChildWithName(
-    ConstString name) {
+size_t
+LibStdcppUniquePtrSyntheticFrontEnd::GetIndexOfChildWithName(ConstString name) {
   if (name == "ptr" || name == "pointer")
     return 0;
   if (name == "del" || name == "deleter")

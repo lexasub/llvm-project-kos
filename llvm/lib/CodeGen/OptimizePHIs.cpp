@@ -34,33 +34,33 @@ STATISTIC(NumDeadPHICycles, "Number of dead PHI cycles");
 
 namespace {
 
-  class OptimizePHIs : public MachineFunctionPass {
-    MachineRegisterInfo *MRI;
-    const TargetInstrInfo *TII;
+class OptimizePHIs : public MachineFunctionPass {
+  MachineRegisterInfo *MRI;
+  const TargetInstrInfo *TII;
 
-  public:
-    static char ID; // Pass identification
+public:
+  static char ID; // Pass identification
 
-    OptimizePHIs() : MachineFunctionPass(ID) {
-      initializeOptimizePHIsPass(*PassRegistry::getPassRegistry());
-    }
+  OptimizePHIs() : MachineFunctionPass(ID) {
+    initializeOptimizePHIsPass(*PassRegistry::getPassRegistry());
+  }
 
-    bool runOnMachineFunction(MachineFunction &Fn) override;
+  bool runOnMachineFunction(MachineFunction &Fn) override;
 
-    void getAnalysisUsage(AnalysisUsage &AU) const override {
-      AU.setPreservesCFG();
-      MachineFunctionPass::getAnalysisUsage(AU);
-    }
+  void getAnalysisUsage(AnalysisUsage &AU) const override {
+    AU.setPreservesCFG();
+    MachineFunctionPass::getAnalysisUsage(AU);
+  }
 
-  private:
-    using InstrSet = SmallPtrSet<MachineInstr *, 16>;
-    using InstrSetIterator = SmallPtrSetIterator<MachineInstr *>;
+private:
+  using InstrSet = SmallPtrSet<MachineInstr *, 16>;
+  using InstrSetIterator = SmallPtrSetIterator<MachineInstr *>;
 
-    bool IsSingleValuePHICycle(MachineInstr *MI, unsigned &SingleValReg,
-                               InstrSet &PHIsInCycle);
-    bool IsDeadPHICycle(MachineInstr *MI, InstrSet &PHIsInCycle);
-    bool OptimizeBB(MachineBasicBlock &MBB);
-  };
+  bool IsSingleValuePHICycle(MachineInstr *MI, unsigned &SingleValReg,
+                             InstrSet &PHIsInCycle);
+  bool IsDeadPHICycle(MachineInstr *MI, InstrSet &PHIsInCycle);
+  bool OptimizeBB(MachineBasicBlock &MBB);
+};
 
 } // end anonymous namespace
 
@@ -68,8 +68,8 @@ char OptimizePHIs::ID = 0;
 
 char &llvm::OptimizePHIsID = OptimizePHIs::ID;
 
-INITIALIZE_PASS(OptimizePHIs, DEBUG_TYPE,
-                "Optimize machine instruction PHIs", false, false)
+INITIALIZE_PASS(OptimizePHIs, DEBUG_TYPE, "Optimize machine instruction PHIs",
+                false, false)
 
 bool OptimizePHIs::runOnMachineFunction(MachineFunction &Fn) {
   if (skipFunction(Fn.getFunction()))
@@ -166,8 +166,8 @@ bool OptimizePHIs::IsDeadPHICycle(MachineInstr *MI, InstrSet &PHIsInCycle) {
 /// a single value.
 bool OptimizePHIs::OptimizeBB(MachineBasicBlock &MBB) {
   bool Changed = false;
-  for (MachineBasicBlock::iterator
-         MII = MBB.begin(), E = MBB.end(); MII != E; ) {
+  for (MachineBasicBlock::iterator MII = MBB.begin(), E = MBB.end();
+       MII != E;) {
     MachineInstr *MI = &*MII++;
     if (!MI->isPHI())
       break;

@@ -1,4 +1,5 @@
-//===--- Sparc.h - Sparc-specific Tool Helpers ----------------------*- C++ -*-===//
+//===--- Sparc.h - Sparc-specific Tool Helpers ----------------------*- C++
+//-*-===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -34,7 +35,7 @@ const char *getSparcAsmModeForCPU(llvm::StringRef Name,
                                   const llvm::Triple &Triple);
 
 } // end namespace sparc
-} // end namespace target
+} // namespace tools
 } // end namespace driver
 } // end namespace clang
 

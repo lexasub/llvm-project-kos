@@ -257,8 +257,7 @@ struct MachineStackObject {
   bool operator==(const MachineStackObject &Other) const {
     return ID == Other.ID && Name == Other.Name && Type == Other.Type &&
            Offset == Other.Offset && Size == Other.Size &&
-           Alignment == Other.Alignment &&
-           StackID == Other.StackID &&
+           Alignment == Other.Alignment && StackID == Other.StackID &&
            CalleeSavedRegister == Other.CalleeSavedRegister &&
            CalleeSavedRestored == Other.CalleeSavedRestored &&
            LocalOffset == Other.LocalOffset && DebugVar == Other.DebugVar &&
@@ -324,12 +323,12 @@ struct FixedMachineStackObject {
   bool operator==(const FixedMachineStackObject &Other) const {
     return ID == Other.ID && Type == Other.Type && Offset == Other.Offset &&
            Size == Other.Size && Alignment == Other.Alignment &&
-           StackID == Other.StackID &&
-           IsImmutable == Other.IsImmutable && IsAliased == Other.IsAliased &&
+           StackID == Other.StackID && IsImmutable == Other.IsImmutable &&
+           IsAliased == Other.IsAliased &&
            CalleeSavedRegister == Other.CalleeSavedRegister &&
            CalleeSavedRestored == Other.CalleeSavedRestored &&
-           DebugVar == Other.DebugVar && DebugExpr == Other.DebugExpr
-           && DebugLoc == Other.DebugLoc;
+           DebugVar == Other.DebugVar && DebugExpr == Other.DebugExpr &&
+           DebugLoc == Other.DebugLoc;
   }
 };
 
@@ -342,8 +341,7 @@ struct ScalarEnumerationTraits<FixedMachineStackObject::ObjectType> {
   }
 };
 
-template <>
-struct ScalarEnumerationTraits<TargetStackID::Value> {
+template <> struct ScalarEnumerationTraits<TargetStackID::Value> {
   static void enumeration(yaml::IO &IO, TargetStackID::Value &ID) {
     IO.enumCase(ID, "default", TargetStackID::Default);
     IO.enumCase(ID, "sgpr-spill", TargetStackID::SGPRSpill);
@@ -369,7 +367,7 @@ template <> struct MappingTraits<FixedMachineStackObject> {
     YamlIO.mapOptional("callee-saved-register", Object.CalleeSavedRegister,
                        StringValue()); // Don't print it out when it's empty.
     YamlIO.mapOptional("callee-saved-restored", Object.CalleeSavedRestored,
-                     true);
+                       true);
     YamlIO.mapOptional("debug-info-variable", Object.DebugVar,
                        StringValue()); // Don't print it out when it's empty.
     YamlIO.mapOptional("debug-info-expression", Object.DebugExpr,
@@ -380,7 +378,6 @@ template <> struct MappingTraits<FixedMachineStackObject> {
 
   static const bool flow = true;
 };
-
 
 /// Serializable representation of CallSiteInfo.
 struct CallSiteInfo {
@@ -422,8 +419,8 @@ template <> struct MappingTraits<CallSiteInfo::ArgRegPair> {
 
   static const bool flow = true;
 };
-}
-}
+} // namespace yaml
+} // namespace llvm
 
 LLVM_YAML_IS_SEQUENCE_VECTOR(llvm::yaml::CallSiteInfo::ArgRegPair)
 

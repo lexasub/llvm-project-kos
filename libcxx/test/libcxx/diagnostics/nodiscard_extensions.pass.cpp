@@ -34,7 +34,7 @@ struct P {
 };
 
 int main(int, char**) {
-  int arr[1] = { 1 };
+  int arr[1] = {1};
 
   std::adjacent_find(std::begin(arr), std::end(arr));
   std::adjacent_find(std::begin(arr), std::end(arr), std::greater<int>());

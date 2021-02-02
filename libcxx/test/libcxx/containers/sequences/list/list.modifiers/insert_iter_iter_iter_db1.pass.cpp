@@ -22,18 +22,17 @@
 #include "test_macros.h"
 #include "test_iterators.h"
 
-int main(int, char**)
-{
-    {
-        std::list<int> v(100);
-        std::list<int> v2(100);
-        int a[] = {1, 2, 3, 4, 5};
-        const int N = sizeof(a)/sizeof(a[0]);
-        std::list<int>::iterator i = v.insert(next(v2.cbegin(), 10),
-                                        input_iterator<const int*>(a),
-                                       input_iterator<const int*>(a+N));
-        assert(false);
-    }
+int main(int, char**) {
+  {
+    std::list<int> v(100);
+    std::list<int> v2(100);
+    int a[] = {1, 2, 3, 4, 5};
+    const int N = sizeof(a) / sizeof(a[0]);
+    std::list<int>::iterator i =
+        v.insert(next(v2.cbegin(), 10), input_iterator<const int*>(a),
+                 input_iterator<const int*>(a + N));
+    assert(false);
+  }
 
   return 0;
 }

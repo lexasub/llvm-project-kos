@@ -20,34 +20,30 @@
 
 struct testbuf : public std::streambuf {};
 
-int main(int, char**)
-{
-    {
-        std::ios ios(0);
-        assert(ios.exceptions() == std::ios::goodbit);
-        ios.exceptions(std::ios::eofbit);
-        assert(ios.exceptions() == std::ios::eofbit);
+int main(int, char**) {
+  {
+    std::ios ios(0);
+    assert(ios.exceptions() == std::ios::goodbit);
+    ios.exceptions(std::ios::eofbit);
+    assert(ios.exceptions() == std::ios::eofbit);
 #ifndef TEST_HAS_NO_EXCEPTIONS
-        try
-        {
-            ios.exceptions(std::ios::badbit);
-            assert(false);
-        }
-        catch (std::ios::failure&)
-        {
-        }
-        assert(ios.exceptions() == std::ios::badbit);
+    try {
+      ios.exceptions(std::ios::badbit);
+      assert(false);
+    } catch (std::ios::failure&) {
+    }
+    assert(ios.exceptions() == std::ios::badbit);
 #endif
-    }
-    {
-        testbuf sb;
-        std::ios ios(&sb);
-        assert(ios.exceptions() == std::ios::goodbit);
-        ios.exceptions(std::ios::eofbit);
-        assert(ios.exceptions() == std::ios::eofbit);
-        ios.exceptions(std::ios::badbit);
-        assert(ios.exceptions() == std::ios::badbit);
-    }
+  }
+  {
+    testbuf sb;
+    std::ios ios(&sb);
+    assert(ios.exceptions() == std::ios::goodbit);
+    ios.exceptions(std::ios::eofbit);
+    assert(ios.exceptions() == std::ios::eofbit);
+    ios.exceptions(std::ios::badbit);
+    assert(ios.exceptions() == std::ios::badbit);
+  }
 
   return 0;
 }

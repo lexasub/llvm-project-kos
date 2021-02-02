@@ -21,22 +21,22 @@
 
 namespace ex = std::experimental::pmr;
 
-int main(int, char**)
-{
-    typedef ex::resource_adaptor<std::allocator<int>> R;
-    typedef ex::resource_adaptor<std::allocator<long>> R2;
-    static_assert(std::is_same<R, R2>::value, "");
-    {
-        static_assert(std::is_base_of<ex::memory_resource, R>::value, "");
-        static_assert(std::is_same<R::allocator_type, std::allocator<char>>::value, "");
-    }
-    {
-        static_assert(std::is_default_constructible<R>::value, "");
-        static_assert(std::is_copy_constructible<R>::value, "");
-        static_assert(std::is_move_constructible<R>::value, "");
-        static_assert(std::is_copy_assignable<R>::value, "");
-        static_assert(std::is_move_assignable<R>::value, "");
-   }
+int main(int, char**) {
+  typedef ex::resource_adaptor<std::allocator<int> > R;
+  typedef ex::resource_adaptor<std::allocator<long> > R2;
+  static_assert(std::is_same<R, R2>::value, "");
+  {
+    static_assert(std::is_base_of<ex::memory_resource, R>::value, "");
+    static_assert(std::is_same<R::allocator_type, std::allocator<char> >::value,
+                  "");
+  }
+  {
+    static_assert(std::is_default_constructible<R>::value, "");
+    static_assert(std::is_copy_constructible<R>::value, "");
+    static_assert(std::is_move_constructible<R>::value, "");
+    static_assert(std::is_copy_assignable<R>::value, "");
+    static_assert(std::is_move_assignable<R>::value, "");
+  }
 
   return 0;
 }

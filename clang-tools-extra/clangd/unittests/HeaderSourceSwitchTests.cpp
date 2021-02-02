@@ -166,7 +166,7 @@ TEST(HeaderSourceSwitchTest, FromHeaderToSource) {
        )cpp",
        testPath("a.cpp")},
 
-       {R"cpp(
+      {R"cpp(
           // We don't have definition in the index, so stay in the header.
           void B_Sym3_NoDef();
        )cpp",

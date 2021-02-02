@@ -11,7 +11,7 @@
 #include <vector>
 
 #if defined(__FreeBSD__) || defined(__NetBSD__)
-#include <sys/socket.h>  // To define 'struct sockaddr'.
+#include <sys/socket.h> // To define 'struct sockaddr'.
 #endif
 
 #include <sanitizer/msan_interface.h>
@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
   assert(res == 0);
   assert(-1 == __msan_test_shadow(&ifas, sizeof(ifaddrs *)));
 
-  std::vector<std::pair<void *, size_t> > ranges;
+  std::vector<std::pair<void *, size_t>> ranges;
   ifaddrs *p = ifas;
   while (p) {
     CHECK_AND_PUSH(p, sizeof(ifaddrs));

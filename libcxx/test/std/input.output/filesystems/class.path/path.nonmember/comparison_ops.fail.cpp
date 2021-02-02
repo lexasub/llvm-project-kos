@@ -10,25 +10,26 @@
 
 // <filesystem>
 
-
 #include "filesystem_include.h"
 
 using namespace fs;
 
 struct ConvToPath {
-  operator fs::path() const {
-    return "";
-  }
+  operator fs::path() const { return ""; }
 };
 
 int main(int, char**) {
   ConvToPath LHS, RHS;
-  (void)(LHS == RHS); // expected-error {{invalid operands to binary expression}}
-  (void)(LHS != RHS); // expected-error {{invalid operands to binary expression}}
+  (void)(LHS ==
+         RHS); // expected-error {{invalid operands to binary expression}}
+  (void)(LHS !=
+         RHS);       // expected-error {{invalid operands to binary expression}}
   (void)(LHS < RHS); // expected-error {{invalid operands to binary expression}}
-  (void)(LHS <= RHS); // expected-error {{invalid operands to binary expression}}
+  (void)(LHS <=
+         RHS);       // expected-error {{invalid operands to binary expression}}
   (void)(LHS > RHS); // expected-error {{invalid operands to binary expression}}
-  (void)(LHS >= RHS); // expected-error {{invalid operands to binary expression}}
+  (void)(LHS >=
+         RHS); // expected-error {{invalid operands to binary expression}}
 
   return 0;
 }

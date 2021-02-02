@@ -602,7 +602,6 @@ int a = FOO;
     auto Range = CharSourceRange::getTokenRange(Expr->getSourceRange());
     EXPECT_THAT_ERROR(validateEditRange(Range, Context->getSourceManager()),
                       Failed());
-
   };
   Visitor.runOver(Code);
 }

@@ -8,13 +8,13 @@ inline auto f() {
   // CHECK: load i32
   // CHECK: store i32
   // CHECK: ret
-  return [=] () mutable { return ++n; };
+  return [=]() mutable { return ++n; };
 }
 
 auto x = f();
 
-template<typename T> auto *g(T t) { return t; }
-template<typename T> decltype(auto) h(T t) { return t; }
+template <typename T> auto *g(T t) { return t; }
+template <typename T> decltype(auto) h(T t) { return t; }
 
 // CHECK: define {{.*}} @_Z1zv
 void z() {
@@ -24,7 +24,9 @@ void z() {
   h(&x);
 }
 
-auto i() { return [] {}; }
+auto i() {
+  return [] {};
+}
 // CHECK: define {{.*}} @_Z1jv
 auto j() {
   // CHECK: call {{.*}} @"_Z1hIZ1ivE3$_0EDcT_"()

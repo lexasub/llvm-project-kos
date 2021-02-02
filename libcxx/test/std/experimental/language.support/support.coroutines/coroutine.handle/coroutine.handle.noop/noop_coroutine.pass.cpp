@@ -25,9 +25,12 @@
 
 namespace coro = std::experimental::coroutines_v1;
 
-
-static_assert(std::is_same<coro::coroutine_handle<coro::noop_coroutine_promise>, coro::noop_coroutine_handle>::value, "");
-static_assert(std::is_same<decltype(coro::noop_coroutine()), coro::noop_coroutine_handle>::value, "");
+static_assert(std::is_same<coro::coroutine_handle<coro::noop_coroutine_promise>,
+                           coro::noop_coroutine_handle>::value,
+              "");
+static_assert(std::is_same<decltype(coro::noop_coroutine()),
+                           coro::noop_coroutine_handle>::value,
+              "");
 
 // template <> struct coroutine_handle<noop_coroutine_promise> : coroutine_handle<>
 // {
@@ -46,8 +49,7 @@ static_assert(std::is_same<decltype(coro::noop_coroutine()), coro::noop_coroutin
 // // 18.11.2.10 noop address
 // constexpr void* address() const noexcept;
 
-int main(int, char**)
-{
+int main(int, char**) {
   auto h = coro::noop_coroutine();
   coro::coroutine_handle<> base = h;
 

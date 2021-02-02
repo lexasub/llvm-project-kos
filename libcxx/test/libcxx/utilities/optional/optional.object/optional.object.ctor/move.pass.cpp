@@ -23,41 +23,43 @@ using std::optional;
 
 struct X {};
 
-struct Y
-{
-    Y() = default;
-    Y(Y&&) {}
+struct Y {
+  Y() = default;
+  Y(Y&&) {}
 };
 
-struct Z
-{
-    Z() = default;
-    Z(Z&&) = delete;
-    Z(const Z&) = delete;
-    Z& operator=(Z&&) = delete;
-    Z& operator=(const Z&) = delete;
+struct Z {
+  Z() = default;
+  Z(Z&&) = delete;
+  Z(const Z&) = delete;
+  Z& operator=(Z&&) = delete;
+  Z& operator=(const Z&) = delete;
 };
 
-int main(int, char**)
-{
-    {
-        using T = int;
-        static_assert((std::is_trivially_copy_constructible<optional<T>>::value), "");
-        constexpr optional<T> opt;
-        constexpr optional<T> opt2 = std::move(opt);
-        (void)opt2;
-    }
-    {
-        using T = X;
-        static_assert((std::is_trivially_copy_constructible<optional<T>>::value), "");
-        constexpr optional<T> opt;
-        constexpr optional<T> opt2 = std::move(opt);
-        (void)opt2;
-    }
-    static_assert(!(std::is_trivially_move_constructible<optional<Y>>::value), "");
-    static_assert(!(std::is_trivially_move_constructible<optional<std::string>>::value), "");
+int main(int, char**) {
+  {
+    using T = int;
+    static_assert((std::is_trivially_copy_constructible<optional<T> >::value),
+                  "");
+    constexpr optional<T> opt;
+    constexpr optional<T> opt2 = std::move(opt);
+    (void)opt2;
+  }
+  {
+    using T = X;
+    static_assert((std::is_trivially_copy_constructible<optional<T> >::value),
+                  "");
+    constexpr optional<T> opt;
+    constexpr optional<T> opt2 = std::move(opt);
+    (void)opt2;
+  }
+  static_assert(!(std::is_trivially_move_constructible<optional<Y> >::value),
+                "");
+  static_assert(
+      !(std::is_trivially_move_constructible<optional<std::string> >::value),
+      "");
 
-    static_assert(!(std::is_move_constructible<optional<Z>>::value), "");
+  static_assert(!(std::is_move_constructible<optional<Z> >::value), "");
 
   return 0;
 }

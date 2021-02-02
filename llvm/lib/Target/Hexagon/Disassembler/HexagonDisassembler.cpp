@@ -88,7 +88,7 @@ static void signedDecoder(MCInst &MI, unsigned tmp, const void *Decoder) {
   int64_t Extended = SignExtend64<32>(FullValue);
   HexagonMCInstrInfo::addConstant(MI, Extended, Disassembler.getContext());
 }
-}
+} // namespace
 
 // Forward declare these because the auto-generated code will reference them.
 // Definitions are further down.
@@ -115,8 +115,7 @@ DecodeGeneralDoubleLow8RegsRegisterClass(MCInst &Inst, unsigned RegNo,
 static DecodeStatus DecodeHvxWRRegisterClass(MCInst &Inst, unsigned RegNo,
                                              uint64_t Address,
                                              const void *Decoder);
-static DecodeStatus DecodeHvxVQRRegisterClass(MCInst &Inst,
-                                              unsigned RegNo,
+static DecodeStatus DecodeHvxVQRRegisterClass(MCInst &Inst, unsigned RegNo,
                                               uint64_t Address,
                                               const void *Decoder);
 static DecodeStatus DecodePredRegsRegisterClass(MCInst &Inst, unsigned RegNo,
@@ -197,78 +196,78 @@ DecodeStatus HexagonDisassembler::getInstruction(MCInst &MI, uint64_t &Size,
 }
 
 void HexagonDisassembler::remapInstruction(MCInst &Instr) const {
-  for (auto I: HexagonMCInstrInfo::bundleInstructions(Instr)) {
+  for (auto I : HexagonMCInstrInfo::bundleInstructions(Instr)) {
     auto &MI = const_cast<MCInst &>(*I.getInst());
     switch (MI.getOpcode()) {
     case Hexagon::S2_allocframe:
       if (MI.getOperand(0).getReg() == Hexagon::R29) {
         MI.setOpcode(Hexagon::S6_allocframe_to_raw);
-        MI.erase(MI.begin () + 1);
-        MI.erase(MI.begin ());
+        MI.erase(MI.begin() + 1);
+        MI.erase(MI.begin());
       }
       break;
     case Hexagon::L2_deallocframe:
       if (MI.getOperand(0).getReg() == Hexagon::D15 &&
           MI.getOperand(1).getReg() == Hexagon::R30) {
         MI.setOpcode(L6_deallocframe_map_to_raw);
-        MI.erase(MI.begin () + 1);
-        MI.erase(MI.begin ());
+        MI.erase(MI.begin() + 1);
+        MI.erase(MI.begin());
       }
       break;
     case Hexagon::L4_return:
       if (MI.getOperand(0).getReg() == Hexagon::D15 &&
           MI.getOperand(1).getReg() == Hexagon::R30) {
         MI.setOpcode(L6_return_map_to_raw);
-        MI.erase(MI.begin () + 1);
-        MI.erase(MI.begin ());
+        MI.erase(MI.begin() + 1);
+        MI.erase(MI.begin());
       }
       break;
     case Hexagon::L4_return_t:
       if (MI.getOperand(0).getReg() == Hexagon::D15 &&
           MI.getOperand(2).getReg() == Hexagon::R30) {
         MI.setOpcode(L4_return_map_to_raw_t);
-        MI.erase(MI.begin () + 2);
-        MI.erase(MI.begin ());
+        MI.erase(MI.begin() + 2);
+        MI.erase(MI.begin());
       }
       break;
     case Hexagon::L4_return_f:
       if (MI.getOperand(0).getReg() == Hexagon::D15 &&
           MI.getOperand(2).getReg() == Hexagon::R30) {
         MI.setOpcode(L4_return_map_to_raw_f);
-        MI.erase(MI.begin () + 2);
-        MI.erase(MI.begin ());
+        MI.erase(MI.begin() + 2);
+        MI.erase(MI.begin());
       }
       break;
     case Hexagon::L4_return_tnew_pt:
       if (MI.getOperand(0).getReg() == Hexagon::D15 &&
           MI.getOperand(2).getReg() == Hexagon::R30) {
         MI.setOpcode(L4_return_map_to_raw_tnew_pt);
-        MI.erase(MI.begin () + 2);
-        MI.erase(MI.begin ());
+        MI.erase(MI.begin() + 2);
+        MI.erase(MI.begin());
       }
       break;
     case Hexagon::L4_return_fnew_pt:
       if (MI.getOperand(0).getReg() == Hexagon::D15 &&
           MI.getOperand(2).getReg() == Hexagon::R30) {
         MI.setOpcode(L4_return_map_to_raw_fnew_pt);
-        MI.erase(MI.begin () + 2);
-        MI.erase(MI.begin ());
+        MI.erase(MI.begin() + 2);
+        MI.erase(MI.begin());
       }
       break;
     case Hexagon::L4_return_tnew_pnt:
       if (MI.getOperand(0).getReg() == Hexagon::D15 &&
           MI.getOperand(2).getReg() == Hexagon::R30) {
         MI.setOpcode(L4_return_map_to_raw_tnew_pnt);
-        MI.erase(MI.begin () + 2);
-        MI.erase(MI.begin ());
+        MI.erase(MI.begin() + 2);
+        MI.erase(MI.begin());
       }
       break;
     case Hexagon::L4_return_fnew_pnt:
       if (MI.getOperand(0).getReg() == Hexagon::D15 &&
           MI.getOperand(2).getReg() == Hexagon::R30) {
         MI.setOpcode(L4_return_map_to_raw_fnew_pnt);
-        MI.erase(MI.begin () + 2);
-        MI.erase(MI.begin ());
+        MI.erase(MI.begin() + 2);
+        MI.erase(MI.begin());
       }
       break;
     }
@@ -422,7 +421,6 @@ DecodeStatus HexagonDisassembler::getSingleInstruction(MCInst &MI, MCInst &MCB,
         STI.getFeatureBits()[Hexagon::ExtensionHVX])
       Result = decodeInstruction(DecoderTableEXT_mmvec32, MI, Instruction,
                                  Address, this, STI);
-
   }
 
   switch (MI.getOpcode()) {
@@ -490,9 +488,10 @@ DecodeStatus HexagonDisassembler::getSingleInstruction(MCInst &MI, MCInst &MCB,
     bool SubregBit = (Register & 0x1) != 0;
     if (HexagonMCInstrInfo::hasNewValue2(*MCII, Inst)) {
       // If subreg bit is set we're selecting the second produced newvalue
-      unsigned Producer = SubregBit ?
-          HexagonMCInstrInfo::getNewValueOperand(*MCII, Inst).getReg() :
-          HexagonMCInstrInfo::getNewValueOperand2(*MCII, Inst).getReg();
+      unsigned Producer =
+          SubregBit
+              ? HexagonMCInstrInfo::getNewValueOperand(*MCII, Inst).getReg()
+              : HexagonMCInstrInfo::getNewValueOperand2(*MCII, Inst).getReg();
       assert(Producer != Hexagon::NoRegister);
       MCO.setReg(Producer);
     } else if (HexagonMCInstrInfo::hasNewValue(*MCII, Inst)) {
@@ -622,14 +621,13 @@ static DecodeStatus DecodeHvxWRRegisterClass(MCInst &Inst, unsigned RegNo,
   return DecodeRegisterClass(Inst, RegNo, HvxWRDecoderTable);
 }
 
-LLVM_ATTRIBUTE_UNUSED  // Suppress warning temporarily.
-static DecodeStatus DecodeHvxVQRRegisterClass(MCInst &Inst,
-                                              unsigned RegNo,
-                                              uint64_t /*Address*/,
-                                              const void *Decoder) {
+LLVM_ATTRIBUTE_UNUSED // Suppress warning temporarily.
+    static DecodeStatus
+    DecodeHvxVQRRegisterClass(MCInst &Inst, unsigned RegNo,
+                              uint64_t /*Address*/, const void *Decoder) {
   static const MCPhysReg HvxVQRDecoderTable[] = {
-      Hexagon::VQ0,  Hexagon::VQ1,  Hexagon::VQ2,  Hexagon::VQ3,
-      Hexagon::VQ4,  Hexagon::VQ5,  Hexagon::VQ6,  Hexagon::VQ7};
+      Hexagon::VQ0, Hexagon::VQ1, Hexagon::VQ2, Hexagon::VQ3,
+      Hexagon::VQ4, Hexagon::VQ5, Hexagon::VQ6, Hexagon::VQ7};
 
   return DecodeRegisterClass(Inst, RegNo >> 2, HvxVQRDecoderTable);
 }
@@ -658,15 +656,14 @@ static DecodeStatus DecodeCtrRegsRegisterClass(MCInst &Inst, unsigned RegNo,
   using namespace Hexagon;
 
   static const MCPhysReg CtrlRegDecoderTable[] = {
-    /*  0 */  SA0,        LC0,        SA1,        LC1,
-    /*  4 */  P3_0,       C5,         M0,         M1,
-    /*  8 */  USR,        PC,         UGP,        GP,
-    /* 12 */  CS0,        CS1,        UPCYCLELO,  UPCYCLEHI,
-    /* 16 */  FRAMELIMIT, FRAMEKEY,   PKTCOUNTLO, PKTCOUNTHI,
-    /* 20 */  0,          0,          0,          0,
-    /* 24 */  0,          0,          0,          0,
-    /* 28 */  0,          0,          UTIMERLO,   UTIMERHI
-  };
+      /*  0 */ SA0,        LC0,      SA1,        LC1,
+      /*  4 */ P3_0,       C5,       M0,         M1,
+      /*  8 */ USR,        PC,       UGP,        GP,
+      /* 12 */ CS0,        CS1,      UPCYCLELO,  UPCYCLEHI,
+      /* 16 */ FRAMELIMIT, FRAMEKEY, PKTCOUNTLO, PKTCOUNTHI,
+      /* 20 */ 0,          0,        0,          0,
+      /* 24 */ 0,          0,        0,          0,
+      /* 28 */ 0,          0,        UTIMERLO,   UTIMERHI};
 
   if (RegNo >= array_lengthof(CtrlRegDecoderTable))
     return MCDisassembler::Fail;
@@ -686,15 +683,14 @@ static DecodeStatus DecodeCtrRegs64RegisterClass(MCInst &Inst, unsigned RegNo,
   using namespace Hexagon;
 
   static const MCPhysReg CtrlReg64DecoderTable[] = {
-    /*  0 */  C1_0,       0,          C3_2,       0,
-    /*  4 */  C5_4,       0,          C7_6,       0,
-    /*  8 */  C9_8,       0,          C11_10,     0,
-    /* 12 */  CS,         0,          UPCYCLE,    0,
-    /* 16 */  C17_16,     0,          PKTCOUNT,   0,
-    /* 20 */  0,          0,          0,          0,
-    /* 24 */  0,          0,          0,          0,
-    /* 28 */  0,          0,          UTIMER,     0
-  };
+      /*  0 */ C1_0,   0, C3_2,     0,
+      /*  4 */ C5_4,   0, C7_6,     0,
+      /*  8 */ C9_8,   0, C11_10,   0,
+      /* 12 */ CS,     0, UPCYCLE,  0,
+      /* 16 */ C17_16, 0, PKTCOUNT, 0,
+      /* 20 */ 0,      0, 0,        0,
+      /* 24 */ 0,      0, 0,        0,
+      /* 28 */ 0,      0, UTIMER,   0};
 
   if (RegNo >= array_lengthof(CtrlReg64DecoderTable))
     return MCDisassembler::Fail;
@@ -766,15 +762,14 @@ static DecodeStatus DecodeGuestRegsRegisterClass(MCInst &Inst, unsigned RegNo,
   using namespace Hexagon;
 
   static const MCPhysReg GuestRegDecoderTable[] = {
-    /*  0 */ GELR,      GSR,        GOSP,       G3,
-    /*  4 */ G4,        G5,         G6,         G7,
-    /*  8 */ G8,        G9,         G10,        G11,
-    /* 12 */ G12,       G13,        G14,        G15,
-    /* 16 */ GPMUCNT4,  GPMUCNT5,   GPMUCNT6,   GPMUCNT7,
-    /* 20 */ G20,       G21,        G22,        G23,
-    /* 24 */ GPCYCLELO, GPCYCLEHI,  GPMUCNT0,   GPMUCNT1,
-    /* 28 */ GPMUCNT2,  GPMUCNT3,   G30,        G31
-  };
+      /*  0 */ GELR,      GSR,       GOSP,     G3,
+      /*  4 */ G4,        G5,        G6,       G7,
+      /*  8 */ G8,        G9,        G10,      G11,
+      /* 12 */ G12,       G13,       G14,      G15,
+      /* 16 */ GPMUCNT4,  GPMUCNT5,  GPMUCNT6, GPMUCNT7,
+      /* 20 */ G20,       G21,       G22,      G23,
+      /* 24 */ GPCYCLELO, GPCYCLEHI, GPMUCNT0, GPMUCNT1,
+      /* 28 */ GPMUCNT2,  GPMUCNT3,  G30,      G31};
 
   if (RegNo >= array_lengthof(GuestRegDecoderTable))
     return MCDisassembler::Fail;
@@ -792,15 +787,14 @@ static DecodeStatus DecodeGuestRegs64RegisterClass(MCInst &Inst, unsigned RegNo,
   using namespace Hexagon;
 
   static const MCPhysReg GuestReg64DecoderTable[] = {
-    /*  0 */ G1_0,      0,          G3_2,       0,
-    /*  4 */ G5_4,      0,          G7_6,       0,
-    /*  8 */ G9_8,      0,          G11_10,     0,
-    /* 12 */ G13_12,    0,          G15_14,     0,
-    /* 16 */ G17_16,    0,          G19_18,     0,
-    /* 20 */ G21_20,    0,          G23_22,     0,
-    /* 24 */ G25_24,    0,          G27_26,     0,
-    /* 28 */ G29_28,    0,          G31_30,     0
-  };
+      /*  0 */ G1_0,   0, G3_2,   0,
+      /*  4 */ G5_4,   0, G7_6,   0,
+      /*  8 */ G9_8,   0, G11_10, 0,
+      /* 12 */ G13_12, 0, G15_14, 0,
+      /* 16 */ G17_16, 0, G19_18, 0,
+      /* 20 */ G21_20, 0, G23_22, 0,
+      /* 24 */ G25_24, 0, G27_26, 0,
+      /* 28 */ G29_28, 0, G31_30, 0};
 
   if (RegNo >= array_lengthof(GuestReg64DecoderTable))
     return MCDisassembler::Fail;

@@ -10,4 +10,4 @@
 
 using namespace llvm;
 
-void SparcMachineFunctionInfo::anchor() { }
+void SparcMachineFunctionInfo::anchor() {}

@@ -11,9 +11,8 @@
 
 #include <forward_list>
 
-int main(int, char**)
-{
-    std::forward_list<int, std::allocator<long> > fl;
+int main(int, char**) {
+  std::forward_list<int, std::allocator<long> > fl;
 
   return 0;
 }

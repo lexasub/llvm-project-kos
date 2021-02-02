@@ -1,1 +1,3 @@
-struct pthread_mutex_t { int lock; };
+struct pthread_mutex_t {
+  int lock;
+};

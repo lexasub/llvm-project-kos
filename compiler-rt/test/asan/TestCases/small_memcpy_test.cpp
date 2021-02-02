@@ -9,9 +9,9 @@
 // RUN: not %run %t 48 64 2>&1 | FileCheck %s --check-prefix=CHECK
 // REQUIRES: shadow-scale-3
 #include <assert.h>
-#include <string.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <sanitizer/asan_interface.h>
 
@@ -24,6 +24,6 @@ int main(int argc, char **argv) {
   fprintf(stderr, "%zd %zd\n", poison_from, poison_to - poison_from);
   __asan_poison_memory_region(&A1[0] + poison_from, poison_to - poison_from);
   memcpy(A1, A2, sizeof(A1));
-// CHECK: AddressSanitizer: use-after-poison
+  // CHECK: AddressSanitizer: use-after-poison
   return 0;
 }

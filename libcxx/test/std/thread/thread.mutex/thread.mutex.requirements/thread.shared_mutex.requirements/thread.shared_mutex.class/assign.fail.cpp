@@ -22,11 +22,11 @@
 
 #include <shared_mutex>
 
-int main(int, char**)
-{
-    std::shared_mutex m0;
-    std::shared_mutex m1;
-    m1 = m0; // expected-error {{overload resolution selected deleted operator '='}}
+int main(int, char**) {
+  std::shared_mutex m0;
+  std::shared_mutex m1;
+  m1 =
+      m0; // expected-error {{overload resolution selected deleted operator '='}}
 
   return 0;
 }

@@ -115,17 +115,31 @@ public:
   enum BuiltinOpcodes {
     OPC_Scope,
     OPC_RecordNode,
-    OPC_RecordChild0, OPC_RecordChild1, OPC_RecordChild2, OPC_RecordChild3,
-    OPC_RecordChild4, OPC_RecordChild5, OPC_RecordChild6, OPC_RecordChild7,
+    OPC_RecordChild0,
+    OPC_RecordChild1,
+    OPC_RecordChild2,
+    OPC_RecordChild3,
+    OPC_RecordChild4,
+    OPC_RecordChild5,
+    OPC_RecordChild6,
+    OPC_RecordChild7,
     OPC_RecordMemRef,
     OPC_CaptureGlueInput,
     OPC_MoveChild,
-    OPC_MoveChild0, OPC_MoveChild1, OPC_MoveChild2, OPC_MoveChild3,
-    OPC_MoveChild4, OPC_MoveChild5, OPC_MoveChild6, OPC_MoveChild7,
+    OPC_MoveChild0,
+    OPC_MoveChild1,
+    OPC_MoveChild2,
+    OPC_MoveChild3,
+    OPC_MoveChild4,
+    OPC_MoveChild5,
+    OPC_MoveChild6,
+    OPC_MoveChild7,
     OPC_MoveParent,
     OPC_CheckSame,
-    OPC_CheckChild0Same, OPC_CheckChild1Same,
-    OPC_CheckChild2Same, OPC_CheckChild3Same,
+    OPC_CheckChild0Same,
+    OPC_CheckChild1Same,
+    OPC_CheckChild2Same,
+    OPC_CheckChild3Same,
     OPC_CheckPatternPredicate,
     OPC_CheckPredicate,
     OPC_CheckPredicateWithOperands,
@@ -134,16 +148,26 @@ public:
     OPC_CheckType,
     OPC_CheckTypeRes,
     OPC_SwitchType,
-    OPC_CheckChild0Type, OPC_CheckChild1Type, OPC_CheckChild2Type,
-    OPC_CheckChild3Type, OPC_CheckChild4Type, OPC_CheckChild5Type,
-    OPC_CheckChild6Type, OPC_CheckChild7Type,
+    OPC_CheckChild0Type,
+    OPC_CheckChild1Type,
+    OPC_CheckChild2Type,
+    OPC_CheckChild3Type,
+    OPC_CheckChild4Type,
+    OPC_CheckChild5Type,
+    OPC_CheckChild6Type,
+    OPC_CheckChild7Type,
     OPC_CheckInteger,
-    OPC_CheckChild0Integer, OPC_CheckChild1Integer, OPC_CheckChild2Integer,
-    OPC_CheckChild3Integer, OPC_CheckChild4Integer,
-    OPC_CheckCondCode, OPC_CheckChild2CondCode,
+    OPC_CheckChild0Integer,
+    OPC_CheckChild1Integer,
+    OPC_CheckChild2Integer,
+    OPC_CheckChild3Integer,
+    OPC_CheckChild4Integer,
+    OPC_CheckCondCode,
+    OPC_CheckChild2CondCode,
     OPC_CheckValueType,
     OPC_CheckComplexPat,
-    OPC_CheckAndImm, OPC_CheckOrImm,
+    OPC_CheckAndImm,
+    OPC_CheckOrImm,
     OPC_CheckImmAllOnesV,
     OPC_CheckImmAllZerosV,
     OPC_CheckFoldableChainNode,
@@ -161,28 +185,32 @@ public:
     OPC_EmitNodeXForm,
     OPC_EmitNode,
     // Space-optimized forms that implicitly encode number of result VTs.
-    OPC_EmitNode0, OPC_EmitNode1, OPC_EmitNode2,
+    OPC_EmitNode0,
+    OPC_EmitNode1,
+    OPC_EmitNode2,
     OPC_MorphNodeTo,
     // Space-optimized forms that implicitly encode number of result VTs.
-    OPC_MorphNodeTo0, OPC_MorphNodeTo1, OPC_MorphNodeTo2,
+    OPC_MorphNodeTo0,
+    OPC_MorphNodeTo1,
+    OPC_MorphNodeTo2,
     OPC_CompleteMatch,
     // Contains offset in table for pattern being selected
     OPC_Coverage
   };
 
   enum {
-    OPFL_None       = 0,  // Node has no chain or glue input and isn't variadic.
-    OPFL_Chain      = 1,     // Node has a chain input.
-    OPFL_GlueInput  = 2,     // Node has a glue input.
-    OPFL_GlueOutput = 4,     // Node has a glue output.
-    OPFL_MemRefs    = 8,     // Node gets accumulated MemRefs.
-    OPFL_Variadic0  = 1<<4,  // Node is variadic, root has 0 fixed inputs.
-    OPFL_Variadic1  = 2<<4,  // Node is variadic, root has 1 fixed inputs.
-    OPFL_Variadic2  = 3<<4,  // Node is variadic, root has 2 fixed inputs.
-    OPFL_Variadic3  = 4<<4,  // Node is variadic, root has 3 fixed inputs.
-    OPFL_Variadic4  = 5<<4,  // Node is variadic, root has 4 fixed inputs.
-    OPFL_Variadic5  = 6<<4,  // Node is variadic, root has 5 fixed inputs.
-    OPFL_Variadic6  = 7<<4,  // Node is variadic, root has 6 fixed inputs.
+    OPFL_None = 0,       // Node has no chain or glue input and isn't variadic.
+    OPFL_Chain = 1,      // Node has a chain input.
+    OPFL_GlueInput = 2,  // Node has a glue input.
+    OPFL_GlueOutput = 4, // Node has a glue output.
+    OPFL_MemRefs = 8,    // Node gets accumulated MemRefs.
+    OPFL_Variadic0 = 1 << 4, // Node is variadic, root has 0 fixed inputs.
+    OPFL_Variadic1 = 2 << 4, // Node is variadic, root has 1 fixed inputs.
+    OPFL_Variadic2 = 3 << 4, // Node is variadic, root has 2 fixed inputs.
+    OPFL_Variadic3 = 4 << 4, // Node is variadic, root has 3 fixed inputs.
+    OPFL_Variadic4 = 5 << 4, // Node is variadic, root has 4 fixed inputs.
+    OPFL_Variadic5 = 6 << 4, // Node is variadic, root has 5 fixed inputs.
+    OPFL_Variadic6 = 7 << 4, // Node is variadic, root has 6 fixed inputs.
 
     OPFL_VariadicInfo = OPFL_Variadic6
   };
@@ -191,9 +219,8 @@ public:
   /// number of fixed arity values that should be skipped when copying from the
   /// root.
   static inline int getNumFixedFromVariadicInfo(unsigned Flags) {
-    return ((Flags&OPFL_VariadicInfo) >> 4)-1;
+    return ((Flags & OPFL_VariadicInfo) >> 4) - 1;
   }
-
 
 protected:
   /// DAGSize - Size of DAG being instruction selected.
@@ -239,7 +266,8 @@ protected:
     llvm_unreachable("Tblgen should generate the implementation of this!");
   }
 
-  /// getIncludePathForIndex - get the td source location of pattern instantiation
+  /// getIncludePathForIndex - get the td source location of pattern
+  /// instantiation
   virtual StringRef getIncludePathForIndex(unsigned index) {
     llvm_unreachable("Tblgen should generate the implementation of this!");
   }
@@ -253,8 +281,7 @@ public:
   bool CheckAndMask(SDValue LHS, ConstantSDNode *RHS,
                     int64_t DesiredMaskS) const;
   bool CheckOrMask(SDValue LHS, ConstantSDNode *RHS,
-                    int64_t DesiredMaskS) const;
-
+                   int64_t DesiredMaskS) const;
 
   /// CheckPatternPredicate - This function is generated by tblgen in the
   /// target.  It runs the specified pattern predicate and returns true if it
@@ -283,9 +310,10 @@ public:
     llvm_unreachable("Tblgen should generate the implementation of this!");
   }
 
-  virtual bool CheckComplexPattern(SDNode *Root, SDNode *Parent, SDValue N,
-                                   unsigned PatternNo,
-                        SmallVectorImpl<std::pair<SDValue, SDNode*> > &Result) {
+  virtual bool
+  CheckComplexPattern(SDNode *Root, SDNode *Parent, SDValue N,
+                      unsigned PatternNo,
+                      SmallVectorImpl<std::pair<SDValue, SDNode *>> &Result) {
     llvm_unreachable("Tblgen should generate the implementation of this!");
   }
 
@@ -298,9 +326,7 @@ public:
 
   /// Return true if complex patterns for this target can mutate the
   /// DAG.
-  virtual bool ComplexPatternFuncMutatesDAG() const {
-    return false;
-  }
+  virtual bool ComplexPatternFuncMutatesDAG() const { return false; }
 
   /// Return whether the node may raise an FP exception.
   bool mayRaiseFPException(SDNode *Node) const;
@@ -308,7 +334,6 @@ public:
   bool isOrEquivalentToAdd(const SDNode *N) const;
 
 private:
-
   // Calls to these functions are generated by tblgen.
   void Select_INLINEASM(SDNode *N);
   void Select_READ_REGISTER(SDNode *Op);
@@ -335,8 +360,7 @@ private:
   /// instructions between \p Begin and \p End.  \p HadTailCall will be set
   /// to true if a call in the block was translated as a tail call.
   void SelectBasicBlock(BasicBlock::const_iterator Begin,
-                        BasicBlock::const_iterator End,
-                        bool &HadTailCall);
+                        BasicBlock::const_iterator End, bool &HadTailCall);
   void FinishBasicBlock();
 
   void CodeGenAndEmitDAG();
@@ -362,6 +386,6 @@ private:
                     bool isMorphNodeTo);
 };
 
-}
+} // namespace llvm
 
 #endif /* LLVM_CODEGEN_SELECTIONDAGISEL_H */

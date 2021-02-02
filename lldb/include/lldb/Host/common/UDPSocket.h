@@ -31,6 +31,6 @@ private:
 
   SocketAddress m_sockaddr;
 };
-}
+} // namespace lldb_private
 
 #endif // LLDB_HOST_COMMON_UDPSOCKET_H

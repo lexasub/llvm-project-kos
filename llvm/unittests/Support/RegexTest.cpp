@@ -14,8 +14,7 @@
 using namespace llvm;
 namespace {
 
-class RegexTest : public ::testing::Test {
-};
+class RegexTest : public ::testing::Test {};
 
 TEST_F(RegexTest, Basics) {
   Regex r1("^[0-9]+$");
@@ -43,20 +42,20 @@ TEST_F(RegexTest, Basics) {
   EXPECT_EQ("513", Matches[2].str());
 
   Regex r4("a[^b]+b");
-  std::string String="axxb";
+  std::string String = "axxb";
   String[2] = '\0';
   EXPECT_FALSE(r4.match("abb"));
   EXPECT_TRUE(r4.match(String, &Matches));
   EXPECT_EQ(1u, Matches.size());
   EXPECT_EQ(String, Matches[0].str());
 
-  std::string NulPattern="X[0-9]+X([a-f])?:([0-9]+)";
-  String="YX99a:513b";
+  std::string NulPattern = "X[0-9]+X([a-f])?:([0-9]+)";
+  String = "YX99a:513b";
   NulPattern[7] = '\0';
   Regex r5(NulPattern);
   EXPECT_FALSE(r5.match(String));
   EXPECT_FALSE(r5.match("X9"));
-  String[3]='\0';
+  String[3] = '\0';
   EXPECT_TRUE(r5.match(String));
 }
 
@@ -99,7 +98,7 @@ TEST_F(RegexTest, Substitution) {
 
   EXPECT_EQ("aber", Regex("[0-9]+").sub("\\", "a1234ber", &Error));
   EXPECT_EQ(Error, "replacement string contained trailing backslash");
-  
+
   // Backreferences
   EXPECT_EQ("aa1234bber", Regex("a[0-9]+b").sub("a\\0b", "a1234ber", &Error));
   EXPECT_EQ("", Error);
@@ -178,4 +177,4 @@ TEST_F(RegexTest, OssFuzz3727Regression) {
   EXPECT_FALSE(r.isValid(Error));
 }
 
-}
+} // namespace

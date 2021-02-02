@@ -17,9 +17,8 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    std::this_thread::yield();
+int main(int, char**) {
+  std::this_thread::yield();
 
   return 0;
 }

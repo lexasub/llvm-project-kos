@@ -13,6 +13,5 @@ template <> struct A<bool> {
   };
 };
 
-
 template <typename T> constexpr int f() { return 0; }
 template <> constexpr int f<int>() { return 4; }

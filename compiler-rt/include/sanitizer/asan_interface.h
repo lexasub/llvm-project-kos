@@ -56,7 +56,7 @@ void __asan_unpoison_memory_region(void const volatile *addr, size_t size);
 ///
 /// \param addr Start of memory region.
 /// \param size Size of memory region.
-#define ASAN_POISON_MEMORY_REGION(addr, size) \
+#define ASAN_POISON_MEMORY_REGION(addr, size)                                  \
   __asan_poison_memory_region((addr), (size))
 
 /// Marks a memory region as addressable.
@@ -66,13 +66,11 @@ void __asan_unpoison_memory_region(void const volatile *addr, size_t size);
 ///
 /// \param addr Start of memory region.
 /// \param size Size of memory region.
-#define ASAN_UNPOISON_MEMORY_REGION(addr, size) \
+#define ASAN_UNPOISON_MEMORY_REGION(addr, size)                                \
   __asan_unpoison_memory_region((addr), (size))
 #else
-#define ASAN_POISON_MEMORY_REGION(addr, size) \
-  ((void)(addr), (void)(size))
-#define ASAN_UNPOISON_MEMORY_REGION(addr, size) \
-  ((void)(addr), (void)(size))
+#define ASAN_POISON_MEMORY_REGION(addr, size) ((void)(addr), (void)(size))
+#define ASAN_UNPOISON_MEMORY_REGION(addr, size) ((void)(addr), (void)(size))
 #endif
 
 /// Checks if an address is poisoned.
@@ -242,8 +240,8 @@ void __asan_get_shadow_mapping(size_t *shadow_scale, size_t *shadow_offset);
 /// \param addr Address of the ASan error.
 /// \param is_write True if the error is a write error; false otherwise.
 /// \param access_size Size of the memory access of the ASan error.
-void __asan_report_error(void *pc, void *bp, void *sp,
-                         void *addr, int is_write, size_t access_size);
+void __asan_report_error(void *pc, void *bp, void *sp, void *addr, int is_write,
+                         size_t access_size);
 
 // Deprecated. Call __sanitizer_set_death_callback instead.
 void __asan_set_death_callback(void (*callback)(void));
@@ -273,7 +271,7 @@ void __asan_print_accumulated_stats(void);
 /// <c>verbosity=1:halt_on_error=0</c>).
 ///
 /// \returns Default options string.
-const char* __asan_default_options(void);
+const char *__asan_default_options(void);
 
 // The following two functions facilitate garbage collection in presence of
 // ASan's fake stack.
@@ -317,10 +315,10 @@ void __asan_handle_no_return(void);
 
 /// Update allocation stack trace for the given allocation to the current stack
 /// trace. Returns 1 if successfull, 0 if not.
-int __asan_update_allocation_context(void* addr);
+int __asan_update_allocation_context(void *addr);
 
 #ifdef __cplusplus
-}  // extern "C"
+} // extern "C"
 #endif
 
-#endif  // SANITIZER_ASAN_INTERFACE_H
+#endif // SANITIZER_ASAN_INTERFACE_H

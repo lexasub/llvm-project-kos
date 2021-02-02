@@ -22,30 +22,31 @@ namespace clang {
 /// This is represented as 'for (element 'in' collection-expression)' stmt.
 class ObjCForCollectionStmt : public Stmt {
   enum { ELEM, COLLECTION, BODY, END_EXPR };
-  Stmt* SubExprs[END_EXPR]; // SubExprs[ELEM] is an expression or declstmt.
+  Stmt *SubExprs[END_EXPR]; // SubExprs[ELEM] is an expression or declstmt.
   SourceLocation ForLoc;
   SourceLocation RParenLoc;
+
 public:
   ObjCForCollectionStmt(Stmt *Elem, Expr *Collect, Stmt *Body,
                         SourceLocation FCL, SourceLocation RPL);
-  explicit ObjCForCollectionStmt(EmptyShell Empty) :
-    Stmt(ObjCForCollectionStmtClass, Empty) { }
+  explicit ObjCForCollectionStmt(EmptyShell Empty)
+      : Stmt(ObjCForCollectionStmtClass, Empty) {}
 
   Stmt *getElement() { return SubExprs[ELEM]; }
   Expr *getCollection() {
-    return reinterpret_cast<Expr*>(SubExprs[COLLECTION]);
+    return reinterpret_cast<Expr *>(SubExprs[COLLECTION]);
   }
   Stmt *getBody() { return SubExprs[BODY]; }
 
   const Stmt *getElement() const { return SubExprs[ELEM]; }
   const Expr *getCollection() const {
-    return reinterpret_cast<Expr*>(SubExprs[COLLECTION]);
+    return reinterpret_cast<Expr *>(SubExprs[COLLECTION]);
   }
   const Stmt *getBody() const { return SubExprs[BODY]; }
 
   void setElement(Stmt *S) { SubExprs[ELEM] = S; }
   void setCollection(Expr *E) {
-    SubExprs[COLLECTION] = reinterpret_cast<Stmt*>(E);
+    SubExprs[COLLECTION] = reinterpret_cast<Stmt *>(E);
   }
   void setBody(Stmt *S) { SubExprs[BODY] = S; }
 
@@ -82,24 +83,19 @@ private:
 
 public:
   ObjCAtCatchStmt(SourceLocation atCatchLoc, SourceLocation rparenloc,
-                  VarDecl *catchVarDecl,
-                  Stmt *atCatchStmt)
-    : Stmt(ObjCAtCatchStmtClass), ExceptionDecl(catchVarDecl),
-    Body(atCatchStmt), AtCatchLoc(atCatchLoc), RParenLoc(rparenloc) { }
+                  VarDecl *catchVarDecl, Stmt *atCatchStmt)
+      : Stmt(ObjCAtCatchStmtClass), ExceptionDecl(catchVarDecl),
+        Body(atCatchStmt), AtCatchLoc(atCatchLoc), RParenLoc(rparenloc) {}
 
-  explicit ObjCAtCatchStmt(EmptyShell Empty) :
-    Stmt(ObjCAtCatchStmtClass, Empty) { }
+  explicit ObjCAtCatchStmt(EmptyShell Empty)
+      : Stmt(ObjCAtCatchStmtClass, Empty) {}
 
   const Stmt *getCatchBody() const { return Body; }
   Stmt *getCatchBody() { return Body; }
   void setCatchBody(Stmt *S) { Body = S; }
 
-  const VarDecl *getCatchParamDecl() const {
-    return ExceptionDecl;
-  }
-  VarDecl *getCatchParamDecl() {
-    return ExceptionDecl;
-  }
+  const VarDecl *getCatchParamDecl() const { return ExceptionDecl; }
+  VarDecl *getCatchParamDecl() { return ExceptionDecl; }
   void setCatchParamDecl(VarDecl *D) { ExceptionDecl = D; }
 
   SourceLocation getAtCatchLoc() const { return AtCatchLoc; }
@@ -133,8 +129,8 @@ public:
       : Stmt(ObjCAtFinallyStmtClass), AtFinallyLoc(atFinallyLoc),
         AtFinallyStmt(atFinallyStmt) {}
 
-  explicit ObjCAtFinallyStmt(EmptyShell Empty) :
-    Stmt(ObjCAtFinallyStmtClass, Empty) { }
+  explicit ObjCAtFinallyStmt(EmptyShell Empty)
+      : Stmt(ObjCAtFinallyStmtClass, Empty) {}
 
   const Stmt *getFinallyBody() const { return AtFinallyStmt; }
   Stmt *getFinallyBody() { return AtFinallyStmt; }
@@ -153,7 +149,7 @@ public:
   }
 
   child_range children() {
-    return child_range(&AtFinallyStmt, &AtFinallyStmt+1);
+    return child_range(&AtFinallyStmt, &AtFinallyStmt + 1);
   }
 
   const_child_range children() const {
@@ -178,19 +174,18 @@ private:
   /// The order of the statements in memory follows the order in the source,
   /// with the \@try body first, followed by the \@catch statements (if any)
   /// and, finally, the \@finally (if it exists).
-  Stmt **getStmts() { return reinterpret_cast<Stmt **> (this + 1); }
-  const Stmt* const *getStmts() const {
-    return reinterpret_cast<const Stmt * const*> (this + 1);
+  Stmt **getStmts() { return reinterpret_cast<Stmt **>(this + 1); }
+  const Stmt *const *getStmts() const {
+    return reinterpret_cast<const Stmt *const *>(this + 1);
   }
 
-  ObjCAtTryStmt(SourceLocation atTryLoc, Stmt *atTryStmt,
-                Stmt **CatchStmts, unsigned NumCatchStmts,
-                Stmt *atFinallyStmt);
+  ObjCAtTryStmt(SourceLocation atTryLoc, Stmt *atTryStmt, Stmt **CatchStmts,
+                unsigned NumCatchStmts, Stmt *atFinallyStmt);
 
   explicit ObjCAtTryStmt(EmptyShell Empty, unsigned NumCatchStmts,
                          bool HasFinally)
-    : Stmt(ObjCAtTryStmtClass, Empty), NumCatchStmts(NumCatchStmts),
-      HasFinally(HasFinally) { }
+      : Stmt(ObjCAtTryStmtClass, Empty), NumCatchStmts(NumCatchStmts),
+        HasFinally(HasFinally) {}
 
 public:
   static ObjCAtTryStmt *Create(const ASTContext &Context,
@@ -257,8 +252,7 @@ public:
   }
 
   child_range children() {
-    return child_range(getStmts(),
-                       getStmts() + 1 + NumCatchStmts + HasFinally);
+    return child_range(getStmts(), getStmts() + 1 + NumCatchStmts + HasFinally);
   }
 
   const_child_range children() const {
@@ -278,36 +272,34 @@ class ObjCAtSynchronizedStmt : public Stmt {
 private:
   SourceLocation AtSynchronizedLoc;
   enum { SYNC_EXPR, SYNC_BODY, END_EXPR };
-  Stmt* SubStmts[END_EXPR];
+  Stmt *SubStmts[END_EXPR];
 
 public:
   ObjCAtSynchronizedStmt(SourceLocation atSynchronizedLoc, Stmt *synchExpr,
                          Stmt *synchBody)
-  : Stmt(ObjCAtSynchronizedStmtClass) {
+      : Stmt(ObjCAtSynchronizedStmtClass) {
     SubStmts[SYNC_EXPR] = synchExpr;
     SubStmts[SYNC_BODY] = synchBody;
     AtSynchronizedLoc = atSynchronizedLoc;
   }
-  explicit ObjCAtSynchronizedStmt(EmptyShell Empty) :
-    Stmt(ObjCAtSynchronizedStmtClass, Empty) { }
+  explicit ObjCAtSynchronizedStmt(EmptyShell Empty)
+      : Stmt(ObjCAtSynchronizedStmtClass, Empty) {}
 
   SourceLocation getAtSynchronizedLoc() const { return AtSynchronizedLoc; }
   void setAtSynchronizedLoc(SourceLocation Loc) { AtSynchronizedLoc = Loc; }
 
   const CompoundStmt *getSynchBody() const {
-    return reinterpret_cast<CompoundStmt*>(SubStmts[SYNC_BODY]);
+    return reinterpret_cast<CompoundStmt *>(SubStmts[SYNC_BODY]);
   }
   CompoundStmt *getSynchBody() {
-    return reinterpret_cast<CompoundStmt*>(SubStmts[SYNC_BODY]);
+    return reinterpret_cast<CompoundStmt *>(SubStmts[SYNC_BODY]);
   }
   void setSynchBody(Stmt *S) { SubStmts[SYNC_BODY] = S; }
 
   const Expr *getSynchExpr() const {
-    return reinterpret_cast<Expr*>(SubStmts[SYNC_EXPR]);
+    return reinterpret_cast<Expr *>(SubStmts[SYNC_EXPR]);
   }
-  Expr *getSynchExpr() {
-    return reinterpret_cast<Expr*>(SubStmts[SYNC_EXPR]);
-  }
+  Expr *getSynchExpr() { return reinterpret_cast<Expr *>(SubStmts[SYNC_EXPR]); }
   void setSynchExpr(Stmt *S) { SubStmts[SYNC_EXPR] = S; }
 
   SourceLocation getBeginLoc() const LLVM_READONLY { return AtSynchronizedLoc; }
@@ -320,7 +312,7 @@ public:
   }
 
   child_range children() {
-    return child_range(&SubStmts[0], &SubStmts[0]+END_EXPR);
+    return child_range(&SubStmts[0], &SubStmts[0] + END_EXPR);
   }
 
   const_child_range children() const {
@@ -335,14 +327,14 @@ class ObjCAtThrowStmt : public Stmt {
 
 public:
   ObjCAtThrowStmt(SourceLocation atThrowLoc, Stmt *throwExpr)
-  : Stmt(ObjCAtThrowStmtClass), Throw(throwExpr) {
+      : Stmt(ObjCAtThrowStmtClass), Throw(throwExpr) {
     AtThrowLoc = atThrowLoc;
   }
-  explicit ObjCAtThrowStmt(EmptyShell Empty) :
-    Stmt(ObjCAtThrowStmtClass, Empty) { }
+  explicit ObjCAtThrowStmt(EmptyShell Empty)
+      : Stmt(ObjCAtThrowStmtClass, Empty) {}
 
-  const Expr *getThrowExpr() const { return reinterpret_cast<Expr*>(Throw); }
-  Expr *getThrowExpr() { return reinterpret_cast<Expr*>(Throw); }
+  const Expr *getThrowExpr() const { return reinterpret_cast<Expr *>(Throw); }
+  Expr *getThrowExpr() { return reinterpret_cast<Expr *>(Throw); }
   void setThrowExpr(Stmt *S) { Throw = S; }
 
   SourceLocation getThrowLoc() const LLVM_READONLY { return AtThrowLoc; }
@@ -357,7 +349,7 @@ public:
     return T->getStmtClass() == ObjCAtThrowStmtClass;
   }
 
-  child_range children() { return child_range(&Throw, &Throw+1); }
+  child_range children() { return child_range(&Throw, &Throw + 1); }
 
   const_child_range children() const {
     return const_child_range(&Throw, &Throw + 1);
@@ -373,8 +365,8 @@ public:
   ObjCAutoreleasePoolStmt(SourceLocation atLoc, Stmt *subStmt)
       : Stmt(ObjCAutoreleasePoolStmtClass), AtLoc(atLoc), SubStmt(subStmt) {}
 
-  explicit ObjCAutoreleasePoolStmt(EmptyShell Empty) :
-    Stmt(ObjCAutoreleasePoolStmtClass, Empty) { }
+  explicit ObjCAutoreleasePoolStmt(EmptyShell Empty)
+      : Stmt(ObjCAutoreleasePoolStmtClass, Empty) {}
 
   const Stmt *getSubStmt() const { return SubStmt; }
   Stmt *getSubStmt() { return SubStmt; }
@@ -399,6 +391,6 @@ public:
   }
 };
 
-}  // end namespace clang
+} // end namespace clang
 
 #endif

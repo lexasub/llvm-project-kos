@@ -84,6 +84,7 @@ struct ReportLocation {
   ReportStack *stack;
 
   static ReportLocation *New(ReportLocationType type);
+
  private:
   explicit ReportLocation(ReportLocationType type);
 };
@@ -109,11 +110,11 @@ class ReportDesc {
  public:
   ReportType typ;
   uptr tag;
-  Vector<ReportStack*> stacks;
-  Vector<ReportMop*> mops;
-  Vector<ReportLocation*> locs;
-  Vector<ReportMutex*> mutexes;
-  Vector<ReportThread*> threads;
+  Vector<ReportStack *> stacks;
+  Vector<ReportMop *> mops;
+  Vector<ReportLocation *> locs;
+  Vector<ReportMutex *> mutexes;
+  Vector<ReportThread *> threads;
   Vector<int> unique_tids;
   ReportStack *sleep;
   int count;
@@ -122,8 +123,8 @@ class ReportDesc {
   ~ReportDesc();
 
  private:
-  ReportDesc(const ReportDesc&);
-  void operator = (const ReportDesc&);
+  ReportDesc(const ReportDesc &);
+  void operator=(const ReportDesc &);
 };
 
 // Format and output the report to the console/log. No additional logic.

@@ -2,7 +2,9 @@
 // RUN: cp %s %t.cpp
 // RUN: not %clang_cc1 -fixit %t.cpp 2>&1 | FileCheck %s
 
-struct A { int x; };
+struct A {
+  int x;
+};
 int foo(A *p) {
   return p.x;
 }

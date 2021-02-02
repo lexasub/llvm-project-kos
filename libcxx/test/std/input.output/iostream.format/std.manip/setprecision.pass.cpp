@@ -18,38 +18,35 @@
 #include "test_macros.h"
 
 template <class CharT>
-struct testbuf
-    : public std::basic_streambuf<CharT>
-{
-    testbuf() {}
+struct testbuf : public std::basic_streambuf<CharT> {
+  testbuf() {}
 };
 
-int main(int, char**)
-{
-    {
-        testbuf<char> sb;
-        std::istream is(&sb);
-        is >> std::setprecision(10);
-        assert(is.precision() == 10);
-    }
-    {
-        testbuf<char> sb;
-        std::ostream os(&sb);
-        os << std::setprecision(10);
-        assert(os.precision() == 10);
-    }
-    {
-        testbuf<wchar_t> sb;
-        std::wistream is(&sb);
-        is >> std::setprecision(10);
-        assert(is.precision() == 10);
-    }
-    {
-        testbuf<wchar_t> sb;
-        std::wostream os(&sb);
-        os << std::setprecision(10);
-        assert(os.precision() == 10);
-    }
+int main(int, char**) {
+  {
+    testbuf<char> sb;
+    std::istream is(&sb);
+    is >> std::setprecision(10);
+    assert(is.precision() == 10);
+  }
+  {
+    testbuf<char> sb;
+    std::ostream os(&sb);
+    os << std::setprecision(10);
+    assert(os.precision() == 10);
+  }
+  {
+    testbuf<wchar_t> sb;
+    std::wistream is(&sb);
+    is >> std::setprecision(10);
+    assert(is.precision() == 10);
+  }
+  {
+    testbuf<wchar_t> sb;
+    std::wostream os(&sb);
+    os << std::setprecision(10);
+    assert(os.precision() == 10);
+  }
 
   return 0;
 }

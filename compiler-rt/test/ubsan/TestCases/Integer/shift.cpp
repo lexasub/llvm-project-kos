@@ -24,7 +24,7 @@ int main() {
 
   a <<= 31; // ok in C++11, not ok in C99/C11
   b <<= 31; // ok
-  b <<= 1; // still ok, unsigned
+  b <<= 1;  // still ok, unsigned
 
 #ifdef LSH_OVERFLOW
   // CHECK-LSH_OVERFLOW: shift.cpp:[[@LINE+1]]:5: runtime error: left shift of negative value -2147483648
@@ -34,7 +34,7 @@ int main() {
 #ifdef TOO_LOW
   a = 0;
   // CHECK-TOO_LOW: shift.cpp:[[@LINE+1]]:5: runtime error: shift exponent -3 is negative
-  a OP (-3);
+  a OP(-3);
 #endif
 
 #ifdef TOO_HIGH

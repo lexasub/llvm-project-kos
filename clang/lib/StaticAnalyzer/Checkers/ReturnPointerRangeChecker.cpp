@@ -23,14 +23,13 @@ using namespace clang;
 using namespace ento;
 
 namespace {
-class ReturnPointerRangeChecker :
-    public Checker< check::PreStmt<ReturnStmt> > {
+class ReturnPointerRangeChecker : public Checker<check::PreStmt<ReturnStmt>> {
   mutable std::unique_ptr<BuiltinBug> BT;
 
 public:
-    void checkPreStmt(const ReturnStmt *RS, CheckerContext &C) const;
+  void checkPreStmt(const ReturnStmt *RS, CheckerContext &C) const;
 };
-}
+} // namespace
 
 void ReturnPointerRangeChecker::checkPreStmt(const ReturnStmt *RS,
                                              CheckerContext &C) const {

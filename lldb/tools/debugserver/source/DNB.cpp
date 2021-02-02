@@ -268,8 +268,9 @@ static void *waitpid_thread(void *arg) {
 
   while (true) {
     pid_t child_pid = waitpid(pid, &status, 0);
-    DNBLogThreadedIf(LOG_PROCESS, "waitpid_thread (): waitpid (pid = %i, "
-                                  "&status, 0) => %i, status = %i, errno = %i",
+    DNBLogThreadedIf(LOG_PROCESS,
+                     "waitpid_thread (): waitpid (pid = %i, "
+                     "&status, 0) => %i, status = %i, errno = %i",
                      pid, child_pid, status, errno);
 
     if (child_pid < 0) {
@@ -293,9 +294,10 @@ static void *waitpid_thread(void *arg) {
 
   // We should never exit as long as our child process is alive, so if we
   // do something else went wrong and we should exit...
-  DNBLogThreadedIf(LOG_PROCESS, "waitpid_thread (): main loop exited, setting "
-                                "exit status to an invalid value (-1) for pid "
-                                "%i",
+  DNBLogThreadedIf(LOG_PROCESS,
+                   "waitpid_thread (): main loop exited, setting "
+                   "exit status to an invalid value (-1) for pid "
+                   "%i",
                    pid);
   DNBProcessSetExitStatus(pid, -1);
   return NULL;
@@ -470,8 +472,10 @@ nub_process_t DNBProcessAttach(nub_process_t attach_pid,
         snprintf(pidstr, sizeof(pidstr), "--attach=%d", attach_pid);
         execl(translated_debugserver, "--native-regs", "--setsid", fdstr,
               "--handoff-attach-from-native", pidstr, (char *)0);
-        DNBLogThreadedIf(LOG_PROCESS, "Failed to launch debugserver for "
-                         "translated process: ", errno, strerror(errno));
+        DNBLogThreadedIf(LOG_PROCESS,
+                         "Failed to launch debugserver for "
+                         "translated process: ",
+                         errno, strerror(errno));
         __builtin_trap();
       }
     }
@@ -495,20 +499,22 @@ nub_process_t DNBProcessAttach(nub_process_t attach_pid,
 
   while (pid != INVALID_NUB_PROCESS) {
     // Wait for process to start up and hit entry point
-    DNBLogThreadedIf(LOG_PROCESS, "%s DNBProcessWaitForEvent (%4.4x, "
-                                  "eEventProcessRunningStateChanged | "
-                                  "eEventProcessStoppedStateChanged, true, "
-                                  "INFINITE)...",
+    DNBLogThreadedIf(LOG_PROCESS,
+                     "%s DNBProcessWaitForEvent (%4.4x, "
+                     "eEventProcessRunningStateChanged | "
+                     "eEventProcessStoppedStateChanged, true, "
+                     "INFINITE)...",
                      __FUNCTION__, pid);
-    nub_event_t set_events =
-        DNBProcessWaitForEvents(pid, eEventProcessRunningStateChanged |
-                                         eEventProcessStoppedStateChanged,
-                                true, timeout);
+    nub_event_t set_events = DNBProcessWaitForEvents(
+        pid,
+        eEventProcessRunningStateChanged | eEventProcessStoppedStateChanged,
+        true, timeout);
 
-    DNBLogThreadedIf(LOG_PROCESS, "%s DNBProcessWaitForEvent (%4.4x, "
-                                  "eEventProcessRunningStateChanged | "
-                                  "eEventProcessStoppedStateChanged, true, "
-                                  "INFINITE) => 0x%8.8x",
+    DNBLogThreadedIf(LOG_PROCESS,
+                     "%s DNBProcessWaitForEvent (%4.4x, "
+                     "eEventProcessRunningStateChanged | "
+                     "eEventProcessStoppedStateChanged, true, "
+                     "INFINITE) => 0x%8.8x",
                      __FUNCTION__, pid, set_events);
 
     if (set_events == 0) {

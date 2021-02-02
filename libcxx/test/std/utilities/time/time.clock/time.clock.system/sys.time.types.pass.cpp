@@ -19,47 +19,45 @@
 //   sys_seconds{sys_days{2000y/January/1}}.time_since_epoch() is 946’684’800s, which is 10’957 * 86’400s.
 // —end example]
 
-
 #include <chrono>
 #include <cassert>
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    using system_clock = std::chrono::system_clock;
-    using year         = std::chrono::year;
+int main(int, char**) {
+  using system_clock = std::chrono::system_clock;
+  using year = std::chrono::year;
 
-    using seconds = std::chrono::seconds;
-    using minutes = std::chrono::minutes;
-    using days    = std::chrono::days;
+  using seconds = std::chrono::seconds;
+  using minutes = std::chrono::minutes;
+  using days = std::chrono::days;
 
-    using sys_seconds = std::chrono::sys_seconds;
-    using sys_minutes = std::chrono::sys_time<minutes>;
-    using sys_days    = std::chrono::sys_days;
+  using sys_seconds = std::chrono::sys_seconds;
+  using sys_minutes = std::chrono::sys_time<minutes>;
+  using sys_days = std::chrono::sys_days;
 
-    constexpr std::chrono::month January = std::chrono::January;
+  constexpr std::chrono::month January = std::chrono::January;
 
-    ASSERT_SAME_TYPE(std::chrono::sys_time<seconds>, sys_seconds);
-    ASSERT_SAME_TYPE(std::chrono::sys_time<days>,    sys_days);
+  ASSERT_SAME_TYPE(std::chrono::sys_time<seconds>, sys_seconds);
+  ASSERT_SAME_TYPE(std::chrono::sys_time<days>, sys_days);
 
-//  Test the long form, too
-    ASSERT_SAME_TYPE(std::chrono::time_point<system_clock, seconds>, sys_seconds);
-    ASSERT_SAME_TYPE(std::chrono::time_point<system_clock, minutes>, sys_minutes);
-    ASSERT_SAME_TYPE(std::chrono::time_point<system_clock, days>,    sys_days);
+  //  Test the long form, too
+  ASSERT_SAME_TYPE(std::chrono::time_point<system_clock, seconds>, sys_seconds);
+  ASSERT_SAME_TYPE(std::chrono::time_point<system_clock, minutes>, sys_minutes);
+  ASSERT_SAME_TYPE(std::chrono::time_point<system_clock, days>, sys_days);
 
-//  Test some well known values
-    sys_days d0 = sys_days{year{1970}/January/1};
-    sys_days d1 = sys_days{year{2000}/January/1};
-    ASSERT_SAME_TYPE(decltype(d0.time_since_epoch()), days);
-    assert( d0.time_since_epoch().count() == 0);
-    assert( d1.time_since_epoch().count() == 10957);
+  //  Test some well known values
+  sys_days d0 = sys_days{year{1970} / January / 1};
+  sys_days d1 = sys_days{year{2000} / January / 1};
+  ASSERT_SAME_TYPE(decltype(d0.time_since_epoch()), days);
+  assert(d0.time_since_epoch().count() == 0);
+  assert(d1.time_since_epoch().count() == 10957);
 
-    sys_seconds s0{d0};
-    sys_seconds s1{d1};
-    ASSERT_SAME_TYPE(decltype(s0.time_since_epoch()), seconds);
-    assert( s0.time_since_epoch().count() == 0);
-    assert( s1.time_since_epoch().count() == 946684800L);
+  sys_seconds s0{d0};
+  sys_seconds s1{d1};
+  ASSERT_SAME_TYPE(decltype(s0.time_since_epoch()), seconds);
+  assert(s0.time_since_epoch().count() == 0);
+  assert(s1.time_since_epoch().count() == 946684800L);
 
-    return 0;
+  return 0;
 }

@@ -6,7 +6,7 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This Tablegen backend prints a report that includes all the global 
+// This Tablegen backend prints a report that includes all the global
 // variables, classes, and records in complete detail. It includes more
 // detail than the default TableGen printer backend.
 //
@@ -135,8 +135,7 @@ void DetailedRecordsEmitter::printDefms(Record *Rec, raw_ostream &OS) {
 }
 
 // Print the template arguments of a class.
-void DetailedRecordsEmitter::printTemplateArgs(Record *Rec,
-                                               raw_ostream &OS) {
+void DetailedRecordsEmitter::printTemplateArgs(Record *Rec, raw_ostream &OS) {
   ArrayRef<Init *> Args = Rec->getTemplateArgs();
   if (Args.empty()) {
     OS << "  Template args: (none)\n";
@@ -149,7 +148,8 @@ void DetailedRecordsEmitter::printTemplateArgs(Record *Rec,
     assert(Value && "Template argument value not found.");
     OS << "    ";
     Value->print(OS, false);
-    OS << formatv("  |{0}|", SrcMgr.getFormattedLocationNoOffset(Value->getLoc()));
+    OS << formatv("  |{0}|",
+                  SrcMgr.getFormattedLocationNoOffset(Value->getLoc()));
     OS << NL;
   }
 }

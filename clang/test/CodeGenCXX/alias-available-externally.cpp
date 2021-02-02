@@ -15,6 +15,8 @@ String<CharT>::~String() {}
 
 extern template struct String<char>;
 
-struct Foo : public String<char> { Foo() { String<char> s; } };
+struct Foo : public String<char> {
+  Foo() { String<char> s; }
+};
 
 Foo f;

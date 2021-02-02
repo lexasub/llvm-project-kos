@@ -7,7 +7,7 @@ struct X {
 };
 
 struct Iter {
-  X* operator->();
+  X *operator->();
 };
 
 template <typename T>
@@ -18,4 +18,3 @@ void Foo() {
 void Func() {
   Foo<int>();
 }
-

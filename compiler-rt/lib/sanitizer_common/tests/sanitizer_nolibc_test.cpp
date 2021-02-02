@@ -11,11 +11,10 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "sanitizer_common/sanitizer_platform.h"
+#include <stdlib.h>
 
 #include "gtest/gtest.h"
-
-#include <stdlib.h>
+#include "sanitizer_common/sanitizer_platform.h"
 
 extern const char *argv0;
 

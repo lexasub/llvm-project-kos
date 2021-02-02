@@ -210,7 +210,8 @@ protected:
 };
 } // end namespace ilist_detail
 
-template <> struct ilist_traits<::mlir::Operation> {
+template <>
+struct ilist_traits<::mlir::Operation> {
   using Operation = ::mlir::Operation;
   using op_iterator = simple_ilist<Operation>::iterator;
 

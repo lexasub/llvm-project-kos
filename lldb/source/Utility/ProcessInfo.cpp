@@ -348,7 +348,6 @@ void llvm::yaml::MappingTraits<ProcessInstanceInfo>::mapping(
   io.mapRequired("parent-pid", Info.m_parent_pid);
 }
 
-
 llvm::Optional<ProcessInstanceInfoList>
 repro::GetReplayProcessInstanceInfoList() {
   static std::unique_ptr<repro::MultiLoader<repro::ProcessInfoProvider>>

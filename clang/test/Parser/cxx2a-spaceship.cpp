@@ -1,6 +1,6 @@
 // RUN: %clang_cc1 -std=c++2a -verify %s
 
-template<int> struct X {};
+template <int> struct X {};
 
 X<1> operator<<(X<0>, X<0>);
 X<2> operator<=>(X<0>, X<1>);
@@ -18,7 +18,7 @@ void f(X<0> x0, X<1> x1) {
 }
 
 struct PR41991 {
-  [[nodiscard]] friend bool operator==(const PR41991&, const PR41991&) = default;
-  [[nodiscard]] friend bool operator!=(const PR41991&, const PR41991&) = delete;
-  [[nodiscard]] friend bool operator<(const PR41991&, const PR41991&); // expected-error {{an attribute list cannot appear here}}
+  [[nodiscard]] friend bool operator==(const PR41991 &, const PR41991 &) = default;
+  [[nodiscard]] friend bool operator!=(const PR41991 &, const PR41991 &) = delete;
+  [[nodiscard]] friend bool operator<(const PR41991 &, const PR41991 &); // expected-error {{an attribute list cannot appear here}}
 };

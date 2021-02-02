@@ -6,8 +6,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "llvm/Support/TypeSize.h"
 #include "AArch64InstrInfo.h"
+#include "llvm/Support/TypeSize.h"
 #include "gtest/gtest.h"
 
 using namespace llvm;
@@ -20,8 +20,8 @@ TEST(StackOffset, decomposeStackOffsetForFrameOffsets) {
   // If all offsets can be materialized with only ADDVL,
   // make sure PLSized is 0.
   int64_t ByteSized, VLSized, PLSized;
-  AArch64InstrInfo::decomposeStackOffsetForFrameOffsets(A + B + C, ByteSized, PLSized,
-                                            VLSized);
+  AArch64InstrInfo::decomposeStackOffsetForFrameOffsets(A + B + C, ByteSized,
+                                                        PLSized, VLSized);
   EXPECT_EQ(12, ByteSized);
   EXPECT_EQ(1, VLSized);
   EXPECT_EQ(0, PLSized);
@@ -29,14 +29,16 @@ TEST(StackOffset, decomposeStackOffsetForFrameOffsets) {
   // If we need an ADDPL to materialize the offset, and the number of scalable
   // bytes fits the ADDPL immediate, fold the scalable bytes to fit in PLSized.
   StackOffset D = StackOffset::getScalable(2);
-  AArch64InstrInfo::decomposeStackOffsetForFrameOffsets(C + D, ByteSized, PLSized, VLSized);
+  AArch64InstrInfo::decomposeStackOffsetForFrameOffsets(C + D, ByteSized,
+                                                        PLSized, VLSized);
   EXPECT_EQ(0, ByteSized);
   EXPECT_EQ(0, VLSized);
   EXPECT_EQ(9, PLSized);
 
   StackOffset E = StackOffset::getScalable(64);
   StackOffset F = StackOffset::getScalable(2);
-  AArch64InstrInfo::decomposeStackOffsetForFrameOffsets(E + F, ByteSized, PLSized, VLSized);
+  AArch64InstrInfo::decomposeStackOffsetForFrameOffsets(E + F, ByteSized,
+                                                        PLSized, VLSized);
   EXPECT_EQ(0, ByteSized);
   EXPECT_EQ(0, VLSized);
   EXPECT_EQ(33, PLSized);
@@ -46,7 +48,8 @@ TEST(StackOffset, decomposeStackOffsetForFrameOffsets) {
   // ADDVL (n x 16 bytes) and ADDPL (n x 2 bytes) instructions.
   StackOffset G = StackOffset::getScalable(128);
   StackOffset H = StackOffset::getScalable(2);
-  AArch64InstrInfo::decomposeStackOffsetForFrameOffsets(G + H, ByteSized, PLSized, VLSized);
+  AArch64InstrInfo::decomposeStackOffsetForFrameOffsets(G + H, ByteSized,
+                                                        PLSized, VLSized);
   EXPECT_EQ(0, ByteSized);
   EXPECT_EQ(8, VLSized);
   EXPECT_EQ(1, PLSized);

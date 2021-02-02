@@ -14,7 +14,7 @@ const char *global = test_default_arg();
 // CHECK: @_ZN9test_func10global_twoE = {{(dso_local )?}}global i8* getelementptr inbounds ([1 x i8], [1 x i8]* @[[EMPTY_STR]], i32 0, i32 0)
 const char *global_two = __builtin_FUNCTION();
 
-const char * const global_three = test_default_arg();
+const char *const global_three = test_default_arg();
 
 // CHECK: @[[STR_ONE:.+]] = private unnamed_addr constant [14 x i8] c"test_func_one\00"
 // CHECK: @[[STR_TWO:.+]] = private unnamed_addr constant [14 x i8] c"test_func_two\00"

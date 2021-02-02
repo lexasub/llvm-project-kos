@@ -2,7 +2,7 @@
 #include "test.h"
 
 void *Thread(void *p) {
-  *(int*)p = 42;
+  *(int *)p = 42;
   barrier_wait(&barrier);
   return 0;
 }

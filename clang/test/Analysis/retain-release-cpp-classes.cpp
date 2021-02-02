@@ -24,7 +24,7 @@ void foo(S1 *s1) {
 
   // Definitely no leak end-of-path note here. The retained pointer
   // is still accessible through s1 and s2.
-  ((void) 0); // no-warning
+  ((void)0); // no-warning
 
   // FIXME: Ideally we need to warn after this invalidate(). The per-function
   // retain-release contract is violated: the programmer should release

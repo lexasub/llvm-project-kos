@@ -237,8 +237,8 @@ private:
   /// \param Region - The region extracted
   /// \param Outputs - The outputs from the extracted function.
   /// \param LI - The load instruction used to update the mapping.
-  void updateOutputMapping(OutlinableRegion &Region,
-                           ArrayRef<Value *> Outputs, LoadInst *LI);
+  void updateOutputMapping(OutlinableRegion &Region, ArrayRef<Value *> Outputs,
+                           LoadInst *LI);
 
   /// Extract \p Region into its own function.
   ///

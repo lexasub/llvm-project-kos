@@ -48,6 +48,6 @@ protected:
   lldb::thread_t m_thread;
   lldb::thread_result_t m_result;
 };
-}
+} // namespace lldb_private
 
 #endif

@@ -2,7 +2,8 @@
 // RUN: not clang-tidy %t-input.cpp -checks='-*,google-explicit-constructor,clang-diagnostic-missing-prototypes' -export-fixes=%t.yaml -- -Wmissing-prototypes > %t.msg 2>&1
 // RUN: FileCheck -input-file=%t.msg -check-prefix=CHECK-MESSAGES %s -implicit-check-not='{{warning|error|note}}:'
 // RUN: FileCheck -input-file=%t.yaml -check-prefix=CHECK-YAML %s
-#define X(n) void n ## n() {}
+#define X(n) \
+  void n##n() {}
 X(f)
 int a[-1];
 

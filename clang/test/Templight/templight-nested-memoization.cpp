@@ -1,20 +1,17 @@
 // RUN: %clang_cc1 -templight-dump %s 2>&1 | FileCheck %s
 
 template <int N>
-struct fib
-{
-  static const int value = fib<N-1>::value + fib<N-2>::value;
+struct fib {
+  static const int value = fib<N - 1>::value + fib<N - 2>::value;
 };
 
 template <>
-struct fib<0>
-{
+struct fib<0> {
   static const int value = 1;
 };
 
 template <>
-struct fib<1>
-{
+struct fib<1> {
   static const int value = 1;
 };
 
@@ -171,4 +168,3 @@ struct fib<1>
 // CHECK: {{^orig:[ ]+'.*templight-nested-memoization.cpp:4:8'}}
 // CHECK: {{^poi:[ ]+'.*templight-nested-memoization.cpp:173:8'$}}
 fib<4> x;
-

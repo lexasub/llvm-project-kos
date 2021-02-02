@@ -1,7 +1,6 @@
 // RUN: env CINDEXTEST_SKIP_FUNCTION_BODIES=1 c-index-test -test-load-source all %s 2>&1 \
 // RUN: | FileCheck %s
 
-
 template <class T>
 struct Foo {
   inline int with_body() {
@@ -10,7 +9,6 @@ struct Foo {
 
   inline int without_body();
 };
-
 
 int bar = Foo<int>().with_body() + Foo<int>().without_body();
 // CHECK-NOT: warning: inline function 'Foo<int>::with_body' is not defined

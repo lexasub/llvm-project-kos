@@ -71,8 +71,7 @@ bool hasEqualKnownFields(const llvm::Triple &Lhs, const llvm::Triple &Rhs) {
       Rhs.getVendor() != Triple::UnknownVendor &&
       Lhs.getVendor() != Rhs.getVendor())
     return false;
-  if (!Lhs.isOSUnknown() && !Rhs.isOSUnknown() &&
-      Lhs.getOS() != Rhs.getOS())
+  if (!Lhs.isOSUnknown() && !Rhs.isOSUnknown() && Lhs.getOS() != Rhs.getOS())
     return false;
   if (Lhs.getEnvironment() != Triple::UnknownEnvironment &&
       Rhs.getEnvironment() != Triple::UnknownEnvironment &&
@@ -699,20 +698,19 @@ CrossTranslationUnitContext::importDefinitionImpl(const T *D, ASTUnit *Unit) {
 
   auto ToDeclOrError = Importer.Import(D);
   if (!ToDeclOrError) {
-    handleAllErrors(ToDeclOrError.takeError(),
-                    [&](const ImportError &IE) {
-                      switch (IE.Error) {
-                      case ImportError::NameConflict:
-                        ++NumNameConflicts;
-                         break;
-                      case ImportError::UnsupportedConstruct:
-                        ++NumUnsupportedNodeFound;
-                        break;
-                      case ImportError::Unknown:
-                        llvm_unreachable("Unknown import error happened.");
-                        break;
-                      }
-                    });
+    handleAllErrors(ToDeclOrError.takeError(), [&](const ImportError &IE) {
+      switch (IE.Error) {
+      case ImportError::NameConflict:
+        ++NumNameConflicts;
+        break;
+      case ImportError::UnsupportedConstruct:
+        ++NumUnsupportedNodeFound;
+        break;
+      case ImportError::Unknown:
+        llvm_unreachable("Unknown import error happened.");
+        break;
+      }
+    });
     return llvm::make_error<IndexError>(index_error_code::failed_import);
   }
   auto *ToDecl = cast<T>(*ToDeclOrError);

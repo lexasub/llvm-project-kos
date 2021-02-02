@@ -17,21 +17,20 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        std::strstream out;
-        out.freeze();
-        assert(!out.fail());
-        out << 'a';
-        assert(out.fail());
-        out.clear();
-        out.freeze(false);
-        out << 'a';
-        out << char(0);
-        assert(out.str() == std::string("a"));
-        out.freeze(false);
-    }
+int main(int, char**) {
+  {
+    std::strstream out;
+    out.freeze();
+    assert(!out.fail());
+    out << 'a';
+    assert(out.fail());
+    out.clear();
+    out.freeze(false);
+    out << 'a';
+    out << char(0);
+    assert(out.str() == std::string("a"));
+    out.freeze(false);
+  }
 
   return 0;
 }

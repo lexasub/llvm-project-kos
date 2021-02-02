@@ -11,6 +11,7 @@ public:
   T *End;
 };
 
-void rdar11671507(rdar11671507_vector<int*> v, rdar11671507_vector<int*> w) {
-  for (auto &vec : (rdar11671507_vector<int *>[]){ v, w }) {} // expected-warning {{unused}}
+void rdar11671507(rdar11671507_vector<int *> v, rdar11671507_vector<int *> w) {
+  for (auto &vec : (rdar11671507_vector<int *>[]){v, w}) {
+  } // expected-warning {{unused}}
 }

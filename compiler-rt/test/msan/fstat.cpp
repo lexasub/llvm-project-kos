@@ -1,7 +1,7 @@
 // RUN: %clangxx_msan -O0 %s -o %t && %run %t
 
-#include <sys/stat.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 
 int main(void) {
   struct stat st;

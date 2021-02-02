@@ -61,7 +61,7 @@ public:
 };
 
 char PrintLoopPassWrapper::ID = 0;
-}
+} // namespace
 
 //===----------------------------------------------------------------------===//
 // LPPassManager
@@ -69,8 +69,7 @@ char PrintLoopPassWrapper::ID = 0;
 
 char LPPassManager::ID = 0;
 
-LPPassManager::LPPassManager()
-  : FunctionPass(ID), PMDataManager() {
+LPPassManager::LPPassManager() : FunctionPass(ID), PMDataManager() {
   LI = nullptr;
   CurrentLoop = nullptr;
 }
@@ -292,14 +291,13 @@ bool LPPassManager::runOnFunction(Function &F) {
 
 /// Print passes managed by this manager
 void LPPassManager::dumpPassStructure(unsigned Offset) {
-  errs().indent(Offset*2) << "Loop Pass Manager\n";
+  errs().indent(Offset * 2) << "Loop Pass Manager\n";
   for (unsigned Index = 0; Index < getNumContainedPasses(); ++Index) {
     Pass *P = getContainedPass(Index);
     P->dumpPassStructure(Offset + 1);
-    dumpLastUses(P, Offset+1);
+    dumpLastUses(P, Offset + 1);
   }
 }
-
 
 //===----------------------------------------------------------------------===//
 // LoopPass
@@ -318,8 +316,7 @@ Pass *LoopPass::createPrinterPass(raw_ostream &O,
 void LoopPass::preparePassManager(PMStack &PMS) {
 
   // Find LPPassManager
-  while (!PMS.empty() &&
-         PMS.top()->getPassManagerType() > PMT_LoopPassManager)
+  while (!PMS.empty() && PMS.top()->getPassManagerType() > PMT_LoopPassManager)
     PMS.pop();
 
   // If this pass is destroying high level information that is used
@@ -331,19 +328,17 @@ void LoopPass::preparePassManager(PMStack &PMS) {
 }
 
 /// Assign pass manager to manage this pass.
-void LoopPass::assignPassManager(PMStack &PMS,
-                                 PassManagerType PreferredType) {
+void LoopPass::assignPassManager(PMStack &PMS, PassManagerType PreferredType) {
   // Find LPPassManager
-  while (!PMS.empty() &&
-         PMS.top()->getPassManagerType() > PMT_LoopPassManager)
+  while (!PMS.empty() && PMS.top()->getPassManagerType() > PMT_LoopPassManager)
     PMS.pop();
 
   LPPassManager *LPPM;
   if (PMS.top()->getPassManagerType() == PMT_LoopPassManager)
-    LPPM = (LPPassManager*)PMS.top();
+    LPPM = (LPPassManager *)PMS.top();
   else {
     // Create new Loop Pass Manager if it does not exist.
-    assert (!PMS.empty() && "Unable to create Loop Pass Manager");
+    assert(!PMS.empty() && "Unable to create Loop Pass Manager");
     PMDataManager *PMD = PMS.top();
 
     // [1] Create new Loop Pass Manager
@@ -366,9 +361,7 @@ void LoopPass::assignPassManager(PMStack &PMS,
   LPPM->add(this);
 }
 
-static std::string getDescription(const Loop &L) {
-  return "loop";
-}
+static std::string getDescription(const Loop &L) { return "loop"; }
 
 bool LoopPass::skipLoop(const Loop *L) const {
   const Function *F = L->getHeader()->getParent();

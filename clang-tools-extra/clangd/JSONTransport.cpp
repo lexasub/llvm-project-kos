@@ -272,9 +272,8 @@ bool JSONTransport::readStandardMessage(std::string &JSON) {
   JSON.resize(ContentLength);
   for (size_t Pos = 0, Read; Pos < ContentLength; Pos += Read) {
     // Handle EINTR which is sent when a debugger attaches on some platforms.
-    Read = retryAfterSignalUnlessShutdown(0, [&]{
-      return std::fread(&JSON[Pos], 1, ContentLength - Pos, In);
-    });
+    Read = retryAfterSignalUnlessShutdown(
+        0, [&] { return std::fread(&JSON[Pos], 1, ContentLength - Pos, In); });
     if (Read == 0) {
       elog("Input was aborted. Read only {0} bytes of expected {1}.", Pos,
            ContentLength);

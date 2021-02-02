@@ -6,7 +6,7 @@
 
 #include "test.h"
 
-void* thr(void* arg) {
+void *thr(void *arg) {
   const int N = 32;
   pthread_key_t keys_[N];
   for (size_t i = 0; i < N; ++i) {
@@ -17,7 +17,7 @@ void* thr(void* arg) {
     }
   }
   for (size_t i = 0; i < N; i++)
-    pthread_setspecific(keys_[i], (void*)(long)i);
+    pthread_setspecific(keys_[i], (void *)(long)i);
   for (size_t i = 0; i < N; i++)
     pthread_key_delete(keys_[i]);
   return 0;

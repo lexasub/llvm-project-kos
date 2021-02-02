@@ -5,8 +5,8 @@
 #include "common.h"
 @import libPrivate1;
 #include "private1.h" // expected-error {{use of private header from outside its module}}
-#include "public2.h"
 #include "private2.h" // expected-error {{use of private header from outside its module}}
+#include "public2.h"
 
 struct use_this1 client_variable1;
 struct use_this2 client_variable2;

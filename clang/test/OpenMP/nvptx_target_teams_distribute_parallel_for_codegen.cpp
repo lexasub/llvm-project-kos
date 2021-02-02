@@ -36,7 +36,7 @@
 #define N 1000
 #define M 10
 
-template<typename tx>
+template <typename tx>
 tx ftemplate(int n) {
   tx a[N];
   short aa[N];
@@ -47,44 +47,47 @@ tx ftemplate(int n) {
   int k;
   tx *v;
 
-#pragma omp target teams distribute parallel for lastprivate(l) dist_schedule(static,128) schedule(static,32)
-  for(int i = 0; i < n; i++) {
+#pragma omp target teams distribute parallel for lastprivate(l) dist_schedule(static, 128) schedule(static, 32)
+  for (int i = 0; i < n; i++) {
     a[i] = 1;
     l = i;
   }
 
-#pragma omp target teams distribute parallel for map(tofrom: aa) num_teams(M) thread_limit(64)
-  for(int i = 0; i < n; i++) {
+#pragma omp target teams distribute parallel for map(tofrom \
+                                                     : aa) num_teams(M) thread_limit(64)
+  for (int i = 0; i < n; i++) {
     aa[i] += 1;
   }
 
-#pragma omp target teams distribute parallel for map(tofrom:a, aa, b) if(target: n>40) proc_bind(spread)
-  for(int i = 0; i < 10; i++) {
+#pragma omp target teams distribute parallel for map(tofrom                 \
+                                                     : a, aa, b) if (target \
+                                                                     : n > 40) proc_bind(spread)
+  for (int i = 0; i < 10; i++) {
     b[i] += 1;
   }
 
 #pragma omp target teams distribute parallel for collapse(2) firstprivate(f) private(k)
-  for(int i = 0; i < M; i++) {
-    for(int j = 0; j < M; j++) {
+  for (int i = 0; i < M; i++) {
+    for (int j = 0; j < M; j++) {
       k = M;
       c[i][j] = i + j * f + k;
     }
   }
 
 #pragma omp target teams distribute parallel for collapse(2)
-  for(int i = 0; i < n; i++) {
-    for(int j = 0; j < n; j++) {
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) {
       c[i][j] = i + j;
     }
   }
 
 #pragma omp target teams distribute parallel for map(a, v[:N])
-  for(int i = 0; i < n; i++)
+  for (int i = 0; i < n; i++)
     a[i] = v[i];
   return a[0];
 }
 
-int bar(int n){
+int bar(int n) {
   int a = 0;
 
   a += ftemplate<int>(n);
@@ -243,7 +246,6 @@ int bar(int n){
 
 // CHECK: [[DIST_INNER_LOOP_END]]:
 // CHECK: call void @__kmpc_for_static_fini(
-
 
 // CHECK-32: define internal void [[OUTL4]](
 // CHECK-64: define internal void [[OUTL4]](

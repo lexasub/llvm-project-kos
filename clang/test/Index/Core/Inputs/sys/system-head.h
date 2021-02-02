@@ -9,7 +9,7 @@
 // CHECK: [[@LINE+3]]:11 | protocol/ObjC | Prot2 | [[Prot2_USR:.*]] | {{.*}} | Decl | rel: 0
 // CHECK: [[@LINE+2]]:17 | protocol/ObjC | Prot1 | [[Prot1_USR]] | {{.*}} | Ref,RelBase,RelCont | rel: 1
 // CHECK-NEXT: RelBase,RelCont | Prot2 | [[Prot2_USR]]
-@protocol Prot2<Prot1>
+@protocol Prot2 <Prot1>
 @end
 
 // CHECK: [[@LINE+7]]:12 | class/ObjC | Sub | [[Sub_USR:.*]] | {{.*}} | Decl | rel: 0
@@ -19,9 +19,9 @@
 // CHECK-NEXT: RelBase,RelCont | Sub | [[Sub_USR]]
 // CHECK: [[@LINE+2]]:30 | protocol/ObjC | Prot1 | [[Prot1_USR]] | {{.*}} | Ref,RelBase,RelCont | rel: 1
 // CHECK-NEXT: RelBase,RelCont | Sub | [[Sub_USR]]
-@interface Sub : Base<Prot2, Prot1>
+@interface Sub : Base <Prot2, Prot1>
 // CHECK-NOT: [[@LINE+1]]:3 | class/ObjC | Sub |
--(Sub*)getit;
+- (Sub *)getit;
 @end
 
 // CHECK: [[@LINE+1]]:7 | class/C++ | Cls | [[Cls_USR:.*]] | {{.*}} | Def | rel: 0

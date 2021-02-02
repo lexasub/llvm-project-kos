@@ -1,14 +1,14 @@
 // RUN: %check_clang_tidy -std=c++14-or-later %s readability-magic-numbers %t --
 
 namespace std {
-  class string {};
-  using size_t = decltype(sizeof(int));
-  string operator ""s(const char *, std::size_t);
-  int operator "" s(unsigned long long);
-}
+class string {};
+using size_t = decltype(sizeof(int));
+string operator""s(const char *, std::size_t);
+int operator"" s(unsigned long long);
+} // namespace std
 
 void UserDefinedLiteral() {
-  using std::operator ""s;
+  using std::operator""s;
   "Hello World"s;
   const int i = 3600s;
   int j = 3600s;

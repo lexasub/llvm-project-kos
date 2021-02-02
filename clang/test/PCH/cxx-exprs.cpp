@@ -3,7 +3,7 @@
 
 // Test with pch.
 // RUN: %clang_cc1 -std=c++11 -emit-pch -o %t %s
-// RUN: %clang_cc1 -include-pch %t -verify -std=c++11 %s 
+// RUN: %clang_cc1 -include-pch %t -verify -std=c++11 %s
 
 // RUN: %clang_cc1 -std=c++11 -emit-pch -fpch-instantiate-templates -o %t %s
 // RUN: %clang_cc1 -include-pch %t -verify -std=c++11 %s
@@ -13,9 +13,9 @@
 #ifndef HEADER
 #define HEADER
 
-template<typename T>
+template <typename T>
 class New {
-  New(const New&);
+  New(const New &);
 
 public:
   New *clone() {
@@ -23,7 +23,7 @@ public:
   }
 };
 
-template<typename ...T> int *arr_new(T ...v) {
+template <typename... T> int *arr_new(T... v) {
   return new int[]{v...};
 }
 

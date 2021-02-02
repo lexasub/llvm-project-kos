@@ -34,7 +34,6 @@ static const RegisterSet g_reg_sets_mips64[k_num_register_sets] = {
      g_gpr_regnums},
 };
 
-
 // http://svnweb.freebsd.org/base/head/sys/mips/include/regnum.h
 typedef struct _GPR {
   uint64_t zero;
@@ -95,14 +94,13 @@ size_t RegisterContextFreeBSD_mips64::GetGPRSize() const {
 
 const RegisterSet *
 RegisterContextFreeBSD_mips64::GetRegisterSet(size_t set) const {
-   // Check if RegisterSet is available
-   if (set < k_num_register_sets)
-     return &g_reg_sets_mips64[set];
-   return nullptr;
+  // Check if RegisterSet is available
+  if (set < k_num_register_sets)
+    return &g_reg_sets_mips64[set];
+  return nullptr;
 }
 
-size_t
-RegisterContextFreeBSD_mips64::GetRegisterSetCount() const {
+size_t RegisterContextFreeBSD_mips64::GetRegisterSetCount() const {
   return k_num_register_sets;
 }
 

@@ -504,8 +504,9 @@ void AArch64StackTagging::alignAndPadAlloca(AllocaInfo &Info) {
   Type *PaddingType =
       ArrayType::get(Type::getInt8Ty(F->getContext()), AlignedSize - Size);
   Type *TypeWithPadding = StructType::get(AllocatedType, PaddingType);
-  auto *NewAI = new AllocaInst(
-      TypeWithPadding, Info.AI->getType()->getAddressSpace(), nullptr, "", Info.AI);
+  auto *NewAI =
+      new AllocaInst(TypeWithPadding, Info.AI->getType()->getAddressSpace(),
+                     nullptr, "", Info.AI);
   NewAI->takeName(Info.AI);
   NewAI->setAlignment(Info.AI->getAlign());
   NewAI->setUsedWithInAlloca(Info.AI->isUsedWithInAlloca());

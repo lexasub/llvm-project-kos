@@ -25,16 +25,16 @@ int main() {
 // If we use %p with MSVC, it comes out all upper case. Use %08x to get
 // lowercase hex.
 #ifdef _MSC_VER
-# ifdef _WIN64
-#  define PTR_FMT "0x%08llx"
-# else
-#  define PTR_FMT "0x%08x"
-# endif
+#ifdef _WIN64
+#define PTR_FMT "0x%08llx"
+#else
+#define PTR_FMT "0x%08x"
+#endif
 // Solaris libc omits the leading 0x.
 #elif defined(__sun__) && defined(__svr4__)
-# define PTR_FMT "0x%p"
+#define PTR_FMT "0x%p"
 #else
-# define PTR_FMT "%p"
+#define PTR_FMT "%p"
 #endif
 
 void __asan_on_error() {

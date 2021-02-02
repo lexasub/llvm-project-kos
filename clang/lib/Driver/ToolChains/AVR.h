@@ -11,8 +11,8 @@
 
 #include "Gnu.h"
 #include "InputInfo.h"
-#include "clang/Driver/ToolChain.h"
 #include "clang/Driver/Tool.h"
+#include "clang/Driver/ToolChain.h"
 
 namespace clang {
 namespace driver {

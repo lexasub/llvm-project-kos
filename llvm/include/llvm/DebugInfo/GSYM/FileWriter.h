@@ -29,6 +29,7 @@ namespace gsym {
 class FileWriter {
   llvm::raw_pwrite_stream &OS;
   llvm::support::endianness ByteOrder;
+
 public:
   FileWriter(llvm::raw_pwrite_stream &S, llvm::support::endianness B)
       : OS(S), ByteOrder(B) {}
@@ -109,9 +110,7 @@ public:
   ///         file position.
   uint64_t tell();
 
-  llvm::raw_pwrite_stream &get_stream() {
-    return OS;
-  }
+  llvm::raw_pwrite_stream &get_stream() { return OS; }
 
 private:
   FileWriter(const FileWriter &rhs) = delete;

@@ -152,7 +152,7 @@ public:
   void enableDebugTypeODRUniquing();
   void disableDebugTypeODRUniquing();
 
-  using InlineAsmDiagHandlerTy = void (*)(const SMDiagnostic&, void *Context,
+  using InlineAsmDiagHandlerTy = void (*)(const SMDiagnostic &, void *Context,
                                           unsigned LocCookie);
 
   /// Defines the type of a yield callback.
@@ -179,9 +179,9 @@ public:
 
   /// setDiagnosticHandlerCallBack - This method sets a handler call back
   /// that is invoked when the backend needs to report anything to the user.
-  /// The first argument is a function pointer and the second is a context pointer
-  /// that gets passed into the DiagHandler.  The third argument should be set to
-  /// true if the handler only expects enabled diagnostics.
+  /// The first argument is a function pointer and the second is a context
+  /// pointer that gets passed into the DiagHandler.  The third argument should
+  /// be set to true if the handler only expects enabled diagnostics.
   ///
   /// LLVMContext doesn't take ownership or interpret either of these
   /// pointers.
@@ -189,17 +189,18 @@ public:
       DiagnosticHandler::DiagnosticHandlerTy DiagHandler,
       void *DiagContext = nullptr, bool RespectFilters = false);
 
-  /// setDiagnosticHandler - This method sets unique_ptr to object of DiagnosticHandler
-  /// to provide custom diagnostic handling. The first argument is unique_ptr of object
-  /// of type DiagnosticHandler or a derived of that.   The third argument should be
-  /// set to true if the handler only expects enabled diagnostics.
+  /// setDiagnosticHandler - This method sets unique_ptr to object of
+  /// DiagnosticHandler to provide custom diagnostic handling. The first
+  /// argument is unique_ptr of object of type DiagnosticHandler or a derived of
+  /// that.   The third argument should be set to true if the handler only
+  /// expects enabled diagnostics.
   ///
   /// Ownership of this pointer is moved to LLVMContextImpl.
   void setDiagnosticHandler(std::unique_ptr<DiagnosticHandler> &&DH,
                             bool RespectFilters = false);
 
-  /// getDiagnosticHandlerCallBack - Return the diagnostic handler call back set by
-  /// setDiagnosticHandlerCallBack.
+  /// getDiagnosticHandlerCallBack - Return the diagnostic handler call back set
+  /// by setDiagnosticHandlerCallBack.
   DiagnosticHandler::DiagnosticHandlerTy getDiagnosticHandlerCallBack() const;
 
   /// getDiagnosticContext - Return the diagnostic context set by
@@ -210,8 +211,8 @@ public:
   /// setDiagnosticHandler.
   const DiagnosticHandler *getDiagHandlerPtr() const;
 
-  /// getDiagnosticHandler - transfers owenership of DiagnosticHandler unique_ptr
-  /// to caller.
+  /// getDiagnosticHandler - transfers owenership of DiagnosticHandler
+  /// unique_ptr to caller.
   std::unique_ptr<DiagnosticHandler> getDiagnosticHandler();
 
   /// Return if a code hotness metric should be included in optimization
@@ -322,7 +323,7 @@ public:
   ///
   /// The lifetime of the object must be guaranteed to extend as long as the
   /// LLVMContext is used by compilation.
-  void setOptPassGate(OptPassGate&);
+  void setOptPassGate(OptPassGate &);
 
 private:
   // Module needs access to the add/removeModule methods.
@@ -330,10 +331,10 @@ private:
 
   /// addModule - Register a module as being instantiated in this context.  If
   /// the context is deleted, the module will be deleted as well.
-  void addModule(Module*);
+  void addModule(Module *);
 
   /// removeModule - Unregister a module from this context.
-  void removeModule(Module*);
+  void removeModule(Module *);
 };
 
 // Create wrappers for C Binding types (see CBindingWrapping.h).
@@ -341,12 +342,12 @@ DEFINE_SIMPLE_CONVERSION_FUNCTIONS(LLVMContext, LLVMContextRef)
 
 /* Specialized opaque context conversions.
  */
-inline LLVMContext **unwrap(LLVMContextRef* Tys) {
-  return reinterpret_cast<LLVMContext**>(Tys);
+inline LLVMContext **unwrap(LLVMContextRef *Tys) {
+  return reinterpret_cast<LLVMContext **>(Tys);
 }
 
 inline LLVMContextRef *wrap(const LLVMContext **Tys) {
-  return reinterpret_cast<LLVMContextRef*>(const_cast<LLVMContext**>(Tys));
+  return reinterpret_cast<LLVMContextRef *>(const_cast<LLVMContext **>(Tys));
 }
 
 } // end namespace llvm

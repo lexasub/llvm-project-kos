@@ -299,8 +299,7 @@ bool HexagonMCChecker::checkAXOK() {
           HasSoloAXInst->getLoc(),
           Twine("Instruction can only be in a packet with ALU or non-FPU XTYPE "
                 "instructions"));
-      reportError(I.getLoc(),
-                  Twine("Not an ALU or non-FPU XTYPE instruction"));
+      reportError(I.getLoc(), Twine("Not an ALU or non-FPU XTYPE instruction"));
       return false;
     }
   }

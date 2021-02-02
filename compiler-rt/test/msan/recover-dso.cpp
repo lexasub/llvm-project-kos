@@ -28,7 +28,7 @@
 #include <string.h>
 
 int main(int argc, char **argv) {
-  char *volatile x = (char*)malloc(5 * sizeof(char));
+  char *volatile x = (char *)malloc(5 * sizeof(char));
   x[4] = 0;
   if (strlen(x) < 3)
     exit(0);

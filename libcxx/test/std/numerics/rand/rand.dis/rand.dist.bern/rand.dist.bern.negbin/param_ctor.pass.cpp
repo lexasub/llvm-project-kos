@@ -19,29 +19,28 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        typedef std::negative_binomial_distribution<> D;
-        typedef D::param_type param_type;
-        param_type p;
-        assert(p.k() == 1);
-        assert(p.p() == 0.5);
-    }
-    {
-        typedef std::negative_binomial_distribution<> D;
-        typedef D::param_type param_type;
-        param_type p(10);
-        assert(p.k() == 10);
-        assert(p.p() == 0.5);
-    }
-    {
-        typedef std::negative_binomial_distribution<> D;
-        typedef D::param_type param_type;
-        param_type p(10, 0.25);
-        assert(p.k() == 10);
-        assert(p.p() == 0.25);
-    }
+int main(int, char**) {
+  {
+    typedef std::negative_binomial_distribution<> D;
+    typedef D::param_type param_type;
+    param_type p;
+    assert(p.k() == 1);
+    assert(p.p() == 0.5);
+  }
+  {
+    typedef std::negative_binomial_distribution<> D;
+    typedef D::param_type param_type;
+    param_type p(10);
+    assert(p.k() == 10);
+    assert(p.p() == 0.5);
+  }
+  {
+    typedef std::negative_binomial_distribution<> D;
+    typedef D::param_type param_type;
+    param_type p(10, 0.25);
+    assert(p.k() == 10);
+    assert(p.p() == 0.25);
+  }
 
   return 0;
 }

@@ -22,7 +22,8 @@ public:
   uint32_t GetValue() const { return m_hit_count; }
 
   void Increment(uint32_t difference = 1) {
-    lldbassert(std::numeric_limits<uint32_t>::max() - m_hit_count >= difference);
+    lldbassert(std::numeric_limits<uint32_t>::max() - m_hit_count >=
+               difference);
     m_hit_count += difference;
   }
 

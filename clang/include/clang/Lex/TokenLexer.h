@@ -156,9 +156,7 @@ private:
 
   /// Return true if the next lex call will pop this macro off the include
   /// stack.
-  bool isAtEnd() const {
-    return CurTokenIdx == NumTokens;
-  }
+  bool isAtEnd() const { return CurTokenIdx == NumTokens; }
 
   /// Concatenates the next (sub-)sequence of \p Tokens separated by '##'
   /// starting with LHSTok - stopping when we encounter a token that is neither
@@ -187,7 +185,6 @@ private:
   /// Calls pasteTokens above, passing in the '*this' object's Tokens and
   /// CurTokenIdx data members.
   bool pasteTokens(Token &Tok);
-
 
   /// Takes the tail sequence of tokens within ReplacementToks that represent
   /// the just expanded __VA_OPT__ tokens (possibly zero tokens) and transforms
@@ -233,9 +230,8 @@ private:
   /// Remove comma ahead of __VA_ARGS__, if present, according to compiler
   /// dialect settings.  Returns true if the comma is removed.
   bool MaybeRemoveCommaBeforeVaArgs(SmallVectorImpl<Token> &ResultToks,
-                                    bool HasPasteOperator,
-                                    MacroInfo *Macro, unsigned MacroArgNo,
-                                    Preprocessor &PP);
+                                    bool HasPasteOperator, MacroInfo *Macro,
+                                    unsigned MacroArgNo, Preprocessor &PP);
 
   void PropagateLineStartLeadingSpaceInfo(Token &Result);
 };

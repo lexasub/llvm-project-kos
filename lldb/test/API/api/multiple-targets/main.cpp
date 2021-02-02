@@ -5,18 +5,17 @@
 #include "lldb/API/SBTarget.h"
 
 using namespace lldb;
-int main (int argc, char **argv)
-{
+int main(int argc, char **argv) {
   // We are expecting the program path and a path to an executable to load
   if (argc != 2)
     return 1;
   const char *program_file = argv[1];
   SBDebugger::Initialize();
   SBDebugger debugger = SBDebugger::Create(false);
-  auto lambda = [&](){
+  auto lambda = [&]() {
     SBError error;
-    SBTarget target = debugger.CreateTarget(program_file, nullptr, nullptr, 
-                                            false, error);
+    SBTarget target =
+        debugger.CreateTarget(program_file, nullptr, nullptr, false, error);
   };
 
   // Create 3 targets at the same time and make sure we don't crash.

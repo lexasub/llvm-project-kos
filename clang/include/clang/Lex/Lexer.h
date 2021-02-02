@@ -207,9 +207,7 @@ public:
   /// every character in the file, including whitespace and comments.  This
   /// should only be used in raw mode, as the preprocessor is not prepared to
   /// deal with the excess tokens.
-  bool isKeepWhitespaceMode() const {
-    return ExtendedTokenMode > 1;
-  }
+  bool isKeepWhitespaceMode() const { return ExtendedTokenMode > 1; }
 
   /// SetKeepWhitespaceMode - This method lets clients enable or disable
   /// whitespace retention mode.
@@ -221,9 +219,7 @@ public:
 
   /// inKeepCommentMode - Return true if the lexer should return comments as
   /// tokens.
-  bool inKeepCommentMode() const {
-    return ExtendedTokenMode > 0;
-  }
+  bool inKeepCommentMode() const { return ExtendedTokenMode > 0; }
 
   /// SetCommentRetentionMode - Change the comment retention mode of the lexer
   /// to the specified mode.  This is really only useful when lexing in raw
@@ -250,7 +246,6 @@ public:
   /// ReadToEndOfLine - Read the rest of the current preprocessor line as an
   /// uninterpreted string.  This switches the lexer out of directive mode.
   void ReadToEndOfLine(SmallVectorImpl<char> *Result = nullptr);
-
 
   /// Diag - Forwarding function for diagnostics.  This translate a source
   /// position in the current buffer into a SourceLocation object for rendering.
@@ -343,8 +338,7 @@ public:
   /// Relex the token at the specified location.
   /// \returns true if there was a failure, false on success.
   static bool getRawToken(SourceLocation Loc, Token &Result,
-                          const SourceManager &SM,
-                          const LangOptions &LangOpts,
+                          const SourceManager &SM, const LangOptions &LangOpts,
                           bool IgnoreWhiteSpace = false);
 
   /// Given a location any where in a source buffer, find the location
@@ -356,8 +350,7 @@ public:
 
   /// Get the physical length (including trigraphs and escaped newlines) of the
   /// first \p Characters characters of the token starting at TokStart.
-  static unsigned getTokenPrefixLength(SourceLocation TokStart,
-                                       unsigned CharNo,
+  static unsigned getTokenPrefixLength(SourceLocation TokStart, unsigned CharNo,
                                        const SourceManager &SM,
                                        const LangOptions &LangOpts);
 
@@ -399,9 +392,9 @@ public:
                                         const SourceManager &SM,
                                         const LangOptions &LangOpts) {
     SourceLocation End = getLocForEndOfToken(Range.getEnd(), 0, SM, LangOpts);
-    return End.isInvalid() ? CharSourceRange()
-                           : CharSourceRange::getCharRange(
-                                 Range.getBegin(), End);
+    return End.isInvalid()
+               ? CharSourceRange()
+               : CharSourceRange::getCharRange(Range.getBegin(), End);
   }
   static CharSourceRange getAsCharRange(CharSourceRange Range,
                                         const SourceManager &SM,
@@ -462,18 +455,18 @@ public:
                                            const LangOptions &LangOpts);
 
   /// Returns a string for the source that the range encompasses.
-  static StringRef getSourceText(CharSourceRange Range,
-                                 const SourceManager &SM,
+  static StringRef getSourceText(CharSourceRange Range, const SourceManager &SM,
                                  const LangOptions &LangOpts,
                                  bool *Invalid = nullptr);
 
   /// Retrieve the name of the immediate macro expansion.
   ///
-  /// This routine starts from a source location, and finds the name of the macro
-  /// responsible for its immediate expansion. It looks through any intervening
-  /// macro argument expansions to compute this. It returns a StringRef which
-  /// refers to the SourceManager-owned buffer of the source where that macro
-  /// name is spelled. Thus, the result shouldn't out-live that SourceManager.
+  /// This routine starts from a source location, and finds the name of the
+  /// macro responsible for its immediate expansion. It looks through any
+  /// intervening macro argument expansions to compute this. It returns a
+  /// StringRef which refers to the SourceManager-owned buffer of the source
+  /// where that macro name is spelled. Thus, the result shouldn't out-live that
+  /// SourceManager.
   static StringRef getImmediateMacroName(SourceLocation Loc,
                                          const SourceManager &SM,
                                          const LangOptions &LangOpts);
@@ -529,11 +522,10 @@ public:
   /// location immediately after the specified token. If the token is not found
   /// or the location is inside a macro, the returned source location will be
   /// invalid.
-  static SourceLocation findLocationAfterToken(SourceLocation loc,
-                                         tok::TokenKind TKind,
-                                         const SourceManager &SM,
-                                         const LangOptions &LangOpts,
-                                         bool SkipTrailingWhitespaceAndNewLine);
+  static SourceLocation
+  findLocationAfterToken(SourceLocation loc, tok::TokenKind TKind,
+                         const SourceManager &SM, const LangOptions &LangOpts,
+                         bool SkipTrailingWhitespaceAndNewLine);
 
   /// Returns true if the given character could appear in an identifier.
   static bool isIdentifierBodyChar(char c, const LangOptions &LangOpts);
@@ -585,7 +577,7 @@ private:
   /// TokEnd.
   void FormTokenWithChars(Token &Result, const char *TokEnd,
                           tok::TokenKind Kind) {
-    unsigned TokLen = TokEnd-BufferPtr;
+    unsigned TokLen = TokEnd - BufferPtr;
     Result.setLength(TokLen);
     Result.setLocation(getSourceLocation(BufferPtr, TokLen));
     Result.setKind(Kind);
@@ -630,7 +622,8 @@ private:
   inline char getAndAdvanceChar(const char *&Ptr, Token &Tok) {
     // If this is not a trigraph and not a UCN or escaped newline, return
     // quickly.
-    if (isObviouslySimpleCharacter(Ptr[0])) return *Ptr++;
+    if (isObviouslySimpleCharacter(Ptr[0]))
+      return *Ptr++;
 
     unsigned Size = 0;
     char C = getCharAndSizeSlow(Ptr, Size, &Tok);
@@ -645,13 +638,13 @@ private:
   const char *ConsumeChar(const char *Ptr, unsigned Size, Token &Tok) {
     // Normal case, we consumed exactly one token.  Just return it.
     if (Size == 1)
-      return Ptr+Size;
+      return Ptr + Size;
 
     // Otherwise, re-lex the character with a current token, allowing
     // diagnostics to be emitted and flags to be set.
     Size = 0;
     getCharAndSizeSlow(Ptr, Size, &Tok);
-    return Ptr+Size;
+    return Ptr + Size;
   }
 
   /// getCharAndSize - Peek a single 'character' from the specified buffer,
@@ -701,23 +694,21 @@ private:
                           bool IsStringLiteral);
 
   // Helper functions to lex the remainder of a token of the specific type.
-  bool LexIdentifier         (Token &Result, const char *CurPtr);
-  bool LexNumericConstant    (Token &Result, const char *CurPtr);
-  bool LexStringLiteral      (Token &Result, const char *CurPtr,
-                              tok::TokenKind Kind);
-  bool LexRawStringLiteral   (Token &Result, const char *CurPtr,
-                              tok::TokenKind Kind);
+  bool LexIdentifier(Token &Result, const char *CurPtr);
+  bool LexNumericConstant(Token &Result, const char *CurPtr);
+  bool LexStringLiteral(Token &Result, const char *CurPtr, tok::TokenKind Kind);
+  bool LexRawStringLiteral(Token &Result, const char *CurPtr,
+                           tok::TokenKind Kind);
   bool LexAngledStringLiteral(Token &Result, const char *CurPtr);
-  bool LexCharConstant       (Token &Result, const char *CurPtr,
-                              tok::TokenKind Kind);
-  bool LexEndOfFile          (Token &Result, const char *CurPtr);
-  bool SkipWhitespace        (Token &Result, const char *CurPtr,
-                              bool &TokAtPhysicalStartOfLine);
-  bool SkipLineComment       (Token &Result, const char *CurPtr,
-                              bool &TokAtPhysicalStartOfLine);
-  bool SkipBlockComment      (Token &Result, const char *CurPtr,
-                              bool &TokAtPhysicalStartOfLine);
-  bool SaveLineComment       (Token &Result, const char *CurPtr);
+  bool LexCharConstant(Token &Result, const char *CurPtr, tok::TokenKind Kind);
+  bool LexEndOfFile(Token &Result, const char *CurPtr);
+  bool SkipWhitespace(Token &Result, const char *CurPtr,
+                      bool &TokAtPhysicalStartOfLine);
+  bool SkipLineComment(Token &Result, const char *CurPtr,
+                       bool &TokAtPhysicalStartOfLine);
+  bool SkipBlockComment(Token &Result, const char *CurPtr,
+                        bool &TokAtPhysicalStartOfLine);
+  bool SaveLineComment(Token &Result, const char *CurPtr);
 
   bool IsStartOfConflictMarker(const char *CurPtr);
   bool HandleEndOfConflictMarker(const char *CurPtr);
@@ -735,7 +726,7 @@ private:
   /// Read a universal character name.
   ///
   /// \param StartPtr The position in the source buffer after the initial '\'.
-  ///                 If the UCN is syntactically well-formed (but not 
+  ///                 If the UCN is syntactically well-formed (but not
   ///                 necessarily valid), this parameter will be updated to
   ///                 point to the character after the UCN.
   /// \param SlashLoc The position in the source buffer of the '\'.
@@ -744,7 +735,8 @@ private:
   ///
   /// \return The Unicode codepoint specified by the UCN, or 0 if the UCN is
   ///         invalid.
-  uint32_t tryReadUCN(const char *&StartPtr, const char *SlashLoc, Token *Result);
+  uint32_t tryReadUCN(const char *&StartPtr, const char *SlashLoc,
+                      Token *Result);
 
   /// Try to consume a UCN as part of an identifier at the current
   /// location.

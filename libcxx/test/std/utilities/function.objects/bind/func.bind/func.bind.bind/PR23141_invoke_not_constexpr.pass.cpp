@@ -21,18 +21,15 @@
 
 #include "test_macros.h"
 
-struct Fun
-{
-  template<typename T, typename U>
-  void operator()(T &&, U &&) const
-  {
-    static_assert(std::is_same<U, int &>::value, "");
+struct Fun {
+  template <typename T, typename U>
+  void operator()(T&&, U&&) const {
+    static_assert(std::is_same<U, int&>::value, "");
   }
 };
 
-int main(int, char**)
-{
-    std::bind(Fun{}, std::placeholders::_1, 42)("hello");
+int main(int, char**) {
+  std::bind(Fun{}, std::placeholders::_1, 42)("hello");
 
   return 0;
 }

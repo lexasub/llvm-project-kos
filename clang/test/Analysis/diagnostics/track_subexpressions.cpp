@@ -7,15 +7,15 @@ typedef unsigned char uint8_t;
 
 uint8_t get_uint8_max() {
   uint8_t rcvscale = UINT8_MAX; // expected-note{{'rcvscale' initialized to 255}}
-  return rcvscale; // expected-note{{Returning the value 255 (loaded from 'rcvscale')}}
+  return rcvscale;              // expected-note{{Returning the value 255 (loaded from 'rcvscale')}}
 }
 
 void shift_by_undefined_value() {
   uint8_t shift_amount = get_uint8_max(); // expected-note{{'shift_amount' initialized to 255}}
-                                // expected-note@-1{{Calling 'get_uint8_max'}}
-                                // expected-note@-2{{Returning from 'get_uint8_max'}}
-  (void)(TCP_MAXWIN << shift_amount); // expected-warning{{The result of the left shift is undefined due to shifting by '255', which is greater or equal to the width of type 'int'}}
-                                      // expected-note@-1{{The result of the left shift is undefined due to shifting by '255', which is greater or equal to the width of type 'int'}}
+                                          // expected-note@-1{{Calling 'get_uint8_max'}}
+                                          // expected-note@-2{{Returning from 'get_uint8_max'}}
+  (void)(TCP_MAXWIN << shift_amount);     // expected-warning{{The result of the left shift is undefined due to shifting by '255', which is greater or equal to the width of type 'int'}}
+                                          // expected-note@-1{{The result of the left shift is undefined due to shifting by '255', which is greater or equal to the width of type 'int'}}
 }
 
 namespace array_index_tracking {
@@ -25,7 +25,7 @@ int getIndex(int x) {
   int a;
   if (x > 0) // expected-note {{Assuming 'x' is > 0}}
              // expected-note@-1 {{Taking true branch}}
-    a = 3; // expected-note {{The value 3 is assigned to 'a'}}
+    a = 3;   // expected-note {{The value 3 is assigned to 'a'}}
   else
     a = 2;
   return a; // expected-note {{Returning the value 3 (loaded from 'a')}}
@@ -57,7 +57,7 @@ int getIndex(int x) {
   int a;
   if (x > 0) // expected-note {{Assuming 'x' is > 0}}
              // expected-note@-1 {{Taking true branch}}
-    a = 3; // expected-note {{The value 3 is assigned to 'a'}}
+    a = 3;   // expected-note {{The value 3 is assigned to 'a'}}
   else
     a = 2;
   return a; // expected-note {{Returning the value 3 (loaded from 'a')}}
@@ -80,4 +80,4 @@ void testArrayIndexTracking() {
   // expected-note@-1 {{1st function call argument is an uninitialized value}}
   // expected-warning@-2{{1st function call argument is an uninitialized value}}
 }
-} // end of namespace mulit_array_index_tracking
+} // namespace multi_array_index_tracking

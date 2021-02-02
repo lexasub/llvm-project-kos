@@ -6,14 +6,13 @@
 // RUN: %clangxx -O0 %s -fsanitize-coverage=inline-8bit-counters,pc-table -o %t
 // RUN: %run %t 2>&1 | FileCheck %s
 
-#include <stdio.h>
-#include <stdint.h>
 #include <assert.h>
+#include <stdint.h>
+#include <stdio.h>
 
 const char *first_counter;
 
-extern "C"
-void __sanitizer_cov_8bit_counters_init(const char *start, const char *end) {
+extern "C" void __sanitizer_cov_8bit_counters_init(const char *start, const char *end) {
   printf("INIT: %p %p\n", start, end);
   assert(end - start > 1);
   first_counter = start;
@@ -30,7 +29,6 @@ extern "C" void __sanitizer_cov_pcs_init(const uintptr_t *pcs_beg,
   FirstPC = B[0];
   FirstPCFlag = B[1];
 }
-
 
 int main() {
   assert(first_counter);

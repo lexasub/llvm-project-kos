@@ -16,6 +16,6 @@ class NativeRegisterContext;
 class NativeThreadProtocol;
 class ResumeActionList;
 class UnixSignals;
-}
+} // namespace lldb_private
 
 #endif // LLDB_LLDB_PRIVATE_FORWARD_H

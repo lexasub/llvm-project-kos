@@ -40,7 +40,7 @@
 #include "test_convertible.h"
 #endif
 
-bool is_valid_random_device(const std::string &token) {
+bool is_valid_random_device(const std::string& token) {
 #if defined(_LIBCPP_USING_DEV_RANDOM)
   // Not an exhaustive list: they're the only tokens that are tested below.
   return token == "/dev/urandom" || token == "/dev/random";
@@ -49,11 +49,11 @@ bool is_valid_random_device(const std::string &token) {
 #endif
 }
 
-void check_random_device_valid(const std::string &token) {
+void check_random_device_valid(const std::string& token) {
   std::random_device r(token);
 }
 
-void check_random_device_invalid(const std::string &token) {
+void check_random_device_invalid(const std::string& token) {
 #ifndef TEST_HAS_NO_EXCEPTIONS
   try {
     std::random_device r(token);
@@ -66,9 +66,7 @@ void check_random_device_invalid(const std::string &token) {
 }
 
 int main(int, char**) {
-  {
-    std::random_device r;
-  }
+  { std::random_device r; }
   {
     std::string token = "wrong file";
     check_random_device_invalid(token);
@@ -88,9 +86,9 @@ int main(int, char**) {
       check_random_device_invalid(token);
   }
 #if !defined(_WIN32)
-// Test that random_device(const string&) properly handles getting
-// a file descriptor with the value '0'. Do this by closing the standard
-// streams so that the descriptor '0' is available.
+  // Test that random_device(const string&) properly handles getting
+  // a file descriptor with the value '0'. Do this by closing the standard
+  // streams so that the descriptor '0' is available.
   {
     int ec;
     ec = close(STDIN_FILENO);

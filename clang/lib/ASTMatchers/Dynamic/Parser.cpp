@@ -51,7 +51,7 @@ struct Parser::TokenInfo {
   };
 
   /// Some known identifiers.
-  static const char* const ID_Bind;
+  static const char *const ID_Bind;
 
   TokenInfo() = default;
 
@@ -61,7 +61,7 @@ struct Parser::TokenInfo {
   VariantValue Value;
 };
 
-const char* const Parser::TokenInfo::ID_Bind = "bind";
+const char *const Parser::TokenInfo::ID_Bind = "bind";
 
 /// Simple tokenizer for the parser.
 class Parser::CodeTokenizer {
@@ -160,8 +160,16 @@ private:
       consumeStringLiteral(&Result);
       break;
 
-    case '0': case '1': case '2': case '3': case '4':
-    case '5': case '6': case '7': case '8': case '9':
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9':
       // Parse an unsigned and float literal.
       consumeNumberLiteral(&Result);
       break;
@@ -215,7 +223,9 @@ private:
     if (Code.size() > 1) {
       // Consume the 'x' or 'b' radix modifier, if present.
       switch (toLowercase(Code[1])) {
-      case 'x': case 'b': Length = 2;
+      case 'x':
+      case 'b':
+        Length = 2;
       }
     }
     while (Length < Code.size() && isHexDigit(Code[Length]))
@@ -337,13 +347,9 @@ struct Parser::ScopedContextEntry {
     P->ContextStack.push_back(std::make_pair(C, 0u));
   }
 
-  ~ScopedContextEntry() {
-    P->ContextStack.pop_back();
-  }
+  ~ScopedContextEntry() { P->ContextStack.pop_back(); }
 
-  void nextArg() {
-    ++P->ContextStack.back().second;
-  }
+  void nextArg() { ++P->ContextStack.back().second; }
 };
 
 /// Parse expressions that start with an identifier.
@@ -528,9 +534,10 @@ bool Parser::parseMatcherExpressionImpl(const TokenInfo &NameToken,
                            NameToken.Text, NameToken.Range);
   SourceRange MatcherRange = NameToken.Range;
   MatcherRange.End = EndToken.Range.End;
-  VariantMatcher Result = S->actOnMatcherExpression(
-      *Ctor, MatcherRange, BindID, Args, Error);
-  if (Result.isNull()) return false;
+  VariantMatcher Result =
+      S->actOnMatcherExpression(*Ctor, MatcherRange, BindID, Args, Error);
+  if (Result.isNull())
+    return false;
 
   *Value = Result;
   return true;
@@ -539,7 +546,7 @@ bool Parser::parseMatcherExpressionImpl(const TokenInfo &NameToken,
 // If the prefix of this completion matches the completion token, add it to
 // Completions minus the prefix.
 void Parser::addCompletion(const TokenInfo &CompToken,
-                           const MatcherCompletion& Completion) {
+                           const MatcherCompletion &Completion) {
   if (StringRef(Completion.TypedText).startswith(CompToken.Text) &&
       Completion.Specificity > 0) {
     Completions.emplace_back(Completion.TypedText.substr(CompToken.Text.size()),
@@ -547,9 +554,10 @@ void Parser::addCompletion(const TokenInfo &CompToken,
   }
 }
 
-std::vector<MatcherCompletion> Parser::getNamedValueCompletions(
-    ArrayRef<ArgKind> AcceptedTypes) {
-  if (!NamedValues) return std::vector<MatcherCompletion>();
+std::vector<MatcherCompletion>
+Parser::getNamedValueCompletions(ArrayRef<ArgKind> AcceptedTypes) {
+  if (!NamedValues)
+    return std::vector<MatcherCompletion>();
   std::vector<MatcherCompletion> Result;
   for (const auto &Entry : *NamedValues) {
     unsigned Specificity;
@@ -652,8 +660,8 @@ std::vector<ArgKind> Parser::RegistrySema::getAcceptedCompletionTypes(
   return Registry::getAcceptedCompletionTypes(Context);
 }
 
-std::vector<MatcherCompletion> Parser::RegistrySema::getMatcherCompletions(
-    ArrayRef<ArgKind> AcceptedTypes) {
+std::vector<MatcherCompletion>
+Parser::RegistrySema::getMatcherCompletions(ArrayRef<ArgKind> AcceptedTypes) {
   return Registry::getMatcherCompletions(AcceptedTypes);
 }
 

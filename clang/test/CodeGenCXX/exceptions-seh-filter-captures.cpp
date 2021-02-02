@@ -9,7 +9,7 @@ extern "C" void test_freefunc(int p1) {
   static int s1 = 42;
   __try {
     might_crash();
-  } __except(basic_filter(p1, l1, s1)) {
+  } __except (basic_filter(p1, l1, s1)) {
   }
 }
 
@@ -39,7 +39,7 @@ void S::test_method() {
   int l1 = 13;
   __try {
     might_crash();
-  } __except(basic_filter(l1)) {
+  } __except (basic_filter(l1)) {
     // FIXME: Test capturing 'this' and 'm1'.
   }
 }
@@ -62,7 +62,7 @@ void test_lambda() {
     int l2 = 42;
     __try {
       might_crash();
-    } __except(basic_filter(l2)) {
+    } __except (basic_filter(l2)) {
       // FIXME: Test 'l1' when we can capture the lambda's 'this' decl.
     }
   };

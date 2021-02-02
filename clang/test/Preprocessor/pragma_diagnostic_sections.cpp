@@ -2,14 +2,26 @@
 
 // rdar://8365684
 struct S {
-    void m1() { int b; while (b==b); } // expected-warning {{always evaluates to true}}
+  void m1() {
+    int b;
+    while (b == b)
+      ;
+  } // expected-warning {{always evaluates to true}}
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wtautological-compare"
-    void m2() { int b; while (b==b); }
+  void m2() {
+    int b;
+    while (b == b)
+      ;
+  }
 #pragma clang diagnostic pop
 
-    void m3() { int b; while (b==b); } // expected-warning {{always evaluates to true}}
+  void m3() {
+    int b;
+    while (b == b)
+      ;
+  } // expected-warning {{always evaluates to true}}
 };
 
 //------------------------------------------------------------------------------
@@ -18,13 +30,17 @@ struct S {
 #pragma clang diagnostic ignored "-Wtautological-compare"
 template <typename T>
 struct TS {
-    void m() { T b; while (b==b); }
+  void m() {
+    T b;
+    while (b == b)
+      ;
+  }
 };
 #pragma clang diagnostic pop
 
 void f() {
-    TS<int> ts;
-    ts.m();
+  TS<int> ts;
+  ts.m();
 }
 
 //------------------------------------------------------------------------------
@@ -40,7 +56,7 @@ void f() {
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wreturn-type"
-int g() { }
+int g() {}
 #pragma clang diagnostic pop
 
 //------------------------------------------------------------------------------
@@ -48,32 +64,33 @@ int g() { }
 void ww(
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
-        int x,
+    int x,
 #pragma clang diagnostic pop
-        int y) // expected-warning {{unused}}
+    int y) // expected-warning {{unused}}
 {
 }
 
 //------------------------------------------------------------------------------
 
 struct S2 {
-    int x, y;
-    S2() : 
+  int x, y;
+  S2() :
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wreorder"
-    y(),
-    x()
+         y(),
+         x()
 #pragma clang diagnostic pop
-    {}
+  {
+  }
 };
 
 //------------------------------------------------------------------------------
 
 // rdar://8790245
-#define MYMACRO \
-    _Pragma("clang diagnostic push") \
-    _Pragma("clang diagnostic ignored \"-Wunknown-pragmas\"") \
-    _Pragma("clang diagnostic pop")
+#define MYMACRO                                                 \
+  _Pragma("clang diagnostic push")                              \
+      _Pragma("clang diagnostic ignored \"-Wunknown-pragmas\"") \
+          _Pragma("clang diagnostic pop")
 MYMACRO
 #undef MYMACRO
 

@@ -248,10 +248,10 @@ private:
   LLVMContext *C;
   const DataLayout *DL;
 
-  GlobalVariable *FunctionGuardArray;  // for trace-pc-guard.
-  GlobalVariable *Function8bitCounterArray;  // for inline-8bit-counters.
-  GlobalVariable *FunctionBoolArray;         // for inline-bool-flag.
-  GlobalVariable *FunctionPCsArray;  // for pc-table.
+  GlobalVariable *FunctionGuardArray;       // for trace-pc-guard.
+  GlobalVariable *Function8bitCounterArray; // for inline-8bit-counters.
+  GlobalVariable *FunctionBoolArray;        // for inline-bool-flag.
+  GlobalVariable *FunctionPCsArray;         // for pc-table.
   SmallVector<GlobalValue *, 20> GlobalsToAppendToUsed;
   SmallVector<GlobalValue *, 20> GlobalsToAppendToCompilerUsed;
 
@@ -554,10 +554,9 @@ static bool shouldInstrumentBlock(const Function &F, const BasicBlock *BB,
 
   // Do not instrument full dominators, or full post-dominators with multiple
   // predecessors.
-  return !isFullDominator(BB, DT)
-    && !(isFullPostDominator(BB, PDT) && !BB->getSinglePredecessor());
+  return !isFullDominator(BB, DT) &&
+         !(isFullPostDominator(BB, PDT) && !BB->getSinglePredecessor());
 }
-
 
 // Returns true iff From->To is a backedge.
 // A twist here is that we treat From->To as a backedge if
@@ -618,7 +617,8 @@ void ModuleSanitizerCoverage::instrumentFunction(
   if (Blocklist && Blocklist->inSection("coverage", "fun", F.getName()))
     return;
   if (Options.CoverageType >= SanitizerCoverageOptions::SCK_Edge)
-    SplitAllCriticalEdges(F, CriticalEdgeSplittingOptions().setIgnoreUnreachableDests());
+    SplitAllCriticalEdges(
+        F, CriticalEdgeSplittingOptions().setIgnoreUnreachableDests());
   SmallVector<Instruction *, 8> IndirCalls;
   SmallVector<BasicBlock *, 16> BlocksToInstrument;
   SmallVector<Instruction *, 8> CmpTraceTargets;
@@ -738,7 +738,8 @@ void ModuleSanitizerCoverage::CreateFunctionLocalArrays(
 bool ModuleSanitizerCoverage::InjectCoverage(Function &F,
                                              ArrayRef<BasicBlock *> AllBlocks,
                                              bool IsLeafFunc) {
-  if (AllBlocks.empty()) return false;
+  if (AllBlocks.empty())
+    return false;
   CreateFunctionLocalArrays(F, AllBlocks);
   for (size_t i = 0, N = AllBlocks.size(); i < N; i++)
     InjectCoverageAtBlock(F, *AllBlocks[i], i, IsLeafFunc);
@@ -816,13 +817,14 @@ void ModuleSanitizerCoverage::InjectTraceForDiv(
   for (auto BO : DivTraceTargets) {
     IRBuilder<> IRB(BO);
     Value *A1 = BO->getOperand(1);
-    if (isa<ConstantInt>(A1)) continue;
+    if (isa<ConstantInt>(A1))
+      continue;
     if (!A1->getType()->isIntegerTy())
       continue;
     uint64_t TypeSize = DL->getTypeStoreSizeInBits(A1->getType());
-    int CallbackIdx = TypeSize == 32 ? 0 :
-        TypeSize == 64 ? 1 : -1;
-    if (CallbackIdx < 0) continue;
+    int CallbackIdx = TypeSize == 32 ? 0 : TypeSize == 64 ? 1 : -1;
+    if (CallbackIdx < 0)
+      continue;
     auto Ty = Type::getIntNTy(*C, TypeSize);
     IRB.CreateCall(SanCovTraceDivFunction[CallbackIdx],
                    {IRB.CreateIntCast(A1, Ty, true)});
@@ -850,17 +852,20 @@ void ModuleSanitizerCoverage::InjectTraceForCmp(
       if (!A0->getType()->isIntegerTy())
         continue;
       uint64_t TypeSize = DL->getTypeStoreSizeInBits(A0->getType());
-      int CallbackIdx = TypeSize == 8 ? 0 :
-                        TypeSize == 16 ? 1 :
-                        TypeSize == 32 ? 2 :
-                        TypeSize == 64 ? 3 : -1;
-      if (CallbackIdx < 0) continue;
+      int CallbackIdx = TypeSize == 8    ? 0
+                        : TypeSize == 16 ? 1
+                        : TypeSize == 32 ? 2
+                        : TypeSize == 64 ? 3
+                                         : -1;
+      if (CallbackIdx < 0)
+        continue;
       // __sanitizer_cov_trace_cmp((type_size << 32) | predicate, A0, A1);
       auto CallbackFunc = SanCovTraceCmpFunction[CallbackIdx];
       bool FirstIsConst = isa<ConstantInt>(A0);
       bool SecondIsConst = isa<ConstantInt>(A1);
       // If both are const, then we don't need such a comparison.
-      if (FirstIsConst && SecondIsConst) continue;
+      if (FirstIsConst && SecondIsConst)
+        continue;
       // If only one is const, then make it the first callback argument.
       if (FirstIsConst || SecondIsConst) {
         CallbackFunc = SanCovTraceConstCmpFunction[CallbackIdx];
@@ -870,7 +875,7 @@ void ModuleSanitizerCoverage::InjectTraceForCmp(
 
       auto Ty = Type::getIntNTy(*C, TypeSize);
       IRB.CreateCall(CallbackFunc, {IRB.CreateIntCast(A0, Ty, true),
-              IRB.CreateIntCast(A1, Ty, true)});
+                                    IRB.CreateIntCast(A1, Ty, true)});
     }
   }
 }

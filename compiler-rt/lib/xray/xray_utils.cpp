@@ -39,13 +39,12 @@
 namespace __xray {
 
 #if SANITIZER_FUCHSIA
-constexpr const char* ProfileSinkName = "llvm-xray";
+constexpr const char *ProfileSinkName = "llvm-xray";
 
-LogWriter::~LogWriter() {
-  _zx_handle_close(Vmo);
-}
+LogWriter::~LogWriter() { _zx_handle_close(Vmo); }
 
-void LogWriter::WriteAll(const char *Begin, const char *End) XRAY_NEVER_INSTRUMENT {
+void LogWriter::WriteAll(const char *Begin,
+                         const char *End) XRAY_NEVER_INSTRUMENT {
   if (Begin == End)
     return;
   auto TotalBytes = std::distance(Begin, End);
@@ -71,8 +70,8 @@ void LogWriter::WriteAll(const char *Begin, const char *End) XRAY_NEVER_INSTRUME
   Offset += TotalBytes;
 
   // Record the data size as a property of the VMO.
-  _zx_object_set_property(Vmo, ZX_PROP_VMO_CONTENT_SIZE,
-                          &Offset, sizeof(Offset));
+  _zx_object_set_property(Vmo, ZX_PROP_VMO_CONTENT_SIZE, &Offset,
+                          sizeof(Offset));
 }
 
 void LogWriter::Flush() XRAY_NEVER_INSTRUMENT {
@@ -107,7 +106,7 @@ LogWriter *LogWriter::Open() XRAY_NEVER_INSTRUMENT {
   // Duplicate the handle since __sanitizer_publish_data consumes it and
   // LogWriter needs to hold onto it.
   zx_handle_t Handle;
-  Status =_zx_handle_duplicate(Vmo, ZX_RIGHT_SAME_RIGHTS, &Handle);
+  Status = _zx_handle_duplicate(Vmo, ZX_RIGHT_SAME_RIGHTS, &Handle);
   if (Status != ZX_OK) {
     Report("XRay: cannot duplicate VMO handle: %s\n",
            _zx_status_get_string(Status));
@@ -122,7 +121,8 @@ LogWriter *LogWriter::Open() XRAY_NEVER_INSTRUMENT {
   // Use the dumpfile symbolizer markup element to write the name of the VMO.
   Report("XRay: " FORMAT_DUMPFILE "\n", ProfileSinkName, VmoName);
 
-  LogWriter *LW = reinterpret_cast<LogWriter *>(InternalAlloc(sizeof(LogWriter)));
+  LogWriter *LW =
+      reinterpret_cast<LogWriter *>(InternalAlloc(sizeof(LogWriter)));
   new (LW) LogWriter(Vmo);
   return LW;
 }
@@ -132,11 +132,10 @@ void LogWriter::Close(LogWriter *LW) {
   InternalFree(LW);
 }
 #else // SANITIZER_FUCHSIA
-LogWriter::~LogWriter() {
-  internal_close(Fd);
-}
+LogWriter::~LogWriter() { internal_close(Fd); }
 
-void LogWriter::WriteAll(const char *Begin, const char *End) XRAY_NEVER_INSTRUMENT {
+void LogWriter::WriteAll(const char *Begin,
+                         const char *End) XRAY_NEVER_INSTRUMENT {
   if (Begin == End)
     return;
   auto TotalBytes = std::distance(Begin, End);
@@ -154,9 +153,7 @@ void LogWriter::WriteAll(const char *Begin, const char *End) XRAY_NEVER_INSTRUME
   }
 }
 
-void LogWriter::Flush() XRAY_NEVER_INSTRUMENT {
-  fsync(Fd);
-}
+void LogWriter::Flush() XRAY_NEVER_INSTRUMENT { fsync(Fd); }
 
 LogWriter *LogWriter::Open() XRAY_NEVER_INSTRUMENT {
   // Open a temporary file once for the log.
@@ -169,9 +166,9 @@ LogWriter *LogWriter::Open() XRAY_NEVER_INSTRUMENT {
   if (LastSlash != nullptr)
     Progname = LastSlash + 1;
 
-  int NeededLength = internal_snprintf(
-      TmpFilename, sizeof(TmpFilename), "%s%s.%s",
-      flags()->xray_logfile_base, Progname, TmpWildcardPattern);
+  int NeededLength = internal_snprintf(TmpFilename, sizeof(TmpFilename),
+                                       "%s%s.%s", flags()->xray_logfile_base,
+                                       Progname, TmpWildcardPattern);
   if (NeededLength > int(sizeof(TmpFilename))) {
     Report("XRay log file name too long (%d): %s\n", NeededLength, TmpFilename);
     return nullptr;

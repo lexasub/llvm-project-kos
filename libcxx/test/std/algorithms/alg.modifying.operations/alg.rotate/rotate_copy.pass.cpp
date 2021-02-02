@@ -22,7 +22,6 @@
 #include "test_macros.h"
 #include "test_iterators.h"
 
-
 template <class InIter, class OutIter>
 TEST_CONSTEXPR_CXX20 void test() {
   int ia[] = {0, 1, 2, 3};
@@ -116,14 +115,16 @@ TEST_CONSTEXPR_CXX20 void test() {
 
   {
     int ints[] = {1, 3, 5, 2, 5, 6};
-    int const n_ints = sizeof(ints)/sizeof(int);
+    int const n_ints = sizeof(ints) / sizeof(int);
     int zeros[n_ints] = {0};
 
     const size_t N = 2;
     const auto middle = std::begin(ints) + N;
-    auto it = std::rotate_copy(std::begin(ints), middle, std::end(ints), std::begin(zeros));
+    auto it = std::rotate_copy(std::begin(ints), middle, std::end(ints),
+                               std::begin(zeros));
     assert(std::distance(std::begin(zeros), it) == n_ints);
-    assert(std::equal(std::begin(ints), middle, std::begin(zeros) + n_ints - N));
+    assert(
+        std::equal(std::begin(ints), middle, std::begin(zeros) + n_ints - N));
     assert(std::equal(middle, std::end(ints), std::begin(zeros)));
   }
 }

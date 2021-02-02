@@ -14,6 +14,15 @@
 #include "sanitizer_common/sanitizer_platform.h"
 #if SANITIZER_LINUX || SANITIZER_FREEBSD || SANITIZER_NETBSD
 
+#include <fcntl.h>
+#include <pthread.h>
+#include <signal.h>
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/mman.h>
+
 #include "sanitizer_common/sanitizer_common.h"
 #include "sanitizer_common/sanitizer_libc.h"
 #include "sanitizer_common/sanitizer_linux.h"
@@ -26,39 +35,30 @@
 #include "tsan_flags.h"
 #include "tsan_platform.h"
 #include "tsan_rtl.h"
-
-#include <fcntl.h>
-#include <pthread.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdarg.h>
-#include <sys/mman.h>
 #if SANITIZER_LINUX
-#include <sys/personality.h>
 #include <setjmp.h>
+#include <sys/personality.h>
 #endif
-#include <sys/syscall.h>
+#include <dlfcn.h>
+#include <sched.h>
+#include <sys/resource.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
+#include <sys/syscall.h>
 #include <sys/time.h>
 #include <sys/types.h>
-#include <sys/resource.h>
-#include <sys/stat.h>
 #include <unistd.h>
-#include <sched.h>
-#include <dlfcn.h>
 #if SANITIZER_LINUX
 #define __need_res_state
 #include <resolv.h>
 #endif
 
 #ifdef sa_handler
-# undef sa_handler
+#undef sa_handler
 #endif
 
 #ifdef sa_sigaction
-# undef sa_sigaction
+#undef sa_sigaction
 #endif
 
 #if SANITIZER_FREEBSD
@@ -67,9 +67,9 @@ void *__libc_stack_end = 0;
 #endif
 
 #if SANITIZER_LINUX && defined(__aarch64__) && !SANITIZER_GO
-# define INIT_LONGJMP_XOR_KEY 1
+#define INIT_LONGJMP_XOR_KEY 1
 #else
-# define INIT_LONGJMP_XOR_KEY 0
+#define INIT_LONGJMP_XOR_KEY 0
 #endif
 
 #if INIT_LONGJMP_XOR_KEY
@@ -91,19 +91,19 @@ uptr vmaSize;
 #endif
 
 enum {
-  MemTotal  = 0,
+  MemTotal = 0,
   MemShadow = 1,
-  MemMeta   = 2,
-  MemFile   = 3,
-  MemMmap   = 4,
-  MemTrace  = 5,
-  MemHeap   = 6,
-  MemOther  = 7,
-  MemCount  = 8,
+  MemMeta = 2,
+  MemFile = 3,
+  MemMmap = 4,
+  MemTrace = 5,
+  MemHeap = 6,
+  MemOther = 7,
+  MemCount = 8,
 };
 
-void FillProfileCallback(uptr p, uptr rss, bool file,
-                         uptr *mem, uptr stats_size) {
+void FillProfileCallback(uptr p, uptr rss, bool file, uptr *mem,
+                         uptr stats_size) {
   mem[MemTotal] += rss;
   if (p >= ShadowBeg() && p < ShadowEnd())
     mem[MemShadow] += rss;
@@ -131,20 +131,19 @@ void WriteMemoryProfile(char *buf, uptr buf_size, uptr nthread, uptr nlive) {
   internal_memset(mem, 0, sizeof(mem[0]) * MemCount);
   __sanitizer::GetMemoryProfile(FillProfileCallback, mem, 7);
   StackDepotStats *stacks = StackDepotGetStats();
-  internal_snprintf(buf, buf_size,
+  internal_snprintf(
+      buf, buf_size,
       "RSS %zd MB: shadow:%zd meta:%zd file:%zd mmap:%zd"
       " trace:%zd heap:%zd other:%zd stacks=%zd[%zd] nthr=%zd/%zd\n",
       mem[MemTotal] >> 20, mem[MemShadow] >> 20, mem[MemMeta] >> 20,
       mem[MemFile] >> 20, mem[MemMmap] >> 20, mem[MemTrace] >> 20,
-      mem[MemHeap] >> 20, mem[MemOther] >> 20,
-      stacks->allocated >> 20, stacks->n_uniq_ids,
-      nlive, nthread);
+      mem[MemHeap] >> 20, mem[MemOther] >> 20, stacks->allocated >> 20,
+      stacks->n_uniq_ids, nlive, nthread);
 }
 
 #if SANITIZER_LINUX
 void FlushShadowMemoryCallback(
-    const SuspendedThreadsList &suspended_threads_list,
-    void *argument) {
+    const SuspendedThreadsList &suspended_threads_list, void *argument) {
   ReleaseMemoryPagesToOS(ShadowBeg(), ShadowEnd());
 }
 #endif
@@ -170,8 +169,8 @@ static void MapRodata() {
   if (tmpdir == 0)
     return;
   char name[256];
-  internal_snprintf(name, sizeof(name), "%s/tsan.rodata.%d",
-                    tmpdir, (int)internal_getpid());
+  internal_snprintf(name, sizeof(name), "%s/tsan.rodata.%d", tmpdir,
+                    (int)internal_getpid());
   uptr openrv = internal_open(name, O_RDWR | O_CREAT | O_EXCL, 0600);
   if (internal_iserror(openrv))
     return;
@@ -192,7 +191,7 @@ static void MapRodata() {
     return;
   }
   // Map the file into shadow of .rodata sections.
-  MemoryMappingLayout proc_maps(/*cache_enabled*/true);
+  MemoryMappingLayout proc_maps(/*cache_enabled*/ true);
   // Reusing the buffer 'name'.
   MemoryMappedSegment segment(name, ARRAY_SIZE(name));
   while (proc_maps.Next(&segment)) {
@@ -212,18 +211,15 @@ static void MapRodata() {
   internal_close(fd);
 }
 
-void InitializeShadowMemoryPlatform() {
-  MapRodata();
-}
+void InitializeShadowMemoryPlatform() { MapRodata(); }
 
 #endif  // #if !SANITIZER_GO
 
 void InitializePlatformEarly() {
 #ifdef TSAN_RUNTIME_VMA
-  vmaSize =
-    (MostSignificantSetBitIndex(GET_CURRENT_FRAME()) + 1);
+  vmaSize = (MostSignificantSetBitIndex(GET_CURRENT_FRAME()) + 1);
 #if defined(__aarch64__)
-# if !SANITIZER_GO
+#if !SANITIZER_GO
   if (vmaSize != 39 && vmaSize != 42 && vmaSize != 48) {
     Printf("FATAL: ThreadSanitizer: unsupported VMA range\n");
     Printf("FATAL: Found %zd - Supported 39, 42 and 48\n", vmaSize);
@@ -237,19 +233,19 @@ void InitializePlatformEarly() {
   }
 #endif
 #elif defined(__powerpc64__)
-# if !SANITIZER_GO
+#if !SANITIZER_GO
   if (vmaSize != 44 && vmaSize != 46 && vmaSize != 47) {
     Printf("FATAL: ThreadSanitizer: unsupported VMA range\n");
     Printf("FATAL: Found %zd - Supported 44, 46, and 47\n", vmaSize);
     Die();
   }
-# else
+#else
   if (vmaSize != 46 && vmaSize != 47) {
     Printf("FATAL: ThreadSanitizer: unsupported VMA range\n");
     Printf("FATAL: Found %zd - Supported 46, and 47\n", vmaSize);
     Die();
   }
-# endif
+#endif
 #endif
 #endif
 }
@@ -268,17 +264,19 @@ void InitializePlatform() {
     // we re-exec the program with limited stack size as a best effort.
     if (StackSizeIsUnlimited()) {
       const uptr kMaxStackSize = 32 * 1024 * 1024;
-      VReport(1, "Program is run with unlimited stack size, which wouldn't "
-                 "work with ThreadSanitizer.\n"
-                 "Re-execing with stack size limited to %zd bytes.\n",
+      VReport(1,
+              "Program is run with unlimited stack size, which wouldn't "
+              "work with ThreadSanitizer.\n"
+              "Re-execing with stack size limited to %zd bytes.\n",
               kMaxStackSize);
       SetStackSizeLimitInBytes(kMaxStackSize);
       reexec = true;
     }
 
     if (!AddressSpaceIsUnlimited()) {
-      Report("WARNING: Program is run with limited virtual address space,"
-             " which wouldn't work with ThreadSanitizer.\n");
+      Report(
+          "WARNING: Program is run with limited virtual address space,"
+          " which wouldn't work with ThreadSanitizer.\n");
       Report("Re-execing with unlimited virtual address space.\n");
       SetAddressSpaceUnlimited();
       reexec = true;
@@ -290,7 +288,8 @@ void InitializePlatform() {
     // this big range, we should disable randomized virtual space on aarch64.
     int old_personality = personality(0xffffffff);
     if (old_personality != -1 && (old_personality & ADDR_NO_RANDOMIZE) == 0) {
-      VReport(1, "WARNING: Program is run with randomized virtual address "
+      VReport(1,
+              "WARNING: Program is run with randomized virtual address "
               "space, which wouldn't work with ThreadSanitizer.\n"
               "Re-execing with fixed virtual address space.\n");
       CHECK_NE(personality(old_personality | ADDR_NO_RANDOMIZE), -1);
@@ -315,7 +314,7 @@ void InitializePlatform() {
 int ExtractResolvFDs(void *state, int *fds, int nfd) {
 #if SANITIZER_LINUX && !SANITIZER_ANDROID
   int cnt = 0;
-  struct __res_state *statp = (struct __res_state*)state;
+  struct __res_state *statp = (struct __res_state *)state;
   for (int i = 0; i < MAXNS && cnt < nfd; i++) {
     if (statp->_u._ext.nsaddrs[i] && statp->_u._ext.nssocks[i] != -1)
       fds[cnt++] = statp->_u._ext.nssocks[i];
@@ -331,14 +330,14 @@ int ExtractResolvFDs(void *state, int *fds, int nfd) {
 // see 'man recvmsg' and 'man 3 cmsg'.
 int ExtractRecvmsgFDs(void *msgp, int *fds, int nfd) {
   int res = 0;
-  msghdr *msg = (msghdr*)msgp;
+  msghdr *msg = (msghdr *)msgp;
   struct cmsghdr *cmsg = CMSG_FIRSTHDR(msg);
   for (; cmsg; cmsg = CMSG_NXTHDR(msg, cmsg)) {
     if (cmsg->cmsg_level != SOL_SOCKET || cmsg->cmsg_type != SCM_RIGHTS)
       continue;
     int n = (cmsg->cmsg_len - CMSG_LEN(0)) / sizeof(fds[0]);
     for (int i = 0; i < n; i++) {
-      fds[res++] = ((int*)CMSG_DATA(cmsg))[i];
+      fds[res++] = ((int *)CMSG_DATA(cmsg))[i];
       if (res == nfd)
         return res;
     }
@@ -349,57 +348,57 @@ int ExtractRecvmsgFDs(void *msgp, int *fds, int nfd) {
 // Reverse operation of libc stack pointer mangling
 static uptr UnmangleLongJmpSp(uptr mangled_sp) {
 #if defined(__x86_64__)
-# if SANITIZER_LINUX
+#if SANITIZER_LINUX
   // Reverse of:
   //   xor  %fs:0x30, %rsi
   //   rol  $0x11, %rsi
   uptr sp;
   asm("ror  $0x11,     %0 \n"
       "xor  %%fs:0x30, %0 \n"
-      : "=r" (sp)
-      : "0" (mangled_sp));
+      : "=r"(sp)
+      : "0"(mangled_sp));
   return sp;
-# else
+#else
   return mangled_sp;
-# endif
+#endif
 #elif defined(__aarch64__)
-# if SANITIZER_LINUX
+#if SANITIZER_LINUX
   return mangled_sp ^ longjmp_xor_key;
-# else
+#else
   return mangled_sp;
-# endif
+#endif
 #elif defined(__powerpc64__)
   // Reverse of:
   //   ld   r4, -28696(r13)
   //   xor  r4, r3, r4
   uptr xor_key;
-  asm("ld  %0, -28696(%%r13)" : "=r" (xor_key));
+  asm("ld  %0, -28696(%%r13)" : "=r"(xor_key));
   return mangled_sp ^ xor_key;
 #elif defined(__mips__)
   return mangled_sp;
 #else
-  #error "Unknown platform"
+#error "Unknown platform"
 #endif
 }
 
 #if SANITIZER_NETBSD
-# ifdef __x86_64__
-#  define LONG_JMP_SP_ENV_SLOT 6
-# else
-#  error unsupported
-# endif
+#ifdef __x86_64__
+#define LONG_JMP_SP_ENV_SLOT 6
+#else
+#error unsupported
+#endif
 #elif defined(__powerpc__)
-# define LONG_JMP_SP_ENV_SLOT 0
+#define LONG_JMP_SP_ENV_SLOT 0
 #elif SANITIZER_FREEBSD
-# define LONG_JMP_SP_ENV_SLOT 2
+#define LONG_JMP_SP_ENV_SLOT 2
 #elif SANITIZER_LINUX
-# ifdef __aarch64__
-#  define LONG_JMP_SP_ENV_SLOT 13
-# elif defined(__mips64)
-#  define LONG_JMP_SP_ENV_SLOT 1
-# else
-#  define LONG_JMP_SP_ENV_SLOT 6
-# endif
+#ifdef __aarch64__
+#define LONG_JMP_SP_ENV_SLOT 13
+#elif defined(__mips64)
+#define LONG_JMP_SP_ENV_SLOT 1
+#else
+#define LONG_JMP_SP_ENV_SLOT 6
+#endif
 #endif
 
 uptr ExtractLongJmpSp(uptr *env) {
@@ -419,7 +418,7 @@ static void InitializeLongjmpXorKey() {
 
   // 2. Retrieve vanilla/mangled SP.
   uptr sp;
-  asm("mov  %0, sp" : "=r" (sp));
+  asm("mov  %0, sp" : "=r"(sp));
   uptr mangled_sp = ((uptr *)&env)[LONG_JMP_SP_ENV_SLOT];
 
   // 3. xor SPs to obtain key.
@@ -456,7 +455,7 @@ int call_pthread_cancel_with_cleanup(int (*fn)(void *arg),
 #endif  // !SANITIZER_GO
 
 #if !SANITIZER_GO
-void ReplaceSystemMalloc() { }
+void ReplaceSystemMalloc() {}
 #endif
 
 #if !SANITIZER_GO
@@ -466,24 +465,24 @@ void ReplaceSystemMalloc() { }
 static ThreadState *dead_thread_state = nullptr;
 
 ThreadState *cur_thread() {
-  ThreadState* thr = reinterpret_cast<ThreadState*>(*get_android_tls_ptr());
+  ThreadState *thr = reinterpret_cast<ThreadState *>(*get_android_tls_ptr());
   if (thr == nullptr) {
     __sanitizer_sigset_t emptyset;
     internal_sigfillset(&emptyset);
     __sanitizer_sigset_t oldset;
     CHECK_EQ(0, internal_sigprocmask(SIG_SETMASK, &emptyset, &oldset));
-    thr = reinterpret_cast<ThreadState*>(*get_android_tls_ptr());
+    thr = reinterpret_cast<ThreadState *>(*get_android_tls_ptr());
     if (thr == nullptr) {
-      thr = reinterpret_cast<ThreadState*>(MmapOrDie(sizeof(ThreadState),
-                                                     "ThreadState"));
+      thr = reinterpret_cast<ThreadState *>(
+          MmapOrDie(sizeof(ThreadState), "ThreadState"));
       *get_android_tls_ptr() = reinterpret_cast<uptr>(thr);
       if (dead_thread_state == nullptr) {
-        dead_thread_state = reinterpret_cast<ThreadState*>(
+        dead_thread_state = reinterpret_cast<ThreadState *>(
             MmapOrDie(sizeof(ThreadState), "ThreadState"));
         dead_thread_state->fast_state.SetIgnoreBit();
         dead_thread_state->ignore_interceptors = 1;
         dead_thread_state->is_dead = true;
-        *const_cast<int*>(&dead_thread_state->tid) = -1;
+        *const_cast<int *>(&dead_thread_state->tid) = -1;
         CHECK_EQ(0, internal_mprotect(dead_thread_state, sizeof(ThreadState),
                                       PROT_READ));
       }
@@ -502,7 +501,7 @@ void cur_thread_finalize() {
   internal_sigfillset(&emptyset);
   __sanitizer_sigset_t oldset;
   CHECK_EQ(0, internal_sigprocmask(SIG_SETMASK, &emptyset, &oldset));
-  ThreadState* thr = reinterpret_cast<ThreadState*>(*get_android_tls_ptr());
+  ThreadState *thr = reinterpret_cast<ThreadState *>(*get_android_tls_ptr());
   if (thr != dead_thread_state) {
     *get_android_tls_ptr() = reinterpret_cast<uptr>(dead_thread_state);
     UnmapOrDie(thr, sizeof(ThreadState));

@@ -62,21 +62,21 @@ using namespace M;
 #ifdef __cplusplus
 namespace N {
 #endif
-  void g() {
-    int k = f();
-  }
+void g() {
+  int k = f();
+}
 
 #ifdef __cplusplus
-  extern "C" {
+extern "C" {
 #endif
-    int f;
+int f;
 #if !defined(CXX_HEADER) && !defined(NAMESPACE)
-    // expected-error@-2 {{redefinition of 'f' as different kind of symbol}}
-    // expected-note@c-header.h:1 {{previous}}
+// expected-error@-2 {{redefinition of 'f' as different kind of symbol}}
+// expected-note@c-header.h:1 {{previous}}
 #endif
 
 #ifdef __cplusplus
-  }
+}
 }
 #endif
 

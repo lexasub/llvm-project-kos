@@ -15,5 +15,7 @@ void f(); // So that the namespace isn't empty.
 }
 // CHECK-YAML: ReplacementText: ' // namespace i'
 
-class A { A(int i); };
+class A {
+  A(int i);
+};
 // CHECK-YAML: ReplacementText: 'explicit '

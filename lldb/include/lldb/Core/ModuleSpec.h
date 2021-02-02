@@ -294,7 +294,7 @@ public:
     if (this != &rhs) {
       std::lock(m_mutex, rhs.m_mutex);
       std::lock_guard<std::recursive_mutex> lhs_guard(m_mutex, std::adopt_lock);
-      std::lock_guard<std::recursive_mutex> rhs_guard(rhs.m_mutex, 
+      std::lock_guard<std::recursive_mutex> rhs_guard(rhs.m_mutex,
                                                       std::adopt_lock);
       m_specs = rhs.m_specs;
     }

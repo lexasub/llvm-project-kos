@@ -41,9 +41,8 @@ struct GenericConvertingDeleter {
 };
 
 template <class T, class U>
-using EnableIfNotSame = typename std::enable_if<
-    !std::is_same<typename std::decay<T>::type, typename std::decay<U>::type>::value
->::type;
+using EnableIfNotSame = typename std::enable_if<!std::is_same<
+    typename std::decay<T>::type, typename std::decay<U>::type>::value>::type;
 
 template <class Templ, class Other>
 struct is_specialization;
@@ -56,11 +55,12 @@ struct is_specialization<Templ<ID1>, Templ<ID2> > : std::true_type {};
 
 template <class Templ, class Other>
 using EnableIfSpecialization = typename std::enable_if<
-    is_specialization<Templ, typename std::decay<Other>::type >::value
-  >::type;
+    is_specialization<Templ, typename std::decay<Other>::type>::value>::type;
 
-template <int ID> struct TrackingDeleter;
-template <int ID> struct ConstTrackingDeleter;
+template <int ID>
+struct TrackingDeleter;
+template <int ID>
+struct ConstTrackingDeleter;
 
 template <int ID>
 struct TrackingDeleter {
@@ -70,7 +70,7 @@ struct TrackingDeleter {
       : arg_type(&makeArgumentID<TrackingDeleter const&>()) {}
 
   TrackingDeleter(TrackingDeleter&&)
-      : arg_type(&makeArgumentID<TrackingDeleter &&>()) {}
+      : arg_type(&makeArgumentID<TrackingDeleter&&>()) {}
 
   template <class T, class = EnableIfSpecialization<TrackingDeleter, T> >
   TrackingDeleter(T&&) : arg_type(&makeArgumentID<T&&>()) {}
@@ -80,8 +80,8 @@ struct TrackingDeleter {
     return *this;
   }
 
-  TrackingDeleter& operator=(TrackingDeleter &&) {
-    arg_type = &makeArgumentID<TrackingDeleter &&>();
+  TrackingDeleter& operator=(TrackingDeleter&&) {
+    arg_type = &makeArgumentID<TrackingDeleter&&>();
     return *this;
   }
 
@@ -111,7 +111,7 @@ struct ConstTrackingDeleter {
       : arg_type(&makeArgumentID<ConstTrackingDeleter const&>()) {}
 
   ConstTrackingDeleter(ConstTrackingDeleter&&)
-      : arg_type(&makeArgumentID<ConstTrackingDeleter &&>()) {}
+      : arg_type(&makeArgumentID<ConstTrackingDeleter&&>()) {}
 
   template <class T, class = EnableIfSpecialization<ConstTrackingDeleter, T> >
   ConstTrackingDeleter(T&&) : arg_type(&makeArgumentID<T&&>()) {}
@@ -121,8 +121,8 @@ struct ConstTrackingDeleter {
     return *this;
   }
 
-  const ConstTrackingDeleter& operator=(ConstTrackingDeleter &&) const {
-    arg_type = &makeArgumentID<ConstTrackingDeleter &&>();
+  const ConstTrackingDeleter& operator=(ConstTrackingDeleter&&) const {
+    arg_type = &makeArgumentID<ConstTrackingDeleter&&>();
     return *this;
   }
 
@@ -161,35 +161,40 @@ struct AssignDeleter {
   AssignDeleter(AssignDeleter&&) = default;
 
   AssignDeleter& operator=(AssignDeleter const&) = delete;
-  AssignDeleter& operator=(AssignDeleter &&) = delete;
+  AssignDeleter& operator=(AssignDeleter&&) = delete;
 
-  template <class T> AssignDeleter& operator=(T&&) && = delete;
-  template <class T> AssignDeleter& operator=(T&&) const && = delete;
+  template <class T>
+  AssignDeleter& operator=(T&&) && = delete;
+  template <class T>
+  AssignDeleter& operator=(T&&) const&& = delete;
+
+  template <class T,
+            class = typename std::enable_if<std::is_same<T&&, From>::value &&
+                                            !AssignIsConst>::type>
+  AssignDeleter& operator=(T&&) & {
+    return *this;
+  }
 
   template <class T, class = typename std::enable_if<
-      std::is_same<T&&, From>::value && !AssignIsConst
-    >::type>
-  AssignDeleter& operator=(T&&) & { return *this; }
-
-  template <class T, class = typename std::enable_if<
-      std::is_same<T&&, From>::value && AssignIsConst
-    >::type>
-  const AssignDeleter& operator=(T&&) const & { return *this; }
+                         std::is_same<T&&, From>::value && AssignIsConst>::type>
+  const AssignDeleter& operator=(T&&) const& {
+    return *this;
+  }
 
   template <class T>
   void operator()(T) const {}
 };
 
 template <class VT, class DDest, class DSource>
-  void doDeleterTest() {
-    using U1 = std::unique_ptr<VT, DDest>;
-    using U2 = std::unique_ptr<VT, DSource>;
-    static_assert(std::is_nothrow_assignable<U1, U2&&>::value, "");
-    typename std::decay<DDest>::type ddest;
-    typename std::decay<DSource>::type dsource;
-    U1 u1(nullptr, ddest);
-    U2 u2(nullptr, dsource);
-    u1 = std::move(u2);
+void doDeleterTest() {
+  using U1 = std::unique_ptr<VT, DDest>;
+  using U2 = std::unique_ptr<VT, DSource>;
+  static_assert(std::is_nothrow_assignable<U1, U2&&>::value, "");
+  typename std::decay<DDest>::type ddest;
+  typename std::decay<DSource>::type dsource;
+  U1 u1(nullptr, ddest);
+  U2 u2(nullptr, dsource);
+  u1 = std::move(u2);
 }
 
 template <bool IsArray>
@@ -210,9 +215,9 @@ void test_sfinae() {
   }
   { // Test that if the deleter assignment is not valid the assignment operator
     // SFINAEs.
-    using U1 = std::unique_ptr<VT, GenericConvertingDeleter<0> const& >;
+    using U1 = std::unique_ptr<VT, GenericConvertingDeleter<0> const&>;
     using U2 = std::unique_ptr<VT, GenericConvertingDeleter<0> >;
-    using U3 = std::unique_ptr<VT, GenericConvertingDeleter<0> &>;
+    using U3 = std::unique_ptr<VT, GenericConvertingDeleter<0>&>;
     using U4 = std::unique_ptr<VT, GenericConvertingDeleter<1> >;
     using U5 = std::unique_ptr<VT, GenericConvertingDeleter<1> const&>;
     static_assert(!std::is_assignable<U1, U2&&>::value, "");
@@ -225,9 +230,9 @@ void test_sfinae() {
   }
   { // Test that if the deleter assignment is not valid the assignment operator
     // SFINAEs.
-    using U1 = std::unique_ptr<VT, GenericConvertingDeleter<0> & >;
+    using U1 = std::unique_ptr<VT, GenericConvertingDeleter<0>&>;
     using U2 = std::unique_ptr<VT, GenericConvertingDeleter<0> >;
-    using U3 = std::unique_ptr<VT, GenericConvertingDeleter<0> &>;
+    using U3 = std::unique_ptr<VT, GenericConvertingDeleter<0>&>;
     using U4 = std::unique_ptr<VT, GenericConvertingDeleter<1> >;
     using U5 = std::unique_ptr<VT, GenericConvertingDeleter<1> const&>;
 
@@ -236,17 +241,17 @@ void test_sfinae() {
     static_assert(std::is_nothrow_assignable<U1, U4&&>::value, "");
     static_assert(std::is_nothrow_assignable<U1, U5&&>::value, "");
 
-    using U1C = std::unique_ptr<const VT, GenericConvertingDeleter<0> &>;
+    using U1C = std::unique_ptr<const VT, GenericConvertingDeleter<0>&>;
     static_assert(std::is_nothrow_assignable<U1C, U1&&>::value, "");
   }
   { // Test that non-reference destination deleters can be assigned
     // from any source deleter type with a suitable conversion. Including
     // reference types.
     using U1 = std::unique_ptr<VT, GenericConvertingDeleter<0> >;
-    using U2 = std::unique_ptr<VT, GenericConvertingDeleter<0> &>;
-    using U3 = std::unique_ptr<VT, GenericConvertingDeleter<0> const &>;
+    using U2 = std::unique_ptr<VT, GenericConvertingDeleter<0>&>;
+    using U3 = std::unique_ptr<VT, GenericConvertingDeleter<0> const&>;
     using U4 = std::unique_ptr<VT, GenericConvertingDeleter<1> >;
-    using U5 = std::unique_ptr<VT, GenericConvertingDeleter<1> &>;
+    using U5 = std::unique_ptr<VT, GenericConvertingDeleter<1>&>;
     using U6 = std::unique_ptr<VT, GenericConvertingDeleter<1> const&>;
     static_assert(std::is_assignable<U1, U2&&>::value, "");
     static_assert(std::is_assignable<U1, U3&&>::value, "");
@@ -258,7 +263,7 @@ void test_sfinae() {
   {
     using Del = GenericDeleter<0>;
     using AD = AssignDeleter<Del&&>;
-    using ADC = AssignDeleter<Del&&, /*AllowConstAssign*/true>;
+    using ADC = AssignDeleter<Del&&, /*AllowConstAssign*/ true>;
     doDeleterTest<VT, AD, Del>();
     doDeleterTest<VT, AD&, Del>();
     doDeleterTest<VT, ADC const&, Del>();
@@ -266,7 +271,7 @@ void test_sfinae() {
   {
     using Del = GenericDeleter<0>;
     using AD = AssignDeleter<Del&>;
-    using ADC = AssignDeleter<Del&, /*AllowConstAssign*/true>;
+    using ADC = AssignDeleter<Del&, /*AllowConstAssign*/ true>;
     doDeleterTest<VT, AD, Del&>();
     doDeleterTest<VT, AD&, Del&>();
     doDeleterTest<VT, ADC const&, Del&>();
@@ -274,13 +279,12 @@ void test_sfinae() {
   {
     using Del = GenericDeleter<0>;
     using AD = AssignDeleter<Del const&>;
-    using ADC = AssignDeleter<Del const&, /*AllowConstAssign*/true>;
+    using ADC = AssignDeleter<Del const&, /*AllowConstAssign*/ true>;
     doDeleterTest<VT, AD, Del const&>();
     doDeleterTest<VT, AD&, Del const&>();
     doDeleterTest<VT, ADC const&, Del const&>();
   }
 }
-
 
 template <bool IsArray>
 void test_noexcept() {
@@ -320,8 +324,8 @@ void test_deleter_value_category() {
   CD2 cd2;
 
   { // Test non-reference deleter conversions
-    using U1 = std::unique_ptr<VT, TD1 >;
-    using U2 = std::unique_ptr<VT, TD2 >;
+    using U1 = std::unique_ptr<VT, TD1>;
+    using U2 = std::unique_ptr<VT, TD2>;
     U1 u1;
     U2 u2;
     u1.get_deleter().reset();
@@ -329,8 +333,8 @@ void test_deleter_value_category() {
     assert(checkArg<TD2&&>(u1.get_deleter()));
   }
   { // Test assignment to non-const ref
-    using U1 = std::unique_ptr<VT, TD1& >;
-    using U2 = std::unique_ptr<VT, TD2 >;
+    using U1 = std::unique_ptr<VT, TD1&>;
+    using U2 = std::unique_ptr<VT, TD2>;
     U1 u1(nullptr, d1);
     U2 u2;
     u1.get_deleter().reset();
@@ -338,8 +342,8 @@ void test_deleter_value_category() {
     assert(checkArg<TD2&&>(u1.get_deleter()));
   }
   { // Test assignment to const&.
-    using U1 = std::unique_ptr<VT, CD1 const& >;
-    using U2 = std::unique_ptr<VT, CD2 >;
+    using U1 = std::unique_ptr<VT, CD1 const&>;
+    using U2 = std::unique_ptr<VT, CD2>;
     U1 u1(nullptr, cd1);
     U2 u2;
     u1.get_deleter().reset();
@@ -348,8 +352,8 @@ void test_deleter_value_category() {
   }
 
   { // Test assignment from non-const ref
-    using U1 = std::unique_ptr<VT, TD1 >;
-    using U2 = std::unique_ptr<VT, TD2& >;
+    using U1 = std::unique_ptr<VT, TD1>;
+    using U2 = std::unique_ptr<VT, TD2&>;
     U1 u1;
     U2 u2(nullptr, d2);
     u1.get_deleter().reset();
@@ -357,8 +361,8 @@ void test_deleter_value_category() {
     assert(checkArg<TD2&>(u1.get_deleter()));
   }
   { // Test assignment from const ref
-    using U1 = std::unique_ptr<VT, TD1 >;
-    using U2 = std::unique_ptr<VT, TD2 const& >;
+    using U1 = std::unique_ptr<VT, TD1>;
+    using U2 = std::unique_ptr<VT, TD2 const&>;
     U1 u1;
     U2 u2(nullptr, d2);
     u1.get_deleter().reset();
@@ -367,8 +371,8 @@ void test_deleter_value_category() {
   }
 
   { // Test assignment from non-const ref
-    using U1 = std::unique_ptr<VT, TD1& >;
-    using U2 = std::unique_ptr<VT, TD2& >;
+    using U1 = std::unique_ptr<VT, TD1&>;
+    using U2 = std::unique_ptr<VT, TD2&>;
     U1 u1(nullptr, d1);
     U2 u2(nullptr, d2);
     u1.get_deleter().reset();
@@ -376,8 +380,8 @@ void test_deleter_value_category() {
     assert(checkArg<TD2&>(u1.get_deleter()));
   }
   { // Test assignment from const ref
-    using U1 = std::unique_ptr<VT, TD1& >;
-    using U2 = std::unique_ptr<VT, TD2 const& >;
+    using U1 = std::unique_ptr<VT, TD1&>;
+    using U2 = std::unique_ptr<VT, TD2 const&>;
     U1 u1(nullptr, d1);
     U2 u2(nullptr, d2);
     u1.get_deleter().reset();
@@ -386,17 +390,17 @@ void test_deleter_value_category() {
   }
 
   { // Test assignment from non-const ref
-    using U1 = std::unique_ptr<VT, CD1 const& >;
-    using U2 = std::unique_ptr<VT, CD2 & >;
+    using U1 = std::unique_ptr<VT, CD1 const&>;
+    using U2 = std::unique_ptr<VT, CD2&>;
     U1 u1(nullptr, cd1);
     U2 u2(nullptr, cd2);
     u1.get_deleter().reset();
     u1 = std::move(u2);
-    assert(checkArg<CD2 &>(u1.get_deleter()));
+    assert(checkArg<CD2&>(u1.get_deleter()));
   }
   { // Test assignment from const ref
-    using U1 = std::unique_ptr<VT, CD1 const& >;
-    using U2 = std::unique_ptr<VT, CD2 const& >;
+    using U1 = std::unique_ptr<VT, CD1 const&>;
+    using U2 = std::unique_ptr<VT, CD2 const&>;
     U1 u1(nullptr, cd1);
     U2 u2(nullptr, cd2);
     u1.get_deleter().reset();
@@ -407,12 +411,12 @@ void test_deleter_value_category() {
 
 int main(int, char**) {
   {
-    test_sfinae</*IsArray*/false>();
+    test_sfinae</*IsArray*/ false>();
     test_noexcept<false>();
     test_deleter_value_category<false>();
   }
   {
-    test_sfinae</*IsArray*/true>();
+    test_sfinae</*IsArray*/ true>();
     test_noexcept<true>();
     test_deleter_value_category<true>();
   }

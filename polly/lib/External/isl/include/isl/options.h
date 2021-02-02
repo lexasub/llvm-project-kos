@@ -21,22 +21,22 @@ struct isl_options;
 
 ISL_ARG_DECL(isl_options, struct isl_options, isl_options_args)
 
-#define			ISL_BOUND_BERNSTEIN	0
-#define			ISL_BOUND_RANGE		1
+#define ISL_BOUND_BERNSTEIN 0
+#define ISL_BOUND_RANGE 1
 isl_stat isl_options_set_bound(isl_ctx *ctx, int val);
 int isl_options_get_bound(isl_ctx *ctx);
 
-#define			ISL_ON_ERROR_WARN	0
-#define			ISL_ON_ERROR_CONTINUE	1
-#define			ISL_ON_ERROR_ABORT	2
+#define ISL_ON_ERROR_WARN 0
+#define ISL_ON_ERROR_CONTINUE 1
+#define ISL_ON_ERROR_ABORT 2
 isl_stat isl_options_set_on_error(isl_ctx *ctx, int val);
 int isl_options_get_on_error(isl_ctx *ctx);
 
 isl_stat isl_options_set_gbr_only_first(isl_ctx *ctx, int val);
 int isl_options_get_gbr_only_first(isl_ctx *ctx);
 
-#define		ISL_SCHEDULE_ALGORITHM_ISL		0
-#define		ISL_SCHEDULE_ALGORITHM_FEAUTRIER	1
+#define ISL_SCHEDULE_ALGORITHM_ISL 0
+#define ISL_SCHEDULE_ALGORITHM_FEAUTRIER 1
 isl_stat isl_options_set_schedule_algorithm(isl_ctx *ctx, int val);
 int isl_options_get_schedule_algorithm(isl_ctx *ctx);
 

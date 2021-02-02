@@ -19,17 +19,15 @@
 #include "min_allocator.h"
 
 template <class S>
-void
-test(S s, const typename S::value_type* str, typename S::size_type n, S expected)
-{
-    s.assign(str, n);
-    LIBCPP_ASSERT(s.__invariants());
-    assert(s == expected);
+void test(S s, const typename S::value_type* str, typename S::size_type n,
+          S expected) {
+  s.assign(str, n);
+  LIBCPP_ASSERT(s.__invariants());
+  assert(s == expected);
 }
 
-int main(int, char**)
-{
-    {
+int main(int, char**) {
+  {
     typedef std::string S;
     test(S(), "", 0, S());
     test(S(), "12345", 3, S("123"));
@@ -47,10 +45,12 @@ int main(int, char**)
     test(S("12345678901234567890"), "12345", 5, S("12345"));
     test(S("12345678901234567890"), "12345678901234567890", 20,
          S("12345678901234567890"));
-    }
+  }
 #if TEST_STD_VER >= 11
-    {
-    typedef std::basic_string<char, std::char_traits<char>, min_allocator<char>> S;
+  {
+    typedef std::basic_string<char, std::char_traits<char>,
+                              min_allocator<char> >
+        S;
     test(S(), "", 0, S());
     test(S(), "12345", 3, S("123"));
     test(S(), "12345", 4, S("1234"));
@@ -67,12 +67,12 @@ int main(int, char**)
     test(S("12345678901234567890"), "12345", 5, S("12345"));
     test(S("12345678901234567890"), "12345678901234567890", 20,
          S("12345678901234567890"));
-    }
+  }
 #endif
-    { // test assign to self
+  { // test assign to self
     typedef std::string S;
     S s_short = "123/";
-    S s_long  = "Lorem ipsum dolor sit amet, consectetur/";
+    S s_long = "Lorem ipsum dolor sit amet, consectetur/";
 
     s_short.assign(s_short.data(), s_short.size());
     assert(s_short == "123/");
@@ -82,9 +82,9 @@ int main(int, char**)
     s_long.assign(s_long.data(), s_long.size());
     assert(s_long == "Lorem ipsum dolor sit amet, consectetur/");
 
-    s_long.assign(s_long.data() + 2, 8 );
+    s_long.assign(s_long.data() + 2, 8);
     assert(s_long == "rem ipsu");
-    }
+  }
 
   return 0;
 }

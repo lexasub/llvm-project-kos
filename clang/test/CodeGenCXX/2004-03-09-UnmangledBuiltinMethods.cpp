@@ -5,4 +5,4 @@ struct AccessFlags {
   void strlen();
 };
 
-void AccessFlags::strlen() { }
+void AccessFlags::strlen() {}

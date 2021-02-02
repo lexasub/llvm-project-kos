@@ -7,8 +7,7 @@
 
 #define UNTAG(x) (typeof((x) + 0))(((uintptr_t)(x)) & 0xffffffffffffff)
 
-__attribute__((no_sanitize("hwaddress")))
-int untag_printf(const char *fmt, ...) {
+__attribute__((no_sanitize("hwaddress"))) int untag_printf(const char *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
   int ret = vprintf(UNTAG(fmt), ap);
@@ -16,8 +15,7 @@ int untag_printf(const char *fmt, ...) {
   return ret;
 }
 
-__attribute__((no_sanitize("hwaddress")))
-int untag_fprintf(FILE *stream, const char *fmt, ...) {
+__attribute__((no_sanitize("hwaddress"))) int untag_fprintf(FILE *stream, const char *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
   int ret = vfprintf(stream, UNTAG(fmt), ap);

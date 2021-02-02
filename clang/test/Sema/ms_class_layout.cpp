@@ -5,8 +5,9 @@
 
 class B {
 public:
-  virtual void b(){}
+  virtual void b() {}
   int b_field;
+
 protected:
 private:
 };
@@ -14,81 +15,76 @@ private:
 class A : public B {
 public:
   int a_field;
-  virtual void a(){}
+  virtual void a() {}
   char one;
+
 protected:
 private:
 };
 
 class D {
 public:
-  virtual void b(){}
+  virtual void b() {}
   double a;
 };
 
-class C : public virtual A, 
-          public D, public B {
+class C : public virtual A,
+          public D,
+          public B {
 public:
   double c1_field;
   int c2_field;
   double c3_field;
   int c4_field;
-  virtual void foo(){}
-  virtual void bar(){}
+  virtual void foo() {}
+  virtual void bar() {}
+
 protected:
 private:
 };
 
-struct BaseStruct
-{
-    BaseStruct(){}
-    double v0;
-    float v1;
-    C fg;
+struct BaseStruct {
+  BaseStruct() {}
+  double v0;
+  float v1;
+  C fg;
 };
 
 struct DerivedStruct : public BaseStruct {
   int x;
 };
 
-struct G
-{
-    int g_field;
+struct G {
+  int g_field;
 };
 
-struct H : public G, 
-           public virtual D
-{
+struct H : public G,
+           public virtual D {
 };
 
-struct I : public virtual D
-{
-  virtual ~I(){}
+struct I : public virtual D {
+  virtual ~I() {}
   double q;
 };
 
-struct K
-{
+struct K {
   int k;
 };
 
-struct L
-{
+struct L {
   int l;
 };
 
-struct M : public virtual K
-{
+struct M : public virtual K {
   int m;
 };
 
-struct N : public L, public M
-{
-  virtual void f(){}
+struct N : public L, public M {
+  virtual void f() {}
 };
 
 struct O : public H, public G {
-  virtual void fo(){}
+  virtual void fo() {}
 };
 
 struct P : public M, public virtual L {
@@ -99,41 +95,41 @@ struct R {};
 
 class IA {
 public:
-  virtual ~IA(){}
+  virtual ~IA() {}
   virtual void ia() = 0;
 };
 
 class ICh : public virtual IA {
 public:
-  virtual ~ICh(){}
-  virtual void ia(){}
-  virtual void iCh(){}
+  virtual ~ICh() {}
+  virtual void ia() {}
+  virtual void iCh() {}
 };
 
 struct f {
-  virtual int asd() {return -90;}
+  virtual int asd() { return -90; }
 };
 
 struct s : public virtual f {
-  virtual ~s(){}
+  virtual ~s() {}
   int r;
-  virtual int asd() {return -9;}
+  virtual int asd() { return -9; }
 };
 
 struct sd : virtual s, virtual ICh {
-  virtual ~sd(){}
+  virtual ~sd() {}
   int q;
   char y;
-  virtual int asd() {return -1;}
+  virtual int asd() { return -1; }
 };
-struct AV { 
-  virtual void foo(); 
+struct AV {
+  virtual void foo();
 };
-struct BV : AV { 
+struct BV : AV {
 };
-struct CV : virtual BV { 
-  CV(); 
-  virtual void foo(); 
+struct CV : virtual BV {
+  CV();
+  virtual void foo();
 };
 struct DV : BV {
 };
@@ -141,20 +137,20 @@ struct EV : CV, DV {
 };
 #pragma pack(pop)
 
-// This needs only for building layouts. 
+// This needs only for building layouts.
 // Without this clang doesn`t dump record layouts.
 int main() {
   // This avoid "Can't yet mangle constructors!" for MS ABI.
-  C* c;
+  C *c;
   c->foo();
-  DerivedStruct* v;
-  H* g;
-  BaseStruct* u;
-  I* i;
-  N* n;
-  O* o;
-  P* p;
-  R* r;
+  DerivedStruct *v;
+  H *g;
+  BaseStruct *u;
+  I *i;
+  N *n;
+  O *o;
+  P *p;
+  R *r;
   sd *h;
   EV *j;
   return 0;
@@ -350,7 +346,6 @@ int main() {
 // CHECK: struct.O = type { i32 (...)**, [4 x i8], %struct.H.base, %struct.G, %class.D }
 // CHECK: struct.O.base = type { i32 (...)**, [4 x i8], %struct.H.base, %struct.G, [4 x i8] }
 
-
 // CHECK:       0 | struct P
 // CHECK-NEXT:  0 |   struct M (base)
 // CHECK-NEXT:  0 |     (M vbtable pointer)
@@ -390,7 +385,7 @@ int main() {
 // CHECK-NEXT:  0 |   (IA vftable pointer)
 // CHECK-NEXT:  sizeof=4, align=4
 // CHECK-NEXT:  nvsize=4, nvalign=4
-	
+
 // CHECK:       0 | class ICh
 // CHECK-NEXT:  0 |   (ICh vftable pointer)
 // CHECK-NEXT:  4 |   (ICh vbtable pointer)
@@ -431,13 +426,11 @@ int main() {
 // CHECK-NEXT: sizeof=4, align=4
 // CHECK-NEXT: nvsize=4, nvalign=4
 
-
 // CHECK:       0 | struct BV
 // CHECK-NEXT:  0 |   struct AV (primary base)
 // CHECK-NEXT:  0 |     (AV vftable pointer)
 // CHECK-NEXT: sizeof=4, align=4
 // CHECK-NEXT: nvsize=4, nvalign=4
-
 
 // CHECK:       0 | struct CV
 // CHECK-NEXT:  0 |   (CV vbtable pointer)
@@ -482,10 +475,15 @@ int main() {
 // Overriding a method means that all the vbases containing that
 // method need a vtordisp.  Note: this code will cause an error in cl.exe.
 namespace test1 {
-  struct A { virtual void foo(); };
-  struct B : A {};
-  struct C : virtual A, virtual B { C(); virtual void foo(); };
-  void test() { C *c; }
+struct A {
+  virtual void foo();
+};
+struct B : A {};
+struct C : virtual A, virtual B {
+  C();
+  virtual void foo();
+};
+void test() { C *c; }
 
 // CHECK:        0 | struct test1::C
 // CHECK-NEXT:   0 |   (C vbtable pointer)
@@ -498,4 +496,4 @@ namespace test1 {
 // CHECK-NEXT:  16 |       (A vftable pointer)
 // CHECK-NEXT:  sizeof=20, align=4
 // CHECK-NEXT:  nvsize=4, nvalign=4
-}
+} // namespace test1

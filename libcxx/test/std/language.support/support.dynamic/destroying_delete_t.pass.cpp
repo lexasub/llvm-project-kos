@@ -23,7 +23,7 @@
 #include "test_macros.h"
 
 struct A {
-  void *data;
+  void* data;
   A();
   ~A();
 
@@ -35,17 +35,11 @@ bool A_constructed = false;
 bool A_destroyed = false;
 bool A_destroying_deleted = false;
 
-A::A() {
-  A_constructed = true;
-}
+A::A() { A_constructed = true; }
 
-A::~A() {
-  A_destroyed = true;
-}
+A::~A() { A_destroyed = true; }
 
-A* A::New() {
-  return new(::operator new(sizeof(A))) A();
-}
+A* A::New() { return new (::operator new(sizeof(A))) A(); }
 
 void A::operator delete(A* a, std::destroying_delete_t) {
   A_destroying_deleted = true;
@@ -56,15 +50,16 @@ void A::operator delete(A* a, std::destroying_delete_t) {
 // supports the feature -- otherwise we don't define the library feature-test
 // macro.
 #if defined(__cpp_impl_destroying_delete)
-#  if !defined(__cpp_lib_destroying_delete)
-#    error "Expected __cpp_lib_destroying_delete to be defined"
-#  elif __cpp_lib_destroying_delete < 201806L
-#    error "Unexpected value of __cpp_lib_destroying_delete"
-#  endif
+#if !defined(__cpp_lib_destroying_delete)
+#error "Expected __cpp_lib_destroying_delete to be defined"
+#elif __cpp_lib_destroying_delete < 201806L
+#error "Unexpected value of __cpp_lib_destroying_delete"
+#endif
 #else
-#  if defined(__cpp_lib_destroying_delete)
-#    error "The library feature-test macro for destroying delete shouldn't be defined when the compiler doesn't support the language feature"
-#  endif
+#if defined(__cpp_lib_destroying_delete)
+#error                                                                         \
+    "The library feature-test macro for destroying delete shouldn't be defined when the compiler doesn't support the language feature"
+#endif
 #endif
 
 int main(int, char**) {

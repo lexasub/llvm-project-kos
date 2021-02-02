@@ -92,8 +92,8 @@ Status OptionValueFileColonLine::SetValueFromString(llvm::StringRef value,
       llvm::StringRef middle_piece;
 
       std::tie(file_name, middle_piece) = left_of_last_piece.rsplit(':');
-      if (middle_piece.empty() || !llvm::to_integer(middle_piece, 
-                                                    m_line_number)) {
+      if (middle_piece.empty() ||
+          !llvm::to_integer(middle_piece, m_line_number)) {
         // The middle piece was empty or not an integer, so there were only two
         // legit pieces; our original division was right.  Reassign the file
         // name and pull out the line number:

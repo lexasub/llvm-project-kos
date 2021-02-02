@@ -34,10 +34,9 @@
 // Of course, the class and its methods were renamed, but the size and layout
 // of the class should remain the same as the original implementation.
 template <class T, class Alloc>
-struct OldEmplaceControlBlock
-  : std::__shared_weak_count
-{
-  explicit OldEmplaceControlBlock(Alloc a) : data_(std::move(a), std::__value_init_tag()) { }
+struct OldEmplaceControlBlock : std::__shared_weak_count {
+  explicit OldEmplaceControlBlock(Alloc a)
+      : data_(std::move(a), std::__value_init_tag()) {}
   T* get_elem() noexcept { return std::addressof(data_.second()); }
   Alloc* get_alloc() noexcept { return std::addressof(data_.first()); }
 
@@ -55,8 +54,8 @@ private:
 
 template <class T, template <class> class Alloc>
 void test() {
-  using Old = OldEmplaceControlBlock<T, Alloc<T>>;
-  using New = std::__shared_ptr_emplace<T, Alloc<T>>;
+  using Old = OldEmplaceControlBlock<T, Alloc<T> >;
+  using New = std::__shared_ptr_emplace<T, Alloc<T> >;
 
   static_assert(sizeof(New) == sizeof(Old), "");
   static_assert(alignof(New) == alignof(Old), "");
@@ -80,7 +79,8 @@ void test() {
     char const* old_alloc = reinterpret_cast<char const*>(old.get_alloc());
     char const* new_alloc = reinterpret_cast<char const*>(new_.__get_alloc());
     std::ptrdiff_t old_offset = old_alloc - reinterpret_cast<char const*>(&old);
-    std::ptrdiff_t new_offset = new_alloc - reinterpret_cast<char const*>(&new_);
+    std::ptrdiff_t new_offset =
+        new_alloc - reinterpret_cast<char const*>(&new_);
     assert(new_offset == old_offset && "offset of allocator changed");
   }
 
@@ -90,12 +90,14 @@ void test() {
 }
 
 // Object types to store in the control block
-struct TrivialEmptyType { };
-struct TrivialNonEmptyType { char c[11]; };
-struct FinalEmptyType final { };
+struct TrivialEmptyType {};
+struct TrivialNonEmptyType {
+  char c[11];
+};
+struct FinalEmptyType final {};
 struct NonTrivialType {
   char c[22];
-  NonTrivialType() : c{'x'} { }
+  NonTrivialType() : c{'x'} {}
 };
 
 // Allocator types
@@ -103,35 +105,39 @@ template <class T>
 struct TrivialEmptyAlloc {
   using value_type = T;
   TrivialEmptyAlloc() = default;
-  template <class U> TrivialEmptyAlloc(TrivialEmptyAlloc<U>) { }
+  template <class U>
+  TrivialEmptyAlloc(TrivialEmptyAlloc<U>) {}
   T* allocate(std::size_t) { return nullptr; }
-  void deallocate(T*, std::size_t) { }
+  void deallocate(T*, std::size_t) {}
 };
 template <class T>
 struct TrivialNonEmptyAlloc {
   char storage[77];
   using value_type = T;
   TrivialNonEmptyAlloc() = default;
-  template <class U> TrivialNonEmptyAlloc(TrivialNonEmptyAlloc<U>) { }
+  template <class U>
+  TrivialNonEmptyAlloc(TrivialNonEmptyAlloc<U>) {}
   T* allocate(std::size_t) { return nullptr; }
-  void deallocate(T*, std::size_t) { }
+  void deallocate(T*, std::size_t) {}
 };
 template <class T>
 struct FinalEmptyAlloc final {
   using value_type = T;
   FinalEmptyAlloc() = default;
-  template <class U> FinalEmptyAlloc(FinalEmptyAlloc<U>) { }
+  template <class U>
+  FinalEmptyAlloc(FinalEmptyAlloc<U>) {}
   T* allocate(std::size_t) { return nullptr; }
-  void deallocate(T*, std::size_t) { }
+  void deallocate(T*, std::size_t) {}
 };
 template <class T>
 struct NonTrivialAlloc {
   char storage[88];
   using value_type = T;
-  NonTrivialAlloc() { }
-  template <class U> NonTrivialAlloc(NonTrivialAlloc<U>) { }
+  NonTrivialAlloc() {}
+  template <class U>
+  NonTrivialAlloc(NonTrivialAlloc<U>) {}
   T* allocate(std::size_t) { return nullptr; }
-  void deallocate(T*, std::size_t) { }
+  void deallocate(T*, std::size_t) {}
 };
 
 int main(int, char**) {

@@ -14,18 +14,18 @@
 #define LLVM_CLANG_AST_ASTCONSUMER_H
 
 namespace clang {
-  class ASTContext;
-  class CXXMethodDecl;
-  class CXXRecordDecl;
-  class Decl;
-  class DeclGroupRef;
-  class ASTMutationListener;
-  class ASTDeserializationListener; // layering violation because void* is ugly
-  class SemaConsumer; // layering violation required for safe SemaConsumer
-  class TagDecl;
-  class VarDecl;
-  class FunctionDecl;
-  class ImportDecl;
+class ASTContext;
+class CXXMethodDecl;
+class CXXRecordDecl;
+class Decl;
+class DeclGroupRef;
+class ASTMutationListener;
+class ASTDeserializationListener; // layering violation because void* is ugly
+class SemaConsumer; // layering violation required for safe SemaConsumer
+class TagDecl;
+class VarDecl;
+class FunctionDecl;
+class ImportDecl;
 
 /// ASTConsumer - This is an abstract interface that should be implemented by
 /// clients that read ASTs.  This abstraction layer allows the client to be
@@ -38,7 +38,7 @@ class ASTConsumer {
   friend class SemaConsumer;
 
 public:
-  ASTConsumer() : SemaConsumer(false) { }
+  ASTConsumer() : SemaConsumer(false) {}
 
   virtual ~ASTConsumer() {}
 

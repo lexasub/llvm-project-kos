@@ -37,10 +37,9 @@ void DWARFUnitVector::addUnitsForSection(DWARFContext &C,
                                          DWARFSectionKind SectionKind) {
   const DWARFObject &D = C.getDWARFObj();
   addUnitsImpl(C, D, Section, C.getDebugAbbrev(), &D.getRangesSection(),
-               &D.getLocSection(), D.getStrSection(),
-               D.getStrOffsetsSection(), &D.getAddrSection(),
-               D.getLineSection(), D.isLittleEndian(), false, false,
-               SectionKind);
+               &D.getLocSection(), D.getStrSection(), D.getStrOffsetsSection(),
+               &D.getAddrSection(), D.getLineSection(), D.isLittleEndian(),
+               false, false, SectionKind);
 }
 
 void DWARFUnitVector::addUnitsForDWOSection(DWARFContext &C,
@@ -48,11 +47,11 @@ void DWARFUnitVector::addUnitsForDWOSection(DWARFContext &C,
                                             DWARFSectionKind SectionKind,
                                             bool Lazy) {
   const DWARFObject &D = C.getDWARFObj();
-  addUnitsImpl(C, D, DWOSection, C.getDebugAbbrevDWO(), &D.getRangesDWOSection(),
-               &D.getLocDWOSection(), D.getStrDWOSection(),
-               D.getStrOffsetsDWOSection(), &D.getAddrSection(),
-               D.getLineDWOSection(), C.isLittleEndian(), true, Lazy,
-               SectionKind);
+  addUnitsImpl(C, D, DWOSection, C.getDebugAbbrevDWO(),
+               &D.getRangesDWOSection(), &D.getLocDWOSection(),
+               D.getStrDWOSection(), D.getStrOffsetsDWOSection(),
+               &D.getAddrSection(), D.getLineDWOSection(), C.isLittleEndian(),
+               true, Lazy, SectionKind);
 }
 
 void DWARFUnitVector::addUnitsImpl(
@@ -86,12 +85,12 @@ void DWARFUnitVector::addUnitsImpl(
       std::unique_ptr<DWARFUnit> U;
       if (Header.isTypeUnit())
         U = std::make_unique<DWARFTypeUnit>(Context, InfoSection, Header, DA,
-                                             RS, LocSection, SS, SOS, AOS, LS,
-                                             LE, IsDWO, *this);
+                                            RS, LocSection, SS, SOS, AOS, LS,
+                                            LE, IsDWO, *this);
       else
-        U = std::make_unique<DWARFCompileUnit>(Context, InfoSection, Header,
-                                                DA, RS, LocSection, SS, SOS,
-                                                AOS, LS, LE, IsDWO, *this);
+        U = std::make_unique<DWARFCompileUnit>(Context, InfoSection, Header, DA,
+                                               RS, LocSection, SS, SOS, AOS, LS,
+                                               LE, IsDWO, *this);
       return U;
     };
   }
@@ -303,17 +302,18 @@ bool DWARFUnitHeader::applyIndexEntry(const DWARFUnitIndex::Entry *Entry) {
 
 // Parse the rangelist table header, including the optional array of offsets
 // following it (DWARF v5 and later).
-template<typename ListTableType>
-static Expected<ListTableType>
-parseListTableHeader(DWARFDataExtractor &DA, uint64_t Offset,
-                        DwarfFormat Format) {
+template <typename ListTableType>
+static Expected<ListTableType> parseListTableHeader(DWARFDataExtractor &DA,
+                                                    uint64_t Offset,
+                                                    DwarfFormat Format) {
   // We are expected to be called with Offset 0 or pointing just past the table
   // header. Correct Offset in the latter case so that it points to the start
   // of the header.
   if (Offset > 0) {
     uint64_t HeaderSize = DWARFListTableHeader::getHeaderSize(Format);
     if (Offset < HeaderSize)
-      return createStringError(errc::invalid_argument, "did not detect a valid"
+      return createStringError(errc::invalid_argument,
+                               "did not detect a valid"
                                " list table with base = 0x%" PRIx64 "\n",
                                Offset);
     Offset -= HeaderSize;
@@ -363,8 +363,8 @@ void DWARFUnit::extractDIEsToVector(
   uint32_t Depth = 0;
   bool IsCUDie = true;
 
-  while (DIE.extractFast(*this, &DIEOffset, DebugInfoData, NextCUOffset,
-                         Depth)) {
+  while (
+      DIE.extractFast(*this, &DIEOffset, DebugInfoData, NextCUOffset, Depth)) {
     if (IsCUDie) {
       if (AppendCUDie)
         Dies.push_back(DIE);
@@ -389,7 +389,7 @@ void DWARFUnit::extractDIEsToVector(
       if (Depth > 0)
         --Depth;
       if (Depth == 0)
-        break;  // We are done with this compile unit!
+        break; // We are done with this compile unit!
     }
   }
 
@@ -411,8 +411,7 @@ void DWARFUnit::extractDIEsIfNeeded(bool CUDieOnly) {
 }
 
 Error DWARFUnit::tryExtractDIEsIfNeeded(bool CUDieOnly) {
-  if ((CUDieOnly && !DieArray.empty()) ||
-      DieArray.size() > 1)
+  if ((CUDieOnly && !DieArray.empty()) || DieArray.size() > 1)
     return Error::success(); // Already parsed.
 
   bool HasCUDie = !DieArray.empty();
@@ -677,9 +676,8 @@ DWARFDie DWARFUnit::getSubroutineForAddress(uint64_t Address) {
   return R->second.second;
 }
 
-void
-DWARFUnit::getInlinedChainForAddress(uint64_t Address,
-                                     SmallVectorImpl<DWARFDie> &InlinedChain) {
+void DWARFUnit::getInlinedChainForAddress(
+    uint64_t Address, SmallVectorImpl<DWARFDie> &InlinedChain) {
   assert(InlinedChain.empty());
   // Try to look for subprogram DIEs in the DWO file.
   parseDWO();
@@ -694,7 +692,7 @@ DWARFUnit::getInlinedChainForAddress(uint64_t Address,
   while (!SubroutineDIE.isSubprogramDIE()) {
     if (SubroutineDIE.getTag() == DW_TAG_inlined_subroutine)
       InlinedChain.push_back(SubroutineDIE);
-    SubroutineDIE  = SubroutineDIE.getParent();
+    SubroutineDIE = SubroutineDIE.getParent();
   }
   InlinedChain.push_back(SubroutineDIE);
 }
@@ -818,7 +816,8 @@ StrOffsetsContributionDescriptor::validateContributionSize(
   if (ValidationSize >= Size)
     if (DA.isValidOffsetForDataOfSize((uint32_t)Base, ValidationSize))
       return *this;
-  return createStringError(errc::invalid_argument, "length exceeds section size");
+  return createStringError(errc::invalid_argument,
+                           "length exceeds section size");
 }
 
 // Look for a DWARF64-formatted contribution to the string offsets table
@@ -826,10 +825,13 @@ StrOffsetsContributionDescriptor::validateContributionSize(
 static Expected<StrOffsetsContributionDescriptor>
 parseDWARF64StringOffsetsTableHeader(DWARFDataExtractor &DA, uint64_t Offset) {
   if (!DA.isValidOffsetForDataOfSize(Offset, 16))
-    return createStringError(errc::invalid_argument, "section offset exceeds section size");
+    return createStringError(errc::invalid_argument,
+                             "section offset exceeds section size");
 
   if (DA.getU32(&Offset) != dwarf::DW_LENGTH_DWARF64)
-    return createStringError(errc::invalid_argument, "32 bit contribution referenced from a 64 bit unit");
+    return createStringError(
+        errc::invalid_argument,
+        "32 bit contribution referenced from a 64 bit unit");
 
   uint64_t Size = DA.getU64(&Offset);
   uint8_t Version = DA.getU16(&Offset);
@@ -844,7 +846,8 @@ parseDWARF64StringOffsetsTableHeader(DWARFDataExtractor &DA, uint64_t Offset) {
 static Expected<StrOffsetsContributionDescriptor>
 parseDWARF32StringOffsetsTableHeader(DWARFDataExtractor &DA, uint64_t Offset) {
   if (!DA.isValidOffsetForDataOfSize(Offset, 8))
-    return createStringError(errc::invalid_argument, "section offset exceeds section size");
+    return createStringError(errc::invalid_argument,
+                             "section offset exceeds section size");
 
   uint32_t ContributionSize = DA.getU32(&Offset);
   if (ContributionSize >= dwarf::DW_LENGTH_lo_reserved)
@@ -866,7 +869,8 @@ parseDWARFStringOffsetsTableHeader(DWARFDataExtractor &DA,
   switch (Format) {
   case dwarf::DwarfFormat::DWARF64: {
     if (Offset < 16)
-      return createStringError(errc::invalid_argument, "insufficient space for 64 bit header prefix");
+      return createStringError(errc::invalid_argument,
+                               "insufficient space for 64 bit header prefix");
     auto DescOrError = parseDWARF64StringOffsetsTableHeader(DA, Offset - 16);
     if (!DescOrError)
       return DescOrError.takeError();
@@ -875,7 +879,8 @@ parseDWARFStringOffsetsTableHeader(DWARFDataExtractor &DA,
   }
   case dwarf::DwarfFormat::DWARF32: {
     if (Offset < 8)
-      return createStringError(errc::invalid_argument, "insufficient space for 32 bit header prefix");
+      return createStringError(errc::invalid_argument,
+                               "insufficient space for 32 bit header prefix");
     auto DescOrError = parseDWARF32StringOffsetsTableHeader(DA, Offset - 8);
     if (!DescOrError)
       return DescOrError.takeError();
@@ -900,7 +905,7 @@ DWARFUnit::determineStringOffsetsTableContribution(DWARFDataExtractor &DA) {
 }
 
 Expected<Optional<StrOffsetsContributionDescriptor>>
-DWARFUnit::determineStringOffsetsTableContributionDWO(DWARFDataExtractor & DA) {
+DWARFUnit::determineStringOffsetsTableContributionDWO(DWARFDataExtractor &DA) {
   assert(IsDWO);
   uint64_t Offset = 0;
   auto IndexEntry = Header.getIndexEntry();
@@ -913,7 +918,8 @@ DWARFUnit::determineStringOffsetsTableContributionDWO(DWARFDataExtractor & DA) {
       return None;
     Offset += Header.getFormat() == dwarf::DwarfFormat::DWARF32 ? 8 : 16;
     // Look for a valid contribution at the given offset.
-    auto DescOrError = parseDWARFStringOffsetsTableHeader(DA, Header.getFormat(), Offset);
+    auto DescOrError =
+        parseDWARFStringOffsetsTableHeader(DA, Header.getFormat(), Offset);
     if (!DescOrError)
       return DescOrError.takeError();
     return *DescOrError;

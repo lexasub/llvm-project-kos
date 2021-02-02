@@ -172,8 +172,7 @@ typedef struct LLVMOrcOpaqueResourceTracker *LLVMOrcResourceTrackerRef;
 /**
  * A reference to an orc::DefinitionGenerator.
  */
-typedef struct LLVMOrcOpaqueDefinitionGenerator
-    *LLVMOrcDefinitionGeneratorRef;
+typedef struct LLVMOrcOpaqueDefinitionGenerator *LLVMOrcDefinitionGeneratorRef;
 
 /**
  * An opaque lookup state object. Instances of this type can be captured to
@@ -339,8 +338,7 @@ LLVMErrorRef LLVMOrcResourceTrackerRemove(LLVMOrcResourceTrackerRef RT);
  * ownership has not been passed to a JITDylib (e.g. because some error
  * prevented the client from calling LLVMOrcJITDylibAddGenerator).
  */
-void LLVMOrcDisposeDefinitionGenerator(
-    LLVMOrcDefinitionGeneratorRef DG);
+void LLVMOrcDisposeDefinitionGenerator(LLVMOrcDefinitionGeneratorRef DG);
 
 /**
  * Dispose of a MaterializationUnit.

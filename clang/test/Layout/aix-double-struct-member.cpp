@@ -272,12 +272,20 @@ int a = sizeof(Z);
 namespace test9 {
 // Test the class layout when having a zero-extent array in a base class, which
 // renders the base class not empty.
-struct A { char zea[0]; };
+struct A {
+  char zea[0];
+};
 
-struct B : A { double d; };
+struct B : A {
+  double d;
+};
 
-struct C { double d; };
-struct D : A, C { char x; };
+struct C {
+  double d;
+};
+struct D : A, C {
+  char x;
+};
 
 int a = sizeof(B);
 int b = sizeof(D);
@@ -301,7 +309,9 @@ int b = sizeof(D);
 } // namespace test9
 
 namespace test10 {
-struct A { double x; };
+struct A {
+  double x;
+};
 struct B : A {};
 
 int a = sizeof(B);

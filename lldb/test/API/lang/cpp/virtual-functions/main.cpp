@@ -57,14 +57,15 @@ int main() {
   BaseWithVirtDtor &derived_with_dtor_as_base = derived_with_dtor;
   BaseWithoutVirtDtor &derived_without_as_base = derived_without_dtor;
   BaseWithVirtDtor &derived_with_base_dtor_as_base = derived_with_base_dtor;
-  BaseWithoutVirtDtor &derived_with_dtor_but_no_base_dtor_as_base = derived_with_dtor_but_no_base_dtor;
+  BaseWithoutVirtDtor &derived_with_dtor_but_no_base_dtor_as_base =
+      derived_with_dtor_but_no_base_dtor;
 
   // Call functions so that they are compiled.
   int i = base_with_dtor.foo() + base_without_dtor.foo() +
           derived_with_dtor.foo() + derived_without_dtor.foo() +
-          derived_with_base_dtor.foo() + derived_with_overload.foo(1)
-          + derived_with_overload_and_using.foo(2)
-          + derived_with_overload_and_using.foo();
+          derived_with_base_dtor.foo() + derived_with_overload.foo(1) +
+          derived_with_overload_and_using.foo(2) +
+          derived_with_overload_and_using.foo();
 
   return i; // break here
 }

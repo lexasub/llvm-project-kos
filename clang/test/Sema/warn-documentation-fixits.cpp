@@ -12,13 +12,13 @@ int test2(int aaa, int bbb);
 
 // expected-warning@+1 {{template parameter 'ZZZZZZZZZZ' not found in the template declaration}} expected-note@+1 {{did you mean 'T'?}}
 /// \tparam ZZZZZZZZZZ Aaa
-template<typename T>
+template <typename T>
 void test3(T aaa);
 
 // expected-warning@+1 {{template parameter 'SomTy' not found in the template declaration}} expected-note@+1 {{did you mean 'SomeTy'?}}
 /// \tparam SomTy Aaa
 /// \tparam OtherTy Bbb
-template<typename SomeTy, typename OtherTy>
+template <typename SomeTy, typename OtherTy>
 void test4(SomeTy aaa, OtherTy bbb);
 
 // expected-warning@+1 {{declaration is marked with '\deprecated' command but does not have a deprecation attribute}} expected-note@+2 {{add a deprecation attribute to the declaration to silence this warning}}
@@ -40,7 +40,7 @@ struct test_deprecated_3 {
   }
 };
 
-template<typename T>
+template <typename T>
 struct test_deprecated_6 {
   // expected-warning@+1 {{declaration is marked with '\deprecated' command but does not have a deprecation attribute}} expected-note@+2 {{add a deprecation attribute to the declaration to silence this warning}}
   /// \deprecated

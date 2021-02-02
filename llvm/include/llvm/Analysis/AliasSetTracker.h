@@ -53,7 +53,7 @@ class AliasSet : public ilist_node<AliasSet> {
   friend class AliasSetTracker;
 
   class PointerRec {
-    Value *Val;  // The pointer this record corresponds to.
+    Value *Val; // The pointer this record corresponds to.
     PointerRec **PrevInList = nullptr;
     PointerRec *NextInList = nullptr;
     AliasSet *AS = nullptr;
@@ -66,14 +66,14 @@ class AliasSet : public ilist_node<AliasSet> {
 
   public:
     PointerRec(Value *V)
-      : Val(V), AAInfo(DenseMapInfo<AAMDNodes>::getEmptyKey()) {}
+        : Val(V), AAInfo(DenseMapInfo<AAMDNodes>::getEmptyKey()) {}
 
     Value *getValue() const { return Val; }
 
     PointerRec *getNext() const { return NextInList; }
     bool hasAliasSet() const { return AS != nullptr; }
 
-    PointerRec** setPrevInList(PointerRec **PIL) {
+    PointerRec **setPrevInList(PointerRec **PIL) {
       PrevInList = PIL;
       return &NextInList;
     }
@@ -129,7 +129,8 @@ class AliasSet : public ilist_node<AliasSet> {
     }
 
     void eraseFromList() {
-      if (NextInList) NextInList->PrevInList = PrevInList;
+      if (NextInList)
+        NextInList->PrevInList = PrevInList;
       *PrevInList = NextInList;
       if (AS->PtrListEnd == &NextInList) {
         AS->PtrListEnd = PrevInList;
@@ -179,9 +180,7 @@ class AliasSet : public ilist_node<AliasSet> {
   /// of the set. We represent these independently of the values of alias
   /// results in order to pack it into a single bit. Lattice goes from
   /// MustAlias to MayAlias.
-  enum AliasLattice {
-    SetMustAlias = 0, SetMayAlias = 1
-  };
+  enum AliasLattice { SetMustAlias = 0, SetMayAlias = 1 };
   unsigned Alias : 1;
 
   unsigned SetSize = 0;
@@ -207,7 +206,7 @@ public:
   bool isRef() const { return Access & RefAccess; }
   bool isMod() const { return Access & ModAccess; }
   bool isMustAlias() const { return Alias == SetMustAlias; }
-  bool isMayAlias()  const { return Alias == SetMayAlias; }
+  bool isMayAlias() const { return Alias == SetMayAlias; }
 
   /// Return true if this alias set should be ignored as part of the
   /// AliasSetTracker object.
@@ -220,7 +219,7 @@ public:
   // this alias set.
   class iterator;
   iterator begin() const { return iterator(PtrList); }
-  iterator end()   const { return iterator(); }
+  iterator end() const { return iterator(); }
   bool empty() const { return PtrList == nullptr; }
 
   // Unfortunately, ilist::size() is linear, so we have to add code to keep
@@ -229,23 +228,21 @@ public:
 
   /// If this alias set is known to contain a single instruction and *only* a
   /// single unique instruction, return it.  Otherwise, return nullptr.
-  Instruction* getUniqueInstruction();
+  Instruction *getUniqueInstruction();
 
   void print(raw_ostream &OS) const;
   void dump() const;
 
   /// Define an iterator for alias sets... this is just a forward iterator.
-  class iterator : public std::iterator<std::forward_iterator_tag,
-                                        PointerRec, ptrdiff_t> {
+  class iterator
+      : public std::iterator<std::forward_iterator_tag, PointerRec, ptrdiff_t> {
     PointerRec *CurNode;
 
   public:
     explicit iterator(PointerRec *CN = nullptr) : CurNode(CN) {}
 
-    bool operator==(const iterator& x) const {
-      return CurNode == x.CurNode;
-    }
-    bool operator!=(const iterator& x) const { return !operator==(x); }
+    bool operator==(const iterator &x) const { return CurNode == x.CurNode; }
+    bool operator!=(const iterator &x) const { return !operator==(x); }
 
     value_type &operator*() const {
       assert(CurNode && "Dereferencing AliasSet.end()!");
@@ -257,31 +254,32 @@ public:
     LocationSize getSize() const { return CurNode->getSize(); }
     AAMDNodes getAAInfo() const { return CurNode->getAAInfo(); }
 
-    iterator& operator++() {                // Preincrement
+    iterator &operator++() { // Preincrement
       assert(CurNode && "Advancing past AliasSet.end()!");
       CurNode = CurNode->getNext();
       return *this;
     }
     iterator operator++(int) { // Postincrement
-      iterator tmp = *this; ++*this; return tmp;
+      iterator tmp = *this;
+      ++*this;
+      return tmp;
     }
   };
 
 private:
   // Can only be created by AliasSetTracker.
   AliasSet()
-      : PtrListEnd(&PtrList), RefCount(0),  AliasAny(false), Access(NoAccess),
+      : PtrListEnd(&PtrList), RefCount(0), AliasAny(false), Access(NoAccess),
         Alias(SetMustAlias) {}
 
-  PointerRec *getSomePointer() const {
-    return PtrList;
-  }
+  PointerRec *getSomePointer() const { return PtrList; }
 
   /// Return the real alias set this represents. If this has been merged with
   /// another set and is forwarding, return the ultimate destination set. This
   /// also implements the union-find collapsing as well.
   AliasSet *getForwardedTarget(AliasSetTracker &AST) {
-    if (!Forward) return this;
+    if (!Forward)
+      return this;
 
     AliasSet *Dest = Forward->getForwardedTarget(AST);
     if (Dest != Forward) {
@@ -305,7 +303,8 @@ private:
       if (UnknownInsts[i] == I) {
         UnknownInsts[i] = UnknownInsts.back();
         UnknownInsts.pop_back();
-        --i; --e;  // Revisit the moved entry.
+        --i;
+        --e; // Revisit the moved entry.
       }
     if (!WasEmpty && UnknownInsts.empty())
       dropRef(AST);
@@ -319,7 +318,7 @@ public:
   bool aliasesUnknownInst(const Instruction *Inst, AAResults &AA) const;
 };
 
-inline raw_ostream& operator<<(raw_ostream &OS, const AliasSet &AS) {
+inline raw_ostream &operator<<(raw_ostream &OS, const AliasSet &AS) {
   AS.print(OS);
   return OS;
 }
@@ -379,8 +378,8 @@ public:
   void add(VAArgInst *VAAI);
   void add(AnyMemSetInst *MSI);
   void add(AnyMemTransferInst *MTI);
-  void add(Instruction *I);       // Dispatch to one of the other add methods...
-  void add(BasicBlock &BB);       // Add all instructions in basic block
+  void add(Instruction *I); // Dispatch to one of the other add methods...
+  void add(BasicBlock &BB); // Add all instructions in basic block
   void add(const AliasSetTracker &AST); // Add alias relations from another AST
   void addUnknown(Instruction *I);
   void addAllInstructionsInLoopUsingMSSA();
@@ -415,10 +414,10 @@ public:
   using const_iterator = ilist<AliasSet>::const_iterator;
 
   const_iterator begin() const { return AliasSets.begin(); }
-  const_iterator end()   const { return AliasSets.end(); }
+  const_iterator end() const { return AliasSets.end(); }
 
   iterator begin() { return AliasSets.begin(); }
-  iterator end()   { return AliasSets.end(); }
+  iterator end() { return AliasSets.end(); }
 
   void print(raw_ostream &OS) const;
   void dump() const;
@@ -456,7 +455,7 @@ private:
   AliasSet *findAliasSetForUnknownInst(Instruction *Inst);
 };
 
-inline raw_ostream& operator<<(raw_ostream &OS, const AliasSetTracker &AST) {
+inline raw_ostream &operator<<(raw_ostream &OS, const AliasSetTracker &AST) {
   AST.print(OS);
   return OS;
 }

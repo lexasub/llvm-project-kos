@@ -12,9 +12,11 @@
 
 // CHECK: @main
 int main(int argc, char **argv) {
-#pragma omp parallel sections reduction(task, +: argc, argv[0:10][0:argc])
+#pragma omp parallel sections reduction(task, + \
+                                        : argc, argv [0:10] [0:argc])
   {
-#pragma omp task in_reduction(+: argc, argv[0:10][0:argc])
+#pragma omp task in_reduction(+ \
+                              : argc, argv [0:10] [0:argc])
     ;
   }
 }

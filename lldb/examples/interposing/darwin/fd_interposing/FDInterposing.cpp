@@ -486,9 +486,10 @@ void save_backtrace(int fd, int err, const StringSP &string_sp,
         const int log_fd = get_logging_fd();
         // Two fd create functions in a row, we missed
         // a function that closes a fd...
-        log(log_fd, fd_event_sp.get(), "\nwarning: unmatched file descriptor "
-                                       "create event fd=%i (we missed a file "
-                                       "descriptor close event):\n",
+        log(log_fd, fd_event_sp.get(),
+            "\nwarning: unmatched file descriptor "
+            "create event fd=%i (we missed a file "
+            "descriptor close event):\n",
             fd);
       } else if (g_compact) {
         // We are compacting so we remove previous create event
@@ -503,9 +504,10 @@ void save_backtrace(int fd, int err, const StringSP &string_sp,
         const int log_fd = get_logging_fd();
         // Two fd delete functions in a row, we must
         // have missed some function that opened a descriptor
-        log(log_fd, fd_event_sp.get(), "\nwarning: unmatched file descriptor "
-                                       "close event for fd=%d (we missed the "
-                                       "file descriptor create event):\n",
+        log(log_fd, fd_event_sp.get(),
+            "\nwarning: unmatched file descriptor "
+            "close event for fd=%d (we missed the "
+            "file descriptor create event):\n",
             fd);
       } else if (g_compact) {
         // Since this is a close event, we want to remember the open event

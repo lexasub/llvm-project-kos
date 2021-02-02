@@ -253,7 +253,7 @@ bool BreakpointLocationList::RemoveLocation(
 }
 
 void BreakpointLocationList::RemoveLocationByIndex(size_t idx) {
-  assert (idx < m_locations.size());
+  assert(idx < m_locations.size());
   m_address_to_location.erase(m_locations[idx]->GetAddress());
   m_locations.erase(m_locations.begin() + idx);
 }

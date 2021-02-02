@@ -133,19 +133,18 @@ static bool shouldMinimize(StringRef Filename) {
   if (Ext.empty())
     return true; // C++ standard library
   return llvm::StringSwitch<bool>(Ext)
-    .CasesLower(".c", ".cc", ".cpp", ".c++", ".cxx", true)
-    .CasesLower(".h", ".hh", ".hpp", ".h++", ".hxx", true)
-    .CasesLower(".m", ".mm", true)
-    .CasesLower(".i", ".ii", ".mi", ".mmi", true)
-    .CasesLower(".def", ".inc", true)
-    .Default(false);
+      .CasesLower(".c", ".cc", ".cpp", ".c++", ".cxx", true)
+      .CasesLower(".h", ".hh", ".hpp", ".h++", ".hxx", true)
+      .CasesLower(".m", ".mm", true)
+      .CasesLower(".i", ".ii", ".mi", ".mmi", true)
+      .CasesLower(".def", ".inc", true)
+      .Default(false);
 }
-
 
 static bool shouldCacheStatFailures(StringRef Filename) {
   StringRef Ext = llvm::sys::path::extension(Filename);
   if (Ext.empty())
-    return false; // This may be the module cache directory.
+    return false;                  // This may be the module cache directory.
   return shouldMinimize(Filename); // Only cache stat failures on source files.
 }
 
@@ -159,8 +158,8 @@ DependencyScanningWorkerFilesystem::getOrCreateFileSystemEntry(
   // FIXME: Handle PCM/PCH files.
   // FIXME: Handle module map files.
 
-  bool KeepOriginalSource = IgnoredFiles.count(Filename) ||
-                            !shouldMinimize(Filename);
+  bool KeepOriginalSource =
+      IgnoredFiles.count(Filename) || !shouldMinimize(Filename);
   DependencyScanningFilesystemSharedCache::SharedFileSystemEntry
       &SharedCacheEntry = SharedCache.get(Filename);
   const CachedFileSystemEntry *Result;

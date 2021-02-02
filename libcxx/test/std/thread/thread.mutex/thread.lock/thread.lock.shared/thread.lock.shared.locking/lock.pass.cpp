@@ -50,52 +50,43 @@ ms Tolerance = ms(25);
 ms Tolerance = ms(25 * 5);
 #endif
 
-
-void f()
-{
-    std::shared_lock<std::shared_timed_mutex> lk(m, std::defer_lock);
-    time_point t0 = Clock::now();
+void f() {
+  std::shared_lock<std::shared_timed_mutex> lk(m, std::defer_lock);
+  time_point t0 = Clock::now();
+  lk.lock();
+  time_point t1 = Clock::now();
+  assert(lk.owns_lock() == true);
+  ns d = t1 - t0 - WaitTime;
+  assert(d < Tolerance); // within tolerance
+#ifndef TEST_HAS_NO_EXCEPTIONS
+  try {
     lk.lock();
-    time_point t1 = Clock::now();
-    assert(lk.owns_lock() == true);
-    ns d = t1 - t0 - WaitTime;
-    assert(d < Tolerance);  // within tolerance
-#ifndef TEST_HAS_NO_EXCEPTIONS
-    try
-    {
-        lk.lock();
-        assert(false);
-    }
-    catch (std::system_error& e)
-    {
-        assert(e.code().value() == EDEADLK);
-    }
+    assert(false);
+  } catch (std::system_error& e) {
+    assert(e.code().value() == EDEADLK);
+  }
 #endif
-    lk.unlock();
-    lk.release();
+  lk.unlock();
+  lk.release();
 #ifndef TEST_HAS_NO_EXCEPTIONS
-    try
-    {
-        lk.lock();
-        assert(false);
-    }
-    catch (std::system_error& e)
-    {
-        assert(e.code().value() == EPERM);
-    }
+  try {
+    lk.lock();
+    assert(false);
+  } catch (std::system_error& e) {
+    assert(e.code().value() == EPERM);
+  }
 #endif
 }
 
-int main(int, char**)
-{
-    m.lock();
-    std::vector<std::thread> v;
-    for (int i = 0; i < 5; ++i)
-        v.push_back(support::make_test_thread(f));
-    std::this_thread::sleep_for(WaitTime);
-    m.unlock();
-    for (auto& t : v)
-        t.join();
+int main(int, char**) {
+  m.lock();
+  std::vector<std::thread> v;
+  for (int i = 0; i < 5; ++i)
+    v.push_back(support::make_test_thread(f));
+  std::this_thread::sleep_for(WaitTime);
+  m.unlock();
+  for (auto& t : v)
+    t.join();
 
   return 0;
 }

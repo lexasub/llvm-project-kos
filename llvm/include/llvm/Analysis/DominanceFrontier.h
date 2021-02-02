@@ -36,8 +36,7 @@ class raw_ostream;
 /// DominanceFrontierBase - Common base class for computing forward and inverse
 /// dominance frontiers for a function.
 ///
-template <class BlockT, bool IsPostDom>
-class DominanceFrontierBase {
+template <class BlockT, bool IsPostDom> class DominanceFrontierBase {
 public:
   using DomSetType = std::set<BlockT *>;                // Dom set for a bb
   using DomSetMapType = std::map<BlockT *, DomSetType>; // Dom set map
@@ -64,13 +63,9 @@ public:
   }
 
   /// isPostDominator - Returns true if analysis based of postdoms
-  bool isPostDominator() const {
-    return IsPostDominators;
-  }
+  bool isPostDominator() const { return IsPostDominators; }
 
-  void releaseMemory() {
-    Frontiers.clear();
-  }
+  void releaseMemory() { Frontiers.clear(); }
 
   // Accessor interface:
   using iterator = typename DomSetMapType::iterator;
@@ -161,7 +156,7 @@ public:
   DominanceFrontierWrapperPass();
 
   DominanceFrontier &getDominanceFrontier() { return DF; }
-  const DominanceFrontier &getDominanceFrontier() const { return DF;  }
+  const DominanceFrontier &getDominanceFrontier() const { return DF; }
 
   void releaseMemory() override;
 

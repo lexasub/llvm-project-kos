@@ -5,11 +5,11 @@
 // Check -fsplit-bitfields will be ignored since sanitizer is enabled.
 
 struct S1 {
-  unsigned f1:2;
-  unsigned f2:6;
-  unsigned f3:8;
-  unsigned f4:4;
-  unsigned f5:8;
+  unsigned f1 : 2;
+  unsigned f2 : 6;
+  unsigned f3 : 8;
+  unsigned f4 : 4;
+  unsigned f5 : 8;
 };
 
 S1 a1;
@@ -69,9 +69,9 @@ void write8_2() {
 }
 
 struct S2 {
-  unsigned long f1:16;
-  unsigned long f2:16;
-  unsigned long f3:6;
+  unsigned long f1 : 16;
+  unsigned long f2 : 16;
+  unsigned long f3 : 6;
 };
 
 S2 a2;
@@ -129,9 +129,9 @@ void write16_2() {
 }
 
 struct S3 {
-  unsigned long f1:14;
-  unsigned long f2:18;
-  unsigned long f3:32;
+  unsigned long f1 : 14;
+  unsigned long f2 : 18;
+  unsigned long f3 : 32;
 };
 
 S3 a3;

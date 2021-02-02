@@ -18,20 +18,22 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        std::future<int> f0;
-        std::future<int> f = f0; // expected-error {{call to deleted constructor of 'std::future<int>'}}
-    }
-    {
-        std::future<int &> f0;
-        std::future<int &> f = f0; // expected-error {{call to deleted constructor of 'std::future<int &>'}}
-    }
-    {
-        std::future<void> f0;
-        std::future<void> f = f0; // expected-error {{call to deleted constructor of 'std::future<void>'}}
-    }
+int main(int, char**) {
+  {
+    std::future<int> f0;
+    std::future<int> f =
+        f0; // expected-error {{call to deleted constructor of 'std::future<int>'}}
+  }
+  {
+    std::future<int&> f0;
+    std::future<int&> f =
+        f0; // expected-error {{call to deleted constructor of 'std::future<int &>'}}
+  }
+  {
+    std::future<void> f0;
+    std::future<void> f =
+        f0; // expected-error {{call to deleted constructor of 'std::future<void>'}}
+  }
 
-    return 0;
+  return 0;
 }

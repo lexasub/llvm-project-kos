@@ -30,24 +30,24 @@ int foo() { // expected-note {{declared here}}
 
 #pragma omp allocate(a)(
 // expected-warning@-1 {{extra tokens at the end of '#pragma omp allocate' are ignored}}
-#pragma omp allocate(a)[  // expected-warning {{extra tokens at the end of '#pragma omp allocate' are ignored}}
+#pragma omp allocate(a)[ // expected-warning {{extra tokens at the end of '#pragma omp allocate' are ignored}}
 #pragma omp allocate(a) { // expected-warning {{extra tokens at the end of '#pragma omp allocate' are ignored}}
-#pragma omp allocate(a))  // expected-warning {{extra tokens at the end of '#pragma omp allocate' are ignored}}
-#pragma omp allocate(a)]  // expected-warning {{extra tokens at the end of '#pragma omp allocate' are ignored}}
+#pragma omp allocate(a)) // expected-warning {{extra tokens at the end of '#pragma omp allocate' are ignored}}
+#pragma omp allocate(a)] // expected-warning {{extra tokens at the end of '#pragma omp allocate' are ignored}}
 #pragma omp allocate(a) } // expected-warning {{extra tokens at the end of '#pragma omp allocate' are ignored}}
-#pragma omp allocate a    // expected-error {{expected '(' after 'allocate'}}
-#pragma omp allocate(d    // expected-error {{expected ')'}} expected-note {{to match this '('}}
-#pragma omp allocate(d))  // expected-warning {{extra tokens at the end of '#pragma omp allocate' are ignored}}
+#pragma omp allocate a // expected-error {{expected '(' after 'allocate'}}
+#pragma omp allocate(d // expected-error {{expected ')'}} expected-note {{to match this '('}}
+#pragma omp allocate(d)) // expected-warning {{extra tokens at the end of '#pragma omp allocate' are ignored}}
 int x, y;
 #pragma omp allocate(x)) // expected-warning {{extra tokens at the end of '#pragma omp allocate' are ignored}}
 #pragma omp allocate(y)),
 // expected-warning@-1 {{extra tokens at the end of '#pragma omp allocate' are ignored}}
 #pragma omp allocate(a, d)
-#pragma omp allocate(d.a)       // expected-error {{expected identifier}}
-#pragma omp allocate((float)a)  // expected-error {{expected unqualified-id}}
-int foa;                        // expected-note {{'foa' declared here}}
-#pragma omp allocate(faa)       // expected-error {{use of undeclared identifier 'faa'; did you mean 'foa'?}}
-#pragma omp allocate(foo)       // expected-error {{'foo' is not a global variable, static local variable or static data member}}
+#pragma omp allocate(d.a) // expected-error {{expected identifier}}
+#pragma omp allocate((float)a) // expected-error {{expected unqualified-id}}
+int foa;                  // expected-note {{'foa' declared here}}
+#pragma omp allocate(faa) // expected-error {{use of undeclared identifier 'faa'; did you mean 'foa'?}}
+#pragma omp allocate(foo) // expected-error {{'foo' is not a global variable, static local variable or static data member}}
 #pragma omp allocate(int a = 2) // expected-error {{expected unqualified-id}}
 
 struct IncompleteSt;
@@ -68,7 +68,7 @@ public:
   TestClass(int aaa) : a(aaa) {}
 #pragma omp allocate(b, a) // expected-error {{'a' is not a global variable, static local variable or static data member}}
 } g(10);
-#pragma omp allocate(b)            // expected-error {{use of undeclared identifier 'b'}}
+#pragma omp allocate(b) // expected-error {{use of undeclared identifier 'b'}}
 #pragma omp allocate(TestClass::b) // expected-error {{'#pragma omp allocate' must appear in the scope of the 'TestClass::b' variable declaration}}
 #pragma omp allocate(g)
 

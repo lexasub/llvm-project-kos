@@ -2,8 +2,8 @@
 // RUN: %env_tool_opts=strip_path_prefix=/TestCases/ %run %t 2>&1 | FileCheck %s
 //
 // Tests __sanitizer_symbolize_pc.
-#include <stdio.h>
 #include <sanitizer/common_interface_defs.h>
+#include <stdio.h>
 
 int GLOBAL_VAR_ABC;
 
@@ -27,12 +27,13 @@ void SymbolizeCaller() {
                            "FUNC:%f LINE:%l FILE:%s", data, sizeof(data));
   printf("SECOND_FORMAT %s\n", data);
   __sanitizer_symbolize_pc(__builtin_return_address(0),
-                          "LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
-                          "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
-                          "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
-                          "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
-                          "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOONG"
-                          "FUNC:%f LINE:%l FILE:%s", data, sizeof(data));
+                           "LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
+                           "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
+                           "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
+                           "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"
+                           "OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOONG"
+                           "FUNC:%f LINE:%l FILE:%s",
+                           data, sizeof(data));
   printf("LONG_FORMAT %s\n", data);
 }
 

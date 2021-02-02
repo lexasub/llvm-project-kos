@@ -69,8 +69,8 @@ protected:
   /// corresponds to the MDNode mapped with the subprogram DIE.
   DenseMap<DIE *, const DINode *> ContainingTypeMap;
 
-  DwarfUnit(dwarf::Tag, const DICompileUnit *Node, AsmPrinter *A, DwarfDebug *DW,
-            DwarfFile *DWU);
+  DwarfUnit(dwarf::Tag, const DICompileUnit *Node, AsmPrinter *A,
+            DwarfDebug *DW, DwarfFile *DWU);
 
   bool applySubprogramDefinitionAttributes(const DISubprogram *SP, DIE &SPDie);
 
@@ -78,7 +78,7 @@ protected:
 
 public:
   // Accessors.
-  AsmPrinter* getAsmPrinter() const { return Asm; }
+  AsmPrinter *getAsmPrinter() const { return Asm; }
   MCSymbol *getEndLabel() const { return EndLabel; }
   uint16_t getLanguage() const { return CUNode->getSourceLanguage(); }
   const DICompileUnit *getCUNode() const { return CUNode; }
@@ -323,7 +323,7 @@ private:
   /// Set D as anonymous type for index which can be reused later.
   void setIndexTyDie(DIE *D) { IndexTyDie = D; }
 
-  virtual void finishNonUnitTypeDIE(DIE& D, const DICompositeType *CTy) = 0;
+  virtual void finishNonUnitTypeDIE(DIE &D, const DICompositeType *CTy) = 0;
 
   /// If this is a named finished type then include it in the list of types for
   /// the accelerator tables.
@@ -342,7 +342,7 @@ class DwarfTypeUnit final : public DwarfUnit {
   bool UsedLineTable = false;
 
   unsigned getOrCreateSourceID(const DIFile *File) override;
-  void finishNonUnitTypeDIE(DIE& D, const DICompositeType *CTy) override;
+  void finishNonUnitTypeDIE(DIE &D, const DICompositeType *CTy) override;
   bool isDwoUnit() const override;
 
 public:
@@ -364,5 +364,5 @@ public:
                      const DIScope *Context) override;
   DwarfCompileUnit &getCU() override { return CU; }
 };
-} // end llvm namespace
+} // namespace llvm
 #endif

@@ -425,8 +425,7 @@ public:
   CFIProgram(uint64_t CodeAlignmentFactor, int64_t DataAlignmentFactor,
              Triple::ArchType Arch)
       : CodeAlignmentFactor(CodeAlignmentFactor),
-        DataAlignmentFactor(DataAlignmentFactor),
-        Arch(Arch) {}
+        DataAlignmentFactor(DataAlignmentFactor), Arch(Arch) {}
 
   /// Parse and store a sequence of CFI instructions from Data,
   /// starting at *Offset and ending at EndOffset. *Offset is updated
@@ -602,8 +601,7 @@ public:
       Optional<uint64_t> LSDAAddress, Triple::ArchType Arch)
       : FrameEntry(FK_FDE, IsDWARF64, Offset, Length,
                    Cie ? Cie->getCodeAlignmentFactor() : 0,
-                   Cie ? Cie->getDataAlignmentFactor() : 0,
-                   Arch),
+                   Cie ? Cie->getDataAlignmentFactor() : 0, Arch),
         CIEPointer(CIEPointer), InitialLocation(InitialLocation),
         AddressRange(AddressRange), LinkedCIE(Cie), LSDAAddress(LSDAAddress) {}
 
@@ -652,8 +650,8 @@ public:
   // it is a .debug_frame section. EHFrameAddress should be different
   // than zero for correct parsing of .eh_frame addresses when they
   // use a PC-relative encoding.
-  DWARFDebugFrame(Triple::ArchType Arch,
-                  bool IsEH = false, uint64_t EHFrameAddress = 0);
+  DWARFDebugFrame(Triple::ArchType Arch, bool IsEH = false,
+                  uint64_t EHFrameAddress = 0);
   ~DWARFDebugFrame();
 
   /// Dump the section data into the given stream.

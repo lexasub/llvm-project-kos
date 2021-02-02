@@ -5,17 +5,37 @@
 namespace test1 {
 
 // Some covariant types.
-struct A { int a; };
-struct B { int b; };
-struct C : A, B { int c; };
-struct D : C { int d; };
-struct E : D { int e; };
+struct A {
+  int a;
+};
+struct B {
+  int b;
+};
+struct C : A, B {
+  int c;
+};
+struct D : C {
+  int d;
+};
+struct E : D {
+  int e;
+};
 
 // One base class and two overrides, all with covariant return types.
-struct H     { virtual B *foo(); };
-struct I : H { virtual C *foo(); };
-struct J : I { virtual D *foo(); J(); };
-struct K : J { virtual E *foo(); K(); };
+struct H {
+  virtual B *foo();
+};
+struct I : H {
+  virtual C *foo();
+};
+struct J : I {
+  virtual D *foo();
+  J();
+};
+struct K : J {
+  virtual E *foo();
+  K();
+};
 
 J::J() {}
 
@@ -66,22 +86,42 @@ K::K() {}
 // CODEGEN: call {{.*}} @"?foo@K@test1@@UAEPAUE@2@XZ"
 // CODEGEN-NEXT: ret
 
-}
+} // namespace test1
 
 namespace test2 {
 
 // Covariant types.  D* is not trivially convertible to C*.
-struct A { int a; };
-struct B { int b; };
-struct C : B { int c; };
-struct D : A, C { int d; };
-struct E : D { int e; };
+struct A {
+  int a;
+};
+struct B {
+  int b;
+};
+struct C : B {
+  int c;
+};
+struct D : A, C {
+  int d;
+};
+struct E : D {
+  int e;
+};
 
 // J's foo will require an adjusting thunk, and K will require a trivial thunk.
-struct H     { virtual B *foo(); };
-struct I : H { virtual C *foo(); };
-struct J : I { virtual D *foo(); J(); };
-struct K : J { virtual E *foo(); K(); };
+struct H {
+  virtual B *foo();
+};
+struct I : H {
+  virtual C *foo();
+};
+struct J : I {
+  virtual D *foo();
+  J();
+};
+struct K : J {
+  virtual E *foo();
+  K();
+};
 
 J::J() {}
 
@@ -103,7 +143,7 @@ K::K() {}
 
 // GLOBALS-LABEL: @"??_7K@test2@@6B@" = linkonce_odr unnamed_addr constant { [3 x i8*] }
 
-}
+} // namespace test2
 
 namespace pr20479 {
 struct A {
@@ -115,10 +155,10 @@ struct B : virtual A {
 };
 
 struct C : virtual A, B {
-// VFTABLES-LABEL: VFTable for 'pr20479::A' in 'pr20479::B' in 'pr20479::C' (2 entries).
-// VFTABLES-NEXT:   0 | pr20479::B *pr20479::B::f()
-// VFTABLES-NEXT:       [return adjustment (to type 'struct pr20479::A *'): vbase #1, 0 non-virtual]
-// VFTABLES-NEXT:   1 | pr20479::B *pr20479::B::f()
+  // VFTABLES-LABEL: VFTable for 'pr20479::A' in 'pr20479::B' in 'pr20479::C' (2 entries).
+  // VFTABLES-NEXT:   0 | pr20479::B *pr20479::B::f()
+  // VFTABLES-NEXT:       [return adjustment (to type 'struct pr20479::A *'): vbase #1, 0 non-virtual]
+  // VFTABLES-NEXT:   1 | pr20479::B *pr20479::B::f()
   C();
 };
 
@@ -127,7 +167,7 @@ C::C() {}
 // GLOBALS-LABEL: @"??_7C@pr20479@@6B@" = linkonce_odr unnamed_addr constant { [2 x i8*] }
 // GLOBALS: @"?f@B@pr20479@@QAEPAUA@2@XZ"
 // GLOBALS: @"?f@B@pr20479@@UAEPAU12@XZ"
-}
+} // namespace pr20479
 
 namespace pr21073 {
 struct A {
@@ -139,13 +179,13 @@ struct B : virtual A {
 };
 
 struct C : virtual A, virtual B {
-// VFTABLES-LABEL: VFTable for 'pr21073::A' in 'pr21073::B' in 'pr21073::C' (2 entries).
-// VFTABLES-NEXT:   0 | pr21073::B *pr21073::B::f()
-// VFTABLES-NEXT:       [return adjustment (to type 'struct pr21073::A *'): vbase #1, 0 non-virtual]
-// VFTABLES-NEXT:       [this adjustment: 8 non-virtual]
-// VFTABLES-NEXT:   1 | pr21073::B *pr21073::B::f()
-// VFTABLES-NEXT:       [return adjustment (to type 'struct pr21073::B *'): 0 non-virtual]
-// VFTABLES-NEXT:       [this adjustment: 8 non-virtual]
+  // VFTABLES-LABEL: VFTable for 'pr21073::A' in 'pr21073::B' in 'pr21073::C' (2 entries).
+  // VFTABLES-NEXT:   0 | pr21073::B *pr21073::B::f()
+  // VFTABLES-NEXT:       [return adjustment (to type 'struct pr21073::A *'): vbase #1, 0 non-virtual]
+  // VFTABLES-NEXT:       [this adjustment: 8 non-virtual]
+  // VFTABLES-NEXT:   1 | pr21073::B *pr21073::B::f()
+  // VFTABLES-NEXT:       [return adjustment (to type 'struct pr21073::B *'): 0 non-virtual]
+  // VFTABLES-NEXT:       [this adjustment: 8 non-virtual]
   C();
 };
 
@@ -154,13 +194,19 @@ C::C() {}
 // GLOBALS-LABEL: @"??_7C@pr21073@@6B@" = linkonce_odr unnamed_addr constant { [2 x i8*] }
 // GLOBALS: @"?f@B@pr21073@@WPPPPPPPI@AEPAUA@2@XZ"
 // GLOBALS: @"?f@B@pr21073@@WPPPPPPPI@AEPAU12@XZ"
-}
+} // namespace pr21073
 
 namespace pr21073_2 {
-struct A { virtual A *foo(); };
+struct A {
+  virtual A *foo();
+};
 struct B : virtual A {};
-struct C : virtual A { virtual C *foo(); };
-struct D : B, C { D(); };
+struct C : virtual A {
+  virtual C *foo();
+};
+struct D : B, C {
+  D();
+};
 D::D() {}
 
 // VFTABLES-LABEL: VFTable for 'pr21073_2::A' in 'pr21073_2::C' in 'pr21073_2::D' (2 entries)
@@ -171,11 +217,15 @@ D::D() {}
 // GLOBALS-LABEL: @"??_7D@pr21073_2@@6B@" = {{.*}} constant { [2 x i8*] }
 // GLOBALS: @"?foo@C@pr21073_2@@QAEPAUA@2@XZ"
 // GLOBALS: @"?foo@C@pr21073_2@@UAEPAU12@XZ"
-}
+} // namespace pr21073_2
 
 namespace test3 {
-struct A { virtual A *fn(); };
-struct B : virtual A { virtual B *fn(); };
+struct A {
+  virtual A *fn();
+};
+struct B : virtual A {
+  virtual B *fn();
+};
 struct X : virtual B {};
 struct Y : virtual B {};
 struct C : X, Y {};
@@ -200,19 +250,25 @@ D::D() {}
 // GLOBALS: @"?fn@D@test3@@$4PPPPPPPM@A@AEPAUA@2@XZ"
 // GLOBALS: @"?fn@D@test3@@$4PPPPPPPM@A@AEPAUB@2@XZ"
 // GLOBALS: @"?fn@D@test3@@$4PPPPPPPM@A@AEPAU12@XZ"
-}
+} // namespace test3
 
 namespace pr34302 {
 // C::f is lives in the vftable inside its virtual B subobject. In the MS ABI,
 // covariant return type virtual methods extend vftables from virtual bases,
 // even though that can make it impossible to implement certain diamond
 // hierarchies correctly.
-struct A { virtual ~A(); };
-struct B : A { virtual B *f(); };
-struct C : virtual B { C *f(); };
+struct A {
+  virtual ~A();
+};
+struct B : A {
+  virtual B *f();
+};
+struct C : virtual B {
+  C *f();
+};
 C c;
 // VFTABLES-LABEL: VFTable indices for 'pr34302::C' (2 entries).
 // VFTABLES-NEXT:  -- accessible via vbtable index 1, vfptr at offset 0 --
 // VFTABLES-NEXT:    0 | pr34302::C::~C() [scalar deleting]
 // VFTABLES-NEXT:    2 | pr34302::C *pr34302::C::f()
-}
+} // namespace pr34302

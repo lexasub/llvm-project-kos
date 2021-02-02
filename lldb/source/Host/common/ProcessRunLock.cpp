@@ -59,6 +59,6 @@ bool ProcessRunLock::SetStopped() {
   ::pthread_rwlock_unlock(&m_rwlock);
   return true;
 }
-}
+} // namespace lldb_private
 
 #endif

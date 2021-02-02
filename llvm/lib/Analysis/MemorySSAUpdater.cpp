@@ -10,11 +10,11 @@
 //
 //===----------------------------------------------------------------===//
 #include "llvm/Analysis/MemorySSAUpdater.h"
-#include "llvm/Analysis/LoopIterator.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/SetVector.h"
 #include "llvm/ADT/SmallPtrSet.h"
 #include "llvm/Analysis/IteratedDominanceFrontier.h"
+#include "llvm/Analysis/LoopIterator.h"
 #include "llvm/Analysis/MemorySSA.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/DataLayout.h"
@@ -111,8 +111,8 @@ MemoryAccess *MemorySSAUpdater::getPreviousDefRecursive(
         Phi = MSSA->createMemoryPhi(BB);
 
       // See if the existing phi operands match what we need.
-      // Unlike normal SSA, we only allow one phi node per block, so we can't just
-      // create a new one.
+      // Unlike normal SSA, we only allow one phi node per block, so we can't
+      // just create a new one.
       if (Phi->getNumOperands() != 0) {
         // FIXME: Figure out whether this is dead code and if so remove it.
         if (!std::equal(Phi->op_begin(), Phi->op_end(), PhiOps.begin())) {
@@ -423,13 +423,15 @@ void MemorySSAUpdater::insertDef(MemoryDef *MD, bool RenameUses) {
     fixupDefs(FixupList);
     FixupList.clear();
     // Put any new phis on the fixup list, and process them
-    FixupList.append(InsertedPHIs.begin() + StartingPHISize, InsertedPHIs.end());
+    FixupList.append(InsertedPHIs.begin() + StartingPHISize,
+                     InsertedPHIs.end());
   }
 
   // Optimize potentially non-minimal phis added in this method.
   unsigned NewPhiSize = NewPhiIndexEnd - NewPhiIndex;
   if (NewPhiSize)
-    tryRemoveTrivialPhis(ArrayRef<WeakVH>(&InsertedPHIs[NewPhiIndex], NewPhiSize));
+    tryRemoveTrivialPhis(
+        ArrayRef<WeakVH>(&InsertedPHIs[NewPhiIndex], NewPhiSize));
 
   // Now that all fixups are done, rename all uses if we are asked. Skip
   // renaming for defs in unreachable blocks.

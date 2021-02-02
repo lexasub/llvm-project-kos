@@ -14,7 +14,7 @@ char *__attribute__((assume_aligned(0x8000))) passthrough(char *x) {
   return x;
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
   char *ptr = (char *)malloc(2);
 
   passthrough(ptr + 1);

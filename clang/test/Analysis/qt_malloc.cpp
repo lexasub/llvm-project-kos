@@ -2,8 +2,7 @@
 // expected-no-diagnostics
 #include "Inputs/qt-simulator.h"
 
-void send(QObject *obj)
-{
+void send(QObject *obj) {
   QEvent *e1 = new QEvent(QEvent::None);
   static_cast<QApplication *>(QCoreApplication::instance())->postEvent(obj, e1);
   QEvent *e2 = new QEvent(QEvent::None);

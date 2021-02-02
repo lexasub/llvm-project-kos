@@ -687,7 +687,7 @@ Expected<LeafRecord> LeafRecord::fromCodeViewRecord(CVType Type) {
   switch (Type.kind()) {
 #include "llvm/DebugInfo/CodeView/CodeViewTypes.def"
   default:
-      llvm_unreachable("Unknown leaf kind!");
+    llvm_unreachable("Unknown leaf kind!");
   }
   return make_error<CodeViewError>(cv_error_code::corrupt_record);
 }
@@ -739,7 +739,9 @@ void MappingTraits<LeafRecord>::mapping(IO &IO, LeafRecord &Obj) {
 #define MEMBER_RECORD_ALIAS(EnumName, EnumVal, AliasName, ClassName)
   switch (Kind) {
 #include "llvm/DebugInfo/CodeView/CodeViewTypes.def"
-  default: { llvm_unreachable("Unknown leaf kind!"); }
+  default: {
+    llvm_unreachable("Unknown leaf kind!");
+  }
   }
 }
 
@@ -768,7 +770,9 @@ void MappingTraits<MemberRecord>::mapping(IO &IO, MemberRecord &Obj) {
 #define TYPE_RECORD_ALIAS(EnumName, EnumVal, AliasName, ClassName)
   switch (Kind) {
 #include "llvm/DebugInfo/CodeView/CodeViewTypes.def"
-  default: { llvm_unreachable("Unknown member kind!"); }
+  default: {
+    llvm_unreachable("Unknown member kind!");
+  }
   }
 }
 

@@ -23,23 +23,21 @@
 
 #include "test_macros.h"
 
-TEST_CONSTEXPR_CXX20 bool test()
-{
-    std::allocator<int> a1;
-    std::allocator<int> a2;
-    assert(a1 == a2);
-    assert(!(a1 != a2));
+TEST_CONSTEXPR_CXX20 bool test() {
+  std::allocator<int> a1;
+  std::allocator<int> a2;
+  assert(a1 == a2);
+  assert(!(a1 != a2));
 
-    return true;
+  return true;
 }
 
-int main(int, char**)
-{
-    test();
+int main(int, char**) {
+  test();
 
 #if TEST_STD_VER > 17
-    static_assert(test());
+  static_assert(test());
 #endif
 
-    return 0;
+  return 0;
 }

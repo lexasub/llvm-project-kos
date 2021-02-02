@@ -31,7 +31,7 @@ struct CtorAssertsT {
   CtorAssertsT() : defaulted(true) {}
   template <class T>
   constexpr CtorAssertsT(T) : defaulted(false) {
-      static_assert(!std::is_same<T, AssertOn>::value, "");
+    static_assert(!std::is_same<T, AssertOn>::value, "");
   }
 };
 
@@ -41,7 +41,7 @@ struct AllowAssertT {
   AllowAssertT(AllowT) {}
   template <class U>
   constexpr AllowAssertT(U) {
-      static_assert(!std::is_same<U, AssertT>::value, "");
+    static_assert(!std::is_same<U, AssertT>::value, "");
   }
 };
 
@@ -56,16 +56,15 @@ struct AllowAssertT {
 // will cause a static assertion.
 void test_tuple_like_lazy_sfinae() {
 #if defined(_LIBCPP_VERSION)
-    // This test requires libc++'s reduced arity initialization.
-    using T1 = ConstructibleFromT<std::pair<int, int>>;
-    using T2 = CtorAssertsT<int>;
-    std::pair<int, int> p(42, 100);
-    std::tuple<T1, T2> t(p);
-    assert(std::get<0>(t).value == p);
-    assert(std::get<1>(t).defaulted);
+  // This test requires libc++'s reduced arity initialization.
+  using T1 = ConstructibleFromT<std::pair<int, int> >;
+  using T2 = CtorAssertsT<int>;
+  std::pair<int, int> p(42, 100);
+  std::tuple<T1, T2> t(p);
+  assert(std::get<0>(t).value == p);
+  assert(std::get<1>(t).defaulted);
 #endif
 }
-
 
 struct NonConstCopyable {
   NonConstCopyable() = default;
@@ -79,7 +78,7 @@ template <class T>
 struct BlowsUpOnConstCopy {
   BlowsUpOnConstCopy() = default;
   constexpr BlowsUpOnConstCopy(BlowsUpOnConstCopy const&) {
-      static_assert(!std::is_same<T, T>::value, "");
+    static_assert(!std::is_same<T, T>::value, "");
   }
   BlowsUpOnConstCopy(BlowsUpOnConstCopy&) = default;
 };
@@ -89,17 +88,16 @@ struct BlowsUpOnConstCopy {
 // (2) tuple(UTypes&&...)
 // Test that (1) short circuits before evaluating the copy constructor of the
 // second argument. Constructor (2) should be selected.
-void test_const_Types_lazy_sfinae()
-{
-    NonConstCopyable v(42);
-    BlowsUpOnConstCopy<int> b;
-    std::tuple<NonConstCopyable, BlowsUpOnConstCopy<int>> t(v, b);
-    assert(std::get<0>(t).value == 42);
+void test_const_Types_lazy_sfinae() {
+  NonConstCopyable v(42);
+  BlowsUpOnConstCopy<int> b;
+  std::tuple<NonConstCopyable, BlowsUpOnConstCopy<int> > t(v, b);
+  assert(std::get<0>(t).value == 42);
 }
 
 int main(int, char**) {
-    test_tuple_like_lazy_sfinae();
-    test_const_Types_lazy_sfinae();
+  test_tuple_like_lazy_sfinae();
+  test_const_Types_lazy_sfinae();
 
   return 0;
 }

@@ -73,14 +73,14 @@ llvm::Expected<bool> Resolver::forEachUndefines(File &file,
 
 llvm::Expected<bool> Resolver::handleArchiveFile(File &file) {
   ArchiveLibraryFile *archiveFile = cast<ArchiveLibraryFile>(&file);
-  return forEachUndefines(file,
-                          [&](StringRef undefName) -> llvm::Expected<bool> {
-    if (File *member = archiveFile->find(undefName)) {
-      member->setOrdinal(_ctx.getNextOrdinalAndIncrement());
-      return handleFile(*member);
-    }
-    return false;
-  });
+  return forEachUndefines(
+      file, [&](StringRef undefName) -> llvm::Expected<bool> {
+        if (File *member = archiveFile->find(undefName)) {
+          member->setOrdinal(_ctx.getNextOrdinalAndIncrement());
+          return handleFile(*member);
+        }
+        return false;
+      });
 }
 
 llvm::Error Resolver::handleSharedLibrary(File &file) {
@@ -104,9 +104,9 @@ llvm::Error Resolver::handleSharedLibrary(File &file) {
 
 bool Resolver::doUndefinedAtom(OwningAtomPtr<UndefinedAtom> atom) {
   DEBUG_WITH_TYPE("resolver", llvm::dbgs()
-                    << "       UndefinedAtom: "
-                    << llvm::format("0x%09lX", atom.get())
-                    << ", name=" << atom.get()->name() << "\n");
+                                  << "       UndefinedAtom: "
+                                  << llvm::format("0x%09lX", atom.get())
+                                  << ", name=" << atom.get()->name() << "\n");
 
   // tell symbol table
   bool newUndefAdded = _symbolTable.add(*atom.get());
@@ -122,18 +122,13 @@ bool Resolver::doUndefinedAtom(OwningAtomPtr<UndefinedAtom> atom) {
 // Called on each atom when a file is added. Returns true if a given
 // atom is added to the symbol table.
 void Resolver::doDefinedAtom(OwningAtomPtr<DefinedAtom> atom) {
-  DEBUG_WITH_TYPE("resolver", llvm::dbgs()
-                    << "         DefinedAtom: "
-                    << llvm::format("0x%09lX", atom.get())
-                    << ", file=#"
-                    << atom.get()->file().ordinal()
-                    << ", atom=#"
-                    << atom.get()->ordinal()
-                    << ", name="
-                    << atom.get()->name()
-                    << ", type="
-                    << atom.get()->contentType()
-                    << "\n");
+  DEBUG_WITH_TYPE("resolver",
+                  llvm::dbgs() << "         DefinedAtom: "
+                               << llvm::format("0x%09lX", atom.get())
+                               << ", file=#" << atom.get()->file().ordinal()
+                               << ", atom=#" << atom.get()->ordinal()
+                               << ", name=" << atom.get()->name() << ", type="
+                               << atom.get()->contentType() << "\n");
 
   // An atom that should never be dead-stripped is a dead-strip root.
   if (_ctx.deadStrip() &&
@@ -148,11 +143,9 @@ void Resolver::doDefinedAtom(OwningAtomPtr<DefinedAtom> atom) {
 
 void Resolver::doSharedLibraryAtom(OwningAtomPtr<SharedLibraryAtom> atom) {
   DEBUG_WITH_TYPE("resolver", llvm::dbgs()
-                    << "   SharedLibraryAtom: "
-                    << llvm::format("0x%09lX", atom.get())
-                    << ", name="
-                    << atom.get()->name()
-                    << "\n");
+                                  << "   SharedLibraryAtom: "
+                                  << llvm::format("0x%09lX", atom.get())
+                                  << ", name=" << atom.get()->name() << "\n");
 
   // tell symbol table
   _symbolTable.add(*atom.get());
@@ -163,11 +156,9 @@ void Resolver::doSharedLibraryAtom(OwningAtomPtr<SharedLibraryAtom> atom) {
 
 void Resolver::doAbsoluteAtom(OwningAtomPtr<AbsoluteAtom> atom) {
   DEBUG_WITH_TYPE("resolver", llvm::dbgs()
-                    << "       AbsoluteAtom: "
-                    << llvm::format("0x%09lX", atom.get())
-                    << ", name="
-                    << atom.get()->name()
-                    << "\n");
+                                  << "       AbsoluteAtom: "
+                                  << llvm::format("0x%09lX", atom.get())
+                                  << ", name=" << atom.get()->name() << "\n");
 
   // tell symbol table
   if (atom.get()->scope() != Atom::scopeTranslationUnit)
@@ -210,15 +201,15 @@ File *Resolver::getFile(int &index) {
 // Keep adding atoms until _ctx.getNextFile() returns an error. This
 // function is where undefined atoms are resolved.
 bool Resolver::resolveUndefines() {
-  DEBUG_WITH_TYPE("resolver",
-                  llvm::dbgs() << "******** Resolving undefines:\n");
+  DEBUG_WITH_TYPE("resolver", llvm::dbgs()
+                                  << "******** Resolving undefines:\n");
   ScopedTask task(getDefaultDomain(), "resolveUndefines");
   int index = 0;
   std::set<File *> seen;
   for (;;) {
     bool undefAdded = false;
-    DEBUG_WITH_TYPE("resolver",
-                    llvm::dbgs() << "Loading file #" << index << "\n");
+    DEBUG_WITH_TYPE("resolver", llvm::dbgs()
+                                    << "Loading file #" << index << "\n");
     File *file = getFile(index);
     if (!file)
       return true;
@@ -227,8 +218,8 @@ bool Resolver::resolveUndefines() {
                    << "\n";
       return false;
     }
-    DEBUG_WITH_TYPE("resolver",
-                    llvm::dbgs() << "Loaded file: " << file->path() << "\n");
+    DEBUG_WITH_TYPE("resolver", llvm::dbgs()
+                                    << "Loaded file: " << file->path() << "\n");
     switch (file->kind()) {
     case File::kindErrorObject:
     case File::kindNormalizedObject:
@@ -292,8 +283,8 @@ bool Resolver::resolveUndefines() {
 // switch all references to undefined or coalesced away atoms
 // to the new defined atom
 void Resolver::updateReferences() {
-  DEBUG_WITH_TYPE("resolver",
-                  llvm::dbgs() << "******** Updating references:\n");
+  DEBUG_WITH_TYPE("resolver", llvm::dbgs()
+                                  << "******** Updating references:\n");
   ScopedTask task(getDefaultDomain(), "updateReferences");
   for (const OwningAtomPtr<Atom> &atom : _atoms) {
     if (const DefinedAtom *defAtom = dyn_cast<DefinedAtom>(atom.get())) {
@@ -341,8 +332,8 @@ static bool isBackref(const Reference *ref) {
 
 // remove all atoms not actually used
 void Resolver::deadStripOptimize() {
-  DEBUG_WITH_TYPE("resolver",
-                  llvm::dbgs() << "******** Dead stripping unused atoms:\n");
+  DEBUG_WITH_TYPE("resolver", llvm::dbgs()
+                                  << "******** Dead stripping unused atoms:\n");
   ScopedTask task(getDefaultDomain(), "deadStripOptimize");
   // only do this optimization with -dead_strip
   if (!_ctx.deadStrip())
@@ -382,15 +373,15 @@ void Resolver::deadStripOptimize() {
   // now remove all non-live atoms from _atoms
   _atoms.erase(std::remove_if(_atoms.begin(), _atoms.end(),
                               [&](OwningAtomPtr<Atom> &a) {
-                 return _liveAtoms.count(a.get()) == 0;
-               }),
+                                return _liveAtoms.count(a.get()) == 0;
+                              }),
                _atoms.end());
 }
 
 // error out if some undefines remain
 bool Resolver::checkUndefines() {
-  DEBUG_WITH_TYPE("resolver",
-                  llvm::dbgs() << "******** Checking for undefines:\n");
+  DEBUG_WITH_TYPE("resolver", llvm::dbgs()
+                                  << "******** Checking for undefines:\n");
 
   // build vector of remaining undefined symbols
   std::vector<const UndefinedAtom *> undefinedAtoms = _symbolTable.undefines();
@@ -442,15 +433,15 @@ void Resolver::removeCoalescedAwayAtoms() {
   ScopedTask task(getDefaultDomain(), "removeCoalescedAwayAtoms");
   _atoms.erase(std::remove_if(_atoms.begin(), _atoms.end(),
                               [&](OwningAtomPtr<Atom> &a) {
-                 return _symbolTable.isCoalescedAway(a.get()) ||
-                        _deadAtoms.count(a.get());
-               }),
+                                return _symbolTable.isCoalescedAway(a.get()) ||
+                                       _deadAtoms.count(a.get());
+                              }),
                _atoms.end());
 }
 
 bool Resolver::resolve() {
-  DEBUG_WITH_TYPE("resolver",
-                  llvm::dbgs() << "******** Resolving atom references:\n");
+  DEBUG_WITH_TYPE("resolver", llvm::dbgs()
+                                  << "******** Resolving atom references:\n");
   if (!resolveUndefines())
     return false;
   updateReferences();
@@ -470,30 +461,24 @@ bool Resolver::resolve() {
 }
 
 void Resolver::MergedFile::addAtoms(
-                              llvm::MutableArrayRef<OwningAtomPtr<Atom>> all) {
+    llvm::MutableArrayRef<OwningAtomPtr<Atom>> all) {
   ScopedTask task(getDefaultDomain(), "addAtoms");
   DEBUG_WITH_TYPE("resolver", llvm::dbgs() << "Resolver final atom list:\n");
 
   for (OwningAtomPtr<Atom> &atom : all) {
 #ifndef NDEBUG
     if (auto *definedAtom = dyn_cast<DefinedAtom>(atom.get())) {
-      DEBUG_WITH_TYPE("resolver", llvm::dbgs()
-                      << llvm::format("    0x%09lX", definedAtom)
-                      << ", file=#"
-                      << definedAtom->file().ordinal()
-                      << ", atom=#"
-                      << definedAtom->ordinal()
-                      << ", name="
-                      << definedAtom->name()
-                      << ", type="
-                      << definedAtom->contentType()
-                      << "\n");
+      DEBUG_WITH_TYPE("resolver",
+                      llvm::dbgs()
+                          << llvm::format("    0x%09lX", definedAtom)
+                          << ", file=#" << definedAtom->file().ordinal()
+                          << ", atom=#" << definedAtom->ordinal()
+                          << ", name=" << definedAtom->name()
+                          << ", type=" << definedAtom->contentType() << "\n");
     } else {
-      DEBUG_WITH_TYPE("resolver", llvm::dbgs()
-                      << llvm::format("    0x%09lX", atom.get())
-                      << ", name="
-                      << atom.get()->name()
-                      << "\n");
+      DEBUG_WITH_TYPE("resolver",
+                      llvm::dbgs() << llvm::format("    0x%09lX", atom.get())
+                                   << ", name=" << atom.get()->name() << "\n");
     }
 #endif
     addAtom(*atom.release());

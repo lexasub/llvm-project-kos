@@ -14,14 +14,15 @@
 #include <stdint.h>
 
 #define __ARM_CMSE_SECURE_MODE (__ARM_FEATURE_CMSE & 0x2)
-#define CMSE_MPU_READWRITE 1 /* checks if readwrite_ok field is set */
-#define CMSE_AU_NONSECURE  2 /* checks if permissions have secure field unset */
-#define CMSE_MPU_UNPRIV    4 /* sets T flag on TT insrtuction */
-#define CMSE_MPU_READ      8 /* checks if read_ok field is set */
+#define CMSE_MPU_READWRITE 1  /* checks if readwrite_ok field is set */
+#define CMSE_AU_NONSECURE 2   /* checks if permissions have secure field unset \
+                               */
+#define CMSE_MPU_UNPRIV 4     /* sets T flag on TT insrtuction */
+#define CMSE_MPU_READ 8       /* checks if read_ok field is set */
 #define CMSE_MPU_NONSECURE 16 /* sets A flag, checks if secure field unset */
 #define CMSE_NONSECURE (CMSE_AU_NONSECURE | CMSE_MPU_NONSECURE)
 
-#define cmse_check_pointed_object(p, f) \
+#define cmse_check_pointed_object(p, f)                                        \
   cmse_check_address_range((p), sizeof(*(p)), (f))
 
 #if defined(__cplusplus)

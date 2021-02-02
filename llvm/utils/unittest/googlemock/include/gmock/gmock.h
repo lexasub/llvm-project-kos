@@ -59,8 +59,8 @@
 #include "gmock/gmock-cardinalities.h"
 #include "gmock/gmock-generated-actions.h"
 #include "gmock/gmock-generated-function-mockers.h"
-#include "gmock/gmock-generated-nice-strict.h"
 #include "gmock/gmock-generated-matchers.h"
+#include "gmock/gmock-generated-nice-strict.h"
 #include "gmock/gmock-matchers.h"
 #include "gmock/gmock-more-actions.h"
 #include "gmock/gmock-more-matchers.h"
@@ -83,12 +83,12 @@ GMOCK_DECLARE_string_(verbose);
 // Since Google Test is needed for Google Mock to work, this function
 // also initializes Google Test and parses its flags, if that hasn't
 // been done.
-GTEST_API_ void InitGoogleMock(int* argc, char** argv);
+GTEST_API_ void InitGoogleMock(int *argc, char **argv);
 
 // This overloaded version can be used in Windows programs compiled in
 // UNICODE mode.
-GTEST_API_ void InitGoogleMock(int* argc, wchar_t** argv);
+GTEST_API_ void InitGoogleMock(int *argc, wchar_t **argv);
 
-}  // namespace testing
+} // namespace testing
 
-#endif  // GMOCK_INCLUDE_GMOCK_GMOCK_H_
+#endif // GMOCK_INCLUDE_GMOCK_GMOCK_H_

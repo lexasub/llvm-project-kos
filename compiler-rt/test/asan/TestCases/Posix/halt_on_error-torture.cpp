@@ -14,9 +14,9 @@
 // RUN: grep 'ERROR: AddressSanitizer: use-after-poison' %t.log | count 1
 // RUN: FileCheck %s <%t.log
 
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
 #include <time.h>
 
 #include <sanitizer/asan_interface.h>
@@ -26,7 +26,7 @@ size_t niter = 10;
 
 void random_delay(unsigned *seed) {
   *seed = 1664525 * *seed + 1013904223;
-  struct timespec delay = { 0, static_cast<long>((*seed % 1000) * 1000) };
+  struct timespec delay = {0, static_cast<long>((*seed % 1000) * 1000)};
   nanosleep(&delay, 0);
 }
 
@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
   // CHECK: All threads terminated
   printf("All threads terminated\n");
 
-  delete [] tids;
+  delete[] tids;
 
   return 0;
 }

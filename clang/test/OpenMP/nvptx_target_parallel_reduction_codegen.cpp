@@ -16,7 +16,7 @@
 // CHECK-DAG: {{@__omp_offloading_.+l32}}_exec_mode = weak constant i8 0
 // CHECK-DAG: {{@__omp_offloading_.+l38}}_exec_mode = weak constant i8 0
 
-template<typename tx>
+template <typename tx>
 tx ftemplate(int n) {
   int a;
   short b;
@@ -24,27 +24,32 @@ tx ftemplate(int n) {
   float d;
   double e;
 
-  #pragma omp target parallel reduction(+: e)
+#pragma omp target parallel reduction(+ \
+                                      : e)
   {
     e += 5;
   }
 
-  #pragma omp target parallel reduction(^: c) reduction(*: d)
+#pragma omp target parallel reduction(^                \
+                                      : c) reduction(* \
+                                                     : d)
   {
     c ^= 2;
     d *= 33;
   }
 
-  #pragma omp target parallel reduction(|: a) reduction(max: b)
+#pragma omp target parallel reduction(|                  \
+                                      : a) reduction(max \
+                                                     : b)
   {
     a |= 1;
     b = 99 > b ? 99 : b;
   }
 
-  return a+b+c+d+e;
+  return a + b + c + d + e;
 }
 
-int bar(int n){
+int bar(int n) {
   int a = 0;
 
   a += ftemplate<char>(n);

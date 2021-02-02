@@ -6,53 +6,53 @@ namespace std {
 
 template <typename T>
 struct unique_ptr {
-  T& operator*() const;
-  T* operator->() const;
-  T* get() const;
+  T &operator*() const;
+  T *operator->() const;
+  T *get() const;
   explicit operator bool() const noexcept;
 };
 
 template <typename T>
 struct shared_ptr {
-  T& operator*() const;
-  T* operator->() const;
-  T* get() const;
+  T &operator*() const;
+  T *operator->() const;
+  T *get() const;
   explicit operator bool() const noexcept;
 };
 
-}  // namespace std
+} // namespace std
 
 struct Bar {
   void Do();
   void ConstDo() const;
 };
 struct BarPtr {
-  Bar* operator->();
-  Bar& operator*();
-  Bar* get();
+  Bar *operator->();
+  Bar &operator*();
+  Bar *get();
   explicit operator bool() const;
 };
 struct int_ptr {
-  int* get();
-  int* operator->();
-  int& operator*();
+  int *get();
+  int *operator->();
+  int &operator*();
 };
 
 struct Fail1 {
-  Bar* get();
+  Bar *get();
 };
 struct Fail2 {
-  Bar* get();
-  int* operator->();
-  int& operator*();
+  Bar *get();
+  int *operator->();
+  int &operator*();
 };
 
 struct PointerWithOverloadedGet {
-  int* get();
+  int *get();
   template <typename T>
-  T* get();
-  int* operator->();
-  int& operator*();
+  T *get();
+  int *operator->();
+  int &operator*();
 };
 
 void Positive() {
@@ -68,12 +68,12 @@ void Positive() {
   // CHECK-MESSAGES: u.get()->ConstDo();
   // CHECK-FIXES: u->ConstDo();
 
-  Bar& b = *BarPtr().get();
+  Bar &b = *BarPtr().get();
   // CHECK-MESSAGES: :[[@LINE-1]]:13: warning: redundant get() call
   // CHECK-MESSAGES: Bar& b = *BarPtr().get();
   // CHECK-FIXES: Bar& b = *BarPtr();
 
-  Bar& b2 = *std::unique_ptr<Bar>().get();
+  Bar &b2 = *std::unique_ptr<Bar>().get();
   // CHECK-MESSAGES: :[[@LINE-1]]:14: warning: redundant get() call
   // CHECK-MESSAGES: Bar& b2 = *std::unique_ptr<Bar>().get();
   // CHECK-FIXES: Bar& b2 = *std::unique_ptr<Bar>();
@@ -88,7 +88,7 @@ void Positive() {
   // CHECK-MESSAGES: (*std::unique_ptr<Bar>().get()).ConstDo();
   // CHECK-FIXES: (*std::unique_ptr<Bar>()).ConstDo();
 
-  std::unique_ptr<Bar>* up;
+  std::unique_ptr<Bar> *up;
   (*up->get()).Do();
   // CHECK-MESSAGES: :[[@LINE-1]]:5: warning: redundant get() call
   // CHECK-MESSAGES: (*up->get()).Do();
@@ -113,11 +113,13 @@ void Positive() {
   // CHECK-MESSAGES: uu.get() == nullptr;
   // CHECK-FIXES: bool bb = uu == nullptr;
 
-  if (up->get());
+  if (up->get())
+    ;
   // CHECK-MESSAGES: :[[@LINE-1]]:7: warning: redundant get() call
   // CHECK-MESSAGES: if (up->get());
   // CHECK-FIXES: if (*up);
-  if ((uu.get()));
+  if ((uu.get()))
+    ;
   // CHECK-MESSAGES: :[[@LINE-1]]:8: warning: redundant get() call
   // CHECK-MESSAGES: if ((uu.get()));
   // CHECK-FIXES: if ((uu));
@@ -150,19 +152,23 @@ void Positive() {
   // CHECK-FIXES: bb = *ss == NULL;
 
   std::unique_ptr<int> x, y;
-  if (x.get() == nullptr);
+  if (x.get() == nullptr)
+    ;
   // CHECK-MESSAGES: :[[@LINE-1]]:7: warning: redundant get() call
   // CHECK-MESSAGES: if (x.get() == nullptr);
   // CHECK-FIXES: if (x == nullptr);
-  if (nullptr == y.get());
+  if (nullptr == y.get())
+    ;
   // CHECK-MESSAGES: :[[@LINE-1]]:18: warning: redundant get() call
   // CHECK-MESSAGES: if (nullptr == y.get());
   // CHECK-FIXES: if (nullptr == y);
-  if (x.get() == NULL);
+  if (x.get() == NULL)
+    ;
   // CHECK-MESSAGES: :[[@LINE-1]]:7: warning: redundant get() call
   // CHECK-MESSAGES: if (x.get() == NULL);
   // CHECK-FIXES: if (x == NULL);
-  if (NULL == x.get());
+  if (NULL == x.get())
+    ;
   // CHECK-MESSAGES: :[[@LINE-1]]:15: warning: redundant get() call
   // CHECK-MESSAGES: if (NULL == x.get());
   // CHECK-FIXES: if (NULL == x);
@@ -172,23 +178,23 @@ void Positive() {
 
 void Negative() {
   struct NegPtr {
-    int* get();
-    int* operator->() {
+    int *get();
+    int *operator->() {
       return &*this->get();
     }
-    int& operator*() {
+    int &operator*() {
       return *get();
     }
   };
 
   long l = *PointerWithOverloadedGet().get<long>();
 
-  std::unique_ptr<Bar>* u;
+  std::unique_ptr<Bar> *u;
   u->get()->Do();
 
   Fail1().get()->Do();
   Fail2().get()->Do();
-  const Bar& b = *Fail1().get();
+  const Bar &b = *Fail1().get();
   (*Fail2().get()).Do();
 
   int_ptr ip;

@@ -32,7 +32,7 @@ unsigned AArch64::getDefaultFPU(StringRef CPU, AArch64::ArchKind AK) {
 #define AARCH64_CPU_NAME(NAME, ID, DEFAULT_FPU, IS_DEFAULT, DEFAULT_EXT)       \
   .Case(NAME, ARM::DEFAULT_FPU)
 #include "../../include/llvm/Support/AArch64TargetParser.def"
-  .Default(ARM::FK_INVALID);
+      .Default(ARM::FK_INVALID);
 }
 
 uint64_t AArch64::getDefaultExtensions(StringRef CPU, AArch64::ArchKind AK) {
@@ -45,7 +45,7 @@ uint64_t AArch64::getDefaultExtensions(StringRef CPU, AArch64::ArchKind AK) {
                       .ArchBaseExtensions |                                    \
                   DEFAULT_EXT)
 #include "../../include/llvm/Support/AArch64TargetParser.def"
-  .Default(AArch64::AEK_INVALID);
+      .Default(AArch64::AEK_INVALID);
 }
 
 AArch64::ArchKind AArch64::getCPUArchKind(StringRef CPU) {
@@ -56,7 +56,7 @@ AArch64::ArchKind AArch64::getCPUArchKind(StringRef CPU) {
 #define AARCH64_CPU_NAME(NAME, ID, DEFAULT_FPU, IS_DEFAULT, DEFAULT_EXT)       \
   .Case(NAME, ArchKind::ID)
 #include "../../include/llvm/Support/AArch64TargetParser.def"
-  .Default(ArchKind::INVALID);
+      .Default(ArchKind::INVALID);
 }
 
 bool AArch64::getExtensionFeatures(uint64_t Extensions,
@@ -126,7 +126,7 @@ bool AArch64::getArchFeatures(AArch64::ArchKind AK,
     Features.push_back("+v8.6a");
   if (AK == AArch64::ArchKind::ARMV8_7A)
     Features.push_back("+v8.7a");
-  if(AK == AArch64::ArchKind::ARMV8R)
+  if (AK == AArch64::ArchKind::ARMV8R)
     Features.push_back("+v8r");
 
   return AK != ArchKind::INVALID;

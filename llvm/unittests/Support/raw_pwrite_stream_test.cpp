@@ -91,4 +91,4 @@ TEST(raw_pwrite_ostreamTest, TestDevNull) {
   OS.pwrite(Test.data(), Test.size(), 0);
 }
 #endif
-}
+} // namespace

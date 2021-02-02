@@ -30,7 +30,7 @@ struct traits_sfinae_base<T, void_t<typename T::promise_type>> {
 
 template <class Ret, class... Args>
 struct coroutine_traits : public traits_sfinae_base<Ret> {};
-}
+} // namespace std::experimental
 
 struct suspend_never {
   bool await_ready() noexcept;
@@ -39,10 +39,10 @@ struct suspend_never {
 };
 
 struct MoveOnly {
-  MoveOnly() {};
-  MoveOnly(const MoveOnly&) = delete;
-  MoveOnly(MoveOnly&&) noexcept {};
-  ~MoveOnly() {};
+  MoveOnly(){};
+  MoveOnly(const MoveOnly &) = delete;
+  MoveOnly(MoveOnly &&) noexcept {};
+  ~MoveOnly(){};
 };
 
 template <typename T>
@@ -52,7 +52,7 @@ struct task {
     auto final_suspend() noexcept { return suspend_never{}; }
     auto get_return_object() { return task{}; }
     static void unhandled_exception() {}
-    void return_value(T&& value) {}
+    void return_value(T &&value) {}
   };
 };
 

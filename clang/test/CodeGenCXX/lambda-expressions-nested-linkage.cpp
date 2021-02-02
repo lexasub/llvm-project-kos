@@ -8,33 +8,33 @@ namespace non_inline_function {
 void foo() {
   auto L = [](int a) {
     return [](char b) {
-     return b;
+      return b;
     };
   };
-  L(3)('a');
+  L(3)
+  ('a');
 }
-}
+} // namespace non_inline_function
 
 namespace non_template {
-  struct L {
-    int t = ([](int a) { return [](int b) { return b; };})(2)(3);    
-  };
-  L l; 
-}
+struct L {
+  int t = ([](int a) { return [](int b) { return b; }; })(2)(3);
+};
+L l;
+} // namespace non_template
 
 namespace lambdas_in_NSDMIs_template_class {
-template<class T>
+template <class T>
 struct L {
-    T t2 = ([](int a) { return [](int b) { return b; };})(T{})(T{});    
+  T t2 = ([](int a) { return [](int b) { return b; }; })(T{})(T{});
 };
 L<int> l;
-}
+} // namespace lambdas_in_NSDMIs_template_class
 
 // CHECK-LABEL: define linkonce_odr i32 @_ZN15inline_function3fooEv
 
 // CHECK-LABEL: define linkonce_odr void @_ZNK12non_template1L1tMUliE_clEi(%class.anon
 // CHECK-LABEL: define linkonce_odr i32 @_ZZNK12non_template1L1tMUliE_clEiENKUliE_clEi(%class.anon
-
 
 // CHECK-LABEL: define linkonce_odr void @_ZNK32lambdas_in_NSDMIs_template_class1LIiEUliE_clEi(%class.anon
 // CHECK-LABEL: define linkonce_odr i32 @_ZZNK32lambdas_in_NSDMIs_template_class1LIiEUliE_clEiENKUliE_clEi(%class.anon
@@ -45,13 +45,14 @@ namespace inline_function {
 inline int foo() {
   auto L = [](int a) {
     return [](char b) {
-     return b;
+      return b;
     };
   };
-  L(3)('a');
+  L(3)
+  ('a');
 }
 int use = foo();
-}
+} // namespace inline_function
 
 #if __cplusplus >= 201402L
 // CXX14-LABEL: define internal void @"_ZZZN32lambda_capture_in_generic_lambda3fooIiEEDavENKUlT_E_clIZNS_L1fEvE3$_1EEDaS1_ENKUlvE_clEv"
@@ -62,8 +63,8 @@ template <typename T> auto foo() {
   };
 }
 static void f() {
-  foo<int>()([] { });
+  foo<int>()([] {});
 }
 void f1() { f(); }
-}
+} // namespace lambda_capture_in_generic_lambda
 #endif

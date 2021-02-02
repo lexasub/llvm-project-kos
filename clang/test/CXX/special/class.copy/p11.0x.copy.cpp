@@ -2,7 +2,7 @@
 
 struct Trivial {};
 struct NonTrivial {
-  NonTrivial(const NonTrivial&);
+  NonTrivial(const NonTrivial &);
 };
 
 // A defaulted copy constructor for a class X is defined as deleted if X has:
@@ -29,8 +29,9 @@ DeletedNTVariant2 DV2b(DV2a); // expected-error{{call to implicitly-deleted copy
 //    that is deleted or inaccessible
 struct NoAccess {
   NoAccess() = default;
+
 private:
-  NoAccess(const NoAccess&);
+  NoAccess(const NoAccess &);
 
   friend struct HasAccess;
 };
@@ -49,11 +50,11 @@ HasAccess HAa;
 HasAccess HAb(HAa);
 
 struct NonConst {
-  NonConst(NonConst&);
+  NonConst(NonConst &);
 };
 struct Ambiguity {
-  Ambiguity(const Ambiguity&);
-  Ambiguity(volatile Ambiguity&);
+  Ambiguity(const Ambiguity &);
+  Ambiguity(volatile Ambiguity &);
 };
 
 struct IsAmbiguous {
@@ -74,7 +75,7 @@ Deleted Db(Da); // expected-error{{call to implicitly-deleted copy constructor}}
 // overload resolution would fail.
 struct VolatileMember {
   volatile Trivial vm; // expected-note {{has no copy}}
-} vm1, vm2(vm1); // expected-error {{deleted}}
+} vm1, vm2(vm1);       // expected-error {{deleted}}
 
 // -- a direct or virtual base class B that cannot be copied because overload
 //    resolution results in an ambiguity or a function that is deleted or
@@ -123,7 +124,7 @@ HasNoAccessDtorBase HNADBb(HNADBa); // expected-error{{implicitly-deleted copy c
 // -- a non-static data member of rvalue reference type
 int some_int;
 struct RValue {
-  int && ri = static_cast<int&&>(some_int); // expected-note{{copy constructor of 'RValue' is implicitly deleted because field 'ri' is of rvalue reference type 'int &&'}}
+  int &&ri = static_cast<int &&>(some_int); // expected-note{{copy constructor of 'RValue' is implicitly deleted because field 'ri' is of rvalue reference type 'int &&'}}
 };
 RValue RVa;
 RValue RVb(RVa); // expected-error{{call to implicitly-deleted copy constructor}}
@@ -131,38 +132,38 @@ RValue RVb(RVa); // expected-error{{call to implicitly-deleted copy constructor}
 // FIXME: The error on the class-name is attached to the location of the
 // constructor. This is not especially clear.
 struct RValueTmp { // expected-error {{reference member 'ri' binds to a temporary}}
-  int && ri = 1; // expected-note{{copy constructor of 'RValueTmp' is implicitly deleted because field 'ri' is of rvalue reference type 'int &&'}} // expected-note {{default member init}}
+  int &&ri = 1;    // expected-note{{copy constructor of 'RValueTmp' is implicitly deleted because field 'ri' is of rvalue reference type 'int &&'}} // expected-note {{default member init}}
 };
-RValueTmp RVTa; // expected-note {{implicit default constructor for 'RValueTmp' first required here}}
+RValueTmp RVTa;       // expected-note {{implicit default constructor for 'RValueTmp' first required here}}
 RValueTmp RVTb(RVTa); // expected-error{{call to implicitly-deleted copy constructor}}
 
 namespace PR13381 {
-  struct S {
-    S(const S&);
-    S(const volatile S&) = delete; // expected-note{{deleted here}}
-  };
-  struct T {
-    volatile S s; // expected-note{{field 's' has a deleted copy constructor}}
-  };
-  T &f();
-  T t = f(); // expected-error{{call to implicitly-deleted copy constructor}}
-}
+struct S {
+  S(const S &);
+  S(const volatile S &) = delete; // expected-note{{deleted here}}
+};
+struct T {
+  volatile S s; // expected-note{{field 's' has a deleted copy constructor}}
+};
+T &f();
+T t = f(); // expected-error{{call to implicitly-deleted copy constructor}}
+} // namespace PR13381
 
 namespace Mutable {
-  struct A {
-    A(const A &);
-    A(A &) = delete; // expected-note {{deleted here}}
-  };
+struct A {
+  A(const A &);
+  A(A &) = delete; // expected-note {{deleted here}}
+};
 
-  struct B {
-    A a;
-    B(const B &);
-  };
-  B::B(const B &) = default;
+struct B {
+  A a;
+  B(const B &);
+};
+B::B(const B &) = default;
 
-  struct C {
-    mutable A a; // expected-note {{deleted because field 'a' has a deleted copy constructor}}
-    C(const C &);
-  };
-  C::C(const C &) = default; // expected-error{{would delete}}
-}
+struct C {
+  mutable A a; // expected-note {{deleted because field 'a' has a deleted copy constructor}}
+  C(const C &);
+};
+C::C(const C &) = default; // expected-error{{would delete}}
+} // namespace Mutable

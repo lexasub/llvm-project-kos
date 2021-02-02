@@ -4,7 +4,7 @@ typedef int Integer;
 struct X {
   void f() {
     int localA, localB;
-    auto lambda = [&localA, localB] (Integer x) -> Integer {
+    auto lambda = [&localA, localB](Integer x) -> Integer {
       return localA + localB + x;
     };
     auto lambda2 = [](Integer y) {};

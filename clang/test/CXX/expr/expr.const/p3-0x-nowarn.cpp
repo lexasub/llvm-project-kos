@@ -4,6 +4,7 @@
 // <rdar://problem/11121178>
 void f(int x) {
   switch (x) {
-    case 0x80000001: break;
+  case 0x80000001:
+    break;
   }
 }

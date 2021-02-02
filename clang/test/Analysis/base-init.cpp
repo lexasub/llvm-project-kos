@@ -4,6 +4,7 @@ void clang_analyzer_eval(bool);
 
 class A {
   int x;
+
 public:
   A();
   int getx() const {
@@ -16,6 +17,7 @@ A::A() : x(0) {
 
 class B : public A {
   int y;
+
 public:
   B();
 };

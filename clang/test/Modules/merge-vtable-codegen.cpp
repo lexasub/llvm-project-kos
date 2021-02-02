@@ -16,8 +16,8 @@
 // Note that order is important:
 // Module 'c' just reexports A, while module 'b' defines a method that uses a
 // virtual method of A.
-#include "Inputs/merge-vtable-codegen/c.h"
 #include "Inputs/merge-vtable-codegen/b.h"
+#include "Inputs/merge-vtable-codegen/c.h"
 
 void t() {
   b(nullptr);

@@ -11,9 +11,9 @@
 // RUN: %clang_cc1 -x objective-c++ -fmodules-cache-path=%t -fmodules -fmodule-map-file=Inputs/modular_maps/modulea-cwd.map -fmodule-map-file=Inputs/modular_maps/modulec-cwd.map -I Inputs/modular_maps %s -verify -fmodule-map-file-home-is-cwd
 // RUN: %clang_cc1 -x objective-c++ -fmodules-cache-path=%t -fmodules -fmodule-map-file=Inputs/modular_maps/modulec-cwd.map -fmodule-map-file=Inputs/modular_maps/modulea-cwd.map -I Inputs/modular_maps %s -verify -fmodule-map-file-home-is-cwd
 
-#include "common.h"
 #include "a.h"
 #include "b.h" // expected-error {{private header}}
+#include "common.h"
 @import C;
 const int v = a + c + x;
 const int val = a + b + c + x;

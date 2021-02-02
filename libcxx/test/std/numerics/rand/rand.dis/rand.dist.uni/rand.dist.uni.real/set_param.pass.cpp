@@ -18,16 +18,15 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        typedef std::uniform_real_distribution<> D;
-        typedef D::param_type P;
-        P p(3, 8);
-        D d(6, 7);
-        d.param(p);
-        assert(d.param() == p);
-    }
+int main(int, char**) {
+  {
+    typedef std::uniform_real_distribution<> D;
+    typedef D::param_type P;
+    P p(3, 8);
+    D d(6, 7);
+    d.param(p);
+    assert(d.param() == p);
+  }
 
   return 0;
 }

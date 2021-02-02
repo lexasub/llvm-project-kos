@@ -26,7 +26,7 @@ class Preprocessor;
 class SourceManager;
 
 namespace comments {
-  class FullComment;
+class FullComment;
 } // end namespace comments
 
 class RawComment {
@@ -42,40 +42,28 @@ public:
     RCK_Merged        ///< Two or more documentation comments merged together
   };
 
-  RawComment() : Kind(RCK_Invalid), IsAlmostTrailingComment(false) { }
+  RawComment() : Kind(RCK_Invalid), IsAlmostTrailingComment(false) {}
 
   RawComment(const SourceManager &SourceMgr, SourceRange SR,
              const CommentOptions &CommentOpts, bool Merged);
 
-  CommentKind getKind() const LLVM_READONLY {
-    return (CommentKind) Kind;
-  }
+  CommentKind getKind() const LLVM_READONLY { return (CommentKind)Kind; }
 
-  bool isInvalid() const LLVM_READONLY {
-    return Kind == RCK_Invalid;
-  }
+  bool isInvalid() const LLVM_READONLY { return Kind == RCK_Invalid; }
 
-  bool isMerged() const LLVM_READONLY {
-    return Kind == RCK_Merged;
-  }
+  bool isMerged() const LLVM_READONLY { return Kind == RCK_Merged; }
 
   /// Is this comment attached to any declaration?
-  bool isAttached() const LLVM_READONLY {
-    return IsAttached;
-  }
+  bool isAttached() const LLVM_READONLY { return IsAttached; }
 
-  void setAttached() {
-    IsAttached = true;
-  }
+  void setAttached() { IsAttached = true; }
 
   /// Returns true if it is a comment that should be put after a member:
   /// \code ///< stuff \endcode
   /// \code //!< stuff \endcode
   /// \code /**< stuff */ \endcode
   /// \code /*!< stuff */ \endcode
-  bool isTrailingComment() const LLVM_READONLY {
-    return IsTrailingComment;
-  }
+  bool isTrailingComment() const LLVM_READONLY { return IsTrailingComment; }
 
   /// Returns true if it is a probable typo:
   /// \code //< stuff \endcode
@@ -162,11 +150,10 @@ private:
 
   /// Constructor for AST deserialization.
   RawComment(SourceRange SR, CommentKind K, bool IsTrailingComment,
-             bool IsAlmostTrailingComment) :
-    Range(SR), RawTextValid(false), BriefTextValid(false), Kind(K),
-    IsAttached(false), IsTrailingComment(IsTrailingComment),
-    IsAlmostTrailingComment(IsAlmostTrailingComment)
-  { }
+             bool IsAlmostTrailingComment)
+      : Range(SR), RawTextValid(false), BriefTextValid(false), Kind(K),
+        IsAttached(false), IsTrailingComment(IsTrailingComment),
+        IsAlmostTrailingComment(IsAlmostTrailingComment) {}
 
   StringRef getRawTextSlow(const SourceManager &SourceMgr) const;
 

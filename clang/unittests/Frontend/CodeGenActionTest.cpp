@@ -23,11 +23,10 @@ using namespace clang::frontend;
 
 namespace {
 
-
 class NullCodeGenAction : public CodeGenAction {
 public:
   NullCodeGenAction(llvm::LLVMContext *_VMContext = nullptr)
-    : CodeGenAction(Backend_EmitMCNull, _VMContext) {}
+      : CodeGenAction(Backend_EmitMCNull, _VMContext) {}
 
   // The action does not call methods of ATContext.
   void ExecuteAction() override {
@@ -39,12 +38,10 @@ public:
   }
 };
 
-
 TEST(CodeGenTest, TestNullCodeGen) {
   auto Invocation = std::make_shared<CompilerInvocation>();
   Invocation->getPreprocessorOpts().addRemappedFile(
-      "test.cc",
-      MemoryBuffer::getMemBuffer("").release());
+      "test.cc", MemoryBuffer::getMemBuffer("").release());
   Invocation->getFrontendOpts().Inputs.push_back(
       FrontendInputFile("test.cc", Language::CXX));
   Invocation->getFrontendOpts().ProgramAction = EmitLLVM;
@@ -59,4 +56,4 @@ TEST(CodeGenTest, TestNullCodeGen) {
   EXPECT_TRUE(Success);
 }
 
-}
+} // namespace

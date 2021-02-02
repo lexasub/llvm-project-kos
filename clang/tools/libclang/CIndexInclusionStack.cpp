@@ -27,7 +27,7 @@ void getInclusions(bool IsLocal, unsigned n, CXTranslationUnit TU,
   SmallVector<CXSourceLocation, 10> InclusionStack;
   const bool HasPreamble = SM.getPreambleFileID().isValid();
 
-  for (unsigned i = 0 ; i < n ; ++i) {
+  for (unsigned i = 0; i < n; ++i) {
     bool Invalid = false;
     const SrcMgr::SLocEntry &SL =
         IsLocal ? SM.getLocalSLocEntry(i) : SM.getLoadedSLocEntry(i, &Invalid);
@@ -49,7 +49,7 @@ void getInclusions(bool IsLocal, unsigned n, CXTranslationUnit TU,
     while (L.isValid()) {
       PresumedLoc PLoc = SM.getPresumedLoc(L);
       InclusionStack.push_back(cxloc::translateSourceLocation(Ctx, L));
-      L = PLoc.isValid()? PLoc.getIncludeLoc() : SourceLocation();
+      L = PLoc.isValid() ? PLoc.getIncludeLoc() : SourceLocation();
     }
 
     // If there is a preamble, the last entry is the "inclusion" of that
@@ -74,7 +74,7 @@ void clang_getInclusions(CXTranslationUnit TU, CXInclusionVisitor CB,
   }
 
   SourceManager &SM = cxtu::getASTUnit(TU)->getSourceManager();
-  const unsigned n =  SM.local_sloc_entry_size();
+  const unsigned n = SM.local_sloc_entry_size();
 
   // In the case where all the SLocEntries are in an external source, traverse
   // those SLocEntries as well.  This is the case where we are looking

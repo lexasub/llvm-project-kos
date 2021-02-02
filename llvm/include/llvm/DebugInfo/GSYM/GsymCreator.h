@@ -146,7 +146,6 @@ class GsymCreator {
   bool Finalized = false;
 
 public:
-
   GsymCreator();
 
   /// Save a GSYM file to a stand alone file.
@@ -219,8 +218,7 @@ public:
   ///
   /// \param  Callback A callback function that will get called with each
   ///         FunctionInfo. If the callback returns false, stop iterating.
-  void forEachFunctionInfo(
-      std::function<bool(FunctionInfo &)> const &Callback);
+  void forEachFunctionInfo(std::function<bool(FunctionInfo &)> const &Callback);
 
   /// Thread safe const iteration over all function infos.
   ///
@@ -286,9 +284,7 @@ public:
   ///
   /// \param  Addr The address to use as the base address of the GSYM file
   ///              when it is saved to disk.
-  void setBaseAddress(uint64_t Addr) {
-    BaseAddress = Addr;
-  }
+  void setBaseAddress(uint64_t Addr) { BaseAddress = Addr; }
 };
 
 } // namespace gsym

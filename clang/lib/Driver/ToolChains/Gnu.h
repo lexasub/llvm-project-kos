@@ -262,8 +262,7 @@ public:
                                StringRef SysRoot);
 
     bool ScanGCCForMultilibs(const llvm::Triple &TargetTriple,
-                             const llvm::opt::ArgList &Args,
-                             StringRef Path,
+                             const llvm::opt::ArgList &Args, StringRef Path,
                              bool NeedsBiarchSuffix = false);
 
     void ScanLibDirForGCCTriple(const llvm::Triple &TargetArch,
@@ -312,8 +311,9 @@ protected:
 
   virtual std::string getMultiarchTriple(const Driver &D,
                                          const llvm::Triple &TargetTriple,
-                                         StringRef SysRoot) const
-  { return TargetTriple.str(); }
+                                         StringRef SysRoot) const {
+    return TargetTriple.str();
+  }
 
   /// \name ToolChain Implementation Helper Functions
   /// @{
@@ -327,8 +327,7 @@ protected:
   void PushPPaths(ToolChain::path_list &PPaths);
   void AddMultilibPaths(const Driver &D, const std::string &SysRoot,
                         const std::string &OSLibDir,
-                        const std::string &MultiarchTriple,
-                        path_list &Paths);
+                        const std::string &MultiarchTriple, path_list &Paths);
   void AddMultiarchPaths(const Driver &D, const std::string &SysRoot,
                          const std::string &OSLibDir, path_list &Paths);
   void AddMultilibIncludeArgs(const llvm::opt::ArgList &DriverArgs,
@@ -340,16 +339,14 @@ protected:
       const llvm::opt::ArgList &DriverArgs,
       llvm::opt::ArgStringList &CC1Args) const override;
 
-  virtual void
-  addLibCxxIncludePaths(const llvm::opt::ArgList &DriverArgs,
-                        llvm::opt::ArgStringList &CC1Args) const;
+  virtual void addLibCxxIncludePaths(const llvm::opt::ArgList &DriverArgs,
+                                     llvm::opt::ArgStringList &CC1Args) const;
   virtual void
   addLibStdCxxIncludePaths(const llvm::opt::ArgList &DriverArgs,
                            llvm::opt::ArgStringList &CC1Args) const;
 
-  bool
-  addGCCLibStdCxxIncludePaths(const llvm::opt::ArgList &DriverArgs,
-                           llvm::opt::ArgStringList &CC1Args) const;
+  bool addGCCLibStdCxxIncludePaths(const llvm::opt::ArgList &DriverArgs,
+                                   llvm::opt::ArgStringList &CC1Args) const;
 
   bool addLibStdCXXIncludePaths(Twine Base, Twine Suffix, StringRef GCCTriple,
                                 StringRef GCCMultiarchTriple,
@@ -373,9 +370,10 @@ public:
               const llvm::opt::ArgList &Args)
       : Generic_GCC(D, Triple, Args) {}
 
-  void addClangTargetOptions(const llvm::opt::ArgList &DriverArgs,
-                             llvm::opt::ArgStringList &CC1Args,
-                             Action::OffloadKind DeviceOffloadKind) const override;
+  void
+  addClangTargetOptions(const llvm::opt::ArgList &DriverArgs,
+                        llvm::opt::ArgStringList &CC1Args,
+                        Action::OffloadKind DeviceOffloadKind) const override;
 
   virtual std::string getDynamicLinker(const llvm::opt::ArgList &Args) const {
     return {};

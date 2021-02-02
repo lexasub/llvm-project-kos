@@ -45,8 +45,7 @@ public:
 
 private:
   bool lowerReturnVal(MachineIRBuilder &MIRBuilder, const Value *Val,
-                      ArrayRef<Register> VRegs,
-                      MachineInstrBuilder &Ret) const;
+                      ArrayRef<Register> VRegs, MachineInstrBuilder &Ret) const;
 
   /// Split an argument into one or more arguments that the CC lowering can cope
   /// with.

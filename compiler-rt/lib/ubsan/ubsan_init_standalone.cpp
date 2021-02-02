@@ -12,7 +12,7 @@
 
 #include "ubsan_platform.h"
 #if !CAN_SANITIZE_UB
-# error "UBSan is not supported on this platform!"
+#error "UBSan is not supported on this platform!"
 #endif
 
 #include "sanitizer_common/sanitizer_internal_defs.h"
@@ -22,7 +22,7 @@
 namespace __ubsan {
 
 class UbsanStandaloneInitializer {
- public:
+public:
   UbsanStandaloneInitializer() {
     InitAsStandalone();
     InitializeDeadlySignals();

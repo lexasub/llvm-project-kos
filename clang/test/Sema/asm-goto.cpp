@@ -4,36 +4,39 @@
 struct S {
   ~S();
   int f(int);
+
 private:
   int k;
 };
 void test1(int n) {
-// expected-error@+1 {{cannot jump from this goto statement to its label}}
+  // expected-error@+1 {{cannot jump from this goto statement to its label}}
   goto DirectJump;
-// expected-note@+1 {{jump bypasses variable with a non-trivial destructor}}
+  // expected-note@+1 {{jump bypasses variable with a non-trivial destructor}}
   S s1;
 
 DirectJump:
-// expected-error@+1 {{cannot jump from this asm goto statement to one of its possible targets}}
-  asm goto("jmp %l0;" ::::Later);
-// expected-note@+1 {{jump bypasses variable with a non-trivial destructor}}
+  // expected-error@+1 {{cannot jump from this asm goto statement to one of its possible targets}}
+  asm goto("jmp %l0;" :: ::Later);
+  // expected-note@+1 {{jump bypasses variable with a non-trivial destructor}}
   S s2;
 // expected-note@+1 {{possible target of asm goto statement}}
 Later:
   return;
 }
 
-struct T { ~T(); };
+struct T {
+  ~T();
+};
 void test2(int a) {
   if (a) {
-FOO:
-// expected-note@+2 {{jump exits scope of variable with non-trivial destructor}}
-// expected-note@+1 {{jump exits scope of variable with non-trivial destructor}}
+  FOO:
+    // expected-note@+2 {{jump exits scope of variable with non-trivial destructor}}
+    // expected-note@+1 {{jump exits scope of variable with non-trivial destructor}}
     T t;
     void *p = &&BAR;
-// expected-error@+1 {{cannot jump from this asm goto statement to one of its possible targets}}
-    asm goto("jmp %l0;" ::::BAR);
-// expected-error@+1 {{cannot jump from this indirect goto statement to one of its possible targets}}
+    // expected-error@+1 {{cannot jump from this asm goto statement to one of its possible targets}}
+    asm goto("jmp %l0;" :: ::BAR);
+    // expected-error@+1 {{cannot jump from this indirect goto statement to one of its possible targets}}
     goto *p;
     p = &&FOO;
     goto *p;
@@ -45,14 +48,13 @@ BAR:
   return;
 }
 
-int test3(int n)
-{
+int test3(int n) {
   // expected-error@+2 {{cannot jump from this asm goto statement to one of its possible targets}}
   // expected-error@+1 {{cannot jump from this asm goto statement to one of its possible targets}}
-  asm volatile goto("testl %0, %0; jne %l1;" :: "r"(n)::label_true, loop);
+  asm volatile goto("testl %0, %0; jne %l1;" ::"r"(n)::label_true, loop);
   // expected-note@+2 {{jump bypasses initialization of variable length array}}
   // expected-note@+1 {{possible target of asm goto statement}}
-  return ({int a[n];label_true: 2;});
+  return ({int a[n];label_true: 2; });
   // expected-note@+1 {{jump bypasses initialization of variable length array}}
   int b[n];
 // expected-note@+1 {{possible target of asm goto statement}}

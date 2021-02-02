@@ -32,7 +32,8 @@ namespace {
 
 class ARMInstructionSelector : public InstructionSelector {
 public:
-  ARMInstructionSelector(const ARMBaseTargetMachine &TM, const ARMSubtarget &STI,
+  ARMInstructionSelector(const ARMBaseTargetMachine &TM,
+                         const ARMSubtarget &STI,
                          const ARMRegisterBankInfo &RBI);
 
   bool select(MachineInstr &I) override;
@@ -162,7 +163,7 @@ createARMInstructionSelector(const ARMBaseTargetMachine &TM,
                              const ARMRegisterBankInfo &RBI) {
   return new ARMInstructionSelector(TM, STI, RBI);
 }
-}
+} // namespace llvm
 
 #define GET_GLOBALISEL_IMPL
 #include "ARMGenGlobalISel.inc"
@@ -811,10 +812,10 @@ bool ARMInstructionSelector::selectShift(unsigned ShiftOpc,
 }
 
 void ARMInstructionSelector::renderVFPF32Imm(
-  MachineInstrBuilder &NewInstBuilder, const MachineInstr &OldInst,
-  int OpIdx) const {
-  assert(OldInst.getOpcode() == TargetOpcode::G_FCONSTANT &&
-         OpIdx == -1 && "Expected G_FCONSTANT");
+    MachineInstrBuilder &NewInstBuilder, const MachineInstr &OldInst,
+    int OpIdx) const {
+  assert(OldInst.getOpcode() == TargetOpcode::G_FCONSTANT && OpIdx == -1 &&
+         "Expected G_FCONSTANT");
 
   APFloat FPImmValue = OldInst.getOperand(1).getFPImm()->getValueAPF();
   int FPImmEncoding = ARM_AM::getFP32Imm(FPImmValue);
@@ -824,9 +825,10 @@ void ARMInstructionSelector::renderVFPF32Imm(
 }
 
 void ARMInstructionSelector::renderVFPF64Imm(
-  MachineInstrBuilder &NewInstBuilder, const MachineInstr &OldInst, int OpIdx) const {
-  assert(OldInst.getOpcode() == TargetOpcode::G_FCONSTANT &&
-         OpIdx == -1 && "Expected G_FCONSTANT");
+    MachineInstrBuilder &NewInstBuilder, const MachineInstr &OldInst,
+    int OpIdx) const {
+  assert(OldInst.getOpcode() == TargetOpcode::G_FCONSTANT && OpIdx == -1 &&
+         "Expected G_FCONSTANT");
 
   APFloat FPImmValue = OldInst.getOperand(1).getFPImm()->getValueAPF();
   int FPImmEncoding = ARM_AM::getFP64Imm(FPImmValue);
@@ -1104,12 +1106,13 @@ bool ARMInstructionSelector::select(MachineInstr &I) {
       I.getOperand(0).setReg(ValueToStore);
 
       auto InsertBefore = I.getIterator();
-      auto AndI = BuildMI(MBB, InsertBefore, I.getDebugLoc(), TII.get(Opcodes.AND))
-        .addDef(ValueToStore)
-        .addUse(OriginalValue)
-        .addImm(1)
-        .add(predOps(ARMCC::AL))
-        .add(condCodeOp());
+      auto AndI =
+          BuildMI(MBB, InsertBefore, I.getDebugLoc(), TII.get(Opcodes.AND))
+              .addDef(ValueToStore)
+              .addUse(OriginalValue)
+              .addImm(1)
+              .add(predOps(ARMCC::AL))
+              .add(condCodeOp());
       if (!constrainSelectedInstRegOperands(*AndI, TII, TRI, RBI))
         return false;
     }

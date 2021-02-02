@@ -37,7 +37,8 @@ std::atomic<int> readers_finished(0);
 
 // Wait for the readers to start then try and acquire the write lock.
 void writer_one() {
-  while (readers_started != total_readers) {}
+  while (readers_started != total_readers) {
+  }
   bool b = m.try_lock_for(std::chrono::milliseconds(500));
   assert(b == false);
 }
@@ -55,8 +56,7 @@ void blocked_reader() {
   m.unlock_shared();
 }
 
-int main(int, char**)
-{
+int main(int, char**) {
   typedef std::chrono::steady_clock Clock;
 
   m.lock_shared();

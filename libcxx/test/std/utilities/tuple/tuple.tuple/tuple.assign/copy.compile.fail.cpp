@@ -19,14 +19,13 @@
 
 #include "MoveOnly.h"
 
-int main(int, char**)
-{
-    {
-        typedef std::tuple<MoveOnly> T;
-        T t0(MoveOnly(2));
-        T t;
-        t = t0;
-    }
+int main(int, char**) {
+  {
+    typedef std::tuple<MoveOnly> T;
+    T t0(MoveOnly(2));
+    T t;
+    t = t0;
+  }
 
   return 0;
 }

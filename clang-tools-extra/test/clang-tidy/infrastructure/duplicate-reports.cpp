@@ -9,6 +9,6 @@ void alwaysThrows() {
 void doTheJob() {
   try {
     alwaysThrows();
-  } catch (int&) {
+  } catch (int &) {
   }
 }

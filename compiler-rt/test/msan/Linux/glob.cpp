@@ -3,10 +3,10 @@
 // RUN: %clangxx_msan -O3 %s -o %t && %run %t %p 2>&1 | FileCheck %s
 
 #include <assert.h>
+#include <errno.h>
 #include <glob.h>
 #include <stdio.h>
 #include <string.h>
-#include <errno.h>
 
 int main(int argc, char *argv[]) {
   assert(argc == 2);

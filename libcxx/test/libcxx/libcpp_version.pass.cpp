@@ -17,13 +17,9 @@
 
 static const int libcpp_version =
 #include <__libcpp_version>
-;
+    ;
 
 static_assert(_LIBCPP_VERSION == libcpp_version,
               "_LIBCPP_VERSION doesn't match __libcpp_version");
 
-int main(int, char**) {
-
-
-  return 0;
-}
+int main(int, char**) { return 0; }

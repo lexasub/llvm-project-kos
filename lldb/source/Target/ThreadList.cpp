@@ -39,7 +39,7 @@ const ThreadList &ThreadList::operator=(const ThreadList &rhs) {
     // the assignment occurs
     std::lock(GetMutex(), rhs.GetMutex());
     std::lock_guard<std::recursive_mutex> guard(GetMutex(), std::adopt_lock);
-    std::lock_guard<std::recursive_mutex> rhs_guard(rhs.GetMutex(), 
+    std::lock_guard<std::recursive_mutex> rhs_guard(rhs.GetMutex(),
                                                     std::adopt_lock);
 
     m_process = rhs.m_process;
@@ -384,8 +384,8 @@ Vote ThreadList::ShouldReportStop(Event *event_ptr) {
         result = eVoteNo;
       } else {
         LLDB_LOG(log,
-          "Thread {0:x} voted {1}, but lost out because result was {2}",
-          thread_sp->GetID(), vote, result);
+                 "Thread {0:x} voted {1}, but lost out because result was {2}",
+                 thread_sp->GetID(), vote, result);
       }
       break;
     }

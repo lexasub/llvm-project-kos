@@ -21,24 +21,15 @@
 #include "../../../test_compare.h"
 #include "min_allocator.h"
 
-int main(int, char**)
-{
-    {
+int main(int, char**) {
+  {
     typedef std::pair<const int, double> V;
-    V ar[] =
-    {
-        V(1, 1),
-        V(1, 1.5),
-        V(1, 2),
-        V(2, 1),
-        V(2, 1.5),
-        V(2, 2),
-        V(3, 1),
-        V(3, 1.5),
-        V(3, 2),
+    V ar[] = {
+        V(1, 1), V(1, 1.5), V(1, 2),   V(2, 1), V(2, 1.5),
+        V(2, 2), V(3, 1),   V(3, 1.5), V(3, 2),
     };
     typedef test_compare<std::less<int> > C;
-    std::multimap<int, double, C> m(ar, ar+sizeof(ar)/sizeof(ar[0]), C(5));
+    std::multimap<int, double, C> m(ar, ar + sizeof(ar) / sizeof(ar[0]), C(5));
     assert(m.key_comp() == C(5));
     assert(m.size() == 9);
     assert(distance(m.begin(), m.end()) == 9);
@@ -51,24 +42,17 @@ int main(int, char**)
     assert(*next(m.begin(), 6) == V(3, 1));
     assert(*next(m.begin(), 7) == V(3, 1.5));
     assert(*next(m.begin(), 8) == V(3, 2));
-    }
+  }
 #if TEST_STD_VER >= 11
-    {
+  {
     typedef std::pair<const int, double> V;
-    V ar[] =
-    {
-        V(1, 1),
-        V(1, 1.5),
-        V(1, 2),
-        V(2, 1),
-        V(2, 1.5),
-        V(2, 2),
-        V(3, 1),
-        V(3, 1.5),
-        V(3, 2),
+    V ar[] = {
+        V(1, 1), V(1, 1.5), V(1, 2),   V(2, 1), V(2, 1.5),
+        V(2, 2), V(3, 1),   V(3, 1.5), V(3, 2),
     };
     typedef test_compare<std::less<int> > C;
-    std::multimap<int, double, C, min_allocator<V>> m(ar, ar+sizeof(ar)/sizeof(ar[0]), C(5));
+    std::multimap<int, double, C, min_allocator<V> > m(
+        ar, ar + sizeof(ar) / sizeof(ar[0]), C(5));
     assert(m.key_comp() == C(5));
     assert(m.size() == 9);
     assert(distance(m.begin(), m.end()) == 9);
@@ -81,7 +65,7 @@ int main(int, char**)
     assert(*next(m.begin(), 6) == V(3, 1));
     assert(*next(m.begin(), 7) == V(3, 1.5));
     assert(*next(m.begin(), 8) == V(3, 2));
-    }
+  }
 #endif
 
   return 0;

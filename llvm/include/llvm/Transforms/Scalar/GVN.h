@@ -60,7 +60,7 @@ struct AvailableValue;
 struct AvailableValueInBlock;
 class GVNLegacyPass;
 
-} // end namespace gvn
+} // namespace LLVM_LIBRARY_VISIBILITY
 
 /// A set of parameters to control various transforms performed by GVN pass.
 //  Each of the optional boolean parameters can be set to:

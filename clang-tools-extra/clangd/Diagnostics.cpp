@@ -542,7 +542,7 @@ std::vector<Diag> StoreDiags::take(const clang::tidy::ClangTidyContext *Tidy) {
   // duplicated messages due to various reasons (e.g. the check doesn't handle
   // template instantiations well; clang-tidy alias checks).
   std::set<std::pair<Range, std::string>> SeenDiags;
-  llvm::erase_if(Output, [&](const Diag& D) {
+  llvm::erase_if(Output, [&](const Diag &D) {
     return !SeenDiags.emplace(D.Range, D.Message).second;
   });
   return std::move(Output);

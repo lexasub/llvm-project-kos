@@ -102,7 +102,7 @@ int foo(int x, int y, int z) {
   // COLUMNS: call i32 @{{.*}}noargs{{.*}}, !dbg ![[DNOARGS:[0-9]+]]
   // COLUMNS: call i32 @{{.*}}onearg{{.*}}, !dbg ![[DONEARG:[0-9]+]]
   // COLUMNS: store i32 %{{[^,]+}}, i32* %d,{{.*}} !dbg ![[DECLD:[0-9]+]]
-  
+
   d = onearg(noargs());
   // NONEST: call i32 @{{.*}}noargs{{.*}}, !dbg ![[SETD:[0-9]+]]
   // NONEST: call i32 @{{.*}}onearg{{.*}}, !dbg ![[SETD]]
@@ -114,7 +114,8 @@ int foo(int x, int y, int z) {
   // COLUMNS: call i32 @{{.*}}onearg{{.*}}, !dbg ![[SETDONEARG:[0-9]+]]
   // COLUMNS: store i32 %{{[^,]+}}, i32* %d,{{.*}} !dbg ![[SETD:[0-9]+]]
 
-  for (const auto x : range(noargs())) noargs1();
+  for (const auto x : range(noargs()))
+    noargs1();
   // NONEST: call i32 @{{.*}}noargs{{.*}}, !dbg ![[RANGEFOR:[0-9]+]]
   // NONEST: call {{.+}} @{{.*}}range{{.*}}, !dbg ![[RANGEFOR]]
   // NONEST: call i32 @{{.*}}noargs1{{.*}}, !dbg ![[RANGEFOR_BODY:[0-9]+]]

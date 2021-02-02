@@ -270,13 +270,12 @@ public:
   std::vector<BitTestBlock> BitTestCases;
 
   void findJumpTables(CaseClusterVector &Clusters, const SwitchInst *SI,
-                      MachineBasicBlock *DefaultMBB,
-                      ProfileSummaryInfo *PSI, BlockFrequencyInfo *BFI);
+                      MachineBasicBlock *DefaultMBB, ProfileSummaryInfo *PSI,
+                      BlockFrequencyInfo *BFI);
 
   bool buildJumpTable(const CaseClusterVector &Clusters, unsigned First,
                       unsigned Last, const SwitchInst *SI,
                       MachineBasicBlock *DefaultMBB, CaseCluster &JTCluster);
-
 
   void findBitTestClusters(CaseClusterVector &Clusters, const SwitchInst *SI);
 

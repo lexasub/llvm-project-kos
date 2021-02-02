@@ -5,17 +5,17 @@
 // The mem_to_shadow's part might need rework
 // XFAIL: freebsd
 
+#include "test.h"
 #include <assert.h>
 #include <stdint.h>
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
-#include "test.h"
+#include <string.h>
 
 const char *mem_to_shadow(const char *p) {
 #if defined(__x86_64__)
   return (char *)((uintptr_t)p ^ 0x500000000000ULL);
-#elif defined (__mips64)
+#elif defined(__mips64)
   return (char *)((uintptr_t)p ^ 0x8000000000ULL);
 #elif defined(__powerpc64__)
 #define LINEARIZE_MEM(mem) \

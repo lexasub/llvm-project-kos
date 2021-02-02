@@ -10,8 +10,9 @@
 //
 //===----------------------------------------------------------------------===//
 #include "tsan_clock.h"
-#include "tsan_rtl.h"
+
 #include "sanitizer_common/sanitizer_placement_new.h"
+#include "tsan_rtl.h"
 
 // SyncClock and ThreadClock implement vector clocks for sync variables
 // (mutexes, atomic variables, file descriptors, etc) and threads, respectively.
@@ -83,9 +84,9 @@
 // We don't have ThreadState in these methods, so this is an ugly hack that
 // works only in C++.
 #if !SANITIZER_GO
-# define CPP_STAT_INC(typ) StatInc(cur_thread(), typ)
+#define CPP_STAT_INC(typ) StatInc(cur_thread(), typ)
 #else
-# define CPP_STAT_INC(typ) (void)0
+#define CPP_STAT_INC(typ) (void)0
 #endif
 
 namespace __tsan {
@@ -113,13 +114,14 @@ static void UnrefClockBlock(ClockCache *c, u32 idx, uptr blocks) {
 }
 
 ThreadClock::ThreadClock(unsigned tid, unsigned reused)
-    : tid_(tid)
-    , reused_(reused + 1)  // 0 has special meaning
-    , last_acquire_()
-    , global_acquire_()
-    , cached_idx_()
-    , cached_size_()
-    , cached_blocks_() {
+    : tid_(tid),
+      reused_(reused + 1)  // 0 has special meaning
+      ,
+      last_acquire_(),
+      global_acquire_(),
+      cached_idx_(),
+      cached_size_(),
+      cached_blocks_() {
   CHECK_LT(tid, kMaxTidInClock);
   CHECK_EQ(reused_, ((u64)reused_ << kClkBits) >> kClkBits);
   nclk_ = tid_ + 1;
@@ -197,7 +199,7 @@ void ThreadClock::releaseStoreAcquire(ClockCache *c, SyncClock *sc) {
     return;
   }
 
-  nclk_ = max(nclk_, (uptr) sc->size_);
+  nclk_ = max(nclk_, (uptr)sc->size_);
 
   // Check if we need to resize sc.
   if (sc->size_ < nclk_)
@@ -318,8 +320,7 @@ void ThreadClock::ReleaseStore(ClockCache *c, SyncClock *dst) {
     dst->Resize(c, nclk_);
 
   if (dst->release_store_tid_ == tid_ &&
-      dst->release_store_reused_ == reused_ &&
-      !HasAcquiredAfterRelease(dst)) {
+      dst->release_store_reused_ == reused_ && !HasAcquiredAfterRelease(dst)) {
     CPP_STAT_INC(StatClockStoreFast);
     UpdateCurrentThread(c, dst);
     return;
@@ -336,8 +337,7 @@ void ThreadClock::ReleaseStore(ClockCache *c, SyncClock *dst) {
     ce.reused = 0;
     i++;
   }
-  for (uptr i = 0; i < kDirtyTids; i++)
-    dst->dirty_[i].tid = kInvalidTid;
+  for (uptr i = 0; i < kDirtyTids; i++) dst->dirty_[i].tid = kInvalidTid;
   dst->release_store_tid_ = tid_;
   dst->release_store_reused_ = reused_;
   // Rememeber that we don't need to acquire it in future.
@@ -382,8 +382,7 @@ void ThreadClock::UpdateCurrentThread(ClockCache *c, SyncClock *dst) const {
   dst->Unshare(c);
   CPP_STAT_INC(StatClockReleaseSlow);
   dst->elem(tid_).epoch = clk_[tid_];
-  for (uptr i = 0; i < dst->size_; i++)
-    dst->elem(i).reused = 0;
+  for (uptr i = 0; i < dst->size_; i++) dst->elem(i).reused = 0;
   dst->FlushDirty();
 }
 
@@ -406,7 +405,7 @@ bool ThreadClock::IsAlreadyAcquired(const SyncClock *src) const {
 bool ThreadClock::HasAcquiredAfterRelease(const SyncClock *dst) const {
   const u64 my_epoch = dst->elem(tid_).epoch;
   return my_epoch <= last_acquire_ ||
-      my_epoch <= atomic_load_relaxed(&global_acquire_);
+         my_epoch <= atomic_load_relaxed(&global_acquire_);
 }
 
 // Sets a single element in the vector clock.
@@ -421,16 +420,13 @@ void ThreadClock::set(ClockCache *c, unsigned tid, u64 v) {
   ResetCached(c);
 }
 
-void ThreadClock::DebugDump(int(*printf)(const char *s, ...)) {
+void ThreadClock::DebugDump(int (*printf)(const char *s, ...)) {
   printf("clock=[");
-  for (uptr i = 0; i < nclk_; i++)
-    printf("%s%llu", i == 0 ? "" : ",", clk_[i]);
+  for (uptr i = 0; i < nclk_; i++) printf("%s%llu", i == 0 ? "" : ",", clk_[i]);
   printf("] tid=%u/%u last_acq=%llu", tid_, reused_, last_acquire_);
 }
 
-SyncClock::SyncClock() {
-  ResetImpl();
-}
+SyncClock::SyncClock() { ResetImpl(); }
 
 SyncClock::~SyncClock() {
   // Reset must be called before dtor.
@@ -453,8 +449,7 @@ void SyncClock::ResetImpl() {
   blocks_ = 0;
   release_store_tid_ = kInvalidTid;
   release_store_reused_ = 0;
-  for (uptr i = 0; i < kDirtyTids; i++)
-    dirty_[i].tid = kInvalidTid;
+  for (uptr i = 0; i < kDirtyTids; i++) dirty_[i].tid = kInvalidTid;
 }
 
 void SyncClock::Resize(ClockCache *c, uptr nclk) {
@@ -534,8 +529,7 @@ void SyncClock::Unshare(ClockCache *c) {
   old.blocks_ = blocks_;
   old.release_store_tid_ = release_store_tid_;
   old.release_store_reused_ = release_store_reused_;
-  for (unsigned i = 0; i < kDirtyTids; i++)
-    old.dirty_[i] = dirty_[i];
+  for (unsigned i = 0; i < kDirtyTids; i++) old.dirty_[i] = dirty_[i];
   // Then, clear current object.
   ResetImpl();
   // Allocate brand new clock in the current object.
@@ -548,8 +542,7 @@ void SyncClock::Unshare(ClockCache *c) {
   }
   release_store_tid_ = old.release_store_tid_;
   release_store_reused_ = old.release_store_reused_;
-  for (unsigned i = 0; i < kDirtyTids; i++)
-    dirty_[i] = old.dirty_[i];
+  for (unsigned i = 0; i < kDirtyTids; i++) dirty_[i] = old.dirty_[i];
   // Drop reference to old and delete if necessary.
   old.Reset(c);
 }
@@ -613,11 +606,9 @@ u64 SyncClock::get(unsigned tid) const {
 }
 
 // Used only by Iter test.
-u64 SyncClock::get_clean(unsigned tid) const {
-  return elem(tid).epoch;
-}
+u64 SyncClock::get_clean(unsigned tid) const { return elem(tid).epoch; }
 
-void SyncClock::DebugDump(int(*printf)(const char *s, ...)) {
+void SyncClock::DebugDump(int (*printf)(const char *s, ...)) {
   printf("clock=[");
   for (uptr i = 0; i < size_; i++)
     printf("%s%llu", i == 0 ? "" : ",", elem(i).epoch);
@@ -625,9 +616,8 @@ void SyncClock::DebugDump(int(*printf)(const char *s, ...)) {
   for (uptr i = 0; i < size_; i++)
     printf("%s%llu", i == 0 ? "" : ",", elem(i).reused);
   printf("] release_store_tid=%d/%d dirty_tids=%d[%llu]/%d[%llu]",
-      release_store_tid_, release_store_reused_,
-      dirty_[0].tid, dirty_[0].epoch,
-      dirty_[1].tid, dirty_[1].epoch);
+         release_store_tid_, release_store_reused_, dirty_[0].tid,
+         dirty_[0].epoch, dirty_[1].tid, dirty_[1].epoch);
 }
 
 void SyncClock::Iter::Next() {
@@ -639,7 +629,7 @@ void SyncClock::Iter::Next() {
     ClockBlock *cb = ctx->clock_alloc.Map(idx);
     pos_ = &cb->clock[0];
     end_ = pos_ + min(parent_->size_ - block_ * ClockBlock::kClockCount,
-        ClockBlock::kClockCount);
+                      ClockBlock::kClockCount);
     return;
   }
   if (block_ == parent_->blocks_ &&
@@ -647,7 +637,7 @@ void SyncClock::Iter::Next() {
     // Iterate over elements in the first level block.
     pos_ = &parent_->tab_->clock[0];
     end_ = pos_ + min(parent_->size_ - block_ * ClockBlock::kClockCount,
-        ClockBlock::kClockCount);
+                      ClockBlock::kClockCount);
     return;
   }
   parent_ = nullptr;  // denotes end

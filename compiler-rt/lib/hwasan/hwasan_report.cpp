@@ -127,9 +127,9 @@ class SavedStackAllocations {
   uptr rb_;
 };
 
-class Decorator: public __sanitizer::SanitizerCommonDecorator {
+class Decorator : public __sanitizer::SanitizerCommonDecorator {
  public:
-  Decorator() : SanitizerCommonDecorator() { }
+  Decorator() : SanitizerCommonDecorator() {}
   const char *Access() { return Blue(); }
   const char *Allocation() const { return Magenta(); }
   const char *Origin() const { return Magenta(); }
@@ -142,7 +142,8 @@ static bool FindHeapAllocation(HeapAllocationsRingBuffer *rb, uptr tagged_addr,
                                HeapAllocationRecord *har, uptr *ring_index,
                                uptr *num_matching_addrs,
                                uptr *num_matching_addrs_4b) {
-  if (!rb) return false;
+  if (!rb)
+    return false;
 
   *num_matching_addrs = 0;
   *num_matching_addrs_4b = 0;
@@ -166,9 +167,7 @@ static bool FindHeapAllocation(HeapAllocationsRingBuffer *rb, uptr tagged_addr,
 
     // Measure the number of heap ring buffer entries that would have matched
     // if we only had 4 tag bits, which is the case for MTE.
-    auto untag_4b = [](uptr p) {
-      return p & ((1ULL << 60) - 1);
-    };
+    auto untag_4b = [](uptr p) { return p & ((1ULL << 60) - 1); };
     if (untag_4b(h.tagged_addr) <= untag_4b(tagged_addr) &&
         untag_4b(h.tagged_addr) + h.requested_size > untag_4b(tagged_addr)) {
       ++*num_matching_addrs_4b;
@@ -307,14 +306,13 @@ void PrintAddressDescription(
   HwasanChunkView chunk = FindHeapChunkByAddress(untagged_addr);
   if (uptr beg = chunk.Beg()) {
     uptr size = chunk.ActualSize();
-    Printf("%s[%p,%p) is a %s %s heap chunk; "
-           "size: %zd offset: %zd\n%s",
-           d.Location(),
-           beg, beg + size,
-           chunk.FromSmallHeap() ? "small" : "large",
-           chunk.IsAllocated() ? "allocated" : "unallocated",
-           size, untagged_addr - beg,
-           d.Default());
+    Printf(
+        "%s[%p,%p) is a %s %s heap chunk; "
+        "size: %zd offset: %zd\n%s",
+        d.Location(), beg, beg + size,
+        chunk.FromSmallHeap() ? "small" : "large",
+        chunk.IsAllocated() ? "allocated" : "unallocated", size,
+        untagged_addr - beg, d.Default());
   }
 
   // Check if this looks like a heap buffer overflow by scanning
@@ -322,7 +320,7 @@ void PrintAddressDescription(
   // object with a different memory tag. If that tag matches addr_tag,
   // check the allocator if it has a live chunk there.
   tag_t addr_tag = GetTagFromPointer(tagged_addr);
-  tag_t *tag_ptr = reinterpret_cast<tag_t*>(MemToShadow(untagged_addr));
+  tag_t *tag_ptr = reinterpret_cast<tag_t *>(MemToShadow(untagged_addr));
   tag_t *candidate = nullptr, *left = tag_ptr, *right = tag_ptr;
   for (int i = 0; i < 1000; i++) {
     if (TagsEqual(addr_tag, left)) {
@@ -476,7 +474,8 @@ static void PrintTagInfoAroundAddr(tag_t *tag_ptr, uptr num_rows,
 static void PrintTagsAroundAddr(tag_t *tag_ptr) {
   Printf(
       "Memory tags around the buggy address (one tag corresponds to %zd "
-      "bytes):\n", kShadowAlignment);
+      "bytes):\n",
+      kShadowAlignment);
   PrintTagInfoAroundAddr(tag_ptr, 17, [](InternalScopedString &s, tag_t *tag) {
     s.append("%02x", *tag);
   });
@@ -506,7 +505,7 @@ void ReportInvalidFree(StackTrace *stack, uptr tagged_addr) {
 
   uptr untagged_addr = UntagAddr(tagged_addr);
   tag_t ptr_tag = GetTagFromPointer(tagged_addr);
-  tag_t *tag_ptr = reinterpret_cast<tag_t*>(MemToShadow(untagged_addr));
+  tag_t *tag_ptr = reinterpret_cast<tag_t *>(MemToShadow(untagged_addr));
   tag_t mem_tag = *tag_ptr;
   Decorator d;
   Printf("%s", d.Error());
@@ -550,37 +549,34 @@ void ReportTailOverwritten(StackTrace *stack, uptr tagged_addr, uptr orig_size,
   InternalScopedString s(GetPageSizeCached() * 8);
   CHECK_GT(tail_size, 0U);
   CHECK_LT(tail_size, kShadowAlignment);
-  u8 *tail = reinterpret_cast<u8*>(untagged_addr + orig_size);
+  u8 *tail = reinterpret_cast<u8 *>(untagged_addr + orig_size);
   s.append("Tail contains: ");
-  for (uptr i = 0; i < kShadowAlignment - tail_size; i++)
-    s.append(".. ");
-  for (uptr i = 0; i < tail_size; i++)
-    s.append("%02x ", tail[i]);
+  for (uptr i = 0; i < kShadowAlignment - tail_size; i++) s.append(".. ");
+  for (uptr i = 0; i < tail_size; i++) s.append("%02x ", tail[i]);
   s.append("\n");
   s.append("Expected:      ");
-  for (uptr i = 0; i < kShadowAlignment - tail_size; i++)
-    s.append(".. ");
-  for (uptr i = 0; i < tail_size; i++)
-    s.append("%02x ", expected[i]);
+  for (uptr i = 0; i < kShadowAlignment - tail_size; i++) s.append(".. ");
+  for (uptr i = 0; i < tail_size; i++) s.append("%02x ", expected[i]);
   s.append("\n");
   s.append("               ");
-  for (uptr i = 0; i < kShadowAlignment - tail_size; i++)
-    s.append("   ");
+  for (uptr i = 0; i < kShadowAlignment - tail_size; i++) s.append("   ");
   for (uptr i = 0; i < tail_size; i++)
     s.append("%s ", expected[i] != tail[i] ? "^^" : "  ");
 
-  s.append("\nThis error occurs when a buffer overflow overwrites memory\n"
-    "to the right of a heap object, but within the %zd-byte granule, e.g.\n"
-    "   char *x = new char[20];\n"
-    "   x[25] = 42;\n"
-    "%s does not detect such bugs in uninstrumented code at the time of write,"
-    "\nbut can detect them at the time of free/delete.\n"
-    "To disable this feature set HWASAN_OPTIONS=free_checks_tail_magic=0\n",
-    kShadowAlignment, SanitizerToolName);
+  s.append(
+      "\nThis error occurs when a buffer overflow overwrites memory\n"
+      "to the right of a heap object, but within the %zd-byte granule, e.g.\n"
+      "   char *x = new char[20];\n"
+      "   x[25] = 42;\n"
+      "%s does not detect such bugs in uninstrumented code at the time of "
+      "write,"
+      "\nbut can detect them at the time of free/delete.\n"
+      "To disable this feature set HWASAN_OPTIONS=free_checks_tail_magic=0\n",
+      kShadowAlignment, SanitizerToolName);
   Printf("%s", s.data());
   GetCurrentThread()->Announce();
 
-  tag_t *tag_ptr = reinterpret_cast<tag_t*>(MemToShadow(untagged_addr));
+  tag_t *tag_ptr = reinterpret_cast<tag_t *>(MemToShadow(untagged_addr));
   PrintTagsAroundAddr(tag_ptr);
 
   ReportErrorSummary(bug_type, stack);
@@ -643,22 +639,22 @@ void ReportRegisters(uptr *frame, uptr pc) {
   // reduce the amount of logcat error messages printed. Each Printf() will
   // result in a new logcat line, irrespective of whether a newline is present,
   // and so we wish to reduce the number of Printf() calls we have to make.
-  Printf("    x0  %016llx  x1  %016llx  x2  %016llx  x3  %016llx\n",
-       frame[0], frame[1], frame[2], frame[3]);
-  Printf("    x4  %016llx  x5  %016llx  x6  %016llx  x7  %016llx\n",
-       frame[4], frame[5], frame[6], frame[7]);
-  Printf("    x8  %016llx  x9  %016llx  x10 %016llx  x11 %016llx\n",
-       frame[8], frame[9], frame[10], frame[11]);
-  Printf("    x12 %016llx  x13 %016llx  x14 %016llx  x15 %016llx\n",
-       frame[12], frame[13], frame[14], frame[15]);
-  Printf("    x16 %016llx  x17 %016llx  x18 %016llx  x19 %016llx\n",
-       frame[16], frame[17], frame[18], frame[19]);
-  Printf("    x20 %016llx  x21 %016llx  x22 %016llx  x23 %016llx\n",
-       frame[20], frame[21], frame[22], frame[23]);
-  Printf("    x24 %016llx  x25 %016llx  x26 %016llx  x27 %016llx\n",
-       frame[24], frame[25], frame[26], frame[27]);
-  Printf("    x28 %016llx  x29 %016llx  x30 %016llx\n",
-       frame[28], frame[29], frame[30]);
+  Printf("    x0  %016llx  x1  %016llx  x2  %016llx  x3  %016llx\n", frame[0],
+         frame[1], frame[2], frame[3]);
+  Printf("    x4  %016llx  x5  %016llx  x6  %016llx  x7  %016llx\n", frame[4],
+         frame[5], frame[6], frame[7]);
+  Printf("    x8  %016llx  x9  %016llx  x10 %016llx  x11 %016llx\n", frame[8],
+         frame[9], frame[10], frame[11]);
+  Printf("    x12 %016llx  x13 %016llx  x14 %016llx  x15 %016llx\n", frame[12],
+         frame[13], frame[14], frame[15]);
+  Printf("    x16 %016llx  x17 %016llx  x18 %016llx  x19 %016llx\n", frame[16],
+         frame[17], frame[18], frame[19]);
+  Printf("    x20 %016llx  x21 %016llx  x22 %016llx  x23 %016llx\n", frame[20],
+         frame[21], frame[22], frame[23]);
+  Printf("    x24 %016llx  x25 %016llx  x26 %016llx  x27 %016llx\n", frame[24],
+         frame[25], frame[26], frame[27]);
+  Printf("    x28 %016llx  x29 %016llx  x30 %016llx\n", frame[28], frame[29],
+         frame[30]);
 }
 
 }  // namespace __hwasan

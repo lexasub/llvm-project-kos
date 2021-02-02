@@ -108,9 +108,8 @@ bool EditedSource::canInsertInOffset(SourceLocation OrigLoc, FileOffset Offs) {
   return true;
 }
 
-bool EditedSource::commitInsert(SourceLocation OrigLoc,
-                                FileOffset Offs, StringRef text,
-                                bool beforePreviousInsertions) {
+bool EditedSource::commitInsert(SourceLocation OrigLoc, FileOffset Offs,
+                                StringRef text, bool beforePreviousInsertions) {
   if (!canInsertInOffset(OrigLoc, Offs))
     return false;
   if (text.empty())
@@ -139,9 +138,10 @@ bool EditedSource::commitInsert(SourceLocation OrigLoc,
 }
 
 bool EditedSource::commitInsertFromRange(SourceLocation OrigLoc,
-                                   FileOffset Offs,
-                                   FileOffset InsertFromRangeOffs, unsigned Len,
-                                   bool beforePreviousInsertions) {
+                                         FileOffset Offs,
+                                         FileOffset InsertFromRangeOffs,
+                                         unsigned Len,
+                                         bool beforePreviousInsertions) {
   if (Len == 0)
     return true;
 
@@ -196,8 +196,8 @@ bool EditedSource::commitInsertFromRange(SourceLocation OrigLoc,
   return commitInsert(OrigLoc, Offs, StrVec, beforePreviousInsertions);
 }
 
-void EditedSource::commitRemove(SourceLocation OrigLoc,
-                                FileOffset BeginOffs, unsigned Len) {
+void EditedSource::commitRemove(SourceLocation OrigLoc, FileOffset BeginOffs,
+                                unsigned Len) {
   if (Len == 0)
     return;
 
@@ -219,8 +219,8 @@ void EditedSource::commitRemove(SourceLocation OrigLoc,
   FileEdit *TopFA = nullptr;
 
   if (I == FileEdits.end()) {
-    FileEditsTy::iterator
-      NewI = FileEdits.insert(I, std::make_pair(BeginOffs, FileEdit()));
+    FileEditsTy::iterator NewI =
+        FileEdits.insert(I, std::make_pair(BeginOffs, FileEdit()));
     NewI->second.RemoveLen = Len;
     return;
   }
@@ -229,8 +229,8 @@ void EditedSource::commitRemove(SourceLocation OrigLoc,
   FileOffset B = I->first;
   FileOffset E = B.getWithOffset(FA.RemoveLen);
   if (BeginOffs < B) {
-    FileEditsTy::iterator
-      NewI = FileEdits.insert(I, std::make_pair(BeginOffs, FileEdit()));
+    FileEditsTy::iterator NewI =
+        FileEdits.insert(I, std::make_pair(BeginOffs, FileEdit()));
     TopBegin = BeginOffs;
     TopEnd = EndOffs;
     TopFA = &NewI->second;
@@ -284,22 +284,20 @@ bool EditedSource::commit(const Commit &commit) {
       Editor.startingCommit();
     }
 
-    ~CommitRAII() {
-      Editor.finishedCommit();
-    }
+    ~CommitRAII() { Editor.finishedCommit(); }
   } CommitRAII(*this);
 
-  for (edit::Commit::edit_iterator
-         I = commit.edit_begin(), E = commit.edit_end(); I != E; ++I) {
+  for (edit::Commit::edit_iterator I = commit.edit_begin(),
+                                   E = commit.edit_end();
+       I != E; ++I) {
     const edit::Commit::Edit &edit = *I;
     switch (edit.Kind) {
     case edit::Commit::Act_Insert:
       commitInsert(edit.OrigLoc, edit.Offset, edit.Text, edit.BeforePrev);
       break;
     case edit::Commit::Act_InsertFromRange:
-      commitInsertFromRange(edit.OrigLoc, edit.Offset,
-                            edit.InsertFromRangeOffs, edit.Length,
-                            edit.BeforePrev);
+      commitInsertFromRange(edit.OrigLoc, edit.Offset, edit.InsertFromRangeOffs,
+                            edit.Length, edit.BeforePrev);
       break;
     case edit::Commit::Act_Remove:
       commitRemove(edit.OrigLoc, edit.Offset, edit.Length);
@@ -335,8 +333,8 @@ static bool canRemoveWhitespace(char left, char beforeWSpace, char right,
 /// -Remove any trailing whitespace if possible.
 /// -Insert a space if removing the range is going to mess up the source tokens.
 static void adjustRemoval(const SourceManager &SM, const LangOptions &LangOpts,
-                          SourceLocation Loc, FileOffset offs,
-                          unsigned &len, StringRef &text) {
+                          SourceLocation Loc, FileOffset offs, unsigned &len,
+                          StringRef &text) {
   assert(len && text.empty());
   SourceLocation BeginTokLoc = Lexer::GetBeginningOfToken(Loc, SM, LangOpts);
   if (BeginTokLoc != Loc)
@@ -367,21 +365,21 @@ static void adjustRemoval(const SourceManager &SM, const LangOptions &LangOpts,
   if (buffer[end] == ' ') {
     assert((end + 1 != buffer.size() || buffer.data()[end + 1] == 0) &&
            "buffer not zero-terminated!");
-    if (canRemoveWhitespace(/*left=*/buffer[begin-1],
-                            /*beforeWSpace=*/buffer[end-1],
+    if (canRemoveWhitespace(/*left=*/buffer[begin - 1],
+                            /*beforeWSpace=*/buffer[end - 1],
                             /*right=*/buffer.data()[end + 1], // zero-terminated
                             LangOpts))
       ++len;
     return;
   }
 
-  if (!canBeJoined(buffer[begin-1], buffer[end], LangOpts))
+  if (!canBeJoined(buffer[begin - 1], buffer[end], LangOpts))
     text = " ";
 }
 
-static void applyRewrite(EditsReceiver &receiver,
-                         StringRef text, FileOffset offs, unsigned len,
-                         const SourceManager &SM, const LangOptions &LangOpts,
+static void applyRewrite(EditsReceiver &receiver, StringRef text,
+                         FileOffset offs, unsigned len, const SourceManager &SM,
+                         const LangOptions &LangOpts,
                          bool shouldAdjustRemovals) {
   assert(offs.getFID().isValid());
   SourceLocation Loc = SM.getLocForStartOfFile(offs.getFID());
@@ -391,8 +389,8 @@ static void applyRewrite(EditsReceiver &receiver,
   if (text.empty() && shouldAdjustRemovals)
     adjustRemoval(SM, LangOpts, Loc, offs, len, text);
 
-  CharSourceRange range = CharSourceRange::getCharRange(Loc,
-                                                     Loc.getLocWithOffset(len));
+  CharSourceRange range =
+      CharSourceRange::getCharRange(Loc, Loc.getLocWithOffset(len));
 
   if (text.empty()) {
     assert(len);
@@ -458,8 +456,8 @@ StringRef EditedSource::getSourceText(FileOffset BeginOffs, FileOffset EndOffs,
   SourceLocation BLoc = SourceMgr.getLocForStartOfFile(BeginOffs.getFID());
   BLoc = BLoc.getLocWithOffset(BeginOffs.getOffset());
   assert(BLoc.isFileID());
-  SourceLocation
-    ELoc = BLoc.getLocWithOffset(EndOffs.getOffset() - BeginOffs.getOffset());
+  SourceLocation ELoc =
+      BLoc.getLocWithOffset(EndOffs.getOffset() - BeginOffs.getOffset());
   return Lexer::getSourceText(CharSourceRange::getCharRange(BLoc, ELoc),
                               SourceMgr, LangOpts, &Invalid);
 }

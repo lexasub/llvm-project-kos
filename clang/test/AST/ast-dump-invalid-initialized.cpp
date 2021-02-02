@@ -1,6 +1,8 @@
 // RUN: not %clang_cc1 -triple x86_64-unknown-unknown -Wno-unused-value -fcxx-exceptions -std=gnu++17 -ast-dump %s | FileCheck -strict-whitespace %s
 
-struct A { A(int, int) {} };
+struct A {
+  A(int, int) {}
+};
 class ForwardDecl;
 
 void test() {
@@ -13,9 +15,8 @@ void test() {
   // CHECK: `-VarDecl {{.*}} a3 'A'
   A a3 = garbage();
 
-
   // CHECK: `-VarDecl {{.*}} invalid b1 'const A &'
-  const A& b1;
+  const A &b1;
   // CHECK: `-VarDecl {{.*}} invalid b2 'ForwardDecl'
   ForwardDecl b2;
   // CHECK: `-VarDecl {{.*}} invalid b3 'auto'

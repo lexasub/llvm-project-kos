@@ -52,53 +52,55 @@ struct CC {
   float B;
 
   int foo(T arg) {
-    // Region 00
-    // CK25-DAG: call i32 @__tgt_target_mapper(%struct.ident_t* @{{.+}}, i64 {{[^,]+}}, i8* {{[^,]+}}, i32 1, i8** [[GEPBP:%.+]], i8** [[GEPP:%.+]], {{.+}}getelementptr {{.+}}[1 x i{{.+}}]* [[SIZE00]]{{.+}}, {{.+}}getelementptr {{.+}}[1 x i{{.+}}]* [[MTYPE00]]{{.+}}, i8** null)
-    // CK25-DAG: [[GEPBP]] = getelementptr inbounds {{.+}}[[BP:%[^,]+]]
-    // CK25-DAG: [[GEPP]] = getelementptr inbounds {{.+}}[[P:%[^,]+]]
+// Region 00
+// CK25-DAG: call i32 @__tgt_target_mapper(%struct.ident_t* @{{.+}}, i64 {{[^,]+}}, i8* {{[^,]+}}, i32 1, i8** [[GEPBP:%.+]], i8** [[GEPP:%.+]], {{.+}}getelementptr {{.+}}[1 x i{{.+}}]* [[SIZE00]]{{.+}}, {{.+}}getelementptr {{.+}}[1 x i{{.+}}]* [[MTYPE00]]{{.+}}, i8** null)
+// CK25-DAG: [[GEPBP]] = getelementptr inbounds {{.+}}[[BP:%[^,]+]]
+// CK25-DAG: [[GEPP]] = getelementptr inbounds {{.+}}[[P:%[^,]+]]
 
-    // CK25-DAG: [[BP0:%.+]] = getelementptr inbounds {{.+}}[[BP]], i{{.+}} 0, i{{.+}} 0
-    // CK25-DAG: [[P0:%.+]] = getelementptr inbounds {{.+}}[[P]], i{{.+}} 0, i{{.+}} 0
-    // CK25-DAG: [[CBP0:%.+]] = bitcast i8** [[BP0]] to [[ST]]**
-    // CK25-DAG: [[CP0:%.+]] = bitcast i8** [[P0]] to i32**
-    // CK25-DAG: store [[ST]]* [[VAR0:%.+]], [[ST]]** [[CBP0]]
-    // CK25-DAG: store i32* [[SEC0:%.+]], i32** [[CP0]]
-    // CK25-DAG: [[SEC0]] = getelementptr {{.*}}[[ST]]* [[VAR0:%.+]], i{{.+}} 0, i{{.+}} 0
+// CK25-DAG: [[BP0:%.+]] = getelementptr inbounds {{.+}}[[BP]], i{{.+}} 0, i{{.+}} 0
+// CK25-DAG: [[P0:%.+]] = getelementptr inbounds {{.+}}[[P]], i{{.+}} 0, i{{.+}} 0
+// CK25-DAG: [[CBP0:%.+]] = bitcast i8** [[BP0]] to [[ST]]**
+// CK25-DAG: [[CP0:%.+]] = bitcast i8** [[P0]] to i32**
+// CK25-DAG: store [[ST]]* [[VAR0:%.+]], [[ST]]** [[CBP0]]
+// CK25-DAG: store i32* [[SEC0:%.+]], i32** [[CP0]]
+// CK25-DAG: [[SEC0]] = getelementptr {{.*}}[[ST]]* [[VAR0:%.+]], i{{.+}} 0, i{{.+}} 0
 
-    // CK25: call void [[CALL00:@.+]]([[ST]]* {{[^,]+}})
-    #pragma omp target map(to:A)
+// CK25: call void [[CALL00:@.+]]([[ST]]* {{[^,]+}})
+#pragma omp target map(to \
+                       : A)
     {
       [&]() {
         A += 1;
       }();
     }
 
-    // Region 01
-    // CK25-DAG: call i32 @__tgt_target_mapper(%struct.ident_t* @{{.+}}, i64 {{[^,]+}}, i8* {{[^,]+}}, i32 1, i8** [[GEPBP:%.+]], i8** [[GEPP:%.+]], {{.+}}getelementptr {{.+}}[1 x i{{.+}}]* [[SIZE01]], {{.+}}getelementptr {{.+}}[1 x i{{.+}}]* [[MTYPE01]]{{.+}}, i8** null)
-    // CK25-DAG: [[GEPBP]] = getelementptr inbounds {{.+}}[[BP:%[^,]+]]
-    // CK25-DAG: [[GEPP]] = getelementptr inbounds {{.+}}[[P:%[^,]+]]
+// Region 01
+// CK25-DAG: call i32 @__tgt_target_mapper(%struct.ident_t* @{{.+}}, i64 {{[^,]+}}, i8* {{[^,]+}}, i32 1, i8** [[GEPBP:%.+]], i8** [[GEPP:%.+]], {{.+}}getelementptr {{.+}}[1 x i{{.+}}]* [[SIZE01]], {{.+}}getelementptr {{.+}}[1 x i{{.+}}]* [[MTYPE01]]{{.+}}, i8** null)
+// CK25-DAG: [[GEPBP]] = getelementptr inbounds {{.+}}[[BP:%[^,]+]]
+// CK25-DAG: [[GEPP]] = getelementptr inbounds {{.+}}[[P:%[^,]+]]
 
-    // CK25-DAG: [[BP0:%.+]] = getelementptr inbounds {{.+}}[[BP]], i{{.+}} 0, i{{.+}} 0
-    // CK25-DAG: [[P0:%.+]] = getelementptr inbounds {{.+}}[[P]], i{{.+}} 0, i{{.+}} 0
-    // CK25-DAG: [[CBP0:%.+]] = bitcast i8** [[BP0]] to i32**
-    // CK25-DAG: [[CP0:%.+]] = bitcast i8** [[P0]] to i32**
-    // CK25-DAG: store i32* [[VAR0:%.+]], i32** [[CBP0]]
-    // CK25-DAG: store i32* [[VAR0]], i32** [[CP0]]
+// CK25-DAG: [[BP0:%.+]] = getelementptr inbounds {{.+}}[[BP]], i{{.+}} 0, i{{.+}} 0
+// CK25-DAG: [[P0:%.+]] = getelementptr inbounds {{.+}}[[P]], i{{.+}} 0, i{{.+}} 0
+// CK25-DAG: [[CBP0:%.+]] = bitcast i8** [[BP0]] to i32**
+// CK25-DAG: [[CP0:%.+]] = bitcast i8** [[P0]] to i32**
+// CK25-DAG: store i32* [[VAR0:%.+]], i32** [[CBP0]]
+// CK25-DAG: store i32* [[VAR0]], i32** [[CP0]]
 
-    // CK25: call void [[CALL01:@.+]](i32* {{[^,]+}})
-    #pragma omp target map(to:arg)
+// CK25: call void [[CALL01:@.+]](i32* {{[^,]+}})
+#pragma omp target map(to \
+                       : arg)
     {
       [&]() {
         arg += 1;
       }();
     }
 
-    return A+arg;
+    return A + arg;
   }
 };
 
-int explicit_maps_with_inner_lambda(int a){
-  CC<123,int> c;
+int explicit_maps_with_inner_lambda(int a) {
+  CC<123, int> c;
   return c.foo(a);
 }
 

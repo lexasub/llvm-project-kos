@@ -314,19 +314,19 @@ void GISelKnownBits::computeKnownBitsImpl(Register R, KnownBits &Known,
   }
   case TargetOpcode::G_UMIN: {
     KnownBits KnownRHS;
-    computeKnownBitsImpl(MI.getOperand(1).getReg(), Known,
-                         DemandedElts, Depth + 1);
-    computeKnownBitsImpl(MI.getOperand(2).getReg(), KnownRHS,
-                         DemandedElts, Depth + 1);
+    computeKnownBitsImpl(MI.getOperand(1).getReg(), Known, DemandedElts,
+                         Depth + 1);
+    computeKnownBitsImpl(MI.getOperand(2).getReg(), KnownRHS, DemandedElts,
+                         Depth + 1);
     Known = KnownBits::umin(Known, KnownRHS);
     break;
   }
   case TargetOpcode::G_UMAX: {
     KnownBits KnownRHS;
-    computeKnownBitsImpl(MI.getOperand(1).getReg(), Known,
-                         DemandedElts, Depth + 1);
-    computeKnownBitsImpl(MI.getOperand(2).getReg(), KnownRHS,
-                         DemandedElts, Depth + 1);
+    computeKnownBitsImpl(MI.getOperand(1).getReg(), Known, DemandedElts,
+                         Depth + 1);
+    computeKnownBitsImpl(MI.getOperand(2).getReg(), KnownRHS, DemandedElts,
+                         Depth + 1);
     Known = KnownBits::umax(Known, KnownRHS);
     break;
   }
@@ -536,7 +536,8 @@ unsigned GISelKnownBits::computeNumSignBits(Register R,
     Register Src = MI.getOperand(1).getReg();
     unsigned SrcBits = MI.getOperand(2).getImm();
     unsigned InRegBits = TyBits - SrcBits + 1;
-    return std::max(computeNumSignBits(Src, DemandedElts, Depth + 1), InRegBits);
+    return std::max(computeNumSignBits(Src, DemandedElts, Depth + 1),
+                    InRegBits);
   }
   case TargetOpcode::G_SEXTLOAD: {
     // FIXME: We need an in-memory type representation.
@@ -577,7 +578,7 @@ unsigned GISelKnownBits::computeNumSignBits(Register R,
   case TargetOpcode::G_INTRINSIC_W_SIDE_EFFECTS:
   default: {
     unsigned NumBits =
-      TL.computeNumSignBitsForTargetInstr(*this, R, DemandedElts, MRI, Depth);
+        TL.computeNumSignBitsForTargetInstr(*this, R, DemandedElts, MRI, Depth);
     if (NumBits > 1)
       FirstAnswer = std::max(FirstAnswer, NumBits);
     break;
@@ -588,9 +589,9 @@ unsigned GISelKnownBits::computeNumSignBits(Register R,
   // use this information.
   KnownBits Known = getKnownBits(R, DemandedElts, Depth);
   APInt Mask;
-  if (Known.isNonNegative()) {        // sign bit is 0
+  if (Known.isNonNegative()) { // sign bit is 0
     Mask = Known.Zero;
-  } else if (Known.isNegative()) {  // sign bit is 1;
+  } else if (Known.isNegative()) { // sign bit is 1;
     Mask = Known.One;
   } else {
     // Nothing known.
@@ -605,9 +606,8 @@ unsigned GISelKnownBits::computeNumSignBits(Register R,
 
 unsigned GISelKnownBits::computeNumSignBits(Register R, unsigned Depth) {
   LLT Ty = MRI.getType(R);
-  APInt DemandedElts = Ty.isVector()
-                           ? APInt::getAllOnesValue(Ty.getNumElements())
-                           : APInt(1, 1);
+  APInt DemandedElts =
+      Ty.isVector() ? APInt::getAllOnesValue(Ty.getNumElements()) : APInt(1, 1);
   return computeNumSignBits(R, DemandedElts, Depth);
 }
 

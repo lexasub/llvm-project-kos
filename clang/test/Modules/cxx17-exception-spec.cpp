@@ -16,7 +16,7 @@ module b {}
 #pragma clang module contents
 #pragma clang module begin b
 #pragma clang module import a
-using T = decltype(return_true() && noexcept(X::f()));
+using T = decltype(return_true() &&noexcept(X::f()));
 #pragma clang module end
 #pragma clang module endbuild
 

@@ -1,4 +1,4 @@
 struct ForwardDecl {
-   long HiddenMemberName;
+  long HiddenMemberName;
 };
 ForwardDecl fwd_decl;

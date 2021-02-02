@@ -4,17 +4,19 @@
 //  n# = negative test
 
 namespace std {
-template< class T >
+template <class T>
 struct add_cv { typedef const volatile T type; };
 
-template< class T> struct add_const { typedef const T type; };
+template <class T>
+struct add_const { typedef const T type; };
 
-template< class T> struct add_volatile { typedef volatile T type; };
-}
+template <class T>
+struct add_volatile { typedef volatile T type; };
+} // namespace std
 
 const int p1() {
-// CHECK-MESSAGES: [[@LINE-1]]:1: warning: return type 'const int' is 'const'-qualified at the top level, which may reduce code readability without improving const correctness
-// CHECK-FIXES: int p1() {
+  // CHECK-MESSAGES: [[@LINE-1]]:1: warning: return type 'const int' is 'const'-qualified at the top level, which may reduce code readability without improving const correctness
+  // CHECK-FIXES: int p1() {
   return 1;
 }
 
@@ -47,7 +49,7 @@ public:
 };
 
 class Clazz {
- public:
+public:
   Clazz *const p2() {
     // CHECK-MESSAGES: [[@LINE-1]]:3: warning: return type 'Clazz *const' is 'co
     // CHECK-FIXES: Clazz *p2() {
@@ -63,12 +65,12 @@ class Clazz {
     return 4;
   }
 
-  const Klazz<const int>* const p5() const;
+  const Klazz<const int> *const p5() const;
   // CHECK-FIXES: const Klazz<const int>* p5() const;
 
-  const Clazz operator++(int x) {  //  p12
-  // CHECK-MESSAGES: [[@LINE-1]]:3: warning: return type 'const Clazz' is 'const
-  // CHECK-FIXES: Clazz operator++(int x) {
+  const Clazz operator++(int x) { //  p12
+    // CHECK-MESSAGES: [[@LINE-1]]:3: warning: return type 'const Clazz' is 'const
+    // CHECK-FIXES: Clazz operator++(int x) {
   }
 
   struct Strukt {
@@ -81,7 +83,7 @@ class Clazz {
 
   // No warning is emitted here, because this is only the declaration.  The
   // warning will be associated with the definition, below.
-  const Strukt* const p7();
+  const Strukt *const p7();
   // CHECK-FIXES: const Strukt* p7();
 
   // const-qualifier is the first `const` token, but not the first token.
@@ -94,7 +96,7 @@ class Clazz {
   // CHECK-FIXES: static Strukt p9() {}
 
   int n0() const { return 0; }
-  const Klazz<const int>& n11(const Klazz<const int>) const;
+  const Klazz<const int> &n11(const Klazz<const int>) const;
 };
 
 Clazz *const Clazz::p3() {
@@ -103,11 +105,11 @@ Clazz *const Clazz::p3() {
   return this;
 }
 
-const Klazz<const int>* const Clazz::p5() const {}
+const Klazz<const int> *const Clazz::p5() const {}
 // CHECK-MESSAGES: [[@LINE-1]]:1: warning: return type 'const Klazz<const int> *
 // CHECK-FIXES: const Klazz<const int>* Clazz::p5() const {}
 
-const Clazz::Strukt* const Clazz::p7() {}
+const Clazz::Strukt *const Clazz::p7() {}
 // CHECK-MESSAGES: [[@LINE-1]]:1: warning: return type 'const Clazz::Strukt *con
 // CHECK-FIXES: const Clazz::Strukt* Clazz::p7() {}
 
@@ -135,11 +137,11 @@ const Klazz<const Klazz<const int>> p33() {}
 // CHECK-MESSAGES: [[@LINE-1]]:1: warning: return type 'const Klazz<
 // CHECK-FIXES: Klazz<const Klazz<const int>> p33() {}
 
-const Klazz<const int>* const p13() {}
+const Klazz<const int> *const p13() {}
 // CHECK-MESSAGES: [[@LINE-1]]:1: warning: return type 'const Klazz<const int> *
 // CHECK-FIXES: const Klazz<const int>* p13() {}
 
-const Klazz<const int>* const volatile p14() {}
+const Klazz<const int> *const volatile p14() {}
 // CHECK-MESSAGES: [[@LINE-1]]:1: warning: return type 'const Klazz<const int> *
 // CHECK-FIXES: const Klazz<const int>* volatile p14() {}
 
@@ -176,8 +178,8 @@ const int p15();
 // CHECK-FIXES: int p15();
 
 const int p15() {
-// CHECK-MESSAGES: [[@LINE-1]]:1: warning:
-// CHECK-FIXES: int p15() {
+  // CHECK-MESSAGES: [[@LINE-1]]:1: warning:
+  // CHECK-FIXES: int p15() {
   return 0;
 }
 
@@ -188,10 +190,11 @@ const /* comment */ /* another comment*/ int p16() { return 0; }
 // CHECK-FIXES: /* comment */ /* another comment*/ int p16() { return 0; }
 
 /* comment */ const
-// CHECK-MESSAGES: [[@LINE-1]]:15: warning:
-// CHECK-FIXES: /* comment */
-// more
-/* another comment*/ int p17() { return 0; }
+    // CHECK-MESSAGES: [[@LINE-1]]:15: warning:
+    // CHECK-FIXES: /* comment */
+    // more
+    /* another comment*/ int
+    p17() { return 0; }
 
 // Test cases where the `const` token lexically is hidden behind some form of
 // indirection.
@@ -228,7 +231,7 @@ int const p24() { return 3; }
 // CHECK-MESSAGES: [[@LINE-1]]:1: warning: return type 'const int' is 'const'-qu
 // CHECK-FIXES: int p24() { return 3; }
 
-int const * const p25(const int* p) { return p; }
+int const *const p25(const int *p) { return p; }
 // CHECK-MESSAGES: [[@LINE-1]]:1: warning: return type 'const int *const' is 'co
 // CHECK-FIXES: int const * p25(const int* p) { return p; }
 
@@ -255,19 +258,19 @@ Klazz<char const *> const p30(char const *s) { return s; }
 
 const int n1 = 1;
 const Clazz n2 = Clazz();
-const Clazz* n3 = new Clazz();
+const Clazz *n3 = new Clazz();
 Clazz *const n4 = new Clazz();
 const Clazz *const n5 = new Clazz();
 constexpr int n6 = 6;
 constexpr int n7() { return 8; }
 const int eight = 8;
-constexpr const int* n8() { return &eight; }
+constexpr const int *n8() { return &eight; }
 Klazz<const int> n9();
-const Klazz<const int>* n10();
-const Klazz<const int>& Clazz::n11(const Klazz<const int>) const {}
+const Klazz<const int> *n10();
+const Klazz<const int> &Clazz::n11(const Klazz<const int>) const {}
 
 // Declaration only.
 const int n14();
 
-int **const * n_multiple_ptr();
-int *const & n_pointer_ref();
+int **const *n_multiple_ptr();
+int *const &n_pointer_ref();

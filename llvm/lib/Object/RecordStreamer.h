@@ -23,8 +23,15 @@ class Module;
 
 class RecordStreamer : public MCStreamer {
 public:
-  enum State { NeverSeen, Global, Defined, DefinedGlobal, DefinedWeak, Used,
-               UndefinedWeak};
+  enum State {
+    NeverSeen,
+    Global,
+    Defined,
+    DefinedGlobal,
+    DefinedWeak,
+    Used,
+    UndefinedWeak
+  };
 
 private:
   const Module &M;

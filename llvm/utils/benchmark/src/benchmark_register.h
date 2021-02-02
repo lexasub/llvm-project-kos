@@ -6,8 +6,7 @@
 
 #include "check.h"
 
-template <typename T>
-void AddRange(std::vector<T>* dst, T lo, T hi, int mult) {
+template <typename T> void AddRange(std::vector<T> *dst, T lo, T hi, int mult) {
   CHECK_GE(lo, 0);
   CHECK_GE(hi, lo);
   CHECK_GE(mult, 2);
@@ -19,7 +18,8 @@ void AddRange(std::vector<T>* dst, T lo, T hi, int mult) {
 
   // Now space out the benchmarks in multiples of "mult"
   for (T i = 1; i < kmax / mult; i *= mult) {
-    if (i >= hi) break;
+    if (i >= hi)
+      break;
     if (i > lo) {
       dst->push_back(i);
     }
@@ -31,4 +31,4 @@ void AddRange(std::vector<T>* dst, T lo, T hi, int mult) {
   }
 }
 
-#endif  // BENCHMARK_REGISTER_H
+#endif // BENCHMARK_REGISTER_H

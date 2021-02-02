@@ -64,9 +64,7 @@ protected:
     VerifyResult = Result.str();
   }
 
-  void setSuccess() {
-    Verified = true;
-  }
+  void setSuccess() { Verified = true; }
 
 private:
   bool Verified;
@@ -135,9 +133,10 @@ MatchVerifier<NodeType>::match(const std::string &Code,
 
 /// \brief Runs a matcher over some AST, and returns the result of the
 /// verifier for the matched node.
-template <typename NodeType> template <typename MatcherType>
-testing::AssertionResult MatchVerifier<NodeType>::match(
-    const Decl *D, const MatcherType &AMatcher) {
+template <typename NodeType>
+template <typename MatcherType>
+testing::AssertionResult
+MatchVerifier<NodeType>::match(const Decl *D, const MatcherType &AMatcher) {
   MatchFinder Finder;
   Finder.addMatcher(AMatcher.bind(""), this);
 
@@ -219,8 +218,8 @@ private:
 template <typename NodeType>
 class RangeVerifier : public MatchVerifier<NodeType> {
 public:
-  void expectRange(unsigned BeginLine, unsigned BeginColumn,
-                   unsigned EndLine, unsigned EndColumn) {
+  void expectRange(unsigned BeginLine, unsigned BeginColumn, unsigned EndLine,
+                   unsigned EndColumn) {
     ExpectBeginLine = BeginLine;
     ExpectBeginColumn = BeginColumn;
     ExpectEndLine = EndLine;
@@ -262,9 +261,7 @@ private:
 /// \brief Verify whether a node's dump contains a given substring.
 class DumpVerifier : public MatchVerifier<DynTypedNode> {
 public:
-  void expectSubstring(const std::string &Str) {
-    ExpectSubstring = Str;
-  }
+  void expectSubstring(const std::string &Str) { ExpectSubstring = Str; }
 
 protected:
   void verify(const MatchFinder::MatchResult &Result,
@@ -289,9 +286,7 @@ private:
 /// \brief Verify whether a node's pretty print matches a given string.
 class PrintVerifier : public MatchVerifier<DynTypedNode> {
 public:
-  void expectString(const std::string &Str) {
-    ExpectString = Str;
-  }
+  void expectString(const std::string &Str) { ExpectString = Str; }
 
 protected:
   void verify(const MatchFinder::MatchResult &Result,

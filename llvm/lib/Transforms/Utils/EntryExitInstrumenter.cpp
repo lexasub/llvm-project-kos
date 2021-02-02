@@ -26,13 +26,9 @@ static void insertCall(Function &CurFn, StringRef Func,
   Module &M = *InsertionPt->getParent()->getParent()->getParent();
   LLVMContext &C = InsertionPt->getParent()->getContext();
 
-  if (Func == "mcount" ||
-      Func == ".mcount" ||
-      Func == "llvm.arm.gnu.eabi.mcount" ||
-      Func == "\01_mcount" ||
-      Func == "\01mcount" ||
-      Func == "__mcount" ||
-      Func == "_mcount" ||
+  if (Func == "mcount" || Func == ".mcount" ||
+      Func == "llvm.arm.gnu.eabi.mcount" || Func == "\01_mcount" ||
+      Func == "\01mcount" || Func == "__mcount" || Func == "_mcount" ||
       Func == "__cyg_profile_func_enter_bare") {
     FunctionCallee Fn = M.getOrInsertFunction(Func, Type::getVoidTy(C));
     CallInst *Call = CallInst::Create(Fn, "", InsertionPt);
@@ -144,7 +140,7 @@ struct PostInlineEntryExitInstrumenter : public FunctionPass {
   bool runOnFunction(Function &F) override { return ::runOnFunction(F, true); }
 };
 char PostInlineEntryExitInstrumenter::ID = 0;
-}
+} // namespace
 
 INITIALIZE_PASS_BEGIN(
     EntryExitInstrumenter, "ee-instrument",

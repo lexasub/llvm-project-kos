@@ -19,16 +19,16 @@ _Complex long double val6 = 2.0il;
 #pragma clang system_header
 
 namespace std {
-  template<typename T> struct complex {};
-  complex<float> operator""if(unsigned long long);
-  complex<float> operator""if(long double);
+template <typename T> struct complex {};
+complex<float> operator""if(unsigned long long);
+complex<float> operator""if(long double);
 
-  complex<double> operator"" i(unsigned long long);
-  complex<double> operator"" i(long double);
+complex<double> operator"" i(unsigned long long);
+complex<double> operator"" i(long double);
 
-  complex<long double> operator"" il(unsigned long long);
-  complex<long double> operator"" il(long double);
-}
+complex<long double> operator"" il(unsigned long long);
+complex<long double> operator"" il(long double);
+} // namespace std
 
 using namespace std;
 

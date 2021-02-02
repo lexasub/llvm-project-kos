@@ -19,25 +19,24 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        std::locale l(std::locale::classic(), new std::ctype<char>);
-        assert(globalMemCounter.checkDeleteArrayCalledEq(0));
-    }
+int main(int, char**) {
+  {
+    std::locale l(std::locale::classic(), new std::ctype<char>);
     assert(globalMemCounter.checkDeleteArrayCalledEq(0));
-    {
-        std::ctype<char>::mask table[256];
-        std::locale l(std::locale::classic(), new std::ctype<char>(table));
-        assert(globalMemCounter.checkDeleteArrayCalledEq(0));
-    }
+  }
+  assert(globalMemCounter.checkDeleteArrayCalledEq(0));
+  {
+    std::ctype<char>::mask table[256];
+    std::locale l(std::locale::classic(), new std::ctype<char>(table));
     assert(globalMemCounter.checkDeleteArrayCalledEq(0));
-    {
-        std::locale l(std::locale::classic(),
-            new std::ctype<char>(new std::ctype<char>::mask[256], true));
-        assert(globalMemCounter.checkDeleteArrayCalledEq(0));
-    }
-    assert(globalMemCounter.checkDeleteArrayCalledEq(1));
+  }
+  assert(globalMemCounter.checkDeleteArrayCalledEq(0));
+  {
+    std::locale l(std::locale::classic(),
+                  new std::ctype<char>(new std::ctype<char>::mask[256], true));
+    assert(globalMemCounter.checkDeleteArrayCalledEq(0));
+  }
+  assert(globalMemCounter.checkDeleteArrayCalledEq(1));
 
   return 0;
 }

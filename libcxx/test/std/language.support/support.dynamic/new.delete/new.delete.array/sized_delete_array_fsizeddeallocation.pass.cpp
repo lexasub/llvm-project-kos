@@ -20,11 +20,11 @@
 // ADDITIONAL_COMPILE_FLAGS: -fsized-deallocation
 
 #if !defined(__cpp_sized_deallocation)
-# error __cpp_sized_deallocation should be defined
+#error __cpp_sized_deallocation should be defined
 #endif
 
 #if !(__cpp_sized_deallocation >= 201309L)
-# error expected __cpp_sized_deallocation >= 201309L
+#error expected __cpp_sized_deallocation >= 201309L
 #endif
 
 #include <new>
@@ -38,22 +38,19 @@ int unsized_delete_called = 0;
 int unsized_delete_nothrow_called = 0;
 int sized_delete_called = 0;
 
-void operator delete[](void* p) TEST_NOEXCEPT
-{
-    ++unsized_delete_called;
-    std::free(p);
+void operator delete[](void* p) TEST_NOEXCEPT {
+  ++unsized_delete_called;
+  std::free(p);
 }
 
-void operator delete[](void* p, const std::nothrow_t&) TEST_NOEXCEPT
-{
-    ++unsized_delete_nothrow_called;
-    std::free(p);
+void operator delete[](void* p, const std::nothrow_t&) TEST_NOEXCEPT {
+  ++unsized_delete_nothrow_called;
+  std::free(p);
 }
 
-void operator delete[](void* p, std::size_t) TEST_NOEXCEPT
-{
-    ++sized_delete_called;
-    std::free(p);
+void operator delete[](void* p, std::size_t) TEST_NOEXCEPT {
+  ++sized_delete_called;
+  std::free(p);
 }
 
 // NOTE: Use a class with a non-trivial destructor as the test type in order
@@ -65,19 +62,20 @@ void operator delete[](void* p, std::size_t) TEST_NOEXCEPT
 //   with two parameters is selected.
 // - Otherwise, it is unspecified which of the two deallocation functions is
 //   selected.
-struct A { ~A() {} };
+struct A {
+  ~A() {}
+};
 
-int main(int, char**)
-{
-    A* x = new A[3];
-    assert(0 == unsized_delete_called);
-    assert(0 == unsized_delete_nothrow_called);
-    assert(0 == sized_delete_called);
+int main(int, char**) {
+  A* x = new A[3];
+  assert(0 == unsized_delete_called);
+  assert(0 == unsized_delete_nothrow_called);
+  assert(0 == sized_delete_called);
 
-    delete [] x;
-    assert(0 == unsized_delete_called);
-    assert(0 == unsized_delete_nothrow_called);
-    assert(1 == sized_delete_called);
+  delete[] x;
+  assert(0 == unsized_delete_called);
+  assert(0 == unsized_delete_nothrow_called);
+  assert(1 == sized_delete_called);
 
   return 0;
 }

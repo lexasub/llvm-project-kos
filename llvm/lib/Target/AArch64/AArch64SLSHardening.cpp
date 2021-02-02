@@ -143,43 +143,43 @@ bool AArch64SLSHardening::hardenReturnsAndBRs(MachineBasicBlock &MBB) const {
 static const char SLSBLRNamePrefix[] = "__llvm_slsblr_thunk_";
 
 static const struct ThunkNameAndReg {
-  const char* Name;
+  const char *Name;
   Register Reg;
 } SLSBLRThunks[] = {
-  { "__llvm_slsblr_thunk_x0",  AArch64::X0},
-  { "__llvm_slsblr_thunk_x1",  AArch64::X1},
-  { "__llvm_slsblr_thunk_x2",  AArch64::X2},
-  { "__llvm_slsblr_thunk_x3",  AArch64::X3},
-  { "__llvm_slsblr_thunk_x4",  AArch64::X4},
-  { "__llvm_slsblr_thunk_x5",  AArch64::X5},
-  { "__llvm_slsblr_thunk_x6",  AArch64::X6},
-  { "__llvm_slsblr_thunk_x7",  AArch64::X7},
-  { "__llvm_slsblr_thunk_x8",  AArch64::X8},
-  { "__llvm_slsblr_thunk_x9",  AArch64::X9},
-  { "__llvm_slsblr_thunk_x10",  AArch64::X10},
-  { "__llvm_slsblr_thunk_x11",  AArch64::X11},
-  { "__llvm_slsblr_thunk_x12",  AArch64::X12},
-  { "__llvm_slsblr_thunk_x13",  AArch64::X13},
-  { "__llvm_slsblr_thunk_x14",  AArch64::X14},
-  { "__llvm_slsblr_thunk_x15",  AArch64::X15},
-  // X16 and X17 are deliberately missing, as the mitigation requires those
-  // register to not be used in BLR. See comment in ConvertBLRToBL for more
-  // details.
-  { "__llvm_slsblr_thunk_x18",  AArch64::X18},
-  { "__llvm_slsblr_thunk_x19",  AArch64::X19},
-  { "__llvm_slsblr_thunk_x20",  AArch64::X20},
-  { "__llvm_slsblr_thunk_x21",  AArch64::X21},
-  { "__llvm_slsblr_thunk_x22",  AArch64::X22},
-  { "__llvm_slsblr_thunk_x23",  AArch64::X23},
-  { "__llvm_slsblr_thunk_x24",  AArch64::X24},
-  { "__llvm_slsblr_thunk_x25",  AArch64::X25},
-  { "__llvm_slsblr_thunk_x26",  AArch64::X26},
-  { "__llvm_slsblr_thunk_x27",  AArch64::X27},
-  { "__llvm_slsblr_thunk_x28",  AArch64::X28},
-  { "__llvm_slsblr_thunk_x29",  AArch64::FP},
-  // X30 is deliberately missing, for similar reasons as X16 and X17 are
-  // missing.
-  { "__llvm_slsblr_thunk_x31",  AArch64::XZR},
+    {"__llvm_slsblr_thunk_x0", AArch64::X0},
+    {"__llvm_slsblr_thunk_x1", AArch64::X1},
+    {"__llvm_slsblr_thunk_x2", AArch64::X2},
+    {"__llvm_slsblr_thunk_x3", AArch64::X3},
+    {"__llvm_slsblr_thunk_x4", AArch64::X4},
+    {"__llvm_slsblr_thunk_x5", AArch64::X5},
+    {"__llvm_slsblr_thunk_x6", AArch64::X6},
+    {"__llvm_slsblr_thunk_x7", AArch64::X7},
+    {"__llvm_slsblr_thunk_x8", AArch64::X8},
+    {"__llvm_slsblr_thunk_x9", AArch64::X9},
+    {"__llvm_slsblr_thunk_x10", AArch64::X10},
+    {"__llvm_slsblr_thunk_x11", AArch64::X11},
+    {"__llvm_slsblr_thunk_x12", AArch64::X12},
+    {"__llvm_slsblr_thunk_x13", AArch64::X13},
+    {"__llvm_slsblr_thunk_x14", AArch64::X14},
+    {"__llvm_slsblr_thunk_x15", AArch64::X15},
+    // X16 and X17 are deliberately missing, as the mitigation requires those
+    // register to not be used in BLR. See comment in ConvertBLRToBL for more
+    // details.
+    {"__llvm_slsblr_thunk_x18", AArch64::X18},
+    {"__llvm_slsblr_thunk_x19", AArch64::X19},
+    {"__llvm_slsblr_thunk_x20", AArch64::X20},
+    {"__llvm_slsblr_thunk_x21", AArch64::X21},
+    {"__llvm_slsblr_thunk_x22", AArch64::X22},
+    {"__llvm_slsblr_thunk_x23", AArch64::X23},
+    {"__llvm_slsblr_thunk_x24", AArch64::X24},
+    {"__llvm_slsblr_thunk_x25", AArch64::X25},
+    {"__llvm_slsblr_thunk_x26", AArch64::X26},
+    {"__llvm_slsblr_thunk_x27", AArch64::X27},
+    {"__llvm_slsblr_thunk_x28", AArch64::X28},
+    {"__llvm_slsblr_thunk_x29", AArch64::FP},
+    // X30 is deliberately missing, for similar reasons as X16 and X17 are
+    // missing.
+    {"__llvm_slsblr_thunk_x31", AArch64::XZR},
 };
 
 namespace {
@@ -214,7 +214,7 @@ void SLSBLRThunkInserter::populateThunk(MachineFunction &MF) {
 
   const TargetInstrInfo *TII =
       MF.getSubtarget<AArch64Subtarget>().getInstrInfo();
-  assert (MF.size() == 1);
+  assert(MF.size() == 1);
   MachineBasicBlock *Entry = &MF.front();
   Entry->clear();
 
@@ -327,7 +327,7 @@ AArch64SLSHardening::ConvertBLRToBL(MachineBasicBlock &MBB,
   MCContext &Context = MBB.getParent()->getContext();
   auto ThunkIt =
       llvm::find_if(SLSBLRThunks, [Reg](auto T) { return T.Reg == Reg; });
-  assert (ThunkIt != std::end(SLSBLRThunks));
+  assert(ThunkIt != std::end(SLSBLRThunks));
   MCSymbol *Sym = Context.getOrCreateSymbol(ThunkIt->Name);
 
   MachineInstr *BL = BuildMI(MBB, MBBI, DL, TII->get(BLOpcode)).addSym(Sym);

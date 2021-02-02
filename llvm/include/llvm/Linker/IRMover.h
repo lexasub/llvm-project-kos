@@ -83,6 +83,6 @@ private:
   MDMapT SharedMDs; ///< A Metadata map to use for all calls to \a move().
 };
 
-} // End llvm namespace
+} // namespace llvm
 
 #endif

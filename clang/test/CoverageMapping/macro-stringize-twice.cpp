@@ -21,9 +21,9 @@ public:
 };
 void use_str(const char *);
 
-#define m(func)                                                                \
-  use_str(#func);                                                              \
-  k(ERROR) << #func;                                                           \
+#define m(func)      \
+  use_str(#func);    \
+  k(ERROR) << #func; \
   return 0; // CHECK: File 1, [[@LINE-1]]:4 -> [[@LINE-1]]:16 = (#0 - #1)
 int main() {
   m(asdf);

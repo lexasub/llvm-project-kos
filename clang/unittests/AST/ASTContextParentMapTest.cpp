@@ -10,13 +10,13 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "clang/AST/ASTContext.h"
 #include "MatchVerifier.h"
+#include "clang/AST/ASTContext.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
 #include "clang/ASTMatchers/ASTMatchers.h"
 #include "clang/Tooling/Tooling.h"
-#include "gtest/gtest.h"
 #include "gmock/gmock.h"
+#include "gtest/gtest.h"
 
 using testing::ElementsAre;
 
@@ -55,12 +55,12 @@ TEST(GetParents, ReturnsParentInsideTemplateInstantiations) {
       "template<typename T> struct C { void f() {} };"
       "void g() { C<int> c; c.f(); }",
       cxxMethodDecl(hasName("f"),
-                 hasParent(cxxRecordDecl(isTemplateInstantiation())))));
+                    hasParent(cxxRecordDecl(isTemplateInstantiation())))));
   EXPECT_TRUE(DeclVerifier.match(
       "template<typename T> struct C { void f() {} };"
       "void g() { C<int> c; c.f(); }",
-      cxxMethodDecl(hasName("f"),
-                 hasParent(cxxRecordDecl(unless(isTemplateInstantiation()))))));
+      cxxMethodDecl(hasName("f"), hasParent(cxxRecordDecl(
+                                      unless(isTemplateInstantiation()))))));
   EXPECT_FALSE(DeclVerifier.match(
       "template<typename T> struct C { void f() {} };"
       "void g() { C<int> c; c.f(); }",

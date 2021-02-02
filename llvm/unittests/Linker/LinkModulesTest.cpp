@@ -39,8 +39,9 @@ protected:
 
     AT = ArrayType::get(Type::getInt8PtrTy(Ctx), 3);
 
-    GV = new GlobalVariable(*M.get(), AT, false /*=isConstant*/,
-                            GlobalValue::InternalLinkage, nullptr,"switch.bas");
+    GV =
+        new GlobalVariable(*M.get(), AT, false /*=isConstant*/,
+                           GlobalValue::InternalLinkage, nullptr, "switch.bas");
 
     // Global Initializer
     std::vector<Constant *> Init;
@@ -135,8 +136,7 @@ static Module *getExternal(LLVMContext &Ctx, StringRef FuncName) {
   FunctionType *FTy = FunctionType::get(
       Type::getVoidTy(Ctx), Type::getInt8PtrTy(Ctx), false /*=isVarArgs*/);
 
-  Function *F =
-      Function::Create(FTy, Function::ExternalLinkage, FuncName, M);
+  Function *F = Function::Create(FTy, Function::ExternalLinkage, FuncName, M);
   F->setCallingConv(CallingConv::C);
 
   BasicBlock *BB = BasicBlock::Create(Ctx, "", F);
@@ -314,20 +314,24 @@ TEST_F(LinkModuleTest, RemangleIntrinsics) {
   // be renamed to "struct.rtx_def.0". Check that the intrinsics which have this
   // type in the signature are properly remangled.
   const char *FooStr =
-    "%struct.rtx_def = type { i16 }\n"
-    "define void @foo(%struct.rtx_def* %a, i8 %b, i32 %c) {\n"
-    "  call void  @llvm.memset.p0s_struct.rtx_defs.i32(%struct.rtx_def* %a, i8 %b, i32 %c, i32 4, i1 true)\n"
-    "  ret void\n"
-    "}\n"
-    "declare void @llvm.memset.p0s_struct.rtx_defs.i32(%struct.rtx_def*, i8, i32, i32, i1)\n";
+      "%struct.rtx_def = type { i16 }\n"
+      "define void @foo(%struct.rtx_def* %a, i8 %b, i32 %c) {\n"
+      "  call void  @llvm.memset.p0s_struct.rtx_defs.i32(%struct.rtx_def* %a, "
+      "i8 %b, i32 %c, i32 4, i1 true)\n"
+      "  ret void\n"
+      "}\n"
+      "declare void @llvm.memset.p0s_struct.rtx_defs.i32(%struct.rtx_def*, i8, "
+      "i32, i32, i1)\n";
 
   const char *BarStr =
-    "%struct.rtx_def = type { i16 }\n"
-    "define void @bar(%struct.rtx_def* %a, i8 %b, i32 %c) {\n"
-    "  call void  @llvm.memset.p0s_struct.rtx_defs.i32(%struct.rtx_def* %a, i8 %b, i32 %c, i32 4, i1 true)\n"
-    "  ret void\n"
-    "}\n"
-    "declare void @llvm.memset.p0s_struct.rtx_defs.i32(%struct.rtx_def*, i8, i32, i32, i1)\n";
+      "%struct.rtx_def = type { i16 }\n"
+      "define void @bar(%struct.rtx_def* %a, i8 %b, i32 %c) {\n"
+      "  call void  @llvm.memset.p0s_struct.rtx_defs.i32(%struct.rtx_def* %a, "
+      "i8 %b, i32 %c, i32 4, i1 true)\n"
+      "  ret void\n"
+      "}\n"
+      "declare void @llvm.memset.p0s_struct.rtx_defs.i32(%struct.rtx_def*, i8, "
+      "i32, i32, i1)\n";
 
   std::unique_ptr<Module> Foo = parseAssemblyString(FooStr, Err, C);
   assert(Foo);

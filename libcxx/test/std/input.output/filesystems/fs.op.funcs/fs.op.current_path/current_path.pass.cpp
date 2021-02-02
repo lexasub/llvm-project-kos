@@ -27,72 +27,68 @@ using namespace fs;
 
 TEST_SUITE(filesystem_current_path_path_test_suite)
 
-TEST_CASE(current_path_signature_test)
-{
-    const path p; ((void)p);
-    std::error_code ec; ((void)ec);
-    ASSERT_NOT_NOEXCEPT(current_path());
-    ASSERT_NOT_NOEXCEPT(current_path(ec));
-    ASSERT_NOT_NOEXCEPT(current_path(p));
-    ASSERT_NOEXCEPT(current_path(p, ec));
+TEST_CASE(current_path_signature_test) {
+  const path p;
+  ((void)p);
+  std::error_code ec;
+  ((void)ec);
+  ASSERT_NOT_NOEXCEPT(current_path());
+  ASSERT_NOT_NOEXCEPT(current_path(ec));
+  ASSERT_NOT_NOEXCEPT(current_path(p));
+  ASSERT_NOEXCEPT(current_path(p, ec));
 }
 
-TEST_CASE(current_path_test)
-{
-    std::error_code ec;
-    const path p = current_path(ec);
-    TEST_REQUIRE(!ec);
-    TEST_CHECK(p.is_absolute());
-    TEST_CHECK(is_directory(p));
+TEST_CASE(current_path_test) {
+  std::error_code ec;
+  const path p = current_path(ec);
+  TEST_REQUIRE(!ec);
+  TEST_CHECK(p.is_absolute());
+  TEST_CHECK(is_directory(p));
 
-    const path p2 = current_path();
-    TEST_CHECK(p2 == p);
+  const path p2 = current_path();
+  TEST_CHECK(p2 == p);
 }
 
-TEST_CASE(current_path_after_change_test)
-{
-    CWDGuard guard;
-    static_test_env static_env;
-    const path new_path = static_env.Dir;
-    current_path(new_path);
-    TEST_CHECK(current_path() == new_path);
+TEST_CASE(current_path_after_change_test) {
+  CWDGuard guard;
+  static_test_env static_env;
+  const path new_path = static_env.Dir;
+  current_path(new_path);
+  TEST_CHECK(current_path() == new_path);
 }
 
-TEST_CASE(current_path_is_file_test)
-{
-    CWDGuard guard;
-    static_test_env static_env;
-    const path p = static_env.File;
-    std::error_code ec;
-    const path old_p = current_path();
-    current_path(p, ec);
-    TEST_CHECK(ec);
-    TEST_CHECK(old_p == current_path());
+TEST_CASE(current_path_is_file_test) {
+  CWDGuard guard;
+  static_test_env static_env;
+  const path p = static_env.File;
+  std::error_code ec;
+  const path old_p = current_path();
+  current_path(p, ec);
+  TEST_CHECK(ec);
+  TEST_CHECK(old_p == current_path());
 }
 
-TEST_CASE(set_to_non_absolute_path)
-{
-    CWDGuard guard;
-    static_test_env static_env;
-    const path base = static_env.Dir;
-    current_path(base);
-    const path p = static_env.Dir2.filename();
-    std::error_code ec;
-    current_path(p, ec);
-    TEST_CHECK(!ec);
-    const path new_cwd = current_path();
-    TEST_CHECK(new_cwd == static_env.Dir2);
-    TEST_CHECK(new_cwd.is_absolute());
+TEST_CASE(set_to_non_absolute_path) {
+  CWDGuard guard;
+  static_test_env static_env;
+  const path base = static_env.Dir;
+  current_path(base);
+  const path p = static_env.Dir2.filename();
+  std::error_code ec;
+  current_path(p, ec);
+  TEST_CHECK(!ec);
+  const path new_cwd = current_path();
+  TEST_CHECK(new_cwd == static_env.Dir2);
+  TEST_CHECK(new_cwd.is_absolute());
 }
 
-TEST_CASE(set_to_empty)
-{
-    const path p = "";
-    std::error_code ec;
-    const path old_p = current_path();
-    current_path(p, ec);
-    TEST_CHECK(ec);
-    TEST_CHECK(old_p == current_path());
+TEST_CASE(set_to_empty) {
+  const path p = "";
+  std::error_code ec;
+  const path old_p = current_path();
+  current_path(p, ec);
+  TEST_CHECK(ec);
+  TEST_CHECK(old_p == current_path());
 }
 
 TEST_SUITE_END()

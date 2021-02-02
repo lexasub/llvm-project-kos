@@ -66,7 +66,7 @@ class GlobalDecl {
 
 public:
   GlobalDecl() = default;
-  GlobalDecl(const VarDecl *D) { Init(D);}
+  GlobalDecl(const VarDecl *D) { Init(D); }
   GlobalDecl(const FunctionDecl *D, unsigned MVIndex = 0)
       : MultiVersionIndex(MVIndex) {
     if (!D->hasAttr<CUDAGlobalAttr>()) {
@@ -119,9 +119,8 @@ public:
   }
 
   unsigned getMultiVersionIndex() const {
-    assert(isa<FunctionDecl>(
-               getDecl()) &&
-               !cast<FunctionDecl>(getDecl())->hasAttr<CUDAGlobalAttr>() &&
+    assert(isa<FunctionDecl>(getDecl()) &&
+           !cast<FunctionDecl>(getDecl())->hasAttr<CUDAGlobalAttr>() &&
            !isa<CXXConstructorDecl>(getDecl()) &&
            !isa<CXXDestructorDecl>(getDecl()) &&
            "Decl is not a plain FunctionDecl!");
@@ -200,25 +199,21 @@ public:
 
 namespace llvm {
 
-  template<> struct DenseMapInfo<clang::GlobalDecl> {
-    static inline clang::GlobalDecl getEmptyKey() {
-      return clang::GlobalDecl();
-    }
+template <> struct DenseMapInfo<clang::GlobalDecl> {
+  static inline clang::GlobalDecl getEmptyKey() { return clang::GlobalDecl(); }
 
-    static inline clang::GlobalDecl getTombstoneKey() {
-      return clang::GlobalDecl::
-        getFromOpaquePtr(reinterpret_cast<void*>(-1));
-    }
+  static inline clang::GlobalDecl getTombstoneKey() {
+    return clang::GlobalDecl::getFromOpaquePtr(reinterpret_cast<void *>(-1));
+  }
 
-    static unsigned getHashValue(clang::GlobalDecl GD) {
-      return DenseMapInfo<void*>::getHashValue(GD.getAsOpaquePtr());
-    }
+  static unsigned getHashValue(clang::GlobalDecl GD) {
+    return DenseMapInfo<void *>::getHashValue(GD.getAsOpaquePtr());
+  }
 
-    static bool isEqual(clang::GlobalDecl LHS,
-                        clang::GlobalDecl RHS) {
-      return LHS == RHS;
-    }
-  };
+  static bool isEqual(clang::GlobalDecl LHS, clang::GlobalDecl RHS) {
+    return LHS == RHS;
+  }
+};
 
 } // namespace llvm
 

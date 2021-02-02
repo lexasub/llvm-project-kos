@@ -3,30 +3,32 @@
 // RUN: %clang_cc1 -fsyntax-only -verify -std=c++11 %s
 
 int x(1);
-int (x2)(1);
+int(x2)(1);
 
 void f() {
   int x(1);
-  int (x2)(1);
-  for (int x(1);;) {}
+  int(x2)(1);
+  for (int x(1);;) {
+  }
 }
 
-class Y { 
-public: explicit Y(float);
+class Y {
+public:
+  explicit Y(float);
 };
 
-class X { // expected-note{{candidate constructor (the implicit copy constructor)}}
+class X {                  // expected-note{{candidate constructor (the implicit copy constructor)}}
 #if __cplusplus >= 201103L // C++11 or later
 // expected-note@-2 {{candidate constructor (the implicit move constructor) not viable}}
 #endif
 
 public:
-  explicit X(int); // expected-note{{candidate constructor}}
+  explicit X(int);        // expected-note{{candidate constructor}}
   X(float, float, float); // expected-note{{candidate constructor}}
-  X(float, Y); // expected-note{{candidate constructor}}
+  X(float, Y);            // expected-note{{candidate constructor}}
 };
 
-class Z { // expected-note{{candidate constructor (the implicit copy constructor)}}
+class Z {                  // expected-note{{candidate constructor (the implicit copy constructor)}}
 #if __cplusplus >= 201103L // C++11 or later
 // expected-note@-2 {{candidate constructor (the implicit move constructor) not viable}}
 #endif
@@ -46,15 +48,14 @@ void g() {
 }
 
 struct Base {
-   operator int*() const; 
+  operator int *() const;
 };
 
 struct Derived : Base {
-   operator int*(); // expected-note {{candidate function}}
+  operator int *(); // expected-note {{candidate function}}
 };
 
 void foo(const Derived cd, Derived d) {
-        int *pi = cd;	// expected-error {{no viable conversion from 'const Derived' to 'int *'}}
-        int *ppi = d; 
-
+  int *pi = cd; // expected-error {{no viable conversion from 'const Derived' to 'int *'}}
+  int *ppi = d;
 }

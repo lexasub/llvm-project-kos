@@ -23,7 +23,7 @@
 #include <utility>
 
 namespace clang {
-  class CXXRecordDecl;
+class CXXRecordDecl;
 
 /// Represents a single component in a vtable.
 class VTableComponent {
@@ -71,8 +71,7 @@ public:
     assert(!isa<CXXDestructorDecl>(MD) &&
            "Don't use MakeFunction with destructors!");
 
-    return VTableComponent(CK_FunctionPointer,
-                           reinterpret_cast<uintptr_t>(MD));
+    return VTableComponent(CK_FunctionPointer, reinterpret_cast<uintptr_t>(MD));
   }
 
   static VTableComponent MakeCompleteDtor(const CXXDestructorDecl *DD) {
@@ -93,9 +92,7 @@ public:
   }
 
   /// Get the kind of this vtable component.
-  Kind getKind() const {
-    return (Kind)(Value & 0x7);
-  }
+  Kind getKind() const { return (Kind)(Value & 0x7); }
 
   CharUnits getVCallOffset() const {
     assert(getKind() == CK_VCallOffset && "Invalid component kind!");
@@ -191,7 +188,8 @@ private:
   VTableComponent(Kind ComponentKind, CharUnits Offset) {
     assert((ComponentKind == CK_VCallOffset ||
             ComponentKind == CK_VBaseOffset ||
-            ComponentKind == CK_OffsetToTop) && "Invalid component kind!");
+            ComponentKind == CK_OffsetToTop) &&
+           "Invalid component kind!");
     assert(Offset.getQuantity() < (1LL << 56) && "Offset is too big!");
     assert(Offset.getQuantity() >= -(1LL << 56) && "Offset is too small!");
 
@@ -199,8 +197,9 @@ private:
   }
 
   VTableComponent(Kind ComponentKind, uintptr_t Ptr) {
-    assert((isRTTIKind(ComponentKind) || isFunctionPointerKind(ComponentKind)) &&
-           "Invalid component kind!");
+    assert(
+        (isRTTIKind(ComponentKind) || isFunctionPointerKind(ComponentKind)) &&
+        "Invalid component kind!");
 
     assert((Ptr & 7) == 0 && "Pointer not sufficiently aligned!");
 
@@ -209,7 +208,8 @@ private:
 
   CharUnits getOffset() const {
     assert((getKind() == CK_VCallOffset || getKind() == CK_VBaseOffset ||
-            getKind() == CK_OffsetToTop) && "Invalid component kind!");
+            getKind() == CK_OffsetToTop) &&
+           "Invalid component kind!");
 
     return CharUnits::fromQuantity(Value >> 3);
   }
@@ -244,10 +244,10 @@ public:
   typedef llvm::SmallVector<unsigned, 4> AddressPointsIndexMapTy;
 
 private:
-  // Stores the component indices of the first component of each virtual table in
-  // the virtual table group. To save a little memory in the common case where
-  // the vtable group contains a single vtable, an empty vector here represents
-  // the vector {0}.
+  // Stores the component indices of the first component of each virtual table
+  // in the virtual table group. To save a little memory in the common case
+  // where the vtable group contains a single vtable, an empty vector here
+  // represents the vector {0}.
   OwningArrayRef<size_t> VTableIndices;
 
   OwningArrayRef<VTableComponent> VTableComponents;
@@ -272,18 +272,14 @@ public:
     return VTableComponents;
   }
 
-  ArrayRef<VTableThunkTy> vtable_thunks() const {
-    return VTableThunks;
-  }
+  ArrayRef<VTableThunkTy> vtable_thunks() const { return VTableThunks; }
 
   AddressPointLocation getAddressPoint(BaseSubobject Base) const {
     assert(AddressPoints.count(Base) && "Did not find address point!");
     return AddressPoints.find(Base)->second;
   }
 
-  const AddressPointsMapTy &getAddressPoints() const {
-    return AddressPoints;
-  }
+  const AddressPointsMapTy &getAddressPoints() const { return AddressPoints; }
 
   const AddressPointsIndexMapTy &getAddressPointIndices() const {
     return AddressPointIndices;
@@ -339,7 +335,8 @@ protected:
 
 public:
   virtual const ThunkInfoVectorTy *getThunkInfo(GlobalDecl GD) {
-    const CXXMethodDecl *MD = cast<CXXMethodDecl>(GD.getDecl()->getCanonicalDecl());
+    const CXXMethodDecl *MD =
+        cast<CXXMethodDecl>(GD.getDecl()->getCanonicalDecl());
     computeVTableRelatedInformation(MD->getParent());
 
     // This assumes that all the destructors present in the vtable
@@ -361,7 +358,6 @@ public:
 
 class ItaniumVTableContext : public VTableContextBase {
 private:
-
   /// Contains the index (relative to the vtable address point)
   /// where the function pointer for a virtual function is stored.
   typedef llvm::DenseMap<GlobalDecl, int64_t> MethodVTableIndicesTy;
@@ -372,15 +368,14 @@ private:
       VTableLayoutMapTy;
   VTableLayoutMapTy VTableLayouts;
 
-  typedef std::pair<const CXXRecordDecl *,
-                    const CXXRecordDecl *> ClassPairTy;
+  typedef std::pair<const CXXRecordDecl *, const CXXRecordDecl *> ClassPairTy;
 
   /// vtable offsets for offsets of virtual bases of a class.
   ///
   /// Contains the vtable offset (relative to the address point) in chars
   /// where the offsets for virtual bases of a class are stored.
   typedef llvm::DenseMap<ClassPairTy, CharUnits>
-    VirtualBaseClassOffsetOffsetsMapTy;
+      VirtualBaseClassOffsetOffsetsMapTy;
   VirtualBaseClassOffsetOffsetsMapTy VirtualBaseClassOffsetOffsets;
 
   void computeVTableRelatedInformation(const CXXRecordDecl *RD) override;
@@ -542,12 +537,11 @@ struct MethodVFTableLocation {
 
 class MicrosoftVTableContext : public VTableContextBase {
 public:
-
 private:
   ASTContext &Context;
 
   typedef llvm::DenseMap<GlobalDecl, MethodVFTableLocation>
-    MethodVFTableLocationsTy;
+      MethodVFTableLocationsTy;
   MethodVFTableLocationsTy MethodVFTableLocations;
 
   typedef llvm::DenseMap<const CXXRecordDecl *, std::unique_ptr<VPtrInfoVector>>

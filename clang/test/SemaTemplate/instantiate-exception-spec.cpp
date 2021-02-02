@@ -2,8 +2,8 @@
 // RUN: %clang_cc1 -fexceptions -fcxx-exceptions -emit-llvm-only %s
 
 #ifdef ERRORS
-template<typename T> void f1(T*) throw(T); // expected-error{{incomplete type 'Incomplete' is not allowed in exception specification}}
-struct Incomplete; // expected-note{{forward}}
+template <typename T> void f1(T *) throw(T); // expected-error{{incomplete type 'Incomplete' is not allowed in exception specification}}
+struct Incomplete;                           // expected-note{{forward}}
 
 void test_f1(Incomplete *incomplete_p, int *int_p) {
   f1(int_p);
@@ -11,7 +11,7 @@ void test_f1(Incomplete *incomplete_p, int *int_p) {
 }
 #endif
 
-template<typename T> void f(void (*p)() throw(T)) {
+template <typename T> void f(void (*p)() throw(T)) {
 #ifdef ERRORS
   void (*q)() throw(char) = p; // expected-error {{target exception spec}}
 

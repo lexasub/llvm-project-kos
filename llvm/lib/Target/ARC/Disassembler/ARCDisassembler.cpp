@@ -89,8 +89,8 @@ static DecodeStatus DecodeSignedOperand(MCInst &Inst, unsigned InsnS,
 
 template <unsigned B>
 static DecodeStatus DecodeFromCyclicRange(MCInst &Inst, unsigned InsnS,
-                                        uint64_t Address = 0,
-                                        const void *Decoder = nullptr);
+                                          uint64_t Address = 0,
+                                          const void *Decoder = nullptr);
 
 template <unsigned B>
 static DecodeStatus DecodeBranchTargetS(MCInst &Inst, unsigned InsnS,
@@ -131,8 +131,8 @@ static DecodeStatus DecodeGPR32RegisterClass(MCInst &Inst, unsigned RegNo,
 }
 
 static DecodeStatus DecodeGBR32ShortRegister(MCInst &Inst, unsigned RegNo,
-                                               uint64_t Address,
-                                               const void *Decoder) {
+                                             uint64_t Address,
+                                             const void *Decoder) {
   // Enumerates registers from ranges [r0-r3],[r12-r15].
   if (RegNo > 3)
     RegNo += 8; // 4 for r12, etc...

@@ -31,13 +31,12 @@ static bool IsFile(const std::string &Path, const DWORD &FileAttributes) {
   if (FileAttributes & FILE_ATTRIBUTE_DIRECTORY)
     return false;
 
-  HANDLE FileHandle(
-      CreateFileA(Path.c_str(), 0, FILE_SHARE_READ, NULL, OPEN_EXISTING,
-                  FILE_FLAG_BACKUP_SEMANTICS, 0));
+  HANDLE FileHandle(CreateFileA(Path.c_str(), 0, FILE_SHARE_READ, NULL,
+                                OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, 0));
 
   if (FileHandle == INVALID_HANDLE_VALUE) {
     Printf("CreateFileA() failed for \"%s\" (Error code: %lu).\n", Path.c_str(),
-        GetLastError());
+           GetLastError());
     return false;
   }
 
@@ -45,7 +44,7 @@ static bool IsFile(const std::string &Path, const DWORD &FileAttributes) {
 
   if (FileType == FILE_TYPE_UNKNOWN) {
     Printf("GetFileType() failed for \"%s\" (Error code: %lu).\n", Path.c_str(),
-        GetLastError());
+           GetLastError());
     CloseHandle(FileHandle);
     return false;
   }
@@ -64,7 +63,7 @@ bool IsFile(const std::string &Path) {
 
   if (Att == INVALID_FILE_ATTRIBUTES) {
     Printf("GetFileAttributesA() failed for \"%s\" (Error code: %lu).\n",
-        Path.c_str(), GetLastError());
+           Path.c_str(), GetLastError());
     return false;
   }
 
@@ -72,7 +71,8 @@ bool IsFile(const std::string &Path) {
 }
 
 static bool IsDir(DWORD FileAttrs) {
-  if (FileAttrs == INVALID_FILE_ATTRIBUTES) return false;
+  if (FileAttrs == INVALID_FILE_ATTRIBUTES)
+    return false;
   return FileAttrs & FILE_ATTRIBUTE_DIRECTORY;
 }
 
@@ -90,7 +90,8 @@ bool IsDirectory(const std::string &Path) {
 
 std::string Basename(const std::string &Path) {
   size_t Pos = Path.find_last_of("/\\");
-  if (Pos == std::string::npos) return Path;
+  if (Pos == std::string::npos)
+    return Path;
   assert(Pos < Path.size());
   return Path.substr(Pos + 1);
 }
@@ -114,19 +115,19 @@ void ListFilesInDirRecursive(const std::string &Dir, long *Epoch,
                              Vector<std::string> *V, bool TopDir) {
   auto E = GetEpoch(Dir);
   if (Epoch)
-    if (E && *Epoch >= E) return;
+    if (E && *Epoch >= E)
+      return;
 
   std::string Path(Dir);
   assert(!Path.empty());
   if (Path.back() != '\\')
-      Path.push_back('\\');
+    Path.push_back('\\');
   Path.push_back('*');
 
   // Get the first directory entry.
   WIN32_FIND_DATAA FindInfo;
   HANDLE FindHandle(FindFirstFileA(Path.c_str(), &FindInfo));
-  if (FindHandle == INVALID_HANDLE_VALUE)
-  {
+  if (FindHandle == INVALID_HANDLE_VALUE) {
     if (GetLastError() == ERROR_FILE_NOT_FOUND)
       return;
     Printf("No such file or directory: %s; exiting\n", Dir.c_str());
@@ -140,12 +141,11 @@ void ListFilesInDirRecursive(const std::string &Dir, long *Epoch,
       size_t FilenameLen = strlen(FindInfo.cFileName);
       if ((FilenameLen == 1 && FindInfo.cFileName[0] == '.') ||
           (FilenameLen == 2 && FindInfo.cFileName[0] == '.' &&
-                               FindInfo.cFileName[1] == '.'))
+           FindInfo.cFileName[1] == '.'))
         continue;
 
       ListFilesInDirRecursive(FileName, Epoch, V, false);
-    }
-    else if (IsFile(FileName, FindInfo.dwFileAttributes))
+    } else if (IsFile(FileName, FindInfo.dwFileAttributes))
       V->push_back(FileName);
   } while (FindNextFileA(FindHandle, &FindInfo));
 
@@ -159,7 +159,6 @@ void ListFilesInDirRecursive(const std::string &Dir, long *Epoch,
     *Epoch = E;
 }
 
-
 void IterateDirRecursive(const std::string &Dir,
                          void (*DirPreCallback)(const std::string &Dir),
                          void (*DirPostCallback)(const std::string &Dir),
@@ -168,11 +167,13 @@ void IterateDirRecursive(const std::string &Dir,
   DirPreCallback(Dir);
 
   DWORD DirAttrs = GetFileAttributesA(Dir.c_str());
-  if (!IsDir(DirAttrs)) return;
+  if (!IsDir(DirAttrs))
+    return;
 
   std::string TargetDir(Dir);
   assert(!TargetDir.empty());
-  if (TargetDir.back() != '\\') TargetDir.push_back('\\');
+  if (TargetDir.back() != '\\')
+    TargetDir.push_back('\\');
   TargetDir.push_back('*');
 
   WIN32_FIND_DATAA FindInfo;
@@ -211,37 +212,23 @@ void IterateDirRecursive(const std::string &Dir,
   DirPostCallback(Dir);
 }
 
-char GetSeparator() {
-  return '\\';
-}
+char GetSeparator() { return '\\'; }
 
-FILE* OpenFile(int Fd, const char* Mode) {
-  return _fdopen(Fd, Mode);
-}
+FILE *OpenFile(int Fd, const char *Mode) { return _fdopen(Fd, Mode); }
 
-int CloseFile(int Fd) {
-  return _close(Fd);
-}
+int CloseFile(int Fd) { return _close(Fd); }
 
-int DuplicateFile(int Fd) {
-  return _dup(Fd);
-}
+int DuplicateFile(int Fd) { return _dup(Fd); }
 
-void RemoveFile(const std::string &Path) {
-  _unlink(Path.c_str());
-}
+void RemoveFile(const std::string &Path) { _unlink(Path.c_str()); }
 
 void RenameFile(const std::string &OldPath, const std::string &NewPath) {
   rename(OldPath.c_str(), NewPath.c_str());
 }
 
-intptr_t GetHandleFromFd(int fd) {
-  return _get_osfhandle(fd);
-}
+intptr_t GetHandleFromFd(int fd) { return _get_osfhandle(fd); }
 
-bool IsSeparator(char C) {
-  return C == '\\' || C == '/';
-}
+bool IsSeparator(char C) { return C == '\\' || C == '/'; }
 
 // Parse disk designators, like "C:\". If Relative == true, also accepts: "C:".
 // Returns number of characters considered if successful.
@@ -263,7 +250,7 @@ static size_t ParseDrive(const std::string &FileName, const size_t Offset,
 static size_t ParseFileName(const std::string &FileName, const size_t Offset) {
   size_t Pos = Offset;
   const size_t End = FileName.size();
-  for(; Pos < End && !IsSeparator(FileName[Pos]); ++Pos)
+  for (; Pos < End && !IsSeparator(FileName[Pos]); ++Pos)
     ;
   return Pos - Offset;
 }
@@ -275,7 +262,7 @@ static size_t ParseDir(const std::string &FileName, const size_t Offset) {
   const size_t End = FileName.size();
   if (Pos >= End || IsSeparator(FileName[Pos]))
     return 0;
-  for(; Pos < End && !IsSeparator(FileName[Pos]); ++Pos)
+  for (; Pos < End && !IsSeparator(FileName[Pos]); ++Pos)
     ;
   if (Pos >= End)
     return 0;
@@ -297,9 +284,8 @@ static size_t ParseServerAndShare(const std::string &FileName,
   return Pos - Offset;
 }
 
-// Parse the given Ref string from the position Offset, to exactly match the given
-// string Patt.
-// Returns number of characters considered if successful.
+// Parse the given Ref string from the position Offset, to exactly match the
+// given string Patt. Returns number of characters considered if successful.
 static size_t ParseCustomString(const std::string &Ref, size_t Offset,
                                 const char *Patt) {
   size_t Len = strlen(Patt);
@@ -357,7 +343,7 @@ std::string DirName(const std::string &FileName) {
   }
 
   if (DirLen) {
-    --DirLen; // Remove trailing separator.
+    --DirLen;       // Remove trailing separator.
     if (!FileLen) { // Path ended in separator.
       assert(DirLen);
       // Remove file name from Dir.
@@ -399,18 +385,18 @@ bool IsInterestingCoverageFile(const std::string &FileName) {
   return true;
 }
 
-void RawPrint(const char *Str) {
-  _write(2, Str, strlen(Str));
-}
+void RawPrint(const char *Str) { _write(2, Str, strlen(Str)); }
 
 void MkDir(const std::string &Path) {
-  if (CreateDirectoryA(Path.c_str(), nullptr)) return;
+  if (CreateDirectoryA(Path.c_str(), nullptr))
+    return;
   Printf("CreateDirectoryA failed for %s (Error code: %lu).\n", Path.c_str(),
          GetLastError());
 }
 
 void RmDir(const std::string &Path) {
-  if (RemoveDirectoryA(Path.c_str())) return;
+  if (RemoveDirectoryA(Path.c_str()))
+    return;
   Printf("RemoveDirectoryA failed for %s (Error code: %lu).\n", Path.c_str(),
          GetLastError());
 }
@@ -420,6 +406,6 @@ const std::string &getDevNull() {
   return devNull;
 }
 
-}  // namespace fuzzer
+} // namespace fuzzer
 
 #endif // LIBFUZZER_WINDOWS

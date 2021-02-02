@@ -1,10 +1,8 @@
-class FooNS
-{
+class FooNS {
 public:
-    virtual void bar();
-    virtual char baz() = 0;
+  virtual void bar();
+  virtual char baz() = 0;
 
 protected:
-    int x;
+  int x;
 };
-

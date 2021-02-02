@@ -8,5 +8,8 @@
 // CHECK-NEXT: ...
 
 // CXXDeductionGuideDecl
-template<typename T> struct A { A(); A(T); };
-A() -> A<int>;
+template <typename T> struct A {
+  A();
+  A(T);
+};
+A()->A<int>;

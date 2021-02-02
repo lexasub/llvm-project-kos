@@ -6,7 +6,7 @@
 }
 + classMethod;
 - instanceMethodWithInt:(int)i;
-- (struct OpaqueData*) getSomethingOpaque;
+- (struct OpaqueData *)getSomethingOpaque;
 @property int property;
 @end
 
@@ -23,7 +23,7 @@
 
 typedef enum {
   e0 = 0
-}  InnerEnum;
+} InnerEnum;
 
 + (InnerEnum)protocolMethod;
 
@@ -35,10 +35,18 @@ struct FwdDeclared {
 };
 struct PureForwardDecl;
 
-typedef union { int i; } TypedefUnion;
+typedef union {
+  int i;
+} TypedefUnion;
 typedef enum { e1 = 1 } TypedefEnum;
-typedef struct { int i; } TypedefStruct;
+typedef struct {
+  int i;
+} TypedefStruct;
 
-union { int i; } GlobalUnion;
-struct { int i; } GlobalStruct;
+union {
+  int i;
+} GlobalUnion;
+struct {
+  int i;
+} GlobalStruct;
 enum { e2 = 2 } GlobalEnum;

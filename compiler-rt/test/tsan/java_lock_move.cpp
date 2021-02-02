@@ -9,7 +9,7 @@ jptr lockaddr2;
 void *Thread(void *p) {
   barrier_wait(&barrier);
   __tsan_java_mutex_lock(lockaddr2);
-  *(int*)varaddr2 = 42;
+  *(int *)varaddr2 = 42;
   __tsan_java_mutex_unlock(lockaddr2);
   return 0;
 }
@@ -29,7 +29,7 @@ int main() {
   pthread_t th;
   pthread_create(&th, 0, Thread, 0);
   __tsan_java_mutex_lock(lockaddr);
-  *(int*)varaddr = 43;
+  *(int *)varaddr = 43;
   __tsan_java_mutex_unlock(lockaddr);
   __tsan_java_move(varaddr, varaddr2, kBlockSize);
   barrier_wait(&barrier);

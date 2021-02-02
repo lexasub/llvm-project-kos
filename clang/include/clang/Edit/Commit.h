@@ -28,11 +28,7 @@ class EditedSource;
 
 class Commit {
 public:
-  enum EditKind {
-    Act_Insert,
-    Act_InsertFromRange,
-    Act_Remove
-  };
+  enum EditKind { Act_Insert, Act_InsertFromRange, Act_Remove };
 
   struct Edit {
     EditKind Kind;
@@ -100,7 +96,8 @@ public:
   }
 
   bool insertWrap(StringRef before, SourceRange TokenRange, StringRef after) {
-    return insertWrap(before, CharSourceRange::getTokenRange(TokenRange), after);
+    return insertWrap(before, CharSourceRange::getTokenRange(TokenRange),
+                      after);
   }
 
   bool remove(SourceRange TokenRange) {
@@ -122,8 +119,8 @@ public:
   edit_iterator edit_end() const { return CachedEdits.end(); }
 
 private:
-  void addInsert(SourceLocation OrigLoc,
-                FileOffset Offs, StringRef text, bool beforePreviousInsertions);
+  void addInsert(SourceLocation OrigLoc, FileOffset Offs, StringRef text,
+                 bool beforePreviousInsertions);
   void addInsertFromRange(SourceLocation OrigLoc, FileOffset Offs,
                           FileOffset RangeOffs, unsigned RangeLen,
                           bool beforePreviousInsertions);
@@ -134,8 +131,8 @@ private:
                            SourceLocation &AfterLoc);
   bool canInsertInOffset(SourceLocation OrigLoc, FileOffset Offs);
   bool canRemoveRange(CharSourceRange range, FileOffset &Offs, unsigned &Len);
-  bool canReplaceText(SourceLocation loc, StringRef text,
-                      FileOffset &Offs, unsigned &Len);
+  bool canReplaceText(SourceLocation loc, StringRef text, FileOffset &Offs,
+                      unsigned &Len);
 
   void commitInsert(FileOffset offset, StringRef text,
                     bool beforePreviousInsertions);

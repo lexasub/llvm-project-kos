@@ -88,7 +88,7 @@ public:
     return new (Head->Buf) T[Count]();
   }
 
-  template <typename T, typename... Args> T *alloc(Args &&... ConstructorArgs) {
+  template <typename T, typename... Args> T *alloc(Args &&...ConstructorArgs) {
     constexpr size_t Size = sizeof(T);
     assert(Head && Head->Buf);
 

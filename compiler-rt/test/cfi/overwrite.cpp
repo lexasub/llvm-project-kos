@@ -23,8 +23,8 @@
 
 // REQUIRES: cxxabi
 
-#include <stdio.h>
 #include "utils.h"
+#include <stdio.h>
 
 struct A {
   virtual void f();
@@ -36,7 +36,7 @@ void foo() {
   fprintf(stderr, "foo\n");
 }
 
-void *fake_vtable[] = { 0, 0, (void *)&foo };
+void *fake_vtable[] = {0, 0, (void *)&foo};
 
 int main() {
   create_derivers<A>();

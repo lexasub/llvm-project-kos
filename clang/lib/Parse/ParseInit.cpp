@@ -21,7 +21,6 @@
 #include "llvm/ADT/SmallString.h"
 using namespace clang;
 
-
 /// MayBeDesignationStart - Return true if the current token might be the start
 /// of a designator.  If we can tell it is impossible that it is a designator,
 /// return false.
@@ -30,10 +29,10 @@ bool Parser::MayBeDesignationStart() {
   default:
     return false;
 
-  case tok::period:      // designator: '.' identifier
+  case tok::period: // designator: '.' identifier
     return true;
 
-  case tok::l_square: {  // designator: array-designator
+  case tok::l_square: { // designator: array-designator
     if (!PP.getLangOpts().CPlusPlus11)
       return true;
 
@@ -64,7 +63,7 @@ bool Parser::MayBeDesignationStart() {
     // Handle the complicated case below.
     break;
   }
-  case tok::identifier:  // designation: identifier ':'
+  case tok::identifier: // designation: identifier ':'
     return PP.LookAhead(0).is(tok::colon);
   }
 
@@ -169,8 +168,8 @@ ExprResult Parser::ParseInitializerWithPotentialDesignator(
     const IdentifierInfo *FieldName = Tok.getIdentifierInfo();
 
     SmallString<256> NewSyntax;
-    llvm::raw_svector_ostream(NewSyntax) << '.' << FieldName->getName()
-                                         << " = ";
+    llvm::raw_svector_ostream(NewSyntax)
+        << '.' << FieldName->getName() << " = ";
 
     SourceLocation NameLoc = ConsumeToken(); // Eat the identifier.
 
@@ -178,8 +177,8 @@ ExprResult Parser::ParseInitializerWithPotentialDesignator(
     SourceLocation ColonLoc = ConsumeToken();
 
     Diag(NameLoc, diag::ext_gnu_old_style_field_designator)
-      << FixItHint::CreateReplacement(SourceRange(NameLoc, ColonLoc),
-                                      NewSyntax);
+        << FixItHint::CreateReplacement(SourceRange(NameLoc, ColonLoc),
+                                        NewSyntax);
 
     Designation D;
     D.AddDesignator(Designator::getField(FieldName, SourceLocation(), NameLoc));
@@ -246,7 +245,7 @@ ExprResult Parser::ParseInitializerWithPotentialDesignator(
     // send) or send to 'super', parse this as a message send
     // expression.  We handle C++ and C separately, since C++ requires
     // much more complicated parsing.
-    if  (getLangOpts().ObjC && getLangOpts().CPlusPlus) {
+    if (getLangOpts().ObjC && getLangOpts().CPlusPlus) {
       // Send to 'super'.
       if (Tok.is(tok::identifier) && Tok.getIdentifierInfo() == Ident_super &&
           NextToken().isNot(tok::period) &&
@@ -268,17 +267,16 @@ ExprResult Parser::ParseInitializerWithPotentialDesignator(
       // the rest of it.
       if (!IsExpr) {
         CheckArrayDesignatorSyntax(*this, StartLoc, Desig);
-        return ParseAssignmentExprWithObjCMessageExprStart(StartLoc,
-                                                           SourceLocation(),
-                                   ParsedType::getFromOpaquePtr(TypeOrExpr),
-                                                           nullptr);
+        return ParseAssignmentExprWithObjCMessageExprStart(
+            StartLoc, SourceLocation(),
+            ParsedType::getFromOpaquePtr(TypeOrExpr), nullptr);
       }
 
       // If the receiver was an expression, we still don't know
       // whether we have a message send or an array designator; just
       // adopt the expression for further analysis below.
       // FIXME: potentially-potentially evaluated expression above?
-      Idx = ExprResult(static_cast<Expr*>(TypeOrExpr));
+      Idx = ExprResult(static_cast<Expr *>(TypeOrExpr));
     } else if (getLangOpts().ObjC && Tok.is(tok::identifier)) {
       IdentifierInfo *II = Tok.getIdentifierInfo();
       SourceLocation IILoc = Tok.getLocation();
@@ -305,10 +303,9 @@ ExprResult Parser::ParseInitializerWithPotentialDesignator(
         // Parse type arguments and protocol qualifiers.
         if (Tok.is(tok::less)) {
           SourceLocation NewEndLoc;
-          TypeResult NewReceiverType
-            = parseObjCTypeArgsAndProtocolQualifiers(IILoc, ReceiverType,
-                                                     /*consumeLastToken=*/true,
-                                                     NewEndLoc);
+          TypeResult NewReceiverType = parseObjCTypeArgsAndProtocolQualifiers(
+              IILoc, ReceiverType,
+              /*consumeLastToken=*/true, NewEndLoc);
           if (!NewReceiverType.isUsable()) {
             SkipUntil(tok::r_square, StopAtSemi);
             return ExprError();
@@ -317,10 +314,8 @@ ExprResult Parser::ParseInitializerWithPotentialDesignator(
           ReceiverType = NewReceiverType.get();
         }
 
-        return ParseAssignmentExprWithObjCMessageExprStart(StartLoc,
-                                                           SourceLocation(),
-                                                           ReceiverType,
-                                                           nullptr);
+        return ParseAssignmentExprWithObjCMessageExprStart(
+            StartLoc, SourceLocation(), ReceiverType, nullptr);
 
       case Sema::ObjCInstanceMessage:
         // Fall through; we'll just parse the expression and
@@ -369,14 +364,13 @@ ExprResult Parser::ParseInitializerWithPotentialDesignator(
         SkipUntil(tok::r_square, StopAtSemi);
         return RHS;
       }
-      Desig.AddDesignator(Designator::getArrayRange(Idx.get(),
-                                                    RHS.get(),
+      Desig.AddDesignator(Designator::getArrayRange(Idx.get(), RHS.get(),
                                                     StartLoc, EllipsisLoc));
     }
 
     T.consumeClose();
-    Desig.getDesignator(Desig.getNumDesignators() - 1).setRBracketLoc(
-                                                        T.getCloseLocation());
+    Desig.getDesignator(Desig.getNumDesignators() - 1)
+        .setRBracketLoc(T.getCloseLocation());
   }
 
   // Okay, we're done with the designator sequence.  We know that there must be
@@ -408,9 +402,9 @@ ExprResult Parser::ParseInitializerWithPotentialDesignator(
       (Desig.getDesignator(0).isArrayDesignator() ||
        Desig.getDesignator(0).isArrayRangeDesignator())) {
     Diag(Tok, diag::ext_gnu_missing_equal_designator)
-      << FixItHint::CreateInsertion(Tok.getLocation(), "= ");
-    return Actions.ActOnDesignatedInitializer(Desig, Tok.getLocation(),
-                                              true, ParseInitializer());
+        << FixItHint::CreateInsertion(Tok.getLocation(), "= ");
+    return Actions.ActOnDesignatedInitializer(Desig, Tok.getLocation(), true,
+                                              ParseInitializer());
   }
 
   Diag(Tok, diag::err_expected_equal_designator);
@@ -460,13 +454,15 @@ ExprResult Parser::ParseBraceInitializer() {
 
   while (1) {
     // Handle Microsoft __if_exists/if_not_exists if necessary.
-    if (getLangOpts().MicrosoftExt && (Tok.is(tok::kw___if_exists) ||
-        Tok.is(tok::kw___if_not_exists))) {
+    if (getLangOpts().MicrosoftExt &&
+        (Tok.is(tok::kw___if_exists) || Tok.is(tok::kw___if_not_exists))) {
       if (ParseMicrosoftIfExistsBraceInitializer(InitExprs, InitExprsOk)) {
-        if (Tok.isNot(tok::comma)) break;
+        if (Tok.isNot(tok::comma))
+          break;
         ConsumeToken();
       }
-      if (Tok.is(tok::r_brace)) break;
+      if (Tok.is(tok::r_brace))
+        break;
       continue;
     }
 
@@ -506,24 +502,24 @@ ExprResult Parser::ParseBraceInitializer() {
     }
 
     // If we don't have a comma continued list, we're done.
-    if (Tok.isNot(tok::comma)) break;
+    if (Tok.isNot(tok::comma))
+      break;
 
     // TODO: save comma locations if some client cares.
     ConsumeToken();
 
     // Handle trailing comma.
-    if (Tok.is(tok::r_brace)) break;
+    if (Tok.is(tok::r_brace))
+      break;
   }
 
   bool closed = !T.consumeClose();
 
   if (InitExprsOk && closed)
-    return Actions.ActOnInitList(LBraceLoc, InitExprs,
-                                 T.getCloseLocation());
+    return Actions.ActOnInitList(LBraceLoc, InitExprs, T.getCloseLocation());
 
   return ExprError(); // an error occurred.
 }
-
 
 // Return true if a comma (or closing brace) is necessary after the
 // __if_exists/if_not_exists statement.
@@ -547,7 +543,7 @@ bool Parser::ParseMicrosoftIfExistsBraceInitializer(ExprVector &InitExprs,
 
   case IEB_Dependent:
     Diag(Result.KeywordLoc, diag::warn_microsoft_dependent_exists)
-      << Result.IsIfExists;
+        << Result.IsIfExists;
     // Fall through to skip.
     LLVM_FALLTHROUGH;
 

@@ -22,14 +22,13 @@ using namespace clang;
 using namespace ento;
 
 namespace {
-class FixedAddressChecker
-  : public Checker< check::PreStmt<BinaryOperator> > {
+class FixedAddressChecker : public Checker<check::PreStmt<BinaryOperator>> {
   mutable std::unique_ptr<BuiltinBug> BT;
 
 public:
   void checkPreStmt(const BinaryOperator *B, CheckerContext &C) const;
 };
-}
+} // namespace
 
 void FixedAddressChecker::checkPreStmt(const BinaryOperator *B,
                                        CheckerContext &C) const {

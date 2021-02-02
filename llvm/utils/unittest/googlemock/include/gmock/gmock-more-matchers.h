@@ -55,6 +55,6 @@ MATCHER(IsEmpty, negation ? "isn't empty" : "is empty") {
   return false;
 }
 
-}  // namespace testing
+} // namespace testing
 
-#endif  // GMOCK_GMOCK_MORE_MATCHERS_H_
+#endif // GMOCK_GMOCK_MORE_MATCHERS_H_

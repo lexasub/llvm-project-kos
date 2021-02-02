@@ -34,8 +34,7 @@ public:
   unsigned getStubAlignment() override { return 1; }
 
   Expected<object::relocation_iterator>
-  processRelocationRef(unsigned SectionID,
-                       object::relocation_iterator RelI,
+  processRelocationRef(unsigned SectionID, object::relocation_iterator RelI,
                        const object::ObjectFile &Obj,
                        ObjSectionToIDMap &ObjSectionToID,
                        StubMap &Stubs) override {
@@ -222,7 +221,6 @@ public:
   void registerEHFrames() override {}
 };
 
-}
+} // namespace llvm
 
 #endif
-

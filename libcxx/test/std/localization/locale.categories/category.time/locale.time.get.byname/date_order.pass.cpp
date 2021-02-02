@@ -26,32 +26,29 @@
 
 typedef std::time_get_byname<char, input_iterator<const char*> > F;
 
-class my_facet
-    : public F
-{
+class my_facet : public F {
 public:
-    explicit my_facet(const std::string& nm, std::size_t refs = 0)
-        : F(nm, refs) {}
+  explicit my_facet(const std::string& nm, std::size_t refs = 0)
+      : F(nm, refs) {}
 };
 
-int main(int, char**)
-{
-    {
-        const my_facet f(LOCALE_en_US_UTF_8, 1);
-        assert(f.date_order() == std::time_base::mdy);
-    }
-    {
-        const my_facet f(LOCALE_fr_FR_UTF_8, 1);
-        assert(f.date_order() == std::time_base::dmy);
-    }
-    {
-        const my_facet f(LOCALE_ru_RU_UTF_8, 1);
-        assert(f.date_order() == std::time_base::dmy);
-    }
-    {
-        const my_facet f(LOCALE_zh_CN_UTF_8, 1);
-        assert(f.date_order() == std::time_base::ymd);
-    }
+int main(int, char**) {
+  {
+    const my_facet f(LOCALE_en_US_UTF_8, 1);
+    assert(f.date_order() == std::time_base::mdy);
+  }
+  {
+    const my_facet f(LOCALE_fr_FR_UTF_8, 1);
+    assert(f.date_order() == std::time_base::dmy);
+  }
+  {
+    const my_facet f(LOCALE_ru_RU_UTF_8, 1);
+    assert(f.date_order() == std::time_base::dmy);
+  }
+  {
+    const my_facet f(LOCALE_zh_CN_UTF_8, 1);
+    assert(f.date_order() == std::time_base::ymd);
+  }
 
   return 0;
 }

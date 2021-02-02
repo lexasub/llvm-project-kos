@@ -9,9 +9,9 @@
 // Investigate why LeakyGlobal leak does show
 // UNSUPPORTED: arm-linux || armhf-linux
 
+#include <sanitizer/lsan_interface.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sanitizer/lsan_interface.h>
 
 struct LeakyGlobal {
   LeakyGlobal() {

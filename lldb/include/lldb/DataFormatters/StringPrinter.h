@@ -140,6 +140,7 @@ public:
     void SetIsTruncated(bool t) { m_is_truncated = t; }
 
     bool GetIsTruncated() const { return m_is_truncated; }
+
   private:
     DataExtractor m_data;
     bool m_is_truncated = false;

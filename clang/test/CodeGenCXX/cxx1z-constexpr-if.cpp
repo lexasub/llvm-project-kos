@@ -21,7 +21,8 @@ void f() {
     should_be_used_2();
   else {
     goto foo;
-foo: should_not_be_used();
+  foo:
+    should_not_be_used();
   }
   if constexpr (A())
     should_be_used_3();

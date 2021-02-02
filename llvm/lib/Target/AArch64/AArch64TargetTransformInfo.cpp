@@ -362,106 +362,103 @@ int AArch64TTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst, Type *Src,
     return AdjustCost(
         BaseT::getCastInstrCost(Opcode, Dst, Src, CCH, CostKind, I));
 
-  static const TypeConversionCostTblEntry
-  ConversionTbl[] = {
-    { ISD::TRUNCATE, MVT::v4i16, MVT::v4i32,  1 },
-    { ISD::TRUNCATE, MVT::v4i32, MVT::v4i64,  0 },
-    { ISD::TRUNCATE, MVT::v8i8,  MVT::v8i32,  3 },
-    { ISD::TRUNCATE, MVT::v16i8, MVT::v16i32, 6 },
+  static const TypeConversionCostTblEntry ConversionTbl[] = {
+      {ISD::TRUNCATE, MVT::v4i16, MVT::v4i32, 1},
+      {ISD::TRUNCATE, MVT::v4i32, MVT::v4i64, 0},
+      {ISD::TRUNCATE, MVT::v8i8, MVT::v8i32, 3},
+      {ISD::TRUNCATE, MVT::v16i8, MVT::v16i32, 6},
 
-    // The number of shll instructions for the extension.
-    { ISD::SIGN_EXTEND, MVT::v4i64,  MVT::v4i16, 3 },
-    { ISD::ZERO_EXTEND, MVT::v4i64,  MVT::v4i16, 3 },
-    { ISD::SIGN_EXTEND, MVT::v4i64,  MVT::v4i32, 2 },
-    { ISD::ZERO_EXTEND, MVT::v4i64,  MVT::v4i32, 2 },
-    { ISD::SIGN_EXTEND, MVT::v8i32,  MVT::v8i8,  3 },
-    { ISD::ZERO_EXTEND, MVT::v8i32,  MVT::v8i8,  3 },
-    { ISD::SIGN_EXTEND, MVT::v8i32,  MVT::v8i16, 2 },
-    { ISD::ZERO_EXTEND, MVT::v8i32,  MVT::v8i16, 2 },
-    { ISD::SIGN_EXTEND, MVT::v8i64,  MVT::v8i8,  7 },
-    { ISD::ZERO_EXTEND, MVT::v8i64,  MVT::v8i8,  7 },
-    { ISD::SIGN_EXTEND, MVT::v8i64,  MVT::v8i16, 6 },
-    { ISD::ZERO_EXTEND, MVT::v8i64,  MVT::v8i16, 6 },
-    { ISD::SIGN_EXTEND, MVT::v16i16, MVT::v16i8, 2 },
-    { ISD::ZERO_EXTEND, MVT::v16i16, MVT::v16i8, 2 },
-    { ISD::SIGN_EXTEND, MVT::v16i32, MVT::v16i8, 6 },
-    { ISD::ZERO_EXTEND, MVT::v16i32, MVT::v16i8, 6 },
+      // The number of shll instructions for the extension.
+      {ISD::SIGN_EXTEND, MVT::v4i64, MVT::v4i16, 3},
+      {ISD::ZERO_EXTEND, MVT::v4i64, MVT::v4i16, 3},
+      {ISD::SIGN_EXTEND, MVT::v4i64, MVT::v4i32, 2},
+      {ISD::ZERO_EXTEND, MVT::v4i64, MVT::v4i32, 2},
+      {ISD::SIGN_EXTEND, MVT::v8i32, MVT::v8i8, 3},
+      {ISD::ZERO_EXTEND, MVT::v8i32, MVT::v8i8, 3},
+      {ISD::SIGN_EXTEND, MVT::v8i32, MVT::v8i16, 2},
+      {ISD::ZERO_EXTEND, MVT::v8i32, MVT::v8i16, 2},
+      {ISD::SIGN_EXTEND, MVT::v8i64, MVT::v8i8, 7},
+      {ISD::ZERO_EXTEND, MVT::v8i64, MVT::v8i8, 7},
+      {ISD::SIGN_EXTEND, MVT::v8i64, MVT::v8i16, 6},
+      {ISD::ZERO_EXTEND, MVT::v8i64, MVT::v8i16, 6},
+      {ISD::SIGN_EXTEND, MVT::v16i16, MVT::v16i8, 2},
+      {ISD::ZERO_EXTEND, MVT::v16i16, MVT::v16i8, 2},
+      {ISD::SIGN_EXTEND, MVT::v16i32, MVT::v16i8, 6},
+      {ISD::ZERO_EXTEND, MVT::v16i32, MVT::v16i8, 6},
 
-    // LowerVectorINT_TO_FP:
-    { ISD::SINT_TO_FP, MVT::v2f32, MVT::v2i32, 1 },
-    { ISD::SINT_TO_FP, MVT::v4f32, MVT::v4i32, 1 },
-    { ISD::SINT_TO_FP, MVT::v2f64, MVT::v2i64, 1 },
-    { ISD::UINT_TO_FP, MVT::v2f32, MVT::v2i32, 1 },
-    { ISD::UINT_TO_FP, MVT::v4f32, MVT::v4i32, 1 },
-    { ISD::UINT_TO_FP, MVT::v2f64, MVT::v2i64, 1 },
+      // LowerVectorINT_TO_FP:
+      {ISD::SINT_TO_FP, MVT::v2f32, MVT::v2i32, 1},
+      {ISD::SINT_TO_FP, MVT::v4f32, MVT::v4i32, 1},
+      {ISD::SINT_TO_FP, MVT::v2f64, MVT::v2i64, 1},
+      {ISD::UINT_TO_FP, MVT::v2f32, MVT::v2i32, 1},
+      {ISD::UINT_TO_FP, MVT::v4f32, MVT::v4i32, 1},
+      {ISD::UINT_TO_FP, MVT::v2f64, MVT::v2i64, 1},
 
-    // Complex: to v2f32
-    { ISD::SINT_TO_FP, MVT::v2f32, MVT::v2i8,  3 },
-    { ISD::SINT_TO_FP, MVT::v2f32, MVT::v2i16, 3 },
-    { ISD::SINT_TO_FP, MVT::v2f32, MVT::v2i64, 2 },
-    { ISD::UINT_TO_FP, MVT::v2f32, MVT::v2i8,  3 },
-    { ISD::UINT_TO_FP, MVT::v2f32, MVT::v2i16, 3 },
-    { ISD::UINT_TO_FP, MVT::v2f32, MVT::v2i64, 2 },
+      // Complex: to v2f32
+      {ISD::SINT_TO_FP, MVT::v2f32, MVT::v2i8, 3},
+      {ISD::SINT_TO_FP, MVT::v2f32, MVT::v2i16, 3},
+      {ISD::SINT_TO_FP, MVT::v2f32, MVT::v2i64, 2},
+      {ISD::UINT_TO_FP, MVT::v2f32, MVT::v2i8, 3},
+      {ISD::UINT_TO_FP, MVT::v2f32, MVT::v2i16, 3},
+      {ISD::UINT_TO_FP, MVT::v2f32, MVT::v2i64, 2},
 
-    // Complex: to v4f32
-    { ISD::SINT_TO_FP, MVT::v4f32, MVT::v4i8,  4 },
-    { ISD::SINT_TO_FP, MVT::v4f32, MVT::v4i16, 2 },
-    { ISD::UINT_TO_FP, MVT::v4f32, MVT::v4i8,  3 },
-    { ISD::UINT_TO_FP, MVT::v4f32, MVT::v4i16, 2 },
+      // Complex: to v4f32
+      {ISD::SINT_TO_FP, MVT::v4f32, MVT::v4i8, 4},
+      {ISD::SINT_TO_FP, MVT::v4f32, MVT::v4i16, 2},
+      {ISD::UINT_TO_FP, MVT::v4f32, MVT::v4i8, 3},
+      {ISD::UINT_TO_FP, MVT::v4f32, MVT::v4i16, 2},
 
-    // Complex: to v8f32
-    { ISD::SINT_TO_FP, MVT::v8f32, MVT::v8i8,  10 },
-    { ISD::SINT_TO_FP, MVT::v8f32, MVT::v8i16, 4 },
-    { ISD::UINT_TO_FP, MVT::v8f32, MVT::v8i8,  10 },
-    { ISD::UINT_TO_FP, MVT::v8f32, MVT::v8i16, 4 },
+      // Complex: to v8f32
+      {ISD::SINT_TO_FP, MVT::v8f32, MVT::v8i8, 10},
+      {ISD::SINT_TO_FP, MVT::v8f32, MVT::v8i16, 4},
+      {ISD::UINT_TO_FP, MVT::v8f32, MVT::v8i8, 10},
+      {ISD::UINT_TO_FP, MVT::v8f32, MVT::v8i16, 4},
 
-    // Complex: to v16f32
-    { ISD::SINT_TO_FP, MVT::v16f32, MVT::v16i8, 21 },
-    { ISD::UINT_TO_FP, MVT::v16f32, MVT::v16i8, 21 },
+      // Complex: to v16f32
+      {ISD::SINT_TO_FP, MVT::v16f32, MVT::v16i8, 21},
+      {ISD::UINT_TO_FP, MVT::v16f32, MVT::v16i8, 21},
 
-    // Complex: to v2f64
-    { ISD::SINT_TO_FP, MVT::v2f64, MVT::v2i8,  4 },
-    { ISD::SINT_TO_FP, MVT::v2f64, MVT::v2i16, 4 },
-    { ISD::SINT_TO_FP, MVT::v2f64, MVT::v2i32, 2 },
-    { ISD::UINT_TO_FP, MVT::v2f64, MVT::v2i8,  4 },
-    { ISD::UINT_TO_FP, MVT::v2f64, MVT::v2i16, 4 },
-    { ISD::UINT_TO_FP, MVT::v2f64, MVT::v2i32, 2 },
+      // Complex: to v2f64
+      {ISD::SINT_TO_FP, MVT::v2f64, MVT::v2i8, 4},
+      {ISD::SINT_TO_FP, MVT::v2f64, MVT::v2i16, 4},
+      {ISD::SINT_TO_FP, MVT::v2f64, MVT::v2i32, 2},
+      {ISD::UINT_TO_FP, MVT::v2f64, MVT::v2i8, 4},
+      {ISD::UINT_TO_FP, MVT::v2f64, MVT::v2i16, 4},
+      {ISD::UINT_TO_FP, MVT::v2f64, MVT::v2i32, 2},
 
+      // LowerVectorFP_TO_INT
+      {ISD::FP_TO_SINT, MVT::v2i32, MVT::v2f32, 1},
+      {ISD::FP_TO_SINT, MVT::v4i32, MVT::v4f32, 1},
+      {ISD::FP_TO_SINT, MVT::v2i64, MVT::v2f64, 1},
+      {ISD::FP_TO_UINT, MVT::v2i32, MVT::v2f32, 1},
+      {ISD::FP_TO_UINT, MVT::v4i32, MVT::v4f32, 1},
+      {ISD::FP_TO_UINT, MVT::v2i64, MVT::v2f64, 1},
 
-    // LowerVectorFP_TO_INT
-    { ISD::FP_TO_SINT, MVT::v2i32, MVT::v2f32, 1 },
-    { ISD::FP_TO_SINT, MVT::v4i32, MVT::v4f32, 1 },
-    { ISD::FP_TO_SINT, MVT::v2i64, MVT::v2f64, 1 },
-    { ISD::FP_TO_UINT, MVT::v2i32, MVT::v2f32, 1 },
-    { ISD::FP_TO_UINT, MVT::v4i32, MVT::v4f32, 1 },
-    { ISD::FP_TO_UINT, MVT::v2i64, MVT::v2f64, 1 },
+      // Complex, from v2f32: legal type is v2i32 (no cost) or v2i64 (1 ext).
+      {ISD::FP_TO_SINT, MVT::v2i64, MVT::v2f32, 2},
+      {ISD::FP_TO_SINT, MVT::v2i16, MVT::v2f32, 1},
+      {ISD::FP_TO_SINT, MVT::v2i8, MVT::v2f32, 1},
+      {ISD::FP_TO_UINT, MVT::v2i64, MVT::v2f32, 2},
+      {ISD::FP_TO_UINT, MVT::v2i16, MVT::v2f32, 1},
+      {ISD::FP_TO_UINT, MVT::v2i8, MVT::v2f32, 1},
 
-    // Complex, from v2f32: legal type is v2i32 (no cost) or v2i64 (1 ext).
-    { ISD::FP_TO_SINT, MVT::v2i64, MVT::v2f32, 2 },
-    { ISD::FP_TO_SINT, MVT::v2i16, MVT::v2f32, 1 },
-    { ISD::FP_TO_SINT, MVT::v2i8,  MVT::v2f32, 1 },
-    { ISD::FP_TO_UINT, MVT::v2i64, MVT::v2f32, 2 },
-    { ISD::FP_TO_UINT, MVT::v2i16, MVT::v2f32, 1 },
-    { ISD::FP_TO_UINT, MVT::v2i8,  MVT::v2f32, 1 },
+      // Complex, from v4f32: legal type is v4i16, 1 narrowing => ~2
+      {ISD::FP_TO_SINT, MVT::v4i16, MVT::v4f32, 2},
+      {ISD::FP_TO_SINT, MVT::v4i8, MVT::v4f32, 2},
+      {ISD::FP_TO_UINT, MVT::v4i16, MVT::v4f32, 2},
+      {ISD::FP_TO_UINT, MVT::v4i8, MVT::v4f32, 2},
 
-    // Complex, from v4f32: legal type is v4i16, 1 narrowing => ~2
-    { ISD::FP_TO_SINT, MVT::v4i16, MVT::v4f32, 2 },
-    { ISD::FP_TO_SINT, MVT::v4i8,  MVT::v4f32, 2 },
-    { ISD::FP_TO_UINT, MVT::v4i16, MVT::v4f32, 2 },
-    { ISD::FP_TO_UINT, MVT::v4i8,  MVT::v4f32, 2 },
-
-    // Complex, from v2f64: legal type is v2i32, 1 narrowing => ~2.
-    { ISD::FP_TO_SINT, MVT::v2i32, MVT::v2f64, 2 },
-    { ISD::FP_TO_SINT, MVT::v2i16, MVT::v2f64, 2 },
-    { ISD::FP_TO_SINT, MVT::v2i8,  MVT::v2f64, 2 },
-    { ISD::FP_TO_UINT, MVT::v2i32, MVT::v2f64, 2 },
-    { ISD::FP_TO_UINT, MVT::v2i16, MVT::v2f64, 2 },
-    { ISD::FP_TO_UINT, MVT::v2i8,  MVT::v2f64, 2 },
+      // Complex, from v2f64: legal type is v2i32, 1 narrowing => ~2.
+      {ISD::FP_TO_SINT, MVT::v2i32, MVT::v2f64, 2},
+      {ISD::FP_TO_SINT, MVT::v2i16, MVT::v2f64, 2},
+      {ISD::FP_TO_SINT, MVT::v2i8, MVT::v2f64, 2},
+      {ISD::FP_TO_UINT, MVT::v2i32, MVT::v2f64, 2},
+      {ISD::FP_TO_UINT, MVT::v2i16, MVT::v2f64, 2},
+      {ISD::FP_TO_UINT, MVT::v2i8, MVT::v2f64, 2},
   };
 
-  if (const auto *Entry = ConvertCostTableLookup(ConversionTbl, ISD,
-                                                 DstTy.getSimpleVT(),
-                                                 SrcTy.getSimpleVT()))
+  if (const auto *Entry = ConvertCostTableLookup(
+          ConversionTbl, ISD, DstTy.getSimpleVT(), SrcTy.getSimpleVT()))
     return AdjustCost(Entry->Cost);
 
   return AdjustCost(
@@ -563,15 +560,15 @@ int AArch64TTIImpl::getVectorInstrCost(unsigned Opcode, Type *Val,
 
 int AArch64TTIImpl::getArithmeticInstrCost(
     unsigned Opcode, Type *Ty, TTI::TargetCostKind CostKind,
-    TTI::OperandValueKind Opd1Info,
-    TTI::OperandValueKind Opd2Info, TTI::OperandValueProperties Opd1PropInfo,
+    TTI::OperandValueKind Opd1Info, TTI::OperandValueKind Opd2Info,
+    TTI::OperandValueProperties Opd1PropInfo,
     TTI::OperandValueProperties Opd2PropInfo, ArrayRef<const Value *> Args,
     const Instruction *CxtI) {
   // TODO: Handle more cost kinds.
   if (CostKind != TTI::TCK_RecipThroughput)
     return BaseT::getArithmeticInstrCost(Opcode, Ty, CostKind, Opd1Info,
-                                         Opd2Info, Opd1PropInfo,
-                                         Opd2PropInfo, Args, CxtI);
+                                         Opd2Info, Opd1PropInfo, Opd2PropInfo,
+                                         Args, CxtI);
 
   // Legalize the type.
   std::pair<int, MVT> LT = TLI->getTypeLegalizationCost(DL, Ty);
@@ -591,8 +588,8 @@ int AArch64TTIImpl::getArithmeticInstrCost(
   switch (ISD) {
   default:
     return Cost + BaseT::getArithmeticInstrCost(Opcode, Ty, CostKind, Opd1Info,
-                                                Opd2Info,
-                                                Opd1PropInfo, Opd2PropInfo);
+                                                Opd2Info, Opd1PropInfo,
+                                                Opd2PropInfo);
   case ISD::SDIV:
     if (Opd2Info == TargetTransformInfo::OK_UniformConstantValue &&
         Opd2PropInfo == TargetTransformInfo::OP_PowerOf2) {
@@ -600,21 +597,17 @@ int AArch64TTIImpl::getArithmeticInstrCost(
       // normally expanded to the sequence ADD + CMP + SELECT + SRA.
       // The OperandValue properties many not be same as that of previous
       // operation; conservatively assume OP_None.
-      Cost += getArithmeticInstrCost(Instruction::Add, Ty, CostKind,
-                                     Opd1Info, Opd2Info,
-                                     TargetTransformInfo::OP_None,
+      Cost += getArithmeticInstrCost(Instruction::Add, Ty, CostKind, Opd1Info,
+                                     Opd2Info, TargetTransformInfo::OP_None,
                                      TargetTransformInfo::OP_None);
-      Cost += getArithmeticInstrCost(Instruction::Sub, Ty, CostKind,
-                                     Opd1Info, Opd2Info,
-                                     TargetTransformInfo::OP_None,
+      Cost += getArithmeticInstrCost(Instruction::Sub, Ty, CostKind, Opd1Info,
+                                     Opd2Info, TargetTransformInfo::OP_None,
                                      TargetTransformInfo::OP_None);
-      Cost += getArithmeticInstrCost(Instruction::Select, Ty, CostKind,
-                                     Opd1Info, Opd2Info,
-                                     TargetTransformInfo::OP_None,
-                                     TargetTransformInfo::OP_None);
-      Cost += getArithmeticInstrCost(Instruction::AShr, Ty, CostKind,
-                                     Opd1Info, Opd2Info,
-                                     TargetTransformInfo::OP_None,
+      Cost += getArithmeticInstrCost(
+          Instruction::Select, Ty, CostKind, Opd1Info, Opd2Info,
+          TargetTransformInfo::OP_None, TargetTransformInfo::OP_None);
+      Cost += getArithmeticInstrCost(Instruction::AShr, Ty, CostKind, Opd1Info,
+                                     Opd2Info, TargetTransformInfo::OP_None,
                                      TargetTransformInfo::OP_None);
       return Cost;
     }
@@ -626,25 +619,21 @@ int AArch64TTIImpl::getArithmeticInstrCost(
         // Vector signed division by constant are expanded to the
         // sequence MULHS + ADD/SUB + SRA + SRL + ADD, and unsigned division
         // to MULHS + SUB + SRL + ADD + SRL.
-        int MulCost = getArithmeticInstrCost(Instruction::Mul, Ty, CostKind,
-                                             Opd1Info, Opd2Info,
-                                             TargetTransformInfo::OP_None,
-                                             TargetTransformInfo::OP_None);
-        int AddCost = getArithmeticInstrCost(Instruction::Add, Ty, CostKind,
-                                             Opd1Info, Opd2Info,
-                                             TargetTransformInfo::OP_None,
-                                             TargetTransformInfo::OP_None);
-        int ShrCost = getArithmeticInstrCost(Instruction::AShr, Ty, CostKind,
-                                             Opd1Info, Opd2Info,
-                                             TargetTransformInfo::OP_None,
-                                             TargetTransformInfo::OP_None);
+        int MulCost = getArithmeticInstrCost(
+            Instruction::Mul, Ty, CostKind, Opd1Info, Opd2Info,
+            TargetTransformInfo::OP_None, TargetTransformInfo::OP_None);
+        int AddCost = getArithmeticInstrCost(
+            Instruction::Add, Ty, CostKind, Opd1Info, Opd2Info,
+            TargetTransformInfo::OP_None, TargetTransformInfo::OP_None);
+        int ShrCost = getArithmeticInstrCost(
+            Instruction::AShr, Ty, CostKind, Opd1Info, Opd2Info,
+            TargetTransformInfo::OP_None, TargetTransformInfo::OP_None);
         return MulCost * 2 + AddCost * 2 + ShrCost * 2 + 1;
       }
     }
 
     Cost += BaseT::getArithmeticInstrCost(Opcode, Ty, CostKind, Opd1Info,
-                                          Opd2Info,
-                                          Opd1PropInfo, Opd2PropInfo);
+                                          Opd2Info, Opd1PropInfo, Opd2PropInfo);
     if (Ty->isVectorTy()) {
       // On AArch64, vector divisions are not supported natively and are
       // expanded into scalar divisions of each pair of elements.
@@ -688,8 +677,8 @@ int AArch64TTIImpl::getArithmeticInstrCost(
       return (Cost + 2) * LT.first;
 
     return Cost + BaseT::getArithmeticInstrCost(Opcode, Ty, CostKind, Opd1Info,
-                                                Opd2Info,
-                                                Opd1PropInfo, Opd2PropInfo);
+                                                Opd2Info, Opd1PropInfo,
+                                                Opd2PropInfo);
   }
 }
 
@@ -746,15 +735,13 @@ int AArch64TTIImpl::getCmpSelInstrCost(unsigned Opcode, Type *ValTy,
         return LT.first;
     }
 
-    static const TypeConversionCostTblEntry
-    VectorSelectTbl[] = {
-      { ISD::SELECT, MVT::v16i1, MVT::v16i16, 16 },
-      { ISD::SELECT, MVT::v8i1, MVT::v8i32, 8 },
-      { ISD::SELECT, MVT::v16i1, MVT::v16i32, 16 },
-      { ISD::SELECT, MVT::v4i1, MVT::v4i64, 4 * AmortizationCost },
-      { ISD::SELECT, MVT::v8i1, MVT::v8i64, 8 * AmortizationCost },
-      { ISD::SELECT, MVT::v16i1, MVT::v16i64, 16 * AmortizationCost }
-    };
+    static const TypeConversionCostTblEntry VectorSelectTbl[] = {
+        {ISD::SELECT, MVT::v16i1, MVT::v16i16, 16},
+        {ISD::SELECT, MVT::v8i1, MVT::v8i32, 8},
+        {ISD::SELECT, MVT::v16i1, MVT::v16i32, 16},
+        {ISD::SELECT, MVT::v4i1, MVT::v4i64, 4 * AmortizationCost},
+        {ISD::SELECT, MVT::v8i1, MVT::v8i64, 8 * AmortizationCost},
+        {ISD::SELECT, MVT::v16i1, MVT::v16i64, 16 * AmortizationCost}};
 
     EVT SelCondTy = TLI->getValueType(DL, CondTy);
     EVT SelValTy = TLI->getValueType(DL, ValTy);
@@ -821,7 +808,7 @@ int AArch64TTIImpl::getMemoryOpCost(unsigned Opcode, Type *Ty,
     return 1;
 
   // Type legalization can't handle structs
-  if (TLI->getValueType(DL, Ty,  true) == MVT::Other)
+  if (TLI->getValueType(DL, Ty, true) == MVT::Other)
     return BaseT::getMemoryOpCost(Opcode, Ty, Alignment, AddressSpace,
                                   CostKind);
 
@@ -1191,10 +1178,8 @@ int AArch64TTIImpl::getArithmeticReductionCost(unsigned Opcode,
   // instructions as normal vector adds. This is the only arithmetic vector
   // reduction operation for which we have an instruction.
   static const CostTblEntry CostTblNoPairwise[]{
-      {ISD::ADD, MVT::v8i8,  1},
-      {ISD::ADD, MVT::v16i8, 1},
-      {ISD::ADD, MVT::v4i16, 1},
-      {ISD::ADD, MVT::v8i16, 1},
+      {ISD::ADD, MVT::v8i8, 1},  {ISD::ADD, MVT::v16i8, 1},
+      {ISD::ADD, MVT::v4i16, 1}, {ISD::ADD, MVT::v8i16, 1},
       {ISD::ADD, MVT::v4i32, 1},
   };
 
@@ -1210,45 +1195,45 @@ int AArch64TTIImpl::getShuffleCost(TTI::ShuffleKind Kind, VectorType *Tp,
   if (Kind == TTI::SK_Broadcast || Kind == TTI::SK_Transpose ||
       Kind == TTI::SK_Select || Kind == TTI::SK_PermuteSingleSrc) {
     static const CostTblEntry ShuffleTbl[] = {
-      // Broadcast shuffle kinds can be performed with 'dup'.
-      { TTI::SK_Broadcast, MVT::v8i8,  1 },
-      { TTI::SK_Broadcast, MVT::v16i8, 1 },
-      { TTI::SK_Broadcast, MVT::v4i16, 1 },
-      { TTI::SK_Broadcast, MVT::v8i16, 1 },
-      { TTI::SK_Broadcast, MVT::v2i32, 1 },
-      { TTI::SK_Broadcast, MVT::v4i32, 1 },
-      { TTI::SK_Broadcast, MVT::v2i64, 1 },
-      { TTI::SK_Broadcast, MVT::v2f32, 1 },
-      { TTI::SK_Broadcast, MVT::v4f32, 1 },
-      { TTI::SK_Broadcast, MVT::v2f64, 1 },
-      // Transpose shuffle kinds can be performed with 'trn1/trn2' and
-      // 'zip1/zip2' instructions.
-      { TTI::SK_Transpose, MVT::v8i8,  1 },
-      { TTI::SK_Transpose, MVT::v16i8, 1 },
-      { TTI::SK_Transpose, MVT::v4i16, 1 },
-      { TTI::SK_Transpose, MVT::v8i16, 1 },
-      { TTI::SK_Transpose, MVT::v2i32, 1 },
-      { TTI::SK_Transpose, MVT::v4i32, 1 },
-      { TTI::SK_Transpose, MVT::v2i64, 1 },
-      { TTI::SK_Transpose, MVT::v2f32, 1 },
-      { TTI::SK_Transpose, MVT::v4f32, 1 },
-      { TTI::SK_Transpose, MVT::v2f64, 1 },
-      // Select shuffle kinds.
-      // TODO: handle vXi8/vXi16.
-      { TTI::SK_Select, MVT::v2i32, 1 }, // mov.
-      { TTI::SK_Select, MVT::v4i32, 2 }, // rev+trn (or similar).
-      { TTI::SK_Select, MVT::v2i64, 1 }, // mov.
-      { TTI::SK_Select, MVT::v2f32, 1 }, // mov.
-      { TTI::SK_Select, MVT::v4f32, 2 }, // rev+trn (or similar).
-      { TTI::SK_Select, MVT::v2f64, 1 }, // mov.
-      // PermuteSingleSrc shuffle kinds.
-      // TODO: handle vXi8/vXi16.
-      { TTI::SK_PermuteSingleSrc, MVT::v2i32, 1 }, // mov.
-      { TTI::SK_PermuteSingleSrc, MVT::v4i32, 3 }, // perfectshuffle worst case.
-      { TTI::SK_PermuteSingleSrc, MVT::v2i64, 1 }, // mov.
-      { TTI::SK_PermuteSingleSrc, MVT::v2f32, 1 }, // mov.
-      { TTI::SK_PermuteSingleSrc, MVT::v4f32, 3 }, // perfectshuffle worst case.
-      { TTI::SK_PermuteSingleSrc, MVT::v2f64, 1 }, // mov.
+        // Broadcast shuffle kinds can be performed with 'dup'.
+        {TTI::SK_Broadcast, MVT::v8i8, 1},
+        {TTI::SK_Broadcast, MVT::v16i8, 1},
+        {TTI::SK_Broadcast, MVT::v4i16, 1},
+        {TTI::SK_Broadcast, MVT::v8i16, 1},
+        {TTI::SK_Broadcast, MVT::v2i32, 1},
+        {TTI::SK_Broadcast, MVT::v4i32, 1},
+        {TTI::SK_Broadcast, MVT::v2i64, 1},
+        {TTI::SK_Broadcast, MVT::v2f32, 1},
+        {TTI::SK_Broadcast, MVT::v4f32, 1},
+        {TTI::SK_Broadcast, MVT::v2f64, 1},
+        // Transpose shuffle kinds can be performed with 'trn1/trn2' and
+        // 'zip1/zip2' instructions.
+        {TTI::SK_Transpose, MVT::v8i8, 1},
+        {TTI::SK_Transpose, MVT::v16i8, 1},
+        {TTI::SK_Transpose, MVT::v4i16, 1},
+        {TTI::SK_Transpose, MVT::v8i16, 1},
+        {TTI::SK_Transpose, MVT::v2i32, 1},
+        {TTI::SK_Transpose, MVT::v4i32, 1},
+        {TTI::SK_Transpose, MVT::v2i64, 1},
+        {TTI::SK_Transpose, MVT::v2f32, 1},
+        {TTI::SK_Transpose, MVT::v4f32, 1},
+        {TTI::SK_Transpose, MVT::v2f64, 1},
+        // Select shuffle kinds.
+        // TODO: handle vXi8/vXi16.
+        {TTI::SK_Select, MVT::v2i32, 1}, // mov.
+        {TTI::SK_Select, MVT::v4i32, 2}, // rev+trn (or similar).
+        {TTI::SK_Select, MVT::v2i64, 1}, // mov.
+        {TTI::SK_Select, MVT::v2f32, 1}, // mov.
+        {TTI::SK_Select, MVT::v4f32, 2}, // rev+trn (or similar).
+        {TTI::SK_Select, MVT::v2f64, 1}, // mov.
+        // PermuteSingleSrc shuffle kinds.
+        // TODO: handle vXi8/vXi16.
+        {TTI::SK_PermuteSingleSrc, MVT::v2i32, 1}, // mov.
+        {TTI::SK_PermuteSingleSrc, MVT::v4i32, 3}, // perfectshuffle worst case.
+        {TTI::SK_PermuteSingleSrc, MVT::v2i64, 1}, // mov.
+        {TTI::SK_PermuteSingleSrc, MVT::v2f32, 1}, // mov.
+        {TTI::SK_PermuteSingleSrc, MVT::v4f32, 3}, // perfectshuffle worst case.
+        {TTI::SK_PermuteSingleSrc, MVT::v2f64, 1}, // mov.
     };
     std::pair<int, MVT> LT = TLI->getTypeLegalizationCost(DL, Tp);
     if (const auto *Entry = CostTableLookup(ShuffleTbl, Kind, LT.second))

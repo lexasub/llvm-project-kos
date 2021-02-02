@@ -119,9 +119,9 @@ enum {
 #define LOG_THREAD (1u << 2)
 #define LOG_EXCEPTIONS (1u << 3)
 #define LOG_SHLIB (1u << 4)
-#define LOG_MEMORY (1u << 5)             // Log memory reads/writes calls
-#define LOG_MEMORY_DATA_SHORT (1u << 6)  // Log short memory reads/writes bytes
-#define LOG_MEMORY_DATA_LONG (1u << 7)   // Log all memory reads/writes bytes
+#define LOG_MEMORY (1u << 5) // Log memory reads/writes calls
+#define LOG_MEMORY_DATA_SHORT (1u << 6) // Log short memory reads/writes bytes
+#define LOG_MEMORY_DATA_LONG (1u << 7) // Log all memory reads/writes bytes
 #define LOG_MEMORY_PROTECTIONS (1u << 8) // Log memory protection changes
 #define LOG_BREAKPOINTS (1u << 9)
 #define LOG_EVENTS (1u << 10)
@@ -141,10 +141,10 @@ enum {
 // Generic Register set to be defined by each architecture for access to common
 // register values.
 #define REGISTER_SET_GENERIC ((uint32_t)0xFFFFFFFFu)
-#define GENERIC_REGNUM_PC 0    // Program Counter
-#define GENERIC_REGNUM_SP 1    // Stack Pointer
-#define GENERIC_REGNUM_FP 2    // Frame Pointer
-#define GENERIC_REGNUM_RA 3    // Return Address
+#define GENERIC_REGNUM_PC 0 // Program Counter
+#define GENERIC_REGNUM_SP 1 // Stack Pointer
+#define GENERIC_REGNUM_FP 2 // Frame Pointer
+#define GENERIC_REGNUM_RA 3 // Return Address
 #define GENERIC_REGNUM_FLAGS 4 // Processor flags register
 #define GENERIC_REGNUM_ARG1                                                    \
   5 // The register that would contain pointer size or less argument 1 (if any)

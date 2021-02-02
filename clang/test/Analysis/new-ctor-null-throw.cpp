@@ -9,7 +9,6 @@ void clang_analyzer_eval(bool);
 
 typedef __typeof__(sizeof(int)) size_t;
 
-
 // These are ill-formed. One cannot return nullptr from a throwing version of an
 // operator new.
 void *operator new(size_t size) {
@@ -53,4 +52,3 @@ void testMethod() {
   // expected-warning@-2 {{Called C++ object pointer is null}}
 #endif
 }
-

@@ -30,14 +30,14 @@ protected:
   static T getValue(const BitVectorTy &Bits, unsigned Idx) {
     T val = T();
     for (unsigned i = 0; i != BitNum; ++i)
-      val = T(val | ((Bits[(Idx << (BitNum-1)) + i] ? 1UL : 0UL) << i));
+      val = T(val | ((Bits[(Idx << (BitNum - 1)) + i] ? 1UL : 0UL) << i));
     return val;
   }
 
   static void setValue(BitVectorTy &Bits, unsigned Idx, T val) {
     assert((val >> BitNum) == 0 && "value is too big");
     for (unsigned i = 0; i != BitNum; ++i)
-      Bits[(Idx << (BitNum-1)) + i] = val & (T(1) << i);
+      Bits[(Idx << (BitNum - 1)) + i] = val & (T(1) << i);
   }
 };
 
@@ -46,9 +46,9 @@ class PackedVectorBase<T, BitNum, BitVectorTy, true> {
 protected:
   static T getValue(const BitVectorTy &Bits, unsigned Idx) {
     T val = T();
-    for (unsigned i = 0; i != BitNum-1; ++i)
-      val = T(val | ((Bits[(Idx << (BitNum-1)) + i] ? 1UL : 0UL) << i));
-    if (Bits[(Idx << (BitNum-1)) + BitNum-1])
+    for (unsigned i = 0; i != BitNum - 1; ++i)
+      val = T(val | ((Bits[(Idx << (BitNum - 1)) + i] ? 1UL : 0UL) << i));
+    if (Bits[(Idx << (BitNum - 1)) + BitNum - 1])
       val = ~val;
     return val;
   }
@@ -56,11 +56,11 @@ protected:
   static void setValue(BitVectorTy &Bits, unsigned Idx, T val) {
     if (val < 0) {
       val = ~val;
-      Bits.set((Idx << (BitNum-1)) + BitNum-1);
+      Bits.set((Idx << (BitNum - 1)) + BitNum - 1);
     }
-    assert((val >> (BitNum-1)) == 0 && "value is too big");
-    for (unsigned i = 0; i != BitNum-1; ++i)
-      Bits[(Idx << (BitNum-1)) + i] = val & (T(1) << i);
+    assert((val >> (BitNum - 1)) == 0 && "value is too big");
+    for (unsigned i = 0; i != BitNum - 1; ++i)
+      Bits[(Idx << (BitNum - 1)) + i] = val & (T(1) << i);
   }
 };
 
@@ -72,8 +72,9 @@ protected:
 /// will create a vector accepting values -2, -1, 0, 1. Any other value will hit
 /// an assertion.
 template <typename T, unsigned BitNum, typename BitVectorTy = BitVector>
-class PackedVector : public PackedVectorBase<T, BitNum, BitVectorTy,
-                                            std::numeric_limits<T>::is_signed> {
+class PackedVector
+    : public PackedVectorBase<T, BitNum, BitVectorTy,
+                              std::numeric_limits<T>::is_signed> {
   BitVectorTy Bits;
   using base = PackedVectorBase<T, BitNum, BitVectorTy,
                                 std::numeric_limits<T>::is_signed>;
@@ -92,13 +93,11 @@ public:
       return *this;
     }
 
-    operator T() const {
-      return Vec.getValue(Vec.Bits, Idx);
-    }
+    operator T() const { return Vec.getValue(Vec.Bits, Idx); }
   };
 
   PackedVector() = default;
-  explicit PackedVector(unsigned size) : Bits(size << (BitNum-1)) {}
+  explicit PackedVector(unsigned size) : Bits(size << (BitNum - 1)) {}
 
   bool empty() const { return Bits.empty(); }
 
@@ -108,7 +107,7 @@ public:
 
   void resize(unsigned N) { Bits.resize(N << (BitNum - 1)); }
 
-  void reserve(unsigned N) { Bits.reserve(N << (BitNum-1)); }
+  void reserve(unsigned N) { Bits.reserve(N << (BitNum - 1)); }
 
   PackedVector &reset() {
     Bits.reset();
@@ -116,25 +115,17 @@ public:
   }
 
   void push_back(T val) {
-    resize(size()+1);
-    (*this)[size()-1] = val;
+    resize(size() + 1);
+    (*this)[size() - 1] = val;
   }
 
-  reference operator[](unsigned Idx) {
-    return reference(*this, Idx);
-  }
+  reference operator[](unsigned Idx) { return reference(*this, Idx); }
 
-  T operator[](unsigned Idx) const {
-    return base::getValue(Bits, Idx);
-  }
+  T operator[](unsigned Idx) const { return base::getValue(Bits, Idx); }
 
-  bool operator==(const PackedVector &RHS) const {
-    return Bits == RHS.Bits;
-  }
+  bool operator==(const PackedVector &RHS) const { return Bits == RHS.Bits; }
 
-  bool operator!=(const PackedVector &RHS) const {
-    return Bits != RHS.Bits;
-  }
+  bool operator!=(const PackedVector &RHS) const { return Bits != RHS.Bits; }
 
   PackedVector &operator|=(const PackedVector &RHS) {
     Bits |= RHS.Bits;

@@ -4,8 +4,8 @@
 bool on = false;
 int len = 42;
 double grid[10][10] = {0};
-const char * hello = "world";
-const char * world = "hello";
+const char *hello = "world";
+const char *world = "hello";
 
 void A::B() {}
 
@@ -26,7 +26,7 @@ int bar() {
 }
 
 void assign(int ii, int jj) {
-  grid[ii][jj] = (ii+1) * (jj+1);
+  grid[ii][jj] = (ii + 1) * (jj + 1);
 }
 
 void initialize_grid() {
@@ -50,18 +50,18 @@ int main() {
 
   for (int ii = 0; ii < 10; ++ii) {
     switch (rand() % 5) {
-      case 0:
-        a += rand();
-        break;
-      case 1:
-      case 2:
-        a += rand() / rand();
-        break;
-      case 3:
-        a -= rand();
-        break;
-      default:
-        a = -1;
+    case 0:
+      a += rand();
+      break;
+    case 1:
+    case 2:
+      a += rand() / rand();
+      break;
+    case 3:
+      a -= rand();
+      break;
+    default:
+      a = -1;
     }
   }
 

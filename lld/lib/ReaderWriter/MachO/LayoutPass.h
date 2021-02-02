@@ -32,17 +32,18 @@ namespace mach_o {
 class LayoutPass : public Pass {
 public:
   struct SortKey {
-    SortKey(OwningAtomPtr<DefinedAtom> &&atom,
-            const DefinedAtom *root, uint64_t override)
-    : _atom(std::move(atom)), _root(root), _override(override) {}
+    SortKey(OwningAtomPtr<DefinedAtom> &&atom, const DefinedAtom *root,
+            uint64_t override)
+        : _atom(std::move(atom)), _root(root), _override(override) {}
     OwningAtomPtr<DefinedAtom> _atom;
     const DefinedAtom *_root;
     uint64_t _override;
 
     // Note, these are only here to appease MSVC bots which didn't like
     // the same methods being implemented/deleted in OwningAtomPtr.
-    SortKey(SortKey &&key) : _atom(std::move(key._atom)), _root(key._root),
-                             _override(key._override) {
+    SortKey(SortKey &&key)
+        : _atom(std::move(key._atom)), _root(key._root),
+          _override(key._override) {
       key._root = nullptr;
     }
 
@@ -56,11 +57,12 @@ public:
 
   private:
     SortKey(const SortKey &) = delete;
-    void operator=(const SortKey&) = delete;
+    void operator=(const SortKey &) = delete;
   };
 
-  typedef std::function<bool (const DefinedAtom *left, const DefinedAtom *right,
-                              bool &leftBeforeRight)> SortOverride;
+  typedef std::function<bool(const DefinedAtom *left, const DefinedAtom *right,
+                             bool &leftBeforeRight)>
+      SortOverride;
 
   LayoutPass(const Registry &registry, SortOverride sorter);
 

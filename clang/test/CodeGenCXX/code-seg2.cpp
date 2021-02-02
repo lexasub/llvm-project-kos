@@ -25,7 +25,6 @@ int caller1() {
 //CHECK: define {{.*}}bar1@?$ClassOne{{.*}} section "foo_one"
 //CHECK: define {{.*}}bar2@?$ClassOne{{.*}} section "foo_one"
 
-
 template <typename T>
 struct ClassTwo {
   int bar11(T t) { return int(t); }
@@ -58,14 +57,12 @@ int caller2() {
 //CHECK: define {{.*}}bar22@?$ClassTwo{{.*}} section "newone"
 //CHECK: define {{.*}}bar33@?$ClassTwo{{.*}} section "someother"
 
-template<>
-struct ClassOne<double>
-{
+template <>
+struct ClassOne<double> {
   int bar44(double d) { return 1; }
 };
-template<>
-struct  __declspec(code_seg("foo_three")) ClassOne<long>
-{
+template <>
+struct __declspec(code_seg("foo_three")) ClassOne<long> {
   int bar55(long d) { return 1; }
 };
 
@@ -73,39 +70,36 @@ struct  __declspec(code_seg("foo_three")) ClassOne<long>
 int caller3() {
   ClassOne<double> d;
   ClassOne<long> l;
-  return d.bar44(1.0)+l.bar55(1);
+  return d.bar44(1.0) + l.bar55(1);
 }
 
 //CHECK: define {{.*}}bar44{{.*}} section "yetanother"
 //CHECK: define {{.*}}bar55{{.*}} section "foo_three"
-
 
 // Function templates
 template <typename T>
 int __declspec(code_seg("foo_four")) bar66(T t) { return int(t); }
 
 // specializations do not take the segment from primary
-template<>
+template <>
 int bar66(int i) { return 0; }
 
 #pragma code_seg(pop)
 
-template<>
+template <>
 int bar66(char c) { return 0; }
 
-struct A1 {int i;};
-template<>
+struct A1 {
+  int i;
+};
+template <>
 int __declspec(code_seg("foo_five")) bar66(A1 a) { return a.i; }
 
-int caller4()
-{
-// but instantiations do use the section from the primary
-return bar66(0) + bar66(1.0) + bar66('c');
+int caller4() {
+  // but instantiations do use the section from the primary
+  return bar66(0) + bar66(1.0) + bar66('c');
 }
 //CHECK: define {{.*}}bar66@H{{.*}} section "onemore"
 //CHECK-NOT: define {{.*}}bar66@D{{.*}} section
 //CHECK: define {{.*}}bar66@UA1{{.*}} section "foo_five"
 //CHECK: define {{.*}}bar66@N{{.*}} section "foo_four"
-
-
-

@@ -1,10 +1,10 @@
 // RUN: %clang_cc1 -fsyntax-only -verify %s
 
 class c {
-  virtual void f1(const char* a, ...)
-    __attribute__ (( __format__(__printf__,2,3) )) = 0;
-  virtual void f2(const char* a, ...)
-    __attribute__ (( __format__(__printf__,2,3) )) {}
+  virtual void f1(const char *a, ...)
+      __attribute__((__format__(__printf__, 2, 3))) = 0;
+  virtual void f2(const char *a, ...)
+      __attribute__((__format__(__printf__, 2, 3))) {}
 };
 
 template <typename T> class X {
@@ -13,24 +13,24 @@ template <typename T> class X {
 };
 
 namespace PR17666 {
-  const int A = 1;
-  typedef int __attribute__((__aligned__(A))) T1;
-  int check1[__alignof__(T1) == 1 ? 1 : -1];
+const int A = 1;
+typedef int __attribute__((__aligned__(A))) T1;
+int check1[__alignof__(T1) == 1 ? 1 : -1];
 
-  typedef int __attribute__((aligned(int(1)))) T1;
-  typedef int __attribute__((aligned(int))) T2; // expected-error {{expected '(' for function-style cast}}
-}
+typedef int __attribute__((aligned(int(1)))) T1;
+typedef int __attribute__((aligned(int))) T2; // expected-error {{expected '(' for function-style cast}}
+} // namespace PR17666
 
 __attribute((typename)) int x; // expected-warning {{unknown attribute 'typename' ignored}}
 
 void fn() {
-  void (*__attribute__((attr)) fn_ptr)() = &fn; // expected-warning{{unknown attribute 'attr' ignored}}
-  void (*__attribute__((attrA)) *__attribute__((attrB)) fn_ptr_ptr)() = &fn_ptr; // expected-warning{{unknown attribute 'attrA' ignored}} expected-warning{{unknown attribute 'attrB' ignored}}
+  void (*__attribute__((attr)) fn_ptr)() = &fn;                                   // expected-warning{{unknown attribute 'attr' ignored}}
+  void (*__attribute__((attrA)) * __attribute__((attrB)) fn_ptr_ptr)() = &fn_ptr; // expected-warning{{unknown attribute 'attrA' ignored}} expected-warning{{unknown attribute 'attrB' ignored}}
 
   void (&__attribute__((attr)) fn_lref)() = fn; // expected-warning{{unknown attribute 'attr' ignored}}
-  void (&&__attribute__((attr)) fn_rref)() = fn; // expected-warning{{unknown attribute 'attr' ignored}}
+  void(&&__attribute__((attr)) fn_rref)() = fn; // expected-warning{{unknown attribute 'attr' ignored}}
 
   int i[5];
-  int (*__attribute__((attr(i[1]))) pi);  // expected-warning{{unknown attribute 'attr' ignored}}
+  int(*__attribute__((attr(i[1]))) pi); // expected-warning{{unknown attribute 'attr' ignored}}
   pi = &i[0];
 }

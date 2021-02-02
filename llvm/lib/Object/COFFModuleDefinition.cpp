@@ -286,7 +286,8 @@ private:
       if (Tok.K == EqualEqual) {
         read();
         E.AliasTarget = std::string(Tok.Value);
-        if (Machine == IMAGE_FILE_MACHINE_I386 && !isDecorated(E.AliasTarget, MingwDef))
+        if (Machine == IMAGE_FILE_MACHINE_I386 &&
+            !isDecorated(E.AliasTarget, MingwDef))
           E.AliasTarget = std::string("_").append(E.AliasTarget);
         continue;
       }

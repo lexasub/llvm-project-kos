@@ -39,8 +39,8 @@ SBWatchpoint::SBWatchpoint(const SBWatchpoint &rhs)
 }
 
 const SBWatchpoint &SBWatchpoint::operator=(const SBWatchpoint &rhs) {
-  LLDB_RECORD_METHOD(const lldb::SBWatchpoint &,
-                     SBWatchpoint, operator=,(const lldb::SBWatchpoint &), rhs);
+  LLDB_RECORD_METHOD(const lldb::SBWatchpoint &, SBWatchpoint, operator=,
+                     (const lldb::SBWatchpoint &), rhs);
 
   m_opaque_wp = rhs.m_opaque_wp;
   return LLDB_RECORD_RESULT(*this);
@@ -50,7 +50,6 @@ SBWatchpoint::~SBWatchpoint() = default;
 
 watch_id_t SBWatchpoint::GetID() {
   LLDB_RECORD_METHOD_NO_ARGS(lldb::watch_id_t, SBWatchpoint, GetID);
-
 
   watch_id_t watch_id = LLDB_INVALID_WATCH_ID;
   lldb::WatchpointSP watchpoint_sp(GetSP());
@@ -71,15 +70,15 @@ SBWatchpoint::operator bool() const {
 }
 
 bool SBWatchpoint::operator==(const SBWatchpoint &rhs) const {
-  LLDB_RECORD_METHOD_CONST(
-      bool, SBWatchpoint, operator==,(const SBWatchpoint &), rhs);
+  LLDB_RECORD_METHOD_CONST(bool, SBWatchpoint, operator==,
+                           (const SBWatchpoint &), rhs);
 
   return GetSP() == rhs.GetSP();
 }
 
 bool SBWatchpoint::operator!=(const SBWatchpoint &rhs) const {
-  LLDB_RECORD_METHOD_CONST(
-      bool, SBWatchpoint, operator!=,(const SBWatchpoint &), rhs);
+  LLDB_RECORD_METHOD_CONST(bool, SBWatchpoint, operator!=,
+                           (const SBWatchpoint &), rhs);
 
   return !(*this == rhs);
 }
@@ -307,20 +306,19 @@ SBWatchpoint SBWatchpoint::GetWatchpointFromEvent(const lldb::SBEvent &event) {
 namespace lldb_private {
 namespace repro {
 
-template <>
-void RegisterMethods<SBWatchpoint>(Registry &R) {
+template <> void RegisterMethods<SBWatchpoint>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBWatchpoint, ());
   LLDB_REGISTER_CONSTRUCTOR(SBWatchpoint, (const lldb::WatchpointSP &));
   LLDB_REGISTER_CONSTRUCTOR(SBWatchpoint, (const lldb::SBWatchpoint &));
-  LLDB_REGISTER_METHOD(const lldb::SBWatchpoint &,
-                       SBWatchpoint, operator=,(const lldb::SBWatchpoint &));
+  LLDB_REGISTER_METHOD(const lldb::SBWatchpoint &, SBWatchpoint, operator=,
+                       (const lldb::SBWatchpoint &));
   LLDB_REGISTER_METHOD(lldb::watch_id_t, SBWatchpoint, GetID, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBWatchpoint, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBWatchpoint, operator bool, ());
-  LLDB_REGISTER_METHOD_CONST(
-      bool, SBWatchpoint, operator==,(const lldb::SBWatchpoint &));
-  LLDB_REGISTER_METHOD_CONST(
-      bool, SBWatchpoint, operator!=,(const lldb::SBWatchpoint &));
+  LLDB_REGISTER_METHOD_CONST(bool, SBWatchpoint, operator==,
+                             (const lldb::SBWatchpoint &));
+  LLDB_REGISTER_METHOD_CONST(bool, SBWatchpoint, operator!=,
+                             (const lldb::SBWatchpoint &));
   LLDB_REGISTER_METHOD(lldb::SBError, SBWatchpoint, GetError, ());
   LLDB_REGISTER_METHOD(int32_t, SBWatchpoint, GetHardwareIndex, ());
   LLDB_REGISTER_METHOD(lldb::addr_t, SBWatchpoint, GetWatchAddress, ());
@@ -336,17 +334,15 @@ void RegisterMethods<SBWatchpoint>(Registry &R) {
                        (lldb::SBStream &, lldb::DescriptionLevel));
   LLDB_REGISTER_METHOD(void, SBWatchpoint, Clear, ());
   LLDB_REGISTER_METHOD_CONST(lldb::WatchpointSP, SBWatchpoint, GetSP, ());
-  LLDB_REGISTER_METHOD(void, SBWatchpoint, SetSP,
-                       (const lldb::WatchpointSP &));
+  LLDB_REGISTER_METHOD(void, SBWatchpoint, SetSP, (const lldb::WatchpointSP &));
   LLDB_REGISTER_STATIC_METHOD(bool, SBWatchpoint, EventIsWatchpointEvent,
                               (const lldb::SBEvent &));
   LLDB_REGISTER_STATIC_METHOD(lldb::WatchpointEventType, SBWatchpoint,
                               GetWatchpointEventTypeFromEvent,
                               (const lldb::SBEvent &));
   LLDB_REGISTER_STATIC_METHOD(lldb::SBWatchpoint, SBWatchpoint,
-                              GetWatchpointFromEvent,
-                              (const lldb::SBEvent &));
+                              GetWatchpointFromEvent, (const lldb::SBEvent &));
 }
 
-}
-}
+} // namespace repro
+} // namespace lldb_private

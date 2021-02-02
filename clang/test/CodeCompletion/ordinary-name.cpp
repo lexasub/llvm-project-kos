@@ -1,4 +1,6 @@
-struct X { int x; };
+struct X {
+  int x;
+};
 void z(int);
 typedef struct t TYPEDEF;
 
@@ -127,9 +129,9 @@ void foo() {
   // CHECK-CC3-NEXT: COMPLETION: long
   // CHECK-CC3-NEXT: COMPLETION: mutable
   // CHECK-CC3-NEXT: COMPLETION: operator
-  // CHECK-CC3-NEXT: COMPLETION: Pattern : private: 
-  // CHECK-CC3-NEXT: COMPLETION: Pattern : protected: 
-  // CHECK-CC3-NEXT: COMPLETION: Pattern : public: 
+  // CHECK-CC3-NEXT: COMPLETION: Pattern : private:
+  // CHECK-CC3-NEXT: COMPLETION: Pattern : protected:
+  // CHECK-CC3-NEXT: COMPLETION: Pattern : public:
   // CHECK-CC3-NEXT: COMPLETION: short
   // CHECK-CC3-NEXT: COMPLETION: signed
   // CHECK-CC3-NEXT: COMPLETION: static

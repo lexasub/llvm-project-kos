@@ -46,79 +46,80 @@ void foo() {
 }
 
 class S {
-  public:
+public:
   void zee() {
-    #pragma omp target map(this[:2]) // expected-note {{expected length on mapping of 'this' array section expression to be '1'}} // expected-error {{invalid 'this' expression on 'map' clause}}
-      int a;
-    #pragma omp target map(this[1:1]) // expected-note {{expected lower bound on mapping of 'this' array section expression to be '0' or not specified}} // expected-error {{invalid 'this' expression on 'map' clause}}
-      int b;
-    #pragma omp target map(this[1]) // expected-note {{expected 'this' subscript expression on map clause to be 'this[0]'}} // expected-error {{invalid 'this' expression on 'map' clause}}
-      int c;
-#pragma omp target map(foo)         // omp4-error {{expected expression containing only member accesses and/or array sections based on named variables}} omp5-error {{expected addressable lvalue in 'map' clause}}
-      int d;
-#pragma omp target map(zee)         // omp4-error {{expected expression containing only member accesses and/or array sections based on named variables}} omp5-error {{expected addressable lvalue in 'map' clause}}
-      int e;
-#pragma omp target map(this->zee)   // omp4-error {{expected expression containing only member accesses and/or array sections based on named variables}} omp5-error {{expected addressable lvalue in 'map' clause}}
-      int f;
+#pragma omp target map(this[:2]) // expected-note {{expected length on mapping of 'this' array section expression to be '1'}} // expected-error {{invalid 'this' expression on 'map' clause}}
+    int a;
+#pragma omp target map(this [1:1]) // expected-note {{expected lower bound on mapping of 'this' array section expression to be '0' or not specified}} // expected-error {{invalid 'this' expression on 'map' clause}}
+    int b;
+#pragma omp target map(this[1]) // expected-note {{expected 'this' subscript expression on map clause to be 'this[0]'}} // expected-error {{invalid 'this' expression on 'map' clause}}
+    int c;
+#pragma omp target map(foo) // omp4-error {{expected expression containing only member accesses and/or array sections based on named variables}} omp5-error {{expected addressable lvalue in 'map' clause}}
+    int d;
+#pragma omp target map(zee) // omp4-error {{expected expression containing only member accesses and/or array sections based on named variables}} omp5-error {{expected addressable lvalue in 'map' clause}}
+    int e;
+#pragma omp target map(this->zee) // omp4-error {{expected expression containing only member accesses and/or array sections based on named variables}} omp5-error {{expected addressable lvalue in 'map' clause}}
+    int f;
   }
 };
 
 #pragma omp target // expected-error {{unexpected OpenMP directive '#pragma omp target'}}
 
 int main(int argc, char **argv) {
-  #pragma omp target { // expected-warning {{extra tokens at the end of '#pragma omp target' are ignored}}
+#pragma omp target { // expected-warning {{extra tokens at the end of '#pragma omp target' are ignored}}
   foo();
-  #pragma omp target ( // expected-warning {{extra tokens at the end of '#pragma omp target' are ignored}}
+#pragma omp target( // expected-warning {{extra tokens at the end of '#pragma omp target' are ignored}}
   foo();
-  #pragma omp target [ // expected-warning {{extra tokens at the end of '#pragma omp target' are ignored}}
+#pragma omp target[ // expected-warning {{extra tokens at the end of '#pragma omp target' are ignored}}
   foo();
-  #pragma omp target ] // expected-warning {{extra tokens at the end of '#pragma omp target' are ignored}}
+#pragma omp target] // expected-warning {{extra tokens at the end of '#pragma omp target' are ignored}}
   foo();
-  #pragma omp target ) // expected-warning {{extra tokens at the end of '#pragma omp target' are ignored}}
+#pragma omp target) // expected-warning {{extra tokens at the end of '#pragma omp target' are ignored}}
   foo();
-  #pragma omp target } // expected-warning {{extra tokens at the end of '#pragma omp target' are ignored}}
+#pragma omp target } // expected-warning {{extra tokens at the end of '#pragma omp target' are ignored}}
   foo();
-  #pragma omp target
+#pragma omp target
   foo();
-  // expected-warning@+1 {{extra tokens at the end of '#pragma omp target' are ignored}}
-  #pragma omp target unknown()
+// expected-warning@+1 {{extra tokens at the end of '#pragma omp target' are ignored}}
+#pragma omp target unknown()
   foo();
-  L1:
-    foo();
-  #pragma omp target
+L1:
+  foo();
+#pragma omp target
   ;
-  #pragma omp target
+#pragma omp target
   {
     goto L1; // expected-error {{use of undeclared label 'L1'}}
     argc++;
   }
 
   for (int i = 0; i < 10; ++i) {
-    switch(argc) {
-     case (0):
-      #pragma omp target
-      {
-        foo();
-        break; // expected-error {{'break' statement not in loop or switch statement}}
-        continue; // expected-error {{'continue' statement not in loop statement}}
-      }
-      default:
-       break;
+    switch (argc) {
+    case (0):
+#pragma omp target
+    {
+      foo();
+      break;    // expected-error {{'break' statement not in loop or switch statement}}
+      continue; // expected-error {{'continue' statement not in loop statement}}
+    }
+    default:
+      break;
     }
   }
 
   goto L2; // expected-error {{use of undeclared label 'L2'}}
-  #pragma omp target
-  L2:
+#pragma omp target
+L2:
   foo();
-  #pragma omp target
+#pragma omp target
   {
     return 1; // expected-error {{cannot return from OpenMP region}}
   }
 
   [[]] // expected-error {{an attribute list cannot appear here}}
-  #pragma omp target
-  for (int n = 0; n < 100; ++n) {}
+#pragma omp target
+      for (int n = 0; n < 100; ++n) {
+  }
 
 #pragma omp target map(foo) // omp4-error {{expected expression containing only member accesses and/or array sections based on named variables}} omp5-error {{expected addressable lvalue in 'map' clause}}
   {}
@@ -135,7 +136,8 @@ template <class> struct a { static bool b; };
 template <class c, bool = a<c>::b> void e(c) { // expected-note {{candidate template ignored: substitution failure [with c = int]: non-type template argument is not a constant expression}}
 #pragma omp target
   {
-    int d ; e(d); // expected-error {{no matching function for call to 'e'}}
+    int d;
+    e(d); // expected-error {{no matching function for call to 'e'}}
   }
 }
 #endif

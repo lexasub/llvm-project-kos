@@ -29,10 +29,9 @@ SlotIndexes::~SlotIndexes() {
   indexList.clearAndLeakNodesUnsafely();
 }
 
-INITIALIZE_PASS(SlotIndexes, DEBUG_TYPE,
-                "Slot index numbering", false, false)
+INITIALIZE_PASS(SlotIndexes, DEBUG_TYPE, "Slot index numbering", false, false)
 
-STATISTIC(NumLocalRenum,  "Number of local renumberings");
+STATISTIC(NumLocalRenum, "Number of local renumberings");
 
 void SlotIndexes::getAnalysisUsage(AnalysisUsage &au) const {
   au.setPreservesAll();
@@ -98,8 +97,8 @@ bool SlotIndexes::runOnMachineFunction(MachineFunction &fn) {
     indexList.push_back(createEntry(nullptr, index += SlotIndex::InstrDist));
 
     MBBRanges[MBB.getNumber()].first = blockStartIndex;
-    MBBRanges[MBB.getNumber()].second = SlotIndex(&indexList.back(),
-                                                   SlotIndex::Slot_Block);
+    MBBRanges[MBB.getNumber()].second =
+        SlotIndex(&indexList.back(), SlotIndex::Slot_Block);
     idx2MBBMap.push_back(IdxMBBPair(blockStartIndex, &MBB));
   }
 
@@ -159,7 +158,7 @@ void SlotIndexes::removeSingleMachineInstrFromMaps(MachineInstr &MI) {
 // index.
 void SlotIndexes::renumberIndexes(IndexList::iterator curItr) {
   // Number indexes with half the default spacing so we can catch up quickly.
-  const unsigned Space = SlotIndex::InstrDist/2;
+  const unsigned Space = SlotIndex::InstrDist / 2;
   static_assert((Space & 3) == 0, "InstrDist must be a multiple of 2*NUM");
 
   IndexList::iterator startItr = std::prev(curItr);
@@ -280,4 +279,3 @@ LLVM_DUMP_METHOD void SlotIndex::dump() const {
   dbgs() << "\n";
 }
 #endif
-

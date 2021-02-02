@@ -75,8 +75,8 @@ SBThreadPlan::SBThreadPlan(lldb::SBThread &sb_thread, const char *class_name) {
 
 SBThreadPlan::SBThreadPlan(lldb::SBThread &sb_thread, const char *class_name,
                            lldb::SBStructuredData &args_data) {
-  LLDB_RECORD_CONSTRUCTOR(SBThreadPlan, (lldb::SBThread &, const char *,
-                                         SBStructuredData &),
+  LLDB_RECORD_CONSTRUCTOR(SBThreadPlan,
+                          (lldb::SBThread &, const char *, SBStructuredData &),
                           sb_thread, class_name, args_data);
 
   Thread *thread = sb_thread.get();
@@ -88,8 +88,8 @@ SBThreadPlan::SBThreadPlan(lldb::SBThread &sb_thread, const char *class_name,
 // Assignment operator
 
 const lldb::SBThreadPlan &SBThreadPlan::operator=(const SBThreadPlan &rhs) {
-  LLDB_RECORD_METHOD(const lldb::SBThreadPlan &,
-                     SBThreadPlan, operator=,(const lldb::SBThreadPlan &), rhs);
+  LLDB_RECORD_METHOD(const lldb::SBThreadPlan &, SBThreadPlan, operator=,
+                     (const lldb::SBThreadPlan &), rhs);
 
   if (this != &rhs)
     m_opaque_wp = rhs.m_opaque_wp;
@@ -431,7 +431,7 @@ SBThreadPlan::QueueThreadPlanForStepScripted(const char *script_class_name,
                                              SBError &error) {
   LLDB_RECORD_METHOD(lldb::SBThreadPlan, SBThreadPlan,
                      QueueThreadPlanForStepScripted,
-                     (const char *, lldb::SBStructuredData &, lldb::SBError &), 
+                     (const char *, lldb::SBStructuredData &, lldb::SBError &),
                      script_class_name, args_data, error);
 
   ThreadPlanSP thread_plan_sp(GetSP());
@@ -456,16 +456,15 @@ SBThreadPlan::QueueThreadPlanForStepScripted(const char *script_class_name,
 namespace lldb_private {
 namespace repro {
 
-template <>
-void RegisterMethods<SBThreadPlan>(Registry &R) {
+template <> void RegisterMethods<SBThreadPlan>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBThreadPlan, ());
   LLDB_REGISTER_CONSTRUCTOR(SBThreadPlan, (const lldb::ThreadPlanSP &));
   LLDB_REGISTER_CONSTRUCTOR(SBThreadPlan, (const lldb::SBThreadPlan &));
   LLDB_REGISTER_CONSTRUCTOR(SBThreadPlan, (lldb::SBThread &, const char *));
-  LLDB_REGISTER_CONSTRUCTOR(SBThreadPlan, (lldb::SBThread &, const char *,
-                       lldb::SBStructuredData &));
-  LLDB_REGISTER_METHOD(const lldb::SBThreadPlan &,
-                       SBThreadPlan, operator=,(const lldb::SBThreadPlan &));
+  LLDB_REGISTER_CONSTRUCTOR(
+      SBThreadPlan, (lldb::SBThread &, const char *, lldb::SBStructuredData &));
+  LLDB_REGISTER_METHOD(const lldb::SBThreadPlan &, SBThreadPlan, operator=,
+                       (const lldb::SBThreadPlan &));
   LLDB_REGISTER_METHOD_CONST(bool, SBThreadPlan, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBThreadPlan, operator bool, ());
   LLDB_REGISTER_METHOD(void, SBThreadPlan, Clear, ());
@@ -509,11 +508,10 @@ void RegisterMethods<SBThreadPlan>(Registry &R) {
   LLDB_REGISTER_METHOD(lldb::SBThreadPlan, SBThreadPlan,
                        QueueThreadPlanForStepScripted,
                        (const char *, lldb::SBError &));
-  LLDB_REGISTER_METHOD(lldb::SBThreadPlan, SBThreadPlan,
-                       QueueThreadPlanForStepScripted,
-                       (const char *, lldb::SBStructuredData &,
-                       lldb::SBError &));
+  LLDB_REGISTER_METHOD(
+      lldb::SBThreadPlan, SBThreadPlan, QueueThreadPlanForStepScripted,
+      (const char *, lldb::SBStructuredData &, lldb::SBError &));
 }
 
-}
-}
+} // namespace repro
+} // namespace lldb_private

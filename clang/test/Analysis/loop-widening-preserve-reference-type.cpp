@@ -9,9 +9,10 @@ struct B : public A {};
 
 void invalid_type_region_access() {
   const A &x = B();
-  for (int i = 0; i < 10; ++i) { }
+  for (int i = 0; i < 10; ++i) {
+  }
   clang_analyzer_eval(&x != 0); // expected-warning{{TRUE}}
-}                               // expected-warning@-1{{reference cannot be bound to dereferenced null pointer in well-defined C++ code; comparison may be assumed to always evaluate to true}}
+} // expected-warning@-1{{reference cannot be bound to dereferenced null pointer in well-defined C++ code; comparison may be assumed to always evaluate to true}}
 
 using AR = const A &;
 void invalid_type_alias_region_access() {

@@ -42,17 +42,16 @@ CharSourceRange Commit::Edit::getInsertFromRange(SourceManager &SM) const {
 
 Commit::Commit(EditedSource &Editor)
     : SourceMgr(Editor.getSourceManager()), LangOpts(Editor.getLangOpts()),
-      PPRec(Editor.getPPCondDirectiveRecord()),
-      Editor(&Editor) {}
+      PPRec(Editor.getPPCondDirectiveRecord()), Editor(&Editor) {}
 
-bool Commit::insert(SourceLocation loc, StringRef text,
-                    bool afterToken, bool beforePreviousInsertions) {
+bool Commit::insert(SourceLocation loc, StringRef text, bool afterToken,
+                    bool beforePreviousInsertions) {
   if (text.empty())
     return true;
 
   FileOffset Offs;
   if ((!afterToken && !canInsert(loc, Offs)) ||
-      ( afterToken && !canInsertAfterToken(loc, Offs, loc))) {
+      (afterToken && !canInsertAfterToken(loc, Offs, loc))) {
     IsCommitable = false;
     return false;
   }
@@ -61,8 +60,7 @@ bool Commit::insert(SourceLocation loc, StringRef text,
   return true;
 }
 
-bool Commit::insertFromRange(SourceLocation loc,
-                             CharSourceRange range,
+bool Commit::insertFromRange(SourceLocation loc, CharSourceRange range,
                              bool afterToken, bool beforePreviousInsertions) {
   FileOffset RangeOffs;
   unsigned RangeLen;
@@ -73,7 +71,7 @@ bool Commit::insertFromRange(SourceLocation loc,
 
   FileOffset Offs;
   if ((!afterToken && !canInsert(loc, Offs)) ||
-      ( afterToken && !canInsertAfterToken(loc, Offs, loc))) {
+      (afterToken && !canInsertAfterToken(loc, Offs, loc))) {
     IsCommitable = false;
     return false;
   }
@@ -147,18 +145,16 @@ bool Commit::replaceWithInner(CharSourceRange range,
 
   FileOffset OuterEnd = OuterBegin.getWithOffset(OuterLen);
   FileOffset InnerEnd = InnerBegin.getWithOffset(InnerLen);
-  if (OuterBegin.getFID() != InnerBegin.getFID() ||
-      InnerBegin < OuterBegin ||
-      InnerBegin > OuterEnd ||
-      InnerEnd > OuterEnd) {
+  if (OuterBegin.getFID() != InnerBegin.getFID() || InnerBegin < OuterBegin ||
+      InnerBegin > OuterEnd || InnerEnd > OuterEnd) {
     IsCommitable = false;
     return false;
   }
 
-  addRemove(range.getBegin(),
-            OuterBegin, InnerBegin.getOffset() - OuterBegin.getOffset());
-  addRemove(replacementRange.getEnd(),
-            InnerEnd, OuterEnd.getOffset() - InnerEnd.getOffset());
+  addRemove(range.getBegin(), OuterBegin,
+            InnerBegin.getOffset() - OuterBegin.getOffset());
+  addRemove(replacementRange.getEnd(), InnerEnd,
+            OuterEnd.getOffset() - InnerEnd.getOffset());
   return true;
 }
 
@@ -209,8 +205,7 @@ void Commit::addInsertFromRange(SourceLocation OrigLoc, FileOffset Offs,
   CachedEdits.push_back(data);
 }
 
-void Commit::addRemove(SourceLocation OrigLoc,
-                       FileOffset Offs, unsigned Len) {
+void Commit::addRemove(SourceLocation OrigLoc, FileOffset Offs, unsigned Len) {
   if (Len == 0)
     return;
 
@@ -283,8 +278,8 @@ bool Commit::canInsertAfterToken(SourceLocation loc, FileOffset &offs,
 bool Commit::canInsertInOffset(SourceLocation OrigLoc, FileOffset Offs) {
   for (const auto &act : CachedEdits)
     if (act.Kind == Act_Remove) {
-      if (act.Offset.getFID() == Offs.getFID() &&
-          Offs > act.Offset && Offs < act.Offset.getWithOffset(act.Length))
+      if (act.Offset.getFID() == Offs.getFID() && Offs > act.Offset &&
+          Offs < act.Offset.getWithOffset(act.Length))
         return false; // position has been removed.
     }
 
@@ -293,8 +288,8 @@ bool Commit::canInsertInOffset(SourceLocation OrigLoc, FileOffset Offs) {
   return Editor->canInsertInOffset(OrigLoc, Offs);
 }
 
-bool Commit::canRemoveRange(CharSourceRange range,
-                            FileOffset &Offs, unsigned &Len) {
+bool Commit::canRemoveRange(CharSourceRange range, FileOffset &Offs,
+                            unsigned &Len) {
   const SourceManager &SM = SourceMgr;
   range = Lexer::makeFileCharRange(range, SM, LangOpts);
   if (range.isInvalid())
@@ -311,8 +306,7 @@ bool Commit::canRemoveRange(CharSourceRange range,
 
   std::pair<FileID, unsigned> beginInfo = SM.getDecomposedLoc(range.getBegin());
   std::pair<FileID, unsigned> endInfo = SM.getDecomposedLoc(range.getEnd());
-  if (beginInfo.first != endInfo.first ||
-      beginInfo.second > endInfo.second)
+  if (beginInfo.first != endInfo.first || beginInfo.second > endInfo.second)
     return false;
 
   Offs = FileOffset(beginInfo.first, beginInfo.second);

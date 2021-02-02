@@ -2,4 +2,3 @@
 // in precompiled headers.
 
 #define MyLocalizedStringInPCH(key) NSLocalizedString((key), @"")
-

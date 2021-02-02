@@ -10,7 +10,9 @@ extern int Xyz; // Xyz
 
 namespace macros {
 #define DECLARE(x) extern int x
-#define DEFINE(x) extern int x; int x = 42
+#define DEFINE(x) \
+  extern int x;   \
+  int x = 42
 DECLARE(test);
 DEFINE(test);
 // CHECK-FIXES: {{^}}#define DECLARE(x) extern int x{{$}}

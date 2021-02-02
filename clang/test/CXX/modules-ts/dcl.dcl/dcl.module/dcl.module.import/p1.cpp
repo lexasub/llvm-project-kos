@@ -18,7 +18,7 @@
 #ifdef INTERFACE
 export
 #endif
-module MODULE_NAME;
+    module MODULE_NAME;
 
 int use_1 = a;
 #if !MODULE_X
@@ -34,15 +34,15 @@ int use_2 = b; // ok
 int use_3 = c; // expected-error {{declaration of 'c' must be imported from module 'x.y'}}
                // expected-note@x.y.cppm:1 {{not visible}}
 
-import x [[]];
-import x [[foo]]; // expected-warning {{unknown attribute 'foo' ignored}}
-import x [[noreturn]]; // expected-error {{'noreturn' attribute cannot be applied to a module import}}
-import x [[blarg::noreturn]]; // expected-warning {{unknown attribute 'noreturn' ignored}}
+import x[[]];
+import x[[foo]];             // expected-warning {{unknown attribute 'foo' ignored}}
+import x[[noreturn]];        // expected-error {{'noreturn' attribute cannot be applied to a module import}}
+import x[[blarg::noreturn]]; // expected-warning {{unknown attribute 'noreturn' ignored}}
 
 import x.y;
 import a.b; // Does not imply existence of module a.
-import x.; // expected-error {{expected a module name after 'import'}}
-import .x; // expected-error {{expected a module name after 'import'}}
+import x.;  // expected-error {{expected a module name after 'import'}}
+import.x;   // expected-error {{expected a module name after 'import'}}
 
 int use_4 = c; // ok
 

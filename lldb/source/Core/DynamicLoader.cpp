@@ -162,8 +162,7 @@ ModuleSP DynamicLoader::LoadModuleAtAddress(const FileSpec &file,
     return module_sp;
   }
 
-  if ((module_sp = target.GetOrCreateModule(module_spec, 
-                                            true /* notify */))) {
+  if ((module_sp = target.GetOrCreateModule(module_spec, true /* notify */))) {
     UpdateLoadedSections(module_sp, link_map_addr, base_addr,
                          base_addr_is_offset);
     return module_sp;
@@ -189,7 +188,7 @@ ModuleSP DynamicLoader::LoadModuleAtAddress(const FileSpec &file,
     MemoryRegionInfo memory_info;
     Status error = m_process->GetMemoryRegionInfo(base_addr, memory_info);
     if (error.Success() && memory_info.GetMapped() &&
-        memory_info.GetRange().GetRangeBase() == base_addr && 
+        memory_info.GetRange().GetRangeBase() == base_addr &&
         !(memory_info.GetName().IsEmpty())) {
       ModuleSpec new_module_spec(FileSpec(memory_info.GetName().GetStringRef()),
                                  target.GetArchitecture());
@@ -199,8 +198,8 @@ ModuleSP DynamicLoader::LoadModuleAtAddress(const FileSpec &file,
         return module_sp;
       }
 
-      if ((module_sp = target.GetOrCreateModule(new_module_spec, 
-                                                true /* notify */))) {
+      if ((module_sp =
+               target.GetOrCreateModule(new_module_spec, true /* notify */))) {
         UpdateLoadedSections(module_sp, link_map_addr, base_addr, false);
         return module_sp;
       }
@@ -235,9 +234,7 @@ addr_t DynamicLoader::ReadPointer(addr_t addr) {
     return value;
 }
 
-void DynamicLoader::LoadOperatingSystemPlugin(bool flush)
-{
-    if (m_process)
-        m_process->LoadOperatingSystemPlugin(flush);
+void DynamicLoader::LoadOperatingSystemPlugin(bool flush) {
+  if (m_process)
+    m_process->LoadOperatingSystemPlugin(flush);
 }
-

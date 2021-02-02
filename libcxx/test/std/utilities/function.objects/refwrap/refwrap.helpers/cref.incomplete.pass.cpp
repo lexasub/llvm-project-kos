@@ -21,25 +21,24 @@
 
 #include "test_macros.h"
 
-
 struct Foo;
 
 Foo& get_foo();
 
 void test() {
-    Foo const& foo = get_foo();
-    std::reference_wrapper<Foo const> ref = std::cref(foo);
-    assert(&ref.get() == &foo);
+  Foo const& foo = get_foo();
+  std::reference_wrapper<Foo const> ref = std::cref(foo);
+  assert(&ref.get() == &foo);
 }
 
-struct Foo { };
+struct Foo {};
 
 Foo& get_foo() {
-    static Foo foo;
-    return foo;
+  static Foo foo;
+  return foo;
 }
 
 int main(int, char**) {
-    test();
-    return 0;
+  test();
+  return 0;
 }

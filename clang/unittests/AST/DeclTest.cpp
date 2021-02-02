@@ -60,8 +60,7 @@ TEST(Decl, CleansUpAPValues) {
   // for ComplexInt.
   ASSERT_FALSE(runToolOnCodeWithArgs(
       Factory->create(),
-      "constexpr _Complex __uint128_t c = 0xffffffffffffffff;",
-      Args));
+      "constexpr _Complex __uint128_t c = 0xffffffffffffffff;", Args));
 }
 
 TEST(Decl, AsmLabelAttr) {
@@ -101,6 +100,7 @@ TEST(Decl, AsmLabelAttr) {
     MC->mangleName(DeclG, OS_G);
   }
 
-  ASSERT_TRUE(0 == MangleF.compare("\x01" "foo"));
+  ASSERT_TRUE(0 == MangleF.compare("\x01"
+                                   "foo"));
   ASSERT_TRUE(0 == MangleG.compare("goo"));
 }

@@ -47,7 +47,7 @@ private:
   size_t m_bytes;
   ConnectionStatus m_status;
 };
-}
+} // namespace
 
 ConnectionGenericFile::ConnectionGenericFile()
     : m_file(INVALID_HANDLE_VALUE), m_owns_file(false) {

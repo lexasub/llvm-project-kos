@@ -8,11 +8,11 @@
 // Investigate why it does not fail with use_tls=0
 // UNSUPPORTED: arm-linux || armhf-linux
 
+#include "sanitizer_common/print_address.h"
 #include <assert.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "sanitizer_common/print_address.h"
 
 // From glibc: this many keys are stored in the thread descriptor directly.
 const unsigned PTHREAD_KEY_2NDLEVEL_SIZE = 32;
@@ -29,7 +29,7 @@ int main() {
   res = pthread_key_create(&key, NULL);
   assert(key >= PTHREAD_KEY_2NDLEVEL_SIZE);
   assert(res == 0);
-  void *p  = malloc(1337);
+  void *p = malloc(1337);
   res = pthread_setspecific(key, p);
   assert(res == 0);
   print_address("Test alloc: ", 1, p);

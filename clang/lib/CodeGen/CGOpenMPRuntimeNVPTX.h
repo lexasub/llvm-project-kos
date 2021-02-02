@@ -37,7 +37,7 @@ public:
   llvm::Value *getGPUNumThreads(CodeGenFunction &CGF) override;
 };
 
-} // CodeGen namespace.
-} // clang namespace.
+} // namespace CodeGen
+} // namespace clang
 
 #endif // LLVM_CLANG_LIB_CODEGEN_CGOPENMPRUNTIMENVPTX_H

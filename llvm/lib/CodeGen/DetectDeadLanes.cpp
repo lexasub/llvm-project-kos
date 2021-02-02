@@ -146,8 +146,7 @@ static bool lowersToCopies(const MachineInstr &MI) {
   return false;
 }
 
-static bool isCrossCopy(const MachineRegisterInfo &MRI,
-                        const MachineInstr &MI,
+static bool isCrossCopy(const MachineRegisterInfo &MRI, const MachineInstr &MI,
                         const TargetRegisterClass *DstRC,
                         const MachineOperand &MO) {
   assert(lowersToCopies(MI));
@@ -167,7 +166,7 @@ static bool isCrossCopy(const MachineRegisterInfo &MRI,
     break;
   case TargetOpcode::REG_SEQUENCE: {
     unsigned OpNum = MI.getOperandNo(&MO);
-    DstSubIdx = MI.getOperand(OpNum+1).getImm();
+    DstSubIdx = MI.getOperand(OpNum + 1).getImm();
     break;
   }
   case TargetOpcode::EXTRACT_SUBREG: {
@@ -304,8 +303,9 @@ void DetectDeadLanes::transferDefinedLanesStep(const MachineOperand &Use,
   PutInWorklist(DefRegIdx);
 }
 
-LaneBitmask DetectDeadLanes::transferDefinedLanes(const MachineOperand &Def,
-    unsigned OpNum, LaneBitmask DefinedLanes) const {
+LaneBitmask
+DetectDeadLanes::transferDefinedLanes(const MachineOperand &Def, unsigned OpNum,
+                                      LaneBitmask DefinedLanes) const {
   const MachineInstr &MI = *Def.getParent();
   // Translate DefinedLanes if necessary.
   switch (MI.getOpcode()) {
@@ -394,8 +394,8 @@ LaneBitmask DetectDeadLanes::determineInitialDefinedLanes(unsigned Reg) {
         }
         unsigned MOSubReg = MO.getSubReg();
         MODefinedLanes = MRI->getMaxLaneMaskForVReg(MOReg);
-        MODefinedLanes = TRI->reverseComposeSubRegIndexLaneMask(
-            MOSubReg, MODefinedLanes);
+        MODefinedLanes =
+            TRI->reverseComposeSubRegIndexLaneMask(MOSubReg, MODefinedLanes);
       }
 
       unsigned OpNum = DefMI.getOperandNo(&MO);
@@ -586,7 +586,7 @@ bool DetectDeadLanes::runOnMachineFunction(MachineFunction &MF) {
   bool Again;
   do {
     Again = runOnce(MF);
-  } while(Again);
+  } while (Again);
 
   DefinedByCopy.clear();
   WorklistMembers.clear();

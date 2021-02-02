@@ -529,7 +529,8 @@ static QualType makeConstInt(clang::ASTContext &ctxt) {
 
 TEST_F(TestTypeSystemClang, TestGetTypeClassDeclType) {
   clang::ASTContext &ctxt = m_ast->getASTContext();
-  auto *nullptr_expr = new (ctxt) CXXNullPtrLiteralExpr(ctxt.NullPtrTy, SourceLocation());
+  auto *nullptr_expr =
+      new (ctxt) CXXNullPtrLiteralExpr(ctxt.NullPtrTy, SourceLocation());
   QualType t = ctxt.getDecltypeType(nullptr_expr, makeConstInt(ctxt));
   EXPECT_EQ(lldb::eTypeClassBuiltin, m_ast->GetTypeClass(t.getAsOpaquePtr()));
 }
@@ -542,7 +543,8 @@ TEST_F(TestTypeSystemClang, TestGetTypeClassTypeOf) {
 
 TEST_F(TestTypeSystemClang, TestGetTypeClassTypeOfExpr) {
   clang::ASTContext &ctxt = m_ast->getASTContext();
-  auto *nullptr_expr = new (ctxt) CXXNullPtrLiteralExpr(ctxt.NullPtrTy, SourceLocation());
+  auto *nullptr_expr =
+      new (ctxt) CXXNullPtrLiteralExpr(ctxt.NullPtrTy, SourceLocation());
   QualType t = ctxt.getTypeOfExprType(nullptr_expr);
   EXPECT_EQ(lldb::eTypeClassBuiltin, m_ast->GetTypeClass(t.getAsOpaquePtr()));
 }

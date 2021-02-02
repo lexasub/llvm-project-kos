@@ -84,10 +84,16 @@ int chf3(int x) {
 int chf1(int x) {
   return chf2(x);
 }
-}
+} // namespace chns
 
-typedef struct { int n; } Anonymous;
-int fun_using_anon_struct(int n) { Anonymous anon; anon.n = n; return anon.n; }
+typedef struct {
+  int n;
+} Anonymous;
+int fun_using_anon_struct(int n) {
+  Anonymous anon;
+  anon.n = n;
+  return anon.n;
+}
 
 int other_macro_diag(int x) {
   MACRODIAG();

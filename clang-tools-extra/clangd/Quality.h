@@ -91,7 +91,7 @@ struct SymbolRelevanceSignals {
   /// 0-1+ fuzzy-match score for unqualified name. Must be explicitly assigned.
   float NameMatch = 1;
   /// Lowercase words relevant to the context (e.g. near the completion point).
-  llvm::StringSet<>* ContextWords = nullptr;
+  llvm::StringSet<> *ContextWords = nullptr;
   bool Forbidden = false; // Unavailable (e.g const) or inaccessible (private).
   /// Whether fixits needs to be applied for that completion or not.
   bool NeedsFixIts = false;

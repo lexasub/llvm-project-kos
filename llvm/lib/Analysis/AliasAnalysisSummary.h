@@ -243,7 +243,7 @@ struct InstantiatedAttr {
 };
 Optional<InstantiatedAttr> instantiateExternalAttribute(ExternalAttribute EAttr,
                                                         CallBase &Call);
-}
+} // namespace cflaa
 
 template <> struct DenseMapInfo<cflaa::InstantiatedValue> {
   static inline cflaa::InstantiatedValue getEmptyKey() {
@@ -263,6 +263,6 @@ template <> struct DenseMapInfo<cflaa::InstantiatedValue> {
     return LHS.Val == RHS.Val && LHS.DerefLevel == RHS.DerefLevel;
   }
 };
-}
+} // namespace llvm
 
 #endif

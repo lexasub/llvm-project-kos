@@ -15,11 +15,9 @@
 #include "llvm/IR/Function.h"
 using namespace llvm;
 
-TargetIntrinsicInfo::TargetIntrinsicInfo() {
-}
+TargetIntrinsicInfo::TargetIntrinsicInfo() {}
 
-TargetIntrinsicInfo::~TargetIntrinsicInfo() {
-}
+TargetIntrinsicInfo::~TargetIntrinsicInfo() {}
 
 unsigned TargetIntrinsicInfo::getIntrinsicID(const Function *F) const {
   const ValueName *ValName = F->getValueName();

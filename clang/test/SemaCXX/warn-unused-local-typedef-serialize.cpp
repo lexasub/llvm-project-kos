@@ -4,8 +4,8 @@
 
 #ifndef BE_THE_SOURCE
 inline void myfun() {
-// The warning should fire every time the pch file is used, not when it's built.
-// CHECK: warning: unused typedef
+  // The warning should fire every time the pch file is used, not when it's built.
+  // CHECK: warning: unused typedef
   typedef int a;
 }
 #endif

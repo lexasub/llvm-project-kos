@@ -61,7 +61,7 @@ void b(intptr_t n, T arg) {
   intptr_t a;
   [&]() {
     n = sizeof(buffer1[n]);
-    [&](){
+    [&]() {
       n = sizeof(buffer2);
       n = sizeof(buffer1);
     }();

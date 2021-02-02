@@ -70,10 +70,10 @@ public:
   enum StmtClass {
     NoStmtClass = 0,
 #define STMT(CLASS, PARENT) CLASS##Class,
-#define STMT_RANGE(BASE, FIRST, LAST) \
-        first##BASE##Constant=FIRST##Class, last##BASE##Constant=LAST##Class,
-#define LAST_STMT_RANGE(BASE, FIRST, LAST) \
-        first##BASE##Constant=FIRST##Class, last##BASE##Constant=LAST##Class
+#define STMT_RANGE(BASE, FIRST, LAST)                                          \
+  first##BASE##Constant = FIRST##Class, last##BASE##Constant = LAST##Class,
+#define LAST_STMT_RANGE(BASE, FIRST, LAST)                                     \
+  first##BASE##Constant = FIRST##Class, last##BASE##Constant = LAST##Class
 #define ABSTRACT_STMT(STMT)
 #include "clang/AST/StmtNodes.inc"
   };
@@ -284,28 +284,28 @@ protected:
   //===--- Expression bitfields classes ---===//
 
   class ExprBitfields {
-    friend class ASTStmtReader; // deserialization
-    friend class AtomicExpr; // ctor
-    friend class BlockDeclRefExpr; // ctor
-    friend class CallExpr; // ctor
-    friend class CXXConstructExpr; // ctor
+    friend class ASTStmtReader;               // deserialization
+    friend class AtomicExpr;                  // ctor
+    friend class BlockDeclRefExpr;            // ctor
+    friend class CallExpr;                    // ctor
+    friend class CXXConstructExpr;            // ctor
     friend class CXXDependentScopeMemberExpr; // ctor
-    friend class CXXNewExpr; // ctor
-    friend class CXXUnresolvedConstructExpr; // ctor
-    friend class DeclRefExpr; // computeDependence
-    friend class DependentScopeDeclRefExpr; // ctor
-    friend class DesignatedInitExpr; // ctor
+    friend class CXXNewExpr;                  // ctor
+    friend class CXXUnresolvedConstructExpr;  // ctor
+    friend class DeclRefExpr;                 // computeDependence
+    friend class DependentScopeDeclRefExpr;   // ctor
+    friend class DesignatedInitExpr;          // ctor
     friend class Expr;
-    friend class InitListExpr; // ctor
-    friend class ObjCArrayLiteral; // ctor
+    friend class InitListExpr;          // ctor
+    friend class ObjCArrayLiteral;      // ctor
     friend class ObjCDictionaryLiteral; // ctor
-    friend class ObjCMessageExpr; // ctor
-    friend class OffsetOfExpr; // ctor
-    friend class OpaqueValueExpr; // ctor
-    friend class OverloadExpr; // ctor
-    friend class ParenListExpr; // ctor
-    friend class PseudoObjectExpr; // ctor
-    friend class ShuffleVectorExpr; // ctor
+    friend class ObjCMessageExpr;       // ctor
+    friend class OffsetOfExpr;          // ctor
+    friend class OpaqueValueExpr;       // ctor
+    friend class OverloadExpr;          // ctor
+    friend class ParenListExpr;         // ctor
+    friend class PseudoObjectExpr;      // ctor
+    friend class ShuffleVectorExpr;     // ctor
 
     unsigned : NumStmtBits;
 
@@ -379,7 +379,6 @@ protected:
     /// The location of the declaration name itself.
     SourceLocation Loc;
   };
-
 
   class FloatingLiteralBitfields {
     friend class FloatingLiteral;
@@ -1080,10 +1079,9 @@ protected:
 public:
   // Only allow allocation of Stmts using the allocator in ASTContext
   // or by doing a placement new.
-  void* operator new(size_t bytes, const ASTContext& C,
-                     unsigned alignment = 8);
+  void *operator new(size_t bytes, const ASTContext &C, unsigned alignment = 8);
 
-  void* operator new(size_t bytes, const ASTContext* C,
+  void *operator new(size_t bytes, const ASTContext *C,
                      unsigned alignment = 8) {
     return operator new(bytes, *C, alignment);
   }
@@ -1114,7 +1112,7 @@ protected:
   ///
   /// This is needed because AST nodes use Stmt* arrays to store
   /// references to children (to be compatible with StmtIterator).
-  template<typename T, typename TPtr = T *, typename StmtPtr = Stmt *>
+  template <typename T, typename TPtr = T *, typename StmtPtr = Stmt *>
   struct CastIterator
       : llvm::iterator_adaptor_base<CastIterator<T, TPtr, StmtPtr>, StmtPtr *,
                                     std::random_access_iterator_tag, TPtr> {
@@ -1156,7 +1154,8 @@ public:
     static_assert(sizeof(*this) % alignof(void *) == 0,
                   "Insufficient alignment!");
     StmtBits.sClass = SC;
-    if (StatisticsEnabled) Stmt::addStmtClass(SC);
+    if (StatisticsEnabled)
+      Stmt::addStmtClass(SC);
   }
 
   StmtClass getStmtClass() const {
@@ -1233,8 +1232,8 @@ public:
 
   const Stmt *stripLabelLikeStatements() const;
   Stmt *stripLabelLikeStatements() {
-    return const_cast<Stmt*>(
-      const_cast<const Stmt*>(this)->stripLabelLikeStatements());
+    return const_cast<Stmt *>(
+        const_cast<const Stmt *>(this)->stripLabelLikeStatements());
   }
 
   /// Child Iterators: All subclasses must implement 'children'
@@ -1281,7 +1280,7 @@ public:
   ///
   /// \param Hash an ODRHash object which will be called where pointers would
   /// have been used in the Profile function.
-  void ProcessODRHash(llvm::FoldingSetNodeID &ID, ODRHash& Hash) const;
+  void ProcessODRHash(llvm::FoldingSetNodeID &ID, ODRHash &Hash) const;
 };
 
 /// DeclStmt - Adaptor class for mixing declarations with statements and
@@ -1784,7 +1783,7 @@ public:
   const Expr *getExprStmt() const;
   Expr *getExprStmt() {
     const ValueStmt *ConstThis = this;
-    return const_cast<Expr*>(ConstThis->getExprStmt());
+    return const_cast<Expr *>(ConstThis->getExprStmt());
   }
 
   static bool classof(const Stmt *T) {
@@ -1822,7 +1821,9 @@ public:
   void setSubStmt(Stmt *SS) { SubStmt = SS; }
 
   SourceLocation getBeginLoc() const { return getIdentLoc(); }
-  SourceLocation getEndLoc() const LLVM_READONLY { return SubStmt->getEndLoc();}
+  SourceLocation getEndLoc() const LLVM_READONLY {
+    return SubStmt->getEndLoc();
+  }
 
   child_range children() { return child_range(&SubStmt, &SubStmt + 1); }
 
@@ -1883,7 +1884,9 @@ public:
   const Stmt *getSubStmt() const { return SubStmt; }
 
   SourceLocation getBeginLoc() const { return getAttrLoc(); }
-  SourceLocation getEndLoc() const LLVM_READONLY { return SubStmt->getEndLoc();}
+  SourceLocation getEndLoc() const LLVM_READONLY {
+    return SubStmt->getEndLoc();
+  }
 
   child_range children() { return child_range(&SubStmt, &SubStmt + 1); }
 
@@ -2079,7 +2082,7 @@ public:
 
   /// If this is an 'if constexpr', determine which substatement will be taken.
   /// Otherwise, or if the condition is value-dependent, returns None.
-  Optional<const Stmt*> getNondiscardedCase(const ASTContext &Ctx) const;
+  Optional<const Stmt *> getNondiscardedCase(const ASTContext &Ctx) const;
 
   bool isObjCAvailabilityCheck() const;
 
@@ -2500,7 +2503,7 @@ public:
 /// specified in the source.
 class ForStmt : public Stmt {
   enum { INIT, CONDVAR, COND, INC, BODY, END_EXPR };
-  Stmt* SubExprs[END_EXPR]; // SubExprs[INIT] is an expression or declstmt.
+  Stmt *SubExprs[END_EXPR]; // SubExprs[INIT] is an expression or declstmt.
   SourceLocation LParenLoc, RParenLoc;
 
 public:
@@ -2527,21 +2530,23 @@ public:
   /// If this ForStmt has a condition variable, return the faux DeclStmt
   /// associated with the creation of that condition variable.
   const DeclStmt *getConditionVariableDeclStmt() const {
-    return reinterpret_cast<DeclStmt*>(SubExprs[CONDVAR]);
+    return reinterpret_cast<DeclStmt *>(SubExprs[CONDVAR]);
   }
 
-  Expr *getCond() { return reinterpret_cast<Expr*>(SubExprs[COND]); }
-  Expr *getInc()  { return reinterpret_cast<Expr*>(SubExprs[INC]); }
+  Expr *getCond() { return reinterpret_cast<Expr *>(SubExprs[COND]); }
+  Expr *getInc() { return reinterpret_cast<Expr *>(SubExprs[INC]); }
   Stmt *getBody() { return SubExprs[BODY]; }
 
   const Stmt *getInit() const { return SubExprs[INIT]; }
-  const Expr *getCond() const { return reinterpret_cast<Expr*>(SubExprs[COND]);}
-  const Expr *getInc()  const { return reinterpret_cast<Expr*>(SubExprs[INC]); }
+  const Expr *getCond() const {
+    return reinterpret_cast<Expr *>(SubExprs[COND]);
+  }
+  const Expr *getInc() const { return reinterpret_cast<Expr *>(SubExprs[INC]); }
   const Stmt *getBody() const { return SubExprs[BODY]; }
 
   void setInit(Stmt *S) { SubExprs[INIT] = S; }
-  void setCond(Expr *E) { SubExprs[COND] = reinterpret_cast<Stmt*>(E); }
-  void setInc(Expr *E) { SubExprs[INC] = reinterpret_cast<Stmt*>(E); }
+  void setCond(Expr *E) { SubExprs[COND] = reinterpret_cast<Stmt *>(E); }
+  void setInc(Expr *E) { SubExprs[INC] = reinterpret_cast<Stmt *>(E); }
   void setBody(Stmt *S) { SubExprs[BODY] = S; }
 
   SourceLocation getForLoc() const { return ForStmtBits.ForLoc; }
@@ -2560,7 +2565,7 @@ public:
 
   // Iterators
   child_range children() {
-    return child_range(&SubExprs[0], &SubExprs[0]+END_EXPR);
+    return child_range(&SubExprs[0], &SubExprs[0] + END_EXPR);
   }
 
   const_child_range children() const {
@@ -2689,9 +2694,7 @@ public:
 /// BreakStmt - This represents a break.
 class BreakStmt : public Stmt {
 public:
-  BreakStmt(SourceLocation BL) : Stmt(BreakStmtClass) {
-    setBreakLoc(BL);
-  }
+  BreakStmt(SourceLocation BL) : Stmt(BreakStmtClass) { setBreakLoc(BL); }
 
   /// Build an empty break statement.
   explicit BreakStmt(EmptyShell Empty) : Stmt(BreakStmtClass, Empty) {}
@@ -2829,9 +2832,9 @@ protected:
 
   AsmStmt(StmtClass SC, SourceLocation asmloc, bool issimple, bool isvolatile,
           unsigned numoutputs, unsigned numinputs, unsigned numclobbers)
-      : Stmt (SC), AsmLoc(asmloc), IsSimple(issimple), IsVolatile(isvolatile),
-        NumOutputs(numoutputs), NumInputs(numinputs),
-        NumClobbers(numclobbers) {}
+      : Stmt(SC), AsmLoc(asmloc), IsSimple(issimple), IsVolatile(isvolatile),
+        NumOutputs(numoutputs), NumInputs(numinputs), NumClobbers(numclobbers) {
+  }
 
 public:
   /// Build an empty inline-assembly statement.
@@ -2893,7 +2896,7 @@ public:
 
   static bool classof(const Stmt *T) {
     return T->getStmtClass() == GCCAsmStmtClass ||
-      T->getStmtClass() == MSAsmStmtClass;
+           T->getStmtClass() == MSAsmStmtClass;
   }
 
   // Input expr iterators.
@@ -2903,19 +2906,13 @@ public:
   using inputs_range = llvm::iterator_range<inputs_iterator>;
   using inputs_const_range = llvm::iterator_range<const_inputs_iterator>;
 
-  inputs_iterator begin_inputs() {
-    return &Exprs[0] + NumOutputs;
-  }
+  inputs_iterator begin_inputs() { return &Exprs[0] + NumOutputs; }
 
-  inputs_iterator end_inputs() {
-    return &Exprs[0] + NumOutputs + NumInputs;
-  }
+  inputs_iterator end_inputs() { return &Exprs[0] + NumOutputs + NumInputs; }
 
   inputs_range inputs() { return inputs_range(begin_inputs(), end_inputs()); }
 
-  const_inputs_iterator begin_inputs() const {
-    return &Exprs[0] + NumOutputs;
-  }
+  const_inputs_iterator begin_inputs() const { return &Exprs[0] + NumOutputs; }
 
   const_inputs_iterator end_inputs() const {
     return &Exprs[0] + NumOutputs + NumInputs;
@@ -2932,25 +2929,17 @@ public:
   using outputs_range = llvm::iterator_range<outputs_iterator>;
   using outputs_const_range = llvm::iterator_range<const_outputs_iterator>;
 
-  outputs_iterator begin_outputs() {
-    return &Exprs[0];
-  }
+  outputs_iterator begin_outputs() { return &Exprs[0]; }
 
-  outputs_iterator end_outputs() {
-    return &Exprs[0] + NumOutputs;
-  }
+  outputs_iterator end_outputs() { return &Exprs[0] + NumOutputs; }
 
   outputs_range outputs() {
     return outputs_range(begin_outputs(), end_outputs());
   }
 
-  const_outputs_iterator begin_outputs() const {
-    return &Exprs[0];
-  }
+  const_outputs_iterator begin_outputs() const { return &Exprs[0]; }
 
-  const_outputs_iterator end_outputs() const {
-    return &Exprs[0] + NumOutputs;
-  }
+  const_outputs_iterator end_outputs() const { return &Exprs[0] + NumOutputs; }
 
   outputs_const_range outputs() const {
     return outputs_const_range(begin_outputs(), end_outputs());
@@ -3004,8 +2993,8 @@ public:
   class AsmStringPiece {
   public:
     enum Kind {
-      String,  // String in .ll asm string form, "$" -> "$$" and "%%" -> "%".
-      Operand  // Operand reference, with optional modifier %c4.
+      String, // String in .ll asm string form, "$" -> "$$" and "%%" -> "%".
+      Operand // Operand reference, with optional modifier %c4.
     };
 
   private:
@@ -3077,7 +3066,7 @@ public:
   Expr *getOutputExpr(unsigned i);
 
   const Expr *getOutputExpr(unsigned i) const {
-    return const_cast<GCCAsmStmt*>(this)->getOutputExpr(i);
+    return const_cast<GCCAsmStmt *>(this)->getOutputExpr(i);
   }
 
   //===--- Input operands ---===//
@@ -3106,18 +3095,14 @@ public:
   void setInputExpr(unsigned i, Expr *E);
 
   const Expr *getInputExpr(unsigned i) const {
-    return const_cast<GCCAsmStmt*>(this)->getInputExpr(i);
+    return const_cast<GCCAsmStmt *>(this)->getInputExpr(i);
   }
 
   //===--- Labels ---===//
 
-  bool isAsmGoto() const {
-    return NumLabels > 0;
-  }
+  bool isAsmGoto() const { return NumLabels > 0; }
 
-  unsigned getNumLabels() const {
-    return NumLabels;
-  }
+  unsigned getNumLabels() const { return NumLabels; }
 
   IdentifierInfo *getLabelIdentifier(unsigned i) const {
     return Names[i + NumOutputs + NumInputs];
@@ -3130,17 +3115,13 @@ public:
   using labels_range = llvm::iterator_range<labels_iterator>;
   using labels_const_range = llvm::iterator_range<const_labels_iterator>;
 
-  labels_iterator begin_labels() {
-    return &Exprs[0] + NumOutputs + NumInputs;
-  }
+  labels_iterator begin_labels() { return &Exprs[0] + NumOutputs + NumInputs; }
 
   labels_iterator end_labels() {
     return &Exprs[0] + NumOutputs + NumInputs + NumLabels;
   }
 
-  labels_range labels() {
-    return labels_range(begin_labels(), end_labels());
-  }
+  labels_range labels() { return labels_range(begin_labels(), end_labels()); }
 
   const_labels_iterator begin_labels() const {
     return &Exprs[0] + NumOutputs + NumInputs;
@@ -3155,15 +3136,10 @@ public:
   }
 
 private:
-  void setOutputsAndInputsAndClobbers(const ASTContext &C,
-                                      IdentifierInfo **Names,
-                                      StringLiteral **Constraints,
-                                      Stmt **Exprs,
-                                      unsigned NumOutputs,
-                                      unsigned NumInputs,
-                                      unsigned NumLabels,
-                                      StringLiteral **Clobbers,
-                                      unsigned NumClobbers);
+  void setOutputsAndInputsAndClobbers(
+      const ASTContext &C, IdentifierInfo **Names, StringLiteral **Constraints,
+      Stmt **Exprs, unsigned NumOutputs, unsigned NumInputs, unsigned NumLabels,
+      StringLiteral **Clobbers, unsigned NumClobbers);
 
 public:
   //===--- Other ---===//
@@ -3205,9 +3181,9 @@ public:
   MSAsmStmt(const ASTContext &C, SourceLocation asmloc,
             SourceLocation lbraceloc, bool issimple, bool isvolatile,
             ArrayRef<Token> asmtoks, unsigned numoutputs, unsigned numinputs,
-            ArrayRef<StringRef> constraints,
-            ArrayRef<Expr*> exprs, StringRef asmstr,
-            ArrayRef<StringRef> clobbers, SourceLocation endloc);
+            ArrayRef<StringRef> constraints, ArrayRef<Expr *> exprs,
+            StringRef asmstr, ArrayRef<StringRef> clobbers,
+            SourceLocation endloc);
 
   /// Build an empty MS-style inline-assembly statement.
   explicit MSAsmStmt(EmptyShell Empty) : AsmStmt(MSAsmStmtClass, Empty) {}
@@ -3238,7 +3214,7 @@ public:
   Expr *getOutputExpr(unsigned i);
 
   const Expr *getOutputExpr(unsigned i) const {
-    return const_cast<MSAsmStmt*>(this)->getOutputExpr(i);
+    return const_cast<MSAsmStmt *>(this)->getOutputExpr(i);
   }
 
   //===--- Input operands ---===//
@@ -3252,7 +3228,7 @@ public:
   void setInputExpr(unsigned i, Expr *E);
 
   const Expr *getInputExpr(unsigned i) const {
-    return const_cast<MSAsmStmt*>(this)->getInputExpr(i);
+    return const_cast<MSAsmStmt *>(this)->getInputExpr(i);
   }
 
   //===--- Other ---===//
@@ -3265,8 +3241,8 @@ public:
     return llvm::makeArrayRef(Clobbers, NumClobbers);
   }
 
-  ArrayRef<Expr*> getAllExprs() const {
-    return llvm::makeArrayRef(reinterpret_cast<Expr**>(Exprs),
+  ArrayRef<Expr *> getAllExprs() const {
+    return llvm::makeArrayRef(reinterpret_cast<Expr **>(Exprs),
                               NumInputs + NumOutputs);
   }
 
@@ -3275,7 +3251,7 @@ public:
 private:
   void initialize(const ASTContext &C, StringRef AsmString,
                   ArrayRef<Token> AsmToks, ArrayRef<StringRef> Constraints,
-                  ArrayRef<Expr*> Exprs, ArrayRef<StringRef> Clobbers);
+                  ArrayRef<Expr *> Exprs, ArrayRef<StringRef> Clobbers);
 
 public:
   SourceLocation getBeginLoc() const LLVM_READONLY { return AsmLoc; }
@@ -3297,7 +3273,7 @@ class SEHExceptStmt : public Stmt {
   friend class ASTReader;
   friend class ASTStmtReader;
 
-  SourceLocation  Loc;
+  SourceLocation Loc;
   Stmt *Children[2];
 
   enum { FILTER_EXPR, BLOCK };
@@ -3306,10 +3282,8 @@ class SEHExceptStmt : public Stmt {
   explicit SEHExceptStmt(EmptyShell E) : Stmt(SEHExceptStmtClass, E) {}
 
 public:
-  static SEHExceptStmt* Create(const ASTContext &C,
-                               SourceLocation ExceptLoc,
-                               Expr *FilterExpr,
-                               Stmt *Block);
+  static SEHExceptStmt *Create(const ASTContext &C, SourceLocation ExceptLoc,
+                               Expr *FilterExpr, Stmt *Block);
 
   SourceLocation getBeginLoc() const LLVM_READONLY { return getExceptLoc(); }
 
@@ -3317,16 +3291,12 @@ public:
   SourceLocation getEndLoc() const { return getBlock()->getEndLoc(); }
 
   Expr *getFilterExpr() const {
-    return reinterpret_cast<Expr*>(Children[FILTER_EXPR]);
+    return reinterpret_cast<Expr *>(Children[FILTER_EXPR]);
   }
 
-  CompoundStmt *getBlock() const {
-    return cast<CompoundStmt>(Children[BLOCK]);
-  }
+  CompoundStmt *getBlock() const { return cast<CompoundStmt>(Children[BLOCK]); }
 
-  child_range children() {
-    return child_range(Children, Children+2);
-  }
+  child_range children() { return child_range(Children, Children + 2); }
 
   const_child_range children() const {
     return const_child_range(Children, Children + 2);
@@ -3341,15 +3311,14 @@ class SEHFinallyStmt : public Stmt {
   friend class ASTReader;
   friend class ASTStmtReader;
 
-  SourceLocation  Loc;
+  SourceLocation Loc;
   Stmt *Block;
 
   SEHFinallyStmt(SourceLocation Loc, Stmt *Block);
   explicit SEHFinallyStmt(EmptyShell E) : Stmt(SEHFinallyStmtClass, E) {}
 
 public:
-  static SEHFinallyStmt* Create(const ASTContext &C,
-                                SourceLocation FinallyLoc,
+  static SEHFinallyStmt *Create(const ASTContext &C, SourceLocation FinallyLoc,
                                 Stmt *Block);
 
   SourceLocation getBeginLoc() const LLVM_READONLY { return getFinallyLoc(); }
@@ -3359,9 +3328,7 @@ public:
 
   CompoundStmt *getBlock() const { return cast<CompoundStmt>(Block); }
 
-  child_range children() {
-    return child_range(&Block,&Block+1);
-  }
+  child_range children() { return child_range(&Block, &Block + 1); }
 
   const_child_range children() const {
     return const_child_range(&Block, &Block + 1);
@@ -3377,20 +3344,18 @@ class SEHTryStmt : public Stmt {
   friend class ASTStmtReader;
 
   bool IsCXXTry;
-  SourceLocation  TryLoc;
+  SourceLocation TryLoc;
   Stmt *Children[2];
 
   enum { TRY = 0, HANDLER = 1 };
 
   SEHTryStmt(bool isCXXTry, // true if 'try' otherwise '__try'
-             SourceLocation TryLoc,
-             Stmt *TryBlock,
-             Stmt *Handler);
+             SourceLocation TryLoc, Stmt *TryBlock, Stmt *Handler);
 
   explicit SEHTryStmt(EmptyShell E) : Stmt(SEHTryStmtClass, E) {}
 
 public:
-  static SEHTryStmt* Create(const ASTContext &C, bool isCXXTry,
+  static SEHTryStmt *Create(const ASTContext &C, bool isCXXTry,
                             SourceLocation TryLoc, Stmt *TryBlock,
                             Stmt *Handler);
 
@@ -3401,19 +3366,17 @@ public:
 
   bool getIsCXXTry() const { return IsCXXTry; }
 
-  CompoundStmt* getTryBlock() const {
+  CompoundStmt *getTryBlock() const {
     return cast<CompoundStmt>(Children[TRY]);
   }
 
   Stmt *getHandler() const { return Children[HANDLER]; }
 
   /// Returns 0 if not defined
-  SEHExceptStmt  *getExceptHandler() const;
+  SEHExceptStmt *getExceptHandler() const;
   SEHFinallyStmt *getFinallyHandler() const;
 
-  child_range children() {
-    return child_range(Children, Children+2);
-  }
+  child_range children() { return child_range(Children, Children + 2); }
 
   const_child_range children() const {
     return const_child_range(Children, Children + 2);
@@ -3558,8 +3521,8 @@ public:
   static CapturedStmt *Create(const ASTContext &Context, Stmt *S,
                               CapturedRegionKind Kind,
                               ArrayRef<Capture> Captures,
-                              ArrayRef<Expr *> CaptureInits,
-                              CapturedDecl *CD, RecordDecl *RD);
+                              ArrayRef<Expr *> CaptureInits, CapturedDecl *CD,
+                              RecordDecl *RD);
 
   static CapturedStmt *CreateDeserialized(const ASTContext &Context,
                                           unsigned NumCaptures);

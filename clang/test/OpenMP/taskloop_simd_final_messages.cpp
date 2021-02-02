@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
 #pragma omp taskloop simd final(argc // expected-error {{expected ')'}} expected-note {{to match this '('}}
   for (int i = 0; i < 10; ++i)
     foo();
-#pragma omp taskloop simd final(z+argc)) // expected-warning {{extra tokens at the end of '#pragma omp taskloop simd' are ignored}}
+#pragma omp taskloop simd final(z + argc)) // expected-warning {{extra tokens at the end of '#pragma omp taskloop simd' are ignored}}
   for (int i = 0; i < 10; ++i)
     foo();
 #pragma omp taskloop simd final(argc > 0 ? argv[1] : argv[2])

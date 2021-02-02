@@ -3,27 +3,27 @@
 
 class A {
 public:
-// CHECK:      [B1 (ENTRY)]
-// CHECK-NEXT:   Succs (1): B0
-// CHECK:      [B0 (EXIT)]
-// CHECK-NEXT:   Preds (1): B1
+  // CHECK:      [B1 (ENTRY)]
+  // CHECK-NEXT:   Succs (1): B0
+  // CHECK:      [B0 (EXIT)]
+  // CHECK-NEXT:   Preds (1): B1
   A() {}
 
-// CHECK:      [B1 (ENTRY)]
-// CHECK-NEXT:   Succs (1): B0
-// CHECK:      [B0 (EXIT)]
-// CHECK-NEXT:   Preds (1): B1
+  // CHECK:      [B1 (ENTRY)]
+  // CHECK-NEXT:   Succs (1): B0
+  // CHECK:      [B0 (EXIT)]
+  // CHECK-NEXT:   Preds (1): B1
   ~A() {}
 
-// CHECK:      [B2 (ENTRY)]
-// CHECK-NEXT:   Succs (1): B1
-// CHECK:      [B1]
-// CHECK-NEXT:   1: 1
-// CHECK-NEXT:   2: return [B1.1];
-// CHECK-NEXT:   Preds (1): B2
-// CHECK-NEXT:   Succs (1): B0
-// CHECK:      [B0 (EXIT)]
-// CHECK-NEXT:   Preds (1): B1
+  // CHECK:      [B2 (ENTRY)]
+  // CHECK-NEXT:   Succs (1): B1
+  // CHECK:      [B1]
+  // CHECK-NEXT:   1: 1
+  // CHECK-NEXT:   2: return [B1.1];
+  // CHECK-NEXT:   Preds (1): B2
+  // CHECK-NEXT:   Succs (1): B0
+  // CHECK:      [B0 (EXIT)]
+  // CHECK-NEXT:   Preds (1): B1
   operator int() const { return 1; }
 };
 
@@ -74,7 +74,8 @@ void test_array() {
 // CHECK-NEXT:   Preds (1): B1
 void test_scope() {
   A a;
-  { A c;
+  {
+    A c;
     A d;
   }
   A b;
@@ -114,7 +115,8 @@ void test_scope() {
 void test_return() {
   A a;
   A b;
-  if (UV) return;
+  if (UV)
+    return;
   A c;
 }
 
@@ -167,7 +169,8 @@ void test_if_implicit_scope() {
   A a;
   if (A b = a)
     A c;
-  else A c;
+  else
+    A c;
 }
 
 // CHECK:      [B9 (ENTRY)]
@@ -260,11 +263,13 @@ void test_if_jumps() {
   A a;
   if (A b = a) {
     A c;
-    if (UV) return;
+    if (UV)
+      return;
     A d;
   } else {
     A c;
-    if (UV) return;
+    if (UV)
+      return;
     A d;
   }
   A e;
@@ -418,9 +423,12 @@ void test_while_jumps() {
   A a;
   while (A b = a) {
     A c;
-    if (UV) break;
-    if (UV) continue;
-    if (UV) return;
+    if (UV)
+      break;
+    if (UV)
+      continue;
+    if (UV)
+      return;
     A d;
   }
   A e;
@@ -506,9 +514,12 @@ void test_do_jumps() {
   A a;
   do {
     A b;
-    if (UV) break;
-    if (UV) continue;
-    if (UV) return;
+    if (UV)
+      break;
+    if (UV)
+      continue;
+    if (UV)
+      return;
     A c;
   } while (UV);
   A d;
@@ -560,7 +571,7 @@ void test_do_jumps() {
 // CHECK:      [B0 (EXIT)]
 // CHECK-NEXT:   Preds (1): B1
 void test_for_implicit_scope() {
-  for (A a; A b = a; )
+  for (A a; A b = a;)
     A c;
 }
 
@@ -664,11 +675,14 @@ void test_for_implicit_scope() {
 // CHECK-NEXT:   Preds (2): B1 B4
 void test_for_jumps() {
   A a;
-  for (A b; A c = b; ) {
+  for (A b; A c = b;) {
     A d;
-    if (UV) break;
-    if (UV) continue;
-    if (UV) return;
+    if (UV)
+      break;
+    if (UV)
+      continue;
+    if (UV)
+      return;
     A e;
   }
   A f;
@@ -743,9 +757,12 @@ void test_goto() {
 l0:
   A cb;
   A b;
-  { A a;
-    if (UV) goto l0;
-    if (UV) goto l1;
+  {
+    A a;
+    if (UV)
+      goto l0;
+    if (UV)
+      goto l1;
     A b;
   }
 l1:
@@ -937,22 +954,22 @@ void test_range_for(A &b) {
 void test_switch_with_compound_with_default() {
   char c = '1';
   switch (int i = getX()) {
-    case 0:
-      c = '2';
-    case 1:
-      c = '3';
-      break;
-    case 2: {
-      c = '2';
-      break;
-    }
-    case 3:
-      c = '2';
-    default: {
-      int a = 0;
-      ++i;
-    }
-    }
+  case 0:
+    c = '2';
+  case 1:
+    c = '3';
+    break;
+  case 2: {
+    c = '2';
+    break;
+  }
+  case 3:
+    c = '2';
+  default: {
+    int a = 0;
+    ++i;
+  }
+  }
   int k = 1;
 }
 
@@ -1007,15 +1024,15 @@ void test_switch_with_compound_with_default() {
 int test_switch_with_compound_without_default() {
   char c = '1';
   switch (int i = getX()) {
-    case 0:
-      c = '2';
-    case 1:
-      c = '1';
-      break;
-    case 2:
-      c = '3';
-      break;
-   }
+  case 0:
+    c = '2';
+  case 1:
+    c = '1';
+    break;
+  case 2:
+    c = '3';
+    break;
+  }
   int k = 3;
 }
 
@@ -1061,12 +1078,12 @@ int test_switch_with_compound_without_default() {
 void test_without_compound() {
   char s = '1';
   switch (int i = getX())
-    case 0:
-    default: {
-      int a = 0;
-      ++i;
-    }
-  int k = 1;
+  case 0:
+  default: {
+    int a = 0;
+    ++i;
+  }
+    int k = 1;
 }
 
 // CHECK:      [B12 (ENTRY)]

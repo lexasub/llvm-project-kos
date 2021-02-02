@@ -15,5 +15,5 @@
 #include "test_macros.h"
 
 #if defined(TEST_HAS_ALIGNED_ALLOC) != defined(_LIBCPP_HAS_ALIGNED_ALLOC)
-#   error "TEST_HAS_ALIGNED_ALLOC and _LIBCPP_HAS_ALIGNED_ALLOC are out of sync"
+#error "TEST_HAS_ALIGNED_ALLOC and _LIBCPP_HAS_ALIGNED_ALLOC are out of sync"
 #endif

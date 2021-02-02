@@ -29,8 +29,8 @@
 #if defined(_WIN32)
 #include <process.h>
 #else
-#include <unistd.h>
 #include <pthread.h>
+#include <unistd.h>
 #endif
 
 using namespace lldb_private;
@@ -55,8 +55,9 @@ void Log::ListCategories(llvm::raw_ostream &stream,
                   });
 }
 
-uint32_t Log::GetFlags(llvm::raw_ostream &stream, const ChannelMap::value_type &entry,
-                         llvm::ArrayRef<const char *> categories) {
+uint32_t Log::GetFlags(llvm::raw_ostream &stream,
+                       const ChannelMap::value_type &entry,
+                       llvm::ArrayRef<const char *> categories) {
   bool list_categories = false;
   uint32_t flags = 0;
   for (const char *category : categories) {
@@ -293,8 +294,7 @@ void Log::WriteHeader(llvm::raw_ostream &OS, llvm::StringRef file,
 
   // Add the process and thread if requested
   if (options.Test(LLDB_LOG_OPTION_PREPEND_PROC_AND_THREAD))
-    OS << llvm::formatv("[{0,0+4}/{1,0+4}] ", getpid(),
-                        llvm::get_threadid());
+    OS << llvm::formatv("[{0,0+4}/{1,0+4}] ", getpid(), llvm::get_threadid());
 
   // Add the thread name if requested
   if (options.Test(LLDB_LOG_OPTION_PREPEND_THREAD_NAME)) {
@@ -350,6 +350,6 @@ void Log::DisableLoggingChild() {
   // Disable logging by clearing out the atomic variable after forking -- if we
   // forked while another thread held the channel mutex, we would deadlock when
   // trying to write to the log.
-  for (auto &c: *g_channel_map)
+  for (auto &c : *g_channel_map)
     c.second.m_channel.log_ptr.store(nullptr, std::memory_order_relaxed);
 }

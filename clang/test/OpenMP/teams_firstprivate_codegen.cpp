@@ -77,8 +77,8 @@ T tmain() {
   T vec[] __attribute__((aligned(128))) = {1, 2};
   S<T> s_arr[] __attribute__((aligned(128))) = {1, 2};
   S<T> var __attribute__((aligned(128))) (3);
-  #pragma omp target
-  #pragma omp teams firstprivate(t_var, vec, s_arr, var)
+#pragma omp target
+#pragma omp teams firstprivate(t_var, vec, s_arr, var)
   {
     vec[0] = t_var;
     s_arr[0] = var;
@@ -94,43 +94,43 @@ int main() {
 #ifdef LAMBDA
   // LAMBDA-LABEL: @main
   // LAMBDA: call{{.*}} void [[OUTER_LAMBDA:@.+]](
-  [&]() {    
-  // LAMBDA: define{{.*}} internal{{.*}} void [[OUTER_LAMBDA]](
-  // LAMBDA: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, i32 2, {{.+}}* [[OMP_REGION:@.+]] to {{.+}}, i32* {{.+}}, {{.+}})    
-  #pragma omp target
-  #pragma omp teams firstprivate(g, sivar)
-  {
-    // LAMBDA: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias %{{.+}}, i32* noalias %{{.+}}, i32* nonnull align 4 dereferenceable(4) [[G_IN:%.+]], i{{64|32}} {{.*}}[[SIVAR_IN:%.+]])
-    // LAMBDA: store i{{[0-9]+}}* [[G_IN]], i{{[0-9]+}}** [[G_ADDR:%.+]],
-    // LAMBDA: store i{{[0-9]+}} [[SIVAR_IN]], i{{[0-9]+}}* [[SIVAR_ADDR:%.+]],
-    // LAMBDA: [[G_ADDR_VAL:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[G_ADDR]],
-    // LAMBDA-64: [[SIVAR_CONV:%.+]] = bitcast i64*  [[SIVAR_ADDR]] to i32*
-    // LAMBDA: [[G_VAL:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[G_ADDR_VAL]],
-    // LAMBDA: store i{{[0-9]+}} [[G_VAL]], i{{[0-9]+}}* [[G_LOCAL:%.+]],
-    g = 1;
-    sivar = 2;
-    // LAMBDA: store i{{[0-9]+}} 1, i{{[0-9]+}}* [[G_LOCAL]],
-    // LAMBDA-64: store i{{[0-9]+}} 2, i{{[0-9]+}}* [[SIVAR_CONV]],
-    // LAMBDA-32: store i{{[0-9]+}} 2, i{{[0-9]+}}* [[SIVAR_ADDR]],
-    // LAMBDA: [[G_PRIVATE_ADDR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG:%.+]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
-    // LAMBDA: store i{{[0-9]+}}* [[G_LOCAL]], i{{[0-9]+}}** [[G_PRIVATE_ADDR_REF]]
-    // LAMBDA: [[SIVAR_PRIVATE_ADDR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG:%.+]], i{{[0-9]+}} 0, i{{[0-9]+}} 1
-    // LAMBDA-64: store i{{[0-9]+}}* [[SIVAR_CONV]], i{{[0-9]+}}** [[SIVAR_PRIVATE_ADDR_REF]]
-    // LAMBDA-32: store i{{[0-9]+}}* [[SIVAR_ADDR]], i{{[0-9]+}}** [[SIVAR_PRIVATE_ADDR_REF]]
-    // LAMBDA: call{{.*}} void [[INNER_LAMBDA:@.+]](%{{.+}}* {{[^,]*}} [[ARG]])
-    [&]() {
-      // LAMBDA: define {{.+}} void [[INNER_LAMBDA]](%{{.+}}* {{[^,]*}} [[ARG_PTR:%.+]])
-      // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
-      g = 2;
-      sivar = 4;
-      // LAMBDA: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
-      // LAMBDA: [[G_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
-      // LAMBDA: [[G_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[G_PTR_REF]]
-      // LAMBDA: [[SIVAR_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 1
-      // LAMBDA: [[SIVAR_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[SIVAR_PTR_REF]]
-      // LAMBDA: store i{{[0-9]+}} 4, i{{[0-9]+}}* [[SIVAR_REF]]
-    }();
-  }
+  [&]() {
+// LAMBDA: define{{.*}} internal{{.*}} void [[OUTER_LAMBDA]](
+// LAMBDA: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, i32 2, {{.+}}* [[OMP_REGION:@.+]] to {{.+}}, i32* {{.+}}, {{.+}})
+#pragma omp target
+#pragma omp teams firstprivate(g, sivar)
+    {
+      // LAMBDA: define{{.*}} internal{{.*}} void [[OMP_REGION]](i32* noalias %{{.+}}, i32* noalias %{{.+}}, i32* nonnull align 4 dereferenceable(4) [[G_IN:%.+]], i{{64|32}} {{.*}}[[SIVAR_IN:%.+]])
+      // LAMBDA: store i{{[0-9]+}}* [[G_IN]], i{{[0-9]+}}** [[G_ADDR:%.+]],
+      // LAMBDA: store i{{[0-9]+}} [[SIVAR_IN]], i{{[0-9]+}}* [[SIVAR_ADDR:%.+]],
+      // LAMBDA: [[G_ADDR_VAL:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[G_ADDR]],
+      // LAMBDA-64: [[SIVAR_CONV:%.+]] = bitcast i64*  [[SIVAR_ADDR]] to i32*
+      // LAMBDA: [[G_VAL:%.+]] = load i{{[0-9]+}}, i{{[0-9]+}}* [[G_ADDR_VAL]],
+      // LAMBDA: store i{{[0-9]+}} [[G_VAL]], i{{[0-9]+}}* [[G_LOCAL:%.+]],
+      g = 1;
+      sivar = 2;
+      // LAMBDA: store i{{[0-9]+}} 1, i{{[0-9]+}}* [[G_LOCAL]],
+      // LAMBDA-64: store i{{[0-9]+}} 2, i{{[0-9]+}}* [[SIVAR_CONV]],
+      // LAMBDA-32: store i{{[0-9]+}} 2, i{{[0-9]+}}* [[SIVAR_ADDR]],
+      // LAMBDA: [[G_PRIVATE_ADDR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG:%.+]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
+      // LAMBDA: store i{{[0-9]+}}* [[G_LOCAL]], i{{[0-9]+}}** [[G_PRIVATE_ADDR_REF]]
+      // LAMBDA: [[SIVAR_PRIVATE_ADDR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG:%.+]], i{{[0-9]+}} 0, i{{[0-9]+}} 1
+      // LAMBDA-64: store i{{[0-9]+}}* [[SIVAR_CONV]], i{{[0-9]+}}** [[SIVAR_PRIVATE_ADDR_REF]]
+      // LAMBDA-32: store i{{[0-9]+}}* [[SIVAR_ADDR]], i{{[0-9]+}}** [[SIVAR_PRIVATE_ADDR_REF]]
+      // LAMBDA: call{{.*}} void [[INNER_LAMBDA:@.+]](%{{.+}}* {{[^,]*}} [[ARG]])
+      [&]() {
+        // LAMBDA: define {{.+}} void [[INNER_LAMBDA]](%{{.+}}* {{[^,]*}} [[ARG_PTR:%.+]])
+        // LAMBDA: store %{{.+}}* [[ARG_PTR]], %{{.+}}** [[ARG_PTR_REF:%.+]],
+        g = 2;
+        sivar = 4;
+        // LAMBDA: [[ARG_PTR:%.+]] = load %{{.+}}*, %{{.+}}** [[ARG_PTR_REF]]
+        // LAMBDA: [[G_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 0
+        // LAMBDA: [[G_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[G_PTR_REF]]
+        // LAMBDA: [[SIVAR_PTR_REF:%.+]] = getelementptr inbounds %{{.+}}, %{{.+}}* [[ARG_PTR]], i{{[0-9]+}} 0, i{{[0-9]+}} 1
+        // LAMBDA: [[SIVAR_REF:%.+]] = load i{{[0-9]+}}*, i{{[0-9]+}}** [[SIVAR_PTR_REF]]
+        // LAMBDA: store i{{[0-9]+}} 4, i{{[0-9]+}}* [[SIVAR_REF]]
+      }();
+    }
   }();
   return 0;
 #else
@@ -139,15 +139,15 @@ int main() {
   int vec[] = {1, 2};
   S<float> s_arr[] = {1, 2};
   S<float> var(3);
-  #pragma omp target
-  #pragma omp teams firstprivate(t_var, vec, s_arr, var, sivar)
+#pragma omp target
+#pragma omp teams firstprivate(t_var, vec, s_arr, var, sivar)
   {
     vec[0] = t_var;
     s_arr[0] = var;
     sivar = 2;
   }
-  #pragma omp target
-  #pragma omp teams firstprivate(t_var)
+#pragma omp target
+#pragma omp teams firstprivate(t_var)
   {}
   return tmain<int>();
 #endif
@@ -258,35 +258,35 @@ int main() {
 struct St {
   int a, b;
   St() : a(0), b(0) {}
-  St(const St &) { }
+  St(const St &) {}
   ~St() {}
   void St_func(St s[2], int n, long double vla1[n]) {
     double vla2[n][n] __attribute__((aligned(128)));
     a = b;
-    #pragma omp target
-    #pragma omp teams firstprivate(s, vla1, vla2)
+#pragma omp target
+#pragma omp teams firstprivate(s, vla1, vla2)
     vla1[b] = vla2[1][n - 1] = a = b;
   }
 };
 
 void array_func(float a[3], St s[2], int n, long double vla1[n]) {
   double vla2[n][n] __attribute__((aligned(128)));
-// ARRAY: call {{.+}} @__kmpc_fork_teams(
-// ARRAY-DAG: [[PRIV_S:%.+]] = alloca %struct.St*,
-// ARRAY-64-DAG: [[PRIV_VLA1:%.+]] = alloca ppc_fp128*,
-// ARRAY-32-DAG: [[PRIV_VLA1:%.+]] = alloca x86_fp80*,
-// ARRAY-DAG: [[PRIV_A:%.+]] = alloca float*,
-// ARRAY-DAG: [[PRIV_VLA2:%.+]] = alloca double*,
-// ARRAY-DAG: store float* %{{.+}}, float** [[PRIV_A]],
-// ARRAY-DAG: store %struct.St* %{{.+}}, %struct.St** [[PRIV_S]],
-// ARRAY-64-DAG: store ppc_fp128* %{{.+}}, ppc_fp128** [[PRIV_VLA1]],
-// ARRAY-32-DAG: store x86_fp80* %{{.+}}, x86_fp80** [[PRIV_VLA1]],
-// ARRAY-DAG: store double* %{{.+}}, double** [[PRIV_VLA2]],
-// ARRAY: call i8* @llvm.stacksave()
-// ARRAY: [[SIZE:%.+]] = mul nuw i{{[0-9]+}} %{{.+}}, 8
-// ARRAY: call void @llvm.memcpy.p0i8.p0i8.i{{[0-9]+}}(i8* align 128 %{{.+}}, i8* align 128 %{{.+}}, i{{[0-9]+}} [[SIZE]], i1 false)
-  #pragma omp target
-  #pragma omp teams firstprivate(a, s, vla1, vla2)
+  // ARRAY: call {{.+}} @__kmpc_fork_teams(
+  // ARRAY-DAG: [[PRIV_S:%.+]] = alloca %struct.St*,
+  // ARRAY-64-DAG: [[PRIV_VLA1:%.+]] = alloca ppc_fp128*,
+  // ARRAY-32-DAG: [[PRIV_VLA1:%.+]] = alloca x86_fp80*,
+  // ARRAY-DAG: [[PRIV_A:%.+]] = alloca float*,
+  // ARRAY-DAG: [[PRIV_VLA2:%.+]] = alloca double*,
+  // ARRAY-DAG: store float* %{{.+}}, float** [[PRIV_A]],
+  // ARRAY-DAG: store %struct.St* %{{.+}}, %struct.St** [[PRIV_S]],
+  // ARRAY-64-DAG: store ppc_fp128* %{{.+}}, ppc_fp128** [[PRIV_VLA1]],
+  // ARRAY-32-DAG: store x86_fp80* %{{.+}}, x86_fp80** [[PRIV_VLA1]],
+  // ARRAY-DAG: store double* %{{.+}}, double** [[PRIV_VLA2]],
+  // ARRAY: call i8* @llvm.stacksave()
+  // ARRAY: [[SIZE:%.+]] = mul nuw i{{[0-9]+}} %{{.+}}, 8
+  // ARRAY: call void @llvm.memcpy.p0i8.p0i8.i{{[0-9]+}}(i8* align 128 %{{.+}}, i8* align 128 %{{.+}}, i{{[0-9]+}} [[SIZE]], i1 false)
+#pragma omp target
+#pragma omp teams firstprivate(a, s, vla1, vla2)
   s[0].St_func(s, n, vla1);
   ;
 }

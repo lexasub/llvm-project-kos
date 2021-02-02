@@ -50,9 +50,9 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "CoverageChecker.h"
 #include "ModularizeUtilities.h"
 #include "clang/AST/ASTConsumer.h"
-#include "CoverageChecker.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/RecursiveASTVisitor.h"
 #include "clang/Basic/SourceManager.h"
@@ -116,9 +116,9 @@ public:
 
 protected:
   std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &CI,
-    StringRef InFile) override {
+                                                 StringRef InFile) override {
     return std::make_unique<CoverageCheckerConsumer>(Checker,
-      CI.getPreprocessor());
+                                                     CI.getPreprocessor());
   }
 
 private:
@@ -128,7 +128,7 @@ private:
 class CoverageCheckerFrontendActionFactory : public FrontendActionFactory {
 public:
   CoverageCheckerFrontendActionFactory(CoverageChecker &Checker)
-    : Checker(Checker) {}
+      : Checker(Checker) {}
 
   std::unique_ptr<FrontendAction> create() override {
     return std::make_unique<CoverageCheckerAction>(Checker);
@@ -142,12 +142,11 @@ private:
 
 // Constructor.
 CoverageChecker::CoverageChecker(StringRef ModuleMapPath,
-    std::vector<std::string> &IncludePaths,
-    ArrayRef<std::string> CommandLine,
-    clang::ModuleMap *ModuleMap)
-  : ModuleMapPath(ModuleMapPath), IncludePaths(IncludePaths),
-    CommandLine(CommandLine),
-    ModMap(ModuleMap) {}
+                                 std::vector<std::string> &IncludePaths,
+                                 ArrayRef<std::string> CommandLine,
+                                 clang::ModuleMap *ModuleMap)
+    : ModuleMapPath(ModuleMapPath), IncludePaths(IncludePaths),
+      CommandLine(CommandLine), ModMap(ModuleMap) {}
 
 // Create instance of CoverageChecker, to simplify setting up
 // subordinate objects.
@@ -156,7 +155,7 @@ std::unique_ptr<CoverageChecker> CoverageChecker::createCoverageChecker(
     ArrayRef<std::string> CommandLine, clang::ModuleMap *ModuleMap) {
 
   return std::make_unique<CoverageChecker>(ModuleMapPath, IncludePaths,
-                                            CommandLine, ModuleMap);
+                                           CommandLine, ModuleMap);
 }
 
 // Do checks.
@@ -195,8 +194,8 @@ std::error_code CoverageChecker::doChecks() {
 // ModuleMapHeadersSet.
 void CoverageChecker::collectModuleHeaders() {
   for (ModuleMap::module_iterator I = ModMap->module_begin(),
-    E = ModMap->module_end();
-    I != E; ++I) {
+                                  E = ModMap->module_end();
+       I != E; ++I) {
     collectModuleHeaders(*I->second);
   }
 }
@@ -209,13 +208,12 @@ bool CoverageChecker::collectModuleHeaders(const Module &Mod) {
 
   if (const FileEntry *UmbrellaHeader = Mod.getUmbrellaHeader().Entry) {
     // Collect umbrella header.
-    ModuleMapHeadersSet.insert(ModularizeUtilities::getCanonicalPath(
-      UmbrellaHeader->getName()));
+    ModuleMapHeadersSet.insert(
+        ModularizeUtilities::getCanonicalPath(UmbrellaHeader->getName()));
     // Preprocess umbrella header and collect the headers it references.
     if (!collectUmbrellaHeaderHeaders(UmbrellaHeader->getName()))
       return false;
-  }
-  else if (const DirectoryEntry *UmbrellaDir = Mod.getUmbrellaDir().Entry) {
+  } else if (const DirectoryEntry *UmbrellaDir = Mod.getUmbrellaDir().Entry) {
     // Collect headers in umbrella directory.
     if (!collectUmbrellaHeaders(UmbrellaDir->getName()))
       return false;
@@ -223,8 +221,8 @@ bool CoverageChecker::collectModuleHeaders(const Module &Mod) {
 
   for (auto &HeaderKind : Mod.Headers)
     for (auto &Header : HeaderKind)
-      ModuleMapHeadersSet.insert(ModularizeUtilities::getCanonicalPath(
-        Header.Entry->getName()));
+      ModuleMapHeadersSet.insert(
+          ModularizeUtilities::getCanonicalPath(Header.Entry->getName()));
 
   for (auto MI = Mod.submodule_begin(), MIEnd = Mod.submodule_end();
        MI != MIEnd; ++MI)
@@ -244,7 +242,7 @@ bool CoverageChecker::collectUmbrellaHeaders(StringRef UmbrellaDirName) {
   // Walk the directory.
   std::error_code EC;
   for (sys::fs::directory_iterator I(Directory.str(), EC), E; I != E;
-    I.increment(EC)) {
+       I.increment(EC)) {
     if (EC)
       return false;
     std::string File(I->path());
@@ -268,8 +266,8 @@ bool CoverageChecker::collectUmbrellaHeaders(StringRef UmbrellaDirName) {
 }
 
 // Collect headers referenced from an umbrella file.
-bool
-CoverageChecker::collectUmbrellaHeaderHeaders(StringRef UmbrellaHeaderName) {
+bool CoverageChecker::collectUmbrellaHeaderHeaders(
+    StringRef UmbrellaHeaderName) {
 
   SmallString<256> PathBuf(ModuleMapDirectory);
 
@@ -325,13 +323,12 @@ bool CoverageChecker::collectFileSystemHeaders() {
   if (IncludePaths.size() == 0) {
     if (!collectFileSystemHeaders(StringRef("")))
       return false;
-  }
-  else {
+  } else {
     // Otherwise we only look at the sub-trees specified by the
     // include paths.
     for (std::vector<std::string>::const_iterator I = IncludePaths.begin(),
-      E = IncludePaths.end();
-      I != E; ++I) {
+                                                  E = IncludePaths.end();
+         I != E; ++I) {
       if (!collectFileSystemHeaders(*I))
         return false;
     }
@@ -357,9 +354,9 @@ bool CoverageChecker::collectFileSystemHeaders(StringRef IncludePath) {
   if (Directory.size() == 0)
     Directory = ".";
   if (IncludePath.startswith("/") || IncludePath.startswith("\\") ||
-    ((IncludePath.size() >= 2) && (IncludePath[1] == ':'))) {
+      ((IncludePath.size() >= 2) && (IncludePath[1] == ':'))) {
     llvm::errs() << "error: Include path \"" << IncludePath
-      << "\" is not relative to the module map file.\n";
+                 << "\" is not relative to the module map file.\n";
     return false;
   }
 
@@ -367,10 +364,10 @@ bool CoverageChecker::collectFileSystemHeaders(StringRef IncludePath) {
   std::error_code EC;
   int Count = 0;
   for (sys::fs::recursive_directory_iterator I(Directory.str(), EC), E; I != E;
-    I.increment(EC)) {
+       I.increment(EC)) {
     if (EC)
       return false;
-    //std::string file(I->path());
+    // std::string file(I->path());
     StringRef file(I->path());
     llvm::ErrorOr<sys::fs::basic_file_status> Status = I->status();
     if (!Status)
@@ -393,7 +390,7 @@ bool CoverageChecker::collectFileSystemHeaders(StringRef IncludePath) {
   }
   if (Count == 0) {
     llvm::errs() << "warning: No headers found in include path: \""
-      << IncludePath << "\"\n";
+                 << IncludePath << "\"\n";
   }
   return true;
 }
@@ -411,13 +408,13 @@ bool CoverageChecker::collectFileSystemHeaders(StringRef IncludePath) {
 void CoverageChecker::findUnaccountedForHeaders() {
   // Walk over file system headers.
   for (std::vector<std::string>::const_iterator I = FileSystemHeaders.begin(),
-    E = FileSystemHeaders.end();
-    I != E; ++I) {
+                                                E = FileSystemHeaders.end();
+       I != E; ++I) {
     // Look for header in module map.
     if (ModuleMapHeadersSet.insert(*I).second) {
       UnaccountedForHeaders.push_back(*I);
       llvm::errs() << "warning: " << ModuleMapPath
-        << " does not account for file: " << *I << "\n";
+                   << " does not account for file: " << *I << "\n";
     }
   }
 }

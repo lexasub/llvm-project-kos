@@ -41,26 +41,25 @@ extern bool EnableARCOpts;
 /// Test if the given module looks interesting to run ARC optimization
 /// on.
 inline bool ModuleHasARC(const Module &M) {
-  return
-    M.getNamedValue("llvm.objc.retain") ||
-    M.getNamedValue("llvm.objc.release") ||
-    M.getNamedValue("llvm.objc.autorelease") ||
-    M.getNamedValue("llvm.objc.retainAutoreleasedReturnValue") ||
-    M.getNamedValue("llvm.objc.unsafeClaimAutoreleasedReturnValue") ||
-    M.getNamedValue("llvm.objc.retainBlock") ||
-    M.getNamedValue("llvm.objc.autoreleaseReturnValue") ||
-    M.getNamedValue("llvm.objc.autoreleasePoolPush") ||
-    M.getNamedValue("llvm.objc.loadWeakRetained") ||
-    M.getNamedValue("llvm.objc.loadWeak") ||
-    M.getNamedValue("llvm.objc.destroyWeak") ||
-    M.getNamedValue("llvm.objc.storeWeak") ||
-    M.getNamedValue("llvm.objc.initWeak") ||
-    M.getNamedValue("llvm.objc.moveWeak") ||
-    M.getNamedValue("llvm.objc.copyWeak") ||
-    M.getNamedValue("llvm.objc.retainedObject") ||
-    M.getNamedValue("llvm.objc.unretainedObject") ||
-    M.getNamedValue("llvm.objc.unretainedPointer") ||
-    M.getNamedValue("llvm.objc.clang.arc.use");
+  return M.getNamedValue("llvm.objc.retain") ||
+         M.getNamedValue("llvm.objc.release") ||
+         M.getNamedValue("llvm.objc.autorelease") ||
+         M.getNamedValue("llvm.objc.retainAutoreleasedReturnValue") ||
+         M.getNamedValue("llvm.objc.unsafeClaimAutoreleasedReturnValue") ||
+         M.getNamedValue("llvm.objc.retainBlock") ||
+         M.getNamedValue("llvm.objc.autoreleaseReturnValue") ||
+         M.getNamedValue("llvm.objc.autoreleasePoolPush") ||
+         M.getNamedValue("llvm.objc.loadWeakRetained") ||
+         M.getNamedValue("llvm.objc.loadWeak") ||
+         M.getNamedValue("llvm.objc.destroyWeak") ||
+         M.getNamedValue("llvm.objc.storeWeak") ||
+         M.getNamedValue("llvm.objc.initWeak") ||
+         M.getNamedValue("llvm.objc.moveWeak") ||
+         M.getNamedValue("llvm.objc.copyWeak") ||
+         M.getNamedValue("llvm.objc.retainedObject") ||
+         M.getNamedValue("llvm.objc.unretainedObject") ||
+         M.getNamedValue("llvm.objc.unretainedPointer") ||
+         M.getNamedValue("llvm.objc.clang.arc.use");
 }
 
 /// This is a wrapper around getUnderlyingObject which also knows how to
@@ -135,8 +134,8 @@ inline bool IsNullOrUndef(const Value *V) {
 
 inline bool IsNoopInstruction(const Instruction *I) {
   return isa<BitCastInst>(I) ||
-    (isa<GetElementPtrInst>(I) &&
-     cast<GetElementPtrInst>(I)->hasAllZeroIndices());
+         (isa<GetElementPtrInst>(I) &&
+          cast<GetElementPtrInst>(I)->hasAllZeroIndices());
 }
 
 /// Test whether the given value is possible a retainable object pointer.
@@ -184,14 +183,12 @@ inline bool IsObjCIdentifiedObject(const Value *V) {
   // Assume that call results and arguments have their own "provenance".
   // Constants (including GlobalVariables) and Allocas are never
   // reference-counted.
-  if (isa<CallInst>(V) || isa<InvokeInst>(V) ||
-      isa<Argument>(V) || isa<Constant>(V) ||
-      isa<AllocaInst>(V))
+  if (isa<CallInst>(V) || isa<InvokeInst>(V) || isa<Argument>(V) ||
+      isa<Constant>(V) || isa<AllocaInst>(V))
     return true;
 
   if (const LoadInst *LI = dyn_cast<LoadInst>(V)) {
-    const Value *Pointer =
-      GetRCIdentityRoot(LI->getPointerOperand());
+    const Value *Pointer = GetRCIdentityRoot(LI->getPointerOperand());
     if (const GlobalVariable *GV = dyn_cast<GlobalVariable>(Pointer)) {
       // A constant pointer can't be pointing to an object on the heap. It may
       // be reference-counted, but it won't be deleted.

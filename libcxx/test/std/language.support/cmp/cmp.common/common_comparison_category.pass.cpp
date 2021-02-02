@@ -13,7 +13,6 @@
 // template <class ...Ts> struct common_comparison_category
 // template <class ...Ts> using common_comparison_category_t
 
-
 #include <compare>
 #include <type_traits>
 #include <cassert>
@@ -22,14 +21,16 @@
 
 const volatile void* volatile sink;
 
-template <class Expect, class ...Args>
+template <class Expect, class... Args>
 void test_cat() {
   using Cat = std::common_comparison_category<Args...>;
   using CatT = typename Cat::type;
-  static_assert(std::is_same<CatT, std::common_comparison_category_t<Args...>>::value, "");
-  static_assert(std::is_same<CatT, Expect>::value, "expected different category");
+  static_assert(
+      std::is_same<CatT, std::common_comparison_category_t<Args...> >::value,
+      "");
+  static_assert(std::is_same<CatT, Expect>::value,
+                "expected different category");
 };
-
 
 // [class.spaceship]p4: The 'common comparison type' U of a possibly-empty list
 //   of 'n' types T0, T1, ..., TN, is defined as follows:

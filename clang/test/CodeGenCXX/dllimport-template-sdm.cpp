@@ -24,7 +24,6 @@
 // EXPORT-DAG: @"?sdm@?$B@H@@2HB" = weak_odr dso_local dllexport constant i32 2, comdat, align 4
 // EXPORT-DAG: @"?sdm@?$C@H@@2HB" = weak_odr dso_local dllexport constant i32 2, comdat, align 4
 
-
 template <typename T> struct A {
   static constexpr int csdm = 2;
   static int sdm;

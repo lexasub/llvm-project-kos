@@ -25,7 +25,6 @@
 #include "rapid-cxx-test.h"
 #include "filesystem_test_helper.h"
 
-
 TEST_SUITE(filesystem_proximate_path_test_suite)
 
 TEST_CASE(test_signature_0) {

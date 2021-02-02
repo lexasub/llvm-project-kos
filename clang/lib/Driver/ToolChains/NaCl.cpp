@@ -7,8 +7,8 @@
 //===----------------------------------------------------------------------===//
 
 #include "NaCl.h"
-#include "InputInfo.h"
 #include "CommonArgs.h"
+#include "InputInfo.h"
 #include "clang/Driver/Compilation.h"
 #include "clang/Driver/Driver.h"
 #include "clang/Driver/DriverDiagnostic.h"
@@ -95,8 +95,8 @@ void nacltools::Linker::ConstructJob(Compilation &C, const JobAction &JA,
   else if (Arch == llvm::Triple::mipsel)
     CmdArgs.push_back("mipselelf_nacl");
   else
-    D.Diag(diag::err_target_unsupported_arch) << ToolChain.getArchName()
-                                              << "Native Client";
+    D.Diag(diag::err_target_unsupported_arch)
+        << ToolChain.getArchName() << "Native Client";
 
   if (IsStatic)
     CmdArgs.push_back("-static");

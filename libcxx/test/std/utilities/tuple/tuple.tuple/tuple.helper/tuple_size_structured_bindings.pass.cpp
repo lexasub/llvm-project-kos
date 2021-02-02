@@ -24,7 +24,9 @@
 
 #include "test_macros.h"
 
-struct S { int x; };
+struct S {
+  int x;
+};
 
 void test_decomp_user_type() {
   {
@@ -60,7 +62,6 @@ void test_decomp_tuple() {
     assert(&r1 == &std::get<0>(s));
   }
 }
-
 
 void test_decomp_pair() {
   typedef std::pair<int, double> T;
@@ -115,7 +116,10 @@ struct Test {
 };
 
 template <size_t N>
-int get(Test const&) { static_assert(N == 0, ""); return -1; }
+int get(Test const&) {
+  static_assert(N == 0, "");
+  return -1;
+}
 
 template <>
 struct std::tuple_element<0, Test> {

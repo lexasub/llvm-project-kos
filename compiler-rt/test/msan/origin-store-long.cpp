@@ -12,10 +12,9 @@ int main() {
   *p = *q;
   char *z = (char *)p;
   return z[6];
-// CHECK: WARNING: MemorySanitizer: use-of-uninitialized-value
-// CHECK:   in main {{.*}}origin-store-long.cpp:[[@LINE-2]]
+  // CHECK: WARNING: MemorySanitizer: use-of-uninitialized-value
+  // CHECK:   in main {{.*}}origin-store-long.cpp:[[@LINE-2]]
 
-// CHECK:  Uninitialized value was created by a heap allocation
-// CHECK:   in main {{.*}}origin-store-long.cpp:[[@LINE-8]]
+  // CHECK:  Uninitialized value was created by a heap allocation
+  // CHECK:   in main {{.*}}origin-store-long.cpp:[[@LINE-8]]
 }
-

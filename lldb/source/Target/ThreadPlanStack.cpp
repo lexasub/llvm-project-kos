@@ -380,8 +380,7 @@ void ThreadPlanStack::WillResume() {
 }
 
 void ThreadPlanStackMap::Update(ThreadList &current_threads,
-                                bool delete_missing,
-                                bool check_for_new) {
+                                bool delete_missing, bool check_for_new) {
 
   // Now find all the new threads and add them to the map:
   if (check_for_new) {

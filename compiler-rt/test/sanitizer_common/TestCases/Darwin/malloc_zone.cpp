@@ -19,24 +19,24 @@
 //
 
 #include <malloc/malloc.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 int main(void) {
   malloc_zone_t *default_zone = malloc_default_zone();
   printf("default zone name: %s\n", malloc_get_zone_name(default_zone));
-// CHECK: default zone name: {{a|l|t}}san
+  // CHECK: default zone name: {{a|l|t}}san
 
   void *ptr1 = malloc(10);
   void *ptr2 = malloc_zone_malloc(default_zone, 10);
 
-  malloc_zone_t* zone1 = malloc_zone_from_ptr(ptr1);
-  malloc_zone_t* zone2 = malloc_zone_from_ptr(ptr2);
+  malloc_zone_t *zone1 = malloc_zone_from_ptr(ptr1);
+  malloc_zone_t *zone2 = malloc_zone_from_ptr(ptr2);
 
   printf("zone1: %d\n", zone1 == default_zone);
   printf("zone2: %d\n", zone2 == default_zone);
-// CHECK: zone1: 1
-// CHECK: zone2: 1
+  // CHECK: zone1: 1
+  // CHECK: zone2: 1
 
   free(ptr1);
   malloc_zone_free(zone2, ptr2);

@@ -18,7 +18,7 @@ namespace named {
 // expected-warning@+2 {{__declspec attribute 'dllexport' is not supported}}
 #endif
 __declspec(dllexport) int const x = 3;
-}
+} // namespace named
 } // namespace
 
 namespace named1 {
@@ -28,6 +28,6 @@ namespace named {
 // expected-warning@+2 {{__declspec attribute 'dllexport' is not supported}}
 #endif
 __declspec(dllexport) int const x = 3;
-}
+} // namespace named
 } // namespace
 } // namespace named1

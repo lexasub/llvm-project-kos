@@ -1,20 +1,20 @@
 namespace outer {
 
-template<typename T>
+template <typename T>
 struct Foo {
   T t;
 };
 
-template <typename T, unsigned U, template<typename> class W>
-struct Baz { };
+template <typename T, unsigned U, template <typename> class W>
+struct Baz {};
 
 template <typename... T>
-struct Qux { };
+struct Qux {};
 
 namespace inner {
 
 struct Bar {
-  Bar(outer::Foo<bool>* foo) { }
+  Bar(outer::Foo<bool> *foo) {}
 
   typedef int FooType;
   using AliasType = double;
@@ -26,11 +26,11 @@ struct Bar {
   typedef double OtherType;
   typedef int ArrayType[5];
   Baz<int, 1, Foo> baz;
-  Qux<int, char*, Foo<int>, FooType> qux;
+  Qux<int, char *, Foo<int>, FooType> qux;
 };
 
-}
-}
+} // namespace inner
+} // namespace outer
 
 template <typename T>
 T tbar(int);
@@ -49,30 +49,35 @@ struct Blob {
 };
 int Blob::*member_pointer;
 
-namespace NS { struct Type{}; } NS::Type elaboratedNamespaceType(const NS::Type t);
+namespace NS {
+struct Type {};
+} // namespace NS
+NS::Type elaboratedNamespaceType(const NS::Type t);
 
 auto autoI = 0;
 auto autoTbar = tbar<int>(0);
 auto autoBlob = new Blob();
-auto autoFunction(){return int();}
+auto autoFunction() { return int(); }
 decltype(auto) autoInt = 5;
 
 template <typename T>
 using TypeAlias = outer::Qux<T>;
 
-struct TypeAliasUser { TypeAlias<int> foo; };
+struct TypeAliasUser {
+  TypeAlias<int> foo;
+};
 
-template<typename T>
+template <typename T>
 struct Specialization {};
 
-template<>
+template <>
 struct Specialization<int>;
 
-Specialization<Specialization<bool>& > templRefParam;
+Specialization<Specialization<bool> &> templRefParam;
 auto autoTemplRefParam = templRefParam;
 
-template<typename T> struct A {};
-template<typename T> using C = T;
+template <typename T> struct A {};
+template <typename T> using C = T;
 using baz = C<A<void>>;
 
 auto autoTemplPointer = &autoTemplRefParam;
@@ -81,14 +86,22 @@ outer::Foo<bool> parameter;
 outer::inner::Bar construct(&parameter);
 
 class X {
-  struct { int a; };
-  class { public: int b; };
-  union { int c; int d;};
+  struct {
+    int a;
+  };
+  class {
+  public:
+    int b;
+  };
+  union {
+    int c;
+    int d;
+  };
   enum { Test };
 };
 
 namespace {
-  int a;
+int a;
 }
 
 inline namespace InlineNS {}

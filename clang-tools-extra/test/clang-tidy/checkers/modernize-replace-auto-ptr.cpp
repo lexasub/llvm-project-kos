@@ -11,12 +11,10 @@ std::auto_ptr<Derived> create_derived_ptr();
 // CHECK-MESSAGES: :[[@LINE-1]]:6: warning: auto_ptr is deprecated, use unique_ptr instead [modernize-replace-auto-ptr]
 // CHECK-FIXES: std::unique_ptr<Derived> create_derived_ptr();
 
-
 // Test function return values (declaration)
 std::auto_ptr<char> f_5();
 // CHECK-MESSAGES: :[[@LINE-1]]:6: warning: auto_ptr is deprecated
 // CHECK-FIXES: std::unique_ptr<char> f_5()
-
 
 // Test function parameters.
 void f_6(std::auto_ptr<int>);
@@ -25,7 +23,6 @@ void f_6(std::auto_ptr<int>);
 void f_7(const std::auto_ptr<int> &);
 // CHECK-MESSAGES: :[[@LINE-1]]:21: warning: auto_ptr is deprecated
 // CHECK-FIXES: void f_7(const std::unique_ptr<int> &);
-
 
 // Test on record type fields.
 struct A {
@@ -38,9 +35,9 @@ struct A {
   // CHECK-FIXES: typedef std::unique_ptr<int> int_ptr_type;
 };
 
-
 // FIXME: Test template WITH instantiation.
-template <typename T> struct B {
+template <typename T>
+struct B {
   typedef typename std::auto_ptr<T> created_type;
   // CHECK-MESSAGES: :[[@LINE-1]]:25: warning: auto_ptr is deprecated
   // CHECK-FIXES: typedef typename std::unique_ptr<T> created_type;
@@ -50,22 +47,21 @@ template <typename T> struct B {
   // CHECK-FIXES: created_type create() { return std::unique_ptr<T>(new T()); }
 };
 
-
 // Test 'using' in a namespace (declaration)
 namespace ns_1 {
 // Test multiple using declarations.
-  using std::auto_ptr;
-  // CHECK-MESSAGES: :[[@LINE-1]]:14: warning: auto_ptr is deprecated
-  // CHECK-FIXES: using std::unique_ptr;
-  using std::auto_ptr;
-  // CHECK-MESSAGES: :[[@LINE-1]]:14: warning: auto_ptr is deprecated
-  // CHECK-FIXES: using std::unique_ptr;
-}
-
+using std::auto_ptr;
+// CHECK-MESSAGES: :[[@LINE-1]]:14: warning: auto_ptr is deprecated
+// CHECK-FIXES: using std::unique_ptr;
+using std::auto_ptr;
+// CHECK-MESSAGES: :[[@LINE-1]]:14: warning: auto_ptr is deprecated
+// CHECK-FIXES: using std::unique_ptr;
+} // namespace ns_1
 
 namespace ns_2 {
-template <typename T> struct auto_ptr {};
-}
+template <typename T>
+struct auto_ptr {};
+} // namespace ns_2
 
 void f_1() {
   std::auto_ptr<int> a;
@@ -73,10 +69,10 @@ void f_1() {
   // CHECK-FIXES: std::unique_ptr<int> a;
 
   // Check that spaces aren't modified unnecessarily.
-  std:: auto_ptr <int> b;
+  std::auto_ptr<int> b;
   // CHECK-MESSAGES: :[[@LINE-1]]:9: warning: auto_ptr is deprecated
   // CHECK-FIXES: std:: unique_ptr <int> b;
-  std :: auto_ptr < char > c(new char());
+  std ::auto_ptr<char> c(new char());
   // CHECK-MESSAGES: :[[@LINE-1]]:10: warning: auto_ptr is deprecated
   // CHECK-FIXES: std :: unique_ptr < char > c(new char());
 
@@ -122,7 +118,7 @@ void f_1() {
   // CHECK-FIXES: std::unique_ptr<int> l{std::unique_ptr<int>()};
 
   // Test interlocked auto_ptr.
-  std::auto_ptr<std::auto_ptr<int> > m;
+  std::auto_ptr<std::auto_ptr<int>> m;
   // CHECK-MESSAGES: :[[@LINE-1]]:8: warning: auto_ptr is deprecated
   // CHECK-MESSAGES: :[[@LINE-2]]:22: warning: auto_ptr is deprecated
   // CHECK-FIXES: std::unique_ptr<std::unique_ptr<int> > m;
@@ -187,7 +183,8 @@ void f_4() {
 #define MACRO_3(Type) std::auto_ptr<Type>
   // CHECK-MESSAGES: :[[@LINE-1]]:28: warning: auto_ptr is deprecated
   // CHECK-FIXES: #define MACRO_3(Type) std::unique_ptr<Type>
-  MACRO_3(float)r(new float());
+  MACRO_3(float)
+  r(new float());
 #define MACRO_4 std::auto_ptr
   // CHECK-MESSAGES: :[[@LINE-1]]:22: warning: auto_ptr is deprecated
   // CHECK-FIXES: #define MACRO_4 std::unique_ptr
@@ -200,8 +197,8 @@ void f_4() {
 
 // Test function return values (definition).
 std::auto_ptr<char> f_5()
-  // CHECK-MESSAGES: :[[@LINE-1]]:6: warning: auto_ptr is deprecated
-  // CHECK-FIXES: std::unique_ptr<char> f_5()
+// CHECK-MESSAGES: :[[@LINE-1]]:6: warning: auto_ptr is deprecated
+// CHECK-FIXES: std::unique_ptr<char> f_5()
 {
   // Test constructor.
   return std::auto_ptr<char>(new char());
@@ -228,13 +225,13 @@ void f() {
 
 // FIXME: Alias template could be replaced if a matcher existed.
 namespace std {
-template <typename T> using aaaaaaaa = auto_ptr<T>;
+template <typename T>
+using aaaaaaaa = auto_ptr<T>;
 }
 
 // We want to avoid replacing 'aaaaaaaa' by unique_ptr here. It's better to
 // change the type alias directly.
 std::aaaaaaaa<int> d;
-
 
 void takes_ownership_fn(std::auto_ptr<int> x);
 // CHECK-MESSAGES: :[[@LINE-1]]:30: warning: auto_ptr is deprecated
@@ -245,11 +242,11 @@ std::auto_ptr<int> get_by_value();
 // CHECK-FIXES: std::unique_ptr<int> get_by_value();
 
 class Wrapper {
- public:
+public:
   std::auto_ptr<int> &get_wrapped();
   // CHECK-MESSAGES: :[[@LINE-1]]:8: warning: auto_ptr is deprecated
 
- private:
+private:
   std::auto_ptr<int> wrapped;
   // CHECK-MESSAGES: :[[@LINE-1]]:8: warning: auto_ptr is deprecated
 };
@@ -277,8 +274,8 @@ void f() {
   // CHECK-MESSAGES: :[[@LINE-1]]:22: warning: use std::move to transfer ownership
   // CHECK-FIXES: takes_ownership_fn(std::move(wrapper_a.get_wrapped()));
 
-  std::auto_ptr<int> d[] = { std::auto_ptr<int>(new int(1)),
-                             std::auto_ptr<int>(new int(2)) };
+  std::auto_ptr<int> d[] = {std::auto_ptr<int>(new int(1)),
+                            std::auto_ptr<int>(new int(2))};
   // CHECK-MESSAGES: :[[@LINE-2]]:8: warning: auto_ptr is deprecated
   // CHECK-MESSAGES: :[[@LINE-3]]:35: warning: auto_ptr is deprecated
   // CHECK-MESSAGES: :[[@LINE-3]]:35: warning: auto_ptr is deprecated

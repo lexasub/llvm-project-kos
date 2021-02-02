@@ -27,8 +27,7 @@ namespace fuzzer {
 // conditions inside __sanitizer_cov_trace_cmp*.
 // After the unit has been executed we may decide to use the contents of
 // this table to populate a Dictionary.
-template<class T, size_t kSizeT>
-struct TableOfRecentCompares {
+template <class T, size_t kSizeT> struct TableOfRecentCompares {
   static const size_t kSize = kSizeT;
   struct Pair {
     T A, B;
@@ -45,14 +44,14 @@ struct TableOfRecentCompares {
   Pair Table[kSize];
 };
 
-template <size_t kSizeT>
-struct MemMemTable {
+template <size_t kSizeT> struct MemMemTable {
   static const size_t kSize = kSizeT;
   Word MemMemWords[kSize];
   Word EmptyWord;
 
   void Add(const uint8_t *Data, size_t Size) {
-    if (Size <= 2) return;
+    if (Size <= 2)
+      return;
     Size = std::min(Size, Word::GetMaxSize());
     size_t Idx = SimpleFastHash(Data, Size) % kSize;
     MemMemWords[Idx].Set(Data, Size);
@@ -60,7 +59,8 @@ struct MemMemTable {
   const Word &Get(size_t Idx) {
     for (size_t i = 0; i < kSize; i++) {
       const Word &W = MemMemWords[(Idx + i) % kSize];
-      if (W.size()) return W;
+      if (W.size())
+        return W;
     }
     EmptyWord.Set(nullptr, 0);
     return EmptyWord;
@@ -68,7 +68,7 @@ struct MemMemTable {
 };
 
 class TracePC {
- public:
+public:
   void HandleInline8bitCountersInit(uint8_t *Start, uint8_t *Stop);
   void HandlePCsInit(const uintptr_t *Start, const uintptr_t *Stop);
   void HandleCallerCallee(uintptr_t Caller, uintptr_t Callee);
@@ -96,8 +96,7 @@ class TracePC {
 
   void PrintCoverage(bool PrintAllCounters);
 
-  template<class CallBack>
-  void IterateCoveredFunctions(CallBack CB);
+  template <class CallBack> void IterateCoveredFunctions(CallBack CB);
 
   void AddValueForMemcmp(void *caller_pc, const void *s1, const void *s2,
                          size_t n, bool StopAtZero);
@@ -110,8 +109,7 @@ class TracePC {
   void RecordInitialStack();
   uintptr_t GetMaxStackOffset() const;
 
-  template<class CallBack>
-  void ForEachObservedPC(CallBack CB) {
+  template <class CallBack> void ForEachObservedPC(CallBack CB) {
     for (auto PC : ObservedPCs)
       CB(PC);
   }
@@ -146,31 +144,32 @@ private:
     Region *Regions;
     size_t NumRegions;
     uint8_t *Start() { return Regions[0].Start; }
-    uint8_t *Stop()  { return Regions[NumRegions - 1].Stop; }
-    size_t Size()   { return Stop() - Start(); }
-    size_t  Idx(uint8_t *P) {
+    uint8_t *Stop() { return Regions[NumRegions - 1].Stop; }
+    size_t Size() { return Stop() - Start(); }
+    size_t Idx(uint8_t *P) {
       assert(P >= Start() && P < Stop());
       return P - Start();
     }
   };
 
   Module Modules[4096];
-  size_t NumModules;  // linker-initialized.
+  size_t NumModules; // linker-initialized.
   size_t NumInline8bitCounters;
 
-  template <class Callback>
-  void IterateCounterRegions(Callback CB) {
+  template <class Callback> void IterateCounterRegions(Callback CB) {
     for (size_t m = 0; m < NumModules; m++)
       for (size_t r = 0; r < Modules[m].NumRegions; r++)
         CB(Modules[m].Regions[r]);
   }
 
-  struct { const PCTableEntry *Start, *Stop; } ModulePCTable[4096];
+  struct {
+    const PCTableEntry *Start, *Stop;
+  } ModulePCTable[4096];
   size_t NumPCTables;
   size_t NumPCsInPCTables;
 
-  Set<const PCTableEntry*> ObservedPCs;
-  std::unordered_map<uintptr_t, uintptr_t> ObservedFuncs;  // PC => Counter.
+  Set<const PCTableEntry *> ObservedPCs;
+  std::unordered_map<uintptr_t, uintptr_t> ObservedFuncs; // PC => Counter.
 
   uint8_t *FocusFunctionCounterPtr = nullptr;
 
@@ -180,9 +179,9 @@ private:
 
 template <class Callback>
 // void Callback(size_t FirstFeature, size_t Idx, uint8_t Value);
-ATTRIBUTE_NO_SANITIZE_ALL
-size_t ForEachNonZeroByte(const uint8_t *Begin, const uint8_t *End,
-                        size_t FirstFeature, Callback Handle8bitCounter) {
+ATTRIBUTE_NO_SANITIZE_ALL size_t
+ForEachNonZeroByte(const uint8_t *Begin, const uint8_t *End,
+                   size_t FirstFeature, Callback Handle8bitCounter) {
   typedef uintptr_t LargeType;
   const size_t Step = sizeof(LargeType) / sizeof(uint8_t);
   const size_t StepMask = Step - 1;
@@ -209,37 +208,42 @@ size_t ForEachNonZeroByte(const uint8_t *Begin, const uint8_t *End,
 }
 
 // Given a non-zero Counter returns a number in the range [0,7].
-template<class T>
-unsigned CounterToFeature(T Counter) {
-    // Returns a feature number by placing Counters into buckets as illustrated
-    // below.
-    //
-    // Counter bucket: [1] [2] [3] [4-7] [8-15] [16-31] [32-127] [128+]
-    // Feature number:  0   1   2    3     4       5       6       7
-    //
-    // This is a heuristic taken from AFL (see
-    // http://lcamtuf.coredump.cx/afl/technical_details.txt).
-    //
-    // This implementation may change in the future so clients should
-    // not rely on it.
-    assert(Counter);
-    unsigned Bit = 0;
-    /**/ if (Counter >= 128) Bit = 7;
-    else if (Counter >= 32) Bit = 6;
-    else if (Counter >= 16) Bit = 5;
-    else if (Counter >= 8) Bit = 4;
-    else if (Counter >= 4) Bit = 3;
-    else if (Counter >= 3) Bit = 2;
-    else if (Counter >= 2) Bit = 1;
-    return Bit;
+template <class T> unsigned CounterToFeature(T Counter) {
+  // Returns a feature number by placing Counters into buckets as illustrated
+  // below.
+  //
+  // Counter bucket: [1] [2] [3] [4-7] [8-15] [16-31] [32-127] [128+]
+  // Feature number:  0   1   2    3     4       5       6       7
+  //
+  // This is a heuristic taken from AFL (see
+  // http://lcamtuf.coredump.cx/afl/technical_details.txt).
+  //
+  // This implementation may change in the future so clients should
+  // not rely on it.
+  assert(Counter);
+  unsigned Bit = 0;
+  /**/ if (Counter >= 128)
+    Bit = 7;
+  else if (Counter >= 32)
+    Bit = 6;
+  else if (Counter >= 16)
+    Bit = 5;
+  else if (Counter >= 8)
+    Bit = 4;
+  else if (Counter >= 4)
+    Bit = 3;
+  else if (Counter >= 3)
+    Bit = 2;
+  else if (Counter >= 2)
+    Bit = 1;
+  return Bit;
 }
 
-template <class Callback>  // void Callback(size_t Feature)
-ATTRIBUTE_NO_SANITIZE_ADDRESS
-ATTRIBUTE_NOINLINE
-void TracePC::CollectFeatures(Callback HandleFeature) const {
-  auto Handle8bitCounter = [&](size_t FirstFeature,
-                               size_t Idx, uint8_t Counter) {
+template <class Callback> // void Callback(size_t Feature)
+ATTRIBUTE_NO_SANITIZE_ADDRESS ATTRIBUTE_NOINLINE void
+TracePC::CollectFeatures(Callback HandleFeature) const {
+  auto Handle8bitCounter = [&](size_t FirstFeature, size_t Idx,
+                               uint8_t Counter) {
     if (UseCounters)
       HandleFeature(FirstFeature + Idx * 8 + CounterToFeature(Counter));
     else
@@ -250,7 +254,8 @@ void TracePC::CollectFeatures(Callback HandleFeature) const {
 
   for (size_t i = 0; i < NumModules; i++) {
     for (size_t r = 0; r < Modules[i].NumRegions; r++) {
-      if (!Modules[i].Regions[r].Enabled) continue;
+      if (!Modules[i].Regions[r].Enabled)
+        continue;
       FirstFeature += 8 * ForEachNonZeroByte(Modules[i].Regions[r].Start,
                                              Modules[i].Regions[r].Stop,
                                              FirstFeature, Handle8bitCounter);
@@ -262,17 +267,18 @@ void TracePC::CollectFeatures(Callback HandleFeature) const {
                              FirstFeature, Handle8bitCounter);
 
   if (UseValueProfileMask) {
-    ValueProfileMap.ForEach([&](size_t Idx) {
-      HandleFeature(FirstFeature + Idx);
-    });
+    ValueProfileMap.ForEach(
+        [&](size_t Idx) { HandleFeature(FirstFeature + Idx); });
     FirstFeature += ValueProfileMap.SizeInBits();
   }
 
   // Step function, grows similar to 8 * Log_2(A).
   auto StackDepthStepFunction = [](uint32_t A) -> uint32_t {
-    if (!A) return A;
+    if (!A)
+      return A;
     uint32_t Log2 = Log(A);
-    if (Log2 < 3) return A;
+    if (Log2 < 3)
+      return A;
     Log2 -= 3;
     return (Log2 + 1) * 8 + ((A >> Log2) & 7);
   };
@@ -286,6 +292,6 @@ void TracePC::CollectFeatures(Callback HandleFeature) const {
 
 extern TracePC TPC;
 
-}  // namespace fuzzer
+} // namespace fuzzer
 
-#endif  // LLVM_FUZZER_TRACE_PC
+#endif // LLVM_FUZZER_TRACE_PC

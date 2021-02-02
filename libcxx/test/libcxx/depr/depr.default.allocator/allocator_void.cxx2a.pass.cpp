@@ -30,16 +30,20 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    static_assert((std::is_same<std::allocator<void>::pointer, void*>::value), "");
-    static_assert((std::is_same<std::allocator<void>::const_pointer, const void*>::value), "");
-    static_assert((std::is_same<std::allocator<void>::value_type, void>::value), "");
-    static_assert((std::is_same<std::allocator<void>::rebind<int>::other,
-                                std::allocator<int> >::value), "");
-    std::allocator<void> a;
-    std::allocator<void> a2 = a;
-    a2 = a;
+int main(int, char**) {
+  static_assert((std::is_same<std::allocator<void>::pointer, void*>::value),
+                "");
+  static_assert(
+      (std::is_same<std::allocator<void>::const_pointer, const void*>::value),
+      "");
+  static_assert((std::is_same<std::allocator<void>::value_type, void>::value),
+                "");
+  static_assert((std::is_same<std::allocator<void>::rebind<int>::other,
+                              std::allocator<int> >::value),
+                "");
+  std::allocator<void> a;
+  std::allocator<void> a2 = a;
+  a2 = a;
 
   return 0;
 }

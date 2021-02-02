@@ -2,13 +2,13 @@
 // expected-no-diagnostics
 
 struct meta {
-  template<typename U>
+  template <typename U>
   struct apply {
-    typedef U* type;
+    typedef U *type;
   };
 };
 
-template<typename T, typename U>
+template <typename T, typename U>
 void f(typename T::template apply<U>::type);
 
 void test_f(int *ip) {

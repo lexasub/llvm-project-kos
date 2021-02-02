@@ -26,7 +26,8 @@ static bool isAdvancedMetachar(unsigned Char) {
 }
 
 void TrigramIndex::insert(const std::string &Regex) {
-  if (Defeated) return;
+  if (Defeated)
+    return;
   std::set<unsigned> Was;
   unsigned Cnt = 0;
   unsigned Tri = 0;

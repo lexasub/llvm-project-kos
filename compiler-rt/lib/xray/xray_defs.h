@@ -28,4 +28,4 @@
 #define XRAY_HAS_TLS_ALIGNAS 1
 #endif
 
-#endif  // XRAY_XRAY_DEFS_H
+#endif // XRAY_XRAY_DEFS_H

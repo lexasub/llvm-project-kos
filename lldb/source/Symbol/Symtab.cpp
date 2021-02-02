@@ -559,7 +559,7 @@ struct SymbolIndexComparator {
     return false;
   }
 };
-}
+} // namespace
 
 void Symtab::SortSymbolIndexesByValue(std::vector<uint32_t> &indexes,
                                       bool remove_duplicates) const {
@@ -645,9 +645,8 @@ Symtab::AppendSymbolIndexesWithNameAndType(ConstString symbol_name,
 }
 
 uint32_t Symtab::AppendSymbolIndexesWithNameAndType(
-    ConstString symbol_name, SymbolType symbol_type,
-    Debug symbol_debug_type, Visibility symbol_visibility,
-    std::vector<uint32_t> &indexes) {
+    ConstString symbol_name, SymbolType symbol_type, Debug symbol_debug_type,
+    Visibility symbol_visibility, std::vector<uint32_t> &indexes) {
   std::lock_guard<std::recursive_mutex> guard(m_mutex);
 
   if (AppendSymbolIndexesWithName(symbol_name, symbol_debug_type,
@@ -729,10 +728,9 @@ Symbol *Symtab::FindSymbolWithType(SymbolType symbol_type,
   return nullptr;
 }
 
-void
-Symtab::FindAllSymbolsWithNameAndType(ConstString name,
-                                      SymbolType symbol_type,
-                                      std::vector<uint32_t> &symbol_indexes) {
+void Symtab::FindAllSymbolsWithNameAndType(
+    ConstString name, SymbolType symbol_type,
+    std::vector<uint32_t> &symbol_indexes) {
   std::lock_guard<std::recursive_mutex> guard(m_mutex);
 
   LLDB_SCOPED_TIMER();

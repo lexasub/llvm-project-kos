@@ -13,9 +13,9 @@ int initializer1(int &p, int x) {
 int param_not_initialized_by_func() {
   int outP;                        // expected-note {{'outP' declared without an initial value}}
   int out = initializer1(outP, 0); // expected-note{{Calling 'initializer1'}}
-                                // expected-note@-1{{Returning from 'initializer1'}}
+                                   // expected-note@-1{{Returning from 'initializer1'}}
   return outP;                     // expected-note{{Undefined or garbage value returned to caller}}
-                                // expected-warning@-1{{Undefined or garbage value returned to caller}}
+                                   // expected-warning@-1{{Undefined or garbage value returned to caller}}
 }
 
 struct S {
@@ -110,8 +110,8 @@ struct C {
 };
 
 int use_constructor() {
-  C c(0, 0); // expected-note{{Calling constructor for 'C'}}
-             // expected-note@-1{{Returning from constructor for 'C'}}
+  C c(0, 0);  // expected-note{{Calling constructor for 'C'}}
+              // expected-note@-1{{Returning from constructor for 'C'}}
   return c.y; // expected-note{{Undefined or garbage value returned to caller}}
               // expected-warning@-1{{Undefined or garbage value returned to caller}}
 }
@@ -121,8 +121,8 @@ int coin();
 int use_other_constructor() {
   C c(0, 0, coin()); // expected-note{{Calling constructor for 'C'}}
                      // expected-note@-1{{Returning from constructor for 'C'}}
-  return c.y; // expected-note{{Undefined or garbage value returned to caller}}
-              // expected-warning@-1{{Undefined or garbage value returned to caller}}
+  return c.y;        // expected-note{{Undefined or garbage value returned to caller}}
+                     // expected-warning@-1{{Undefined or garbage value returned to caller}}
 }
 
 struct D {
@@ -133,19 +133,19 @@ void D::initialize(int *p) {
 
 } // expected-note{{Returning without writing to '*p'}}
 
-int use_d_initializer(D* d) {
-  int p; // expected-note {{'p' declared without an initial value}}
+int use_d_initializer(D *d) {
+  int p;             // expected-note {{'p' declared without an initial value}}
   d->initialize(&p); // expected-note{{Calling 'D::initialize'}}
                      // expected-note@-1{{Returning from 'D::initialize'}}
-  return p;                     // expected-note{{Undefined or garbage value returned to caller}}
-                                // expected-warning@-1{{Undefined or garbage value returned to caller}}
+  return p;          // expected-note{{Undefined or garbage value returned to caller}}
+                     // expected-warning@-1{{Undefined or garbage value returned to caller}}
 }
 
 struct S2 {
   int x;
 };
 
-int pointerreference(S2* &s) {
+int pointerreference(S2 *&s) {
   if (coin()) // expected-note{{Assuming the condition is true}}
               // expected-note@-1{{Taking true branch}}
     return 1; // expected-note{{Returning without writing to 's->x'}}
@@ -156,11 +156,11 @@ int pointerreference(S2* &s) {
 
 int usepointerreference() {
   S2 s;
-  S2* p = &s;
+  S2 *p = &s;
   pointerreference(p); //expected-note{{Calling 'pointerreference'}}
-                         //expected-note@-1{{Returning from 'pointerreference'}}
-  return s.x; // expected-warning{{Undefined or garbage value returned to caller}}
-              // expected-note@-1{{Undefined or garbage value returned to caller}}
+                       //expected-note@-1{{Returning from 'pointerreference'}}
+  return s.x;          // expected-warning{{Undefined or garbage value returned to caller}}
+                       // expected-note@-1{{Undefined or garbage value returned to caller}}
 }
 
 void *has_no_argument_and_returns_null(void) {
@@ -168,14 +168,14 @@ void *has_no_argument_and_returns_null(void) {
 }
 
 void rdar40335545() {
-    int local; // expected-note{{}}
-    void (*takes_int_ptr_argument)(int *) = (void (*)(int*))has_no_argument_and_returns_null;
+  int local; // expected-note{{}}
+  void (*takes_int_ptr_argument)(int *) = (void (*)(int *))has_no_argument_and_returns_null;
 
-    takes_int_ptr_argument(&local); // no-crash
+  takes_int_ptr_argument(&local); // no-crash
 
-    int useLocal = local; //expected-warning{{}}
-                          //expected-note@-1{{}}
-    (void)useLocal;
+  int useLocal = local; //expected-warning{{}}
+                        //expected-note@-1{{}}
+  (void)useLocal;
 }
 
 ////////
@@ -185,7 +185,6 @@ struct HasRef {
   HasRef(int &a) : a(a) {}
 };
 
-
 void maybeInitialize(const HasRef &&pA) {
   if (coin()) // expected-note{{Assuming the condition is false}}
               // expected-note@-1{{Taking false branch}}
@@ -193,13 +192,13 @@ void maybeInitialize(const HasRef &&pA) {
 } // expected-note{{Returning without writing to 'pA.a'}}
 
 int useMaybeInitializerWritingIntoField() {
-  int z; // expected-note{{'z' declared without an initial value}}
+  int z;                      // expected-note{{'z' declared without an initial value}}
   maybeInitialize(HasRef(z)); // expected-note{{Calling constructor for 'HasRef'}}
                               // expected-note@-1{{Returning from constructor for 'HasRef'}}
                               // expected-note@-2{{Calling 'maybeInitialize'}}
                               // expected-note@-3{{Returning from 'maybeInitialize'}}
-  return z; // expected-warning{{Undefined or garbage value returned to caller}}
-            // expected-note@-1{{Undefined or garbage value returned to caller}}
+  return z;                   // expected-warning{{Undefined or garbage value returned to caller}}
+                              // expected-note@-1{{Undefined or garbage value returned to caller}}
 }
 
 ////////
@@ -217,13 +216,13 @@ void maybeInitialize(const HasRefToItself &&pA) {
 } // expected-note{{Returning without writing to 'pA.Ref.z'}}
 
 int useMaybeInitializerWritingIntoFieldWithRefToItself() {
-  int z; // expected-note{{'z' declared without an initial value}}
+  int z;                              // expected-note{{'z' declared without an initial value}}
   maybeInitialize(HasRefToItself(z)); // expected-note{{Calling constructor for 'HasRefToItself'}}
-                              // expected-note@-1{{Returning from constructor for 'HasRefToItself'}}
-                              // expected-note@-2{{Calling 'maybeInitialize'}}
-                              // expected-note@-3{{Returning from 'maybeInitialize'}}
-  return z; // expected-warning{{Undefined or garbage value returned to caller}}
-            // expected-note@-1{{Undefined or garbage value returned to caller}}
+                                      // expected-note@-1{{Returning from constructor for 'HasRefToItself'}}
+                                      // expected-note@-2{{Calling 'maybeInitialize'}}
+                                      // expected-note@-3{{Returning from 'maybeInitialize'}}
+  return z;                           // expected-warning{{Undefined or garbage value returned to caller}}
+                                      // expected-note@-1{{Undefined or garbage value returned to caller}}
 }
 
 ////
@@ -235,13 +234,13 @@ void maybeInitialize(const HasRef *pA) {
 } // expected-note{{Returning without writing to 'pA->a'}}
 
 int useMaybeInitializerStructByPointer() {
-  int z; // expected-note{{'z' declared without an initial value}}
-  HasRef wrapper(z); // expected-note{{Calling constructor for 'HasRef'}}
-                     // expected-note@-1{{Returning from constructor for 'HasRef'}}
+  int z;                     // expected-note{{'z' declared without an initial value}}
+  HasRef wrapper(z);         // expected-note{{Calling constructor for 'HasRef'}}
+                             // expected-note@-1{{Returning from constructor for 'HasRef'}}
   maybeInitialize(&wrapper); // expected-note{{Calling 'maybeInitialize'}}
                              // expected-note@-1{{Returning from 'maybeInitialize'}}
-  return z; // expected-warning{{Undefined or garbage value returned to caller}}
-            // expected-note@-1{{Undefined or garbage value returned to caller}}
+  return z;                  // expected-warning{{Undefined or garbage value returned to caller}}
+                             // expected-note@-1{{Undefined or garbage value returned to caller}}
 }
 
 ////////
@@ -258,13 +257,13 @@ void maybeInitializeWithParent(const HasParentWithRef &pA) {
 } // expected-note{{Returning without writing to 'pA.a'}}
 
 int useMaybeInitializerWritingIntoParentField() {
-  int z; // expected-note{{'z' declared without an initial value}}
+  int z;                                          // expected-note{{'z' declared without an initial value}}
   maybeInitializeWithParent(HasParentWithRef(z)); // expected-note{{Calling constructor for 'HasParentWithRef'}}
-                              // expected-note@-1{{Returning from constructor for 'HasParentWithRef'}}
-                              // expected-note@-2{{Calling 'maybeInitializeWithParent'}}
-                              // expected-note@-3{{Returning from 'maybeInitializeWithParent'}}
-  return z; // expected-warning{{Undefined or garbage value returned to caller}}
-            // expected-note@-1{{Undefined or garbage value returned to caller}}
+                                                  // expected-note@-1{{Returning from constructor for 'HasParentWithRef'}}
+                                                  // expected-note@-2{{Calling 'maybeInitializeWithParent'}}
+                                                  // expected-note@-3{{Returning from 'maybeInitializeWithParent'}}
+  return z;                                       // expected-warning{{Undefined or garbage value returned to caller}}
+                                                  // expected-note@-1{{Undefined or garbage value returned to caller}}
 }
 
 ////////
@@ -281,13 +280,13 @@ void maybeInitializeIndirectly(const HasIndirectRef &pA) {
 } // expected-note{{Returning without writing to 'pA.Ref.a'}}
 
 int useMaybeInitializeIndirectly() {
-  int z; // expected-note{{'z' declared without an initial value}}
-  HasRef r(z); // expected-note{{Calling constructor for 'HasRef'}}
-               // expected-note@-1{{Returning from constructor for 'HasRef'}}
+  int z;                                        // expected-note{{'z' declared without an initial value}}
+  HasRef r(z);                                  // expected-note{{Calling constructor for 'HasRef'}}
+                                                // expected-note@-1{{Returning from constructor for 'HasRef'}}
   maybeInitializeIndirectly(HasIndirectRef(r)); // expected-note{{Calling 'maybeInitializeIndirectly'}}
                                                 // expected-note@-1{{Returning from 'maybeInitializeIndirectly'}}
-  return z; // expected-warning{{Undefined or garbage value returned to caller}}
-            // expected-note@-1{{Undefined or garbage value returned to caller}}
+  return z;                                     // expected-warning{{Undefined or garbage value returned to caller}}
+                                                // expected-note@-1{{Undefined or garbage value returned to caller}}
 }
 
 ////////
@@ -304,13 +303,13 @@ void maybeInitializeIndirectly(const HasIndirectRefByValue &pA) {
 } // expected-note{{Returning without writing to 'pA.Ref.a'}}
 
 int useMaybeInitializeIndirectlyIndirectRefByValue() {
-  int z; // expected-note{{'z' declared without an initial value}}
-  HasRef r(z); // expected-note{{Calling constructor for 'HasRef'}}
-               // expected-note@-1{{Returning from constructor for 'HasRef'}}
+  int z;                                               // expected-note{{'z' declared without an initial value}}
+  HasRef r(z);                                         // expected-note{{Calling constructor for 'HasRef'}}
+                                                       // expected-note@-1{{Returning from constructor for 'HasRef'}}
   maybeInitializeIndirectly(HasIndirectRefByValue(r)); // expected-note{{Calling 'maybeInitializeIndirectly'}}
-                                                // expected-note@-1{{Returning from 'maybeInitializeIndirectly'}}
-  return z; // expected-warning{{Undefined or garbage value returned to caller}}
-            // expected-note@-1{{Undefined or garbage value returned to caller}}
+                                                       // expected-note@-1{{Returning from 'maybeInitializeIndirectly'}}
+  return z;                                            // expected-warning{{Undefined or garbage value returned to caller}}
+                                                       // expected-note@-1{{Undefined or garbage value returned to caller}}
 }
 
 ////////
@@ -327,13 +326,13 @@ void maybeInitializeIndirectly(const HasIndirectPointerRef &pA) {
 } // expected-note{{Returning without writing to 'pA.Ref->a'}}
 
 int useMaybeInitializeIndirectlyWithPointer() {
-  int z; // expected-note{{'z' declared without an initial value}}
-  HasRef r(z); // expected-note{{Calling constructor for 'HasRef'}}
-               // expected-note@-1{{Returning from constructor for 'HasRef'}}
+  int z;                                                // expected-note{{'z' declared without an initial value}}
+  HasRef r(z);                                          // expected-note{{Calling constructor for 'HasRef'}}
+                                                        // expected-note@-1{{Returning from constructor for 'HasRef'}}
   maybeInitializeIndirectly(HasIndirectPointerRef(&r)); // expected-note{{Calling 'maybeInitializeIndirectly'}}
-                                                // expected-note@-1{{Returning from 'maybeInitializeIndirectly'}}
-  return z; // expected-warning{{Undefined or garbage value returned to caller}}
-            // expected-note@-1{{Undefined or garbage value returned to caller}}
+                                                        // expected-note@-1{{Returning from 'maybeInitializeIndirectly'}}
+  return z;                                             // expected-warning{{Undefined or garbage value returned to caller}}
+                                                        // expected-note@-1{{Undefined or garbage value returned to caller}}
 }
 
 ////////
@@ -349,15 +348,15 @@ struct HasFieldB {
 void maybeInitializeHasField(HasFieldA *b) {
   if (coin()) // expected-note{{Assuming the condition is false}}
               // expected-note@-1{{Taking false branch}}
-    ((HasFieldB*)b)->x = 120;
+    ((HasFieldB *)b)->x = 120;
 }
 
 int forceElementRegionApperence() {
   HasFieldA a;
   maybeInitializeHasField(&a); // expected-note{{Calling 'maybeInitializeHasField'}}
                                // expected-note@-1{{Returning from 'maybeInitializeHasField'}}
-  return ((HasFieldB*)&a)->x; // expected-warning{{Undefined or garbage value returned to caller}}
-                              // expected-note@-1{{Undefined or garbage value returned to caller}}
+  return ((HasFieldB *)&a)->x; // expected-warning{{Undefined or garbage value returned to caller}}
+                               // expected-note@-1{{Undefined or garbage value returned to caller}}
 }
 
 ////////
@@ -371,6 +370,6 @@ struct HasForgottenField {
 bool tracksThroughExclamationMark() {
   HasForgottenField a; // expected-note{{Calling default constructor for 'HasForgottenField'}}
                        // expected-note@-1{{Returning from default constructor for 'HasForgottenField'}}
-  return !a.x; // expected-warning{{Undefined or garbage value returned to caller}}
-               // expected-note@-1{{Undefined or garbage value returned to caller}}
+  return !a.x;         // expected-warning{{Undefined or garbage value returned to caller}}
+                       // expected-note@-1{{Undefined or garbage value returned to caller}}
 }

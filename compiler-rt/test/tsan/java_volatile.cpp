@@ -5,10 +5,10 @@ jptr varaddr;
 jptr lockaddr;
 
 void *Thread(void *p) {
-  while (__atomic_load_n((int*)lockaddr, __ATOMIC_RELAXED) == 0)
-    usleep(1000);  // spin-wait
+  while (__atomic_load_n((int *)lockaddr, __ATOMIC_RELAXED) == 0)
+    usleep(1000); // spin-wait
   __tsan_java_acquire(lockaddr);
-  *(int*)varaddr = 42;
+  *(int *)varaddr = 42;
   return 0;
 }
 
@@ -23,15 +23,15 @@ int main() {
   lockaddr = jheap + 8;
   pthread_t th;
   pthread_create(&th, 0, Thread, 0);
-  *(int*)varaddr = 43;
+  *(int *)varaddr = 43;
   __tsan_java_release(lockaddr);
-  __atomic_store_n((int*)lockaddr, 1, __ATOMIC_RELAXED);
+  __atomic_store_n((int *)lockaddr, 1, __ATOMIC_RELAXED);
   pthread_join(th, 0);
-  *(int*)lockaddr = 0;
+  *(int *)lockaddr = 0;
   pthread_create(&th, 0, Thread, 0);
-  *(int*)varaddr = 43;
+  *(int *)varaddr = 43;
   __tsan_java_release_store(lockaddr);
-  __atomic_store_n((int*)lockaddr, 1, __ATOMIC_RELAXED);
+  __atomic_store_n((int *)lockaddr, 1, __ATOMIC_RELAXED);
   pthread_join(th, 0);
   __tsan_java_free(jheap, kBlockSize);
   fprintf(stderr, "DONE\n");

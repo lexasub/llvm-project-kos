@@ -22,17 +22,16 @@
 
 typedef std::codecvt<char16_t, char, std::mbstate_t> F;
 
-int main(int, char**)
-{
-    std::locale l = std::locale::classic();
-    const F& f = std::use_facet<F>(l);
-    std::mbstate_t mbs = {};
-    const char from[] = "some text";
-    assert(f.length(mbs, from, from+10, 0) == 0);
-    assert(f.length(mbs, from, from+10, 8) == 8);
-    assert(f.length(mbs, from, from+10, 9) == 9);
-    assert(f.length(mbs, from, from+10, 10) == 10);
-    assert(f.length(mbs, from, from+10, 100) == 10);
+int main(int, char**) {
+  std::locale l = std::locale::classic();
+  const F& f = std::use_facet<F>(l);
+  std::mbstate_t mbs = {};
+  const char from[] = "some text";
+  assert(f.length(mbs, from, from + 10, 0) == 0);
+  assert(f.length(mbs, from, from + 10, 8) == 8);
+  assert(f.length(mbs, from, from + 10, 9) == 9);
+  assert(f.length(mbs, from, from + 10, 10) == 10);
+  assert(f.length(mbs, from, from + 10, 100) == 10);
 
   return 0;
 }

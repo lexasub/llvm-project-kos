@@ -32,7 +32,7 @@ struct X : A, B {
 } x;
 
 void build_vftable(X *obj) { obj->f(); }
-}
+} // namespace test1
 
 namespace test2 {
 struct A {
@@ -62,7 +62,7 @@ struct X : A, B {
 };
 
 void build_vftable(X *obj) { obj->g(); }
-}
+} // namespace test2
 
 namespace test3 {
 struct A {
@@ -91,14 +91,14 @@ struct X : A, B {
 };
 
 void build_vftable(X *obj) { obj->i(); }
-}
+} // namespace test3
 
 namespace test4 {
 struct A {
   virtual void f();
 };
 
-struct Empty { };  // Doesn't have a vftable!
+struct Empty {}; // Doesn't have a vftable!
 
 // Only the right base has a vftable, so it's laid out before the left one!
 struct X : Empty, A {
@@ -114,7 +114,7 @@ struct X : Empty, A {
 } x;
 
 void build_vftable(X *obj) { obj->f(); }
-}
+} // namespace test4
 
 namespace test5 {
 struct A {
@@ -149,7 +149,7 @@ struct X : C {
 } x;
 
 void build_vftable(X *obj) { obj->f(); }
-}
+} // namespace test5
 
 namespace test6 {
 struct A {
@@ -182,7 +182,7 @@ struct X : C {
 };
 
 void build_vftable(X *obj) { obj->g(); }
-}
+} // namespace test6
 
 namespace test7 {
 struct A {
@@ -217,7 +217,7 @@ struct X : C {
 };
 
 void build_vftable(X *obj) { obj->g(); }
-}
+} // namespace test7
 
 namespace test8 {
 struct A {
@@ -248,7 +248,7 @@ struct X : A, B {
 } x;
 
 void build_vftable(X *obj) { obj->h(); }
-}
+} // namespace test8
 
 namespace test9 {
 struct A {
@@ -299,4 +299,4 @@ struct X : C, D {
 } x;
 
 void build_vftable(test9::X *obj) { obj->z(); }
-}
+} // namespace test9

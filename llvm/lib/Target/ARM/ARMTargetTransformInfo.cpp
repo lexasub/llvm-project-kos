@@ -20,8 +20,8 @@
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/Instructions.h"
-#include "llvm/IR/Intrinsics.h"
 #include "llvm/IR/IntrinsicInst.h"
+#include "llvm/IR/Intrinsics.h"
 #include "llvm/IR/IntrinsicsARM.h"
 #include "llvm/IR/PatternMatch.h"
 #include "llvm/IR/Type.h"
@@ -43,12 +43,12 @@ using namespace llvm;
 #define DEBUG_TYPE "armtti"
 
 static cl::opt<bool> EnableMaskedLoadStores(
-  "enable-arm-maskedldst", cl::Hidden, cl::init(true),
-  cl::desc("Enable the generation of masked loads and stores"));
+    "enable-arm-maskedldst", cl::Hidden, cl::init(true),
+    cl::desc("Enable the generation of masked loads and stores"));
 
 static cl::opt<bool> DisableLowOverheadLoops(
-  "disable-arm-loloops", cl::Hidden, cl::init(false),
-  cl::desc("Disable the generation of low-overhead loops"));
+    "disable-arm-loloops", cl::Hidden, cl::init(false),
+    cl::desc("Disable the generation of low-overhead loops"));
 
 static cl::opt<bool>
     AllowWLSLoops("allow-arm-wlsloops", cl::Hidden, cl::init(true),
@@ -90,7 +90,8 @@ bool ARMTTIImpl::areInlineCompatible(const Function *Caller,
   const FeatureBitset &CalleeBits =
       TM.getSubtargetImpl(*Callee)->getFeatureBits();
 
-  // To inline a callee, all features not in the allowed list must match exactly.
+  // To inline a callee, all features not in the allowed list must match
+  // exactly.
   bool MatchExact = (CallerBits & ~InlineFeaturesAllowed) ==
                     (CalleeBits & ~InlineFeaturesAllowed);
   // For features in the allowed list, the callee's features must be a subset of
@@ -250,9 +251,9 @@ int ARMTTIImpl::getIntImmCost(const APInt &Imm, Type *Ty,
                               TTI::TargetCostKind CostKind) {
   assert(Ty->isIntegerTy());
 
- unsigned Bits = Ty->getPrimitiveSizeInBits();
- if (Bits == 0 || Imm.getActiveBits() >= 64)
-   return 4;
+  unsigned Bits = Ty->getPrimitiveSizeInBits();
+  if (Bits == 0 || Imm.getActiveBits() >= 64)
+    return 4;
 
   int64_t SImmVal = Imm.getSExtValue();
   uint64_t ZImmVal = Imm.getZExtValue();
@@ -352,10 +353,10 @@ int ARMTTIImpl::getIntImmCostInst(unsigned Opcode, unsigned Idx,
   if (Opcode == Instruction::ICmp && Imm.isNegative() &&
       Ty->getIntegerBitWidth() == 32) {
     int64_t NegImm = -Imm.getSExtValue();
-    if (ST->isThumb2() && NegImm < 1<<12)
+    if (ST->isThumb2() && NegImm < 1 << 12)
       // icmp X, #-C -> cmn X, #C
       return 0;
-    if (ST->isThumb() && NegImm < 1<<8)
+    if (ST->isThumb() && NegImm < 1 << 8)
       // icmp X, #-C -> adds X, #C
       return 0;
   }
@@ -405,8 +406,8 @@ int ARMTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst, Type *Src,
   auto IsLegalFPType = [this](EVT VT) {
     EVT EltVT = VT.getScalarType();
     return (EltVT == MVT::f32 && ST->hasVFP2Base()) ||
-            (EltVT == MVT::f64 && ST->hasFP64()) ||
-            (EltVT == MVT::f16 && ST->hasFullFP16());
+           (EltVT == MVT::f64 && ST->hasFP64()) ||
+           (EltVT == MVT::f16 && ST->hasFullFP16());
   };
 
   EVT SrcTy = TLI->getValueType(DL, Src);
@@ -515,28 +516,28 @@ int ARMTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst, Type *Src,
   }
 
   // NEON vector operations that can extend their inputs.
-  if ((ISD == ISD::SIGN_EXTEND || ISD == ISD::ZERO_EXTEND) &&
-      I && I->hasOneUse() && ST->hasNEON() && SrcTy.isVector()) {
+  if ((ISD == ISD::SIGN_EXTEND || ISD == ISD::ZERO_EXTEND) && I &&
+      I->hasOneUse() && ST->hasNEON() && SrcTy.isVector()) {
     static const TypeConversionCostTblEntry NEONDoubleWidthTbl[] = {
-      // vaddl
-      { ISD::ADD, MVT::v4i32, MVT::v4i16, 0 },
-      { ISD::ADD, MVT::v8i16, MVT::v8i8,  0 },
-      // vsubl
-      { ISD::SUB, MVT::v4i32, MVT::v4i16, 0 },
-      { ISD::SUB, MVT::v8i16, MVT::v8i8,  0 },
-      // vmull
-      { ISD::MUL, MVT::v4i32, MVT::v4i16, 0 },
-      { ISD::MUL, MVT::v8i16, MVT::v8i8,  0 },
-      // vshll
-      { ISD::SHL, MVT::v4i32, MVT::v4i16, 0 },
-      { ISD::SHL, MVT::v8i16, MVT::v8i8,  0 },
+        // vaddl
+        {ISD::ADD, MVT::v4i32, MVT::v4i16, 0},
+        {ISD::ADD, MVT::v8i16, MVT::v8i8, 0},
+        // vsubl
+        {ISD::SUB, MVT::v4i32, MVT::v4i16, 0},
+        {ISD::SUB, MVT::v8i16, MVT::v8i8, 0},
+        // vmull
+        {ISD::MUL, MVT::v4i32, MVT::v4i16, 0},
+        {ISD::MUL, MVT::v8i16, MVT::v8i8, 0},
+        // vshll
+        {ISD::SHL, MVT::v4i32, MVT::v4i16, 0},
+        {ISD::SHL, MVT::v8i16, MVT::v8i8, 0},
     };
 
     auto *User = cast<Instruction>(*I->user_begin());
     int UserISD = TLI->InstructionOpcodeToISD(User->getOpcode());
-    if (auto *Entry = ConvertCostTableLookup(NEONDoubleWidthTbl, UserISD,
-                                             DstTy.getSimpleVT(),
-                                             SrcTy.getSimpleVT())) {
+    if (auto *Entry =
+            ConvertCostTableLookup(NEONDoubleWidthTbl, UserISD,
+                                   DstTy.getSimpleVT(), SrcTy.getSimpleVT())) {
       return AdjustCost(Entry->Cost);
     }
   }
@@ -562,153 +563,150 @@ int ARMTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst, Type *Src,
   // to cast up/down their types automatically at no extra cost.
   // TODO: Get these tables to know at least what the related operations are.
   static const TypeConversionCostTblEntry NEONVectorConversionTbl[] = {
-    { ISD::SIGN_EXTEND, MVT::v4i32, MVT::v4i16, 1 },
-    { ISD::ZERO_EXTEND, MVT::v4i32, MVT::v4i16, 1 },
-    { ISD::SIGN_EXTEND, MVT::v2i64, MVT::v2i32, 1 },
-    { ISD::ZERO_EXTEND, MVT::v2i64, MVT::v2i32, 1 },
-    { ISD::TRUNCATE,    MVT::v4i32, MVT::v4i64, 0 },
-    { ISD::TRUNCATE,    MVT::v4i16, MVT::v4i32, 1 },
+      {ISD::SIGN_EXTEND, MVT::v4i32, MVT::v4i16, 1},
+      {ISD::ZERO_EXTEND, MVT::v4i32, MVT::v4i16, 1},
+      {ISD::SIGN_EXTEND, MVT::v2i64, MVT::v2i32, 1},
+      {ISD::ZERO_EXTEND, MVT::v2i64, MVT::v2i32, 1},
+      {ISD::TRUNCATE, MVT::v4i32, MVT::v4i64, 0},
+      {ISD::TRUNCATE, MVT::v4i16, MVT::v4i32, 1},
 
-    // The number of vmovl instructions for the extension.
-    { ISD::SIGN_EXTEND, MVT::v8i16, MVT::v8i8,  1 },
-    { ISD::ZERO_EXTEND, MVT::v8i16, MVT::v8i8,  1 },
-    { ISD::SIGN_EXTEND, MVT::v4i32, MVT::v4i8,  2 },
-    { ISD::ZERO_EXTEND, MVT::v4i32, MVT::v4i8,  2 },
-    { ISD::SIGN_EXTEND, MVT::v2i64, MVT::v2i8,  3 },
-    { ISD::ZERO_EXTEND, MVT::v2i64, MVT::v2i8,  3 },
-    { ISD::SIGN_EXTEND, MVT::v2i64, MVT::v2i16, 2 },
-    { ISD::ZERO_EXTEND, MVT::v2i64, MVT::v2i16, 2 },
-    { ISD::SIGN_EXTEND, MVT::v4i64, MVT::v4i16, 3 },
-    { ISD::ZERO_EXTEND, MVT::v4i64, MVT::v4i16, 3 },
-    { ISD::SIGN_EXTEND, MVT::v8i32, MVT::v8i8, 3 },
-    { ISD::ZERO_EXTEND, MVT::v8i32, MVT::v8i8, 3 },
-    { ISD::SIGN_EXTEND, MVT::v8i64, MVT::v8i8, 7 },
-    { ISD::ZERO_EXTEND, MVT::v8i64, MVT::v8i8, 7 },
-    { ISD::SIGN_EXTEND, MVT::v8i64, MVT::v8i16, 6 },
-    { ISD::ZERO_EXTEND, MVT::v8i64, MVT::v8i16, 6 },
-    { ISD::SIGN_EXTEND, MVT::v16i32, MVT::v16i8, 6 },
-    { ISD::ZERO_EXTEND, MVT::v16i32, MVT::v16i8, 6 },
+      // The number of vmovl instructions for the extension.
+      {ISD::SIGN_EXTEND, MVT::v8i16, MVT::v8i8, 1},
+      {ISD::ZERO_EXTEND, MVT::v8i16, MVT::v8i8, 1},
+      {ISD::SIGN_EXTEND, MVT::v4i32, MVT::v4i8, 2},
+      {ISD::ZERO_EXTEND, MVT::v4i32, MVT::v4i8, 2},
+      {ISD::SIGN_EXTEND, MVT::v2i64, MVT::v2i8, 3},
+      {ISD::ZERO_EXTEND, MVT::v2i64, MVT::v2i8, 3},
+      {ISD::SIGN_EXTEND, MVT::v2i64, MVT::v2i16, 2},
+      {ISD::ZERO_EXTEND, MVT::v2i64, MVT::v2i16, 2},
+      {ISD::SIGN_EXTEND, MVT::v4i64, MVT::v4i16, 3},
+      {ISD::ZERO_EXTEND, MVT::v4i64, MVT::v4i16, 3},
+      {ISD::SIGN_EXTEND, MVT::v8i32, MVT::v8i8, 3},
+      {ISD::ZERO_EXTEND, MVT::v8i32, MVT::v8i8, 3},
+      {ISD::SIGN_EXTEND, MVT::v8i64, MVT::v8i8, 7},
+      {ISD::ZERO_EXTEND, MVT::v8i64, MVT::v8i8, 7},
+      {ISD::SIGN_EXTEND, MVT::v8i64, MVT::v8i16, 6},
+      {ISD::ZERO_EXTEND, MVT::v8i64, MVT::v8i16, 6},
+      {ISD::SIGN_EXTEND, MVT::v16i32, MVT::v16i8, 6},
+      {ISD::ZERO_EXTEND, MVT::v16i32, MVT::v16i8, 6},
 
-    // Operations that we legalize using splitting.
-    { ISD::TRUNCATE,    MVT::v16i8, MVT::v16i32, 6 },
-    { ISD::TRUNCATE,    MVT::v8i8, MVT::v8i32, 3 },
+      // Operations that we legalize using splitting.
+      {ISD::TRUNCATE, MVT::v16i8, MVT::v16i32, 6},
+      {ISD::TRUNCATE, MVT::v8i8, MVT::v8i32, 3},
 
-    // Vector float <-> i32 conversions.
-    { ISD::SINT_TO_FP,  MVT::v4f32, MVT::v4i32, 1 },
-    { ISD::UINT_TO_FP,  MVT::v4f32, MVT::v4i32, 1 },
+      // Vector float <-> i32 conversions.
+      {ISD::SINT_TO_FP, MVT::v4f32, MVT::v4i32, 1},
+      {ISD::UINT_TO_FP, MVT::v4f32, MVT::v4i32, 1},
 
-    { ISD::SINT_TO_FP,  MVT::v2f32, MVT::v2i8, 3 },
-    { ISD::UINT_TO_FP,  MVT::v2f32, MVT::v2i8, 3 },
-    { ISD::SINT_TO_FP,  MVT::v2f32, MVT::v2i16, 2 },
-    { ISD::UINT_TO_FP,  MVT::v2f32, MVT::v2i16, 2 },
-    { ISD::SINT_TO_FP,  MVT::v2f32, MVT::v2i32, 1 },
-    { ISD::UINT_TO_FP,  MVT::v2f32, MVT::v2i32, 1 },
-    { ISD::SINT_TO_FP,  MVT::v4f32, MVT::v4i1, 3 },
-    { ISD::UINT_TO_FP,  MVT::v4f32, MVT::v4i1, 3 },
-    { ISD::SINT_TO_FP,  MVT::v4f32, MVT::v4i8, 3 },
-    { ISD::UINT_TO_FP,  MVT::v4f32, MVT::v4i8, 3 },
-    { ISD::SINT_TO_FP,  MVT::v4f32, MVT::v4i16, 2 },
-    { ISD::UINT_TO_FP,  MVT::v4f32, MVT::v4i16, 2 },
-    { ISD::SINT_TO_FP,  MVT::v8f32, MVT::v8i16, 4 },
-    { ISD::UINT_TO_FP,  MVT::v8f32, MVT::v8i16, 4 },
-    { ISD::SINT_TO_FP,  MVT::v8f32, MVT::v8i32, 2 },
-    { ISD::UINT_TO_FP,  MVT::v8f32, MVT::v8i32, 2 },
-    { ISD::SINT_TO_FP,  MVT::v16f32, MVT::v16i16, 8 },
-    { ISD::UINT_TO_FP,  MVT::v16f32, MVT::v16i16, 8 },
-    { ISD::SINT_TO_FP,  MVT::v16f32, MVT::v16i32, 4 },
-    { ISD::UINT_TO_FP,  MVT::v16f32, MVT::v16i32, 4 },
+      {ISD::SINT_TO_FP, MVT::v2f32, MVT::v2i8, 3},
+      {ISD::UINT_TO_FP, MVT::v2f32, MVT::v2i8, 3},
+      {ISD::SINT_TO_FP, MVT::v2f32, MVT::v2i16, 2},
+      {ISD::UINT_TO_FP, MVT::v2f32, MVT::v2i16, 2},
+      {ISD::SINT_TO_FP, MVT::v2f32, MVT::v2i32, 1},
+      {ISD::UINT_TO_FP, MVT::v2f32, MVT::v2i32, 1},
+      {ISD::SINT_TO_FP, MVT::v4f32, MVT::v4i1, 3},
+      {ISD::UINT_TO_FP, MVT::v4f32, MVT::v4i1, 3},
+      {ISD::SINT_TO_FP, MVT::v4f32, MVT::v4i8, 3},
+      {ISD::UINT_TO_FP, MVT::v4f32, MVT::v4i8, 3},
+      {ISD::SINT_TO_FP, MVT::v4f32, MVT::v4i16, 2},
+      {ISD::UINT_TO_FP, MVT::v4f32, MVT::v4i16, 2},
+      {ISD::SINT_TO_FP, MVT::v8f32, MVT::v8i16, 4},
+      {ISD::UINT_TO_FP, MVT::v8f32, MVT::v8i16, 4},
+      {ISD::SINT_TO_FP, MVT::v8f32, MVT::v8i32, 2},
+      {ISD::UINT_TO_FP, MVT::v8f32, MVT::v8i32, 2},
+      {ISD::SINT_TO_FP, MVT::v16f32, MVT::v16i16, 8},
+      {ISD::UINT_TO_FP, MVT::v16f32, MVT::v16i16, 8},
+      {ISD::SINT_TO_FP, MVT::v16f32, MVT::v16i32, 4},
+      {ISD::UINT_TO_FP, MVT::v16f32, MVT::v16i32, 4},
 
-    { ISD::FP_TO_SINT,  MVT::v4i32, MVT::v4f32, 1 },
-    { ISD::FP_TO_UINT,  MVT::v4i32, MVT::v4f32, 1 },
-    { ISD::FP_TO_SINT,  MVT::v4i8, MVT::v4f32, 3 },
-    { ISD::FP_TO_UINT,  MVT::v4i8, MVT::v4f32, 3 },
-    { ISD::FP_TO_SINT,  MVT::v4i16, MVT::v4f32, 2 },
-    { ISD::FP_TO_UINT,  MVT::v4i16, MVT::v4f32, 2 },
+      {ISD::FP_TO_SINT, MVT::v4i32, MVT::v4f32, 1},
+      {ISD::FP_TO_UINT, MVT::v4i32, MVT::v4f32, 1},
+      {ISD::FP_TO_SINT, MVT::v4i8, MVT::v4f32, 3},
+      {ISD::FP_TO_UINT, MVT::v4i8, MVT::v4f32, 3},
+      {ISD::FP_TO_SINT, MVT::v4i16, MVT::v4f32, 2},
+      {ISD::FP_TO_UINT, MVT::v4i16, MVT::v4f32, 2},
 
-    // Vector double <-> i32 conversions.
-    { ISD::SINT_TO_FP,  MVT::v2f64, MVT::v2i32, 2 },
-    { ISD::UINT_TO_FP,  MVT::v2f64, MVT::v2i32, 2 },
+      // Vector double <-> i32 conversions.
+      {ISD::SINT_TO_FP, MVT::v2f64, MVT::v2i32, 2},
+      {ISD::UINT_TO_FP, MVT::v2f64, MVT::v2i32, 2},
 
-    { ISD::SINT_TO_FP,  MVT::v2f64, MVT::v2i8, 4 },
-    { ISD::UINT_TO_FP,  MVT::v2f64, MVT::v2i8, 4 },
-    { ISD::SINT_TO_FP,  MVT::v2f64, MVT::v2i16, 3 },
-    { ISD::UINT_TO_FP,  MVT::v2f64, MVT::v2i16, 3 },
-    { ISD::SINT_TO_FP,  MVT::v2f64, MVT::v2i32, 2 },
-    { ISD::UINT_TO_FP,  MVT::v2f64, MVT::v2i32, 2 },
+      {ISD::SINT_TO_FP, MVT::v2f64, MVT::v2i8, 4},
+      {ISD::UINT_TO_FP, MVT::v2f64, MVT::v2i8, 4},
+      {ISD::SINT_TO_FP, MVT::v2f64, MVT::v2i16, 3},
+      {ISD::UINT_TO_FP, MVT::v2f64, MVT::v2i16, 3},
+      {ISD::SINT_TO_FP, MVT::v2f64, MVT::v2i32, 2},
+      {ISD::UINT_TO_FP, MVT::v2f64, MVT::v2i32, 2},
 
-    { ISD::FP_TO_SINT,  MVT::v2i32, MVT::v2f64, 2 },
-    { ISD::FP_TO_UINT,  MVT::v2i32, MVT::v2f64, 2 },
-    { ISD::FP_TO_SINT,  MVT::v8i16, MVT::v8f32, 4 },
-    { ISD::FP_TO_UINT,  MVT::v8i16, MVT::v8f32, 4 },
-    { ISD::FP_TO_SINT,  MVT::v16i16, MVT::v16f32, 8 },
-    { ISD::FP_TO_UINT,  MVT::v16i16, MVT::v16f32, 8 }
-  };
+      {ISD::FP_TO_SINT, MVT::v2i32, MVT::v2f64, 2},
+      {ISD::FP_TO_UINT, MVT::v2i32, MVT::v2f64, 2},
+      {ISD::FP_TO_SINT, MVT::v8i16, MVT::v8f32, 4},
+      {ISD::FP_TO_UINT, MVT::v8i16, MVT::v8f32, 4},
+      {ISD::FP_TO_SINT, MVT::v16i16, MVT::v16f32, 8},
+      {ISD::FP_TO_UINT, MVT::v16i16, MVT::v16f32, 8}};
 
   if (SrcTy.isVector() && ST->hasNEON()) {
-    if (const auto *Entry = ConvertCostTableLookup(NEONVectorConversionTbl, ISD,
-                                                   DstTy.getSimpleVT(),
-                                                   SrcTy.getSimpleVT()))
+    if (const auto *Entry =
+            ConvertCostTableLookup(NEONVectorConversionTbl, ISD,
+                                   DstTy.getSimpleVT(), SrcTy.getSimpleVT()))
       return AdjustCost(Entry->Cost);
   }
 
   // Scalar float to integer conversions.
   static const TypeConversionCostTblEntry NEONFloatConversionTbl[] = {
-    { ISD::FP_TO_SINT,  MVT::i1, MVT::f32, 2 },
-    { ISD::FP_TO_UINT,  MVT::i1, MVT::f32, 2 },
-    { ISD::FP_TO_SINT,  MVT::i1, MVT::f64, 2 },
-    { ISD::FP_TO_UINT,  MVT::i1, MVT::f64, 2 },
-    { ISD::FP_TO_SINT,  MVT::i8, MVT::f32, 2 },
-    { ISD::FP_TO_UINT,  MVT::i8, MVT::f32, 2 },
-    { ISD::FP_TO_SINT,  MVT::i8, MVT::f64, 2 },
-    { ISD::FP_TO_UINT,  MVT::i8, MVT::f64, 2 },
-    { ISD::FP_TO_SINT,  MVT::i16, MVT::f32, 2 },
-    { ISD::FP_TO_UINT,  MVT::i16, MVT::f32, 2 },
-    { ISD::FP_TO_SINT,  MVT::i16, MVT::f64, 2 },
-    { ISD::FP_TO_UINT,  MVT::i16, MVT::f64, 2 },
-    { ISD::FP_TO_SINT,  MVT::i32, MVT::f32, 2 },
-    { ISD::FP_TO_UINT,  MVT::i32, MVT::f32, 2 },
-    { ISD::FP_TO_SINT,  MVT::i32, MVT::f64, 2 },
-    { ISD::FP_TO_UINT,  MVT::i32, MVT::f64, 2 },
-    { ISD::FP_TO_SINT,  MVT::i64, MVT::f32, 10 },
-    { ISD::FP_TO_UINT,  MVT::i64, MVT::f32, 10 },
-    { ISD::FP_TO_SINT,  MVT::i64, MVT::f64, 10 },
-    { ISD::FP_TO_UINT,  MVT::i64, MVT::f64, 10 }
-  };
+      {ISD::FP_TO_SINT, MVT::i1, MVT::f32, 2},
+      {ISD::FP_TO_UINT, MVT::i1, MVT::f32, 2},
+      {ISD::FP_TO_SINT, MVT::i1, MVT::f64, 2},
+      {ISD::FP_TO_UINT, MVT::i1, MVT::f64, 2},
+      {ISD::FP_TO_SINT, MVT::i8, MVT::f32, 2},
+      {ISD::FP_TO_UINT, MVT::i8, MVT::f32, 2},
+      {ISD::FP_TO_SINT, MVT::i8, MVT::f64, 2},
+      {ISD::FP_TO_UINT, MVT::i8, MVT::f64, 2},
+      {ISD::FP_TO_SINT, MVT::i16, MVT::f32, 2},
+      {ISD::FP_TO_UINT, MVT::i16, MVT::f32, 2},
+      {ISD::FP_TO_SINT, MVT::i16, MVT::f64, 2},
+      {ISD::FP_TO_UINT, MVT::i16, MVT::f64, 2},
+      {ISD::FP_TO_SINT, MVT::i32, MVT::f32, 2},
+      {ISD::FP_TO_UINT, MVT::i32, MVT::f32, 2},
+      {ISD::FP_TO_SINT, MVT::i32, MVT::f64, 2},
+      {ISD::FP_TO_UINT, MVT::i32, MVT::f64, 2},
+      {ISD::FP_TO_SINT, MVT::i64, MVT::f32, 10},
+      {ISD::FP_TO_UINT, MVT::i64, MVT::f32, 10},
+      {ISD::FP_TO_SINT, MVT::i64, MVT::f64, 10},
+      {ISD::FP_TO_UINT, MVT::i64, MVT::f64, 10}};
   if (SrcTy.isFloatingPoint() && ST->hasNEON()) {
-    if (const auto *Entry = ConvertCostTableLookup(NEONFloatConversionTbl, ISD,
-                                                   DstTy.getSimpleVT(),
-                                                   SrcTy.getSimpleVT()))
+    if (const auto *Entry =
+            ConvertCostTableLookup(NEONFloatConversionTbl, ISD,
+                                   DstTy.getSimpleVT(), SrcTy.getSimpleVT()))
       return AdjustCost(Entry->Cost);
   }
 
   // Scalar integer to float conversions.
   static const TypeConversionCostTblEntry NEONIntegerConversionTbl[] = {
-    { ISD::SINT_TO_FP,  MVT::f32, MVT::i1, 2 },
-    { ISD::UINT_TO_FP,  MVT::f32, MVT::i1, 2 },
-    { ISD::SINT_TO_FP,  MVT::f64, MVT::i1, 2 },
-    { ISD::UINT_TO_FP,  MVT::f64, MVT::i1, 2 },
-    { ISD::SINT_TO_FP,  MVT::f32, MVT::i8, 2 },
-    { ISD::UINT_TO_FP,  MVT::f32, MVT::i8, 2 },
-    { ISD::SINT_TO_FP,  MVT::f64, MVT::i8, 2 },
-    { ISD::UINT_TO_FP,  MVT::f64, MVT::i8, 2 },
-    { ISD::SINT_TO_FP,  MVT::f32, MVT::i16, 2 },
-    { ISD::UINT_TO_FP,  MVT::f32, MVT::i16, 2 },
-    { ISD::SINT_TO_FP,  MVT::f64, MVT::i16, 2 },
-    { ISD::UINT_TO_FP,  MVT::f64, MVT::i16, 2 },
-    { ISD::SINT_TO_FP,  MVT::f32, MVT::i32, 2 },
-    { ISD::UINT_TO_FP,  MVT::f32, MVT::i32, 2 },
-    { ISD::SINT_TO_FP,  MVT::f64, MVT::i32, 2 },
-    { ISD::UINT_TO_FP,  MVT::f64, MVT::i32, 2 },
-    { ISD::SINT_TO_FP,  MVT::f32, MVT::i64, 10 },
-    { ISD::UINT_TO_FP,  MVT::f32, MVT::i64, 10 },
-    { ISD::SINT_TO_FP,  MVT::f64, MVT::i64, 10 },
-    { ISD::UINT_TO_FP,  MVT::f64, MVT::i64, 10 }
-  };
+      {ISD::SINT_TO_FP, MVT::f32, MVT::i1, 2},
+      {ISD::UINT_TO_FP, MVT::f32, MVT::i1, 2},
+      {ISD::SINT_TO_FP, MVT::f64, MVT::i1, 2},
+      {ISD::UINT_TO_FP, MVT::f64, MVT::i1, 2},
+      {ISD::SINT_TO_FP, MVT::f32, MVT::i8, 2},
+      {ISD::UINT_TO_FP, MVT::f32, MVT::i8, 2},
+      {ISD::SINT_TO_FP, MVT::f64, MVT::i8, 2},
+      {ISD::UINT_TO_FP, MVT::f64, MVT::i8, 2},
+      {ISD::SINT_TO_FP, MVT::f32, MVT::i16, 2},
+      {ISD::UINT_TO_FP, MVT::f32, MVT::i16, 2},
+      {ISD::SINT_TO_FP, MVT::f64, MVT::i16, 2},
+      {ISD::UINT_TO_FP, MVT::f64, MVT::i16, 2},
+      {ISD::SINT_TO_FP, MVT::f32, MVT::i32, 2},
+      {ISD::UINT_TO_FP, MVT::f32, MVT::i32, 2},
+      {ISD::SINT_TO_FP, MVT::f64, MVT::i32, 2},
+      {ISD::UINT_TO_FP, MVT::f64, MVT::i32, 2},
+      {ISD::SINT_TO_FP, MVT::f32, MVT::i64, 10},
+      {ISD::UINT_TO_FP, MVT::f32, MVT::i64, 10},
+      {ISD::SINT_TO_FP, MVT::f64, MVT::i64, 10},
+      {ISD::UINT_TO_FP, MVT::f64, MVT::i64, 10}};
 
   if (SrcTy.isInteger() && ST->hasNEON()) {
-    if (const auto *Entry = ConvertCostTableLookup(NEONIntegerConversionTbl,
-                                                   ISD, DstTy.getSimpleVT(),
-                                                   SrcTy.getSimpleVT()))
+    if (const auto *Entry =
+            ConvertCostTableLookup(NEONIntegerConversionTbl, ISD,
+                                   DstTy.getSimpleVT(), SrcTy.getSimpleVT()))
       return AdjustCost(Entry->Cost);
   }
 
@@ -716,24 +714,24 @@ int ARMTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst, Type *Src,
   // instruction, i8->i32 is two. i64 zexts are an VAND with a constant, sext
   // are linearised so take more.
   static const TypeConversionCostTblEntry MVEVectorConversionTbl[] = {
-    { ISD::SIGN_EXTEND, MVT::v8i16, MVT::v8i8, 1 },
-    { ISD::ZERO_EXTEND, MVT::v8i16, MVT::v8i8, 1 },
-    { ISD::SIGN_EXTEND, MVT::v4i32, MVT::v4i8, 2 },
-    { ISD::ZERO_EXTEND, MVT::v4i32, MVT::v4i8, 2 },
-    { ISD::SIGN_EXTEND, MVT::v2i64, MVT::v2i8, 10 },
-    { ISD::ZERO_EXTEND, MVT::v2i64, MVT::v2i8, 2 },
-    { ISD::SIGN_EXTEND, MVT::v4i32, MVT::v4i16, 1 },
-    { ISD::ZERO_EXTEND, MVT::v4i32, MVT::v4i16, 1 },
-    { ISD::SIGN_EXTEND, MVT::v2i64, MVT::v2i16, 10 },
-    { ISD::ZERO_EXTEND, MVT::v2i64, MVT::v2i16, 2 },
-    { ISD::SIGN_EXTEND, MVT::v2i64, MVT::v2i32, 8 },
-    { ISD::ZERO_EXTEND, MVT::v2i64, MVT::v2i32, 2 },
+      {ISD::SIGN_EXTEND, MVT::v8i16, MVT::v8i8, 1},
+      {ISD::ZERO_EXTEND, MVT::v8i16, MVT::v8i8, 1},
+      {ISD::SIGN_EXTEND, MVT::v4i32, MVT::v4i8, 2},
+      {ISD::ZERO_EXTEND, MVT::v4i32, MVT::v4i8, 2},
+      {ISD::SIGN_EXTEND, MVT::v2i64, MVT::v2i8, 10},
+      {ISD::ZERO_EXTEND, MVT::v2i64, MVT::v2i8, 2},
+      {ISD::SIGN_EXTEND, MVT::v4i32, MVT::v4i16, 1},
+      {ISD::ZERO_EXTEND, MVT::v4i32, MVT::v4i16, 1},
+      {ISD::SIGN_EXTEND, MVT::v2i64, MVT::v2i16, 10},
+      {ISD::ZERO_EXTEND, MVT::v2i64, MVT::v2i16, 2},
+      {ISD::SIGN_EXTEND, MVT::v2i64, MVT::v2i32, 8},
+      {ISD::ZERO_EXTEND, MVT::v2i64, MVT::v2i32, 2},
   };
 
   if (SrcTy.isVector() && ST->hasMVEIntegerOps()) {
-    if (const auto *Entry = ConvertCostTableLookup(MVEVectorConversionTbl,
-                                                   ISD, DstTy.getSimpleVT(),
-                                                   SrcTy.getSimpleVT()))
+    if (const auto *Entry =
+            ConvertCostTableLookup(MVEVectorConversionTbl, ISD,
+                                   DstTy.getSimpleVT(), SrcTy.getSimpleVT()))
       return AdjustCost(Entry->Cost * ST->getMVEVectorCostFactor());
   }
 
@@ -766,20 +764,19 @@ int ARMTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst, Type *Src,
 
   // Scalar integer conversion costs.
   static const TypeConversionCostTblEntry ARMIntegerConversionTbl[] = {
-    // i16 -> i64 requires two dependent operations.
-    { ISD::SIGN_EXTEND, MVT::i64, MVT::i16, 2 },
+      // i16 -> i64 requires two dependent operations.
+      {ISD::SIGN_EXTEND, MVT::i64, MVT::i16, 2},
 
-    // Truncates on i64 are assumed to be free.
-    { ISD::TRUNCATE,    MVT::i32, MVT::i64, 0 },
-    { ISD::TRUNCATE,    MVT::i16, MVT::i64, 0 },
-    { ISD::TRUNCATE,    MVT::i8,  MVT::i64, 0 },
-    { ISD::TRUNCATE,    MVT::i1,  MVT::i64, 0 }
-  };
+      // Truncates on i64 are assumed to be free.
+      {ISD::TRUNCATE, MVT::i32, MVT::i64, 0},
+      {ISD::TRUNCATE, MVT::i16, MVT::i64, 0},
+      {ISD::TRUNCATE, MVT::i8, MVT::i64, 0},
+      {ISD::TRUNCATE, MVT::i1, MVT::i64, 0}};
 
   if (SrcTy.isInteger()) {
-    if (const auto *Entry = ConvertCostTableLookup(ARMIntegerConversionTbl, ISD,
-                                                   DstTy.getSimpleVT(),
-                                                   SrcTy.getSimpleVT()))
+    if (const auto *Entry =
+            ConvertCostTableLookup(ARMIntegerConversionTbl, ISD,
+                                   DstTy.getSimpleVT(), SrcTy.getSimpleVT()))
       return AdjustCost(Entry->Cost);
   }
 
@@ -807,8 +804,7 @@ int ARMTTIImpl::getVectorInstrCost(unsigned Opcode, Type *ValTy,
 
     // Even if it's not a cross class copy, this likely leads to mixing
     // of NEON and VFP code and should be therefore penalized.
-    if (ValTy->isVectorTy() &&
-        ValTy->getScalarSizeInBits() <= 32)
+    if (ValTy->isVectorTy() && ValTy->getScalarSizeInBits() <= 32)
       return std::max(BaseT::getVectorInstrCost(Opcode, ValTy, Index), 2U);
   }
 
@@ -833,8 +829,8 @@ int ARMTTIImpl::getCmpSelInstrCost(unsigned Opcode, Type *ValTy, Type *CondTy,
   int ISD = TLI->InstructionOpcodeToISD(Opcode);
 
   // Thumb scalar code size cost for select.
-  if (CostKind == TTI::TCK_CodeSize && ISD == ISD::SELECT &&
-      ST->isThumb() && !ValTy->isVectorTy()) {
+  if (CostKind == TTI::TCK_CodeSize && ISD == ISD::SELECT && ST->isThumb() &&
+      !ValTy->isVectorTy()) {
     // Assume expensive structs.
     if (TLI->getValueType(DL, ValTy, true) == MVT::Other)
       return TTI::TCC_Expensive;
@@ -860,10 +856,9 @@ int ARMTTIImpl::getCmpSelInstrCost(unsigned Opcode, Type *ValTy, Type *CondTy,
   if (ST->hasNEON() && ValTy->isVectorTy() && ISD == ISD::SELECT && CondTy) {
     // Lowering of some vector selects is currently far from perfect.
     static const TypeConversionCostTblEntry NEONVectorSelectTbl[] = {
-      { ISD::SELECT, MVT::v4i1, MVT::v4i64, 4*4 + 1*2 + 1 },
-      { ISD::SELECT, MVT::v8i1, MVT::v8i64, 50 },
-      { ISD::SELECT, MVT::v16i1, MVT::v16i64, 100 }
-    };
+        {ISD::SELECT, MVT::v4i1, MVT::v4i64, 4 * 4 + 1 * 2 + 1},
+        {ISD::SELECT, MVT::v8i1, MVT::v8i64, 50},
+        {ISD::SELECT, MVT::v16i1, MVT::v16i64, 100}};
 
     EVT SelCondTy = TLI->getValueType(DL, CondTy);
     EVT SelValTy = TLI->getValueType(DL, ValTy);
@@ -937,7 +932,7 @@ bool ARMTTIImpl::isLegalMaskedLoad(Type *DataTy, Align Alignment) {
       return false;
 
     // We don't support extending fp types.
-     unsigned VecWidth = DataTy->getPrimitiveSizeInBits();
+    unsigned VecWidth = DataTy->getPrimitiveSizeInBits();
     if (VecWidth != 128 && VecTy->getElementType()->isFloatingPointTy())
       return false;
   }
@@ -991,8 +986,7 @@ int ARMTTIImpl::getNumMemOps(const IntrinsicInst *I) const {
                       /*IsVolatile*/ false);
     DstAddrSpace = MC->getDestAddressSpace();
     SrcAddrSpace = MC->getSourceAddressSpace();
-  }
-  else if (const auto *MS = dyn_cast<MemSetInst>(I)) {
+  } else if (const auto *MS = dyn_cast<MemSetInst>(I)) {
     ConstantInt *C = dyn_cast<ConstantInt>(MS->getLength());
     // If 'size' is not a constant, a library call will be generated.
     if (!C)
@@ -1004,33 +998,31 @@ int ARMTTIImpl::getNumMemOps(const IntrinsicInst *I) const {
     MOp = MemOp::Set(Size, /*DstAlignCanChange*/ false, DstAlign,
                      /*IsZeroMemset*/ false, /*IsVolatile*/ false);
     DstAddrSpace = MS->getDestAddressSpace();
-  }
-  else
+  } else
     llvm_unreachable("Expected a memcpy/move or memset!");
 
   unsigned Limit, Factor = 2;
-  switch(I->getIntrinsicID()) {
-    case Intrinsic::memcpy:
-      Limit = TLI->getMaxStoresPerMemcpy(F->hasMinSize());
-      break;
-    case Intrinsic::memmove:
-      Limit = TLI->getMaxStoresPerMemmove(F->hasMinSize());
-      break;
-    case Intrinsic::memset:
-      Limit = TLI->getMaxStoresPerMemset(F->hasMinSize());
-      Factor = 1;
-      break;
-    default:
-      llvm_unreachable("Expected a memcpy/move or memset!");
+  switch (I->getIntrinsicID()) {
+  case Intrinsic::memcpy:
+    Limit = TLI->getMaxStoresPerMemcpy(F->hasMinSize());
+    break;
+  case Intrinsic::memmove:
+    Limit = TLI->getMaxStoresPerMemmove(F->hasMinSize());
+    break;
+  case Intrinsic::memset:
+    Limit = TLI->getMaxStoresPerMemset(F->hasMinSize());
+    Factor = 1;
+    break;
+  default:
+    llvm_unreachable("Expected a memcpy/move or memset!");
   }
 
   // MemOps will be poplulated with a list of data types that needs to be
   // loaded and stored. That's why we multiply the number of elements by 2 to
   // get the cost for this memcpy.
   std::vector<EVT> MemOps;
-  if (getTLI()->findOptimalMemOpLowering(
-          MemOps, Limit, MOp, DstAddrSpace,
-          SrcAddrSpace, F->getAttributes()))
+  if (getTLI()->findOptimalMemOpLowering(MemOps, Limit, MOp, DstAddrSpace,
+                                         SrcAddrSpace, F->getAttributes()))
     return MemOps.size() * Factor;
 
   // If we can't find an optimal memop lowering, return the default cost
@@ -1047,8 +1039,8 @@ int ARMTTIImpl::getMemcpyCost(const Instruction *I) {
   return NumOps;
 }
 
-int ARMTTIImpl::getShuffleCost(TTI::ShuffleKind Kind, VectorType *Tp,
-                               int Index, VectorType *SubTp) {
+int ARMTTIImpl::getShuffleCost(TTI::ShuffleKind Kind, VectorType *Tp, int Index,
+                               VectorType *SubTp) {
   if (ST->hasNEON()) {
     if (Kind == TTI::SK_Broadcast) {
       static const CostTblEntry NEONDupTbl[] = {
@@ -1130,8 +1122,8 @@ int ARMTTIImpl::getShuffleCost(TTI::ShuffleKind Kind, VectorType *Tp,
 
       std::pair<int, MVT> LT = TLI->getTypeLegalizationCost(DL, Tp);
 
-      if (const auto *Entry = CostTableLookup(MVEDupTbl, ISD::VECTOR_SHUFFLE,
-                                              LT.second))
+      if (const auto *Entry =
+              CostTableLookup(MVEDupTbl, ISD::VECTOR_SHUFFLE, LT.second))
         return LT.first * Entry->Cost * ST->getMVEVectorCostFactor();
     }
   }
@@ -1171,52 +1163,52 @@ int ARMTTIImpl::getArithmeticInstrCost(unsigned Opcode, Type *Ty,
     const unsigned FunctionCallDivCost = 20;
     const unsigned ReciprocalDivCost = 10;
     static const CostTblEntry CostTbl[] = {
-      // Division.
-      // These costs are somewhat random. Choose a cost of 20 to indicate that
-      // vectorizing devision (added function call) is going to be very expensive.
-      // Double registers types.
-      { ISD::SDIV, MVT::v1i64, 1 * FunctionCallDivCost},
-      { ISD::UDIV, MVT::v1i64, 1 * FunctionCallDivCost},
-      { ISD::SREM, MVT::v1i64, 1 * FunctionCallDivCost},
-      { ISD::UREM, MVT::v1i64, 1 * FunctionCallDivCost},
-      { ISD::SDIV, MVT::v2i32, 2 * FunctionCallDivCost},
-      { ISD::UDIV, MVT::v2i32, 2 * FunctionCallDivCost},
-      { ISD::SREM, MVT::v2i32, 2 * FunctionCallDivCost},
-      { ISD::UREM, MVT::v2i32, 2 * FunctionCallDivCost},
-      { ISD::SDIV, MVT::v4i16,     ReciprocalDivCost},
-      { ISD::UDIV, MVT::v4i16,     ReciprocalDivCost},
-      { ISD::SREM, MVT::v4i16, 4 * FunctionCallDivCost},
-      { ISD::UREM, MVT::v4i16, 4 * FunctionCallDivCost},
-      { ISD::SDIV, MVT::v8i8,      ReciprocalDivCost},
-      { ISD::UDIV, MVT::v8i8,      ReciprocalDivCost},
-      { ISD::SREM, MVT::v8i8,  8 * FunctionCallDivCost},
-      { ISD::UREM, MVT::v8i8,  8 * FunctionCallDivCost},
-      // Quad register types.
-      { ISD::SDIV, MVT::v2i64, 2 * FunctionCallDivCost},
-      { ISD::UDIV, MVT::v2i64, 2 * FunctionCallDivCost},
-      { ISD::SREM, MVT::v2i64, 2 * FunctionCallDivCost},
-      { ISD::UREM, MVT::v2i64, 2 * FunctionCallDivCost},
-      { ISD::SDIV, MVT::v4i32, 4 * FunctionCallDivCost},
-      { ISD::UDIV, MVT::v4i32, 4 * FunctionCallDivCost},
-      { ISD::SREM, MVT::v4i32, 4 * FunctionCallDivCost},
-      { ISD::UREM, MVT::v4i32, 4 * FunctionCallDivCost},
-      { ISD::SDIV, MVT::v8i16, 8 * FunctionCallDivCost},
-      { ISD::UDIV, MVT::v8i16, 8 * FunctionCallDivCost},
-      { ISD::SREM, MVT::v8i16, 8 * FunctionCallDivCost},
-      { ISD::UREM, MVT::v8i16, 8 * FunctionCallDivCost},
-      { ISD::SDIV, MVT::v16i8, 16 * FunctionCallDivCost},
-      { ISD::UDIV, MVT::v16i8, 16 * FunctionCallDivCost},
-      { ISD::SREM, MVT::v16i8, 16 * FunctionCallDivCost},
-      { ISD::UREM, MVT::v16i8, 16 * FunctionCallDivCost},
-      // Multiplication.
+        // Division.
+        // These costs are somewhat random. Choose a cost of 20 to indicate that
+        // vectorizing devision (added function call) is going to be very
+        // expensive.
+        // Double registers types.
+        {ISD::SDIV, MVT::v1i64, 1 * FunctionCallDivCost},
+        {ISD::UDIV, MVT::v1i64, 1 * FunctionCallDivCost},
+        {ISD::SREM, MVT::v1i64, 1 * FunctionCallDivCost},
+        {ISD::UREM, MVT::v1i64, 1 * FunctionCallDivCost},
+        {ISD::SDIV, MVT::v2i32, 2 * FunctionCallDivCost},
+        {ISD::UDIV, MVT::v2i32, 2 * FunctionCallDivCost},
+        {ISD::SREM, MVT::v2i32, 2 * FunctionCallDivCost},
+        {ISD::UREM, MVT::v2i32, 2 * FunctionCallDivCost},
+        {ISD::SDIV, MVT::v4i16, ReciprocalDivCost},
+        {ISD::UDIV, MVT::v4i16, ReciprocalDivCost},
+        {ISD::SREM, MVT::v4i16, 4 * FunctionCallDivCost},
+        {ISD::UREM, MVT::v4i16, 4 * FunctionCallDivCost},
+        {ISD::SDIV, MVT::v8i8, ReciprocalDivCost},
+        {ISD::UDIV, MVT::v8i8, ReciprocalDivCost},
+        {ISD::SREM, MVT::v8i8, 8 * FunctionCallDivCost},
+        {ISD::UREM, MVT::v8i8, 8 * FunctionCallDivCost},
+        // Quad register types.
+        {ISD::SDIV, MVT::v2i64, 2 * FunctionCallDivCost},
+        {ISD::UDIV, MVT::v2i64, 2 * FunctionCallDivCost},
+        {ISD::SREM, MVT::v2i64, 2 * FunctionCallDivCost},
+        {ISD::UREM, MVT::v2i64, 2 * FunctionCallDivCost},
+        {ISD::SDIV, MVT::v4i32, 4 * FunctionCallDivCost},
+        {ISD::UDIV, MVT::v4i32, 4 * FunctionCallDivCost},
+        {ISD::SREM, MVT::v4i32, 4 * FunctionCallDivCost},
+        {ISD::UREM, MVT::v4i32, 4 * FunctionCallDivCost},
+        {ISD::SDIV, MVT::v8i16, 8 * FunctionCallDivCost},
+        {ISD::UDIV, MVT::v8i16, 8 * FunctionCallDivCost},
+        {ISD::SREM, MVT::v8i16, 8 * FunctionCallDivCost},
+        {ISD::UREM, MVT::v8i16, 8 * FunctionCallDivCost},
+        {ISD::SDIV, MVT::v16i8, 16 * FunctionCallDivCost},
+        {ISD::UDIV, MVT::v16i8, 16 * FunctionCallDivCost},
+        {ISD::SREM, MVT::v16i8, 16 * FunctionCallDivCost},
+        {ISD::UREM, MVT::v16i8, 16 * FunctionCallDivCost},
+        // Multiplication.
     };
 
     if (const auto *Entry = CostTableLookup(CostTbl, ISDOpcode, LT.second))
       return LT.first * Entry->Cost;
 
-    int Cost = BaseT::getArithmeticInstrCost(Opcode, Ty, CostKind, Op1Info,
-                                             Op2Info,
-                                             Opd1PropInfo, Opd2PropInfo);
+    int Cost = BaseT::getArithmeticInstrCost(
+        Opcode, Ty, CostKind, Op1Info, Op2Info, Opd1PropInfo, Opd2PropInfo);
 
     // This is somewhat of a hack. The problem that we are facing is that SROA
     // creates a sequence of shift, and, or instructions to construct values.
@@ -1266,18 +1258,18 @@ int ARMTTIImpl::getArithmeticInstrCost(unsigned Opcode, Type *Ty,
       Ty->isVectorTy())
     BaseCost = ST->getMVEVectorCostFactor();
 
-  // The rest of this mostly follows what is done in BaseT::getArithmeticInstrCost,
-  // without treating floats as more expensive that scalars or increasing the
-  // costs for custom operations. The results is also multiplied by the
-  // MVEVectorCostFactor where appropriate.
+  // The rest of this mostly follows what is done in
+  // BaseT::getArithmeticInstrCost, without treating floats as more expensive
+  // that scalars or increasing the costs for custom operations. The results is
+  // also multiplied by the MVEVectorCostFactor where appropriate.
   if (TLI->isOperationLegalOrCustomOrPromote(ISDOpcode, LT.second))
     return LT.first * BaseCost;
 
   // Else this is expand, assume that we need to scalarize this op.
   if (auto *VTy = dyn_cast<FixedVectorType>(Ty)) {
     unsigned Num = VTy->getNumElements();
-    unsigned Cost = getArithmeticInstrCost(Opcode, Ty->getScalarType(),
-                                           CostKind);
+    unsigned Cost =
+        getArithmeticInstrCost(Opcode, Ty->getScalarType(), CostKind);
     // Return the cost of multiple scalar invocation plus the cost of
     // inserting and extracting the values.
     return BaseT::getScalarizationOverhead(VTy, Args) + Num * Cost;
@@ -1555,8 +1547,7 @@ int ARMTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
     if (!VT->isVectorTy() && !ICA.getVectorFactor().isScalar())
       VT = VectorType::get(VT, ICA.getVectorFactor());
 
-    std::pair<int, MVT> LT =
-        TLI->getTypeLegalizationCost(DL, VT);
+    std::pair<int, MVT> LT = TLI->getTypeLegalizationCost(DL, VT);
     if (LT.second == MVT::v4i32 || LT.second == MVT::v8i16 ||
         LT.second == MVT::v16i8) {
       // This is a base cost of 1 for the vadd, plus 3 extract shifts if we
@@ -1583,7 +1574,8 @@ bool ARMTTIImpl::isLoweredToCall(const Function *F) {
     return false;
 
   switch (F->getIntrinsicID()) {
-  default: break;
+  default:
+    break;
   case Intrinsic::powi:
   case Intrinsic::sin:
   case Intrinsic::cos:
@@ -1645,14 +1637,14 @@ bool ARMTTIImpl::maybeLoweredToCall(Instruction &I) {
   // other CallInst will generate a bl.
   if (auto *Call = dyn_cast<CallInst>(&I)) {
     if (auto *II = dyn_cast<IntrinsicInst>(Call)) {
-      switch(II->getIntrinsicID()) {
-        case Intrinsic::memcpy:
-        case Intrinsic::memset:
-        case Intrinsic::memmove:
-          return getNumMemOps(II) == -1;
-        default:
-          if (const Function *F = Call->getCalledFunction())
-            return isLoweredToCall(F);
+      switch (II->getIntrinsicID()) {
+      case Intrinsic::memcpy:
+      case Intrinsic::memset:
+      case Intrinsic::memmove:
+        return getNumMemOps(II) == -1;
+      default:
+        if (const Function *F = Call->getCalledFunction())
+          return isLoweredToCall(F);
       }
     }
     return true;
@@ -1744,9 +1736,8 @@ bool ARMTTIImpl::isHardwareLoopProfitable(Loop *L, ScalarEvolution &SE,
     return false;
   }
 
-  const SCEV *TripCountSCEV =
-    SE.getAddExpr(BackedgeTakenCount,
-                  SE.getOne(BackedgeTakenCount->getType()));
+  const SCEV *TripCountSCEV = SE.getAddExpr(
+      BackedgeTakenCount, SE.getOne(BackedgeTakenCount->getType()));
 
   // We need to store the trip count in LR, a 32-bit register.
   if (SE.getUnsignedRangeMax(TripCountSCEV).getBitWidth() > 32) {
@@ -1832,12 +1823,12 @@ static bool canTailPredicateInstruction(Instruction &I, int &ICmpCount) {
     return false;
 
   // Extends have to be extending-loads
-  if (isa<SExtInst>(&I) || isa<ZExtInst>(&I) )
+  if (isa<SExtInst>(&I) || isa<ZExtInst>(&I))
     if (!I.getOperand(0)->hasOneUse() || !isa<LoadInst>(I.getOperand(0)))
       return false;
 
   // Truncs have to be narrowing-stores
-  if (isa<TruncInst>(&I) )
+  if (isa<TruncInst>(&I))
     if (!I.hasOneUse() || !isa<StoreInst>(*I.user_begin()))
       return false;
 
@@ -1866,7 +1857,7 @@ static bool canTailPredicateLoop(Loop *L, LoopInfo *LI, ScalarEvolution &SE,
   // specifically here. If the value ends up not being a reduction (and so the
   // vectorizer cannot tailfold the loop), we should fall back to standard
   // vectorization automatically.
-  SmallVector< Instruction *, 8 > LiveOuts;
+  SmallVector<Instruction *, 8> LiveOuts;
   LiveOuts = llvm::findDefsUsedOutsideOfLoop(L);
   bool ReductionsDisabled =
       EnableTailPredication == TailPredication::EnabledNoReductions ||
@@ -1899,7 +1890,7 @@ static bool canTailPredicateLoop(Loop *L, LoopInfo *LI, ScalarEvolution &SE,
         return false;
       }
 
-      Type *T  = I.getType();
+      Type *T = I.getType();
       if (T->isPointerTy())
         T = T->getPointerElementType();
 
@@ -1947,12 +1938,9 @@ static bool canTailPredicateLoop(Loop *L, LoopInfo *LI, ScalarEvolution &SE,
   return true;
 }
 
-bool ARMTTIImpl::preferPredicateOverEpilogue(Loop *L, LoopInfo *LI,
-                                             ScalarEvolution &SE,
-                                             AssumptionCache &AC,
-                                             TargetLibraryInfo *TLI,
-                                             DominatorTree *DT,
-                                             const LoopAccessInfo *LAI) {
+bool ARMTTIImpl::preferPredicateOverEpilogue(
+    Loop *L, LoopInfo *LI, ScalarEvolution &SE, AssumptionCache &AC,
+    TargetLibraryInfo *TLI, DominatorTree *DT, const LoopAccessInfo *LAI) {
   if (!EnableTailPredication) {
     LLVM_DEBUG(dbgs() << "Tail-predication not enabled.\n");
     return false;
@@ -1971,7 +1959,8 @@ bool ARMTTIImpl::preferPredicateOverEpilogue(Loop *L, LoopInfo *LI,
     return false;
   }
 
-  assert(L->isInnermost() && "preferPredicateOverEpilogue: inner-loop expected");
+  assert(L->isInnermost() &&
+         "preferPredicateOverEpilogue: inner-loop expected");
 
   HardwareLoopInfo HWLoopInfo(L);
   if (!HWLoopInfo.canAnalyze(*LI)) {
@@ -2023,7 +2012,7 @@ void ARMTTIImpl::getUnrollingPreferences(Loop *L, ScalarEvolution &SE,
   if (!ST->isThumb2())
     return;
 
-  SmallVector<BasicBlock*, 4> ExitingBlocks;
+  SmallVector<BasicBlock *, 4> ExitingBlocks;
   L->getExitingBlocks(ExitingBlocks);
   LLVM_DEBUG(dbgs() << "Loop has:\n"
                     << "Blocks: " << L->getNumBlocks() << "\n"
@@ -2061,9 +2050,9 @@ void ARMTTIImpl::getUnrollingPreferences(Loop *L, ScalarEvolution &SE,
         return;
       }
 
-      SmallVector<const Value*, 4> Operands(I.operand_values());
+      SmallVector<const Value *, 4> Operands(I.operand_values());
       Cost +=
-        getUserCost(&I, Operands, TargetTransformInfo::TCK_SizeAndLatency);
+          getUserCost(&I, Operands, TargetTransformInfo::TCK_SizeAndLatency);
     }
   }
 

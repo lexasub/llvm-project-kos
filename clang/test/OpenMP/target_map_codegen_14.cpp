@@ -46,22 +46,22 @@
 // - OMP_MAP_PRIVATE_VAL + OMP_MAP_TARGET_PARAM | OMP_MAP_IMPLICIT = 800
 // CK15: [[TYPES2:@.+]] = {{.+}}constant [4 x i64] [i64 32, i64 281474976711171, i64 281474976711171, i64 800]
 
-template<int x>
+template <int x>
 class SSST {
 public:
   int a;
   double b;
 
   void foo(int c) {
-    #pragma omp target
+#pragma omp target
     {
       a += c + x;
       b += (double)(c + x);
     }
   }
-  template<int y>
+  template <int y>
   void bar(int c) {
-    #pragma omp target
+#pragma omp target
     {
       a += c + x + y;
       b += (double)(c + x + y);
@@ -72,7 +72,7 @@ public:
 };
 
 // CK15-LABEL: implicit_maps_templated_class{{.*}}(
-void implicit_maps_templated_class (int a){
+void implicit_maps_templated_class(int a) {
   SSST<123> ssst(a, (double)a);
 
   // CK15: define {{.*}}void @{{.+}}foo{{.+}}([[ST]]* {{[^,]+}}, i32 {{[^,]+}})

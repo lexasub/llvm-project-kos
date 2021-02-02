@@ -14,11 +14,10 @@ using namespace llvm;
 
 namespace std {
 
-std::ostream &operator<<(std::ostream &OS,
-                         const std::set<unsigned> &S) {
+std::ostream &operator<<(std::ostream &OS, const std::set<unsigned> &S) {
   OS << "{";
-  for (std::set<unsigned>::const_iterator it = S.begin(),
-         ie = S.end(); it != ie; ++it) {
+  for (std::set<unsigned>::const_iterator it = S.begin(), ie = S.end();
+       it != ie; ++it) {
     if (it != S.begin())
       OS << ",";
     OS << *it;
@@ -27,7 +26,7 @@ std::ostream &operator<<(std::ostream &OS,
   return OS;
 }
 
-}
+} // namespace std
 
 namespace {
 
@@ -38,14 +37,13 @@ class FixedDeltaAlgorithm final : public DeltaAlgorithm {
 protected:
   bool ExecuteOneTest(const changeset_ty &Changes) override {
     ++NumTests;
-    return std::includes(Changes.begin(), Changes.end(),
-                         FailingSet.begin(), FailingSet.end());
+    return std::includes(Changes.begin(), Changes.end(), FailingSet.begin(),
+                         FailingSet.end());
   }
 
 public:
   FixedDeltaAlgorithm(const changeset_ty &_FailingSet)
-    : FailingSet(_FailingSet),
-      NumTests(0) {}
+      : FailingSet(_FailingSet), NumTests(0) {}
 
   unsigned getNumTests() const { return NumTests; }
 };
@@ -67,9 +65,7 @@ std::set<unsigned> range(unsigned Start, unsigned End) {
   return S;
 }
 
-std::set<unsigned> range(unsigned N) {
-  return range(0, N);
-}
+std::set<unsigned> range(unsigned N) { return range(0, N); }
 
 TEST(DeltaAlgorithmTest, Basic) {
   // P = {3,5,7} \in S
@@ -81,19 +77,18 @@ TEST(DeltaAlgorithmTest, Basic) {
 
   // P = {3,5,7} \in S
   //   [10, 20) should minimize to [10,20)
-  EXPECT_EQ(range(10,20), FDA.Run(range(10,20)));
+  EXPECT_EQ(range(10, 20), FDA.Run(range(10, 20)));
 
   // P = [0,4) \in S
   //   [0, 4) should minimize to [0,4) in 11 tests.
   //
   // 11 = |{ {},
   //         {0}, {1}, {2}, {3},
-  //         {1, 2, 3}, {0, 2, 3}, {0, 1, 3}, {0, 1, 2}, 
+  //         {1, 2, 3}, {0, 2, 3}, {0, 1, 3}, {0, 1, 2},
   //         {0, 1}, {2, 3} }|
   FDA = FixedDeltaAlgorithm(range(10));
   EXPECT_EQ(range(4), FDA.Run(range(4)));
-  EXPECT_EQ(11U, FDA.getNumTests());  
+  EXPECT_EQ(11U, FDA.getNumTests());
 }
 
-}
-
+} // namespace

@@ -183,8 +183,8 @@ class TextDiagnosticBuffer;
 ///   // expected-no-diagnostics
 /// \endcode
 ///
-class VerifyDiagnosticConsumer: public DiagnosticConsumer,
-                                public CommentHandler {
+class VerifyDiagnosticConsumer : public DiagnosticConsumer,
+                                 public CommentHandler {
 public:
   /// Directive - Abstract class representing a parsed verify directive.
   ///

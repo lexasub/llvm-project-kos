@@ -188,12 +188,12 @@
 #include <cassert>
 #include <cstdint>
 #include <functional>
+#include <limits.h>
+#include <limits>
 #include <queue>
 #include <tuple>
 #include <utility>
 #include <vector>
-#include <limits.h>
-#include <limits>
 
 #include "LiveDebugValues.h"
 
@@ -229,9 +229,9 @@ struct SpillLoc {
   }
   bool operator<(const SpillLoc &Other) const {
     return std::make_tuple(SpillBase, SpillOffset.getFixed(),
-                    SpillOffset.getScalable()) <
+                           SpillOffset.getScalable()) <
            std::make_tuple(Other.SpillBase, Other.SpillOffset.getFixed(),
-                    Other.SpillOffset.getScalable());
+                           Other.SpillOffset.getScalable());
   }
 };
 
@@ -240,41 +240,27 @@ class LocIdx {
 
   // Default constructor is private, initializing to an illegal location number.
   // Use only for "not an entry" elements in IndexedMaps.
-  LocIdx() : Location(UINT_MAX) { }
+  LocIdx() : Location(UINT_MAX) {}
 
 public:
-  #define NUM_LOC_BITS 24
+#define NUM_LOC_BITS 24
   LocIdx(unsigned L) : Location(L) {
     assert(L < (1 << NUM_LOC_BITS) && "Machine locations must fit in 24 bits");
   }
 
-  static LocIdx MakeIllegalLoc() {
-    return LocIdx();
-  }
+  static LocIdx MakeIllegalLoc() { return LocIdx(); }
 
-  bool isIllegal() const {
-    return Location == UINT_MAX;
-  }
+  bool isIllegal() const { return Location == UINT_MAX; }
 
-  uint64_t asU64() const {
-    return Location;
-  }
+  uint64_t asU64() const { return Location; }
 
-  bool operator==(unsigned L) const {
-    return Location == L;
-  }
+  bool operator==(unsigned L) const { return Location == L; }
 
-  bool operator==(const LocIdx &L) const {
-    return Location == L.Location;
-  }
+  bool operator==(const LocIdx &L) const { return Location == L.Location; }
 
-  bool operator!=(unsigned L) const {
-    return !(*this == L);
-  }
+  bool operator!=(unsigned L) const { return !(*this == L); }
 
-  bool operator!=(const LocIdx &L) const {
-    return !(*this == L);
-  }
+  bool operator!=(const LocIdx &L) const { return !(*this == L); }
 
   bool operator<(const LocIdx &Other) const {
     return Location < Other.Location;
@@ -284,9 +270,7 @@ public:
 class LocIdxToIndexFunctor {
 public:
   using argument_type = LocIdx;
-  unsigned operator()(const LocIdx &L) const {
-    return L.asU64();
-  }
+  unsigned operator()(const LocIdx &L) const { return L.asU64(); }
 };
 
 /// Unique identifier for a value defined by an instruction, as a value type.
@@ -308,15 +292,13 @@ class ValueIDNum {
 public:
   // XXX -- temporarily enabled while the live-in / live-out tables are moved
   // to something more type-y
-  ValueIDNum() : BlockNo(0xFFFFF),
-                 InstNo(0xFFFFF),
-                 LocNo(0xFFFFFF) { }
+  ValueIDNum() : BlockNo(0xFFFFF), InstNo(0xFFFFF), LocNo(0xFFFFFF) {}
 
   ValueIDNum(uint64_t Block, uint64_t Inst, uint64_t Loc)
-    : BlockNo(Block), InstNo(Inst), LocNo(Loc) { }
+      : BlockNo(Block), InstNo(Inst), LocNo(Loc) {}
 
   ValueIDNum(uint64_t Block, uint64_t Inst, LocIdx Loc)
-    : BlockNo(Block), InstNo(Inst), LocNo(Loc.asU64()) { }
+      : BlockNo(Block), InstNo(Inst), LocNo(Loc.asU64()) {}
 
   uint64_t getBlock() const { return BlockNo; }
   uint64_t getInst() const { return InstNo; }
@@ -463,14 +445,14 @@ public:
 
   public:
     class value_type {
-      public:
-      value_type(LocIdx Idx, ValueIDNum &Value) : Idx(Idx), Value(Value) { }
+    public:
+      value_type(LocIdx Idx, ValueIDNum &Value) : Idx(Idx), Value(Value) {}
       const LocIdx Idx;  /// Read-only index of this location.
       ValueIDNum &Value; /// Reference to the stored value at this location.
     };
 
     MLocIterator(LocToValueType &ValueMap, LocIdx Idx)
-      : ValueMap(ValueMap), Idx(Idx) { }
+        : ValueMap(ValueMap), Idx(Idx) {}
 
     bool operator==(const MLocIterator &Other) const {
       assert(&ValueMap == &Other.ValueMap);
@@ -481,20 +463,15 @@ public:
       return !(*this == Other);
     }
 
-    void operator++() {
-      Idx = LocIdx(Idx.asU64() + 1);
-    }
+    void operator++() { Idx = LocIdx(Idx.asU64() + 1); }
 
-    value_type operator*() {
-      return value_type(Idx, ValueMap[LocIdx(Idx)]);
-    }
+    value_type operator*() { return value_type(Idx, ValueMap[LocIdx(Idx)]); }
   };
 
   MLocTracker(MachineFunction &MF, const TargetInstrInfo &TII,
               const TargetRegisterInfo &TRI, const TargetLowering &TLI)
       : MF(MF), TII(TII), TRI(TRI), TLI(TLI),
-        LocIdxToIDNum(ValueIDNum::EmptyValue),
-        LocIdxToLocID(0) {
+        LocIdxToIDNum(ValueIDNum::EmptyValue), LocIdxToLocID(0) {
     NumRegs = TRI.getNumRegs();
     reset();
     LocIDToLocIdx.resize(NumRegs, LocIdx::MakeIllegalLoc());
@@ -558,7 +535,8 @@ public:
     LocIDToLocIdx.clear();
     LocIdxToLocID.clear();
     LocIdxToIDNum.clear();
-    //SpillLocs.reset(); XXX UniqueVector::reset assumes a SpillLoc casts from 0
+    // SpillLocs.reset(); XXX UniqueVector::reset assumes a SpillLoc casts from
+    // 0
     SpillLocs = decltype(SpillLocs)();
 
     LocIDToLocIdx.resize(NumRegs, LocIdx::MakeIllegalLoc());
@@ -707,13 +685,9 @@ public:
   }
 
   /// Return true if Idx is a spill machine location.
-  bool isSpill(LocIdx Idx) const {
-    return LocIdxToLocID[Idx] >= NumRegs;
-  }
+  bool isSpill(LocIdx Idx) const { return LocIdxToLocID[Idx] >= NumRegs; }
 
-  MLocIterator begin() {
-    return MLocIterator(LocIdxToIDNum, 0);
-  }
+  MLocIterator begin() { return MLocIterator(LocIdxToIDNum, 0); }
 
   MLocIterator end() {
     return MLocIterator(LocIdxToIDNum, LocIdxToIDNum.size());
@@ -813,34 +787,34 @@ public:
   DbgValueProperties Properties;
 
   typedef enum {
-    Undef,     // Represents a DBG_VALUE $noreg in the transfer function only.
-    Def,       // This value is defined by an inst, or is a PHI value.
-    Const,     // A constant value contained in the MachineOperand field.
-    Proposed,  // This is a tentative PHI value, which may be confirmed or
-               // invalidated later.
-    NoVal      // Empty DbgValue, generated during dataflow. BlockNo stores
-               // which block this was generated in.
-   } KindT;
+    Undef,    // Represents a DBG_VALUE $noreg in the transfer function only.
+    Def,      // This value is defined by an inst, or is a PHI value.
+    Const,    // A constant value contained in the MachineOperand field.
+    Proposed, // This is a tentative PHI value, which may be confirmed or
+              // invalidated later.
+    NoVal     // Empty DbgValue, generated during dataflow. BlockNo stores
+              // which block this was generated in.
+  } KindT;
   /// Discriminator for whether this is a constant or an in-program value.
   KindT Kind;
 
   DbgValue(const ValueIDNum &Val, const DbgValueProperties &Prop, KindT Kind)
-    : ID(Val), Properties(Prop), Kind(Kind) {
+      : ID(Val), Properties(Prop), Kind(Kind) {
     assert(Kind == Def || Kind == Proposed);
   }
 
   DbgValue(unsigned BlockNo, const DbgValueProperties &Prop, KindT Kind)
-    : BlockNo(BlockNo), Properties(Prop), Kind(Kind) {
+      : BlockNo(BlockNo), Properties(Prop), Kind(Kind) {
     assert(Kind == NoVal);
   }
 
   DbgValue(const MachineOperand &MO, const DbgValueProperties &Prop, KindT Kind)
-    : MO(MO), Properties(Prop), Kind(Kind) {
+      : MO(MO), Properties(Prop), Kind(Kind) {
     assert(Kind == Const);
   }
 
   DbgValue(const DbgValueProperties &Prop, KindT Kind)
-    : Properties(Prop), Kind(Kind) {
+      : Properties(Prop), Kind(Kind) {
     assert(Kind == Undef &&
            "Empty DbgValue constructor must pass in Undef kind");
   }
@@ -1172,7 +1146,7 @@ public:
       if (It != ActiveVLocs.end()) {
         ActiveMLocs[It->second.Loc].erase(Var);
         ActiveVLocs.erase(It);
-     }
+      }
       // Any use-before-defs no longer apply.
       UseBeforeDefVariables.erase(Var);
       return;
@@ -1728,10 +1702,8 @@ bool InstrRefBasedLDV::transferDebugInstrRef(MachineInstr &MI) {
 
       if (MTracker->isSpill(CurL))
         FoundLoc = CurL; // Spills are a longer term location.
-      else if (!MTracker->isSpill(*FoundLoc) &&
-               !MTracker->isSpill(CurL) &&
-               !isCalleeSaved(*FoundLoc) &&
-               isCalleeSaved(CurL))
+      else if (!MTracker->isSpill(*FoundLoc) && !MTracker->isSpill(CurL) &&
+               !isCalleeSaved(*FoundLoc) && isCalleeSaved(CurL))
         FoundLoc = CurL; // Callee saved regs are longer term than normal.
     }
   }
@@ -2249,7 +2221,7 @@ void InstrRefBasedLDV::produceMLocTransferFunction(
       // this block never used anyway.
       ValueIDNum NotGeneratedNum = ValueIDNum(I, 1, Idx);
       auto Result =
-        TransferMap.insert(std::make_pair(Idx.asU64(), NotGeneratedNum));
+          TransferMap.insert(std::make_pair(Idx.asU64(), NotGeneratedNum));
       if (!Result.second) {
         ValueIDNum &ValueID = Result.first->second;
         if (ValueID.getBlock() == I && ValueID.isPHI())
@@ -2665,7 +2637,9 @@ std::tuple<bool, bool> InstrRefBasedLDV::vlocJoin(
     assert(Result.second);
   };
 
-  auto ConfirmNoVal = [&ConfirmValue, &MBB](const DebugVariable &Var, const DbgValueProperties &Properties) {
+  auto ConfirmNoVal = [&ConfirmValue,
+                       &MBB](const DebugVariable &Var,
+                             const DbgValueProperties &Properties) {
     DbgValue NoLocPHIVal(MBB.getNumber(), Properties, DbgValue::NoVal);
 
     ConfirmValue(Var, NoLocPHIVal);

@@ -37,7 +37,7 @@ namespace tooling {
 ///     action.
 template <typename RuleType, typename... RequirementTypes>
 std::unique_ptr<RefactoringActionRule>
-createRefactoringActionRule(const RequirementTypes &... Requirements);
+createRefactoringActionRule(const RequirementTypes &...Requirements);
 
 /// A set of refactoring action rules that should have unique initiation
 /// requirements.

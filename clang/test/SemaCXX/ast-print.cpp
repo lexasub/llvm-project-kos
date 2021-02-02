@@ -2,69 +2,66 @@
 
 // CHECK: r;
 // CHECK-NEXT: (r->method());
-struct MyClass
-{
-    void method() {}
+struct MyClass {
+  void method() {}
 };
 
-struct Reference
-{
-    MyClass* object;
-    MyClass* operator ->() { return object; }
+struct Reference {
+  MyClass *object;
+  MyClass *operator->() { return object; }
 };
 
 void test1() {
-    Reference r;
-    (r->method());
+  Reference r;
+  (r->method());
 }
 
 // CHECK: if (int a = 1)
 // CHECK:  while (int a = 1)
 // CHECK:  switch (int a = 1)
 
-void test2()
-{
-    if (int a = 1) { }
-    while (int a = 1) { }
-    switch (int a = 1) { }
+void test2() {
+  if (int a = 1) {
+  }
+  while (int a = 1) {
+  }
+  switch (int a = 1) {}
 }
 
 // CHECK: new (1) int;
-void *operator new (typeof(sizeof(1)), int, int = 2);
+void *operator new(typeof(sizeof(1)), int, int = 2);
 void test3() {
   new (1) int;
 }
 
 // CHECK: new X;
 struct X {
-  void *operator new (typeof(sizeof(1)), int = 2);
+  void *operator new(typeof(sizeof(1)), int = 2);
 };
 void test4() { new X; }
 
 // CHECK: for (int i = 2097, j = 42; false;)
 void test5() {
-  for (int i = 2097, j = 42; false;) {}
+  for (int i = 2097, j = 42; false;) {
+  }
 }
 
 // CHECK: test6fn((int &)y);
-void test6fn(int& x);
+void test6fn(int &x);
 void test6() {
-    unsigned int y = 0;
-    test6fn((int&)y);
+  unsigned int y = 0;
+  test6fn((int &)y);
 }
 
 // CHECK: S s(1, 2);
 
-template <class S> void test7()
-{
-    S s( 1,2 );
+template <class S> void test7() {
+  S s(1, 2);
 }
-
 
 // CHECK: t.~T();
 
 template <typename T> void test8(T t) { t.~T(); }
-
 
 // CHECK:      enum E
 // CHECK-NEXT:  A,
@@ -73,23 +70,23 @@ template <typename T> void test8(T t) { t.~T(); }
 // CHECK-NEXT:  };
 // CHECK-NEXT: {{^[ ]+}}E a = A;
 
-struct test9
-{
-    void f()
-    {
-        enum E { A, B, C };
-        E a = A;
-    }
+struct test9 {
+  void f() {
+    enum E { A,
+             B,
+             C };
+    E a = A;
+  }
 };
 
 namespace test10 {
-  namespace M {
-    template<typename T>
-    struct X {
-      enum { value };
-    };
-  }
-}
+namespace M {
+template <typename T>
+struct X {
+  enum { value };
+};
+} // namespace M
+} // namespace test10
 
 typedef int INT;
 
@@ -99,27 +96,22 @@ int test11() {
   return test10::M::X<INT>::value;
 }
 
-
-struct DefaultArgClass
-{
+struct DefaultArgClass {
   DefaultArgClass(int a = 1) {}
   DefaultArgClass(int a, int b, int c = 1) {}
 };
 
-struct NoArgClass
-{
+struct NoArgClass {
   NoArgClass() {}
 };
 
-struct VirualDestrClass
-{
+struct VirualDestrClass {
   VirualDestrClass(int arg);
   virtual ~VirualDestrClass();
 };
 
-struct ConstrWithCleanupsClass
-{
-  ConstrWithCleanupsClass(const VirualDestrClass& cplx = VirualDestrClass(42));
+struct ConstrWithCleanupsClass {
+  ConstrWithCleanupsClass(const VirualDestrClass &cplx = VirualDestrClass(42));
 };
 
 // CHECK: test12
@@ -153,7 +145,6 @@ void test13() {
   __c11_atomic_load(&i, 0);
 }
 
-
 // CHECK: void test14() {
 // CHECK:     struct X {
 // CHECK:         union {
@@ -162,9 +153,12 @@ void test13() {
 // CHECK:     };
 // CHECK: }
 void test14() {
-  struct X { union { int x; } x; };
+  struct X {
+    union {
+      int x;
+    } x;
+  };
 }
-
 
 // CHECK: float test15() {
 // CHECK:     return __builtin_asinf(1.F);
@@ -190,38 +184,41 @@ void bar(void *);
 void foo() {
   A a, b;
   bar(a & b);
-// CHECK: bar(a & b);
+  // CHECK: bar(a & b);
   if (a & b)
-// CHECK: if (a & b)
+    // CHECK: if (a & b)
     return;
 }
-};
+}; // namespace PR18776
 
 namespace {
 void test(int i) {
   switch (i) {
-    case 1:
-      // CHECK: {{\[\[clang::fallthrough\]\]}}
-      [[clang::fallthrough]];
-    case 2:
-      break;
+  case 1:
+    // CHECK: {{\[\[clang::fallthrough\]\]}}
+    [[clang::fallthrough]];
+  case 2:
+    break;
   }
 }
-}
+} // namespace
 
 namespace {
 // CHECK: struct {{\[\[gnu::visibility\(\"hidden\"\)\]\]}} S;
 struct [[gnu::visibility("hidden")]] S;
-}
+} // namespace
 
 // CHECK:      struct CXXFunctionalCastExprPrint {
 // CHECK-NEXT: } fce = CXXFunctionalCastExprPrint{};
-struct CXXFunctionalCastExprPrint {} fce = CXXFunctionalCastExprPrint{};
+struct CXXFunctionalCastExprPrint {
+} fce = CXXFunctionalCastExprPrint{};
 
 // CHECK:      struct CXXTemporaryObjectExprPrint {
 // CHECK-NEXT:   CXXTemporaryObjectExprPrint();
 // CHECK-NEXT: } toe = CXXTemporaryObjectExprPrint{};
-struct CXXTemporaryObjectExprPrint { CXXTemporaryObjectExprPrint(); } toe = CXXTemporaryObjectExprPrint{};
+struct CXXTemporaryObjectExprPrint {
+  CXXTemporaryObjectExprPrint();
+} toe = CXXTemporaryObjectExprPrint{};
 
 namespace PR24872 {
 // CHECK: template <typename T> struct Foo : T {
@@ -229,15 +226,19 @@ namespace PR24872 {
 template <typename T> struct Foo : T {
   using T::operator-;
 };
-}
+} // namespace PR24872
 
 namespace dont_crash_on_auto_vars {
-struct T { enum E {X = 12ll }; };
+struct T {
+  enum E { X = 12ll };
+};
 struct S {
-  struct  { int I; } ADecl;
+  struct {
+    int I;
+  } ADecl;
   static const auto Y = T::X;
 };
 //CHECK: static const auto Y = T::X;
 constexpr auto var = T::X;
 //CHECK: constexpr auto var = T::X;
-}
+} // namespace dont_crash_on_auto_vars

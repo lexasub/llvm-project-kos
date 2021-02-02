@@ -132,6 +132,6 @@ void test(unsigned a, unsigned b) {
   res = 10 ^ 1; // expected-warning {{result of '10 ^ 1' is 11; did you mean '1e1'?}}
   // expected-note@-1 {{replace expression with '0xA ^ 1' to silence this warning}}
   res = 2 ^ 1; // expected-warning {{result of '2 ^ 1' is 3; did you mean '1 << 1' (2)?}}
-  // expected-note@-1 {{replace expression with '0x2 ^ 1' to silence this warning}}
+               // expected-note@-1 {{replace expression with '0x2 ^ 1' to silence this warning}}
 #endif
 }

@@ -15,13 +15,13 @@
 
 #include "test_macros.h"
 
-void f() { }
+void f() {}
 
 int main(int, char**) {
 #if !defined(TEST_HAS_QUICK_EXIT)
-    std::at_quick_exit(f);
+  std::at_quick_exit(f);
 #else
-#   error
+#error
 #endif
-    return 0;
+  return 0;
 }

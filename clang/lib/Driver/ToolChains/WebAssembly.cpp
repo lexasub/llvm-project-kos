@@ -14,9 +14,9 @@
 #include "clang/Driver/Driver.h"
 #include "clang/Driver/DriverDiagnostic.h"
 #include "clang/Driver/Options.h"
+#include "llvm/Option/ArgList.h"
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/Path.h"
-#include "llvm/Option/ArgList.h"
 
 using namespace clang::driver;
 using namespace clang::driver::tools;
@@ -29,13 +29,14 @@ using namespace llvm::opt;
 static std::string getMultiarchTriple(const Driver &D,
                                       const llvm::Triple &TargetTriple,
                                       StringRef SysRoot) {
-    return (TargetTriple.getArchName() + "-" +
-            TargetTriple.getOSAndEnvironmentName()).str();
+  return (TargetTriple.getArchName() + "-" +
+          TargetTriple.getOSAndEnvironmentName())
+      .str();
 }
 
 std::string wasm::Linker::getLinkerPath(const ArgList &Args) const {
   const ToolChain &ToolChain = getToolChain();
-  if (const Arg* A = Args.getLastArg(options::OPT_fuse_ld_EQ)) {
+  if (const Arg *A = Args.getLastArg(options::OPT_fuse_ld_EQ)) {
     StringRef UseLinker = A->getValue();
     if (!UseLinker.empty()) {
       if (llvm::sys::path::is_absolute(UseLinker) &&
@@ -149,9 +150,9 @@ void wasm::Linker::ConstructJob(Compilation &C, const JobAction &JA,
 /// Given a base library directory, append path components to form the
 /// LTO directory.
 static std::string AppendLTOLibDir(const std::string &Dir) {
-    // The version allows the path to be keyed to the specific version of
-    // LLVM in used, as the bitcode format is not stable.
-    return Dir + "/llvm-lto/" LLVM_VERSION_STRING;
+  // The version allows the path to be keyed to the specific version of
+  // LLVM in used, as the bitcode format is not stable.
+  return Dir + "/llvm-lto/" LLVM_VERSION_STRING;
 }
 
 WebAssembly::WebAssembly(const Driver &D, const llvm::Triple &Triple,
@@ -341,7 +342,8 @@ void WebAssembly::AddClangSystemIncludeArgs(const ArgList &DriverArgs,
   if (getTriple().getOS() != llvm::Triple::UnknownOS) {
     const std::string MultiarchTriple =
         getMultiarchTriple(D, getTriple(), D.SysRoot);
-    addSystemInclude(DriverArgs, CC1Args, D.SysRoot + "/include/" + MultiarchTriple);
+    addSystemInclude(DriverArgs, CC1Args,
+                     D.SysRoot + "/include/" + MultiarchTriple);
   }
   addSystemInclude(DriverArgs, CC1Args, D.SysRoot + "/include");
 }

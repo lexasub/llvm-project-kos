@@ -361,7 +361,7 @@ TEST_P(AcxxelTest, WaitForEventsInAStream) {
 
   EXPECT_FALSE(Stream0
                    .addCallback([&Mutex, &ConditionVar, &GoFlag, &MarkerFlag](
-                       acxxel::Stream &, const acxxel::Status &) {
+                                    acxxel::Stream &, const acxxel::Status &) {
                      std::unique_lock<std::mutex> Lock(Mutex);
                      ConditionVar.wait(Lock,
                                        [&GoFlag] { return GoFlag == true; });

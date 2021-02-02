@@ -1,27 +1,27 @@
 // RUN: %clang_cc1 -triple x86_64-apple-darwin -std=c++11 -emit-llvm %s -o - | FileCheck %s
 
 struct A {
-  A(const A&);
+  A(const A &);
   A();
   ~A();
-}; 
+};
 
 struct B : public A {
   B();
-  B(const B& Other);
+  B(const B &Other);
   ~B();
 };
 
 struct C : public B {
   C();
-  C(const C& Other);
+  C(const C &Other);
   ~C();
-}; 
+};
 
 struct X {
-  operator B&();
-  operator C&();
-  X(const X&);
+  operator B &();
+  operator C &();
+  X(const X &);
   X();
   ~X();
   B b;
@@ -44,7 +44,7 @@ void test0(X x) {
 struct Base;
 
 struct Root {
-  operator Base&();
+  operator Base &();
 };
 
 struct Derived;

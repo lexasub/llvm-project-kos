@@ -35,10 +35,10 @@ MachineLoopInfo::MachineLoopInfo() : MachineFunctionPass(ID) {
   initializeMachineLoopInfoPass(*PassRegistry::getPassRegistry());
 }
 INITIALIZE_PASS_BEGIN(MachineLoopInfo, "machine-loops",
-                "Machine Natural Loop Construction", true, true)
+                      "Machine Natural Loop Construction", true, true)
 INITIALIZE_PASS_DEPENDENCY(MachineDominatorTree)
 INITIALIZE_PASS_END(MachineLoopInfo, "machine-loops",
-                "Machine Natural Loop Construction", true, true)
+                    "Machine Natural Loop Construction", true, true)
 
 char &llvm::MachineLoopInfoID = MachineLoopInfo::ID;
 
@@ -160,7 +160,8 @@ bool MachineLoop::isLoopInvariant(MachineInstr &I) const {
       continue;
 
     Register Reg = MO.getReg();
-    if (Reg == 0) continue;
+    if (Reg == 0)
+      continue;
 
     // An instruction that uses or defines a physical register can't e.g. be
     // hoisted, so mark this as not invariant.
@@ -189,8 +190,7 @@ bool MachineLoop::isLoopInvariant(MachineInstr &I) const {
     if (!MO.isUse())
       continue;
 
-    assert(MRI->getVRegDef(Reg) &&
-           "Machine instr not mapped for this vreg?!");
+    assert(MRI->getVRegDef(Reg) && "Machine instr not mapped for this vreg?!");
 
     // If the loop contains the definition of an operand, then the instruction
     // isn't loop invariant.
@@ -203,7 +203,5 @@ bool MachineLoop::isLoopInvariant(MachineInstr &I) const {
 }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
-LLVM_DUMP_METHOD void MachineLoop::dump() const {
-  print(dbgs());
-}
+LLVM_DUMP_METHOD void MachineLoop::dump() const { print(dbgs()); }
 #endif

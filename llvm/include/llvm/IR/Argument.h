@@ -39,7 +39,7 @@ public:
                     unsigned ArgNo = 0);
 
   inline const Function *getParent() const { return Parent; }
-  inline       Function *getParent()       { return Parent; }
+  inline Function *getParent() { return Parent; }
 
   /// Return the index of this formal argument in its containing function.
   ///
@@ -160,11 +160,9 @@ public:
   Attribute getAttribute(Attribute::AttrKind Kind) const;
 
   /// Method for support type inquiry through isa, cast, and dyn_cast.
-  static bool classof(const Value *V) {
-    return V->getValueID() == ArgumentVal;
-  }
+  static bool classof(const Value *V) { return V->getValueID() == ArgumentVal; }
 };
 
-} // End llvm namespace
+} // namespace llvm
 
 #endif

@@ -5,11 +5,11 @@
 // RUN: %clang_cc1 -std=c++14 -x c++ /dev/null -include-pch %t.pch
 
 template <int i>
-struct X { };
+struct X {};
 
 using SizeT = decltype(sizeof(int));
 
-template <SizeT i, typename ...T>
+template <SizeT i, typename... T>
 using TypePackElement = __type_pack_element<i, T...>;
 
 void fn1() {

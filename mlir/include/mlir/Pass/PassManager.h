@@ -75,7 +75,8 @@ public:
   /// pass manager.
   OpPassManager &nest(Identifier nestedName);
   OpPassManager &nest(StringRef nestedName);
-  template <typename OpT> OpPassManager &nest() {
+  template <typename OpT>
+  OpPassManager &nest() {
     return nest(OpT::getOperationName());
   }
 
@@ -85,7 +86,8 @@ public:
 
   /// Add the given pass to a nested pass manager for the given operation kind
   /// `OpT`.
-  template <typename OpT> void addNestedPass(std::unique_ptr<Pass> pass) {
+  template <typename OpT>
+  void addNestedPass(std::unique_ptr<Pass> pass) {
     nest<OpT>().addPass(std::move(pass));
   }
 

@@ -35,11 +35,11 @@ SBMemoryRegionInfo::SBMemoryRegionInfo(const SBMemoryRegionInfo &rhs)
   m_opaque_up = clone(rhs.m_opaque_up);
 }
 
-const SBMemoryRegionInfo &SBMemoryRegionInfo::
-operator=(const SBMemoryRegionInfo &rhs) {
-  LLDB_RECORD_METHOD(
-      const lldb::SBMemoryRegionInfo &,
-      SBMemoryRegionInfo, operator=,(const lldb::SBMemoryRegionInfo &), rhs);
+const SBMemoryRegionInfo &
+SBMemoryRegionInfo::operator=(const SBMemoryRegionInfo &rhs) {
+  LLDB_RECORD_METHOD(const lldb::SBMemoryRegionInfo &,
+                     SBMemoryRegionInfo, operator=,
+                     (const lldb::SBMemoryRegionInfo &), rhs);
 
   if (this != &rhs)
     m_opaque_up = clone(rhs.m_opaque_up);
@@ -55,17 +55,15 @@ void SBMemoryRegionInfo::Clear() {
 }
 
 bool SBMemoryRegionInfo::operator==(const SBMemoryRegionInfo &rhs) const {
-  LLDB_RECORD_METHOD_CONST(
-      bool, SBMemoryRegionInfo, operator==,(const lldb::SBMemoryRegionInfo &),
-      rhs);
+  LLDB_RECORD_METHOD_CONST(bool, SBMemoryRegionInfo, operator==,
+                           (const lldb::SBMemoryRegionInfo &), rhs);
 
   return ref() == rhs.ref();
 }
 
 bool SBMemoryRegionInfo::operator!=(const SBMemoryRegionInfo &rhs) const {
-  LLDB_RECORD_METHOD_CONST(
-      bool, SBMemoryRegionInfo, operator!=,(const lldb::SBMemoryRegionInfo &),
-      rhs);
+  LLDB_RECORD_METHOD_CONST(bool, SBMemoryRegionInfo, operator!=,
+                           (const lldb::SBMemoryRegionInfo &), rhs);
 
   return ref() != rhs.ref();
 }
@@ -136,21 +134,18 @@ bool SBMemoryRegionInfo::GetDescription(SBStream &description) {
 namespace lldb_private {
 namespace repro {
 
-template <>
-void RegisterMethods<SBMemoryRegionInfo>(Registry &R) {
+template <> void RegisterMethods<SBMemoryRegionInfo>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBMemoryRegionInfo, ());
   LLDB_REGISTER_CONSTRUCTOR(SBMemoryRegionInfo,
                             (const lldb::SBMemoryRegionInfo &));
-  LLDB_REGISTER_METHOD(
-      const lldb::SBMemoryRegionInfo &,
-      SBMemoryRegionInfo, operator=,(const lldb::SBMemoryRegionInfo &));
+  LLDB_REGISTER_METHOD(const lldb::SBMemoryRegionInfo &,
+                       SBMemoryRegionInfo, operator=,
+                       (const lldb::SBMemoryRegionInfo &));
   LLDB_REGISTER_METHOD(void, SBMemoryRegionInfo, Clear, ());
-  LLDB_REGISTER_METHOD_CONST(
-      bool,
-      SBMemoryRegionInfo, operator==,(const lldb::SBMemoryRegionInfo &));
-  LLDB_REGISTER_METHOD_CONST(
-      bool,
-      SBMemoryRegionInfo, operator!=,(const lldb::SBMemoryRegionInfo &));
+  LLDB_REGISTER_METHOD_CONST(bool, SBMemoryRegionInfo, operator==,
+                             (const lldb::SBMemoryRegionInfo &));
+  LLDB_REGISTER_METHOD_CONST(bool, SBMemoryRegionInfo, operator!=,
+                             (const lldb::SBMemoryRegionInfo &));
   LLDB_REGISTER_METHOD(lldb::addr_t, SBMemoryRegionInfo, GetRegionBase, ());
   LLDB_REGISTER_METHOD(lldb::addr_t, SBMemoryRegionInfo, GetRegionEnd, ());
   LLDB_REGISTER_METHOD(bool, SBMemoryRegionInfo, IsReadable, ());
@@ -162,5 +157,5 @@ void RegisterMethods<SBMemoryRegionInfo>(Registry &R) {
                        (lldb::SBStream &));
 }
 
-}
-}
+} // namespace repro
+} // namespace lldb_private

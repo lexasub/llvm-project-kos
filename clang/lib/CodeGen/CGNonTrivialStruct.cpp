@@ -84,7 +84,7 @@ struct CopyStructVisitor : StructVisitor<Derived>,
 
   template <class... Ts>
   void preVisit(QualType::PrimitiveCopyKind PCK, QualType FT,
-                const FieldDecl *FD, CharUnits CurStructOffset, Ts &&... Args) {
+                const FieldDecl *FD, CharUnits CurStructOffset, Ts &&...Args) {
     if (PCK)
       asDerived().flushTrivialFields(std::forward<Ts>(Args)...);
   }
@@ -92,7 +92,7 @@ struct CopyStructVisitor : StructVisitor<Derived>,
   template <class... Ts>
   void visitWithKind(QualType::PrimitiveCopyKind PCK, QualType FT,
                      const FieldDecl *FD, CharUnits CurStructOffset,
-                     Ts &&... Args) {
+                     Ts &&...Args) {
     if (const auto *AT = asDerived().getContext().getAsArrayType(FT)) {
       asDerived().visitArray(PCK, AT, FT.isVolatileQualified(), FD,
                              CurStructOffset, std::forward<Ts>(Args)...);
@@ -326,9 +326,9 @@ static std::array<Address, N> getParamAddrs(std::index_sequence<Ints...> IntSeq,
                                             std::array<CharUnits, N> Alignments,
                                             FunctionArgList Args,
                                             CodeGenFunction *CGF) {
-  return std::array<Address, N>{{
-      Address(CGF->Builder.CreateLoad(CGF->GetAddrOfLocalVar(Args[Ints])),
-              Alignments[Ints])...}};
+  return std::array<Address, N>{
+      {Address(CGF->Builder.CreateLoad(CGF->GetAddrOfLocalVar(Args[Ints])),
+               Alignments[Ints])...}};
 }
 
 // Template classes that are used as bases for classes that emit special

@@ -6,8 +6,8 @@
 // RUN:     not %run %t 2>&1 | FileCheck %s
 
 #include <assert.h>
-#include <string.h>
 #include <rpc/xdr.h>
+#include <string.h>
 
 #include <sanitizer/msan_interface.h>
 

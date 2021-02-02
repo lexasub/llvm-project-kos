@@ -22,8 +22,8 @@ int main() {
   memset((void *)c, 0xFF, sizeof(Derived));
   Derived *list = (Derived *)c;
 
-// CHECK: PR33221.cpp:[[@LINE+2]]:19: runtime error: member access within address {{.*}} which does not point to an object of type 'Base'
-// CHECK-NEXT: invalid vptr
+  // CHECK: PR33221.cpp:[[@LINE+2]]:19: runtime error: member access within address {{.*}} which does not point to an object of type 'Base'
+  // CHECK-NEXT: invalid vptr
   int foo = list->i;
   return 0;
 }

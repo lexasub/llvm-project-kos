@@ -17,7 +17,6 @@
 
 // CHECK-NEW-VAR-CPP-CASE1: int kGlobalInt = 1;
 
-
 // RUN: cp %S/Inputs/var_test*  %T/move-var
 // RUN: clang-move -names="a::kGlobalStr" -new_header=%T/move-var/new_var_test.h -old_header=../move-var/var_test.h -old_cc=../move-var/var_test.cpp -new_cc=%T/move-var/new_var_test.cpp %T/move-var/var_test.cpp --
 // RUN: FileCheck -input-file=%T/move-var/var_test.h -check-prefix=CHECK-OLD-VAR-H-CASE2 %s
@@ -34,7 +33,6 @@
 // CHECK-NEW-VAR-H-CASE2-NOT: const char *const kGlobalStr = "Hello2";
 
 // CHECK-NEW-VAR-CPP-CASE2: const char *const kGlobalStr = "Hello";
-
 
 // RUN: cp %S/Inputs/var_test*  %T/move-var
 // RUN: clang-move -names="kEvilInt" -new_header=%T/move-var/new_var_test.h -old_header=../move-var/var_test.h -old_cc=../move-var/var_test.cpp -new_cc=%T/move-var/new_var_test.cpp %T/move-var/var_test.cpp --

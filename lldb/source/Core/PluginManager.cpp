@@ -202,7 +202,7 @@ public:
   template <typename... Args>
   bool RegisterPlugin(ConstString name, const char *description,
                       typename Instance::CallbackType callback,
-                      Args &&... args) {
+                      Args &&...args) {
     if (!callback)
       return false;
     assert((bool)name);

@@ -1,7 +1,6 @@
 #import <Foundation/Foundation.h>
 
-@interface BaseClass : NSObject
-{
+@interface BaseClass : NSObject {
   int _backed_int;
 #if !__OBJC2__
   int _unbacked_int;
@@ -11,13 +10,12 @@
 @property int unbacked_int;
 @end
 
-@interface DerivedClass : BaseClass
-{
+@interface DerivedClass : BaseClass {
   int _derived_backed_int;
 #if !__OBJC2__
   int _derived_unbacked_int;
 #endif
-  @public
+@public
   uint32_t flag1 : 1;
   uint32_t flag2 : 3;
 }

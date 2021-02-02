@@ -44,19 +44,19 @@ void test_ctor_sfinae() {
     static_assert(!test_convertible<V, std::in_place_index_t<1>, int>(), "");
   }
   {
-    using V = std::variant<int, long, int *>;
+    using V = std::variant<int, long, int*>;
     static_assert(
-        std::is_constructible<V, std::in_place_index_t<2>, int *>::value, "");
-    static_assert(!test_convertible<V, std::in_place_index_t<2>, int *>(), "");
+        std::is_constructible<V, std::in_place_index_t<2>, int*>::value, "");
+    static_assert(!test_convertible<V, std::in_place_index_t<2>, int*>(), "");
   }
   { // args not convertible to type
-    using V = std::variant<int, long, int *>;
+    using V = std::variant<int, long, int*>;
     static_assert(
-        !std::is_constructible<V, std::in_place_index_t<0>, int *>::value, "");
-    static_assert(!test_convertible<V, std::in_place_index_t<0>, int *>(), "");
+        !std::is_constructible<V, std::in_place_index_t<0>, int*>::value, "");
+    static_assert(!test_convertible<V, std::in_place_index_t<0>, int*>(), "");
   }
   { // index not in variant
-    using V = std::variant<int, long, int *>;
+    using V = std::variant<int, long, int*>;
     static_assert(
         !std::is_constructible<V, std::in_place_index_t<3>, int>::value, "");
     static_assert(!test_convertible<V, std::in_place_index_t<3>, int>(), "");

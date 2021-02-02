@@ -47,7 +47,7 @@ struct S1 {
 };
 #elif defined(SECOND)
 struct S1 {
-  private:
+private:
 };
 #else
 S1 s1;
@@ -57,11 +57,11 @@ S1 s1;
 
 #if defined(FIRST)
 struct S2 {
-  public:
+public:
 };
 #elif defined(SECOND)
 struct S2 {
-  protected:
+protected:
 };
 #else
 S2 s2;
@@ -145,7 +145,7 @@ struct S4 {
 };
 #elif defined(SECOND)
 struct S4 {
-  public:
+public:
 };
 #else
 S4 s4;
@@ -176,13 +176,14 @@ Invalid1 i1;
 // expected-note@first.h:* {{but in 'FirstModule' found public access specifier}}
 #endif
 #undef DECLS
-}  // namespace StaticAssert
+} // namespace StaticAssert
 
 namespace Field {
 #if defined(FIRST)
 struct S1 {
   int x;
-  private:
+
+private:
   int y;
 };
 #elif defined(SECOND)
@@ -413,7 +414,7 @@ Invalid1 i1;
 // expected-note@first.h:* {{but in 'FirstModule' found public access specifier}}
 #endif
 #undef DECLS
-}  // namespace Field
+} // namespace Field
 
 namespace Method {
 #if defined(FIRST)
@@ -422,7 +423,7 @@ struct S1 {
 };
 #elif defined(SECOND)
 struct S1 {
-  private:
+private:
   void A() {}
 };
 #else
@@ -482,7 +483,7 @@ S4 s4;
 #if defined(FIRST)
 struct S5 {
   virtual void A() = 0;
-  virtual void B() {};
+  virtual void B(){};
 };
 #elif defined(SECOND)
 struct S5 {
@@ -662,7 +663,7 @@ struct Valid1 {
   DECLS
 };
 #else
-Valid1* v1;
+Valid1 *v1;
 #endif
 
 #if defined(FIRST) || defined(SECOND)
@@ -671,12 +672,12 @@ struct Invalid1 {
   ACCESS
 };
 #else
-Invalid1* i1;
+Invalid1 *i1;
 // expected-error@second.h:* {{'Method::Invalid1' has different definitions in different modules; first difference is definition in module 'SecondModule' found private access specifier}}
 // expected-note@first.h:* {{but in 'FirstModule' found public access specifier}}
 #endif
 #undef DECLS
-}  // namespace Method
+} // namespace Method
 
 namespace MethodBody {
 #if defined(FIRST)
@@ -857,7 +858,7 @@ struct Valid1 {
 };
 OUTOFLINEDEFS(Valid1)
 #else
-Valid1* v1;
+Valid1 *v1;
 #endif
 
 #if defined(FIRST) || defined(SECOND)
@@ -867,12 +868,12 @@ struct Invalid1 {
 };
 OUTOFLINEDEFS(Invalid1)
 #else
-Invalid1* i1;
+Invalid1 *i1;
 // expected-error@first.h:* {{'MethodBody::Invalid1' has different definitions in different modules; first difference is definition in module 'FirstModule' found public access specifier}}
 // expected-note@second.h:* {{but in 'SecondModule' found private access specifier}}
 #endif
 #undef DECLS
-}  // namespace MethodBody
+} // namespace MethodBody
 
 namespace Constructor {
 #if defined(FIRST)
@@ -902,7 +903,7 @@ struct S2 {
   S2(int) {}
 };
 #else
-S2* s2;
+S2 *s2;
 // expected-error@second.h:* {{'Constructor::S2' has different definitions in different modules; first difference is definition in module 'SecondModule' found constructor that has 2 parameters}}
 // expected-note@first.h:* {{but in 'FirstModule' found constructor that has 1 parameter}}
 #endif
@@ -917,7 +918,7 @@ struct Valid1 {
   DECLS(Valid1)
 };
 #else
-Valid1* v1;
+Valid1 *v1;
 #endif
 
 #if defined(FIRST) || defined(SECOND)
@@ -926,12 +927,12 @@ struct Invalid1 {
   ACCESS
 };
 #else
-Invalid1* i1;
+Invalid1 *i1;
 // expected-error@second.h:* {{'Constructor::Invalid1' has different definitions in different modules; first difference is definition in module 'SecondModule' found private access specifier}}
 // expected-note@first.h:* {{but in 'FirstModule' found public access specifier}}
 #endif
 #undef DECLS
-}  // namespace Constructor
+} // namespace Constructor
 
 namespace Destructor {
 #if defined(FIRST)
@@ -1003,7 +1004,7 @@ Invalid2 i2;
 // expected-error@second.h:* {{'Destructor::Invalid2' has different definitions in different modules; first difference is definition in module 'SecondModule' found private access specifier}}
 // expected-note@first.h:* {{but in 'FirstModule' found public access specifier}}
 #endif
-}  // namespace Destructor
+} // namespace Destructor
 
 namespace TypeDef {
 #if defined(FIRST)
@@ -1129,7 +1130,7 @@ Invalid1 i1;
 // expected-note@first.h:* {{but in 'FirstModule' found public access specifier}}
 #endif
 #undef DECLS
-}  // namespace TypeDef
+} // namespace TypeDef
 
 namespace Using {
 #if defined(FIRST)
@@ -1255,7 +1256,7 @@ Invalid1 i1;
 // expected-note@first.h:* {{but in 'FirstModule' found public access specifier}}
 #endif
 #undef DECLS
-}  // namespace Using
+} // namespace Using
 
 namespace RecordType {
 #if defined(FIRST)
@@ -1300,7 +1301,7 @@ Invalid1 i1;
 // expected-note@first.h:* {{but in 'FirstModule' found public access specifier}}
 #endif
 #undef DECLS
-}  // namespace RecordType
+} // namespace RecordType
 
 namespace DependentType {
 #if defined(FIRST)
@@ -1314,7 +1315,7 @@ class S1 {
   typename T::typeB x;
 };
 #else
-template<class T>
+template <class T>
 using U1 = S1<T>;
 // expected-error@first.h:* {{'DependentType::S1::x' from module 'FirstModule' is not present in definition of 'S1<T>' in module 'SecondModule'}}
 // expected-note@second.h:* {{declaration of 'x' does not match}}
@@ -1346,16 +1347,20 @@ using I1 = Invalid1<T>;
 // expected-note@first.h:* {{but in 'FirstModule' found public access specifier}}
 #endif
 #undef DECLS
-}  // namespace DependentType
+} // namespace DependentType
 
 namespace ElaboratedType {
 #if defined(FIRST)
-namespace N1 { using type = double; }
+namespace N1 {
+using type = double;
+}
 struct S1 {
   N1::type x;
 };
 #elif defined(SECOND)
-namespace N1 { using type = int; }
+namespace N1 {
+using type = int;
+}
 struct S1 {
   N1::type x;
 };
@@ -1369,7 +1374,9 @@ S1 s1;
   NS::type x;
 
 #if defined(FIRST) || defined(SECOND)
-namespace NS { using type = float; }
+namespace NS {
+using type = float;
+}
 #endif
 
 #if defined(FIRST) || defined(SECOND)
@@ -1391,7 +1398,7 @@ Invalid1 i1;
 // expected-note@first.h:* {{but in 'FirstModule' found public access specifier}}
 #endif
 #undef DECLS
-}  // namespace ElaboratedType
+} // namespace ElaboratedType
 
 namespace Enum {
 #if defined(FIRST)
@@ -1414,7 +1421,8 @@ S1 s1;
   E e = E1;
 
 #if defined(FIRST) || defined(SECOND)
-enum E { E1, E2 };
+enum E { E1,
+         E2 };
 #endif
 
 #if defined(FIRST) || defined(SECOND)
@@ -1436,7 +1444,7 @@ Invalid1 i1;
 // expected-note@first.h:* {{but in 'FirstModule' found public access specifier}}
 #endif
 #undef DECLS
-}
+} // namespace Enum
 
 namespace NestedNamespaceSpecifier {
 #if defined(FIRST)
@@ -1447,12 +1455,12 @@ using Type = int;
 struct S1 {
   LevelA1::Type x;
 };
-# elif defined(SECOND)
+#elif defined(SECOND)
 namespace LevelB1 {
 namespace LevelC1 {
 using Type = int;
 }
-}
+} // namespace LevelB1
 
 struct S1 {
   LevelB1::LevelC1::Type x;
@@ -1464,11 +1472,13 @@ S1 s1;
 #endif
 
 #if defined(FIRST)
-namespace LevelA2 { using Type = int; }
+namespace LevelA2 {
+using Type = int;
+}
 struct S2 {
   LevelA2::Type x;
 };
-# elif defined(SECOND)
+#elif defined(SECOND)
 struct S2 {
   int x;
 };
@@ -1478,13 +1488,17 @@ S2 s2;
 // expected-note@first.h:* {{but in 'FirstModule' found field 'x' with type 'LevelA2::Type' (aka 'int')}}
 #endif
 
-namespace LevelA3 { using Type = int; }
-namespace LevelB3 { using Type = int; }
+namespace LevelA3 {
+using Type = int;
+}
+namespace LevelB3 {
+using Type = int;
+}
 #if defined(FIRST)
 struct S3 {
   LevelA3::Type x;
 };
-# elif defined(SECOND)
+#elif defined(SECOND)
 struct S3 {
   LevelB3::Type x;
 };
@@ -1495,12 +1509,16 @@ S3 s3;
 #endif
 
 #if defined(FIRST)
-struct TA4 { using Type = int; };
+struct TA4 {
+  using Type = int;
+};
 struct S4 {
   TA4::Type x;
 };
-# elif defined(SECOND)
-struct TB4 { using Type = int; };
+#elif defined(SECOND)
+struct TB4 {
+  using Type = int;
+};
 struct S4 {
   TB4::Type x;
 };
@@ -1511,12 +1529,16 @@ S4 s4;
 #endif
 
 #if defined(FIRST)
-struct T5 { using Type = int; };
+struct T5 {
+  using Type = int;
+};
 struct S5 {
   T5::Type x;
 };
-# elif defined(SECOND)
-namespace T5 { using Type = int; };
+#elif defined(SECOND)
+namespace T5 {
+using Type = int;
+};
 struct S5 {
   T5::Type x;
 };
@@ -1527,11 +1549,13 @@ S5 s5;
 #endif
 
 #if defined(FIRST)
-namespace N6 {using I = int;}
+namespace N6 {
+using I = int;
+}
 struct S6 {
   NestedNamespaceSpecifier::N6::I x;
 };
-# elif defined(SECOND)
+#elif defined(SECOND)
 using I = int;
 struct S6 {
   ::NestedNamespaceSpecifier::I x;
@@ -1579,13 +1603,17 @@ using U8 = S8<T>;
 #endif
 
 #if defined(FIRST)
-namespace N9 { using I = int; }
+namespace N9 {
+using I = int;
+}
 namespace O9 = N9;
 struct S9 {
   O9::I x;
 };
 #elif defined(SECOND)
-namespace N9 { using I = int; }
+namespace N9 {
+using I = int;
+}
 namespace P9 = N9;
 struct S9 {
   P9::I x;
@@ -1598,12 +1626,16 @@ S9 s9;
 
 namespace N10 {
 #if defined(FIRST)
-inline namespace A { struct X {}; }
+inline namespace A {
+struct X {};
+} // namespace A
 struct S10 {
   A::X x;
 };
 #elif defined(SECOND)
-inline namespace B { struct X {}; }
+inline namespace B {
+struct X {};
+} // namespace B
 struct S10 {
   B::X x;
 };
@@ -1612,7 +1644,7 @@ S10 s10;
 // expected-error@second.h:* {{'NestedNamespaceSpecifier::N10::S10::x' from module 'SecondModule' is not present in definition of 'NestedNamespaceSpecifier::N10::S10' in module 'FirstModule'}}
 // expected-note@first.h:* {{declaration of 'x' does not match}}
 #endif
-}
+} // namespace N10
 
 #define DECLS       \
   NS1::Type a;      \
@@ -1622,12 +1654,12 @@ S10 s10;
 
 #if defined(FIRST) || defined(SECOND)
 namespace NS1 {
-  using Type = int;
-  namespace NS2 {
-    using Type = double;
-  }
-  struct S {};
+using Type = int;
+namespace NS2 {
+using Type = double;
 }
+struct S {};
+} // namespace NS1
 namespace NS3 = NS1;
 #endif
 
@@ -1679,7 +1711,7 @@ using I2 = Invalid2<T, U>;
 // expected-note@first.h:* {{but in 'FirstModule' found public access specifier}}
 #endif
 #undef DECLS
-}  // namespace NestedNamespaceSpecifier
+} // namespace NestedNamespaceSpecifier
 
 namespace TemplateSpecializationType {
 #if defined(FIRST)
@@ -1729,7 +1761,7 @@ template <class T, class U> struct TwoTemplateArgs {};
 
 #if defined(FIRST) || defined(SECOND)
 struct Valid1 {
-DECLS
+  DECLS
 };
 #else
 Valid1 v1;
@@ -1737,8 +1769,8 @@ Valid1 v1;
 
 #if defined(FIRST) || defined(SECOND)
 struct Invalid1 {
-DECLS
-ACCESS
+  DECLS
+  ACCESS
 };
 #else
 Invalid1 i1;
@@ -1746,16 +1778,16 @@ Invalid1 i1;
 // expected-note@first.h:* {{but in 'FirstModule' found public access specifier}}
 #endif
 #undef DECLS
-}  // namespace TemplateSpecializationType
+} // namespace TemplateSpecializationType
 
 namespace TemplateArgument {
 #if defined(FIRST)
-template <class> struct U1{};
+template <class> struct U1 {};
 struct S1 {
   U1<int> x;
 };
 #elif defined(SECOND)
-template <int> struct U1{};
+template <int> struct U1 {};
 struct S1 {
   U1<1> x;
 };
@@ -1766,12 +1798,12 @@ S1 s1;
 #endif
 
 #if defined(FIRST)
-template <int> struct U2{};
+template <int> struct U2 {};
 struct S2 {
   using T = U2<2>;
 };
 #elif defined(SECOND)
-template <int> struct U2{};
+template <int> struct U2 {};
 struct S2 {
   using T = U2<(2)>;
 };
@@ -1782,12 +1814,12 @@ S2 s2;
 #endif
 
 #if defined(FIRST)
-template <int> struct U3{};
+template <int> struct U3 {};
 struct S3 {
   using T = U3<2>;
 };
 #elif defined(SECOND)
-template <int> struct U3{};
+template <int> struct U3 {};
 struct S3 {
   using T = U3<1 + 1>;
 };
@@ -1798,13 +1830,13 @@ S3 s3;
 #endif
 
 #if defined(FIRST)
-template<class> struct T4a {};
+template <class> struct T4a {};
 template <template <class> class T> struct U4 {};
 struct S4 {
   U4<T4a> x;
 };
 #elif defined(SECOND)
-template<class> struct T4b {};
+template <class> struct T4b {};
 template <template <class> class T> struct U4 {};
 struct S4 {
   U4<T4b> x;
@@ -1851,12 +1883,12 @@ S6 s6;
 
 #if defined(FIRST)
 struct S7 {
-  template<int> void run() {}
-  template<> void run<1>() {}
+  template <int> void run() {}
+  template <> void run<1>() {}
 };
 #elif defined(SECOND)
 struct S7 {
-  template<int> void run() {}
+  template <int> void run() {}
   void run() {}
 };
 #else
@@ -1868,16 +1900,16 @@ S7 s7;
 #if defined(FIRST)
 struct S8 {
   static int a, b;
-  template<int&> void run() {}
-  template<int&, int&> void run() {}
-  template<> void run<a>() {}
+  template <int &> void run() {}
+  template <int &, int &> void run() {}
+  template <> void run<a>() {}
 };
 #elif defined(SECOND)
 struct S8 {
   static int a, b;
-  template<int&> void run() {}
-  template<int&, int&> void run() {}
-  template<> void run<a, b>() {}
+  template <int &> void run() {}
+  template <int &, int &> void run() {}
+  template <> void run<a, b>() {}
 };
 #else
 S8 s8;
@@ -1888,14 +1920,14 @@ S8 s8;
 #if defined(FIRST)
 struct S9 {
   static int a, b;
-  template<int&> void run() {}
-  template<> void run<a>() {}
+  template <int &> void run() {}
+  template <> void run<a>() {}
 };
 #elif defined(SECOND)
 struct S9 {
   static int a, b;
-  template<int&> void run() {}
-  template<> void run<b>() {}
+  template <int &> void run() {}
+  template <> void run<b>() {}
 };
 #else
 S9 s9;
@@ -1906,14 +1938,14 @@ S9 s9;
 #if defined(FIRST)
 struct S10 {
   static int a, b;
-  template<int, int&...> void run() {}
-  template<> void run<1, a>() {}
+  template <int, int &...> void run() {}
+  template <> void run<1, a>() {}
 };
 #elif defined(SECOND)
 struct S10 {
   static int a, b;
-  template<int, int&...> void run() {}
-  template<> void run<1, b>() {}
+  template <int, int &...> void run() {}
+  template <> void run<1, b>() {}
 };
 #else
 S10 s10;
@@ -1924,14 +1956,14 @@ S10 s10;
 #if defined(FIRST)
 struct S11 {
   static int a, b;
-  template<int, int&...> void run() {}
-  template<> void run<1, a>() {}
+  template <int, int &...> void run() {}
+  template <> void run<1, a>() {}
 };
 #elif defined(SECOND)
 struct S11 {
   static int a, b;
-  template<int, int&...> void run() {}
-  template<> void run<1, a, a>() {}
+  template <int, int &...> void run() {}
+  template <> void run<1, a, a>() {}
 };
 #else
 S11 s11;
@@ -1962,15 +1994,15 @@ S11 s11;
   void Function<i2, i1>() {}
 
 #if defined(FIRST) || defined(SECOND)
-template <class> struct OneClass{};
-template <int> struct OneInt{};
-template <template <class> class> struct OneTemplateClass{};
-template <template <int> class> struct OneTemplateInt{};
+template <class> struct OneClass {};
+template <int> struct OneInt {};
+template <template <class> class> struct OneTemplateClass {};
+template <template <int> class> struct OneTemplateInt {};
 #endif
 
 #if defined(FIRST) || defined(SECOND)
 struct Valid1 {
-DECLS
+  DECLS
 };
 #else
 Valid1 v1;
@@ -1978,8 +2010,8 @@ Valid1 v1;
 
 #if defined(FIRST) || defined(SECOND)
 struct Invalid1 {
-DECLS
-ACCESS
+  DECLS
+  ACCESS
 };
 #else
 Invalid1 i1;
@@ -1987,7 +2019,7 @@ Invalid1 i1;
 // expected-note@first.h:* {{but in 'FirstModule' found public access specifier}}
 #endif
 #undef DECLS
-}  // namespace TemplateArgument
+} // namespace TemplateArgument
 
 namespace TemplateTypeParmType {
 #if defined(FIRST)
@@ -2007,7 +2039,7 @@ using TemplateTypeParmType::S1;
 #endif
 
 #if defined(FIRST)
-template <int ...Ts>
+template <int... Ts>
 struct U2 {};
 template <int T, int U>
 class S2 {
@@ -2015,7 +2047,7 @@ class S2 {
   type x;
 };
 #elif defined(SECOND)
-template <int ...Ts>
+template <int... Ts>
 struct U2 {};
 template <int T, int U>
 class S2 {
@@ -2039,7 +2071,7 @@ using TemplateTypeParmType::S2;
   ParameterPack<U, T> d;
 
 #if defined(FIRST) || defined(SECOND)
-template <class ...Ts> struct ParameterPack {};
+template <class... Ts> struct ParameterPack {};
 #endif
 
 #if defined(FIRST) || defined(SECOND)
@@ -2063,7 +2095,7 @@ using TemplateTypeParmType::Invalid1;
 // expected-note@first.h:* {{but in 'FirstModule' found public access specifier}}
 #endif
 #undef DECLS
-}  // namespace TemplateTypeParmType
+} // namespace TemplateTypeParmType
 
 namespace VarDecl {
 #if defined(FIRST)
@@ -2175,6 +2207,7 @@ public:
 #elif defined(SECOND)
 struct S8 {
   static const int x = 1;
+
 public:
 };
 #else
@@ -2226,7 +2259,7 @@ Invalid1 i1;
 // expected-note@first.h:* {{but in 'FirstModule' found public access specifier}}
 #endif
 #undef DECLS
-}  // namespace VarDecl
+} // namespace VarDecl
 
 namespace Friend {
 #if defined(FIRST)
@@ -2321,7 +2354,7 @@ Invalid1 i1;
 // expected-note@first.h:* {{but in 'FirstModule' found public access specifier}}
 #endif
 #undef DECLS
-}  // namespace Friend
+} // namespace Friend
 
 namespace TemplateParameters {
 #if defined(FIRST)
@@ -2374,11 +2407,11 @@ using TemplateParameters::S4;
 
 #if defined(FIRST)
 template <int> class S5_first {};
-template <template<int> class A = S5_first>
+template <template <int> class A = S5_first>
 struct S5 {};
 #elif defined(SECOND)
 template <int> class S5_second {};
-template <template<int> class A = S5_second>
+template <template <int> class A = S5_second>
 struct S5 {};
 #else
 using TemplateParameters::S5;
@@ -2429,7 +2462,7 @@ using TemplateParameters::Invalid1;
 // expected-note@first.h:* {{but in 'FirstModule' found public access specifier}}
 #endif
 #undef DECLS
-}  // namespace TemplateParameters
+} // namespace TemplateParameters
 
 namespace BaseClass {
 #if defined(FIRST)
@@ -2561,8 +2594,7 @@ struct Base5 {};
 #endif
 
 #if defined(FIRST) || defined(SECOND)
-struct Valid1 :
-  Base1, virtual Base2, protected Base3, public Base4, private Base5 {
+struct Valid1 : Base1, virtual Base2, protected Base3, public Base4, private Base5 {
 
   DECLS
 };
@@ -2571,8 +2603,7 @@ Valid1 v1;
 #endif
 
 #if defined(FIRST) || defined(SECOND)
-struct Invalid1 :
-  Base1, virtual Base2, protected Base3, public Base4, private Base5 {
+struct Invalid1 : Base1, virtual Base2, protected Base3, public Base4, private Base5 {
 
   DECLS
   ACCESS
@@ -2583,20 +2614,20 @@ Invalid1 i1;
 // expected-note@first.h:* {{but in 'FirstModule' found public access specifier}}
 #endif
 #undef DECLS
-}  // namespace BaseClass
+} // namespace BaseClass
 
 namespace PointersAndReferences {
 #if defined(FIRST) || defined(SECOND)
-template<typename> struct Wrapper{};
+template <typename> struct Wrapper {};
 #endif
 
 #if defined(FIRST)
 struct S1 {
-  Wrapper<int*> x;
+  Wrapper<int *> x;
 };
 #elif defined(SECOND)
 struct S1 {
-  Wrapper<float*> x;
+  Wrapper<float *> x;
 };
 #else
 S1 s1;
@@ -2704,7 +2735,7 @@ Invalid1 i1;
 // expected-note@first.h:* {{but in 'FirstModule' found public access specifier}}
 #endif
 #undef DECLS
-}  // namespace PointersAndReferences
+} // namespace PointersAndReferences
 
 namespace FunctionTemplate {
 #if defined(FIRST)
@@ -2769,7 +2800,7 @@ struct S5 {
 };
 #elif defined(SECOND)
 struct S5 {
- public:
+public:
   template <int x> void foo();
 };
 #else
@@ -2810,13 +2841,13 @@ S7 s7;
 template <int>
 struct U8 {};
 struct S8 {
-  template <template<int> class x = U8> void foo();
+  template <template <int> class x = U8> void foo();
 };
 #elif defined(SECOND)
 template <int>
 struct T8 {};
-struct S8{
-  template <template<int> class x = T8> void foo();
+struct S8 {
+  template <template <int> class x = T8> void foo();
 };
 #else
 S8 s8;
@@ -2827,12 +2858,14 @@ S8 s8;
 #if defined(FIRST)
 template <int>
 struct U9 {};
-struct S9 { S9();
-  template <template<int> class x = U9> void foo();
+struct S9 {
+  S9();
+  template <template <int> class x = U9> void foo();
 };
 #elif defined(SECOND)
-struct S9 { S9();
-  template <template<int> class x> void foo();
+struct S9 {
+  S9();
+  template <template <int> class x> void foo();
 };
 #else
 S9 s9;
@@ -2842,13 +2875,13 @@ S9 s9;
 
 #if defined(FIRST)
 struct S10 {
-  template <template<int> class x> void foo();
-  template <template<typename> class x> void foo();
+  template <template <int> class x> void foo();
+  template <template <typename> class x> void foo();
 };
 #elif defined(SECOND)
 struct S10 {
-  template <template<typename> class x> void foo();
-  template <template<int> class x> void foo();
+  template <template <typename> class x> void foo();
+  template <template <int> class x> void foo();
 };
 #else
 S10 s10;
@@ -2858,11 +2891,11 @@ S10 s10;
 
 #if defined(FIRST)
 struct S11 {
-  template <template<int> class x> void foo();
+  template <template <int> class x> void foo();
 };
 #elif defined(SECOND)
 struct S11 {
-  template <template<int> class> void foo();
+  template <template <int> class> void foo();
 };
 #else
 S11 s11;
@@ -3006,13 +3039,13 @@ S20 s20;
 
 #if defined(FIRST)
 struct S21 {
-  template <template<class> class...> void foo();
-  template <template<class> class> void foo();
+  template <template <class> class...> void foo();
+  template <template <class> class> void foo();
 };
 #elif defined(SECOND)
 struct S21 {
-  template <template<class> class> void foo();
-  template <template<class> class...> void foo();
+  template <template <class> class> void foo();
+  template <template <class> class...> void foo();
 };
 #else
 S21 s21;
@@ -3022,7 +3055,7 @@ S21 s21;
 
 #if defined(FIRST)
 struct S22 {
-  template <template<class> class> void foo();
+  template <template <class> class> void foo();
   template <class> void foo();
   template <int> void foo();
 };
@@ -3030,7 +3063,7 @@ struct S22 {
 struct S22 {
   template <class> void foo();
   template <int> void foo();
-  template <template<class> class> void foo();
+  template <template <class> class> void foo();
 };
 #else
 S22 s22;
@@ -3042,12 +3075,12 @@ S22 s22;
 struct S23 {
   template <class> void foo();
   template <int> void foo();
-  template <template<class> class> void foo();
+  template <template <class> class> void foo();
 };
 #elif defined(SECOND)
 struct S23 {
   template <int> void foo();
-  template <template<class> class> void foo();
+  template <template <class> class> void foo();
   template <class> void foo();
 };
 #else
@@ -3059,12 +3092,12 @@ S23 s23;
 #if defined(FIRST)
 struct S24 {
   template <int> void foo();
-  template <template<class> class> void foo();
+  template <template <class> class> void foo();
   template <class> void foo();
 };
 #elif defined(SECOND)
 struct S24 {
-  template <template<class> class> void foo();
+  template <template <class> class> void foo();
   template <class> void foo();
   template <int> void foo();
 };
@@ -3080,7 +3113,7 @@ struct S25 {
 };
 #elif defined(SECOND)
 struct S25 {
- public:
+public:
   template <int> void foo();
 };
 #else
@@ -3124,7 +3157,7 @@ S25 s25;
   void template5();
 
 #if defined(FIRST) || defined(SECOND)
-template<int>
+template <int>
 struct U {};
 struct Valid1 {
   DECLS
@@ -3144,7 +3177,7 @@ Invalid1 i1;
 // expected-note@first.h:* {{but in 'FirstModule' found public access specifier}}
 #endif
 #undef DECLS
-}
+} // namespace FunctionTemplate
 
 namespace Enums {
 #if defined(FIRST)
@@ -3180,7 +3213,8 @@ E3 e3;
 #if defined(FIRST)
 enum E4 { x41 };
 #elif defined(SECOND)
-enum E4 { x41, x42 };
+enum E4 { x41,
+          x42 };
 #else
 E4 e4;
 // expected-error@second.h:* {{'Enums::E4' has different definitions in different modules; definition in module 'SecondModule' first difference is enum with 2 elements}}
@@ -3188,7 +3222,8 @@ E4 e4;
 #endif
 
 #if defined(FIRST)
-enum E5 { x51, x52 };
+enum E5 { x51,
+          x52 };
 #elif defined(SECOND)
 enum E5 { x51 };
 #else
@@ -3198,9 +3233,11 @@ E5 e5;
 #endif
 
 #if defined(FIRST)
-enum E6 { x61, x62 };
+enum E6 { x61,
+          x62 };
 #elif defined(SECOND)
-enum E6 { x62, x61 };
+enum E6 { x62,
+          x61 };
 #else
 E6 e6;
 // expected-error@second.h:* {{'Enums::E6' has different definitions in different modules; definition in module 'SecondModule' first difference is 1st element has name 'x62'}}
@@ -3228,9 +3265,11 @@ E8 e8;
 #endif
 
 #if defined(FIRST)
-enum E9 { x91 = 0, x92 = 1 };
+enum E9 { x91 = 0,
+          x92 = 1 };
 #elif defined(SECOND)
-enum E9 { x91 = 0, x92 = 2 - 1 };
+enum E9 { x91 = 0,
+          x92 = 2 - 1 };
 #else
 E9 e9;
 // expected-error@second.h:* {{'Enums::E9' has different definitions in different modules; definition in module 'SecondModule' first difference is 2nd element 'x92' has an initializer}}
@@ -3308,14 +3347,14 @@ E16 e16;
 #endif
 
 #if defined(FIRST)
-enum Valid { v1 = (struct S*)0 == (struct S*)0 };
+enum Valid { v1 = (struct S *)0 == (struct S *)0 };
 #elif defined(SECOND)
 struct S {};
-enum Valid { v1 = (struct S*)0 == (struct S*)0 };
+enum Valid { v1 = (struct S *)0 == (struct S *)0 };
 #else
 Valid V;
 #endif
-}  // namespace Enums
+} // namespace Enums
 
 namespace Types {
 namespace Complex {
@@ -3339,7 +3378,7 @@ auto function1 = invalid;
 // expected-note@first.h:* {{but in 'FirstModule' found a different body}}
 auto function2 = valid;
 #endif
-}  // namespace Complex
+} // namespace Complex
 
 namespace Decltype {
 #if defined(FIRST)
@@ -3375,7 +3414,7 @@ auto function2 = invalid2;
 // expected-note@first.h:* {{but in 'FirstModule' found a different body}}
 auto function3 = valid;
 #endif
-}  // namespace Decltype
+} // namespace Decltype
 
 namespace Auto {
 #if defined(FIRST)
@@ -3420,14 +3459,14 @@ auto function3 = invalid2;
 // expected-note@first.h:* {{but in 'FirstModule' found a different body}}
 auto function4 = valid;
 #endif
-}  // namespace Auto
+} // namespace Auto
 
 namespace DeducedTemplateSpecialization {
 #if defined(FIRST)
-template<typename T> struct A {};
-A() -> A<int>;
-template<typename T> struct B {};
-B() -> B<int>;
+template <typename T> struct A {};
+A()->A<int>;
+template <typename T> struct B {};
+B()->B<int>;
 
 void invalid1() {
   A a{};
@@ -3439,10 +3478,10 @@ void valid() {
   B b{};
 }
 #elif defined(SECOND)
-template<typename T> struct A {};
-A() -> A<float>;
-template<typename T> struct B {};
-B() -> B<int>;
+template <typename T> struct A {};
+A()->A<float>;
+template <typename T> struct B {};
+B()->B<int>;
 
 void invalid1() {
   A a{};
@@ -3462,7 +3501,7 @@ auto function2 = invalid2;
 // expected-note@first.h:* {{but in 'FirstModule' found a different body}}
 auto function3 = valid;
 #endif
-}  // namespace DeducedTemplateSpecialization
+} // namespace DeducedTemplateSpecialization
 
 namespace DependentAddressSpace {
 #if defined(FIRST)
@@ -3507,32 +3546,32 @@ class S {
   static auto function3 = valid<A, B>;
 };
 #endif
-}  // namespace DependentAddressSpace
+} // namespace DependentAddressSpace
 
 namespace DependentSizedExtVector {
 #if defined(FIRST)
-template<int Size>
+template <int Size>
 void invalid1() {
   typedef int __attribute__((ext_vector_type(Size))) type;
 }
-template<int Size>
+template <int Size>
 void invalid2() {
   typedef int __attribute__((ext_vector_type(Size + 0))) type;
 }
-template<int Size>
+template <int Size>
 void valid() {
   typedef int __attribute__((ext_vector_type(Size))) type;
 }
 #elif defined(SECOND)
-template<int Size>
+template <int Size>
 void invalid1() {
   typedef float __attribute__((ext_vector_type(Size))) type;
 }
-template<int Size>
+template <int Size>
 void invalid2() {
   typedef int __attribute__((ext_vector_type(Size + 1))) type;
 }
-template<int Size>
+template <int Size>
 void valid() {
   typedef int __attribute__((ext_vector_type(Size))) type;
 }
@@ -3548,7 +3587,7 @@ class S {
   static auto Function3 = valid<Num>;
 };
 #endif
-}  // namespace DependentSizedExtVector
+} // namespace DependentSizedExtVector
 
 namespace InjectedClassName {
 #if defined(FIRST)
@@ -3597,7 +3636,7 @@ Invalid::L2<1>::L3<1> invalid;
 // expected-note@first.h:* {{declaration of 'x' does not match}}
 Valid::L2<1>::L3<1> valid;
 #endif
-}  // namespace InjectedClassName
+} // namespace InjectedClassName
 
 namespace MemberPointer {
 #if defined(FIRST)
@@ -3620,7 +3659,7 @@ void Valid() {
   void (A::*fun1)();
   int (A::*fun2)();
   void (B::*fun3)(int);
-  void (B::*fun4)(bool*, int);
+  void (B::*fun4)(bool *, int);
 }
 #elif defined(SECOND)
 struct A {};
@@ -3642,7 +3681,7 @@ void Valid() {
   void (A::*fun1)();
   int (A::*fun2)();
   void (B::*fun3)(int);
-  void (B::*fun4)(bool*, int);
+  void (B::*fun4)(bool *, int);
 }
 #else
 auto function1 = Invalid1;
@@ -3657,7 +3696,7 @@ auto function3 = Invalid3;
 auto function4 = Valid;
 #endif
 
-}  // namespace MemberPointer
+} // namespace MemberPointer
 
 namespace PackExpansion {
 #if defined(FIRST)
@@ -3709,22 +3748,22 @@ Invalid::L2<int>::L3<short, bool> invalid;
 Valid::L2<int>::L3<short, bool> valid;
 #endif
 
-}  // namespace PackExpansion
+} // namespace PackExpansion
 
 namespace Paren {
 #if defined(FIRST)
 void invalid() {
-  int (*x);
+  int(*x);
 }
 void valid() {
-  int (*x);
+  int(*x);
 }
 #elif defined(SECOND)
 void invalid() {
-  float (*x);
+  float(*x);
 }
 void valid() {
-  int (*x);
+  int(*x);
 }
 #else
 auto function1 = invalid;
@@ -3732,7 +3771,7 @@ auto function1 = invalid;
 // expected-note@first.h:* {{but in 'FirstModule' found a different body}}
 auto function2 = valid;
 #endif
-}  // namespace Paren
+} // namespace Paren
 
 namespace SubstTemplateTypeParm {
 #if defined(FIRST)
@@ -3740,7 +3779,7 @@ template <class> struct wrapper {};
 template <class, class, class> struct triple {};
 struct Valid {
   template <class T,
-           template <class _T, class _U, class = wrapper<_T>> class A = triple>
+            template <class _T, class _U, class = wrapper<_T>> class A = triple>
   struct L2 {
     A<T, T> x;
   };
@@ -3750,7 +3789,7 @@ template <class> struct wrapper {};
 template <class, class, class> struct triple {};
 struct Valid {
   template <class T,
-           template <class _T, class _U, class = wrapper<_T>> class A = triple>
+            template <class _T, class _U, class = wrapper<_T>> class A = triple>
   struct L2 {
     A<T, T> x;
   };
@@ -3760,10 +3799,10 @@ template <class T,
           template <class _T, class _U, class = wrapper<_T>> class A = triple>
 using V = Valid::L2<T, A>;
 #endif
-}  // namespace SubstTemplateTypeParm
+} // namespace SubstTemplateTypeParm
 
 namespace SubstTemplateTypeParmPack {
-}  // namespace SubstTemplateTypeParmPack
+} // namespace SubstTemplateTypeParmPack
 
 namespace UnaryTransform {
 #if defined(FIRST)
@@ -3829,7 +3868,7 @@ Valid1 v1;
 Valid2 v2;
 Valid3 v3;
 #endif
-}  // namespace UnaryTransform
+} // namespace UnaryTransform
 
 namespace UnresolvedUsing {
 #if defined(FIRST)
@@ -3870,14 +3909,14 @@ template <class T> using I = Invalid<T>;
 template <class T> using V = Valid<T>;
 #endif
 
-}  // namespace UnresolvedUsing
+} // namespace UnresolvedUsing
 
 // Vector
 // void invalid1() {
 //  __attribute((vector_size(8))) int *x1;
 //}
 
-}  // namespace Types
+} // namespace Types
 
 // Collection of interesting cases below.
 
@@ -3902,17 +3941,21 @@ namespace NNS {
 template <typename> struct Foo;
 template <template <class> class T = NNS::Foo>
 struct NestedNamespaceSpecifier {};
-}
+} // namespace NNS
 #endif
-}  // namespace SelfReference
+} // namespace SelfReference
 
 namespace FriendFunction {
 #if defined(FIRST)
 void F(int = 0);
-struct S { friend void F(int); };
+struct S {
+  friend void F(int);
+};
 #elif defined(SECOND)
 void F(int);
-struct S { friend void F(int); };
+struct S {
+  friend void F(int);
+};
 #else
 S s;
 #endif
@@ -3922,25 +3965,25 @@ void G(int = 0);
 struct T {
   friend void G(int);
 
-  private:
+private:
 };
 #elif defined(SECOND)
 void G(int);
 struct T {
   friend void G(int);
 
-  public:
+public:
 };
 #else
 T t;
 // expected-error@second.h:* {{'FriendFunction::T' has different definitions in different modules; first difference is definition in module 'SecondModule' found public access specifier}}
 // expected-note@first.h:* {{but in 'FirstModule' found private access specifier}}
 #endif
-}  // namespace FriendFunction
+} // namespace FriendFunction
 
 namespace ImplicitDecl {
 #if defined(FIRST)
-struct S { };
+struct S {};
 void S_Constructors() {
   // Trigger creation of implicit contructors
   S foo;
@@ -3948,14 +3991,14 @@ void S_Constructors() {
   S baz(bar);
 }
 #elif defined(SECOND)
-struct S { };
+struct S {};
 #else
 S s;
 #endif
 
 #if defined(FIRST)
 struct T {
-  private:
+private:
 };
 void T_Constructors() {
   // Trigger creation of implicit contructors
@@ -3965,7 +4008,7 @@ void T_Constructors() {
 }
 #elif defined(SECOND)
 struct T {
-  public:
+public:
 };
 #else
 T t;
@@ -3973,7 +4016,7 @@ T t;
 // expected-note@second.h:* {{but in 'SecondModule' found public access specifier}}
 #endif
 
-}  // namespace ImplicitDecl
+} // namespace ImplicitDecl
 
 namespace TemplatedClass {
 #if defined(FIRST)
@@ -3989,19 +4032,19 @@ S<int> s;
 #if defined(FIRST)
 template <class>
 struct T {
-  private:
+private:
 };
 #elif defined(SECOND)
 template <class>
 struct T {
-  public:
+public:
 };
 #else
 T<int> t;
 // expected-error@second.h:* {{'TemplatedClass::T' has different definitions in different modules; first difference is definition in module 'SecondModule' found public access specifier}}
 // expected-note@first.h:* {{but in 'FirstModule' found private access specifier}}
 #endif
-}  // namespace TemplatedClass
+} // namespace TemplatedClass
 
 namespace TemplateClassWithField {
 #if defined(FIRST)
@@ -4023,21 +4066,21 @@ template <class A>
 struct T {
   A a;
 
-  private:
+private:
 };
 #elif defined(SECOND)
 template <class A>
 struct T {
   A a;
 
-  public:
+public:
 };
 #else
 T<int> t;
 // expected-error@second.h:* {{'TemplateClassWithField::T' has different definitions in different modules; first difference is definition in module 'SecondModule' found public access specifier}}
 // expected-note@first.h:* {{but in 'FirstModule' found private access specifier}}
 #endif
-}  // namespace TemplateClassWithField
+} // namespace TemplateClassWithField
 
 namespace TemplateClassWithTemplateField {
 #if defined(FIRST)
@@ -4056,7 +4099,7 @@ struct S {
 };
 #else
 template <class A>
-class WrapperS{};
+class WrapperS {};
 S<int> s;
 #endif
 
@@ -4067,7 +4110,7 @@ template <class A>
 struct T {
   WrapperT<A> a;
 
-  public:
+public:
 };
 #elif defined(SECOND)
 template <class A>
@@ -4076,16 +4119,16 @@ template <class A>
 struct T {
   WrapperT<A> a;
 
-  private:
+private:
 };
 #else
 template <class A>
-class WrapperT{};
+class WrapperT {};
 T<int> t;
 // expected-error@second.h:* {{'TemplateClassWithTemplateField::T' has different definitions in different modules; first difference is definition in module 'SecondModule' found private access specifier}}
 // expected-note@first.h:* {{but in 'FirstModule' found public access specifier}}
 #endif
-}  // namespace TemplateClassWithTemplateField
+} // namespace TemplateClassWithTemplateField
 
 namespace EnumWithForwardDeclaration {
 #if defined(FIRST)
@@ -4094,7 +4137,8 @@ struct S {
   void get(E) {}
 };
 #elif defined(SECOND)
-enum E : int { A, B };
+enum E : int { A,
+               B };
 struct S {
   void get(E) {}
 };
@@ -4105,19 +4149,21 @@ S s;
 #if defined(FIRST)
 struct T {
   void get(E) {}
-  public:
+
+public:
 };
 #elif defined(SECOND)
 struct T {
   void get(E) {}
-  private:
+
+private:
 };
 #else
 T t;
 // expected-error@second.h:* {{'EnumWithForwardDeclaration::T' has different definitions in different modules; first difference is definition in module 'SecondModule' found private access specifier}}
 // expected-note@first.h:* {{but in 'FirstModule' found public access specifier}}
 #endif
-}  // namespace EnumWithForwardDeclaration
+} // namespace EnumWithForwardDeclaration
 
 namespace StructWithForwardDeclaration {
 #if defined(FIRST)
@@ -4137,19 +4183,21 @@ S s;
 struct Q {};
 struct T {
   struct Q *ptr;
-  public:
+
+public:
 };
 #elif defined(SECOND)
 struct T {
   struct Q *ptr;
-  private:
+
+private:
 };
 #else
 T t;
 // expected-error@second.h:* {{'StructWithForwardDeclaration::T' has different definitions in different modules; first difference is definition in module 'SecondModule' found private access specifier}}
 // expected-note@first.h:* {{but in 'FirstModule' found public access specifier}}
 #endif
-}  // namespace StructWithForwardDeclaration
+} // namespace StructWithForwardDeclaration
 
 namespace StructWithForwardDeclarationNoDefinition {
 #if defined(FIRST)
@@ -4170,20 +4218,20 @@ struct Q;
 struct T {
   struct Q *ptr;
 
-  public:
+public:
 };
 #elif defined(SECOND)
 struct T {
   struct Q *ptr;
 
-  private:
+private:
 };
 #else
 T t;
 // expected-error@second.h:* {{'StructWithForwardDeclarationNoDefinition::T' has different definitions in different modules; first difference is definition in module 'SecondModule' found private access specifier}}
 // expected-note@first.h:* {{but in 'FirstModule' found public access specifier}}
 #endif
-}  // namespace StructWithForwardDeclarationNoDefinition
+} // namespace StructWithForwardDeclarationNoDefinition
 
 namespace LateParsedDefaultArgument {
 #if defined(FIRST)
@@ -4199,7 +4247,7 @@ void run() {
   S<int>::R().foo();
 }
 #endif
-}  // namespace LateParsedDefaultArgument
+} // namespace LateParsedDefaultArgument
 
 namespace LateParsedDefaultArgument {
 #if defined(FIRST)
@@ -4213,7 +4261,7 @@ Bravo<char> golf;
 #elif defined(SECOND)
 #else
 #endif
-}  // LateParsedDefaultArgument
+} // namespace LateParsedDefaultArgument
 
 namespace DifferentParameterNameInTemplate {
 #if defined(FIRST) || defined(SECOND)
@@ -4259,34 +4307,34 @@ struct BetaHelper {
 #else
 Alpha::Alpha() {}
 #endif
-}  // DifferentParameterNameInTemplate
+} // namespace DifferentParameterNameInTemplate
 
 namespace ParameterTest {
 #if defined(FIRST)
 class X {};
 template <typename G>
 class S {
-  public:
-   typedef G Type;
-   static inline G *Foo(const G *a, int * = nullptr);
+public:
+  typedef G Type;
+  static inline G *Foo(const G *a, int * = nullptr);
 };
 
-template<typename G>
-G* S<G>::Foo(const G* aaaa, int*) {}
+template <typename G>
+G *S<G>::Foo(const G *aaaa, int *) {}
 #elif defined(SECOND)
 template <typename G>
 class S {
-  public:
-   typedef G Type;
-   static inline G *Foo(const G *a, int * = nullptr);
+public:
+  typedef G Type;
+  static inline G *Foo(const G *a, int * = nullptr);
 };
 
-template<typename G>
-G* S<G>::Foo(const G* asdf, int*) {}
+template <typename G>
+G *S<G>::Foo(const G *asdf, int *) {}
 #else
 S<X> s;
 #endif
-}  // ParameterTest
+} // namespace ParameterTest
 
 namespace MultipleTypedefs {
 #if defined(FIRST)
@@ -4305,14 +4353,18 @@ S1 s1;
 #endif
 
 #if defined(FIRST)
-struct T2 { int x; };
+struct T2 {
+  int x;
+};
 typedef T2 B2;
 typedef B2 A2;
 struct S2 {
   T2 x;
 };
 #elif defined(SECOND)
-struct T2 { int x; };
+struct T2 {
+  int x;
+};
 typedef T2 A2;
 struct S2 {
   T2 x;
@@ -4368,7 +4420,7 @@ struct S5 {
 #else
 S5 s5;
 #endif
-}  // MultipleTypedefs
+} // namespace MultipleTypedefs
 
 namespace DefaultArguments {
 #if defined(FIRST)
@@ -4410,7 +4462,7 @@ Bravo<char> golf;
 // expected-error@second.h:* {{'DefaultArguments::Bravo' has different definitions in different modules; first difference is definition in module 'SecondModule' found method 'charlie' with 1st parameter with a default argument}}
 // expected-note@first.h:* {{but in 'FirstModule' found method 'charlie' with 1st parameter with a different default argument}}
 #endif
-}  // namespace DefaultArguments
+} // namespace DefaultArguments
 
 namespace FunctionDecl {
 #if defined(FIRST)
@@ -4439,13 +4491,13 @@ S2 s2;
 struct S3 {
   S3() = delete;
 };
-S3* s3c;
+S3 *s3c;
 #elif defined(SECOND)
 struct S3 {
   S3() = delete;
 };
 #else
-S3* s3;
+S3 *s3;
 #endif
 
 #if defined(FIRST) || defined(SECOND)
@@ -4586,7 +4638,7 @@ void S13::foo(int y) {}
 #else
 S13 s13;
 #endif
-}  // namespace FunctionDecl
+} // namespace FunctionDecl
 
 namespace DeclTemplateArguments {
 #if defined(FIRST)
@@ -4601,7 +4653,7 @@ int num = bar();
 // expected-error@second.h:* {{'DeclTemplateArguments::bar' has different definitions in different modules; definition in module 'SecondModule' first difference is function body}}
 // expected-note@first.h:* {{but in 'FirstModule' found a different body}}
 #endif
-}
+} // namespace DeclTemplateArguments
 
 namespace FunctionProtoTypeDecay {
 #if defined(FIRST)
@@ -4637,18 +4689,19 @@ struct S2 {
 #else
 S2 s2;
 #endif
-}
+} // namespace FunctionProtoTypeDecay
 
 namespace TypedefStruct {
 #if defined(FIRST)
 struct T1;
 class S1 {
-  T1* t;
+  T1 *t;
 };
 #elif defined(SECOND)
-typedef struct T1 {} T1;
+typedef struct T1 {
+} T1;
 class S1 {
-  T1* t;
+  T1 *t;
 };
 #else
 S1 s1;
@@ -4657,12 +4710,13 @@ S1 s1;
 #if defined(FIRST)
 struct T2;
 class S2 {
-  const T2* t = nullptr;
+  const T2 *t = nullptr;
 };
 #elif defined(SECOND)
-typedef struct T2 {} T2;
+typedef struct T2 {
+} T2;
 class S2 {
-  const T2* t = nullptr;
+  const T2 *t = nullptr;
 };
 #else
 S2 s2;
@@ -4671,12 +4725,13 @@ S2 s2;
 #if defined(FIRST)
 struct T3;
 class S3 {
-  T3* const t = nullptr;
+  T3 *const t = nullptr;
 };
 #elif defined(SECOND)
-typedef struct T3 {} T3;
+typedef struct T3 {
+} T3;
 class S3 {
-  T3* const t = nullptr;
+  T3 *const t = nullptr;
 };
 #else
 S3 s3;
@@ -4687,14 +4742,15 @@ namespace NS4 {
 struct T4;
 } // namespace NS4
 class S4 {
-  NS4::T4* t = 0;
+  NS4::T4 *t = 0;
 };
 #elif defined(SECOND)
 namespace NS4 {
-typedef struct T4 {} T4;
+typedef struct T4 {
+} T4;
 } // namespace NS4
 class S4 {
-  NS4::T4* t = 0;
+  NS4::T4 *t = 0;
 };
 #else
 S4 s4;

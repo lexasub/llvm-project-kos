@@ -23,36 +23,37 @@
 
 #define N 1000
 
-template<typename tx>
+template <typename tx>
 tx ftemplate(int n) {
   tx a[N];
   short aa[N];
   tx b[10];
 
-  #pragma omp target simd
-  for(int i = 0; i < n; i++) {
+#pragma omp target simd
+  for (int i = 0; i < n; i++) {
     a[i] = 1;
   }
 
-  #pragma omp target simd
+#pragma omp target simd
   for (int i = 0; i < n; i++) {
     aa[i] += 1;
   }
 
-  #pragma omp target simd
-  for(int i = 0; i < 10; i++) {
+#pragma omp target simd
+  for (int i = 0; i < 10; i++) {
     b[i] += 1;
   }
 
-  #pragma omp target simd reduction(+:n)
-  for(int i = 0; i < 10; i++) {
+#pragma omp target simd reduction(+ \
+                                  : n)
+  for (int i = 0; i < 10; i++) {
     b[i] += 1;
   }
 
   return a[0];
 }
 
-int bar(int n){
+int bar(int n) {
   int a = 0;
 
   a += ftemplate<int>(n);

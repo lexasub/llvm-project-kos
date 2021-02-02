@@ -272,9 +272,10 @@ FunctionPass *llvm::createStraightLineStrengthReducePass() {
 
 bool StraightLineStrengthReduce::isBasisFor(const Candidate &Basis,
                                             const Candidate &C) {
-  return (Basis.Ins != C.Ins && // skip the same instruction
-          // They must have the same type too. Basis.Base == C.Base doesn't
-          // guarantee their types are the same (PR23975).
+  return (Basis.Ins !=
+              C.Ins && // skip the same instruction
+                       // They must have the same type too. Basis.Base == C.Base
+                       // doesn't guarantee their types are the same (PR23975).
           Basis.Ins->getType() == C.Ins->getType() &&
           // Basis must dominate C in order to rewrite C with respect to Basis.
           DT->dominates(Basis.Ins->getParent(), C.Ins->getParent()) &&
@@ -674,36 +675,34 @@ void StraightLineStrengthReduce::rewriteCandidateWithBasis(
     }
     break;
   }
-  case Candidate::GEP:
-    {
-      Type *IntPtrTy = DL->getIntPtrType(C.Ins->getType());
-      bool InBounds = cast<GetElementPtrInst>(C.Ins)->isInBounds();
-      if (BumpWithUglyGEP) {
-        // C = (char *)Basis + Bump
-        unsigned AS = Basis.Ins->getType()->getPointerAddressSpace();
-        Type *CharTy = Type::getInt8PtrTy(Basis.Ins->getContext(), AS);
-        Reduced = Builder.CreateBitCast(Basis.Ins, CharTy);
-        if (InBounds)
-          Reduced =
-              Builder.CreateInBoundsGEP(Builder.getInt8Ty(), Reduced, Bump);
-        else
-          Reduced = Builder.CreateGEP(Builder.getInt8Ty(), Reduced, Bump);
-        Reduced = Builder.CreateBitCast(Reduced, C.Ins->getType());
-      } else {
-        // C = gep Basis, Bump
-        // Canonicalize bump to pointer size.
-        Bump = Builder.CreateSExtOrTrunc(Bump, IntPtrTy);
-        if (InBounds)
-          Reduced = Builder.CreateInBoundsGEP(
-              cast<GetElementPtrInst>(Basis.Ins)->getResultElementType(),
-              Basis.Ins, Bump);
-        else
-          Reduced = Builder.CreateGEP(
-              cast<GetElementPtrInst>(Basis.Ins)->getResultElementType(),
-              Basis.Ins, Bump);
-      }
-      break;
+  case Candidate::GEP: {
+    Type *IntPtrTy = DL->getIntPtrType(C.Ins->getType());
+    bool InBounds = cast<GetElementPtrInst>(C.Ins)->isInBounds();
+    if (BumpWithUglyGEP) {
+      // C = (char *)Basis + Bump
+      unsigned AS = Basis.Ins->getType()->getPointerAddressSpace();
+      Type *CharTy = Type::getInt8PtrTy(Basis.Ins->getContext(), AS);
+      Reduced = Builder.CreateBitCast(Basis.Ins, CharTy);
+      if (InBounds)
+        Reduced = Builder.CreateInBoundsGEP(Builder.getInt8Ty(), Reduced, Bump);
+      else
+        Reduced = Builder.CreateGEP(Builder.getInt8Ty(), Reduced, Bump);
+      Reduced = Builder.CreateBitCast(Reduced, C.Ins->getType());
+    } else {
+      // C = gep Basis, Bump
+      // Canonicalize bump to pointer size.
+      Bump = Builder.CreateSExtOrTrunc(Bump, IntPtrTy);
+      if (InBounds)
+        Reduced = Builder.CreateInBoundsGEP(
+            cast<GetElementPtrInst>(Basis.Ins)->getResultElementType(),
+            Basis.Ins, Bump);
+      else
+        Reduced = Builder.CreateGEP(
+            cast<GetElementPtrInst>(Basis.Ins)->getResultElementType(),
+            Basis.Ins, Bump);
     }
+    break;
+  }
   default:
     llvm_unreachable("C.CandidateKind is invalid");
   };

@@ -21,9 +21,7 @@ namespace __sanitizer {
 
 class StaticSpinMutex {
  public:
-  void Init() {
-    atomic_store(&state_, 0, memory_order_relaxed);
-  }
+  void Init() { atomic_store(&state_, 0, memory_order_relaxed); }
 
   void Lock() {
     if (TryLock())
@@ -35,9 +33,7 @@ class StaticSpinMutex {
     return atomic_exchange(&state_, 1, memory_order_acquire) == 0;
   }
 
-  void Unlock() {
-    atomic_store(&state_, 0, memory_order_release);
-  }
+  void Unlock() { atomic_store(&state_, 0, memory_order_release); }
 
   void CheckLocked() {
     CHECK_EQ(atomic_load(&state_, memory_order_relaxed), 1);
@@ -52,8 +48,8 @@ class StaticSpinMutex {
         proc_yield(10);
       else
         internal_sched_yield();
-      if (atomic_load(&state_, memory_order_relaxed) == 0
-          && atomic_exchange(&state_, 1, memory_order_acquire) == 0)
+      if (atomic_load(&state_, memory_order_relaxed) == 0 &&
+          atomic_exchange(&state_, 1, memory_order_acquire) == 0)
         return;
     }
   }
@@ -61,13 +57,11 @@ class StaticSpinMutex {
 
 class SpinMutex : public StaticSpinMutex {
  public:
-  SpinMutex() {
-    Init();
-  }
+  SpinMutex() { Init(); }
 
  private:
-  SpinMutex(const SpinMutex&);
-  void operator=(const SpinMutex&);
+  SpinMutex(const SpinMutex &);
+  void operator=(const SpinMutex &);
 };
 
 class BlockingMutex {
@@ -96,9 +90,7 @@ class BlockingMutex {
 // Reader-writer spin mutex.
 class RWMutex {
  public:
-  RWMutex() {
-    atomic_store(&state_, kUnlocked, memory_order_relaxed);
-  }
+  RWMutex() { atomic_store(&state_, kUnlocked, memory_order_relaxed); }
 
   ~RWMutex() {
     CHECK_EQ(atomic_load(&state_, memory_order_relaxed), kUnlocked);
@@ -139,11 +131,7 @@ class RWMutex {
  private:
   atomic_uint32_t state_;
 
-  enum {
-    kUnlocked = 0,
-    kWriteLock = 1,
-    kReadLock = 2
-  };
+  enum { kUnlocked = 0, kWriteLock = 1, kReadLock = 2 };
 
   void NOINLINE LockSlow() {
     for (int i = 0;; i++) {
@@ -155,7 +143,7 @@ class RWMutex {
       if (cmp == kUnlocked &&
           atomic_compare_exchange_weak(&state_, &cmp, kWriteLock,
                                        memory_order_acquire))
-          return;
+        return;
     }
   }
 
@@ -171,46 +159,36 @@ class RWMutex {
     }
   }
 
-  RWMutex(const RWMutex&);
-  void operator = (const RWMutex&);
+  RWMutex(const RWMutex &);
+  void operator=(const RWMutex &);
 };
 
-template<typename MutexType>
+template <typename MutexType>
 class GenericScopedLock {
  public:
-  explicit GenericScopedLock(MutexType *mu)
-      : mu_(mu) {
-    mu_->Lock();
-  }
+  explicit GenericScopedLock(MutexType *mu) : mu_(mu) { mu_->Lock(); }
 
-  ~GenericScopedLock() {
-    mu_->Unlock();
-  }
+  ~GenericScopedLock() { mu_->Unlock(); }
 
  private:
   MutexType *mu_;
 
-  GenericScopedLock(const GenericScopedLock&);
-  void operator=(const GenericScopedLock&);
+  GenericScopedLock(const GenericScopedLock &);
+  void operator=(const GenericScopedLock &);
 };
 
-template<typename MutexType>
+template <typename MutexType>
 class GenericScopedReadLock {
  public:
-  explicit GenericScopedReadLock(MutexType *mu)
-      : mu_(mu) {
-    mu_->ReadLock();
-  }
+  explicit GenericScopedReadLock(MutexType *mu) : mu_(mu) { mu_->ReadLock(); }
 
-  ~GenericScopedReadLock() {
-    mu_->ReadUnlock();
-  }
+  ~GenericScopedReadLock() { mu_->ReadUnlock(); }
 
  private:
   MutexType *mu_;
 
-  GenericScopedReadLock(const GenericScopedReadLock&);
-  void operator=(const GenericScopedReadLock&);
+  GenericScopedReadLock(const GenericScopedReadLock &);
+  void operator=(const GenericScopedReadLock &);
 };
 
 typedef GenericScopedLock<StaticSpinMutex> SpinMutexLock;

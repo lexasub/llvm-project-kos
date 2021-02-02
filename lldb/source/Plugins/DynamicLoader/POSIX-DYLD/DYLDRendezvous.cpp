@@ -562,7 +562,7 @@ bool DYLDRendezvous::FindMetadata(const char *name, PThreadField field,
   target.GetImages().FindSymbolsWithNameAndType(ConstString(name),
                                                 eSymbolTypeAny, list);
   if (list.IsEmpty())
-  return false;
+    return false;
 
   Address address = list[0].symbol->GetAddress();
   addr_t addr = address.GetLoadAddress(&target);
@@ -614,10 +614,10 @@ void DYLDRendezvous::DumpToLog(Log *log) const {
   LLDB_LOGF(log, "   Break  : %" PRIx64, GetBreakAddress());
   LLDB_LOGF(log, "   LDBase : %" PRIx64, GetLDBase());
   LLDB_LOGF(log, "   State  : %s",
-            (state == eConsistent)
-                ? "consistent"
-                : (state == eAdd) ? "add"
-                                  : (state == eDelete) ? "delete" : "unknown");
+            (state == eConsistent) ? "consistent"
+            : (state == eAdd)      ? "add"
+            : (state == eDelete)   ? "delete"
+                                   : "unknown");
 
   iterator I = begin();
   iterator E = end();

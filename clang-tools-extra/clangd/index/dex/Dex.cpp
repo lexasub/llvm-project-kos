@@ -30,7 +30,7 @@ std::unique_ptr<SymbolIndex> Dex::build(SymbolSlab Symbols, RefSlab Refs,
   // contained, without references into a backing store.
   auto Data = std::make_pair(std::move(Symbols), std::move(Refs));
   return std::make_unique<Dex>(Data.first, Data.second, Rels, std::move(Data),
-                                Size);
+                               Size);
 }
 
 namespace {

@@ -5,7 +5,7 @@
 struct B;
 struct A {
   A();
-  A(const A&);
+  A(const A &);
 
   void operator[](B b);
 
@@ -51,7 +51,6 @@ void side_effect();
 void callee(A);
 void (*get_f())(A);
 
-
 // CHECK-LABEL: define {{.*}}@{{.*}}postfix_before_args{{.*}}(
 void postfix_before_args() {
   // CHECK: call {{.*}}@{{.*}}get_f{{.*}}(
@@ -65,9 +64,8 @@ void postfix_before_args() {
   // CHECK-WINDOWS: call {{.*}}@"??0A@@Q{{AE|EAA}}@XZ"(
   // CHECK: call {{.*}}@{{.*}}callee{{.*}}(
   (side_effect(), callee)(A{});
-// CHECK: }
+  // CHECK: }
 }
-
 
 // CHECK-LABEL: define {{.*}}@{{.*}}dot_lhs_before_rhs{{.*}}(
 void dot_lhs_before_rhs() {
@@ -85,13 +83,12 @@ void dot_lhs_before_rhs() {
   // CHECK: call {{.*}}@{{.*}}make_b{{.*}}(
   // CHECK: call {{.*}}@{{.*}}a_member_f{{.*}}(
   make_c()->a_member_f(make_b());
-// CHECK: }
+  // CHECK: }
 }
-
 
 // CHECK-LABEL: define {{.*}}@{{.*}}array_lhs_before_rhs{{.*}}(
 void array_lhs_before_rhs() {
-  int (&get_arr())[10];
+  int(&get_arr())[10];
   extern int get_index();
 
   // CHECK: call {{.*}}@{{.*}}get_arr{{.*}}(
@@ -116,15 +113,16 @@ void array_lhs_before_rhs() {
   // CHECK: call {{.*}}@{{.*}}make_c{{.*}}(
   // CHECK: call
   get_index()[make_c()] = 0;
-// CHECK: }
+  // CHECK: }
 }
-
 
 void *operator new(decltype(sizeof(0)), C);
 
 // CHECK-LABEL: define {{.*}}@{{.*}}alloc_before_init{{.*}}(
 void alloc_before_init() {
-  struct Q { Q(A) {} };
+  struct Q {
+    Q(A) {}
+  };
   // CHECK-ITANIUM: call {{.*}}@_Znw{{.*}}(
   // CHECK-WINDOWS: call {{.*}}@"??2@YAP{{EAX_K|AXI}}@Z"(
   // CHECK: call {{.*}}@{{.*}}make_a{{.*}}(
@@ -133,9 +131,8 @@ void alloc_before_init() {
   // CHECK: call {{.*}}@{{.*}}make_c{{.*}}(
   // CHECK: call {{.*}}@{{.*}}make_a{{.*}}(
   new (make_c()) Q(make_a());
-// CHECK: }
+  // CHECK: }
 }
-
 
 // CHECK-LABEL: define {{.*}}@{{.*}}dotstar_lhs_before_rhs{{.*}}(
 int dotstar_lhs_before_rhs() {
@@ -173,9 +170,8 @@ int dotstar_lhs_before_rhs() {
   (make_a_ptr()->*make_mem_fn_ptr_a())();
 
   return a + b;
-// CHECK: }
+  // CHECK: }
 }
-
 
 // CHECK-LABEL: define {{.*}}@{{.*}}assign_rhs_before_lhs{{.*}}(
 void assign_rhs_before_lhs() {
@@ -204,7 +200,7 @@ void assign_rhs_before_lhs() {
   // CHECK: call {{.*}}@{{.*}}make_b{{.*}}(
   // CHECK: call {{.*}}@{{.*}}make_c{{.*}}(
   make_c() += make_b();
-// CHECK: }
+  // CHECK: }
 }
 
 // CHECK-LABEL: define {{.*}}@{{.*}}shift_lhs_before_rhs{{.*}}(
@@ -235,19 +231,19 @@ void shift_lhs_before_rhs() {
   // CHECK: call {{.*}}@{{.*}}make_c{{.*}}(
   // CHECK: call {{.*}}@{{.*}}make_b{{.*}}(
   make_c() >> make_b();
-// CHECK: }
+  // CHECK: }
 }
 
 // CHECK-LABEL: define {{.*}}@{{.*}}comma_lhs_before_rhs{{.*}}(
 void comma_lhs_before_rhs() {
   // CHECK: call {{.*}}@{{.*}}make_c{{.*}}(
   // CHECK: call {{.*}}@{{.*}}make_a{{.*}}(
-  make_c() , make_a();
+  make_c(), make_a();
 
   // FIXME: This is not correct for Windows ABIs, see above.
   // CHECK: call {{.*}}@{{.*}}make_c{{.*}}(
   // CHECK: call {{.*}}@{{.*}}make_b{{.*}}(
-  make_c() , make_b();
+  make_c(), make_b();
 }
 
 // CHECK-LABEL: define {{.*}}@{{.*}}andor_lhs_before_rhs{{.*}}(

@@ -39,7 +39,7 @@ private:
 public:
   StringMatcher(StringRef strVariableName,
                 const std::vector<StringPair> &matches, raw_ostream &os)
-    : StrVariableName(strVariableName), Matches(matches), OS(os) {}
+      : StrVariableName(strVariableName), Matches(matches), OS(os) {}
 
   void Emit(unsigned Indent = 0, bool IgnoreDuplicates = false) const;
 

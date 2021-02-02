@@ -120,10 +120,10 @@ void f_cstyle_cast() {
   // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: use auto when initializing with a cast to avoid duplicating the type name
   // CHECK-FIXES: auto  &c2 = (C &)*a;
 
-  xmlChar  *s = BAD_CAST "xml";
+  xmlChar *s = BAD_CAST "xml";
   // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: use auto when initializing with a cast to avoid duplicating the type name
   // CHECK-FIXES: auto s = BAD_CAST "xml";
-  xmlChar  *t = XMLCHAR_CAST("xml");
+  xmlChar *t = XMLCHAR_CAST("xml");
   // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: use auto when initializing with a cast to avoid duplicating the type name
   // CHECK-FIXES: auto t = XMLCHAR_CAST("xml");
   CAST_IN_MACRO("xml");
@@ -140,8 +140,7 @@ void f_functional_cast() {
   A a = A(b);
 }
 
-class StringRef
-{
+class StringRef {
 public:
   StringRef(const char *);
   const char *begin() const;
@@ -174,8 +173,7 @@ struct S {
 template <typename T>
 T max(T t1, T t2);
 
-void f_template_cast()
-{
+void f_template_cast() {
   double d = 0;
   int i1 = template_value_cast<int>(d);
   // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: use auto when initializing with a template cast to avoid duplicating the type name

@@ -160,17 +160,15 @@ static bool unifyLoopExits(DominatorTree &DT, LoopInfo &LI, Loop *L) {
   }
 
   LLVM_DEBUG(
-      dbgs() << "Found exit blocks:";
-      for (auto Exit : Exits) {
+      dbgs() << "Found exit blocks:"; for (auto Exit
+                                           : Exits) {
         dbgs() << " " << Exit->getName();
-      }
-      dbgs() << "\n";
+      } dbgs() << "\n";
 
-      dbgs() << "Found exiting blocks:";
-      for (auto EB : ExitingBlocks) {
+      dbgs() << "Found exiting blocks:"; for (auto EB
+                                              : ExitingBlocks) {
         dbgs() << " " << EB->getName();
-      }
-      dbgs() << "\n";);
+      } dbgs() << "\n";);
 
   if (Exits.size() <= 1) {
     LLVM_DEBUG(dbgs() << "loop does not have multiple exits; nothing to do\n");

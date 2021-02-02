@@ -1,8 +1,8 @@
 // RUN: %clang_cc1 -emit-llvm -triple %itanium_abi_triple -o - %s | FileCheck %s
 
 namespace N {
-  void free(void *i) {}
-}
+void free(void *i) {}
+} // namespace N
 
 int main(void) {
   // CHECK: call {{.*}}void @_ZN1N4freeEPv

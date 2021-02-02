@@ -18,7 +18,6 @@
 
 #endif // #ifdef MISSING_HEADER
 
-
 #ifdef NONREQUIRED_MISSING_HEADER
 
 // However, if the missing header is dominated by an unsatisfied
@@ -31,7 +30,6 @@
 #include "nonrequired_missing_header/not_missing.h"
 
 #endif // #ifdef NONREQUIRED_MISSING_HEADER
-
 
 #ifdef MISSING_REQUIREMENT
 

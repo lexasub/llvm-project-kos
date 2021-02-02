@@ -6,7 +6,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-
 // Test the set of C++11 features that Clang provides as an extension in C++03 mode.
 // The language features we expect are:
 //
@@ -35,16 +34,16 @@ struct T2 {
   T2() = default;
   T2(T2 const&) = delete;
 };
-}
+} // namespace test_eq_delete_and_default
 
 namespace alias_templates {
 template <class T>
 using X = T;
 static_assert((std::is_same<X<int>, int>::value), "");
-}
+} // namespace alias_templates
 
 namespace variadics_templates {
-template <class ...Args>
+template <class... Args>
 int t1(Args...) {
   return sizeof...(Args);
 }
@@ -53,13 +52,16 @@ void test() {
   assert(t1(42) == 1);
   assert(t1(1, 2, 3) == 3);
 }
-}
+} // namespace variadics_templates
 
 namespace rvalue_references_move_semantics {
 struct T {
   T() : moved(0) {}
   T(T const& other) : moved(other.moved) {}
-  T(T&& other) : moved(other.moved) { ++moved; other.moved = -1; }
+  T(T&& other) : moved(other.moved) {
+    ++moved;
+    other.moved = -1;
+  }
   int moved;
 };
 void f(T o, int expect_moved) { assert(o.moved == expect_moved); }
@@ -77,7 +79,7 @@ void test() {
     f(static_cast<T&&>(t), 1);
   }
 }
-}
+} // namespace rvalue_references_move_semantics
 
 namespace rvalue_references_perfect_forwarding {
 template <class Expect, class T>
@@ -90,20 +92,20 @@ void test() {
   f<int&&>(42);
   f<int&&>(static_cast<int&&>(x));
 }
-}
+} // namespace rvalue_references_perfect_forwarding
 
 namespace default_values_for_nttp {
 template <int I = 42>
-void f() { assert(I == 42); }
-void test() {
-  f();
+void f() {
+  assert(I == 42);
 }
-}
+void test() { f(); }
+} // namespace default_values_for_nttp
 
 namespace reference_qualified_functions {
 struct T {
   T() : lvalue_called(0), rvalue_called(0) {}
-  void foo() const & { lvalue_called++; }
+  void foo() const& { lvalue_called++; }
   void foo() && { rvalue_called++; }
   mutable int lvalue_called;
   int rvalue_called;
@@ -123,7 +125,7 @@ void test() {
     assert(t.rvalue_called == 1);
   }
 }
-}
+} // namespace reference_qualified_functions
 
 int main(int, char**) {
   variadics_templates::test();

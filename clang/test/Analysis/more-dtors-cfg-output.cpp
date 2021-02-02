@@ -94,7 +94,7 @@ void elided_lambda_capture_init() {
   // The copy from get_foo() into the lambda should be elided.  Should call
   // the lambda's destructor, but not ~Foo() separately.
   // (This syntax is C++14 'generalized lambda captures'.)
-  auto z = [x=get_foo()]() {};
+  auto z = [x = get_foo()]() {};
 }
 // CHECK: void elided_lambda_capture_init()
 // CXX14: (CXXConstructExpr{{.*}}, struct Foo)
@@ -131,7 +131,6 @@ void elided_stmt_expr() {
 // CXX14: ~Foo() (Temporary object destructor)
 // CHECK: ~Foo() (Temporary object destructor)
 
-
 void elided_stmt_expr_multiple_stmts() {
   // Make sure that only the value returned out of a statement expression is
   // elided.
@@ -142,7 +141,6 @@ void elided_stmt_expr_multiple_stmts() {
 // CXX14: (CXXConstructExpr{{.*}}, struct Foo)
 // CXX14: ~Foo() (Temporary object destructor)
 // CHECK: ~Foo() (Temporary object destructor)
-
 
 void unelided_stmt_expr() {
   ({ (const Bar &)get_bar(); });
@@ -218,7 +216,7 @@ Foo elided_return() {
 // CXX14: ~Foo() (Temporary object destructor)
 
 auto elided_return_lambda() {
-  return [x=get_foo()]() {};
+  return [x = get_foo()]() {};
 }
 // CHECK: (lambda at {{.*}}) elided_return_lambda()
 // CXX14: (CXXConstructExpr{{.*}}, class (lambda at {{.*}}))
@@ -242,8 +240,8 @@ void test_default_arg() {
 // CHECK: ~Foo() (Temporary object destructor)
 
 struct DefaultArgInCtor {
-    DefaultArgInCtor(Foo foo = get_foo());
-    ~DefaultArgInCtor();
+  DefaultArgInCtor(Foo foo = get_foo());
+  ~DefaultArgInCtor();
 };
 
 void default_ctor_with_default_arg() {
@@ -276,11 +274,11 @@ void new_default_ctor_with_default_arg(long count) {
 // Boilerplate needed to test co_return:
 
 namespace std::experimental {
-  template <typename Promise>
-  struct coroutine_handle {
-    static coroutine_handle from_address(void *) noexcept;
-  };
-}
+template <typename Promise>
+struct coroutine_handle {
+  static coroutine_handle from_address(void *) noexcept;
+};
+} // namespace std::experimental
 
 struct TestPromise {
   TestPromise initial_suspend();
@@ -294,13 +292,13 @@ struct TestPromise {
 };
 
 namespace std::experimental {
-  template <typename Ret, typename... Args>
-  struct coroutine_traits;
-  template <>
-  struct coroutine_traits<Bar> {
-      using promise_type = TestPromise;
-  };
-}
+template <typename Ret, typename... Args>
+struct coroutine_traits;
+template <>
+struct coroutine_traits<Bar> {
+  using promise_type = TestPromise;
+};
+} // namespace std::experimental
 
 Bar coreturn() {
   co_return get_bar();

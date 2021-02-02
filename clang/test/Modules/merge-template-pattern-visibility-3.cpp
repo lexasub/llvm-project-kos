@@ -4,7 +4,7 @@
 module A {}
 #pragma clang module contents
 #pragma clang module begin A
-template<typename T> void f(const T&) { T::error; }
+template <typename T> void f(const T &) { T::error; }
 #pragma clang module end
 #pragma clang module endbuild
 
@@ -12,7 +12,7 @@ template<typename T> void f(const T&) { T::error; }
 module B {}
 #pragma clang module contents
 #pragma clang module begin B
-template<typename T> void f(const T&) { T::error; }
+template <typename T> void f(const T &) { T::error; }
 #pragma clang module end
 #pragma clang module endbuild
 
@@ -21,7 +21,7 @@ module C {}
 #pragma clang module contents
 #pragma clang module begin C
 #pragma clang module load B
-template<typename T> void f(const T&) { T::error; }
+template <typename T> void f(const T &) { T::error; }
 #pragma clang module end
 #pragma clang module endbuild
 

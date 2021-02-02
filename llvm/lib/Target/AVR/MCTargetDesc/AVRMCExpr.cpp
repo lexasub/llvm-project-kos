@@ -19,7 +19,7 @@ namespace llvm {
 namespace {
 
 const struct ModifierEntry {
-  const char * const Spelling;
+  const char *const Spelling;
   AVRMCExpr::VariantKind VariantKind;
 } ModifierNames[] = {
     {"lo8", AVRMCExpr::VK_AVR_LO8},       {"hi8", AVRMCExpr::VK_AVR_HI8},
@@ -80,7 +80,8 @@ bool AVRMCExpr::evaluateAsRelocatableImpl(MCValue &Result,
   if (Value.isAbsolute()) {
     Result = MCValue::get(evaluateAsInt64(Value.getConstant()));
   } else {
-    if (!Layout) return false;
+    if (!Layout)
+      return false;
 
     MCContext &Context = Layout->getAssembler().getContext();
     const MCSymbolRefExpr *Sym = Value.getSymA();
@@ -213,4 +214,3 @@ AVRMCExpr::VariantKind AVRMCExpr::getKindByName(StringRef Name) {
 }
 
 } // end of namespace llvm
-

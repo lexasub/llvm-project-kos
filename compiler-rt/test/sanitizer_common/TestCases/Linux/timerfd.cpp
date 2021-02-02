@@ -2,12 +2,11 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
-#include <time.h>
 #include <sys/timerfd.h>
+#include <time.h>
 #include <unistd.h>
 
-int main (int argc, char** argv)
-{
+int main(int argc, char **argv) {
   int fd = timerfd_create(CLOCK_REALTIME, 0);
   assert(fd >= 0);
 
@@ -36,7 +35,6 @@ int main (int argc, char** argv)
   assert(its3.it_value.tv_sec <= its.it_value.tv_sec);
   assert(its3.it_value.tv_nsec <= its.it_value.tv_nsec);
 
-
   unsigned long long buf;
   res = read(fd, &buf, sizeof(buf));
   assert(res == 8);
@@ -47,6 +45,6 @@ int main (int argc, char** argv)
 
   printf("DONE\n");
   // CHECK: DONE
-  
+
   return 0;
 }

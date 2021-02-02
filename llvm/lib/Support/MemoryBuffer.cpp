@@ -38,7 +38,7 @@ using namespace llvm;
 // MemoryBuffer implementation itself.
 //===----------------------------------------------------------------------===//
 
-MemoryBuffer::~MemoryBuffer() { }
+MemoryBuffer::~MemoryBuffer() {}
 
 /// init - Initialize this MemoryBuffer as a reference to externally allocated
 /// memory, memory that we know is already null terminated.
@@ -80,8 +80,7 @@ void *operator new(size_t N, const NamedBufferAlloc &Alloc) {
 
 namespace {
 /// MemoryBufferMem - Named MemoryBuffer pointing to a block of memory.
-template<typename MB>
-class MemoryBufferMem : public MB {
+template <typename MB> class MemoryBufferMem : public MB {
 public:
   MemoryBufferMem(StringRef InputData, bool RequiresNullTerminator) {
     MemoryBuffer::init(InputData.begin(), InputData.end(),
@@ -124,7 +123,8 @@ MemoryBuffer::getMemBuffer(MemoryBufferRef Ref, bool RequiresNullTerminator) {
 
 static ErrorOr<std::unique_ptr<WritableMemoryBuffer>>
 getMemBufferCopyImpl(StringRef InputData, const Twine &BufferName) {
-  auto Buf = WritableMemoryBuffer::getNewUninitMemBuffer(InputData.size(), BufferName);
+  auto Buf =
+      WritableMemoryBuffer::getNewUninitMemBuffer(InputData.size(), BufferName);
   if (!Buf)
     return make_error_code(errc::not_enough_memory);
   memcpy(Buf->getBufferStart(), InputData.data(), InputData.size());
@@ -179,8 +179,7 @@ constexpr sys::fs::mapped_file_region::mapmode
 /// Memory maps a file descriptor using sys::fs::mapped_file_region.
 ///
 /// This handles converting the offset into a legal offset on the platform.
-template<typename MB>
-class MemoryBufferMMapFile : public MB {
+template <typename MB> class MemoryBufferMMapFile : public MB {
   sys::fs::mapped_file_region MFR;
 
   static uint64_t getLegalMapOffset(uint64_t Offset) {
@@ -196,8 +195,8 @@ class MemoryBufferMMapFile : public MB {
   }
 
 public:
-  MemoryBufferMMapFile(bool RequiresNullTerminator, sys::fs::file_t FD, uint64_t Len,
-                       uint64_t Offset, std::error_code &EC)
+  MemoryBufferMMapFile(bool RequiresNullTerminator, sys::fs::file_t FD,
+                       uint64_t Len, uint64_t Offset, std::error_code &EC)
       : MFR(FD, Mapmode<MB>, getLegalMapSize(Len, Offset),
             getLegalMapOffset(Offset), EC) {
     if (!EC) {
@@ -223,7 +222,7 @@ public:
 
 static ErrorOr<std::unique_ptr<WritableMemoryBuffer>>
 getMemoryBufferForStream(sys::fs::file_t FD, const Twine &BufferName) {
-  const ssize_t ChunkSize = 4096*4;
+  const ssize_t ChunkSize = 4096 * 4;
   SmallString<ChunkSize> Buffer;
   // Read into Buffer until we hit EOF.
   for (;;) {
@@ -239,7 +238,6 @@ getMemoryBufferForStream(sys::fs::file_t FD, const Twine &BufferName) {
 
   return getMemBufferCopyImpl(Buffer, BufferName);
 }
-
 
 ErrorOr<std::unique_ptr<MemoryBuffer>>
 MemoryBuffer::getFile(const Twine &Filename, int64_t FileSize,
@@ -285,7 +283,8 @@ WritableMemoryBuffer::getFileSlice(const Twine &Filename, uint64_t MapSize,
 }
 
 std::unique_ptr<WritableMemoryBuffer>
-WritableMemoryBuffer::getNewUninitMemBuffer(size_t Size, const Twine &BufferName) {
+WritableMemoryBuffer::getNewUninitMemBuffer(size_t Size,
+                                            const Twine &BufferName) {
   using MemBuffer = MemoryBufferMem<WritableMemoryBuffer>;
   // Allocate space for the MemoryBuffer, the data and the name. It is important
   // that MemoryBuffer and data are aligned so PointerIntPair works with them.
@@ -295,7 +294,7 @@ WritableMemoryBuffer::getNewUninitMemBuffer(size_t Size, const Twine &BufferName
   StringRef NameRef = BufferName.toStringRef(NameBuf);
   size_t AlignedStringLen = alignTo(sizeof(MemBuffer) + NameRef.size() + 1, 16);
   size_t RealLen = AlignedStringLen + Size + 1;
-  char *Mem = static_cast<char*>(operator new(RealLen, std::nothrow));
+  char *Mem = static_cast<char *>(operator new(RealLen, std::nothrow));
   if (!Mem)
     return nullptr;
 
@@ -319,13 +318,9 @@ WritableMemoryBuffer::getNewMemBuffer(size_t Size, const Twine &BufferName) {
   return SB;
 }
 
-static bool shouldUseMmap(sys::fs::file_t FD,
-                          size_t FileSize,
-                          size_t MapSize,
-                          off_t Offset,
-                          bool RequiresNullTerminator,
-                          int PageSize,
-                          bool IsVolatile) {
+static bool shouldUseMmap(sys::fs::file_t FD, size_t FileSize, size_t MapSize,
+                          off_t Offset, bool RequiresNullTerminator,
+                          int PageSize, bool IsVolatile) {
   // mmap may leave the buffer without null terminator if the file size changed
   // by the time the last page is mapped in, so avoid it if the file size is
   // likely to change.
@@ -360,12 +355,12 @@ static bool shouldUseMmap(sys::fs::file_t FD,
 
   // Don't try to map files that are exactly a multiple of the system page size
   // if we need a null terminator.
-  if ((FileSize & (PageSize -1)) == 0)
+  if ((FileSize & (PageSize - 1)) == 0)
     return false;
 
 #if defined(__CYGWIN__)
-  // Don't try to map files that are exactly a multiple of the physical page size
-  // if we need a null terminator.
+  // Don't try to map files that are exactly a multiple of the physical page
+  // size if we need a null terminator.
   // FIXME: We should reorganize again getPageSize() on Win32.
   if ((FileSize & (4096 - 1)) == 0)
     return false;
@@ -493,15 +488,17 @@ getOpenFileImpl(sys::fs::file_t FD, const Twine &Filename, uint64_t FileSize,
 }
 
 ErrorOr<std::unique_ptr<MemoryBuffer>>
-MemoryBuffer::getOpenFile(sys::fs::file_t FD, const Twine &Filename, uint64_t FileSize,
-                          bool RequiresNullTerminator, bool IsVolatile) {
+MemoryBuffer::getOpenFile(sys::fs::file_t FD, const Twine &Filename,
+                          uint64_t FileSize, bool RequiresNullTerminator,
+                          bool IsVolatile) {
   return getOpenFileImpl<MemoryBuffer>(FD, Filename, FileSize, FileSize, 0,
-                         RequiresNullTerminator, IsVolatile);
+                                       RequiresNullTerminator, IsVolatile);
 }
 
 ErrorOr<std::unique_ptr<MemoryBuffer>>
-MemoryBuffer::getOpenFileSlice(sys::fs::file_t FD, const Twine &Filename, uint64_t MapSize,
-                               int64_t Offset, bool IsVolatile) {
+MemoryBuffer::getOpenFileSlice(sys::fs::file_t FD, const Twine &Filename,
+                               uint64_t MapSize, int64_t Offset,
+                               bool IsVolatile) {
   assert(MapSize != uint64_t(-1));
   return getOpenFileImpl<MemoryBuffer>(FD, Filename, -1, MapSize, Offset, false,
                                        IsVolatile);

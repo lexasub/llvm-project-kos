@@ -22,54 +22,47 @@
 
 #include <cstdio>
 
-TEST_CONSTEXPR_CXX14 int factorial(int x)
-{
-    int r = 1;
-    for (; x; --x)
-        r *= x;
-    return r;
+TEST_CONSTEXPR_CXX14 int factorial(int x) {
+  int r = 1;
+  for (; x; --x)
+    r *= x;
+  return r;
 }
 
 template <class Iter>
-TEST_CONSTEXPR_CXX20 bool
-test()
-{
-    int ia[] = {6, 5, 4, 3, 2, 1};
-    const int sa = sizeof(ia)/sizeof(ia[0]);
-    int prev[sa];
-    for (int e = 0; e <= sa; ++e)
-    {
-        int count = 0;
-        bool x;
-        do
-        {
-            std::copy(ia, ia+e, prev);
-            x = std::prev_permutation(Iter(ia), Iter(ia+e));
-            if (e > 1)
-            {
-                if (x)
-                    assert(std::lexicographical_compare(ia, ia+e, prev, prev+e));
-                else
-                    assert(std::lexicographical_compare(prev, prev+e, ia, ia+e));
-            }
-            ++count;
-        } while (x);
-        assert(count == factorial(e));
-    }
-    return true;
+TEST_CONSTEXPR_CXX20 bool test() {
+  int ia[] = {6, 5, 4, 3, 2, 1};
+  const int sa = sizeof(ia) / sizeof(ia[0]);
+  int prev[sa];
+  for (int e = 0; e <= sa; ++e) {
+    int count = 0;
+    bool x;
+    do {
+      std::copy(ia, ia + e, prev);
+      x = std::prev_permutation(Iter(ia), Iter(ia + e));
+      if (e > 1) {
+        if (x)
+          assert(std::lexicographical_compare(ia, ia + e, prev, prev + e));
+        else
+          assert(std::lexicographical_compare(prev, prev + e, ia, ia + e));
+      }
+      ++count;
+    } while (x);
+    assert(count == factorial(e));
+  }
+  return true;
 }
 
-int main(int, char**)
-{
-    test<bidirectional_iterator<int*> >();
-    test<random_access_iterator<int*> >();
-    test<int*>();
+int main(int, char**) {
+  test<bidirectional_iterator<int*> >();
+  test<random_access_iterator<int*> >();
+  test<int*>();
 
 #if TEST_STD_VER >= 20
-    static_assert(test<bidirectional_iterator<int*>>());
-    static_assert(test<random_access_iterator<int*>>());
-    static_assert(test<int*>());
+  static_assert(test<bidirectional_iterator<int*> >());
+  static_assert(test<random_access_iterator<int*> >());
+  static_assert(test<int*>());
 #endif
 
-    return 0;
+  return 0;
 }

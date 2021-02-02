@@ -14,7 +14,7 @@ namespace {
 
 // Matches the (optional) capture-default of a lambda-introducer.
 class LambdaDefaultCaptureVisitor
-  : public ExpectedLocationVisitor<LambdaDefaultCaptureVisitor> {
+    : public ExpectedLocationVisitor<LambdaDefaultCaptureVisitor> {
 public:
   bool VisitLambdaExpr(LambdaExpr *Lambda) {
     if (Lambda->getCaptureDefault() != LCD_None) {

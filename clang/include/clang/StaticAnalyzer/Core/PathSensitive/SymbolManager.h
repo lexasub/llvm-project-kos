@@ -37,7 +37,7 @@ namespace ento {
 class BasicValueFactory;
 class StoreManager;
 
-///A symbol representing the value stored at a MemRegion.
+/// A symbol representing the value stored at a MemRegion.
 class SymbolRegionValue : public SymbolData {
   const TypedValueRegion *R;
 
@@ -48,14 +48,15 @@ public:
     assert(isValidTypeForSymbol(r->getValueType()));
   }
 
-  const TypedValueRegion* getRegion() const { return R; }
+  const TypedValueRegion *getRegion() const { return R; }
 
-  static void Profile(llvm::FoldingSetNodeID& profile, const TypedValueRegion* R) {
-    profile.AddInteger((unsigned) SymbolRegionValueKind);
+  static void Profile(llvm::FoldingSetNodeID &profile,
+                      const TypedValueRegion *R) {
+    profile.AddInteger((unsigned)SymbolRegionValueKind);
     profile.AddPointer(R);
   }
 
-  void Profile(llvm::FoldingSetNodeID& profile) override {
+  void Profile(llvm::FoldingSetNodeID &profile) override {
     Profile(profile, R);
   }
 
@@ -105,10 +106,10 @@ public:
 
   void dumpToStream(raw_ostream &os) const override;
 
-  static void Profile(llvm::FoldingSetNodeID& profile, const Stmt *S,
+  static void Profile(llvm::FoldingSetNodeID &profile, const Stmt *S,
                       QualType T, unsigned Count, const LocationContext *LCtx,
                       const void *SymbolTag) {
-    profile.AddInteger((unsigned) SymbolConjuredKind);
+    profile.AddInteger((unsigned)SymbolConjuredKind);
     profile.AddPointer(S);
     profile.AddPointer(LCtx);
     profile.Add(T);
@@ -116,7 +117,7 @@ public:
     profile.AddPointer(SymbolTag);
   }
 
-  void Profile(llvm::FoldingSetNodeID& profile) override {
+  void Profile(llvm::FoldingSetNodeID &profile) override {
     Profile(profile, S, T, Count, LCtx, SymbolTag);
   }
 
@@ -150,14 +151,14 @@ public:
   void dumpToStream(raw_ostream &os) const override;
   const MemRegion *getOriginRegion() const override { return getRegion(); }
 
-  static void Profile(llvm::FoldingSetNodeID& profile, SymbolRef parent,
+  static void Profile(llvm::FoldingSetNodeID &profile, SymbolRef parent,
                       const TypedValueRegion *r) {
-    profile.AddInteger((unsigned) SymbolDerivedKind);
+    profile.AddInteger((unsigned)SymbolDerivedKind);
     profile.AddPointer(r);
     profile.AddPointer(parent);
   }
 
-  void Profile(llvm::FoldingSetNodeID& profile) override {
+  void Profile(llvm::FoldingSetNodeID &profile) override {
     Profile(profile, parentSymbol, R);
   }
 
@@ -187,12 +188,12 @@ public:
 
   void dumpToStream(raw_ostream &os) const override;
 
-  static void Profile(llvm::FoldingSetNodeID& profile, const SubRegion *R) {
-    profile.AddInteger((unsigned) SymbolExtentKind);
+  static void Profile(llvm::FoldingSetNodeID &profile, const SubRegion *R) {
+    profile.AddInteger((unsigned)SymbolExtentKind);
     profile.AddPointer(R);
   }
 
-  void Profile(llvm::FoldingSetNodeID& profile) override {
+  void Profile(llvm::FoldingSetNodeID &profile) override {
     Profile(profile, R);
   }
 
@@ -207,7 +208,7 @@ public:
 ///  dead-symbol sweeping AND their associated regions are still alive.
 ///  Intended for use by checkers.
 class SymbolMetadata : public SymbolData {
-  const MemRegion* R;
+  const MemRegion *R;
   const Stmt *S;
   QualType T;
   const LocationContext *LCtx;
@@ -215,16 +216,16 @@ class SymbolMetadata : public SymbolData {
   const void *Tag;
 
 public:
-  SymbolMetadata(SymbolID sym, const MemRegion* r, const Stmt *s, QualType t,
+  SymbolMetadata(SymbolID sym, const MemRegion *r, const Stmt *s, QualType t,
                  const LocationContext *LCtx, unsigned count, const void *tag)
       : SymbolData(SymbolMetadataKind, sym), R(r), S(s), T(t), LCtx(LCtx),
         Count(count), Tag(tag) {
-      assert(r);
-      assert(s);
-      assert(isValidTypeForSymbol(t));
-      assert(LCtx);
-      assert(tag);
-    }
+    assert(r);
+    assert(s);
+    assert(isValidTypeForSymbol(t));
+    assert(LCtx);
+    assert(tag);
+  }
 
   const MemRegion *getRegion() const { return R; }
   const Stmt *getStmt() const { return S; }
@@ -238,10 +239,10 @@ public:
 
   void dumpToStream(raw_ostream &os) const override;
 
-  static void Profile(llvm::FoldingSetNodeID& profile, const MemRegion *R,
+  static void Profile(llvm::FoldingSetNodeID &profile, const MemRegion *R,
                       const Stmt *S, QualType T, const LocationContext *LCtx,
                       unsigned Count, const void *Tag) {
-    profile.AddInteger((unsigned) SymbolMetadataKind);
+    profile.AddInteger((unsigned)SymbolMetadataKind);
     profile.AddPointer(R);
     profile.AddPointer(S);
     profile.Add(T);
@@ -250,7 +251,7 @@ public:
     profile.AddPointer(Tag);
   }
 
-  void Profile(llvm::FoldingSetNodeID& profile) override {
+  void Profile(llvm::FoldingSetNodeID &profile) override {
     Profile(profile, R, S, T, LCtx, Count, Tag);
   }
 
@@ -291,15 +292,15 @@ public:
 
   void dumpToStream(raw_ostream &os) const override;
 
-  static void Profile(llvm::FoldingSetNodeID& ID,
-                      const SymExpr *In, QualType From, QualType To) {
-    ID.AddInteger((unsigned) SymbolCastKind);
+  static void Profile(llvm::FoldingSetNodeID &ID, const SymExpr *In,
+                      QualType From, QualType To) {
+    ID.AddInteger((unsigned)SymbolCastKind);
     ID.AddPointer(In);
     ID.Add(From);
     ID.Add(To);
   }
 
-  void Profile(llvm::FoldingSetNodeID& ID) override {
+  void Profile(llvm::FoldingSetNodeID &ID) override {
     Profile(ID, Operand, FromTy, ToTy);
   }
 
@@ -426,27 +427,26 @@ class SymbolManager {
   SymbolDependTy SymbolDependencies;
 
   unsigned SymbolCounter = 0;
-  llvm::BumpPtrAllocator& BPAlloc;
+  llvm::BumpPtrAllocator &BPAlloc;
   BasicValueFactory &BV;
   ASTContext &Ctx;
 
 public:
   SymbolManager(ASTContext &ctx, BasicValueFactory &bv,
-                llvm::BumpPtrAllocator& bpalloc)
+                llvm::BumpPtrAllocator &bpalloc)
       : SymbolDependencies(16), BPAlloc(bpalloc), BV(bv), Ctx(ctx) {}
 
   static bool canSymbolicate(QualType T);
 
   /// Make a unique symbol for MemRegion R according to its kind.
-  const SymbolRegionValue* getRegionValueSymbol(const TypedValueRegion* R);
+  const SymbolRegionValue *getRegionValueSymbol(const TypedValueRegion *R);
 
-  const SymbolConjured* conjureSymbol(const Stmt *E,
-                                      const LocationContext *LCtx,
-                                      QualType T,
+  const SymbolConjured *conjureSymbol(const Stmt *E,
+                                      const LocationContext *LCtx, QualType T,
                                       unsigned VisitCount,
                                       const void *SymbolTag = nullptr);
 
-  const SymbolConjured* conjureSymbol(const Expr *E,
+  const SymbolConjured *conjureSymbol(const Expr *E,
                                       const LocationContext *LCtx,
                                       unsigned VisitCount,
                                       const void *SymbolTag = nullptr) {
@@ -468,27 +468,25 @@ public:
                                           unsigned VisitCount,
                                           const void *SymbolTag = nullptr);
 
-  const SymbolCast* getCastSymbol(const SymExpr *Operand,
-                                  QualType From, QualType To);
+  const SymbolCast *getCastSymbol(const SymExpr *Operand, QualType From,
+                                  QualType To);
 
   const SymIntExpr *getSymIntExpr(const SymExpr *lhs, BinaryOperator::Opcode op,
-                                  const llvm::APSInt& rhs, QualType t);
+                                  const llvm::APSInt &rhs, QualType t);
 
   const SymIntExpr *getSymIntExpr(const SymExpr &lhs, BinaryOperator::Opcode op,
-                                  const llvm::APSInt& rhs, QualType t) {
+                                  const llvm::APSInt &rhs, QualType t) {
     return getSymIntExpr(&lhs, op, rhs, t);
   }
 
-  const IntSymExpr *getIntSymExpr(const llvm::APSInt& lhs,
-                                  BinaryOperator::Opcode op,
-                                  const SymExpr *rhs, QualType t);
+  const IntSymExpr *getIntSymExpr(const llvm::APSInt &lhs,
+                                  BinaryOperator::Opcode op, const SymExpr *rhs,
+                                  QualType t);
 
   const SymSymExpr *getSymSymExpr(const SymExpr *lhs, BinaryOperator::Opcode op,
                                   const SymExpr *rhs, QualType t);
 
-  QualType getType(const SymExpr *SE) const {
-    return SE->getType();
-  }
+  QualType getType(const SymExpr *SE) const { return SE->getType(); }
 
   /// Add artificial symbol dependency.
   ///
@@ -503,10 +501,7 @@ public:
 
 /// A class responsible for cleaning up unused symbols.
 class SymbolReaper {
-  enum SymbolStatus {
-    NotProcessed,
-    HaveMarkedDependents
-  };
+  enum SymbolStatus { NotProcessed, HaveMarkedDependents };
 
   using SymbolSetTy = llvm::DenseSet<SymbolRef>;
   using SymbolMapTy = llvm::DenseMap<SymbolRef, SymbolStatus>;
@@ -519,7 +514,7 @@ class SymbolReaper {
 
   const StackFrameContext *LCtx;
   const Stmt *Loc;
-  SymbolManager& SymMgr;
+  SymbolManager &SymMgr;
   StoreRef reapedStore;
   llvm::DenseMap<const MemRegion *, unsigned> includedRegionCache;
 
@@ -567,9 +562,7 @@ public:
   ///
   /// This should only be called once all marking of dead symbols has completed.
   /// (For checkers, this means only in the checkDeadSymbols callback.)
-  bool isDead(SymbolRef sym) {
-    return !isLive(sym);
-  }
+  bool isDead(SymbolRef sym) { return !isLive(sym); }
 
   void markLive(const MemRegion *region);
   void markElementIndicesLive(const MemRegion *region);

@@ -1,1 +1,3 @@
-namespace N { extern int n; }
+namespace N {
+extern int n;
+}

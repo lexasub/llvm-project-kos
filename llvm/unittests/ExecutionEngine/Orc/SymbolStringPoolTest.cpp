@@ -50,4 +50,4 @@ TEST(SymbolStringPool, ClearDeadEntries) {
   EXPECT_TRUE(SP.empty()) << "pool should be empty";
 }
 
-}
+} // namespace

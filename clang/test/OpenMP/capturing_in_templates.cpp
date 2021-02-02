@@ -26,7 +26,7 @@ pair<T1, T2> make_pair(T1 &&t1, T2 &&t2) {
 int main(int argc, char **argv) {
 // CHECK: call i32 @__tgt_target_mapper(%struct.ident_t* @{{.+}}, i64 -1, i8* @{{.+}}.region_id, i32 0, i8** null, i8** null, i64* null, i64* null, i8** null, i8** null)
 #pragma omp target
- {
+  {
     for (int i = 0; i < 64; ++i) {
       for (int j = 0; j < 64; ++j) {
         auto foo = make_pair(i * i, j * j);

@@ -119,7 +119,8 @@ int main(int argc, const char **argv) {
                  OptionsParser->getSourcePathList());
 
   if (UseColor.getNumOccurrences() > 0) {
-    ArgumentsAdjuster colorAdjustor = [](const CommandLineArguments &Args, StringRef /*unused*/) {
+    ArgumentsAdjuster colorAdjustor = [](const CommandLineArguments &Args,
+                                         StringRef /*unused*/) {
       CommandLineArguments AdjustedArgs = Args;
       if (UseColor)
         AdjustedArgs.push_back("-fdiagnostics-color");

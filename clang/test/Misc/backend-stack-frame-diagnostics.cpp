@@ -63,18 +63,18 @@ void frameSizeLocalClassWarning() {
 void frameSizeLambdaWarning() {
   auto fn =
       []() { // expected-warning-re {{stack frame size of {{[0-9]+}} bytes in lambda expression}}
-    char buffer[80];
-    doIt(buffer);
-  };
+        char buffer[80];
+        doIt(buffer);
+      };
   fn();
 }
 
 void frameSizeBlocksWarning() {
   auto fn =
       ^() { // expected-warning-re {{stack frame size of {{[0-9]+}} bytes in block literal}}
-    char buffer[80];
-    doIt(buffer);
-  };
+        char buffer[80];
+        doIt(buffer);
+      };
   fn();
 }
 

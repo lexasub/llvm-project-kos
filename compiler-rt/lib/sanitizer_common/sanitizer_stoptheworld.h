@@ -13,8 +13,8 @@
 #ifndef SANITIZER_STOPTHEWORLD_H
 #define SANITIZER_STOPTHEWORLD_H
 
-#include "sanitizer_internal_defs.h"
 #include "sanitizer_common.h"
+#include "sanitizer_internal_defs.h"
 
 namespace __sanitizer {
 
@@ -50,8 +50,7 @@ class SuspendedThreadsList {
 };
 
 typedef void (*StopTheWorldCallback)(
-    const SuspendedThreadsList &suspended_threads_list,
-    void *argument);
+    const SuspendedThreadsList &suspended_threads_list, void *argument);
 
 // Suspend all threads in the current process and run the callback on the list
 // of suspended threads. This function will resume the threads before returning.

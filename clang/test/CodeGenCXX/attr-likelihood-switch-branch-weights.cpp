@@ -7,7 +7,7 @@ void OneCaseL() {
   // CHECK: switch
   // CHECK: {{.*}} !prof !6
   switch (i) {
-    [[likely]] case 1: break;
+    [[likely]] case 1 : break;
   }
 }
 
@@ -16,7 +16,8 @@ void OneCaseU() {
   // CHECK: switch
   // CHECK: {{.*}} !prof !7
   switch (i) {
-    [[unlikely]] case 1: ++i; break;
+    [[unlikely]] case 1 : ++i;
+    break;
   }
 }
 
@@ -25,8 +26,9 @@ void TwoCasesLN() {
   // CHECK: switch
   // CHECK: {{.*}} !prof !8
   switch (i) {
-    [[likely]] case 1: break;
-    case 2: break;
+    [[likely]] case 1 : break;
+  case 2:
+    break;
   }
 }
 
@@ -35,8 +37,9 @@ void TwoCasesUN() {
   // CHECK: switch
   // CHECK: {{.*}} !prof !9
   switch (i) {
-    [[unlikely]] case 1: break;
-    case 2: break;
+    [[unlikely]] case 1 : break;
+  case 2:
+    break;
   }
 }
 
@@ -45,8 +48,8 @@ void TwoCasesLU() {
   // CHECK: switch
   // CHECK: {{.*}} !prof !10
   switch (i) {
-    [[likely]] case 1: break;
-    [[unlikely]] case 2: break;
+    [[likely]] case 1 : break;
+    [[unlikely]] case 2 : break;
   }
 }
 
@@ -55,10 +58,9 @@ void CasesFallthroughNNLN() {
   // CHECK: switch
   // CHECK: {{.*}} !prof !11
   switch (i) {
-    case 1:
-    case 2:
-    [[likely]] case 3:
-    case 4: break;
+  case 1:
+  case 2:
+    [[likely]] case 3 : case 4 : break;
   }
 }
 
@@ -67,10 +69,9 @@ void CasesFallthroughNNUN() {
   // CHECK: switch
   // CHECK: {{.*}} !prof !12
   switch (i) {
-    case 1:
-    case 2:
-    [[unlikely]] case 3:
-    case 4: break;
+  case 1:
+  case 2:
+    [[unlikely]] case 3 : case 4 : break;
   }
 }
 
@@ -79,10 +80,10 @@ void CasesFallthroughRangeSmallLN() {
   // CHECK: switch
   // CHECK: {{.*}} !prof !13
   switch (i) {
-    case 1 ... 5: ++i;
-    case 102:
-    [[likely]] case 103:
-    case 104: break;
+  case 1 ... 5:
+    ++i;
+  case 102:
+    [[likely]] case 103 : case 104 : break;
   }
 }
 
@@ -91,10 +92,10 @@ void CasesFallthroughRangeSmallUN() {
   // CHECK: switch
   // CHECK: {{.*}} !prof !14
   switch (i) {
-    case 1 ... 5: ++i;
-    case 102:
-    [[unlikely]] case 103:
-    case 104: break;
+  case 1 ... 5:
+    ++i;
+  case 102:
+    [[unlikely]] case 103 : case 104 : break;
   }
 }
 
@@ -105,9 +106,7 @@ void CasesFallthroughRangeLargeLLN() {
   // CHECK: caserange
   // CHECK: br{{.*}} !prof !15
   switch (i) {
-    [[likely]] case 0 ... 64:
-    [[likely]] case 1003:
-    case 104: break;
+    [[likely]] case 0 ... 64 : [[likely]] case 1003 : case 104 : break;
   }
 }
 
@@ -118,9 +117,7 @@ void CasesFallthroughRangeLargeUUN() {
   // CHECK: caserange
   // CHECK: br{{.*}} !prof !16
   switch (i) {
-    [[unlikely]] case 0 ... 64:
-    [[unlikely]] case 1003:
-    case 104: break;
+    [[unlikely]] case 0 ... 64 : [[unlikely]] case 1003 : case 104 : break;
   }
 }
 
@@ -129,8 +126,9 @@ void OneCaseDefaultL() {
   // CHECK: switch
   // CHECK: {{.*}} !prof !17
   switch (i) {
-    case 1: break;
-    [[likely]] default: break;
+  case 1:
+    break;
+    [[likely]] default : break;
   }
 }
 
@@ -139,8 +137,9 @@ void OneCaseDefaultU() {
   // CHECK: switch
   // CHECK: {{.*}} !prof !18
   switch (i) {
-    case 1: break;
-    [[unlikely]] default: break;
+  case 1:
+    break;
+    [[unlikely]] default : break;
   }
 }
 
@@ -149,9 +148,10 @@ void TwoCasesDefaultLNL() {
   // CHECK: switch
   // CHECK: {{.*}} !prof !19
   switch (i) {
-    [[likely]] case 1: break;
-    case 2: break;
-    [[likely]] default: break;
+    [[likely]] case 1 : break;
+  case 2:
+    break;
+    [[likely]] default : break;
   }
 }
 
@@ -160,9 +160,11 @@ void TwoCasesDefaultLNN() {
   // CHECK: switch
   // CHECK: {{.*}} !prof !8
   switch (i) {
-    [[likely]] case 1: break;
-    case 2: break;
-    default: break;
+    [[likely]] case 1 : break;
+  case 2:
+    break;
+  default:
+    break;
   }
 }
 
@@ -171,9 +173,10 @@ void TwoCasesDefaultLNU() {
   // CHECK: switch
   // CHECK: {{.*}} !prof !20
   switch (i) {
-    [[likely]] case 1: break;
-    case 2: break;
-    [[unlikely]] default: break;
+    [[likely]] case 1 : break;
+  case 2:
+    break;
+    [[unlikely]] default : break;
   }
 }
 

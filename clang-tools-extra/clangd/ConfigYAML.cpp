@@ -182,7 +182,7 @@ private:
     // If Key is seen twice, Parse runs only once and an error is reported.
     void handle(llvm::StringLiteral Key, std::function<void(Node &)> Parse) {
       for (const auto &Entry : Keys) {
-        (void) Entry;
+        (void)Entry;
         assert(Entry.first != Key && "duplicate key handler");
       }
       Keys.emplace_back(Key, std::move(Parse));

@@ -132,16 +132,16 @@ TEST(DoPathMappingTests, RespectsCaseSensitivity) {
 
 TEST(DoPathMappingTests, MapsWindowsPaths) {
   // Maps windows properly
-  EXPECT_TRUE(mapsProperly("file:///C:/home/foo.cpp",
-                           "file:///C:/workarea/foo.cpp", R"(C:\home=C:\workarea)",
-                           PathMapping::Direction::ClientToServer));
+  EXPECT_TRUE(mapsProperly(
+      "file:///C:/home/foo.cpp", "file:///C:/workarea/foo.cpp",
+      R"(C:\home=C:\workarea)", PathMapping::Direction::ClientToServer));
 }
 
 TEST(DoPathMappingTests, MapsWindowsUnixInterop) {
   // Path mappings with a windows-style client path and unix-style server path
-  EXPECT_TRUE(mapsProperly(
-      "file:///C:/home/foo.cpp", "file:///workarea/foo.cpp",
-      R"(C:\home=/workarea)", PathMapping::Direction::ClientToServer));
+  EXPECT_TRUE(mapsProperly("file:///C:/home/foo.cpp",
+                           "file:///workarea/foo.cpp", R"(C:\home=/workarea)",
+                           PathMapping::Direction::ClientToServer));
 }
 
 TEST(ApplyPathMappingTests, PreservesOriginalParams) {

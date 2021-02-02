@@ -7,9 +7,9 @@
 struct A {
   [[clang::reinitializes]] void foo();
   __attribute__((reinitializes)) void gnu_foo();
-  [[clang::reinitializes]] void bar() const; // expected-error {{only applies to}}
+  [[clang::reinitializes]] void bar() const;  // expected-error {{only applies to}}
   [[clang::reinitializes]] static void baz(); // expected-error {{only applies to}}
-  [[clang::reinitializes]] int a; // expected-error {{only applies to}}
+  [[clang::reinitializes]] int a;             // expected-error {{only applies to}}
 
   [[clang::reinitializes("arg")]] void qux(); // expected-error {{'reinitializes' attribute takes no arguments}}
 };

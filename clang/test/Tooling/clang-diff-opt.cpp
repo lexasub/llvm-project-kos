@@ -9,21 +9,52 @@
 
 #ifndef DEST
 
-void f1() { {;} {{;}} }
+void f1() {
+  { ; }
+  {
+    { ; }
+  }
+}
 
-void f2() { {;} {{;;;;;}} }
+void f2() {
+  { ; }
+  {
+    {
+      ;
+      ;
+      ;
+      ;
+      ;
+    }
+  }
+}
 
-void f3() { {;} {{;;;;;;}} }
+void f3() {
+  { ; }
+  {
+    {
+      ;
+      ;
+      ;
+      ;
+      ;
+      ;
+    }
+  }
+}
 
 #else
 
 void f1() {
-// Jaccard similarity = 3 / (5 + 4 - 3) = 3 / 6 >= 0.5
-// The optimal matching algorithm should move the ; into the outer block
-// CHECK: Match CompoundStmt(2) to CompoundStmt(2)
-// CHECK-NOT: Match CompoundStmt(3)
-// CHECK-NEXT: Match NullStmt(4) to NullStmt(3)
-  ; {{;}}
+  // Jaccard similarity = 3 / (5 + 4 - 3) = 3 / 6 >= 0.5
+  // The optimal matching algorithm should move the ; into the outer block
+  // CHECK: Match CompoundStmt(2) to CompoundStmt(2)
+  // CHECK-NOT: Match CompoundStmt(3)
+  // CHECK-NEXT: Match NullStmt(4) to NullStmt(3)
+  ;
+  {
+    { ; }
+  }
 }
 
 void f2() {
@@ -31,7 +62,17 @@ void f2() {
   // As none of the subtrees is bigger than 10 nodes, the optimal algorithm
   // will be run.
   // CHECK: Match NullStmt(11) to NullStmt(9)
-  ;; {{;;;;;}}
+  ;
+  ;
+  {
+    {
+      ;
+      ;
+      ;
+      ;
+      ;
+    }
+  }
 }
 
 void f3() {
@@ -39,7 +80,18 @@ void f3() {
   // As the subtrees are bigger than 10 nodes, the optimal algorithm will not
   // be run.
   // CHECK: Delete NullStmt(22)
-  ;; {{;;;;;;}}
+  ;
+  ;
+  {
+    {
+      ;
+      ;
+      ;
+      ;
+      ;
+      ;
+    }
+  }
 }
- 
+
 #endif

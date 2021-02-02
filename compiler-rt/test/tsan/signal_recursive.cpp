@@ -6,9 +6,9 @@
 // REQUIRES: disabled
 
 #include "test.h"
+#include <errno.h>
 #include <semaphore.h>
 #include <signal.h>
-#include <errno.h>
 
 static const int kSigSuspend = SIGUSR1;
 static const int kSigRestart = SIGUSR2;
@@ -45,7 +45,7 @@ static void SuspendHandler(int sig) {
 
   // Wait for wakeup signal.
   while (!g_busy_thread_received_restart)
-    usleep(100);  // wait for kSigRestart signal
+    usleep(100); // wait for kSigRestart signal
 
   // Acknowledge that thread restarted
   if (sem_post(&g_thread_suspend_ack_sem) != 0)
@@ -100,7 +100,7 @@ static void Init() {
     fail("sigaction failed");
 }
 
-void* BusyThread(void *arg) {
+void *BusyThread(void *arg) {
   (void)arg;
   while (!g_busy_thread_garbage_collected) {
     usleep(100); // Tsan deadlocks without these sleeps

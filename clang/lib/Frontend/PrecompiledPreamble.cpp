@@ -668,8 +668,8 @@ PrecompiledPreamble::TempPCHFile::TempPCHFile(TempPCHFile &&Other) {
   Other.FilePath = None;
 }
 
-PrecompiledPreamble::TempPCHFile &PrecompiledPreamble::TempPCHFile::
-operator=(TempPCHFile &&Other) {
+PrecompiledPreamble::TempPCHFile &
+PrecompiledPreamble::TempPCHFile::operator=(TempPCHFile &&Other) {
   RemoveFileIfPresent();
 
   FilePath = std::move(Other.FilePath);
@@ -705,8 +705,8 @@ PrecompiledPreamble::PCHStorage::PCHStorage(PCHStorage &&Other) : PCHStorage() {
   *this = std::move(Other);
 }
 
-PrecompiledPreamble::PCHStorage &PrecompiledPreamble::PCHStorage::
-operator=(PCHStorage &&Other) {
+PrecompiledPreamble::PCHStorage &
+PrecompiledPreamble::PCHStorage::operator=(PCHStorage &&Other) {
   destroy();
 
   StorageKind = Other.StorageKind;

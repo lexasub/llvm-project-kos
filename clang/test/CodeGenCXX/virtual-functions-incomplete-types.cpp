@@ -7,7 +7,7 @@ struct B {
   virtual A g();
 };
 
-void B::f() { }
+void B::f() {}
 
 // CHECK-LABEL: define{{.*}} i32 @_ZN1D1gEv(%struct.D* {{[^,]*}} %this)
 // CHECK: declare void @_ZN1B1gEv()
@@ -19,7 +19,7 @@ struct D {
   virtual C g();
 };
 
-void D::f() { }
+void D::f() {}
 
 struct C {
   int a;

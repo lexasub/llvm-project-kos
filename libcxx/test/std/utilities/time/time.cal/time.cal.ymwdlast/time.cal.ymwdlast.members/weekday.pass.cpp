@@ -19,24 +19,27 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    using year                    = std::chrono::year;
-    using month                   = std::chrono::month;
-    using weekday                 = std::chrono::weekday;
-    using weekday_last            = std::chrono::weekday_last;
-    using year_month_weekday_last = std::chrono::year_month_weekday_last;
+int main(int, char**) {
+  using year = std::chrono::year;
+  using month = std::chrono::month;
+  using weekday = std::chrono::weekday;
+  using weekday_last = std::chrono::weekday_last;
+  using year_month_weekday_last = std::chrono::year_month_weekday_last;
 
-    ASSERT_NOEXCEPT(                   std::declval<const year_month_weekday_last>().weekday());
-    ASSERT_SAME_TYPE(weekday, decltype(std::declval<const year_month_weekday_last>().weekday()));
+  ASSERT_NOEXCEPT(std::declval<const year_month_weekday_last>().weekday());
+  ASSERT_SAME_TYPE(
+      weekday,
+      decltype(std::declval<const year_month_weekday_last>().weekday()));
 
-    static_assert( year_month_weekday_last{year{}, month{}, weekday_last{weekday{}}}.weekday() == weekday{}, "");
+  static_assert(
+      year_month_weekday_last{year{}, month{}, weekday_last{weekday{}}}
+              .weekday() == weekday{},
+      "");
 
-    for (unsigned i = 1; i <= 50; ++i)
-    {
-        year_month_weekday_last ymwdl(year{1}, month{1}, weekday_last{weekday{i}});
-        assert(ymwdl.weekday().c_encoding() == (i == 7 ? 0 : i));
-    }
+  for (unsigned i = 1; i <= 50; ++i) {
+    year_month_weekday_last ymwdl(year{1}, month{1}, weekday_last{weekday{i}});
+    assert(ymwdl.weekday().c_encoding() == (i == 7 ? 0 : i));
+  }
 
   return 0;
 }

@@ -569,8 +569,8 @@ static void markIndicesSafe(const IndicesVector &ToMark,
 /// This method limits promotion of aggregates to only promote up to three
 /// elements of the aggregate in order to avoid exploding the number of
 /// arguments passed in.
-static bool isSafeToPromoteArgument(Argument *Arg, Type *ByValTy, AAResults &AAR,
-                                    unsigned MaxElements) {
+static bool isSafeToPromoteArgument(Argument *Arg, Type *ByValTy,
+                                    AAResults &AAR, unsigned MaxElements) {
   using GEPIndicesSet = std::set<IndicesVector>;
 
   // Quick exit for unused arguments
@@ -873,7 +873,7 @@ promoteArguments(Function *F, function_ref<AAResults &(Function &F)> AARGetter,
   // Don't perform argument promotion for naked functions; otherwise we can end
   // up removing parameters that are seemingly 'not used' as they are referred
   // to in the assembly.
-  if(F->hasFnAttribute(Attribute::Naked))
+  if (F->hasFnAttribute(Attribute::Naked))
     return nullptr;
 
   // Make sure that it is local to this module.

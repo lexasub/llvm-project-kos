@@ -499,7 +499,8 @@ unsigned getCallOpcode(const MachineFunction &MF, const ARMSubtarget &STI,
 }
 } // end anonymous namespace
 
-bool ARMCallLowering::lowerCall(MachineIRBuilder &MIRBuilder, CallLoweringInfo &Info) const {
+bool ARMCallLowering::lowerCall(MachineIRBuilder &MIRBuilder,
+                                CallLoweringInfo &Info) const {
   MachineFunction &MF = MIRBuilder.getMF();
   const auto &TLI = *getTLI<ARMTargetLowering>();
   const auto &DL = MF.getDataLayout();

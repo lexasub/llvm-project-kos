@@ -18,8 +18,8 @@
 
 // UNSUPPORTED: freebsd, solaris, darwin
 
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 
 const int kNumAllocs = 200 * 1000;
@@ -38,6 +38,6 @@ int main(int argc, char **argv) {
     memset(x, 0, kAllocSize);
     sink[i] = x;
   }
-  sleep(1);  // Make sure the background thread has time to kill the process.
-// CHECK: hard rss limit exhausted
+  sleep(1); // Make sure the background thread has time to kill the process.
+  // CHECK: hard rss limit exhausted
 }

@@ -11,8 +11,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "CIndexer.h"
 #include "CIndexDiagnostic.h"
+#include "CIndexer.h"
 #include "CLog.h"
 #include "CXCursor.h"
 #include "CXSourceLocation.h"
@@ -40,7 +40,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
-
 
 #ifdef UDP_CODE_COMPLETION_LOGGER
 #include "clang/Basic/Version.h"
@@ -136,7 +135,7 @@ CXString clang_getCompletionChunkText(CXCompletionString completion_string,
   case CodeCompletionString::CK_HorizontalSpace:
   case CodeCompletionString::CK_VerticalSpace:
     return cxstring::createRef((*CCStr)[chunk_number].Text);
-      
+
   case CodeCompletionString::CK_Optional:
     // Note: treated as an empty text block.
     return cxstring::createEmpty();
@@ -144,7 +143,6 @@ CXString clang_getCompletionChunkText(CXCompletionString completion_string,
 
   llvm_unreachable("Invalid CodeCompletionString Kind!");
 }
-
 
 CXCompletionString
 clang_getCompletionChunkCompletionString(CXCompletionString completion_string,
@@ -186,23 +184,23 @@ clang_getCompletionChunkCompletionString(CXCompletionString completion_string,
 
 unsigned clang_getNumCompletionChunks(CXCompletionString completion_string) {
   CodeCompletionString *CCStr = (CodeCompletionString *)completion_string;
-  return CCStr? CCStr->size() : 0;
+  return CCStr ? CCStr->size() : 0;
 }
 
 unsigned clang_getCompletionPriority(CXCompletionString completion_string) {
   CodeCompletionString *CCStr = (CodeCompletionString *)completion_string;
-  return CCStr? CCStr->getPriority() : unsigned(CCP_Unlikely);
-}
-  
-enum CXAvailabilityKind 
-clang_getCompletionAvailability(CXCompletionString completion_string) {
-  CodeCompletionString *CCStr = (CodeCompletionString *)completion_string;
-  return CCStr? static_cast<CXAvailabilityKind>(CCStr->getAvailability())
-              : CXAvailability_Available;
+  return CCStr ? CCStr->getPriority() : unsigned(CCP_Unlikely);
 }
 
-unsigned clang_getCompletionNumAnnotations(CXCompletionString completion_string)
-{
+enum CXAvailabilityKind
+clang_getCompletionAvailability(CXCompletionString completion_string) {
+  CodeCompletionString *CCStr = (CodeCompletionString *)completion_string;
+  return CCStr ? static_cast<CXAvailabilityKind>(CCStr->getAvailability())
+               : CXAvailability_Available;
+}
+
+unsigned
+clang_getCompletionNumAnnotations(CXCompletionString completion_string) {
   CodeCompletionString *CCStr = (CodeCompletionString *)completion_string;
   return CCStr ? CCStr->getAnnotationCount() : 0;
 }
@@ -214,21 +212,19 @@ CXString clang_getCompletionAnnotation(CXCompletionString completion_string,
                : cxstring::createNull();
 }
 
-CXString
-clang_getCompletionParent(CXCompletionString completion_string,
-                          CXCursorKind *kind) {
+CXString clang_getCompletionParent(CXCompletionString completion_string,
+                                   CXCursorKind *kind) {
   if (kind)
     *kind = CXCursor_NotImplemented;
-  
+
   CodeCompletionString *CCStr = (CodeCompletionString *)completion_string;
   if (!CCStr)
     return cxstring::createNull();
-  
+
   return cxstring::createRef(CCStr->getParentContextName());
 }
 
-CXString
-clang_getCompletionBriefComment(CXCompletionString completion_string) {
+CXString clang_getCompletionBriefComment(CXCompletionString completion_string) {
   CodeCompletionString *CCStr = (CodeCompletionString *)completion_string;
 
   if (!CCStr)
@@ -249,7 +245,7 @@ namespace {
 struct AllocatedCXCodeCompleteResults : public CXCodeCompleteResults {
   AllocatedCXCodeCompleteResults(IntrusiveRefCntPtr<FileManager> FileMgr);
   ~AllocatedCXCodeCompleteResults();
-  
+
   /// Diagnostics produced while performing code completion.
   SmallVector<StoredDiagnostic, 8> Diagnostics;
 
@@ -257,10 +253,10 @@ struct AllocatedCXCodeCompleteResults : public CXCodeCompleteResults {
   SmallVector<std::unique_ptr<CXStoredDiagnostic>, 8> DiagnosticsWrappers;
 
   IntrusiveRefCntPtr<DiagnosticOptions> DiagOpts;
-  
+
   /// Diag object
   IntrusiveRefCntPtr<DiagnosticsEngine> Diag;
-  
+
   /// Language options used to adjust source locations.
   LangOptions LangOpts;
 
@@ -269,11 +265,11 @@ struct AllocatedCXCodeCompleteResults : public CXCodeCompleteResults {
 
   /// Source manager, used for diagnostics.
   IntrusiveRefCntPtr<SourceManager> SourceMgr;
-  
+
   /// Temporary buffers that will be deleted once we have finished with
   /// the code-completion results.
   SmallVector<const llvm::MemoryBuffer *, 1> TemporaryBuffers;
-  
+
   /// Allocator used to store globally cached code-completion results.
   std::shared_ptr<clang::GlobalCodeCompletionAllocator>
       CachedCompletionAllocator;
@@ -283,11 +279,11 @@ struct AllocatedCXCodeCompleteResults : public CXCodeCompleteResults {
 
   /// Context under which completion occurred.
   enum clang::CodeCompletionContext::Kind ContextKind;
-  
+
   /// A bitfield representing the acceptable completions for the
   /// current context.
   unsigned long long Contexts;
-  
+
   /// The kind of the container for the current context for completions.
   enum CXCursorKind ContainerKind;
 
@@ -297,7 +293,7 @@ struct AllocatedCXCodeCompleteResults : public CXCodeCompleteResults {
   /// a boolean value indicating whether there is complete information
   /// about the container
   unsigned ContainerIsIncomplete;
-  
+
   /// A string containing the Objective-C selector entered thus far for a
   /// message send.
   std::string Selector;
@@ -311,27 +307,33 @@ struct AllocatedCXCodeCompleteResults : public CXCodeCompleteResults {
 
 unsigned clang_getCompletionNumFixIts(CXCodeCompleteResults *results,
                                       unsigned completion_index) {
-  AllocatedCXCodeCompleteResults *allocated_results = (AllocatedCXCodeCompleteResults *)results;
+  AllocatedCXCodeCompleteResults *allocated_results =
+      (AllocatedCXCodeCompleteResults *)results;
 
-  if (!allocated_results || allocated_results->FixItsVector.size() <= completion_index)
+  if (!allocated_results ||
+      allocated_results->FixItsVector.size() <= completion_index)
     return 0;
 
-  return static_cast<unsigned>(allocated_results->FixItsVector[completion_index].size());
+  return static_cast<unsigned>(
+      allocated_results->FixItsVector[completion_index].size());
 }
 
 CXString clang_getCompletionFixIt(CXCodeCompleteResults *results,
                                   unsigned completion_index,
                                   unsigned fixit_index,
                                   CXSourceRange *replacement_range) {
-  AllocatedCXCodeCompleteResults *allocated_results = (AllocatedCXCodeCompleteResults *)results;
+  AllocatedCXCodeCompleteResults *allocated_results =
+      (AllocatedCXCodeCompleteResults *)results;
 
-  if (!allocated_results || allocated_results->FixItsVector.size() <= completion_index) {
+  if (!allocated_results ||
+      allocated_results->FixItsVector.size() <= completion_index) {
     if (replacement_range)
       *replacement_range = clang_getNullRange();
     return cxstring::createNull();
   }
 
-  ArrayRef<FixItHint> FixIts = allocated_results->FixItsVector[completion_index];
+  ArrayRef<FixItHint> FixIts =
+      allocated_results->FixItsVector[completion_index];
   if (FixIts.size() <= fixit_index) {
     if (replacement_range)
       *replacement_range = clang_getNullRange();
@@ -348,7 +350,7 @@ CXString clang_getCompletionFixIt(CXCodeCompleteResults *results,
   return cxstring::createRef(FixIt.CodeToInsert.c_str());
 }
 
-/// Tracks the number of code-completion result objects that are 
+/// Tracks the number of code-completion result objects that are
 /// currently active.
 ///
 /// Used for debugging purposes only.
@@ -369,9 +371,9 @@ AllocatedCXCodeCompleteResults::AllocatedCXCodeCompleteResults(
     fprintf(stderr, "+++ %u completion results\n",
             ++CodeCompletionResultObjects);
 }
-  
+
 AllocatedCXCodeCompleteResults::~AllocatedCXCodeCompleteResults() {
-  delete [] Results;
+  delete[] Results;
 
   for (unsigned I = 0, N = TemporaryBuffers.size(); I != N; ++I)
     delete TemporaryBuffers[I];
@@ -381,311 +383,295 @@ AllocatedCXCodeCompleteResults::~AllocatedCXCodeCompleteResults() {
             --CodeCompletionResultObjects);
 }
 
-static unsigned long long getContextsForContextKind(
-                                          enum CodeCompletionContext::Kind kind, 
-                                                    Sema &S) {
+static unsigned long long
+getContextsForContextKind(enum CodeCompletionContext::Kind kind, Sema &S) {
   unsigned long long contexts = 0;
   switch (kind) {
-    case CodeCompletionContext::CCC_OtherWithMacros: {
-      //We can allow macros here, but we don't know what else is permissible
-      //So we'll say the only thing permissible are macros
-      contexts = CXCompletionContext_MacroName;
-      break;
+  case CodeCompletionContext::CCC_OtherWithMacros: {
+    // We can allow macros here, but we don't know what else is permissible
+    // So we'll say the only thing permissible are macros
+    contexts = CXCompletionContext_MacroName;
+    break;
+  }
+  case CodeCompletionContext::CCC_TopLevel:
+  case CodeCompletionContext::CCC_ObjCIvarList:
+  case CodeCompletionContext::CCC_ClassStructUnion:
+  case CodeCompletionContext::CCC_Type: {
+    contexts = CXCompletionContext_AnyType | CXCompletionContext_ObjCInterface;
+    if (S.getLangOpts().CPlusPlus) {
+      contexts |= CXCompletionContext_EnumTag | CXCompletionContext_UnionTag |
+                  CXCompletionContext_StructTag | CXCompletionContext_ClassTag |
+                  CXCompletionContext_NestedNameSpecifier;
     }
-    case CodeCompletionContext::CCC_TopLevel:
-    case CodeCompletionContext::CCC_ObjCIvarList:
-    case CodeCompletionContext::CCC_ClassStructUnion:
-    case CodeCompletionContext::CCC_Type: {
-      contexts = CXCompletionContext_AnyType | 
-                 CXCompletionContext_ObjCInterface;
-      if (S.getLangOpts().CPlusPlus) {
-        contexts |= CXCompletionContext_EnumTag |
-                    CXCompletionContext_UnionTag |
-                    CXCompletionContext_StructTag |
-                    CXCompletionContext_ClassTag |
-                    CXCompletionContext_NestedNameSpecifier;
-      }
-      break;
+    break;
+  }
+  case CodeCompletionContext::CCC_Statement: {
+    contexts = CXCompletionContext_AnyType | CXCompletionContext_ObjCInterface |
+               CXCompletionContext_AnyValue;
+    if (S.getLangOpts().CPlusPlus) {
+      contexts |= CXCompletionContext_EnumTag | CXCompletionContext_UnionTag |
+                  CXCompletionContext_StructTag | CXCompletionContext_ClassTag |
+                  CXCompletionContext_NestedNameSpecifier;
     }
-    case CodeCompletionContext::CCC_Statement: {
-      contexts = CXCompletionContext_AnyType |
-                 CXCompletionContext_ObjCInterface |
-                 CXCompletionContext_AnyValue;
-      if (S.getLangOpts().CPlusPlus) {
-        contexts |= CXCompletionContext_EnumTag |
-                    CXCompletionContext_UnionTag |
-                    CXCompletionContext_StructTag |
-                    CXCompletionContext_ClassTag |
-                    CXCompletionContext_NestedNameSpecifier;
-      }
-      break;
+    break;
+  }
+  case CodeCompletionContext::CCC_Expression: {
+    contexts = CXCompletionContext_AnyValue;
+    if (S.getLangOpts().CPlusPlus) {
+      contexts |= CXCompletionContext_AnyType |
+                  CXCompletionContext_ObjCInterface |
+                  CXCompletionContext_EnumTag | CXCompletionContext_UnionTag |
+                  CXCompletionContext_StructTag | CXCompletionContext_ClassTag |
+                  CXCompletionContext_NestedNameSpecifier;
     }
-    case CodeCompletionContext::CCC_Expression: {
-      contexts = CXCompletionContext_AnyValue;
-      if (S.getLangOpts().CPlusPlus) {
-        contexts |= CXCompletionContext_AnyType |
-                    CXCompletionContext_ObjCInterface |
-                    CXCompletionContext_EnumTag |
-                    CXCompletionContext_UnionTag |
-                    CXCompletionContext_StructTag |
-                    CXCompletionContext_ClassTag |
-                    CXCompletionContext_NestedNameSpecifier;
-      }
-      break;
+    break;
+  }
+  case CodeCompletionContext::CCC_ObjCMessageReceiver: {
+    contexts = CXCompletionContext_ObjCObjectValue |
+               CXCompletionContext_ObjCSelectorValue |
+               CXCompletionContext_ObjCInterface;
+    if (S.getLangOpts().CPlusPlus) {
+      contexts |= CXCompletionContext_CXXClassTypeValue |
+                  CXCompletionContext_AnyType | CXCompletionContext_EnumTag |
+                  CXCompletionContext_UnionTag | CXCompletionContext_StructTag |
+                  CXCompletionContext_ClassTag |
+                  CXCompletionContext_NestedNameSpecifier;
     }
-    case CodeCompletionContext::CCC_ObjCMessageReceiver: {
-      contexts = CXCompletionContext_ObjCObjectValue |
-                 CXCompletionContext_ObjCSelectorValue |
-                 CXCompletionContext_ObjCInterface;
-      if (S.getLangOpts().CPlusPlus) {
-        contexts |= CXCompletionContext_CXXClassTypeValue |
-                    CXCompletionContext_AnyType |
-                    CXCompletionContext_EnumTag |
-                    CXCompletionContext_UnionTag |
-                    CXCompletionContext_StructTag |
-                    CXCompletionContext_ClassTag |
-                    CXCompletionContext_NestedNameSpecifier;
-      }
-      break;
+    break;
+  }
+  case CodeCompletionContext::CCC_DotMemberAccess: {
+    contexts = CXCompletionContext_DotMemberAccess;
+    break;
+  }
+  case CodeCompletionContext::CCC_ArrowMemberAccess: {
+    contexts = CXCompletionContext_ArrowMemberAccess;
+    break;
+  }
+  case CodeCompletionContext::CCC_ObjCPropertyAccess: {
+    contexts = CXCompletionContext_ObjCPropertyAccess;
+    break;
+  }
+  case CodeCompletionContext::CCC_EnumTag: {
+    contexts =
+        CXCompletionContext_EnumTag | CXCompletionContext_NestedNameSpecifier;
+    break;
+  }
+  case CodeCompletionContext::CCC_UnionTag: {
+    contexts =
+        CXCompletionContext_UnionTag | CXCompletionContext_NestedNameSpecifier;
+    break;
+  }
+  case CodeCompletionContext::CCC_ClassOrStructTag: {
+    contexts = CXCompletionContext_StructTag | CXCompletionContext_ClassTag |
+               CXCompletionContext_NestedNameSpecifier;
+    break;
+  }
+  case CodeCompletionContext::CCC_ObjCProtocolName: {
+    contexts = CXCompletionContext_ObjCProtocol;
+    break;
+  }
+  case CodeCompletionContext::CCC_Namespace: {
+    contexts = CXCompletionContext_Namespace;
+    break;
+  }
+  case CodeCompletionContext::CCC_SymbolOrNewName:
+  case CodeCompletionContext::CCC_Symbol: {
+    contexts = CXCompletionContext_NestedNameSpecifier;
+    break;
+  }
+  case CodeCompletionContext::CCC_MacroNameUse: {
+    contexts = CXCompletionContext_MacroName;
+    break;
+  }
+  case CodeCompletionContext::CCC_NaturalLanguage: {
+    contexts = CXCompletionContext_NaturalLanguage;
+    break;
+  }
+  case CodeCompletionContext::CCC_IncludedFile: {
+    contexts = CXCompletionContext_IncludedFile;
+    break;
+  }
+  case CodeCompletionContext::CCC_SelectorName: {
+    contexts = CXCompletionContext_ObjCSelectorName;
+    break;
+  }
+  case CodeCompletionContext::CCC_ParenthesizedExpression: {
+    contexts = CXCompletionContext_AnyType | CXCompletionContext_ObjCInterface |
+               CXCompletionContext_AnyValue;
+    if (S.getLangOpts().CPlusPlus) {
+      contexts |= CXCompletionContext_EnumTag | CXCompletionContext_UnionTag |
+                  CXCompletionContext_StructTag | CXCompletionContext_ClassTag |
+                  CXCompletionContext_NestedNameSpecifier;
     }
-    case CodeCompletionContext::CCC_DotMemberAccess: {
-      contexts = CXCompletionContext_DotMemberAccess;
-      break;
-    }
-    case CodeCompletionContext::CCC_ArrowMemberAccess: {
-      contexts = CXCompletionContext_ArrowMemberAccess;
-      break;
-    }
-    case CodeCompletionContext::CCC_ObjCPropertyAccess: {
-      contexts = CXCompletionContext_ObjCPropertyAccess;
-      break;
-    }
-    case CodeCompletionContext::CCC_EnumTag: {
-      contexts = CXCompletionContext_EnumTag |
-                 CXCompletionContext_NestedNameSpecifier;
-      break;
-    }
-    case CodeCompletionContext::CCC_UnionTag: {
-      contexts = CXCompletionContext_UnionTag |
-                 CXCompletionContext_NestedNameSpecifier;
-      break;
-    }
-    case CodeCompletionContext::CCC_ClassOrStructTag: {
-      contexts = CXCompletionContext_StructTag |
-                 CXCompletionContext_ClassTag |
-                 CXCompletionContext_NestedNameSpecifier;
-      break;
-    }
-    case CodeCompletionContext::CCC_ObjCProtocolName: {
-      contexts = CXCompletionContext_ObjCProtocol;
-      break;
-    }
-    case CodeCompletionContext::CCC_Namespace: {
-      contexts = CXCompletionContext_Namespace;
-      break;
-    }
-    case CodeCompletionContext::CCC_SymbolOrNewName:
-    case CodeCompletionContext::CCC_Symbol: {
-      contexts = CXCompletionContext_NestedNameSpecifier;
-      break;
-    }
-    case CodeCompletionContext::CCC_MacroNameUse: {
-      contexts = CXCompletionContext_MacroName;
-      break;
-    }
-    case CodeCompletionContext::CCC_NaturalLanguage: {
-      contexts = CXCompletionContext_NaturalLanguage;
-      break;
-    }
-    case CodeCompletionContext::CCC_IncludedFile: {
-      contexts = CXCompletionContext_IncludedFile;
-      break;
-    }
-    case CodeCompletionContext::CCC_SelectorName: {
-      contexts = CXCompletionContext_ObjCSelectorName;
-      break;
-    }
-    case CodeCompletionContext::CCC_ParenthesizedExpression: {
-      contexts = CXCompletionContext_AnyType |
-                 CXCompletionContext_ObjCInterface |
-                 CXCompletionContext_AnyValue;
-      if (S.getLangOpts().CPlusPlus) {
-        contexts |= CXCompletionContext_EnumTag |
-                    CXCompletionContext_UnionTag |
-                    CXCompletionContext_StructTag |
-                    CXCompletionContext_ClassTag |
-                    CXCompletionContext_NestedNameSpecifier;
-      }
-      break;
-    }
-    case CodeCompletionContext::CCC_ObjCInstanceMessage: {
-      contexts = CXCompletionContext_ObjCInstanceMessage;
-      break;
-    }
-    case CodeCompletionContext::CCC_ObjCClassMessage: {
-      contexts = CXCompletionContext_ObjCClassMessage;
-      break;
-    }
-    case CodeCompletionContext::CCC_ObjCInterfaceName: {
-      contexts = CXCompletionContext_ObjCInterface;
-      break;
-    }
-    case CodeCompletionContext::CCC_ObjCCategoryName: {
-      contexts = CXCompletionContext_ObjCCategory;
-      break;
-    }
-    case CodeCompletionContext::CCC_Other:
-    case CodeCompletionContext::CCC_ObjCInterface:
-    case CodeCompletionContext::CCC_ObjCImplementation:
-    case CodeCompletionContext::CCC_NewName:
-    case CodeCompletionContext::CCC_MacroName:
-    case CodeCompletionContext::CCC_PreprocessorExpression:
-    case CodeCompletionContext::CCC_PreprocessorDirective:
-    case CodeCompletionContext::CCC_TypeQualifiers: {
-      //Only Clang results should be accepted, so we'll set all of the other
-      //context bits to 0 (i.e. the empty set)
-      contexts = CXCompletionContext_Unexposed;
-      break;
-    }
-    case CodeCompletionContext::CCC_Recovery: {
-      //We don't know what the current context is, so we'll return unknown
-      //This is the equivalent of setting all of the other context bits
-      contexts = CXCompletionContext_Unknown;
-      break;
-    }
+    break;
+  }
+  case CodeCompletionContext::CCC_ObjCInstanceMessage: {
+    contexts = CXCompletionContext_ObjCInstanceMessage;
+    break;
+  }
+  case CodeCompletionContext::CCC_ObjCClassMessage: {
+    contexts = CXCompletionContext_ObjCClassMessage;
+    break;
+  }
+  case CodeCompletionContext::CCC_ObjCInterfaceName: {
+    contexts = CXCompletionContext_ObjCInterface;
+    break;
+  }
+  case CodeCompletionContext::CCC_ObjCCategoryName: {
+    contexts = CXCompletionContext_ObjCCategory;
+    break;
+  }
+  case CodeCompletionContext::CCC_Other:
+  case CodeCompletionContext::CCC_ObjCInterface:
+  case CodeCompletionContext::CCC_ObjCImplementation:
+  case CodeCompletionContext::CCC_NewName:
+  case CodeCompletionContext::CCC_MacroName:
+  case CodeCompletionContext::CCC_PreprocessorExpression:
+  case CodeCompletionContext::CCC_PreprocessorDirective:
+  case CodeCompletionContext::CCC_TypeQualifiers: {
+    // Only Clang results should be accepted, so we'll set all of the other
+    // context bits to 0 (i.e. the empty set)
+    contexts = CXCompletionContext_Unexposed;
+    break;
+  }
+  case CodeCompletionContext::CCC_Recovery: {
+    // We don't know what the current context is, so we'll return unknown
+    // This is the equivalent of setting all of the other context bits
+    contexts = CXCompletionContext_Unknown;
+    break;
+  }
   }
   return contexts;
 }
 
 namespace {
-  class CaptureCompletionResults : public CodeCompleteConsumer {
-    AllocatedCXCodeCompleteResults &AllocatedResults;
-    CodeCompletionTUInfo CCTUInfo;
-    SmallVector<CXCompletionResult, 16> StoredResults;
-    CXTranslationUnit *TU;
-  public:
-    CaptureCompletionResults(const CodeCompleteOptions &Opts,
-                             AllocatedCXCodeCompleteResults &Results,
-                             CXTranslationUnit *TranslationUnit)
-        : CodeCompleteConsumer(Opts), AllocatedResults(Results),
-          CCTUInfo(Results.CodeCompletionAllocator), TU(TranslationUnit) {}
-    ~CaptureCompletionResults() override { Finish(); }
+class CaptureCompletionResults : public CodeCompleteConsumer {
+  AllocatedCXCodeCompleteResults &AllocatedResults;
+  CodeCompletionTUInfo CCTUInfo;
+  SmallVector<CXCompletionResult, 16> StoredResults;
+  CXTranslationUnit *TU;
 
-    void ProcessCodeCompleteResults(Sema &S, 
-                                    CodeCompletionContext Context,
-                                    CodeCompletionResult *Results,
-                                    unsigned NumResults) override {
-      StoredResults.reserve(StoredResults.size() + NumResults);
-      if (includeFixIts())
-        AllocatedResults.FixItsVector.reserve(NumResults);
-      for (unsigned I = 0; I != NumResults; ++I) {
-        CodeCompletionString *StoredCompletion
-          = Results[I].CreateCodeCompletionString(S, Context, getAllocator(),
-                                                  getCodeCompletionTUInfo(),
-                                                  includeBriefComments());
-        
-        CXCompletionResult R;
-        R.CursorKind = Results[I].CursorKind;
-        R.CompletionString = StoredCompletion;
-        StoredResults.push_back(R);
-        if (includeFixIts())
-          AllocatedResults.FixItsVector.emplace_back(std::move(Results[I].FixIts));
-      }
+public:
+  CaptureCompletionResults(const CodeCompleteOptions &Opts,
+                           AllocatedCXCodeCompleteResults &Results,
+                           CXTranslationUnit *TranslationUnit)
+      : CodeCompleteConsumer(Opts), AllocatedResults(Results),
+        CCTUInfo(Results.CodeCompletionAllocator), TU(TranslationUnit) {}
+  ~CaptureCompletionResults() override { Finish(); }
 
-      enum CodeCompletionContext::Kind contextKind = Context.getKind();
-      
-      AllocatedResults.ContextKind = contextKind;
-      AllocatedResults.Contexts = getContextsForContextKind(contextKind, S);
-      
-      AllocatedResults.Selector = "";
-      ArrayRef<IdentifierInfo *> SelIdents = Context.getSelIdents();
-      for (ArrayRef<IdentifierInfo *>::iterator I = SelIdents.begin(),
-                                                E = SelIdents.end();
-           I != E; ++I) {
-        if (IdentifierInfo *selIdent = *I)
-          AllocatedResults.Selector += selIdent->getName();
-        AllocatedResults.Selector += ":";
-      }
-      
-      QualType baseType = Context.getBaseType();
-      NamedDecl *D = nullptr;
-
-      if (!baseType.isNull()) {
-        // Get the declaration for a class/struct/union/enum type
-        if (const TagType *Tag = baseType->getAs<TagType>())
-          D = Tag->getDecl();
-        // Get the @interface declaration for a (possibly-qualified) Objective-C
-        // object pointer type, e.g., NSString*
-        else if (const ObjCObjectPointerType *ObjPtr = 
-                 baseType->getAs<ObjCObjectPointerType>())
-          D = ObjPtr->getInterfaceDecl();
-        // Get the @interface declaration for an Objective-C object type
-        else if (const ObjCObjectType *Obj = baseType->getAs<ObjCObjectType>())
-          D = Obj->getInterface();
-        // Get the class for a C++ injected-class-name
-        else if (const InjectedClassNameType *Injected =
-                 baseType->getAs<InjectedClassNameType>())
-          D = Injected->getDecl();
-      }
-
-      if (D != nullptr) {
-        CXCursor cursor = cxcursor::MakeCXCursor(D, *TU);
-
-        AllocatedResults.ContainerKind = clang_getCursorKind(cursor);
-
-        CXString CursorUSR = clang_getCursorUSR(cursor);
-        AllocatedResults.ContainerUSR = clang_getCString(CursorUSR);
-        clang_disposeString(CursorUSR);
-
-        const Type *type = baseType.getTypePtrOrNull();
-        if (type) {
-          AllocatedResults.ContainerIsIncomplete = type->isIncompleteType();
-        }
-        else {
-          AllocatedResults.ContainerIsIncomplete = 1;
-        }
-      }
-      else {
-        AllocatedResults.ContainerKind = CXCursor_InvalidCode;
-        AllocatedResults.ContainerUSR.clear();
-        AllocatedResults.ContainerIsIncomplete = 1;
-      }
-    }
-
-    void ProcessOverloadCandidates(Sema &S, unsigned CurrentArg,
-                                   OverloadCandidate *Candidates,
-                                   unsigned NumCandidates,
-                                   SourceLocation OpenParLoc) override {
-      StoredResults.reserve(StoredResults.size() + NumCandidates);
-      for (unsigned I = 0; I != NumCandidates; ++I) {
-        CodeCompletionString *StoredCompletion
-          = Candidates[I].CreateSignatureString(CurrentArg, S, getAllocator(),
+  void ProcessCodeCompleteResults(Sema &S, CodeCompletionContext Context,
+                                  CodeCompletionResult *Results,
+                                  unsigned NumResults) override {
+    StoredResults.reserve(StoredResults.size() + NumResults);
+    if (includeFixIts())
+      AllocatedResults.FixItsVector.reserve(NumResults);
+    for (unsigned I = 0; I != NumResults; ++I) {
+      CodeCompletionString *StoredCompletion =
+          Results[I].CreateCodeCompletionString(S, Context, getAllocator(),
                                                 getCodeCompletionTUInfo(),
                                                 includeBriefComments());
-        
-        CXCompletionResult R;
-        R.CursorKind = CXCursor_OverloadCandidate;
-        R.CompletionString = StoredCompletion;
-        StoredResults.push_back(R);
+
+      CXCompletionResult R;
+      R.CursorKind = Results[I].CursorKind;
+      R.CompletionString = StoredCompletion;
+      StoredResults.push_back(R);
+      if (includeFixIts())
+        AllocatedResults.FixItsVector.emplace_back(
+            std::move(Results[I].FixIts));
+    }
+
+    enum CodeCompletionContext::Kind contextKind = Context.getKind();
+
+    AllocatedResults.ContextKind = contextKind;
+    AllocatedResults.Contexts = getContextsForContextKind(contextKind, S);
+
+    AllocatedResults.Selector = "";
+    ArrayRef<IdentifierInfo *> SelIdents = Context.getSelIdents();
+    for (ArrayRef<IdentifierInfo *>::iterator I = SelIdents.begin(),
+                                              E = SelIdents.end();
+         I != E; ++I) {
+      if (IdentifierInfo *selIdent = *I)
+        AllocatedResults.Selector += selIdent->getName();
+      AllocatedResults.Selector += ":";
+    }
+
+    QualType baseType = Context.getBaseType();
+    NamedDecl *D = nullptr;
+
+    if (!baseType.isNull()) {
+      // Get the declaration for a class/struct/union/enum type
+      if (const TagType *Tag = baseType->getAs<TagType>())
+        D = Tag->getDecl();
+      // Get the @interface declaration for a (possibly-qualified) Objective-C
+      // object pointer type, e.g., NSString*
+      else if (const ObjCObjectPointerType *ObjPtr =
+                   baseType->getAs<ObjCObjectPointerType>())
+        D = ObjPtr->getInterfaceDecl();
+      // Get the @interface declaration for an Objective-C object type
+      else if (const ObjCObjectType *Obj = baseType->getAs<ObjCObjectType>())
+        D = Obj->getInterface();
+      // Get the class for a C++ injected-class-name
+      else if (const InjectedClassNameType *Injected =
+                   baseType->getAs<InjectedClassNameType>())
+        D = Injected->getDecl();
+    }
+
+    if (D != nullptr) {
+      CXCursor cursor = cxcursor::MakeCXCursor(D, *TU);
+
+      AllocatedResults.ContainerKind = clang_getCursorKind(cursor);
+
+      CXString CursorUSR = clang_getCursorUSR(cursor);
+      AllocatedResults.ContainerUSR = clang_getCString(CursorUSR);
+      clang_disposeString(CursorUSR);
+
+      const Type *type = baseType.getTypePtrOrNull();
+      if (type) {
+        AllocatedResults.ContainerIsIncomplete = type->isIncompleteType();
+      } else {
+        AllocatedResults.ContainerIsIncomplete = 1;
       }
+    } else {
+      AllocatedResults.ContainerKind = CXCursor_InvalidCode;
+      AllocatedResults.ContainerUSR.clear();
+      AllocatedResults.ContainerIsIncomplete = 1;
     }
+  }
 
-    CodeCompletionAllocator &getAllocator() override {
-      return *AllocatedResults.CodeCompletionAllocator;
+  void ProcessOverloadCandidates(Sema &S, unsigned CurrentArg,
+                                 OverloadCandidate *Candidates,
+                                 unsigned NumCandidates,
+                                 SourceLocation OpenParLoc) override {
+    StoredResults.reserve(StoredResults.size() + NumCandidates);
+    for (unsigned I = 0; I != NumCandidates; ++I) {
+      CodeCompletionString *StoredCompletion =
+          Candidates[I].CreateSignatureString(CurrentArg, S, getAllocator(),
+                                              getCodeCompletionTUInfo(),
+                                              includeBriefComments());
+
+      CXCompletionResult R;
+      R.CursorKind = CXCursor_OverloadCandidate;
+      R.CompletionString = StoredCompletion;
+      StoredResults.push_back(R);
     }
+  }
 
-    CodeCompletionTUInfo &getCodeCompletionTUInfo() override { return CCTUInfo;}
+  CodeCompletionAllocator &getAllocator() override {
+    return *AllocatedResults.CodeCompletionAllocator;
+  }
 
-  private:
-    void Finish() {
-      AllocatedResults.Results = new CXCompletionResult [StoredResults.size()];
-      AllocatedResults.NumResults = StoredResults.size();
-      std::memcpy(AllocatedResults.Results, StoredResults.data(), 
-                  StoredResults.size() * sizeof(CXCompletionResult));
-      StoredResults.clear();
-    }
-  };
-}
+  CodeCompletionTUInfo &getCodeCompletionTUInfo() override { return CCTUInfo; }
+
+private:
+  void Finish() {
+    AllocatedResults.Results = new CXCompletionResult[StoredResults.size()];
+    AllocatedResults.NumResults = StoredResults.size();
+    std::memcpy(AllocatedResults.Results, StoredResults.data(),
+                StoredResults.size() * sizeof(CXCompletionResult));
+    StoredResults.clear();
+  }
+};
+} // namespace
 
 static CXCodeCompleteResults *
 clang_codeCompleteAt_Impl(CXTranslationUnit TU, const char *complete_filename,
@@ -698,7 +684,7 @@ clang_codeCompleteAt_Impl(CXTranslationUnit TU, const char *complete_filename,
 
 #ifdef UDP_CODE_COMPLETION_LOGGER
 #ifdef UDP_CODE_COMPLETION_LOGGER_PORT
-  const llvm::TimeRecord &StartTime =  llvm::TimeRecord::getCurrentTime();
+  const llvm::TimeRecord &StartTime = llvm::TimeRecord::getCurrentTime();
 #endif
 #endif
   bool EnableLogging = getenv("LIBCLANG_CODE_COMPLETION_LOGGING") != nullptr;
@@ -732,11 +718,11 @@ clang_codeCompleteAt_Impl(CXTranslationUnit TU, const char *complete_filename,
   }
 
   // Parse the resulting source file to find code-completion results.
-  AllocatedCXCodeCompleteResults *Results = new AllocatedCXCodeCompleteResults(
-      &AST->getFileManager());
+  AllocatedCXCodeCompleteResults *Results =
+      new AllocatedCXCodeCompleteResults(&AST->getFileManager());
   Results->Results = nullptr;
   Results->NumResults = 0;
-  
+
   // Create a code-completion consumer to capture the results.
   CodeCompleteOptions Opts;
   Opts.IncludeBriefComments = IncludeBriefComments;
@@ -771,11 +757,9 @@ clang_codeCompleteAt_Impl(CXTranslationUnit TU, const char *complete_filename,
   // results are still active).
   Results->CachedCompletionAllocator = AST->getCachedCompletionAllocator();
 
-  
-
 #ifdef UDP_CODE_COMPLETION_LOGGER
 #ifdef UDP_CODE_COMPLETION_LOGGER_PORT
-  const llvm::TimeRecord &EndTime =  llvm::TimeRecord::getCurrentTime();
+  const llvm::TimeRecord &EndTime = llvm::TimeRecord::getCurrentTime();
   SmallString<256> LogResult;
   llvm::raw_svector_ostream os(LogResult);
 
@@ -783,7 +767,7 @@ clang_codeCompleteAt_Impl(CXTranslationUnit TU, const char *complete_filename,
   const char *lang = 0;
   bool usesPCH = false;
 
-  for (std::vector<const char*>::iterator I = argv.begin(), E = argv.end();
+  for (std::vector<const char *>::iterator I = argv.begin(), E = argv.end();
        I != E; ++I) {
     if (*I == 0)
       continue;
@@ -792,9 +776,8 @@ clang_codeCompleteAt_Impl(CXTranslationUnit TU, const char *complete_filename,
         lang = *(++I);
         continue;
       }
-    }
-    else if (strcmp(*I, "-include") == 0) {
-      if (I+1 != E) {
+    } else if (strcmp(*I, "-include") == 0) {
+      if (I + 1 != E) {
         const char *arg = *(++I);
         SmallString<512> pchName;
         {
@@ -829,35 +812,32 @@ clang_codeCompleteAt_Impl(CXTranslationUnit TU, const char *complete_filename,
       bzero(&servaddr, sizeof(servaddr));
       servaddr.sin_family = AF_INET;
       servaddr.sin_port = htons(UDP_CODE_COMPLETION_LOGGER_PORT);
-      if (inet_pton(AF_INET, UDP_CODE_COMPLETION_LOGGER,
-                    &servaddr.sin_addr) <= 0)
+      if (inet_pton(AF_INET, UDP_CODE_COMPLETION_LOGGER, &servaddr.sin_addr) <=
+          0)
         break;
 
       int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
       if (sockfd < 0)
         break;
 
-      sendto(sockfd, res.data(), res.size(), 0,
-             (struct sockaddr *)&servaddr, sizeof(servaddr));
+      sendto(sockfd, res.data(), res.size(), 0, (struct sockaddr *)&servaddr,
+             sizeof(servaddr));
       close(sockfd);
-    }
-    while (false);
+    } while (false);
   }
 #endif
 #endif
   return Results;
 }
 
-CXCodeCompleteResults *clang_codeCompleteAt(CXTranslationUnit TU,
-                                            const char *complete_filename,
-                                            unsigned complete_line,
-                                            unsigned complete_column,
-                                            struct CXUnsavedFile *unsaved_files,
-                                            unsigned num_unsaved_files,
-                                            unsigned options) {
+CXCodeCompleteResults *
+clang_codeCompleteAt(CXTranslationUnit TU, const char *complete_filename,
+                     unsigned complete_line, unsigned complete_column,
+                     struct CXUnsavedFile *unsaved_files,
+                     unsigned num_unsaved_files, unsigned options) {
   LOG_FUNC_SECTION {
-    *Log << TU << ' '
-         << complete_filename << ':' << complete_line << ':' << complete_column;
+    *Log << TU << ' ' << complete_filename << ':' << complete_line << ':'
+         << complete_column;
   }
 
   if (num_unsaved_files && !unsaved_files)
@@ -890,26 +870,24 @@ void clang_disposeCodeCompleteResults(CXCodeCompleteResults *ResultsIn) {
   if (!ResultsIn)
     return;
 
-  AllocatedCXCodeCompleteResults *Results
-    = static_cast<AllocatedCXCodeCompleteResults*>(ResultsIn);
+  AllocatedCXCodeCompleteResults *Results =
+      static_cast<AllocatedCXCodeCompleteResults *>(ResultsIn);
   delete Results;
 }
-  
-unsigned 
-clang_codeCompleteGetNumDiagnostics(CXCodeCompleteResults *ResultsIn) {
-  AllocatedCXCodeCompleteResults *Results
-    = static_cast<AllocatedCXCodeCompleteResults*>(ResultsIn);
+
+unsigned clang_codeCompleteGetNumDiagnostics(CXCodeCompleteResults *ResultsIn) {
+  AllocatedCXCodeCompleteResults *Results =
+      static_cast<AllocatedCXCodeCompleteResults *>(ResultsIn);
   if (!Results)
     return 0;
 
   return Results->Diagnostics.size();
 }
 
-CXDiagnostic 
-clang_codeCompleteGetDiagnostic(CXCodeCompleteResults *ResultsIn,
-                                unsigned Index) {
-  AllocatedCXCodeCompleteResults *Results
-    = static_cast<AllocatedCXCodeCompleteResults*>(ResultsIn);
+CXDiagnostic clang_codeCompleteGetDiagnostic(CXCodeCompleteResults *ResultsIn,
+                                             unsigned Index) {
+  AllocatedCXCodeCompleteResults *Results =
+      static_cast<AllocatedCXCodeCompleteResults *>(ResultsIn);
   if (!Results || Index >= Results->Diagnostics.size())
     return nullptr;
 
@@ -924,48 +902,47 @@ clang_codeCompleteGetDiagnostic(CXCodeCompleteResults *ResultsIn,
 
 unsigned long long
 clang_codeCompleteGetContexts(CXCodeCompleteResults *ResultsIn) {
-  AllocatedCXCodeCompleteResults *Results
-    = static_cast<AllocatedCXCodeCompleteResults*>(ResultsIn);
+  AllocatedCXCodeCompleteResults *Results =
+      static_cast<AllocatedCXCodeCompleteResults *>(ResultsIn);
   if (!Results)
     return 0;
-  
+
   return Results->Contexts;
 }
 
-enum CXCursorKind clang_codeCompleteGetContainerKind(
-                                               CXCodeCompleteResults *ResultsIn,
-                                                     unsigned *IsIncomplete) {
+enum CXCursorKind
+clang_codeCompleteGetContainerKind(CXCodeCompleteResults *ResultsIn,
+                                   unsigned *IsIncomplete) {
   AllocatedCXCodeCompleteResults *Results =
-    static_cast<AllocatedCXCodeCompleteResults *>(ResultsIn);
+      static_cast<AllocatedCXCodeCompleteResults *>(ResultsIn);
   if (!Results)
     return CXCursor_InvalidCode;
 
   if (IsIncomplete != nullptr) {
     *IsIncomplete = Results->ContainerIsIncomplete;
   }
-  
+
   return Results->ContainerKind;
 }
-  
+
 CXString clang_codeCompleteGetContainerUSR(CXCodeCompleteResults *ResultsIn) {
   AllocatedCXCodeCompleteResults *Results =
-    static_cast<AllocatedCXCodeCompleteResults *>(ResultsIn);
+      static_cast<AllocatedCXCodeCompleteResults *>(ResultsIn);
   if (!Results)
     return cxstring::createEmpty();
 
   return cxstring::createRef(Results->ContainerUSR.c_str());
 }
 
-  
 CXString clang_codeCompleteGetObjCSelector(CXCodeCompleteResults *ResultsIn) {
   AllocatedCXCodeCompleteResults *Results =
-    static_cast<AllocatedCXCodeCompleteResults *>(ResultsIn);
+      static_cast<AllocatedCXCodeCompleteResults *>(ResultsIn);
   if (!Results)
     return cxstring::createEmpty();
-  
+
   return cxstring::createDup(Results->Selector);
 }
-  
+
 /// Simple utility function that appends a \p New string to the given
 /// \p Old string, using the \p Buffer for storage.
 ///
@@ -983,7 +960,7 @@ static void AppendToString(StringRef &Old, StringRef New,
     Old = New;
     return;
   }
-  
+
   if (Buffer.empty())
     Buffer.append(Old.begin(), Old.end());
   Buffer.append(New.begin(), New.end());
@@ -998,45 +975,43 @@ static void AppendToString(StringRef &Old, StringRef New,
 ///
 /// \param Buffer A buffer used for storage of the completed name.
 static StringRef GetTypedName(CodeCompletionString *String,
-                                    SmallString<256> &Buffer) {
+                              SmallString<256> &Buffer) {
   StringRef Result;
   for (CodeCompletionString::iterator C = String->begin(), CEnd = String->end();
        C != CEnd; ++C) {
     if (C->Kind == CodeCompletionString::CK_TypedText)
       AppendToString(Result, C->Text, Buffer);
   }
-  
+
   return Result;
 }
 
 namespace {
-  struct OrderCompletionResults {
-    bool operator()(const CXCompletionResult &XR, 
-                    const CXCompletionResult &YR) const {
-      CodeCompletionString *X
-        = (CodeCompletionString *)XR.CompletionString;
-      CodeCompletionString *Y
-        = (CodeCompletionString *)YR.CompletionString;
+struct OrderCompletionResults {
+  bool operator()(const CXCompletionResult &XR,
+                  const CXCompletionResult &YR) const {
+    CodeCompletionString *X = (CodeCompletionString *)XR.CompletionString;
+    CodeCompletionString *Y = (CodeCompletionString *)YR.CompletionString;
 
-      SmallString<256> XBuffer;
-      StringRef XText = GetTypedName(X, XBuffer);
-      SmallString<256> YBuffer;
-      StringRef YText = GetTypedName(Y, YBuffer);
-      
-      if (XText.empty() || YText.empty())
-        return !XText.empty();
-            
-      int result = XText.compare_lower(YText);
-      if (result < 0)
-        return true;
-      if (result > 0)
-        return false;
-      
-      result = XText.compare(YText);
-      return result < 0;
-    }
-  };
-}
+    SmallString<256> XBuffer;
+    StringRef XText = GetTypedName(X, XBuffer);
+    SmallString<256> YBuffer;
+    StringRef YText = GetTypedName(Y, YBuffer);
+
+    if (XText.empty() || YText.empty())
+      return !XText.empty();
+
+    int result = XText.compare_lower(YText);
+    if (result < 0)
+      return true;
+    if (result > 0)
+      return false;
+
+    result = XText.compare(YText);
+    return result < 0;
+  }
+};
+} // namespace
 
 void clang_sortCodeCompletionResults(CXCompletionResult *Results,
                                      unsigned NumResults) {

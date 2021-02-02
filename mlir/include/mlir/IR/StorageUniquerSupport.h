@@ -70,7 +70,8 @@ public:
 
   /// Provide an implementation of 'classof' that compares the type id of the
   /// provided value with that of the concrete type.
-  template <typename T> static bool classof(T val) {
+  template <typename T>
+  static bool classof(T val) {
     static_assert(std::is_convertible<ConcreteT, T>::value,
                   "casting from a non-convertible type");
     return val.getTypeID() == getTypeID();
@@ -113,7 +114,8 @@ public:
 protected:
   /// Mutate the current storage instance. This will not change the unique key.
   /// The arguments are forwarded to 'ConcreteT::mutate'.
-  template <typename... Args> LogicalResult mutate(Args &&...args) {
+  template <typename... Args>
+  LogicalResult mutate(Args &&...args) {
     return UniquerT::template mutate<ConcreteT>(this->getContext(), getImpl(),
                                                 std::forward<Args>(args)...);
   }

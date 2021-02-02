@@ -3,7 +3,7 @@
 // A DWARF forward declaration of a template instantiation should have template
 // parameter children (if we ask for them).
 
-template<typename T> class A;
+template <typename T> class A;
 A<int> *p;
 
 // CHILD:      !DICompositeType(tag: DW_TAG_class_type, name: "A<int>"

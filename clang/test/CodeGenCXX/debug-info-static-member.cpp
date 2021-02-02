@@ -11,10 +11,10 @@
 enum X {
   Y
 };
-class C
-{
+class C {
   static int a;
   const static bool const_a = true;
+
 protected:
   static int b;
 #if __cplusplus >= 201103L
@@ -98,11 +98,10 @@ int C::b = 2;
 // CHECK: [[CV]] = distinct !DIGlobalVariable(name: "c", {{.*}} declaration: ![[DECL_C]])
 int C::c = 1;
 
-int main()
-{
-        C instance_C;
-        instance_C.d = 8;
-        return C::c;
+int main() {
+  C instance_C;
+  instance_C.d = 8;
+  return C::c;
 }
 
 // CHECK-NOT: !DIGlobalVariable(name: "anon_static_decl_var"
@@ -113,18 +112,18 @@ namespace {
 struct anon_static_decl_struct {
   static const int anon_static_decl_var = 117;
 };
-}
+} // namespace
 
 int ref() {
   return anon_static_decl_struct::anon_static_decl_var;
 }
 
-template<typename T>
+template <typename T>
 struct static_decl_templ {
   static const int static_decl_templ_var = 7;
 };
 
-template<typename T>
+template <typename T>
 const int static_decl_templ<T>::static_decl_templ_var;
 
 int static_decl_templ_ref() {
@@ -149,10 +148,10 @@ const int V::const_va;
 
 namespace x {
 struct y {
-// CHECK: !DIGlobalVariable(name: "z",
-// CHECK-SAME:              scope: [[NS_X:![0-9]+]]
-// CHECK: [[NS_X]] = !DINamespace(name: "x"
+  // CHECK: !DIGlobalVariable(name: "z",
+  // CHECK-SAME:              scope: [[NS_X:![0-9]+]]
+  // CHECK: [[NS_X]] = !DINamespace(name: "x"
   static int z;
 };
 int y::z;
-}
+} // namespace x

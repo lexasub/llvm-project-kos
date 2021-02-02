@@ -12,7 +12,6 @@ void WTFAnnotateBenignRaceSized(const char *f, int l,
                                 const char *desc);
 }
 
-
 void *Thread(void *x) {
   Global = 42;
   WTFGlobal = 142;

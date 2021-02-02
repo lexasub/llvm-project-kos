@@ -74,7 +74,8 @@ public:
   size_t ConnectToWaitingProcesses(lldb_private::Debugger &debugger,
                                    lldb_private::Status &error) override;
 
-  lldb_private::ConstString GetFullNameForDylib(lldb_private::ConstString basename) override;
+  lldb_private::ConstString
+  GetFullNameForDylib(lldb_private::ConstString basename) override;
 
 protected:
   std::unique_ptr<lldb_private::OptionGroupPlatformRSync>
@@ -97,8 +98,8 @@ protected:
   MakeLoadImageUtilityFunction(lldb_private::ExecutionContext &exe_ctx,
                                lldb_private::Status &error);
 
-  virtual
-  llvm::StringRef GetLibdlFunctionDeclarations(lldb_private::Process *process);
+  virtual llvm::StringRef
+  GetLibdlFunctionDeclarations(lldb_private::Process *process);
 
 private:
   PlatformPOSIX(const PlatformPOSIX &) = delete;

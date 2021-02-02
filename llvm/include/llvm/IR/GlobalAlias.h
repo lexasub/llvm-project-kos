@@ -70,16 +70,12 @@ public:
 
   /// These methods retrieve and set alias target.
   void setAliasee(Constant *Aliasee);
-  const Constant *getAliasee() const {
-    return getIndirectSymbol();
-  }
-  Constant *getAliasee() {
-    return getIndirectSymbol();
-  }
+  const Constant *getAliasee() const { return getIndirectSymbol(); }
+  Constant *getAliasee() { return getIndirectSymbol(); }
 
   static bool isValidLinkage(LinkageTypes L) {
-    return isExternalLinkage(L) || isLocalLinkage(L) ||
-      isWeakLinkage(L) || isLinkOnceLinkage(L);
+    return isExternalLinkage(L) || isLocalLinkage(L) || isWeakLinkage(L) ||
+           isLinkOnceLinkage(L);
   }
 
   // Methods for support type inquiry through isa, cast, and dyn_cast:

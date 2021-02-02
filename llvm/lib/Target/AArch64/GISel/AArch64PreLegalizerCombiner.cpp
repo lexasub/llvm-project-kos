@@ -185,11 +185,14 @@ public:
 
   AArch64PreLegalizerCombiner(bool IsOptNone = false);
 
-  StringRef getPassName() const override { return "AArch64PreLegalizerCombiner"; }
+  StringRef getPassName() const override {
+    return "AArch64PreLegalizerCombiner";
+  }
 
   bool runOnMachineFunction(MachineFunction &MF) override;
 
   void getAnalysisUsage(AnalysisUsage &AU) const override;
+
 private:
   bool IsOptNone;
 };
@@ -248,7 +251,6 @@ INITIALIZE_PASS_DEPENDENCY(GISelCSEAnalysisWrapperPass)
 INITIALIZE_PASS_END(AArch64PreLegalizerCombiner, DEBUG_TYPE,
                     "Combine AArch64 machine instrs before legalization", false,
                     false)
-
 
 namespace llvm {
 FunctionPass *createAArch64PreLegalizerCombiner(bool IsOptNone) {

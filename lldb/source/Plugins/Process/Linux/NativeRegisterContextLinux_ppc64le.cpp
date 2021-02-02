@@ -26,9 +26,9 @@
 
 // System includes - They have to be included after framework includes because
 // they define some macros which collide with variable names in other modules
-#include <sys/socket.h>
-#include <elf.h>
 #include <asm/ptrace.h>
+#include <elf.h>
+#include <sys/socket.h>
 
 #define REG_CONTEXT_SIZE                                                       \
   (GetGPRSize() + GetFPRSize() + sizeof(m_vmx_ppc64le) + sizeof(m_vsx_ppc64le))
@@ -37,70 +37,70 @@ using namespace lldb_private;
 using namespace lldb_private::process_linux;
 
 static const uint32_t g_gpr_regnums_ppc64le[] = {
-    gpr_r0_ppc64le,   gpr_r1_ppc64le,  gpr_r2_ppc64le,     gpr_r3_ppc64le,
-    gpr_r4_ppc64le,   gpr_r5_ppc64le,  gpr_r6_ppc64le,     gpr_r7_ppc64le,
-    gpr_r8_ppc64le,   gpr_r9_ppc64le,  gpr_r10_ppc64le,    gpr_r11_ppc64le,
-    gpr_r12_ppc64le,  gpr_r13_ppc64le, gpr_r14_ppc64le,    gpr_r15_ppc64le,
-    gpr_r16_ppc64le,  gpr_r17_ppc64le, gpr_r18_ppc64le,    gpr_r19_ppc64le,
-    gpr_r20_ppc64le,  gpr_r21_ppc64le, gpr_r22_ppc64le,    gpr_r23_ppc64le,
-    gpr_r24_ppc64le,  gpr_r25_ppc64le, gpr_r26_ppc64le,    gpr_r27_ppc64le,
-    gpr_r28_ppc64le,  gpr_r29_ppc64le, gpr_r30_ppc64le,    gpr_r31_ppc64le,
-    gpr_pc_ppc64le,   gpr_msr_ppc64le, gpr_origr3_ppc64le, gpr_ctr_ppc64le,
-    gpr_lr_ppc64le,   gpr_xer_ppc64le, gpr_cr_ppc64le,     gpr_softe_ppc64le,
+    gpr_r0_ppc64le,     gpr_r1_ppc64le,  gpr_r2_ppc64le,     gpr_r3_ppc64le,
+    gpr_r4_ppc64le,     gpr_r5_ppc64le,  gpr_r6_ppc64le,     gpr_r7_ppc64le,
+    gpr_r8_ppc64le,     gpr_r9_ppc64le,  gpr_r10_ppc64le,    gpr_r11_ppc64le,
+    gpr_r12_ppc64le,    gpr_r13_ppc64le, gpr_r14_ppc64le,    gpr_r15_ppc64le,
+    gpr_r16_ppc64le,    gpr_r17_ppc64le, gpr_r18_ppc64le,    gpr_r19_ppc64le,
+    gpr_r20_ppc64le,    gpr_r21_ppc64le, gpr_r22_ppc64le,    gpr_r23_ppc64le,
+    gpr_r24_ppc64le,    gpr_r25_ppc64le, gpr_r26_ppc64le,    gpr_r27_ppc64le,
+    gpr_r28_ppc64le,    gpr_r29_ppc64le, gpr_r30_ppc64le,    gpr_r31_ppc64le,
+    gpr_pc_ppc64le,     gpr_msr_ppc64le, gpr_origr3_ppc64le, gpr_ctr_ppc64le,
+    gpr_lr_ppc64le,     gpr_xer_ppc64le, gpr_cr_ppc64le,     gpr_softe_ppc64le,
     gpr_trap_ppc64le,
     LLDB_INVALID_REGNUM // register sets need to end with this flag
 };
 
 static const uint32_t g_fpr_regnums_ppc64le[] = {
-    fpr_f0_ppc64le,    fpr_f1_ppc64le,  fpr_f2_ppc64le,  fpr_f3_ppc64le,
-    fpr_f4_ppc64le,    fpr_f5_ppc64le,  fpr_f6_ppc64le,  fpr_f7_ppc64le,
-    fpr_f8_ppc64le,    fpr_f9_ppc64le,  fpr_f10_ppc64le, fpr_f11_ppc64le,
-    fpr_f12_ppc64le,   fpr_f13_ppc64le, fpr_f14_ppc64le, fpr_f15_ppc64le,
-    fpr_f16_ppc64le,   fpr_f17_ppc64le, fpr_f18_ppc64le, fpr_f19_ppc64le,
-    fpr_f20_ppc64le,   fpr_f21_ppc64le, fpr_f22_ppc64le, fpr_f23_ppc64le,
-    fpr_f24_ppc64le,   fpr_f25_ppc64le, fpr_f26_ppc64le, fpr_f27_ppc64le,
-    fpr_f28_ppc64le,   fpr_f29_ppc64le, fpr_f30_ppc64le, fpr_f31_ppc64le,
+    fpr_f0_ppc64le,     fpr_f1_ppc64le,  fpr_f2_ppc64le,  fpr_f3_ppc64le,
+    fpr_f4_ppc64le,     fpr_f5_ppc64le,  fpr_f6_ppc64le,  fpr_f7_ppc64le,
+    fpr_f8_ppc64le,     fpr_f9_ppc64le,  fpr_f10_ppc64le, fpr_f11_ppc64le,
+    fpr_f12_ppc64le,    fpr_f13_ppc64le, fpr_f14_ppc64le, fpr_f15_ppc64le,
+    fpr_f16_ppc64le,    fpr_f17_ppc64le, fpr_f18_ppc64le, fpr_f19_ppc64le,
+    fpr_f20_ppc64le,    fpr_f21_ppc64le, fpr_f22_ppc64le, fpr_f23_ppc64le,
+    fpr_f24_ppc64le,    fpr_f25_ppc64le, fpr_f26_ppc64le, fpr_f27_ppc64le,
+    fpr_f28_ppc64le,    fpr_f29_ppc64le, fpr_f30_ppc64le, fpr_f31_ppc64le,
     fpr_fpscr_ppc64le,
     LLDB_INVALID_REGNUM // register sets need to end with this flag
 };
 
 static const uint32_t g_vmx_regnums_ppc64le[] = {
-    vmx_vr0_ppc64le,  vmx_vr1_ppc64le,    vmx_vr2_ppc64le,  vmx_vr3_ppc64le,
-    vmx_vr4_ppc64le,  vmx_vr5_ppc64le,    vmx_vr6_ppc64le,  vmx_vr7_ppc64le,
-    vmx_vr8_ppc64le,  vmx_vr9_ppc64le,    vmx_vr10_ppc64le, vmx_vr11_ppc64le,
-    vmx_vr12_ppc64le, vmx_vr13_ppc64le,   vmx_vr14_ppc64le, vmx_vr15_ppc64le,
-    vmx_vr16_ppc64le, vmx_vr17_ppc64le,   vmx_vr18_ppc64le, vmx_vr19_ppc64le,
-    vmx_vr20_ppc64le, vmx_vr21_ppc64le,   vmx_vr22_ppc64le, vmx_vr23_ppc64le,
-    vmx_vr24_ppc64le, vmx_vr25_ppc64le,   vmx_vr26_ppc64le, vmx_vr27_ppc64le,
-    vmx_vr28_ppc64le, vmx_vr29_ppc64le,   vmx_vr30_ppc64le, vmx_vr31_ppc64le,
-    vmx_vscr_ppc64le, vmx_vrsave_ppc64le,
+    vmx_vr0_ppc64le,    vmx_vr1_ppc64le,    vmx_vr2_ppc64le,  vmx_vr3_ppc64le,
+    vmx_vr4_ppc64le,    vmx_vr5_ppc64le,    vmx_vr6_ppc64le,  vmx_vr7_ppc64le,
+    vmx_vr8_ppc64le,    vmx_vr9_ppc64le,    vmx_vr10_ppc64le, vmx_vr11_ppc64le,
+    vmx_vr12_ppc64le,   vmx_vr13_ppc64le,   vmx_vr14_ppc64le, vmx_vr15_ppc64le,
+    vmx_vr16_ppc64le,   vmx_vr17_ppc64le,   vmx_vr18_ppc64le, vmx_vr19_ppc64le,
+    vmx_vr20_ppc64le,   vmx_vr21_ppc64le,   vmx_vr22_ppc64le, vmx_vr23_ppc64le,
+    vmx_vr24_ppc64le,   vmx_vr25_ppc64le,   vmx_vr26_ppc64le, vmx_vr27_ppc64le,
+    vmx_vr28_ppc64le,   vmx_vr29_ppc64le,   vmx_vr30_ppc64le, vmx_vr31_ppc64le,
+    vmx_vscr_ppc64le,   vmx_vrsave_ppc64le,
     LLDB_INVALID_REGNUM // register sets need to end with this flag
 };
 
 static const uint32_t g_vsx_regnums_ppc64le[] = {
-    vsx_vs0_ppc64le,  vsx_vs1_ppc64le,  vsx_vs2_ppc64le,  vsx_vs3_ppc64le,
-    vsx_vs4_ppc64le,  vsx_vs5_ppc64le,  vsx_vs6_ppc64le,  vsx_vs7_ppc64le,
-    vsx_vs8_ppc64le,  vsx_vs9_ppc64le,  vsx_vs10_ppc64le, vsx_vs11_ppc64le,
-    vsx_vs12_ppc64le, vsx_vs13_ppc64le, vsx_vs14_ppc64le, vsx_vs15_ppc64le,
-    vsx_vs16_ppc64le, vsx_vs17_ppc64le, vsx_vs18_ppc64le, vsx_vs19_ppc64le,
-    vsx_vs20_ppc64le, vsx_vs21_ppc64le, vsx_vs22_ppc64le, vsx_vs23_ppc64le,
-    vsx_vs24_ppc64le, vsx_vs25_ppc64le, vsx_vs26_ppc64le, vsx_vs27_ppc64le,
-    vsx_vs28_ppc64le, vsx_vs29_ppc64le, vsx_vs30_ppc64le, vsx_vs31_ppc64le,
-    vsx_vs32_ppc64le, vsx_vs33_ppc64le, vsx_vs34_ppc64le, vsx_vs35_ppc64le,
-    vsx_vs36_ppc64le, vsx_vs37_ppc64le, vsx_vs38_ppc64le, vsx_vs39_ppc64le,
-    vsx_vs40_ppc64le, vsx_vs41_ppc64le, vsx_vs42_ppc64le, vsx_vs43_ppc64le,
-    vsx_vs44_ppc64le, vsx_vs45_ppc64le, vsx_vs46_ppc64le, vsx_vs47_ppc64le,
-    vsx_vs48_ppc64le, vsx_vs49_ppc64le, vsx_vs50_ppc64le, vsx_vs51_ppc64le,
-    vsx_vs52_ppc64le, vsx_vs53_ppc64le, vsx_vs54_ppc64le, vsx_vs55_ppc64le,
-    vsx_vs56_ppc64le, vsx_vs57_ppc64le, vsx_vs58_ppc64le, vsx_vs59_ppc64le,
-    vsx_vs60_ppc64le, vsx_vs61_ppc64le, vsx_vs62_ppc64le, vsx_vs63_ppc64le,
+    vsx_vs0_ppc64le,    vsx_vs1_ppc64le,  vsx_vs2_ppc64le,  vsx_vs3_ppc64le,
+    vsx_vs4_ppc64le,    vsx_vs5_ppc64le,  vsx_vs6_ppc64le,  vsx_vs7_ppc64le,
+    vsx_vs8_ppc64le,    vsx_vs9_ppc64le,  vsx_vs10_ppc64le, vsx_vs11_ppc64le,
+    vsx_vs12_ppc64le,   vsx_vs13_ppc64le, vsx_vs14_ppc64le, vsx_vs15_ppc64le,
+    vsx_vs16_ppc64le,   vsx_vs17_ppc64le, vsx_vs18_ppc64le, vsx_vs19_ppc64le,
+    vsx_vs20_ppc64le,   vsx_vs21_ppc64le, vsx_vs22_ppc64le, vsx_vs23_ppc64le,
+    vsx_vs24_ppc64le,   vsx_vs25_ppc64le, vsx_vs26_ppc64le, vsx_vs27_ppc64le,
+    vsx_vs28_ppc64le,   vsx_vs29_ppc64le, vsx_vs30_ppc64le, vsx_vs31_ppc64le,
+    vsx_vs32_ppc64le,   vsx_vs33_ppc64le, vsx_vs34_ppc64le, vsx_vs35_ppc64le,
+    vsx_vs36_ppc64le,   vsx_vs37_ppc64le, vsx_vs38_ppc64le, vsx_vs39_ppc64le,
+    vsx_vs40_ppc64le,   vsx_vs41_ppc64le, vsx_vs42_ppc64le, vsx_vs43_ppc64le,
+    vsx_vs44_ppc64le,   vsx_vs45_ppc64le, vsx_vs46_ppc64le, vsx_vs47_ppc64le,
+    vsx_vs48_ppc64le,   vsx_vs49_ppc64le, vsx_vs50_ppc64le, vsx_vs51_ppc64le,
+    vsx_vs52_ppc64le,   vsx_vs53_ppc64le, vsx_vs54_ppc64le, vsx_vs55_ppc64le,
+    vsx_vs56_ppc64le,   vsx_vs57_ppc64le, vsx_vs58_ppc64le, vsx_vs59_ppc64le,
+    vsx_vs60_ppc64le,   vsx_vs61_ppc64le, vsx_vs62_ppc64le, vsx_vs63_ppc64le,
     LLDB_INVALID_REGNUM // register sets need to end with this flag
 };
 
 namespace {
 // Number of register sets provided by this context.
 enum { k_num_register_sets = 4 };
-}
+} // namespace
 
 static const RegisterSet g_reg_sets_ppc64le[k_num_register_sets] = {
     {"General Purpose Registers", "gpr", k_num_gpr_registers_ppc64le,
@@ -119,7 +119,7 @@ NativeRegisterContextLinux::CreateHostNativeRegisterContextLinux(
   switch (target_arch.GetMachine()) {
   case llvm::Triple::ppc64le:
     return std::make_unique<NativeRegisterContextLinux_ppc64le>(target_arch,
-                                                                 native_thread);
+                                                                native_thread);
   default:
     llvm_unreachable("have no register context for architecture");
   }
@@ -159,8 +159,9 @@ uint32_t NativeRegisterContextLinux_ppc64le::GetUserRegisterCount() const {
   return count;
 }
 
-Status NativeRegisterContextLinux_ppc64le::ReadRegister(
-    const RegisterInfo *reg_info, RegisterValue &reg_value) {
+Status
+NativeRegisterContextLinux_ppc64le::ReadRegister(const RegisterInfo *reg_info,
+                                                 RegisterValue &reg_value) {
   Status error;
 
   if (!reg_info) {
@@ -231,7 +232,7 @@ Status NativeRegisterContextLinux_ppc64le::ReadRegister(
     if (error.Fail())
       return error;
 
-    uint8_t *src = (uint8_t *) &m_gpr_ppc64le + reg_info->byte_offset;
+    uint8_t *src = (uint8_t *)&m_gpr_ppc64le + reg_info->byte_offset;
     reg_value.SetFromMemoryData(reg_info, src, reg_info->byte_size,
                                 eByteOrderLittle, error);
   } else {

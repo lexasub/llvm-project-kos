@@ -48,187 +48,363 @@ MVT::SimpleValueType llvm::getValueType(Record *Rec) {
 
 StringRef llvm::getName(MVT::SimpleValueType T) {
   switch (T) {
-  case MVT::Other:   return "UNKNOWN";
-  case MVT::iPTR:    return "TLI.getPointerTy()";
-  case MVT::iPTRAny: return "TLI.getPointerTy()";
-  default: return getEnumName(T);
+  case MVT::Other:
+    return "UNKNOWN";
+  case MVT::iPTR:
+    return "TLI.getPointerTy()";
+  case MVT::iPTRAny:
+    return "TLI.getPointerTy()";
+  default:
+    return getEnumName(T);
   }
 }
 
 StringRef llvm::getEnumName(MVT::SimpleValueType T) {
   switch (T) {
-  case MVT::Other:    return "MVT::Other";
-  case MVT::i1:       return "MVT::i1";
-  case MVT::i8:       return "MVT::i8";
-  case MVT::i16:      return "MVT::i16";
-  case MVT::i32:      return "MVT::i32";
-  case MVT::i64:      return "MVT::i64";
-  case MVT::i128:     return "MVT::i128";
-  case MVT::Any:      return "MVT::Any";
-  case MVT::iAny:     return "MVT::iAny";
-  case MVT::fAny:     return "MVT::fAny";
-  case MVT::vAny:     return "MVT::vAny";
-  case MVT::f16:      return "MVT::f16";
-  case MVT::bf16:     return "MVT::bf16";
-  case MVT::f32:      return "MVT::f32";
-  case MVT::f64:      return "MVT::f64";
-  case MVT::f80:      return "MVT::f80";
-  case MVT::f128:     return "MVT::f128";
-  case MVT::ppcf128:  return "MVT::ppcf128";
-  case MVT::x86mmx:   return "MVT::x86mmx";
-  case MVT::x86amx:   return "MVT::x86amx";
-  case MVT::Glue:     return "MVT::Glue";
-  case MVT::isVoid:   return "MVT::isVoid";
-  case MVT::v1i1:     return "MVT::v1i1";
-  case MVT::v2i1:     return "MVT::v2i1";
-  case MVT::v4i1:     return "MVT::v4i1";
-  case MVT::v8i1:     return "MVT::v8i1";
-  case MVT::v16i1:    return "MVT::v16i1";
-  case MVT::v32i1:    return "MVT::v32i1";
-  case MVT::v64i1:    return "MVT::v64i1";
-  case MVT::v128i1:   return "MVT::v128i1";
-  case MVT::v256i1:   return "MVT::v256i1";
-  case MVT::v512i1:   return "MVT::v512i1";
-  case MVT::v1024i1:  return "MVT::v1024i1";
-  case MVT::v1i8:     return "MVT::v1i8";
-  case MVT::v2i8:     return "MVT::v2i8";
-  case MVT::v4i8:     return "MVT::v4i8";
-  case MVT::v8i8:     return "MVT::v8i8";
-  case MVT::v16i8:    return "MVT::v16i8";
-  case MVT::v32i8:    return "MVT::v32i8";
-  case MVT::v64i8:    return "MVT::v64i8";
-  case MVT::v128i8:   return "MVT::v128i8";
-  case MVT::v256i8:   return "MVT::v256i8";
-  case MVT::v1i16:    return "MVT::v1i16";
-  case MVT::v2i16:    return "MVT::v2i16";
-  case MVT::v3i16:    return "MVT::v3i16";
-  case MVT::v4i16:    return "MVT::v4i16";
-  case MVT::v8i16:    return "MVT::v8i16";
-  case MVT::v16i16:   return "MVT::v16i16";
-  case MVT::v32i16:   return "MVT::v32i16";
-  case MVT::v64i16:   return "MVT::v64i16";
-  case MVT::v128i16:  return "MVT::v128i16";
-  case MVT::v1i32:    return "MVT::v1i32";
-  case MVT::v2i32:    return "MVT::v2i32";
-  case MVT::v3i32:    return "MVT::v3i32";
-  case MVT::v4i32:    return "MVT::v4i32";
-  case MVT::v5i32:    return "MVT::v5i32";
-  case MVT::v8i32:    return "MVT::v8i32";
-  case MVT::v16i32:   return "MVT::v16i32";
-  case MVT::v32i32:   return "MVT::v32i32";
-  case MVT::v64i32:   return "MVT::v64i32";
-  case MVT::v128i32:  return "MVT::v128i32";
-  case MVT::v256i32:  return "MVT::v256i32";
-  case MVT::v512i32:  return "MVT::v512i32";
-  case MVT::v1024i32: return "MVT::v1024i32";
-  case MVT::v2048i32: return "MVT::v2048i32";
-  case MVT::v1i64:    return "MVT::v1i64";
-  case MVT::v2i64:    return "MVT::v2i64";
-  case MVT::v4i64:    return "MVT::v4i64";
-  case MVT::v8i64:    return "MVT::v8i64";
-  case MVT::v16i64:   return "MVT::v16i64";
-  case MVT::v32i64:   return "MVT::v32i64";
-  case MVT::v64i64:   return "MVT::v64i64";
-  case MVT::v128i64:  return "MVT::v128i64";
-  case MVT::v256i64:  return "MVT::v256i64";
-  case MVT::v1i128:   return "MVT::v1i128";
-  case MVT::v2f16:    return "MVT::v2f16";
-  case MVT::v3f16:    return "MVT::v3f16";
-  case MVT::v4f16:    return "MVT::v4f16";
-  case MVT::v8f16:    return "MVT::v8f16";
-  case MVT::v16f16:   return "MVT::v16f16";
-  case MVT::v32f16:   return "MVT::v32f16";
-  case MVT::v64f16:   return "MVT::v64f16";
-  case MVT::v128f16:  return "MVT::v128f16";
-  case MVT::v2bf16:   return "MVT::v2bf16";
-  case MVT::v3bf16:   return "MVT::v3bf16";
-  case MVT::v4bf16:   return "MVT::v4bf16";
-  case MVT::v8bf16:   return "MVT::v8bf16";
-  case MVT::v16bf16:  return "MVT::v16bf16";
-  case MVT::v32bf16:  return "MVT::v32bf16";
-  case MVT::v64bf16:  return "MVT::v64bf16";
-  case MVT::v128bf16: return "MVT::v128bf16";
-  case MVT::v1f32:    return "MVT::v1f32";
-  case MVT::v2f32:    return "MVT::v2f32";
-  case MVT::v3f32:    return "MVT::v3f32";
-  case MVT::v4f32:    return "MVT::v4f32";
-  case MVT::v5f32:    return "MVT::v5f32";
-  case MVT::v8f32:    return "MVT::v8f32";
-  case MVT::v16f32:   return "MVT::v16f32";
-  case MVT::v32f32:   return "MVT::v32f32";
-  case MVT::v64f32:   return "MVT::v64f32";
-  case MVT::v128f32:  return "MVT::v128f32";
-  case MVT::v256f32:  return "MVT::v256f32";
-  case MVT::v512f32:  return "MVT::v512f32";
-  case MVT::v1024f32: return "MVT::v1024f32";
-  case MVT::v2048f32: return "MVT::v2048f32";
-  case MVT::v1f64:    return "MVT::v1f64";
-  case MVT::v2f64:    return "MVT::v2f64";
-  case MVT::v4f64:    return "MVT::v4f64";
-  case MVT::v8f64:    return "MVT::v8f64";
-  case MVT::v16f64:   return "MVT::v16f64";
-  case MVT::v32f64:   return "MVT::v32f64";
-  case MVT::v64f64:   return "MVT::v64f64";
-  case MVT::v128f64:  return "MVT::v128f64";
-  case MVT::v256f64:  return "MVT::v256f64";
-  case MVT::nxv1i1:   return "MVT::nxv1i1";
-  case MVT::nxv2i1:   return "MVT::nxv2i1";
-  case MVT::nxv4i1:   return "MVT::nxv4i1";
-  case MVT::nxv8i1:   return "MVT::nxv8i1";
-  case MVT::nxv16i1:  return "MVT::nxv16i1";
-  case MVT::nxv32i1:  return "MVT::nxv32i1";
-  case MVT::nxv64i1:  return "MVT::nxv64i1";
-  case MVT::nxv1i8:   return "MVT::nxv1i8";
-  case MVT::nxv2i8:   return "MVT::nxv2i8";
-  case MVT::nxv4i8:   return "MVT::nxv4i8";
-  case MVT::nxv8i8:   return "MVT::nxv8i8";
-  case MVT::nxv16i8:  return "MVT::nxv16i8";
-  case MVT::nxv32i8:  return "MVT::nxv32i8";
-  case MVT::nxv64i8:  return "MVT::nxv64i8";
-  case MVT::nxv1i16:  return "MVT::nxv1i16";
-  case MVT::nxv2i16:  return "MVT::nxv2i16";
-  case MVT::nxv4i16:  return "MVT::nxv4i16";
-  case MVT::nxv8i16:  return "MVT::nxv8i16";
-  case MVT::nxv16i16: return "MVT::nxv16i16";
-  case MVT::nxv32i16: return "MVT::nxv32i16";
-  case MVT::nxv1i32:  return "MVT::nxv1i32";
-  case MVT::nxv2i32:  return "MVT::nxv2i32";
-  case MVT::nxv4i32:  return "MVT::nxv4i32";
-  case MVT::nxv8i32:  return "MVT::nxv8i32";
-  case MVT::nxv16i32: return "MVT::nxv16i32";
-  case MVT::nxv32i32: return "MVT::nxv32i32";
-  case MVT::nxv1i64:  return "MVT::nxv1i64";
-  case MVT::nxv2i64:  return "MVT::nxv2i64";
-  case MVT::nxv4i64:  return "MVT::nxv4i64";
-  case MVT::nxv8i64:  return "MVT::nxv8i64";
-  case MVT::nxv16i64: return "MVT::nxv16i64";
-  case MVT::nxv32i64: return "MVT::nxv32i64";
-  case MVT::nxv1f16:  return "MVT::nxv1f16";
-  case MVT::nxv2f16:  return "MVT::nxv2f16";
-  case MVT::nxv4f16:  return "MVT::nxv4f16";
-  case MVT::nxv8f16:  return "MVT::nxv8f16";
-  case MVT::nxv16f16: return "MVT::nxv16f16";
-  case MVT::nxv32f16: return "MVT::nxv32f16";
-  case MVT::nxv2bf16:  return "MVT::nxv2bf16";
-  case MVT::nxv4bf16:  return "MVT::nxv4bf16";
-  case MVT::nxv8bf16:  return "MVT::nxv8bf16";
-  case MVT::nxv1f32:   return "MVT::nxv1f32";
-  case MVT::nxv2f32:   return "MVT::nxv2f32";
-  case MVT::nxv4f32:   return "MVT::nxv4f32";
-  case MVT::nxv8f32:   return "MVT::nxv8f32";
-  case MVT::nxv16f32:  return "MVT::nxv16f32";
-  case MVT::nxv1f64:   return "MVT::nxv1f64";
-  case MVT::nxv2f64:   return "MVT::nxv2f64";
-  case MVT::nxv4f64:   return "MVT::nxv4f64";
-  case MVT::nxv8f64:   return "MVT::nxv8f64";
-  case MVT::token:     return "MVT::token";
-  case MVT::Metadata:  return "MVT::Metadata";
-  case MVT::iPTR:      return "MVT::iPTR";
-  case MVT::iPTRAny:   return "MVT::iPTRAny";
-  case MVT::Untyped:   return "MVT::Untyped";
-  case MVT::funcref:   return "MVT::funcref";
-  case MVT::externref: return "MVT::externref";
-  default: llvm_unreachable("ILLEGAL VALUE TYPE!");
+  case MVT::Other:
+    return "MVT::Other";
+  case MVT::i1:
+    return "MVT::i1";
+  case MVT::i8:
+    return "MVT::i8";
+  case MVT::i16:
+    return "MVT::i16";
+  case MVT::i32:
+    return "MVT::i32";
+  case MVT::i64:
+    return "MVT::i64";
+  case MVT::i128:
+    return "MVT::i128";
+  case MVT::Any:
+    return "MVT::Any";
+  case MVT::iAny:
+    return "MVT::iAny";
+  case MVT::fAny:
+    return "MVT::fAny";
+  case MVT::vAny:
+    return "MVT::vAny";
+  case MVT::f16:
+    return "MVT::f16";
+  case MVT::bf16:
+    return "MVT::bf16";
+  case MVT::f32:
+    return "MVT::f32";
+  case MVT::f64:
+    return "MVT::f64";
+  case MVT::f80:
+    return "MVT::f80";
+  case MVT::f128:
+    return "MVT::f128";
+  case MVT::ppcf128:
+    return "MVT::ppcf128";
+  case MVT::x86mmx:
+    return "MVT::x86mmx";
+  case MVT::x86amx:
+    return "MVT::x86amx";
+  case MVT::Glue:
+    return "MVT::Glue";
+  case MVT::isVoid:
+    return "MVT::isVoid";
+  case MVT::v1i1:
+    return "MVT::v1i1";
+  case MVT::v2i1:
+    return "MVT::v2i1";
+  case MVT::v4i1:
+    return "MVT::v4i1";
+  case MVT::v8i1:
+    return "MVT::v8i1";
+  case MVT::v16i1:
+    return "MVT::v16i1";
+  case MVT::v32i1:
+    return "MVT::v32i1";
+  case MVT::v64i1:
+    return "MVT::v64i1";
+  case MVT::v128i1:
+    return "MVT::v128i1";
+  case MVT::v256i1:
+    return "MVT::v256i1";
+  case MVT::v512i1:
+    return "MVT::v512i1";
+  case MVT::v1024i1:
+    return "MVT::v1024i1";
+  case MVT::v1i8:
+    return "MVT::v1i8";
+  case MVT::v2i8:
+    return "MVT::v2i8";
+  case MVT::v4i8:
+    return "MVT::v4i8";
+  case MVT::v8i8:
+    return "MVT::v8i8";
+  case MVT::v16i8:
+    return "MVT::v16i8";
+  case MVT::v32i8:
+    return "MVT::v32i8";
+  case MVT::v64i8:
+    return "MVT::v64i8";
+  case MVT::v128i8:
+    return "MVT::v128i8";
+  case MVT::v256i8:
+    return "MVT::v256i8";
+  case MVT::v1i16:
+    return "MVT::v1i16";
+  case MVT::v2i16:
+    return "MVT::v2i16";
+  case MVT::v3i16:
+    return "MVT::v3i16";
+  case MVT::v4i16:
+    return "MVT::v4i16";
+  case MVT::v8i16:
+    return "MVT::v8i16";
+  case MVT::v16i16:
+    return "MVT::v16i16";
+  case MVT::v32i16:
+    return "MVT::v32i16";
+  case MVT::v64i16:
+    return "MVT::v64i16";
+  case MVT::v128i16:
+    return "MVT::v128i16";
+  case MVT::v1i32:
+    return "MVT::v1i32";
+  case MVT::v2i32:
+    return "MVT::v2i32";
+  case MVT::v3i32:
+    return "MVT::v3i32";
+  case MVT::v4i32:
+    return "MVT::v4i32";
+  case MVT::v5i32:
+    return "MVT::v5i32";
+  case MVT::v8i32:
+    return "MVT::v8i32";
+  case MVT::v16i32:
+    return "MVT::v16i32";
+  case MVT::v32i32:
+    return "MVT::v32i32";
+  case MVT::v64i32:
+    return "MVT::v64i32";
+  case MVT::v128i32:
+    return "MVT::v128i32";
+  case MVT::v256i32:
+    return "MVT::v256i32";
+  case MVT::v512i32:
+    return "MVT::v512i32";
+  case MVT::v1024i32:
+    return "MVT::v1024i32";
+  case MVT::v2048i32:
+    return "MVT::v2048i32";
+  case MVT::v1i64:
+    return "MVT::v1i64";
+  case MVT::v2i64:
+    return "MVT::v2i64";
+  case MVT::v4i64:
+    return "MVT::v4i64";
+  case MVT::v8i64:
+    return "MVT::v8i64";
+  case MVT::v16i64:
+    return "MVT::v16i64";
+  case MVT::v32i64:
+    return "MVT::v32i64";
+  case MVT::v64i64:
+    return "MVT::v64i64";
+  case MVT::v128i64:
+    return "MVT::v128i64";
+  case MVT::v256i64:
+    return "MVT::v256i64";
+  case MVT::v1i128:
+    return "MVT::v1i128";
+  case MVT::v2f16:
+    return "MVT::v2f16";
+  case MVT::v3f16:
+    return "MVT::v3f16";
+  case MVT::v4f16:
+    return "MVT::v4f16";
+  case MVT::v8f16:
+    return "MVT::v8f16";
+  case MVT::v16f16:
+    return "MVT::v16f16";
+  case MVT::v32f16:
+    return "MVT::v32f16";
+  case MVT::v64f16:
+    return "MVT::v64f16";
+  case MVT::v128f16:
+    return "MVT::v128f16";
+  case MVT::v2bf16:
+    return "MVT::v2bf16";
+  case MVT::v3bf16:
+    return "MVT::v3bf16";
+  case MVT::v4bf16:
+    return "MVT::v4bf16";
+  case MVT::v8bf16:
+    return "MVT::v8bf16";
+  case MVT::v16bf16:
+    return "MVT::v16bf16";
+  case MVT::v32bf16:
+    return "MVT::v32bf16";
+  case MVT::v64bf16:
+    return "MVT::v64bf16";
+  case MVT::v128bf16:
+    return "MVT::v128bf16";
+  case MVT::v1f32:
+    return "MVT::v1f32";
+  case MVT::v2f32:
+    return "MVT::v2f32";
+  case MVT::v3f32:
+    return "MVT::v3f32";
+  case MVT::v4f32:
+    return "MVT::v4f32";
+  case MVT::v5f32:
+    return "MVT::v5f32";
+  case MVT::v8f32:
+    return "MVT::v8f32";
+  case MVT::v16f32:
+    return "MVT::v16f32";
+  case MVT::v32f32:
+    return "MVT::v32f32";
+  case MVT::v64f32:
+    return "MVT::v64f32";
+  case MVT::v128f32:
+    return "MVT::v128f32";
+  case MVT::v256f32:
+    return "MVT::v256f32";
+  case MVT::v512f32:
+    return "MVT::v512f32";
+  case MVT::v1024f32:
+    return "MVT::v1024f32";
+  case MVT::v2048f32:
+    return "MVT::v2048f32";
+  case MVT::v1f64:
+    return "MVT::v1f64";
+  case MVT::v2f64:
+    return "MVT::v2f64";
+  case MVT::v4f64:
+    return "MVT::v4f64";
+  case MVT::v8f64:
+    return "MVT::v8f64";
+  case MVT::v16f64:
+    return "MVT::v16f64";
+  case MVT::v32f64:
+    return "MVT::v32f64";
+  case MVT::v64f64:
+    return "MVT::v64f64";
+  case MVT::v128f64:
+    return "MVT::v128f64";
+  case MVT::v256f64:
+    return "MVT::v256f64";
+  case MVT::nxv1i1:
+    return "MVT::nxv1i1";
+  case MVT::nxv2i1:
+    return "MVT::nxv2i1";
+  case MVT::nxv4i1:
+    return "MVT::nxv4i1";
+  case MVT::nxv8i1:
+    return "MVT::nxv8i1";
+  case MVT::nxv16i1:
+    return "MVT::nxv16i1";
+  case MVT::nxv32i1:
+    return "MVT::nxv32i1";
+  case MVT::nxv64i1:
+    return "MVT::nxv64i1";
+  case MVT::nxv1i8:
+    return "MVT::nxv1i8";
+  case MVT::nxv2i8:
+    return "MVT::nxv2i8";
+  case MVT::nxv4i8:
+    return "MVT::nxv4i8";
+  case MVT::nxv8i8:
+    return "MVT::nxv8i8";
+  case MVT::nxv16i8:
+    return "MVT::nxv16i8";
+  case MVT::nxv32i8:
+    return "MVT::nxv32i8";
+  case MVT::nxv64i8:
+    return "MVT::nxv64i8";
+  case MVT::nxv1i16:
+    return "MVT::nxv1i16";
+  case MVT::nxv2i16:
+    return "MVT::nxv2i16";
+  case MVT::nxv4i16:
+    return "MVT::nxv4i16";
+  case MVT::nxv8i16:
+    return "MVT::nxv8i16";
+  case MVT::nxv16i16:
+    return "MVT::nxv16i16";
+  case MVT::nxv32i16:
+    return "MVT::nxv32i16";
+  case MVT::nxv1i32:
+    return "MVT::nxv1i32";
+  case MVT::nxv2i32:
+    return "MVT::nxv2i32";
+  case MVT::nxv4i32:
+    return "MVT::nxv4i32";
+  case MVT::nxv8i32:
+    return "MVT::nxv8i32";
+  case MVT::nxv16i32:
+    return "MVT::nxv16i32";
+  case MVT::nxv32i32:
+    return "MVT::nxv32i32";
+  case MVT::nxv1i64:
+    return "MVT::nxv1i64";
+  case MVT::nxv2i64:
+    return "MVT::nxv2i64";
+  case MVT::nxv4i64:
+    return "MVT::nxv4i64";
+  case MVT::nxv8i64:
+    return "MVT::nxv8i64";
+  case MVT::nxv16i64:
+    return "MVT::nxv16i64";
+  case MVT::nxv32i64:
+    return "MVT::nxv32i64";
+  case MVT::nxv1f16:
+    return "MVT::nxv1f16";
+  case MVT::nxv2f16:
+    return "MVT::nxv2f16";
+  case MVT::nxv4f16:
+    return "MVT::nxv4f16";
+  case MVT::nxv8f16:
+    return "MVT::nxv8f16";
+  case MVT::nxv16f16:
+    return "MVT::nxv16f16";
+  case MVT::nxv32f16:
+    return "MVT::nxv32f16";
+  case MVT::nxv2bf16:
+    return "MVT::nxv2bf16";
+  case MVT::nxv4bf16:
+    return "MVT::nxv4bf16";
+  case MVT::nxv8bf16:
+    return "MVT::nxv8bf16";
+  case MVT::nxv1f32:
+    return "MVT::nxv1f32";
+  case MVT::nxv2f32:
+    return "MVT::nxv2f32";
+  case MVT::nxv4f32:
+    return "MVT::nxv4f32";
+  case MVT::nxv8f32:
+    return "MVT::nxv8f32";
+  case MVT::nxv16f32:
+    return "MVT::nxv16f32";
+  case MVT::nxv1f64:
+    return "MVT::nxv1f64";
+  case MVT::nxv2f64:
+    return "MVT::nxv2f64";
+  case MVT::nxv4f64:
+    return "MVT::nxv4f64";
+  case MVT::nxv8f64:
+    return "MVT::nxv8f64";
+  case MVT::token:
+    return "MVT::token";
+  case MVT::Metadata:
+    return "MVT::Metadata";
+  case MVT::iPTR:
+    return "MVT::iPTR";
+  case MVT::iPTRAny:
+    return "MVT::iPTRAny";
+  case MVT::Untyped:
+    return "MVT::Untyped";
+  case MVT::funcref:
+    return "MVT::funcref";
+  case MVT::externref:
+    return "MVT::externref";
+  default:
+    llvm_unreachable("ILLEGAL VALUE TYPE!");
   }
 }
 
@@ -244,12 +420,11 @@ std::string llvm::getQualifiedName(const Record *R) {
   return Namespace + "::" + R->getName().str();
 }
 
-
 /// getTarget - Return the current instance of the Target class.
 ///
 CodeGenTarget::CodeGenTarget(RecordKeeper &records)
-  : Records(records), CGH(records) {
-  std::vector<Record*> Targets = Records.getAllDerivedDefinitions("Target");
+    : Records(records), CGH(records) {
+  std::vector<Record *> Targets = Records.getAllDerivedDefinitions("Target");
   if (Targets.size() == 0)
     PrintFatalError("ERROR: No 'Target' subclasses defined!");
   if (Targets.size() != 1)
@@ -257,8 +432,7 @@ CodeGenTarget::CodeGenTarget(RecordKeeper &records)
   TargetRec = Targets[0];
 }
 
-CodeGenTarget::~CodeGenTarget() {
-}
+CodeGenTarget::~CodeGenTarget() {}
 
 StringRef CodeGenTarget::getName() const { return TargetRec->getName(); }
 
@@ -294,7 +468,7 @@ bool CodeGenTarget::getAllowRegisterRenaming() const {
 /// getAsmParser - Return the AssemblyParser definition for this target.
 ///
 Record *CodeGenTarget::getAsmParser() const {
-  std::vector<Record*> LI = TargetRec->getValueAsListOfDefs("AssemblyParsers");
+  std::vector<Record *> LI = TargetRec->getValueAsListOfDefs("AssemblyParsers");
   if (AsmParserNum >= LI.size())
     PrintFatalError("Target does not have an AsmParser #" +
                     Twine(AsmParserNum) + "!");
@@ -305,8 +479,8 @@ Record *CodeGenTarget::getAsmParser() const {
 /// this target.
 ///
 Record *CodeGenTarget::getAsmParserVariant(unsigned i) const {
-  std::vector<Record*> LI =
-    TargetRec->getValueAsListOfDefs("AssemblyParserVariants");
+  std::vector<Record *> LI =
+      TargetRec->getValueAsListOfDefs("AssemblyParserVariants");
   if (i >= LI.size())
     PrintFatalError("Target does not have an AsmParserVariant #" + Twine(i) +
                     "!");
@@ -317,15 +491,15 @@ Record *CodeGenTarget::getAsmParserVariant(unsigned i) const {
 /// available for this target.
 ///
 unsigned CodeGenTarget::getAsmParserVariantCount() const {
-  std::vector<Record*> LI =
-    TargetRec->getValueAsListOfDefs("AssemblyParserVariants");
+  std::vector<Record *> LI =
+      TargetRec->getValueAsListOfDefs("AssemblyParserVariants");
   return LI.size();
 }
 
 /// getAsmWriter - Return the AssemblyWriter definition for this target.
 ///
 Record *CodeGenTarget::getAsmWriter() const {
-  std::vector<Record*> LI = TargetRec->getValueAsListOfDefs("AssemblyWriters");
+  std::vector<Record *> LI = TargetRec->getValueAsListOfDefs("AssemblyWriters");
   if (AsmWriterNum >= LI.size())
     PrintFatalError("Target does not have an AsmWriter #" +
                     Twine(AsmWriterNum) + "!");
@@ -338,11 +512,9 @@ CodeGenRegBank &CodeGenTarget::getRegBank() const {
   return *RegBank;
 }
 
-Optional<CodeGenRegisterClass *>
-CodeGenTarget::getSuperRegForSubReg(const ValueTypeByHwMode &ValueTy,
-                                    CodeGenRegBank &RegBank,
-                                    const CodeGenSubRegIndex *SubIdx,
-                                    bool MustBeAllocatable) const {
+Optional<CodeGenRegisterClass *> CodeGenTarget::getSuperRegForSubReg(
+    const ValueTypeByHwMode &ValueTy, CodeGenRegBank &RegBank,
+    const CodeGenSubRegIndex *SubIdx, bool MustBeAllocatable) const {
   std::vector<CodeGenRegisterClass *> Candidates;
   auto &RegClasses = RegBank.getRegClasses();
 
@@ -398,8 +570,7 @@ const CodeGenRegister *CodeGenTarget::getRegisterByName(StringRef Name) const {
   return getRegBank().getRegistersByName().lookup(Name);
 }
 
-std::vector<ValueTypeByHwMode> CodeGenTarget::getRegisterVTs(Record *R)
-      const {
+std::vector<ValueTypeByHwMode> CodeGenTarget::getRegisterVTs(Record *R) const {
   const CodeGenRegister *Reg = getRegBank().getReg(R);
   std::vector<ValueTypeByHwMode> Result;
   for (const auto &RC : getRegBank().getRegClasses()) {
@@ -415,16 +586,15 @@ std::vector<ValueTypeByHwMode> CodeGenTarget::getRegisterVTs(Record *R)
   return Result;
 }
 
-
 void CodeGenTarget::ReadLegalValueTypes() const {
   for (const auto &RC : getRegBank().getRegClasses())
     llvm::append_range(LegalValueTypes, RC.VTs);
 
   // Remove duplicates.
   llvm::sort(LegalValueTypes);
-  LegalValueTypes.erase(std::unique(LegalValueTypes.begin(),
-                                    LegalValueTypes.end()),
-                        LegalValueTypes.end());
+  LegalValueTypes.erase(
+      std::unique(LegalValueTypes.begin(), LegalValueTypes.end()),
+      LegalValueTypes.end());
 }
 
 CodeGenSchedModels &CodeGenTarget::getSchedModels() const {
@@ -434,7 +604,7 @@ CodeGenSchedModels &CodeGenTarget::getSchedModels() const {
 }
 
 void CodeGenTarget::ReadInstructions() const {
-  std::vector<Record*> Insts = Records.getAllDerivedDefinitions("Instruction");
+  std::vector<Record *> Insts = Records.getAllDerivedDefinitions("Instruction");
   if (Insts.size() <= 2)
     PrintFatalError("No 'Instruction' subclasses defined!");
 
@@ -443,11 +613,10 @@ void CodeGenTarget::ReadInstructions() const {
     Instructions[Insts[i]] = std::make_unique<CodeGenInstruction>(Insts[i]);
 }
 
-static const CodeGenInstruction *
-GetInstByName(const char *Name,
-              const DenseMap<const Record*,
-                             std::unique_ptr<CodeGenInstruction>> &Insts,
-              RecordKeeper &Records) {
+static const CodeGenInstruction *GetInstByName(
+    const char *Name,
+    const DenseMap<const Record *, std::unique_ptr<CodeGenInstruction>> &Insts,
+    RecordKeeper &Records) {
   const Record *Rec = Records.getDef(Name);
 
   const auto I = Insts.find(Rec);
@@ -501,7 +670,6 @@ void CodeGenTarget::ComputeInstrsByEnum() const {
       });
 }
 
-
 /// isLittleEndianEncoding - Return whether this target encodes its instruction
 /// in little-endian format, i.e. bits laid out in the order [0..n]
 ///
@@ -532,7 +700,7 @@ void CodeGenTarget::reverseBitsForLittleEndianEncoding() {
       unsigned bitSwapIdx = numBits - bit - 1;
       Init *OrigBit = BI->getBit(bit);
       Init *BitSwap = BI->getBit(bitSwapIdx);
-      NewBits[bit]        = BitSwap;
+      NewBits[bit] = BitSwap;
       NewBits[bitSwapIdx] = OrigBit;
     }
     if (numBits % 2) {
@@ -561,10 +729,10 @@ bool CodeGenTarget::guessInstructionProperties() const {
 // ComplexPattern implementation
 //
 ComplexPattern::ComplexPattern(Record *R) {
-  Ty          = ::getValueType(R->getValueAsDef("Ty"));
+  Ty = ::getValueType(R->getValueAsDef("Ty"));
   NumOperands = R->getValueAsInt("NumOperands");
   SelectFunc = std::string(R->getValueAsString("SelectFunc"));
-  RootNodes   = R->getValueAsListOfDefs("RootNodes");
+  RootNodes = R->getValueAsListOfDefs("RootNodes");
 
   // FIXME: This is a hack to statically increase the priority of patterns which
   // maps a sub-dag to a complex pattern. e.g. favors LEA over ADD. To get best
@@ -579,7 +747,7 @@ ComplexPattern::ComplexPattern(Record *R) {
   // FIXME: Why is this different from parseSDPatternOperatorProperties?
   // Parse the properties.
   Properties = 0;
-  std::vector<Record*> PropList = R->getValueAsListOfDefs("Properties");
+  std::vector<Record *> PropList = R->getValueAsListOfDefs("Properties");
   for (unsigned i = 0, e = PropList.size(); i != e; ++i)
     if (PropList[i]->getName() == "SDNPHasChain") {
       Properties |= 1 << SDNPHasChain;
@@ -665,11 +833,11 @@ CodeGenIntrinsic::CodeGenIntrinsic(Record *R,
     PrintFatalError(DefLoc,
                     "Intrinsic '" + DefName + "' does not start with 'int_'!");
 
-  EnumName = std::string(DefName.begin()+4, DefName.end());
+  EnumName = std::string(DefName.begin() + 4, DefName.end());
 
-  if (R->getValue("GCCBuiltinName"))  // Ignore a missing GCCBuiltinName field.
+  if (R->getValue("GCCBuiltinName")) // Ignore a missing GCCBuiltinName field.
     GCCBuiltinName = std::string(R->getValueAsString("GCCBuiltinName"));
-  if (R->getValue("MSBuiltinName"))   // Ignore a missing MSBuiltinName field.
+  if (R->getValue("MSBuiltinName")) // Ignore a missing MSBuiltinName field.
     MSBuiltinName = std::string(R->getValueAsString("MSBuiltinName"));
 
   TargetPrefix = std::string(R->getValueAsString("TargetPrefix"));
@@ -692,9 +860,9 @@ CodeGenIntrinsic::CodeGenIntrinsic(Record *R,
   // If TargetPrefix is specified, make sure that Name starts with
   // "llvm.<targetprefix>.".
   if (!TargetPrefix.empty()) {
-    if (Name.size() < 6+TargetPrefix.size() ||
-        std::string(Name.begin() + 5, Name.begin() + 6 + TargetPrefix.size())
-        != (TargetPrefix + "."))
+    if (Name.size() < 6 + TargetPrefix.size() ||
+        std::string(Name.begin() + 5, Name.begin() + 6 + TargetPrefix.size()) !=
+            (TargetPrefix + "."))
       PrintFatalError(DefLoc, "Intrinsic '" + DefName +
                                   "' does not start with 'llvm." +
                                   TargetPrefix + ".'!");
@@ -729,8 +897,7 @@ CodeGenIntrinsic::CodeGenIntrinsic(Record *R,
     MVT::SimpleValueType VT;
     if (TyEl->isSubClassOf("LLVMMatchType")) {
       unsigned MatchTy = TyEl->getValueAsInt("Number");
-      assert(MatchTy < OverloadedVTs.size() &&
-             "Invalid matching number!");
+      assert(MatchTy < OverloadedVTs.size() && "Invalid matching number!");
       VT = OverloadedVTs[MatchTy];
       // It only makes sense to use the extended and truncated vector element
       // variants with iAny types; otherwise, if the intrinsic is not
@@ -761,9 +928,10 @@ CodeGenIntrinsic::CodeGenIntrinsic(Record *R,
     if (TyEl->isSubClassOf("LLVMMatchType")) {
       unsigned MatchTy = TyEl->getValueAsInt("Number");
       if (MatchTy >= OverloadedVTs.size()) {
-        PrintError(R->getLoc(),
-                   "Parameter #" + Twine(i) + " has out of bounds matching "
-                   "number " + Twine(MatchTy));
+        PrintError(R->getLoc(), "Parameter #" + Twine(i) +
+                                    " has out of bounds matching "
+                                    "number " +
+                                    Twine(MatchTy));
         PrintFatalError(DefLoc,
                         Twine("ParamTypes is ") + TypeList->getAsString());
       }
@@ -779,7 +947,7 @@ CodeGenIntrinsic::CodeGenIntrinsic(Record *R,
       VT = getValueType(TyEl->getValueAsDef("VT"));
 
     // Reject invalid types.
-    if (VT == MVT::isVoid && i != e-1 /*void at end means varargs*/)
+    if (VT == MVT::isVoid && i != e - 1 /*void at end means varargs*/)
       PrintFatalError(DefLoc, "Intrinsic '" + DefName +
                                   " has void in result type list!");
 

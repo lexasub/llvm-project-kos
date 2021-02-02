@@ -179,7 +179,6 @@ public:
   virtual size_t ParseVariablesForContext(const SymbolContext &sc) = 0;
   virtual Type *ResolveTypeUID(lldb::user_id_t type_uid) = 0;
 
-
   /// The characteristics of an array type.
   struct ArrayInfo {
     int64_t first_index = 0;

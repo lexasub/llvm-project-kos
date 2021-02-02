@@ -18,27 +18,26 @@
 #include "test_macros.h"
 #include "platform_support.h"
 
-int main(int, char**)
-{
-    std::string temp = get_temp_file_name();
-    {
-        std::ofstream fs;
-        assert(!fs.is_open());
-        fs.open(temp.c_str());
-        assert(fs.is_open());
-        fs.close();
-        assert(!fs.is_open());
-    }
-    std::remove(temp.c_str());
-    {
-        std::wofstream fs;
-        assert(!fs.is_open());
-        fs.open(temp.c_str());
-        assert(fs.is_open());
-        fs.close();
-        assert(!fs.is_open());
-    }
-    std::remove(temp.c_str());
+int main(int, char**) {
+  std::string temp = get_temp_file_name();
+  {
+    std::ofstream fs;
+    assert(!fs.is_open());
+    fs.open(temp.c_str());
+    assert(fs.is_open());
+    fs.close();
+    assert(!fs.is_open());
+  }
+  std::remove(temp.c_str());
+  {
+    std::wofstream fs;
+    assert(!fs.is_open());
+    fs.open(temp.c_str());
+    assert(fs.is_open());
+    fs.close();
+    assert(!fs.is_open());
+  }
+  std::remove(temp.c_str());
 
   return 0;
 }

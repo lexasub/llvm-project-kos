@@ -18,14 +18,12 @@ using namespace std::experimental;
 
 bool cancel = false;
 
-struct goroutine
-{
+struct goroutine {
   static int const N = 10;
   static int count;
   static coroutine_handle<> stack[N];
 
-  static void schedule(coroutine_handle<>& rh)
-  {
+  static void schedule(coroutine_handle<>& rh) {
     assert(count < N);
     stack[count++] = rh;
     rh = nullptr;
@@ -35,22 +33,16 @@ struct goroutine
 
   static void go(goroutine) {}
 
-  static void run_one()
-  {
+  static void run_one() {
     assert(count > 0);
     stack[--count]();
   }
 
-  struct promise_type
-  {
-    suspend_never initial_suspend() {
-      return {};
-    }
+  struct promise_type {
+    suspend_never initial_suspend() { return {}; }
     suspend_never final_suspend() noexcept { return {}; }
     void return_void() {}
-    goroutine get_return_object() {
-      return{};
-    }
+    goroutine get_return_object() { return {}; }
     void unhandled_exception() {}
   };
 };
@@ -63,21 +55,20 @@ class channel;
 
 struct push_awaiter {
   channel* ch;
-  bool await_ready() {return false; }
+  bool await_ready() { return false; }
   void await_suspend(coroutine_handle<> rh);
   void await_resume() {}
 };
 
 struct pull_awaiter {
-  channel * ch;
+  channel* ch;
 
   bool await_ready();
   void await_suspend(coroutine_handle<> rh);
   int await_resume();
 };
 
-class channel
-{
+class channel {
   using T = int;
 
   friend struct push_awaiter;
@@ -86,25 +77,23 @@ class channel
   T const* pvalue = nullptr;
   coroutine_handle<> reader = nullptr;
   coroutine_handle<> writer = nullptr;
+
 public:
-  push_awaiter push(T const& value)
-  {
+  push_awaiter push(T const& value) {
     assert(pvalue == nullptr);
     assert(!writer);
     pvalue = &value;
 
-    return { this };
+    return {this};
   }
 
-  pull_awaiter pull()
-  {
+  pull_awaiter pull() {
     assert(!reader);
 
-    return { this };
+    return {this};
   }
 
-  void sync_push(T const& value)
-  {
+  void sync_push(T const& value) {
     assert(!pvalue);
     pvalue = &value;
     assert(reader);
@@ -113,13 +102,12 @@ public:
     reader = nullptr;
   }
 
-  auto sync_pull()
-  {
-    while (!pvalue) goroutine::run_one();
+  auto sync_pull() {
+    while (!pvalue)
+      goroutine::run_one();
     auto result = *pvalue;
     pvalue = nullptr;
-    if (writer)
-    {
+    if (writer) {
       auto wr = writer;
       writer = nullptr;
       wr();
@@ -128,19 +116,14 @@ public:
   }
 };
 
-void push_awaiter::await_suspend(coroutine_handle<> rh)
-{
+void push_awaiter::await_suspend(coroutine_handle<> rh) {
   ch->writer = rh;
-  if (ch->reader) goroutine::schedule(ch->reader);
+  if (ch->reader)
+    goroutine::schedule(ch->reader);
 }
 
-
-bool pull_awaiter::await_ready() {
-  return !!ch->writer;
-}
-void pull_awaiter::await_suspend(coroutine_handle<> rh) {
-  ch->reader = rh;
-}
+bool pull_awaiter::await_ready() { return !!ch->writer; }
+void pull_awaiter::await_suspend(coroutine_handle<> rh) { ch->reader = rh; }
 int pull_awaiter::await_resume() {
   auto result = *ch->pvalue;
   ch->pvalue = nullptr;
@@ -153,8 +136,7 @@ int pull_awaiter::await_resume() {
   return result;
 }
 
-goroutine pusher(channel& left, channel& right)
-{
+goroutine pusher(channel& left, channel& right) {
   for (;;) {
     auto val = co_await left.pull();
     co_await right.push(val + 1);

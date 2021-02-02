@@ -6,8 +6,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "Format.h"
 #include "Annotations.h"
+#include "Format.h"
 #include "SourceCode.h"
 #include "TestFS.h"
 #include "clang/Format/Format.h"
@@ -20,15 +20,14 @@ namespace clang {
 namespace clangd {
 namespace {
 
-std::string afterTyped(llvm::StringRef CodeWithCursor,
-                           llvm::StringRef Typed) {
+std::string afterTyped(llvm::StringRef CodeWithCursor, llvm::StringRef Typed) {
   Annotations Code(CodeWithCursor);
   unsigned Cursor = llvm::cantFail(positionToOffset(Code.code(), Code.point()));
   auto Changes =
       formatIncremental(Code.code(), Cursor, Typed,
                         format::getGoogleStyle(format::FormatStyle::LK_Cpp));
   tooling::Replacements Merged;
-  for (const auto& R : Changes)
+  for (const auto &R : Changes)
     if (llvm::Error E = Merged.add(R))
       ADD_FAILURE() << llvm::toString(std::move(E));
   auto NewCode = tooling::applyAllReplacements(Code.code(), Merged);
@@ -51,7 +50,7 @@ TEST(FormatIncremental, SplitComment) {
 // this comment was
 ^split
 )cpp",
-   R"cpp(
+                     R"cpp(
 // this comment was
 // ^split
 )cpp");
@@ -60,7 +59,7 @@ TEST(FormatIncremental, SplitComment) {
 // trailing whitespace is not a split
 ^   
 )cpp",
-   R"cpp(
+                     R"cpp(
 // trailing whitespace is not a split
 ^
 )cpp");
@@ -80,7 +79,7 @@ TEST(FormatIncremental, SplitComment) {
 // extra   
     ^     whitespace
 )cpp",
-   R"cpp(
+                     R"cpp(
 // extra
 // ^whitespace
 )cpp");
@@ -89,7 +88,7 @@ TEST(FormatIncremental, SplitComment) {
 /// triple
 ^slash
 )cpp",
-   R"cpp(
+                     R"cpp(
 /// triple
 /// ^slash
 )cpp");
@@ -98,7 +97,7 @@ TEST(FormatIncremental, SplitComment) {
 /// editor continuation
 //^
 )cpp",
-   R"cpp(
+                     R"cpp(
 /// editor continuation
 /// ^
 )cpp");
@@ -107,17 +106,16 @@ TEST(FormatIncremental, SplitComment) {
 // break before
 ^ // slashes
 )cpp",
-   R"cpp(
+                     R"cpp(
 // break before
 ^// slashes
 )cpp");
-
 
   expectAfterNewline(R"cpp(
 int x;  // aligned
 ^comment
 )cpp",
-   R"cpp(
+                     R"cpp(
 int x;  // aligned
         // ^comment
 )cpp");
@@ -132,7 +130,7 @@ void foo() {
             ^
 }
 )cpp",
-   R"cpp(
+                     R"cpp(
 void foo() {
   if (x)
     return;  // All spelled tokens are accounted for.
@@ -148,7 +146,7 @@ void foo() {
   if (bar)
 ^
 )cpp",
-   R"cpp(
+                     R"cpp(
 void foo() {
   if (bar)
     ^
@@ -159,7 +157,7 @@ void foo() {
   bar(baz(
 ^
 )cpp",
-   R"cpp(
+                     R"cpp(
 void foo() {
   bar(baz(
       ^
@@ -169,7 +167,7 @@ void foo() {
 void foo() {
 ^}
 )cpp",
-   R"cpp(
+                     R"cpp(
 void foo() {
   ^
 }
@@ -180,48 +178,48 @@ class X {
 protected:
 ^
 )cpp",
-   R"cpp(
+                     R"cpp(
 class X {
  protected:
   ^
 )cpp");
 
-// Mismatched brackets (1)
+  // Mismatched brackets (1)
   expectAfterNewline(R"cpp(
 void foo() {
   foo{bar(
 ^}
 }
 )cpp",
-   R"cpp(
+                     R"cpp(
 void foo() {
   foo {
     bar(
         ^}
 }
 )cpp");
-// Mismatched brackets (2)
+  // Mismatched brackets (2)
   expectAfterNewline(R"cpp(
 void foo() {
   foo{bar(
 ^text}
 }
 )cpp",
-   R"cpp(
+                     R"cpp(
 void foo() {
   foo {
     bar(
         ^text}
 }
 )cpp");
-// Matched brackets
+  // Matched brackets
   expectAfterNewline(R"cpp(
 void foo() {
   foo{bar(
 ^)
 }
 )cpp",
-   R"cpp(
+                     R"cpp(
 void foo() {
   foo {
     bar(
@@ -249,7 +247,7 @@ int x=untouched( );
 auto L = []{return;return;};
 ^
 )cpp",
-   R"cpp(
+                     R"cpp(
 int x=untouched( );
 auto L = [] {
   return;
@@ -268,7 +266,7 @@ int x(){
 ^
 }
 )cpp",
-   R"cpp(
+                     R"cpp(
 int x(){
 
 
@@ -283,7 +281,7 @@ class x{
 ^
 }
 )cpp",
-   R"cpp(
+                     R"cpp(
 class x{
  public:
   ^

@@ -41,9 +41,8 @@
 using namespace lldb;
 using namespace lldb_private;
 
-static lldb::addr_t
-ReadAddressFromDebugAddrSection(const DWARFUnit *dwarf_cu,
-                                uint32_t index) {
+static lldb::addr_t ReadAddressFromDebugAddrSection(const DWARFUnit *dwarf_cu,
+                                                    uint32_t index) {
   uint32_t index_size = dwarf_cu->GetAddressByteSize();
   dw_offset_t addr_base = dwarf_cu->GetAddrBase();
   lldb::offset_t offset = addr_base + index * index_size;
@@ -112,7 +111,7 @@ namespace {
 /// Implement enough of the DWARFObject interface in order to be able to call
 /// DWARFLocationTable::dumpLocationList. We don't have access to a real
 /// DWARFObject here because DWARFExpression is used in non-DWARF scenarios too.
-class DummyDWARFObject final: public llvm::DWARFObject {
+class DummyDWARFObject final : public llvm::DWARFObject {
 public:
   DummyDWARFObject(bool IsLittleEndian) : IsLittleEndian(IsLittleEndian) {}
 
@@ -122,10 +121,11 @@ public:
                                             uint64_t Pos) const override {
     return llvm::None;
   }
+
 private:
   bool IsLittleEndian;
 };
-}
+} // namespace
 
 void DWARFExpression::GetDescription(Stream *s, lldb::DescriptionLevel level,
                                      addr_t location_list_base_addr,
@@ -1042,8 +1042,8 @@ bool DWARFExpression::Evaluate(
         stack.back().ClearContext();
       } break;
       case Value::eValueTypeFileAddress: {
-        auto file_addr = stack.back().GetScalar().ULongLong(
-            LLDB_INVALID_ADDRESS);
+        auto file_addr =
+            stack.back().GetScalar().ULongLong(LLDB_INVALID_ADDRESS);
         if (!module_sp) {
           if (error_ptr)
             error_ptr->SetErrorString(
@@ -1066,7 +1066,8 @@ bool DWARFExpression::Evaluate(
         stack.back().GetScalar() = load_Addr;
         stack.back().SetValueType(Value::eValueTypeLoadAddress);
         // Fall through to load address code below...
-      } LLVM_FALLTHROUGH;
+      }
+        LLVM_FALLTHROUGH;
       case Value::eValueTypeLoadAddress:
         if (exe_ctx) {
           if (process) {
@@ -2136,10 +2137,11 @@ bool DWARFExpression::Evaluate(
               error_ptr->SetErrorStringWithFormat(
                   "failed to read memory DW_OP_piece(%" PRIu64
                   ") from %s address 0x%" PRIx64,
-                  piece_byte_size, curr_piece_source_value.GetValueType() ==
-                                           Value::eValueTypeFileAddress
-                                       ? "file"
-                                       : "host",
+                  piece_byte_size,
+                  curr_piece_source_value.GetValueType() ==
+                          Value::eValueTypeFileAddress
+                      ? "file"
+                      : "host",
                   addr);
             }
             return false;
@@ -2148,8 +2150,7 @@ bool DWARFExpression::Evaluate(
             uint32_t bit_size = piece_byte_size * 8;
             uint32_t bit_offset = 0;
             Scalar &scalar = curr_piece_source_value.GetScalar();
-            if (!scalar.ExtractBitfield(
-                    bit_size, bit_offset)) {
+            if (!scalar.ExtractBitfield(bit_size, bit_offset)) {
               if (error_ptr)
                 error_ptr->SetErrorStringWithFormat(
                     "unable to extract %" PRIu64 " bytes from a %" PRIu64
@@ -2648,13 +2649,13 @@ bool DWARFExpression::MatchesOperand(StackFrame &frame,
     addr_t pc = frame.GetFrameCodeAddress().GetLoadAddress(
         frame.CalculateTarget().get());
 
-    if (llvm::Optional<DataExtractor> expr = GetLocationExpression(load_function_start, pc))
+    if (llvm::Optional<DataExtractor> expr =
+            GetLocationExpression(load_function_start, pc))
       opcodes = std::move(*expr);
     else
       return false;
   } else
     opcodes = m_data;
-
 
   lldb::offset_t op_offset = 0;
   uint8_t opcode = opcodes.GetU8(&op_offset);
@@ -2717,10 +2718,8 @@ bool DWARFExpression::MatchesOperand(StackFrame &frame,
     return MatchUnaryOp(
         MatchOpType(Instruction::Operand::Type::Dereference),
         MatchBinaryOp(MatchOpType(Instruction::Operand::Type::Sum),
-                      MatchRegOp(*reg),
-                      MatchImmOp(offset)))(operand);
+                      MatchRegOp(*reg), MatchImmOp(offset)))(operand);
   } else {
     return MatchRegOp(*reg)(operand);
   }
 }
-

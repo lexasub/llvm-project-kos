@@ -2,6 +2,6 @@
 // expected-no-diagnostics
 namespace Test1 {
 
-class A final { };
+class A final {};
 
-}
+} // namespace Test1

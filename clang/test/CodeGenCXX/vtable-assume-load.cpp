@@ -51,7 +51,7 @@ void fooB() {
 // CHECK1-LABEL: define linkonce_odr void @_ZN5test11BC2Ev(%"struct.test1::B"*
 // CHECK1-NOT: @llvm.assume(
 // CHECK1-LABEL: {{^}}}
-}
+} // namespace test1
 namespace test2 {
 struct A {
   A();
@@ -91,7 +91,7 @@ void test() {
   g(&c);
   h(&c);
 }
-}
+} // namespace test2
 
 namespace test3 {
 struct A {
@@ -118,7 +118,7 @@ void test() {
   C c;
   g(&c);
 }
-} // test3
+} // namespace test3
 
 namespace test4 {
 struct A {
@@ -152,7 +152,7 @@ void test() {
   C c;
   g(&c);
 }
-} // test4
+} // namespace test4
 
 namespace testMS {
 
@@ -173,7 +173,7 @@ void test() {
   g(s);
 }
 
-} // testMS
+} // namespace testMS
 
 namespace test6 {
 struct A {
@@ -201,7 +201,7 @@ void g() {
   A *a = new A;
   B *b = new B;
 }
-}
+} // namespace test6
 
 namespace test7 {
 // Because A's key function is defined here, vtable is generated in this TU
@@ -221,7 +221,7 @@ void g() {
   A *a = new A();
   a->bar();
 }
-}
+} // namespace test7
 
 namespace test8 {
 
@@ -292,7 +292,7 @@ void e() {
   E e;
   e.bar();
 }
-}
+} // namespace test8
 
 namespace test9 {
 
@@ -309,5 +309,4 @@ void test() {
   s->doStuff();
   delete s;
 }
-}
-
+} // namespace test9

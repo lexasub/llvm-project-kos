@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 class Logger {
- public:
+public:
   Logger() {
     fprintf(stderr, "Logger ctor\n");
   }

@@ -10,8 +10,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 #include <string>
 
 namespace clang_fuzzer {
@@ -22,4 +22,4 @@ std::string FunctionToString(const Function &input);
 std::string ProtoToCxx(const uint8_t *data, size_t size);
 std::string LoopFunctionToString(const LoopFunction &input);
 std::string LoopProtoToCxx(const uint8_t *data, size_t size);
-}
+} // namespace clang_fuzzer

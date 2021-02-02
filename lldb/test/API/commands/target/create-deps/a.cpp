@@ -1,4 +1,1 @@
-int a_function ()
-{
-    return 500;
-}
+int a_function() { return 500; }

@@ -15,11 +15,10 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    std::knuth_b e;
-    e.discard(9999);
-    assert(e() == 1112339016u);
+int main(int, char**) {
+  std::knuth_b e;
+  e.discard(9999);
+  assert(e() == 1112339016u);
 
   return 0;
 }

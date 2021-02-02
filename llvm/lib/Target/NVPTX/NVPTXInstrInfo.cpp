@@ -177,12 +177,9 @@ unsigned NVPTXInstrInfo::removeBranch(MachineBasicBlock &MBB,
   return 2;
 }
 
-unsigned NVPTXInstrInfo::insertBranch(MachineBasicBlock &MBB,
-                                      MachineBasicBlock *TBB,
-                                      MachineBasicBlock *FBB,
-                                      ArrayRef<MachineOperand> Cond,
-                                      const DebugLoc &DL,
-                                      int *BytesAdded) const {
+unsigned NVPTXInstrInfo::insertBranch(
+    MachineBasicBlock &MBB, MachineBasicBlock *TBB, MachineBasicBlock *FBB,
+    ArrayRef<MachineOperand> Cond, const DebugLoc &DL, int *BytesAdded) const {
   assert(!BytesAdded && "code size not handled");
 
   // Shouldn't be a fall through.
@@ -195,7 +192,8 @@ unsigned NVPTXInstrInfo::insertBranch(MachineBasicBlock &MBB,
     if (Cond.empty()) // Unconditional branch
       BuildMI(&MBB, DL, get(NVPTX::GOTO)).addMBB(TBB);
     else // Conditional branch
-      BuildMI(&MBB, DL, get(NVPTX::CBranch)).addReg(Cond[0].getReg())
+      BuildMI(&MBB, DL, get(NVPTX::CBranch))
+          .addReg(Cond[0].getReg())
           .addMBB(TBB);
     return 1;
   }

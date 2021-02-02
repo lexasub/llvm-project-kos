@@ -23,9 +23,7 @@
 
 std::mutex m;
 
-void do_try_lock() {
-  assert(m.try_lock() == false);
-}
+void do_try_lock() { assert(m.try_lock() == false); }
 
 int main(int, char**) {
   {

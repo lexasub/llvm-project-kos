@@ -13,12 +13,12 @@
 #include <sanitizer_common/sanitizer_deadlock_detector_interface.h>
 #include <sanitizer_common/sanitizer_stackdepot.h>
 
-#include "tsan_rtl.h"
 #include "tsan_flags.h"
-#include "tsan_sync.h"
-#include "tsan_report.h"
-#include "tsan_symbolize.h"
 #include "tsan_platform.h"
+#include "tsan_report.h"
+#include "tsan_rtl.h"
+#include "tsan_symbolize.h"
+#include "tsan_sync.h"
 
 namespace __tsan {
 
@@ -28,9 +28,7 @@ struct Callback final : public DDCallback {
   ThreadState *thr;
   uptr pc;
 
-  Callback(ThreadState *thr, uptr pc)
-      : thr(thr)
-      , pc(pc) {
+  Callback(ThreadState *thr, uptr pc) : thr(thr), pc(pc) {
     DDCallback::pt = thr->proc()->dd_pt;
     DDCallback::lt = thr->dd_lt;
   }
@@ -46,7 +44,7 @@ void DDMutexInit(ThreadState *thr, uptr pc, SyncVar *s) {
 }
 
 static void ReportMutexMisuse(ThreadState *thr, uptr pc, ReportType typ,
-    uptr addr, u64 mid) {
+                              uptr addr, u64 mid) {
   // In Go, these misuses are either impossible, or detected by std lib,
   // or false positives (e.g. unlock in a different thread).
   if (SANITIZER_GO)
@@ -83,9 +81,8 @@ void MutexDestroy(ThreadState *thr, uptr pc, uptr addr, u32 flagz) {
   SyncVar *s = ctx->metamap.GetIfExistsAndLock(addr, true);
   if (s == 0)
     return;
-  if ((flagz & MutexFlagLinkerInit)
-      || s->IsFlagSet(MutexFlagLinkerInit)
-      || ((flagz & MutexFlagNotStatic) && !s->IsFlagSet(MutexFlagNotStatic))) {
+  if ((flagz & MutexFlagLinkerInit) || s->IsFlagSet(MutexFlagLinkerInit) ||
+      ((flagz & MutexFlagNotStatic) && !s->IsFlagSet(MutexFlagNotStatic))) {
     // Destroy is no-op for linker-initialized mutexes.
     s->mtx.Unlock();
     return;
@@ -96,9 +93,8 @@ void MutexDestroy(ThreadState *thr, uptr pc, uptr addr, u32 flagz) {
     ctx->dd->MutexInit(&cb, &s->dd);
   }
   bool unlock_locked = false;
-  if (flags()->report_destroy_locked
-      && s->owner_tid != SyncVar::kInvalidTid
-      && !s->IsFlagSet(MutexFlagBroken)) {
+  if (flags()->report_destroy_locked && s->owner_tid != SyncVar::kInvalidTid &&
+      !s->IsFlagSet(MutexFlagBroken)) {
     s->SetFlags(MutexFlagBroken);
     unlock_locked = true;
   }
@@ -156,8 +152,8 @@ void MutexPreLock(ThreadState *thr, uptr pc, uptr addr, u32 flagz) {
 }
 
 void MutexPostLock(ThreadState *thr, uptr pc, uptr addr, u32 flagz, int rec) {
-  DPrintf("#%d: MutexPostLock %zx flag=0x%x rec=%d\n",
-      thr->tid, addr, flagz, rec);
+  DPrintf("#%d: MutexPostLock %zx flag=0x%x rec=%d\n", thr->tid, addr, flagz,
+          rec);
   if (flagz & MutexFlagRecursiveLock)
     CHECK_GT(rec, 0);
   else
@@ -191,8 +187,8 @@ void MutexPostLock(ThreadState *thr, uptr pc, uptr addr, u32 flagz, int rec) {
   thr->mset.Add(s->GetId(), true, thr->fast_state.epoch());
   bool pre_lock = false;
   if (first && common_flags()->detect_deadlocks) {
-    pre_lock = (flagz & MutexFlagDoPreLockOnPostLock) &&
-        !(flagz & MutexFlagTryLock);
+    pre_lock =
+        (flagz & MutexFlagDoPreLockOnPostLock) && !(flagz & MutexFlagTryLock);
     Callback cb(thr, pc);
     if (pre_lock)
       ctx->dd->MutexBeforeLock(&cb, &s->dd, true);
@@ -286,8 +282,8 @@ void MutexPostReadLock(ThreadState *thr, uptr pc, uptr addr, u32 flagz) {
   thr->mset.Add(s->GetId(), false, thr->fast_state.epoch());
   bool pre_lock = false;
   if (common_flags()->detect_deadlocks) {
-    pre_lock = (flagz & MutexFlagDoPreLockOnPostLock) &&
-        !(flagz & MutexFlagTryLock);
+    pre_lock =
+        (flagz & MutexFlagDoPreLockOnPostLock) && !(flagz & MutexFlagTryLock);
     Callback cb(thr, pc);
     if (pre_lock)
       ctx->dd->MutexBeforeLock(&cb, &s->dd, false);
@@ -299,7 +295,7 @@ void MutexPostReadLock(ThreadState *thr, uptr pc, uptr addr, u32 flagz) {
   s = 0;
   if (report_bad_lock)
     ReportMutexMisuse(thr, pc, ReportTypeMutexBadReadLock, addr, mid);
-  if (pre_lock  && common_flags()->detect_deadlocks) {
+  if (pre_lock && common_flags()->detect_deadlocks) {
     Callback cb(thr, pc);
     ReportDeadlock(thr, pc, ctx->dd->GetReport(&cb));
   }
@@ -412,8 +408,8 @@ void Acquire(ThreadState *thr, uptr pc, uptr addr) {
 }
 
 static void UpdateClockCallback(ThreadContextBase *tctx_base, void *arg) {
-  ThreadState *thr = reinterpret_cast<ThreadState*>(arg);
-  ThreadContext *tctx = static_cast<ThreadContext*>(tctx_base);
+  ThreadState *thr = reinterpret_cast<ThreadState *>(arg);
+  ThreadContext *tctx = static_cast<ThreadContext *>(tctx_base);
   u64 epoch = tctx->epoch1;
   if (tctx->status == ThreadStatusRunning) {
     epoch = tctx->thr->fast_state.epoch();
@@ -427,8 +423,8 @@ void AcquireGlobal(ThreadState *thr, uptr pc) {
   if (thr->ignore_sync)
     return;
   ThreadRegistryLock l(ctx->thread_registry);
-  ctx->thread_registry->RunCallbackForEachThreadLocked(
-      UpdateClockCallback, thr);
+  ctx->thread_registry->RunCallbackForEachThreadLocked(UpdateClockCallback,
+                                                       thr);
 }
 
 void ReleaseStoreAcquire(ThreadState *thr, uptr pc, uptr addr) {
@@ -469,8 +465,8 @@ void ReleaseStore(ThreadState *thr, uptr pc, uptr addr) {
 
 #if !SANITIZER_GO
 static void UpdateSleepClockCallback(ThreadContextBase *tctx_base, void *arg) {
-  ThreadState *thr = reinterpret_cast<ThreadState*>(arg);
-  ThreadContext *tctx = static_cast<ThreadContext*>(tctx_base);
+  ThreadState *thr = reinterpret_cast<ThreadState *>(arg);
+  ThreadContext *tctx = static_cast<ThreadContext *>(tctx_base);
   u64 epoch = tctx->epoch1;
   if (tctx->status == ThreadStatusRunning)
     epoch = tctx->thr->fast_state.epoch();
@@ -483,8 +479,8 @@ void AfterSleep(ThreadState *thr, uptr pc) {
     return;
   thr->last_sleep_stack_id = CurrentStackId(thr, pc);
   ThreadRegistryLock l(ctx->thread_registry);
-  ctx->thread_registry->RunCallbackForEachThreadLocked(
-      UpdateSleepClockCallback, thr);
+  ctx->thread_registry->RunCallbackForEachThreadLocked(UpdateSleepClockCallback,
+                                                       thr);
 }
 #endif
 

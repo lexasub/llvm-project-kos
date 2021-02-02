@@ -7,55 +7,55 @@
 #if TEST1
 
 // MSVC allows type definition in anonymous union and struct
-struct A
-{
-  union
-  {
+struct A {
+  union {
     int a;
-    struct B  // expected-warning {{types declared in an anonymous union are a Microsoft extension}}
+    struct B // expected-warning {{types declared in an anonymous union are a Microsoft extension}}
     {
       int c;
     } d;
 
-    union C   // expected-warning {{types declared in an anonymous union are a Microsoft extension}}
+    union C // expected-warning {{types declared in an anonymous union are a Microsoft extension}}
     {
       int e;
       int ee;
     } f;
 
-    typedef int D;  // expected-warning {{types declared in an anonymous union are a Microsoft extension}}
-    struct F;  // expected-warning {{types declared in an anonymous union are a Microsoft extension}}
+    typedef int D; // expected-warning {{types declared in an anonymous union are a Microsoft extension}}
+    struct F;      // expected-warning {{types declared in an anonymous union are a Microsoft extension}}
   };
 
   struct
   {
     int a2;
 
-    struct B2  // expected-warning {{types declared in an anonymous struct are a Microsoft extension}}
+    struct B2 // expected-warning {{types declared in an anonymous struct are a Microsoft extension}}
     {
       int c2;
     } d2;
 
-	union C2  // expected-warning {{types declared in an anonymous struct are a Microsoft extension}}
+    union C2 // expected-warning {{types declared in an anonymous struct are a Microsoft extension}}
     {
       int e2;
       int ee2;
     } f2;
 
-    typedef int D2;  // expected-warning {{types declared in an anonymous struct are a Microsoft extension}}
-    struct F2;  // expected-warning {{types declared in an anonymous struct are a Microsoft extension}}
+    typedef int D2; // expected-warning {{types declared in an anonymous struct are a Microsoft extension}}
+    struct F2;      // expected-warning {{types declared in an anonymous struct are a Microsoft extension}}
   };
 };
 
 // __stdcall handling
 struct M {
-    int __stdcall addP();
-    float __stdcall subtractP();
+  int __stdcall addP();
+  float __stdcall subtractP();
 };
 
 // __unaligned handling
 typedef char __unaligned *aligned_type;
-typedef struct UnalignedTag { int f; } __unaligned *aligned_type2;
+typedef struct UnalignedTag {
+  int f;
+} __unaligned *aligned_type2;
 typedef char __unaligned aligned_type3;
 
 struct aligned_type4 {
@@ -63,14 +63,14 @@ struct aligned_type4 {
 };
 
 __unaligned int aligned_type4::*p1_aligned_type4 = &aligned_type4::i;
-int aligned_type4::* __unaligned p2_aligned_type4 = &aligned_type4::i;
-__unaligned int aligned_type4::* __unaligned p3_aligned_type4 = &aligned_type4::i;
+int aligned_type4::*__unaligned p2_aligned_type4 = &aligned_type4::i;
+__unaligned int aligned_type4::*__unaligned p3_aligned_type4 = &aligned_type4::i;
 void (aligned_type4::*__unaligned p4_aligned_type4)();
 
 // Check that __unaligned qualifier can be used for overloading
 void foo_unaligned(int *arg) {}
 void foo_unaligned(__unaligned int *arg) {}
-void foo_unaligned(int arg) {} // expected-note {{previous definition is here}}
+void foo_unaligned(int arg) {}             // expected-note {{previous definition is here}}
 void foo_unaligned(__unaligned int arg) {} // expected-error {{redefinition of 'foo_unaligned'}}
 class A_unaligned {};
 class B_unaligned : public A_unaligned {};
@@ -102,9 +102,11 @@ void test_unaligned() {
 // Test from PR27367
 // We should accept assignment of an __unaligned pointer to a non-__unaligned
 // pointer to void
-typedef struct _ITEMIDLIST { int i; } ITEMIDLIST;
+typedef struct _ITEMIDLIST {
+  int i;
+} ITEMIDLIST;
 typedef ITEMIDLIST __unaligned *LPITEMIDLIST;
-extern "C" __declspec(dllimport) void __stdcall CoTaskMemFree(void* pv);
+extern "C" __declspec(dllimport) void __stdcall CoTaskMemFree(void *pv);
 __inline void FreeIDListArray(LPITEMIDLIST *ppidls) {
   CoTaskMemFree(*ppidls);
   __unaligned int *x = 0;
@@ -124,24 +126,23 @@ void f(IN_ADDR __unaligned *a) {
   IN_ADDR local_addr2 = a; // expected-error {{no viable conversion from '__unaligned IN_ADDR *' (aka '__unaligned in_addr *') to 'IN_ADDR' (aka 'in_addr')}}
 }
 
-template<typename T> void h1(T (__stdcall M::* const )()) { }
+template <typename T> void h1(T (__stdcall M::*const)()) {}
 
 void m1() {
   h1<int>(&M::addP);
   h1(&M::subtractP);
 }
 
-
 namespace signed_hex_i64 {
 void f(long long); // expected-note {{candidate function}}
-void f(int); // expected-note {{candidate function}}
+void f(int);       // expected-note {{candidate function}}
 void g() {
   // This used to be controlled by -fms-extensions, but it is now under
   // -fms-compatibility.
   f(0xffffffffffffffffLL); // expected-error {{call to 'f' is ambiguous}}
   f(0xffffffffffffffffi64);
 }
-}
+} // namespace signed_hex_i64
 
 // Enumeration types with a fixed underlying type.
 const int seventeen = 17;
@@ -166,43 +167,35 @@ enum : long long {
   SomeValue = 0x100000000
 };
 
-
 class AAA {
-__declspec(dllimport) void f(void) { }
-void f2(void); // expected-note{{previous declaration is here}}
+  __declspec(dllimport) void f(void) {}
+  void f2(void); // expected-note{{previous declaration is here}}
 };
 
 __declspec(dllimport) void AAA::f2(void) { // expected-error{{dllimport cannot be applied to non-inline function definition}}
                                            // expected-error@-1{{redeclaration of 'AAA::f2' cannot add 'dllimport' attribute}}
-
 }
-
-
 
 template <class T>
 class BB {
 public:
-   void f(int g = 10 ); // expected-note {{previous definition is here}}
+  void f(int g = 10); // expected-note {{previous definition is here}}
 };
 
 template <class T>
-void BB<T>::f(int g = 0) { } // expected-warning {{redefinition of default argument}}
-
-
+void BB<T>::f(int g = 0) {} // expected-warning {{redefinition of default argument}}
 
 extern void static_func();
 void static_func(); // expected-note {{previous declaration is here}}
 
-
 static void static_func() // expected-warning {{redeclaring non-static 'static_func' as static is a Microsoft extension}}
 {
-
 }
 
-extern const int static_var; // expected-note {{previous declaration is here}}
+extern const int static_var;     // expected-note {{previous declaration is here}}
 static const int static_var = 3; // expected-warning {{redeclaring non-static 'static_var' as static is a Microsoft extension}}
 
-void pointer_to_integral_type_conv(char* ptr) {
+void pointer_to_integral_type_conv(char *ptr) {
   char ch = (char)ptr;   // expected-warning {{cast to smaller integer type 'char' from 'char *'}}
   short sh = (short)ptr; // expected-warning {{cast to smaller integer type 'short' from 'char *'}}
   ch = (char)ptr;        // expected-warning {{cast to smaller integer type 'char' from 'char *'}}
@@ -235,7 +228,7 @@ struct PR11150 {
     virtual void f() = 0;
   };
 
-  int array[__is_abstract(X)? 1 : -1];
+  int array[__is_abstract(X) ? 1 : -1];
 };
 
 void f() { int __except = 0; }
@@ -247,11 +240,11 @@ class C {
 };
 
 struct StructWithProperty {
-  __declspec(property(get=GetV)) int V1;
-  __declspec(property(put=SetV)) int V2;
-  __declspec(property(get=GetV, put=SetV_NotExist)) int V3;
-  __declspec(property(get=GetV_NotExist, put=SetV)) int V4;
-  __declspec(property(get=GetV, put=SetV)) int V5;
+  __declspec(property(get = GetV)) int V1;
+  __declspec(property(put = SetV)) int V2;
+  __declspec(property(get = GetV, put = SetV_NotExist)) int V3;
+  __declspec(property(get = GetV_NotExist, put = SetV)) int V4;
+  __declspec(property(get = GetV, put = SetV)) int V5;
 
   int GetV() { return 123; }
   void SetV(int i) {}
@@ -259,21 +252,19 @@ struct StructWithProperty {
 void TestProperty() {
   StructWithProperty sp;
   int i = sp.V2; // expected-error{{no getter defined for property 'V2'}}
-  sp.V1 = 12; // expected-error{{no setter defined for property 'V1'}}
+  sp.V1 = 12;    // expected-error{{no setter defined for property 'V1'}}
   int j = sp.V4; // expected-error{{no member named 'GetV_NotExist' in 'StructWithProperty'}} expected-error{{cannot find suitable getter for property 'V4'}}
-  sp.V3 = 14; // expected-error{{no member named 'SetV_NotExist' in 'StructWithProperty'}} expected-error{{cannot find suitable setter for property 'V3'}}
+  sp.V3 = 14;    // expected-error{{no member named 'SetV_NotExist' in 'StructWithProperty'}} expected-error{{cannot find suitable setter for property 'V3'}}
   int k = sp.V5;
   sp.V5 = k++;
 }
 
 /* 4 tests for PseudoObject, begin */
-struct SP1
-{
+struct SP1 {
   bool operator()() { return true; }
 };
-struct SP2
-{
-  __declspec(property(get=GetV)) SP1 V;
+struct SP2 {
+  __declspec(property(get = GetV)) SP1 V;
   SP1 GetV() { return SP1(); }
 };
 void TestSP2() {
@@ -286,11 +277,13 @@ struct SP3 {
   void f(T t) {}
 };
 template <class T>
-struct SP4
-{
-  __declspec(property(get=GetV)) int V;
+struct SP4 {
+  __declspec(property(get = GetV)) int V;
   int GetV() { return 123; }
-  void f() { SP3 s2; s2.f(V); }
+  void f() {
+    SP3 s2;
+    s2.f(V);
+  }
 };
 void TestSP4() {
   SP4<int> s;
@@ -298,18 +291,16 @@ void TestSP4() {
 }
 
 template <class T>
-struct SP5
-{
-  __declspec(property(get=GetV)) T V;
+struct SP5 {
+  __declspec(property(get = GetV)) T V;
   int GetV() { return 123; }
   void f() { int *p = new int[V]; }
 };
 
 template <class T>
-struct SP6
-{
+struct SP6 {
 public:
-  __declspec(property(get=GetV)) T V;
+  __declspec(property(get = GetV)) T V;
   T GetV() { return 123; }
   void f() { int t = V; }
 };
@@ -321,48 +312,60 @@ void TestSP6() {
 
 // Property access: explicit, implicit, with Qualifier
 struct SP7 {
-  __declspec(property(get=GetV, put=SetV)) int V;
+  __declspec(property(get = GetV, put = SetV)) int V;
   int GetV() { return 123; }
   void SetV(int v) {}
 
-  void ImplicitAccess() { int i = V; V = i; }
-  void ExplicitAccess() { int i = this->V; this->V = i; }
+  void ImplicitAccess() {
+    int i = V;
+    V = i;
+  }
+  void ExplicitAccess() {
+    int i = this->V;
+    this->V = i;
+  }
 };
-struct SP8: public SP7 {
-  void AccessWithQualifier() { int i = SP7::V; SP7::V = i; }
+struct SP8 : public SP7 {
+  void AccessWithQualifier() {
+    int i = SP7::V;
+    SP7::V = i;
+  }
 };
 
 // Property usage
 template <class T>
 struct SP9 {
-  __declspec(property(get=GetV, put=SetV)) T V;
+  __declspec(property(get = GetV, put = SetV)) T V;
   T GetV() { return 0; }
   void SetV(T v) {}
-  bool f() { V = this->V; return V < this->V; }
+  bool f() {
+    V = this->V;
+    return V < this->V;
+  }
   void g() { V++; }
-  void h() { V*=2; }
+  void h() { V *= 2; }
 };
 struct SP10 {
   SP10(int v) {}
-  bool operator<(const SP10& v) { return true; }
+  bool operator<(const SP10 &v) { return true; }
   SP10 operator*(int v) { return *this; }
   SP10 operator+(int v) { return *this; }
-  SP10& operator=(const SP10& v) { return *this; }
+  SP10 &operator=(const SP10 &v) { return *this; }
 };
 void TestSP9() {
   SP9<int> c;
-  int i = c.V; // Decl initializer
-  i = c.V; // Binary op operand
-  c.SetV(c.V); // CallExpr arg
+  int i = c.V;               // Decl initializer
+  i = c.V;                   // Binary op operand
+  c.SetV(c.V);               // CallExpr arg
   int *p = new int[c.V + 1]; // Array size
-  p[c.V] = 1; // Array index
+  p[c.V] = 1;                // Array index
 
   c.V = 123; // Setter
 
-  c.V++; // Unary op operand
+  c.V++;    // Unary op operand
   c.V *= 2; // Unary op operand
 
-  SP9<int*> c2;
+  SP9<int *> c2;
   c2.V[0] = 123; // Array
 
   SP9<SP10> c3;
@@ -373,14 +376,14 @@ void TestSP9() {
 
 union u {
   int *i1;
-  int &i2;  // expected-warning {{union member 'i2' has reference type 'int &', which is a Microsoft extension}}
+  int &i2; // expected-warning {{union member 'i2' has reference type 'int &', which is a Microsoft extension}}
 };
 
 // Property getter using reference.
 struct SP11 {
-  __declspec(property(get=GetV)) int V;
+  __declspec(property(get = GetV)) int V;
   int _v;
-  int& GetV() { return _v; }
+  int &GetV() { return _v; }
   void UseV();
   void TakePtr(int *) {}
   void TakeRef(int &) {}
@@ -394,7 +397,7 @@ void SP11::UseV() {
 }
 
 struct StructWithUnnamedMember {
-  __declspec(property(get=GetV)) int : 10; // expected-error {{anonymous property is not supported}}
+  __declspec(property(get = GetV)) int : 10; // expected-error {{anonymous property is not supported}}
 };
 
 struct MSPropertyClass {
@@ -410,28 +413,27 @@ int MSPropertyClass::*g() {
 }
 
 namespace rdar14250378 {
-  class Bar {};
+class Bar {};
 
-  namespace NyNamespace {
-    class Foo {
-    public:
-      Bar* EnsureBar();
-    };
+namespace NyNamespace {
+class Foo {
+public:
+  Bar *EnsureBar();
+};
 
-    class Baz : public Foo {
-    public:
-      friend class Bar;
-    };
+class Baz : public Foo {
+public:
+  friend class Bar;
+};
 
-    Bar* Foo::EnsureBar() {
-      return 0;
-    }
-  }
+Bar *Foo::EnsureBar() {
+  return 0;
 }
+} // namespace NyNamespace
+} // namespace rdar14250378
 
 // expected-error@+1 {{'sealed' keyword not permitted with interface types}}
-__interface InterfaceWithSealed sealed {
-};
+__interface InterfaceWithSealed sealed{};
 
 struct SomeBase {
   virtual void OverrideMe();
@@ -458,15 +460,17 @@ struct SealedType sealed : SomeBase {
 struct InheritFromSealed : SealedType {};
 
 class SealedDestructor { // expected-note {{mark 'SealedDestructor' as 'sealed' to silence this warning}}
-    // expected-warning@+1 {{'sealed' keyword is a Microsoft extension}}
-    virtual ~SealedDestructor() sealed; // expected-warning {{class with destructor marked 'sealed' cannot be inherited from}}
+  // expected-warning@+1 {{'sealed' keyword is a Microsoft extension}}
+  virtual ~SealedDestructor() sealed; // expected-warning {{class with destructor marked 'sealed' cannot be inherited from}}
 };
 
 void AfterClassBody() {
   // expected-warning@+1 {{attribute 'deprecated' is ignored, place it after "struct" to apply attribute to type declaration}}
-  struct D {} __declspec(deprecated);
+  struct D {
+  } __declspec(deprecated);
 
-  struct __declspec(align(4)) S {} __declspec(align(8)) s1;
+  struct __declspec(align(4)) S {
+  } __declspec(align(8)) s1;
   S s2;
   _Static_assert(__alignof(S) == 4, "");
   _Static_assert(__alignof(s1) == 8, "");
@@ -477,10 +481,10 @@ namespace PR24246 {
 template <typename TX> struct A {
   template <bool> struct largest_type_select;
   template <> struct largest_type_select<false> {
-    blah x;  // expected-error {{unknown type name 'blah'}}
+    blah x; // expected-error {{unknown type name 'blah'}}
   };
 };
-}
+} // namespace PR24246
 
 class PR34109_class {
   PR34109_class() {}
@@ -492,18 +496,18 @@ void operator delete(void *) throw();
 __declspec(dllexport) void operator delete(void *) throw();
 // expected-error@-1  {{redeclaration of 'operator delete' cannot add 'dllexport' attribute}}
 
-void PR34109(int* a) {
+void PR34109(int *a) {
   delete a;
 }
 
 namespace PR42089 {
-  struct S {
-    __attribute__((nothrow)) void Foo(); // expected-note {{previous declaration is here}}
-    __attribute__((nothrow)) void Bar();
-  };
-  void S::Foo(){} // expected-warning {{is missing exception specification}}
-  __attribute__((nothrow)) void S::Bar(){}
-}
+struct S {
+  __attribute__((nothrow)) void Foo(); // expected-note {{previous declaration is here}}
+  __attribute__((nothrow)) void Bar();
+};
+void S::Foo() {} // expected-warning {{is missing exception specification}}
+__attribute__((nothrow)) void S::Bar() {}
+} // namespace PR42089
 
 #elif TEST2
 
@@ -513,13 +517,12 @@ typedef char __unaligned *aligned_type; // expected-error {{expected ';' after t
 #elif TEST3
 
 namespace PR32750 {
-template<typename T> struct A {};
-template<typename T> struct B : A<A<T>> { A<T>::C::D d; }; // expected-error {{missing 'typename' prior to dependent type name 'A<T>::C::D'}}
-}
+template <typename T> struct A {};
+template <typename T> struct B : A<A<T>> { A<T>::C::D d; }; // expected-error {{missing 'typename' prior to dependent type name 'A<T>::C::D'}}
+} // namespace PR32750
 
 #else
 
 #error Unknown test mode
 
 #endif
-

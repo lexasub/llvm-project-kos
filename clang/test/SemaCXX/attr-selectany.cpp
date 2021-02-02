@@ -4,7 +4,7 @@
 
 // MSVC produces similar diagnostics.
 
-__declspec(selectany) void foo() { } // expected-error{{'selectany' can only be applied to data items with external linkage}}
+__declspec(selectany) void foo() {} // expected-error{{'selectany' can only be applied to data items with external linkage}}
 
 __declspec(selectany) int x1 = 1;
 
@@ -22,22 +22,23 @@ static __declspec(selectany) int x6 = 2; // expected-error{{'selectany' can only
 
 // FIXME: MSVC accepts this and makes x7 externally visible and comdat, but keep
 // it as internal and not weak/linkonce.
-static int x7; // expected-note{{previous definition}}
-extern __declspec(selectany) int x7;  // expected-warning{{attribute declaration must precede definition}}
+static int x7;                       // expected-note{{previous definition}}
+extern __declspec(selectany) int x7; // expected-warning{{attribute declaration must precede definition}}
 
 int asdf() { return x7; }
 
 class X {
- public:
+public:
   X(int i) { i++; };
   int i;
 };
 
 __declspec(selectany) X x(1);
 
-namespace { class Internal {}; }
+namespace {
+class Internal {};
+} // namespace
 __declspec(selectany) auto x8 = Internal(); // expected-error {{'selectany' can only be applied to data items with external linkage}}
-
 
 // The D3D11 headers do something like this.  MSVC doesn't error on this at
 // all, even without the __declspec(selectany), in violation of the standard.

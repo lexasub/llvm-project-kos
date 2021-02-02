@@ -14,13 +14,11 @@
 //
 // RewriteMapFile := RewriteDescriptors
 // RewriteDescriptors := RewriteDescriptor | RewriteDescriptors
-// RewriteDescriptor := RewriteDescriptorType ':' '{' RewriteDescriptorFields '}'
-// RewriteDescriptorFields := RewriteDescriptorField | RewriteDescriptorFields
-// RewriteDescriptorField := FieldIdentifier ':' FieldValue ','
-// RewriteDescriptorType := Identifier
-// FieldIdentifier := Identifier
-// FieldValue := Identifier
-// Identifier := [0-9a-zA-Z]+
+// RewriteDescriptor := RewriteDescriptorType ':' '{' RewriteDescriptorFields
+// '}' RewriteDescriptorFields := RewriteDescriptorField |
+// RewriteDescriptorFields RewriteDescriptorField := FieldIdentifier ':'
+// FieldValue ',' RewriteDescriptorType := Identifier FieldIdentifier :=
+// Identifier FieldValue := Identifier Identifier := [0-9a-zA-Z]+
 //
 // Currently, the following descriptor types are supported:
 //
@@ -152,8 +150,8 @@ namespace {
 
 template <RewriteDescriptor::Type DT, typename ValueType,
           ValueType *(Module::*Get)(StringRef) const,
-          iterator_range<typename iplist<ValueType>::iterator>
-          (Module::*Iterator)()>
+          iterator_range<typename iplist<ValueType>::iterator> (
+              Module::*Iterator)()>
 class PatternRewriteDescriptor : public RewriteDescriptor {
 public:
   const std::string Pattern;
@@ -172,12 +170,12 @@ public:
 
 } // end anonymous namespace
 
-template <RewriteDescriptor::Type DT, typename ValueType,
-          ValueType *(Module::*Get)(StringRef) const,
-          iterator_range<typename iplist<ValueType>::iterator>
-          (Module::*Iterator)()>
-bool PatternRewriteDescriptor<DT, ValueType, Get, Iterator>::
-performOnModule(Module &M) {
+template <
+    RewriteDescriptor::Type DT, typename ValueType,
+    ValueType *(Module::*Get)(StringRef) const,
+    iterator_range<typename iplist<ValueType>::iterator> (Module::*Iterator)()>
+bool PatternRewriteDescriptor<DT, ValueType, Get, Iterator>::performOnModule(
+    Module &M) {
   bool Changed = false;
   for (auto &C : (M.*Iterator)()) {
     std::string Error;
@@ -256,8 +254,8 @@ bool RewriteMapParser::parse(const std::string &MapFile,
       MemoryBuffer::getFile(MapFile);
 
   if (!Mapping)
-    report_fatal_error("unable to read rewrite map '" + MapFile + "': " +
-                       Mapping.getError().message());
+    report_fatal_error("unable to read rewrite map '" + MapFile +
+                       "': " + Mapping.getError().message());
 
   if (!parse(*Mapping, DL))
     report_fatal_error("unable to parse rewrite map '" + MapFile + "'");
@@ -322,10 +320,9 @@ bool RewriteMapParser::parseEntry(yaml::Stream &YS, yaml::KeyValueNode &Entry,
   return false;
 }
 
-bool RewriteMapParser::
-parseRewriteFunctionDescriptor(yaml::Stream &YS, yaml::ScalarNode *K,
-                               yaml::MappingNode *Descriptor,
-                               RewriteDescriptorList *DL) {
+bool RewriteMapParser::parseRewriteFunctionDescriptor(
+    yaml::Stream &YS, yaml::ScalarNode *K, yaml::MappingNode *Descriptor,
+    RewriteDescriptorList *DL) {
   bool Naked = false;
   std::string Source;
   std::string Target;
@@ -392,10 +389,9 @@ parseRewriteFunctionDescriptor(yaml::Stream &YS, yaml::ScalarNode *K,
   return true;
 }
 
-bool RewriteMapParser::
-parseRewriteGlobalVariableDescriptor(yaml::Stream &YS, yaml::ScalarNode *K,
-                                     yaml::MappingNode *Descriptor,
-                                     RewriteDescriptorList *DL) {
+bool RewriteMapParser::parseRewriteGlobalVariableDescriptor(
+    yaml::Stream &YS, yaml::ScalarNode *K, yaml::MappingNode *Descriptor,
+    RewriteDescriptorList *DL) {
   std::string Source;
   std::string Target;
   std::string Transform;
@@ -455,10 +451,9 @@ parseRewriteGlobalVariableDescriptor(yaml::Stream &YS, yaml::ScalarNode *K,
   return true;
 }
 
-bool RewriteMapParser::
-parseRewriteGlobalAliasDescriptor(yaml::Stream &YS, yaml::ScalarNode *K,
-                                  yaml::MappingNode *Descriptor,
-                                  RewriteDescriptorList *DL) {
+bool RewriteMapParser::parseRewriteGlobalAliasDescriptor(
+    yaml::Stream &YS, yaml::ScalarNode *K, yaml::MappingNode *Descriptor,
+    RewriteDescriptorList *DL) {
   std::string Source;
   std::string Target;
   std::string Transform;
@@ -508,9 +503,9 @@ parseRewriteGlobalAliasDescriptor(yaml::Stream &YS, yaml::ScalarNode *K,
   }
 
   if (!Target.empty())
-    DL->push_back(std::make_unique<ExplicitRewriteNamedAliasDescriptor>(
-        Source, Target,
-        /*Naked*/ false));
+    DL->push_back(
+        std::make_unique<ExplicitRewriteNamedAliasDescriptor>(Source, Target,
+                                                              /*Naked*/ false));
   else
     DL->push_back(std::make_unique<PatternRewriteNamedAliasDescriptor>(
         Source, Transform));

@@ -15,14 +15,13 @@
 #include <memory>
 #include <cassert>
 
-int main(int, char**)
-{
-    const std::shared_ptr<int> p1(new int);
-    const std::shared_ptr<int> p2(new int);
-    const std::weak_ptr<int> w1(p1);
-    const std::weak_ptr<int> w2(p2);
+int main(int, char**) {
+  const std::shared_ptr<int> p1(new int);
+  const std::shared_ptr<int> p2(new int);
+  const std::weak_ptr<int> w1(p1);
+  const std::weak_ptr<int> w2(p2);
 
-    bool b = w1 < w2;
+  bool b = w1 < w2;
 
   return 0;
 }

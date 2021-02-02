@@ -27,13 +27,13 @@ extern const omp_allocator_handle_t omp_thread_mem_alloc;
 // CHECK-DAG: @{{.+}}ST{{.+}}m{{.+}} = external global i32,
 // CHECK-DAG: @bar_c = internal global i32 0,
 // CHECK-DAG: @bar_b = internal addrspace(3) global double 0.000000e+00,
-struct St{
- int a;
+struct St {
+  int a;
 };
 
-struct St1{
- int a;
- static int b;
+struct St1 {
+  int a;
+  static int b;
 #pragma omp allocate(b) allocator(omp_default_mem_alloc)
 } d;
 
@@ -45,27 +45,27 @@ int a, b, c;
 template <class T>
 struct ST {
   static T m;
-  #pragma omp allocate(m) allocator(omp_low_lat_mem_alloc)
+#pragma omp allocate(m) allocator(omp_low_lat_mem_alloc)
 };
 
 template <class T> T foo() {
   T v;
-  #pragma omp allocate(v) allocator(omp_cgroup_mem_alloc)
+#pragma omp allocate(v) allocator(omp_cgroup_mem_alloc)
   v = ST<T>::m;
   return v;
 }
 
-namespace ns{
-  int a;
+namespace ns {
+int a;
 }
 #pragma omp allocate(ns::a) allocator(omp_pteam_mem_alloc)
 
 // CHECK-LABEL: @main
-int main () {
+int main() {
   // CHECK: alloca double,
   static int a;
 #pragma omp allocate(a) allocator(omp_thread_mem_alloc)
-  a=2;
+  a = 2;
   double b = 3;
   float c;
 #pragma omp allocate(b) allocator(omp_default_mem_alloc)
@@ -96,12 +96,12 @@ void bar() {
     bar_b = bar_a;
     baz(bar_a);
   }
-// CHECK: define internal void [[OUTLINED]](i32* noalias %{{.+}}, i32* noalias %{{.+}})
-// CHECK-NOT: alloca double,
-// CHECK: alloca float,
-// CHECK-NOT: alloca double,
-// CHECK: load float, float* %
-// CHECK: store double {{.+}}, double* addrspacecast (double addrspace(3)* @bar_b to double*),
+  // CHECK: define internal void [[OUTLINED]](i32* noalias %{{.+}}, i32* noalias %{{.+}})
+  // CHECK-NOT: alloca double,
+  // CHECK: alloca float,
+  // CHECK-NOT: alloca double,
+  // CHECK: load float, float* %
+  // CHECK: store double {{.+}}, double* addrspacecast (double addrspace(3)* @bar_b to double*),
 }
 
 #pragma omp end declare target

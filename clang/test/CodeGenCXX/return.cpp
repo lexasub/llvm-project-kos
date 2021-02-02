@@ -24,14 +24,17 @@ int no_return() {
 }
 
 enum Enum {
-  A, B
+  A,
+  B
 };
 
 // CHECK-COMMON-LABEL: @_Z27returnNotViableDontOptimize4Enum
 int returnNotViableDontOptimize(Enum e) {
   switch (e) {
-  case A: return 1;
-  case B: return 2;
+  case A:
+    return 1;
+  case B:
+    return 2;
   }
   // Undefined behaviour optimization shouldn't be used when -fno-strict-return
   // is turned on, even if all the enum cases are covered in this function.
@@ -66,7 +69,7 @@ NonTrivialCopy nonTrivialCopy() {
 struct NonTrivialDefaultConstructor {
   int x;
 
-  NonTrivialDefaultConstructor() { }
+  NonTrivialDefaultConstructor() {}
 };
 
 // CHECK-NOSTRICT-LABEL: @_Z28nonTrivialDefaultConstructorv

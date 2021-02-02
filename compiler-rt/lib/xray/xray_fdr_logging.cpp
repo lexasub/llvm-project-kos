@@ -581,9 +581,9 @@ void fdrLoggingHandleCustomEvent(void *Event,
   TLD.Controller->customEvent(TSC, CPU, Event, ReducedEventSize);
 }
 
-void fdrLoggingHandleTypedEvent(
-    uint16_t EventType, const void *Event,
-    std::size_t EventSize) noexcept XRAY_NEVER_INSTRUMENT {
+void fdrLoggingHandleTypedEvent(uint16_t EventType, const void *Event,
+                                std::size_t EventSize) noexcept
+    XRAY_NEVER_INSTRUMENT {
   auto TC = getTimestamp();
   auto &TSC = TC.TSC;
   auto &CPU = TC.CPU;

@@ -16,12 +16,12 @@
 using namespace clang;
 
 PPConditionalDirectiveRecord::PPConditionalDirectiveRecord(SourceManager &SM)
-  : SourceMgr(SM) {
+    : SourceMgr(SM) {
   CondDirectiveStack.push_back(SourceLocation());
 }
 
 bool PPConditionalDirectiveRecord::rangeIntersectsConditionalDirective(
-                                                      SourceRange Range) const {
+    SourceRange Range) const {
   if (Range.isInvalid())
     return false;
 
@@ -33,9 +33,9 @@ bool PPConditionalDirectiveRecord::rangeIntersectsConditionalDirective(
   if (SourceMgr.isBeforeInTranslationUnit(Range.getEnd(), low->getLoc()))
     return false;
 
-  CondDirectiveLocsTy::const_iterator
-    upp = std::upper_bound(low, CondDirectiveLocs.end(),
-                           Range.getEnd(), CondDirectiveLoc::Comp(SourceMgr));
+  CondDirectiveLocsTy::const_iterator upp =
+      std::upper_bound(low, CondDirectiveLocs.end(), Range.getEnd(),
+                       CondDirectiveLoc::Comp(SourceMgr));
   SourceLocation uppRegion;
   if (upp != CondDirectiveLocs.end())
     uppRegion = upp->getRegionLoc();
@@ -44,7 +44,7 @@ bool PPConditionalDirectiveRecord::rangeIntersectsConditionalDirective(
 }
 
 SourceLocation PPConditionalDirectiveRecord::findConditionalDirectiveRegionLoc(
-                                                     SourceLocation Loc) const {
+    SourceLocation Loc) const {
   if (Loc.isInvalid())
     return SourceLocation();
   if (CondDirectiveLocs.empty())
@@ -61,7 +61,7 @@ SourceLocation PPConditionalDirectiveRecord::findConditionalDirectiveRegionLoc(
 }
 
 void PPConditionalDirectiveRecord::addCondDirectiveLoc(
-                                                      CondDirectiveLoc DirLoc) {
+    CondDirectiveLoc DirLoc) {
   // Ignore directives in system headers.
   if (SourceMgr.isInSystemHeader(DirLoc.getLoc()))
     return;

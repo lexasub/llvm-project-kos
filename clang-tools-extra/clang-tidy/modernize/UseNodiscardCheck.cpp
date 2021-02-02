@@ -94,10 +94,11 @@ void UseNodiscardCheck::registerMatchers(MatchFinder *Finder) {
           allOf(isConst(), isDefinitionOrInline(),
                 unless(anyOf(
                     returns(voidType()),
-                    returns(hasDeclaration(decl(hasAttr(clang::attr::WarnUnusedResult)))),
-                    isNoReturn(), isOverloadedOperator(),
-                    isVariadic(), hasTemplateReturnType(),
-                    hasClassMutableFields(), isConversionOperator(),
+                    returns(hasDeclaration(
+                        decl(hasAttr(clang::attr::WarnUnusedResult)))),
+                    isNoReturn(), isOverloadedOperator(), isVariadic(),
+                    hasTemplateReturnType(), hasClassMutableFields(),
+                    isConversionOperator(),
                     hasAttr(clang::attr::WarnUnusedResult),
                     hasType(isInstantiationDependentType()),
                     hasAnyParameter(anyOf(

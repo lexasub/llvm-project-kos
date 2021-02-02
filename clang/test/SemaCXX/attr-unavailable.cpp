@@ -7,7 +7,7 @@ void foo(...) __attribute__((__unavailable__)); // \
 
 void bar(...) __attribute__((__unavailable__)); // expected-note 4 {{explicitly marked unavailable}}
 
-void test_foo(short* sp) {
+void test_foo(short *sp) {
   int &ir = foo(1);
   double &dr = foo(1.0);
   foo(sp); // expected-error{{'foo' is unavailable}}
@@ -27,10 +27,10 @@ void foo() FOO; // expected-note{{'foo' has been explicitly marked unavailable h
 void bar() {
   foo(); // expected-error {{'foo' is unavailable: not available - replaced}}
 }
-}
+} // namespace radar9046492
 
-void unavail(short* sp)  __attribute__((__unavailable__));
-void unavail(short* sp) {
+void unavail(short *sp) __attribute__((__unavailable__));
+void unavail(short *sp) {
   // No complains inside an unavailable function.
   int &ir = foo(1);
   double &dr = foo(1.0);
@@ -41,22 +41,23 @@ void unavail(short* sp) {
 // Show that delayed processing of 'unavailable' is the same
 // delayed process for 'deprecated'.
 // <rdar://problem/12241361> and <rdar://problem/15584219>
-enum DeprecatedEnum { DE_A, DE_B } __attribute__((deprecated)); // expected-note {{'DeprecatedEnum' has been explicitly marked deprecated here}}
+enum DeprecatedEnum { DE_A,
+                      DE_B } __attribute__((deprecated)); // expected-note {{'DeprecatedEnum' has been explicitly marked deprecated here}}
 __attribute__((deprecated)) typedef enum DeprecatedEnum DeprecatedEnum;
 typedef enum DeprecatedEnum AnotherDeprecatedEnum; // expected-warning {{'DeprecatedEnum' is deprecated}}
 
 __attribute__((deprecated))
-DeprecatedEnum testDeprecated(DeprecatedEnum X) { return X; }
+DeprecatedEnum
+testDeprecated(DeprecatedEnum X) { return X; }
 
-
-enum UnavailableEnum { UE_A, UE_B } __attribute__((unavailable)); // expected-note {{'UnavailableEnum' has been explicitly marked unavailable here}}
+enum UnavailableEnum { UE_A,
+                       UE_B } __attribute__((unavailable)); // expected-note {{'UnavailableEnum' has been explicitly marked unavailable here}}
 __attribute__((unavailable)) typedef enum UnavailableEnum UnavailableEnum;
 typedef enum UnavailableEnum AnotherUnavailableEnum; // expected-error {{'UnavailableEnum' is unavailable}}
 
-
 __attribute__((unavailable))
-UnavailableEnum testUnavailable(UnavailableEnum X) { return X; }
-
+UnavailableEnum
+testUnavailable(UnavailableEnum X) { return X; }
 
 // Check that unavailable classes can be used as arguments to unavailable
 // function, particularly in template functions.
@@ -65,19 +66,19 @@ UnavailableEnum testUnavailable(UnavailableEnum X) { return X; }
 #endif
 class __attribute((unavailable)) UnavailableClass; // \
         expected-note 3{{'UnavailableClass' has been explicitly marked unavailable here}}
-void unavail_class(UnavailableClass&); // expected-error {{'UnavailableClass' is unavailable}}
-void unavail_class_marked(UnavailableClass&) __attribute__((unavailable));
-template <class T> void unavail_class(UnavailableClass&); // expected-error {{'UnavailableClass' is unavailable}}
-template <class T> void unavail_class_marked(UnavailableClass&) __attribute__((unavailable));
-template <class T> void templated(T&);
-void untemplated(UnavailableClass &UC) {  // expected-error {{'UnavailableClass' is unavailable}}
+void unavail_class(UnavailableClass &);            // expected-error {{'UnavailableClass' is unavailable}}
+void unavail_class_marked(UnavailableClass &) __attribute__((unavailable));
+template <class T> void unavail_class(UnavailableClass &); // expected-error {{'UnavailableClass' is unavailable}}
+template <class T> void unavail_class_marked(UnavailableClass &) __attribute__((unavailable));
+template <class T> void templated(T &);
+void untemplated(UnavailableClass &UC) { // expected-error {{'UnavailableClass' is unavailable}}
   templated(UC);
 }
 void untemplated_marked(UnavailableClass &UC) __attribute__((unavailable)) {
   templated(UC);
 }
 
-template <class T> void templated_calls_bar() { bar(); } // \
+template <class T> void templated_calls_bar() { bar(); }         // \
            // expected-error{{'bar' is unavailable}}
 template <class T> void templated_calls_bar_arg(T v) { bar(v); } // \
            // expected-error{{'bar' is unavailable}}
@@ -90,7 +91,7 @@ void unavail_templated_calls_bar() __attribute__((unavailable)) { //  \
 }
 template <class T>
 void unavail_templated_calls_bar_arg(T v) __attribute__((unavailable)) {
-// expected-note@-1 {{'unavail_templated_calls_bar_arg<int>' has been explicitly marked unavailable here}}
+  // expected-note@-1 {{'unavail_templated_calls_bar_arg<int>' has been explicitly marked unavailable here}}
   bar(v);
 }
 
@@ -119,13 +120,13 @@ void unavail_calls_unavail_templated() __attribute__((unavailable)) {
 void unavailable() __attribute((unavailable));
 // expected-note@-1 4 {{'unavailable' has been explicitly marked unavailable here}}
 struct AvailableStruct {
-  void calls_unavailable() { unavailable(); } // \
+  void calls_unavailable() { unavailable(); }                    // \
   expected-error{{'unavailable' is unavailable}}
   template <class U> void calls_unavailable() { unavailable(); } // \
   expected-error{{'unavailable' is unavailable}}
 };
 template <class T> struct AvailableStructTemplated {
-  void calls_unavailable() { unavailable(); } // \
+  void calls_unavailable() { unavailable(); }                    // \
   expected-error{{'unavailable' is unavailable}}
   template <class U> void calls_unavailable() { unavailable(); } // \
   expected-error{{'unavailable' is unavailable}}
@@ -140,7 +141,7 @@ template <class T> struct __attribute__((unavailable)) UnavailableStructTemplate
 };
 
 int unavailable_int() __attribute__((unavailable)); // expected-note 2 {{'unavailable_int' has been explicitly marked unavailable here}}
-int has_default_arg(int x = unavailable_int()) { // expected-error{{'unavailable_int' is unavailable}}
+int has_default_arg(int x = unavailable_int()) {    // expected-error{{'unavailable_int' is unavailable}}
   return x;
 }
 
@@ -163,8 +164,7 @@ template <class T>
 int has_default_arg_template2(T x = unavailable_template<T>())
     __attribute__((unavailable)) {}
 
-__attribute__((unavailable))
-int instantiate_it2 = has_default_arg_template2<int>();
+__attribute__((unavailable)) int instantiate_it2 = has_default_arg_template2<int>();
 
 template <class T>
 int phase_one_unavailable(int x = unavailable_int()) {}

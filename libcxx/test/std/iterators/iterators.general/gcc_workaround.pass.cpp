@@ -11,12 +11,10 @@
 #include <string>
 #include "test_macros.h"
 
-void f(const std::string &s) { TEST_IGNORE_NODISCARD s.begin(); }
+void f(const std::string& s) { TEST_IGNORE_NODISCARD s.begin(); }
 
 #include <vector>
 
-void AppendTo(const std::vector<char> &v) { TEST_IGNORE_NODISCARD v.begin(); }
+void AppendTo(const std::vector<char>& v) { TEST_IGNORE_NODISCARD v.begin(); }
 
-int main(int, char**) {
-  return 0;
-}
+int main(int, char**) { return 0; }

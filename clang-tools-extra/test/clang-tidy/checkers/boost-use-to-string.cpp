@@ -7,14 +7,14 @@ class basic_string {};
 
 using string = basic_string<char>;
 using wstring = basic_string<wchar_t>;
-}
+} // namespace std
 
 namespace boost {
 template <typename T, typename V>
 T lexical_cast(const V &) {
   return T();
 };
-}
+} // namespace boost
 
 struct my_weird_type {};
 
@@ -151,8 +151,8 @@ void no_warnings() {
 struct Fields {
   int integer;
   float floating;
-  Fields* wierd;
-  const int &getConstInteger() const {return integer;}
+  Fields *wierd;
+  const int &getConstInteger() const { return integer; }
 };
 
 void testFields() {

@@ -18,10 +18,9 @@ namespace tidy {
 namespace abseil {
 
 void NoNamespaceCheck::registerMatchers(MatchFinder *Finder) {
-  Finder->addMatcher(
-      namespaceDecl(hasName("::absl"), unless(isInAbseilFile()))
-          .bind("abslNamespace"),
-      this);
+  Finder->addMatcher(namespaceDecl(hasName("::absl"), unless(isInAbseilFile()))
+                         .bind("abslNamespace"),
+                     this);
 }
 
 void NoNamespaceCheck::check(const MatchFinder::MatchResult &Result) {

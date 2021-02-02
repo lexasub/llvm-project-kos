@@ -20,11 +20,10 @@
 
 #include "test_macros.h"
 
-
-struct R { };
-struct A1 { };
-struct A2 { };
-struct A3 { };
+struct R {};
+struct A1 {};
+struct A2 {};
+struct A3 {};
 
 R f0() { return {}; }
 R f1(A1) { return {}; }

@@ -64,7 +64,8 @@ FunctionPass *llvm::createX86AvoidTrailingCallPass() {
   return new X86AvoidTrailingCallPass();
 }
 
-INITIALIZE_PASS(X86AvoidTrailingCallPass, AVOIDCALL_NAME, AVOIDCALL_DESC, false, false)
+INITIALIZE_PASS(X86AvoidTrailingCallPass, AVOIDCALL_NAME, AVOIDCALL_DESC, false,
+                false)
 
 // A real instruction is a non-meta, non-pseudo instruction.  Some pseudos
 // expand to nothing, and some expand to code. This logic conservatively assumes

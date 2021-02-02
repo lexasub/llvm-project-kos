@@ -25,13 +25,13 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "clang/StaticAnalyzer/Checkers/BuiltinCheckerRegistration.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
+#include "clang/Lex/Lexer.h"
+#include "clang/StaticAnalyzer/Checkers/BuiltinCheckerRegistration.h"
 #include "clang/StaticAnalyzer/Core/BugReporter/BugReporter.h"
 #include "clang/StaticAnalyzer/Core/BugReporter/BugType.h"
 #include "clang/StaticAnalyzer/Core/Checker.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/AnalysisManager.h"
-#include "clang/Lex/Lexer.h"
 #include "llvm/ADT/APSInt.h"
 
 using namespace clang;
@@ -54,23 +54,21 @@ class Callback : public MatchFinder::MatchCallback {
   AnalysisDeclContext *ADC;
 
 public:
-  Callback(const NumberObjectConversionChecker *C,
-           BugReporter &BR, AnalysisDeclContext *ADC)
+  Callback(const NumberObjectConversionChecker *C, BugReporter &BR,
+           AnalysisDeclContext *ADC)
       : C(C), BR(BR), ADC(ADC) {}
   void run(const MatchFinder::MatchResult &Result) override;
 };
 } // end of anonymous namespace
 
 void Callback::run(const MatchFinder::MatchResult &Result) {
-  bool IsPedanticMatch =
-      (Result.Nodes.getNodeAs<Stmt>("pedantic") != nullptr);
+  bool IsPedanticMatch = (Result.Nodes.getNodeAs<Stmt>("pedantic") != nullptr);
   if (IsPedanticMatch && !C->Pedantic)
     return;
 
   ASTContext &ACtx = ADC->getASTContext();
 
-  if (const Expr *CheckIfNull =
-          Result.Nodes.getNodeAs<Expr>("check_if_null")) {
+  if (const Expr *CheckIfNull = Result.Nodes.getNodeAs<Expr>("check_if_null")) {
     // Unless the macro indicates that the intended type is clearly not
     // a pointer type, we should avoid warning on comparing pointers
     // to zero literals in non-pedantic mode.
@@ -107,19 +105,16 @@ void Callback::run(const MatchFinder::MatchResult &Result) {
   const Expr *ConvertedObjCObject = Result.Nodes.getNodeAs<Expr>("objc_object");
   bool IsCpp = (ConvertedCppObject != nullptr);
   bool IsObjC = (ConvertedObjCObject != nullptr);
-  const Expr *Obj = IsObjC ? ConvertedObjCObject
-                  : IsCpp ? ConvertedCppObject
-                  : ConvertedCObject;
+  const Expr *Obj = IsObjC  ? ConvertedObjCObject
+                    : IsCpp ? ConvertedCppObject
+                            : ConvertedCObject;
   assert(Obj);
 
-  bool IsComparison =
-      (Result.Nodes.getNodeAs<Stmt>("comparison") != nullptr);
+  bool IsComparison = (Result.Nodes.getNodeAs<Stmt>("comparison") != nullptr);
 
-  bool IsOSNumber =
-      (Result.Nodes.getNodeAs<Decl>("osnumber") != nullptr);
+  bool IsOSNumber = (Result.Nodes.getNodeAs<Decl>("osnumber") != nullptr);
 
-  bool IsInteger =
-      (Result.Nodes.getNodeAs<QualType>("int_type") != nullptr);
+  bool IsInteger = (Result.Nodes.getNodeAs<QualType>("int_type") != nullptr);
   bool IsObjCBool =
       (Result.Nodes.getNodeAs<QualType>("objc_bool_type") != nullptr);
   bool IsCppBool =
@@ -146,9 +141,9 @@ void Callback::run(const MatchFinder::MatchResult &Result) {
   OS << "a pointer value of type '" << ObjT.getAsString() << "' to a ";
 
   std::string EuphemismForPlain = "primitive";
-  std::string SuggestedApi = IsObjC ? (IsInteger ? "" : "-boolValue")
-                           : IsCpp ? (IsOSNumber ? "" : "getValue()")
-                           : "CFNumberGetValue()";
+  std::string SuggestedApi = IsObjC  ? (IsInteger ? "" : "-boolValue")
+                             : IsCpp ? (IsOSNumber ? "" : "getValue()")
+                                     : "CFNumberGetValue()";
   if (SuggestedApi.empty()) {
     // A generic message if we're not sure what API should be called.
     // FIXME: Pattern-match the integer type to make a better guess?
@@ -170,10 +165,12 @@ void Callback::run(const MatchFinder::MatchResult &Result) {
   else // Branch condition?
     OS << EuphemismForPlain << " boolean value";
 
-
   if (IsPedanticMatch)
     OS << "; instead, either compare the pointer to "
-       << (IsObjC ? "nil" : IsCpp ? "nullptr" : "NULL") << " or ";
+       << (IsObjC  ? "nil"
+           : IsCpp ? "nullptr"
+                   : "NULL")
+       << " or ";
   else
     OS << "; did you mean to ";
 
@@ -196,52 +193,40 @@ void NumberObjectConversionChecker::checkASTCodeBody(const Decl *D,
                                                      AnalysisManager &AM,
                                                      BugReporter &BR) const {
   // Currently this matches CoreFoundation opaque pointer typedefs.
-  auto CSuspiciousNumberObjectExprM =
-      expr(ignoringParenImpCasts(
-          expr(hasType(
-              typedefType(hasDeclaration(anyOf(
-                  typedefDecl(hasName("CFNumberRef")),
-                  typedefDecl(hasName("CFBooleanRef")))))))
+  auto CSuspiciousNumberObjectExprM = expr(ignoringParenImpCasts(
+      expr(hasType(typedefType(
+               hasDeclaration(anyOf(typedefDecl(hasName("CFNumberRef")),
+                                    typedefDecl(hasName("CFBooleanRef")))))))
           .bind("c_object")));
 
   // Currently this matches XNU kernel number-object pointers.
-  auto CppSuspiciousNumberObjectExprM =
-      expr(ignoringParenImpCasts(
-          expr(hasType(hasCanonicalType(
-              pointerType(pointee(hasCanonicalType(
-                  recordType(hasDeclaration(
-                      anyOf(
-                        cxxRecordDecl(hasName("OSBoolean")),
-                        cxxRecordDecl(hasName("OSNumber"))
-                            .bind("osnumber"))))))))))
+  auto CppSuspiciousNumberObjectExprM = expr(ignoringParenImpCasts(
+      expr(hasType(hasCanonicalType(pointerType(
+               pointee(hasCanonicalType(recordType(hasDeclaration(anyOf(
+                   cxxRecordDecl(hasName("OSBoolean")),
+                   cxxRecordDecl(hasName("OSNumber")).bind("osnumber"))))))))))
           .bind("cpp_object")));
 
   // Currently this matches NeXTSTEP number objects.
-  auto ObjCSuspiciousNumberObjectExprM =
-      expr(ignoringParenImpCasts(
-          expr(hasType(hasCanonicalType(
-              objcObjectPointerType(pointee(
-                  qualType(hasCanonicalType(
-                      qualType(hasDeclaration(
-                          objcInterfaceDecl(hasName("NSNumber")))))))))))
+  auto ObjCSuspiciousNumberObjectExprM = expr(ignoringParenImpCasts(
+      expr(hasType(hasCanonicalType(objcObjectPointerType(
+               pointee(qualType(hasCanonicalType(qualType(hasDeclaration(
+                   objcInterfaceDecl(hasName("NSNumber")))))))))))
           .bind("objc_object")));
 
-  auto SuspiciousNumberObjectExprM = anyOf(
-      CSuspiciousNumberObjectExprM,
-      CppSuspiciousNumberObjectExprM,
-      ObjCSuspiciousNumberObjectExprM);
+  auto SuspiciousNumberObjectExprM =
+      anyOf(CSuspiciousNumberObjectExprM, CppSuspiciousNumberObjectExprM,
+            ObjCSuspiciousNumberObjectExprM);
 
   // Useful for predicates like "Unless we've seen the same object elsewhere".
   auto AnotherSuspiciousNumberObjectExprM =
-      expr(anyOf(
-          equalsBoundNode("c_object"),
-          equalsBoundNode("objc_object"),
-          equalsBoundNode("cpp_object")));
+      expr(anyOf(equalsBoundNode("c_object"), equalsBoundNode("objc_object"),
+                 equalsBoundNode("cpp_object")));
 
   // The .bind here is in order to compose the error message more accurately.
   auto ObjCSuspiciousScalarBooleanTypeM =
-      qualType(typedefType(hasDeclaration(
-                   typedefDecl(hasName("BOOL"))))).bind("objc_bool_type");
+      qualType(typedefType(hasDeclaration(typedefDecl(hasName("BOOL")))))
+          .bind("objc_bool_type");
 
   // The .bind here is in order to compose the error message more accurately.
   auto SuspiciousScalarBooleanTypeM =
@@ -253,63 +238,58 @@ void NumberObjectConversionChecker::checkASTCodeBody(const Decl *D,
   // for storing pointers.
   auto SuspiciousScalarNumberTypeM =
       qualType(hasCanonicalType(isInteger()),
-               unless(typedefType(hasDeclaration(
-                   typedefDecl(matchesName("^::u?intptr_t$"))))))
-      .bind("int_type");
+               unless(typedefType(
+                   hasDeclaration(typedefDecl(matchesName("^::u?intptr_t$"))))))
+          .bind("int_type");
 
-  auto SuspiciousScalarTypeM =
-      qualType(anyOf(SuspiciousScalarBooleanTypeM,
-                     SuspiciousScalarNumberTypeM));
+  auto SuspiciousScalarTypeM = qualType(
+      anyOf(SuspiciousScalarBooleanTypeM, SuspiciousScalarNumberTypeM));
 
   auto SuspiciousScalarExprM =
       expr(ignoringParenImpCasts(expr(hasType(SuspiciousScalarTypeM))));
 
   auto ConversionThroughAssignmentM =
-      binaryOperator(allOf(hasOperatorName("="),
-                           hasLHS(SuspiciousScalarExprM),
+      binaryOperator(allOf(hasOperatorName("="), hasLHS(SuspiciousScalarExprM),
                            hasRHS(SuspiciousNumberObjectExprM)));
 
   auto ConversionThroughBranchingM =
-      ifStmt(allOf(
-          hasCondition(SuspiciousNumberObjectExprM),
-          unless(hasConditionVariableStatement(declStmt())
-      ))).bind("pedantic");
+      ifStmt(allOf(hasCondition(SuspiciousNumberObjectExprM),
+                   unless(hasConditionVariableStatement(declStmt()))))
+          .bind("pedantic");
 
-  auto ConversionThroughCallM =
-      callExpr(hasAnyArgument(allOf(hasType(SuspiciousScalarTypeM),
-                                    ignoringParenImpCasts(
-                                        SuspiciousNumberObjectExprM))));
+  auto ConversionThroughCallM = callExpr(hasAnyArgument(
+      allOf(hasType(SuspiciousScalarTypeM),
+            ignoringParenImpCasts(SuspiciousNumberObjectExprM))));
 
   // We bind "check_if_null" to modify the warning message
   // in case it was intended to compare a pointer to 0 with a relatively-ok
   // construct "x == 0" or "x != 0".
   auto ConversionThroughEquivalenceM =
-      binaryOperator(allOf(anyOf(hasOperatorName("=="), hasOperatorName("!=")),
-                           hasEitherOperand(SuspiciousNumberObjectExprM),
-                           hasEitherOperand(SuspiciousScalarExprM
-                                            .bind("check_if_null"))))
-      .bind("comparison");
+      binaryOperator(
+          allOf(anyOf(hasOperatorName("=="), hasOperatorName("!=")),
+                hasEitherOperand(SuspiciousNumberObjectExprM),
+                hasEitherOperand(SuspiciousScalarExprM.bind("check_if_null"))))
+          .bind("comparison");
 
   auto ConversionThroughComparisonM =
       binaryOperator(allOf(anyOf(hasOperatorName(">="), hasOperatorName(">"),
                                  hasOperatorName("<="), hasOperatorName("<")),
                            hasEitherOperand(SuspiciousNumberObjectExprM),
                            hasEitherOperand(SuspiciousScalarExprM)))
-      .bind("comparison");
+          .bind("comparison");
 
   auto ConversionThroughConditionalOperatorM =
-      conditionalOperator(allOf(
-          hasCondition(SuspiciousNumberObjectExprM),
-          unless(hasTrueExpression(
-              hasDescendant(AnotherSuspiciousNumberObjectExprM))),
-          unless(hasFalseExpression(
-              hasDescendant(AnotherSuspiciousNumberObjectExprM)))))
-      .bind("pedantic");
+      conditionalOperator(allOf(hasCondition(SuspiciousNumberObjectExprM),
+                                unless(hasTrueExpression(hasDescendant(
+                                    AnotherSuspiciousNumberObjectExprM))),
+                                unless(hasFalseExpression(hasDescendant(
+                                    AnotherSuspiciousNumberObjectExprM)))))
+          .bind("pedantic");
 
   auto ConversionThroughExclamationMarkM =
-      unaryOperator(allOf(hasOperatorName("!"),
-                          has(expr(SuspiciousNumberObjectExprM))))
-      .bind("pedantic");
+      unaryOperator(
+          allOf(hasOperatorName("!"), has(expr(SuspiciousNumberObjectExprM))))
+          .bind("pedantic");
 
   auto ConversionThroughExplicitBooleanCastM =
       explicitCastExpr(allOf(hasType(SuspiciousScalarBooleanTypeM),
@@ -319,21 +299,20 @@ void NumberObjectConversionChecker::checkASTCodeBody(const Decl *D,
       explicitCastExpr(allOf(hasType(SuspiciousScalarNumberTypeM),
                              has(expr(SuspiciousNumberObjectExprM))));
 
-  auto ConversionThroughInitializerM =
-      declStmt(hasSingleDecl(
-          varDecl(hasType(SuspiciousScalarTypeM),
-                  hasInitializer(SuspiciousNumberObjectExprM))));
+  auto ConversionThroughInitializerM = declStmt(
+      hasSingleDecl(varDecl(hasType(SuspiciousScalarTypeM),
+                            hasInitializer(SuspiciousNumberObjectExprM))));
 
-  auto FinalM = stmt(anyOf(ConversionThroughAssignmentM,
-                           ConversionThroughBranchingM,
-                           ConversionThroughCallM,
-                           ConversionThroughComparisonM,
-                           ConversionThroughConditionalOperatorM,
-                           ConversionThroughEquivalenceM,
-                           ConversionThroughExclamationMarkM,
-                           ConversionThroughExplicitBooleanCastM,
-                           ConversionThroughExplicitNumberCastM,
-                           ConversionThroughInitializerM)).bind("conv");
+  auto FinalM =
+      stmt(anyOf(ConversionThroughAssignmentM, ConversionThroughBranchingM,
+                 ConversionThroughCallM, ConversionThroughComparisonM,
+                 ConversionThroughConditionalOperatorM,
+                 ConversionThroughEquivalenceM,
+                 ConversionThroughExclamationMarkM,
+                 ConversionThroughExplicitBooleanCastM,
+                 ConversionThroughExplicitNumberCastM,
+                 ConversionThroughInitializerM))
+          .bind("conv");
 
   MatchFinder F;
   Callback CB(this, BR, AM.getAnalysisDeclContext(D));
@@ -349,6 +328,7 @@ void ento::registerNumberObjectConversionChecker(CheckerManager &Mgr) {
       Mgr.getAnalyzerOptions().getCheckerBooleanOption(Chk, "Pedantic");
 }
 
-bool ento::shouldRegisterNumberObjectConversionChecker(const CheckerManager &mgr) {
+bool ento::shouldRegisterNumberObjectConversionChecker(
+    const CheckerManager &mgr) {
   return true;
 }

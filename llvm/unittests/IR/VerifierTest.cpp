@@ -96,7 +96,8 @@ TEST(VerifierTest, Freeze) {
 TEST(VerifierTest, InvalidRetAttribute) {
   LLVMContext C;
   Module M("M", C);
-  FunctionType *FTy = FunctionType::get(Type::getInt32Ty(C), /*isVarArg=*/false);
+  FunctionType *FTy =
+      FunctionType::get(Type::getInt32Ty(C), /*isVarArg=*/false);
   Function *F = Function::Create(FTy, Function::ExternalLinkage, "foo", M);
   AttributeList AS = F->getAttributes();
   F->setAttributes(
@@ -105,8 +106,9 @@ TEST(VerifierTest, InvalidRetAttribute) {
   std::string Error;
   raw_string_ostream ErrorOS(Error);
   EXPECT_TRUE(verifyModule(M, &ErrorOS));
-  EXPECT_TRUE(StringRef(ErrorOS.str()).startswith(
-      "Attribute 'uwtable' only applies to functions!"));
+  EXPECT_TRUE(
+      StringRef(ErrorOS.str())
+          .startswith("Attribute 'uwtable' only applies to functions!"));
 }
 
 TEST(VerifierTest, CrossModuleRef) {
@@ -114,7 +116,8 @@ TEST(VerifierTest, CrossModuleRef) {
   Module M1("M1", C);
   Module M2("M2", C);
   Module M3("M3", C);
-  FunctionType *FTy = FunctionType::get(Type::getInt32Ty(C), /*isVarArg=*/false);
+  FunctionType *FTy =
+      FunctionType::get(Type::getInt32Ty(C), /*isVarArg=*/false);
   Function *F1 = Function::Create(FTy, Function::ExternalLinkage, "foo1", M1);
   Function *F2 = Function::Create(FTy, Function::ExternalLinkage, "foo2", M2);
   Function *F3 = Function::Create(FTy, Function::ExternalLinkage, "foo3", M3);
@@ -123,7 +126,7 @@ TEST(VerifierTest, CrossModuleRef) {
   BasicBlock *Entry3 = BasicBlock::Create(C, "entry", F3);
 
   // BAD: Referencing function in another module
-  CallInst::Create(F2,"call",Entry1);
+  CallInst::Create(F2, "call", Entry1);
 
   // BAD: Referencing personality routine in another module
   F3->setPersonalityFn(F2);
@@ -151,17 +154,18 @@ TEST(VerifierTest, CrossModuleRef) {
 
   Error.clear();
   EXPECT_TRUE(verifyModule(M1, &ErrorOS));
-  EXPECT_TRUE(StringRef(ErrorOS.str()).equals(
-      "Referencing function in another module!\n"
-      "  %call = call i32 @foo2()\n"
-      "; ModuleID = 'M1'\n"
-      "i32 ()* @foo2\n"
-      "; ModuleID = 'M2'\n"));
+  EXPECT_TRUE(StringRef(ErrorOS.str())
+                  .equals("Referencing function in another module!\n"
+                          "  %call = call i32 @foo2()\n"
+                          "; ModuleID = 'M1'\n"
+                          "i32 ()* @foo2\n"
+                          "; ModuleID = 'M2'\n"));
 
   Error.clear();
   EXPECT_TRUE(verifyModule(M3, &ErrorOS));
-  EXPECT_TRUE(StringRef(ErrorOS.str()).startswith(
-      "Referencing personality function in another module!"));
+  EXPECT_TRUE(
+      StringRef(ErrorOS.str())
+          .startswith("Referencing personality function in another module!"));
 
   // Erase bad methods to avoid triggering an assertion failure on destruction
   F1->eraseFromParent();
@@ -176,9 +180,9 @@ TEST(VerifierTest, InvalidVariableLinkage) {
   std::string Error;
   raw_string_ostream ErrorOS(Error);
   EXPECT_TRUE(verifyModule(M, &ErrorOS));
-  EXPECT_TRUE(
-      StringRef(ErrorOS.str()).startswith("Global is external, but doesn't "
-                                          "have external or weak linkage!"));
+  EXPECT_TRUE(StringRef(ErrorOS.str())
+                  .startswith("Global is external, but doesn't "
+                              "have external or weak linkage!"));
 }
 
 TEST(VerifierTest, InvalidFunctionLinkage) {
@@ -190,9 +194,9 @@ TEST(VerifierTest, InvalidFunctionLinkage) {
   std::string Error;
   raw_string_ostream ErrorOS(Error);
   EXPECT_TRUE(verifyModule(M, &ErrorOS));
-  EXPECT_TRUE(
-      StringRef(ErrorOS.str()).startswith("Global is external, but doesn't "
-                                          "have external or weak linkage!"));
+  EXPECT_TRUE(StringRef(ErrorOS.str())
+                  .startswith("Global is external, but doesn't "
+                              "have external or weak linkage!"));
 }
 
 TEST(VerifierTest, DetectInvalidDebugInfo) {

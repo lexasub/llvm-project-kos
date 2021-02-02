@@ -48,67 +48,67 @@ STATISTIC(NumReplacements, "Number of frame indices references replaced");
 
 namespace {
 
-  class FrameRef {
-    MachineBasicBlock::iterator MI; // Instr referencing the frame
-    int64_t LocalOffset;            // Local offset of the frame idx referenced
-    int FrameIdx;                   // The frame index
+class FrameRef {
+  MachineBasicBlock::iterator MI; // Instr referencing the frame
+  int64_t LocalOffset;            // Local offset of the frame idx referenced
+  int FrameIdx;                   // The frame index
 
-    // Order reference instruction appears in program. Used to ensure
-    // deterministic order when multiple instructions may reference the same
-    // location.
-    unsigned Order;
+  // Order reference instruction appears in program. Used to ensure
+  // deterministic order when multiple instructions may reference the same
+  // location.
+  unsigned Order;
 
-  public:
-    FrameRef(MachineInstr *I, int64_t Offset, int Idx, unsigned Ord) :
-      MI(I), LocalOffset(Offset), FrameIdx(Idx), Order(Ord) {}
+public:
+  FrameRef(MachineInstr *I, int64_t Offset, int Idx, unsigned Ord)
+      : MI(I), LocalOffset(Offset), FrameIdx(Idx), Order(Ord) {}
 
-    bool operator<(const FrameRef &RHS) const {
-      return std::tie(LocalOffset, FrameIdx, Order) <
-             std::tie(RHS.LocalOffset, RHS.FrameIdx, RHS.Order);
-    }
+  bool operator<(const FrameRef &RHS) const {
+    return std::tie(LocalOffset, FrameIdx, Order) <
+           std::tie(RHS.LocalOffset, RHS.FrameIdx, RHS.Order);
+  }
 
-    MachineBasicBlock::iterator getMachineInstr() const { return MI; }
-    int64_t getLocalOffset() const { return LocalOffset; }
-    int getFrameIndex() const { return FrameIdx; }
-  };
+  MachineBasicBlock::iterator getMachineInstr() const { return MI; }
+  int64_t getLocalOffset() const { return LocalOffset; }
+  int getFrameIndex() const { return FrameIdx; }
+};
 
-  class LocalStackSlotPass: public MachineFunctionPass {
-    SmallVector<int64_t, 16> LocalOffsets;
+class LocalStackSlotPass : public MachineFunctionPass {
+  SmallVector<int64_t, 16> LocalOffsets;
 
-    /// StackObjSet - A set of stack object indexes
-    using StackObjSet = SmallSetVector<int, 8>;
+  /// StackObjSet - A set of stack object indexes
+  using StackObjSet = SmallSetVector<int, 8>;
 
-    void AdjustStackOffset(MachineFrameInfo &MFI, int FrameIdx, int64_t &Offset,
-                           bool StackGrowsDown, Align &MaxAlign);
-    void AssignProtectedObjSet(const StackObjSet &UnassignedObjs,
-                               SmallSet<int, 16> &ProtectedObjs,
-                               MachineFrameInfo &MFI, bool StackGrowsDown,
-                               int64_t &Offset, Align &MaxAlign);
-    void calculateFrameObjectOffsets(MachineFunction &Fn);
-    bool insertFrameReferenceRegisters(MachineFunction &Fn);
+  void AdjustStackOffset(MachineFrameInfo &MFI, int FrameIdx, int64_t &Offset,
+                         bool StackGrowsDown, Align &MaxAlign);
+  void AssignProtectedObjSet(const StackObjSet &UnassignedObjs,
+                             SmallSet<int, 16> &ProtectedObjs,
+                             MachineFrameInfo &MFI, bool StackGrowsDown,
+                             int64_t &Offset, Align &MaxAlign);
+  void calculateFrameObjectOffsets(MachineFunction &Fn);
+  bool insertFrameReferenceRegisters(MachineFunction &Fn);
 
-  public:
-    static char ID; // Pass identification, replacement for typeid
+public:
+  static char ID; // Pass identification, replacement for typeid
 
-    explicit LocalStackSlotPass() : MachineFunctionPass(ID) {
-      initializeLocalStackSlotPassPass(*PassRegistry::getPassRegistry());
-    }
+  explicit LocalStackSlotPass() : MachineFunctionPass(ID) {
+    initializeLocalStackSlotPassPass(*PassRegistry::getPassRegistry());
+  }
 
-    bool runOnMachineFunction(MachineFunction &MF) override;
+  bool runOnMachineFunction(MachineFunction &MF) override;
 
-    void getAnalysisUsage(AnalysisUsage &AU) const override {
-      AU.setPreservesCFG();
-      MachineFunctionPass::getAnalysisUsage(AU);
-    }
-  };
+  void getAnalysisUsage(AnalysisUsage &AU) const override {
+    AU.setPreservesCFG();
+    MachineFunctionPass::getAnalysisUsage(AU);
+  }
+};
 
 } // end anonymous namespace
 
 char LocalStackSlotPass::ID = 0;
 
 char &llvm::LocalStackSlotAllocationID = LocalStackSlotPass::ID;
-INITIALIZE_PASS(LocalStackSlotPass, DEBUG_TYPE,
-                "Local Stack Slot Allocation", false, false)
+INITIALIZE_PASS(LocalStackSlotPass, DEBUG_TYPE, "Local Stack Slot Allocation",
+                false, false)
 
 bool LocalStackSlotPass::runOnMachineFunction(MachineFunction &MF) {
   MachineFrameInfo &MFI = MF.getFrameInfo();
@@ -177,7 +177,8 @@ void LocalStackSlotPass::AssignProtectedObjSet(
     MachineFrameInfo &MFI, bool StackGrowsDown, int64_t &Offset,
     Align &MaxAlign) {
   for (StackObjSet::const_iterator I = UnassignedObjs.begin(),
-        E = UnassignedObjs.end(); I != E; ++I) {
+                                   E = UnassignedObjs.end();
+       I != E; ++I) {
     int i = *I;
     AdjustStackOffset(MFI, i, Offset, StackGrowsDown, MaxAlign);
     ProtectedObjs.insert(i);
@@ -191,7 +192,7 @@ void LocalStackSlotPass::calculateFrameObjectOffsets(MachineFunction &Fn) {
   MachineFrameInfo &MFI = Fn.getFrameInfo();
   const TargetFrameLowering &TFI = *Fn.getSubtarget().getFrameLowering();
   bool StackGrowsDown =
-    TFI.getStackGrowthDirection() == TargetFrameLowering::StackGrowsDown;
+      TFI.getStackGrowthDirection() == TargetFrameLowering::StackGrowsDown;
   int64_t Offset = 0;
   Align MaxAlign;
 
@@ -267,13 +268,11 @@ void LocalStackSlotPass::calculateFrameObjectOffsets(MachineFunction &Fn) {
   MFI.setLocalFrameMaxAlign(MaxAlign);
 }
 
-static inline bool
-lookupCandidateBaseReg(unsigned BaseReg,
-                       int64_t BaseOffset,
-                       int64_t FrameSizeAdjust,
-                       int64_t LocalFrameOffset,
-                       const MachineInstr &MI,
-                       const TargetRegisterInfo *TRI) {
+static inline bool lookupCandidateBaseReg(unsigned BaseReg, int64_t BaseOffset,
+                                          int64_t FrameSizeAdjust,
+                                          int64_t LocalFrameOffset,
+                                          const MachineInstr &MI,
+                                          const TargetRegisterInfo *TRI) {
   // Check if the relative offset from the where the base register references
   // to the target address is in range for the instruction.
   int64_t Offset = FrameSizeAdjust + LocalFrameOffset - BaseOffset;
@@ -293,7 +292,7 @@ bool LocalStackSlotPass::insertFrameReferenceRegisters(MachineFunction &Fn) {
   const TargetRegisterInfo *TRI = Fn.getSubtarget().getRegisterInfo();
   const TargetFrameLowering &TFI = *Fn.getSubtarget().getFrameLowering();
   bool StackGrowsDown =
-    TFI.getStackGrowthDirection() == TargetFrameLowering::StackGrowsDown;
+      TFI.getStackGrowthDirection() == TargetFrameLowering::StackGrowsDown;
 
   // Collect all of the instructions in the block that reference
   // a frame index. Also store the frame index referenced to ease later
@@ -329,7 +328,8 @@ bool LocalStackSlotPass::insertFrameReferenceRegisters(MachineFunction &Fn) {
           int64_t LocalOffset = LocalOffsets[Idx];
           if (!TRI->needsFrameBaseReg(&MI, LocalOffset))
             break;
-          FrameReferenceInsns.push_back(FrameRef(&MI, LocalOffset, Idx, Order++));
+          FrameReferenceInsns.push_back(
+              FrameRef(&MI, LocalOffset, Idx, Order++));
           break;
         }
       }
@@ -346,7 +346,7 @@ bool LocalStackSlotPass::insertFrameReferenceRegisters(MachineFunction &Fn) {
   int64_t BaseOffset = 0;
 
   // Loop through the frame references and allocate for them as necessary.
-  for (int ref = 0, e = FrameReferenceInsns.size(); ref < e ; ++ref) {
+  for (int ref = 0, e = FrameReferenceInsns.size(); ref < e; ++ref) {
     FrameRef &FR = FrameReferenceInsns[ref];
     MachineInstr &MI = *FR.getMachineInstr();
     int64_t LocalOffset = FR.getLocalOffset();

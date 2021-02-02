@@ -5,4 +5,4 @@
 // CHECK: error: -offset, -length and -lines can only be used for single file.
 // CHECK-LINE: error: -offset, -length and -lines can only be used for single file.
 
-int i ;
+int i;

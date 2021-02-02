@@ -4,34 +4,33 @@
 
 // CHECK: define linkonce_odr{{.*}}_ZlsR11std_ostreamRK8StreamerI3FooE
 
-struct std_ostream
-{
+struct std_ostream {
   int dummy;
 };
 
 std_ostream cout;
 
 template <typename STRUCT_TYPE>
-struct Streamer
-{
-    friend std_ostream& operator << (std_ostream& o, const Streamer& f) // expected-error{{redefinition of 'operator<<'}}
-        {
-            Streamer s(f);
-            s(o);
-            return o;
-        }
+struct Streamer {
+  friend std_ostream &operator<<(std_ostream &o, const Streamer &f) // expected-error{{redefinition of 'operator<<'}}
+  {
+    Streamer s(f);
+    s(o);
+    return o;
+  }
 
-    Streamer(const STRUCT_TYPE& s) : s(s) {}
+  Streamer(const STRUCT_TYPE &s) : s(s) {}
 
-    const STRUCT_TYPE& s;
-    void operator () (std_ostream&) const;
+  const STRUCT_TYPE &s;
+  void operator()(std_ostream &) const;
 };
 
-typedef struct Foo {} Foo;
+typedef struct Foo {
+} Foo;
 
-inline std_ostream& operator << (std_ostream&, const Streamer<Foo>&);
+inline std_ostream &operator<<(std_ostream &, const Streamer<Foo> &);
 #ifdef REDEFINE
-std_ostream& operator << (std_ostream& o, const Streamer<Foo>&) // expected-note{{is here}}
+std_ostream &operator<<(std_ostream &o, const Streamer<Foo> &) // expected-note{{is here}}
 {
   // Sema should flag this as a redefinition
   return o;
@@ -39,12 +38,11 @@ std_ostream& operator << (std_ostream& o, const Streamer<Foo>&) // expected-note
 #endif
 
 template <>
-void Streamer<Foo>::operator () (std_ostream& o) const // expected-note{{requested here}}
+void Streamer<Foo>::operator()(std_ostream &o) const // expected-note{{requested here}}
 {
 }
 
-int main(void)
-{
-    Foo foo;
-    cout << foo;
+int main(void) {
+  Foo foo;
+  cout << foo;
 }

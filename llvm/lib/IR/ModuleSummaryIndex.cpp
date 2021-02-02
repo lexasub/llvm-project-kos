@@ -357,7 +357,7 @@ struct Edge {
   GlobalValue::GUID Src;
   GlobalValue::GUID Dst;
 };
-}
+} // namespace
 
 void Attributes::add(const Twine &Name, const Twine &Value,
                      const Twine &Comment) {
@@ -423,15 +423,19 @@ static std::string linkageToString(GlobalValue::LinkageTypes LT) {
 
 static std::string fflagsToString(FunctionSummary::FFlags F) {
   auto FlagValue = [](unsigned V) { return V ? '1' : '0'; };
-  char FlagRep[] = {FlagValue(F.ReadNone),     FlagValue(F.ReadOnly),
-                    FlagValue(F.NoRecurse),    FlagValue(F.ReturnDoesNotAlias),
-                    FlagValue(F.NoInline), FlagValue(F.AlwaysInline), 0};
+  char FlagRep[] = {FlagValue(F.ReadNone),
+                    FlagValue(F.ReadOnly),
+                    FlagValue(F.NoRecurse),
+                    FlagValue(F.ReturnDoesNotAlias),
+                    FlagValue(F.NoInline),
+                    FlagValue(F.AlwaysInline),
+                    0};
 
   return FlagRep;
 }
 
 // Get string representation of function instruction count and flags.
-static std::string getSummaryAttributes(GlobalValueSummary* GVS) {
+static std::string getSummaryAttributes(GlobalValueSummary *GVS) {
   auto *FS = dyn_cast_or_null<FunctionSummary>(GVS);
   if (!FS)
     return "";
@@ -550,7 +554,8 @@ void ModuleSummaryIndex::exportToDot(
     OS << "    node [style=filled,fillcolor=lightblue];\n";
 
     auto &GVSMap = ModIt.second;
-    auto Draw = [&](GlobalValue::GUID IdFrom, GlobalValue::GUID IdTo, int Hotness) {
+    auto Draw = [&](GlobalValue::GUID IdFrom, GlobalValue::GUID IdTo,
+                    int Hotness) {
       if (!GVSMap.count(IdTo)) {
         CrossModuleEdges.push_back({ModId, Hotness, IdFrom, IdTo});
         return;

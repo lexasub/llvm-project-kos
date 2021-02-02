@@ -2,16 +2,6 @@
 
 /* Whitespace below is significant */
 
-
-
-
-
-
-
-
-
-
-
 @interface TestMethodPool1
 + alloc;
 - (double)instMethod:(int)foo;
@@ -22,7 +12,9 @@
 @end
 
 @implementation TestMethodPool1
-+ alloc { return 0; }
++ alloc {
+  return 0;
+}
 
 - (double)instMethod:(int)foo {
   return foo;

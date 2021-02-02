@@ -81,10 +81,9 @@ bool GenericToNVVM::runOnModule(Module &M) {
         !llvm::isTexture(*GV) && !llvm::isSurface(*GV) &&
         !llvm::isSampler(*GV) && !GV->getName().startswith("llvm.")) {
       GlobalVariable *NewGV = new GlobalVariable(
-          M, GV->getValueType(), GV->isConstant(),
-          GV->getLinkage(),
-          GV->hasInitializer() ? GV->getInitializer() : nullptr,
-          "", GV, GV->getThreadLocalMode(), llvm::ADDRESS_SPACE_GLOBAL);
+          M, GV->getValueType(), GV->isConstant(), GV->getLinkage(),
+          GV->hasInitializer() ? GV->getInitializer() : nullptr, "", GV,
+          GV->getThreadLocalMode(), llvm::ADDRESS_SPACE_GLOBAL);
       NewGV->copyAttributesFrom(GV);
       GVMap[GV] = NewGV;
     }

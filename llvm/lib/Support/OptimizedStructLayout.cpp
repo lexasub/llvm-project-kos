@@ -1,4 +1,5 @@
-//===--- OptimizedStructLayout.cpp - Optimal data layout algorithm ----------------===//
+//===--- OptimizedStructLayout.cpp - Optimal data layout algorithm
+//----------------===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -22,15 +23,13 @@ static void checkValidLayout(ArrayRef<Field> Fields, uint64_t Size,
   uint64_t LastEnd = 0;
   Align ComputedMaxAlign;
   for (auto &Field : Fields) {
-    assert(Field.hasFixedOffset() &&
-           "didn't assign a fixed offset to field");
+    assert(Field.hasFixedOffset() && "didn't assign a fixed offset to field");
     assert(isAligned(Field.Alignment, Field.Offset) &&
            "didn't assign a correctly-aligned offset to field");
     assert(Field.Offset >= LastEnd &&
            "didn't assign offsets in ascending order");
     LastEnd = Field.getEndOffset();
-    assert(Field.Alignment <= MaxAlign &&
-           "didn't compute MaxAlign correctly");
+    assert(Field.Alignment <= MaxAlign && "didn't compute MaxAlign correctly");
     ComputedMaxAlign = std::max(Field.Alignment, MaxAlign);
   }
   assert(LastEnd == Size && "didn't compute LastEnd correctly");
@@ -53,8 +52,7 @@ llvm::performOptimizedStructLayout(MutableArrayRef<Field> Fields) {
         assert(LastEnd <= Field.Offset &&
                "fixed-offset fields overlap or are not in order");
         LastEnd = Field.getEndOffset();
-        assert(LastEnd > Field.Offset &&
-               "overflow in fixed-offset end offset");
+        assert(LastEnd > Field.Offset && "overflow in fixed-offset end offset");
       } else {
         InFixedPrefix = false;
       }
@@ -92,7 +90,7 @@ llvm::performOptimizedStructLayout(MutableArrayRef<Field> Fields) {
   {
     uintptr_t UniqueNumber = 0;
     for (auto I = FirstFlexible; I != E; ++I) {
-      I->Scratch = reinterpret_cast<void*>(UniqueNumber++);
+      I->Scratch = reinterpret_cast<void *>(UniqueNumber++);
       MaxAlign = std::max(MaxAlign, I->Alignment);
     }
   }
@@ -104,22 +102,22 @@ llvm::performOptimizedStructLayout(MutableArrayRef<Field> Fields) {
   // doesn't hurt here.
   array_pod_sort(FirstFlexible, E,
                  [](const Field *lhs, const Field *rhs) -> int {
-    // Decreasing alignment.
-    if (lhs->Alignment != rhs->Alignment)
-      return (lhs->Alignment < rhs->Alignment ? 1 : -1);
+                   // Decreasing alignment.
+                   if (lhs->Alignment != rhs->Alignment)
+                     return (lhs->Alignment < rhs->Alignment ? 1 : -1);
 
-    // Decreasing size.
-    if (lhs->Size != rhs->Size)
-      return (lhs->Size < rhs->Size ? 1 : -1);
+                   // Decreasing size.
+                   if (lhs->Size != rhs->Size)
+                     return (lhs->Size < rhs->Size ? 1 : -1);
 
-    // Original order.
-    auto lhsNumber = reinterpret_cast<uintptr_t>(lhs->Scratch);
-    auto rhsNumber = reinterpret_cast<uintptr_t>(rhs->Scratch);
-    if (lhsNumber != rhsNumber)
-      return (lhsNumber < rhsNumber ? -1 : 1);
+                   // Original order.
+                   auto lhsNumber = reinterpret_cast<uintptr_t>(lhs->Scratch);
+                   auto rhsNumber = reinterpret_cast<uintptr_t>(rhs->Scratch);
+                   if (lhsNumber != rhsNumber)
+                     return (lhsNumber < rhsNumber ? -1 : 1);
 
-    return 0;
-  });
+                   return 0;
+                 });
 
   // Do a quick check for whether that sort alone has given us a perfect
   // layout with no interior padding.  This is very common: if the
@@ -228,7 +226,6 @@ llvm::performOptimizedStructLayout(MutableArrayRef<Field> Fields) {
   // finding the best-sized match, but it would require allocating memory
   // and copying data, so it's unlikely to be worthwhile.
 
-
   // Start by organizing the flexible-offset fields into bins according to
   // their alignment.  We expect a small enough number of bins that we
   // don't care about the asymptotic costs of walking this.
@@ -251,7 +248,7 @@ llvm::performOptimizedStructLayout(MutableArrayRef<Field> Fields) {
     }
   };
   SmallVector<AlignmentQueue, 8> FlexibleFieldsByAlignment;
-  for (auto I = FirstFlexible; I != E; ) {
+  for (auto I = FirstFlexible; I != E;) {
     auto Head = I;
     auto Alignment = I->Alignment;
 
@@ -269,7 +266,7 @@ llvm::performOptimizedStructLayout(MutableArrayRef<Field> Fields) {
 
 #ifndef NDEBUG
   // Verify that we set the queues up correctly.
-  auto checkQueues = [&]{
+  auto checkQueues = [&] {
     bool FirstQueue = true;
     Align LastQueueAlignment;
     for (auto &Queue : FlexibleFieldsByAlignment) {
@@ -305,7 +302,7 @@ llvm::performOptimizedStructLayout(MutableArrayRef<Field> Fields) {
       if (!Cur->Scratch)
         Queue->MinSize = Last->Size;
 
-    // Otherwise, replace the head.
+      // Otherwise, replace the head.
     } else {
       if (auto NewHead = Queue->getNext(Cur))
         Queue->Head = NewHead;
@@ -345,22 +342,21 @@ llvm::performOptimizedStructLayout(MutableArrayRef<Field> Fields) {
   // Helper function to try to find a field in the given queue that'll
   // fit starting at StartOffset but before EndOffset (if present).
   // Note that this never fails if EndOffset is not provided.
-  auto tryAddFillerFromQueue = [&](AlignmentQueue *Queue,
-                                   uint64_t StartOffset,
+  auto tryAddFillerFromQueue = [&](AlignmentQueue *Queue, uint64_t StartOffset,
                                    Optional<uint64_t> EndOffset) -> bool {
     assert(Queue->Head);
     assert(StartOffset == alignTo(LastEnd, Queue->Alignment));
 
     // Figure out the maximum size that a field can be, and ignore this
     // queue if there's nothing in it that small.
-    auto MaxViableSize =
-      (EndOffset ? *EndOffset - StartOffset : ~(uint64_t)0);
-    if (Queue->MinSize > MaxViableSize) return false;
+    auto MaxViableSize = (EndOffset ? *EndOffset - StartOffset : ~(uint64_t)0);
+    if (Queue->MinSize > MaxViableSize)
+      return false;
 
     // Find the matching field.  Note that this should always find
     // something because of the MinSize check above.
     for (Field *Cur = Queue->Head, *Last = nullptr; true;
-           Last = Cur, Cur = Queue->getNext(Cur)) {
+         Last = Cur, Cur = Queue->getNext(Cur)) {
       assert(Cur && "didn't find a match in queue despite its MinSize");
       if (Cur->Size <= MaxViableSize)
         return addToLayout(Queue, Last, Cur, StartOffset);
@@ -432,7 +428,7 @@ llvm::performOptimizedStructLayout(MutableArrayRef<Field> Fields) {
   while (!FlexibleFieldsByAlignment.empty()) {
     bool Success = tryAddBestField(None);
     assert(Success && "didn't find a field with no fixed limit?");
-    (void) Success;
+    (void)Success;
   }
 
   // Copy the layout back into place.

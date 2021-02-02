@@ -31,4 +31,3 @@ bool test2(vector unsigned long v1, vector unsigned long v2,
   res |= v9 == v10;
   return res;
 }
-

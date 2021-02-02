@@ -23,8 +23,8 @@
 #ifndef HEADER
 #define HEADER
 
-template<typename tx, typename ty>
-struct TT{
+template <typename tx, typename ty>
+struct TT {
   tx X;
   ty Y;
   TT<tx, ty> operator*(const TT<tx, ty> &) { return *this; }
@@ -41,7 +41,8 @@ int foo(int n) {
   double cn[5][n];
   TT<long long, char> d;
 
-  #pragma omp target reduction(*:a)
+#pragma omp target reduction(* \
+                             : a)
   {
   }
 
@@ -51,7 +52,8 @@ int foo(int n) {
   // TCHECK: load i32*, i32** [[A]],
   // TCHECK: ret void
 
-#pragma omp target reduction(+:a)
+#pragma omp target reduction(+ \
+                             : a)
   {
     a = 1;
   }
@@ -63,7 +65,8 @@ int foo(int n) {
   // TCHECK: store i{{[0-9]+}} 1, i{{[0-9]+}}* [[REF]],
   // TCHECK: ret void
 
-  #pragma omp target reduction(-:a, aa)
+#pragma omp target reduction(- \
+                             : a, aa)
   {
     a = 1;
     aa = 1;
@@ -83,14 +86,14 @@ int foo(int n) {
   return a;
 }
 
-
-template<typename tx>
+template <typename tx>
 tx ftemplate(int n) {
   tx a = 0;
   short aa = 0;
   tx b[10];
 
-#pragma omp target reduction(+:a,aa,b)
+#pragma omp target reduction(+ \
+                             : a, aa, b)
   {
     a = 1;
     aa = 1;
@@ -100,14 +103,14 @@ tx ftemplate(int n) {
   return a;
 }
 
-static
-int fstatic(int n) {
+static int fstatic(int n) {
   int a = 0;
   short aa = 0;
   char aaa = 0;
   int b[10];
 
-#pragma omp target reduction(-:a,aa,aaa,b)
+#pragma omp target reduction(- \
+                             : a, aa, aaa, b)
   {
     a = 1;
     aa = 1;
@@ -141,11 +144,12 @@ int fstatic(int n) {
 struct S1 {
   double a;
 
-  int r1(int n){
-    int b = n+1;
+  int r1(int n) {
+    int b = n + 1;
     short int c[2][n];
 
-#pragma omp target reduction(max:b,c)
+#pragma omp target reduction(max \
+                             : b, c)
     {
       this->a = (double)b + 1.5;
       c[1][1] = ++a;
@@ -193,8 +197,7 @@ struct S1 {
   // TCHECK: ret void
 };
 
-
-int bar(int n){
+int bar(int n) {
   int a = 0;
   a += foo(n);
   S1 S;

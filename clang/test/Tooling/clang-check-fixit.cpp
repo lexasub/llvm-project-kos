@@ -17,5 +17,5 @@
 // RUN: echo "[{ \"directory\": \"%/t\", \"command\": \"/path/to/clang -c relative-json.cpp\", \"file\": \"relative-json.cpp\" }]" > %t/compile_commands.json
 // RUN: clang-check relative-json.cpp -fixit 2>&1 | FileCheck %s
 typedef int T
-// CHECK: .cpp:[[@LINE-1]]:14: error: expected ';' after top level declarator
-// CHECK: .cpp:[[@LINE-2]]:14: note: FIX-IT applied suggested code changes
+    // CHECK: .cpp:[[@LINE-1]]:14: error: expected ';' after top level declarator
+    // CHECK: .cpp:[[@LINE-2]]:14: note: FIX-IT applied suggested code changes

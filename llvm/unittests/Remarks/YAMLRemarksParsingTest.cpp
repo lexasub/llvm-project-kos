@@ -63,10 +63,7 @@ bool parseExpectError(const char (&Buf)[N], const char *Error) {
   return StringRef(Stream.str()).contains(Error);
 }
 
-enum class CmpType {
-  Equal,
-  Contains
-};
+enum class CmpType { Equal, Contains };
 
 void parseExpectErrorMeta(StringRef Buf, const char *Error, CmpType Cmp,
                           Optional<StringRef> ExternalFilePrependPath = None) {
@@ -92,7 +89,8 @@ void parseExpectErrorMeta(StringRef Buf, const char *Error, CmpType Cmp,
 }
 
 TEST(YAMLRemarks, ParsingEmpty) {
-  EXPECT_TRUE(parseExpectError("\n\n", "document root is not of mapping type."));
+  EXPECT_TRUE(
+      parseExpectError("\n\n", "document root is not of mapping type."));
 }
 
 TEST(YAMLRemarks, ParsingNotYAML) {
@@ -176,203 +174,212 @@ TEST(YAMLRemarks, ParsingTypes) {
 TEST(YAMLRemarks, ParsingMissingFields) {
   // No type.
   EXPECT_TRUE(parseExpectError("\n"
-                   "---\n"
-                   "Pass: inline\n"
-                   "Name: NoDefinition\n"
-                   "Function: foo\n"
-                   "",
-                   "expected a remark tag."));
+                               "---\n"
+                               "Pass: inline\n"
+                               "Name: NoDefinition\n"
+                               "Function: foo\n"
+                               "",
+                               "expected a remark tag."));
   // No pass.
   EXPECT_TRUE(parseExpectError("\n"
-                   "--- !Missed\n"
-                   "Name: NoDefinition\n"
-                   "Function: foo\n"
-                   "",
-                   "Type, Pass, Name or Function missing."));
+                               "--- !Missed\n"
+                               "Name: NoDefinition\n"
+                               "Function: foo\n"
+                               "",
+                               "Type, Pass, Name or Function missing."));
   // No name.
   EXPECT_TRUE(parseExpectError("\n"
-                   "--- !Missed\n"
-                   "Pass: inline\n"
-                   "Function: foo\n"
-                   "",
-                   "Type, Pass, Name or Function missing."));
+                               "--- !Missed\n"
+                               "Pass: inline\n"
+                               "Function: foo\n"
+                               "",
+                               "Type, Pass, Name or Function missing."));
   // No function.
   EXPECT_TRUE(parseExpectError("\n"
-                   "--- !Missed\n"
-                   "Pass: inline\n"
-                   "Name: NoDefinition\n"
-                   "",
-                   "Type, Pass, Name or Function missing."));
+                               "--- !Missed\n"
+                               "Pass: inline\n"
+                               "Name: NoDefinition\n"
+                               "",
+                               "Type, Pass, Name or Function missing."));
   // Debug loc but no file.
   EXPECT_TRUE(parseExpectError("\n"
-                   "--- !Missed\n"
-                   "Pass: inline\n"
-                   "Name: NoDefinition\n"
-                   "Function: foo\n"
-                   "DebugLoc: { Line: 3, Column: 12 }\n"
-                   "",
-                   "DebugLoc node incomplete."));
+                               "--- !Missed\n"
+                               "Pass: inline\n"
+                               "Name: NoDefinition\n"
+                               "Function: foo\n"
+                               "DebugLoc: { Line: 3, Column: 12 }\n"
+                               "",
+                               "DebugLoc node incomplete."));
   // Debug loc but no line.
   EXPECT_TRUE(parseExpectError("\n"
-                   "--- !Missed\n"
-                   "Pass: inline\n"
-                   "Name: NoDefinition\n"
-                   "Function: foo\n"
-                   "DebugLoc: { File: file.c, Column: 12 }\n"
-                   "",
-                   "DebugLoc node incomplete."));
+                               "--- !Missed\n"
+                               "Pass: inline\n"
+                               "Name: NoDefinition\n"
+                               "Function: foo\n"
+                               "DebugLoc: { File: file.c, Column: 12 }\n"
+                               "",
+                               "DebugLoc node incomplete."));
   // Debug loc but no column.
   EXPECT_TRUE(parseExpectError("\n"
-                   "--- !Missed\n"
-                   "Pass: inline\n"
-                   "Name: NoDefinition\n"
-                   "Function: foo\n"
-                   "DebugLoc: { File: file.c, Line: 3 }\n"
-                   "",
-                   "DebugLoc node incomplete."));
+                               "--- !Missed\n"
+                               "Pass: inline\n"
+                               "Name: NoDefinition\n"
+                               "Function: foo\n"
+                               "DebugLoc: { File: file.c, Line: 3 }\n"
+                               "",
+                               "DebugLoc node incomplete."));
 }
 
 TEST(YAMLRemarks, ParsingWrongTypes) {
   // Wrong debug loc type.
   EXPECT_TRUE(parseExpectError("\n"
-                   "--- !Missed\n"
-                   "Pass: inline\n"
-                   "Name: NoDefinition\n"
-                   "Function: foo\n"
-                   "DebugLoc: foo\n"
-                   "",
-                   "expected a value of mapping type."));
+                               "--- !Missed\n"
+                               "Pass: inline\n"
+                               "Name: NoDefinition\n"
+                               "Function: foo\n"
+                               "DebugLoc: foo\n"
+                               "",
+                               "expected a value of mapping type."));
   // Wrong line type.
-  EXPECT_TRUE(parseExpectError("\n"
-                   "--- !Missed\n"
-                   "Pass: inline\n"
-                   "Name: NoDefinition\n"
-                   "Function: foo\n"
-                   "DebugLoc: { File: file.c, Line: b, Column: 12 }\n"
-                   "",
-                   "expected a value of integer type."));
+  EXPECT_TRUE(
+      parseExpectError("\n"
+                       "--- !Missed\n"
+                       "Pass: inline\n"
+                       "Name: NoDefinition\n"
+                       "Function: foo\n"
+                       "DebugLoc: { File: file.c, Line: b, Column: 12 }\n"
+                       "",
+                       "expected a value of integer type."));
   // Wrong column type.
-  EXPECT_TRUE(parseExpectError("\n"
-                   "--- !Missed\n"
-                   "Pass: inline\n"
-                   "Name: NoDefinition\n"
-                   "Function: foo\n"
-                   "DebugLoc: { File: file.c, Line: 3, Column: c }\n"
-                   "",
-                   "expected a value of integer type."));
+  EXPECT_TRUE(
+      parseExpectError("\n"
+                       "--- !Missed\n"
+                       "Pass: inline\n"
+                       "Name: NoDefinition\n"
+                       "Function: foo\n"
+                       "DebugLoc: { File: file.c, Line: 3, Column: c }\n"
+                       "",
+                       "expected a value of integer type."));
   // Wrong args type.
   EXPECT_TRUE(parseExpectError("\n"
-                   "--- !Missed\n"
-                   "Pass: inline\n"
-                   "Name: NoDefinition\n"
-                   "Function: foo\n"
-                   "Args: foo\n"
-                   "",
-                   "wrong value type for key."));
+                               "--- !Missed\n"
+                               "Pass: inline\n"
+                               "Name: NoDefinition\n"
+                               "Function: foo\n"
+                               "Args: foo\n"
+                               "",
+                               "wrong value type for key."));
   // Wrong key type.
   EXPECT_TRUE(parseExpectError("\n"
-                   "--- !Missed\n"
-                   "{ A: a }: inline\n"
-                   "Name: NoDefinition\n"
-                   "Function: foo\n"
-                   "",
-                   "key is not a string."));
+                               "--- !Missed\n"
+                               "{ A: a }: inline\n"
+                               "Name: NoDefinition\n"
+                               "Function: foo\n"
+                               "",
+                               "key is not a string."));
   // Debug loc with unknown entry.
-  EXPECT_TRUE(parseExpectError("\n"
-                   "--- !Missed\n"
-                   "Pass: inline\n"
-                   "Name: NoDefinition\n"
-                   "Function: foo\n"
-                   "DebugLoc: { File: file.c, Column: 12, Unknown: 12 }\n"
-                   "",
-                   "unknown entry in DebugLoc map."));
+  EXPECT_TRUE(
+      parseExpectError("\n"
+                       "--- !Missed\n"
+                       "Pass: inline\n"
+                       "Name: NoDefinition\n"
+                       "Function: foo\n"
+                       "DebugLoc: { File: file.c, Column: 12, Unknown: 12 }\n"
+                       "",
+                       "unknown entry in DebugLoc map."));
   // Unknown entry.
   EXPECT_TRUE(parseExpectError("\n"
-                   "--- !Missed\n"
-                   "Unknown: inline\n"
-                   "",
-                   "unknown key."));
+                               "--- !Missed\n"
+                               "Unknown: inline\n"
+                               "",
+                               "unknown key."));
   // Not a scalar.
   EXPECT_TRUE(parseExpectError("\n"
-                   "--- !Missed\n"
-                   "Pass: { File: a, Line: 1, Column: 2 }\n"
-                   "Name: NoDefinition\n"
-                   "Function: foo\n"
-                   "",
-                   "expected a value of scalar type."));
+                               "--- !Missed\n"
+                               "Pass: { File: a, Line: 1, Column: 2 }\n"
+                               "Name: NoDefinition\n"
+                               "Function: foo\n"
+                               "",
+                               "expected a value of scalar type."));
   // Not a string file in debug loc.
-  EXPECT_TRUE(parseExpectError("\n"
-                   "--- !Missed\n"
-                   "Pass: inline\n"
-                   "Name: NoDefinition\n"
-                   "Function: foo\n"
-                   "DebugLoc: { File: { a: b }, Column: 12, Line: 12 }\n"
-                   "",
-                   "expected a value of scalar type."));
+  EXPECT_TRUE(
+      parseExpectError("\n"
+                       "--- !Missed\n"
+                       "Pass: inline\n"
+                       "Name: NoDefinition\n"
+                       "Function: foo\n"
+                       "DebugLoc: { File: { a: b }, Column: 12, Line: 12 }\n"
+                       "",
+                       "expected a value of scalar type."));
   // Not a integer column in debug loc.
-  EXPECT_TRUE(parseExpectError("\n"
-                   "--- !Missed\n"
-                   "Pass: inline\n"
-                   "Name: NoDefinition\n"
-                   "Function: foo\n"
-                   "DebugLoc: { File: file.c, Column: { a: b }, Line: 12 }\n"
-                   "",
-                   "expected a value of scalar type."));
+  EXPECT_TRUE(parseExpectError(
+      "\n"
+      "--- !Missed\n"
+      "Pass: inline\n"
+      "Name: NoDefinition\n"
+      "Function: foo\n"
+      "DebugLoc: { File: file.c, Column: { a: b }, Line: 12 }\n"
+      "",
+      "expected a value of scalar type."));
   // Not a integer line in debug loc.
-  EXPECT_TRUE(parseExpectError("\n"
-                   "--- !Missed\n"
-                   "Pass: inline\n"
-                   "Name: NoDefinition\n"
-                   "Function: foo\n"
-                   "DebugLoc: { File: file.c, Column: 12, Line: { a: b } }\n"
-                   "",
-                   "expected a value of scalar type."));
+  EXPECT_TRUE(parseExpectError(
+      "\n"
+      "--- !Missed\n"
+      "Pass: inline\n"
+      "Name: NoDefinition\n"
+      "Function: foo\n"
+      "DebugLoc: { File: file.c, Column: 12, Line: { a: b } }\n"
+      "",
+      "expected a value of scalar type."));
   // Not a mapping type value for args.
-  EXPECT_TRUE(parseExpectError("\n"
-                   "--- !Missed\n"
-                   "Pass: inline\n"
-                   "Name: NoDefinition\n"
-                   "Function: foo\n"
-                   "DebugLoc: { File: file.c, Column: 12, Line: { a: b } }\n"
-                   "",
-                   "expected a value of scalar type."));
+  EXPECT_TRUE(parseExpectError(
+      "\n"
+      "--- !Missed\n"
+      "Pass: inline\n"
+      "Name: NoDefinition\n"
+      "Function: foo\n"
+      "DebugLoc: { File: file.c, Column: 12, Line: { a: b } }\n"
+      "",
+      "expected a value of scalar type."));
 }
 
 TEST(YAMLRemarks, ParsingWrongArgs) {
   // Multiple debug locs per arg.
-  EXPECT_TRUE(parseExpectError("\n"
-                   "--- !Missed\n"
-                   "Pass: inline\n"
-                   "Name: NoDefinition\n"
-                   "Function: foo\n"
-                   "Args:\n"
-                   "  - Str: string\n"
-                   "    DebugLoc: { File: a, Line: 1, Column: 2 }\n"
-                   "    DebugLoc: { File: a, Line: 1, Column: 2 }\n"
-                   "",
-                   "only one DebugLoc entry is allowed per argument."));
+  EXPECT_TRUE(
+      parseExpectError("\n"
+                       "--- !Missed\n"
+                       "Pass: inline\n"
+                       "Name: NoDefinition\n"
+                       "Function: foo\n"
+                       "Args:\n"
+                       "  - Str: string\n"
+                       "    DebugLoc: { File: a, Line: 1, Column: 2 }\n"
+                       "    DebugLoc: { File: a, Line: 1, Column: 2 }\n"
+                       "",
+                       "only one DebugLoc entry is allowed per argument."));
   // Multiple strings per arg.
-  EXPECT_TRUE(parseExpectError("\n"
-                   "--- !Missed\n"
-                   "Pass: inline\n"
-                   "Name: NoDefinition\n"
-                   "Function: foo\n"
-                   "Args:\n"
-                   "  - Str: string\n"
-                   "    Str2: string\n"
-                   "    DebugLoc: { File: a, Line: 1, Column: 2 }\n"
-                   "",
-                   "only one string entry is allowed per argument."));
+  EXPECT_TRUE(
+      parseExpectError("\n"
+                       "--- !Missed\n"
+                       "Pass: inline\n"
+                       "Name: NoDefinition\n"
+                       "Function: foo\n"
+                       "Args:\n"
+                       "  - Str: string\n"
+                       "    Str2: string\n"
+                       "    DebugLoc: { File: a, Line: 1, Column: 2 }\n"
+                       "",
+                       "only one string entry is allowed per argument."));
   // No arg value.
   EXPECT_TRUE(parseExpectError("\n"
-                   "--- !Missed\n"
-                   "Pass: inline\n"
-                   "Name: NoDefinition\n"
-                   "Function: foo\n"
-                   "Args:\n"
-                   "  - DebugLoc: { File: a, Line: 1, Column: 2 }\n"
-                   "",
-                   "argument key is missing."));
+                               "--- !Missed\n"
+                               "Pass: inline\n"
+                               "Name: NoDefinition\n"
+                               "Function: foo\n"
+                               "Args:\n"
+                               "  - DebugLoc: { File: a, Line: 1, Column: 2 }\n"
+                               "",
+                               "argument key is missing."));
 }
 
 static inline StringRef checkStr(StringRef Str, unsigned ExpectedLen) {

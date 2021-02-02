@@ -8,7 +8,6 @@
 
 #include "lldb/DataFormatters/DataVisualization.h"
 
-
 using namespace lldb;
 using namespace lldb_private;
 

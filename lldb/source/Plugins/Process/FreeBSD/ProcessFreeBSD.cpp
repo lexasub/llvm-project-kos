@@ -7,13 +7,13 @@
 //===----------------------------------------------------------------------===//
 
 #include <errno.h>
+#include <machine/elf.h>
 #include <pthread.h>
 #include <pthread_np.h>
 #include <stdlib.h>
 #include <sys/sysctl.h>
 #include <sys/types.h>
 #include <sys/user.h>
-#include <machine/elf.h>
 
 #include <mutex>
 #include <unordered_map>
@@ -63,15 +63,14 @@ UnixSignalsSP &GetFreeBSDSignals() {
   static UnixSignalsSP s_freebsd_signals_sp(new FreeBSDSignals());
   return s_freebsd_signals_sp;
 }
-}
+} // namespace
 
 // Static functions.
 
-lldb::ProcessSP
-ProcessFreeBSD::CreateInstance(lldb::TargetSP target_sp,
-                               lldb::ListenerSP listener_sp,
-                               const FileSpec *crash_file_path,
-                               bool can_connect) {
+lldb::ProcessSP ProcessFreeBSD::CreateInstance(lldb::TargetSP target_sp,
+                                               lldb::ListenerSP listener_sp,
+                                               const FileSpec *crash_file_path,
+                                               bool can_connect) {
   lldb::ProcessSP process_sp;
   if (crash_file_path == NULL && !can_connect)
     process_sp.reset(
@@ -367,7 +366,7 @@ Status ProcessFreeBSD::DoLaunch(Module *module,
     FileSystem::Instance().Resolve(working_dir);
     if (!FileSystem::Instance().IsDirectory(working_dir.GetPath())) {
       error.SetErrorStringWithFormat("No such file or directory: %s",
-                                   working_dir.GetCString());
+                                     working_dir.GetCString());
       return error;
     }
   }

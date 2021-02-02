@@ -4,8 +4,8 @@
 // CHECK: !DICompositeType(tag: DW_TAG_structure_type, scope: [[SCOPE]]
 // CHECK-SAME:                              DIFlagExportSymbols | DIFlagTypePassByValue
 struct A {
- // Anonymous class exports its symbols into A
- struct {
-     int y;
- };
+  // Anonymous class exports its symbols into A
+  struct {
+    int y;
+  };
 } a;

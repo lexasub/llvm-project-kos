@@ -91,7 +91,7 @@ static void clearAssumptionsOfUsers(Instruction *I, DemandedBits &DB) {
 }
 
 static bool bitTrackingDCE(Function &F, DemandedBits &DB) {
-  SmallVector<Instruction*, 128> Worklist;
+  SmallVector<Instruction *, 128> Worklist;
   bool Changed = false;
   for (Instruction &I : instructions(F)) {
     // If the instruction has side effects and no non-dbg uses,
@@ -102,10 +102,9 @@ static bool bitTrackingDCE(Function &F, DemandedBits &DB) {
 
     // Remove instructions that are dead, either because they were not reached
     // during analysis or have no demanded bits.
-    if (DB.isInstructionDead(&I) ||
-        (I.getType()->isIntOrIntVectorTy() &&
-         DB.getDemandedBits(&I).isNullValue() &&
-         wouldInstructionBeTriviallyDead(&I))) {
+    if (DB.isInstructionDead(&I) || (I.getType()->isIntOrIntVectorTy() &&
+                                     DB.getDemandedBits(&I).isNullValue() &&
+                                     wouldInstructionBeTriviallyDead(&I))) {
       salvageDebugInfo(I);
       Worklist.push_back(&I);
       I.dropAllReferences();
@@ -194,7 +193,7 @@ struct BDCELegacyPass : public FunctionPass {
     AU.addPreserved<GlobalsAAWrapperPass>();
   }
 };
-}
+} // namespace
 
 char BDCELegacyPass::ID = 0;
 INITIALIZE_PASS_BEGIN(BDCELegacyPass, "bdce",

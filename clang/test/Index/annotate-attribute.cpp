@@ -4,12 +4,12 @@ class Test {
 public:
   __attribute__((annotate("spiffy_method"))) void aMethod();
 
-public __attribute__((annotate("works"))):
-  void anotherMethod(); // annotation attribute should be propagated.
+public
+  __attribute__((annotate("works"))) : void anotherMethod(); // annotation attribute should be propagated.
 
-private __attribute__((annotate("investigations"))):
-  //propagated annotation should have changed from "works" to "investigations"
-  void inlineMethod() {}
+private
+  __attribute__((annotate("investigations"))) : //propagated annotation should have changed from "works" to "investigations"
+                                                void inlineMethod() {}
 
 protected:
   // attribute propagation should have stopped here

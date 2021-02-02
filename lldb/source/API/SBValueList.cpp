@@ -102,8 +102,8 @@ void SBValueList::Clear() {
 }
 
 const SBValueList &SBValueList::operator=(const SBValueList &rhs) {
-  LLDB_RECORD_METHOD(const lldb::SBValueList &,
-                     SBValueList, operator=,(const lldb::SBValueList &), rhs);
+  LLDB_RECORD_METHOD(const lldb::SBValueList &, SBValueList, operator=,
+                     (const lldb::SBValueList &), rhs);
 
   if (this != &rhs) {
     if (rhs.IsValid())
@@ -152,7 +152,6 @@ void SBValueList::Append(const lldb::SBValueList &value_list) {
 SBValue SBValueList::GetValueAtIndex(uint32_t idx) const {
   LLDB_RECORD_METHOD_CONST(lldb::SBValue, SBValueList, GetValueAtIndex,
                            (uint32_t), idx);
-
 
   SBValue sb_value;
   if (m_opaque_up)
@@ -206,18 +205,16 @@ ValueListImpl &SBValueList::ref() {
 namespace lldb_private {
 namespace repro {
 
-template <>
-void RegisterMethods<SBValueList>(Registry &R) {
+template <> void RegisterMethods<SBValueList>(Registry &R) {
   LLDB_REGISTER_CONSTRUCTOR(SBValueList, ());
   LLDB_REGISTER_CONSTRUCTOR(SBValueList, (const lldb::SBValueList &));
   LLDB_REGISTER_METHOD_CONST(bool, SBValueList, IsValid, ());
   LLDB_REGISTER_METHOD_CONST(bool, SBValueList, operator bool, ());
   LLDB_REGISTER_METHOD(void, SBValueList, Clear, ());
-  LLDB_REGISTER_METHOD(const lldb::SBValueList &,
-                       SBValueList, operator=,(const lldb::SBValueList &));
-  LLDB_REGISTER_METHOD(void, SBValueList, Append, (const lldb::SBValue &));
-  LLDB_REGISTER_METHOD(void, SBValueList, Append,
+  LLDB_REGISTER_METHOD(const lldb::SBValueList &, SBValueList, operator=,
                        (const lldb::SBValueList &));
+  LLDB_REGISTER_METHOD(void, SBValueList, Append, (const lldb::SBValue &));
+  LLDB_REGISTER_METHOD(void, SBValueList, Append, (const lldb::SBValueList &));
   LLDB_REGISTER_METHOD_CONST(lldb::SBValue, SBValueList, GetValueAtIndex,
                              (uint32_t));
   LLDB_REGISTER_METHOD_CONST(uint32_t, SBValueList, GetSize, ());
@@ -227,5 +224,5 @@ void RegisterMethods<SBValueList>(Registry &R) {
                              (const char *));
 }
 
-}
-}
+} // namespace repro
+} // namespace lldb_private

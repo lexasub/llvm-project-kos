@@ -8,9 +8,9 @@ auto get_add_one() -> int (*)(const int) {
   return add_one;
 }
 
-auto lambda = [](double x, double y) {return x + y;};
+auto lambda = [](double x, double y) { return x + y; };
 
-auto lambda2 = [](double x, double y) -> double {return x + y;};
+auto lambda2 = [](double x, double y) -> double { return x + y; };
 
 int main() {
   get_add_one()(5);

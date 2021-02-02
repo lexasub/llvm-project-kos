@@ -3,7 +3,7 @@
 
 // Ensure we don't crash on C++ declarations with special names.
 struct X {
-  X(int i): i(i) {}
+  X(int i) : i(i) {}
   int i;
 };
 
@@ -16,7 +16,7 @@ void test(X a, X b) {
 }
 
 // Ensure we don't crash on custom-defined strncat.
-char strncat ();
-int main () {
-  return strncat ();
+char strncat();
+int main() {
+  return strncat();
 }

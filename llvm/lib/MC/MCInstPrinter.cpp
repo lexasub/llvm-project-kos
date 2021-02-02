@@ -24,7 +24,7 @@ using namespace llvm;
 void llvm::dumpBytes(ArrayRef<uint8_t> bytes, raw_ostream &OS) {
   static const char hex_rep[] = "0123456789abcdef";
   bool First = true;
-  for (char i: bytes) {
+  for (char i : bytes) {
     if (First)
       First = false;
     else
@@ -178,10 +178,8 @@ StringRef MCInstPrinter::markup(StringRef s) const {
 }
 
 // For asm-style hex (e.g. 0ffh) the first digit always has to be a number.
-static bool needsLeadingZero(uint64_t Value)
-{
-  while (Value)
-  {
+static bool needsLeadingZero(uint64_t Value) {
+  while (Value) {
     uint64_t digit = (Value >> 60) & 0xf;
     if (digit != 0)
       return (digit >= 0xa);
@@ -219,9 +217,9 @@ format_object<int64_t> MCInstPrinter::formatHex(int64_t Value) const {
 }
 
 format_object<uint64_t> MCInstPrinter::formatHex(uint64_t Value) const {
-  switch(PrintHexStyle) {
+  switch (PrintHexStyle) {
   case HexStyle::C:
-     return format("0x%" PRIx64, Value);
+    return format("0x%" PRIx64, Value);
   case HexStyle::Asm:
     if (needsLeadingZero(Value))
       return format("0%" PRIx64 "h", Value);

@@ -9,14 +9,10 @@ struct Foo {
 };
 
 struct Foo *GetAFoo() {
-  static struct Foo f = { 0, *((Bar*)0) };
+  static struct Foo f = {0, *((Bar *)0)};
   return &f;
 }
 
-int GetSum(struct Foo *f) {
-  return f->a + f->b.d;
-}
+int GetSum(struct Foo *f) { return f->a + f->b.d; }
 
-int main() {
-  return GetSum(GetAFoo());
-}
+int main() { return GetSum(GetAFoo()); }

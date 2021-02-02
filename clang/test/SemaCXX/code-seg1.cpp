@@ -40,7 +40,7 @@ struct __declspec(code_seg("foo_base")) Derived : B1, B2 {};
 
 // virtual Inheritance is involved (code segmments all disagree between the bases and derived class)
 struct __declspec(code_seg("my_one")) Base {
-  virtual int barA() { return 1; } ;
+  virtual int barA() { return 1; };
 };
 
 struct __declspec(code_seg("my_two")) Derived5 : virtual Base {
@@ -63,7 +63,7 @@ struct __declspec(code_seg("my_four")) Derived7 : Derived5, Derived6 {};
 
 // virtual Inheritance is involved (code segmments partially agree between the bases and derived class)
 struct __declspec(code_seg("my_class")) BaseClass {
-  virtual int barA() { return 1; } ;
+  virtual int barA() { return 1; };
 };
 
 struct __declspec(code_seg("my_class")) DerivedClass1 : virtual BaseClass { //OK
@@ -82,10 +82,10 @@ struct __declspec(code_seg("my_derived_one")) DerivedClass3 : DerivedClass1, Der
 
 // virtual Inheritance is involved (code segmments all agree between the bases and derived class)
 struct __declspec(code_seg("foo_one")) Class {
-  virtual int foo1() { return 10; } ;
+  virtual int foo1() { return 10; };
 };
 
-struct __declspec(code_seg("foo_one")) Derived_One: virtual Class { //OK
+struct __declspec(code_seg("foo_one")) Derived_One : virtual Class { //OK
   virtual int foo2() { return 20; };
 };
 
@@ -94,4 +94,3 @@ struct __declspec(code_seg("foo_one")) Derived_Two : virtual Class { //OK
 };
 
 struct __declspec(code_seg("foo_one")) Derived_Three : Derived_One, Derived_Two {}; //OK
-

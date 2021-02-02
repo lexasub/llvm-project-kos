@@ -4,16 +4,16 @@
 
 // RUN: %clangxx_asan -O1 %s -o %t && %run %t 2>&1 | FileCheck %s
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/prctl.h>
-#include <sys/wait.h>
-#include <time.h>
 #include <pthread.h>
 #include <sanitizer/lsan_interface.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/prctl.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <time.h>
+#include <unistd.h>
 
 static void handler(int signo);
 static void *thr(void *arg);
@@ -40,14 +40,14 @@ int main() {
       kill(parent, SIGPROF);
     }
   }
-  usleep(10000);  // Let the child start.
+  usleep(10000); // Let the child start.
   __lsan_do_leak_check();
   // Kill and join the child.
   kill(pid, SIGTERM);
   waitpid(pid, 0, 0);
-  sleep(1);  // If the tracer thread still runs, give it time to crash.
+  sleep(1); // If the tracer thread still runs, give it time to crash.
   fprintf(stderr, "DONE\n");
-// CHECK: DONE
+  // CHECK: DONE
 }
 
 static void handler(int signo) {

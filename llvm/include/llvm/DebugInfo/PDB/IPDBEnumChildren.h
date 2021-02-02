@@ -36,9 +36,7 @@ class NullEnumerator : public IPDBEnumChildren<ChildType> {
   getChildAtIndex(uint32_t Index) const override {
     return nullptr;
   }
-  virtual std::unique_ptr<ChildType> getNext() override {
-    return nullptr;
-  }
+  virtual std::unique_ptr<ChildType> getNext() override { return nullptr; }
   virtual void reset() override {}
 };
 

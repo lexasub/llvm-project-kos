@@ -11,4 +11,8 @@
 // CHECK-NEXT: ...
 
 class C5 {};
-void f() { try {} catch(C5&){} }
+void f() {
+  try {
+  } catch (C5 &) {
+  }
+}

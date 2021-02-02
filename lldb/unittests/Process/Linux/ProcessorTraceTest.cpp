@@ -11,7 +11,6 @@
 #include "ProcessorTrace.h"
 #include "llvm/ADT/ArrayRef.h"
 
-
 using namespace lldb_private;
 using namespace process_linux;
 

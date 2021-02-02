@@ -5,6 +5,6 @@
 // Fixes could not be applied and should not be reported.
 int foo() { return VAL; }
 
-#define V 0+0
+#define V 0 + 0
 int bar() { return V; }
 // CHECK-FIXES: #define V (0+0)

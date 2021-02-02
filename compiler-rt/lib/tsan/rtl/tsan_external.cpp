@@ -9,9 +9,9 @@
 // This file is a part of ThreadSanitizer (TSan), a race detector.
 //
 //===----------------------------------------------------------------------===//
-#include "tsan_rtl.h"
-#include "tsan_interceptors.h"
 #include "sanitizer_common/sanitizer_ptrauth.h"
+#include "tsan_interceptors.h"
+#include "tsan_rtl.h"
 
 namespace __tsan {
 
@@ -23,13 +23,14 @@ struct TagData {
 };
 
 static TagData registered_tags[kExternalTagMax] = {
-  {},
-  {"Swift variable", "Swift access race"},
+    {},
+    {"Swift variable", "Swift access race"},
 };
 static atomic_uint32_t used_tags{kExternalTagFirstUserAvailable};
 static TagData *GetTagData(uptr tag) {
   // Invalid/corrupted tag?  Better return NULL and let the caller deal with it.
-  if (tag >= atomic_load(&used_tags, memory_order_relaxed)) return nullptr;
+  if (tag >= atomic_load(&used_tags, memory_order_relaxed))
+    return nullptr;
   return &registered_tags[tag];
 }
 
@@ -57,18 +58,20 @@ uptr TagFromShadowStackFrame(uptr pc) {
 
 #if !SANITIZER_GO
 
-typedef void(*AccessFunc)(ThreadState *, uptr, uptr, int);
+typedef void (*AccessFunc)(ThreadState *, uptr, uptr, int);
 void ExternalAccess(void *addr, uptr caller_pc, void *tag, AccessFunc access) {
   CHECK_LT(tag, atomic_load(&used_tags, memory_order_relaxed));
   ThreadState *thr = cur_thread();
-  if (caller_pc) FuncEntry(thr, caller_pc);
+  if (caller_pc)
+    FuncEntry(thr, caller_pc);
   InsertShadowStackFrameForTag(thr, (uptr)tag);
   bool in_ignored_lib;
   if (!caller_pc || !libignore()->IsIgnored(caller_pc, &in_ignored_lib)) {
     access(thr, CALLERPC, (uptr)addr, kSizeLog1);
   }
   FuncExit(thr);
-  if (caller_pc) FuncExit(thr);
+  if (caller_pc)
+    FuncExit(thr);
 }
 
 extern "C" {
@@ -92,7 +95,8 @@ void __tsan_external_register_header(void *tag, const char *header) {
   header = internal_strdup(header);
   char *old_header =
       (char *)atomic_exchange(header_ptr, (uptr)header, memory_order_seq_cst);
-  if (old_header) internal_free(old_header);
+  if (old_header)
+    internal_free(old_header);
 }
 
 SANITIZER_INTERFACE_ATTRIBUTE
@@ -102,7 +106,8 @@ void __tsan_external_assign_tag(void *addr, void *tag) {
   MBlock *b = nullptr;
   if (a->PointerIsMine((void *)addr)) {
     void *block_begin = a->GetBlockBegin((void *)addr);
-    if (block_begin) b = ctx->metamap.GetBlock((uptr)block_begin);
+    if (block_begin)
+      b = ctx->metamap.GetBlock((uptr)block_begin);
   }
   if (b) {
     b->tag = (uptr)tag;

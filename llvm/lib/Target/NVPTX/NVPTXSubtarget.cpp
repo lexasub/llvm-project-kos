@@ -32,14 +32,14 @@ void NVPTXSubtarget::anchor() {}
 
 NVPTXSubtarget &NVPTXSubtarget::initializeSubtargetDependencies(StringRef CPU,
                                                                 StringRef FS) {
-    // Provide the default CPU if we don't have one.
-    TargetName = std::string(CPU.empty() ? "sm_20" : CPU);
+  // Provide the default CPU if we don't have one.
+  TargetName = std::string(CPU.empty() ? "sm_20" : CPU);
 
-    ParseSubtargetFeatures(TargetName, /*TuneCPU*/ TargetName, FS);
+  ParseSubtargetFeatures(TargetName, /*TuneCPU*/ TargetName, FS);
 
-    // Set default to PTX 3.2 (CUDA 5.5)
-    if (PTXVersion == 0) {
-      PTXVersion = 32;
+  // Set default to PTX 3.2 (CUDA 5.5)
+  if (PTXVersion == 0) {
+    PTXVersion = 32;
   }
 
   return *this;

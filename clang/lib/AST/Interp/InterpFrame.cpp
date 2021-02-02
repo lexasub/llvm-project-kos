@@ -89,7 +89,7 @@ void print(llvm::raw_ostream &OS, const Pointer &P, ASTContext &Ctx,
   if (!Ty->isReferenceType())
     OS << "&";
   llvm::SmallVector<Pointer, 2> Levels;
-  for (Pointer F = P; !F.isRoot(); ) {
+  for (Pointer F = P; !F.isRoot();) {
     Levels.push_back(F);
     F = F.isArrayElement() ? F.getArray().expand() : F.getBase();
   }
@@ -148,9 +148,7 @@ SourceLocation InterpFrame::getCallLocation() const {
   return S.getLocation(Caller->Func, RetPC - sizeof(uintptr_t));
 }
 
-const FunctionDecl *InterpFrame::getCallee() const {
-  return Func->getDecl();
-}
+const FunctionDecl *InterpFrame::getCallee() const { return Func->getDecl(); }
 
 Pointer InterpFrame::getLocalPointer(unsigned Offset) {
   assert(Offset < Func->getFrameSize() && "Invalid local offset.");
@@ -190,4 +188,3 @@ const Expr *InterpFrame::getExpr(CodePtr PC) const {
 SourceLocation InterpFrame::getLocation(CodePtr PC) const {
   return S.getLocation(Func, PC);
 }
-

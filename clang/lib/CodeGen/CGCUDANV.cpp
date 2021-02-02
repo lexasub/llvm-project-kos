@@ -154,7 +154,7 @@ public:
   llvm::Function *makeModuleDtorFunction() override;
 };
 
-}
+} // namespace
 
 std::string CGNVCUDARuntime::addPrefixToName(StringRef FuncName) const {
   if (CGM.getLangOpts().HIP)
@@ -265,7 +265,7 @@ void CGNVCUDARuntime::emitDeviceStubBodyNew(CodeGenFunction &CGF,
       llvm::ConstantInt::get(SizeTy, std::max<size_t>(1, Args.size())));
   // Store pointers to the arguments in a locally allocated launch_args.
   for (unsigned i = 0; i < Args.size(); ++i) {
-    llvm::Value* VarPtr = CGF.GetAddrOfLocalVar(Args[i]).getPointer();
+    llvm::Value *VarPtr = CGF.GetAddrOfLocalVar(Args[i]).getPointer();
     llvm::Value *VoidVarPtr = CGF.Builder.CreatePointerCast(VarPtr, VoidPtrTy);
     CGF.Builder.CreateDefaultAlignedStore(
         VoidVarPtr, CGF.Builder.CreateConstGEP1_32(KernelArgs.getPointer(), i));
@@ -674,10 +674,9 @@ llvm::Function *CGNVCUDARuntime::makeModuleCtorFunction() {
       // to contain the fat binary but will be populated somewhere else,
       // e.g. by lld through link script.
       FatBinStr = new llvm::GlobalVariable(
-        CGM.getModule(), CGM.Int8Ty,
-        /*isConstant=*/true, llvm::GlobalValue::ExternalLinkage, nullptr,
-        "__hip_fatbin", nullptr,
-        llvm::GlobalVariable::NotThreadLocal);
+          CGM.getModule(), CGM.Int8Ty,
+          /*isConstant=*/true, llvm::GlobalValue::ExternalLinkage, nullptr,
+          "__hip_fatbin", nullptr, llvm::GlobalVariable::NotThreadLocal);
       cast<llvm::GlobalVariable>(FatBinStr)->setSection(FatbinConstantName);
     }
 
@@ -730,8 +729,8 @@ llvm::Function *CGNVCUDARuntime::makeModuleCtorFunction() {
   // thread safety of the loaded program. Therefore we can assume sequential
   // execution of constructor functions here.
   if (IsHIP) {
-    auto Linkage = CudaGpuBinary ? llvm::GlobalValue::InternalLinkage :
-        llvm::GlobalValue::LinkOnceAnyLinkage;
+    auto Linkage = CudaGpuBinary ? llvm::GlobalValue::InternalLinkage
+                                 : llvm::GlobalValue::LinkOnceAnyLinkage;
     llvm::BasicBlock *IfBlock =
         llvm::BasicBlock::Create(Context, "if", ModuleCtorFunc);
     llvm::BasicBlock *ExitBlock =
@@ -739,8 +738,7 @@ llvm::Function *CGNVCUDARuntime::makeModuleCtorFunction() {
     // The name, size, and initialization pattern of this variable is part
     // of HIP ABI.
     GpuBinaryHandle = new llvm::GlobalVariable(
-        TheModule, VoidPtrPtrTy, /*isConstant=*/false,
-        Linkage,
+        TheModule, VoidPtrPtrTy, /*isConstant=*/false, Linkage,
         /*Initializer=*/llvm::ConstantPointerNull::get(VoidPtrPtrTy),
         "__hip_gpubin_handle");
     GpuBinaryHandle->setAlignment(CGM.getPointerAlign().getAsAlign());

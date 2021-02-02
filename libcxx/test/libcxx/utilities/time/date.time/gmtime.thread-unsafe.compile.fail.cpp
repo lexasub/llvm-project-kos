@@ -11,9 +11,9 @@
 #include <ctime>
 
 int main(int, char**) {
-    // gmtime is not thread-safe.
-    std::time_t t = 0;
-    std::gmtime(&t);
+  // gmtime is not thread-safe.
+  std::time_t t = 0;
+  std::gmtime(&t);
 
   return 0;
 }

@@ -47,13 +47,10 @@ struct EVT;
 /// \param CurIndex is the current index in the recursion.
 ///
 /// \returns \p CurIndex plus the linear index in \p Ty  the indices list.
-unsigned ComputeLinearIndex(Type *Ty,
-                            const unsigned *Indices,
-                            const unsigned *IndicesEnd,
-                            unsigned CurIndex = 0);
+unsigned ComputeLinearIndex(Type *Ty, const unsigned *Indices,
+                            const unsigned *IndicesEnd, unsigned CurIndex = 0);
 
-inline unsigned ComputeLinearIndex(Type *Ty,
-                                   ArrayRef<unsigned> Indices,
+inline unsigned ComputeLinearIndex(Type *Ty, ArrayRef<unsigned> Indices,
                                    unsigned CurIndex = 0) {
   return ComputeLinearIndex(Ty, Indices.begin(), Indices.end(), CurIndex);
 }
@@ -136,6 +133,6 @@ bool returnTypeIsEligibleForTailCall(const Function *F, const Instruction *I,
 DenseMap<const MachineBasicBlock *, int>
 getEHScopeMembership(const MachineFunction &MF);
 
-} // End llvm namespace
+} // namespace llvm
 
 #endif

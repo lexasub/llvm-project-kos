@@ -14,5 +14,5 @@
 #include <vector>
 
 namespace clang_fuzzer {
-const std::vector<const char *>& GetCLArgs();
+const std::vector<const char *> &GetCLArgs();
 }

@@ -52,5 +52,5 @@ enum TemplateNameKind {
   TNK_Concept_template,
 };
 
-}
+} // namespace clang
 #endif

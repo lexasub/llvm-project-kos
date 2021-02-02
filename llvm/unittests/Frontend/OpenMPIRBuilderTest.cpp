@@ -251,8 +251,7 @@ TEST_F(OpenMPIRBuilderTest, CreateCancel) {
   EXPECT_EQ(CancelBBTI->getSuccessor(1)->size(), 1U);
   EXPECT_EQ(CancelBBTI->getSuccessor(1)->getTerminator()->getNumSuccessors(),
             1U);
-  EXPECT_EQ(CancelBBTI->getSuccessor(1)->getTerminator()->getSuccessor(0),
-            CBB);
+  EXPECT_EQ(CancelBBTI->getSuccessor(1)->getTerminator()->getSuccessor(0), CBB);
 
   EXPECT_EQ(cast<CallInst>(Cancel)->getArgOperand(1), GTID);
 
@@ -290,7 +289,6 @@ TEST_F(OpenMPIRBuilderTest, CreateCancelIfCond) {
   BB = BB->getTerminator()->getSuccessor(0);
   EXPECT_EQ(BB->size(), 4U);
 
-
   CallInst *GTID = dyn_cast<CallInst>(&BB->front());
   EXPECT_NE(GTID, nullptr);
   EXPECT_EQ(GTID->getNumArgOperands(), 1U);
@@ -308,12 +306,12 @@ TEST_F(OpenMPIRBuilderTest, CreateCancelIfCond) {
   Instruction *CancelBBTI = Cancel->getParent()->getTerminator();
   EXPECT_EQ(CancelBBTI->getNumSuccessors(), 2U);
   EXPECT_EQ(CancelBBTI->getSuccessor(0)->size(), 1U);
-  EXPECT_EQ(CancelBBTI->getSuccessor(0)->getUniqueSuccessor(), NewIP.getBlock());
+  EXPECT_EQ(CancelBBTI->getSuccessor(0)->getUniqueSuccessor(),
+            NewIP.getBlock());
   EXPECT_EQ(CancelBBTI->getSuccessor(1)->size(), 1U);
   EXPECT_EQ(CancelBBTI->getSuccessor(1)->getTerminator()->getNumSuccessors(),
             1U);
-  EXPECT_EQ(CancelBBTI->getSuccessor(1)->getTerminator()->getSuccessor(0),
-            CBB);
+  EXPECT_EQ(CancelBBTI->getSuccessor(1)->getTerminator()->getSuccessor(0), CBB);
 
   EXPECT_EQ(cast<CallInst>(Cancel)->getArgOperand(1), GTID);
 
@@ -1778,32 +1776,33 @@ TEST_F(OpenMPIRBuilderTest, CopyinBlocks) {
 
   OpenMPIRBuilder::LocationDescription Loc({Builder.saveIP(), DL});
 
-  IntegerType* Int32 = Type::getInt32Ty(M->getContext());
-  AllocaInst* MasterAddress = Builder.CreateAlloca(Int32->getPointerTo());
-	AllocaInst* PrivAddress = Builder.CreateAlloca(Int32->getPointerTo());
+  IntegerType *Int32 = Type::getInt32Ty(M->getContext());
+  AllocaInst *MasterAddress = Builder.CreateAlloca(Int32->getPointerTo());
+  AllocaInst *PrivAddress = Builder.CreateAlloca(Int32->getPointerTo());
 
   BasicBlock *EntryBB = BB;
 
   OMPBuilder.createCopyinClauseBlocks(Builder.saveIP(), MasterAddress,
                                       PrivAddress, Int32, /*BranchtoEnd*/ true);
 
-  BranchInst* EntryBr = dyn_cast_or_null<BranchInst>(EntryBB->getTerminator());
+  BranchInst *EntryBr = dyn_cast_or_null<BranchInst>(EntryBB->getTerminator());
 
   EXPECT_NE(EntryBr, nullptr);
   EXPECT_TRUE(EntryBr->isConditional());
 
-  BasicBlock* NotMasterBB = EntryBr->getSuccessor(0);
-  BasicBlock* CopyinEnd = EntryBr->getSuccessor(1);
-  CmpInst* CMP = dyn_cast_or_null<CmpInst>(EntryBr->getCondition());
+  BasicBlock *NotMasterBB = EntryBr->getSuccessor(0);
+  BasicBlock *CopyinEnd = EntryBr->getSuccessor(1);
+  CmpInst *CMP = dyn_cast_or_null<CmpInst>(EntryBr->getCondition());
 
   EXPECT_NE(CMP, nullptr);
   EXPECT_NE(NotMasterBB, nullptr);
   EXPECT_NE(CopyinEnd, nullptr);
 
-  BranchInst* NotMasterBr = dyn_cast_or_null<BranchInst>(NotMasterBB->getTerminator());
+  BranchInst *NotMasterBr =
+      dyn_cast_or_null<BranchInst>(NotMasterBB->getTerminator());
   EXPECT_NE(NotMasterBr, nullptr);
   EXPECT_FALSE(NotMasterBr->isConditional());
-  EXPECT_EQ(CopyinEnd,NotMasterBr->getSuccessor(0));
+  EXPECT_EQ(CopyinEnd, NotMasterBr->getSuccessor(0));
 }
 
 TEST_F(OpenMPIRBuilderTest, SingleDirective) {

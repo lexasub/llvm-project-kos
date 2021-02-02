@@ -70,7 +70,7 @@ bool Registry::handleTaggedDoc(llvm::yaml::IO &io,
 void Registry::addKindTable(Reference::KindNamespace ns,
                             Reference::KindArch arch,
                             const KindStrings array[]) {
-  KindEntry entry = { ns, arch, array };
+  KindEntry entry = {ns, arch, array};
   _kindEntries.push_back(entry);
 }
 

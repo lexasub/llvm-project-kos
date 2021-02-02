@@ -26,8 +26,8 @@
 #include "llvm/IR/DebugInfoMetadata.h"
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/Function.h"
-#include "llvm/IR/GlobalObject.h"
 #include "llvm/IR/GlobalIndirectSymbol.h"
+#include "llvm/IR/GlobalObject.h"
 #include "llvm/IR/GlobalVariable.h"
 #include "llvm/IR/InlineAsm.h"
 #include "llvm/IR/Instruction.h"
@@ -160,8 +160,8 @@ public:
                                     bool IsOldCtorDtor,
                                     ArrayRef<Constant *> NewMembers,
                                     unsigned MCID);
-  void scheduleMapGlobalIndirectSymbol(GlobalIndirectSymbol &GIS, Constant &Target,
-                                       unsigned MCID);
+  void scheduleMapGlobalIndirectSymbol(GlobalIndirectSymbol &GIS,
+                                       Constant &Target, unsigned MCID);
   void scheduleRemapFunction(Function &F, unsigned MCID);
 
   void flush();
@@ -405,7 +405,7 @@ Value *Mapper::mapValue(const Value *V) {
 
   // Okay, this either must be a constant (which may or may not be mappable) or
   // is something that is not in the mapping table.
-  Constant *C = const_cast<Constant*>(dyn_cast<Constant>(V));
+  Constant *C = const_cast<Constant *>(dyn_cast<Constant>(V));
   if (!C)
     return nullptr;
 
@@ -445,7 +445,7 @@ Value *Mapper::mapValue(const Value *V) {
 
   // Okay, we need to create a new constant.  We've already processed some or
   // all of the operands, set them all up now.
-  SmallVector<Constant*, 8> Ops;
+  SmallVector<Constant *, 8> Ops;
   Ops.reserve(NumOperands);
   for (unsigned j = 0; j != OpNo; ++j)
     Ops.push_back(cast<Constant>(C->getOperand(j)));
@@ -1116,8 +1116,7 @@ void ValueMapper::remapFunction(Function &F) {
 }
 
 void ValueMapper::scheduleMapGlobalInitializer(GlobalVariable &GV,
-                                               Constant &Init,
-                                               unsigned MCID) {
+                                               Constant &Init, unsigned MCID) {
   getAsMapper(pImpl)->scheduleMapGlobalInitializer(GV, Init, MCID);
 }
 

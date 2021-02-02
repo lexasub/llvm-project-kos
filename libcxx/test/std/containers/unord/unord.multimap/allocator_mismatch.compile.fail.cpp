@@ -11,9 +11,10 @@
 
 #include <unordered_map>
 
-int main(int, char**)
-{
-    std::unordered_multimap<int, int, std::hash<int>, std::less<int>, std::allocator<long> > m;
+int main(int, char**) {
+  std::unordered_multimap<int, int, std::hash<int>, std::less<int>,
+                          std::allocator<long> >
+      m;
 
   return 0;
 }

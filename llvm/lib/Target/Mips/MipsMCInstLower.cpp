@@ -26,11 +26,9 @@
 using namespace llvm;
 
 MipsMCInstLower::MipsMCInstLower(MipsAsmPrinter &asmprinter)
-  : AsmPrinter(asmprinter) {}
+    : AsmPrinter(asmprinter) {}
 
-void MipsMCInstLower::Initialize(MCContext *C) {
-  Ctx = C;
-}
+void MipsMCInstLower::Initialize(MCContext *C) { Ctx = C; }
 
 MCOperand MipsMCInstLower::LowerSymbolOperand(const MachineOperand &MO,
                                               MachineOperandType MOTy,
@@ -40,7 +38,7 @@ MCOperand MipsMCInstLower::LowerSymbolOperand(const MachineOperand &MO,
   bool IsGpOff = false;
   const MCSymbol *Symbol;
 
-  switch(MO.getTargetFlags()) {
+  switch (MO.getTargetFlags()) {
   default:
     llvm_unreachable("Invalid target flag!");
   case MipsII::MO_NO_FLAG:
@@ -179,10 +177,12 @@ MCOperand MipsMCInstLower::LowerOperand(const MachineOperand &MO,
   MachineOperandType MOTy = MO.getType();
 
   switch (MOTy) {
-  default: llvm_unreachable("unknown operand type");
+  default:
+    llvm_unreachable("unknown operand type");
   case MachineOperand::MO_Register:
     // Ignore all implicit register operands.
-    if (MO.isImplicit()) break;
+    if (MO.isImplicit())
+      break;
     return MCOperand::createReg(MO.getReg());
   case MachineOperand::MO_Immediate:
     return MCOperand::createImm(MO.getImm() + offset);
@@ -196,7 +196,7 @@ MCOperand MipsMCInstLower::LowerOperand(const MachineOperand &MO,
     return LowerSymbolOperand(MO, MOTy, offset);
   case MachineOperand::MO_RegisterMask:
     break;
- }
+  }
 
   return MCOperand();
 }
@@ -211,8 +211,8 @@ MCOperand MipsMCInstLower::createSub(MachineBasicBlock *BB1,
   return MCOperand::createExpr(MipsMCExpr::create(Kind, Sub, *Ctx));
 }
 
-void MipsMCInstLower::
-lowerLongBranchLUi(const MachineInstr *MI, MCInst &OutMI) const {
+void MipsMCInstLower::lowerLongBranchLUi(const MachineInstr *MI,
+                                         MCInst &OutMI) const {
   OutMI.setOpcode(Mips::LUi);
 
   // Lower register operand.

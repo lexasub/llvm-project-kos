@@ -87,8 +87,8 @@ public:
   Instruction *visitFNeg(UnaryOperator &I);
   Instruction *visitAdd(BinaryOperator &I);
   Instruction *visitFAdd(BinaryOperator &I);
-  Value *OptimizePointerDifference(
-      Value *LHS, Value *RHS, Type *Ty, bool isNUW);
+  Value *OptimizePointerDifference(Value *LHS, Value *RHS, Type *Ty,
+                                   bool isNUW);
   Instruction *visitSub(BinaryOperator &I);
   Instruction *visitFSub(BinaryOperator &I);
   Instruction *visitMul(BinaryOperator &I);
@@ -217,8 +217,8 @@ private:
   /// OverflowResult, and return true.  If no simplification is possible,
   /// returns false.
   bool OptimizeOverflowCheck(Instruction::BinaryOps BinaryOp, bool IsSigned,
-                             Value *LHS, Value *RHS,
-                             Instruction &CtxI, Value *&OperationResult,
+                             Value *LHS, Value *RHS, Instruction &CtxI,
+                             Value *&OperationResult,
                              Constant *&OverflowResult);
 
   Instruction *visitCallBase(CallBase &Call);
@@ -307,10 +307,14 @@ private:
                        const Value *RHS, const Instruction &CxtI,
                        bool IsSigned) const {
     switch (Opcode) {
-    case Instruction::Add: return willNotOverflowAdd(LHS, RHS, CxtI, IsSigned);
-    case Instruction::Sub: return willNotOverflowSub(LHS, RHS, CxtI, IsSigned);
-    case Instruction::Mul: return willNotOverflowMul(LHS, RHS, CxtI, IsSigned);
-    default: llvm_unreachable("Unexpected opcode for overflow query");
+    case Instruction::Add:
+      return willNotOverflowAdd(LHS, RHS, CxtI, IsSigned);
+    case Instruction::Sub:
+      return willNotOverflowSub(LHS, RHS, CxtI, IsSigned);
+    case Instruction::Mul:
+      return willNotOverflowMul(LHS, RHS, CxtI, IsSigned);
+    default:
+      llvm_unreachable("Unexpected opcode for overflow query");
     }
   }
 
@@ -385,7 +389,8 @@ public:
   Instruction *replaceInstUsesWith(Instruction &I, Value *V) {
     // If there are no uses to replace, then we return nullptr to indicate that
     // no changes were made to the program.
-    if (I.use_empty()) return nullptr;
+    if (I.use_empty())
+      return nullptr;
 
     Worklist.pushUsersToWorkList(I); // Add all modified instrs to worklist.
 
@@ -430,10 +435,8 @@ public:
   void CreateNonTerminatorUnreachable(Instruction *InsertAt) {
     auto &Ctx = InsertAt->getContext();
     new StoreInst(ConstantInt::getTrue(Ctx),
-                  UndefValue::get(Type::getInt1PtrTy(Ctx)),
-                  InsertAt);
+                  UndefValue::get(Type::getInt1PtrTy(Ctx)), InsertAt);
   }
-
 
   /// Combiner aware instruction erasure.
   ///
@@ -457,8 +460,8 @@ public:
     return nullptr; // Don't do anything with FI
   }
 
-  void computeKnownBits(const Value *V, KnownBits &Known,
-                        unsigned Depth, const Instruction *CxtI) const {
+  void computeKnownBits(const Value *V, KnownBits &Known, unsigned Depth,
+                        const Instruction *CxtI) const {
     llvm::computeKnownBits(V, Known, DL, Depth, &AC, CxtI, &DT);
   }
 
@@ -489,8 +492,7 @@ public:
     return llvm::computeOverflowForUnsignedMul(LHS, RHS, DL, &AC, CxtI, &DT);
   }
 
-  OverflowResult computeOverflowForSignedMul(const Value *LHS,
-                                             const Value *RHS,
+  OverflowResult computeOverflowForSignedMul(const Value *LHS, const Value *RHS,
                                              const Instruction *CxtI) const {
     return llvm::computeOverflowForSignedMul(LHS, RHS, DL, &AC, CxtI, &DT);
   }
@@ -501,8 +503,7 @@ public:
     return llvm::computeOverflowForUnsignedAdd(LHS, RHS, DL, &AC, CxtI, &DT);
   }
 
-  OverflowResult computeOverflowForSignedAdd(const Value *LHS,
-                                             const Value *RHS,
+  OverflowResult computeOverflowForSignedAdd(const Value *LHS, const Value *RHS,
                                              const Instruction *CxtI) const {
     return llvm::computeOverflowForSignedAdd(LHS, RHS, DL, &AC, CxtI, &DT);
   }
@@ -518,9 +519,9 @@ public:
     return llvm::computeOverflowForSignedSub(LHS, RHS, DL, &AC, CxtI, &DT);
   }
 
-  OverflowResult computeOverflow(
-      Instruction::BinaryOps BinaryOp, bool IsSigned,
-      Value *LHS, Value *RHS, Instruction *CxtI) const;
+  OverflowResult computeOverflow(Instruction::BinaryOps BinaryOp, bool IsSigned,
+                                 Value *LHS, Value *RHS,
+                                 Instruction *CxtI) const;
 
   /// Performs a few simplifications for operators which are associative
   /// or commutative.
@@ -574,14 +575,15 @@ public:
   /// DemandedMask, but without modifying the Instruction.
   Value *SimplifyMultipleUseDemandedBits(Instruction *I,
                                          const APInt &DemandedMask,
-                                         KnownBits &Known,
-                                         unsigned Depth, Instruction *CxtI);
+                                         KnownBits &Known, unsigned Depth,
+                                         Instruction *CxtI);
 
   /// Helper routine of SimplifyDemandedUseBits. It tries to simplify demanded
   /// bit for "r1 = shr x, c1; r2 = shl r1, c2" instruction sequence.
-  Value *simplifyShrShlDemandedBits(
-      Instruction *Shr, const APInt &ShrOp1, Instruction *Shl,
-      const APInt &ShlOp1, const APInt &DemandedMask, KnownBits &Known);
+  Value *simplifyShrShlDemandedBits(Instruction *Shr, const APInt &ShrOp1,
+                                    Instruction *Shl, const APInt &ShlOp1,
+                                    const APInt &DemandedMask,
+                                    KnownBits &Known);
 
   /// Tries to simplify operands to an integer instruction based on its
   /// demanded bits.

@@ -15,7 +15,8 @@ using namespace mlir;
 namespace llvm {
 
 // Specialize DOTGraphTraits to produce more readable output.
-template <> struct DOTGraphTraits<Region *> : public DefaultDOTGraphTraits {
+template <>
+struct DOTGraphTraits<Region *> : public DefaultDOTGraphTraits {
   using DefaultDOTGraphTraits::DefaultDOTGraphTraits;
 
   static std::string getNodeLabel(Block *Block, Region *);

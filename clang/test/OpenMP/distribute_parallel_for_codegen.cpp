@@ -32,66 +32,65 @@
 #ifndef HEADER
 #define HEADER
 
-
 template <typename T>
 T tmain() {
   T *a, *b, *c;
   int n = 10000;
   int ch = 100;
 
-  // no schedule clauses
-  #pragma omp target
-  #pragma omp teams
-  #pragma omp distribute parallel for
+// no schedule clauses
+#pragma omp target
+#pragma omp teams
+#pragma omp distribute parallel for
   for (int i = 0; i < n; ++i) {
-    #pragma omp cancel for
+#pragma omp cancel for
     a[i] = b[i] + c[i];
   }
 
-  // dist_schedule: static no chunk
-  #pragma omp target
-  #pragma omp teams
-  #pragma omp distribute parallel for dist_schedule(static)
-  for (int i = 0; i < n; ++i) {
-    a[i] = b[i] + c[i];
-  }
-
-  // dist_schedule: static chunk
-  #pragma omp target
-  #pragma omp teams
-  #pragma omp distribute parallel for dist_schedule(static, ch)
+// dist_schedule: static no chunk
+#pragma omp target
+#pragma omp teams
+#pragma omp distribute parallel for dist_schedule(static)
   for (int i = 0; i < n; ++i) {
     a[i] = b[i] + c[i];
   }
 
-  // schedule: static no chunk
-  #pragma omp target
-  #pragma omp teams
-  #pragma omp distribute parallel for schedule(static)
+// dist_schedule: static chunk
+#pragma omp target
+#pragma omp teams
+#pragma omp distribute parallel for dist_schedule(static, ch)
   for (int i = 0; i < n; ++i) {
     a[i] = b[i] + c[i];
   }
 
-  // schedule: static chunk
-  #pragma omp target
-  #pragma omp teams
-  #pragma omp distribute parallel for schedule(static, ch)
+// schedule: static no chunk
+#pragma omp target
+#pragma omp teams
+#pragma omp distribute parallel for schedule(static)
   for (int i = 0; i < n; ++i) {
     a[i] = b[i] + c[i];
   }
 
-  // schedule: dynamic no chunk
-  #pragma omp target
-  #pragma omp teams
-  #pragma omp distribute parallel for schedule(dynamic)
+// schedule: static chunk
+#pragma omp target
+#pragma omp teams
+#pragma omp distribute parallel for schedule(static, ch)
   for (int i = 0; i < n; ++i) {
     a[i] = b[i] + c[i];
   }
 
-  // schedule: dynamic chunk
-  #pragma omp target
-  #pragma omp teams
-  #pragma omp distribute parallel for schedule(dynamic, ch)
+// schedule: dynamic no chunk
+#pragma omp target
+#pragma omp teams
+#pragma omp distribute parallel for schedule(dynamic)
+  for (int i = 0; i < n; ++i) {
+    a[i] = b[i] + c[i];
+  }
+
+// schedule: dynamic chunk
+#pragma omp target
+#pragma omp teams
+#pragma omp distribute parallel for schedule(dynamic, ch)
   for (int i = 0; i < n; ++i) {
     a[i] = b[i] + c[i];
   }
@@ -108,36 +107,36 @@ int main() {
   // LAMBDA-LABEL: @main
   // LAMBDA: call{{.*}} void [[OUTER_LAMBDA:@.+]](
   [&]() {
-    // LAMBDA: define{{.*}} internal{{.*}} void [[OUTER_LAMBDA]](
+// LAMBDA: define{{.*}} internal{{.*}} void [[OUTER_LAMBDA]](
 
-    // LAMBDA: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
-    // LAMBDA: call void [[OFFLOADING_FUN_1:@.+]](
+// LAMBDA: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
+// LAMBDA: call void [[OFFLOADING_FUN_1:@.+]](
 
-    // LAMBDA: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
-    // LAMBDA: call void [[OFFLOADING_FUN_2:@.+]](
+// LAMBDA: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
+// LAMBDA: call void [[OFFLOADING_FUN_2:@.+]](
 
-    // LAMBDA: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
-    // LAMBDA: call void [[OFFLOADING_FUN_3:@.+]](
+// LAMBDA: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
+// LAMBDA: call void [[OFFLOADING_FUN_3:@.+]](
 
-    // LAMBDA: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
-    // LAMBDA: call void [[OFFLOADING_FUN_4:@.+]](
+// LAMBDA: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
+// LAMBDA: call void [[OFFLOADING_FUN_4:@.+]](
 
-    // LAMBDA: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
-    // LAMBDA: call void [[OFFLOADING_FUN_5:@.+]](
+// LAMBDA: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
+// LAMBDA: call void [[OFFLOADING_FUN_5:@.+]](
 
-    // LAMBDA: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
-    // LAMBDA: call void [[OFFLOADING_FUN_6:@.+]](
+// LAMBDA: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
+// LAMBDA: call void [[OFFLOADING_FUN_6:@.+]](
 
-    // LAMBDA: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
-    // LAMBDA: call void [[OFFLOADING_FUN_7:@.+]](
+// LAMBDA: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
+// LAMBDA: call void [[OFFLOADING_FUN_7:@.+]](
 
-    // no schedule clauses
-    #pragma omp target
-    #pragma omp teams
-    // LAMBDA: define{{.+}} void [[OFFLOADING_FUN_1]](
-    // LAMBDA: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, i32 4, {{.+}}* [[OMP_OUTLINED_1:@.+]] to {{.+}})
+// no schedule clauses
+#pragma omp target
+#pragma omp teams
+  // LAMBDA: define{{.+}} void [[OFFLOADING_FUN_1]](
+  // LAMBDA: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, i32 4, {{.+}}* [[OMP_OUTLINED_1:@.+]] to {{.+}})
 
-    #pragma omp distribute parallel for
+#pragma omp distribute parallel for
     for (int i = 0; i < n; ++i) {
       a[i] = b[i] + c[i];
       // LAMBDA: define{{.+}} void [[OMP_OUTLINED_1]](
@@ -260,17 +259,17 @@ int main() {
       // LAMBDA: ret
 
       [&]() {
-	a[i] = b[i] + c[i];
+        a[i] = b[i] + c[i];
       }();
     }
 
-    // dist_schedule: static no chunk (same sa default - no dist_schedule)
-    #pragma omp target
-    #pragma omp teams
+// dist_schedule: static no chunk (same sa default - no dist_schedule)
+#pragma omp target
+#pragma omp teams
     // LAMBDA: define{{.+}} void [[OFFLOADING_FUN_2]](
     // LAMBDA: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, i32 4, {{.+}}* [[OMP_OUTLINED_2:@.+]] to {{.+}})
 
-    #pragma omp distribute parallel for dist_schedule(static)
+#pragma omp distribute parallel for dist_schedule(static)
     for (int i = 0; i < n; ++i) {
       a[i] = b[i] + c[i];
       // LAMBDA: define{{.+}} void [[OMP_OUTLINED_2]](
@@ -392,17 +391,17 @@ int main() {
       // LAMBDA-DAG: call void @__kmpc_for_static_fini(
       // LAMBDA: ret
       [&]() {
-	a[i] = b[i] + c[i];
+        a[i] = b[i] + c[i];
       }();
     }
 
-    // dist_schedule: static chunk
-    #pragma omp target
-    #pragma omp teams
+// dist_schedule: static chunk
+#pragma omp target
+#pragma omp teams
     // LAMBDA: define{{.+}} void [[OFFLOADING_FUN_3]](
     // LAMBDA: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, i32 5, {{.+}}* [[OMP_OUTLINED_3:@.+]] to {{.+}})
 
-    #pragma omp distribute parallel for dist_schedule(static, ch)
+#pragma omp distribute parallel for dist_schedule(static, ch)
     for (int i = 0; i < n; ++i) {
       a[i] = b[i] + c[i];
       // LAMBDA: define{{.+}} void [[OMP_OUTLINED_3]](
@@ -505,17 +504,17 @@ int main() {
 
       // skip implementation of 'parallel for': using default scheduling and was tested above
       [&]() {
-	a[i] = b[i] + c[i];
+        a[i] = b[i] + c[i];
       }();
     }
 
-    // schedule: static no chunk
-    #pragma omp target
-    #pragma omp teams
+// schedule: static no chunk
+#pragma omp target
+#pragma omp teams
     // LAMBDA: define{{.+}} void [[OFFLOADING_FUN_4]](
     // LAMBDA: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, i32 4, {{.+}}* [[OMP_OUTLINED_4:@.+]] to {{.+}})
 
-    #pragma omp distribute parallel for schedule(static)
+#pragma omp distribute parallel for schedule(static)
     for (int i = 0; i < n; ++i) {
       a[i] = b[i] + c[i];
       // LAMBDA: define{{.+}} void [[OMP_OUTLINED_4]](
@@ -592,17 +591,17 @@ int main() {
       // LAMBDA: ret
 
       [&]() {
-	a[i] = b[i] + c[i];
+        a[i] = b[i] + c[i];
       }();
     }
 
-    // schedule: static chunk
-    #pragma omp target
-    #pragma omp teams
+// schedule: static chunk
+#pragma omp target
+#pragma omp teams
     // LAMBDA: define{{.+}} void [[OFFLOADING_FUN_5]](
     // LAMBDA: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, i32 5, {{.+}}* [[OMP_OUTLINED_5:@.+]] to {{.+}})
 
-    #pragma omp distribute parallel for schedule(static, ch)
+#pragma omp distribute parallel for schedule(static, ch)
     for (int i = 0; i < n; ++i) {
       a[i] = b[i] + c[i];
       // LAMBDA: define{{.+}} void [[OMP_OUTLINED_5]](
@@ -705,17 +704,17 @@ int main() {
       // LAMBDA-DAG: call void @__kmpc_for_static_fini(
       // LAMBDA: ret
       [&]() {
-	a[i] = b[i] + c[i];
+        a[i] = b[i] + c[i];
       }();
     }
 
-    // schedule: dynamic no chunk
-    #pragma omp target
-    #pragma omp teams
+// schedule: dynamic no chunk
+#pragma omp target
+#pragma omp teams
     // LAMBDA: define{{.+}} void [[OFFLOADING_FUN_6]](
     // LAMBDA: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, i32 4, {{.+}}* [[OMP_OUTLINED_6:@.+]] to {{.+}})
 
-    #pragma omp distribute parallel for schedule(dynamic)
+#pragma omp distribute parallel for schedule(dynamic)
     for (int i = 0; i < n; ++i) {
       a[i] = b[i] + c[i];
       // LAMBDA: define{{.+}} void [[OMP_OUTLINED_6]](
@@ -787,17 +786,17 @@ int main() {
       // LAMBDA: [[OMP_PF_OUTER_LOOP_END]]:
       // LAMBDA: ret
       [&]() {
-	a[i] = b[i] + c[i];
+        a[i] = b[i] + c[i];
       }();
     }
 
-    // schedule: dynamic chunk
-    #pragma omp target
-    #pragma omp teams
+// schedule: dynamic chunk
+#pragma omp target
+#pragma omp teams
     // LAMBDA: define{{.+}} void [[OFFLOADING_FUN_7]](
     // LAMBDA: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, i32 5, {{.+}}* [[OMP_OUTLINED_7:@.+]] to {{.+}})
 
-    #pragma omp distribute parallel for schedule(dynamic, ch)
+#pragma omp distribute parallel for schedule(dynamic, ch)
     for (int i = 0; i < n; ++i) {
       a[i] = b[i] + c[i];
       // LAMBDA: define{{.+}} void [[OMP_OUTLINED_7]](
@@ -869,44 +868,44 @@ int main() {
       // LAMBDA: [[OMP_PF_OUTER_LOOP_END]]:
       // LAMBDA: ret
       [&]() {
-	a[i] = b[i] + c[i];
+        a[i] = b[i] + c[i];
       }();
     }
   }();
   return 0;
 #else
-  // CHECK-LABEL: @main
+// CHECK-LABEL: @main
 
-  // CHECK: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
-  // CHECK: call void [[OFFLOADING_FUN_1:@.+]](
+// CHECK: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
+// CHECK: call void [[OFFLOADING_FUN_1:@.+]](
 
-  // CHECK: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
-  // CHECK: call void [[OFFLOADING_FUN_2:@.+]](
+// CHECK: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
+// CHECK: call void [[OFFLOADING_FUN_2:@.+]](
 
-  // CHECK: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
-  // CHECK: call void [[OFFLOADING_FUN_3:@.+]](
+// CHECK: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
+// CHECK: call void [[OFFLOADING_FUN_3:@.+]](
 
-  // CHECK: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
-  // CHECK: call void [[OFFLOADING_FUN_4:@.+]](
+// CHECK: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
+// CHECK: call void [[OFFLOADING_FUN_4:@.+]](
 
-  // CHECK: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
-  // CHECK: call void [[OFFLOADING_FUN_5:@.+]](
+// CHECK: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
+// CHECK: call void [[OFFLOADING_FUN_5:@.+]](
 
-  // CHECK: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
-  // CHECK: call void [[OFFLOADING_FUN_6:@.+]](
+// CHECK: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
+// CHECK: call void [[OFFLOADING_FUN_6:@.+]](
 
-  // CHECK: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
-  // CHECK: call void [[OFFLOADING_FUN_7:@.+]](
+// CHECK: call i{{[0-9]+}} @__tgt_target_teams_mapper(%struct.ident_t* @{{.+}},
+// CHECK: call void [[OFFLOADING_FUN_7:@.+]](
 
-  // CHECK: call{{.+}} [[TMAIN:@.+]]()
+// CHECK: call{{.+}} [[TMAIN:@.+]]()
 
-  // no schedule clauses
-  #pragma omp target
-  #pragma omp teams
+// no schedule clauses
+#pragma omp target
+#pragma omp teams
   // CHECK: define internal void [[OFFLOADING_FUN_1]](
   // CHECK: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, i32 4, {{.+}}* [[OMP_OUTLINED_1:@.+]] to {{.+}})
 
-  #pragma omp distribute parallel for
+#pragma omp distribute parallel for
   for (int i = 0; i < n; ++i) {
     a[i] = b[i] + c[i];
     // CHECK: define{{.+}} void [[OMP_OUTLINED_1]](
@@ -1029,13 +1028,13 @@ int main() {
     // CHECK: ret
   }
 
-  // dist_schedule: static no chunk
-  #pragma omp target
-  #pragma omp teams
+// dist_schedule: static no chunk
+#pragma omp target
+#pragma omp teams
   // CHECK: define{{.+}} void [[OFFLOADING_FUN_2]](
   // CHECK: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, i32 4, {{.+}}* [[OMP_OUTLINED_2:@.+]] to {{.+}})
 
-  #pragma omp distribute parallel for dist_schedule(static)
+#pragma omp distribute parallel for dist_schedule(static)
   for (int i = 0; i < n; ++i) {
     a[i] = b[i] + c[i];
     // CHECK: define{{.+}} void [[OMP_OUTLINED_2]](
@@ -1158,13 +1157,13 @@ int main() {
     // CHECK: ret
   }
 
-  // dist_schedule: static chunk
-  #pragma omp target
-  #pragma omp teams
+// dist_schedule: static chunk
+#pragma omp target
+#pragma omp teams
   // CHECK: define{{.+}} void [[OFFLOADING_FUN_3]](
   // CHECK: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, i32 5, {{.+}}* [[OMP_OUTLINED_3:@.+]] to {{.+}})
 
-  #pragma omp distribute parallel for dist_schedule(static, ch)
+#pragma omp distribute parallel for dist_schedule(static, ch)
   for (int i = 0; i < n; ++i) {
     a[i] = b[i] + c[i];
     // CHECK: define{{.+}} void [[OMP_OUTLINED_3]](
@@ -1269,13 +1268,13 @@ int main() {
     // skip implementation of 'parallel for': using default scheduling and was tested above
   }
 
-  // schedule: static no chunk
-  #pragma omp target
-  #pragma omp teams
+// schedule: static no chunk
+#pragma omp target
+#pragma omp teams
   // CHECK: define{{.+}} void [[OFFLOADING_FUN_4]](
   // CHECK: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, i32 4, {{.+}}* [[OMP_OUTLINED_4:@.+]] to {{.+}})
 
-  #pragma omp distribute parallel for schedule(static)
+#pragma omp distribute parallel for schedule(static)
   for (int i = 0; i < n; ++i) {
     a[i] = b[i] + c[i];
     // CHECK: define{{.+}} void [[OMP_OUTLINED_4]](
@@ -1352,13 +1351,13 @@ int main() {
     // CHECK: ret
   }
 
-  // schedule: static chunk
-  #pragma omp target
-  #pragma omp teams
+// schedule: static chunk
+#pragma omp target
+#pragma omp teams
   // CHECK: define{{.+}} void [[OFFLOADING_FUN_5]](
   // CHECK: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, i32 5, {{.+}}* [[OMP_OUTLINED_5:@.+]] to {{.+}})
 
-  #pragma omp distribute parallel for schedule(static, ch)
+#pragma omp distribute parallel for schedule(static, ch)
   for (int i = 0; i < n; ++i) {
     a[i] = b[i] + c[i];
     // CHECK: define{{.+}} void [[OMP_OUTLINED_5]](
@@ -1462,13 +1461,13 @@ int main() {
     // CHECK: ret
   }
 
-  // schedule: dynamic no chunk
-  #pragma omp target
-  #pragma omp teams
+// schedule: dynamic no chunk
+#pragma omp target
+#pragma omp teams
   // CHECK: define{{.+}} void [[OFFLOADING_FUN_6]](
   // CHECK: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, i32 4, {{.+}}* [[OMP_OUTLINED_6:@.+]] to {{.+}})
 
-  #pragma omp distribute parallel for schedule(dynamic)
+#pragma omp distribute parallel for schedule(dynamic)
   for (int i = 0; i < n; ++i) {
     a[i] = b[i] + c[i];
     // CHECK: define{{.+}} void [[OMP_OUTLINED_6]](
@@ -1541,13 +1540,13 @@ int main() {
     // CHECK: ret
   }
 
-  // schedule: dynamic chunk
-  #pragma omp target
-  #pragma omp teams
+// schedule: dynamic chunk
+#pragma omp target
+#pragma omp teams
   // CHECK: define{{.+}} void [[OFFLOADING_FUN_7]](
   // CHECK: call {{.*}}void {{.+}} @__kmpc_fork_teams({{.+}}, i32 5, {{.+}}* [[OMP_OUTLINED_7:@.+]] to {{.+}})
 
-  #pragma omp distribute parallel for schedule(dynamic, ch)
+#pragma omp distribute parallel for schedule(dynamic, ch)
   for (int i = 0; i < n; ++i) {
     a[i] = b[i] + c[i];
     // CHECK: define{{.+}} void [[OMP_OUTLINED_7]](

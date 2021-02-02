@@ -21,11 +21,13 @@
 int main(int, char**) {
   {
     std::unique_ptr<A[]> p;
-    p.reset(static_cast<B*>(nullptr)); // expected-error {{no matching member function for call to 'reset'}}
+    p.reset(static_cast<B*>(
+        nullptr)); // expected-error {{no matching member function for call to 'reset'}}
   }
   {
     std::unique_ptr<int[]> p;
-    p.reset(static_cast<const int*>(nullptr)); // expected-error {{no matching member function for call to 'reset'}}
+    p.reset(static_cast<const int*>(
+        nullptr)); // expected-error {{no matching member function for call to 'reset'}}
   }
 
   return 0;

@@ -6,8 +6,8 @@ struct C {
 };
 
 typedef int I1, I2;
-extern int* p;
-extern int* q;
+extern int *p;
+extern int *q;
 
 void f() {
   p->C::I::~I();

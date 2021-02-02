@@ -26,8 +26,8 @@ int main() {
   barrier_init(&barrier, 2);
   int a[128];
   pthread_t th;
-  pthread_create(&th, 0, Thread, (void*)a);
-  __tsan_write_range_pc((uptr)(a+2), 32, (uptr)barbaz + kPCInc);
+  pthread_create(&th, 0, Thread, (void *)a);
+  __tsan_write_range_pc((uptr)(a + 2), 32, (uptr)barbaz + kPCInc);
   barrier_wait(&barrier);
   pthread_join(th, 0);
   fprintf(stderr, "DONE\n");

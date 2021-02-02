@@ -11,7 +11,7 @@ enum E { a = 1 } e;
 
 int main(int argc, char **argv) {
   // memset(&e, 0xff, sizeof(e));
-  for (unsigned char *p = (unsigned char*)&e; p != (unsigned char*)(&e + 1); ++p)
+  for (unsigned char *p = (unsigned char *)&e; p != (unsigned char *)(&e + 1); ++p)
     *p = 0xff;
 
   // CHECK-PLAIN: error: load of value 4294967295, which is not a valid value for type 'enum E'

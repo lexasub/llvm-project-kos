@@ -2,10 +2,10 @@
 // RUN: %clangxx_msan -O3 -g %s -o %t && %run %t
 
 #include <assert.h>
+#include <sanitizer/msan_interface.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
-#include <sanitizer/msan_interface.h>
 
 int main(void) {
   char *p = (char *)alloca(16);
@@ -16,7 +16,7 @@ int main(void) {
   assert(-1 == __msan_test_shadow(p, 16));
 
   volatile int x = 0;
-  char * volatile q = (char *)alloca(42 * x);
+  char *volatile q = (char *)alloca(42 * x);
   assert(-1 == __msan_test_shadow(p, 16));
 
   int r[x];

@@ -28,32 +28,31 @@ using namespace fs;
 
 TEST_SUITE(recursive_directory_iterator_begin_end_tests)
 
-TEST_CASE(test_function_signatures)
-{
-    recursive_directory_iterator d; ((void)d);
+TEST_CASE(test_function_signatures) {
+  recursive_directory_iterator d;
+  ((void)d);
 
-    ASSERT_SAME_TYPE(decltype(begin(d)), recursive_directory_iterator);
-    ASSERT_NOEXCEPT(begin(std::move(d)));
+  ASSERT_SAME_TYPE(decltype(begin(d)), recursive_directory_iterator);
+  ASSERT_NOEXCEPT(begin(std::move(d)));
 
-    ASSERT_SAME_TYPE(decltype(end(d)), recursive_directory_iterator);
-    ASSERT_NOEXCEPT(end(std::move(d)));
+  ASSERT_SAME_TYPE(decltype(end(d)), recursive_directory_iterator);
+  ASSERT_NOEXCEPT(end(std::move(d)));
 }
 
-TEST_CASE(test_ranged_for_loop)
-{
-    static_test_env static_env;
-    const path testDir = static_env.Dir;
-    std::set<path> dir_contents(static_env.RecDirIterationList.begin(),
-                                static_env.RecDirIterationList.end());
+TEST_CASE(test_ranged_for_loop) {
+  static_test_env static_env;
+  const path testDir = static_env.Dir;
+  std::set<path> dir_contents(static_env.RecDirIterationList.begin(),
+                              static_env.RecDirIterationList.end());
 
-    std::error_code ec;
-    recursive_directory_iterator it(testDir, ec);
-    TEST_REQUIRE(!ec);
+  std::error_code ec;
+  recursive_directory_iterator it(testDir, ec);
+  TEST_REQUIRE(!ec);
 
-    for (auto& elem : it) {
-        TEST_CHECK(dir_contents.erase(elem) == 1);
-    }
-    TEST_CHECK(dir_contents.empty());
+  for (auto& elem : it) {
+    TEST_CHECK(dir_contents.erase(elem) == 1);
+  }
+  TEST_CHECK(dir_contents.empty());
 }
 
 TEST_SUITE_END()

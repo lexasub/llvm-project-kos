@@ -96,8 +96,7 @@ QualType CallEvent::getResultType() const {
 
 static bool isCallback(QualType T) {
   // If a parameter is a block or a callback, assume it can modify pointer.
-  if (T->isBlockPointerType() ||
-      T->isFunctionPointerType() ||
+  if (T->isBlockPointerType() || T->isFunctionPointerType() ||
       T->isObjCSelType())
     return true;
 
@@ -208,16 +207,16 @@ CallEvent::getCalleeStackFrame(unsigned BlockCount) const {
   return ADC->getManager()->getStackFrame(ADC, LCtx, E, B, BlockCount, Idx);
 }
 
-const ParamVarRegion
-*CallEvent::getParameterLocation(unsigned Index, unsigned BlockCount) const {
+const ParamVarRegion *
+CallEvent::getParameterLocation(unsigned Index, unsigned BlockCount) const {
   const StackFrameContext *SFC = getCalleeStackFrame(BlockCount);
   // We cannot construct a VarRegion without a stack frame.
   if (!SFC)
     return nullptr;
 
   const ParamVarRegion *PVR =
-    State->getStateManager().getRegionManager().getParamVarRegion(
-        getOriginExpr(), Index, SFC);
+      State->getStateManager().getRegionManager().getParamVarRegion(
+          getOriginExpr(), Index, SFC);
   return PVR;
 }
 
@@ -272,9 +271,10 @@ ProgramStateRef CallEvent::invalidateRegions(unsigned BlockCount,
     // below for efficiency.
     if (PreserveArgs.count(Idx))
       if (const MemRegion *MR = getArgSVal(Idx).getAsRegion())
-        ETraits.setTrait(MR->getBaseRegion(),
-                        RegionAndSymbolInvalidationTraits::TK_PreserveContents);
-        // TODO: Factor this out + handle the lower level const pointers.
+        ETraits.setTrait(
+            MR->getBaseRegion(),
+            RegionAndSymbolInvalidationTraits::TK_PreserveContents);
+    // TODO: Factor this out + handle the lower level const pointers.
 
     ValuesToInvalidate.push_back(getArgSVal(Idx));
 
@@ -419,9 +419,8 @@ void CallEvent::dump(raw_ostream &Out) const {
 }
 
 bool CallEvent::isCallStmt(const Stmt *S) {
-  return isa<CallExpr>(S) || isa<ObjCMessageExpr>(S)
-                          || isa<CXXConstructExpr>(S)
-                          || isa<CXXNewExpr>(S);
+  return isa<CallExpr>(S) || isa<ObjCMessageExpr>(S) ||
+         isa<CXXConstructExpr>(S) || isa<CXXNewExpr>(S);
 }
 
 QualType CallEvent::getDeclaredResultType(const Decl *D) {
@@ -470,14 +469,15 @@ static void addParameterValuesToBindings(const StackFrameContext *CalleeCtx,
                                          CallEvent::BindingsTy &Bindings,
                                          SValBuilder &SVB,
                                          const CallEvent &Call,
-                                         ArrayRef<ParmVarDecl*> parameters) {
+                                         ArrayRef<ParmVarDecl *> parameters) {
   MemRegionManager &MRMgr = SVB.getRegionManager();
 
   // If the function has fewer parameters than the call has arguments, we simply
   // do not bind any values to them.
   unsigned NumArgs = Call.getNumArgs();
   unsigned Idx = 0;
-  ArrayRef<ParmVarDecl*>::iterator I = parameters.begin(), E = parameters.end();
+  ArrayRef<ParmVarDecl *>::iterator I = parameters.begin(),
+                                    E = parameters.end();
   for (; I != E && Idx < NumArgs; ++I, ++Idx) {
     assert(*I && "Formal parameter has no decl?");
 
@@ -517,21 +517,19 @@ const ConstructionContext *CallEvent::getConstructionContext() const {
   return nullptr;
 }
 
-Optional<SVal>
-CallEvent::getReturnValueUnderConstruction() const {
+Optional<SVal> CallEvent::getReturnValueUnderConstruction() const {
   const auto *CC = getConstructionContext();
   if (!CC)
     return None;
 
   EvalCallOptions CallOpts;
   ExprEngine &Engine = getState()->getStateManager().getOwningEngine();
-  SVal RetVal =
-    Engine.computeObjectUnderConstruction(getOriginExpr(), getState(),
-                                          getLocationContext(), CC, CallOpts);
+  SVal RetVal = Engine.computeObjectUnderConstruction(
+      getOriginExpr(), getState(), getLocationContext(), CC, CallOpts);
   return RetVal;
 }
 
-ArrayRef<ParmVarDecl*> AnyFunctionCall::parameters() const {
+ArrayRef<ParmVarDecl *> AnyFunctionCall::parameters() const {
   const FunctionDecl *D = getDecl();
   if (!D)
     return None;
@@ -546,17 +544,17 @@ RuntimeDefinition AnyFunctionCall::getRuntimeDefinition() const {
   // Note that the AnalysisDeclContext will have the FunctionDecl with
   // the definition (if one exists).
   AnalysisDeclContext *AD =
-    getLocationContext()->getAnalysisDeclContext()->
-    getManager()->getContext(FD);
+      getLocationContext()->getAnalysisDeclContext()->getManager()->getContext(
+          FD);
   bool IsAutosynthesized;
-  Stmt* Body = AD->getBody(IsAutosynthesized);
+  Stmt *Body = AD->getBody(IsAutosynthesized);
   LLVM_DEBUG({
     if (IsAutosynthesized)
       llvm::dbgs() << "Using autosynthesized body for " << FD->getName()
                    << "\n";
   });
   if (Body) {
-    const Decl* Decl = AD->getDecl();
+    const Decl *Decl = AD->getDecl();
     return RuntimeDefinition(Decl);
   }
 
@@ -585,8 +583,7 @@ RuntimeDefinition AnyFunctionCall::getRuntimeDefinition() const {
 }
 
 void AnyFunctionCall::getInitialStackFrameContents(
-                                        const StackFrameContext *CalleeCtx,
-                                        BindingsTy &Bindings) const {
+    const StackFrameContext *CalleeCtx, BindingsTy &Bindings) const {
   const auto *D = cast<FunctionDecl>(CalleeCtx->getDecl());
   SValBuilder &SVB = getState()->getStateManager().getSValBuilder();
   addParameterValuesToBindings(CalleeCtx, Bindings, SVB, *this,
@@ -643,11 +640,11 @@ bool AnyFunctionCall::argumentsMayEscape() const {
   // - Many CF containers allow objects to escape through custom
   //   allocators/deallocators upon container construction. (PR12101)
   if (FName.startswith("CF") || FName.startswith("CG")) {
-    return StrInStrNoCase(FName, "InsertValue")  != StringRef::npos ||
-           StrInStrNoCase(FName, "AddValue")     != StringRef::npos ||
-           StrInStrNoCase(FName, "SetValue")     != StringRef::npos ||
-           StrInStrNoCase(FName, "WithData")     != StringRef::npos ||
-           StrInStrNoCase(FName, "AppendValue")  != StringRef::npos ||
+    return StrInStrNoCase(FName, "InsertValue") != StringRef::npos ||
+           StrInStrNoCase(FName, "AddValue") != StringRef::npos ||
+           StrInStrNoCase(FName, "SetValue") != StringRef::npos ||
+           StrInStrNoCase(FName, "WithData") != StringRef::npos ||
+           StrInStrNoCase(FName, "AppendValue") != StringRef::npos ||
            StrInStrNoCase(FName, "SetAttribute") != StringRef::npos;
   }
 
@@ -759,7 +756,7 @@ RuntimeDefinition CXXInstanceCall::getRuntimeDefinition() const {
     // DynamicTypeInfo when an object is cast, we can't actually be sure the
     // DynamicTypeInfo is up to date. This assert should be re-enabled once
     // this is fixed. <rdar://problem/12287087>
-    //assert(!MD->getParent()->isDerivedFrom(RD) && "Bad DynamicTypeInfo");
+    // assert(!MD->getParent()->isDerivedFrom(RD) && "Bad DynamicTypeInfo");
 
     return {};
   }
@@ -781,8 +778,7 @@ RuntimeDefinition CXXInstanceCall::getRuntimeDefinition() const {
 }
 
 void CXXInstanceCall::getInitialStackFrameContents(
-                                            const StackFrameContext *CalleeCtx,
-                                            BindingsTy &Bindings) const {
+    const StackFrameContext *CalleeCtx, BindingsTy &Bindings) const {
   AnyFunctionCall::getInitialStackFrameContents(CalleeCtx, Bindings);
 
   // Handle the binding of 'this' in the new stack frame.
@@ -847,15 +843,15 @@ const BlockDataRegion *BlockCall::getBlockRegion() const {
   return dyn_cast_or_null<BlockDataRegion>(DataReg);
 }
 
-ArrayRef<ParmVarDecl*> BlockCall::parameters() const {
+ArrayRef<ParmVarDecl *> BlockCall::parameters() const {
   const BlockDecl *D = getDecl();
   if (!D)
     return None;
   return D->parameters();
 }
 
-void BlockCall::getExtraInvalidatedValues(ValueList &Values,
-                  RegionAndSymbolInvalidationTraits *ETraits) const {
+void BlockCall::getExtraInvalidatedValues(
+    ValueList &Values, RegionAndSymbolInvalidationTraits *ETraits) const {
   // FIXME: This also needs to invalidate captured globals.
   if (const MemRegion *R = getBlockRegion())
     Values.push_back(loc::MemRegionVal(R));
@@ -864,7 +860,7 @@ void BlockCall::getExtraInvalidatedValues(ValueList &Values,
 void BlockCall::getInitialStackFrameContents(const StackFrameContext *CalleeCtx,
                                              BindingsTy &Bindings) const {
   SValBuilder &SVB = getState()->getStateManager().getSValBuilder();
-  ArrayRef<ParmVarDecl*> Params;
+  ArrayRef<ParmVarDecl *> Params;
   if (isConversionFromLambda()) {
     auto *LambdaOperatorDecl = cast<CXXMethodDecl>(CalleeCtx->getDecl());
     Params = LambdaOperatorDecl->parameters();
@@ -880,8 +876,7 @@ void BlockCall::getInitialStackFrameContents(const StackFrameContext *CalleeCtx,
     Params = cast<BlockDecl>(CalleeCtx->getDecl())->parameters();
   }
 
-  addParameterValuesToBindings(CalleeCtx, Bindings, SVB, *this,
-                               Params);
+  addParameterValuesToBindings(CalleeCtx, Bindings, SVB, *this, Params);
 }
 
 SVal AnyCXXConstructorCall::getCXXThisVal() const {
@@ -890,8 +885,8 @@ SVal AnyCXXConstructorCall::getCXXThisVal() const {
   return UnknownVal();
 }
 
-void AnyCXXConstructorCall::getExtraInvalidatedValues(ValueList &Values,
-                           RegionAndSymbolInvalidationTraits *ETraits) const {
+void AnyCXXConstructorCall::getExtraInvalidatedValues(
+    ValueList &Values, RegionAndSymbolInvalidationTraits *ETraits) const {
   SVal V = getCXXThisVal();
   if (SymbolRef Sym = V.getAsSymbol(true))
     ETraits->setTrait(Sym,
@@ -900,8 +895,7 @@ void AnyCXXConstructorCall::getExtraInvalidatedValues(ValueList &Values,
 }
 
 void AnyCXXConstructorCall::getInitialStackFrameContents(
-                                             const StackFrameContext *CalleeCtx,
-                                             BindingsTy &Bindings) const {
+    const StackFrameContext *CalleeCtx, BindingsTy &Bindings) const {
   AnyFunctionCall::getInitialStackFrameContents(CalleeCtx, Bindings);
 
   SVal ThisVal = getCXXThisVal();
@@ -936,7 +930,7 @@ RuntimeDefinition CXXDestructorCall::getRuntimeDefinition() const {
   return CXXInstanceCall::getRuntimeDefinition();
 }
 
-ArrayRef<ParmVarDecl*> ObjCMethodCall::parameters() const {
+ArrayRef<ParmVarDecl *> ObjCMethodCall::parameters() const {
   const ObjCMethodDecl *D = getDecl();
   if (!D)
     return None;
@@ -954,11 +948,10 @@ void ObjCMethodCall::getExtraInvalidatedValues(
       SVal IvarLVal = getState()->getLValue(PropIvar, getReceiverSVal());
       if (const MemRegion *IvarRegion = IvarLVal.getAsRegion()) {
         ETraits->setTrait(
-          IvarRegion,
-          RegionAndSymbolInvalidationTraits::TK_DoNotInvalidateSuperRegion);
-        ETraits->setTrait(
-          IvarRegion,
-          RegionAndSymbolInvalidationTraits::TK_SuppressEscape);
+            IvarRegion,
+            RegionAndSymbolInvalidationTraits::TK_DoNotInvalidateSuperRegion);
+        ETraits->setTrait(IvarRegion,
+                          RegionAndSymbolInvalidationTraits::TK_SuppressEscape);
         Values.push_back(IvarLVal);
       }
       return;
@@ -987,7 +980,7 @@ SVal ObjCMethodCall::getReceiverSVal() const {
 bool ObjCMethodCall::isReceiverSelfOrSuper() const {
   if (getOriginExpr()->getReceiverKind() == ObjCMessageExpr::SuperInstance ||
       getOriginExpr()->getReceiverKind() == ObjCMessageExpr::SuperClass)
-      return true;
+    return true;
 
   if (!isInstanceMessage())
     return false;
@@ -1054,15 +1047,15 @@ ObjCMessageKind ObjCMethodCall::getMessageKind() const {
       }
 
       if (K != OCM_Message) {
-        const_cast<ObjCMethodCall *>(this)->Data
-          = ObjCMessageDataTy(POE, K).getOpaqueValue();
+        const_cast<ObjCMethodCall *>(this)->Data =
+            ObjCMessageDataTy(POE, K).getOpaqueValue();
         assert(getMessageKind() == K);
         return K;
       }
     }
 
-    const_cast<ObjCMethodCall *>(this)->Data
-      = ObjCMessageDataTy(nullptr, 1).getOpaqueValue();
+    const_cast<ObjCMethodCall *>(this)->Data =
+        ObjCMessageDataTy(nullptr, 1).getOpaqueValue();
     assert(getMessageKind() == OCM_Message);
     return OCM_Message;
   }
@@ -1096,7 +1089,7 @@ const ObjCPropertyDecl *ObjCMethodCall::getAccessedProperty() const {
 }
 
 bool ObjCMethodCall::canBeOverridenInSubclass(ObjCInterfaceDecl *IDecl,
-                                             Selector Sel) const {
+                                              Selector Sel) const {
   assert(IDecl);
   AnalysisManager &AMgr =
       getState()->getStateManager().getOwningEngine().getAnalysisManager();
@@ -1350,8 +1343,7 @@ bool ObjCMethodCall::argumentsMayEscape() const {
 }
 
 void ObjCMethodCall::getInitialStackFrameContents(
-                                             const StackFrameContext *CalleeCtx,
-                                             BindingsTy &Bindings) const {
+    const StackFrameContext *CalleeCtx, BindingsTy &Bindings) const {
   const auto *D = cast<ObjCMethodDecl>(CalleeCtx->getDecl());
   SValBuilder &SVB = getState()->getStateManager().getSValBuilder();
   addParameterValuesToBindings(CalleeCtx, Bindings, SVB, *this,
@@ -1366,9 +1358,9 @@ void ObjCMethodCall::getInitialStackFrameContents(
   }
 }
 
-CallEventRef<>
-CallEventManager::getSimpleCall(const CallExpr *CE, ProgramStateRef State,
-                                const LocationContext *LCtx) {
+CallEventRef<> CallEventManager::getSimpleCall(const CallExpr *CE,
+                                               ProgramStateRef State,
+                                               const LocationContext *LCtx) {
   if (const auto *MCE = dyn_cast<CXXMemberCallExpr>(CE))
     return create<CXXMemberCall>(MCE, State, LCtx);
 
@@ -1387,9 +1379,8 @@ CallEventManager::getSimpleCall(const CallExpr *CE, ProgramStateRef State,
   return create<SimpleFunctionCall>(CE, State, LCtx);
 }
 
-CallEventRef<>
-CallEventManager::getCaller(const StackFrameContext *CalleeCtx,
-                            ProgramStateRef State) {
+CallEventRef<> CallEventManager::getCaller(const StackFrameContext *CalleeCtx,
+                                           ProgramStateRef State) {
   const LocationContext *ParentCtx = CalleeCtx->getParent();
   const LocationContext *CallerCtx = ParentCtx->getStackFrame();
   assert(CallerCtx && "This should not be used for top-level stack frames");

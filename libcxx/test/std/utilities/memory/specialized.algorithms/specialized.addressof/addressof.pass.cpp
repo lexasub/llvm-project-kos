@@ -15,22 +15,19 @@
 
 #include "test_macros.h"
 
-struct A
-{
-    void operator&() const {}
+struct A {
+  void operator&() const {}
 };
 
 struct nothing {
-    operator char&()
-    {
-        static char c;
-        return c;
-    }
+  operator char&() {
+    static char c;
+    return c;
+  }
 };
 
-int main(int, char**)
-{
-    {
+int main(int, char**) {
+  {
     int i;
     double d;
     assert(std::addressof(i) == &i);
@@ -40,15 +37,14 @@ int main(int, char**)
     assert(std::addressof(*tp) == tp);
     assert(std::addressof(*ctp) == tp);
     delete tp;
-    }
-    {
-    union
-    {
-        nothing n;
-        int i;
+  }
+  {
+    union {
+      nothing n;
+      int i;
     };
     assert(std::addressof(n) == (void*)std::addressof(i));
-    }
+  }
 
   return 0;
 }

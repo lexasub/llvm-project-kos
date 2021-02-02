@@ -11,8 +11,7 @@ void *fiber, *orig_fiber[2];
 
 const unsigned N = 1000;
 
-__attribute__((noinline))
-void switch0() {
+__attribute__((noinline)) void switch0() {
   __tsan_switch_to_fiber(orig_fiber[0], 0);
   swapcontext(&uc, &orig_uc[0]);
 }

@@ -9,28 +9,27 @@
 // Fast unwinder is only available on x86_64 and i386.
 // REQUIRES: x86-target-arch
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 int global_array[10];
 volatile int one = 1;
 
 extern "C" {
 int QsortCallback(const void *a, const void *b) {
-  char *x = (char*)a;
-  char *y = (char*)b;
+  char *x = (char *)a;
+  char *y = (char *)b;
   printf("Calling QsortCallback\n");
-  global_array[one * 10] = 0;  // BOOM
+  global_array[one * 10] = 0; // BOOM
   return (int)*x - (int)*y;
 }
 
-__attribute__((noinline))
-void MyQsort(char *a, size_t size) {
+__attribute__((noinline)) void MyQsort(char *a, size_t size) {
   printf("Calling qsort\n");
   qsort(a, size, sizeof(char), QsortCallback);
-  printf("Done\n");  // Avoid tail call.
+  printf("Done\n"); // Avoid tail call.
 }
-}  // extern "C"
+} // extern "C"
 
 int main() {
   char a[2] = {1, 2};

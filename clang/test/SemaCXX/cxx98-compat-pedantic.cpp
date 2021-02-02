@@ -13,7 +13,7 @@
 #line 32768 // expected-warning {{#line number greater than 32767 is incompatible with C++98}}
 
 #define VA_MACRO(x, ...) x // expected-warning {{variadic macros are incompatible with C++98}}
-VA_MACRO(,x) // expected-warning {{empty macro arguments are incompatible with C++98}}
+VA_MACRO(, x)              // expected-warning {{empty macro arguments are incompatible with C++98}}
 
 ; // expected-warning {{extra ';' outside of a function is incompatible with C++98}}
 
@@ -22,8 +22,8 @@ enum Enum {
 };
 
 void *dlsym();
-void (*FnPtr)() = (void(*)())dlsym(); // expected-warning {{cast between pointer-to-function and pointer-to-object is incompatible with C++98}}
-void *FnVoidPtr = (void*)&dlsym; // expected-warning {{cast between pointer-to-function and pointer-to-object is incompatible with C++98}}
+void (*FnPtr)() = (void (*)())dlsym(); // expected-warning {{cast between pointer-to-function and pointer-to-object is incompatible with C++98}}
+void *FnVoidPtr = (void *)&dlsym;      // expected-warning {{cast between pointer-to-function and pointer-to-object is incompatible with C++98}}
 
 struct ConvertToInt {
   operator int();
@@ -35,13 +35,13 @@ int *ArraySizeConversion = new int[ConvertToInt()];
 // expected-warning@-4 {{implicit conversion from array size expression of type 'ConvertToInt' to integral type 'int' is incompatible with C++98}}
 #endif
 
-template<typename T> class ExternTemplate {};
+template <typename T> class ExternTemplate {};
 extern template class ExternTemplate<int>; // expected-warning {{extern templates are incompatible with C++98}}
 
-long long ll1 = // expected-warning {{'long long' is incompatible with C++98}}
-         -42LL; // expected-warning {{'long long' is incompatible with C++98}}
+long long ll1 =           // expected-warning {{'long long' is incompatible with C++98}}
+    -42LL;                // expected-warning {{'long long' is incompatible with C++98}}
 unsigned long long ull1 = // expected-warning {{'long long' is incompatible with C++98}}
-                   42ULL; // expected-warning {{'long long' is incompatible with C++98}}
+    42ULL;                // expected-warning {{'long long' is incompatible with C++98}}
 
 int k = 0b1001;
 #ifdef CXX1Y
@@ -49,28 +49,29 @@ int k = 0b1001;
 #endif
 
 namespace CopyCtorIssues {
-  struct Private {
-    Private();
-  private:
-    Private(const Private&); // expected-note {{declared private here}}
-  };
-  struct NoViable {
-    NoViable(); // expected-note {{not viable}}
-    NoViable(NoViable&); // expected-note {{not viable}}
-  };
-  struct Ambiguous {
-    Ambiguous();
-    Ambiguous(const Ambiguous &, int = 0); // expected-note {{candidate}}
-    Ambiguous(const Ambiguous &, double = 0); // expected-note {{candidate}}
-  };
-  struct Deleted {
-    Private p; // expected-note {{implicitly deleted}}
-  };
+struct Private {
+  Private();
 
-  const Private &a = Private(); // expected-warning {{copying variable of type 'CopyCtorIssues::Private' when binding a reference to a temporary would invoke an inaccessible constructor in C++98}}
-  const NoViable &b = NoViable(); // expected-warning {{copying variable of type 'CopyCtorIssues::NoViable' when binding a reference to a temporary would find no viable constructor in C++98}}
+private:
+  Private(const Private &); // expected-note {{declared private here}}
+};
+struct NoViable {
+  NoViable();           // expected-note {{not viable}}
+  NoViable(NoViable &); // expected-note {{not viable}}
+};
+struct Ambiguous {
+  Ambiguous();
+  Ambiguous(const Ambiguous &, int = 0);    // expected-note {{candidate}}
+  Ambiguous(const Ambiguous &, double = 0); // expected-note {{candidate}}
+};
+struct Deleted {
+  Private p; // expected-note {{implicitly deleted}}
+};
+
+const Private &a = Private();   // expected-warning {{copying variable of type 'CopyCtorIssues::Private' when binding a reference to a temporary would invoke an inaccessible constructor in C++98}}
+const NoViable &b = NoViable(); // expected-warning {{copying variable of type 'CopyCtorIssues::NoViable' when binding a reference to a temporary would find no viable constructor in C++98}}
 #if !CXX98
-  const Ambiguous &c = Ambiguous(); // expected-warning {{copying variable of type 'CopyCtorIssues::Ambiguous' when binding a reference to a temporary would find ambiguous constructors in C++98}}
+const Ambiguous &c = Ambiguous(); // expected-warning {{copying variable of type 'CopyCtorIssues::Ambiguous' when binding a reference to a temporary would find ambiguous constructors in C++98}}
 #endif
-  const Deleted &d = Deleted(); // expected-warning {{copying variable of type 'CopyCtorIssues::Deleted' when binding a reference to a temporary would invoke a deleted constructor in C++98}}
-}
+const Deleted &d = Deleted(); // expected-warning {{copying variable of type 'CopyCtorIssues::Deleted' when binding a reference to a temporary would invoke a deleted constructor in C++98}}
+} // namespace CopyCtorIssues

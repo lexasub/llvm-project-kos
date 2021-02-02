@@ -3,9 +3,9 @@
 // Test that a signal is not delivered when it is blocked.
 
 #include "test.h"
+#include <errno.h>
 #include <semaphore.h>
 #include <signal.h>
-#include <errno.h>
 
 int stop;
 sig_atomic_t signal_blocked;
@@ -38,7 +38,7 @@ void *thread(void *arg) {
   return 0;
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   struct sigaction act = {};
   act.sa_handler = &handler;
   if (sigaction(SIGUSR1, &act, 0)) {

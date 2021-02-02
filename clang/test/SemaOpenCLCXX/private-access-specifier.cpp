@@ -5,9 +5,9 @@
 
 struct B {
   virtual ~B() // expected-error{{expected ';' at end of declaration list}}
-private:
-   void foo();
-   private int* i; // expected-error{{expected ':'}}
+      private : void foo();
+private
+  int *i; // expected-error{{expected ':'}}
 };
 
-void bar(private int*); //expected-error{{variable has incomplete type 'void'}} expected-error{{expected expression}}
+void bar(private int *); //expected-error{{variable has incomplete type 'void'}} expected-error{{expected expression}}

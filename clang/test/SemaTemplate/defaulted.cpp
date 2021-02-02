@@ -2,9 +2,9 @@
 // expected-no-diagnostics
 
 namespace SpaceshipImpliesEq {
-  template<typename T> struct A {
-    int operator<=>(const A&) const = default;
-    constexpr bool f() { return operator==(*this); }
-  };
-  static_assert(A<int>().f());
-}
+template <typename T> struct A {
+  int operator<=>(const A &) const = default;
+  constexpr bool f() { return operator==(*this); }
+};
+static_assert(A<int>().f());
+} // namespace SpaceshipImpliesEq

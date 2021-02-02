@@ -17,33 +17,18 @@ using namespace llvm::object;
 using namespace llvm::Win64EH;
 
 static const EnumEntry<unsigned> UnwindFlags[] = {
-  { "ExceptionHandler", UNW_ExceptionHandler },
-  { "TerminateHandler", UNW_TerminateHandler },
-  { "ChainInfo"       , UNW_ChainInfo        }
-};
+    {"ExceptionHandler", UNW_ExceptionHandler},
+    {"TerminateHandler", UNW_TerminateHandler},
+    {"ChainInfo", UNW_ChainInfo}};
 
 static const EnumEntry<unsigned> UnwindOpInfo[] = {
-  { "RAX",  0 },
-  { "RCX",  1 },
-  { "RDX",  2 },
-  { "RBX",  3 },
-  { "RSP",  4 },
-  { "RBP",  5 },
-  { "RSI",  6 },
-  { "RDI",  7 },
-  { "R8",   8 },
-  { "R9",   9 },
-  { "R10", 10 },
-  { "R11", 11 },
-  { "R12", 12 },
-  { "R13", 13 },
-  { "R14", 14 },
-  { "R15", 15 }
-};
+    {"RAX", 0},  {"RCX", 1},  {"RDX", 2},  {"RBX", 3}, {"RSP", 4},  {"RBP", 5},
+    {"RSI", 6},  {"RDI", 7},  {"R8", 8},   {"R9", 9},  {"R10", 10}, {"R11", 11},
+    {"R12", 12}, {"R13", 13}, {"R14", 14}, {"R15", 15}};
 
-static uint64_t getOffsetOfLSDA(const UnwindInfo& UI) {
-  return static_cast<const char*>(UI.getLanguageSpecificData())
-         - reinterpret_cast<const char*>(&UI);
+static uint64_t getOffsetOfLSDA(const UnwindInfo &UI) {
+  return static_cast<const char *>(UI.getLanguageSpecificData()) -
+         reinterpret_cast<const char *>(&UI);
 }
 
 static uint32_t getLargeSlotValue(ArrayRef<UnwindCode> UC) {
@@ -55,46 +40,74 @@ static uint32_t getLargeSlotValue(ArrayRef<UnwindCode> UC) {
 // Returns the name of the unwind code.
 static StringRef getUnwindCodeTypeName(uint8_t Code) {
   switch (Code) {
-  default: llvm_unreachable("Invalid unwind code");
-  case UOP_PushNonVol: return "PUSH_NONVOL";
-  case UOP_AllocLarge: return "ALLOC_LARGE";
-  case UOP_AllocSmall: return "ALLOC_SMALL";
-  case UOP_SetFPReg: return "SET_FPREG";
-  case UOP_SaveNonVol: return "SAVE_NONVOL";
-  case UOP_SaveNonVolBig: return "SAVE_NONVOL_FAR";
-  case UOP_SaveXMM128: return "SAVE_XMM128";
-  case UOP_SaveXMM128Big: return "SAVE_XMM128_FAR";
-  case UOP_PushMachFrame: return "PUSH_MACHFRAME";
+  default:
+    llvm_unreachable("Invalid unwind code");
+  case UOP_PushNonVol:
+    return "PUSH_NONVOL";
+  case UOP_AllocLarge:
+    return "ALLOC_LARGE";
+  case UOP_AllocSmall:
+    return "ALLOC_SMALL";
+  case UOP_SetFPReg:
+    return "SET_FPREG";
+  case UOP_SaveNonVol:
+    return "SAVE_NONVOL";
+  case UOP_SaveNonVolBig:
+    return "SAVE_NONVOL_FAR";
+  case UOP_SaveXMM128:
+    return "SAVE_XMM128";
+  case UOP_SaveXMM128Big:
+    return "SAVE_XMM128_FAR";
+  case UOP_PushMachFrame:
+    return "PUSH_MACHFRAME";
   }
 }
 
 // Returns the name of a referenced register.
 static StringRef getUnwindRegisterName(uint8_t Reg) {
   switch (Reg) {
-  default: llvm_unreachable("Invalid register");
-  case 0: return "RAX";
-  case 1: return "RCX";
-  case 2: return "RDX";
-  case 3: return "RBX";
-  case 4: return "RSP";
-  case 5: return "RBP";
-  case 6: return "RSI";
-  case 7: return "RDI";
-  case 8: return "R8";
-  case 9: return "R9";
-  case 10: return "R10";
-  case 11: return "R11";
-  case 12: return "R12";
-  case 13: return "R13";
-  case 14: return "R14";
-  case 15: return "R15";
+  default:
+    llvm_unreachable("Invalid register");
+  case 0:
+    return "RAX";
+  case 1:
+    return "RCX";
+  case 2:
+    return "RDX";
+  case 3:
+    return "RBX";
+  case 4:
+    return "RSP";
+  case 5:
+    return "RBP";
+  case 6:
+    return "RSI";
+  case 7:
+    return "RDI";
+  case 8:
+    return "R8";
+  case 9:
+    return "R9";
+  case 10:
+    return "R10";
+  case 11:
+    return "R11";
+  case 12:
+    return "R12";
+  case 13:
+    return "R13";
+  case 14:
+    return "R14";
+  case 15:
+    return "R15";
   }
 }
 
 // Calculates the number of array slots required for the unwind code.
 static unsigned getNumUsedSlots(const UnwindCode &UnwindCode) {
   switch (UnwindCode.getUnwindOp()) {
-  default: llvm_unreachable("Invalid unwind code");
+  default:
+    llvm_unreachable("Invalid unwind code");
   case UOP_PushNonVol:
   case UOP_AllocSmall:
   case UOP_SetFPReg:
@@ -215,7 +228,7 @@ void Dumper::printRuntimeFunctionEntry(const Context &Ctx,
 // Prints one unwind code. Because an unwind code can occupy up to 3 slots in
 // the unwind codes array, this function requires that the correct number of
 // slots is provided.
-void Dumper::printUnwindCode(const UnwindInfo& UI, ArrayRef<UnwindCode> UC) {
+void Dumper::printUnwindCode(const UnwindInfo &UI, ArrayRef<UnwindCode> UC) {
   assert(UC.size() >= getNumUsedSlots(UC[0]));
 
   SW.startLine() << format("0x%02X: ", unsigned(UC[0].u.CodeOffset))
@@ -291,7 +304,8 @@ void Dumper::printUnwindInfo(const Context &Ctx, const coff_section *Section,
   {
     ListScope UCS(SW, "UnwindCodes");
     ArrayRef<UnwindCode> UC(&UI.UnwindCodes[0], UI.NumCodes);
-    for (const UnwindCode *UCI = UC.begin(), *UCE = UC.end(); UCI < UCE; ++UCI) {
+    for (const UnwindCode *UCI = UC.begin(), *UCE = UC.end(); UCI < UCE;
+         ++UCI) {
       unsigned UsedSlots = getNumUsedSlots(*UCI);
       if (UsedSlots > UC.size()) {
         errs() << "corrupt unwind data";
@@ -346,7 +360,8 @@ void Dumper::printRuntimeFunction(const Context &Ctx,
   if (Offset > Contents.size())
     return;
 
-  const auto UI = reinterpret_cast<const UnwindInfo*>(Contents.data() + Offset);
+  const auto UI =
+      reinterpret_cast<const UnwindInfo *>(Contents.data() + Offset);
   printUnwindInfo(Ctx, XData, Offset, *UI);
 }
 
@@ -370,7 +385,7 @@ void Dumper::printData(const Context &Ctx) {
       continue;
 
     const RuntimeFunction *Entries =
-      reinterpret_cast<const RuntimeFunction *>(Contents.data());
+        reinterpret_cast<const RuntimeFunction *>(Contents.data());
     const size_t Count = Contents.size() / sizeof(RuntimeFunction);
     ArrayRef<RuntimeFunction> RuntimeFunctions(Entries, Count);
 
@@ -382,6 +397,5 @@ void Dumper::printData(const Context &Ctx) {
     }
   }
 }
-}
-}
-
+} // namespace Win64EH
+} // namespace llvm

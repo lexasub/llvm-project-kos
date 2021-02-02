@@ -8,9 +8,9 @@
 
 #include "Plugins/Process/Utility/RegisterContextLinux_i386.h"
 #include "Plugins/Process/Utility/RegisterContextLinux_x86_64.h"
+#include "Plugins/Process/minidump/RegisterContextMinidump_ARM.h"
 #include "Plugins/Process/minidump/RegisterContextMinidump_x86_32.h"
 #include "Plugins/Process/minidump/RegisterContextMinidump_x86_64.h"
-#include "Plugins/Process/minidump/RegisterContextMinidump_ARM.h"
 #include "lldb/Utility/DataBuffer.h"
 #include "llvm/ADT/StringRef.h"
 #include "gtest/gtest.h"
@@ -190,12 +190,12 @@ static void TestARMRegInfo(const lldb_private::RegisterInfo *info) {
 TEST(RegisterContextMinidump, CheckRegisterContextMinidump_ARM) {
   size_t num_regs = RegisterContextMinidump_ARM::GetRegisterCountStatic();
   const lldb_private::RegisterInfo *reg_info;
-  for (size_t reg=0; reg<num_regs; ++reg) {
-    reg_info = RegisterContextMinidump_ARM::GetRegisterInfoAtIndexStatic(reg,
-                                                                         true);
+  for (size_t reg = 0; reg < num_regs; ++reg) {
+    reg_info =
+        RegisterContextMinidump_ARM::GetRegisterInfoAtIndexStatic(reg, true);
     TestARMRegInfo(reg_info);
-    reg_info = RegisterContextMinidump_ARM::GetRegisterInfoAtIndexStatic(reg,
-                                                                         false);
+    reg_info =
+        RegisterContextMinidump_ARM::GetRegisterInfoAtIndexStatic(reg, false);
     TestARMRegInfo(reg_info);
   }
 }

@@ -16,7 +16,7 @@
 #include <stdlib.h>
 #include <thread>
 #if defined(__APPLE__)
-# include <crt_externs.h>
+#include <crt_externs.h>
 #elif !defined(_MSC_VER)
 // Forward declare environ in case it's not provided by stdlib.h.
 extern char **environ;
@@ -24,14 +24,10 @@ extern char **environ;
 
 #if defined(LLVM_ON_UNIX)
 #include <unistd.h>
-void sleep_for(unsigned int seconds) {
-  sleep(seconds);
-}
+void sleep_for(unsigned int seconds) { sleep(seconds); }
 #elif defined(_WIN32)
 #include <windows.h>
-void sleep_for(unsigned int seconds) {
-  Sleep(seconds * 1000);
-}
+void sleep_for(unsigned int seconds) { Sleep(seconds * 1000); }
 #else
 #error sleep_for is not implemented on your platform.
 #endif
@@ -54,10 +50,8 @@ namespace {
 using namespace llvm;
 using namespace sys;
 
-static cl::opt<std::string>
-ProgramTestStringArg1("program-test-string-arg1");
-static cl::opt<std::string>
-ProgramTestStringArg2("program-test-string-arg2");
+static cl::opt<std::string> ProgramTestStringArg1("program-test-string-arg1");
+static cl::opt<std::string> ProgramTestStringArg2("program-test-string-arg2");
 
 class ProgramEnvTest : public testing::Test {
   std::vector<StringRef> EnvTable;
@@ -131,7 +125,7 @@ TEST_F(ProgramEnvTest, CreateProcessLongPath) {
   // Redirect stdout to a long path.
   SmallString<128> TestDirectory;
   ASSERT_NO_ERROR(
-    fs::createUniqueDirectory("program-redirect-test", TestDirectory));
+      fs::createUniqueDirectory("program-redirect-test", TestDirectory));
   SmallString<256> LongPath(TestDirectory);
   LongPath.push_back('\\');
   // MAX_PATH = 260
@@ -141,8 +135,8 @@ TEST_F(ProgramEnvTest, CreateProcessLongPath) {
   bool ExecutionFailed;
   Optional<StringRef> Redirects[] = {None, LongPath.str(), None};
   int RC = ExecuteAndWait(MyExe, ArgV, getEnviron(), Redirects,
-    /*secondsToWait=*/ 10, /*memoryLimit=*/ 0, &Error,
-    &ExecutionFailed);
+                          /*secondsToWait=*/10, /*memoryLimit=*/0, &Error,
+                          &ExecutionFailed);
   EXPECT_FALSE(ExecutionFailed) << Error;
   EXPECT_EQ(0, RC);
 
@@ -156,7 +150,7 @@ TEST_F(ProgramEnvTest, CreateProcessTrailingSlash) {
   if (getenv("LLVM_PROGRAM_TEST_CHILD")) {
     if (ProgramTestStringArg1 == "has\\\\ trailing\\" &&
         ProgramTestStringArg2 == "has\\\\ trailing\\") {
-      exit(0);  // Success!  The arguments were passed and parsed.
+      exit(0); // Success!  The arguments were passed and parsed.
     }
     exit(1);
   }
@@ -182,9 +176,9 @@ TEST_F(ProgramEnvTest, CreateProcessTrailingSlash) {
 #else
   StringRef nul("/dev/null");
 #endif
-  Optional<StringRef> redirects[] = { nul, nul, None };
+  Optional<StringRef> redirects[] = {nul, nul, None};
   int rc = ExecuteAndWait(my_exe, argv, getEnviron(), redirects,
-                          /*secondsToWait=*/ 10, /*memoryLimit=*/ 0, &error,
+                          /*secondsToWait=*/10, /*memoryLimit=*/0, &error,
                           &ExecutionFailed);
   EXPECT_FALSE(ExecutionFailed) << error;
   EXPECT_EQ(0, rc);
@@ -259,7 +253,7 @@ TEST_F(ProgramEnvTest, TestExecuteAndWaitTimeout) {
       Executable, "--gtest_filter=ProgramEnvTest.TestExecuteAndWaitTimeout"};
 
   // Add LLVM_PROGRAM_TEST_TIMEOUT to the environment of the child.
- addEnvVar("LLVM_PROGRAM_TEST_TIMEOUT=1");
+  addEnvVar("LLVM_PROGRAM_TEST_TIMEOUT=1");
 
   std::string Error;
   bool ExecutionFailed;
@@ -294,7 +288,6 @@ TEST(ProgramTest, TestExecuteNegative) {
     ASSERT_TRUE(ExecutionFailed);
     ASSERT_FALSE(Error.empty());
   }
-
 }
 
 #ifdef _WIN32

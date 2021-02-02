@@ -10,7 +10,6 @@ void *malloc(size_t);
 void *calloc(size_t, size_t);
 void free(void *);
 
-
 #if __OBJC__
 
 #import "system-header-simulator-objc.h"

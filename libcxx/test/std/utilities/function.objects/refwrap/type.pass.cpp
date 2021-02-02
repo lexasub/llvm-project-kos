@@ -19,22 +19,28 @@
 
 class C {};
 
-int main(int, char**)
-{
-    static_assert((std::is_same<std::reference_wrapper<C>::type,
-                                                       C>::value), "");
-    static_assert((std::is_same<std::reference_wrapper<void ()>::type,
-                                                       void ()>::value), "");
-    static_assert((std::is_same<std::reference_wrapper<int* (double*)>::type,
-                                                       int* (double*)>::value), "");
-    static_assert((std::is_same<std::reference_wrapper<void(*)()>::type,
-                                                       void(*)()>::value), "");
-    static_assert((std::is_same<std::reference_wrapper<int*(*)(double*)>::type,
-                                                       int*(*)(double*)>::value), "");
-    static_assert((std::is_same<std::reference_wrapper<int*(C::*)(double*)>::type,
-                                                       int*(C::*)(double*)>::value), "");
-    static_assert((std::is_same<std::reference_wrapper<int (C::*)(double*) const volatile>::type,
-                                                       int (C::*)(double*) const volatile>::value), "");
+int main(int, char**) {
+  static_assert((std::is_same<std::reference_wrapper<C>::type, C>::value), "");
+  static_assert(
+      (std::is_same<std::reference_wrapper<void()>::type, void()>::value), "");
+  static_assert((std::is_same<std::reference_wrapper<int*(double*)>::type,
+                              int*(double*)>::value),
+                "");
+  static_assert((std::is_same<std::reference_wrapper<void (*)()>::type,
+                              void (*)()>::value),
+                "");
+  static_assert((std::is_same<std::reference_wrapper<int* (*)(double*)>::type,
+                              int* (*)(double*)>::value),
+                "");
+  static_assert(
+      (std::is_same<std::reference_wrapper<int* (C::*)(double*)>::type,
+                    int* (C::*)(double*)>::value),
+      "");
+  static_assert(
+      (std::is_same<
+          std::reference_wrapper<int (C::*)(double*) const volatile>::type,
+          int (C::*)(double*) const volatile>::value),
+      "");
 
   return 0;
 }

@@ -129,9 +129,8 @@ public:
 
 /// Model of a Fortran LOGICAL intrinsic type, including the KIND type
 /// parameter.
-class LogicalType
-    : public mlir::Type::TypeBase<LogicalType, mlir::Type,
-                                  detail::LogicalTypeStorage> {
+class LogicalType : public mlir::Type::TypeBase<LogicalType, mlir::Type,
+                                                detail::LogicalTypeStorage> {
 public:
   using Base::Base;
   static LogicalType get(mlir::MLIRContext *ctxt, KindTy kind);

@@ -48,8 +48,7 @@ public:
   /// @{
 
   using BaseT::getIntImmCost;
-  int getIntImmCost(const APInt &Imm, Type *Ty,
-                    TTI::TargetCostKind CostKind);
+  int getIntImmCost(const APInt &Imm, Type *Ty, TTI::TargetCostKind CostKind);
 
   int getIntImmCostInst(unsigned Opcode, unsigned Idx, const APInt &Imm,
                         Type *Ty, TTI::TargetCostKind CostKind,
@@ -62,8 +61,7 @@ public:
 
   TTI::PopcntSupportKind getPopcntSupport(unsigned TyWidth);
   bool isHardwareLoopProfitable(Loop *L, ScalarEvolution &SE,
-                                AssumptionCache &AC,
-                                TargetLibraryInfo *LibInfo,
+                                AssumptionCache &AC, TargetLibraryInfo *LibInfo,
                                 HardwareLoopInfo &HWLoopInfo);
   bool canSaveCmp(Loop *L, BranchInst **BI, ScalarEvolution *SE, LoopInfo *LI,
                   DominatorTree *DT, AssumptionCache *AC,
@@ -87,12 +85,10 @@ public:
                                                     bool IsZeroCmp) const;
   bool enableInterleavedAccessVectorization();
 
-  enum PPCRegisterClass {
-    GPRRC, FPRRC, VRRC, VSXRC
-  };
+  enum PPCRegisterClass { GPRRC, FPRRC, VRRC, VSXRC };
   unsigned getNumberOfRegisters(unsigned ClassID) const;
   unsigned getRegisterClassForType(bool Vector, Type *Ty = nullptr) const;
-  const char* getRegisterClassName(unsigned ClassID) const;
+  const char *getRegisterClassName(unsigned ClassID) const;
   unsigned getRegisterBitWidth(bool Vector) const;
   unsigned getCacheLineSize() const override;
   unsigned getPrefetchDistance() const override;
@@ -118,8 +114,7 @@ public:
                          const Instruction *I = nullptr);
   int getVectorInstrCost(unsigned Opcode, Type *Val, unsigned Index);
   int getMemoryOpCost(unsigned Opcode, Type *Src, MaybeAlign Alignment,
-                      unsigned AddressSpace,
-                      TTI::TargetCostKind CostKind,
+                      unsigned AddressSpace, TTI::TargetCostKind CostKind,
                       const Instruction *I = nullptr);
   int getInterleavedMemoryOpCost(
       unsigned Opcode, Type *VecTy, unsigned Factor, ArrayRef<unsigned> Indices,

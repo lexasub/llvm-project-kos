@@ -4,9 +4,9 @@
 // exception-declaration does not specify a name, a temporary (12.2)
 // is copy-initialized (8.5) from the exception object.
 //
-template<typename T>
+template <typename T>
 class X {
-  T* ptr;
+  T *ptr;
 
 public:
   X(const X<T> &) {

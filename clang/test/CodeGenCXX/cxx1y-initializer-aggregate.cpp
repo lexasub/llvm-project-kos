@@ -20,9 +20,9 @@ union B {
   int b = f();
 };
 
-A a { .p = "foobar" };
-A b { 4, "bazquux", .x = 42, .c = 9 };
-A c { 1, 0, 'A', f(), { 3 } };
+A a{.p = "foobar"};
+A b{4, "bazquux", .x = 42, .c = 9};
+A c{1, 0, 'A', f(), {3}};
 
 // CHECK: @[[STR_A:.*]] = {{.*}} [7 x i8] c"foobar\00"
 // CHECK: @a ={{.*}} global {{.*}} zeroinitializer
@@ -32,8 +32,8 @@ A c { 1, 0, 'A', f(), { 3 } };
 // CHECK: @b ={{.*}} global {{.*}} i32 4, {{.*}} @[[STR_B]], {{.*}} i8 117, i32 42, {{.*}} i8 9
 
 B x;
-B y {};
-B z { 1 };
+B y{};
+B z{1};
 // CHECK: @z ={{.*}} global {{.*}} { i32 1 }
 
 // Brace initialization should initialize the first field even though it is

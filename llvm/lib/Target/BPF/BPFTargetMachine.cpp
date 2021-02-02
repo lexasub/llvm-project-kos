@@ -29,9 +29,9 @@
 #include "llvm/Transforms/Utils/SimplifyCFGOptions.h"
 using namespace llvm;
 
-static cl::
-opt<bool> DisableMIPeephole("disable-bpf-peephole", cl::Hidden,
-                            cl::desc("Disable machine peepholes for BPF"));
+static cl::opt<bool>
+    DisableMIPeephole("disable-bpf-peephole", cl::Hidden,
+                      cl::desc("Disable machine peepholes for BPF"));
 
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeBPFTarget() {
   // Register the target.
@@ -94,14 +94,14 @@ public:
   void addMachineSSAOptimization() override;
   void addPreEmitPass() override;
 };
-}
+} // namespace
 
 TargetPassConfig *BPFTargetMachine::createPassConfig(PassManagerBase &PM) {
   return new BPFPassConfig(*this, PM);
 }
 
 void BPFTargetMachine::adjustPassManager(PassManagerBuilder &Builder) {
- Builder.addExtension(
+  Builder.addExtension(
       PassManagerBuilder::EP_EarlyAsPossible,
       [&](const PassManagerBuilder &, legacy::PassManagerBase &PM) {
         PM.add(createBPFAbstractMemberAccess(this));

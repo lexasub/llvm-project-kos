@@ -39,28 +39,27 @@ using namespace llvm;
 #define DEBUG_TYPE "asm-printer"
 
 namespace {
-  class MSP430AsmPrinter : public AsmPrinter {
-  public:
-    MSP430AsmPrinter(TargetMachine &TM, std::unique_ptr<MCStreamer> Streamer)
-        : AsmPrinter(TM, std::move(Streamer)) {}
+class MSP430AsmPrinter : public AsmPrinter {
+public:
+  MSP430AsmPrinter(TargetMachine &TM, std::unique_ptr<MCStreamer> Streamer)
+      : AsmPrinter(TM, std::move(Streamer)) {}
 
-    StringRef getPassName() const override { return "MSP430 Assembly Printer"; }
+  StringRef getPassName() const override { return "MSP430 Assembly Printer"; }
 
-    bool runOnMachineFunction(MachineFunction &MF) override;
+  bool runOnMachineFunction(MachineFunction &MF) override;
 
-    void PrintSymbolOperand(const MachineOperand &MO, raw_ostream &O) override;
-    void printOperand(const MachineInstr *MI, int OpNum,
-                      raw_ostream &O, const char* Modifier = nullptr);
-    void printSrcMemOperand(const MachineInstr *MI, int OpNum,
-                            raw_ostream &O);
-    bool PrintAsmOperand(const MachineInstr *MI, unsigned OpNo,
-                         const char *ExtraCode, raw_ostream &O) override;
-    bool PrintAsmMemoryOperand(const MachineInstr *MI, unsigned OpNo,
-                               const char *ExtraCode, raw_ostream &O) override;
-    void emitInstruction(const MachineInstr *MI) override;
+  void PrintSymbolOperand(const MachineOperand &MO, raw_ostream &O) override;
+  void printOperand(const MachineInstr *MI, int OpNum, raw_ostream &O,
+                    const char *Modifier = nullptr);
+  void printSrcMemOperand(const MachineInstr *MI, int OpNum, raw_ostream &O);
+  bool PrintAsmOperand(const MachineInstr *MI, unsigned OpNo,
+                       const char *ExtraCode, raw_ostream &O) override;
+  bool PrintAsmMemoryOperand(const MachineInstr *MI, unsigned OpNo,
+                             const char *ExtraCode, raw_ostream &O) override;
+  void emitInstruction(const MachineInstr *MI) override;
 
-    void EmitInterruptVectorSection(MachineFunction &ISR);
-  };
+  void EmitInterruptVectorSection(MachineFunction &ISR);
+};
 } // end of anonymous namespace
 
 void MSP430AsmPrinter::PrintSymbolOperand(const MachineOperand &MO,
@@ -79,7 +78,8 @@ void MSP430AsmPrinter::printOperand(const MachineInstr *MI, int OpNum,
                                     raw_ostream &O, const char *Modifier) {
   const MachineOperand &MO = MI->getOperand(OpNum);
   switch (MO.getType()) {
-  default: llvm_unreachable("Not implemented yet!");
+  default:
+    llvm_unreachable("Not implemented yet!");
   case MachineOperand::MO_Register:
     O << MSP430InstPrinter::getRegisterName(MO.getReg());
     return;
@@ -107,14 +107,14 @@ void MSP430AsmPrinter::printOperand(const MachineInstr *MI, int OpNum,
 void MSP430AsmPrinter::printSrcMemOperand(const MachineInstr *MI, int OpNum,
                                           raw_ostream &O) {
   const MachineOperand &Base = MI->getOperand(OpNum);
-  const MachineOperand &Disp = MI->getOperand(OpNum+1);
+  const MachineOperand &Disp = MI->getOperand(OpNum + 1);
 
   // Print displacement first
 
   // Imm here is in fact global address - print extra modifier.
   if (Disp.isImm() && Base.getReg() == MSP430::SR)
     O << '&';
-  printOperand(MI, OpNum+1, O, "nohash");
+  printOperand(MI, OpNum + 1, O, "nohash");
 
   // Print register base field
   if (Base.getReg() != MSP430::SR && Base.getReg() != MSP430::PC) {
@@ -160,12 +160,13 @@ void MSP430AsmPrinter::EmitInterruptVectorSection(MachineFunction &ISR) {
   MCSection *Cur = OutStreamer->getCurrentSectionOnly();
   const auto *F = &ISR.getFunction();
   if (F->getCallingConv() != CallingConv::MSP430_INTR) {
-    report_fatal_error("Functions with 'interrupt' attribute must have msp430_intrcc CC");
+    report_fatal_error(
+        "Functions with 'interrupt' attribute must have msp430_intrcc CC");
   }
   StringRef IVIdx = F->getFnAttribute("interrupt").getValueAsString();
   MCSection *IV = OutStreamer->getContext().getELFSection(
-    "__interrupt_vector_" + IVIdx,
-    ELF::SHT_PROGBITS, ELF::SHF_ALLOC | ELF::SHF_EXECINSTR);
+      "__interrupt_vector_" + IVIdx, ELF::SHT_PROGBITS,
+      ELF::SHF_ALLOC | ELF::SHF_EXECINSTR);
   OutStreamer->SwitchSection(IV);
 
   const MCSymbol *FunctionSymbol = getSymbol(F);

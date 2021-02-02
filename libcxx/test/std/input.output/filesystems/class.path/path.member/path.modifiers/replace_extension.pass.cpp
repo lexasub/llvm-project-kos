@@ -23,38 +23,30 @@
 #include "count_new.h"
 #include "filesystem_test_helper.h"
 
-
 struct ReplaceExtensionTestcase {
   const char* value;
   const char* expect;
   const char* extension;
 };
 
-const ReplaceExtensionTestcase TestCases[] =
-  {
-      {"", "", ""}
-    , {"foo.cpp", "foo", ""}
-    , {"foo.cpp", "foo.", "."}
-    , {"foo..cpp", "foo..txt", "txt"}
-    , {"", ".txt", "txt"}
-    , {"", ".txt", ".txt"}
-    , {"/foo", "/foo.txt", ".txt"}
-    , {"/foo", "/foo.txt", "txt"}
-    , {"/foo.cpp", "/foo.txt", ".txt"}
-    , {"/foo.cpp", "/foo.txt", "txt"}
-  };
-const ReplaceExtensionTestcase NoArgCases[] =
-  {
-      {"", "", ""}
-    , {"foo", "foo", ""}
-    , {"foo.cpp", "foo", ""}
-    , {"foo..cpp", "foo.", ""}
-};
+const ReplaceExtensionTestcase TestCases[] = {{"", "", ""},
+                                              {"foo.cpp", "foo", ""},
+                                              {"foo.cpp", "foo.", "."},
+                                              {"foo..cpp", "foo..txt", "txt"},
+                                              {"", ".txt", "txt"},
+                                              {"", ".txt", ".txt"},
+                                              {"/foo", "/foo.txt", ".txt"},
+                                              {"/foo", "/foo.txt", "txt"},
+                                              {"/foo.cpp", "/foo.txt", ".txt"},
+                                              {"/foo.cpp", "/foo.txt", "txt"}};
+const ReplaceExtensionTestcase NoArgCases[] = {{"", "", ""},
+                                               {"foo", "foo", ""},
+                                               {"foo.cpp", "foo", ""},
+                                               {"foo..cpp", "foo.", ""}};
 
-int main(int, char**)
-{
+int main(int, char**) {
   using namespace fs;
-  for (auto const & TC : TestCases) {
+  for (auto const& TC : TestCases) {
     path p(TC.value);
     assert(p == TC.value);
     path& Ref = (p.replace_extension(TC.extension));

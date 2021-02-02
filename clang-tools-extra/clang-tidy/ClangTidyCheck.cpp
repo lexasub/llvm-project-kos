@@ -84,8 +84,8 @@ ClangTidyCheck::OptionsView::get(StringRef LocalName) const {
 }
 
 static ClangTidyOptions::OptionMap::const_iterator
-findPriorityOption(const ClangTidyOptions::OptionMap &Options, StringRef NamePrefix,
-          StringRef LocalName) {
+findPriorityOption(const ClangTidyOptions::OptionMap &Options,
+                   StringRef NamePrefix, StringRef LocalName) {
   auto IterLocal = Options.find((NamePrefix + LocalName).str());
   auto IterGlobal = Options.find(LocalName.str());
   if (IterLocal == Options.end())

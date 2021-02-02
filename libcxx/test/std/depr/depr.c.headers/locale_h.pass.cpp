@@ -43,11 +43,11 @@
 #error NULL not defined
 #endif
 
-int main(int, char**)
-{
-    lconv lc; ((void)lc);
-    static_assert((std::is_same<decltype(setlocale(0, "")), char*>::value), "");
-    static_assert((std::is_same<decltype(localeconv()), lconv*>::value), "");
+int main(int, char**) {
+  lconv lc;
+  ((void)lc);
+  static_assert((std::is_same<decltype(setlocale(0, "")), char*>::value), "");
+  static_assert((std::is_same<decltype(localeconv()), lconv*>::value), "");
 
-    return 0;
+  return 0;
 }

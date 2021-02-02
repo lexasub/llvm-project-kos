@@ -15,50 +15,50 @@ void xxx(int argc) {
 
 int a;
 struct S;
-S& bar();
+S &bar();
 int main(int argc, char **argv) {
   S &s = bar();
-  #pragma omp parallel
+#pragma omp parallel
   (void)&s;
-  #pragma omp parallel { // expected-warning {{extra tokens at the end of '#pragma omp parallel' are ignored}}
+#pragma omp parallel { // expected-warning {{extra tokens at the end of '#pragma omp parallel' are ignored}}
   foo();
-  #pragma omp parallel ( // expected-warning {{extra tokens at the end of '#pragma omp parallel' are ignored}}
+#pragma omp parallel( // expected-warning {{extra tokens at the end of '#pragma omp parallel' are ignored}}
   foo();
-  #pragma omp parallel [ // expected-warning {{extra tokens at the end of '#pragma omp parallel' are ignored}}
+#pragma omp parallel[ // expected-warning {{extra tokens at the end of '#pragma omp parallel' are ignored}}
   foo();
-  #pragma omp parallel ] // expected-warning {{extra tokens at the end of '#pragma omp parallel' are ignored}}
+#pragma omp parallel] // expected-warning {{extra tokens at the end of '#pragma omp parallel' are ignored}}
   foo();
-  #pragma omp parallel ) // expected-warning {{extra tokens at the end of '#pragma omp parallel' are ignored}}
+#pragma omp parallel) // expected-warning {{extra tokens at the end of '#pragma omp parallel' are ignored}}
   foo();
-  #pragma omp parallel } // expected-warning {{extra tokens at the end of '#pragma omp parallel' are ignored}}
+#pragma omp parallel } // expected-warning {{extra tokens at the end of '#pragma omp parallel' are ignored}}
   foo();
-  #pragma omp parallel
-  // expected-warning@+1 {{extra tokens at the end of '#pragma omp parallel' are ignored}}
-  #pragma omp parallel unknown()
+#pragma omp parallel
+// expected-warning@+1 {{extra tokens at the end of '#pragma omp parallel' are ignored}}
+#pragma omp parallel unknown()
   foo();
-  L1:
-    foo();
-  #pragma omp parallel ordered // expected-error {{unexpected OpenMP clause 'ordered' in directive '#pragma omp parallel'}}
-    ;
-  #pragma omp parallel
+L1:
+  foo();
+#pragma omp parallel ordered // expected-error {{unexpected OpenMP clause 'ordered' in directive '#pragma omp parallel'}}
   ;
-  #pragma omp parallel
+#pragma omp parallel
+  ;
+#pragma omp parallel
   {
     goto L1; // expected-error {{use of undeclared label 'L1'}}
     argc++;
   }
 
   for (int i = 0; i < 10; ++i) {
-    switch(argc) {
-     case (0):
-      #pragma omp parallel
-      {
-        foo();
-        break; // expected-error {{'break' statement not in loop or switch statement}}
-        continue; // expected-error {{'continue' statement not in loop statement}}
-      }
-      default:
-       break;
+    switch (argc) {
+    case (0):
+#pragma omp parallel
+    {
+      foo();
+      break;    // expected-error {{'break' statement not in loop or switch statement}}
+      continue; // expected-error {{'continue' statement not in loop statement}}
+    }
+    default:
+      break;
     }
   }
 #pragma omp parallel default(none) // expected-note 2 {{explicit data sharing attribute requested here}}
@@ -68,17 +68,18 @@ int main(int argc, char **argv) {
   }
 
   goto L2; // expected-error {{use of undeclared label 'L2'}}
-  #pragma omp parallel
-  L2:
+#pragma omp parallel
+L2:
   foo();
-  #pragma omp parallel
+#pragma omp parallel
   {
     return 1; // expected-error {{cannot return from OpenMP region}}
   }
 
   [[]] // expected-error {{an attribute list cannot appear here}}
-  #pragma omp parallel
-  for (int n = 0; n < 100; ++n) {}
+#pragma omp parallel
+      for (int n = 0; n < 100; ++n) {
+  }
 
   return 0;
 }
@@ -101,7 +102,7 @@ struct h {
 };
 h operator<(h, h);
 void g::j() {
-#pragma omp parallel for default(none) if(a::b)
+#pragma omp parallel for default(none) if (a::b)
   for (auto a = blocks.cbegin; a < blocks; ++a) // expected-error 2 {{invalid operands to binary expression ('f' and 'int')}}
     ;
 }

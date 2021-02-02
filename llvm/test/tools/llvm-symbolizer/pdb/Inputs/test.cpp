@@ -7,7 +7,7 @@ namespace NS {
 struct Foo {
   void bar() {}
 };
-}
+} // namespace NS
 
 void foo() {
 }
@@ -17,7 +17,7 @@ static void private_symbol() {
 
 int main() {
   foo();
-  
+
   NS::Foo f;
   f.bar();
   private_symbol();

@@ -7,9 +7,9 @@
 // RUN: %run %t 2>&1
 
 #include <malloc/malloc.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 const int kNumIter = 4096;
 const int kNumZones = 100;
@@ -18,7 +18,7 @@ int main() {
   // Allocate memory chunks from different size classes up to 1 page.
   // (For the case malloc() returns memory chunks in descending order)
   for (int i = 0; i < kNumIter; i++) {
-    mem[i] = (char*)malloc(8 * i);
+    mem[i] = (char *)malloc(8 * i);
   }
   // Try to allocate a page-aligned malloc zone. Otherwise the mprotect() call
   // in malloc_set_zone_name() will silently fail.
@@ -40,7 +40,7 @@ int main() {
   malloc_set_zone_name(zone, "foobar");
   // Allocate memory chunks from different size classes again.
   for (int i = 0; i < kNumIter; i++) {
-    mem[i + kNumIter] = (char*)malloc(8 * i);
+    mem[i + kNumIter] = (char *)malloc(8 * i);
   }
   // Access the allocated memory chunks and free them.
   for (int i = 0; i < kNumIter * 2; i++) {

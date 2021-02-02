@@ -1,11 +1,11 @@
 // RUN: %clangxx_tsan -O1 %s -o %t && %deflake %run %t | FileCheck %s
 #include "test.h"
 #include <pthread.h>
-#include <stdio.h>
 #include <stddef.h>
+#include <stdio.h>
 
 void *Thread(void *a) {
-  ((int*)a)[0]++;
+  ((int *)a)[0]++;
   barrier_wait(&barrier);
   return NULL;
 }

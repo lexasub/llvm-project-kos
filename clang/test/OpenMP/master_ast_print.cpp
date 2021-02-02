@@ -12,24 +12,24 @@
 
 void foo() {}
 
-int main (int argc, char **argv) {
+int main(int argc, char **argv) {
   int b = argc, c, d, e, f, g;
   static int a;
 // CHECK: static int a;
 #pragma omp parallel
-{
+  {
 #pragma omp master
-{
-  a=2;
-}
-}
-// CHECK-NEXT: #pragma omp parallel
-// CHECK-NEXT: {
-// CHECK-NEXT: #pragma omp master{{$}}
-// CHECK-NEXT: {
-// CHECK-NEXT: a = 2;
-// CHECK-NEXT: }
-// CHECK-NEXT: }
+    {
+      a = 2;
+    }
+  }
+  // CHECK-NEXT: #pragma omp parallel
+  // CHECK-NEXT: {
+  // CHECK-NEXT: #pragma omp master{{$}}
+  // CHECK-NEXT: {
+  // CHECK-NEXT: a = 2;
+  // CHECK-NEXT: }
+  // CHECK-NEXT: }
   return (0);
 }
 

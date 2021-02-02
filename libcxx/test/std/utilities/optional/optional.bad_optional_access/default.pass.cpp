@@ -23,10 +23,9 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    using std::bad_optional_access;
-    bad_optional_access ex;
+int main(int, char**) {
+  using std::bad_optional_access;
+  bad_optional_access ex;
 
   return 0;
 }

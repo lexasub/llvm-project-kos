@@ -34,7 +34,7 @@ namespace mach_o {
 class LazyPointerAtom : public SimpleDefinedAtom {
 public:
   LazyPointerAtom(const File &file, bool is64)
-    : SimpleDefinedAtom(file), _is64(is64) { }
+      : SimpleDefinedAtom(file), _is64(is64) {}
 
   ~LazyPointerAtom() override = default;
 
@@ -42,21 +42,17 @@ public:
     return DefinedAtom::typeLazyPointer;
   }
 
-  Alignment alignment() const override {
-    return _is64 ? 8 : 4;
-  }
+  Alignment alignment() const override { return _is64 ? 8 : 4; }
 
-  uint64_t size() const override {
-    return _is64 ? 8 : 4;
-  }
+  uint64_t size() const override { return _is64 ? 8 : 4; }
 
   ContentPermissions permissions() const override {
     return DefinedAtom::permRW_;
   }
 
   ArrayRef<uint8_t> rawContent() const override {
-    static const uint8_t zeros[] =
-        { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+    static const uint8_t zeros[] = {0x00, 0x00, 0x00, 0x00,
+                                    0x00, 0x00, 0x00, 0x00};
     return llvm::makeArrayRef(zeros, size());
   }
 
@@ -70,29 +66,23 @@ private:
 class NonLazyPointerAtom : public SimpleDefinedAtom {
 public:
   NonLazyPointerAtom(const File &file, bool is64, ContentType contentType)
-    : SimpleDefinedAtom(file), _is64(is64), _contentType(contentType) { }
+      : SimpleDefinedAtom(file), _is64(is64), _contentType(contentType) {}
 
   ~NonLazyPointerAtom() override = default;
 
-  ContentType contentType() const override {
-    return _contentType;
-  }
+  ContentType contentType() const override { return _contentType; }
 
-  Alignment alignment() const override {
-    return _is64 ? 8 : 4;
-  }
+  Alignment alignment() const override { return _is64 ? 8 : 4; }
 
-  uint64_t size() const override {
-    return _is64 ? 8 : 4;
-  }
+  uint64_t size() const override { return _is64 ? 8 : 4; }
 
   ContentPermissions permissions() const override {
     return DefinedAtom::permRW_;
   }
 
   ArrayRef<uint8_t> rawContent() const override {
-    static const uint8_t zeros[] =
-        { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+    static const uint8_t zeros[] = {0x00, 0x00, 0x00, 0x00,
+                                    0x00, 0x00, 0x00, 0x00};
     return llvm::makeArrayRef(zeros, size());
   }
 
@@ -107,21 +97,15 @@ private:
 class StubAtom : public SimpleDefinedAtom {
 public:
   StubAtom(const File &file, const ArchHandler::StubInfo &stubInfo)
-      : SimpleDefinedAtom(file), _stubInfo(stubInfo){ }
+      : SimpleDefinedAtom(file), _stubInfo(stubInfo) {}
 
   ~StubAtom() override = default;
 
-  ContentType contentType() const override {
-    return DefinedAtom::typeStub;
-  }
+  ContentType contentType() const override { return DefinedAtom::typeStub; }
 
-  Alignment alignment() const override {
-    return 1 << _stubInfo.codeAlignment;
-  }
+  Alignment alignment() const override { return 1 << _stubInfo.codeAlignment; }
 
-  uint64_t size() const override {
-    return _stubInfo.stubSize;
-  }
+  uint64_t size() const override { return _stubInfo.stubSize; }
 
   ContentPermissions permissions() const override {
     return DefinedAtom::permR_X;
@@ -132,7 +116,7 @@ public:
   }
 
 private:
-  const ArchHandler::StubInfo   &_stubInfo;
+  const ArchHandler::StubInfo &_stubInfo;
 };
 
 //
@@ -141,7 +125,7 @@ private:
 class StubHelperAtom : public SimpleDefinedAtom {
 public:
   StubHelperAtom(const File &file, const ArchHandler::StubInfo &stubInfo)
-      : SimpleDefinedAtom(file), _stubInfo(stubInfo) { }
+      : SimpleDefinedAtom(file), _stubInfo(stubInfo) {}
 
   ~StubHelperAtom() override = default;
 
@@ -149,13 +133,9 @@ public:
     return DefinedAtom::typeStubHelper;
   }
 
-  Alignment alignment() const override {
-    return 1 << _stubInfo.codeAlignment;
-  }
+  Alignment alignment() const override { return 1 << _stubInfo.codeAlignment; }
 
-  uint64_t size() const override {
-    return _stubInfo.stubHelperSize;
-  }
+  uint64_t size() const override { return _stubInfo.stubHelperSize; }
 
   ContentPermissions permissions() const override {
     return DefinedAtom::permR_X;
@@ -167,7 +147,7 @@ public:
   }
 
 private:
-  const ArchHandler::StubInfo   &_stubInfo;
+  const ArchHandler::StubInfo &_stubInfo;
 };
 
 //
@@ -176,7 +156,7 @@ private:
 class StubHelperCommonAtom : public SimpleDefinedAtom {
 public:
   StubHelperCommonAtom(const File &file, const ArchHandler::StubInfo &stubInfo)
-      : SimpleDefinedAtom(file), _stubInfo(stubInfo) { }
+      : SimpleDefinedAtom(file), _stubInfo(stubInfo) {}
 
   ~StubHelperCommonAtom() override = default;
 
@@ -188,9 +168,7 @@ public:
     return 1 << _stubInfo.stubHelperCommonAlignment;
   }
 
-  uint64_t size() const override {
-    return _stubInfo.stubHelperCommonSize;
-  }
+  uint64_t size() const override { return _stubInfo.stubHelperCommonSize; }
 
   ContentPermissions permissions() const override {
     return DefinedAtom::permR_X;
@@ -198,11 +176,11 @@ public:
 
   ArrayRef<uint8_t> rawContent() const override {
     return llvm::makeArrayRef(_stubInfo.stubHelperCommonBytes,
-                        _stubInfo.stubHelperCommonSize);
+                              _stubInfo.stubHelperCommonSize);
   }
 
 private:
-  const ArchHandler::StubInfo   &_stubInfo;
+  const ArchHandler::StubInfo &_stubInfo;
 };
 
 class StubsPass : public Pass {
@@ -233,7 +211,8 @@ public:
           continue;
         }
         const DefinedAtom *defTarget = dyn_cast<DefinedAtom>(target);
-        if (defTarget && defTarget->interposable() != DefinedAtom::interposeNo){
+        if (defTarget &&
+            defTarget->interposable() != DefinedAtom::interposeNo) {
           // Calls to interposable functions in same linkage unit must also go
           // through a stub.
           assert(defTarget->scope() != DefinedAtom::scopeTranslationUnit);
@@ -249,12 +228,12 @@ public:
     // First add help-common and GOT slots used by lazy binding.
     SimpleDefinedAtom *helperCommonAtom =
         new (_file.allocator()) StubHelperCommonAtom(_file, _stubInfo);
-    SimpleDefinedAtom *helperCacheNLPAtom =
-        new (_file.allocator()) NonLazyPointerAtom(_file, _ctx.is64Bit(),
-                                    _stubInfo.stubHelperImageCacheContentType);
-    SimpleDefinedAtom *helperBinderNLPAtom =
-        new (_file.allocator()) NonLazyPointerAtom(_file, _ctx.is64Bit(),
-                                    _stubInfo.stubHelperImageCacheContentType);
+    SimpleDefinedAtom *helperCacheNLPAtom = new (_file.allocator())
+        NonLazyPointerAtom(_file, _ctx.is64Bit(),
+                           _stubInfo.stubHelperImageCacheContentType);
+    SimpleDefinedAtom *helperBinderNLPAtom = new (_file.allocator())
+        NonLazyPointerAtom(_file, _ctx.is64Bit(),
+                           _stubInfo.stubHelperImageCacheContentType);
     addReference(helperCommonAtom, _stubInfo.stubHelperCommonReferenceToCache,
                  helperCacheNLPAtom);
     addOptReference(
@@ -276,23 +255,23 @@ public:
         });
     assert(I != mergedFile.sharedLibrary().end() &&
            "dyld_stub_binder not found");
-    addReference(helperBinderNLPAtom, _stubInfo.nonLazyPointerReferenceToBinder, *I);
+    addReference(helperBinderNLPAtom, _stubInfo.nonLazyPointerReferenceToBinder,
+                 *I);
 
     // Sort targets by name, so stubs and lazy pointers are consistent
     std::vector<const Atom *> targetsNeedingStubs;
     for (auto it : _targetToUses)
       targetsNeedingStubs.push_back(it.first);
     std::sort(targetsNeedingStubs.begin(), targetsNeedingStubs.end(),
-              [](const Atom * left, const Atom * right) {
-      return (left->name().compare(right->name()) < 0);
-    });
+              [](const Atom *left, const Atom *right) {
+                return (left->name().compare(right->name()) < 0);
+              });
 
     // Make and append stubs, lazy pointers, and helpers in alphabetical order.
     unsigned lazyOffset = 0;
     for (const Atom *target : targetsNeedingStubs) {
       auto *stub = new (_file.allocator()) StubAtom(_file, _stubInfo);
-      auto *lp =
-          new (_file.allocator()) LazyPointerAtom(_file, _ctx.is64Bit());
+      auto *lp = new (_file.allocator()) LazyPointerAtom(_file, _ctx.is64Bit());
       auto *helper = new (_file.allocator()) StubHelperAtom(_file, _stubInfo);
 
       addReference(stub, _stubInfo.stubReferenceToLP, lp);
@@ -325,20 +304,15 @@ public:
   }
 
 private:
-  bool noTextRelocs() {
-    return true;
-  }
+  bool noTextRelocs() { return true; }
 
-  bool isCallSite(const Reference &ref) {
-    return _archHandler.isCallSite(ref);
-  }
+  bool isCallSite(const Reference &ref) { return _archHandler.isCallSite(ref); }
 
-  void addReference(SimpleDefinedAtom* atom,
+  void addReference(SimpleDefinedAtom *atom,
                     const ArchHandler::ReferenceInfo &refInfo,
-                    const lld::Atom* target) {
-    atom->addReference(Reference::KindNamespace::mach_o,
-                      refInfo.arch, refInfo.kind, refInfo.offset,
-                      target, refInfo.addend);
+                    const lld::Atom *target) {
+    atom->addReference(Reference::KindNamespace::mach_o, refInfo.arch,
+                       refInfo.kind, refInfo.offset, target, refInfo.addend);
   }
 
   void addReferenceAddend(SimpleDefinedAtom *atom,
@@ -348,25 +322,24 @@ private:
                        refInfo.kind, refInfo.offset, target, addend);
   }
 
-   void addOptReference(SimpleDefinedAtom* atom,
-                    const ArchHandler::ReferenceInfo &refInfo,
-                    const ArchHandler::OptionalRefInfo &optRef,
-                    const lld::Atom* target) {
-      if (!optRef.used)
-        return;
-    atom->addReference(Reference::KindNamespace::mach_o,
-                      refInfo.arch, optRef.kind, optRef.offset,
-                      target, optRef.addend);
+  void addOptReference(SimpleDefinedAtom *atom,
+                       const ArchHandler::ReferenceInfo &refInfo,
+                       const ArchHandler::OptionalRefInfo &optRef,
+                       const lld::Atom *target) {
+    if (!optRef.used)
+      return;
+    atom->addReference(Reference::KindNamespace::mach_o, refInfo.arch,
+                       optRef.kind, optRef.offset, target, optRef.addend);
   }
 
-  typedef llvm::DenseMap<const Atom*,
-                         llvm::SmallVector<const Reference *, 8>> TargetToUses;
+  typedef llvm::DenseMap<const Atom *, llvm::SmallVector<const Reference *, 8>>
+      TargetToUses;
 
   const MachOLinkingContext &_ctx;
-  mach_o::ArchHandler                            &_archHandler;
-  const ArchHandler::StubInfo                    &_stubInfo;
-  MachOFile                                      &_file;
-  TargetToUses                                    _targetToUses;
+  mach_o::ArchHandler &_archHandler;
+  const ArchHandler::StubInfo &_stubInfo;
+  MachOFile &_file;
+  TargetToUses _targetToUses;
 };
 
 void addStubsPass(PassManager &pm, const MachOLinkingContext &ctx) {

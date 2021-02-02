@@ -146,8 +146,8 @@ LineTable::Entry::LessThanBinaryPredicate::LessThanBinaryPredicate(
     LineTable *line_table)
     : m_line_table(line_table) {}
 
-bool LineTable::Entry::LessThanBinaryPredicate::
-operator()(const LineTable::Entry &a, const LineTable::Entry &b) const {
+bool LineTable::Entry::LessThanBinaryPredicate::operator()(
+    const LineTable::Entry &a, const LineTable::Entry &b) const {
 #define LT_COMPARE(a, b)                                                       \
   if (a != b)                                                                  \
   return a < b
@@ -166,9 +166,9 @@ operator()(const LineTable::Entry &a, const LineTable::Entry &b) const {
 #undef LT_COMPARE
 }
 
-bool LineTable::Entry::LessThanBinaryPredicate::
-operator()(const std::unique_ptr<LineSequence> &sequence_a,
-           const std::unique_ptr<LineSequence> &sequence_b) const {
+bool LineTable::Entry::LessThanBinaryPredicate::operator()(
+    const std::unique_ptr<LineSequence> &sequence_a,
+    const std::unique_ptr<LineSequence> &sequence_b) const {
   auto *seq_a = static_cast<const LineSequenceImpl *>(sequence_a.get());
   auto *seq_b = static_cast<const LineSequenceImpl *>(sequence_b.get());
   return (*this)(seq_a->m_entries.front(), seq_b->m_entries.front());
@@ -233,9 +233,7 @@ bool LineTable::FindLineEntryByAddress(const Address &so_addr,
               }
             }
           }
-        }
-        else
-        {
+        } else {
           // There might be code in the containing objfile before the first
           // line table entry.  Make sure that does not get considered part of
           // the first line table entry.

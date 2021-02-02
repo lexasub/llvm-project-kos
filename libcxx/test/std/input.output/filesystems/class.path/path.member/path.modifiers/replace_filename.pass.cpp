@@ -29,26 +29,23 @@ struct ReplaceFilenameTestcase {
   const char* filename;
 };
 
-const ReplaceFilenameTestcase TestCases[] =
-  {
-      {"/foo", "/bar", "bar"}
-    , {"/foo", "/", ""}
-    , {"foo", "bar", "bar"}
-    , {"/", "/bar", "bar"}
-    , {"\\", "bar", "bar"}
-    , {"///", "///bar", "bar"}
-    , {"\\\\", "bar", "bar"}
-    , {"\\/\\", "\\/bar", "bar"}
-    , {".", "bar", "bar"}
-    , {"..", "bar", "bar"}
-    , {"/foo\\baz/bong/", "/foo\\baz/bong/bar", "bar"}
-    , {"/foo\\baz/bong", "/foo\\baz/bar", "bar"}
-  };
+const ReplaceFilenameTestcase TestCases[] = {
+    {"/foo", "/bar", "bar"},
+    {"/foo", "/", ""},
+    {"foo", "bar", "bar"},
+    {"/", "/bar", "bar"},
+    {"\\", "bar", "bar"},
+    {"///", "///bar", "bar"},
+    {"\\\\", "bar", "bar"},
+    {"\\/\\", "\\/bar", "bar"},
+    {".", "bar", "bar"},
+    {"..", "bar", "bar"},
+    {"/foo\\baz/bong/", "/foo\\baz/bong/bar", "bar"},
+    {"/foo\\baz/bong", "/foo\\baz/bar", "bar"}};
 
-int main(int, char**)
-{
+int main(int, char**) {
   using namespace fs;
-  for (auto const & TC : TestCases) {
+  for (auto const& TC : TestCases) {
     path p(TC.value);
     assert(p == TC.value);
     path& Ref = p.replace_filename(TC.filename);

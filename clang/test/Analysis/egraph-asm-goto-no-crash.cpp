@@ -14,12 +14,12 @@ void testAsmGoto() {
   // FIXME: Should be reachable.
   clang_analyzer_warnIfReached();
 
-  label1:
+label1:
   // FIXME: Should be reachable.
   clang_analyzer_warnIfReached();
   return;
 
-  label2:
+label2:
   // FIXME: Should be reachable.
   clang_analyzer_warnIfReached();
   return;

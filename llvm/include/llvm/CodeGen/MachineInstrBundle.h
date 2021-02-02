@@ -33,32 +33,33 @@ void finalizeBundle(MachineBasicBlock &MBB,
 /// used in cases where bundles are pre-determined by marking instructions
 /// with 'InsideBundle' marker. It returns the MBB instruction iterator that
 /// points to the end of the bundle.
-MachineBasicBlock::instr_iterator finalizeBundle(MachineBasicBlock &MBB,
-                    MachineBasicBlock::instr_iterator FirstMI);
+MachineBasicBlock::instr_iterator
+finalizeBundle(MachineBasicBlock &MBB,
+               MachineBasicBlock::instr_iterator FirstMI);
 
 /// finalizeBundles - Finalize instruction bundles in the specified
 /// MachineFunction. Return true if any bundles are finalized.
 bool finalizeBundles(MachineFunction &MF);
 
 /// Returns an iterator to the first instruction in the bundle containing \p I.
-inline MachineBasicBlock::instr_iterator getBundleStart(
-    MachineBasicBlock::instr_iterator I) {
+inline MachineBasicBlock::instr_iterator
+getBundleStart(MachineBasicBlock::instr_iterator I) {
   while (I->isBundledWithPred())
     --I;
   return I;
 }
 
 /// Returns an iterator to the first instruction in the bundle containing \p I.
-inline MachineBasicBlock::const_instr_iterator getBundleStart(
-    MachineBasicBlock::const_instr_iterator I) {
+inline MachineBasicBlock::const_instr_iterator
+getBundleStart(MachineBasicBlock::const_instr_iterator I) {
   while (I->isBundledWithPred())
     --I;
   return I;
 }
 
 /// Returns an iterator pointing beyond the bundle containing \p I.
-inline MachineBasicBlock::instr_iterator getBundleEnd(
-    MachineBasicBlock::instr_iterator I) {
+inline MachineBasicBlock::instr_iterator
+getBundleEnd(MachineBasicBlock::instr_iterator I) {
   while (I->isBundledWithSucc())
     ++I;
   ++I;
@@ -66,8 +67,8 @@ inline MachineBasicBlock::instr_iterator getBundleEnd(
 }
 
 /// Returns an iterator pointing beyond the bundle containing \p I.
-inline MachineBasicBlock::const_instr_iterator getBundleEnd(
-    MachineBasicBlock::const_instr_iterator I) {
+inline MachineBasicBlock::const_instr_iterator
+getBundleEnd(MachineBasicBlock::const_instr_iterator I) {
   while (I->isBundledWithSucc())
     ++I;
   ++I;
@@ -155,9 +156,7 @@ public:
   /// getOperandNo - Returns the number of the current operand relative to its
   /// instruction.
   ///
-  unsigned getOperandNo() const {
-    return OpI - InstrI->operands_begin();
-  }
+  unsigned getOperandNo() const { return OpI - InstrI->operands_begin(); }
 };
 
 /// MIBundleOperands - Iterate over all operands in a bundle of machine
@@ -284,6 +283,6 @@ struct PhysRegInfo {
 PhysRegInfo AnalyzePhysRegInBundle(const MachineInstr &MI, Register Reg,
                                    const TargetRegisterInfo *TRI);
 
-} // End llvm namespace
+} // namespace llvm
 
 #endif

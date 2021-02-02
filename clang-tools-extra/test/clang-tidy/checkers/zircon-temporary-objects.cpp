@@ -48,7 +48,7 @@ int main() {
 
   Bar();
   NS::Bar();
-// CHECK-MESSAGES: :[[@LINE-1]]:3: warning: creating a temporary object of type 'NS::Bar' is prohibited
+  // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: creating a temporary object of type 'NS::Bar' is prohibited
 
   int A = func(Foo());
   // CHECK-MESSAGES: :[[@LINE-1]]:16: warning: creating a temporary object of type 'Foo' is prohibited
@@ -63,7 +63,7 @@ int main() {
 
   Bar(0);
   NS::Bar(0);
-// CHECK-MESSAGES: :[[@LINE-1]]:3: warning: creating a temporary object of type 'NS::Bar' is prohibited
+  // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: creating a temporary object of type 'NS::Bar' is prohibited
 
   int B = func(Foo(0));
   // CHECK-MESSAGES: :[[@LINE-1]]:16: warning: creating a temporary object of type 'Foo' is prohibited
@@ -73,9 +73,9 @@ namespace NS {
 
 void f() {
   Bar();
-// CHECK-MESSAGES: :[[@LINE-1]]:3: warning: creating a temporary object of type 'NS::Bar' is prohibited
+  // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: creating a temporary object of type 'NS::Bar' is prohibited
   Bar(0);
-// CHECK-MESSAGES: :[[@LINE-1]]:3: warning: creating a temporary object of type 'NS::Bar' is prohibited
+  // CHECK-MESSAGES: :[[@LINE-1]]:3: warning: creating a temporary object of type 'NS::Bar' is prohibited
 }
 
 } // namespace NS

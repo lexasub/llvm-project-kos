@@ -30,7 +30,7 @@
 #define N 1000
 #define M 10
 
-template<typename tx>
+template <typename tx>
 tx ftemplate(int n) {
   tx a[N];
   short aa[N];
@@ -40,34 +40,37 @@ tx ftemplate(int n) {
   tx l;
   int k;
 
-#pragma omp target teams distribute parallel for simd lastprivate(l) dist_schedule(static,128) schedule(static,32)
-  for(int i = 0; i < n; i++) {
+#pragma omp target teams distribute parallel for simd lastprivate(l) dist_schedule(static, 128) schedule(static, 32)
+  for (int i = 0; i < n; i++) {
     a[i] = 1;
     l = i;
   }
 
- #pragma omp target teams distribute parallel for simd map(tofrom: aa) num_teams(M) thread_limit(64)
-  for(int i = 0; i < n; i++) {
+#pragma omp target teams distribute parallel for simd map(tofrom \
+                                                          : aa) num_teams(M) thread_limit(64)
+  for (int i = 0; i < n; i++) {
     aa[i] += 1;
   }
 
-#pragma omp target teams distribute parallel for simd map(tofrom:a, aa, b) if(target: n>40) proc_bind(spread)
-  for(int i = 0; i < 10; i++) {
+#pragma omp target teams distribute parallel for simd map(tofrom                 \
+                                                          : a, aa, b) if (target \
+                                                                          : n > 40) proc_bind(spread)
+  for (int i = 0; i < 10; i++) {
     b[i] += 1;
   }
 
 #pragma omp target teams distribute parallel for simd collapse(2) firstprivate(f) private(k)
-  for(int i = 0; i < M; i++) {
-    for(int j = 0; j < M; j++) {
+  for (int i = 0; i < M; i++) {
+    for (int j = 0; j < M; j++) {
       k = M;
-      c[i][j] = i+j*f+k;
+      c[i][j] = i + j * f + k;
     }
   }
 
   return a[0];
 }
 
-int bar(int n){
+int bar(int n) {
   int a = 0;
 
   a += ftemplate<int>(n);

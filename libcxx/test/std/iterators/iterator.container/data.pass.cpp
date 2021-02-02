@@ -26,63 +26,59 @@
 #include <string_view>
 #endif
 
-template<typename C>
-void test_const_container( const C& c )
-{
-//  Can't say noexcept here because the container might not be
-    assert ( std::data(c)   == c.data());
+template <typename C>
+void test_const_container(const C& c) {
+  //  Can't say noexcept here because the container might not be
+  assert(std::data(c) == c.data());
 }
 
-template<typename T>
-void test_const_container( const std::initializer_list<T>& c )
-{
-    ASSERT_NOEXCEPT(std::data(c));
-    assert ( std::data(c)   == c.begin());
+template <typename T>
+void test_const_container(const std::initializer_list<T>& c) {
+  ASSERT_NOEXCEPT(std::data(c));
+  assert(std::data(c) == c.begin());
 }
 
-template<typename C>
-void test_container( C& c )
-{
-//  Can't say noexcept here because the container might not be
-    assert ( std::data(c)   == c.data());
+template <typename C>
+void test_container(C& c) {
+  //  Can't say noexcept here because the container might not be
+  assert(std::data(c) == c.data());
 }
 
-template<typename T>
-void test_container( std::initializer_list<T>& c)
-{
-    ASSERT_NOEXCEPT(std::data(c));
-    assert ( std::data(c)   == c.begin());
+template <typename T>
+void test_container(std::initializer_list<T>& c) {
+  ASSERT_NOEXCEPT(std::data(c));
+  assert(std::data(c) == c.begin());
 }
 
-template<typename T, size_t Sz>
-void test_const_array( const T (&array)[Sz] )
-{
-    ASSERT_NOEXCEPT(std::data(array));
-    assert ( std::data(array) == &array[0]);
+template <typename T, size_t Sz>
+void test_const_array(const T (&array)[Sz]) {
+  ASSERT_NOEXCEPT(std::data(array));
+  assert(std::data(array) == &array[0]);
 }
 
-int main(int, char**)
-{
-    std::vector<int> v; v.push_back(1);
-    std::array<int, 1> a; a[0] = 3;
-    std::initializer_list<int> il = { 4 };
+int main(int, char**) {
+  std::vector<int> v;
+  v.push_back(1);
+  std::array<int, 1> a;
+  a[0] = 3;
+  std::initializer_list<int> il = {4};
 
-    test_container ( v );
-    test_container ( a );
-    test_container ( il );
+  test_container(v);
+  test_container(a);
+  test_container(il);
 
-    test_const_container ( v );
-    test_const_container ( a );
-    test_const_container ( il );
+  test_const_container(v);
+  test_const_container(a);
+  test_const_container(il);
 
 #if TEST_STD_VER > 14
-    std::string_view sv{"ABC"};
-    test_container ( sv );
-    test_const_container ( sv );
+  std::string_view sv{"ABC"};
+  test_container(sv);
+  test_const_container(sv);
 #endif
 
-    static constexpr int arrA [] { 1, 2, 3 };
-    test_const_array ( arrA );
+  static constexpr int arrA[]{1, 2, 3};
+  test_const_array(arrA);
 
   return 0;
 }

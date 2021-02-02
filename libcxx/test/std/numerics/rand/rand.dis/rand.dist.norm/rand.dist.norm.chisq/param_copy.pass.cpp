@@ -19,15 +19,14 @@
 
 #include "test_macros.h"
 
-int main(int, char**)
-{
-    {
-        typedef std::chi_squared_distribution<> D;
-        typedef D::param_type param_type;
-        param_type p0(10);
-        param_type p = p0;
-        assert(p.n() == 10);
-    }
+int main(int, char**) {
+  {
+    typedef std::chi_squared_distribution<> D;
+    typedef D::param_type param_type;
+    param_type p0(10);
+    param_type p = p0;
+    assert(p.n() == 10);
+  }
 
   return 0;
 }

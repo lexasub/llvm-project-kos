@@ -4,8 +4,7 @@
 // RUN: %clangxx_msan -fsanitize-memory-track-origins -O0 %s -o %t && not %run %t >%t.out 2>&1
 // RUN: FileCheck %s < %t.out && FileCheck %s < %t.out
 
-__attribute__((noinline))
-int f() {
+__attribute__((noinline)) int f() {
   int x;
   int *volatile p = &x;
   return *p;

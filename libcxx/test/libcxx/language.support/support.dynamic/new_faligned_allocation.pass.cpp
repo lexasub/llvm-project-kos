@@ -38,11 +38,14 @@ int main(int, char**) {
     static_assert((std::is_same<UT, std::size_t>::value), "");
   }
   {
-    static_assert((!std::is_constructible<std::align_val_t, std::size_t>::value), "");
+    static_assert(
+        (!std::is_constructible<std::align_val_t, std::size_t>::value), "");
 #if TEST_STD_VER >= 11
-    static_assert(!std::is_constructible<std::size_t, std::align_val_t>::value, "");
+    static_assert(!std::is_constructible<std::size_t, std::align_val_t>::value,
+                  "");
 #else
-    static_assert((std::is_constructible<std::size_t, std::align_val_t>::value), "");
+    static_assert((std::is_constructible<std::size_t, std::align_val_t>::value),
+                  "");
 #endif
   }
   {
@@ -53,25 +56,25 @@ int main(int, char**) {
     assert(b == std::align_val_t(32));
   }
   {
-    void *ptr = ::operator new(1, std::align_val_t(128));
+    void* ptr = ::operator new(1, std::align_val_t(128));
     assert(ptr);
     assert(reinterpret_cast<std::uintptr_t>(ptr) % 128 == 0);
     ::operator delete(ptr, std::align_val_t(128));
   }
   {
-    void *ptr = ::operator new(1, std::align_val_t(128), std::nothrow);
+    void* ptr = ::operator new(1, std::align_val_t(128), std::nothrow);
     assert(ptr);
     assert(reinterpret_cast<std::uintptr_t>(ptr) % 128 == 0);
     ::operator delete(ptr, std::align_val_t(128), std::nothrow);
   }
   {
-    void *ptr = ::operator new[](1, std::align_val_t(128));
+    void* ptr = ::operator new[](1, std::align_val_t(128));
     assert(ptr);
     assert(reinterpret_cast<std::uintptr_t>(ptr) % 128 == 0);
     ::operator delete[](ptr, std::align_val_t(128));
   }
   {
-    void *ptr = ::operator new[](1, std::align_val_t(128), std::nothrow);
+    void* ptr = ::operator new[](1, std::align_val_t(128), std::nothrow);
     assert(ptr);
     assert(reinterpret_cast<std::uintptr_t>(ptr) % 128 == 0);
     ::operator delete[](ptr, std::align_val_t(128), std::nothrow);

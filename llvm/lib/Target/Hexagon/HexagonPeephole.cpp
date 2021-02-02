@@ -56,55 +56,58 @@ using namespace llvm;
 
 #define DEBUG_TYPE "hexagon-peephole"
 
-static cl::opt<bool> DisableHexagonPeephole("disable-hexagon-peephole",
-    cl::Hidden, cl::ZeroOrMore, cl::init(false),
-    cl::desc("Disable Peephole Optimization"));
+static cl::opt<bool>
+    DisableHexagonPeephole("disable-hexagon-peephole", cl::Hidden,
+                           cl::ZeroOrMore, cl::init(false),
+                           cl::desc("Disable Peephole Optimization"));
 
-static cl::opt<bool> DisablePNotP("disable-hexagon-pnotp",
-    cl::Hidden, cl::ZeroOrMore, cl::init(false),
-    cl::desc("Disable Optimization of PNotP"));
+static cl::opt<bool> DisablePNotP("disable-hexagon-pnotp", cl::Hidden,
+                                  cl::ZeroOrMore, cl::init(false),
+                                  cl::desc("Disable Optimization of PNotP"));
 
-static cl::opt<bool> DisableOptSZExt("disable-hexagon-optszext",
-    cl::Hidden, cl::ZeroOrMore, cl::init(true),
-    cl::desc("Disable Optimization of Sign/Zero Extends"));
+static cl::opt<bool>
+    DisableOptSZExt("disable-hexagon-optszext", cl::Hidden, cl::ZeroOrMore,
+                    cl::init(true),
+                    cl::desc("Disable Optimization of Sign/Zero Extends"));
 
-static cl::opt<bool> DisableOptExtTo64("disable-hexagon-opt-ext-to-64",
-    cl::Hidden, cl::ZeroOrMore, cl::init(true),
-    cl::desc("Disable Optimization of extensions to i64."));
+static cl::opt<bool>
+    DisableOptExtTo64("disable-hexagon-opt-ext-to-64", cl::Hidden,
+                      cl::ZeroOrMore, cl::init(true),
+                      cl::desc("Disable Optimization of extensions to i64."));
 
 namespace llvm {
-  FunctionPass *createHexagonPeephole();
-  void initializeHexagonPeepholePass(PassRegistry&);
-}
+FunctionPass *createHexagonPeephole();
+void initializeHexagonPeepholePass(PassRegistry &);
+} // namespace llvm
 
 namespace {
-  struct HexagonPeephole : public MachineFunctionPass {
-    const HexagonInstrInfo    *QII;
-    const HexagonRegisterInfo *QRI;
-    const MachineRegisterInfo *MRI;
+struct HexagonPeephole : public MachineFunctionPass {
+  const HexagonInstrInfo *QII;
+  const HexagonRegisterInfo *QRI;
+  const MachineRegisterInfo *MRI;
 
-  public:
-    static char ID;
-    HexagonPeephole() : MachineFunctionPass(ID) {
-      initializeHexagonPeepholePass(*PassRegistry::getPassRegistry());
-    }
+public:
+  static char ID;
+  HexagonPeephole() : MachineFunctionPass(ID) {
+    initializeHexagonPeepholePass(*PassRegistry::getPassRegistry());
+  }
 
-    bool runOnMachineFunction(MachineFunction &MF) override;
+  bool runOnMachineFunction(MachineFunction &MF) override;
 
-    StringRef getPassName() const override {
-      return "Hexagon optimize redundant zero and size extends";
-    }
+  StringRef getPassName() const override {
+    return "Hexagon optimize redundant zero and size extends";
+  }
 
-    void getAnalysisUsage(AnalysisUsage &AU) const override {
-      MachineFunctionPass::getAnalysisUsage(AU);
-    }
-  };
-}
+  void getAnalysisUsage(AnalysisUsage &AU) const override {
+    MachineFunctionPass::getAnalysisUsage(AU);
+  }
+};
+} // namespace
 
 char HexagonPeephole::ID = 0;
 
-INITIALIZE_PASS(HexagonPeephole, "hexagon-peephole", "Hexagon Peephole",
-                false, false)
+INITIALIZE_PASS(HexagonPeephole, "hexagon-peephole", "Hexagon Peephole", false,
+                false)
 
 bool HexagonPeephole::runOnMachineFunction(MachineFunction &MF) {
   if (skipFunction(MF.getFunction()))
@@ -115,9 +118,10 @@ bool HexagonPeephole::runOnMachineFunction(MachineFunction &MF) {
   MRI = &MF.getRegInfo();
 
   DenseMap<unsigned, unsigned> PeepholeMap;
-  DenseMap<unsigned, std::pair<unsigned, unsigned> > PeepholeDoubleRegsMap;
+  DenseMap<unsigned, std::pair<unsigned, unsigned>> PeepholeDoubleRegsMap;
 
-  if (DisableHexagonPeephole) return false;
+  if (DisableHexagonPeephole)
+    return false;
 
   // Loop over all of the basic blocks.
   for (MachineFunction::iterator MBBb = MF.begin(), MBBe = MF.end();
@@ -176,7 +180,7 @@ bool HexagonPeephole::runOnMachineFunction(MachineFunction &MF) {
         Register DstReg = Dst.getReg();
         Register SrcReg = Src1.getReg();
         PeepholeDoubleRegsMap[DstReg] =
-          std::make_pair(*&SrcReg, Hexagon::isub_hi);
+            std::make_pair(*&SrcReg, Hexagon::isub_hi);
       }
 
       // Look for P=NOT(P).
@@ -214,11 +218,11 @@ bool HexagonPeephole::runOnMachineFunction(MachineFunction &MF) {
             // Change the 1st operand.
             MI.RemoveOperand(1);
             MI.addOperand(MachineOperand::CreateReg(PeepholeSrc, false));
-          } else  {
-            DenseMap<unsigned, std::pair<unsigned, unsigned> >::iterator DI =
-              PeepholeDoubleRegsMap.find(SrcReg);
+          } else {
+            DenseMap<unsigned, std::pair<unsigned, unsigned>>::iterator DI =
+                PeepholeDoubleRegsMap.find(SrcReg);
             if (DI != PeepholeDoubleRegsMap.end()) {
-              std::pair<unsigned,unsigned> PeepholeSrc = DI->second;
+              std::pair<unsigned, unsigned> PeepholeSrc = DI->second;
               MI.RemoveOperand(1);
               MI.addOperand(MachineOperand::CreateReg(
                   PeepholeSrc.first, false /*isDef*/, false /*isImp*/,
@@ -257,41 +261,39 @@ bool HexagonPeephole::runOnMachineFunction(MachineFunction &MF) {
           // Handle special instructions.
           unsigned Op = MI.getOpcode();
           unsigned NewOp = 0;
-          unsigned PR = 1, S1 = 2, S2 = 3;   // Operand indices.
+          unsigned PR = 1, S1 = 2, S2 = 3; // Operand indices.
 
           switch (Op) {
-            case Hexagon::C2_mux:
-            case Hexagon::C2_muxii:
-              NewOp = Op;
-              break;
-            case Hexagon::C2_muxri:
-              NewOp = Hexagon::C2_muxir;
-              break;
-            case Hexagon::C2_muxir:
-              NewOp = Hexagon::C2_muxri;
-              break;
+          case Hexagon::C2_mux:
+          case Hexagon::C2_muxii:
+            NewOp = Op;
+            break;
+          case Hexagon::C2_muxri:
+            NewOp = Hexagon::C2_muxir;
+            break;
+          case Hexagon::C2_muxir:
+            NewOp = Hexagon::C2_muxri;
+            break;
           }
           if (NewOp) {
             Register PSrc = MI.getOperand(PR).getReg();
             if (unsigned POrig = PeepholeMap.lookup(PSrc)) {
-              BuildMI(*MBB, MI.getIterator(), MI.getDebugLoc(),
-                      QII->get(NewOp), MI.getOperand(0).getReg())
-                .addReg(POrig)
-                .add(MI.getOperand(S2))
-                .add(MI.getOperand(S1));
+              BuildMI(*MBB, MI.getIterator(), MI.getDebugLoc(), QII->get(NewOp),
+                      MI.getOperand(0).getReg())
+                  .addReg(POrig)
+                  .add(MI.getOperand(S2))
+                  .add(MI.getOperand(S1));
               MRI->clearKillFlags(POrig);
               MI.eraseFromParent();
             }
           } // if (NewOp)
-        } // if (!Done)
+        }   // if (!Done)
 
       } // if (!DisablePNotP)
 
     } // Instruction
-  } // Basic Block
+  }   // Basic Block
   return true;
 }
 
-FunctionPass *llvm::createHexagonPeephole() {
-  return new HexagonPeephole();
-}
+FunctionPass *llvm::createHexagonPeephole() { return new HexagonPeephole(); }

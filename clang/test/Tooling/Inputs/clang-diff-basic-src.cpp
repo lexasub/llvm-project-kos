@@ -25,9 +25,15 @@ public:
 
   int id(int i) { return i; }
 };
-}
+} // namespace src
 
 void m() { int x = 0 + 0 + 0; }
 int um = 1 * 2 + 3;
 
-void f1() {{ (void) __func__;;; }}
+void f1() {
+  {
+    (void)__func__;
+    ;
+    ;
+  }
+}

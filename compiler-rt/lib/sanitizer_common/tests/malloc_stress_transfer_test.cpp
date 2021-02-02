@@ -16,10 +16,10 @@ void Thread() {
         p = new char[kAllocSize];
         *p = 0;
       }
-      for (auto p : PeriodicaAllocations) delete [] p;
+      for (auto p : PeriodicaAllocations) delete[] p;
     }
   }
-  for (auto p : InitialAllocations) delete [] p;
+  for (auto p : InitialAllocations) delete[] p;
 }
 
 int main() {

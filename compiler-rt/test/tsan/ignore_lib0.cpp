@@ -24,15 +24,14 @@ int main() {
   libfunc();
 }
 
-#else  // #ifdef LIB
+#else // #ifdef LIB
 
 #include "ignore_lib_lib.h"
 
-#endif  // #ifdef LIB
+#endif // #ifdef LIB
 
 // CHECK-NOSUPP: WARNING: ThreadSanitizer: data race
 // CHECK-NOSUPP: OK
 
 // CHECK-WITHSUPP-NOT: WARNING: ThreadSanitizer: data race
 // CHECK-WITHSUPP: OK
-

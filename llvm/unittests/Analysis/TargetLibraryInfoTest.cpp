@@ -521,7 +521,8 @@ TEST_F(TargetLibraryInfoTest, ValidProto) {
       "declare i32 @iprintf(i8*, ...)\n"
       "declare i32 @siprintf(i8*, i8*, ...)\n"
 
-      // __small_printf variants have the same prototype as the non-'i' versions.
+      // __small_printf variants have the same prototype as the non-'i'
+      // versions.
       "declare i32 @__small_fprintf(%struct*, i8*, ...)\n"
       "declare i32 @__small_printf(i8*, ...)\n"
       "declare i32 @__small_sprintf(i8*, i8*, ...)\n"
@@ -585,8 +586,7 @@ TEST_F(TargetLibraryInfoTest, ValidProto) {
       "declare i8* @vec_calloc(i64, i64)\n"
       "declare i8* @vec_malloc(i64)\n"
       "declare i8* @vec_realloc(i8*, i64)\n"
-      "declare void @vec_free(i8*)\n"
-      );
+      "declare void @vec_free(i8*)\n");
 
   for (unsigned FI = 0; FI != LibFunc::NumLibFuncs; ++FI) {
     LibFunc LF = (LibFunc)FI;

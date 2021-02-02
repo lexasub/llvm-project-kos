@@ -4,9 +4,9 @@
 
 typedef __typeof__(sizeof(0)) size_t;
 namespace std {
-  struct nothrow_t {};
-  std::nothrow_t nothrow;
-}
+struct nothrow_t {};
+std::nothrow_t nothrow;
+} // namespace std
 void *operator new[](size_t, const std::nothrow_t &) throw();
 void *operator new[](size_t, char *);
 void *operator new[](size_t, int, int);
@@ -39,7 +39,7 @@ C *CallNewNoThrow() {
 // ASAN: call void @__asan_poison_cxx_array_cookie
 
 void CallDelete(C *c) {
-  delete [] c;
+  delete[] c;
 }
 
 // PLAIN-LABEL: CallDelete
@@ -57,8 +57,8 @@ C *CallPlacementNew() {
 // ASAN-NOT: __asan_poison_cxx_array_cookie
 
 C *CallNewWithArgs() {
-// ASAN-LABEL: CallNewWithArgs
-// ASAN-NOT: call void @__asan_poison_cxx_array_cookie
-// ASAN-POISON-ALL-NEW-ARRAY: call void @__asan_poison_cxx_array_cookie
+  // ASAN-LABEL: CallNewWithArgs
+  // ASAN-NOT: call void @__asan_poison_cxx_array_cookie
+  // ASAN-POISON-ALL-NEW-ARRAY: call void @__asan_poison_cxx_array_cookie
   return new (123, 456) C[20];
 }

@@ -300,4 +300,4 @@ TEST_F(RenameAliasTest, AliasesInMacros) {
 } // anonymous namespace
 } // namespace test
 } // namespace clang_rename
-} // namesdpace clang
+} // namespace clang

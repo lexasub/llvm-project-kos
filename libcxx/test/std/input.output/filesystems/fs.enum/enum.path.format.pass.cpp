@@ -27,13 +27,13 @@ int main(int, char**) {
   typedef std::underlying_type<E>::type UT;
   LIBCPP_STATIC_ASSERT(!std::is_convertible<E, UT>::value, "");
 
-  LIBCPP_ONLY(static_assert(std::is_same<UT, unsigned char>::value, "")); // Implementation detail
+  LIBCPP_ONLY(static_assert(std::is_same<UT, unsigned char>::value,
+                            "")); // Implementation detail
 
-  static_assert(
-          E::auto_format   != E::native_format &&
-          E::auto_format   != E::generic_format &&
-          E::native_format != E::generic_format,
-        "Expected enumeration values are not unique");
+  static_assert(E::auto_format != E::native_format &&
+                    E::auto_format != E::generic_format &&
+                    E::native_format != E::generic_format,
+                "Expected enumeration values are not unique");
 
   return 0;
 }

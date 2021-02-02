@@ -28,11 +28,11 @@ int Foo::a(int value) {
 }
 
 // Elided functions
-void f(int = 5) {};
+void f(int = 5){};
 // CHECK-NOTES: [[@LINE-1]]:8: warning: declaring a parameter with a default argument is disallowed [fuchsia-default-arguments-declarations]
 // CHECK-FIXES: void f(int) {};
 
-void g(int) {};
+void g(int){};
 
 // Should not suggest fix for macro-defined parameters
 #define D(val) = val

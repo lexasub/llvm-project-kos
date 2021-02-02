@@ -55,7 +55,6 @@
 #include "llvm/Analysis/CFG.h"
 #include "llvm/Analysis/ScalarEvolution.h"
 #include "llvm/Analysis/TargetLibraryInfo.h"
-#include "llvm/Transforms/Utils/Local.h"
 #include "llvm/IR/Dominators.h"
 #include "llvm/IR/IntrinsicInst.h"
 #include "llvm/IR/LegacyPassManager.h"
@@ -65,6 +64,7 @@
 #include "llvm/Transforms/Scalar.h"
 #include "llvm/Transforms/Utils/BasicBlockUtils.h"
 #include "llvm/Transforms/Utils/Cloning.h"
+#include "llvm/Transforms/Utils/Local.h"
 
 #define DEBUG_TYPE "safepoint-placement"
 
@@ -149,7 +149,7 @@ struct PlaceBackedgeSafepointsImpl : public FunctionPass {
     AU.setPreservesAll();
   }
 };
-}
+} // namespace
 
 static cl::opt<bool> NoEntry("spp-no-entry", cl::Hidden, cl::init(false));
 static cl::opt<bool> NoCall("spp-no-call", cl::Hidden, cl::init(false));
@@ -171,7 +171,7 @@ struct PlaceSafepoints : public FunctionPass {
     AU.addRequired<TargetLibraryInfoWrapperPass>();
   }
 };
-}
+} // namespace
 
 // Insert a safepoint poll immediately before the given instruction.  Does
 // not handle the parsability of state at the runtime call, that's the
@@ -258,7 +258,7 @@ static bool mustBeFiniteCountedLoop(Loop *L, ScalarEvolution *SE,
     if (!isa<SCEVCouldNotCompute>(MaxExec) &&
         SE->getUnsignedRange(MaxExec).getUnsignedMax().isIntN(
             CountedLoopTripWidth))
-        return true;
+      return true;
   }
 
   return /* not finite */ false;
@@ -312,7 +312,7 @@ bool PlaceBackedgeSafepointsImpl::runOnLoop(Loop *L) {
   // having run sometime earlier in the pipeline, but this code must be correct
   // w.r.t. loops with multiple backedges.
   BasicBlock *Header = L->getHeader();
-  SmallVector<BasicBlock*, 16> LoopLatches;
+  SmallVector<BasicBlock *, 16> LoopLatches;
   L->getLoopLatches(LoopLatches);
   for (BasicBlock *Pred : LoopLatches) {
     assert(L->contains(Pred));
@@ -527,8 +527,7 @@ bool PlaceSafepoints::runOnFunction(Function &F) {
     // We can sometimes end up with duplicate poll locations.  This happens if
     // a single loop is visited more than once.   The fact this happens seems
     // wrong, but it does happen for the split-backedge.ll test case.
-    PollLocations.erase(std::unique(PollLocations.begin(),
-                                    PollLocations.end()),
+    PollLocations.erase(std::unique(PollLocations.begin(), PollLocations.end()),
                         PollLocations.end());
 
     // Insert a poll at each point the analysis pass identified
@@ -632,7 +631,7 @@ InsertSafepointPoll(Instruction *InsertBefore,
   auto *F = M->getFunction(GCSafepointPollName);
   assert(F && "gc.safepoint_poll function is missing");
   assert(F->getValueType() ==
-         FunctionType::get(Type::getVoidTy(M->getContext()), false) &&
+             FunctionType::get(Type::getVoidTy(M->getContext()), false) &&
          "gc.safepoint_poll declared with wrong type");
   assert(!F->empty() && "gc.safepoint_poll must be a non-empty function");
   CallInst *PollCall = CallInst::Create(F, "", InsertBefore);
@@ -666,8 +665,7 @@ InsertSafepointPoll(Instruction *InsertBefore,
 
   // If your poll function includes an unreachable at the end, that's not
   // valid.  Bugpoint likes to create this, so check for it.
-  assert(isPotentiallyReachable(&*Start, &*After) &&
-         "malformed poll function");
+  assert(isPotentiallyReachable(&*Start, &*After) && "malformed poll function");
 
   scanInlinedCode(&*Start, &*After, Calls, BBs);
   assert(!Calls.empty() && "slow path not found for safepoint poll");

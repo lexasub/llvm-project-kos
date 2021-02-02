@@ -20,15 +20,15 @@ struct C03 {
   friend inline void func_03() {} // expected-error{{inline declaration of 'func_03' follows non-inline definition}}
 };
 
-void func_04() {} // expected-note{{previous definition is here}}
+void func_04() {}        // expected-note{{previous definition is here}}
 inline void func_04() {} // expected-error{{inline declaration of 'func_04' follows non-inline definition}}
 
 void func_06() {} // expected-note{{previous definition is here}}
-template<typename T> struct C06 {
+template <typename T> struct C06 {
   friend inline void func_06() {} // expected-error{{inline declaration of 'func_06' follows non-inline definition}}
 };
 
 void func_07() {} // expected-note{{previous definition is here}}
-template<typename T> struct C07 {
+template <typename T> struct C07 {
   friend inline void func_07(); // expected-error{{inline declaration of 'func_07' follows non-inline definition}}
 };

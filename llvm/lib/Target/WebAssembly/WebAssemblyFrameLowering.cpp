@@ -135,8 +135,7 @@ unsigned WebAssemblyFrameLowering::getFPReg(const MachineFunction &MF) {
              : WebAssembly::FP32;
 }
 
-unsigned
-WebAssemblyFrameLowering::getOpcConst(const MachineFunction &MF) {
+unsigned WebAssemblyFrameLowering::getOpcConst(const MachineFunction &MF) {
   return MF.getSubtarget<WebAssemblySubtarget>().hasAddr64()
              ? WebAssembly::CONST_I64
              : WebAssembly::CONST_I32;
@@ -160,15 +159,13 @@ unsigned WebAssemblyFrameLowering::getOpcAnd(const MachineFunction &MF) {
              : WebAssembly::AND_I32;
 }
 
-unsigned
-WebAssemblyFrameLowering::getOpcGlobGet(const MachineFunction &MF) {
+unsigned WebAssemblyFrameLowering::getOpcGlobGet(const MachineFunction &MF) {
   return MF.getSubtarget<WebAssemblySubtarget>().hasAddr64()
              ? WebAssembly::GLOBAL_GET_I64
              : WebAssembly::GLOBAL_GET_I32;
 }
 
-unsigned
-WebAssemblyFrameLowering::getOpcGlobSet(const MachineFunction &MF) {
+unsigned WebAssemblyFrameLowering::getOpcGlobSet(const MachineFunction &MF) {
   return MF.getSubtarget<WebAssemblySubtarget>().hasAddr64()
              ? WebAssembly::GLOBAL_SET_I64
              : WebAssembly::GLOBAL_SET_I32;

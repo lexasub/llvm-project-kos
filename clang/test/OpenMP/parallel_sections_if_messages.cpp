@@ -13,8 +13,8 @@ bool foobool(int argc) {
 }
 
 void xxx(int argc) {
-  int cond; // expected-note {{initialize the variable 'cond' to silence this warning}}
-#pragma omp parallel sections if(cond) // expected-warning {{variable 'cond' is uninitialized when used here}}
+  int cond;                             // expected-note {{initialize the variable 'cond' to silence this warning}}
+#pragma omp parallel sections if (cond) // expected-warning {{variable 'cond' is uninitialized when used here}}
   {
     ;
   }
@@ -25,71 +25,78 @@ struct S1; // expected-note {{declared here}}
 template <class T, class S> // expected-note {{declared here}}
 int tmain(T argc, S **argv) {
   T z;
-  #pragma omp parallel sections if // expected-error {{expected '(' after 'if'}}
+#pragma omp parallel sections if // expected-error {{expected '(' after 'if'}}
   {
     foo();
   }
-  #pragma omp parallel sections if ( // expected-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}}
+#pragma omp parallel sections if ( // expected-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}}
   {
     foo();
   }
-  #pragma omp parallel sections if () // expected-error {{expected expression}}
+#pragma omp parallel sections if () // expected-error {{expected expression}}
   {
     foo();
   }
-  #pragma omp parallel sections if (argc // expected-error {{expected ')'}} expected-note {{to match this '('}}
+#pragma omp parallel sections if (argc // expected-error {{expected ')'}} expected-note {{to match this '('}}
   {
     foo();
   }
-  #pragma omp parallel sections if (argc)) // expected-warning {{extra tokens at the end of '#pragma omp parallel sections' are ignored}}
+#pragma omp parallel sections if (argc)) // expected-warning {{extra tokens at the end of '#pragma omp parallel sections' are ignored}}
   {
     foo();
   }
-  #pragma omp parallel sections if (argc > 0 ? argv[1] : argv[2])
+#pragma omp parallel sections if (argc > 0 ? argv[1] : argv[2])
   {
     foo();
   }
-  #pragma omp parallel sections if (foobool(argc)), if (true) // expected-error {{directive '#pragma omp parallel sections' cannot contain more than one 'if' clause}}
+#pragma omp parallel sections if (foobool(argc)), if (true) // expected-error {{directive '#pragma omp parallel sections' cannot contain more than one 'if' clause}}
   {
     foo();
   }
-  #pragma omp parallel sections if (S) // expected-error {{'S' does not refer to a value}}
+#pragma omp parallel sections if (S) // expected-error {{'S' does not refer to a value}}
   {
     foo();
   }
-  #pragma omp parallel sections if (argv[1]=2) // expected-error {{expected ')'}} expected-note {{to match this '('}}
+#pragma omp parallel sections if (argv[1] = 2) // expected-error {{expected ')'}} expected-note {{to match this '('}}
   {
     foo();
   }
-  #pragma omp parallel sections if (argc argc) // expected-error {{expected ')'}} expected-note {{to match this '('}}
+#pragma omp parallel sections if (argc argc) // expected-error {{expected ')'}} expected-note {{to match this '('}}
   {
     foo();
   }
-  #pragma omp parallel sections if(argc + z)
+#pragma omp parallel sections if (argc + z)
   {
     foo();
   }
-  #pragma omp parallel sections if(parallel : // expected-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}}
+#pragma omp parallel sections if (parallel \
+                                  : // expected-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}}
   {
     foo();
   }
-  #pragma omp parallel sections if(parallel : argc // expected-error {{expected ')'}} expected-note {{to match this '('}}
+#pragma omp parallel sections if (parallel \
+                                  : argc // expected-error {{expected ')'}} expected-note {{to match this '('}}
   {
     foo();
   }
-  #pragma omp parallel sections if(parallel : argc)
+#pragma omp parallel sections if (parallel \
+                                  : argc)
   {
     foo();
   }
-  #pragma omp parallel sections if(parallel : argc) if (for:argc) // expected-error {{directive name modifier 'for' is not allowed for '#pragma omp parallel sections'}}
+#pragma omp parallel sections if (parallel \
+                                  : argc) if (for : argc) // expected-error {{directive name modifier 'for' is not allowed for '#pragma omp parallel sections'}}
   {
     foo();
   }
-  #pragma omp parallel sections if(parallel : argc) if (parallel:argc) // expected-error {{directive '#pragma omp parallel sections' cannot contain more than one 'if' clause with 'parallel' name modifier}}
+#pragma omp parallel sections if (parallel             \
+                                  : argc) if (parallel \
+                                              : argc) // expected-error {{directive '#pragma omp parallel sections' cannot contain more than one 'if' clause with 'parallel' name modifier}}
   {
     foo();
   }
-  #pragma omp parallel sections if(parallel : argc) if (argc) // expected-error {{no more 'if' clause is allowed}} expected-note {{previous clause with directive name modifier specified here}}
+#pragma omp parallel sections if (parallel \
+                                  : argc) if (argc) // expected-error {{no more 'if' clause is allowed}} expected-note {{previous clause with directive name modifier specified here}}
   {
     foo();
   }
@@ -99,75 +106,82 @@ int tmain(T argc, S **argv) {
 
 int main(int argc, char **argv) {
   int z;
-  #pragma omp parallel sections if // expected-error {{expected '(' after 'if'}}
+#pragma omp parallel sections if // expected-error {{expected '(' after 'if'}}
   {
     foo();
   }
-  #pragma omp parallel sections if ( // expected-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}}
+#pragma omp parallel sections if ( // expected-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}}
   {
     foo();
   }
-  #pragma omp parallel sections if () // expected-error {{expected expression}}
+#pragma omp parallel sections if () // expected-error {{expected expression}}
   {
     foo();
   }
-  #pragma omp parallel sections if (argc // expected-error {{expected ')'}} expected-note {{to match this '('}}
+#pragma omp parallel sections if (argc // expected-error {{expected ')'}} expected-note {{to match this '('}}
   {
     foo();
   }
-  #pragma omp parallel sections if (argc)) // expected-warning {{extra tokens at the end of '#pragma omp parallel sections' are ignored}}
+#pragma omp parallel sections if (argc)) // expected-warning {{extra tokens at the end of '#pragma omp parallel sections' are ignored}}
   {
     foo();
   }
-  #pragma omp parallel sections if (argc > 0 ? argv[1] : argv[2] + z)
+#pragma omp parallel sections if (argc > 0 ? argv[1] : argv[2] + z)
   {
     foo();
   }
-  #pragma omp parallel sections if (foobool(argc)), if (true) // expected-error {{directive '#pragma omp parallel sections' cannot contain more than one 'if' clause}}
+#pragma omp parallel sections if (foobool(argc)), if (true) // expected-error {{directive '#pragma omp parallel sections' cannot contain more than one 'if' clause}}
   {
     foo();
   }
-  #pragma omp parallel sections if (S1) // expected-error {{'S1' does not refer to a value}}
+#pragma omp parallel sections if (S1) // expected-error {{'S1' does not refer to a value}}
   {
     foo();
   }
-  #pragma omp parallel sections if (argv[1]=2) // expected-error {{expected ')'}} expected-note {{to match this '('}}
+#pragma omp parallel sections if (argv[1] = 2) // expected-error {{expected ')'}} expected-note {{to match this '('}}
   {
     foo();
   }
-  #pragma omp parallel sections if (argc argc) // expected-error {{expected ')'}} expected-note {{to match this '('}}
+#pragma omp parallel sections if (argc argc) // expected-error {{expected ')'}} expected-note {{to match this '('}}
   {
     foo();
   }
-  #pragma omp parallel sections if (1 0) // expected-error {{expected ')'}} expected-note {{to match this '('}}
+#pragma omp parallel sections if (1 0) // expected-error {{expected ')'}} expected-note {{to match this '('}}
   {
     foo();
   }
-  #pragma omp parallel sections if(if(tmain(argc, argv) // expected-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}}
+#pragma omp parallel sections if (if (tmain(argc, argv) // expected-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}}
   {
     foo();
   }
-  #pragma omp parallel sections if(parallel : // expected-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}}
+#pragma omp parallel sections if (parallel \
+                                  : // expected-error {{expected expression}} expected-error {{expected ')'}} expected-note {{to match this '('}}
   {
     foo();
   }
-  #pragma omp parallel sections if(parallel : argc // expected-error {{expected ')'}} expected-note {{to match this '('}}
+#pragma omp parallel sections if (parallel \
+                                  : argc // expected-error {{expected ')'}} expected-note {{to match this '('}}
   {
     foo();
   }
-  #pragma omp parallel sections if(parallel : argc)
+#pragma omp parallel sections if (parallel \
+                                  : argc)
   {
     foo();
   }
-  #pragma omp parallel sections if(parallel : argc) if (for:argc) // expected-error {{directive name modifier 'for' is not allowed for '#pragma omp parallel sections'}}
+#pragma omp parallel sections if (parallel \
+                                  : argc) if (for : argc) // expected-error {{directive name modifier 'for' is not allowed for '#pragma omp parallel sections'}}
   {
     foo();
   }
-  #pragma omp parallel sections if(parallel : argc) if (parallel:argc) // expected-error {{directive '#pragma omp parallel sections' cannot contain more than one 'if' clause with 'parallel' name modifier}}
+#pragma omp parallel sections if (parallel             \
+                                  : argc) if (parallel \
+                                              : argc) // expected-error {{directive '#pragma omp parallel sections' cannot contain more than one 'if' clause with 'parallel' name modifier}}
   {
     foo();
   }
-  #pragma omp parallel sections if(parallel : argc) if (argc) // expected-error {{no more 'if' clause is allowed}} expected-note {{previous clause with directive name modifier specified here}}
+#pragma omp parallel sections if (parallel \
+                                  : argc) if (argc) // expected-error {{no more 'if' clause is allowed}} expected-note {{previous clause with directive name modifier specified here}}
   {
     foo();
   }

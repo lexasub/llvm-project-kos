@@ -53,19 +53,18 @@
 #include <chrono> // for nanoseconds
 
 struct NotTriviallyCopyable {
-    NotTriviallyCopyable ( int i ) : i_(i) {}
-    NotTriviallyCopyable ( const NotTriviallyCopyable &rhs) : i_(rhs.i_) {}
-    int i_;
+  NotTriviallyCopyable(int i) : i_(i) {}
+  NotTriviallyCopyable(const NotTriviallyCopyable& rhs) : i_(rhs.i_) {}
+  int i_;
 };
 
-template <class T, class >
-void test ( T t ) {
-    std::atomic<T> t0(t);
+template <class T, class>
+void test(T t) {
+  std::atomic<T> t0(t);
 }
 
-int main(int, char**)
-{
-    test(NotTriviallyCopyable(42));
+int main(int, char**) {
+  test(NotTriviallyCopyable(42));
 
   return 0;
 }

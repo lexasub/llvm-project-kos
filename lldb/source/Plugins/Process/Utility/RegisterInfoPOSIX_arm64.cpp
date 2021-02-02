@@ -54,13 +54,11 @@
    sizeof(RegisterInfoPOSIX_arm64::EXC))
 
 #define DEFINE_DBG(reg, i)                                                     \
-  #reg, NULL,                                                                  \
-      sizeof(((RegisterInfoPOSIX_arm64::DBG *) NULL)->reg[i]),                 \
-              DBG_OFFSET_NAME(reg[i]), lldb::eEncodingUint, lldb::eFormatHex,  \
-                              {LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,       \
-                               LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,       \
-                               dbg_##reg##i },                                 \
-                               NULL, NULL, NULL, 0
+#reg, NULL, sizeof(((RegisterInfoPOSIX_arm64::DBG *)NULL)->reg[i]),          \
+      DBG_OFFSET_NAME(reg[i]), lldb::eEncodingUint, lldb::eFormatHex,          \
+      {LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM, LLDB_INVALID_REGNUM,          \
+       LLDB_INVALID_REGNUM, dbg_##reg##i },                                    \
+       NULL, NULL, NULL, 0
 #define REG_CONTEXT_SIZE                                                       \
   (sizeof(RegisterInfoPOSIX_arm64::GPR) +                                      \
    sizeof(RegisterInfoPOSIX_arm64::FPU) +                                      \
@@ -203,8 +201,7 @@ RegisterInfoPOSIX_arm64::RegisterInfoPOSIX_arm64(
     const lldb_private::ArchSpec &target_arch)
     : lldb_private::RegisterInfoAndSetInterface(target_arch),
       m_register_info_p(GetRegisterInfoPtr(target_arch)),
-      m_register_info_count(GetRegisterInfoCount(target_arch)) {
-}
+      m_register_info_count(GetRegisterInfoCount(target_arch)) {}
 
 uint32_t RegisterInfoPOSIX_arm64::GetRegisterCount() const {
   if (IsSVEEnabled())

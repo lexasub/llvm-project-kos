@@ -6,11 +6,10 @@
 
 namespace rdar39051732 {
 
-  template<class T> struct A {
-    template <class U> A(T&, ...);
-  };
-  // Deduction guide triggers constructor instantiation.
-  template<class T> A(const T&, const T&) -> A<T&>;
+template <class T> struct A {
+  template <class U> A(T &, ...);
+};
+// Deduction guide triggers constructor instantiation.
+template <class T> A(const T &, const T &) -> A<T &>;
 
-}
-
+} // namespace rdar39051732

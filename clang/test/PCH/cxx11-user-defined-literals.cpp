@@ -11,7 +11,7 @@
 using size_t = decltype(sizeof(int));
 int operator"" _foo(const char *p, size_t);
 
-template<typename T> auto f(T t) -> decltype(t + ""_foo) { return 0; }
+template <typename T> auto f(T t) -> decltype(t + ""_foo) { return 0; }
 
 #else
 

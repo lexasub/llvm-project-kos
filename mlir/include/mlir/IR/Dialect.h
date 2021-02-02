@@ -132,7 +132,8 @@ public:
     auto it = registeredInterfaces.find(interfaceID);
     return it != registeredInterfaces.end() ? it->getSecond().get() : nullptr;
   }
-  template <typename InterfaceT> const InterfaceT *getRegisteredInterface() {
+  template <typename InterfaceT>
+  const InterfaceT *getRegisteredInterface() {
     return static_cast<const InterfaceT *>(
         getRegisteredInterface(InterfaceT::getInterfaceID()));
   }
@@ -149,18 +150,21 @@ protected:
 
   /// This method is used by derived classes to add their operations to the set.
   ///
-  template <typename... Args> void addOperations() {
+  template <typename... Args>
+  void addOperations() {
     (void)std::initializer_list<int>{
         0, (AbstractOperation::insert<Args>(*this), 0)...};
   }
 
   /// Register a set of type classes with this dialect.
-  template <typename... Args> void addTypes() {
+  template <typename... Args>
+  void addTypes() {
     (void)std::initializer_list<int>{0, (addType<Args>(), 0)...};
   }
 
   /// Register a set of attribute classes with this dialect.
-  template <typename... Args> void addAttributes() {
+  template <typename... Args>
+  void addAttributes() {
     (void)std::initializer_list<int>{0, (addAttribute<Args>(), 0)...};
   }
 
@@ -174,7 +178,8 @@ protected:
   void addInterface(std::unique_ptr<DialectInterface> interface);
 
   /// Register a set of dialect interfaces with this dialect instance.
-  template <typename... Args> void addInterfaces() {
+  template <typename... Args>
+  void addInterfaces() {
     (void)std::initializer_list<int>{
         0, (addInterface(std::make_unique<Args>(this)), 0)...};
   }
@@ -184,7 +189,8 @@ private:
   void operator=(Dialect &) = delete;
 
   /// Register an attribute instance with this dialect.
-  template <typename T> void addAttribute() {
+  template <typename T>
+  void addAttribute() {
     // Add this attribute to the dialect and register it with the uniquer.
     addAttribute(T::getTypeID(), AbstractAttribute::get<T>(*this));
     detail::AttributeUniquer::registerAttribute<T>(context);
@@ -192,7 +198,8 @@ private:
   void addAttribute(TypeID typeID, AbstractAttribute &&attrInfo);
 
   /// Register a type instance with this dialect.
-  template <typename T> void addType() {
+  template <typename T>
+  void addType() {
     // Add this type to the dialect and register it with the uniquer.
     addType(T::getTypeID(), AbstractType::get<T>(*this));
     detail::TypeUniquer::registerType<T>(context);

@@ -24,67 +24,75 @@
 
 #if TEST_STD_VER > 17
 TEST_CONSTEXPR bool test_constexpr() {
-    int ia[] = {1, 2, 3};
-    int ib[] = {1, 3, 5, 2, 4, 6};
+  int ia[] = {1, 2, 3};
+  int ib[] = {1, 3, 5, 2, 4, 6};
 
-    std::greater<int> pred{};
-    return !std::lexicographical_compare(std::begin(ia), std::end(ia), std::begin(ib), std::end(ib), pred)
-        &&  std::lexicographical_compare(std::begin(ib), std::end(ib), std::begin(ia), std::end(ia), pred)
-           ;
-    }
+  std::greater<int> pred{};
+  return !std::lexicographical_compare(std::begin(ia), std::end(ia),
+                                       std::begin(ib), std::end(ib), pred) &&
+         std::lexicographical_compare(std::begin(ib), std::end(ib),
+                                      std::begin(ia), std::end(ia), pred);
+}
 #endif
 
 template <class Iter1, class Iter2>
-void
-test()
-{
-    int ia[] = {1, 2, 3, 4};
-    const unsigned sa = sizeof(ia)/sizeof(ia[0]);
-    int ib[] = {1, 2, 3};
-    typedef std::greater<int> C;
-    C c;
-    assert(!std::lexicographical_compare(Iter1(ia),   Iter1(ia+sa), Iter2(ib),   Iter2(ib+2),  c));
-    assert( std::lexicographical_compare(Iter1(ib),   Iter1(ib+2),  Iter2(ia),   Iter2(ia+sa), c));
-    assert(!std::lexicographical_compare(Iter1(ia),   Iter1(ia+sa), Iter2(ib),   Iter2(ib+3),  c));
-    assert( std::lexicographical_compare(Iter1(ib),   Iter1(ib+3),  Iter2(ia),   Iter2(ia+sa), c));
-    assert(!std::lexicographical_compare(Iter1(ia),   Iter1(ia+sa), Iter2(ib+1), Iter2(ib+3),  c));
-    assert( std::lexicographical_compare(Iter1(ib+1), Iter1(ib+3),  Iter2(ia),   Iter2(ia+sa), c));
+void test() {
+  int ia[] = {1, 2, 3, 4};
+  const unsigned sa = sizeof(ia) / sizeof(ia[0]);
+  int ib[] = {1, 2, 3};
+  typedef std::greater<int> C;
+  C c;
+  assert(!std::lexicographical_compare(Iter1(ia), Iter1(ia + sa), Iter2(ib),
+                                       Iter2(ib + 2), c));
+  assert(std::lexicographical_compare(Iter1(ib), Iter1(ib + 2), Iter2(ia),
+                                      Iter2(ia + sa), c));
+  assert(!std::lexicographical_compare(Iter1(ia), Iter1(ia + sa), Iter2(ib),
+                                       Iter2(ib + 3), c));
+  assert(std::lexicographical_compare(Iter1(ib), Iter1(ib + 3), Iter2(ia),
+                                      Iter2(ia + sa), c));
+  assert(!std::lexicographical_compare(Iter1(ia), Iter1(ia + sa), Iter2(ib + 1),
+                                       Iter2(ib + 3), c));
+  assert(std::lexicographical_compare(Iter1(ib + 1), Iter1(ib + 3), Iter2(ia),
+                                      Iter2(ia + sa), c));
 }
 
-int main(int, char**)
-{
-    test<input_iterator<const int*>, input_iterator<const int*> >();
-    test<input_iterator<const int*>, forward_iterator<const int*> >();
-    test<input_iterator<const int*>, bidirectional_iterator<const int*> >();
-    test<input_iterator<const int*>, random_access_iterator<const int*> >();
-    test<input_iterator<const int*>, const int*>();
+int main(int, char**) {
+  test<input_iterator<const int*>, input_iterator<const int*> >();
+  test<input_iterator<const int*>, forward_iterator<const int*> >();
+  test<input_iterator<const int*>, bidirectional_iterator<const int*> >();
+  test<input_iterator<const int*>, random_access_iterator<const int*> >();
+  test<input_iterator<const int*>, const int*>();
 
-    test<forward_iterator<const int*>, input_iterator<const int*> >();
-    test<forward_iterator<const int*>, forward_iterator<const int*> >();
-    test<forward_iterator<const int*>, bidirectional_iterator<const int*> >();
-    test<forward_iterator<const int*>, random_access_iterator<const int*> >();
-    test<forward_iterator<const int*>, const int*>();
+  test<forward_iterator<const int*>, input_iterator<const int*> >();
+  test<forward_iterator<const int*>, forward_iterator<const int*> >();
+  test<forward_iterator<const int*>, bidirectional_iterator<const int*> >();
+  test<forward_iterator<const int*>, random_access_iterator<const int*> >();
+  test<forward_iterator<const int*>, const int*>();
 
-    test<bidirectional_iterator<const int*>, input_iterator<const int*> >();
-    test<bidirectional_iterator<const int*>, forward_iterator<const int*> >();
-    test<bidirectional_iterator<const int*>, bidirectional_iterator<const int*> >();
-    test<bidirectional_iterator<const int*>, random_access_iterator<const int*> >();
-    test<bidirectional_iterator<const int*>, const int*>();
+  test<bidirectional_iterator<const int*>, input_iterator<const int*> >();
+  test<bidirectional_iterator<const int*>, forward_iterator<const int*> >();
+  test<bidirectional_iterator<const int*>,
+       bidirectional_iterator<const int*> >();
+  test<bidirectional_iterator<const int*>,
+       random_access_iterator<const int*> >();
+  test<bidirectional_iterator<const int*>, const int*>();
 
-    test<random_access_iterator<const int*>, input_iterator<const int*> >();
-    test<random_access_iterator<const int*>, forward_iterator<const int*> >();
-    test<random_access_iterator<const int*>, bidirectional_iterator<const int*> >();
-    test<random_access_iterator<const int*>, random_access_iterator<const int*> >();
-    test<random_access_iterator<const int*>, const int*>();
+  test<random_access_iterator<const int*>, input_iterator<const int*> >();
+  test<random_access_iterator<const int*>, forward_iterator<const int*> >();
+  test<random_access_iterator<const int*>,
+       bidirectional_iterator<const int*> >();
+  test<random_access_iterator<const int*>,
+       random_access_iterator<const int*> >();
+  test<random_access_iterator<const int*>, const int*>();
 
-    test<const int*, input_iterator<const int*> >();
-    test<const int*, forward_iterator<const int*> >();
-    test<const int*, bidirectional_iterator<const int*> >();
-    test<const int*, random_access_iterator<const int*> >();
-    test<const int*, const int*>();
+  test<const int*, input_iterator<const int*> >();
+  test<const int*, forward_iterator<const int*> >();
+  test<const int*, bidirectional_iterator<const int*> >();
+  test<const int*, random_access_iterator<const int*> >();
+  test<const int*, const int*>();
 
 #if TEST_STD_VER > 17
-    static_assert(test_constexpr());
+  static_assert(test_constexpr());
 #endif
 
   return 0;

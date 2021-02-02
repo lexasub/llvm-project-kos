@@ -46,6 +46,6 @@ public:
 private:
   std::shared_ptr<HostNativeThreadBase> m_native_thread;
 };
-}
+} // namespace lldb_private
 
 #endif

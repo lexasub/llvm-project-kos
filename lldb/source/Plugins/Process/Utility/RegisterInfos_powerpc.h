@@ -19,28 +19,24 @@
 // Note that the size and offset will be updated by platform-specific classes.
 #define DEFINE_GPR(reg, alt, lldb_kind)                                        \
   {                                                                            \
-    #reg, alt, GPR_SIZE(reg), GPR_OFFSET(reg), eEncodingUint, eFormatHex,      \
-                                         {dwarf_##reg##_powerpc,               \
-                                          dwarf_##reg##_powerpc, lldb_kind,    \
-                                          LLDB_INVALID_REGNUM,                 \
-                                          gpr_##reg##_powerpc },               \
-                                          NULL, NULL, NULL, 0                  \
+#reg, alt, GPR_SIZE(reg), GPR_OFFSET(reg), eEncodingUint, eFormatHex,      \
+        {dwarf_##reg##_powerpc, dwarf_##reg##_powerpc, lldb_kind,              \
+         LLDB_INVALID_REGNUM, gpr_##reg##_powerpc },                           \
+         NULL, NULL, NULL, 0                                                   \
   }
 #define DEFINE_FPR(reg, lldb_kind)                                             \
   {                                                                            \
-    #reg, NULL, 8, FPR_OFFSET(reg), eEncodingIEEE754, eFormatFloat,            \
-                              {dwarf_##reg##_powerpc, dwarf_##reg##_powerpc,   \
-                               lldb_kind, LLDB_INVALID_REGNUM,                 \
-                               fpr_##reg##_powerpc },                          \
-                               NULL, NULL, NULL, 0                             \
+#reg, NULL, 8, FPR_OFFSET(reg), eEncodingIEEE754, eFormatFloat,            \
+        {dwarf_##reg##_powerpc, dwarf_##reg##_powerpc, lldb_kind,              \
+         LLDB_INVALID_REGNUM, fpr_##reg##_powerpc },                           \
+         NULL, NULL, NULL, 0                                                   \
   }
 #define DEFINE_VMX(reg, lldb_kind)                                             \
   {                                                                            \
-    #reg, NULL, 16, VMX_OFFSET(reg), eEncodingVector, eFormatVectorOfUInt32,   \
-                               {dwarf_##reg##_powerpc, dwarf_##reg##_powerpc,  \
-                                lldb_kind, LLDB_INVALID_REGNUM,                \
-                                vmx_##reg##_powerpc },                         \
-                                NULL, NULL, NULL, 0                            \
+#reg, NULL, 16, VMX_OFFSET(reg), eEncodingVector, eFormatVectorOfUInt32,   \
+        {dwarf_##reg##_powerpc, dwarf_##reg##_powerpc, lldb_kind,              \
+         LLDB_INVALID_REGNUM, vmx_##reg##_powerpc },                           \
+         NULL, NULL, NULL, 0                                                   \
   }
 
 // General purpose registers.            EH_Frame,                  DWARF,

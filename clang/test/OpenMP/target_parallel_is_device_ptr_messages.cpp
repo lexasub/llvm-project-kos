@@ -10,7 +10,7 @@ typedef int arr[10];
 typedef ST STarr[10];
 struct SA {
   const int d = 5;
-  const int da[5] = { 0 };
+  const int da[5] = {0};
   ST e;
   ST g[10];
   STarr &rg = g;
@@ -49,14 +49,14 @@ struct SA {
     {}
 #pragma omp target parallel is_device_ptr(rg) // OK
     {}
-#pragma omp target parallel is_device_ptr(k,i,j) // expected-error2 {{expected pointer, array, reference to pointer, or reference to array in 'is_device_ptr clause'}}
+#pragma omp target parallel is_device_ptr(k, i, j) // expected-error2 {{expected pointer, array, reference to pointer, or reference to array in 'is_device_ptr clause'}}
     {}
 #pragma omp target parallel is_device_ptr(d) // expected-error{{expected pointer, array, reference to pointer, or reference to array in 'is_device_ptr clause'}}
     {}
 #pragma omp target parallel is_device_ptr(da) // OK
     {}
-  return;
- }
+    return;
+  }
 };
 struct SB {
   unsigned A;
@@ -92,9 +92,10 @@ struct S1;
 extern S1 a;
 class S2 {
   mutable int a;
+
 public:
-  S2():a(0) { }
-  S2(S2 &s2):a(s2.a) { }
+  S2() : a(0) {}
+  S2(S2 &s2) : a(s2.a) {}
   static float S2s;
   static const float S2sc;
 };
@@ -103,9 +104,10 @@ const S2 b;
 const S2 ba[5];
 class S3 {
   int a;
+
 public:
-  S3():a(0) { }
-  S3(S3 &s3):a(s3.a) { }
+  S3() : a(0) {}
+  S3(S3 &s3) : a(s3.a) {}
 };
 const S3 c;
 const S3 ca[5];
@@ -114,15 +116,17 @@ class S4 {
   int a;
   S4();
   S4(const S4 &s4);
+
 public:
-  S4(int v):a(v) { }
+  S4(int v) : a(v) {}
 };
 class S5 {
   int a;
-  S5():a(0) {}
-  S5(const S5 &s5):a(s5.a) { }
+  S5() : a(0) {}
+  S5(const S5 &s5) : a(s5.a) {}
+
 public:
-  S5(int v):a(v) { }
+  S5(int v) : a(v) {}
 };
 
 S3 h;
@@ -135,7 +139,7 @@ typedef struct {
 template <typename T, int I>
 T tmain(T argc) {
   const T d = 5;
-  const T da[5] = { 0 };
+  const T da[5] = {0};
   S4 e(4);
   S5 g(5);
   S6 h[10];
@@ -177,7 +181,7 @@ T tmain(T argc) {
   {}
 #pragma omp target parallel is_device_ptr(rh) // OK
   {}
-#pragma omp target parallel is_device_ptr(k,i,j) // expected-error2 {{expected pointer, array, reference to pointer, or reference to array in 'is_device_ptr clause'}}
+#pragma omp target parallel is_device_ptr(k, i, j) // expected-error2 {{expected pointer, array, reference to pointer, or reference to array in 'is_device_ptr clause'}}
   {}
 #pragma omp target parallel is_device_ptr(d) // expected-error{{expected pointer, array, reference to pointer, or reference to array in 'is_device_ptr clause'}}
   {}
@@ -204,7 +208,7 @@ T tmain(T argc) {
 
 int main(int argc, char **argv) {
   const int d = 5;
-  const int da[5] = { 0 };
+  const int da[5] = {0};
   S4 e(4);
   S5 g(5);
   S6 h[10];
@@ -246,7 +250,7 @@ int main(int argc, char **argv) {
   {}
 #pragma omp target parallel is_device_ptr(rh) // OK
   {}
-#pragma omp target parallel is_device_ptr(k,i,j) // expected-error2 {{expected pointer, array, reference to pointer, or reference to array in 'is_device_ptr clause'}}
+#pragma omp target parallel is_device_ptr(k, i, j) // expected-error2 {{expected pointer, array, reference to pointer, or reference to array in 'is_device_ptr clause'}}
   {}
 #pragma omp target parallel is_device_ptr(d) // expected-error{{expected pointer, array, reference to pointer, or reference to array in 'is_device_ptr clause'}}
   {}

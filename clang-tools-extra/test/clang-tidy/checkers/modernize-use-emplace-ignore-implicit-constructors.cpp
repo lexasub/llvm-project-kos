@@ -6,8 +6,7 @@
 
 namespace std {
 template <typename>
-class initializer_list
-{
+class initializer_list {
 public:
   initializer_list() noexcept {}
 };
@@ -22,7 +21,7 @@ public:
   void push_back(T &&) {}
 
   template <typename... Args>
-  void emplace_back(Args &&... args){};
+  void emplace_back(Args &&...args){};
   ~vector();
 };
 
